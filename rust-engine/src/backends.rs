@@ -62,6 +62,11 @@ pub trait Backend {
         vec![]
     }
 
+    /// A list of resugaring phases.
+    fn resugaring_phases() -> Vec<Box<dyn prelude::Resugaring>> {
+        vec![]
+    }
+
     /// Group a flat list of items into modules.
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
         let mut modules: HashMap<_, Vec<_>> = HashMap::new();
@@ -118,6 +123,12 @@ impl<B: Backend> crate::phase::Phase for B {
 /// to generate source files with paths determined by [`Backend::module_path`].
 pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> Vec<File> {
     crate::phase::Phase::apply(&backend, &mut items);
+
+    for mut resugaring_phase in B::resugaring_phases() {
+        for item in &mut items {
+            resugaring_phase.visit(item)
+        }
+    }
 
     let linked_items_graph = Rc::new(LinkedItemGraph::new(
         &items,

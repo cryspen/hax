@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+ - Remove `BinOp` resugaring (#1950)
+ - Apply resugarings to linked items (pre/post conditions) (#1961)
+ - Add new import_thir implemented in Rust and using `FullDef`, activated with `--experimental-full-def` (#1967)
 
 Changes to the frontend:
 
@@ -19,6 +22,12 @@ Changes to hax-lib:
  - Lean lib: Add casting for all integer type pairs (#1837)
  - Lean lib: bump lean to v4.28.0-rc1 (#1900)
  - Lean lib: Extract more core models (#1919)
+ - Lean lib: Separate symbolic and bit-blasting specs (#1933)
+ - Lean lib: Communicate user-generated specs to mvcgen (#1937)
+ - Lean lib: Rust primitives for prop (#1942)
+ - Lean lib: For-loops for all unsigned integers (#1951)
+ - Lean lib: Upgrade to Lean v4.29.0-rc1 (#1962)
+ - Lean lib: Add support for Int128 and UInt128 while waiting for upstream in Lean (#1968)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
@@ -31,6 +40,11 @@ Changes to the Lean backend:
  - Add attributes for pureEnsures/pureRequires (#1931)
  - Extract correct `PhantomData` structure (#1932)
  - Standardize generated Lean naming to lowercase namespaces (#1914)
+ - Fix associated constants with default values (#1941)
+ - New default proof for the Lean backend & proof method attribute (#1938)
+ - Prettier proof_mode annotations (#1943)
+ - Detect recursive functions and mark them partial_fixpoint (#1946)
+ - Add more binops (#1963)
 
 Miscellaneous:
 
@@ -83,9 +97,11 @@ Changes to the Lean backend:
  - Add `hax_lib::lean::proof` attribute (#1831)
  - Add support for `#[hax_lib::opaque]` (#1846)
  - Turn rejection phase into a transformation phase (#1840)
+ - Fix string escaping (#1834)
 
 Miscellaneous:
  - Reserve extraction folder for auto-generated files in Lean examples (#1754)
+ - Add `lean_adc` example to the Lean examples section, demonstrating tactics introduced in PR(#1933)
  - New testing framework for the engine(s) (cryspen/hax-evit/134)
 
 ## 0.3.5

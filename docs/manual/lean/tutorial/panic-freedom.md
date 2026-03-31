@@ -26,14 +26,13 @@ to do that is the following:
 ```{.rust .playable .lean-backend .expect-failure}
 #[hax_lib::requires(true)]
 #[hax_lib::ensures(|res| true)]
-#[hax_lib::lean::proof("by unfold square; hax_bv_decide")]
 fn square(x: u8) -> u8 {
     x * x
 }
 ```
 Adding a `hax_lib::requires` and a `hax_lib::ensures` annotation will make Hax generate a specification of the function, asserting panic freedom as well as the postcondition. Here, we used the trivial postcondition `true`, so we only assert panic freedom.
 
-Using the `hax_lib::lean::proof`, we can provide a Lean proof of our specification. If we try running `lake build`
+If we try running `lake build`
 after extracting this code, we get an error: 
 `The prover found a counterexample, consider the following assignment: value = 255`. Indeed `square(255)` 
 panics because the multiplication overflows.
@@ -75,7 +74,6 @@ We already added a pre-condition to specify panic-freedom but we can turn it int
 ```{.rust .playable .lean-backend}
 #[hax_lib::requires(x < 16)]
 #[hax_lib::ensures(|res| true)]
-#[hax_lib::lean::proof("by unfold square; hax_bv_decide")]
 fn square(x: u8) -> u8 {
     x * x
 }
@@ -83,8 +81,7 @@ fn square(x: u8) -> u8 {
 
 With this precondition, Lean is able to prove panic freedom. From now
 on, it is the responsibility of the clients of `square` to respect the
-contract. The next step is thus be to verify, through hax extraction,
-that `square` is used correctly at every call site.
+contract.
 
 ## Common panicking situations
 Multiplication is not the only panicking function provided by the Rust

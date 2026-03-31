@@ -14,75 +14,84 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__mcdc__if
 
+@[spec]
 def say (message : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box String message);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def mcdc_check_neither (a : Bool) (b : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
-  if (← (a &&? b)) then
+  if (← (a &&? b)) then do
     let _ ← (say "a and b");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "not both");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def mcdc_check_a (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
-  if (← (a &&? b)) then
+  if (← (a &&? b)) then do
     let _ ← (say "a and b");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "not both");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def mcdc_check_b (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
-  if (← (a &&? b)) then
+  if (← (a &&? b)) then do
     let _ ← (say "a and b");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "not both");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def mcdc_check_both (a : Bool) (b : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
-  if (← (a &&? b)) then
+  if (← (a &&? b)) then do
     let _ ← (say "a and b");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "not both");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def mcdc_check_tree_decision (a : Bool) (b : Bool) (c : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
-  if (← (a &&? (← (b ||? c)))) then
+  if (← (a &&? (← (b ||? c)))) then do
     let _ ← (say "pass");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "reject");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def mcdc_check_not_tree_decision (a : Bool) (b : Bool) (c : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
-  if (← ((← (a ||? b)) &&? c)) then
+  if (← ((← (a ||? b)) &&? c)) then do
     let _ ← (say "pass");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "reject");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def mcdc_nested_if (a : Bool) (b : Bool) (c : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
-  if (← (a ||? b)) then
+  if (← (a ||? b)) then do
     let _ ← (say "a or b");
-    if (← (b &&? c)) then
+    if (← (b &&? c)) then do
       let _ ← (say "b and c");
       (pure rust_primitives.hax.Tuple0.mk)
-    else
+    else do
       (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "neither a nor b");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (mcdc_check_neither false false);

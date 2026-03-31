@@ -17,7 +17,8 @@ namespace new_tests.legacy__traits__lib
 class SuperTrait.AssociatedTypes (Self : Type) where
   [trait_constr_SuperTrait_i0 : core_models.clone.Clone.AssociatedTypes Self]
 
-attribute [instance] SuperTrait.AssociatedTypes.trait_constr_SuperTrait_i0
+attribute [instance_reducible, instance]
+  SuperTrait.AssociatedTypes.trait_constr_SuperTrait_i0
 
 class SuperTrait (Self : Type)
   [associatedTypes : outParam (SuperTrait.AssociatedTypes (Self : Type))]
@@ -25,8 +26,9 @@ class SuperTrait (Self : Type)
   [trait_constr_SuperTrait_i0 : core_models.clone.Clone Self]
   function_of_super_trait (Self) : (Self -> RustM u32)
 
-attribute [instance] SuperTrait.trait_constr_SuperTrait_i0
+attribute [instance_reducible, instance] SuperTrait.trait_constr_SuperTrait_i0
 
+@[spec]
 def Impl.function_of_super_trait_hoisted (self : i32) : RustM u32 := do
   (rust_primitives.hax.cast_op
     (← (core_models.num.Impl_2.abs self)) :
@@ -41,14 +43,17 @@ instance Impl : SuperTrait i32 where
 
 def Impl_1.N_hoisted : usize := (32 : usize)
 
+@[spec]
 def Impl_1.assoc_f_hoisted (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl_1.method_f_hoisted (self : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (Impl_1.assoc_f_hoisted rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl_1.assoc_type_hoisted (_ : i32) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
@@ -62,6 +67,7 @@ class Bar (Self : Type)
   where
   bar (Self) : (Self -> RustM rust_primitives.hax.Tuple0)
 
+@[spec]
 def Impl_2.method
     (T : Type)
     [trait_constr_method_associated_type_i0 : Bar.AssociatedTypes T]
@@ -70,6 +76,7 @@ def Impl_2.method
     RustM rust_primitives.hax.Tuple0 := do
   (Bar.bar T x)
 
+@[spec]
 def closure_impl_expr
     (I : Type)
     [trait_constr_closure_impl_expr_associated_type_i0 :
@@ -97,6 +104,7 @@ def closure_impl_expr
       (fun x => (do (pure x) : RustM rust_primitives.hax.Tuple0)))))
 
 --  @fail(extraction): lean(HAX0001)
+@[spec]
 def closure_impl_expr_fngen
     (I : Type)
     (F : Type)
@@ -136,18 +144,22 @@ def closure_impl_expr_fngen
 inductive Error : Type
 | Fail : Error
 
+@[spec]
 def Error_cast_to_repr (x : Error) : RustM isize := do
-  match x with | (Error.Fail ) => (pure (0 : isize))
+  match x with | (Error.Fail ) => do (pure (0 : isize))
 
+@[spec]
 def Impl_3.for_application_callback (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple0 -> RustM Error) := do
   (pure (fun _ => (do (pure Error.Fail) : RustM Error)))
 
+@[spec]
 def iter_option (T : Type) (x : (core_models.option.Option T)) :
     RustM (core_models.option.IntoIter T) := do
   (core_models.iter.traits.collect.IntoIterator.into_iter
     (core_models.option.Option T) (← (core_models.option.Impl.as_ref T x)))
 
+@[spec]
 def use_impl_trait (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let iter : (core_models.option.IntoIter Bool) ←
@@ -171,6 +183,7 @@ class Foo (Self : Type) (T : Type)
   where
   to_t (Self) (T) : (Self -> RustM T)
 
+@[spec]
 def _f
     (X : Type)
     [trait_constr__f_associated_type_i0 : Foo.AssociatedTypes X u8]
@@ -185,6 +198,7 @@ end new_tests.legacy__traits__lib.for_clauses
 
 namespace new_tests.legacy__traits__lib.for_clauses.issue_495
 
+@[spec]
 def original_function_from_495 (list : (alloc.vec.Vec u8 alloc.alloc.Global)) :
     RustM rust_primitives.hax.Tuple0 := do
   let _indices : (alloc.vec.Vec u8 alloc.alloc.Global) ←
@@ -203,12 +217,12 @@ def original_function_from_495 (list : (alloc.vec.Vec u8 alloc.alloc.Global)) :
               (← (core_models.slice.Impl.iter u8
                 (← (core_models.ops.deref.Deref.deref
                   (alloc.vec.Vec u8 alloc.alloc.Global) list))))
-              (fun n =>
-                (do (rust_primitives.hax.machine_int.eq n i) : RustM Bool)));
+              (fun n => (do (n ==? i) : RustM Bool)));
           (pure out) :
           RustM Bool)))));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def minimized_1 (list : (alloc.vec.Vec u8 alloc.alloc.Global)) :
     RustM (alloc.vec.Vec u8 alloc.alloc.Global) := do
   (core_models.iter.traits.iterator.Iterator.collect
@@ -220,6 +234,7 @@ def minimized_1 (list : (alloc.vec.Vec u8 alloc.alloc.Global)) :
       (core_models.ops.range.Range.mk (start := (0 : u8)) (_end := (5 : u8)))
       (fun _ => (do (pure true) : RustM Bool)))))
 
+@[spec]
 def minimized_2
     (it :
     (core_models.iter.adapters.filter.Filter
@@ -298,6 +313,7 @@ class PolyOp (Self : Type)
 structure Plus where
   -- no fields
 
+@[spec]
 def Impl.op_hoisted (x : u32) (y : u32) : RustM u32 := do (x +? y)
 
 @[reducible] instance Impl.AssociatedTypes : PolyOp.AssociatedTypes Plus where
@@ -308,6 +324,7 @@ instance Impl : PolyOp Plus where
 structure Times where
   -- no fields
 
+@[spec]
 def Impl_1.op_hoisted (x : u32) (y : u32) : RustM u32 := do (x *? y)
 
 @[reducible] instance Impl_1.AssociatedTypes :
@@ -317,6 +334,7 @@ def Impl_1.op_hoisted (x : u32) (y : u32) : RustM u32 := do (x *? y)
 instance Impl_1 : PolyOp Times where
   op := (Impl_1.op_hoisted)
 
+@[spec]
 def twice
     (OP : Type)
     [trait_constr_twice_associated_type_i0 : PolyOp.AssociatedTypes OP]
@@ -325,6 +343,7 @@ def twice
     RustM u32 := do
   (PolyOp.op OP x x)
 
+@[spec]
 def both (x : u32) : RustM (rust_primitives.hax.Tuple2 u32 u32) := do
   (pure (rust_primitives.hax.Tuple2.mk (← (twice Plus x)) (← (twice Times x))))
 
@@ -353,6 +372,7 @@ end new_tests.legacy__traits__lib.implicit_dependencies_issue_667.define_type
 
 namespace new_tests.legacy__traits__lib.implicit_dependencies_issue_667.impl_type
 
+@[spec]
 def Impl.my_method_hoisted
     (self :
     new_tests.legacy__traits__lib.implicit_dependencies_issue_667.define_type.MyType)
@@ -376,6 +396,7 @@ end new_tests.legacy__traits__lib.implicit_dependencies_issue_667.impl_type
 
 namespace new_tests.legacy__traits__lib.implicit_dependencies_issue_667.use_type
 
+@[spec]
 def some_function
     (x :
     new_tests.legacy__traits__lib.implicit_dependencies_issue_667.define_type.MyType)
@@ -405,6 +426,7 @@ class Foo (Self : Type) (FooConst : usize) (FooType : Type)
     (RustArray FunType FunConst) ->
     RustM rust_primitives.hax.Tuple0)
 
+@[spec]
 def Impl.fun_hoisted
     (FooConst : usize)
     (FooType : Type)
@@ -459,6 +481,7 @@ class Trait (Self : Type) (TypeArg : Type) (ConstArg : usize)
     (Type TypeArg (ConstArg)) ->
     RustM rust_primitives.hax.Tuple0)
 
+@[spec]
 def Impl.method_hoisted
     (TypeArg : Type)
     (ConstArg : usize)
@@ -470,6 +493,7 @@ def Impl.method_hoisted
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl.associated_function_hoisted
     (TypeArg : Type)
     (ConstArg : usize)
@@ -497,6 +521,7 @@ instance Impl (TypeArg : Type) (ConstArg : usize) :
       MethodTypeArg
       (MethodConstArg))
 
+@[spec]
 def method_caller
     (MethodTypeArg : Type)
     (TypeArg : Type)
@@ -519,6 +544,7 @@ def method_caller
       (ConstArg) MethodTypeArg (MethodConstArg) x value_TypeArg value_Type);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def associated_function_caller
     (MethodTypeArg : Type)
     (TypeArg : Type)
@@ -586,7 +612,7 @@ class BlockSizeUser (Self : Type)
 class ParBlocksSizeUser.AssociatedTypes (Self : Type) where
   [trait_constr_ParBlocksSizeUser_i0 : BlockSizeUser.AssociatedTypes Self]
 
-attribute [instance]
+attribute [instance_reducible, instance]
   ParBlocksSizeUser.AssociatedTypes.trait_constr_ParBlocksSizeUser_i0
 
 class ParBlocksSizeUser (Self : Type)
@@ -594,12 +620,14 @@ class ParBlocksSizeUser (Self : Type)
   where
   [trait_constr_ParBlocksSizeUser_i0 : BlockSizeUser Self]
 
-attribute [instance] ParBlocksSizeUser.trait_constr_ParBlocksSizeUser_i0
+attribute [instance_reducible, instance]
+  ParBlocksSizeUser.trait_constr_ParBlocksSizeUser_i0
 
 class BlockBackend.AssociatedTypes (Self : Type) where
   [trait_constr_BlockBackend_i0 : ParBlocksSizeUser.AssociatedTypes Self]
 
-attribute [instance] BlockBackend.AssociatedTypes.trait_constr_BlockBackend_i0
+attribute [instance_reducible, instance]
+  BlockBackend.AssociatedTypes.trait_constr_BlockBackend_i0
 
 class BlockBackend (Self : Type)
   [associatedTypes : outParam (BlockBackend.AssociatedTypes (Self : Type))]
@@ -609,7 +637,8 @@ class BlockBackend (Self : Type)
     ((alloc.vec.Vec (BlockSizeUser.BlockSize Self) alloc.alloc.Global) ->
     RustM rust_primitives.hax.Tuple0)
 
-attribute [instance] BlockBackend.trait_constr_BlockBackend_i0
+attribute [instance_reducible, instance]
+  BlockBackend.trait_constr_BlockBackend_i0
 
 end new_tests.legacy__traits__lib.block_size
 
@@ -671,6 +700,7 @@ namespace new_tests.legacy__traits__lib.implement_arithmetic_trait
 structure Wrapped where
   _0 : i32
 
+@[spec]
 def Impl.add_hoisted (self : Wrapped) (rhs : Wrapped) : RustM Wrapped := do
   (pure (Wrapped.mk (← ((Wrapped._0 self) +? (Wrapped._0 rhs)))))
 
@@ -682,6 +712,7 @@ def Impl.add_hoisted (self : Wrapped) (rhs : Wrapped) : RustM Wrapped := do
 instance Impl : core_models.ops.arith.Add Wrapped Wrapped where
   add := (Impl.add_hoisted)
 
+@[spec]
 def test (x : Wrapped) (y : Wrapped) : RustM Wrapped := do
   (core_models.ops.arith.Add.add Wrapped Wrapped x y)
 
@@ -1164,6 +1195,7 @@ abbrev I1 : Type := (typenum.uint.UInt typenum.uint.UTerm typenum.bit.B1)
 
 abbrev I0 : Type := typenum.uint.UTerm
 
+@[spec]
 def _f
     (T : Type)
     [trait_constr__f_associated_type_i0 :
@@ -1314,7 +1346,8 @@ class SubTrait.AssociatedTypes (Self : Type) (TypeArg : Type) (ConstArg : usize)
   [trait_constr_SubTrait_i0 : Trait.AssociatedTypes Self TypeArg (ConstArg)]
   AssocType : Type
 
-attribute [instance] SubTrait.AssociatedTypes.trait_constr_SubTrait_i0
+attribute [instance_reducible, instance]
+  SubTrait.AssociatedTypes.trait_constr_SubTrait_i0
 
 attribute [reducible] SubTrait.AssociatedTypes.AssocType
 
@@ -1336,7 +1369,7 @@ class SubTrait (Self : Type) (TypeArg : Type) (ConstArg : usize)
     (ConstArg)
     ]
 
-attribute [instance] SubTrait.trait_constr_SubTrait_i0
+attribute [instance_reducible, instance] SubTrait.trait_constr_SubTrait_i0
 
 end new_tests.legacy__traits__lib.implicit_explicit_calling_conventions
 
@@ -1366,7 +1399,7 @@ class Foo.AssociatedTypes (Self : Type) where
   [trait_constr_Foo_i0 : Bar.AssociatedTypes Self associatedTypes.U]
   U : Type
 
-attribute [instance] Foo.AssociatedTypes.trait_constr_Foo_i0
+attribute [instance_reducible, instance] Foo.AssociatedTypes.trait_constr_Foo_i0
 
 attribute [reducible] Foo.AssociatedTypes.U
 
@@ -1378,7 +1411,7 @@ class Foo (Self : Type)
   where
   [trait_constr_Foo_i0 : Bar Self associatedTypes.U]
 
-attribute [instance] Foo.trait_constr_Foo_i0
+attribute [instance_reducible, instance] Foo.trait_constr_Foo_i0
 
 end new_tests.legacy__traits__lib.default_traits_parameters
 
@@ -1396,6 +1429,7 @@ instance Impl_1 : Foo rust_primitives.hax.Tuple0 where
   method_f := (Impl_1.method_f_hoisted)
   assoc_type := (Impl_1.assoc_type_hoisted)
 
+@[spec]
 def f
     (T : Type)
     [trait_constr_f_associated_type_i0 : Foo.AssociatedTypes T]
@@ -1405,6 +1439,7 @@ def f
   let _ ← (Foo.assoc_f T rust_primitives.hax.Tuple0.mk);
   (Foo.method_f T x)
 
+@[spec]
 def g
     (T : Type)
     [trait_constr_g_associated_type_i0 : Foo.AssociatedTypes T]
@@ -1422,7 +1457,8 @@ class Trait2.AssociatedTypes (Self : Type) where
   [trait_constr_Trait2_i0 : Trait1.AssociatedTypes Self]
   U : Type
 
-attribute [instance] Trait2.AssociatedTypes.trait_constr_Trait2_i0
+attribute [instance_reducible, instance]
+  Trait2.AssociatedTypes.trait_constr_Trait2_i0
 
 attribute [reducible] Trait2.AssociatedTypes.U
 
@@ -1434,7 +1470,7 @@ class Trait2 (Self : Type)
   where
   [trait_constr_Trait2_i0 : Trait1 Self]
 
-attribute [instance] Trait2.trait_constr_Trait2_i0
+attribute [instance_reducible, instance] Trait2.trait_constr_Trait2_i0
 
 end new_tests.legacy__traits__lib.recursive_trait_with_assoc_type
 

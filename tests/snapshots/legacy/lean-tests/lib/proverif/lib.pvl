@@ -908,6 +908,23 @@ reduc forall
       )
     ) = new_tests__legacy__lean_tests__lib__constants__const_parameters__0.
 
+type new_tests__legacy__lean_tests__lib__binops__t_S.
+
+fun new_tests__legacy__lean_tests__lib__binops__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__binops__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__binops__t_S_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__binops__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__binops__t_S_default_value: new_tests__legacy__lean_tests__lib__binops__t_S.
+letfun new_tests__legacy__lean_tests__lib__binops__t_S_default() =
+       new_tests__legacy__lean_tests__lib__binops__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__binops__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__binops__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__binops__S()
+    : new_tests__legacy__lean_tests__lib__binops__t_S [data].
+
+
 (*****************************************)
 (* Functions *)
 (*****************************************)
@@ -966,6 +983,15 @@ letfun new_tests__legacy__lean_tests__lib__traits__basic__f(x : v_T) =
        core_models__ops__arith__f_add(
          new_tests__legacy__lean_tests__lib__traits__basic__f_f1(x),
          new_tests__legacy__lean_tests__lib__traits__basic__f_f2(x, x)
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__traits__associated_constant__foo(
+         n : nat
+       ) =
+       core_models__ops__arith__f_add(
+         n,
+         new_tests__legacy__lean_tests__lib__traits__associated_constant__f_One(
+         )
        ).
 
 letfun new_tests__legacy__lean_tests__lib__structs__miscellaneous__test_tuples(
@@ -1244,6 +1270,10 @@ letfun new_tests__legacy__lean_tests__lib__structs__normal_structs(
          end,v_def,theorem,structure,inductive
        ) = s3 in ().
 
+letfun new_tests__legacy__lean_tests__lib__specs__issue_1945___mktuple(a : nat) =
+       let x = (a) in
+       core_models__cmp__f_eq(a, 0).
+
 letfun new_tests__legacy__lean_tests__lib__specs__issue_1852___impl_T__test(
          self : new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T
        ) =
@@ -1257,7 +1287,16 @@ letfun new_tests__legacy__lean_tests__lib__specs__issue_1852___impl_T__func(
 letfun new_tests__legacy__lean_tests__lib__specs__test(x : nat) =
        x.
 
+letfun new_tests__legacy__lean_tests__lib__specs__uuse_previous_result(x : nat) =
+       new_tests__legacy__lean_tests__lib__specs__test(x).
+
 letfun new_tests__legacy__lean_tests__lib__specs__test_proof(x : nat) =
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__specs__square(x : nat) =
+       core_models__ops__arith__f_mul(x, x).
+
+letfun new_tests__legacy__lean_tests__lib__specs__forall_and_exists(x : nat) =
        x.
 
 letfun new_tests__legacy__lean_tests__lib__specs__fn_without_args(
@@ -1267,6 +1306,18 @@ letfun new_tests__legacy__lean_tests__lib__specs__fn_without_args(
 
 letfun new_tests__legacy__lean_tests__lib__specs__custom_pure_proofs(x : nat) =
        ().
+
+letfun new_tests__legacy__lean_tests__lib__recursion__factorial(n : nat) =
+       if core_models__cmp__f_eq(n, 0)
+       then (1)
+       else (
+         core_models__ops__arith__f_mul(
+           n,
+           new_tests__legacy__lean_tests__lib__recursion__factorial(
+             core_models__ops__arith__f_sub(n, 1)
+           )
+         )
+       ).
 
 letfun new_tests__legacy__lean_tests__lib__opaque__an_opaque_fn(
          wildcard45 : bitstring
@@ -1421,6 +1472,30 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
  (if core_models::cmp::f_eq(i, 5) {
  {
  let ..."
+         )
+       ) in
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__loops__for_loop_with_spec(y : nat) =
+       let x:nat = (y) in
+       let x = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
+ f_start: 0,
+ f_end: y,
+ })) {
+ |x| {
+ {
+ let _: tuple0 = {
+ hax_lib::e_internal_loop_invariant::<
+ int,
+..."
          )
        ) in
        x.
@@ -1592,6 +1667,110 @@ letfun new_tests__legacy__lean_tests__lib__casts__add_after_cast(
        ) =
        core_models__ops__arith__f_add(core_models__ops__arith__f_add(a, b), c).
 
+letfun new_tests__legacy__lean_tests__lib__binops__noop(x : nat) =
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__binops__neg_int(x : nat) =
+       core_models__ops__arith__f_neg(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_int(x : nat) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_bool(x : bool) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__index(x : bitstring) =
+       core_models__ops__index__f_index(x, 0).
+
+letfun new_tests__legacy__lean_tests__lib__binops__add_int(x : nat, y : nat) =
+       core_models__ops__arith__f_add(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__sub_int(x : nat, y : nat) =
+       core_models__ops__arith__f_sub(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__mul_int(x : nat, y : nat) =
+       core_models__ops__arith__f_mul(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__div_int(x : nat, y : nat) =
+       core_models__ops__arith__f_div(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__rem_int(x : nat, y : nat) =
+       core_models__ops__arith__f_rem(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__shr_int(x : nat, y : nat) =
+       core_models__ops__bit__f_shr(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__shl_int(x : nat, y : nat) =
+       core_models__ops__bit__f_shl(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitand_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitand(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitand_bool(
+         x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitand(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitor_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitor_bool(x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitxor_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitxor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitxor_bool(
+         x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitxor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__logical_op_and(
+         x : bool, y : bool
+       ) =
+       x && y.
+
+letfun new_tests__legacy__lean_tests__lib__binops__logical_op_or(
+         x : bool, y : bool
+       ) =
+       x || y.
+
+letfun new_tests__legacy__lean_tests__lib__binops__eq_int(x : nat, y : nat) =
+       core_models__cmp__f_eq(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__eq_bool(x : bool, y : bool) =
+       core_models__cmp__f_eq(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__neq_int(x : nat, y : nat) =
+       core_models__cmp__f_ne(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__neq_bool(x : bool, y : bool) =
+       core_models__cmp__f_ne(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__lt_int(x : nat, y : nat) =
+       core_models__cmp__f_lt(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__le_int(x : nat, y : nat) =
+       core_models__cmp__f_le(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__gt_int(x : nat, y : nat) =
+       core_models__cmp__f_gt(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__ge_int(x : nat, y : nat) =
+       core_models__cmp__f_ge(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_s(
+         x : new_tests__legacy__lean_tests__lib__binops__t_S
+       ) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__add_s(
+         x : new_tests__legacy__lean_tests__lib__binops__t_S,
+         y : new_tests__legacy__lean_tests__lib__binops__t_S
+       ) =
+       core_models__ops__arith__f_add(x, y).
+
 letfun new_tests__legacy__lean_tests__lib__associated_types__multiple_projections__func(
          d : v_D, f : v_F, u : v_U
        ) =
@@ -1705,18 +1884,27 @@ letfun new_tests__legacy__lean_tests__lib__test_before_verbatim_multi_line(
        ) =
        32.
 
-letfun new_tests__legacy__lean_tests__lib__binop_resugarings(x : nat) =
-       let add = (core_models__ops__arith__f_add(x, 1)) in
-       let sub = (core_models__ops__arith__f_sub(add, 2)) in
-       let mul = (core_models__ops__arith__f_mul(sub, 3)) in
-       let rem = (core_models__ops__arith__f_rem(mul, 4)) in
-       let div = (core_models__ops__arith__f_div(rem, 5)) in
-       let rshift = (core_models__ops__bit__f_shr(div, x)) in
-       let lshift = (core_models__ops__bit__f_shl(div, x)) in
-       x.
+const new_tests__legacy__lean_tests__lib__v_NULL_CHAR: bitstring.
+
+letfun new_tests__legacy__lean_tests__lib__string_escapes(wildcard77 : bitstring
+       ) =
+       let e_empty = ("") in
+       let e_plain = ("hello world") in
+       let e_with_quotes = ("she said "hello"") in
+       let e_with_single_quote = ("it's fine") in
+       let e_with_backslash = ("path\to\file") in
+       let e_with_newline = ("line1
+line2") in
+       let e_with_tab = ("col1	col2") in
+       let e_with_carriage_return = ("beforeafter") in
+       let e_mixed = ("say "hello"
+and	'goodbye'\end") in
+       let e_carriage_return = ("carriagereturn") in
+       let e_control_chars = ("null byte bellchar font[0mreset") in
+       ().
 
 letfun new_tests__legacy__lean_tests__lib__nested_control_flow__nested_control_flow(
-         wildcard77 : bitstring
+         wildcard78 : bitstring
        ) =
        let x1 = (core_models__ops__arith__f_add(1, if true then (0) else (1))) in
        let x2 = (core_models__ops__arith__f_add(1, 0)) in
@@ -1727,7 +1915,7 @@ letfun new_tests__legacy__lean_tests__lib__nested_control_flow__nested_control_f
        ().
 
 letfun new_tests__legacy__lean_tests__lib__nested_control_flow__explicit_hoisting(
-         wildcard78 : bitstring
+         wildcard79 : bitstring
        ) =
        let x1_tmp = (if true then (0) else (1)) in
        let x1 = (core_models__ops__arith__f_add(1, x1_tmp)) in
@@ -1739,7 +1927,7 @@ letfun new_tests__legacy__lean_tests__lib__nested_control_flow__explicit_hoistin
        ().
 
 letfun new_tests__legacy__lean_tests__lib__nested_control_flow__complex_nesting(
-         wildcard79 : bitstring
+         wildcard80 : bitstring
        ) =
        let x1 = (
          if true
@@ -1833,7 +2021,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
  proj_proj_tuple..."
        ).
 
-letfun new_tests__legacy__lean_tests__lib__ite__test1(wildcard80 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__ite__test1(wildcard81 : bitstring) =
        let x = (if true then (0) else (1)) in
        if false then (2) else (3).
 
@@ -1862,11 +2050,11 @@ letfun new_tests__legacy__lean_tests__lib__ite__test2(b : bool) =
          core_models__ops__arith__f_add(core_models__ops__arith__f_add(z, y), x)
        ).
 
-letfun new_tests__legacy__lean_tests__lib__comments__f(wildcard81 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__comments__f(wildcard82 : bitstring) =
        ().
 
 letfun new_tests__legacy__lean_tests__lib__comments__heavily_documented(
-         wildcard82 : bitstring
+         wildcard83 : bitstring
        ) =
        4.
 

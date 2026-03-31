@@ -744,6 +744,9 @@ let map_path_strings ~(f : string -> string) (did : t) : t =
 
 let is_constructor (did : t) : bool = Explicit_def_id.is_constructor did.def_id
 
+let is_anon_assoc_ty (did : t) : bool =
+  Explicit_def_id.is_anon_assoc_ty did.def_id
+
 let matches_namespace (ns : Types.namespace) (did : t) : bool =
   let did = Explicit_def_id.to_def_id did.def_id in
   let path : string option list =

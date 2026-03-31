@@ -15,30 +15,34 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__let_else_loop
 
 --  @fail(extraction): fstar(HAX0001), lean(HAX0001), coq(HAX0001), proverif(HAX0008)
+@[spec]
 def loopy (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
   match cond with
-    | true => (pure rust_primitives.hax.Tuple0.mk)
-    | _ =>
+    | true => do (pure rust_primitives.hax.Tuple0.mk)
+    | _ => do
       (pure (rust_primitives.hax.Tuple2.mk sorry rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): fstar(HAX0001, HAX0001), lean(HAX0001, HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008, HAX0008)
+@[spec]
 def _loop_either_way (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
   match cond with
-    | true =>
+    | true => do
       (rust_primitives.hax.never_to_any
         (rust_primitives.hax.Tuple2.mk sorry rust_primitives.hax.Tuple0.mk))
-    | _ =>
+    | _ => do
       (pure (rust_primitives.hax.Tuple2.mk sorry rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): proverif(HAX0008, HAX0008), lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001), coq(HAX0001, HAX0001)
+@[spec]
 def _if (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
-  if cond then
+  if cond then do
     (rust_primitives.hax.never_to_any
       (rust_primitives.hax.Tuple2.mk sorry rust_primitives.hax.Tuple0.mk))
-  else
+  else do
     (rust_primitives.hax.never_to_any
       (rust_primitives.hax.Tuple2.mk sorry rust_primitives.hax.Tuple0.mk))
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (loopy true);

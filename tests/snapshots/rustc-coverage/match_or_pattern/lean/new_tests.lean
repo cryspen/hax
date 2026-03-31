@@ -14,61 +14,62 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__match_or_pattern
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let is_true : Bool ←
-    (rust_primitives.hax.machine_int.eq
-      (← (core_models.iter.traits.exact_size.ExactSizeIterator.len
+    ((← (core_models.iter.traits.exact_size.ExactSizeIterator.len
         std.env.Args (← (std.env.args rust_primitives.hax.Tuple0.mk))))
-      (1 : usize));
+      ==? (1 : usize));
   let a : u8 := (0 : u8);
   let b : u8 := (0 : u8);
   let ⟨a, b⟩ ←
-    if is_true then
+    if is_true then do
       let a : u8 := (2 : u8);
       let b : u8 := (0 : u8);
       (pure (rust_primitives.hax.Tuple2.mk a b))
-    else
+    else do
       (pure (rust_primitives.hax.Tuple2.mk a b));
   let _ ←
     match (rust_primitives.hax.Tuple2.mk a b) with
-      | ⟨0, 2⟩ | ⟨0, 3⟩ | ⟨1, 2⟩ | ⟨1, 3⟩ =>
+      | ⟨0, 2⟩ | ⟨0, 3⟩ | ⟨1, 2⟩ | ⟨1, 3⟩ => do
         (pure rust_primitives.hax.Tuple0.mk)
-      | _ => (pure rust_primitives.hax.Tuple0.mk);
+      | _ => do (pure rust_primitives.hax.Tuple0.mk);
   let ⟨a, b⟩ ←
-    if is_true then
+    if is_true then do
       let a : u8 := (0 : u8);
       let b : u8 := (0 : u8);
       (pure (rust_primitives.hax.Tuple2.mk a b))
-    else
+    else do
       (pure (rust_primitives.hax.Tuple2.mk a b));
   let _ ←
     match (rust_primitives.hax.Tuple2.mk a b) with
-      | ⟨0, 2⟩ | ⟨0, 3⟩ | ⟨1, 2⟩ | ⟨1, 3⟩ =>
+      | ⟨0, 2⟩ | ⟨0, 3⟩ | ⟨1, 2⟩ | ⟨1, 3⟩ => do
         (pure rust_primitives.hax.Tuple0.mk)
-      | _ => (pure rust_primitives.hax.Tuple0.mk);
+      | _ => do (pure rust_primitives.hax.Tuple0.mk);
   let ⟨a, b⟩ ←
-    if is_true then
+    if is_true then do
       let a : u8 := (2 : u8);
       let b : u8 := (2 : u8);
       (pure (rust_primitives.hax.Tuple2.mk a b))
-    else
+    else do
       (pure (rust_primitives.hax.Tuple2.mk a b));
   let _ ←
     match (rust_primitives.hax.Tuple2.mk a b) with
-      | ⟨0, 2⟩ | ⟨0, 3⟩ | ⟨1, 2⟩ | ⟨1, 3⟩ =>
+      | ⟨0, 2⟩ | ⟨0, 3⟩ | ⟨1, 2⟩ | ⟨1, 3⟩ => do
         (pure rust_primitives.hax.Tuple0.mk)
-      | _ => (pure rust_primitives.hax.Tuple0.mk);
+      | _ => do (pure rust_primitives.hax.Tuple0.mk);
   let ⟨a, b⟩ ←
-    if is_true then
+    if is_true then do
       let a : u8 := (0 : u8);
       let b : u8 := (2 : u8);
       (pure (rust_primitives.hax.Tuple2.mk a b))
-    else
+    else do
       (pure (rust_primitives.hax.Tuple2.mk a b));
   match (rust_primitives.hax.Tuple2.mk a b) with
-    | ⟨0, 2⟩ | ⟨0, 3⟩ | ⟨1, 2⟩ | ⟨1, 3⟩ => (pure rust_primitives.hax.Tuple0.mk)
-    | _ => (pure rust_primitives.hax.Tuple0.mk)
+    | ⟨0, 2⟩ | ⟨0, 3⟩ | ⟨1, 2⟩ | ⟨1, 3⟩ => do
+      (pure rust_primitives.hax.Tuple0.mk)
+    | _ => do (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__match_or_pattern
 

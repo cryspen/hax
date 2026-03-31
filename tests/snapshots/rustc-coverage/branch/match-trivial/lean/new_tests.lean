@@ -17,6 +17,7 @@ namespace new_tests.rustc_coverage__branch__match_trivial
 inductive Uninhabited : Type
 
 
+@[spec]
 def Uninhabited_cast_to_repr (x : Uninhabited) :
     RustM rust_primitives.hax.Never := do
   match x with 
@@ -24,14 +25,17 @@ def Uninhabited_cast_to_repr (x : Uninhabited) :
 inductive Trivial : Type
 | Value : Trivial
 
+@[spec]
 def Trivial_cast_to_repr (x : Trivial) : RustM isize := do
-  match x with | (Trivial.Value ) => (pure (0 : isize))
+  match x with | (Trivial.Value ) => do (pure (0 : isize))
 
+@[spec]
 def consume (T : Type) (x : T) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box T x);
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def _uninhabited (x : Uninhabited) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -47,6 +51,7 @@ def _uninhabited (x : Uninhabited) : RustM rust_primitives.hax.Tuple0 := do
   (rust_primitives.hax.never_to_any (← (consume String "done")))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def trivial (x : Trivial) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -58,10 +63,11 @@ def trivial (x : Trivial) : RustM rust_primitives.hax.Tuple0 := do
         (do
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
-  let _ ← match x with | (Trivial.Value ) => (consume String "trivial");
+  let _ ← match x with | (Trivial.Value ) => do (consume String "trivial");
   let _ ← (consume String "done");
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (trivial Trivial.Value);

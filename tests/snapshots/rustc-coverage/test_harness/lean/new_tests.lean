@@ -14,6 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__test_harness
 
+@[spec]
 def unused (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)

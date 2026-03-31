@@ -49,139 +49,152 @@ structure Foo where
   core_models.cmp.Eq Foo :=
   by constructor <;> exact Inhabited.default
 
+@[spec]
 def eq_good (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["a
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["a\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (Foo.mk (1 : u32)) (Foo.mk (1 : u32)))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
           (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def eq_good_message (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["b
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["b\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (Foo.mk (1 : u32)) (Foo.mk (1 : u32)))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
           (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def ne_good (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["c
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["c\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (Foo.mk (1 : u32)) (Foo.mk (3 : u32)))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
-          (← (core_models.ops.bit.Not.not
-            (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)))));
+          (← (!? (← (core_models.cmp.PartialEq.eq
+            Foo
+            Foo left_val right_val)))));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def ne_good_message (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["d
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["d\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (Foo.mk (1 : u32)) (Foo.mk (3 : u32)))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
-          (← (core_models.ops.bit.Not.not
-            (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)))));
+          (← (!? (← (core_models.cmp.PartialEq.eq
+            Foo
+            Foo left_val right_val)))));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def eq_bad (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["e
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["e\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (Foo.mk (1 : u32)) (Foo.mk (3 : u32)))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
           (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def eq_bad_message (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["f
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["f\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (Foo.mk (1 : u32)) (Foo.mk (3 : u32)))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
           (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def ne_bad (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["g
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["g\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (Foo.mk (1 : u32)) (Foo.mk (1 : u32)))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
-          (← (core_models.ops.bit.Not.not
-            (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)))));
+          (← (!? (← (core_models.cmp.PartialEq.eq
+            Foo
+            Foo left_val right_val)))));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def ne_bad_message (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["h
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["h\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (Foo.mk (1 : u32)) (Foo.mk (1 : u32)))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
-          (← (core_models.ops.bit.Not.not
-            (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)))));
+          (← (!? (← (core_models.cmp.PartialEq.eq
+            Foo
+            Foo left_val right_val)))));
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008), proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (eq_good rust_primitives.hax.Tuple0.mk);

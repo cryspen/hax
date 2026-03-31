@@ -28,35 +28,43 @@ class Trait (Self : Type)
 instance Impl : Trait Foo where
 
 --  Indirect dependencies
+@[spec]
 def main_a_a (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_b_a (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_c_a (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_a_b (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_b_b (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_c_b (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_a_c (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  Direct dependencies
+@[spec]
 def main_a
     (T : Type)
     [trait_constr_main_a_associated_type_i0 : Trait.AssociatedTypes T]
@@ -68,10 +76,12 @@ def main_a
   let _ ← (main_a_c rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_b_c (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_b (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (main_b_a rust_primitives.hax.Tuple0.mk);
@@ -79,10 +89,12 @@ def main_b (_ : rust_primitives.hax.Tuple0) :
   let _ ← (main_b_c rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_c_c (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main_c (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (main_c_a rust_primitives.hax.Tuple0.mk);
@@ -91,6 +103,7 @@ def main_c (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  Entrypoint
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (main_a Foo Foo.mk);

@@ -25,6 +25,24 @@ fn loop2() -> u32 {
     x
 }
 
+/// For-loop with a spec
+#[hax_lib::requires(y > 0)]
+#[hax_lib::ensures(|res| res > 0)]
+/// @fail(extraction): proverif(HAX0008)
+fn for_loop_with_spec(y: u64) -> u64 {
+    let mut x: u64 = y;
+    for i in 0..y {
+        hax_lib::loop_invariant!(|i: u64| x > 0);
+        if x % 5 == 0 {
+            x = 200;
+        } else {
+            x = x % 5;
+        }
+    }
+    x
+}
+
+/// while-loop
 #[hax_lib::ensures(|r| r == 0)]
 #[hax_lib::lean::pure_ensures_proof("by hax_construct_pure <;> grind")]
 /// @fail(extraction): coq(HAX0001, HAX0001), proverif(HAX0008), ssprove(HAX0001)

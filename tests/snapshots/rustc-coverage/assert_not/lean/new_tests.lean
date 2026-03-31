@@ -14,18 +14,13 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__assert_not
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (hax_lib.assert true);
-  let _ ← (hax_lib.assert (← (core_models.ops.bit.Not.not false)));
-  let _ ←
-    (hax_lib.assert
-      (← (core_models.ops.bit.Not.not (← (core_models.ops.bit.Not.not true)))));
-  let _ ←
-    (hax_lib.assert
-      (← (core_models.ops.bit.Not.not
-        (← (core_models.ops.bit.Not.not
-          (← (core_models.ops.bit.Not.not false)))))));
+  let _ ← (hax_lib.assert (← (!? false)));
+  let _ ← (hax_lib.assert (← (!? (← (!? true)))));
+  let _ ← (hax_lib.assert (← (!? (← (!? (← (!? false)))))));
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__assert_not

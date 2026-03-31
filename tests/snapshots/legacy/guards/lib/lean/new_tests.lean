@@ -15,100 +15,104 @@ set_option linter.unusedVariables false
 namespace new_tests.legacy__guards__lib
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def if_let_guard
     (x : (core_models.option.Option (core_models.result.Result i32 i32))) :
     RustM i32 := do
   match x with
-    | (core_models.option.Option.None ) => (pure (0 : i32))
-    | _ =>
+    | (core_models.option.Option.None ) => do (pure (0 : i32))
+    | _ => do
       match
         (← match x with
-          | (core_models.option.Option.Some  v) =>
+          | (core_models.option.Option.Some  v) => do
             match v with
-              | (core_models.result.Result.Ok  y) =>
+              | (core_models.result.Result.Ok  y) => do
                 (pure (core_models.option.Option.Some y))
-              | _ => (pure core_models.option.Option.None)
-          | _ => (pure core_models.option.Option.None))
+              | _ => do (pure core_models.option.Option.None)
+          | _ => do (pure core_models.option.Option.None))
       with
-        | (core_models.option.Option.Some  x) => (pure x)
-        | (core_models.option.Option.None ) =>
+        | (core_models.option.Option.Some  x) => do (pure x)
+        | (core_models.option.Option.None ) => do
           match x with
             | (core_models.option.Option.Some
-                 (core_models.result.Result.Err  y)) =>
+                 (core_models.result.Result.Err  y)) => do
               (pure y)
-            | _ => (pure (1 : i32))
+            | _ => do (pure (1 : i32))
 
+@[spec]
 def equivalent
     (x : (core_models.option.Option (core_models.result.Result i32 i32))) :
     RustM i32 := do
   match x with
-    | (core_models.option.Option.None ) => (pure (0 : i32))
-    | _ =>
+    | (core_models.option.Option.None ) => do (pure (0 : i32))
+    | _ => do
       match
         (← match x with
-          | (core_models.option.Option.Some  v) =>
+          | (core_models.option.Option.Some  v) => do
             match v with
-              | (core_models.result.Result.Ok  y) =>
+              | (core_models.result.Result.Ok  y) => do
                 (pure (core_models.option.Option.Some y))
-              | _ => (pure core_models.option.Option.None)
-          | _ => (pure core_models.option.Option.None))
+              | _ => do (pure core_models.option.Option.None)
+          | _ => do (pure core_models.option.Option.None))
       with
-        | (core_models.option.Option.Some  y) => (pure y)
-        | (core_models.option.Option.None ) =>
+        | (core_models.option.Option.Some  y) => do (pure y)
+        | (core_models.option.Option.None ) => do
           match x with
             | (core_models.option.Option.Some
-                 (core_models.result.Result.Err  y)) =>
+                 (core_models.result.Result.Err  y)) => do
               (pure y)
-            | _ => (pure (1 : i32))
+            | _ => do (pure (1 : i32))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def multiple_guards
     (x : (core_models.option.Option (core_models.result.Result i32 i32))) :
     RustM i32 := do
   match x with
-    | (core_models.option.Option.None ) => (pure (0 : i32))
-    | _ =>
+    | (core_models.option.Option.None ) => do (pure (0 : i32))
+    | _ => do
       match
         (← match x with
           | (core_models.option.Option.Some  (core_models.result.Result.Ok  v))
-            =>
+            => do
             match (core_models.option.Option.Some (← (v +? (1 : i32)))) with
-              | (core_models.option.Option.Some  1) =>
+              | (core_models.option.Option.Some  1) => do
                 (pure (core_models.option.Option.Some (0 : i32)))
-              | _ => (pure core_models.option.Option.None)
-          | _ => (pure core_models.option.Option.None))
+              | _ => do (pure core_models.option.Option.None)
+          | _ => do (pure core_models.option.Option.None))
       with
-        | (core_models.option.Option.Some  x) => (pure x)
-        | (core_models.option.Option.None ) =>
+        | (core_models.option.Option.Some  x) => do (pure x)
+        | (core_models.option.Option.None ) => do
           match
             (← match x with
-              | (core_models.option.Option.Some  v) =>
+              | (core_models.option.Option.Some  v) => do
                 match v with
-                  | (core_models.result.Result.Ok  y) =>
+                  | (core_models.result.Result.Ok  y) => do
                     (pure (core_models.option.Option.Some y))
-                  | _ => (pure core_models.option.Option.None)
-              | _ => (pure core_models.option.Option.None))
+                  | _ => do (pure core_models.option.Option.None)
+              | _ => do (pure core_models.option.Option.None))
           with
-            | (core_models.option.Option.Some  x) => (pure x)
-            | (core_models.option.Option.None ) =>
+            | (core_models.option.Option.Some  x) => do (pure x)
+            | (core_models.option.Option.None ) => do
               match x with
                 | (core_models.option.Option.Some
-                     (core_models.result.Result.Err  y)) =>
+                     (core_models.result.Result.Err  y)) => do
                   (pure y)
-                | _ => (pure (1 : i32))
+                | _ => do (pure (1 : i32))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def if_guard (x : (core_models.option.Option i32)) : RustM i32 := do
   match
     (← match x with
-      | (core_models.option.Option.Some  v) =>
-        match (← (rust_primitives.hax.machine_int.gt v (0 : i32))) with
-          | true => (pure (core_models.option.Option.Some v))
-          | _ => (pure core_models.option.Option.None)
-      | _ => (pure core_models.option.Option.None))
+      | (core_models.option.Option.Some  v) => do
+        match (← (v >? (0 : i32))) with
+          | true => do (pure (core_models.option.Option.Some v))
+          | _ => do (pure core_models.option.Option.None)
+      | _ => do (pure core_models.option.Option.None))
   with
-    | (core_models.option.Option.Some  x) => (pure x)
-    | (core_models.option.Option.None ) => (pure (0 : i32))
+    | (core_models.option.Option.Some  x) => do (pure x)
+    | (core_models.option.Option.None ) => do (pure (0 : i32))
 
 end new_tests.legacy__guards__lib
 

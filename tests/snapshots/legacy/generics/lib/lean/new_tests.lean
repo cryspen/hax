@@ -14,6 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.legacy__generics__lib
 
+@[spec]
 def dup
     (T : Type)
     [trait_constr_dup_associated_type_i0 :
@@ -27,6 +28,7 @@ def dup
     (← (core_models.clone.Clone.clone T x))))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def foo (LEN : usize) (arr : (RustArray usize LEN)) : RustM usize := do
   let acc : usize ← (LEN +? (9 : usize));
   let acc : usize ←
@@ -38,6 +40,7 @@ def foo (LEN : usize) (arr : (RustArray usize LEN)) : RustM usize := do
       (fun acc i => (do (acc +? (← arr[i]_?)) : RustM usize)));
   (pure acc)
 
+@[spec]
 def repeat
     (LEN : usize)
     (T : Type)
@@ -49,11 +52,14 @@ def repeat
     RustM (RustArray T LEN) := do
   (rust_primitives.hax.repeat x LEN)
 
+@[spec]
 def f (N : usize) (x : usize) : RustM usize := do ((← (N +? N)) +? x)
 
+@[spec]
 def call_f (_ : rust_primitives.hax.Tuple0) : RustM usize := do
   ((← (f ((10 : usize)) (3 : usize))) +? (3 : usize))
 
+@[spec]
 def g
     (N : usize)
     (T : Type)
@@ -73,9 +79,10 @@ def g
       N))
     +? N)
 
+@[spec]
 def call_g (_ : rust_primitives.hax.Tuple0) : RustM usize := do
   ((← (g ((3 : usize)) (RustArray usize 3)
-      #v[(42 : usize), (3 : usize), (49 : usize)]))
+      (RustArray.ofVec #v[(42 : usize), (3 : usize), (49 : usize)])))
     +? (3 : usize))
 
 class Foo.AssociatedTypes (Self : Type) where
@@ -85,6 +92,7 @@ class Foo (Self : Type)
   where
   const_add (Self) (N : usize) : (Self -> RustM usize)
 
+@[spec]
 def Impl.const_add_hoisted (N : usize) (self : usize) : RustM usize := do
   (self +? N)
 
@@ -96,6 +104,7 @@ instance Impl : Foo usize where
 structure Bar where
   -- no fields
 
+@[spec]
 def Impl_1.inherent_impl_generics (T : Type) (N : usize) (x : (RustArray T N)) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
@@ -108,6 +117,7 @@ namespace new_tests.legacy__generics__lib.defaults_generics
 structure Defaults (T : Type) (N : usize) where
   _0 : (RustArray T N)
 
+@[spec]
 def f (_ : (Defaults rust_primitives.hax.Tuple0 ((2 : usize)))) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
@@ -120,6 +130,7 @@ namespace new_tests.legacy__generics__lib.impl_generics
 structure Test where
   -- no fields
 
+@[spec]
 def Impl.set_ciphersuites
     (S : Type)
     (impl_IntoIterator_Item_=_S_ : Type)
@@ -149,6 +160,7 @@ def Impl.set_ciphersuites
     := do
   (pure (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk))
 
+@[spec]
 def Impl.set_alpn_protocols
     (S : Type)
     (impl_IntoIterator_Item_=_S_ : Type)
@@ -188,6 +200,7 @@ structure Test (N : usize) where
 
 def Impl.A (N : usize) : (Test (N)) := RustM.of_isOk (do Test.mk) (by rfl)
 
+@[spec]
 def test (_ : rust_primitives.hax.Tuple0) : RustM (Test ((1 : usize))) := do
   (Impl.A (1 : usize))
 

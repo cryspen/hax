@@ -14,6 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.legacy__proverif_minimal__lib
 
+@[spec]
 def add (left : usize) (right : usize) : RustM usize := do (left +? right)
 
 end new_tests.legacy__proverif_minimal__lib

@@ -2,7 +2,7 @@
 default:
 	cargo hax into lean
 	(cd proofs/lean && \
-   elan default stable && \
+   elan default v4.29.0-rc1 && \
    lake build)
 
 clean:

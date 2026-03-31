@@ -78,7 +78,7 @@ Definition props '(_ : unit) : unit :=
   tt.
 
 (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "1336c1a181b444f1ab48ae9445c58f2b")
+Details: Could not find item with UID (Attr_payloads.UId.T.UId "428aaee23ef14e7ea0235fb0264ee0fa")
 
 Note: the error was labeled with context `Coq backend`.
 (* ERROR_ITEM *))
@@ -86,7 +86,7 @@ Definition inlined_code__v_V : t_u8 :=
   (12 : t_u8).
 
 (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "25b2e3c49eb14b2e88b447289fafdb78")
+Details: Could not find item with UID (Attr_payloads.UId.T.UId "7b377a261e9b4469ac25016bc60fdac7")
 
 Note: the error was labeled with context `Coq backend`.
 (* ERROR_ITEM *))

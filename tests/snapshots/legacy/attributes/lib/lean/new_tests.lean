@@ -20,31 +20,24 @@ def u32_max : u32 := (90000 : u32)
 -- another doc comment on add3
 def add3 (x : u32) (y : u32) (z : u32) : RustM u32 := do ((← (x +? y)) +? z)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def add3.spec (x : u32) (y : u32) (z : u32) :
     Spec
       (requires := do
-        (rust_primitives.hax.logical_op_and
-          (← (rust_primitives.hax.logical_op_and
-            (← (rust_primitives.hax.logical_op_and
-              (← (rust_primitives.hax.machine_int.gt x (10 : u32)))
-              (← (rust_primitives.hax.machine_int.gt y (10 : u32)))))
-            (← (rust_primitives.hax.machine_int.gt z (10 : u32)))))
-          (← (rust_primitives.hax.machine_int.lt
-            (← (rust_primitives.hax.machine_int.add
-              (← (rust_primitives.hax.machine_int.add x y))
-              z))
-            u32_max))))
+        ((← ((← ((← (x >? (10 : u32))) &&? (← (y >? (10 : u32)))))
+            &&? (← (z >? (10 : u32)))))
+          &&? (← ((← ((← (x +? y)) +? z)) <? u32_max))))
       (ensures := fun
           result => do
           (hax_lib.prop.constructors.implies
             (← (hax_lib.prop.constructors.from_bool true))
             (← (hax_lib.prop.constructors.from_bool
-              (← (rust_primitives.hax.machine_int.gt result (32 : u32)))))))
+              (← (result >? (32 : u32)))))))
       (add3 (x : u32) (y : u32) (z : u32)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[add3] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [add3] <;> bv_decide
 }
 
 def swap_and_mut_req_ens (x : u32) (y : u32) :
@@ -55,39 +48,33 @@ def swap_and_mut_req_ens (x : u32) (y : u32) :
   let hax_temp_output : u32 ← (x +? y);
   (pure (rust_primitives.hax.Tuple3.mk x y hax_temp_output))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def swap_and_mut_req_ens.spec (x : u32) (y : u32) :
     Spec
-      (requires := do
-        (rust_primitives.hax.logical_op_and
-          (← (rust_primitives.hax.machine_int.lt x (40 : u32)))
-          (← (rust_primitives.hax.machine_int.lt y (300 : u32)))))
+      (requires := do ((← (x <? (40 : u32))) &&? (← (y <? (300 : u32)))))
       (ensures := fun
           ⟨x_future, y_future, result⟩ => do
-          (rust_primitives.hax.logical_op_and
-            (← (rust_primitives.hax.logical_op_and
-              (← (rust_primitives.hax.machine_int.eq x_future y))
-              (← (rust_primitives.hax.machine_int.eq y_future x))))
-            (← (rust_primitives.hax.machine_int.eq
-              result
-              (← (rust_primitives.hax.machine_int.add x y))))))
+          ((← ((← (x_future ==? y)) &&? (← (y_future ==? x))))
+            &&? (← (result ==? (← (x +? y))))))
       (swap_and_mut_req_ens (x : u32) (y : u32)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[swap_and_mut_req_ens] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [swap_and_mut_req_ens] <;> bv_decide
 }
 
 def issue_844 (_x : u8) : RustM u8 := do (pure _x)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def issue_844.spec (_x : u8) :
     Spec
       (requires := do pure True)
       (ensures := fun _x_future => do (pure true))
       (issue_844 (_x : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[issue_844] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [issue_844] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib
@@ -99,29 +86,31 @@ def doing_nothing (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def doing_nothing.spec (_ : rust_primitives.hax.Tuple0) :
     Spec
       (requires := do (pure true))
       (ensures := fun _x => do (pure true))
       (doing_nothing ⟨⟩) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[doing_nothing] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [doing_nothing] <;> bv_decide
 }
 
 def basically_a_constant (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   (pure (127 : u8))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def basically_a_constant.spec (_ : rust_primitives.hax.Tuple0) :
     Spec
       (requires := do (pure true))
-      (ensures := fun x => do (rust_primitives.hax.machine_int.gt x (100 : u8)))
+      (ensures := fun x => do (x >? (100 : u8)))
       (basically_a_constant ⟨⟩) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[basically_a_constant] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [basically_a_constant] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib.ensures_on_arity_zero_fns
@@ -132,44 +121,39 @@ namespace new_tests.legacy__attributes__lib
 def add3_lemma (x : u32) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def add3_lemma.spec (x : u32) :
     Spec
       (requires := do pure True)
       (ensures := fun
           _ => do
-          (rust_primitives.hax.logical_op_or
-            (← (rust_primitives.hax.logical_op_or
-              (← (rust_primitives.hax.machine_int.le x (10 : u32)))
-              (← (rust_primitives.hax.machine_int.ge
-                x
-                (← (rust_primitives.hax.machine_int.div u32_max (3 : u32)))))))
-            (← (rust_primitives.hax.machine_int.eq
-              (← (add3 x x x))
-              (← (rust_primitives.hax.machine_int.mul x (3 : u32)))))))
+          ((← ((← (x <=? (10 : u32)))
+              ||? (← (x >=? (← (u32_max /? (3 : u32)))))))
+            ||? (← ((← (add3 x x x)) ==? (← (x *? (3 : u32)))))))
       (add3_lemma (x : u32)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[add3_lemma] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [add3_lemma] <;> bv_decide
 }
 
+@[spec]
 def dummy_function (x : u32) : RustM u32 := do (pure x)
 
 def apply_dummy_function_lemma (x : u32) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def apply_dummy_function_lemma.spec (x : u32) :
     Spec
       (requires := do pure True)
-      (ensures := fun
-          _ => do
-          (rust_primitives.hax.machine_int.eq x (← (dummy_function x))))
+      (ensures := fun _ => do (x ==? (← (dummy_function x))))
       (apply_dummy_function_lemma (x : u32)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[apply_dummy_function_lemma] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [apply_dummy_function_lemma] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib
@@ -177,6 +161,7 @@ end new_tests.legacy__attributes__lib
 
 namespace new_tests.legacy__attributes__lib.postprocess_with
 
+@[spec]
 def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
@@ -185,6 +170,7 @@ end new_tests.legacy__attributes__lib.postprocess_with
 
 namespace new_tests.legacy__attributes__lib.postprocess_with.somewhere
 
+@[spec]
 def some_hypothetical_tactic (some_param : u8) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
@@ -194,6 +180,7 @@ end new_tests.legacy__attributes__lib.postprocess_with.somewhere
 
 namespace new_tests.legacy__attributes__lib.postprocess_with
 
+@[spec]
 def g (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
@@ -207,6 +194,7 @@ structure Foo where
   y : u32
   z : u32
 
+@[spec]
 def props (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (hax_lib.assume (← (hax_lib.prop.Impl.from_bool true)));
@@ -225,18 +213,16 @@ structure Foo where
 def Impl.add_hoisted (self : Foo) (rhs : Foo) : RustM Foo := do
   (pure (Foo.mk (← ((Foo._0 self) +? (Foo._0 rhs)))))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl.add_hoisted.spec (self : Foo) (rhs : Foo) :
     Spec
-      (requires := do
-        (rust_primitives.hax.machine_int.lt
-          (Foo._0 self)
-          (← (rust_primitives.hax.machine_int.sub (255 : u8) (Foo._0 rhs)))))
+      (requires := do ((Foo._0 self) <? (← ((255 : u8) -? (Foo._0 rhs)))))
       (ensures := fun _ => pure True)
       (Impl.add_hoisted (self : Foo) (rhs : Foo)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.add_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.add_hoisted] <;> bv_decide
 }
 
 @[reducible] instance Impl.AssociatedTypes :
@@ -250,22 +236,18 @@ instance Impl : core_models.ops.arith.Add Foo Foo where
 def Impl_1.mul_hoisted (self : Foo) (rhs : Foo) : RustM Foo := do
   (pure (Foo.mk (← ((Foo._0 self) *? (Foo._0 rhs)))))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl_1.mul_hoisted.spec (self : Foo) (rhs : Foo) :
     Spec
       (requires := do
-        (rust_primitives.hax.logical_op_or
-          (← (rust_primitives.hax.machine_int.eq (Foo._0 rhs) (0 : u8)))
-          (← (rust_primitives.hax.machine_int.lt
-            (Foo._0 self)
-            (← (rust_primitives.hax.machine_int.div
-              (255 : u8)
-              (Foo._0 rhs)))))))
+        ((← ((Foo._0 rhs) ==? (0 : u8)))
+          ||? (← ((Foo._0 self) <? (← ((255 : u8) /? (Foo._0 rhs)))))))
       (ensures := fun _ => pure True)
       (Impl_1.mul_hoisted (self : Foo) (rhs : Foo)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl_1.mul_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl_1.mul_hoisted] <;> bv_decide
 }
 
 @[reducible] instance Impl_1.AssociatedTypes :
@@ -290,15 +272,16 @@ def Impl_1.index_hoisted (self : MyArray) (index : usize) : RustM u8 := do
   (core_models.legacy__attributes__lib.refined_indexes.Impl_1.index_hoisted
     usize self index)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl_1.index_hoisted.spec (self : MyArray) (index : usize) :
     Spec
-      (requires := do (rust_primitives.hax.machine_int.lt index MAX))
+      (requires := do (index <? MAX))
       (ensures := fun _ => pure True)
       (Impl_1.index_hoisted (self : MyArray) (index : usize)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl_1.index_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl_1.index_hoisted] <;> bv_decide
 }
 
 @[reducible] instance Impl_1.AssociatedTypes :
@@ -315,6 +298,7 @@ instance Impl_1 : core_models.ops.index.Index MyArray usize where
       Done vitae ullamcorper est.
       Curabitur id dui eget sem viverra interdum. 
   -/
+@[spec]
 def mutation_example
     (use_generic_update_at : MyArray)
     (use_specialized_update_at : (RustSlice u8))
@@ -353,15 +337,18 @@ def MAX : usize := (10 : usize)
 structure SafeIndex where
   i : usize
 
+@[spec]
 def Impl.new (i : usize) : RustM (core_models.option.Option SafeIndex) := do
-  if (← (rust_primitives.hax.machine_int.lt i MAX)) then
+  if (← (i <? MAX)) then do
     (pure (core_models.option.Option.Some (SafeIndex.mk (i := i))))
-  else
+  else do
     (pure core_models.option.Option.None)
 
+@[spec]
 def Impl.as_usize (self : SafeIndex) : RustM usize := do
   (pure (SafeIndex.i self))
 
+@[spec]
 def Impl_1.index_hoisted (T : Type)
     (self : (RustArray T 10))
     (index : SafeIndex) :
@@ -383,6 +370,7 @@ end new_tests.legacy__attributes__lib.newtype_pattern
 
 namespace new_tests.legacy__attributes__lib
 
+@[spec]
 def inlined_code (foo : Foo) : RustM rust_primitives.hax.Tuple0 := do
   let v_a : i32 := (13 : i32);
   let _ := rust_primitives.hax.Tuple0.mk;
@@ -390,10 +378,12 @@ def inlined_code (foo : Foo) : RustM rust_primitives.hax.Tuple0 := do
 
 def inlined_code.V : u8 := (12 : u8)
 
+@[spec]
 def mutliple_before_after (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def some_function (_ : rust_primitives.hax.Tuple0) :
     RustM alloc.string.String := do
   (core_models.convert.From._from alloc.string.String String "hello from Rust")
@@ -432,7 +422,8 @@ structure Dummy where
 
 def Impl_3.f (self : Dummy) : RustM Dummy := do (pure self)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl_3.f.spec (self : Dummy) :
     Spec
       (requires := do pure True)
@@ -440,9 +431,9 @@ def Impl_3.f.spec (self : Dummy) :
           self__future => do
           (core_models.cmp.PartialEq.eq Dummy Dummy self__future self))
       (Impl_3.f (self : Dummy)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl_3.f] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl_3.f] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib.future_self
@@ -450,14 +441,17 @@ end new_tests.legacy__attributes__lib.future_self
 
 namespace new_tests.legacy__attributes__lib.replace_body
 
+@[spec]
 def f (x : u8) (y : u8) : RustM u8 := do ((1 : u8) +? (2 : u8))
 
 structure Foo where
   -- no fields
 
+@[spec]
 def Impl.assoc_fn (self : Foo) (x : u8) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl_1.to_string_hoisted (self : Foo) : RustM alloc.string.String := do
   (core_models.convert.Into.into String alloc.string.String "Hello")
 
@@ -488,7 +482,8 @@ structure ViaMul where
 
 def Impl.double_hoisted (x : u8) : RustM u8 := do (x +? x)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl.double_hoisted.spec (x : u8) :
     Spec
       (requires := do
@@ -503,9 +498,9 @@ def Impl.double_hoisted.spec (x : u8) :
               (← (hax_lib.int.Impl_7._unsafe_from_str "2"))))
             (← (rust_primitives.hax.int.from_machine result))))
       (Impl.double_hoisted (x : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.double_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.double_hoisted] <;> bv_decide
 }
 
 @[reducible] instance Impl.AssociatedTypes :
@@ -517,7 +512,8 @@ instance Impl : Operation ViaAdd where
 
 def Impl_1.double_hoisted (x : u8) : RustM u8 := do (x *? (2 : u8))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl_1.double_hoisted.spec (x : u8) :
     Spec
       (requires := do
@@ -532,9 +528,9 @@ def Impl_1.double_hoisted.spec (x : u8) :
               (← (hax_lib.int.Impl_7._unsafe_from_str "2"))))
             (← (rust_primitives.hax.int.from_machine result))))
       (Impl_1.double_hoisted (x : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl_1.double_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl_1.double_hoisted] <;> bv_decide
 }
 
 @[reducible] instance Impl_1.AssociatedTypes :
@@ -552,6 +548,7 @@ class TraitWithRequiresAndEnsures (Self : Type)
   where
   method (Self) : (Self -> u8 -> RustM u8)
 
+@[spec]
 def test
     (T : Type)
     [trait_constr_test_associated_type_i0 :
@@ -586,9 +583,11 @@ structure Int where
   core_models.marker.Copy Int :=
   by constructor <;> exact Inhabited.default
 
+@[spec]
 def add (x : Int) (y : Int) : RustM Int := do
   (pure (Int.mk (← ((Int._0 x) +? (Int._0 y)))))
 
+@[spec]
 def Impl.sub_hoisted (self : Int) (other : Int) : RustM Int := do
   (pure (Int.mk (← ((Int._0 self) +? (Int._0 other)))))
 
@@ -612,6 +611,7 @@ end new_tests.legacy__attributes__lib.refinement_types.hax__autogenerated_refine
 
 namespace new_tests.legacy__attributes__lib.refinement_types
 
+@[spec]
 def bounded_u8
     (x :
     (new_tests.legacy__attributes__lib.refinement_types.hax__autogenerated_refinement__BoundedU8.BoundedU8
@@ -652,15 +652,16 @@ def double (x : u8) :
   (pure ((← (x +? x)) :
   new_tests.legacy__attributes__lib.refinement_types.hax__autogenerated_refinement__Even.Even))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def double.spec (x : u8) :
     Spec
-      (requires := do (rust_primitives.hax.machine_int.lt x (127 : u8)))
+      (requires := do (x <? (127 : u8)))
       (ensures := fun _ => pure True)
       (double (x : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[double] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [double] <;> bv_decide
 }
 
 def double_refine (x : u8) :
@@ -670,15 +671,16 @@ def double_refine (x : u8) :
   (pure ((← (x +? x)) :
   new_tests.legacy__attributes__lib.refinement_types.hax__autogenerated_refinement__Even.Even))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def double_refine.spec (x : u8) :
     Spec
-      (requires := do (rust_primitives.hax.machine_int.lt x (127 : u8)))
+      (requires := do (x <? (127 : u8)))
       (ensures := fun _ => pure True)
       (double_refine (x : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[double_refine] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [double_refine] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib.refinement_types
@@ -808,7 +810,8 @@ def double_abs_i16 (N : usize) (M : usize)
   (new_tests.legacy__attributes__lib.refinement_types.hax__autogenerated_refinement__BoundedAbsI16.BoundedAbsI16
     (M))))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def
       double_abs_i16.spec (N : usize) (M : usize)
       (x :
@@ -816,11 +819,10 @@ def
         (N))) :
     Spec
       (requires := do
-        (rust_primitives.hax.logical_op_and
-          (← (rust_primitives.hax.int.lt
+        ((← (rust_primitives.hax.int.lt
             (← (rust_primitives.hax.int.from_machine M))
             (← (hax_lib.int.Impl_7._unsafe_from_str "32768"))))
-          (← (rust_primitives.hax.int.eq
+          &&? (← (rust_primitives.hax.int.eq
             (← (rust_primitives.hax.int.from_machine M))
             (← (rust_primitives.hax.int.mul
               (← (rust_primitives.hax.int.from_machine N))
@@ -832,9 +834,9 @@ def
         (x :
         (new_tests.legacy__attributes__lib.refinement_types.hax__autogenerated_refinement__BoundedAbsI16.BoundedAbsI16
           (N)))) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[double_abs_i16] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [double_abs_i16] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib.refinement_types
@@ -849,6 +851,7 @@ end new_tests.legacy__attributes__lib.nested_refinement_elim.hax__autogenerated_
 
 namespace new_tests.legacy__attributes__lib.nested_refinement_elim
 
+@[spec]
 def elim_twice
     (x :
     new_tests.legacy__attributes__lib.nested_refinement_elim.hax__autogenerated_refinement__DummyRefinement.DummyRefinement)
@@ -886,18 +889,19 @@ def increment_array (v : (RustArray u8 4)) : RustM (RustArray u8 4) := do
       (← ((← v[(3 : usize)]_?) +? (1 : u8))));
   (pure v)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def increment_array.spec (v : (RustArray u8 4)) :
     Spec
       (requires := do (hax_lib.prop.Impl.from_bool true))
       (ensures := fun
           v_future => do
-          let future_v : (RustArray u8 4) ← (pure v_future);
+          let future_v : (RustArray u8 4) := v_future;
           (hax_lib.prop.Impl.from_bool true))
       (increment_array (v : (RustArray u8 4))) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[increment_array] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [increment_array] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib.inlined_code_ensures_requires
@@ -905,6 +909,7 @@ end new_tests.legacy__attributes__lib.inlined_code_ensures_requires
 
 namespace new_tests.legacy__attributes__lib.verifcation_status
 
+@[spec]
 def a_function_which_only_laxes (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (hax_lib.assert false)
@@ -916,15 +921,16 @@ def a_panicfree_function (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure result)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def a_panicfree_function.spec (_ : rust_primitives.hax.Tuple0) :
     Spec
       (requires := do pure True)
       (ensures := fun x => do (pure false))
       (a_panicfree_function ⟨⟩) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[a_panicfree_function] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [a_panicfree_function] <;> bv_decide
 }
 
 def another_panicfree_function (_ : rust_primitives.hax.Tuple0) :
@@ -934,15 +940,16 @@ def another_panicfree_function (_ : rust_primitives.hax.Tuple0) :
   let still_not_much : i32 ← (not_much +? nothing);
   (pure rust_primitives.hax.Tuple0.mk)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def another_panicfree_function.spec (_ : rust_primitives.hax.Tuple0) :
     Spec
       (requires := do pure True)
       (ensures := fun x => do (pure false))
       (another_panicfree_function ⟨⟩) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[another_panicfree_function] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [another_panicfree_function] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib.verifcation_status
@@ -966,7 +973,8 @@ def Impl.f_hoisted (x : u8) (y : u8) :
   let hax_temp_output : u8 := y;
   (pure (rust_primitives.hax.Tuple2.mk y hax_temp_output))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl.f_hoisted.spec (x : u8) (y : u8) :
     Spec
       (requires := do
@@ -977,32 +985,32 @@ def Impl.f_hoisted.spec (x : u8) (y : u8) :
           (← (hax_lib.int.Impl_7._unsafe_from_str "254"))))
       (ensures := fun
           ⟨y_future, output_variable⟩ => do
-          (rust_primitives.hax.machine_int.eq output_variable y_future))
+          (output_variable ==? y_future))
       (Impl.f_hoisted (x : u8) (y : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.f_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.f_hoisted] <;> bv_decide
 }
 
 def Impl.g_hoisted (x : u8) (y : u8) : RustM u8 := do (pure y)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl.g_hoisted.spec (x : u8) (y : u8) :
     Spec
       (requires := do (pure true))
-      (ensures := fun
-          output_variable => do
-          (rust_primitives.hax.machine_int.eq output_variable y))
+      (ensures := fun output_variable => do (output_variable ==? y))
       (Impl.g_hoisted (x : u8) (y : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.g_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.g_hoisted] <;> bv_decide
 }
 
 def Impl.h_hoisted (x : u8) (y : u8) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl.h_hoisted.spec (x : u8) (y : u8) :
     Spec
       (requires := do (pure true))
@@ -1014,26 +1022,25 @@ def Impl.h_hoisted.spec (x : u8) (y : u8) :
             output_variable
             rust_primitives.hax.Tuple0.mk))
       (Impl.h_hoisted (x : u8) (y : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.h_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.h_hoisted] <;> bv_decide
 }
 
 def Impl.i_hoisted (x : u8) (y : u8) : RustM u8 := do
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure y)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl.i_hoisted.spec (x : u8) (y : u8) :
     Spec
       (requires := do (pure true))
-      (ensures := fun
-          y_future => do
-          (rust_primitives.hax.machine_int.eq y_future y))
+      (ensures := fun y_future => do (y_future ==? y))
       (Impl.i_hoisted (x : u8) (y : u8)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.i_hoisted] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.i_hoisted] <;> bv_decide
 }
 
 @[reducible] instance Impl.AssociatedTypes :
@@ -1063,6 +1070,7 @@ end new_tests.legacy__attributes__lib.issue_1266
 
 namespace new_tests.legacy__attributes__lib.props
 
+@[spec]
 def f (x : hax_lib.prop.Prop) (y : Bool) : RustM hax_lib.prop.Prop := do
   let xprop : hax_lib.prop.Prop ← (hax_lib.prop.constructors.from_bool y);
   let p : hax_lib.prop.Prop ←
@@ -1083,15 +1091,12 @@ def f (x : hax_lib.prop.Prop) (y : Bool) : RustM hax_lib.prop.Prop := do
           (fun x =>
             (do
             (hax_lib.prop.constructors.from_bool
-              (← (rust_primitives.hax.machine_int.le
-                x
-                core_models.num.Impl_6.MAX))) :
+              (← (x <=? core_models.num.Impl_6.MAX))) :
             RustM hax_lib.prop.Prop))))
         (← (hax_lib.prop.constructors.exists
           (fun x =>
             (do
-            (hax_lib.prop.constructors.from_bool
-              (← (rust_primitives.hax.machine_int.gt x (300 : u16)))) :
+            (hax_lib.prop.constructors.from_bool (← (x >? (300 : u16)))) :
             RustM hax_lib.prop.Prop)))))))))
 
 end new_tests.legacy__attributes__lib.props
@@ -1121,7 +1126,8 @@ def Impl.f (self : S) (self_ : u8) (self_0 : u8) (self_1 : u8) (self_2 : u8) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def
       Impl.f.spec
       (self : S)
@@ -1131,17 +1137,14 @@ def
       (self_2 : u8) :
     Spec
       (requires := do
-        (rust_primitives.hax.logical_op_and
-          (← (rust_primitives.hax.logical_op_and
-            (← (rust_primitives.hax.machine_int.eq (S._0 self) (0 : u8)))
-            (← (rust_primitives.hax.machine_int.eq self_ self_1))))
-          (← (rust_primitives.hax.machine_int.eq self_2 (9 : u8)))))
+        ((← ((← ((S._0 self) ==? (0 : u8))) &&? (← (self_ ==? self_1))))
+          &&? (← (self_2 ==? (9 : u8)))))
       (ensures := fun _ => pure True)
       (Impl.f (self : S) (self_ : u8) (self_0 : u8) (self_1 : u8) (self_2 : u8))
     := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.f] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.f] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib.issue_1276
@@ -1155,15 +1158,16 @@ structure Foo where
 def Impl.f (self : Foo) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def Impl.f.spec (self : Foo) :
     Spec
       (requires := do (pure true))
       (ensures := fun _ => pure True)
       (Impl.f (self : Foo)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.f] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.f] <;> bv_decide
 }
 
 end new_tests.legacy__attributes__lib.issue_evit_57
@@ -1171,13 +1175,15 @@ end new_tests.legacy__attributes__lib.issue_evit_57
 
 namespace new_tests.legacy__attributes__lib
 
+@[spec]
 def fib (x : usize) : RustM usize := do
-  if (← (rust_primitives.hax.machine_int.le x (2 : usize))) then
+  if (← (x <=? (2 : usize))) then do
     (pure x)
-  else
+  else do
     (core_models.num.Impl_11.wrapping_add
       (← (fib (← (x -? (1 : usize)))))
       (← (fib (← (x -? (2 : usize))))))
+partial_fixpoint
 
 end new_tests.legacy__attributes__lib
 

@@ -14,20 +14,24 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__attr__nested
 
+@[spec]
 def do_stuff (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def outer_fn (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (do_stuff rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def outer_fn.middle_fn (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (do_stuff rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def outer_fn.middle_fn.inner_fn (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (do_stuff rust_primitives.hax.Tuple0.mk);
@@ -36,6 +40,7 @@ def outer_fn.middle_fn.inner_fn (_ : rust_primitives.hax.Tuple0) :
 structure MyOuter where
   -- no fields
 
+@[spec]
 def Impl.outer_method (self : MyOuter) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (do_stuff rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
@@ -43,6 +48,7 @@ def Impl.outer_method (self : MyOuter) : RustM rust_primitives.hax.Tuple0 := do
 structure Impl.outer_method.MyMiddle where
   -- no fields
 
+@[spec]
 def Impl.outer_method.Impl.middle_method (self : Impl.outer_method.MyMiddle) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (do_stuff rust_primitives.hax.Tuple0.mk);
@@ -51,6 +57,7 @@ def Impl.outer_method.Impl.middle_method (self : Impl.outer_method.MyMiddle) :
 structure Impl.outer_method.Impl.middle_method.MyInner where
   -- no fields
 
+@[spec]
 def Impl.outer_method.Impl.middle_method.Impl.inner_method
     (self : Impl.outer_method.Impl.middle_method.MyInner) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -64,6 +71,7 @@ class MyTrait (Self : Type)
   where
   trait_method (Self) : (Self -> RustM rust_primitives.hax.Tuple0)
 
+@[spec]
 def Impl_1.trait_method_hoisted (self : MyOuter) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (do_stuff rust_primitives.hax.Tuple0.mk);
@@ -79,6 +87,7 @@ instance Impl_1 : MyTrait MyOuter where
 structure Impl_1.trait_method.MyMiddle where
   -- no fields
 
+@[spec]
 def Impl_1.trait_method.Impl.trait_method_hoisted
     (self : Impl_1.trait_method.MyMiddle) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -95,6 +104,7 @@ instance Impl_1.trait_method.Impl : MyTrait Impl_1.trait_method.MyMiddle where
 structure Impl_1.trait_method.Impl.trait_method.MyInner where
   -- no fields
 
+@[spec]
 def Impl_1.trait_method.Impl.trait_method.Impl.trait_method_hoisted
     (self : Impl_1.trait_method.Impl.trait_method.MyInner) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -112,6 +122,7 @@ instance Impl_1.trait_method.Impl.trait_method.Impl :
   trait_method :=
   (Impl_1.trait_method.Impl.trait_method.Impl.trait_method_hoisted)
 
+@[spec]
 def closure_expr (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let
@@ -140,6 +151,7 @@ def closure_expr (_ : rust_primitives.hax.Tuple0) :
   let _ ← (do_stuff rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def closure_tail (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let
@@ -168,6 +180,7 @@ def closure_tail (_ : rust_primitives.hax.Tuple0) :
   let _ ← (do_stuff rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (outer_fn rust_primitives.hax.Tuple0.mk);

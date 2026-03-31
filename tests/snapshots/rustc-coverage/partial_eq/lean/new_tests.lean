@@ -75,11 +75,13 @@ structure Version where
   core_models.cmp.Ord Version :=
   by constructor <;> exact Inhabited.default
 
+@[spec]
 def Impl.new (major : usize) (minor : usize) (patch : usize) :
     RustM Version := do
   (pure (Version.mk (major := major) (minor := minor) (patch := patch)))
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let version_3_2_1 : Version ← (Impl.new (3 : usize) (2 : usize) (1 : usize));
@@ -92,17 +94,16 @@ def main (_ : rust_primitives.hax.Tuple0) :
         Version
         Version version_3_2_1 version_3_3_0)));
   let args : (RustArray core_models.fmt.rt.Argument 3) :=
-    #v[(← (core_models.fmt.rt.Impl.new_debug Version
-           (rust_primitives.hax.Tuple3._0 args))),
-         (← (core_models.fmt.rt.Impl.new_debug Version
-           (rust_primitives.hax.Tuple3._1 args))),
-         (← (core_models.fmt.rt.Impl.new_display Bool
-           (rust_primitives.hax.Tuple3._2 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_debug Version
+                            (rust_primitives.hax.Tuple3._0 args))),
+                          (← (core_models.fmt.rt.Impl.new_debug Version
+                            (rust_primitives.hax.Tuple3._1 args))),
+                          (← (core_models.fmt.rt.Impl.new_display Bool
+                            (rust_primitives.hax.Tuple3._2 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((4 : usize)) ((3 : usize))
-        #v["", " < ", " = ", "
-"]
+        (RustArray.ofVec #v["", " < ", " = ", "\n"])
         args)));
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure rust_primitives.hax.Tuple0.mk)

@@ -14,11 +14,13 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__branch__if_let
 
+@[spec]
 def say (message : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box String message);
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def if_let (input : (core_models.option.Option String)) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -33,30 +35,32 @@ def if_let (input : (core_models.option.Option String)) :
         RustM rust_primitives.hax.Tuple0)));
   let _ ←
     match input with
-      | (core_models.option.Option.Some  x) =>
+      | (core_models.option.Option.Some  x) => do
         let _ ← (say x);
         (pure rust_primitives.hax.Tuple0.mk)
-      | _ => let _ ← (say "none"); (pure rust_primitives.hax.Tuple0.mk);
+      | _ => do let _ ← (say "none"); (pure rust_primitives.hax.Tuple0.mk);
   let _ ← (say "done");
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): coq(HAX0002, HAX0002), ssprove(HAX0002, HAX0002), proverif(HAX0002, HAX0002), lean(HAX0002, HAX0002), fstar(HAX0002, HAX0002)
+@[spec]
 def if_let_chain
     (a : (core_models.option.Option String))
     (b : (core_models.option.Option String)) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
-    if (← (sorry &&? sorry)) then
+    if (← (sorry &&? sorry)) then do
       let _ ← (say x);
       let _ ← (say y);
       (pure rust_primitives.hax.Tuple0.mk)
-    else
+    else do
       let _ ← (say "not both");
       (pure rust_primitives.hax.Tuple0.mk);
   let _ ← (say "done");
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (if_let (core_models.option.Option.Some "x"));

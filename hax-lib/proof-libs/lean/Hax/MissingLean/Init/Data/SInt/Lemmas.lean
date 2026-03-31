@@ -1,3 +1,5 @@
+import Hax.MissingLean.Init.Data.SInt.Lemmas_Int128
+
 attribute [grind =_] Int8.ofNat_le_iff_le
 attribute [grind =_] Int16.ofNat_le_iff_le
 attribute [grind =_] Int32.ofNat_le_iff_le
@@ -31,4 +33,5 @@ additional_int_lemmas Int8 8
 additional_int_lemmas Int16 16
 additional_int_lemmas Int32 32
 additional_int_lemmas Int64 64
+additional_int_lemmas Int128 128
 additional_int_lemmas ISize System.Platform.numBits

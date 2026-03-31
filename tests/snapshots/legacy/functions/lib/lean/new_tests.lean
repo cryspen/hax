@@ -14,11 +14,13 @@ set_option linter.unusedVariables false
 
 namespace new_tests.legacy__functions__lib
 
+@[spec]
 def calling_function_pointer.f (T : Type) (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  Issue #757
+@[spec]
 def calling_function_pointer (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let
@@ -35,6 +37,7 @@ namespace new_tests.legacy__functions__lib.issue_1048
 structure CallableViaDeref where
   -- no fields
 
+@[spec]
 def Impl.deref_hoisted (self : CallableViaDeref) :
     RustM (rust_primitives.hax.Tuple0 -> RustM Bool) := do
   (pure (fun _ => (do (pure true) : RustM Bool)))
@@ -48,6 +51,7 @@ instance Impl : core_models.ops.deref.Deref CallableViaDeref where
   deref := (Impl.deref_hoisted)
 
 --  @fail(extraction): coq(HAX0002)
+@[spec]
 def call_via_deref (_ : rust_primitives.hax.Tuple0) : RustM Bool := do
   ((← (core_models.ops.deref.Deref.deref CallableViaDeref CallableViaDeref.mk))
     rust_primitives.hax.Tuple0.mk)

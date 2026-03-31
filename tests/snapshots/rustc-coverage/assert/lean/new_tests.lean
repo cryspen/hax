@@ -15,39 +15,37 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__assert
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def might_fail_assert (one_plus_one : u32) :
     RustM rust_primitives.hax.Tuple0 := do
   let args : (rust_primitives.hax.Tuple1 u32) :=
     (rust_primitives.hax.Tuple1.mk one_plus_one);
   let args : (RustArray core_models.fmt.rt.Argument 1) :=
-    #v[(← (core_models.fmt.rt.Impl.new_display u32
-           (rust_primitives.hax.Tuple1._0 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display u32
+                            (rust_primitives.hax.Tuple1._0 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-        #v["does 1 + 1 = ", "?
-"]
+        (RustArray.ofVec #v["does 1 + 1 = ", "?\n"])
         args)));
   let _ := rust_primitives.hax.Tuple0.mk;
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk (← ((1 : u32) +? (1 : u32))) one_plus_one)
     with
-      | ⟨left_val, right_val⟩ =>
-        (hax_lib.assert
-          (← (rust_primitives.hax.machine_int.eq left_val right_val)));
+      | ⟨left_val, right_val⟩ => do
+        (hax_lib.assert (← (left_val ==? right_val)));
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result rust_primitives.hax.Tuple0 u8) := do
   let countdown : i32 := (10 : i32);
   let countdown : i32 ←
     (rust_primitives.hax.while_loop
       (fun countdown => (do (pure true) : RustM Bool))
-      (fun countdown =>
-        (do
-        (rust_primitives.hax.machine_int.gt countdown (0 : i32)) : RustM Bool))
+      (fun countdown => (do (countdown >? (0 : i32)) : RustM Bool))
       (fun countdown =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :
@@ -56,14 +54,14 @@ def main (_ : rust_primitives.hax.Tuple0) :
       (fun countdown =>
         (do
         let _ ←
-          if (← (rust_primitives.hax.machine_int.eq countdown (1 : i32))) then
+          if (← (countdown ==? (1 : i32))) then do
             let _ ← (might_fail_assert (3 : u32));
             (pure rust_primitives.hax.Tuple0.mk)
-          else
-            if (← (rust_primitives.hax.machine_int.lt countdown (5 : i32))) then
+          else do
+            if (← (countdown <? (5 : i32))) then do
               let _ ← (might_fail_assert (2 : u32));
               (pure rust_primitives.hax.Tuple0.mk)
-            else
+            else do
               (pure rust_primitives.hax.Tuple0.mk);
         let countdown : i32 ← (countdown -? (1 : i32));
         (pure countdown) :

@@ -15,13 +15,13 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__continue
 
 --  @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001), proverif(HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let is_true : Bool ←
-    (rust_primitives.hax.machine_int.eq
-      (← (core_models.iter.traits.exact_size.ExactSizeIterator.len
+    ((← (core_models.iter.traits.exact_size.ExactSizeIterator.len
         std.env.Args (← (std.env.args rust_primitives.hax.Tuple0.mk))))
-      (1 : usize));
+      ==? (1 : usize));
   let x : i32 := (0 : i32);
   let x : i32 ←
     (rust_primitives.hax.folds.fold_range
@@ -32,8 +32,8 @@ def main (_ : rust_primitives.hax.Tuple0) :
       (fun x _ =>
         (do
         match is_true with
-          | true => (pure x)
-          | _ => let x : i32 := (1 : i32); (pure (3 : i32)) :
+          | true => do (pure x)
+          | _ => do let x : i32 := (1 : i32); (pure (3 : i32)) :
         RustM i32)));
   let x : i32 ←
     (rust_primitives.hax.folds.fold_range
@@ -44,8 +44,8 @@ def main (_ : rust_primitives.hax.Tuple0) :
       (fun x _ =>
         (do
         match is_true with
-          | false => let x : i32 := (1 : i32); (pure (3 : i32))
-          | _ => (pure x) :
+          | false => do let x : i32 := (1 : i32); (pure (3 : i32))
+          | _ => do (pure x) :
         RustM i32)));
   let x : i32 ←
     (rust_primitives.hax.folds.fold_range
@@ -56,8 +56,8 @@ def main (_ : rust_primitives.hax.Tuple0) :
       (fun x _ =>
         (do
         match is_true with
-          | true => let x : i32 := (1 : i32); (pure (3 : i32))
-          | _ => (pure x) :
+          | true => do let x : i32 := (1 : i32); (pure (3 : i32))
+          | _ => do (pure x) :
         RustM i32)));
   let x : i32 ←
     (rust_primitives.hax.folds.fold_range
@@ -66,7 +66,7 @@ def main (_ : rust_primitives.hax.Tuple0) :
       (fun x _ => (do (pure true) : RustM Bool))
       x
       (fun x _ =>
-        (do if is_true then (pure x) else (pure (3 : i32)) : RustM i32)));
+        (do if is_true then do (pure x) else do (pure (3 : i32)) : RustM i32)));
   let x : i32 ←
     (rust_primitives.hax.folds.fold_range
       (0 : i32)
@@ -77,8 +77,8 @@ def main (_ : rust_primitives.hax.Tuple0) :
         (do
         let x : i32 ←
           match is_true with
-            | false => let x : i32 := (1 : i32); (pure x)
-            | _ => let _ := x; (pure x);
+            | false => do let x : i32 := (1 : i32); (pure x)
+            | _ => do let _ := x; (pure x);
         let x : i32 := (3 : i32);
         (pure x) :
         RustM i32)));
@@ -91,10 +91,10 @@ def main (_ : rust_primitives.hax.Tuple0) :
       (fun x _ =>
         (do
         match is_true with
-          | false =>
+          | false => do
             let x : i32 := (1 : i32);
             (pure (core_models.ops.control_flow.ControlFlow.Continue (3 : i32)))
-          | _ =>
+          | _ => do
             (pure (core_models.ops.control_flow.ControlFlow.Break
               (rust_primitives.hax.Tuple2.mk rust_primitives.hax.Tuple0.mk x)))
         :

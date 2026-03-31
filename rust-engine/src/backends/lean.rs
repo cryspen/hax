@@ -13,9 +13,7 @@ use crate::{
         identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
         span::Span,
     },
-    attributes::{
-        hax_proof_attributes, hax_pure_ensures_proof_attributes, hax_pure_requires_proof_attributes,
-    },
+    attributes::hax_proof_attributes,
     names::rust_primitives::hax::{
         cast_op,
         explicit_monadic::{lift, pure},
@@ -23,9 +21,12 @@ use crate::{
     phase::*,
 };
 use camino::Utf8PathBuf;
+use hax_lib_macros_types::ProofMethod;
 use hax_types::engine_api::File;
 
 mod binops {
+    pub use crate::names::core::cmp::PartialEq;
+    pub use crate::names::core::ops::bit::*;
     pub use crate::names::core::ops::index::*;
     pub use crate::names::rust_primitives::arithmetic::neg;
     pub use crate::names::rust_primitives::hax::machine_int::*;
@@ -135,28 +136,7 @@ impl RenderView for LeanPrinter {
     }
 }
 
-impl Printer for LeanPrinter {
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![
-            Box::new(BinOp::new(&[
-                binops::add,
-                binops::sub,
-                binops::mul,
-                binops::rem,
-                binops::div,
-                binops::shr,
-                binops::shl,
-                binops::bitand,
-                binops::bitxor,
-                binops::logical_op_and,
-                binops::logical_op_or,
-                binops::Index::index,
-            ])),
-            Box::new(FunctionsToConstants),
-            Box::new(LetPure),
-        ]
-    }
-}
+impl Printer for LeanPrinter {}
 
 /// The Lean backend
 pub struct LeanBackend;
@@ -167,6 +147,52 @@ impl Backend for LeanBackend {
     fn module_path(&self, module: &Module) -> Utf8PathBuf {
         let krate = module.ident.krate();
         Utf8PathBuf::from(krate).with_extension("lean")
+    }
+
+    fn phases(&self) -> Vec<PhaseKind> {
+        use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
+        vec![
+            RejectRawOrMutPointer.into(),
+            RewriteLocalSelf.into(),
+            TransformHaxLibInline.into(),
+            Specialize.into(),
+            DropSizedTrait.into(),
+            SimplifyQuestionMarks.into(),
+            AndMutDefsite.into(),
+            ReconstructAsserts.into(),
+            ReconstructForLoops.into(),
+            ReconstructWhileLoops.into(),
+            DirectAndMut.into(),
+            RejectArbitraryLhs.into(),
+            DropBlocks.into(),
+            DropMatchGuards.into(),
+            DropReferences.into(),
+            TrivializeAssignLhs.into(),
+            HoistSideEffects.into(),
+            HoistDisjunctivePatterns.into(),
+            SimplifyMatchReturn.into(),
+            LocalMutation.into(),
+            RewriteControlFlow.into(),
+            DropReturnBreakContinue.into(),
+            FunctionalizeLoops.into(),
+            RejectQuestionMark.into(),
+            TraitsSpecs.into(),
+            SimplifyHoisting.into(),
+            NewtypeAsRefinement.into(),
+            ReorderFields.into(),
+            HoistAssociatedFns,
+            SortItems.into(),
+            FilterUnprintableItems,
+            ExplicitMonadic,
+        ]
+    }
+
+    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
+        vec![
+            Box::new(RecursiveFunctions),
+            Box::new(FunctionsToConstants),
+            Box::new(LetPure),
+        ]
     }
 
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
@@ -211,44 +237,6 @@ impl Backend for LeanBackend {
             contents: format!("{}{}", HEADER, contents),
             sourcemap: None,
         }]
-    }
-
-    fn phases(&self) -> Vec<PhaseKind> {
-        use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
-        vec![
-            RejectRawOrMutPointer.into(),
-            RewriteLocalSelf.into(),
-            TransformHaxLibInline.into(),
-            Specialize.into(),
-            DropSizedTrait.into(),
-            SimplifyQuestionMarks.into(),
-            AndMutDefsite.into(),
-            ReconstructAsserts.into(),
-            ReconstructForLoops.into(),
-            ReconstructWhileLoops.into(),
-            DirectAndMut.into(),
-            RejectArbitraryLhs.into(),
-            DropBlocks.into(),
-            DropMatchGuards.into(),
-            DropReferences.into(),
-            TrivializeAssignLhs.into(),
-            HoistSideEffects.into(),
-            HoistDisjunctivePatterns.into(),
-            SimplifyMatchReturn.into(),
-            LocalMutation.into(),
-            RewriteControlFlow.into(),
-            DropReturnBreakContinue.into(),
-            FunctionalizeLoops.into(),
-            RejectQuestionMark.into(),
-            TraitsSpecs.into(),
-            SimplifyHoisting.into(),
-            NewtypeAsRefinement.into(),
-            ReorderFields.into(),
-            HoistAssociatedFns,
-            SortItems.into(),
-            FilterUnprintableItems,
-            ExplicitMonadic,
-        ]
     }
 }
 
@@ -303,6 +291,27 @@ impl LeanPrinter {
             module: rendered.module,
             path,
         })
+    }
+
+    /// Escape a string for use in Lean string literals.
+    /// Handles newlines, quotes, backslashes, and other special characters.
+    fn escape_string(&self, s: &str) -> String {
+        let mut result = String::with_capacity(s.len());
+        for c in s.chars() {
+            match c {
+                '"' => result.push_str("\\\""),
+                '\'' => result.push_str("\\'"),
+                '\\' => result.push_str("\\\\"),
+                '\n' => result.push_str("\\n"),
+                '\r' => result.push_str("\\r"),
+                '\t' => result.push_str("\\t"),
+                c if c.is_ascii_control() => {
+                    result.push_str(&format!("\\x{:02x}", c as u8));
+                }
+                c => result.push(c),
+            }
+        }
+        result
     }
 }
 
@@ -578,12 +587,20 @@ const _: () = {
                             zip_left!(line!(), params).group(),
                             softline!(),
                             ":",
-                            docs!["RustM", softline!(), body.ty, softline!(), reflow!(":= do")]
-                                .group(),
+                            if params.is_empty() {
+                                docs![body.ty, softline!(), reflow!(":=")]
+                            } else {
+                                docs!["RustM", softline!(), body.ty, softline!(), reflow!(":= do")]
+                                    .group()
+                            }
                         ]
                         .group(),
                         line!(),
-                        body,
+                        if params.is_empty() {
+                            self.monad_extract_simplify(body)
+                        } else {
+                            docs![body]
+                        },
                     ]
                     .group()
                     .nest(INDENT),
@@ -662,127 +679,122 @@ const _: () = {
             generics: &Generics,
             params: &Vec<Param>,
         ) -> DocBuilder<A> {
-            let spec = HasLinkedItemGraph::linked_item_graph(self)
-                .fn_like_linked_expressions(item, item.self_id());
-            if spec.precondition.is_none() && spec.postcondition.is_none() {
+            let linked_items = HasLinkedItemGraph::linked_item_graph(self);
+            let spec = linked_items.fn_like_linked_expressions(item, item.self_id());
+            if !linked_items.has_spec(item) {
                 nil!()
             } else {
-                let proofs: Vec<&String> = hax_proof_attributes(&item.meta.attributes).collect();
-                if proofs.len() > 1 {
-                    emit_error!("Only one proof attribute per item is allowed.");
-                }
-                let pure_requires_proofs: Vec<&String> =
-                    hax_pure_requires_proof_attributes(&item.meta.attributes).collect();
-                if pure_requires_proofs.len() > 1 {
-                    emit_error!("Only one lean_pure_requires_proof attribute per item is allowed.");
-                }
-                let pure_ensures_proofs: Vec<&String> =
-                    hax_pure_ensures_proof_attributes(&item.meta.attributes).collect();
-                if pure_ensures_proofs.len() > 1 {
-                    emit_error!("Only one lean_pure_ensures_proof attribute per item is allowed.");
-                }
-                docs![
-                    hardline!(),
-                    hardline!(),
-                    "@[spec]",
-                    hardline!(),
-                    docs![
-                        docs![
-                            "def",
-                            line!(),
+                match hax_proof_attributes(item) {
+                    Err(message) => emit_error!("{message}"),
+                    Ok(proof_attributes) => {
+                        let (tactic, specset) = match proof_attributes.proof_method {
+                            Some(ProofMethod::Grind) => ("grind", "int"),
+                            Some(ProofMethod::BvDecide) | None => ("bv_decide", "bv"),
+                        };
+                        let pure_requires_proof = proof_attributes
+                            .pure_requires_proof
+                            .unwrap_or(format!("by hax_construct_pure <;> {tactic}"));
+                        let pure_ensures_proof = proof_attributes
+                            .pure_ensures_proof
+                            .unwrap_or(format!("by hax_construct_pure <;> {tactic}"));
+                        let proof = proof_attributes.proof.map(|s| docs![s]).unwrap_or(docs![
+                            "by hax_mvcgen [",
                             name,
-                            ".spec",
-                            self.generics(generics, &self.render_last(name)),
-                            params,
-                            softline!(),
-                            ":"
-                        ]
-                        .group()
-                        .nest(INDENT),
-                        line!(),
-                        docs![
-                            "Spec",
-                            line!(),
+                            "] <;> ",
+                            tactic
+                        ]);
+                        {
                             docs![
-                                "requires",
-                                softline!(),
-                                ":= do",
-                                line!(),
-                                spec.precondition.map_or(reflow!("pure True"), |p| docs![p])
-                            ]
-                            .parens()
-                            .group()
-                            .nest(INDENT),
-                            line!(),
-                            docs![
-                                "ensures := ",
-                                spec.postcondition
-                                    .map_or(reflow!("fun _ => pure True"), |p| docs![
-                                        "fun",
+                                hardline!(),
+                                hardline!(),
+                                docs!["set_option hax_mvcgen.specset \"", specset, "\" in"],
+                                hardline!(),
+                                "@[hax_spec]",
+                                hardline!(),
+                                docs![
+                                    docs![
+                                        "def",
                                         line!(),
-                                        p.result_binder,
+                                        name,
+                                        ".spec",
+                                        self.generics(generics, &self.render_last(name)),
+                                        params,
                                         softline!(),
-                                        "=> do",
-                                        line!(),
-                                        p.body,
+                                        ":"
                                     ]
                                     .group()
-                                    .nest(INDENT)),
+                                    .nest(INDENT),
+                                    line!(),
+                                    docs![
+                                        "Spec",
+                                        line!(),
+                                        docs![
+                                            "requires",
+                                            softline!(),
+                                            ":= do",
+                                            line!(),
+                                            spec.precondition
+                                                .map_or(reflow!("pure True"), |p| docs![p])
+                                        ]
+                                        .parens()
+                                        .group()
+                                        .nest(INDENT),
+                                        line!(),
+                                        docs![
+                                            "ensures := ",
+                                            spec.postcondition.map_or(
+                                                reflow!("fun _ => pure True"),
+                                                |p| docs![
+                                                    "fun",
+                                                    line!(),
+                                                    p.result_binder,
+                                                    softline!(),
+                                                    "=> do",
+                                                    line!(),
+                                                    p.body,
+                                                ]
+                                                .group()
+                                                .nest(INDENT)
+                                            ),
+                                        ]
+                                        .parens()
+                                        .group()
+                                        .nest(INDENT),
+                                        line!(),
+                                        docs![
+                                            name,
+                                            zip_left!(line!(), &generics.params),
+                                            self.params_as_args(params)
+                                        ]
+                                        .parens()
+                                        .group()
+                                        .nest(INDENT)
+                                    ]
+                                    .group()
+                                    .nest(INDENT),
+                                    softline!(),
+                                    ":=",
+                                ]
+                                .group()
+                                .nest(2 * INDENT),
+                                softline!(),
+                                docs![
+                                    hardline!(),
+                                    docs!["pureRequires :=", softline!(), pure_requires_proof],
+                                    hardline!(),
+                                    docs!["pureEnsures :=", softline!(), pure_ensures_proof],
+                                    hardline!(),
+                                    docs!["contract :=", softline!(), proof]
+                                        .group()
+                                        .nest(INDENT),
+                                    hardline!(),
+                                ]
+                                .nest(INDENT)
+                                .braces(),
                             ]
-                            .parens()
-                            .group()
-                            .nest(INDENT),
-                            line!(),
-                            docs![
-                                name,
-                                zip_left!(line!(), &generics.params),
-                                self.params_as_args(params)
-                            ]
-                            .parens()
-                            .group()
-                            .nest(INDENT)
-                        ]
-                        .group()
-                        .nest(INDENT),
-                        softline!(),
-                        ":=",
-                    ]
-                    .group()
-                    .nest(2 * INDENT),
-                    softline!(),
-                    docs![
-                        hardline!(),
-                        if pure_requires_proofs.is_empty() {
-                            docs!["pureRequires := by constructor; mvcgen <;> try grind"]
-                        } else {
-                            docs![
-                                "pureRequires := ",
-                                intersperse!(pure_requires_proofs, nil!())
-                            ]
-                        },
-                        hardline!(),
-                        if pure_ensures_proofs.is_empty() {
-                            docs!["pureEnsures := by constructor; intros; mvcgen <;> try grind"]
-                        } else {
-                            docs!["pureEnsures := ", intersperse!(pure_ensures_proofs, nil!())]
-                        },
-                        hardline!(),
-                        docs![
-                            "contract :=",
-                            line!(),
-                            if proofs.is_empty() {
-                                docs!["by mvcgen[", name, "] <;> try grind"]
-                            } else {
-                                docs![intersperse!(proofs, nil!())]
-                            }
-                        ]
-                        .group()
-                        .nest(INDENT),
-                        hardline!(),
-                    ]
-                    .nest(INDENT)
-                    .braces(),
-                ]
+                        }
+                    }
+                }
             }
         }
     }
@@ -876,10 +888,10 @@ const _: () = {
                 } => {
                     if let Some(else_branch) = else_ {
                         docs![
-                            docs!["if", line!(), condition, reflow!(" then")].group(),
+                            docs!["if", line!(), condition, reflow!(" then do")].group(),
                             docs![line!(), then].nest(INDENT),
                             line!(),
-                            "else",
+                            reflow!("else do"),
                             docs![line!(), else_branch].nest(INDENT)
                         ]
                         .group()
@@ -912,8 +924,89 @@ const _: () = {
                         .parens()
                         .group()
                         .nest(INDENT),
-                        ([arg], [], ExprKind::GlobalId(binops::neg)) => {
-                            docs!["-?", softline!(), arg].parens()
+                        // TODO: Replace this match pattern with an `if let` guard when the feature stabilizes
+                        // Tracking PR: https://github.com/rust-lang/rust/pull/141295
+                        (
+                            [arg],
+                            [],
+                            ExprKind::GlobalId(op @ (binops::neg | binops::not | binops::Not::not)),
+                        ) if arg.ty == Ty::bool() || arg.ty.is_int() => {
+                            let symbol = match *op {
+                                binops::neg => "-?",
+                                binops::not => "~?",
+                                binops::Not::not => "!?",
+                                _ => unreachable!(),
+                            };
+                            docs![symbol, softline!(), arg].parens()
+                        }
+                        ([lhs, rhs], [], ExprKind::GlobalId(binops::Index::index)) => {
+                            docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
+                                .nest(INDENT)
+                                .group()
+                        }
+                        // TODO: Replace this match pattern with an `if let` guard when the feature stabilizes
+                        // Tracking PR: https://github.com/rust-lang/rust/pull/141295
+                        (
+                            [lhs, rhs],
+                            [],
+                            ExprKind::GlobalId(
+                                op @ (binops::add
+                                | binops::sub
+                                | binops::mul
+                                | binops::div
+                                | binops::rem
+                                | binops::shr
+                                | binops::shl
+                                | binops::bitand
+                                | binops::BitAnd::bitand
+                                | binops::bitor
+                                | binops::BitOr::bitor
+                                | binops::bitxor
+                                | binops::BitXor::bitxor
+                                | binops::logical_op_and
+                                | binops::logical_op_or
+                                | binops::eq
+                                | binops::PartialEq::eq
+                                | binops::lt
+                                | binops::le
+                                | binops::gt
+                                | binops::ge
+                                | binops::ne
+                                | binops::PartialEq::ne),
+                            ),
+                        ) if (lhs.ty == Ty::bool() && rhs.ty == Ty::bool())
+                            || (rhs.ty.is_int() && lhs.ty.is_int()) =>
+                        {
+                            let symbol = match *op {
+                                binops::add => "+?",
+                                binops::sub => "-?",
+                                binops::mul => "*?",
+                                binops::div => "/?",
+                                binops::rem => "%?",
+                                binops::shr => ">>>?",
+                                binops::shl => "<<<?",
+                                binops::bitand => "&&&?",
+                                binops::BitAnd::bitand => "&&?",
+                                binops::bitor => "|||?",
+                                binops::BitOr::bitor => "||?",
+                                binops::bitxor => "^^^?",
+                                binops::BitXor::bitxor => "^^?",
+                                binops::logical_op_and => "&&?",
+                                binops::logical_op_or => "||?",
+                                binops::eq => "==?",
+                                binops::PartialEq::eq => "==?",
+                                binops::lt => "<?",
+                                binops::le => "<=?",
+                                binops::gt => ">?",
+                                binops::ge => ">=?",
+                                binops::ne => "!=?",
+                                binops::PartialEq::ne => "!=?",
+                                _ => unreachable!(),
+                            };
+                            docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
+                                .group()
+                                .nest(INDENT)
+                                .parens()
                         }
                         _ => {
                             // Fallback for any application
@@ -936,13 +1029,14 @@ const _: () = {
                 }
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => docs![
-                    "#v[",
+                    "RustArray.ofVec #v[",
                     intersperse!(exprs, docs![",", line!()])
                         .nest(INDENT)
                         .group()
                         .align(),
                     "]"
                 ]
+                .parens()
                 .group(),
                 ExprKind::Construct {
                     constructor,
@@ -1029,33 +1123,6 @@ const _: () = {
                 .group()
                 .nest(INDENT),
 
-                ExprKind::Resugared(ResugaredExprKind::BinOp { op, lhs, rhs, .. }) => {
-                    // TODO : refactor this, moving this code directly in the `App` node (see
-                    // https://github.com/cryspen/hax/issues/1705)
-                    if *op == binops::Index::index {
-                        return docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
-                            .nest(INDENT)
-                            .group();
-                    }
-                    let symbol = match *op {
-                        binops::add => "+?",
-                        binops::sub => "-?",
-                        binops::mul => "*?",
-                        binops::div => "/?",
-                        binops::rem => "%?",
-                        binops::shr => ">>>?",
-                        binops::shl => "<<<?",
-                        binops::bitand => "&&&?",
-                        binops::bitxor => "^^^?",
-                        binops::logical_op_and => "&&?",
-                        binops::logical_op_or => "||?",
-                        _ => unreachable!(),
-                    };
-                    docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
-                        .group()
-                        .nest(INDENT)
-                        .parens()
-                }
                 ExprKind::Resugared(ResugaredExprKind::Tuple { .. }) => {
                     unreachable!("This printer doesn't use the tuple resugaring")
                 }
@@ -1097,6 +1164,8 @@ const _: () = {
                     &arm.pat,
                     softline!(),
                     "=>",
+                    softline!(),
+                    "do",
                     line!(),
                     &arm.body
                 ]
@@ -1262,7 +1331,7 @@ const _: () = {
 
         fn literal(&self, literal: &Literal) -> DocBuilder<A> {
             docs![match literal {
-                Literal::String(symbol) => format!("\"{symbol}\""),
+                Literal::String(symbol) => format!("\"{}\"", self.escape_string(symbol)),
                 Literal::Char(c) => format!("'{c}'"),
                 Literal::Bool(b) => format!("{b}"),
                 Literal::Int {
@@ -1358,7 +1427,14 @@ const _: () = {
                     safety: _,
                 } => {
                     let opaque = item.is_opaque();
+                    let linked_items = HasLinkedItemGraph::linked_item_graph(self);
                     docs![
+                        if opaque || linked_items.has_spec(item) {
+                            nil!()
+                        } else {
+                            // Function should be unfolded by `mvcgen`
+                            docs!["@[spec]", hardline!()]
+                        },
                         docs![
                             docs![
                                 docs![
@@ -1375,8 +1451,11 @@ const _: () = {
                                     "RustM",
                                     line!(),
                                     &body.ty,
-                                    line!(),
-                                    if opaque { nil!() } else { docs![":= do"] }
+                                    if opaque {
+                                        nil!()
+                                    } else {
+                                        docs![line!(), ":= do"]
+                                    }
                                 ]
                                 .group(),
                             ]
@@ -1558,7 +1637,7 @@ const _: () = {
                         zip_left!(
                             docs![hardline!(), hardline!()],
                             generic_types.iter().map(|impl_ident| docs![
-                                "attribute [instance]",
+                                "attribute [instance_reducible, instance]",
                                 line!(),
                                 name,
                                 ".AssociatedTypes.",
@@ -1686,7 +1765,7 @@ const _: () = {
                         zip_left!(
                             docs![hardline!(), hardline!()],
                             generic_types.iter().map(|impl_ident| docs![
-                                "attribute [instance]",
+                                "attribute [instance_reducible, instance]",
                                 line!(),
                                 name,
                                 ".",
@@ -1823,6 +1902,27 @@ const _: () = {
                     ]
                     .group()
                     .nest(INDENT),
+                    ResugaredItemKind::RecursiveFn {
+                        name,
+                        generics,
+                        body,
+                        params,
+                        safety,
+                    } => {
+                        // Render the item with an appended `partial_fixpoint`:
+                        let item = Item {
+                            ident: item.ident,
+                            kind: ItemKind::Fn {
+                                name: *name,
+                                generics: generics.clone(),
+                                body: body.clone(),
+                                params: params.clone(),
+                                safety: safety.clone(),
+                            },
+                            meta: item.meta.clone(),
+                        };
+                        return docs![item, hardline!(), "partial_fixpoint"];
+                    }
                 },
                 ItemKind::Alias { .. } => {
                     // aliases are introduced when creating bundles. Those should not appear in

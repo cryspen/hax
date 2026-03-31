@@ -50,55 +50,54 @@ structure Foo where
   by constructor <;> exact Inhabited.default
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let bar : Foo := (Foo.mk (1 : u32));
   let _ ←
     match (rust_primitives.hax.Tuple2.mk bar (Foo.mk (1 : u32))) with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
           (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)));
   let baz : Foo := (Foo.mk (0 : u32));
   let _ ←
     match (rust_primitives.hax.Tuple2.mk baz (Foo.mk (1 : u32))) with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
-          (← (core_models.ops.bit.Not.not
-            (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)))));
+          (← (!? (← (core_models.cmp.PartialEq.eq
+            Foo
+            Foo left_val right_val)))));
   let args : (rust_primitives.hax.Tuple1 Foo) :=
     (rust_primitives.hax.Tuple1.mk (Foo.mk (1 : u32)));
   let args : (RustArray core_models.fmt.rt.Argument 1) :=
-    #v[(← (core_models.fmt.rt.Impl.new_debug Foo
-           (rust_primitives.hax.Tuple1._0 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_debug Foo
+                            (rust_primitives.hax.Tuple1._0 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-        #v["", "
-"]
+        (RustArray.ofVec #v["", "\n"])
         args)));
   let _ := rust_primitives.hax.Tuple0.mk;
   let args : (rust_primitives.hax.Tuple1 Foo) :=
     (rust_primitives.hax.Tuple1.mk bar);
   let args : (RustArray core_models.fmt.rt.Argument 1) :=
-    #v[(← (core_models.fmt.rt.Impl.new_debug Foo
-           (rust_primitives.hax.Tuple1._0 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_debug Foo
+                            (rust_primitives.hax.Tuple1._0 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-        #v["", "
-"]
+        (RustArray.ofVec #v["", "\n"])
         args)));
   let _ := rust_primitives.hax.Tuple0.mk;
   let args : (rust_primitives.hax.Tuple1 Foo) :=
     (rust_primitives.hax.Tuple1.mk baz);
   let args : (RustArray core_models.fmt.rt.Argument 1) :=
-    #v[(← (core_models.fmt.rt.Impl.new_debug Foo
-           (rust_primitives.hax.Tuple1._0 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_debug Foo
+                            (rust_primitives.hax.Tuple1._0 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-        #v["", "
-"]
+        (RustArray.ofVec #v["", "\n"])
         args)));
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure rust_primitives.hax.Tuple0.mk)

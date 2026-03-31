@@ -15,6 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__loop_break
 
 --  @fail(extraction): lean(HAX0001), fstar(HAX0001), coq(HAX0001, HAX0001), ssprove(HAX0001), proverif(HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM
     (rust_primitives.hax.Tuple2

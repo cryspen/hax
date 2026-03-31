@@ -21,21 +21,26 @@ structure A where
 structure B where
   b : Bool
 
+@[spec]
 def some_function (_ : rust_primitives.hax.Tuple0) : RustM Bool := do
   (pure true)
 
+@[spec]
 def some_other_function (b : Bool) : RustM u8 := do (pure (5 : u8))
 
+@[spec]
 def longer_function (x : String) : RustM A := do
   let b : Bool ← (some_function rust_primitives.hax.Tuple0.mk);
   let d : u8 ← (some_other_function b);
   (pure (A.mk (x := (12 : usize)) (y := (9 : u8))))
 
+@[spec]
 def another_longer_function (_ : rust_primitives.hax.Tuple0) : RustM B := do
   let b : Bool ← (some_function rust_primitives.hax.Tuple0.mk);
   let d : u8 ← (some_other_function b);
   (pure (B.mk (b := false)))
 
+@[spec]
 def void_function (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let b : Bool ← (some_function rust_primitives.hax.Tuple0.mk);

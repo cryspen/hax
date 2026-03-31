@@ -15,6 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__branch__guard
 
 --  @fail(extraction): proverif(HAX0008, HAX0008)
+@[spec]
 def branch_match_guard (x : (core_models.option.Option u32)) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -28,66 +29,56 @@ def branch_match_guard (x : (core_models.option.Option u32)) :
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
   match x with
-    | (core_models.option.Option.Some  0) =>
+    | (core_models.option.Option.Some  0) => do
       let _ ←
         (std.io.stdio._print
-          (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["zero
-"])));
+          (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+            (RustArray.ofVec #v["zero\n"]))));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk)
-    | _ =>
+    | _ => do
       match
         (← match x with
-          | (core_models.option.Option.Some  x) =>
-            match
-              (← (rust_primitives.hax.machine_int.eq
-                (← (x %? (2 : u32)))
-                (0 : u32)))
-            with
-              | true =>
+          | (core_models.option.Option.Some  x) => do
+            match (← ((← (x %? (2 : u32))) ==? (0 : u32))) with
+              | true => do
                 let _ ←
                   (std.io.stdio._print
                     (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-                      #v["is nonzero and even
-"])));
+                      (RustArray.ofVec #v["is nonzero and even\n"]))));
                 let _ := rust_primitives.hax.Tuple0.mk;
                 (pure (core_models.option.Option.Some
                   rust_primitives.hax.Tuple0.mk))
-              | _ => (pure core_models.option.Option.None)
-          | _ => (pure core_models.option.Option.None))
+              | _ => do (pure core_models.option.Option.None)
+          | _ => do (pure core_models.option.Option.None))
       with
-        | (core_models.option.Option.Some  x) => (pure x)
-        | (core_models.option.Option.None ) =>
+        | (core_models.option.Option.Some  x) => do (pure x)
+        | (core_models.option.Option.None ) => do
           match
             (← match x with
-              | (core_models.option.Option.Some  x) =>
-                match
-                  (← (rust_primitives.hax.machine_int.eq
-                    (← (x %? (3 : u32)))
-                    (0 : u32)))
-                with
-                  | true =>
+              | (core_models.option.Option.Some  x) => do
+                match (← ((← (x %? (3 : u32))) ==? (0 : u32))) with
+                  | true => do
                     let _ ←
                       (std.io.stdio._print
                         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-                          #v["is nonzero and odd, but divisible by 3
-"])));
+                          (RustArray.ofVec #v["is nonzero and odd, but divisible by 3\n"]))));
                     let _ := rust_primitives.hax.Tuple0.mk;
                     (pure (core_models.option.Option.Some
                       rust_primitives.hax.Tuple0.mk))
-                  | _ => (pure core_models.option.Option.None)
-              | _ => (pure core_models.option.Option.None))
+                  | _ => do (pure core_models.option.Option.None)
+              | _ => do (pure core_models.option.Option.None))
           with
-            | (core_models.option.Option.Some  x) => (pure x)
-            | (core_models.option.Option.None ) =>
+            | (core_models.option.Option.Some  x) => do (pure x)
+            | (core_models.option.Option.None ) => do
               let _ ←
                 (std.io.stdio._print
                   (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-                    #v["something else
-"])));
+                    (RustArray.ofVec #v["something else\n"]))));
               let _ := rust_primitives.hax.Tuple0.mk;
               (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (branch_match_guard (core_models.option.Option.Some (0 : u32)));

@@ -14,37 +14,35 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__abort
 
+@[spec]
 def might_abort (should_abort : Bool) : RustM rust_primitives.hax.Tuple0 := do
-  if should_abort then
+  if should_abort then do
     let _ ←
       (std.io.stdio._print
         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-          #v["aborting...
-"])));
+          (RustArray.ofVec #v["aborting...\n"]))));
     let _ := rust_primitives.hax.Tuple0.mk;
     (rust_primitives.hax.never_to_any
       (← (core_models.panicking.panic_fmt
         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-          #v["panics and aborts"])))))
-  else
+          (RustArray.ofVec #v["panics and aborts"]))))))
+  else do
     let _ ←
       (std.io.stdio._print
         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-          #v["Don't Panic
-"])));
+          (RustArray.ofVec #v["Don\'t Panic\n"]))));
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): ssprove(HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result rust_primitives.hax.Tuple0 u8) := do
   let countdown : i32 := (10 : i32);
   let countdown : i32 ←
     (rust_primitives.hax.while_loop
       (fun countdown => (do (pure true) : RustM Bool))
-      (fun countdown =>
-        (do
-        (rust_primitives.hax.machine_int.gt countdown (0 : i32)) : RustM Bool))
+      (fun countdown => (do (countdown >? (0 : i32)) : RustM Bool))
       (fun countdown =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :
@@ -53,22 +51,22 @@ def main (_ : rust_primitives.hax.Tuple0) :
       (fun countdown =>
         (do
         let _ ←
-          if (← (rust_primitives.hax.machine_int.lt countdown (5 : i32))) then
+          if (← (countdown <? (5 : i32))) then do
             let _ ← (might_abort false);
             (pure rust_primitives.hax.Tuple0.mk)
-          else
+          else do
             (pure rust_primitives.hax.Tuple0.mk);
         let _ ←
-          if (← (rust_primitives.hax.machine_int.lt countdown (5 : i32))) then
+          if (← (countdown <? (5 : i32))) then do
             let _ ← (might_abort false);
             (pure rust_primitives.hax.Tuple0.mk)
-          else
+          else do
             (pure rust_primitives.hax.Tuple0.mk);
         let _ ←
-          if (← (rust_primitives.hax.machine_int.lt countdown (5 : i32))) then
+          if (← (countdown <? (5 : i32))) then do
             let _ ← (might_abort false);
             (pure rust_primitives.hax.Tuple0.mk)
-          else
+          else do
             (pure rust_primitives.hax.Tuple0.mk);
         let countdown : i32 ← (countdown -? (1 : i32));
         (pure countdown) :

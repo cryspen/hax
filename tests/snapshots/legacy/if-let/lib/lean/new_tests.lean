@@ -14,12 +14,13 @@ set_option linter.unusedVariables false
 
 namespace new_tests.legacy__if_let__lib
 
+@[spec]
 def fun_with_if_let (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   let x : (core_models.option.Option u8) :=
     (core_models.option.Option.Some (5 : u8));
   match x with
-    | (core_models.option.Option.Some  x) => (pure x)
-    | _ => (pure (7 : u8))
+    | (core_models.option.Option.Some  x) => do (pure x)
+    | _ => do (pure (7 : u8))
 
 end new_tests.legacy__if_let__lib
 

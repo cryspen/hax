@@ -1,15 +1,20 @@
-{"version": "1.1.0",
- "packagesDir": ".lake/packages",
- "packages":
- [{"url": "https://github.com/leanprover-community/quote4",
-   "type": "git",
-   "subDir": null,
-   "scope": "",
-   "rev": "23324752757bf28124a518ec284044c8db79fee5",
-   "name": "Qq",
-   "manifestFile": "lake-manifest.json",
-   "inputRev": "v4.28.0-rc1",
-   "inherited": false,
-   "configFile": "lakefile.toml"}],
- "name": "Hax",
- "lakeDir": ".lake"}
+{
+  "version": "1.1.0",
+  "packagesDir": ".lake/packages",
+  "packages": [
+    {
+      "url": "https://github.com/leanprover-community/quote4",
+      "type": "git",
+      "subDir": null,
+      "scope": "",
+      "rev": "23324752757bf28124a518ec284044c8db79fee5",
+      "name": "Qq",
+      "manifestFile": "lake-manifest.json",
+      "inputRev": "v4.29.0-rc1",
+      "inherited": false,
+      "configFile": "lakefile.toml"
+    }
+  ],
+  "name": "Hax",
+  "lakeDir": ".lake"
+}

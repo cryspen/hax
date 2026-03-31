@@ -14,6 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__auxiliary__discard_all_helper
 
+@[spec]
 def external_function (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)

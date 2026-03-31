@@ -15,6 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__while
 
 --  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -25,8 +26,7 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure (rust_primitives.hax.Tuple2.mk
     (← (rust_primitives.hax.while_loop
       (fun _ => (do (pure true) : RustM Bool))
-      (fun _ =>
-        (do (rust_primitives.hax.machine_int.ge num (10 : i32)) : RustM Bool))
+      (fun _ => (do (num >=? (10 : i32)) : RustM Bool))
       (fun _ =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :

@@ -138,5 +138,6 @@ make_ocaml_legacy_phase!(
     reject_dyn,
     reject_trait_item_default,
     reject_unsafe,
+    reject_impl_type_method,
     hoist_side_effects
 );

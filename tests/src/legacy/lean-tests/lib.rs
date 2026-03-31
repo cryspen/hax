@@ -5,6 +5,7 @@
 
 pub mod array;
 pub mod associated_types;
+pub mod binops;
 pub mod casts;
 pub mod comments;
 pub mod constants;
@@ -16,6 +17,7 @@ pub mod matching;
 pub mod monadic;
 pub mod nested_control_flow;
 pub mod opaque;
+pub mod recursion;
 pub mod specs;
 pub mod structs;
 pub mod traits;
@@ -48,7 +50,7 @@ fn closure() -> i32 {
     res1 + res2
 }
 
-#[hax_lib::lean::before("@[spec]")]
+#[hax_lib::lean::before("example : Nat := 42")]
 fn test_before_verbatime_single_line(x: u8) -> u8 {
     42
 }
@@ -63,14 +65,19 @@ fn test_before_verbatim_multi_line(x: u8) -> u8 {
     32
 }
 
-// BinOp Resugarings
-fn binop_resugarings(x: u32) -> u32 {
-    let add = x + 1;
-    let sub = add - 2;
-    let mul = sub * 3;
-    let rem = mul % 4;
-    let div = rem / 5;
-    let rshift = div >> x;
-    let lshift = div << x;
-    x
+const NULL_CHAR: char = '\0';
+
+/// Test string literals with escape sequences
+fn string_escapes() {
+    let _empty = "";
+    let _plain = "hello world";
+    let _with_quotes = "she said \"hello\"";
+    let _with_single_quote = "it's fine";
+    let _with_backslash = "path\\to\\file";
+    let _with_newline = "line1\nline2";
+    let _with_tab = "col1\tcol2";
+    let _with_carriage_return = "before\rafter";
+    let _mixed = "say \"hello\"\nand\t'goodbye'\\end";
+    let _carriage_return = "carriage\rreturn";
+    let _control_chars = "null\x00byte bell\x07char font\x1b[0mreset";
 }

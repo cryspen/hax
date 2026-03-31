@@ -14,17 +14,19 @@ set_option linter.unusedVariables false
 
 namespace new_tests.legacy__let_else__lib
 
+@[spec]
 def let_else (opt : (core_models.option.Option u32)) : RustM Bool := do
   match opt with
-    | (core_models.option.Option.Some  x) => (pure true)
-    | _ => (pure false)
+    | (core_models.option.Option.Some  x) => do (pure true)
+    | _ => do (pure false)
 
+@[spec]
 def let_else_different_type (opt : (core_models.option.Option u32)) :
     RustM Bool := do
   match opt with
-    | (core_models.option.Option.Some  x) =>
+    | (core_models.option.Option.Some  x) => do
       (let_else (core_models.option.Option.Some (← (x +? (1 : u32)))))
-    | _ => (pure false)
+    | _ => do (pure false)
 
 end new_tests.legacy__let_else__lib
 

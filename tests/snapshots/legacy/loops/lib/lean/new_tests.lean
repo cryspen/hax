@@ -15,6 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.legacy__loops__lib.recognized_loops
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def range (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple2 u64 rust_primitives.hax.Tuple0) := do
   let count : u64 := (0 : u64);
@@ -22,14 +23,14 @@ def range (_ : rust_primitives.hax.Tuple0) :
     (← (rust_primitives.hax.folds.fold_range
       (0 : u8)
       (10 : u8)
-      (fun count i =>
-        (do (rust_primitives.hax.machine_int.le i (10 : u8)) : RustM Bool))
+      (fun count i => (do (i <=? (10 : u8)) : RustM Bool))
       count
       (fun count i =>
         (do let count : u64 ← (count +? (1 : u64)); (pure count) : RustM u64))))
     rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def range_step_by (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple2 u64 rust_primitives.hax.Tuple0) := do
   let count : u64 := (0 : u64);
@@ -38,28 +39,28 @@ def range_step_by (_ : rust_primitives.hax.Tuple0) :
       (0 : u8)
       (10 : u8)
       (2 : usize)
-      (fun count i =>
-        (do (rust_primitives.hax.machine_int.le i (10 : u8)) : RustM Bool))
+      (fun count i => (do (i <=? (10 : u8)) : RustM Bool))
       count
       (fun count i =>
         (do let count : u64 ← (count +? (1 : u64)); (pure count) : RustM u64))))
     rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def enumerated_slice (T : Type) (slice : (RustSlice T)) :
     RustM (rust_primitives.hax.Tuple2 u64 rust_primitives.hax.Tuple0) := do
   let count : u64 := (0 : u64);
   (pure (rust_primitives.hax.Tuple2.mk
     (← (rust_primitives.hax.folds.fold_enumerated_slice
       slice
-      (fun count i =>
-        (do (rust_primitives.hax.machine_int.le i (10 : usize)) : RustM Bool))
+      (fun count i => (do (i <=? (10 : usize)) : RustM Bool))
       count
       (fun count i =>
         (do let count : u64 ← (count +? (2 : u64)); (pure count) : RustM u64))))
     rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def enumerated_chunked_slice (T : Type) (slice : (RustSlice T)) :
     RustM (rust_primitives.hax.Tuple2 u64 rust_primitives.hax.Tuple0) := do
   let count : u64 := (0 : u64);
@@ -80,6 +81,7 @@ end new_tests.legacy__loops__lib.recognized_loops
 namespace new_tests.legacy__loops__lib.for_loops
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def range1 (_ : rust_primitives.hax.Tuple0) : RustM usize := do
   let acc : usize := (0 : usize);
   let acc : usize ←
@@ -92,6 +94,7 @@ def range1 (_ : rust_primitives.hax.Tuple0) : RustM usize := do
   (pure acc)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def range2 (n : usize) : RustM usize := do
   let acc : usize := (0 : usize);
   let acc : usize ←
@@ -104,6 +107,7 @@ def range2 (n : usize) : RustM usize := do
   (pure acc)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def composed_range (n : usize) : RustM usize := do
   let acc : usize := (0 : usize);
   let acc : usize ←
@@ -124,6 +128,7 @@ def composed_range (n : usize) : RustM usize := do
   (pure acc)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def rev_range (n : usize) : RustM usize := do
   let acc : usize := (0 : usize);
   let acc : usize ←
@@ -140,6 +145,7 @@ def rev_range (n : usize) : RustM usize := do
   (pure acc)
 
 --  @fail(extraction): proverif(HAX0008, HAX0008)
+@[spec]
 def chunks (CHUNK_LEN : usize)
     (arr : (alloc.vec.Vec usize alloc.alloc.Global)) :
     RustM usize := do
@@ -178,6 +184,7 @@ def chunks (CHUNK_LEN : usize)
   (pure acc)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def iterator (arr : (alloc.vec.Vec usize alloc.alloc.Global)) :
     RustM usize := do
   let acc : usize := (0 : usize);
@@ -193,6 +200,7 @@ def iterator (arr : (alloc.vec.Vec usize alloc.alloc.Global)) :
   (pure acc)
 
 --  @fail(extraction): ssprove(HAX0001), proverif(HAX0008)
+@[spec]
 def nested (arr : (alloc.vec.Vec usize alloc.alloc.Global)) : RustM usize := do
   let acc : usize := (0 : usize);
   let acc : usize ←
@@ -244,6 +252,7 @@ def nested (arr : (alloc.vec.Vec usize alloc.alloc.Global)) : RustM usize := do
   (pure acc)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def pattern
     (arr :
     (alloc.vec.Vec (rust_primitives.hax.Tuple2 usize usize) alloc.alloc.Global))
@@ -261,6 +270,7 @@ def pattern
   (pure acc)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def enumerate_chunks (arr : (alloc.vec.Vec usize alloc.alloc.Global)) :
     RustM usize := do
   let acc : usize := (0 : usize);
@@ -286,10 +296,11 @@ def enumerate_chunks (arr : (alloc.vec.Vec usize alloc.alloc.Global)) :
         RustM usize)));
   (pure acc)
 
-def bool_returning (x : u8) : RustM Bool := do
-  (rust_primitives.hax.machine_int.lt x (10 : u8))
+@[spec]
+def bool_returning (x : u8) : RustM Bool := do (x <? (10 : u8))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def f (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple2 u8 rust_primitives.hax.Tuple0) := do
   let acc : u8 := (0 : u8);
@@ -313,13 +324,13 @@ end new_tests.legacy__loops__lib.for_loops
 namespace new_tests.legacy__loops__lib.while_loops
 
 --  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001), proverif(HAX0008)
+@[spec]
 def f (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   let x : u8 := (0 : u8);
   let x : u8 ←
     (rust_primitives.hax.while_loop
       (fun x => (do (pure true) : RustM Bool))
-      (fun x =>
-        (do (rust_primitives.hax.machine_int.lt x (10 : u8)) : RustM Bool))
+      (fun x => (do (x <? (10 : u8)) : RustM Bool))
       (fun x =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :
@@ -329,17 +340,16 @@ def f (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   (x +? (12 : u8))
 
 --  @fail(extraction): proverif(HAX0008), ssprove(HAX0001), coq(HAX0001, HAX0001)
+@[spec]
 def while_invariant_decr (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   let x : u8 := (0 : u8);
   let x : u8 ←
     (rust_primitives.hax.while_loop
       (fun x =>
         (do
-        (hax_lib.prop.constructors.from_bool
-          (← (rust_primitives.hax.machine_int.le x (10 : u8)))) :
+        (hax_lib.prop.constructors.from_bool (← (x <=? (10 : u8)))) :
         RustM hax_lib.prop.Prop))
-      (fun x =>
-        (do (rust_primitives.hax.machine_int.lt x (10 : u8)) : RustM Bool))
+      (fun x => (do (x <? (10 : u8)) : RustM Bool))
       (fun x =>
         (do
         (rust_primitives.hax.int.from_machine (← ((10 : u8) -? x))) :
@@ -349,17 +359,16 @@ def while_invariant_decr (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   (x +? (12 : u8))
 
 --  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008)
+@[spec]
 def while_invariant_decr_rev (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   let x : u8 := (0 : u8);
   let x : u8 ←
     (rust_primitives.hax.while_loop
       (fun x =>
         (do
-        (hax_lib.prop.constructors.from_bool
-          (← (rust_primitives.hax.machine_int.le x (10 : u8)))) :
+        (hax_lib.prop.constructors.from_bool (← (x <=? (10 : u8)))) :
         RustM hax_lib.prop.Prop))
-      (fun x =>
-        (do (rust_primitives.hax.machine_int.lt x (10 : u8)) : RustM Bool))
+      (fun x => (do (x <? (10 : u8)) : RustM Bool))
       (fun x =>
         (do
         (rust_primitives.hax.int.from_machine (← ((10 : u8) -? x))) :
@@ -374,6 +383,7 @@ end new_tests.legacy__loops__lib.while_loops
 namespace new_tests.legacy__loops__lib.control_flow
 
 --  @fail(extraction): coq(HAX0001), ssprove(HAX0001), proverif(HAX0008)
+@[spec]
 def double_sum (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
   let sum : i32 := (0 : i32);
   let sum : i32 ←
@@ -384,10 +394,10 @@ def double_sum (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
       sum
       (fun sum i =>
         (do
-        if (← (rust_primitives.hax.machine_int.lt i (0 : i32))) then
+        if (← (i <? (0 : i32))) then do
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (rust_primitives.hax.Tuple2.mk rust_primitives.hax.Tuple0.mk sum)))
-        else
+        else do
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (← (sum +? i)))) :
         RustM
@@ -397,6 +407,7 @@ def double_sum (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
   (sum *? (2 : i32))
 
 --  @fail(extraction): coq(HAX0001), ssprove(HAX0001), proverif(HAX0008)
+@[spec]
 def double_sum2 (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
   let sum : i32 := (0 : i32);
   let sum2 : i32 := (0 : i32);
@@ -408,12 +419,12 @@ def double_sum2 (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
       (rust_primitives.hax.Tuple2.mk sum sum2)
       (fun ⟨sum, sum2⟩ i =>
         (do
-        if (← (rust_primitives.hax.machine_int.lt i (0 : i32))) then
+        if (← (i <? (0 : i32))) then do
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (rust_primitives.hax.Tuple2.mk
               rust_primitives.hax.Tuple0.mk
               (rust_primitives.hax.Tuple2.mk sum sum2))))
-        else
+        else do
           let sum : i32 ← (sum +? i);
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (rust_primitives.hax.Tuple2.mk sum (← (sum2 +? i))))) :
@@ -426,6 +437,7 @@ def double_sum2 (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
   (sum +? sum2)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def double_sum_return (v : (RustSlice i32)) : RustM i32 := do
   let sum : i32 := (0 : i32);
   match
@@ -435,10 +447,10 @@ def double_sum_return (v : (RustSlice i32)) : RustM i32 := do
       sum
       (fun sum i =>
         (do
-        if (← (rust_primitives.hax.machine_int.lt i (0 : i32))) then
+        if (← (i <? (0 : i32))) then do
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (core_models.ops.control_flow.ControlFlow.Break (0 : i32))))
-        else
+        else do
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (← (sum +? i)))) :
         RustM
@@ -448,11 +460,12 @@ def double_sum_return (v : (RustSlice i32)) : RustM i32 := do
             (rust_primitives.hax.Tuple2 rust_primitives.hax.Tuple0 i32))
           i32)))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-    | (core_models.ops.control_flow.ControlFlow.Continue  sum) =>
+    | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
+    | (core_models.ops.control_flow.ControlFlow.Continue  sum) => do
       (sum *? (2 : i32))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def double_sum2_return (v : (RustSlice i32)) : RustM i32 := do
   let sum : i32 := (0 : i32);
   let sum2 : i32 := (0 : i32);
@@ -463,10 +476,10 @@ def double_sum2_return (v : (RustSlice i32)) : RustM i32 := do
       (rust_primitives.hax.Tuple2.mk sum sum2)
       (fun ⟨sum, sum2⟩ i =>
         (do
-        if (← (rust_primitives.hax.machine_int.lt i (0 : i32))) then
+        if (← (i <? (0 : i32))) then do
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (core_models.ops.control_flow.ControlFlow.Break (0 : i32))))
-        else
+        else do
           let sum : i32 ← (sum +? i);
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (rust_primitives.hax.Tuple2.mk sum (← (sum2 +? i))))) :
@@ -479,18 +492,17 @@ def double_sum2_return (v : (RustSlice i32)) : RustM i32 := do
               (rust_primitives.hax.Tuple2 i32 i32)))
           (rust_primitives.hax.Tuple2 i32 i32))))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-    | (core_models.ops.control_flow.ControlFlow.Continue  ⟨sum, sum2⟩) =>
+    | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
+    | (core_models.ops.control_flow.ControlFlow.Continue  ⟨sum, sum2⟩) => do
       (sum +? sum2)
 
 --  @fail(extraction): coq(HAX0001, HAX0001, HAX0001), proverif(HAX0008), ssprove(HAX0001, HAX0001)
+@[spec]
 def bigger_power_2 (x : i32) : RustM i32 := do
   let pow : i32 := (1 : i32);
   (rust_primitives.hax.while_loop_cf
     (fun pow => (do (pure true) : RustM Bool))
-    (fun pow =>
-      (do
-      (rust_primitives.hax.machine_int.lt pow (1000000 : i32)) : RustM Bool))
+    (fun pow => (do (pow <? (1000000 : i32)) : RustM Bool))
     (fun pow =>
       (do
       (rust_primitives.hax.int.from_machine (0 : u32)) : RustM hax_lib.int.Int))
@@ -498,15 +510,15 @@ def bigger_power_2 (x : i32) : RustM i32 := do
     (fun pow =>
       (do
       let pow : i32 ← (pow *? (2 : i32));
-      if (← (rust_primitives.hax.machine_int.lt pow x)) then
+      if (← (pow <? x)) then do
         let pow : i32 ← (pow *? (3 : i32));
-        if true then
+        if true then do
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (rust_primitives.hax.Tuple2.mk rust_primitives.hax.Tuple0.mk pow)))
-        else
+        else do
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (← (pow *? (2 : i32)))))
-      else
+      else do
         (pure (core_models.ops.control_flow.ControlFlow.Continue
           (← (pow *? (2 : i32))))) :
       RustM
@@ -517,6 +529,7 @@ def bigger_power_2 (x : i32) : RustM i32 := do
 structure M where
   m : (alloc.vec.Vec u8 alloc.alloc.Global)
 
+@[spec]
 def Impl.decoded_message (self : M) :
     RustM
     (core_models.option.Option (alloc.vec.Vec u8 alloc.alloc.Global))
@@ -529,11 +542,11 @@ def Impl.decoded_message (self : M) :
       rust_primitives.hax.Tuple0.mk
       (fun _ i =>
         (do
-        if (← (rust_primitives.hax.machine_int.gt i (5 : usize))) then
+        if (← (i >? (5 : usize))) then do
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (core_models.ops.control_flow.ControlFlow.Break
               core_models.option.Option.None)))
-        else
+        else do
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             rust_primitives.hax.Tuple0.mk)) :
         RustM
@@ -545,13 +558,14 @@ def Impl.decoded_message (self : M) :
               rust_primitives.hax.Tuple0))
           rust_primitives.hax.Tuple0)))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-    | (core_models.ops.control_flow.ControlFlow.Continue  _) =>
+    | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
+    | (core_models.ops.control_flow.ControlFlow.Continue  _) => do
       (pure (core_models.option.Option.Some
         (← (core_models.clone.Clone.clone
           (alloc.vec.Vec u8 alloc.alloc.Global) (M.m self)))))
 
 --  @fail(extraction): proverif(HAX0008), ssprove(HAX0001), coq(HAX0001)
+@[spec]
 def nested (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
   let sum : i32 := (0 : i32);
   let sum : i32 ←
@@ -570,12 +584,12 @@ def nested (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
             sum
             (fun sum j =>
               (do
-              if (← (rust_primitives.hax.machine_int.lt j (0 : i32))) then
+              if (← (j <? (0 : i32))) then do
                 (pure (core_models.ops.control_flow.ControlFlow.Break
                   (rust_primitives.hax.Tuple2.mk
                     rust_primitives.hax.Tuple0.mk
                     sum)))
-              else
+              else do
                 (pure (core_models.ops.control_flow.ControlFlow.Continue
                   (← (sum +? j)))) :
               RustM
@@ -587,6 +601,7 @@ def nested (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
   (sum *? (2 : i32))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def nested_return (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
   let sum : i32 := (0 : i32);
   match
@@ -605,10 +620,10 @@ def nested_return (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
             sum
             (fun sum j =>
               (do
-              if (← (rust_primitives.hax.machine_int.lt j (0 : i32))) then
+              if (← (j <? (0 : i32))) then do
                 (pure (core_models.ops.control_flow.ControlFlow.Break
                   (core_models.ops.control_flow.ControlFlow.Break (0 : i32))))
-              else
+              else do
                 (pure (core_models.ops.control_flow.ControlFlow.Continue
                   (← (sum +? j)))) :
               RustM
@@ -618,10 +633,10 @@ def nested_return (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
                   (rust_primitives.hax.Tuple2 rust_primitives.hax.Tuple0 i32))
                 i32)))))
         with
-          | (core_models.ops.control_flow.ControlFlow.Break  ret) =>
+          | (core_models.ops.control_flow.ControlFlow.Break  ret) => do
             (pure (core_models.ops.control_flow.ControlFlow.Break
               (core_models.ops.control_flow.ControlFlow.Break ret)))
-          | (core_models.ops.control_flow.ControlFlow.Continue  sum) =>
+          | (core_models.ops.control_flow.ControlFlow.Continue  sum) => do
             (pure (core_models.ops.control_flow.ControlFlow.Continue
               (← (sum +? i)))) :
         RustM
@@ -631,11 +646,12 @@ def nested_return (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
             (rust_primitives.hax.Tuple2 rust_primitives.hax.Tuple0 i32))
           i32)))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-    | (core_models.ops.control_flow.ControlFlow.Continue  sum) =>
+    | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
+    | (core_models.ops.control_flow.ControlFlow.Continue  sum) => do
       (sum *? (2 : i32))
 
 --  @fail(extraction): ssprove(HAX0008), coq(HAX0008), proverif(HAX0008, HAX0008)
+@[spec]
 def continue_only (x : (RustSlice i32)) :
     RustM (rust_primitives.hax.Tuple2 i32 rust_primitives.hax.Tuple0) := do
   let product : i32 := (1 : i32);
@@ -646,14 +662,15 @@ def continue_only (x : (RustSlice i32)) :
       product
       (fun product i =>
         (do
-        if (← (rust_primitives.hax.machine_int.eq i (0 : i32))) then
+        if (← (i ==? (0 : i32))) then do
           (pure product)
-        else
+        else do
           (core_models.ops.arith.MulAssign.mul_assign i32 i32 product i) :
         RustM i32))))
     rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): proverif(HAX0008, HAX0008), ssprove(HAX0001, HAX0008), coq(HAX0008, HAX0001)
+@[spec]
 def continue_and_break (x : (RustSlice i32)) :
     RustM (rust_primitives.hax.Tuple2 i32 rust_primitives.hax.Tuple0) := do
   let product : i32 := (1 : i32);
@@ -664,15 +681,15 @@ def continue_and_break (x : (RustSlice i32)) :
       product
       (fun product i =>
         (do
-        if (← (rust_primitives.hax.machine_int.eq i (0 : i32))) then
+        if (← (i ==? (0 : i32))) then do
           (pure (core_models.ops.control_flow.ControlFlow.Continue product))
-        else
-          if (← (rust_primitives.hax.machine_int.lt i (0 : i32))) then
+        else do
+          if (← (i <? (0 : i32))) then do
             (pure (core_models.ops.control_flow.ControlFlow.Break
               (rust_primitives.hax.Tuple2.mk
                 rust_primitives.hax.Tuple0.mk
                 product)))
-          else
+          else do
             (pure (core_models.ops.control_flow.ControlFlow.Continue
               (← (core_models.ops.arith.MulAssign.mul_assign
                 i32
@@ -689,6 +706,7 @@ end new_tests.legacy__loops__lib.control_flow
 namespace new_tests.legacy__loops__lib.and_mut_side_effect_loop
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def looping (array : (RustArray u8 5)) : RustM (RustArray u8 5) := do
   let array : (RustArray u8 5) ←
     (rust_primitives.hax.folds.fold_range
@@ -706,6 +724,7 @@ def looping (array : (RustArray u8 5)) : RustM (RustArray u8 5) := do
   (pure array)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def looping_2 (array : (RustArray u8 5)) : RustM (RustArray u8 5) := do
   let ⟨array, result⟩ :=
     (rust_primitives.hax.Tuple2.mk
