@@ -32,56 +32,70 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
     let lctx ← getLCtx
     let .some h := lctx.findFromUserName? (Syntax.getId h)
       | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Cannot find local assumption {h}")
-    unless h.type.isAppOfArity' ``Triple 7 do
-      Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Expected `Std.Do.Triple`, got {h.type}")
-    let mvar ← mkFreshExprMVar (kind := .syntheticOpaque) (mkSort .zero)
-    logInfo m!"hello {mvar}"
-    let mvarGoal ← mkFreshExprMVar mvar
-    let lemma ← mkAppM ``triple_in_hypothesis #[mvar, mkFVar h.fvarId]
-    let goals ← mvarGoal.mvarId!.apply lemma
-    let [goal, _] := goals
-      | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Unexpected number of goals after `triple_in_hypothesis`: {goals}")
 
-    let goals ← evalTacticAt (←  `(tactic| hax_mvcgen -trivial)) goal
+    forallTelescope (cleanupAnnotations := true) (← instantiateMVars h.type) fun xs hbody => do
 
-    let [goal] := goals
-      | Lean.Meta.throwTacticEx `hax_mvcgen goal (m!"Cannot handle multiple VCs: {goals}")
-    let (_, goal) ← goal.intros
+      let .some lastDecl := (← getLCtx).findDeclRev? (fun decl => some decl)
+        | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Unexpected empty local context")
 
-    let .some lastDecl := lctx.findDeclRev? (fun decl => some decl)
-      | Lean.Meta.throwTacticEx `hax_mvcgen goal (m!"Unexpected empty local context")
+      if hbody.isForall then
+        Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Why is this a forall???")
 
-    logInfo m!"{goal}"
+      unless hbody.isAppOfArity' ``Triple 7 do
+        Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Expected `Std.Do.Triple`, got {hbody}")
+      let mvar ← mkFreshExprMVar (kind := .syntheticOpaque) (mkSort .zero)
+      logInfo m!"hello {mvar}"
+      let mvarGoal ← mkFreshExprMVar mvar
+      let lemma ← mkAppM ``triple_in_hypothesis #[mvar, mkAppN (mkFVar h.fvarId) xs]
+      let goals ← mvarGoal.mvarId!.apply lemma
+      let [goal, _] := goals
+        | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Unexpected number of goals after `triple_in_hypothesis`: {goals}")
 
-    goal.withContext do
-      let lctx ← getLCtx
-      let mvarInst ← lctx.foldrM
-        fun decl acc => do
-          if decl.index <= lastDecl.index
-          then pure acc
-          else if (← inferType decl.type).isProp then
-            if acc.isAppOf ``True.intro then
-              pure (mkFVar decl.fvarId)
-            else
-              pure (← mkAppM ``And.intro #[
-                mkFVar decl.fvarId,
-                acc])
-          else
-            pure (← mkAppOptM ``Exists.intro #[
-              decl.type,
-              ← mkLambdaFVars #[mkFVar decl.fvarId] (← inferType acc),
-              mkFVar decl.fvarId,
-              acc])
-        (mkConst ``True.intro)
-      logInfo mvarInst
-      goal.assign mvarInst
-      mvarGoal.mvarId!.assign mvarInst
+      let goals ← evalTacticAt (←  `(tactic| hax_mvcgen -trivial)) goal
+
+
+      --  `fun (p : Prop) (f : decl1.type -> decl2.type -> ... -> p) => f decl1.fvar decl2.fvar ...`.
+      let mvarInsts ← goals.mapM fun goal => goal.withContext do
+        let (_, goal) ← goal.intros
+        goal.withContext do
+          let lctx ← getLCtx
+          withLocalDeclD `p (mkSort .zero) fun p => do
+            let (fType, fArgs) ←
+              lctx.foldrM
+                fun decl (fType, fArgs) => do
+                  logInfo m!"{decl.userName}"
+                  if decl.index <= lastDecl.index
+                  then pure (fType, fArgs)
+                  else pure (← mkForallFVars #[mkFVar decl.fvarId] fType, (mkFVar decl.fvarId) :: fArgs)
+                (p, [])
+            logInfo m!"{fArgs}"
+            withLocalDeclD `f fType fun f => do
+              pure (goal, ← mkLambdaFVars #[p, f] (mkAppN f fArgs.toArray))
+
+      logInfo m!"{mvarInsts}"
+      let [(goal, mvarInst)] := mvarInsts
+        | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"oops")
+      -- TODO: Handle multiple VCs
+
       mvar.mvarId!.assign (← inferType mvarInst)
+      goal.assign mvarInst
 
-      let x ← mainGoal.replace h.fvarId mvarGoal
+      let x ← mainGoal.replace h.fvarId (← mkLambdaFVars xs mvarGoal)
       setGoals [x.mvarId]
 
-set_option hax_mvcgen.specset "int"
+set_option hax_mvcgen.specset "int" in
 example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do (← a +? b) >? 0) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
+  hax_mvcgen at h
+  apply True.intro
+
+
+set_option hax_mvcgen.specset "int" in
+example (a b : u64) (h : ∀ i, ⦃ ⌜ True ⌝ ⦄ (do (← a +? b) >? i) ⦃ ⇓r => ⌜ r ⌝ ⦄) :  a + b > 0 := by
+  hax_mvcgen at h
+  apply h
+  grind
+
+set_option hax_mvcgen.specset "int" in
+example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do if ← (← a +? b) >? 0 then pure true else pure false) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
   hax_mvcgen at h
   apply True.intro
