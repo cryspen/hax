@@ -25,6 +25,16 @@ theorem haxAdd_spec {x y : u64} :
 
 
 open Elab Tactic Meta
+
+/-- Nest multiple `withLocalDeclD` calls, passing all created fvars to the continuation. -/
+private partial def withLocalDeclsArray (decls : Array (Name × Expr))
+    (k : Array Expr → MetaM α) (i : Nat := 0) (acc : Array Expr := #[]) : MetaM α :=
+  if h : i < decls.size then
+    let (n, t) := decls[i]
+    withLocalDeclD n t fun f => withLocalDeclsArray decls k (i + 1) (acc.push f)
+  else
+    k acc
+
 set_option hygiene false in
 elab "hax_mvcgen" "at" h:ident : tactic => do
   let mainGoal ← getMainGoal
@@ -54,8 +64,10 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
       let goals ← evalTacticAt (←  `(tactic| hax_mvcgen -trivial)) goal
 
 
-      --  `fun (p : Prop) (f : decl1.type -> decl2.type -> ... -> p) => f decl1.fvar decl2.fvar ...`.
-      let mvarInsts ← goals.mapM fun goal => goal.withContext do
+      -- Pass 1: For each VC goal, collect new declarations and compute
+      -- `fTypeAbs` = `fun (p : Prop) => ∀ a₁ : T₁, ..., p` (closed expression)
+      -- `fArgs` = the fvars of new declarations in the goal context
+      let vcInfos ← goals.mapM fun goal => goal.withContext do
         let (_, goal) ← goal.intros
         goal.withContext do
           let lctx ← getLCtx
@@ -63,22 +75,39 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
             let (fType, fArgs) ←
               lctx.foldrM
                 fun decl (fType, fArgs) => do
-                  logInfo m!"{decl.userName}"
                   if decl.index <= lastDecl.index
                   then pure (fType, fArgs)
                   else pure (← mkForallFVars #[mkFVar decl.fvarId] fType, (mkFVar decl.fvarId) :: fArgs)
                 (p, [])
-            logInfo m!"{fArgs}"
-            withLocalDeclD `f fType fun f => do
-              pure (goal, ← mkLambdaFVars #[p, f] (mkAppN f fArgs.toArray))
+            let fTypeAbs ← mkLambdaFVars #[p] fType
+            pure (goal, fTypeAbs, fArgs)
 
-      logInfo m!"{mvarInsts}"
-      let [(goal, mvarInst)] := mvarInsts
-        | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"oops")
-      -- TODO: Handle multiple VCs
+      let vcArr := vcInfos.toArray
 
-      mvar.mvarId!.assign (← inferType mvarInst)
-      goal.assign mvarInst
+      if vcArr.isEmpty then
+        Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"No verification conditions generated")
+
+      let allFTypeAbs := vcArr.map (·.2.1)
+
+      -- Pass 2: For each VC goal i, build:
+      --   fun (p : Prop) (f₁ : fType₁[p]) ... (fₙ : fTypeₙ[p]) => fᵢ a_{i,1} ...
+      -- Each goal uses only its i-th continuation fᵢ, but the lambda binds all of them.
+      -- All mvarInsts have the same type: ∀ (p : Prop), fType₁ → ... → fTypeₙ → p
+      let mvarInsts ← (Array.range vcArr.size).mapM fun idx => do
+        let (goal, _, fArgs) := vcArr[idx]!
+        let mvarInst ← goal.withContext do
+          withLocalDeclD `p (mkSort .zero) fun p => do
+            let fDeclsNamed := (Array.range allFTypeAbs.size).map fun i =>
+              (Name.mkSimple s!"f{i + 1}", allFTypeAbs[i]!.beta #[p])
+            withLocalDeclsArray fDeclsNamed fun fs => do
+              mkLambdaFVars (#[p] ++ fs) (mkAppN fs[idx]! fArgs.toArray)
+        pure (goal, mvarInst)
+
+      logInfo m!"{mvarInsts.toList}"
+
+      mvar.mvarId!.assign (← inferType mvarInsts[0]!.2)
+      for (goal, mvarInst) in mvarInsts.toList do
+        goal.assign mvarInst
 
       let x ← mainGoal.replace h.fvarId (← mkLambdaFVars xs mvarGoal)
       setGoals [x.mvarId]
