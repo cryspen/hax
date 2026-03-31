@@ -493,8 +493,8 @@ let dgeneric_constraint (generic_constraint : A.generic_constraint) :
     B.generic_constraint =
   match generic_constraint with
   | Lifetime lf -> GCLifetime (lf, F.lifetime)
-  | Type impl_ident -> GCType (dimpl_ident impl_ident)
-  | Projection projection -> GCProjection (dprojection_predicate projection)
+  | TypeClass impl_ident -> GCType (dimpl_ident impl_ident)
+  | Equality projection -> GCProjection (dprojection_predicate projection)
 
 let dgenerics (g : A.generics) : B.generics =
   {

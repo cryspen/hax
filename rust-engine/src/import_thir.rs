@@ -49,7 +49,7 @@ struct Context {
 
 fn is_self_type_constraint(gc: &ast::GenericConstraint) -> bool {
     match gc {
-        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) => goal
+        ast::GenericConstraint::TypeClass(ast::ImplIdent { goal, .. }) => goal
             .args
             .first()
             .and_then(ast::GenericValue::expect_ty)
@@ -61,7 +61,7 @@ fn is_self_type_constraint(gc: &ast::GenericConstraint) -> bool {
 
 fn is_constraint_on_ty(gc: &ast::GenericConstraint, ty: &ast::Ty) -> bool {
     match gc {
-        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) => goal
+        ast::GenericConstraint::TypeClass(ast::ImplIdent { goal, .. }) => goal
             .args
             .first()
             .and_then(ast::GenericValue::expect_ty)
@@ -333,7 +333,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
                 let trait_ = trait_predicate.trait_ref.def_id.import_as_nonvalue();
                 let goal = ast::TraitGoal { trait_, args };
 
-                Some(ast::GenericConstraint::Type(ast::ImplIdent {
+                Some(ast::GenericConstraint::TypeClass(ast::ImplIdent {
                     goal,
                     name: impl_expr_name(self.id.0),
                 }))
@@ -346,7 +346,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
                 let impl_ = impl_expr.spanned_import(context, span);
                 let assoc_item = assoc_item.def_id.import_as_nonvalue();
                 let ty = ty.spanned_import(context, span);
-                Some(ast::GenericConstraint::Projection(
+                Some(ast::GenericConstraint::Equality(
                     ast::ProjectionPredicate {
                         impl_,
                         assoc_item,
@@ -367,7 +367,7 @@ impl Import<Vec<ast::GenericConstraint>> for frontend::GenericPredicates {
             .filter_map(|(clause, span)| {
                 let span = span.import(context);
                 let mut gc = clause.spanned_import(context, span)?;
-                if let ast::GenericConstraint::Type(impl_ident) = &mut gc {
+                if let ast::GenericConstraint::TypeClass(impl_ident) = &mut gc {
                     impl_ident.name = impl_expr_name(type_idx);
                     type_idx += 1;
                 }
@@ -1812,7 +1812,7 @@ fn import_trait_item(
             let type_constraints = imported_constraints
                 .iter()
                 .filter_map(|gc| match gc {
-                    ast::GenericConstraint::Type(t) => Some(t.clone()),
+                    ast::GenericConstraint::TypeClass(t) => Some(t.clone()),
                     _ => None,
                 })
                 .collect();
@@ -1830,7 +1830,7 @@ fn import_trait_item(
         .constraints
         .retain(|gc| !is_self_type_constraint(gc));
     for (idx, gc) in generics.constraints.iter_mut().enumerate() {
-        if let ast::GenericConstraint::Type(impl_ident) = gc {
+        if let ast::GenericConstraint::TypeClass(impl_ident) = gc {
             impl_ident.name = impl_expr_name(idx as u64);
         }
     }
