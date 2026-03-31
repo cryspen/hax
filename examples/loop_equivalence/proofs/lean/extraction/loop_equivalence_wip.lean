@@ -158,24 +158,18 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        intro j
        hax_mvcgen <;> try grind
        · -- j ≤ i
-        subst_vars
         apply triple_implies _ h_11
         intros
         hax_mvcgen <;> try grind
         intros ht
         apply triple_implies _ (ht j)
-        by_cases (j = i)
-        · hax_mvcgen <;> try grind
-        · hax_mvcgen <;> try grind
-          rw [Vector.getElem_set_ne] <;> try grind
+        hax_mvcgen <;> try grind (splits := 30)
        · -- j > i
-         subst_vars
          apply triple_implies _ h_11
          hax_mvcgen <;> try grind
          intros ht
          apply triple_implies _ (ht j)
-         hax_mvcgen <;> try grind
-         rw [Vector.getElem_set_ne] <;> try grind
+         hax_mvcgen <;> try grind (splits := 30)
          -- j > N trivially true
 
      · -- post-condition implied by [f] loop invariant at the end of the loop
@@ -192,15 +186,7 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
          hax_mvcgen
          intros ht
          apply triple_implies _ (ht (USize64.ofNat i))
-         hax_mvcgen <;> try grind
-         · intro
-           subst_vars
-           rw [Vector.getElem_set]
-           grind
-         · intro
-           subst_vars
-           rw [Vector.getElem_set]
-           grind
+         hax_mvcgen <;> try grind (splits := 30)
    · -- post-condition if N % 2 = 0 (else-branch)
      hax_mvcgen [f] <;> try grind
      · -- [f] loop-invariant at the start of loop
@@ -212,27 +198,17 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        intro j
        hax_mvcgen <;> try grind
        · -- j ≤ i
-         by_cases (j = i)
-         · apply triple_implies _ h_6
-           hax_mvcgen
-           intros ht
-           apply triple_implies _ (ht j)
-           hax_mvcgen <;> try grind
-         · subst_vars
-           rw [Vector.getElem_set_ne] <;> try grind
-           apply triple_implies _ h_6
-           hax_mvcgen
-           intros ht
-           apply triple_implies _ (ht j)
-           hax_mvcgen <;> try grind
-       · -- j > i
-         subst_vars
-         rw [Vector.getElem_set_ne] <;> try grind
          apply triple_implies _ h_6
          hax_mvcgen
          intros ht
          apply triple_implies _ (ht j)
-         hax_mvcgen <;> try grind
+         hax_mvcgen <;> try grind (splits := 30)
+       · -- j > i
+         apply triple_implies _ h_6
+         hax_mvcgen
+         intros ht
+         apply triple_implies _ (ht j)
+         hax_mvcgen <;> try grind (splits := 30)
          -- j > N trivially true
      · -- post-condition implied by [f] loop invariant at the end of the loop
        expose_names
