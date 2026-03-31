@@ -110,6 +110,15 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
       let x ← mainGoal.replace h.fvarId (← mkLambdaFVars xs mvarGoal)
       setGoals (sideGoals.toList ++ [x.mvarId])
 
+-- A custom operation with no spec in any specset
+def myOp (a b : u64) : RustM u64 := pure (a + b)
+
+-- Example with an operation without spec
+set_option hax_mvcgen.specset "int" in
+example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do (← myOp a b) >? 0) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
+  hax_mvcgen at h
+  sorry
+
 set_option hax_mvcgen.specset "int" in
 example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do (← a +? b) >? 0) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
   hax_mvcgen at h
