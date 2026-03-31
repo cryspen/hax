@@ -18,10 +18,10 @@ p := sorry
 -- theorem haxAdd_spec {x y : u64} :
 --     ⦃ ∀ r, spred(⌜ r.toNat = x.toNat + y.toNat ⌝ → Q.1 r) ⦄ (x +? y) ⦃ Q ⦄ := by sorry
 
-
 @[specset int]
 theorem haxAdd_spec {x y : u64} :
     ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓? r => ⌜ r.toNat = x.toNat + y.toNat ⌝ ⦄ := by sorry
+
 
 
 open Elab Tactic Meta
@@ -54,37 +54,44 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
       let goals ← evalTacticAt (←  `(tactic| hax_mvcgen -trivial)) goal
 
 
-      -- Pass 1: For each VC goal, collect new declarations and compute
-      -- `fTypeAbs` = `fun (p : Prop) => ∀ a₁ : T₁, ..., p` (closed expression)
-      -- `fArgs` = the fvars of new declarations in the goal context
-      let vcInfos ← goals.mapM fun goal => goal.withContext do
-        let (_, goal) ← goal.intros
-        goal.withContext do
-          let lctx ← getLCtx
-          withLocalDeclD `p (mkSort .zero) fun p => do
-            let (fType, fArgs) ←
-              lctx.foldrM
-                fun decl (fType, fArgs) => do
-                  if decl.index <= lastDecl.index
-                  then pure (fType, fArgs)
-                  else pure (← mkForallFVars #[mkFVar decl.fvarId] fType, (mkFVar decl.fvarId) :: fArgs)
-                (p, [])
-            let fTypeAbs ← mkLambdaFVars #[p] fType
-            pure (goal, fTypeAbs, fArgs)
+      -- Intro all goals and partition into mvar goals (target == mvar) and side-condition goals.
+      -- For mvar goals, also collect `fTypeAbs` and `fArgs` for the CPS construction.
+      let mut mvarVCs : Array (MVarId × Expr × List Expr) := #[]
+      let mut sideGoals : Array MVarId := #[]
+      for goal in goals do
+        let (_, goal) ← goal.withContext do goal.intros
+        let target ← goal.withContext do instantiateMVars (← goal.getType)
+        if target == mvar then
+          let vcInfo ← goal.withContext do
+            let lctx ← getLCtx
+            withLocalDeclD `p (mkSort .zero) fun p => do
+              let (fType, fArgs) ←
+                lctx.foldrM
+                  fun decl (fType, fArgs) => do
+                    if decl.index <= lastDecl.index
+                    then pure (fType, fArgs)
+                    else pure (← mkForallFVars #[mkFVar decl.fvarId] fType, (mkFVar decl.fvarId) :: fArgs)
+                  (p, [])
+              let fTypeAbs ← mkLambdaFVars #[p] fType
+              pure (fTypeAbs, fArgs)
+          mvarVCs := mvarVCs.push (goal, vcInfo.1, vcInfo.2)
+        else
+          if (target.find? (· == mvar)).isSome then
+            Lean.Meta.throwTacticEx `hax_mvcgen mainGoal
+              (m!"VC goal target contains but is not equal to the mvar: {target}")
+          sideGoals := sideGoals.push goal
 
-      let vcArr := vcInfos.toArray
+      if mvarVCs.isEmpty then
+        logWarning m!"hax_mvcgen at: no mvar VCs generated, only side conditions"
 
-      if vcArr.isEmpty then
-        Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"No verification conditions generated")
+      let allFTypeAbs := mvarVCs.map (·.2.1)
 
-      let allFTypeAbs := vcArr.map (·.2.1)
-
-      -- Pass 2: For each VC goal i, build:
+      -- For each mvar VC goal i, build:
       --   fun (p : Prop) (f₁ : fType₁[p]) ... (fₙ : fTypeₙ[p]) => fᵢ a_{i,1} ...
       -- Each goal uses only its i-th continuation fᵢ, but the lambda binds all of them.
       -- All mvarInsts have the same type: ∀ (p : Prop), fType₁ → ... → fTypeₙ → p
-      let mvarInsts ← (Array.range vcArr.size).mapM fun idx => do
-        let (goal, _, fArgs) := vcArr[idx]!
+      let mvarInsts ← (Array.range mvarVCs.size).mapM fun idx => do
+        let (goal, _, fArgs) := mvarVCs[idx]!
         let mvarInst ← goal.withContext do
           withLocalDeclD `p (mkSort .zero) fun p => do
             let fDeclsNamed := (Array.range allFTypeAbs.size).map fun i =>
@@ -95,12 +102,13 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
 
       logInfo m!"{mvarInsts.toList}"
 
-      mvar.mvarId!.assign (← inferType mvarInsts[0]!.2)
-      for (goal, mvarInst) in mvarInsts.toList do
-        goal.assign mvarInst
+      if !mvarVCs.isEmpty then
+        mvar.mvarId!.assign (← inferType mvarInsts[0]!.2)
+        for (goal, mvarInst) in mvarInsts.toList do
+          goal.assign mvarInst
 
       let x ← mainGoal.replace h.fvarId (← mkLambdaFVars xs mvarGoal)
-      setGoals [x.mvarId]
+      setGoals (sideGoals.toList ++ [x.mvarId])
 
 set_option hax_mvcgen.specset "int" in
 example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do (← a +? b) >? 0) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
