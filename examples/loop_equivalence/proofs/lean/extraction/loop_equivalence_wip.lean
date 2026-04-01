@@ -171,7 +171,6 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
       expose_names
       unfold RustM.holds at h_3
       hax_mvcgen at h_3
-      apply h_3 <;> clear h_3
       intro ht
       hax_mvcgen at ht
       apply ht j <;> clear ht <;> grind
@@ -179,7 +178,6 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
       expose_names
       unfold RustM.holds at h_3
       hax_mvcgen at h_3
-      apply h_3 <;> clear h_3
       intro ht
       hax_mvcgen at ht
       apply ht j <;> clear ht <;> grind
@@ -198,14 +196,12 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        · -- j ≤ i
         unfold RustM.holds at h_12
         hax_mvcgen at h_12
-        apply h_12 <;> clear h_12
         intro ht
         hax_mvcgen at ht
         apply ht j <;> clear ht <;> grind (splits := 30)
        · -- j > i
         unfold RustM.holds at h_12
         hax_mvcgen at h_12
-        apply h_12 <;> clear h_12
         intro ht
         hax_mvcgen at ht
         apply ht j <;> clear ht <;> grind (splits := 30)
@@ -217,14 +213,12 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
       intros i hi
       unfold RustM.holds at h_10
       hax_mvcgen at h_10
-      apply h_10 <;> clear h_10
       intro ht
       hax_mvcgen at ht
       apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
       · intro
         unfold RustM.holds at h_1
         hax_mvcgen at h_1
-        apply h_1 <;> clear h_1
         intro ht
         hax_mvcgen at ht
         apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
@@ -241,14 +235,12 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        · -- j ≤ i
         unfold RustM.holds at h_6
         hax_mvcgen at h_6
-        apply h_6 <;> clear h_6
         intro ht
         hax_mvcgen at ht
         apply ht j <;> clear ht <;> try grind (splits := 30)
        · -- j > i
         unfold RustM.holds at h_6
         hax_mvcgen at h_6
-        apply h_6 <;> clear h_6
         intro ht
         hax_mvcgen at ht
         apply ht j <;> clear ht <;> try grind (splits := 30)
@@ -259,14 +251,12 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
         intros i hi
         unfold RustM.holds at h_4
         hax_mvcgen at h_4
-        apply h_4 <;> clear h_4
         intro ht
         hax_mvcgen at ht
         apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
         · intro
           unfold RustM.holds at h_1
           hax_mvcgen at h_1
-          apply h_1 <;> clear h_1
           intro ht
           hax_mvcgen at ht
           apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)

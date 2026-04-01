@@ -6,12 +6,19 @@ set_option autoImplicit true
 
 open Lean Std.Do Elab Tactic Meta
 
+structure HaxMvcgenConfig where
+  /-- Apply the result to the main goal (Should be disabled if the hypothesis is forall-quantified
+  and multiple instances are needed) -/
+  apply : Bool := true
+
+declare_config_elab elabHaxMvcgenConfig HaxMvcgenConfig
+
 theorem triple_in_hypothesis {f : RustM α} {Q : α → Assertion _} (p : Prop)
   (h : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓ r => Q r ⦄)
   (hp : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓? r => Q r → ⌜ p ⌝ ⦄) :
 p := sorry
 
-def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) : TacticM (List MVarId) := do
+def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfg : HaxMvcgenConfig) : TacticM (List MVarId) := do
   forallTelescope (cleanupAnnotations := true) (← instantiateMVars hyp.type) fun xs hbody => do
 
     unless hbody.isAppOfArity' ``Triple 7 do
@@ -83,13 +90,20 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) : TacticM (List MVarId) :=
       fun sideGoal => do evalTacticAt (←  `(tactic| mvcgen_trivial)) sideGoal
 
     -- Replace old `hyp` with `newHyp`, using `newHypProof`.
-    let {mvarId, ..} ← mainGoal.replace hyp.fvarId (← mkLambdaFVars xs newHypProof)
-    return ([mvarId] ++ sideGoalsList)
+    let {mvarId, fvarId, ..} ← mainGoal.replace hyp.fvarId (← mkLambdaFVars xs newHypProof)
+    let mainGoals ←
+      if cfg.apply && xs.size == 0 then
+        let r ← mvarId.apply (mkFVar fvarId)
+        r.mapM (·.tryClear fvarId)
+      else
+        pure [mvarId]
+    return (mainGoals ++ sideGoalsList)
 
-elab "hax_mvcgen" "at" h:ident : tactic => do
+elab "hax_mvcgen" cfg:(Lean.Parser.Tactic.config)? "at" h:ident : tactic => do
+  let cfg : HaxMvcgenConfig ← elabHaxMvcgenConfig (cfg.getD default)
   let mainGoal ← getMainGoal
   mainGoal.withContext do
     let lctx ← getLCtx
     let .some h := lctx.findFromUserName? (Syntax.getId h)
       | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Cannot find local assumption {h}")
-    replaceMainGoal (← haxMvcgenAt mainGoal h)
+    replaceMainGoal (← haxMvcgenAt mainGoal h cfg)
