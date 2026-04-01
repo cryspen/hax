@@ -1,0 +1,87 @@
+{
+  "name": "vscode-hax-sourcemap",
+  "displayName": "Hax Source Map",
+  "description": "Navigate between Lean extractions and Rust sources with colour-matched highlighting",
+  "version": "0.1.0",
+  "publisher": "hax",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": [
+    "workspaceContains:**/*.lean.map",
+    "onLanguage:lean4",
+    "onLanguage:lean",
+    "onLanguage:rust"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "hax.jumpToSource",
+        "title": "Hax: Jump to Rust Source",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "hax.jumpToLean",
+        "title": "Hax: Jump to Lean Extraction",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "hax.toggleRainbow",
+        "title": "Hax: Toggle Rainbow Colours"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "hax.jumpToSource",
+        "key": "f12",
+        "when": "editorTextFocus && resourceExtname == .lean && hax.hasSourceMap"
+      },
+      {
+        "command": "hax.jumpToLean",
+        "key": "alt+f12",
+        "when": "editorTextFocus && resourceExtname == .rs && hax.hasReverseMap"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "hax.jumpToSource",
+          "when": "resourceExtname == .lean && hax.hasSourceMap",
+          "group": "navigation"
+        },
+        {
+          "command": "hax.jumpToLean",
+          "when": "resourceExtname == .rs && hax.hasReverseMap",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Hax Source Map",
+      "properties": {
+        "hax.sourcemap.rainbowOnOpen": {
+          "type": "boolean",
+          "default": true,
+          "description": "Apply rainbow highlighting when a mapped Lean file is opened."
+        },
+        "hax.sourcemap.rainbowOpacity": {
+          "type": "number",
+          "default": 0.07,
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Background opacity for rainbow mode (0–1)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p .",
+    "watch": "tsc -watch -p ."
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}

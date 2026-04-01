@@ -1,7 +1,7 @@
 //! A Rust backend (and printer) for hax.
 
 use super::prelude::*;
-use crate::ast::identifiers::global_id::view::{PathSegment, View};
+use crate::ast::{identifiers::global_id::view::{PathSegment, View}, span::Span};
 use std::cell::RefCell;
 
 mod renamings;
@@ -133,14 +133,14 @@ const _: () = {
     }
 
     impl<'a, 'b> RustPrinter {
-        fn generic_params<A: Clone>(&'a self, generic_params: &'b [GenericParam]) -> DocBuilder<A> {
+        fn generic_params<A: Clone + From<Span>>(&'a self, generic_params: &'b [GenericParam]) -> DocBuilder<A> {
             let generic_params = generic_params
                 .iter()
                 .filter(|p| !matches!(&p.kind, GenericParamKind::Lifetime if p.ident.0.to_string() == "_"))
                 .collect::<Vec<_>>();
             sep_opt!("<", generic_params, ">")
         }
-        fn where_clause<A: Clone>(&'a self, constraints: &'b [GenericConstraint]) -> DocBuilder<A> {
+        fn where_clause<A: Clone + From<Span>>(&'a self, constraints: &'b [GenericConstraint]) -> DocBuilder<A> {
             if constraints.is_empty() {
                 return nil!();
             }
@@ -156,7 +156,7 @@ const _: () = {
             .nest(INDENT)
             .group()
         }
-        fn attributes<A: Clone>(&'a self, attrs: &'b [Attribute]) -> DocBuilder<A> {
+        fn attributes<A: Clone + From<Span>>(&'a self, attrs: &'b [Attribute]) -> DocBuilder<A> {
             concat!(
                 attrs
                     .iter()
@@ -168,7 +168,7 @@ const _: () = {
             )
         }
 
-        fn id_name<A: Clone>(&'a self, id: GlobalId) -> DocBuilder<A> {
+        fn id_name<A: Clone + From<Span>>(&'a self, id: GlobalId) -> DocBuilder<A> {
             let view = id.view();
             let path = <RustPrinter as RenderView>::render_strings(self, &view);
             let name = path.last().unwrap().clone();
@@ -180,7 +180,7 @@ const _: () = {
         }
     }
 
-    impl<A: Clone + 'static> PrettyAst<A> for RustPrinter {
+    impl<A: Clone + 'static + From<Span>> PrettyAst<A> for RustPrinter {
         const NAME: &'static str = "Rust";
 
         fn module(&self, module: &Module) -> DocBuilder<A> {

@@ -1,8 +1,7 @@
 //! The Lean backend
 //!
 //! This module defines the trait implementations to export the rust ast to
-//! Pretty::Doc type, which can in turn be exported to string (or, eventually,
-//! source maps).
+//! Pretty::Doc type, which can in turn be exported to string and source maps.
 
 use std::collections::HashSet;
 use std::sync::OnceLock;
@@ -224,18 +223,31 @@ impl Backend for LeanBackend {
             return vec![];
         }
         let path = self.module_path(modules.first().unwrap()).to_string();
-        let contents = modules
-            .into_iter()
-            .map(|module: Module| {
-                let (c, _) = printer.print(module);
-                c
-            })
-            .collect::<Vec<String>>()
-            .join("\n");
+
+        // The HEADER is prepended to the generated content, so all generated
+        // line numbers must be shifted by the number of lines in HEADER.
+        let header_line_count = HEADER.chars().filter(|&c| c == '\n').count() as u32;
+
+        let mut all_raw: Vec<(u32, u32, String, u32, u32)> = vec![];
+        let mut parts: Vec<String> = vec![];
+        let mut line_offset: u32 = header_line_count;
+
+        for module in modules {
+            let (content, sm) = printer.print(module);
+            for (gl, gc, src, sl, sc) in sm.raw {
+                all_raw.push((gl + line_offset, gc, src, sl, sc));
+            }
+            line_offset +=
+                content.chars().filter(|&c| c == '\n').count() as u32 + 1 /* "\n" join */;
+            parts.push(content);
+        }
+
+        let contents = format!("{}{}", HEADER, parts.join("\n"));
+        let sourcemap = SourceMap { raw: all_raw }.to_engine_sourcemap(&path);
         vec![File {
             path,
-            contents: format!("{}{}", HEADER, contents),
-            sourcemap: None,
+            contents,
+            sourcemap,
         }]
     }
 }
@@ -316,7 +328,7 @@ impl LeanPrinter {
 }
 
 /// Render parameters, adding a line after each parameter
-impl<A: 'static + Clone> ToDocument<LeanPrinter, A> for Vec<Param> {
+impl<A: 'static + Clone + From<Span>> ToDocument<LeanPrinter, A> for Vec<Param> {
     fn to_document(&self, printer: &LeanPrinter) -> DocBuilder<A> {
         printer.params(self)
     }
@@ -358,7 +370,7 @@ const _: () = {
     impl LeanPrinter {
         /// Prints arguments a variant or constructor of struct, using named or unamed arguments based
         /// on the `is_record` flag. Used for both expressions and patterns
-        pub fn arguments<A: 'static + Clone, D>(
+        pub fn arguments<A: 'static + Clone + From<Span>, D>(
             &self,
             fields: &[(GlobalId, D)],
             is_record: &bool,
@@ -374,7 +386,7 @@ const _: () = {
         }
 
         /// Prints fields of structures (when in braced notation)
-        fn struct_fields<A: 'static + Clone, D>(&self, fields: &[(GlobalId, D)]) -> DocBuilder<A>
+        fn struct_fields<A: 'static + Clone + From<Span>, D>(&self, fields: &[(GlobalId, D)]) -> DocBuilder<A>
         where
             D: ToDocument<Self, A>,
         {
@@ -387,7 +399,7 @@ const _: () = {
             .group()
         }
         /// Prints named arguments (record) of a variant or constructor of struct
-        fn named_arguments<A: 'static + Clone, D>(&self, fields: &[(GlobalId, D)]) -> DocBuilder<A>
+        fn named_arguments<A: 'static + Clone + From<Span>, D>(&self, fields: &[(GlobalId, D)]) -> DocBuilder<A>
         where
             D: ToDocument<Self, A>,
         {
@@ -403,7 +415,7 @@ const _: () = {
         }
 
         /// Prints positional arguments (tuple) of a variant or constructor of struct
-        fn positional_arguments<A: 'static + Clone, D>(
+        fn positional_arguments<A: 'static + Clone + From<Span>, D>(
             &self,
             fields: &[(GlobalId, D)],
         ) -> DocBuilder<A>
@@ -414,12 +426,12 @@ const _: () = {
         }
 
         /// Prints parameters of functions (items, trait items, impl items)
-        fn params<A: 'static + Clone>(&self, params: &Vec<Param>) -> DocBuilder<A> {
+        fn params<A: 'static + Clone + From<Span>>(&self, params: &Vec<Param>) -> DocBuilder<A> {
             zip_left!(line!(), params)
         }
 
         /// Print parameters as function arguments
-        fn params_as_args<A: 'static + Clone>(&self, params: &[Param]) -> DocBuilder<A> {
+        fn params_as_args<A: 'static + Clone + From<Span>>(&self, params: &[Param]) -> DocBuilder<A> {
             zip_left!(
                 line!(),
                 params.iter().map(|param| {
@@ -439,7 +451,7 @@ const _: () = {
 
         /// Renders expressions with an explicit ascription `(e : RustM ty)`. Used for the body of closure, for
         /// numeric literals, etc.
-        fn expr_typed_result<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
+        fn expr_typed_result<A: 'static + Clone + From<Span>>(&self, expr: &Expr) -> DocBuilder<A> {
             docs![
                 expr,
                 softline!(),
@@ -450,11 +462,11 @@ const _: () = {
             .group()
         }
 
-        fn pat_typed<A: 'static + Clone>(&self, pat: &Pat) -> DocBuilder<A> {
+        fn pat_typed<A: 'static + Clone + From<Span>>(&self, pat: &Pat) -> DocBuilder<A> {
             docs![pat, reflow!(" :"), line!(), &pat.ty].parens().group()
         }
 
-        fn do_block<A: 'static + Clone, D: ToDocument<Self, A>>(&self, body: D) -> DocBuilder<A> {
+        fn do_block<A: 'static + Clone + From<Span>, D: ToDocument<Self, A>>(&self, body: D) -> DocBuilder<A> {
             docs!["do", line!(), body].group()
         }
 
@@ -467,7 +479,7 @@ const _: () = {
 
         /// Renders a named argument for associated types with equality constraints
         /// (aka projections). If there are no equality constraints, returns None.
-        fn associated_type_projections<A: 'static + Clone>(
+        fn associated_type_projections<A: 'static + Clone + From<Span>>(
             &self,
             impl_ident: &ImplIdent,
             projections: Vec<DocBuilder<A>>,
@@ -504,7 +516,7 @@ const _: () = {
 
         /// Turns an expression of type `RustM T` into one of type `T` (out of the monad), providing
         /// reflexivity as a proof witness.
-        fn monad_extract<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
+        fn monad_extract<A: 'static + Clone + From<Span>>(&self, expr: &Expr) -> DocBuilder<A> {
             if let ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) = expr.kind()
             {
                 // Pure values are displayed directly. Note that constructors, while pure, may
@@ -525,7 +537,7 @@ const _: () = {
         }
 
         /// When possible, unwraps the `pure` surrounding an expression to simplify it
-        fn monad_extract_simplify<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
+        fn monad_extract_simplify<A: 'static + Clone + From<Span>>(&self, expr: &Expr) -> DocBuilder<A> {
             if let ExprKind::App { head, args, .. } = expr.kind()
                 && let ExprKind::GlobalId(PURE) = head.kind()
                 && let [pure_expr] = &args[..]
@@ -537,7 +549,7 @@ const _: () = {
         }
 
         /// Print trait items, adding trait-level params as extra arguments
-        fn trait_item_with_trait_params<A: 'static + Clone>(
+        fn trait_item_with_trait_params<A: 'static + Clone + From<Span>>(
             &self,
             trait_generics: &[GenericParam],
             TraitItem {
@@ -608,7 +620,7 @@ const _: () = {
         }
 
         // Print generics, using `name` as a prefix for constraint names
-        fn generics<A: 'static + Clone>(
+        fn generics<A: 'static + Clone + From<Span>>(
             &self,
             generics: &Generics,
             name: &String,
@@ -667,7 +679,7 @@ const _: () = {
         }
 
         /// Print spec of an item
-        fn spec<A: 'static + Clone>(
+        fn spec<A: 'static + Clone + From<Span>>(
             &self,
             item: &Item,
             name: &GlobalId,
@@ -794,13 +806,13 @@ const _: () = {
         }
     }
 
-    impl<A: 'static + Clone> ToDocument<LeanPrinter, A> for (Vec<GenericParam>, &TraitItem) {
+    impl<A: 'static + Clone + From<Span>> ToDocument<LeanPrinter, A> for (Vec<GenericParam>, &TraitItem) {
         fn to_document(&self, printer: &LeanPrinter) -> DocBuilder<A> {
             printer.trait_item_with_trait_params(&self.0, self.1)
         }
     }
 
-    impl<A: 'static + Clone> PrettyAst<A> for LeanPrinter {
+    impl<A: 'static + Clone + From<Span>> PrettyAst<A> for LeanPrinter {
         const NAME: &'static str = "Lean";
 
         /// Produce a non-panicking placeholder document. In general, prefer the use of the helper macro [`todo_document!`].
