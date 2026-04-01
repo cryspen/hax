@@ -480,7 +480,7 @@ def black_box.spec (T : Type) (dummy : T) :
       (black_box (T : Type) (dummy : T)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
-  contract := by hax_mvcgen [black_box] <;> bv_decide
+  contract := by hax_mvcgen [black_box] at ⊢ <;> bv_decide
 }
 
 def must_use (T : Type) (value : T) : RustM T := do (pure value)
@@ -494,7 +494,7 @@ def must_use.spec (T : Type) (value : T) :
       (must_use (T : Type) (value : T)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
-  contract := by hax_mvcgen [must_use] <;> bv_decide
+  contract := by hax_mvcgen [must_use] at ⊢ <;> bv_decide
 }
 
 end core_models.hint
@@ -1690,7 +1690,7 @@ def Impl.is_some.spec (T : Type) (self : (Option T)) :
       (Impl.is_some (T : Type) (self : (Option T))) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
-  contract := by hax_mvcgen [Impl.is_some] <;> bv_decide
+  contract := by hax_mvcgen [Impl.is_some] at ⊢ <;> bv_decide
 }
 
 @[spec]
@@ -2015,7 +2015,7 @@ def
         (src : (RustSlice T))) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
-  contract := by hax_mvcgen [Impl.copy_from_slice] <;> bv_decide
+  contract := by hax_mvcgen [Impl.copy_from_slice] at ⊢ <;> bv_decide
 }
 
 def Impl.clone_from_slice
@@ -2052,7 +2052,7 @@ def
         (src : (RustSlice T))) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
-  contract := by hax_mvcgen [Impl.clone_from_slice] <;> bv_decide
+  contract := by hax_mvcgen [Impl.clone_from_slice] at ⊢ <;> bv_decide
 }
 
 def Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize) :
@@ -2068,7 +2068,7 @@ def Impl.split_at.spec (T : Type) (s : (RustSlice T)) (mid : usize) :
       (Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
-  contract := by hax_mvcgen [Impl.split_at] <;> bv_decide
+  contract := by hax_mvcgen [Impl.split_at] at ⊢ <;> bv_decide
 }
 
 @[spec]

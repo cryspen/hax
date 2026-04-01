@@ -37,7 +37,7 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfg : HaxMvcgenConfig) : 
       | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal
           (m!"Unexpected number of goals after `triple_in_hypothesis`: {goals}")
     let previousLctxSize ← goal.withContext do pure (← getLCtx).decls.size
-    let goals ← evalTacticAt (←  `(tactic| hax_mvcgen -trivial)) goal
+    let goals ← evalTacticAt (←  `(tactic| hax_mvcgen -trivial at ⊢)) goal
 
     -- We partition the resulting goals into `newHypGoals` and `sideGoals`: If the conclusion
     -- of a goal is exactly `newHyp`, then we put it into `newHypGoals`, otherwise into `sideGoals`.

@@ -69,7 +69,7 @@ syntax (name := hax_construct_pure) "hax_construct_pure" (" => " tacticSeq)? : t
 def elabHaxConstructPure : Tactic := fun stx => do
   let tac ← match stx with
   | `(tactic| hax_construct_pure => $tac:tacticSeq) => pure tac
-  | `(tactic| hax_construct_pure) => `(tacticSeq| hax_mvcgen -trivial <;> intros)
+  | `(tactic| hax_construct_pure) => `(tacticSeq| hax_mvcgen -trivial at ⊢ <;> intros)
   | _ => throwUnsupportedSyntax
 
   let goal ← getMainGoal

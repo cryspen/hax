@@ -16,7 +16,7 @@ def mkMvcgenCall (args: Array Name) (cfgStx : Syntax) (argStx : Syntax) : CoreM 
   pure tac
 
 syntax (name := hax_mvcgen) "hax_mvcgen" optConfig
-  (" [" withoutPosition((simpStar <|> simpErase <|> simpLemma),*,?) "] ")? : tactic
+  (" [" withoutPosition((simpStar <|> simpErase <|> simpLemma),*,?) "] ")? "at" "⊢" : tactic
 
 /-- A customized version of the `mvcgen` tactic. It provides `mvcgen` with additional lemmas
 gathered from `@[specset X]` annotations, where `X` is the current setting of

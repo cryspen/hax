@@ -160,13 +160,13 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
          (do arr_future ==? (← (f N arr)): RustM _ ).holds ⌝ ⦄
  := by
    intro h_pre
-   hax_mvcgen [g, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] <;> try grind
+   hax_mvcgen [g, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] at ⊢ <;> try grind
    · intros
-     hax_mvcgen <;> try grind
+     hax_mvcgen at ⊢ <;> try grind
    · -- loop step in g
-     hax_mvcgen; grind
+     hax_mvcgen at ⊢; grind
      intro j
-     hax_mvcgen <;> try grind
+     hax_mvcgen at ⊢ <;> try grind
      · -- j < 2 * i + 1
       expose_names
       hax_mvcgen at h_3
@@ -180,17 +180,17 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
       hax_mvcgen at ht
       apply ht j <;> clear ht <;> grind
    · -- post-condition if N % 2 > 0 (then-branch)
-     hax_mvcgen [f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] <;> try grind
+     hax_mvcgen [f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] at ⊢ <;> try grind
 
      · -- [f] loop-invariant at the start of loop
        intros
-       hax_mvcgen <;> try grind
+       hax_mvcgen at ⊢ <;> try grind
 
      · -- prove that f's loop invariant holds at i + 1 after the body
        expose_names
-       hax_mvcgen <;> try grind
+       hax_mvcgen at ⊢ <;> try grind
        intro j
-       hax_mvcgen <;> try grind
+       hax_mvcgen at ⊢ <;> try grind
        · -- j ≤ i
         hax_mvcgen at h_12
         intro ht
@@ -217,15 +217,15 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
         hax_mvcgen at ht
         apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
    · -- post-condition if N % 2 = 0 (else-branch)
-     hax_mvcgen [f] <;> try grind
+     hax_mvcgen [f] at ⊢ <;> try grind
      · -- [f] loop-invariant at the start of loop
        intros
-       hax_mvcgen <;> try grind
+       hax_mvcgen at ⊢ <;> try grind
      · -- prove that f's loop invariant holds at i + 1 after the body
        expose_names
-       hax_mvcgen <;> try grind
+       hax_mvcgen at ⊢ <;> try grind
        intro j
-       hax_mvcgen <;> try grind
+       hax_mvcgen at ⊢ <;> try grind
        · -- j ≤ i
         hax_mvcgen at h_6
         intro ht
