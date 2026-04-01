@@ -346,13 +346,11 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
                 let impl_ = impl_expr.spanned_import(context, span);
                 let assoc_item = assoc_item.def_id.import_as_nonvalue();
                 let ty = ty.spanned_import(context, span);
-                Some(ast::GenericConstraint::Equality(
-                    ast::ProjectionPredicate {
-                        impl_,
-                        assoc_item,
-                        ty,
-                    },
-                ))
+                Some(ast::GenericConstraint::Equality(ast::ProjectionPredicate {
+                    impl_,
+                    assoc_item,
+                    ty,
+                }))
             }
             _ => None,
         }

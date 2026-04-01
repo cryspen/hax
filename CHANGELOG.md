@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+ - Rename `GenericConstraint::Type` to `TypeClass` and `::Projection` to `Equality` (#1996)
  - Remove `BinOp` resugaring (#1950)
  - Apply resugarings to linked items (pre/post conditions) (#1961)
  - Add new import_thir implemented in Rust and using `FullDef`, activated with `--experimental-full-def` (#1967)
