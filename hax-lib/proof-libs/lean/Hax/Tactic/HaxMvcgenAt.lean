@@ -21,6 +21,7 @@ p := sorry
 def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfg : HaxMvcgenConfig) : TacticM (List MVarId) := do
   forallTelescope (cleanupAnnotations := true) (← instantiateMVars hyp.type) fun xs hbody => do
 
+    let hbody ← whnfR hbody
     unless hbody.isAppOfArity' ``Triple 7 do
       Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Expected `Std.Do.Triple`, got {hbody}")
 
