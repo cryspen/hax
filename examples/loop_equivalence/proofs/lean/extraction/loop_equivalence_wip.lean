@@ -12,6 +12,41 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
+-- def f (x : u64) : RustM u64 := if x == 0 then .fail .integerOverflow else pure x
+
+-- @[spec]
+-- theorem f_spec'
+-- (h : x = 0 → (Q.2.1 Error.integerOverflow).down)
+-- (h : (Q.1 x).down) :
+--   ⦃ ⌜ True ⌝ ⦄
+--   f x
+--   ⦃ Q ⦄ := sorry
+
+-- theorem f_spec_test : ⦃ ⌜ True ⌝ ⦄ f x ⦃ ⇓?r => ⌜ r = x ⌝ ⦄ := by mvcgen
+
+-- theorem f_spec_test' (hx : x ≠ 0) : ⦃ ⌜ True ⌝ ⦄ f x ⦃ ⇓r => ⌜ r = x ⌝ ⦄ := by mvcgen
+
+@[spec]
+theorem mul_spec' (x y : USize64)
+(h : USize64.mulOverflow x y → (Q.2.1 Error.integerOverflow).down)
+(h : ∀ r : USize64, r.toNat = x.toNat * y.toNat → (Q.1 r).down) :
+  ⦃ ⌜ True ⌝ ⦄
+  (x *? y)
+  ⦃ Q ⦄ := sorry
+
+@[spec 10000]
+theorem getElem_spec (a : RustArray u64 N) (i : usize)
+(h : a.toVec.size ≤ i.toNat → (Q.2.1 Error.arrayOutOfBounds).down)
+(h : ∀ (r : u64) (h : i.toNat < N.toNat), r = a.toVec[i.toNat] → (Q.1 r).down) :
+  ⦃ ⌜ True ⌝ ⦄
+  (a[i]_?)
+  ⦃ Q ⦄ := sorry
+
+-- @[grind =] theorem getElem!_set[Inhabited α] {xs : Array α} {i : Nat} (h' : i < xs.size) {v : α} {j : Nat}
+--     (h : j < (xs.set i v).size) :
+--     (xs.set i v)[j]! = if i = j then v else xs[j]! := by
+--   simp at h
+--   by_cases p : i = j <;> simp [p, h]
 
 namespace loop_equivalence
 
@@ -116,7 +151,7 @@ def eq_spec (x y : RustArray u64 n) :
 attribute [local grind! .] USize64.toNat_lt_size
 
 set_option hax_mvcgen.specset "int"
-set_option maxHeartbeats 1_000_000
+set_option maxHeartbeats 10_000_000
 theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
     (do pure True : RustM _ ).holds →
     ⦃ ⌜ True ⌝ ⦄
@@ -134,18 +169,20 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
      hax_mvcgen <;> try grind
      · -- j < 2 * i + 1
       expose_names
-      apply triple_implies _ h_3 <;> clear h_3
-      hax_mvcgen
-      intros ht
-      apply triple_implies _ (ht j) <;> clear ht
-      hax_mvcgen <;> try grind
+      unfold RustM.holds at h_3
+      hax_mvcgen at h_3
+      apply h_3 <;> clear h_3
+      intro ht
+      hax_mvcgen at ht
+      apply ht j <;> clear ht <;> grind
      · -- j ≥ 2 * (i + 1)
       expose_names
-      apply triple_implies _ h_3 <;> clear h_3
-      hax_mvcgen
-      intros ht
-      apply triple_implies _ (ht j) <;> clear ht
-      hax_mvcgen <;> try grind
+      unfold RustM.holds at h_3
+      hax_mvcgen at h_3
+      apply h_3 <;> clear h_3
+      intro ht
+      hax_mvcgen at ht
+      apply ht j <;> clear ht <;> grind
    · -- post-condition if N % 2 > 0 (then-branch)
      hax_mvcgen [f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] <;> try grind
 
@@ -159,35 +196,38 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        intro j
        hax_mvcgen <;> try grind
        · -- j ≤ i
-        apply triple_implies _ h_11
-        intros
-        hax_mvcgen <;> try grind
-        intros ht
-        apply triple_implies _ (ht j)
-        hax_mvcgen <;> try grind (splits := 30)
+        unfold RustM.holds at h_12
+        hax_mvcgen at h_12
+        apply h_12 <;> clear h_12
+        intro ht
+        hax_mvcgen at ht
+        apply ht j <;> clear ht <;> grind (splits := 30)
        · -- j > i
-         apply triple_implies _ h_11
-         hax_mvcgen <;> try grind
-         intros ht
-         apply triple_implies _ (ht j)
-         hax_mvcgen <;> try grind (splits := 30)
+        unfold RustM.holds at h_12
+        hax_mvcgen at h_12
+        apply h_12 <;> clear h_12
+        intro ht
+        hax_mvcgen at ht
+        apply ht j <;> clear ht <;> grind (splits := 30)
          -- j > N trivially true
 
      · -- post-condition implied by [f] loop invariant at the end of the loop
-       expose_names
-       simp only [h_10, beq_iff_eq]
-       intros i hi
-       apply triple_implies _ h_9 <;> clear h_9
-       hax_mvcgen
-       intros ht
-       apply triple_implies _ (ht (USize64.ofNat i))
-       hax_mvcgen <;> try grind
-       · intro
-         apply triple_implies _ (h_1) <;> clear h_1
-         hax_mvcgen
-         intros ht
-         apply triple_implies _ (ht (USize64.ofNat i))
-         hax_mvcgen <;> try grind (splits := 30)
+      expose_names
+      simp only [h_11, beq_iff_eq]
+      intros i hi
+      unfold RustM.holds at h_10
+      hax_mvcgen at h_10
+      apply h_10 <;> clear h_10
+      intro ht
+      hax_mvcgen at ht
+      apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
+      · intro
+        unfold RustM.holds at h_1
+        hax_mvcgen at h_1
+        apply h_1 <;> clear h_1
+        intro ht
+        hax_mvcgen at ht
+        apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
    · -- post-condition if N % 2 = 0 (else-branch)
      hax_mvcgen [f] <;> try grind
      · -- [f] loop-invariant at the start of loop
@@ -199,31 +239,34 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        intro j
        hax_mvcgen <;> try grind
        · -- j ≤ i
-         apply triple_implies _ h_6
-         hax_mvcgen
-         intros ht
-         apply triple_implies _ (ht j)
-         hax_mvcgen <;> try grind (splits := 30)
+        unfold RustM.holds at h_6
+        hax_mvcgen at h_6
+        apply h_6 <;> clear h_6
+        intro ht
+        hax_mvcgen at ht
+        apply ht j <;> clear ht <;> try grind (splits := 30)
        · -- j > i
-         apply triple_implies _ h_6
-         hax_mvcgen
-         intros ht
-         apply triple_implies _ (ht j)
-         hax_mvcgen <;> try grind (splits := 30)
+        unfold RustM.holds at h_6
+        hax_mvcgen at h_6
+        apply h_6 <;> clear h_6
+        intro ht
+        hax_mvcgen at ht
+        apply ht j <;> clear ht <;> try grind (splits := 30)
          -- j > N trivially true
      · -- post-condition implied by [f] loop invariant at the end of the loop
-       expose_names
-       simp only [h_5, beq_iff_eq]
-       intros i hi
-       expose_names
-       apply triple_implies _ h_4
-       hax_mvcgen
-       intros ht
-       apply triple_implies _ (ht (USize64.ofNat i))
-       hax_mvcgen <;> try grind
-       · intro
-         apply triple_implies _ h_1
-         hax_mvcgen
-         intros ht
-         apply triple_implies _ (ht (USize64.ofNat i))
-         hax_mvcgen <;> try grind
+        expose_names
+        simp only [h_5, beq_iff_eq]
+        intros i hi
+        unfold RustM.holds at h_4
+        hax_mvcgen at h_4
+        apply h_4 <;> clear h_4
+        intro ht
+        hax_mvcgen at ht
+        apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
+        · intro
+          unfold RustM.holds at h_1
+          hax_mvcgen at h_1
+          apply h_1 <;> clear h_1
+          intro ht
+          hax_mvcgen at ht
+          apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)

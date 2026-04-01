@@ -94,7 +94,7 @@ instance instWP : WP RustM (.except Error (.except PUnit .pure)) :=
 instance instWPMonad : WPMonad RustM (.except Error (.except PUnit .pure)) :=
   inferInstanceAs (WPMonad (ExceptT Error Option) _)
 
-abbrev holds (x: RustM Prop) : Prop := ⦃ ⌜ True ⌝ ⦄ x ⦃ ⇓ p => ⌜ p ⌝ ⦄
+abbrev holds (x : RustM Prop) : Prop := ⦃ ⌜ True ⌝ ⦄ x ⦃ ⇓ p => ⌜ p ⌝ ⦄
 
 section Order
 

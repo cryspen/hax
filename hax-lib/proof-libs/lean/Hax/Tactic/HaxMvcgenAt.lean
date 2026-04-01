@@ -45,9 +45,6 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
       let .some lastDecl := (← getLCtx).findDeclRev? (fun decl => some decl)
         | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Unexpected empty local context")
 
-      if hbody.isForall then
-        Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Why is this a forall???")
-
       unless hbody.isAppOfArity' ``Triple 7 do
         Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Expected `Std.Do.Triple`, got {hbody}")
       let mvar ← mkFreshExprMVar (kind := .syntheticOpaque) (mkSort .zero)
@@ -81,6 +78,7 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
                   (p, [])
               let fTypeAbs ← mkLambdaFVars #[p] fType
               pure (fTypeAbs, fArgs)
+
           mvarVCs := mvarVCs.push (goal, vcInfo.1, vcInfo.2)
         else
           if (target.find? (· == mvar)).isSome then
@@ -114,17 +112,20 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
         for (goal, mvarInst) in mvarInsts.toList do
           goal.assign mvarInst
 
+      let sideGoalsList ← sideGoals.toList.flatMapM
+        fun sideGoal => do evalTacticAt (←  `(tactic| mvcgen_trivial)) sideGoal
+
       let x ← mainGoal.replace h.fvarId (← mkLambdaFVars xs mvarGoal)
-      setGoals (sideGoals.toList ++ [x.mvarId])
+      setGoals ([x.mvarId] ++ sideGoalsList)
 
 -- A custom operation with no spec in any specset
 def myOp (a b : u64) : RustM u64 := pure (a + b)
 
 -- Example with an operation without spec
-set_option hax_mvcgen.specset "int" in
-example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do (← myOp a b) >? 0) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
-  hax_mvcgen at h
-  sorry
+-- set_option hax_mvcgen.specset "int" in
+-- example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do (← myOp a b) >? 0) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
+--   hax_mvcgen at h
+--   sorry
 
 set_option hax_mvcgen.specset "int" in
 example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do (← a +? b) >? 0) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
@@ -137,6 +138,7 @@ example (a b : u64) (h : ∀ i, ⦃ ⌜ True ⌝ ⦄ (do (← a +? b) >? i) ⦃ 
   hax_mvcgen at h
   apply h
   grind
+  sorry
 
 set_option hax_mvcgen.specset "int" in
 example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do if ← (← a +? b) >? 0 then pure true else pure false) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
