@@ -20,7 +20,7 @@ theorem haxAdd_spec {x y : u64} :
 
 set_option hax_mvcgen.specset "int" in
 example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do (← a +? b) >? 0) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
-  hax_mvcgen at h
+  hax_mvcgen -apply at h
   apply True.intro
 
 
@@ -33,5 +33,5 @@ example (a b : u64) (h : ∀ i, ⦃ ⌜ True ⌝ ⦄ (do (← a +? b) >? i) ⦃ 
 
 set_option hax_mvcgen.specset "int" in
 example (a b : u64) (h : ⦃ ⌜ True ⌝ ⦄ (do if ← (← a +? b) >? 0 then pure true else pure false) ⦃ ⇓r => ⌜ r ⌝ ⦄) : True := by
-  hax_mvcgen at h
+  hax_mvcgen -apply at h
   apply True.intro

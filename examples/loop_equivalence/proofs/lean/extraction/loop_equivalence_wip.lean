@@ -164,7 +164,7 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
    · intros
      hax_mvcgen <;> try grind
    · -- loop step in g
-     hax_mvcgen <;> try grind
+     hax_mvcgen; grind
      intro j
      hax_mvcgen <;> try grind
      · -- j < 2 * i + 1

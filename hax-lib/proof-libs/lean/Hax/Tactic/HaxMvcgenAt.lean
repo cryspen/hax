@@ -100,8 +100,8 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfg : HaxMvcgenConfig) : 
         pure [mvarId]
     return (mainGoals ++ sideGoalsList)
 
-elab "hax_mvcgen" cfg:(Lean.Parser.Tactic.config)? "at" h:ident : tactic => do
-  let cfg : HaxMvcgenConfig ← elabHaxMvcgenConfig (cfg.getD default)
+elab "hax_mvcgen" cfg:Lean.Parser.Tactic.optConfig "at" h:ident : tactic => do
+  let cfg : HaxMvcgenConfig ← elabHaxMvcgenConfig cfg
   let mainGoal ← getMainGoal
   mainGoal.withContext do
     let lctx ← getLCtx
