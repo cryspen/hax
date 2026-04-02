@@ -325,9 +325,9 @@ mod trait_with_constraints {
 }
 
 mod associated_constant {
-    pub trait Foo { 
+    pub trait Foo {
         const f: bool;
-        const x: u8;
+        const x: u8 = 0;
     }
 
     pub struct Bar;
@@ -339,10 +339,10 @@ mod associated_constant {
 
     // https://github.com/cryspen/hax/issues/1940
     trait Baz {
-        const One : u32 = 1;
+        const One: u32 = 1;
     }
 
-    fn foo<F: Baz> (n : u32) -> u32 {
+    fn foo<F: Baz>(n: u32) -> u32 {
         n + F::One
     }
 }

@@ -322,6 +322,17 @@ def computation (x : u32) : RustM u32 := do ((← (x +? x)) +? (1 : u32))
 
 def C4 : u32 := RustM.of_isOk (do ((← (computation C1)) +? C2)) (by rfl)
 
+def C5 : (rust_primitives.hax.Tuple2 u32 u32) :=
+  RustM.of_isOk
+    (do
+    (pure (rust_primitives.hax.Tuple2.mk
+      (← ((0 : u32) +? (0 : u32)))
+      (0 : u32))))
+    (by rfl)
+
+def C6 : (RustArray u32 1) :=
+  RustM.of_isOk (do (pure (RustArray.ofVec #v[(0 : u32)]))) (by rfl)
+
 @[spec]
 def test (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -1628,7 +1639,7 @@ class Foo (Self : Type)
   [associatedTypes : outParam (Foo.AssociatedTypes (Self : Type))]
   where
   f (Self) : Bool
-  x (Self) : u8
+  x (Self) :u8 := (0 : u8)
 
 structure Bar where
   -- no fields
