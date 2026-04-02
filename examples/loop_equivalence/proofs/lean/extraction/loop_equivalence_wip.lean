@@ -159,44 +159,39 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
     ⦃ ⇓ arr_future => ⌜
          (do arr_future ==? (← (f N arr)): RustM _ ).holds ⌝ ⦄
  := by
-   intro h_pre
-   hax_mvcgen [g, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] at ⊢ <;> try grind
-   · intros
-     hax_mvcgen at ⊢ <;> try grind
-   · -- loop step in g
-     hax_mvcgen <;> try grind
-     · -- j < 2 * i + 1
+  intro h_pre
+  hax_mvcgen [g, f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] <;> try grind
+  --  · -- loop step in g
+  · -- j < 2 * i + 1
+    expose_names
+    apply h_27 a <;> grind
+  · -- j ≥ 2 * (i + 1)
+    expose_names
+    apply h_28 a <;> grind
+  --  · -- post-condition if N % 2 > 0 (then-branch)
+  · -- j ≤ i
       expose_names
-      apply h_27 a <;> grind
-     · -- j ≥ 2 * (i + 1)
+      apply h_25 a <;> grind (splits := 30)
+  · -- j > i
       expose_names
-      apply h_28 a <;> grind
-   · -- post-condition if N % 2 > 0 (then-branch)
-     hax_mvcgen [f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] <;> try grind
-     · -- j ≤ i
-          expose_names
-          apply h_25 a <;> grind (splits := 30)
-     · -- j > i
-          expose_names
-          apply h_26 a <;> grind (splits := 30)
-          -- j > N trivially true
-
-     · -- post-condition implied by [f] loop invariant at the end of the loop
-        expose_names
-        simp only [h_9]
-        intro i hi
-        apply h_10 (USize64.ofNat i) <;> apply h_11 (USize64.ofNat i) <;> try grind (splits := 30)
-   · -- post-condition if N % 2 = 0 (else-branch)
-    hax_mvcgen [f] <;> try grind
-    · -- j ≤ i
-      expose_names
-      apply h_17 a <;> clear h_17 <;> try grind (splits := 30)
-    · -- j > i
-      expose_names
-      apply h_17 a <;> clear h_17 <;> try grind (splits := 30)
+      apply h_26 a <;> grind (splits := 30)
       -- j > N trivially true
-    · -- post-condition implied by [f] loop invariant at the end of the loop
-      expose_names
-      simp only [h_3, beq_iff_eq]
-      intros i hi
-      apply h_4 (USize64.ofNat i) <;> apply h_5 (USize64.ofNat i) <;> try grind (splits := 30)
+
+  · -- post-condition implied by [f] loop invariant at the end of the loop
+    expose_names
+    simp only [h_9]
+    intro i hi
+    apply h_10 (USize64.ofNat i) <;> apply h_11 (USize64.ofNat i) <;> try grind (splits := 30)
+  --  · -- post-condition if N % 2 = 0 (else-branch)
+  · -- j ≤ i
+    expose_names
+    apply h_19 a <;> clear h_19 <;> try grind (splits := 30)
+  · -- j > i
+    expose_names
+    apply h_20 a <;> clear h_20 <;> try grind (splits := 30)
+    -- j > N trivially true
+  · -- post-condition implied by [f] loop invariant at the end of the loop
+    expose_names
+    simp only [h_3, beq_iff_eq]
+    intros i hi
+    apply h_4 (USize64.ofNat i) <;> apply h_5 (USize64.ofNat i) <;> try grind (splits := 30)
