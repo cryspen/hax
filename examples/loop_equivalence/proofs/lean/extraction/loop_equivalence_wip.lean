@@ -160,38 +160,39 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
          (do arr_future ==? (← (f N arr)): RustM _ ).holds ⌝ ⦄
  := by
   intro h_pre
-  hax_mvcgen [g, f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] <;> try grind
+  hax_mvcgen [g, f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt]
+    <;> try grind
   --  · -- loop step in g
   · -- j < 2 * i + 1
     expose_names
-    apply h_27 a <;> grind
-  · -- j ≥ 2 * (i + 1)
+    apply h_17 a <;> grind
+  · -- j ≥ 2 * (i + 1)>
     expose_names
-    apply h_28 a <;> grind
+    apply h_17 a <;> grind
   --  · -- post-condition if N % 2 > 0 (then-branch)
   · -- j ≤ i
       expose_names
-      apply h_25 a <;> grind (splits := 30)
+      apply h_16 a <;> grind (splits := 30)
   · -- j > i
       expose_names
-      apply h_26 a <;> grind (splits := 30)
+      apply h_16 a <;> grind (splits := 30)
       -- j > N trivially true
 
   · -- post-condition implied by [f] loop invariant at the end of the loop
     expose_names
-    simp only [h_9]
+    simp only [h_10]
     intro i hi
-    apply h_10 (USize64.ofNat i) <;> apply h_11 (USize64.ofNat i) <;> try grind (splits := 30)
+    apply h_9 (USize64.ofNat i) <;> apply h_11 (USize64.ofNat i) <;> try grind (splits := 30)
   --  · -- post-condition if N % 2 = 0 (else-branch)
   · -- j ≤ i
     expose_names
-    apply h_19 a <;> clear h_19 <;> try grind (splits := 30)
+    apply h_10 a <;> clear h_10 <;> try grind (splits := 30)
   · -- j > i
     expose_names
-    apply h_20 a <;> clear h_20 <;> try grind (splits := 30)
+    apply h_10 a <;> clear h_10 <;> try grind (splits := 30)
     -- j > N trivially true
   · -- post-condition implied by [f] loop invariant at the end of the loop
     expose_names
-    simp only [h_3, beq_iff_eq]
+    simp only [h_4, beq_iff_eq]
     intros i hi
-    apply h_4 (USize64.ofNat i) <;> apply h_5 (USize64.ofNat i) <;> try grind (splits := 30)
+    apply h_3 (USize64.ofNat i) <;> apply h_5 (USize64.ofNat i) <;> try grind (splits := 30)

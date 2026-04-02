@@ -14,20 +14,20 @@ partial def haxMvcgenLoop (mainGoal : MVarId)
     TacticM (List MVarId) := do
   let (_, mainGoal) ← mainGoal.intros
   mainGoal.withContext do
+    let lctx ← getLCtx
+    for hyp in lctx.decls.toArray.filterMap id do
+      if !hyp.isImplementationDetail && (← isTripleExpr hyp.type) then
+        trace `Hax.hax_mvcgen fun () => m!"hax_mvcgen at {hyp.userName}: {hyp.type}"
+        let goals ← haxMvcgenAt mainGoal hyp cfgStx argStx
+        return (← goals.flatMapM (haxMvcgenLoop · cfgStx argStx))
     let goalType ← whnfR (← instantiateMVars (← mainGoal.getType))
     if goalType.isAppOfArity' ``Triple 7 then
-      logInfo m!"hax_mvcgen at ⊢: {mainGoal}"
+      trace `Hax.hax_mvcgen fun () => m!"hax_mvcgen at ⊢: {mainGoal}"
       let inner : TSyntax `tactic := ⟨Syntax.node .none ``Hax.HaxMvcgen.hax_mvcgen_at_goal
         #[Syntax.atom .none "hax_mvcgen", cfgStx.raw, argStx,
           Syntax.atom .none "at", Syntax.atom .none "⊢"]⟩
       let goals ← evalTacticAt inner mainGoal
       return (← goals.flatMapM (haxMvcgenLoop · cfgStx argStx))
-    let lctx ← getLCtx
-    for hyp in lctx.decls.toArray.filterMap id do
-      if !hyp.isImplementationDetail && (← isTripleExpr hyp.type) then
-        logInfo m!"hax_mvcgen at {hyp.userName}: {hyp.type}"
-        let goals ← haxMvcgenAt mainGoal hyp cfgStx argStx
-        return (← goals.flatMapM (haxMvcgenLoop · cfgStx argStx))
     return [mainGoal]
 
 syntax (name := hax_mvcgen) "hax_mvcgen" optConfig

@@ -88,6 +88,9 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
     let sideGoalsList ← sideGoals.toList.flatMapM
       fun sideGoal => do evalTacticAt (←  `(tactic| mvcgen_trivial)) sideGoal
 
+    if !sideGoalsList.isEmpty then
+      logWarning m!"hax_mvcgen at: nontrivial side goals generated: {sideGoalsList}"
+
     -- Replace old `hyp` with `newHyp`, using `newHypProof`.
     let {mvarId, fvarId, ..} ← mainGoal.replace hyp.fvarId (← mkLambdaFVars xs newHypProof)
     let mainGoals ←
