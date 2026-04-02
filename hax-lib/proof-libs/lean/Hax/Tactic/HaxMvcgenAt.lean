@@ -4,21 +4,14 @@ import Hax.Tactic.HaxMvcgenAtGoal
 
 set_option autoImplicit true
 
-open Lean Std.Do Elab Tactic Meta
-
-structure HaxMvcgenConfig where
-  /-- Apply the result to the main goal (Should be disabled if the hypothesis is forall-quantified
-  and multiple instances are needed) -/
-  apply : Bool := true
-
-declare_config_elab elabHaxMvcgenConfig HaxMvcgenConfig
+open Lean Std.Do Elab Parser Tactic Meta
 
 theorem triple_in_hypothesis {f : RustM α} {Q : α → Assertion _} (p : Prop)
   (h : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓ r => Q r ⦄)
   (hp : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓? r => Q r → ⌜ p ⌝ ⦄) :
 p := sorry
 
-def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfg : HaxMvcgenConfig) : TacticM (List MVarId) := do
+def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Parser.Tactic.optConfig) (argStx : Syntax) : TacticM (List MVarId) := do
   forallTelescope (cleanupAnnotations := true) (← instantiateMVars hyp.type) fun xs hbody => do
 
     let hbody ← whnfR hbody
@@ -37,7 +30,12 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfg : HaxMvcgenConfig) : 
       | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal
           (m!"Unexpected number of goals after `triple_in_hypothesis`: {goals}")
     let previousLctxSize ← goal.withContext do pure (← getLCtx).decls.size
-    let goals ← evalTacticAt (←  `(tactic| hax_mvcgen -trivial at ⊢)) goal
+    let cfgStx : TSyntax `Lean.Parser.Tactic.optConfig :=
+      Parser.Tactic.appendConfig cfgStx (← `(Lean.Parser.Tactic.optConfig| -trivial))
+    let inner : TSyntax `tactic := ⟨Syntax.node .none ``Hax.HaxMvcgen.hax_mvcgen_at_goal
+        #[Syntax.atom .none "hax_mvcgen", cfgStx.raw, argStx,
+          Syntax.atom .none "at", Syntax.atom .none "⊢"]⟩
+    let goals ← evalTacticAt inner goal
 
     -- We partition the resulting goals into `newHypGoals` and `sideGoals`: If the conclusion
     -- of a goal is exactly `newHyp`, then we put it into `newHypGoals`, otherwise into `sideGoals`.
@@ -93,18 +91,23 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfg : HaxMvcgenConfig) : 
     -- Replace old `hyp` with `newHyp`, using `newHypProof`.
     let {mvarId, fvarId, ..} ← mainGoal.replace hyp.fvarId (← mkLambdaFVars xs newHypProof)
     let mainGoals ←
-      if cfg.apply && xs.size == 0 then
+      if xs.size == 0 then
         let r ← mvarId.apply (mkFVar fvarId)
         r.mapM (·.tryClear fvarId)
       else
         pure [mvarId]
     return (mainGoals ++ sideGoalsList)
 
-elab "hax_mvcgen" cfg:Lean.Parser.Tactic.optConfig "at" h:ident : tactic => do
-  let cfg : HaxMvcgenConfig ← elabHaxMvcgenConfig cfg
+syntax (name := hax_mvcgen_at_hyp) "hax_mvcgen" optConfig
+  (" [" withoutPosition((simpStar <|> simpErase <|> simpLemma),*,?) "] ")? "at" ident : tactic
+
+@[tactic hax_mvcgen_at_hyp]
+def elabHaxMvcgenAtHyp : Tactic := fun stx => do
+  let cfgStx : TSyntax `Lean.Parser.Tactic.optConfig := ⟨stx[1]⟩
+  let argStx := stx[2]
   let mainGoal ← getMainGoal
   mainGoal.withContext do
     let lctx ← getLCtx
-    let .some h := lctx.findFromUserName? (Syntax.getId h)
-      | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Cannot find local assumption {h}")
-    replaceMainGoal (← haxMvcgenAt mainGoal h cfg)
+    let .some hyp := lctx.findFromUserName? (Syntax.getId stx[4])
+      | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Cannot find local assumption {stx[4]}")
+    replaceMainGoal (← haxMvcgenAt mainGoal hyp cfgStx argStx)

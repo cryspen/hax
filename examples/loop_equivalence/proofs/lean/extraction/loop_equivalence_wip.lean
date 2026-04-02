@@ -191,20 +191,16 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
       intro i hi
       apply h_10 (USize64.ofNat i) <;> apply h_11 (USize64.ofNat i) <;> try grind (splits := 30)
    · -- post-condition if N % 2 = 0 (else-branch)
-     hax_mvcgen [f] at ⊢ <;> try grind
-     hax_mvcgen <;> try grind
-     · -- prove that f's loop invariant holds at i + 1 after the body
-       hax_mvcgen <;> try grind
-       · -- j ≤ i
-        expose_names
-        apply h_17 a <;> clear h_17 <;> try grind (splits := 30)
-       · -- j > i
-        expose_names
-        apply h_17 a <;> clear h_17 <;> try grind (splits := 30)
-         -- j > N trivially true
-     · -- post-condition implied by [f] loop invariant at the end of the loop
-        hax_mvcgen
-        expose_names
-        simp only [h_3, beq_iff_eq]
-        intros i hi
-        apply h_4 (USize64.ofNat i) <;> apply h_5 (USize64.ofNat i) <;> try grind (splits := 30)
+    hax_mvcgen [f] <;> try grind
+    · -- j ≤ i
+      expose_names
+      apply h_17 a <;> clear h_17 <;> try grind (splits := 30)
+    · -- j > i
+      expose_names
+      apply h_17 a <;> clear h_17 <;> try grind (splits := 30)
+      -- j > N trivially true
+    · -- post-condition implied by [f] loop invariant at the end of the loop
+      expose_names
+      simp only [h_3, beq_iff_eq]
+      intros i hi
+      apply h_4 (USize64.ofNat i) <;> apply h_5 (USize64.ofNat i) <;> try grind (splits := 30)
