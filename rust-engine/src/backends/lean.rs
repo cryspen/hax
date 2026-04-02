@@ -617,9 +617,9 @@ const _: () = {
                 zip_left!(line!(), &generics.params),
                 zip_left!(
                     line!(),
-                    generics.type_constraints().map(|impl_ident| {
+                    generics.type_class_constraints().map(|impl_ident| {
                         let projections = generics
-                            .projection_constraints()
+                            .equality_constraints()
                             .filter(|p| !matches!(&*p.impl_.kind, ImplExprKind::LocalBound { id } if *id != impl_ident.name ))
                             .map(|p| {
                                 if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
@@ -1588,7 +1588,7 @@ const _: () = {
                     items,
                     safety: _,
                 } => {
-                    let generic_types = generics.type_constraints().collect::<Vec<_>>();
+                    let generic_types = generics.type_class_constraints().collect::<Vec<_>>();
                     if generic_types.len() < generics.constraints.len() {
                         emit_error!(issue 1921, "Unsupported equality constraints on associated types")
                     }

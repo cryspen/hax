@@ -453,9 +453,9 @@ module Make (FA : Features.T) = struct
       B.generic_constraint =
     match generic_constraint with
     | GCLifetime (lf, _witness) -> Lifetime lf
-    | GCType impl_ident -> Type (dimpl_ident span impl_ident)
+    | GCType impl_ident -> TypeClass (dimpl_ident span impl_ident)
     | GCProjection projection ->
-        Projection (dprojection_predicate span projection)
+        Equality (dprojection_predicate span projection)
 
   let dgenerics span (g : A.generics) : B.generics =
     {
