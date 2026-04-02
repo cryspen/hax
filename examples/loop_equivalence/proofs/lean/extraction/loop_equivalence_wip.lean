@@ -172,24 +172,20 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
       expose_names
       apply h_28 a <;> grind
    · -- post-condition if N % 2 > 0 (then-branch)
-     hax_mvcgen [f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] at ⊢ <;> try grind
-     hax_mvcgen <;> try grind
-     · -- prove that f's loop invariant holds at i + 1 after the body
-       hax_mvcgen <;> try grind
-       · -- j ≤ i
-        expose_names
-        apply h_25 a <;> grind (splits := 30)
-       · -- j > i
-        expose_names
-        apply h_26 a <;> grind (splits := 30)
-         -- j > N trivially true
+     hax_mvcgen [f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] <;> try grind
+     · -- j ≤ i
+          expose_names
+          apply h_25 a <;> grind (splits := 30)
+     · -- j > i
+          expose_names
+          apply h_26 a <;> grind (splits := 30)
+          -- j > N trivially true
 
      · -- post-condition implied by [f] loop invariant at the end of the loop
-      hax_mvcgen
-      expose_names
-      simp only [h_9]
-      intro i hi
-      apply h_10 (USize64.ofNat i) <;> apply h_11 (USize64.ofNat i) <;> try grind (splits := 30)
+        expose_names
+        simp only [h_9]
+        intro i hi
+        apply h_10 (USize64.ofNat i) <;> apply h_11 (USize64.ofNat i) <;> try grind (splits := 30)
    · -- post-condition if N % 2 = 0 (else-branch)
     hax_mvcgen [f] <;> try grind
     · -- j ≤ i
