@@ -2,7 +2,7 @@
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax
-import Hax.Tactic.HaxMvcgenAt
+import Hax.Tactic.HaxMvcgen
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
@@ -164,89 +164,47 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
    · intros
      hax_mvcgen at ⊢ <;> try grind
    · -- loop step in g
-     hax_mvcgen at ⊢; grind
-     intro j
-     hax_mvcgen at ⊢ <;> try grind
+     hax_mvcgen <;> try grind
      · -- j < 2 * i + 1
       expose_names
-      hax_mvcgen at h_3
-      intro ht
-      hax_mvcgen at ht
-      apply ht j <;> clear ht <;> grind
+      apply h_27 a <;> grind
      · -- j ≥ 2 * (i + 1)
       expose_names
-      hax_mvcgen at h_3
-      intro ht
-      hax_mvcgen at ht
-      apply ht j <;> clear ht <;> grind
+      apply h_28 a <;> grind
    · -- post-condition if N % 2 > 0 (then-branch)
      hax_mvcgen [f, -rust_primitives.cmp.eq, -rust_primitives.cmp.lt] at ⊢ <;> try grind
-
-     · -- [f] loop-invariant at the start of loop
-       intros
-       hax_mvcgen at ⊢ <;> try grind
-
+     hax_mvcgen <;> try grind
      · -- prove that f's loop invariant holds at i + 1 after the body
-       expose_names
-       hax_mvcgen at ⊢ <;> try grind
-       intro j
-       hax_mvcgen at ⊢ <;> try grind
+       hax_mvcgen <;> try grind
        · -- j ≤ i
-        hax_mvcgen at h_12
-        intro ht
-        hax_mvcgen at ht
-        apply ht j <;> clear ht <;> grind (splits := 30)
+        expose_names
+        apply h_25 a <;> grind (splits := 30)
        · -- j > i
-        hax_mvcgen at h_12
-        intro ht
-        hax_mvcgen at ht
-        apply ht j <;> clear ht <;> grind (splits := 30)
+        expose_names
+        apply h_26 a <;> grind (splits := 30)
          -- j > N trivially true
 
      · -- post-condition implied by [f] loop invariant at the end of the loop
+      hax_mvcgen
       expose_names
-      simp only [h_11, beq_iff_eq]
-      intros i hi
-      hax_mvcgen at h_10
-      intro ht
-      hax_mvcgen at ht
-      apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
-      · intro
-        hax_mvcgen at h_1
-        intro ht
-        hax_mvcgen at ht
-        apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
+      simp only [h_9]
+      intro i hi
+      apply h_10 (USize64.ofNat i) <;> apply h_11 (USize64.ofNat i) <;> try grind (splits := 30)
    · -- post-condition if N % 2 = 0 (else-branch)
      hax_mvcgen [f] at ⊢ <;> try grind
-     · -- [f] loop-invariant at the start of loop
-       intros
-       hax_mvcgen at ⊢ <;> try grind
+     hax_mvcgen <;> try grind
      · -- prove that f's loop invariant holds at i + 1 after the body
-       expose_names
-       hax_mvcgen at ⊢ <;> try grind
-       intro j
-       hax_mvcgen at ⊢ <;> try grind
+       hax_mvcgen <;> try grind
        · -- j ≤ i
-        hax_mvcgen at h_6
-        intro ht
-        hax_mvcgen at ht
-        apply ht j <;> clear ht <;> try grind (splits := 30)
+        expose_names
+        apply h_17 a <;> clear h_17 <;> try grind (splits := 30)
        · -- j > i
-        hax_mvcgen at h_6
-        intro ht
-        hax_mvcgen at ht
-        apply ht j <;> clear ht <;> try grind (splits := 30)
+        expose_names
+        apply h_17 a <;> clear h_17 <;> try grind (splits := 30)
          -- j > N trivially true
      · -- post-condition implied by [f] loop invariant at the end of the loop
+        hax_mvcgen
         expose_names
-        simp only [h_5, beq_iff_eq]
+        simp only [h_3, beq_iff_eq]
         intros i hi
-        hax_mvcgen at h_4
-        intro ht
-        hax_mvcgen at ht
-        apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
-        · intro
-          hax_mvcgen at h_1
-          intro ht
-          hax_mvcgen at ht
-          apply ht (USize64.ofNat i) <;> clear ht <;> try grind (splits := 30)
+        apply h_4 (USize64.ofNat i) <;> apply h_5 (USize64.ofNat i) <;> try grind (splits := 30)

@@ -1,34 +1,32 @@
-import Hax.Tactic.SpecSet
-import Hax.Tactic.Init
+import Hax.Tactic.HaxMvcgenAt
+import Hax.Tactic.HaxMvcgenAtGoal
 
-namespace Hax.HaxMvcgen
+set_option autoImplicit true
 
-open Lean Elab Syntax Parser Tactic
+open Lean Std.Do Elab Tactic Meta
 
-def mkMvcgenCall (args: Array Name) (cfgStx : Syntax) (argStx : Syntax) : CoreM Syntax := do
-  let cfgStx : TSyntax `Lean.Parser.Tactic.optConfig := .mk cfgStx
-  let mut elems := argStx[1].getArgs.getSepElems
-  for arg in args do
-    elems := elems.push
-      (Syntax.node .none ``Lean.Parser.Tactic.simpLemma #[mkNullNode, mkNullNode, mkIdent arg])
-  let argStx : TSepArray _ _ := Syntax.TSepArray.ofElems (elems.map .mk)
-  let tac := ← `(tactic| mvcgen $cfgStx [$argStx,*])
-  pure tac
+private def isTripleExpr (e : Expr) : MetaM Bool := do
+  forallTelescope (cleanupAnnotations := true) (← instantiateMVars e) fun _ body =>
+    return (← whnfR body).isAppOfArity' ``Triple 7
 
-syntax (name := hax_mvcgen) "hax_mvcgen" optConfig
-  (" [" withoutPosition((simpStar <|> simpErase <|> simpLemma),*,?) "] ")? "at" "⊢" : tactic
+partial def haxMvcgenLoop (mainGoal : MVarId) : TacticM (List MVarId) := do
+  let (_, mainGoal) ← mainGoal.intros
+  mainGoal.withContext do
+    let goalType ← whnfR (← instantiateMVars (← mainGoal.getType))
+    if goalType.isAppOfArity' ``Triple 7 then
+      logInfo m!"hax_mvcgen at ⊢: {mainGoal}"
+      let goals ← evalTacticAt (← `(tactic| hax_mvcgen at ⊢)) mainGoal
+      return (← goals.flatMapM haxMvcgenLoop)
+    let lctx ← getLCtx
+    for hyp in lctx.decls.toArray.filterMap id do
+      if !hyp.isImplementationDetail && (← isTripleExpr hyp.type) then
+        logInfo m!"hax_mvcgen at {hyp.userName}: {hyp.type}"
+        let goals ← haxMvcgenAt mainGoal hyp {}
+        return (← goals.flatMapM haxMvcgenLoop)
+    return [mainGoal]
 
-/-- A customized version of the `mvcgen` tactic. It provides `mvcgen` with additional lemmas
-gathered from `@[specset X]` annotations, where `X` is the current setting of
-`set_option hax_mvcgen.specset`. -/
+syntax (name := hax_mvcgen) "hax_mvcgen" : tactic
+
 @[tactic hax_mvcgen]
-def elabHaxMvcgen : Tactic := fun stx => do
-  let specset := hax_mvcgen.specset.get (← getOptions)
-  let cfgStx := stx[1]
-  let argStx := stx[2]
-  let extState := specSetExt.getState (← getEnv)
-  let decls := (extState.getD specset.toName {}).toArray
-  let tac ← mkMvcgenCall decls cfgStx argStx
-  Tactic.evalTactic tac
-
-end  Hax.HaxMvcgen
+def elabHaxMvcgenLoop : Tactic := fun _ => do
+  replaceMainGoal (← haxMvcgenLoop (← getMainGoal))

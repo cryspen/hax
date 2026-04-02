@@ -1,5 +1,5 @@
 import Hax.Tactic.HaxZify
-import Hax.Tactic.HaxMvcgen
+import Hax.Tactic.HaxMvcgenAtGoal
 import Qq
 
 open Lean Elab Tactic Meta Qq Std.Do

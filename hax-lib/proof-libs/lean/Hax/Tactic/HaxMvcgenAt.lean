@@ -1,6 +1,6 @@
 import Lean
 import Hax.core_models
-import Hax.Tactic.HaxMvcgen
+import Hax.Tactic.HaxMvcgenAtGoal
 
 set_option autoImplicit true
 
