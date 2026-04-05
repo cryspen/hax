@@ -666,6 +666,158 @@ def test_binding_subpattern_matching
         +? (rust_primitives.hax.Tuple2._1 pair))
     | _ => do (pure (0 : u8))
 
+inductive test_ellipsis_records.E : Type
+| C (f1 : u8) (f2 : u8) (f3 : u8) (f4 : u8) : test_ellipsis_records.E
+
+@[spec]
+def test_ellipsis_records (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let c : test_ellipsis_records.E :=
+    (test_ellipsis_records.E.C
+      (f1 := (1 : u8))
+      (f2 := (2 : u8))
+      (f3 := (3 : u8))
+      (f4 := (4 : u8)));
+  let _ ←
+    match c with
+      | (test_ellipsis_records.E.C  (f1 := _) (f2 := _) (f3 := _) (f4 := _)) =>
+        do
+        (hax_lib.assert true);
+  let _ ←
+    match c with
+      | (test_ellipsis_records.E.C  (f1 := f1) (f2 := _) (f3 := _) (f4 := _)) =>
+        do
+        (hax_lib.assert (← (f1 ==? (1 : u8))));
+  let _ ←
+    match c with
+      | (test_ellipsis_records.E.C  (f1 := f1) (f2 := f2) (f3 := _) (f4 := _))
+        => do
+        (hax_lib.assert (← ((← (f1 ==? (1 : u8))) &&? (← (f2 ==? (2 : u8))))));
+  let _ ←
+    match c with
+      | (test_ellipsis_records.E.C  (f1 := _) (f2 := f2) (f3 := _) (f4 := f4))
+        => do
+        (hax_lib.assert (← ((← (f2 ==? (2 : u8))) &&? (← (f4 ==? (4 : u8))))));
+  let _ ←
+    match c with
+      | (test_ellipsis_records.E.C  (f1 := f1) (f2 := f2) (f3 := f3) (f4 := f4))
+        => do
+        (hax_lib.assert
+          (← ((← ((← ((← (f1 ==? (1 : u8))) &&? (← (f2 ==? (2 : u8)))))
+              &&? (← (f3 ==? (3 : u8)))))
+            &&? (← (f4 ==? (4 : u8))))));
+  (pure rust_primitives.hax.Tuple0.mk)
+
+structure test_ellipsis_structs.S where
+  f1 : u8
+  f2 : u8
+  f3 : u8
+  f4 : u8
+
+@[spec]
+def test_ellipsis_structs (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let c : test_ellipsis_structs.S :=
+    (test_ellipsis_structs.S.mk
+      (f1 := (1 : u8))
+      (f2 := (2 : u8))
+      (f3 := (3 : u8))
+      (f4 := (4 : u8)));
+  let _ ←
+    match c with
+      | {f1 := _, f2 := _, f3 := _, f4 := _} => do (hax_lib.assert true);
+  let _ ←
+    match c with
+      | {f1 := f1, f2 := _, f3 := _, f4 := _} => do
+        (hax_lib.assert (← (f1 ==? (1 : u8))));
+  let _ ←
+    match c with
+      | {f1 := f1, f2 := f2, f3 := _, f4 := _} => do
+        (hax_lib.assert (← ((← (f1 ==? (1 : u8))) &&? (← (f2 ==? (2 : u8))))));
+  let _ ←
+    match c with
+      | {f1 := _, f2 := f2, f3 := _, f4 := f4} => do
+        (hax_lib.assert (← ((← (f2 ==? (2 : u8))) &&? (← (f4 ==? (4 : u8))))));
+  let _ ←
+    match c with
+      | {f1 := f1, f2 := f2, f3 := f3, f4 := f4} => do
+        (hax_lib.assert
+          (← ((← ((← ((← (f1 ==? (1 : u8))) &&? (← (f2 ==? (2 : u8)))))
+              &&? (← (f3 ==? (3 : u8)))))
+            &&? (← (f4 ==? (4 : u8))))));
+  (pure rust_primitives.hax.Tuple0.mk)
+
+@[spec]
+def test_ellipsis_bare_tuples (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let t : (rust_primitives.hax.Tuple4 u8 u8 u8 u8) :=
+    (rust_primitives.hax.Tuple4.mk (1 : u8) (2 : u8) (3 : u8) (4 : u8));
+  let _ ← match t with | ⟨_, _, _, _⟩ => do (hax_lib.assert true);
+  let _ ←
+    match t with | ⟨a, _, _, _⟩ => do (hax_lib.assert (← (a ==? (1 : u8))));
+  let _ ←
+    match t with
+      | ⟨a, b, _, _⟩ => do
+        (hax_lib.assert (← ((← (a ==? (1 : u8))) &&? (← (b ==? (2 : u8))))));
+  let _ ←
+    match t with | ⟨_, _, _, d⟩ => do (hax_lib.assert (← (d ==? (4 : u8))));
+  let _ ←
+    match t with
+      | ⟨_, _, c, d⟩ => do
+        (hax_lib.assert (← ((← (c ==? (3 : u8))) &&? (← (d ==? (4 : u8))))));
+  let _ ←
+    match t with
+      | ⟨a, _, _, d⟩ => do
+        (hax_lib.assert (← ((← (a ==? (1 : u8))) &&? (← (d ==? (4 : u8))))));
+  let _ ←
+    match t with
+      | ⟨a, b, c, d⟩ => do
+        (hax_lib.assert
+          (← ((← ((← ((← (a ==? (1 : u8))) &&? (← (b ==? (2 : u8)))))
+              &&? (← (c ==? (3 : u8)))))
+            &&? (← (d ==? (4 : u8))))));
+  (pure rust_primitives.hax.Tuple0.mk)
+
+inductive test_ellipsis_tuples.F : Type
+| D : u8 -> u8 -> u8 -> u8 -> test_ellipsis_tuples.F
+
+@[spec]
+def test_ellipsis_tuples (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let d : test_ellipsis_tuples.F :=
+    (test_ellipsis_tuples.F.D (1 : u8) (2 : u8) (3 : u8) (4 : u8));
+  let _ ←
+    match d with
+      | (test_ellipsis_tuples.F.D  _ _ _ _) => do (hax_lib.assert true);
+  let _ ←
+    match d with
+      | (test_ellipsis_tuples.F.D  a _ _ _) => do
+        (hax_lib.assert (← (a ==? (1 : u8))));
+  let _ ←
+    match d with
+      | (test_ellipsis_tuples.F.D  a b _ _) => do
+        (hax_lib.assert (← ((← (a ==? (1 : u8))) &&? (← (b ==? (2 : u8))))));
+  let _ ←
+    match d with
+      | (test_ellipsis_tuples.F.D  _ _ _ d) => do
+        (hax_lib.assert (← (d ==? (4 : u8))));
+  let _ ←
+    match d with
+      | (test_ellipsis_tuples.F.D  _ _ c d) => do
+        (hax_lib.assert (← ((← (c ==? (3 : u8))) &&? (← (d ==? (4 : u8))))));
+  let _ ←
+    match d with
+      | (test_ellipsis_tuples.F.D  a _ _ d) => do
+        (hax_lib.assert (← ((← (a ==? (1 : u8))) &&? (← (d ==? (4 : u8))))));
+  let _ ←
+    match d with
+      | (test_ellipsis_tuples.F.D  a b c d) => do
+        (hax_lib.assert
+          (← ((← ((← ((← (a ==? (1 : u8))) &&? (← (b ==? (2 : u8)))))
+              &&? (← (c ==? (3 : u8)))))
+            &&? (← (d ==? (4 : u8))))));
+  (pure rust_primitives.hax.Tuple0.mk)
+
 end lean_tests.matching
 
 
