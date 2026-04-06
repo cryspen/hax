@@ -186,3 +186,41 @@ impl Resugaring for RecursiveFunctions {
         "recursive-functions".to_string()
     }
 }
+
+/// Record ellipsis resugaring. Identifies record-like `Construct` patterns where
+/// some fields are wildcards and resugars them into `ConstructWithEllipsis`,
+/// dropping the wildcard fields so the printer can emit `..`.
+pub struct RecordEllipsis;
+
+impl AstVisitorMut for RecordEllipsis {
+    fn enter_pat_kind(&mut self, x: &mut PatKind) {
+        let PatKind::Construct {
+            constructor,
+            is_record: true,
+            is_struct,
+            fields,
+        } = x
+        else {
+            return;
+        };
+        let non_wild: Vec<_> = fields
+            .iter()
+            .filter(|(_, pat)| !matches!(&*pat.kind, PatKind::Wild))
+            .cloned()
+            .collect();
+        if non_wild.len() < fields.len() {
+            *x = ResugaredPatKind::ConstructWithEllipsis {
+                constructor: *constructor,
+                is_struct: *is_struct,
+                fields: non_wild,
+            }
+            .into();
+        }
+    }
+}
+
+impl Resugaring for RecordEllipsis {
+    fn name(&self) -> String {
+        "record-ellipsis".to_string()
+    }
+}
