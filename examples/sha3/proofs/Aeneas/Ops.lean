@@ -15,28 +15,28 @@ theorem UInt64.toNat_mul_of_lt {x y : UInt64} (h : x.toNat * y.toNat < 2 ^ 64) :
 instance : HAdd UInt64 UInt64 (Result UInt64) where
   hAdd x y :=
     if x.toNat + y.toNat ≥ 2 ^ 64 then
-      .fail .integerOverflow
+      throw .integerOverflow
     else pure (x + y)
 
 /-- Multiplication on Rust integers. Panics on overflow. -/
 instance : HMul UInt64 UInt64 (Result UInt64) where
   hMul x y :=
     if x.toNat * y.toNat ≥ 2 ^ 64 then
-      .fail .integerOverflow
+      throw .integerOverflow
     else pure (x * y)
 
 /-- Addition on Rust integers. Panics on overflow. -/
 instance : HAdd USize64 USize64 (Result USize64) where
   hAdd x y :=
     if x.toNat + y.toNat ≥ 2 ^ 64 then
-      .fail .integerOverflow
+      throw .integerOverflow
     else pure (x + y)
 
 /-- Multiplication on Rust integers. Panics on overflow. -/
 instance : HMul USize64 USize64 (Result USize64) where
   hMul x y :=
     if x.toNat * y.toNat ≥ 2 ^ 64 then
-      .fail .integerOverflow
+      throw .integerOverflow
     else pure (x * y)
 
 open Std.Do

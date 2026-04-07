@@ -42,6 +42,8 @@ instance instMonad : Monad Result :=
   inferInstanceAs (Monad (ExceptT Error Option))
 instance instLawfulMonad : LawfulMonad Result :=
   inferInstanceAs (LawfulMonad (ExceptT Error Option))
+instance instMonadExcept : MonadExcept Error Result :=
+  inferInstanceAs (MonadExcept Error (ExceptT Error Option))
 
 @[reducible, match_pattern] def ok {α : Type} (v : α) : Result α := some (.ok v)
 @[reducible, match_pattern] def fail {α : Type} (e : Error) : Result α := some (.error e)
@@ -56,7 +58,7 @@ instance {α : Type} [Repr α] : Repr (Result α) where
 def ofOption {α : Type} (x : Option α) (e : Error) : Result α :=
   match x with
   | .some v => pure v
-  | .none => .fail e
+  | .none => throw e
 
 @[reducible]
 def isOk {α : Type} (x : Result α) : Bool :=
@@ -83,3 +85,7 @@ abbrev holds (x : Result Prop) : Prop := ⦃ ⌜ True ⌝ ⦄ x ⦃ ⇓ p => ⌜
 
 @[spec]
 def lift {α : Type} (x : α) : Result α := pure x
+
+@[spec]
+theorem Result.ok_spec {α : Type} {a : α} {Q} (hQ : (Q.1 a).down): ⦃ ⌜ True ⌝ ⦄ Result.ok a ⦃ Q ⦄ := by
+  simp [Triple, WP.wp, OptionT.run, ExceptT.run, Id.run, hQ]

@@ -14,9 +14,12 @@ theorem triple_in_hypothesis {f : Result α} {Q : α → Assertion _} (p : Prop)
     (hp : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓? r => Q r → ⌜ p ⌝ ⦄) :
     p := by sorry
 
+initialize Lean.registerTraceClass `Hax.hax_mvcgen_at
+
 def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Parser.Tactic.optConfig) (argStx : Syntax) : TacticM (List MVarId) := do
   forallTelescope (cleanupAnnotations := true) (← instantiateMVars hyp.type) fun xs hbody => do
 
+    trace `Hax.hax_mvcgen_at fun () => m!"hax_mvcgen at {mkFVar hyp.fvarId}: {mainGoal}"
     let hbody ← whnfR hbody
     unless hbody.isAppOfArity' ``Triple 7 do
       Lean.Meta.throwTacticEx `hax_mvcgen mainGoal (m!"Expected `Std.Do.Triple`, got {hbody}")
@@ -26,6 +29,7 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
     let newHyp ← mkFreshExprMVar (kind := .syntheticOpaque) (mkSort .zero)
 
     -- To prove `newHyp`, we apply `triple_in_hypothesis`, followed by `hax_mvcgen`.
+    trace `Hax.hax_mvcgen_at fun () => m!"apply `triple_in_hypthesis`"
     let newHypProof ← mkFreshExprMVar newHyp
     let lemma ← mkAppM ``triple_in_hypothesis #[newHyp, mkAppN (mkFVar hyp.fvarId) xs]
     let goals ← newHypProof.mvarId!.apply lemma
@@ -33,14 +37,16 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
       | Lean.Meta.throwTacticEx `hax_mvcgen mainGoal
           (m!"Unexpected number of goals after `triple_in_hypothesis`: {goals}")
     let previousLctxSize ← goal.withContext do pure (← getLCtx).decls.size
+    trace `Hax.hax_mvcgen_at fun () => m!"run `mvcgen`"
     let cfgStx : TSyntax `Lean.Parser.Tactic.optConfig :=
       Parser.Tactic.appendConfig cfgStx (← `(Lean.Parser.Tactic.optConfig| -trivial))
     let inner : TSyntax `tactic := ⟨Syntax.node .none ``Lean.Parser.Tactic.mvcgen
-        #[Syntax.atom .none "hax_mvcgen", cfgStx.raw, argStx]⟩
+        #[Syntax.atom .none "mvcgen", cfgStx.raw, argStx]⟩
     let goals ← evalTacticAt inner goal
 
     -- We partition the resulting goals into `newHypGoals` and `sideGoals`: If the conclusion
     -- of a goal is exactly `newHyp`, then we put it into `newHypGoals`, otherwise into `sideGoals`.
+    trace `Hax.hax_mvcgen_at fun () => m!"partioning into newHypGoals/sideGoals"
     let mut newHypGoals : Array MVarId := #[]
     let mut sideGoals : Array MVarId := #[]
     for goal in goals do
@@ -56,10 +62,12 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
 
     -- For each `newHypGoal`, we collect the local decls `newFVars` that have been introduced
     -- by the `hax_mvcgen` call above.
+    trace `Hax.hax_mvcgen_at fun () => m!"collect newFVars"
     let mut newFVars : Array (Array Expr) := #[]
     for newHypGoal in newHypGoals do
       let lctx ← newHypGoal.withContext getLCtx
       let decls := (lctx.decls.toArray.drop previousLctxSize).filterMap id
+      let decls := decls.filter (!·.isLet)
       let fArgs := decls.map (mkFVar ·.fvarId)
       newFVars := newFVars.push fArgs
 
@@ -69,6 +77,8 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
     -- All `newHypGoalProofs` have the same type: `∀ (p : Prop), fType₁ → ... → fTypeₙ → p`
     let mut newHypGoalProofs := #[]
     for i in [0:newHypGoals.size] do
+      newHypGoals[i]!.withContext do
+        trace `Hax.hax_mvcgen_at fun () => m!"build proofs {newFVars[i]!}"
       let newHypGoalProof ← newHypGoals[i]!.withContext do
         withLocalDeclD `p (mkSort .zero) fun p => do
           let fDeclsNamed ← (Array.range newFVars.size).mapM fun j => do
@@ -79,14 +89,19 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
       newHypGoalProofs := newHypGoalProofs.push newHypGoalProof
 
     -- Assign proofs to goals
+    trace `Hax.hax_mvcgen_at fun () => m!"assign proofs to goals"
     if !newHypGoals.isEmpty then
-      newHyp.mvarId!.assign (← inferType newHypGoalProofs[0]!)
+      let newHypInst ← inferType newHypGoalProofs[0]!
+      trace `Hax.hax_mvcgen_at fun () => m!"assign newHyp {newHypInst}"
+      newHyp.mvarId!.assign newHypInst
       for i in [0:newHypGoals.size] do
+        trace `Hax.hax_mvcgen_at fun () => m!"assign newHypGoal {i}"
         newHypGoals[i]!.assign newHypGoalProofs[i]!
     else
       logWarning m!"hax_mvcgen at: no mvar VCs generated, only side conditions"
 
     -- Discharge side goals with `mvcgen`'s trivial discharger:
+    trace `Hax.hax_mvcgen_at fun () => m!"discharge side goals"
     let sideGoalsList ← sideGoals.toList.flatMapM
       fun sideGoal => do evalTacticAt (←  `(tactic| mvcgen_trivial)) sideGoal
 
@@ -94,9 +109,11 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
       logWarning m!"hax_mvcgen at: nontrivial side goals generated: {sideGoalsList}"
 
     -- Replace old `hyp` with `newHyp`, using `newHypProof`.
+    trace `Hax.hax_mvcgen_at fun () => m!"replace hypothesis"
     let {mvarId, fvarId, ..} ← mainGoal.replace hyp.fvarId (← mkLambdaFVars xs newHypProof)
     let mainGoals ←
       if xs.size == 0 then
+        trace `Hax.hax_mvcgen_at fun () => m!"apply new hypothesis"
         let r ← mvarId.apply (mkFVar fvarId)
         r.mapM (·.tryClear fvarId)
       else

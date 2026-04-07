@@ -8,15 +8,33 @@ def Slice (α : Type) := _root_.Array α
 
 def Array.index_usize {α : Type} {n : Usize} (a : Array α n) (i : Usize) : Result α :=
   if h : i.toNat < a.val.size then
-    .ok (a.val[i.toNat])
+    pure (a.val[i.toNat])
   else
-    .fail .arrayOutOfBounds
+    throw .arrayOutOfBounds
+
+open Std.Do
+
+@[spec]
+theorem Array.index_usize_spec {α : Type} [Inhabited α] {n : Usize} (a : Array α n) (i : Usize) {Q}
+    (h1 : i.toNat ≥ a.val.size → (Q.2.1 Error.arrayOutOfBounds).down)
+    (h2 : ∀ (r : α) (h : i.toNat < a.val.size), r = a.val[i.toNat] → (Q.1 r).down) :
+    ⦃ ⌜ True ⌝ ⦄
+    (index_usize a i)
+    ⦃ Q ⦄ := by sorry
 
 def Array.update {α : Type} {n : Usize} (a : Array α n) (i : Usize) (v : α) : Result (Array α n) :=
   if h : i.toNat < a.val.size then
-    .ok ⟨a.val.set i.toNat v, sorry⟩
+    pure ⟨a.val.set i.toNat v, sorry⟩
   else
-    .fail .arrayOutOfBounds
+    throw Error.arrayOutOfBounds
+
+@[spec]
+theorem Array.update_spec {α : Type} [Inhabited α] {n : Usize} (a : Array α n) (i : Usize) (v : α) {Q}
+    (h1 : i.toNat ≥ a.val.size → (Q.2.1 Error.arrayOutOfBounds).down)
+    (h2 : ∀ r (h : i.toNat < a.val.size), r = a.val.set i.toNat v → (Q.1 ⟨r, sorry⟩).down) :
+    ⦃ ⌜ True ⌝ ⦄
+    (Array.update a i v)
+    ⦃ Q ⦄ := by sorry
 
 def Array.make (n : Usize) (l : List α) : Array α n :=
   ⟨⟨l⟩, sorry⟩
