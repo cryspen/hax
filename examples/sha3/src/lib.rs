@@ -1,6 +1,5 @@
 mod reference;
 use core::ops::Index;
-use reference::*;
 
 #[derive(Copy, Clone)]
 pub(crate) struct KeccakState<const N: usize, T: KeccakItem<N>> {
@@ -119,15 +118,23 @@ impl<const N: usize, T: KeccakItem<N>> KeccakState<N, T> {
         set_ij(&mut self.st, i, j, v);
     }
 
-    fn _requires_iota(&mut self, i: usize) -> bool {
-        i < ROUNDCONSTANTS.len()
-    }
-
     #[inline(always)]
     #[hax_lib::requires(i < ROUNDCONSTANTS.len())]
     fn iota(&mut self, i: usize) {
         self.set(0, 0, T::xor_constant(self[(0, 0)], ROUNDCONSTANTS[i]));
     }
+}
+
+fn _requires_iota(st: &KeccakState<1, u64>, i: usize) -> bool {
+    i < ROUNDCONSTANTS.len()
+}
+
+fn _ensures_iota(st: &KeccakState<1, u64>, i: usize, res: &KeccakState<1, u64>) -> bool {
+    res.st == reference::iota(st.st, i)
+}
+
+fn iota(st: &mut KeccakState<1, u64>, i: usize) {
+    KeccakState::iota(st, i)
 }
 
 fn _requires_index(index: (usize, usize)) -> bool {

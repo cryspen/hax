@@ -1,5 +1,7 @@
 import Aeneas.Array
 import Aeneas.Ops
+import Aeneas.Tactic.HaxMvcgen
+import Aeneas.Tactic.HaxMvcgenAt
 import Lean
 
 namespace Aeneas
@@ -51,6 +53,21 @@ structure Index (Self : Type) (Idx : Type) (Output : Type) where
   index : Self → Idx → Result Output
 
 end core.ops.index
+
+class core.cmp.PartialEq (α β : Type) where
+  eq : α → β → Result Bool
+
+open Std in
+def core.array.equality.PartialEqArray.eq
+  {T : Type} {U : Type} {N : Usize} (partialEqInst : core.cmp.PartialEq T U)
+  (a0 : Array T N) (a1 : Array U N) : Result Bool := do
+  if a0.val.size = a1.val.size then
+    Array.allM (fun (x, y) => partialEqInst.eq x y) (Array.zip a0.val a1.val)
+  else .ok false
+
+def core.cmp.PartialEqU64 : core.cmp.PartialEq UInt64 UInt64 := {
+  eq := fun a b => pure (a == b)
+}
 
 end Aeneas
 

@@ -12,7 +12,7 @@ set_option maxHeartbeats 1000000
 namespace sha3
 
 /- Trait declaration: [sha3::KeccakItem]
-   Source: 'sha3/src/lib.rs', lines 47:0-55:1 -/
+   Source: 'sha3/src/lib.rs', lines 46:0-54:1 -/
 structure KeccakItem (Self : Type) (N : Std.Usize) where
   corecloneCloneInst : core.clone.Clone Self
   coremarkerCopyInst : core.marker.Copy Self
@@ -20,7 +20,7 @@ structure KeccakItem (Self : Type) (N : Std.Usize) where
   xor_constant : Self → Std.U64 → Result Self
 
 /- [sha3::KeccakState]
-   Source: 'sha3/src/lib.rs', lines 6:0-8:1 -/
+   Source: 'sha3/src/lib.rs', lines 5:0-7:1 -/
 structure KeccakState {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T
   N) where
   st : Array T 25#usize

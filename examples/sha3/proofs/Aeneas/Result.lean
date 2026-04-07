@@ -81,4 +81,5 @@ instance instWPMonad : WPMonad Result (.except Error (.except PUnit .pure)) :=
 
 abbrev holds (x : Result Prop) : Prop := ⦃ ⌜ True ⌝ ⦄ x ⦃ ⇓ p => ⌜ p ⌝ ⦄
 
-def lift {α : Type} (x : α) : Result α := .ok x
+@[spec]
+def lift {α : Type} (x : α) : Result α := pure x

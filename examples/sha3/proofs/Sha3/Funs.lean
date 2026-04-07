@@ -13,7 +13,7 @@ set_option maxHeartbeats 1000000
 namespace sha3
 
 /- [sha3::{core::clone::Clone for sha3::KeccakState<T, N>[TraitClause@1]}::clone]:
-   Source: 'sha3/src/lib.rs', lines 5:15-5:20 -/
+   Source: 'sha3/src/lib.rs', lines 4:15-4:20 -/
 def KeccakState.Insts.CoreCloneClone.clone
   {T : Type} {N : Std.Usize} (corecloneCloneInst : core.clone.Clone T)
   (KeccakItemInst : KeccakItem T N) (self : KeccakState KeccakItemInst) :
@@ -23,7 +23,7 @@ def KeccakState.Insts.CoreCloneClone.clone
   ok { st := a }
 
 /- Trait implementation: [sha3::{core::clone::Clone for sha3::KeccakState<T, N>[TraitClause@1]}]
-   Source: 'sha3/src/lib.rs', lines 5:15-5:20 -/
+   Source: 'sha3/src/lib.rs', lines 4:15-4:20 -/
 @[reducible]
 def KeccakState.Insts.CoreCloneClone {T : Type} {N : Std.Usize}
   (corecloneCloneInst : core.clone.Clone T) (KeccakItemInst : KeccakItem T N) :
@@ -33,7 +33,7 @@ def KeccakState.Insts.CoreCloneClone {T : Type} {N : Std.Usize}
 }
 
 /- Trait implementation: [sha3::{core::marker::Copy for sha3::KeccakState<T, N>[TraitClause@1]}]
-   Source: 'sha3/src/lib.rs', lines 5:9-5:13 -/
+   Source: 'sha3/src/lib.rs', lines 4:9-4:13 -/
 @[reducible]
 def KeccakState.Insts.CoreMarkerCopy {T : Type} {N : Std.Usize}
   (coremarkerCopyInst : core.marker.Copy T) (KeccakItemInst : KeccakItem T N) :
@@ -43,7 +43,7 @@ def KeccakState.Insts.CoreMarkerCopy {T : Type} {N : Std.Usize}
 }
 
 /- [sha3::_requires_get_ij]:
-   Source: 'sha3/src/lib.rs', lines 10:0-16:1 -/
+   Source: 'sha3/src/lib.rs', lines 9:0-15:1 -/
 def _requires_get_ij
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
   (arr : Array T 25#usize) (i : Std.Usize) (j : Std.Usize) :
@@ -54,7 +54,7 @@ def _requires_get_ij
   else ok false
 
 /- [sha3::get_ij]:
-   Source: 'sha3/src/lib.rs', lines 22:0-24:1 -/
+   Source: 'sha3/src/lib.rs', lines 21:0-23:1 -/
 def get_ij
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
   (arr : Array T 25#usize) (i : Std.Usize) (j : Std.Usize) :
@@ -65,7 +65,7 @@ def get_ij
   Array.index_usize arr i2
 
 /- [sha3::_requires_set_ij]:
-   Source: 'sha3/src/lib.rs', lines 26:0-33:1 -/
+   Source: 'sha3/src/lib.rs', lines 25:0-32:1 -/
 def _requires_set_ij
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
   (arr : Array T 25#usize) (i : Std.Usize) (j : Std.Usize) (value : T) :
@@ -76,7 +76,7 @@ def _requires_set_ij
   else ok (false, arr)
 
 /- [sha3::set_ij]:
-   Source: 'sha3/src/lib.rs', lines 37:0-44:1 -/
+   Source: 'sha3/src/lib.rs', lines 36:0-43:1 -/
 def set_ij
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
   (arr : Array T 25#usize) (i : Std.Usize) (j : Std.Usize) (value : T) :
@@ -87,23 +87,23 @@ def set_ij
   Array.update arr i2 value
 
 /- [sha3::_veorq_n_u64]:
-   Source: 'sha3/src/lib.rs', lines 58:0-60:1 -/
+   Source: 'sha3/src/lib.rs', lines 57:0-59:1 -/
 def _veorq_n_u64 (a : Std.U64) (c : Std.U64) : Result Std.U64 := do
   ok (a ^^^ c)
 
 /- [sha3::{sha3::KeccakItem<1usize> for u64}::xor_constant]:
-   Source: 'sha3/src/lib.rs', lines 70:4-72:5 -/
+   Source: 'sha3/src/lib.rs', lines 69:4-71:5 -/
 def U64.Insts.Sha3KeccakItem1.xor_constant
   (a : Std.U64) (c : Std.U64) : Result Std.U64 := do
   _veorq_n_u64 a c
 
 /- [sha3::{sha3::KeccakItem<1usize> for u64}::zero]:
-   Source: 'sha3/src/lib.rs', lines 65:4-67:5 -/
+   Source: 'sha3/src/lib.rs', lines 64:4-66:5 -/
 def U64.Insts.Sha3KeccakItem1.zero : Result Std.U64 := do
   ok 0#u64
 
 /- Trait implementation: [sha3::{sha3::KeccakItem<1usize> for u64}]
-   Source: 'sha3/src/lib.rs', lines 63:0-73:1 -/
+   Source: 'sha3/src/lib.rs', lines 62:0-72:1 -/
 @[reducible]
 def U64.Insts.Sha3KeccakItem1 : KeccakItem Std.U64 1#usize := {
   corecloneCloneInst := core.clone.CloneU64
@@ -113,7 +113,7 @@ def U64.Insts.Sha3KeccakItem1 : KeccakItem Std.U64 1#usize := {
 }
 
 /- [sha3::ROUNDCONSTANTS]
-   Source: 'sha3/src/lib.rs', lines 75:0-100:2 -/
+   Source: 'sha3/src/lib.rs', lines 74:0-99:2 -/
 @[global_simps, irreducible]
 def ROUNDCONSTANTS : Array Std.U64 24#usize :=
   Array.make 24#usize [
@@ -127,7 +127,7 @@ def ROUNDCONSTANTS : Array Std.U64 24#usize :=
     ]
 
 /- [sha3::{sha3::KeccakState<T, N>[TraitClause@0]}::new]:
-   Source: 'sha3/src/lib.rs', lines 106:4-110:5 -/
+   Source: 'sha3/src/lib.rs', lines 105:4-109:5 -/
 def KeccakState.new
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N) :
   Result (KeccakState KeccakItemInst)
@@ -137,10 +137,10 @@ def KeccakState.new
   ok { st := a }
 
 /- [sha3::{sha3::KeccakState<T, N>[TraitClause@0]}::_requires_set]:
-   Source: 'sha3/src/lib.rs', lines 112:4-114:5 -/
+   Source: 'sha3/src/lib.rs', lines 111:4-113:5 -/
 def KeccakState._requires_set
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
-  (self : KeccakState KeccakItemInst) (i : Std.Usize) (j : Std.Usize)
+  (self : KeccakState KeccakItemInst) (i : Std.Usize) (j : Std.Usize) 
   (v : T) :
   Result (Bool × (KeccakState KeccakItemInst))
   := do
@@ -149,29 +149,18 @@ def KeccakState._requires_set
   else ok (false, self)
 
 /- [sha3::{sha3::KeccakState<T, N>[TraitClause@0]}::set]:
-   Source: 'sha3/src/lib.rs', lines 118:4-120:5 -/
+   Source: 'sha3/src/lib.rs', lines 117:4-119:5 -/
 def KeccakState.set
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
-  (self : KeccakState KeccakItemInst) (i : Std.Usize) (j : Std.Usize)
+  (self : KeccakState KeccakItemInst) (i : Std.Usize) (j : Std.Usize) 
   (v : T) :
   Result (KeccakState KeccakItemInst)
   := do
   let a ← set_ij KeccakItemInst self.st i j v
   ok { st := a }
 
-/- [sha3::{sha3::KeccakState<T, N>[TraitClause@0]}::_requires_iota]:
-   Source: 'sha3/src/lib.rs', lines 122:4-124:5 -/
-def KeccakState._requires_iota
-  {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
-  (self : KeccakState KeccakItemInst) (i : Std.Usize) :
-  Result (Bool × (KeccakState KeccakItemInst))
-  := do
-  let s ← lift (Array.to_slice ROUNDCONSTANTS)
-  let i1 := Slice.len s
-  ok (i < i1, self)
-
 /- [sha3::{core::ops::index::Index<(usize, usize), T> for sha3::KeccakState<T, N>[TraitClause@0]}::index]:
-   Source: 'sha3/src/lib.rs', lines 143:4-145:5 -/
+   Source: 'sha3/src/lib.rs', lines 150:4-152:5 -/
 def KeccakState.Insts.CoreOpsIndexIndexPairUsizeUsizeT.index
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
   (self : KeccakState KeccakItemInst) (index : (Std.Usize × Std.Usize)) :
@@ -181,7 +170,7 @@ def KeccakState.Insts.CoreOpsIndexIndexPairUsizeUsizeT.index
   get_ij KeccakItemInst self.st i i1
 
 /- [sha3::{sha3::KeccakState<T, N>[TraitClause@0]}::iota]:
-   Source: 'sha3/src/lib.rs', lines 128:4-130:5 -/
+   Source: 'sha3/src/lib.rs', lines 123:4-125:5 -/
 def KeccakState.iota
   {T : Type} {N : Std.Usize} (KeccakItemInst : KeccakItem T N)
   (self : KeccakState KeccakItemInst) (i : Std.Usize) :
@@ -194,23 +183,15 @@ def KeccakState.iota
   let t1 ← KeccakItemInst.xor_constant t i1
   KeccakState.set KeccakItemInst self 0#usize 0#usize t1
 
-/- [sha3::_requires_index]:
-   Source: 'sha3/src/lib.rs', lines 133:0-135:1 -/
-def _requires_index (index : (Std.Usize × Std.Usize)) : Result Bool := do
-  let (i, i1) := index
-  if i < 5#usize
-  then ok (i1 < 5#usize)
-  else ok false
-
-/- Trait implementation: [sha3::{core::ops::index::Index<(usize, usize), T> for sha3::KeccakState<T, N>[TraitClause@0]}]
-   Source: 'sha3/src/lib.rs', lines 138:0-146:1 -/
-@[reducible]
-def KeccakState.Insts.CoreOpsIndexIndexPairUsizeUsizeT {T : Type} {N :
-  Std.Usize} (KeccakItemInst : KeccakItem T N) : core.ops.index.Index
-  (KeccakState KeccakItemInst) (Std.Usize × Std.Usize) T := {
-  index := KeccakState.Insts.CoreOpsIndexIndexPairUsizeUsizeT.index
-    KeccakItemInst
-}
+/- [sha3::_requires_iota]:
+   Source: 'sha3/src/lib.rs', lines 128:0-130:1 -/
+def _requires_iota
+  (st : KeccakState U64.Insts.Sha3KeccakItem1) (i : Std.Usize) :
+  Result Bool
+  := do
+  let s ← lift (Array.to_slice ROUNDCONSTANTS)
+  let i1 := Slice.len s
+  ok (i < i1)
 
 /- [sha3::reference::ROUND_CONSTANTS]
    Source: 'sha3/src/reference.rs', lines 6:0-31:2 -/
@@ -226,12 +207,6 @@ def reference.ROUND_CONSTANTS : Array Std.U64 24#usize :=
     9223372036854808704#u64, 2147483649#u64, 9223372039002292232#u64
     ]
 
-/- [sha3::reference::_requires_iota]:
-   Source: 'sha3/src/reference.rs', lines 33:0-35:1 -/
-def reference._requires_iota
-  (state : Array Std.U64 25#usize) (round : Std.Usize) : Result Bool := do
-  ok (round < 24#usize)
-
 /- [sha3::reference::iota]:
    Source: 'sha3/src/reference.rs', lines 41:0-44:1 -/
 def reference.iota
@@ -242,5 +217,47 @@ def reference.iota
   let i1 ← Array.index_usize state 0#usize
   let i2 ← lift (i1 ^^^ i)
   Array.update state 0#usize i2
+
+/- [sha3::_ensures_iota]:
+   Source: 'sha3/src/lib.rs', lines 132:0-134:1 -/
+def _ensures_iota
+  (st : KeccakState U64.Insts.Sha3KeccakItem1) (i : Std.Usize)
+  (res : KeccakState U64.Insts.Sha3KeccakItem1) :
+  Result Bool
+  := do
+  let a ← reference.iota st.st i
+  core.array.equality.PartialEqArray.eq core.cmp.PartialEqU64 res.st a
+
+/- [sha3::iota]:
+   Source: 'sha3/src/lib.rs', lines 136:0-138:1 -/
+def iota
+  (st : KeccakState U64.Insts.Sha3KeccakItem1) (i : Std.Usize) :
+  Result (KeccakState U64.Insts.Sha3KeccakItem1)
+  := do
+  KeccakState.iota U64.Insts.Sha3KeccakItem1 st i
+
+/- [sha3::_requires_index]:
+   Source: 'sha3/src/lib.rs', lines 140:0-142:1 -/
+def _requires_index (index : (Std.Usize × Std.Usize)) : Result Bool := do
+  let (i, i1) := index
+  if i < 5#usize
+  then ok (i1 < 5#usize)
+  else ok false
+
+/- Trait implementation: [sha3::{core::ops::index::Index<(usize, usize), T> for sha3::KeccakState<T, N>[TraitClause@0]}]
+   Source: 'sha3/src/lib.rs', lines 145:0-153:1 -/
+@[reducible]
+def KeccakState.Insts.CoreOpsIndexIndexPairUsizeUsizeT {T : Type} {N :
+  Std.Usize} (KeccakItemInst : KeccakItem T N) : core.ops.index.Index
+  (KeccakState KeccakItemInst) (Std.Usize × Std.Usize) T := {
+  index := KeccakState.Insts.CoreOpsIndexIndexPairUsizeUsizeT.index
+    KeccakItemInst
+}
+
+/- [sha3::reference::_requires_iota]:
+   Source: 'sha3/src/reference.rs', lines 33:0-35:1 -/
+def reference._requires_iota
+  (state : Array Std.U64 25#usize) (round : Std.Usize) : Result Bool := do
+  ok (round < 24#usize)
 
 end sha3
