@@ -8,6 +8,7 @@ members = [
     "loop_equivalence",
     "limited-order-book",
     "sha256",
+    "sha3",
     "barrett",
     "kyber_compress",
     "proverif-psk",

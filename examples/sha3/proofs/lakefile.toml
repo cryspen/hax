@@ -1,0 +1,13 @@
+name = "Sha3"
+version = "0.1.0"
+defaultTargets = ["Sha3"]
+
+[[lean_lib]]
+name = "Sha3"
+
+[[lean_lib]]
+name = "Aeneas"
+
+[[require]]
+name = "Hax"
+path = "../../../hax-lib/proof-libs/lean"
