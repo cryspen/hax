@@ -12,41 +12,29 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
--- def f (x : u64) : RustM u64 := if x == 0 then .fail .integerOverflow else pure x
-
--- @[spec]
--- theorem f_spec'
--- (h : x = 0 → (Q.2.1 Error.integerOverflow).down)
--- (h : (Q.1 x).down) :
---   ⦃ ⌜ True ⌝ ⦄
---   f x
---   ⦃ Q ⦄ := sorry
-
--- theorem f_spec_test : ⦃ ⌜ True ⌝ ⦄ f x ⦃ ⇓?r => ⌜ r = x ⌝ ⦄ := by mvcgen
-
--- theorem f_spec_test' (hx : x ≠ 0) : ⦃ ⌜ True ⌝ ⦄ f x ⦃ ⇓r => ⌜ r = x ⌝ ⦄ := by mvcgen
-
 @[spec]
 theorem mul_spec' (x y : USize64)
-(h : USize64.mulOverflow x y → (Q.2.1 Error.integerOverflow).down)
-(h : ∀ r : USize64, r.toNat = x.toNat * y.toNat → (Q.1 r).down) :
-  ⦃ ⌜ True ⌝ ⦄
-  (x *? y)
-  ⦃ Q ⦄ := sorry
+    (h1 : USize64.mulOverflow x y → (Q.2.1 Error.integerOverflow).down)
+    (h2 : ∀ r : USize64, r.toNat = x.toNat * y.toNat → (Q.1 r).down) :
+    ⦃ ⌜ True ⌝ ⦄
+    (x *? y)
+    ⦃ Q ⦄ := by
+  hax_mvcgen [rust_primitives.ops.arith.Mul.mul]
+  · apply h1 (by assumption)
+  · grind [USize64.toNat_mul_of_lt]
+
 
 @[spec 10000]
 theorem getElem_spec (a : RustArray u64 N) (i : usize)
-(h : a.toVec.size ≤ i.toNat → (Q.2.1 Error.arrayOutOfBounds).down)
-(h : ∀ (r : u64) (h : i.toNat < N.toNat), r = a.toVec[i.toNat] → (Q.1 r).down) :
-  ⦃ ⌜ True ⌝ ⦄
-  (a[i]_?)
-  ⦃ Q ⦄ := sorry
-
--- @[grind =] theorem getElem!_set[Inhabited α] {xs : Array α} {i : Nat} (h' : i < xs.size) {v : α} {j : Nat}
---     (h : j < (xs.set i v).size) :
---     (xs.set i v)[j]! = if i = j then v else xs[j]! := by
---   simp at h
---   by_cases p : i = j <;> simp [p, h]
+    (h1 : N.toNat ≤ i.toNat → (Q.2.1 Error.arrayOutOfBounds).down)
+    (h2 : ∀ (r : u64) (h : i.toNat < N.toNat), r = a.toVec[i.toNat] → (Q.1 r).down) :
+    ⦃ ⌜ True ⌝ ⦄
+    (a[i]_?)
+    ⦃ Q ⦄ := by
+  dsimp only [getElemResult, usize.instGetElemResultVector]
+  hax_mvcgen
+  · apply h2; rfl
+  · apply h1; omega
 
 namespace loop_equivalence
 
@@ -137,16 +125,22 @@ def g (N : usize) (arr : (RustArray u64 N)) : RustM (RustArray u64 N) := do
 instance : BEq (RustArray u64 N) where
   beq a b := (a.toVec = b.toVec)
 
-theorem triple_implies {f : RustM α} {Q : _ → _} {p} :
-  (⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓?r =>  ⌜ Q r → p ⌝ ⦄) →
-  ((⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓r =>  ⌜ Q r ⌝ ⦄) → p) := by sorry
+def stopper : Prop → Prop := id
 
+theorem self_spec (f : RustM α) :
+  ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓?r =>  ⌜ stopper (⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓r' =>  ⌜ r = r' ⌝ ⦄) ⌝ ⦄ := by sorry
+
+-- @[spec]
+-- def self_spec_op {a} := self_spec (op a)
 
 @[specset int]
 def eq_spec (x y : RustArray u64 n) :
   ⦃ ⌜ True ⌝ ⦄
   (x ==? y)
-  ⦃ ⇓ r => ⌜ r = (∀ i (hi : i < n.toNat), x.toVec[i] == y.toVec[i]) ⌝ ⦄ := sorry
+  ⦃ ⇓ r => ⌜ r = (∀ i (hi : i < n.toNat), x.toVec[i] == y.toVec[i]) ⌝ ⦄ := by
+  dsimp [rust_primitives.cmp.eq, BEq.beq, instBEqRustArrayU64_extraction]
+  hax_mvcgen
+  grind
 
 attribute [local grind! .] USize64.toNat_lt_size
 

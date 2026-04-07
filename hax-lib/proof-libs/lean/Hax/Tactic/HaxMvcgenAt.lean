@@ -6,10 +6,27 @@ set_option autoImplicit true
 
 open Lean Std.Do Elab Parser Tactic Meta
 
+theorem Triple.of_pure_postcondition {f : RustM α} (h : ⦃⌜True⌝⦄ f ⦃PostCond.noThrow fun _ => ⌜p⌝⦄) : p := by
+  cases f <;>
+    simp_all [Triple, WP.wp, pure, Except.pure, ExceptT.run, Id.run]
+
 theorem triple_in_hypothesis {f : RustM α} {Q : α → Assertion _} (p : Prop)
-  (h : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓ r => Q r ⦄)
-  (hp : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓? r => Q r → ⌜ p ⌝ ⦄) :
-p := sorry
+    (h : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓ r => Q r ⦄)
+    (hp : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓? r => Q r → ⌜ p ⌝ ⦄) :
+    p := by
+  have : ⦃ ⌜ True ⌝ ⦄ f ⦃ (⇓ r => Q r) →ₚ (⇓ r => ⌜ p ⌝) ⦄ := by
+    apply Triple.of_entails_right _ hp
+    constructor
+    · intro a
+      dsimp; simp
+    · simp
+  have := Triple.mp f h this
+  simp only [SPred.and_nil, SPred.down_pure, and_self] at this
+  have : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓ r => ⌜ p ⌝ ⦄ := by
+    apply Triple.of_entails_right _ this
+    simp
+  apply Triple.of_pure_postcondition this
+
 
 def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Parser.Tactic.optConfig) (argStx : Syntax) : TacticM (List MVarId) := do
   forallTelescope (cleanupAnnotations := true) (← instantiateMVars hyp.type) fun xs hbody => do
