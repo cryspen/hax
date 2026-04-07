@@ -32,6 +32,7 @@ Changes to hax-lib:
  - Lean lib: Upgrade to Lean v4.29.0-rc1 (#1962)
  - Lean lib: Add support for Int128 and UInt128 while waiting for upstream in Lean (#1968)
  - Lean lib: Refactor `RustM` as `ExceptT Error Option` (#1994)
+ - Lean lib: Add Repr instance for tuples (#2000)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
