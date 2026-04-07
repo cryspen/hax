@@ -7,8 +7,8 @@ set_option autoImplicit true
 open Lean Std.Do Elab Parser Tactic Meta
 
 theorem Triple.of_pure_postcondition {f : RustM α} (h : ⦃⌜True⌝⦄ f ⦃PostCond.noThrow fun _ => ⌜p⌝⦄) : p := by
-  cases f <;>
-    simp_all [Triple, WP.wp, pure, Except.pure, ExceptT.run, Id.run]
+  match f with
+  | .ok _ | .fail _ | .div => simp_all [Triple, WP.wp, pure, OptionT.run, ExceptT.run, Id.run]
 
 theorem triple_in_hypothesis {f : RustM α} {Q : α → Assertion _} (p : Prop)
     (h : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓ r => Q r ⦄)
