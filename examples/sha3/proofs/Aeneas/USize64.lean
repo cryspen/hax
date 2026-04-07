@@ -1,6 +1,4 @@
-import Hax.MissingLean
 import Lean.Meta.Tactic.Simp.BuiltinSimprocs.UInt
-import Aeneas.USize64
 
 /-!
 # USize64
@@ -144,21 +142,17 @@ theorem USize64.umulOverflow_iff (x y : USize64) :
 attribute [grind =] USize64.toNat_toBitVec
 attribute [grind =] USize64.toNat_ofNat_of_lt
 attribute [grind =] USize64.toNat_ofNat_of_lt'
-grind_pattern USize64.toBitVec_ofNat => USize64.toBitVec (OfNat.ofNat n)
-
-additional_uint_decls USize64 64
 
 @[simp] theorem USize64.toNat_lt (n : USize64) : n.toNat < 2 ^ 64 := n.toFin.isLt
 
-theorem USize64.le_self_add {a b : USize64} (h : a.toNat + b.toNat < 2 ^ 64) :
-    a ≤ a + b := by
-  rw [le_iff_toNat_le, USize64.toNat_add_of_lt h]
-  exact Nat.le_add_right a.toNat b.toNat
+theorem USize64.toNat_add_of_lt {x y : USize64} (h : x.toNat + y.toNat < 2 ^ 64) :
+    (x + y).toNat = x.toNat + y.toNat := BitVec.toNat_add_of_lt h
 
-theorem USize64.add_le_of_le {a b c : USize64} (habc : a + b ≤ c) (hab : a.toNat + b.toNat < 2 ^ 64):
-    a ≤ c := by
-  rw [USize64.le_iff_toNat_le, USize64.toNat_add_of_lt hab] at *
-  omega
+theorem USize64.toNat_sub_of_le' {x y : USize64} (h : y.toNat ≤ x.toNat) :
+    (x - y).toNat = x.toNat - y.toNat := BitVec.toNat_sub_of_le h
+
+theorem USize64.toNat_mul_of_lt {x y : USize64} (h : x.toNat * y.toNat < 2 ^ 64) :
+    (x * y).toNat = x.toNat * y.toNat := BitVec.toNat_mul_of_lt h
 
 /-!
 ## Init.Data.UInt.Lemmas

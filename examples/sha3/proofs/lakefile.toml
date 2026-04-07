@@ -7,7 +7,3 @@ name = "Sha3"
 
 [[lean_lib]]
 name = "Aeneas"
-
-[[require]]
-name = "Hax"
-path = "../../../hax-lib/proof-libs/lean"
