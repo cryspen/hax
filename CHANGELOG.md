@@ -14,6 +14,8 @@ Changes to the Rust Engine:
  - Add new import_thir implemented in Rust and using `FullDef`, activated with `--experimental-full-def` (#1967)
 
 Changes to the frontend:
+ - Fix support for ellipsis: add wildcard for every field (based on type info
+   rather than number of subpatterns) (#2001)
 
 Changes to cargo-hax:
 
