@@ -679,24 +679,18 @@ def test_ellipsis_records (_ : rust_primitives.hax.Tuple0) :
       (f3 := (3 : u8))
       (f4 := (4 : u8)));
   let _ ←
-    match c with
-      | (test_ellipsis_records.E.C  (f1 := _) (f2 := _) (f3 := _) (f4 := _)) =>
-        do
-        (hax_lib.assert true);
+    match c with | (test_ellipsis_records.E.C _ ..) => do (hax_lib.assert true);
   let _ ←
     match c with
-      | (test_ellipsis_records.E.C  (f1 := f1) (f2 := _) (f3 := _) (f4 := _)) =>
-        do
+      | (test_ellipsis_records.E.C (f1 := f1) ..) => do
         (hax_lib.assert (← (f1 ==? (1 : u8))));
   let _ ←
     match c with
-      | (test_ellipsis_records.E.C  (f1 := f1) (f2 := f2) (f3 := _) (f4 := _))
-        => do
+      | (test_ellipsis_records.E.C (f1 := f1) (f2 := f2) ..) => do
         (hax_lib.assert (← ((← (f1 ==? (1 : u8))) &&? (← (f2 ==? (2 : u8))))));
   let _ ←
     match c with
-      | (test_ellipsis_records.E.C  (f1 := _) (f2 := f2) (f3 := _) (f4 := f4))
-        => do
+      | (test_ellipsis_records.E.C (f2 := f2) (f4 := f4) ..) => do
         (hax_lib.assert (← ((← (f2 ==? (2 : u8))) &&? (← (f4 ==? (4 : u8))))));
   let _ ←
     match c with
@@ -723,20 +717,16 @@ def test_ellipsis_structs (_ : rust_primitives.hax.Tuple0) :
       (f2 := (2 : u8))
       (f3 := (3 : u8))
       (f4 := (4 : u8)));
+  let _ ← match c with | _ => do (hax_lib.assert true);
+  let _ ←
+    match c with | {f1 := f1, ..} => do (hax_lib.assert (← (f1 ==? (1 : u8))));
   let _ ←
     match c with
-      | {f1 := _, f2 := _, f3 := _, f4 := _} => do (hax_lib.assert true);
-  let _ ←
-    match c with
-      | {f1 := f1, f2 := _, f3 := _, f4 := _} => do
-        (hax_lib.assert (← (f1 ==? (1 : u8))));
-  let _ ←
-    match c with
-      | {f1 := f1, f2 := f2, f3 := _, f4 := _} => do
+      | {f1 := f1, f2 := f2, ..} => do
         (hax_lib.assert (← ((← (f1 ==? (1 : u8))) &&? (← (f2 ==? (2 : u8))))));
   let _ ←
     match c with
-      | {f1 := _, f2 := f2, f3 := _, f4 := f4} => do
+      | {f2 := f2, f4 := f4, ..} => do
         (hax_lib.assert (← ((← (f2 ==? (2 : u8))) &&? (← (f4 ==? (4 : u8))))));
   let _ ←
     match c with

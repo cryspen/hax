@@ -192,6 +192,7 @@ impl Backend for LeanBackend {
             Box::new(RecursiveFunctions),
             Box::new(FunctionsToConstants),
             Box::new(LetPure),
+            Box::new(RecordEllipsis),
         ]
     }
 
@@ -1211,7 +1212,7 @@ const _: () = {
                             .align()
                             .group()
                         } else {
-                            // Structure-like structure, using named arguments
+                            // Record-like structure, using named arguments
                             docs![intersperse!(
                                 fields.iter().map(|(id, pat)| {
                                     docs![self.render_last(id), reflow!(" :="), line!(), pat]
@@ -1235,8 +1236,51 @@ const _: () = {
                         .nest(INDENT)
                     }
                 }
-                PatKind::Resugared(_) => {
-                    unreachable!("This backend does not use resugarings on patterns")
+                PatKind::Resugared(ResugaredPatKind::ConstructWithEllipsis {
+                    constructor,
+                    is_struct,
+                    fields,
+                }) => {
+                    if *is_struct {
+                        // Struct: render as `{f1 := pat, f2 := pat, ..}` or `_`
+                        if fields.is_empty() {
+                            docs!["_"]
+                        } else {
+                            docs![intersperse!(
+                                fields
+                                    .iter()
+                                    .map(|(id, pat)| {
+                                        docs![self.render_last(id), reflow!(" :="), line!(), pat]
+                                            .group()
+                                    })
+                                    .chain(std::iter::once(docs![".."])),
+                                docs![",", line!()]
+                            )]
+                            .align()
+                            .braces()
+                            .group()
+                        }
+                    } else {
+                        // Enum variant with named fields: (f1 := pat) (f2 := pat) ..
+                        let record_part = if fields.is_empty() {
+                            docs!["_"]
+                        } else {
+                            docs![intersperse!(
+                                fields.iter().map(|(id, pat)| {
+                                    docs![self.render_last(id), reflow!(" :="), line!(), pat]
+                                        .group()
+                                        .parens()
+                                }),
+                                line!()
+                            )]
+                            .align()
+                            .group()
+                        };
+                        docs![constructor, line!(), record_part, " .."]
+                            .parens()
+                            .group()
+                            .nest(INDENT)
+                    }
                 }
                 PatKind::Error(_) => {
                     // TODO : Should be made unreachable by https://github.com/cryspen/hax/pull/1672

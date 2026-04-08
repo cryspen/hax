@@ -50,6 +50,7 @@ Changes to the Lean backend:
  - Prettier proof_mode annotations (#1943)
  - Detect recursive functions and mark them partial_fixpoint (#1946)
  - Add more binops (#1963)
+ - Add a resugaring for ellipsis patterns (#2002)
 
 Miscellaneous:
 
