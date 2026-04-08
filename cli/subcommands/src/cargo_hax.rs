@@ -14,6 +14,7 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process;
 
+mod aeneas;
 mod engine_debug_webapp;
 use hax_frontend_exporter::id_table;
 
@@ -78,8 +79,28 @@ fn rustflags() -> String {
     [rustflags, "--cfg hax".into()].join(" ")
 }
 
+/// Find an external binary: check the given env var, then `PATH`.
+pub(crate) fn find_binary(name: &str, env_var: &str, message_format: MessageFormat) -> PathBuf {
+    std::env::var(env_var)
+        .map(PathBuf::from)
+        .or_else(|_| which::which(name))
+        .unwrap_or_else(|_| {
+            HaxMessage::BinaryNotFound {
+                binary_name: name.into(),
+                env_var: env_var.into(),
+                hint: None,
+            }
+            .report(message_format, None);
+            std::process::exit(2);
+        })
+}
+
 const ENGINE_BINARY_NAME: &str = "hax-engine";
+const ENGINE_BINARY_ENV: &str = "HAX_ENGINE_BINARY";
 const ENGINE_BINARY_NOT_FOUND: &str = "The binary [hax-engine] was not found in your [PATH].";
+
+const RUST_ENGINE_BINARY_NAME: &str = "hax-rust-engine";
+const RUST_ENGINE_BINARY_ENV: &str = "HAX_RUST_ENGINE_BINARY";
 
 /// Dynamically looks for binary [ENGINE_BINARY_NAME].  First, we
 /// check whether [HAX_ENGINE_BINARY] is set, and use that if it
@@ -90,7 +111,7 @@ const ENGINE_BINARY_NOT_FOUND: &str = "The binary [hax-engine] was not found in 
 fn find_hax_engine(message_format: MessageFormat) -> process::Command {
     use which::which;
 
-    std::env::var("HAX_ENGINE_BINARY")
+    std::env::var(ENGINE_BINARY_ENV)
         .ok()
         .map(process::Command::new)
         .or_else(|| which(ENGINE_BINARY_NAME).ok().map(process::Command::new))
@@ -114,34 +135,33 @@ fn find_hax_engine(message_format: MessageFormat) -> process::Command {
             })
         })
         .unwrap_or_else(|| {
-            fn is_opam_setup_correctly() -> bool {
-                std::env::var("OPAM_SWITCH_PREFIX").is_ok()
-            }
-            HaxMessage::EngineNotFound {
-                is_opam_setup_correctly: is_opam_setup_correctly(),
+            let opam_ok = std::env::var("OPAM_SWITCH_PREFIX").is_ok();
+            let opam_diag = if opam_ok {
+                "opam seems okay ✓"
+            } else {
+                "opam seems not okay ❌"
+            };
+            HaxMessage::BinaryNotFound {
+                binary_name: ENGINE_BINARY_NAME.into(),
+                env_var: ENGINE_BINARY_ENV.into(),
+                hint: Some(format!(
+                    "With OPAM, `eval $(opam env)` is necessary for OPAM binaries to be in PATH: \
+                     make sure to run `eval $(opam env)` before running `cargo hax`. \
+                     (diagnostics: {})",
+                    opam_diag
+                )),
             }
             .report(message_format, None);
             std::process::exit(2);
         })
 }
 
-const RUST_ENGINE_BINARY_NAME: &str = "hax-rust-engine";
-const RUST_ENGINE_BINARY_NOT_FOUND: &str =
-    "The binary [hax-rust-engine] was not found in your [PATH].";
-
-#[allow(unused_variables, unreachable_code)]
 fn find_rust_hax_engine(message_format: MessageFormat) -> process::Command {
-    use which::which;
-
-    std::env::var("HAX_RUST_ENGINE_BINARY")
-        .ok()
-        .map(process::Command::new)
-        .or_else(|| {
-            which(RUST_ENGINE_BINARY_NAME)
-                .ok()
-                .map(process::Command::new)
-        })
-        .expect(RUST_ENGINE_BINARY_NOT_FOUND)
+    process::Command::new(find_binary(
+        RUST_ENGINE_BINARY_NAME,
+        RUST_ENGINE_BINARY_ENV,
+        message_format,
+    ))
 }
 
 /// Runs `hax-engine`
@@ -616,6 +636,40 @@ fn main() {
         _ => Options::parse_from(args.iter()),
     };
     options.normalize_paths();
+
+    // AeneasLean bypasses the hax frontend entirely: run charon + aeneas directly
+    if let Command::Backend(ref backend) = options.command
+        && let Backend::AeneasLean(ref aeneas_opts) = backend.backend
+    {
+        // Warn about options that are not supported by the aeneas-lean backend
+        for (set, name) in [
+            (backend.dry_run, "--dry-run"),
+            (backend.stats, "--stats"),
+            (backend.profile, "--profile"),
+            (backend.debug_engine.is_some(), "--debug-engine"),
+            (backend.extract_type_aliases, "--extract-type-aliases"),
+            (
+                !backend.translation_options.include_namespaces.is_empty(),
+                "-i",
+            ),
+        ] {
+            if set {
+                HaxMessage::UnsupportedOption {
+                    option: name.into(),
+                    backend: BackendName::AeneasLean,
+                }
+                .report(options.message_format, None);
+            }
+        }
+
+        let error = aeneas::run(
+            aeneas_opts,
+            backend.output_dir.clone(),
+            backend.verbose,
+            options.message_format,
+        );
+        std::process::exit(if error { 1 } else { 0 });
+    }
 
     let (haxmeta_files, exit_code) = options
         .haxmeta

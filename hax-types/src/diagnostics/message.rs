@@ -1,4 +1,4 @@
-use crate::cli_options::{Backend, MessageFormat};
+use crate::cli_options::{Backend, BackendName, MessageFormat};
 use crate::diagnostics::report::ReportCtx;
 use crate::prelude::*;
 
@@ -10,8 +10,10 @@ pub enum HaxMessage {
         diagnostic: super::Diagnostics,
         working_dir: Option<PathBuf>,
     } = 254,
-    EngineNotFound {
-        is_opam_setup_correctly: bool,
+    BinaryNotFound {
+        binary_name: String,
+        env_var: String,
+        hint: Option<String>,
     } = 0,
     ProducedFile {
         path: PathBuf,
@@ -28,6 +30,25 @@ pub enum HaxMessage {
     Stats {
         errors_per_item: Vec<(hax_frontend_exporter::DefId, usize)>,
     } = 6,
+    GenericError {
+        message: String,
+    } = 7,
+    RunningStep {
+        step: String,
+    } = 9,
+    SubprocessOutput {
+        prefix: String,
+        line: String,
+    } = 10,
+    OutputTruncated {
+        prefix: String,
+        remaining: usize,
+        log_path: PathBuf,
+    } = 11,
+    UnsupportedOption {
+        option: String,
+        backend: BackendName,
+    } = 12,
 }
 
 impl HaxMessage {
@@ -45,7 +66,6 @@ impl HaxMessage {
 }
 
 const ENGINE_BINARY_NAME: &str = "hax-engine";
-const ENGINE_BINARY_NOT_FOUND: &str = "The binary [hax-engine] was not found in your [PATH].";
 
 use annotate_snippets::{Level, Renderer};
 
@@ -90,18 +110,22 @@ impl HaxMessage {
                     |msg| format!("{}", renderer.render(msg)),
                 )
             }
-            Self::EngineNotFound {
-                is_opam_setup_correctly,
+            Self::BinaryNotFound {
+                binary_name,
+                env_var,
+                hint,
             } => {
                 use colored::Colorize;
-                let message = format!("hax: {}\n{}\n\n{} {}\n",
-                      &ENGINE_BINARY_NOT_FOUND,
-                      "Please make sure the engine is installed and is in PATH!",
-                      "Hint: With OPAM, `eval $(opam env)` is necessary for OPAM binaries to be in PATH: make sure to run `eval $(opam env)` before running `cargo hax`.".bright_black(),
-                      format!("(diagnostics: {})", if is_opam_setup_correctly { "opam seems okay ✓" } else {"opam seems not okay ❌"}).bright_black()
-            );
-                let message = Level::Error.title(&message);
-                format!("{}", renderer.render(message))
+                let mut message = format!(
+                    "hax: The binary [{}] was not found in your [PATH].\n\
+                     Please make sure it is installed and is in PATH!\n\
+                     Hint: set the [{}] environment variable to provide its path explicitly.",
+                    binary_name, env_var
+                );
+                if let Some(hint) = hint {
+                    message.push_str(&format!("\n{}", hint.bright_black()));
+                }
+                format!("{}", renderer.render(Level::Error.title(&message)))
             }
             Self::ProducedFile { mut path, wrote } => {
                 // Make path relative if possible
@@ -164,6 +188,36 @@ impl HaxMessage {
                 let title = format!(
                     "hax: Experimental backend \"{}\" is work in progress.",
                     backend
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::GenericError { message } => {
+                let title = format!("hax: {}", message);
+                format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::RunningStep { step } => {
+                use colored::Colorize;
+                format!("{:>12} {}", "Running".bold().green(), step)
+            }
+            Self::SubprocessOutput { prefix, line } => {
+                format!("{:>12} > {}", prefix, line)
+            }
+            Self::OutputTruncated {
+                prefix,
+                remaining,
+                log_path,
+            } => {
+                format!(
+                    "{:>12} > ... ({} more lines, full output in {})",
+                    prefix,
+                    remaining,
+                    log_path.display()
+                )
+            }
+            Self::UnsupportedOption { option, backend } => {
+                let title = format!(
+                    "hax: option {} is not supported by the {} backend and will be ignored",
+                    option, backend
                 );
                 format!("{}", renderer.render(Level::Warning.title(&title)))
             }
