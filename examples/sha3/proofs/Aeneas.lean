@@ -61,13 +61,19 @@ open Std in
 def core.array.equality.PartialEqArray.eq
   {T : Type} {U : Type} {N : Usize} (partialEqInst : core.cmp.PartialEq T U)
   (a0 : Array T N) (a1 : Array U N) : Result Bool := do
-  if a0.val.size = a1.val.size then
-    Array.allM (fun (x, y) => partialEqInst.eq x y) (Array.zip a0.val a1.val)
-  else .ok false
+  Array.allM (fun (x, y) => partialEqInst.eq x y) (Array.zip a0.val a1.val)
 
 def core.cmp.PartialEqU64 : core.cmp.PartialEq UInt64 UInt64 := {
   eq := fun a b => pure (a == b)
 }
+
+open Std.Do Std in
+@[spec]
+theorem core.array.equality.PartialEqArray.eq_spec {N : Usize} (a0 : Array U64 N) (a1 : Array U64 N)
+    (h : (Q.1 (a0.val == a1.val)).down) :
+    ⦃ ⌜ True ⌝ ⦄
+    core.array.equality.PartialEqArray.eq core.cmp.PartialEqU64 a0 a1
+    ⦃ Q ⦄ := sorry
 
 end Aeneas
 
