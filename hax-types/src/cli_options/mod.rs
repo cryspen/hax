@@ -170,7 +170,7 @@ pub struct FStarOptions {
 #[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
 pub struct AeneasLeanOptions {
     /// Generate a `lakefile.toml` and `lean-toolchain` in the
-    /// `proofs/lean-aeneas/` directory, with a dependency on the Aeneas
+    /// `proofs/aeneas-lean/` directory, with a dependency on the Aeneas
     /// Lean library. Existing files are not overwritten, so it is safe
     /// to re-run with this flag after editing the lakefile.
     #[arg(long)]
@@ -633,6 +633,7 @@ impl BackendName {
             Self::Easycrypt,
             Self::ProVerif,
             Self::Lean,
+            Self::AeneasLean,
             Self::Rust,
             Self::GenerateRustEngineNames,
         ]
@@ -649,7 +650,7 @@ impl fmt::Display for BackendName {
             BackendName::Easycrypt => "easycrypt",
             BackendName::ProVerif => "proverif",
             BackendName::Lean => "lean",
-            BackendName::AeneasLean => "lean-aeneas",
+            BackendName::AeneasLean => "aeneas-lean",
             BackendName::Rust => "rust",
             BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
             BackendName::Debugger => "debugger",
