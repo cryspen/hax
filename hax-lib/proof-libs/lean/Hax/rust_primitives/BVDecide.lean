@@ -18,44 +18,46 @@ structure BVRustM (α : Type) where
   err : BitVec 3
 
 /-- Encodes `RustM` values into `BVRustM` to be able to run `bv_decide`. -/
-def RustM.toBVRustM {α} [Inhabited α] : RustM α → BVRustM α
-| ok v                      => ⟨ true, v, 0 ⟩
-| fail .assertionFailure    => ⟨ false, default, 0 ⟩
-| fail .integerOverflow     => ⟨ false, default, 1 ⟩
-| fail .divisionByZero      => ⟨ false, default, 2 ⟩
-| fail .arrayOutOfBounds    => ⟨ false, default, 3 ⟩
-| fail .maximumSizeExceeded => ⟨ false, default, 4 ⟩
-| fail .panic               => ⟨ false, default, 5 ⟩
-| fail .undef               => ⟨ false, default, 6 ⟩
-| div                       => ⟨ false, default, 7 ⟩
+def RustM.toBVRustM {α : Type} [Inhabited α] : RustM α → BVRustM α
+| .ok v                      => ⟨ true, v, 0 ⟩
+| .fail .assertionFailure    => ⟨ false, default, 0 ⟩
+| .fail .integerOverflow     => ⟨ false, default, 1 ⟩
+| .fail .divisionByZero      => ⟨ false, default, 2 ⟩
+| .fail .arrayOutOfBounds    => ⟨ false, default, 3 ⟩
+| .fail .maximumSizeExceeded => ⟨ false, default, 4 ⟩
+| .fail .panic               => ⟨ false, default, 5 ⟩
+| .fail .undef               => ⟨ false, default, 6 ⟩
+| .div                       => ⟨ false, default, 7 ⟩
 
-attribute [hax_bv_decide] Coe.coe bind pure
+attribute [hax_bv_decide] Coe.coe
 
-@[hax_bv_decide] theorem RustM.toBVRustM_ok {α} [Inhabited α] {v : α} :
+@[hax_bv_decide] theorem RustM.toBVRustM_pure {α : Type} [Inhabited α] {v : α} :
+    (pure v : RustM α).toBVRustM = ⟨ true, v, 0 ⟩ := rfl
+@[hax_bv_decide] theorem RustM.toBVRustM_ok {α : Type} [Inhabited α] {v : α} :
     (RustM.ok v).toBVRustM = ⟨ true, v, 0 ⟩ := rfl
-@[hax_bv_decide] theorem RustM.toBVRustM_assertionFailure {α} [Inhabited α] :
+@[hax_bv_decide] theorem RustM.toBVRustM_assertionFailure {α : Type} [Inhabited α] :
     (RustM.fail .assertionFailure : RustM α).toBVRustM = ⟨ false, default, 0 ⟩ := rfl
-@[hax_bv_decide] theorem RustM.toBVRustM_integerOverflow {α} [Inhabited α] :
+@[hax_bv_decide] theorem RustM.toBVRustM_integerOverflow {α : Type} [Inhabited α] :
     (RustM.fail .integerOverflow : RustM α).toBVRustM = ⟨ false, default, 1 ⟩ := rfl
-@[hax_bv_decide] theorem RustM.toBVRustM_divisionByZero {α} [Inhabited α] :
+@[hax_bv_decide] theorem RustM.toBVRustM_divisionByZero {α : Type} [Inhabited α] :
     (RustM.fail .divisionByZero : RustM α).toBVRustM = ⟨ false, default, 2 ⟩ := rfl
-@[hax_bv_decide] theorem RustM.toBVRustM_arrayOutOfBounds {α} [Inhabited α] :
+@[hax_bv_decide] theorem RustM.toBVRustM_arrayOutOfBounds {α : Type} [Inhabited α] :
     (RustM.fail .arrayOutOfBounds : RustM α).toBVRustM = ⟨ false, default, 3 ⟩ := rfl
-@[hax_bv_decide] theorem RustM.toBVRustM_maximumSizeExceeded {α} [Inhabited α] :
+@[hax_bv_decide] theorem RustM.toBVRustM_maximumSizeExceeded {α : Type} [Inhabited α] :
     (RustM.fail .maximumSizeExceeded: RustM α).toBVRustM = ⟨ false, default, 4 ⟩ := rfl
-@[hax_bv_decide] theorem RustM.toBVRustM_panic {α} [Inhabited α] :
+@[hax_bv_decide] theorem RustM.toBVRustM_panic {α : Type} [Inhabited α] :
     (RustM.fail .panic : RustM α).toBVRustM = ⟨ false, default, 5 ⟩ := rfl
-@[hax_bv_decide] theorem RustM.toBVRustM_undef {α} [Inhabited α] :
+@[hax_bv_decide] theorem RustM.toBVRustM_undef {α : Type} [Inhabited α] :
     (RustM.fail .undef : RustM α).toBVRustM = ⟨ false, default, 6 ⟩ := rfl
-@[hax_bv_decide] theorem RustM.toBVRustM_div {α} [Inhabited α] :
+@[hax_bv_decide] theorem RustM.toBVRustM_div {α : Type} [Inhabited α] :
     (RustM.div : RustM α ).toBVRustM = ⟨ false, default, 7 ⟩ := rfl
 
 @[hax_bv_decide]
-theorem RustM.toBVRustM_ite {α} [Inhabited α] {c : Prop} [Decidable c]  (x y : RustM α) :
+theorem RustM.toBVRustM_ite {α : Type} [Inhabited α] {c : Prop} [Decidable c]  (x y : RustM α) :
     (if c then x else y).toBVRustM = (if c then x.toBVRustM else y.toBVRustM) := by grind
 
 @[hax_bv_decide]
-theorem RustM.beq_iff_toBVRustM_eq {α} [Inhabited α] [DecidableEq α] (x y : RustM α) :
+theorem RustM.beq_iff_toBVRustM_eq {α : Type} [Inhabited α] [DecidableEq α] (x y : RustM α) :
     decide (x = y) =
       (x.toBVRustM.ok == y.toBVRustM.ok &&
        x.toBVRustM.val == y.toBVRustM.val &&
@@ -68,15 +70,16 @@ theorem RustM.beq_iff_toBVRustM_eq {α} [Inhabited α] [DecidableEq α] (x y : R
     grind [toBVRustM]
 
 @[hax_bv_decide]
-theorem RustM.toBVRustM_bind {α β} [Inhabited α] [Inhabited β] (x : RustM α) (f : α → RustM β) :
-  (x.bind f).toBVRustM =
+theorem RustM.toBVRustM_bind {α β : Type} [Inhabited α] [Inhabited β] (x : RustM α) (f : α → RustM β) :
+  (x >>= f).toBVRustM =
     if x.toBVRustM.ok
     then (f x.toBVRustM.val).toBVRustM
     else {x.toBVRustM with val := default} := by
-  apply RustM.toBVRustM.match_1.splitter _ x <;> simp [bind, toBVRustM]
+  cases x using RustM.toBVRustM.match_1 <;>
+    simp [toBVRustM, Bind.bind, ExceptT.bind, ExceptT.bindCont, ExceptT.mk]
 
 @[hax_bv_decide]
-theorem RustM.Triple_iff_BitVec {α} [Inhabited α]
+theorem RustM.Triple_iff_BitVec {α : Type} [Inhabited α]
     (a : Prop) [Decidable a] (b : α → Prop) (x : RustM α) [Decidable (b x.toBVRustM.val)] :
     ⦃ ⌜ a ⌝ ⦄ x ⦃ ⇓ r => ⌜ b r ⌝ ⦄ ↔
       (!decide a || (x.toBVRustM.ok && decide (b x.toBVRustM.val))) := by

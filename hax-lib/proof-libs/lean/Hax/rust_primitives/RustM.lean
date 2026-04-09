@@ -31,86 +31,68 @@ inductive Error where
 deriving Repr, BEq, DecidableEq
 open Error
 
+
 /--
   RustM monad (corresponding to Aeneas's `Result` monad), representing
-  possible results of rust computations
+  possible results of rust computations.
+
+  Defined as `ExceptT Error Option`, i.e. `Option (Except Error α)`.
+  The `Option` layer models divergence and the `Except Error` layer models
+  Rust panics. The `ExceptT` transformer ensures that once a program has
+  paniced, it can not diverge any more (and vice versa).
 -/
-inductive RustM.{u} (α : Type u) where
-  | ok (v: α): RustM α
-  | fail (e: Error): RustM α
-  | div
-deriving Repr, BEq, DecidableEq, Inhabited
+def RustM (α : Type) := ExceptT Error Option α
 
 namespace RustM
 
-@[hax_bv_decide, reducible, simp]
-instance instPure: Pure RustM where
-  pure x := .ok x
+-- These `Except` instances are missing in Lean's library.
+-- We use them to derive the corresponding `RustM` instances below.
+deriving instance BEq, DecidableEq for Except
 
-def bind {α β : Type} (x: RustM α) (f: α -> RustM β) := match x with
-  | .ok v => f v
-  | .fail e => .fail e
-  | .div => .div
+instance instBEq {α : Type} [BEq α] : BEq (RustM α) :=
+  inferInstanceAs (BEq (Option (Except Error α)))
+instance instDecidableEq {α : Type} [DecidableEq α] : DecidableEq (RustM α) :=
+  inferInstanceAs (DecidableEq (Option (Except Error α)))
+instance instInhabited {α : Type} : Inhabited (RustM α) :=
+  inferInstanceAs (Inhabited (Option (Except Error α)))
+instance instMonad : Monad RustM :=
+  inferInstanceAs (Monad (ExceptT Error Option))
+instance instLawfulMonad : LawfulMonad RustM :=
+  inferInstanceAs (LawfulMonad (ExceptT Error Option))
 
-def ofOption {α} (x:Option α) (e: Error) : RustM α := match x with
+@[reducible, match_pattern] def ok {α : Type} (v : α) : RustM α := some (.ok v)
+@[reducible, match_pattern] def fail {α : Type} (e : Error) : RustM α := some (.error e)
+@[reducible, match_pattern] def div {α : Type} : RustM α := none
+
+instance {α : Type} [Repr α] : Repr (RustM α) where
+  reprPrec x prec := match x with
+    | .ok v   => Repr.addAppParen (f!"RustM.ok {reprArg v}") prec
+    | .fail e => Repr.addAppParen (f!"RustM.fail {reprArg e}") prec
+    | .div    => "RustM.div"
+
+def ofOption {α : Type} (x : Option α) (e : Error) : RustM α :=
+  match x with
   | .some v => pure v
   | .none => .fail e
 
 @[reducible]
-def isOk {α : Type} (x: RustM α) : Bool := match x with
-| .ok _ => true
-| _ => false
+def isOk {α : Type} (x : RustM α) : Bool :=
+  match x with
+  | .ok _ => true
+  | _ => false
 
 @[reducible, specset bv, hax_bv_decide]
-def of_isOk {α : Type} (x: RustM α) (h: RustM.isOk x): α :=
+def of_isOk {α : Type} (x : RustM α) (h : RustM.isOk x) : α :=
   match x with
   | .ok v => v
 
 @[simp, spec]
-def ok_of_isOk {α : Type} (v : α) (h: isOk (ok v)): (ok v).of_isOk h = v := by rfl
+def ok_of_isOk {α : Type} (v : α) (h : isOk (ok v)) : (ok v).of_isOk h = v := by rfl
 
-@[hax_bv_decide]
-instance instMonad : Monad RustM where
-  pure := pure
-  bind := RustM.bind
-
-instance instLawfulMonad : LawfulMonad RustM where
-  id_map x := by
-    dsimp [id, Functor.map, RustM.bind, instPure]
-    cases x;
-    all_goals grind
-  map_const := by
-    intros α β
-    dsimp [Functor.map, Functor.mapConst]
-  seqLeft_eq x y := by
-    dsimp [Functor.map, SeqLeft.seqLeft, Seq.seq, pure, bind]
-    cases x ; all_goals cases y
-    all_goals try simp
-  seqRight_eq x y := by
-    dsimp [Functor.map, SeqRight.seqRight, Seq.seq, pure, bind]
-    cases x ; all_goals cases y
-    all_goals try simp
-  pure_seq g x := by
-    dsimp [Functor.map, Seq.seq, pure, bind]
-  bind_pure_comp f x := by
-    dsimp [Functor.map, pure, bind, instMonad, Bind.bind]
-  bind_map f x := by
-    dsimp [Functor.map, bind, pure, Seq.seq, instMonad, Bind.bind]
-  pure_bind x f := by
-    dsimp [pure, bind, instMonad, Bind.bind]
-  bind_assoc x f g := by
-    dsimp [pure, bind, instMonad, Bind.bind]
-    cases x; all_goals simp
-
-instance instWP : WP RustM (.except Error .pure) where
-  wp x := match x with
-  | .ok v => wp (Pure.pure v : Except Error _)
-  | .fail e => wp (throw e : Except Error _)
-  | .div => PredTrans.const ⌜False⌝
-
-instance instWPMonad : WPMonad RustM (.except Error .pure) where
-  wp_pure := by intros; ext Q; rfl
-  wp_bind x f := by ext Q; cases x <;> rfl
+instance instWP : WP RustM (.except Error (.except PUnit .pure)) :=
+  inferInstanceAs (WP (ExceptT Error Option) _)
+instance instWPMonad : WPMonad RustM (.except Error (.except PUnit .pure)) :=
+  inferInstanceAs (WPMonad (ExceptT Error Option) _)
 
 section Order
 
@@ -118,20 +100,9 @@ open Lean.Order
 
 /- These instances are required to use `partial_fixpoint` in the `RustM` monad. -/
 
-instance {α} : PartialOrder (RustM α) := inferInstanceAs (PartialOrder (FlatOrder RustM.div))
-
-noncomputable instance {α} : CCPO (RustM α) := inferInstanceAs (CCPO (FlatOrder RustM.div))
-
-noncomputable instance : MonoBind RustM where
-  bind_mono_left h := by
-    cases h
-    · exact FlatOrder.rel.bot
-    · exact FlatOrder.rel.refl
-  bind_mono_right h := by
-    cases ‹RustM _›
-    · exact h _
-    · exact FlatOrder.rel.refl
-    · exact FlatOrder.rel.refl
+instance {α : Type} : PartialOrder (RustM α) := inferInstanceAs (PartialOrder (ExceptT Error Option α))
+instance {α : Type} : CCPO (RustM α) := inferInstanceAs (CCPO (ExceptT Error Option α))
+instance : MonoBind RustM := inferInstanceAs (MonoBind (ExceptT Error Option))
 
 open Lean Order in
 /-- `Loop.MonoLoopCombinator` is used to implement while loops in `RustM`: -/

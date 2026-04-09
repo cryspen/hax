@@ -707,6 +707,39 @@ module Reconstruct_while_loops : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
+module Reject_impl_type_method : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+  end
+
+  module Phase = Phases.Reject_impl_type_method (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
 module Reorder_fields : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -917,6 +950,39 @@ module Sort_items : PHASE_FULL = struct
   end
 
   module Phase = Phases.Sort_items (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+module Sort_items_namespace_wise : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+  end
+
+  module Phase = Phases.Sort_items_namespace_wise (ExpectedFA)
 
   module Coerce =
     Feature_gate.Make (Features.Full) (ExpectedFA)
@@ -1438,6 +1504,9 @@ let reconstruct_question_marks : (module PHASE_FULL) =
 let reconstruct_while_loops : (module PHASE_FULL) =
   (module Reconstruct_while_loops)
 
+let reject_impl_type_method : (module PHASE_FULL) =
+  (module Reject_impl_type_method)
+
 let reorder_fields : (module PHASE_FULL) = (module Reorder_fields)
 let rewrite_control_flow : (module PHASE_FULL) = (module Rewrite_control_flow)
 let rewrite_local_self : (module PHASE_FULL) = (module Rewrite_local_self)
@@ -1448,6 +1517,10 @@ let simplify_question_marks : (module PHASE_FULL) =
   (module Simplify_question_marks)
 
 let sort_items : (module PHASE_FULL) = (module Sort_items)
+
+let sort_items_namespace_wise : (module PHASE_FULL) =
+  (module Sort_items_namespace_wise)
+
 let specialize : (module PHASE_FULL) = (module Specialize)
 let traits_specs : (module PHASE_FULL) = (module Traits_specs)
 
@@ -1493,6 +1566,7 @@ let phases_list : (module PHASE_FULL) list =
     reconstruct_for_loops;
     reconstruct_question_marks;
     reconstruct_while_loops;
+    reject_impl_type_method;
     reorder_fields;
     rewrite_control_flow;
     rewrite_local_self;
@@ -1500,6 +1574,7 @@ let phases_list : (module PHASE_FULL) list =
     simplify_match_return;
     simplify_question_marks;
     sort_items;
+    sort_items_namespace_wise;
     specialize;
     traits_specs;
     transform_hax_lib_inline;
@@ -1536,6 +1611,7 @@ let phase_of_name : string -> (module PHASE_FULL) option = function
   | "reconstruct_for_loops" -> Some reconstruct_for_loops
   | "reconstruct_question_marks" -> Some reconstruct_question_marks
   | "reconstruct_while_loops" -> Some reconstruct_while_loops
+  | "reject_impl_type_method" -> Some reject_impl_type_method
   | "reorder_fields" -> Some reorder_fields
   | "rewrite_control_flow" -> Some rewrite_control_flow
   | "rewrite_local_self" -> Some rewrite_local_self
@@ -1543,6 +1619,7 @@ let phase_of_name : string -> (module PHASE_FULL) option = function
   | "simplify_match_return" -> Some simplify_match_return
   | "simplify_question_marks" -> Some simplify_question_marks
   | "sort_items" -> Some sort_items
+  | "sort_items_namespace_wise" -> Some sort_items_namespace_wise
   | "specialize" -> Some specialize
   | "traits_specs" -> Some traits_specs
   | "transform_hax_lib_inline" -> Some transform_hax_lib_inline
@@ -1580,6 +1657,7 @@ let phases : string list =
     "reconstruct_for_loops";
     "reconstruct_question_marks";
     "reconstruct_while_loops";
+    "reject_impl_type_method";
     "reorder_fields";
     "rewrite_control_flow";
     "rewrite_local_self";
@@ -1587,6 +1665,7 @@ let phases : string list =
     "simplify_match_return";
     "simplify_question_marks";
     "sort_items";
+    "sort_items_namespace_wise";
     "specialize";
     "traits_specs";
     "transform_hax_lib_inline";
@@ -1604,5 +1683,5 @@ let phases : string list =
   ]
 
 (*
-and_mut_defsite, bundle_cycles, cf_into_monads, direct_and_mut, drop_blocks, drop_match_guards, drop_references, drop_return_break_continue, drop_sized_trait, explicit_conversions, functionalize_loops, hoist_disjunctive_patterns, local_mutation, newtype_as_refinement, reconstruct_asserts, reconstruct_for_index_loops, reconstruct_for_loops, reconstruct_question_marks, reconstruct_while_loops, reorder_fields, rewrite_control_flow, rewrite_local_self, simplify_hoisting, simplify_match_return, simplify_question_marks, sort_items, specialize, traits_specs, transform_hax_lib_inline, trivialize_assign_lhs, reject_arbitrary_lhs, reject_continue, reject_question_mark, reject_raw_or_mut_pointer, reject_early_exit, reject_as_pattern, reject_dyn, reject_trait_item_default, reject_unsafe, hoist_side_effects
+and_mut_defsite, bundle_cycles, cf_into_monads, direct_and_mut, drop_blocks, drop_match_guards, drop_references, drop_return_break_continue, drop_sized_trait, explicit_conversions, functionalize_loops, hoist_disjunctive_patterns, local_mutation, newtype_as_refinement, reconstruct_asserts, reconstruct_for_index_loops, reconstruct_for_loops, reconstruct_question_marks, reconstruct_while_loops, reject_impl_type_method, reorder_fields, rewrite_control_flow, rewrite_local_self, simplify_hoisting, simplify_match_return, simplify_question_marks, sort_items, sort_items_namespace_wise, specialize, traits_specs, transform_hax_lib_inline, trivialize_assign_lhs, reject_arbitrary_lhs, reject_continue, reject_question_mark, reject_raw_or_mut_pointer, reject_early_exit, reject_as_pattern, reject_dyn, reject_trait_item_default, reject_unsafe, hoist_side_effects
 *)

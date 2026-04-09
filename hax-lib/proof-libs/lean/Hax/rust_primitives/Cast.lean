@@ -1,4 +1,4 @@
-import Hax.rust_primitives.num
+import Hax.rust_primitives.ops
 import Hax.Tactic.Init
 
 /-

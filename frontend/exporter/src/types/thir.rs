@@ -361,13 +361,26 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, Pat> for thir::Pat<'tcx> {
                     subpatterns: subpatterns.clone(),
                 })
                 .sinto(s),
-                rustc_middle::ty::TyKind::Tuple(..) => PatKind::Tuple {
-                    subpatterns: subpatterns
+                rustc_middle::ty::TyKind::Tuple(tys) => {
+                    // Build a full-arity vector, filling unmatched positions with wildcards
+                    // so that tuple patterns with `..` (ellipsis) are correctly expanded.
+                    let mut full_subpatterns: Vec<Pat> = tys
                         .iter()
-                        .map(|pat| pat.pattern.clone())
-                        .collect::<Vec<_>>()
-                        .sinto(s),
-                },
+                        .map(|elem_ty| Decorated {
+                            ty: elem_ty.sinto(s),
+                            span: span.sinto(s),
+                            contents: Box::new(PatKind::Wild),
+                            hir_id: None,
+                            attributes: vec![],
+                        })
+                        .collect();
+                    for field_pat in subpatterns.iter() {
+                        full_subpatterns[field_pat.field.index()] = field_pat.pattern.sinto(s);
+                    }
+                    PatKind::Tuple {
+                        subpatterns: full_subpatterns,
+                    }
+                }
                 _ => supposely_unreachable_fatal!(
                     s[span],
                     "PatLeafNonAdtTy";
@@ -511,14 +524,33 @@ pub enum PatKind {
             let item = translate_item_ref(gstate, variant_def_id, args);
             let variants = adt_def.variants();
             let variant: &rustc_middle::ty::VariantDef = &variants[*variant_index];
+            let tcx = gstate.base().tcx;
+            // Build a map from field index to explicit pattern, so we can
+            // fill in wildcards for fields omitted by `..` (ellipsis).
+            let explicit: std::collections::HashMap<_, _> = subpatterns
+                .iter()
+                .map(|f| (f.field, &f.pattern))
+                .collect();
             TO_TYPE::Variant {
                 item,
                 info: get_variant_information(adt_def, *variant_index, gstate),
-                subpatterns: subpatterns
-                    .iter()
-                    .map(|f| FieldPat {
-                        field: variant.fields[f.field].did.sinto(gstate),
-                        pattern: f.pattern.sinto(gstate),
+                subpatterns: variant.fields.iter_enumerated()
+                    .map(|(field_idx, field_def)| {
+                        let pattern = if let Some(pat) = explicit.get(&field_idx) {
+                            pat.sinto(gstate)
+                        } else {
+                            Decorated {
+                                ty: field_def.ty(tcx, args).sinto(gstate),
+                                span: rustc_span::DUMMY_SP.sinto(gstate),
+                                contents: Box::new(PatKind::Wild),
+                                hir_id: None,
+                                attributes: vec![],
+                            }
+                        };
+                        FieldPat {
+                            field: field_def.did.sinto(gstate),
+                            pattern,
+                        }
                     })
                     .collect(),
             }

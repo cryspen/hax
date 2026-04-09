@@ -1,6 +1,7 @@
-import Hax.rust_primitives.USize64
 import Hax.Tactic.Init
+import Hax.rust_primitives.USize64
 import Hax.Tactic.SpecSet
+import Hax.MissingLean
 import Hax.rust_primitives.RustM
 open Std.Do
 open Std.Tactic
@@ -15,13 +16,13 @@ abbrev u8 := UInt8
 abbrev u16 := UInt16
 abbrev u32 := UInt32
 abbrev u64 := UInt64
+abbrev u128 := UInt128
 abbrev usize := USize64
-abbrev u128 := BitVec 128
 abbrev i8 := Int8
 abbrev i16 := Int16
 abbrev i32 := Int32
 abbrev i64 := Int64
-abbrev i128 := BitVec 128
+abbrev i128 := Int128
 abbrev isize := ISize
 
 abbrev f32 := Float32
@@ -35,6 +36,9 @@ attribute [grind] ToNat.toNat
 
 @[simp, grind]
 instance : ToNat usize where
+  toNat x := x.toNat
+@[simp, grind]
+instance : ToNat u128 where
   toNat x := x.toNat
 @[simp, grind]
 instance : ToNat u64 where
@@ -268,7 +272,12 @@ macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:t
           else if y = 0 then .fail .divisionByZero
           else pure (x % y)
 
-      instance : rust_primitives.ops.arith.Neg $typeName where neg := fun x => pure (- x)
+      /-- Negation on signed integers. Panics on overflow (when `x` is `minValue`). -/
+      instance : rust_primitives.ops.arith.Neg $typeName where
+        neg x :=
+          if x = $(mkIdent (typeName.getId ++ `minValue))
+          then .fail .integerOverflow
+          else pure (- x)
     )
   else -- unsigned
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
@@ -290,11 +299,13 @@ declare_Hax_int_ops unsigned UInt8 8
 declare_Hax_int_ops unsigned UInt16 16
 declare_Hax_int_ops unsigned UInt32 32
 declare_Hax_int_ops unsigned UInt64 64
+declare_Hax_int_ops unsigned UInt128 128
 declare_Hax_int_ops unsigned USize64 64
 declare_Hax_int_ops signed Int8 8
 declare_Hax_int_ops signed Int16 16
 declare_Hax_int_ops signed Int32 32
 declare_Hax_int_ops signed Int64 64
+declare_Hax_int_ops signed Int128 128
 declare_Hax_int_ops signed ISize System.Platform.numBits
 
 
@@ -308,11 +319,13 @@ macro "declare_Hax_shift_ops" : command => do
     ("UInt16", ← `(term| 16)),
     ("UInt32", ← `(term| 32)),
     ("UInt64", ← `(term| 64)),
+    ("UInt128", ← `(term| 128)),
     ("USize64", ← `(term| 64)),
     ("Int8", ← `(term| 8)),
     ("Int16", ← `(term| 16)),
     ("Int32", ← `(term| 32)),
     ("Int64", ← `(term| 64)),
+    ("Int128", ← `(term| 128)),
     ("ISize", ← `(term| OfNat.ofNat System.Platform.numBits))
   ]
   for (ty1, width1) in tys do
@@ -371,21 +384,21 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
     namespace $typeName
 
       /-- Specification for rust addition -/
-      @[spec]
+      @[specset int]
       theorem haxAdd_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `addOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX + y.$toX ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Add.add]; $grind
 
       /-- Specification for rust subtraction -/
-      @[spec]
+      @[specset int]
       theorem haxSub_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `subOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x -? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX - y.$toX ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Sub.sub]; $grind
 
       /-- Specification for rust multiplication -/
-      @[spec]
+      @[specset int]
       theorem haxMul_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `mulOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x *? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX * y.$toX ⌝ ⦄ := by
@@ -394,14 +407,14 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   if signed then
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
       /-- Specification for rust negation for signed integers-/
-      @[spec]
+      @[specset int]
       theorem haxNeg_spec {x : $typeName} (hx : x ≠ $minValue) :
           ⦃ ⌜ True ⌝ ⦄ (-? x) ⦃ ⇓ r => ⌜ r.toInt = - x.toInt ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Neg.neg]
         rw [toInt_neg_of_ne_intMin hx]
 
       /-- Specification for rust multiplication for signed integers-/
-      @[spec]
+      @[specset int]
       theorem haxDiv_spec {x y : $typeName}
           (hx : x ≠ $minValue ∨ y ≠ -1) (hy : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt.tdiv y.toInt ⌝ ⦄ := by
@@ -412,7 +425,7 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
         | inr hx => apply toInt_div_of_ne_right x y hx
 
       /-- Specification for rust remainder for signed integers -/
-      @[spec]
+      @[specset int]
       theorem haxRem_spec (x y : $typeName)
           (hx : x ≠ $minValue ∨ y ≠ -1) (hy : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt.tmod y.toInt ⌝ ⦄ :=  by
@@ -423,13 +436,13 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   else -- unsigned
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
       /-- Specification for rust multiplication for unsigned integers -/
-      @[spec]
+      @[specset int]
       theorem haxDiv_spec (x y : $typeName) (h : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat / y.toNat ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Div.div]
 
       /-- Specification for rust remainder for unsigned integers -/
-      @[spec]
+      @[specset int]
       theorem haxRem_spec (x y : $typeName) (h : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat % y.toNat ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Rem.rem]
@@ -443,11 +456,13 @@ declare_Hax_int_ops_spec unsigned UInt8 8
 declare_Hax_int_ops_spec unsigned UInt16 16
 declare_Hax_int_ops_spec unsigned UInt32 32
 declare_Hax_int_ops_spec unsigned UInt64 64
+declare_Hax_int_ops_spec unsigned UInt128 128
 declare_Hax_int_ops_spec unsigned USize64 64
 declare_Hax_int_ops_spec signed Int8 8
 declare_Hax_int_ops_spec signed Int16 16
 declare_Hax_int_ops_spec signed Int32 32
 declare_Hax_int_ops_spec signed Int64 64
+declare_Hax_int_ops_spec signed Int128 128
 declare_Hax_int_ops_spec signed ISize System.Platform.numBits
 
 open Lean in
@@ -458,10 +473,12 @@ macro "declare_Hax_shift_ops_spec" : command => do
     ("UInt16", ← `(term| 16)),
     ("UInt32", ← `(term| 32)),
     ("UInt64", ← `(term| 64)),
+    -- ("UInt128", ← `(term| 128)),
     ("Int8", ← `(term| 8)),
     ("Int16", ← `(term| 16)),
     ("Int32", ← `(term| 32)),
     ("Int64", ← `(term| 64)),
+    -- ("Int128", ← `(term| 128)),
   ]
   for (ty1, width1) in tys do
     for (ty2, _width2) in tys do

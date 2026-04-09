@@ -34,3 +34,11 @@ class t_BitAnd (v_Self: Type0) (v_Rhs: Type0) = {
   f_bitand:x0: v_Self -> x1: v_Rhs
     -> Prims.Pure f_Output (f_bitand_pre x0 x1) (fun result -> f_bitand_post x0 x1 result)
 }
+
+class t_BitOr (v_Self: Type0) (v_Rhs: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
+  f_bitor_pre:v_Self -> v_Rhs -> Type0;
+  f_bitor_post:v_Self -> v_Rhs -> f_Output -> Type0;
+  f_bitor:x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure f_Output (f_bitor_pre x0 x1) (fun result -> f_bitor_post x0 x1 result)
+}

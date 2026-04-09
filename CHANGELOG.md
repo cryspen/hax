@@ -8,11 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+ - Rename `GenericConstraint::Type` to `TypeClass` and `::Projection` to `Equality` (#1996)
  - Remove `BinOp` resugaring (#1950)
  - Apply resugarings to linked items (pre/post conditions) (#1961)
  - Add new import_thir implemented in Rust and using `FullDef`, activated with `--experimental-full-def` (#1967)
 
 Changes to the frontend:
+ - Fix support for ellipsis: add wildcard for every field (based on type info
+   rather than number of subpatterns) (#2001)
 
 Changes to cargo-hax:
 
@@ -27,6 +30,9 @@ Changes to hax-lib:
  - Lean lib: Rust primitives for prop (#1942)
  - Lean lib: For-loops for all unsigned integers (#1951)
  - Lean lib: Upgrade to Lean v4.29.0-rc1 (#1962)
+ - Lean lib: Add support for Int128 and UInt128 while waiting for upstream in Lean (#1968)
+ - Lean lib: Refactor `RustM` as `ExceptT Error Option` (#1994)
+ - Lean lib: Add Repr instance for tuples (#2000)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
@@ -44,6 +50,7 @@ Changes to the Lean backend:
  - Prettier proof_mode annotations (#1943)
  - Detect recursive functions and mark them partial_fixpoint (#1946)
  - Add more binops (#1963)
+ - Add a resugaring for ellipsis patterns (#2002)
 
 Miscellaneous:
 

@@ -6,7 +6,6 @@ import Hax.rust_primitives.hax
 import Hax.rust_primitives.hax_lib
 import Hax.rust_primitives.GetElemResult
 import Hax.rust_primitives.mem
-import Hax.rust_primitives.num
 import Hax.rust_primitives.ops
 import Hax.rust_primitives.RustM
 import Hax.rust_primitives.sequence
