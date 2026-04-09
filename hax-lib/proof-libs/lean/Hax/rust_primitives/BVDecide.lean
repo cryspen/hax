@@ -75,8 +75,7 @@ theorem RustM.toBVRustM_bind {α β : Type} [Inhabited α] [Inhabited β] (x : R
     if x.toBVRustM.ok
     then (f x.toBVRustM.val).toBVRustM
     else {x.toBVRustM with val := default} := by
-  cases x using RustM.toBVRustM.match_1 <;>
-    simp [toBVRustM, Bind.bind, ExceptT.bind, ExceptT.bindCont, ExceptT.mk]
+  cases x using RustM.toBVRustM.match_1 <;> rfl
 
 @[hax_bv_decide]
 theorem RustM.Triple_iff_BitVec {α : Type} [Inhabited α]
