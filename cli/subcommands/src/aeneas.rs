@@ -48,21 +48,29 @@ fn report_output(lines: &[String], message_format: MessageFormat) {
 }
 
 /// Forward aeneas error output, truncating if longer than 10 lines
-/// and writing the full log to a file.
-fn report_error_output(lines: &[String], lean_dir: &Path, message_format: MessageFormat) {
+/// unless verbose mode is on. Always writes the full log to a file.
+fn report_error_output(
+    lines: &[String],
+    lean_dir: &Path,
+    verbose: u8,
+    message_format: MessageFormat,
+) {
     const MAX_LINES: usize = 10;
 
-    report_output(&lines[..lines.len().min(MAX_LINES)], message_format);
+    let show = if verbose > 0 { lines.len() } else { lines.len().min(MAX_LINES) };
+    report_output(&lines[..show], message_format);
 
     if lines.len() > MAX_LINES {
         let log_path = lean_dir.join("aeneas-error.log");
         let _ = fs::write(&log_path, lines.join("\n"));
-        HaxMessage::OutputTruncated {
-            prefix: "aeneas".into(),
-            remaining: lines.len() - MAX_LINES,
-            log_path,
+        if verbose == 0 {
+            HaxMessage::OutputTruncated {
+                prefix: "aeneas".into(),
+                remaining: lines.len() - MAX_LINES,
+                log_path,
+            }
+            .report(message_format, None);
         }
-        .report(message_format, None);
     }
 }
 
@@ -227,7 +235,7 @@ pub fn run(
 
     // Forward aeneas output (always on error, only in verbose mode on success)
     if !output.status.success() {
-        report_error_output(&all_lines, &lean_dir, message_format);
+        report_error_output(&all_lines, &lean_dir, verbose, message_format);
     } else if verbose > 0 {
         report_output(&all_lines, message_format);
     }
