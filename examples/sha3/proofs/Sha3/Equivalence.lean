@@ -27,20 +27,20 @@ theorem iota_spec
     _requires_iota at *
   dsimp only [U64.Insts.Sha3KeccakItem1.xor_constant, _veorq_n_u64, KeccakState.set, set_ij, _ensures_iota,
     reference.iota]
-  mvcgen
+  hax_mvcgen
   · grind
   · grind
-  · hax_mvcgen at h
-    simp only [Std.Slice.len, Std.Array.to_slice, USize64.reduceToNat, decide_eq_true_eq,
-      ExceptConds.fst_false, SPred.down_pure, imp_false, USize64.not_lt]
-    rwa [USize64.ofNat_le_iff]
+  · expose_names
+    rw [ge_iff_le, ← USize64.ofNat_le_iff] at h_5
+    have : decide (i < ROUNDCONSTANTS.to_slice.len) = true := by grind
+    simp only [Std.Slice.len, Std.Array.to_slice, USize64.reduceOfNat, USize64.reduceToNat,
+      decide_eq_true_eq] at this
+    grind
     grind
   · grind
   · grind
-  · unfold Result.holds
-    mvcgen
-    · grind
-    · grind
-    · grind
-    · unfold ROUNDCONSTANTS reference.ROUND_CONSTANTS at *
-      grind
+  · grind
+  · grind
+  · grind
+  · unfold ROUNDCONSTANTS reference.ROUND_CONSTANTS at *
+    grind

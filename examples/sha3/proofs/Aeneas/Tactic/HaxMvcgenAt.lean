@@ -60,16 +60,14 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
             (m!"VC goal target contains but is not equal to the mvar: {target}")
         sideGoals := sideGoals.push goal
 
-    -- For each `newHypGoal`, we collect the local decls `newFVars` that have been introduced
+    -- For each `newHypGoal`, we collect the local decls `newDecls` that have been introduced
     -- by the `hax_mvcgen` call above.
-    trace `Hax.hax_mvcgen_at fun () => m!"collect newFVars"
-    let mut newFVars : Array (Array Expr) := #[]
+    trace `Hax.hax_mvcgen_at fun () => m!"collect new declarations"
+    let mut newDecls : Array (Array LocalDecl) := #[]
     for newHypGoal in newHypGoals do
       let lctx ← newHypGoal.withContext getLCtx
       let decls := (lctx.decls.toArray.drop previousLctxSize).filterMap id
-      let decls := decls.filter (!·.isLet)
-      let fArgs := decls.map (mkFVar ·.fvarId)
-      newFVars := newFVars.push fArgs
+      newDecls := newDecls.push decls
 
     -- For each newHypGoal `i`, build `newHypGoalProofsᵢ`:
     --   `fun (p : Prop) (f₁ : fType₁[p]) ... (fₙ : fTypeₙ[p]) => fᵢ newFVarsᵢ₁ ... newFVarsᵢₘ`
@@ -78,14 +76,16 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
     let mut newHypGoalProofs := #[]
     for i in [0:newHypGoals.size] do
       newHypGoals[i]!.withContext do
-        trace `Hax.hax_mvcgen_at fun () => m!"build proofs {newFVars[i]!}"
+        trace `Hax.hax_mvcgen_at fun () => m!"build proofs {newDecls[i]!.map (mkFVar ·.fvarId)}"
       let newHypGoalProof ← newHypGoals[i]!.withContext do
         withLocalDeclD `p (mkSort .zero) fun p => do
-          let fDeclsNamed ← (Array.range newFVars.size).mapM fun j => do
-            let fType ← newHypGoals[j]!.withContext (mkForallFVars newFVars[j]! p)
+          let fDeclsNamed ← (Array.range newDecls.size).mapM fun j => do
+            let fType ← newHypGoals[j]!.withContext
+              (mkForallFVars (newDecls[i]!.map (mkFVar ·.fvarId)) p)
             pure (Name.mkSimple s!"f{j + 1}", fun _ : Array Expr => pure fType)
           withLocalDeclsD fDeclsNamed fun fs => do
-            mkLambdaFVars (#[p] ++ fs) (mkAppN fs[i]! newFVars[i]!)
+            mkLambdaFVars (#[p] ++ fs)
+              (mkAppN fs[i]! (newDecls[i]!.filter (!·.isLet)|>.map (mkFVar ·.fvarId)))
       newHypGoalProofs := newHypGoalProofs.push newHypGoalProof
 
     -- Assign proofs to goals
