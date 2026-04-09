@@ -2,23 +2,12 @@
 
 use hax_types::cli_options::*;
 use hax_types::diagnostics::message::HaxMessage;
+use std::fs;
 use std::path::Path;
-use std::{fs};
-
 
 /// Generate the contents of a `lakefile.toml` for an aeneas-lean project.
 fn lakefile_contents(crate_name: &str) -> String {
-    // Convert crate name to PascalCase for the Lean module name
-    let pkg_name: String = crate_name
-        .split('_')
-        .map(|s| {
-            let mut c = s.chars();
-            match c.next() {
-                None => String::new(),
-                Some(f) => f.to_uppercase().to_string() + c.as_str(),
-            }
-        })
-        .collect();
+    let pkg_name = super::to_camel_case(crate_name);
 
     format!(
         r#"name = "{pkg_name}"
@@ -27,7 +16,7 @@ defaultTargets = ["{pkg_name}"]
 
 [[lean_lib]]
 name = "{pkg_name}"
-roots = ["extraction.{pkg_name}"]
+roots = ["{pkg_name}"]
 
 [[require]]
 name = "aeneas"

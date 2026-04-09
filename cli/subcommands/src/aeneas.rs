@@ -9,8 +9,8 @@
 use hax_types::cli_options::*;
 use hax_types::diagnostics::message::HaxMessage;
 use std::collections::HashMap;
-use std::time::SystemTime;
 use std::path::{Path, PathBuf};
+use std::time::SystemTime;
 use std::{fs, process};
 
 use super::find_binary;
@@ -22,6 +22,19 @@ const AENEAS_BINARY_ENV: &str = "HAX_AENEAS_BINARY";
 const CHARON_BINARY_NAME: &str = "charon";
 const CHARON_BINARY_ENV: &str = "HAX_CHARON_BINARY";
 const BACKEND_DIR: &str = "aeneas-lean";
+
+/// Convert a snake_case crate name to CamelCase for Lean.
+pub fn to_camel_case(name: &str) -> String {
+    name.split('_')
+        .map(|s| {
+            let mut c = s.chars();
+            match c.next() {
+                None => String::new(),
+                Some(f) => f.to_uppercase().to_string() + c.as_str(),
+            }
+        })
+        .collect()
+}
 
 /// Forward all aeneas output lines.
 fn report_output(lines: &[String], message_format: MessageFormat) {
@@ -96,14 +109,17 @@ pub fn run(
         .and_then(|m| m.root_package().map(|p| p.name.replace('-', "_")))
         .unwrap_or_else(|| "output".to_string());
 
+    // Convert crate name to PascalCase for the Lean package/directory name.
+    let pkg_name = to_camel_case(&crate_name);
+
     // Output directory layout:
     //   <lean_dir>/
-    //     extraction/   <- Lean files produced by aeneas
-    //     llbc/         <- LLBC file produced by charon
-    //     lakefile.toml <- (optional) Lean project file
+    //     <PkgName>/Extraction/   <- Lean files produced by aeneas
+    //     llbc/                   <- LLBC file produced by charon
+    //     lakefile.toml           <- (optional) Lean project file
     //     lean-toolchain
     let lean_dir = output_dir.unwrap_or_else(|| crate_dir.join("proofs").join(BACKEND_DIR));
-    let out_dir = lean_dir.join("extraction");
+    let out_dir = lean_dir.join(&pkg_name).join("Extraction");
     let llbc_dir = lean_dir.join("llbc");
 
     fs::create_dir_all(&out_dir).unwrap_or_else(|e| {
@@ -143,7 +159,10 @@ pub fn run(
         Ok(status) if status.success() => {}
         Ok(status) => {
             HaxMessage::GenericError {
-                message: format!("charon exited with non-zero code {}", status.code().unwrap_or(-1)),
+                message: format!(
+                    "charon exited with non-zero code {}",
+                    status.code().unwrap_or(-1)
+                ),
             }
             .report(message_format, None);
             return true;
@@ -240,7 +259,10 @@ pub fn run(
 
     if !output.status.success() {
         HaxMessage::GenericError {
-            message: format!("aeneas exited with non-zero code {}", output.status.code().unwrap_or(-1)),
+            message: format!(
+                "aeneas exited with non-zero code {}",
+                output.status.code().unwrap_or(-1)
+            ),
         }
         .report(message_format, None);
         return true;
