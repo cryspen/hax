@@ -16,7 +16,7 @@ defaultTargets = ["{pkg_name}"]
 
 [[lean_lib]]
 name = "{pkg_name}"
-roots = ["{pkg_name}"]
+roots = ["{pkg_name}.Extraction.Funs"]
 
 [[require]]
 name = "aeneas"

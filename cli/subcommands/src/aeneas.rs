@@ -100,13 +100,16 @@ pub fn run(
     let aeneas = find_binary(AENEAS_BINARY_NAME, AENEAS_BINARY_ENV, message_format);
     let charon = find_binary(CHARON_BINARY_NAME, CHARON_BINARY_ENV, message_format);
 
-    let crate_dir = std::env::current_dir().expect("Could not get current directory");
-
-    let crate_name = cargo_metadata::MetadataCommand::new()
-        .current_dir(&crate_dir)
+    let metadata = cargo_metadata::MetadataCommand::new()
         .exec()
-        .ok()
-        .and_then(|m| m.root_package().map(|p| p.name.replace('-', "_")))
+        .expect("Could not read cargo metadata");
+    let crate_dir = metadata
+        .root_package()
+        .map(|p| PathBuf::from(&p.manifest_path).parent().unwrap().to_path_buf())
+        .unwrap_or_else(|| std::env::current_dir().expect("Could not get current directory"));
+    let crate_name = metadata
+        .root_package()
+        .map(|p| p.name.replace('-', "_"))
         .unwrap_or_else(|| "output".to_string());
 
     // Convert crate name to PascalCase for the Lean package/directory name.
@@ -227,6 +230,13 @@ pub fn run(
         report_error_output(&all_lines, &lean_dir, message_format);
     } else if verbose > 0 {
         report_output(&all_lines, message_format);
+    }
+
+    // Rename the main output file from <PkgName>.lean to Funs.lean
+    let aeneas_main_file = out_dir.join(format!("{}.lean", pkg_name));
+    let funs_file = out_dir.join("Funs.lean");
+    if aeneas_main_file.exists() {
+        let _ = fs::rename(&aeneas_main_file, &funs_file);
     }
 
     // Report results
