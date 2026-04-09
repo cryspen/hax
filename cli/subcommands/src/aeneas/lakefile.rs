@@ -59,7 +59,7 @@ pub fn generate(lean_dir: &Path, crate_name: &str, message_format: MessageFormat
     );
     write_if_absent(
         &lean_dir.join("lean-toolchain"),
-        "leanprover/lean4:stable",
+        "leanprover/lean4:v4.28.0-rc1",
         message_format,
     );
 }
