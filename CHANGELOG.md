@@ -54,6 +54,8 @@ Changes to the Lean backend:
  - Add a resugaring for ellipsis patterns (#2002)
 
 Miscellaneous:
+ - Fix Nix development shell: add an `fstar` devShell providing F* and the
+   required environment variables (#1972)
 
 ## 0.3.6
 

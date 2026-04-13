@@ -243,6 +243,14 @@
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
             packages = defaultPackages;
           };
+          fstar = pkgs.mkShell {
+            inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            shellHook = ''
+              export HAX_HOME=$(git rev-parse --show-toplevel)
+              export FSTAR_HOME="${fstar}"
+            '';
+            packages = defaultPackages ++ [ fstar ];
+          };
         };
       });
 }
