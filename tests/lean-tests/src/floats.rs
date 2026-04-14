@@ -1,7 +1,8 @@
-// Tests on floats
+//! Tests on floats
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+// Float constants
 const N: f32 = 1.0;
 
 fn test() {
@@ -11,6 +12,7 @@ fn test() {
     let l5 = N;
 }
 
+// Float as function args and return
 fn f(x: f64, y: f32) -> f32 {
     y
 }

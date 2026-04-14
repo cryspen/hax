@@ -1,3 +1,8 @@
+//! Tests on pattern matching
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
+// Matching on constants
 fn test_const_matching(x: u32, c: char, s: &str, b: bool) -> u32 {
     let x = match x {
         0 => 42,
@@ -18,6 +23,7 @@ fn test_const_matching(x: u32, c: char, s: &str, b: bool) -> u32 {
     return x + c + s + b;
 }
 
+// Binding subpattern with @
 fn test_binding_subpattern_matching(x: (u8, (u8, u8))) -> u8 {
     match x {
         (0, pair @ (a, b)) => a + b + pair.0 + pair.1,
@@ -25,6 +31,7 @@ fn test_binding_subpattern_matching(x: (u8, (u8, u8))) -> u8 {
     }
 }
 
+// Ellipsis (..) in record/struct-variant patterns: all fields, some fields, no fields
 fn test_ellipsis_records() {
     enum E {
         C { f1: u8, f2: u8, f3: u8, f4: u8 },
@@ -54,6 +61,7 @@ fn test_ellipsis_records() {
     };
 }
 
+// Ellipsis (..) in plain struct patterns
 fn test_ellipsis_structs() {
     struct S {
         f1: u8,
@@ -86,6 +94,7 @@ fn test_ellipsis_structs() {
     };
 }
 
+// Ellipsis (..) in bare tuple patterns: prefix, suffix, both ends
 fn test_ellipsis_bare_tuples() {
     let t = (1u8, 2u8, 3u8, 4u8);
 
@@ -112,6 +121,7 @@ fn test_ellipsis_bare_tuples() {
     };
 }
 
+// Ellipsis (..) in enum tuple-variant patterns
 fn test_ellipsis_tuples() {
     enum F {
         D(u8, u8, u8, u8),
