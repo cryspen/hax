@@ -212,23 +212,12 @@ structure S where
   -- no fields
 
 @[reducible] instance Impl.AssociatedTypes :
-  core_models.ops.bit.Not.AssociatedTypes S
-  where
-  Output := S
-
-instance Impl : core_models.ops.bit.Not S where
-  not := fun (self : S) => do (pure self)
-
-@[reducible] instance Impl_1.AssociatedTypes :
   core_models.ops.arith.Add.AssociatedTypes S S
   where
   Output := S
 
-instance Impl_1 : core_models.ops.arith.Add S S where
+instance Impl : core_models.ops.arith.Add S S where
   add := fun (self : S) (rhs : S) => do (pure self)
-
-@[spec]
-def not_s (x : S) : RustM S := do (core_models.ops.bit.Not.not S x)
 
 @[spec]
 def add_s (x : S) (y : S) : RustM S := do
