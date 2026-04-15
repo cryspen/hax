@@ -151,3 +151,156 @@ fn test_ellipsis_tuples() {
         F::D(a, b, c, d) => assert!(a == 1 && b == 2 && c == 3 && d == 4),
     };
 }
+
+// Nested tuple destructuring
+fn nested_tuple_match(x: ((u32, u32), (u32, u32))) -> u32 {
+    match x {
+        ((a, b), (c, d)) => a + b + c + d,
+    }
+}
+
+// Match with multiple arms and fallthrough wildcard
+fn multi_arm(x: u32) -> u32 {
+    match x {
+        0 => 100,
+        1 => 200,
+        2 => 300,
+        3 => 400,
+        _ => 0,
+    }
+}
+
+// Match returning different types from each arm (all same type)
+fn match_expressions(x: Option<u32>) -> u32 {
+    match x {
+        Some(v) => v * 2,
+        None => 0,
+    }
+}
+
+// Match on nested enums
+enum Wrapper {
+    Single(u32),
+    Pair(u32, u32),
+    Empty,
+}
+
+fn match_wrapper(w: Wrapper) -> u32 {
+    match w {
+        Wrapper::Single(x) => x,
+        Wrapper::Pair(x, y) => x + y,
+        Wrapper::Empty => 0,
+    }
+}
+
+// Match on nested Options
+fn match_nested_option(x: Option<Option<u32>>) -> u32 {
+    match x {
+        Some(Some(v)) => v,
+        Some(None) => 1,
+        None => 2,
+    }
+}
+
+// Match on Result
+fn match_result(x: Result<u32, i32>) -> u32 {
+    match x {
+        Ok(v) => v,
+        Err(_) => 0,
+    }
+}
+
+// Exhaustive matching on bool
+fn match_bool_exhaustive(b: bool) -> u32 {
+    match b {
+        true => 1,
+        false => 0,
+    }
+}
+
+// Match on tuple of enums
+fn match_enum_pair(a: Option<u32>, b: Option<u32>) -> u32 {
+    match (a, b) {
+        (Some(x), Some(y)) => x + y,
+        (Some(x), None) => x,
+        (None, Some(y)) => y,
+        (None, None) => 0,
+    }
+}
+
+// Deeply nested pattern
+fn deep_pattern(x: Option<Result<(u32, u32), u32>>) -> u32 {
+    match x {
+        Some(Ok((a, b))) => a + b,
+        Some(Err(e)) => e,
+        None => 0,
+    }
+}
+
+// Match with binding and computation in arm
+fn match_with_block(x: Option<u32>) -> u32 {
+    match x {
+        Some(v) => {
+            let doubled = v * 2;
+            let tripled = v * 3;
+            doubled + tripled
+        }
+        None => {
+            let default = 42;
+            default
+        }
+    }
+}
+
+// Multiple let-destructurings
+fn multiple_let_destruct() -> u32 {
+    let (a, b) = (1u32, 2u32);
+    let (c, (d, e)) = (3u32, (4u32, 5u32));
+    a + b + c + d + e
+}
+
+// Match with @ binding on enum
+fn at_binding_enum(x: Option<u32>) -> u32 {
+    match x {
+        v @ Some(42) => 100,
+        Some(n) => n,
+        None => 0,
+    }
+}
+
+// Match on reference
+fn match_on_ref(x: &u32) -> u32 {
+    match x {
+        &0 => 100,
+        &1 => 200,
+        _ => 0,
+    }
+}
+
+// Match returning unit
+fn match_unit(x: u32) {
+    match x {
+        0 => (),
+        _ => (),
+    }
+}
+
+// Matching on ranges (inclusive)
+fn match_range(x: u32) -> &'static str {
+    match x {
+        0..=9 => "digit",
+        10..=99 => "two-digit",
+        100..=999 => "three-digit",
+        _ => "large",
+    }
+}
+
+// Matching on char ranges
+fn char_class(c: char) -> u32 {
+    match c {
+        'a'..='z' => 1,
+        'A'..='Z' => 2,
+        '0'..='9' => 3,
+        _ => 0,
+    }
+}

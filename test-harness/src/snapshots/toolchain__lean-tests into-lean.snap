@@ -57,6 +57,110 @@ def g (N : usize) (x : (RustArray u8 N)) :
     (f ((10 : usize)) (← (rust_primitives.hax.repeat (0 : u8) (10 : usize))));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
+def array_literals (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let _empty : (RustArray u32 0) := (RustArray.ofVec #v[]);
+  let _one : (RustArray u32 1) := (RustArray.ofVec #v[(42 : u32)]);
+  let _three : (RustArray u32 3) :=
+    (RustArray.ofVec #v[(1 : u32), (2 : u32), (3 : u32)]);
+  let _five : (RustArray u8 5) :=
+    (RustArray.ofVec #v[(10 : u8), (20 : u8), (30 : u8), (40 : u8), (50 : u8)]);
+  let _bools : (RustArray Bool 3) := (RustArray.ofVec #v[true, false, true]);
+  let _chars : (RustArray Char 3) := (RustArray.ofVec #v['a', 'b', 'c']);
+  (pure rust_primitives.hax.Tuple0.mk)
+
+@[spec]
+def array_repeat (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let _zeros : (RustArray u32 5) ←
+    (rust_primitives.hax.repeat (0 : u32) (5 : usize));
+  let _ones : (RustArray u8 10) ←
+    (rust_primitives.hax.repeat (1 : u8) (10 : usize));
+  let _falses : (RustArray Bool 3) ←
+    (rust_primitives.hax.repeat false (3 : usize));
+  (pure rust_primitives.hax.Tuple0.mk)
+
+@[spec]
+def array_index (arr : (RustArray u32 5)) : RustM u32 := do
+  let first : u32 ← arr[(0 : usize)]_?;
+  let last : u32 ← arr[(4 : usize)]_?;
+  (first +? last)
+
+@[spec]
+def array_in_expr (arr : (RustArray u32 3)) : RustM u32 := do
+  ((← arr[(0 : usize)]_?)
+    +? (← ((← arr[(1 : usize)]_?) *? (← arr[(2 : usize)]_?))))
+
+@[spec]
+def sum_array_3 (arr : (RustArray u32 3)) : RustM u32 := do
+  ((← ((← arr[(0 : usize)]_?) +? (← arr[(1 : usize)]_?)))
+    +? (← arr[(2 : usize)]_?))
+
+@[spec]
+def make_array (a : u32) (b : u32) (c : u32) : RustM (RustArray u32 3) := do
+  (pure (RustArray.ofVec #v[a, b, c]))
+
+@[spec]
+def nested_arrays (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let _matrix : (RustArray (RustArray u32 3) 2) :=
+    (RustArray.ofVec #v[(RustArray.ofVec #v[(1 : u32), (2 : u32), (3 : u32)]),
+                          (RustArray.ofVec #v[(4 : u32),
+                                                (5 : u32),
+                                                (6 : u32)])]);
+  let _access : u32 ← (← _matrix[(0 : usize)]_?)[(1 : usize)]_?;
+  let _row : (RustArray u32 3) ← _matrix[(1 : usize)]_?;
+  (pure rust_primitives.hax.Tuple0.mk)
+
+@[spec]
+def array_of_tuples (_ : rust_primitives.hax.Tuple0) :
+    RustM (RustArray (rust_primitives.hax.Tuple2 u32 u32) 3) := do
+  (pure (RustArray.ofVec #v[(rust_primitives.hax.Tuple2.mk (1 : u32) (2 : u32)),
+                              (rust_primitives.hax.Tuple2.mk
+                                (3 : u32)
+                                (4 : u32)),
+                              (rust_primitives.hax.Tuple2.mk
+                                (5 : u32)
+                                (6 : u32))]))
+
+@[spec]
+def double_array (N : usize) (a : (RustArray u32 N)) (b : (RustArray u32 N)) :
+    RustM u32 := do
+  ((← a[(0 : usize)]_?) +? (← b[(0 : usize)]_?))
+
+@[spec]
+def match_array (arr : (RustArray u32 3)) : RustM u32 := do (pure sorry)
+
+@[spec]
+def match_array_nested (arr : (RustArray (RustArray u32 2) 2)) : RustM u32 := do
+  (pure sorry)
+
+structure Point where
+  x : u32
+  y : u32
+
+@[spec]
+def array_of_structs (_ : rust_primitives.hax.Tuple0) :
+    RustM (RustArray Point 2) := do
+  (pure (RustArray.ofVec #v[(Point.mk (x := (0 : u32)) (y := (1 : u32))),
+                              (Point.mk (x := (2 : u32)) (y := (3 : u32)))]))
+
+@[spec]
+def sum_ref (arr : (RustArray u32 4)) : RustM u32 := do
+  ((← ((← ((← arr[(0 : usize)]_?) +? (← arr[(1 : usize)]_?)))
+      +? (← arr[(2 : usize)]_?)))
+    +? (← arr[(3 : usize)]_?))
+
+structure Buffer (N : usize) where
+  data : (RustArray u8 N)
+
+@[spec]
+def make_buffer (_ : rust_primitives.hax.Tuple0) :
+    RustM (Buffer ((16 : usize))) := do
+  (pure (Buffer.mk
+    (data := (← (rust_primitives.hax.repeat (0 : u8) (16 : usize))))))
+
 end lean_tests.array
 
 
@@ -406,19 +510,150 @@ namespace lean_tests.floats
 
 def N : f32 := (1.0 : f32)
 
+def PI_F32 : f32 := (3.14159 : f32)
+
+def PI_F64 : f64 := (3.141592653589793 : f64)
+
+def NEG_ONE : f64 := (-1.0 : f64)
+
 @[spec]
-def test (_ : rust_primitives.hax.Tuple0) :
+def float_literals (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
-  let l0 : f64 := (1.0 : f64);
-  let l1 : f64 := (0.9 : f64);
-  let l2 : f32 := (5.0 : f32);
-  let l5 : f32 := N;
+  let _l0 : f64 := (1.0 : f64);
+  let _l1 : f64 := (0.9 : f64);
+  let _l2 : f32 := (5.0 : f32);
+  let _l3 : f32 := N;
+  let _l4 : f64 := (0.0 : f64);
+  let _l5 : f64 := (-3.14 : f64);
+  let _l6 : f64 := (1.0e10 : f64);
+  let _l7 : f64 := (2.5E-3 : f64);
+  let _l8 : f64 := (100.0 : f64);
   (pure rust_primitives.hax.Tuple0.mk)
 
 @[spec]
 def f (x : f64) (y : f32) : RustM f32 := do (pure y)
 
+@[spec]
+def float_tuple (_ : rust_primitives.hax.Tuple0) :
+    RustM (rust_primitives.hax.Tuple2 f32 f64) := do
+  (pure (rust_primitives.hax.Tuple2.mk (1.5 : f32) (2.5 : f64)))
+
+@[spec]
+def float_array (_ : rust_primitives.hax.Tuple0) : RustM (RustArray f64 3) := do
+  (pure (RustArray.ofVec #v[(1.0 : f64), (2.0 : f64), (3.0 : f64)]))
+
 end lean_tests.floats
+
+
+namespace lean_tests.guards
+
+@[spec]
+def simple_if_guard (x : (core_models.option.Option i32)) : RustM i32 := do
+  match
+    (← match x with
+      | (core_models.option.Option.Some  v) => do
+        match (← (v >? (0 : i32))) with
+          | true => do (pure (core_models.option.Option.Some v))
+          | _ => do (pure core_models.option.Option.None)
+      | _ => do (pure core_models.option.Option.None))
+  with
+    | (core_models.option.Option.Some  x) => do (pure x)
+    | (core_models.option.Option.None ) => do
+      match
+        (← match x with
+          | (core_models.option.Option.Some  v) => do
+            match (← (v <? (-10 : i32))) with
+              | true => do (pure (core_models.option.Option.Some (← (-? v))))
+              | _ => do (pure core_models.option.Option.None)
+          | _ => do (pure core_models.option.Option.None))
+      with
+        | (core_models.option.Option.Some  x) => do (pure x)
+        | (core_models.option.Option.None ) => do
+          match x with
+            | (core_models.option.Option.Some  _) => do (pure (0 : i32))
+            | (core_models.option.Option.None ) => do (pure (-1 : i32))
+
+@[spec]
+def guard_with_outer (x : (core_models.option.Option i32)) (threshold : i32) :
+    RustM i32 := do
+  match
+    (← match x with
+      | (core_models.option.Option.Some  v) => do
+        match (← (v >? threshold)) with
+          | true => do
+            (pure (core_models.option.Option.Some (← (v -? threshold))))
+          | _ => do (pure core_models.option.Option.None)
+      | _ => do (pure core_models.option.Option.None))
+  with
+    | (core_models.option.Option.Some  x) => do (pure x)
+    | (core_models.option.Option.None ) => do
+      match x with
+        | (core_models.option.Option.Some  v) => do (pure v)
+        | (core_models.option.Option.None ) => do (pure (0 : i32))
+
+inductive Shape : Type
+| Circle : u32 -> Shape
+| Rect : u32 -> u32 -> Shape
+| Square : u32 -> Shape
+
+@[spec]
+def area_filter (s : Shape) (min_area : u32) : RustM Bool := do
+  match
+    (← match s with
+      | (Shape.Circle  r) => do
+        match (← ((← (r *? r)) >? min_area)) with
+          | true => do (pure (core_models.option.Option.Some true))
+          | _ => do (pure core_models.option.Option.None)
+      | _ => do (pure core_models.option.Option.None))
+  with
+    | (core_models.option.Option.Some  x) => do (pure x)
+    | (core_models.option.Option.None ) => do
+      match
+        (← match s with
+          | (Shape.Rect  w h) => do
+            match (← ((← (w *? h)) >? min_area)) with
+              | true => do (pure (core_models.option.Option.Some true))
+              | _ => do (pure core_models.option.Option.None)
+          | _ => do (pure core_models.option.Option.None))
+      with
+        | (core_models.option.Option.Some  x) => do (pure x)
+        | (core_models.option.Option.None ) => do
+          match
+            (← match s with
+              | (Shape.Square  s) => do
+                match (← ((← (s *? s)) >? min_area)) with
+                  | true => do (pure (core_models.option.Option.Some true))
+                  | _ => do (pure core_models.option.Option.None)
+              | _ => do (pure core_models.option.Option.None))
+          with
+            | (core_models.option.Option.Some  x) => do (pure x)
+            | (core_models.option.Option.None ) => do (pure false)
+
+@[spec]
+def nested_option_guard
+    (x : (core_models.option.Option (core_models.option.Option i32))) :
+    RustM i32 := do
+  match
+    (← match x with
+      | (core_models.option.Option.Some  (core_models.option.Option.Some  v)) =>
+        do
+        match (← (v >? (0 : i32))) with
+          | true => do (pure (core_models.option.Option.Some v))
+          | _ => do (pure core_models.option.Option.None)
+      | _ => do (pure core_models.option.Option.None))
+  with
+    | (core_models.option.Option.Some  x) => do (pure x)
+    | (core_models.option.Option.None ) => do
+      match x with
+        | (core_models.option.Option.Some  (core_models.option.Option.Some  v))
+          => do
+          (-? v)
+        | (core_models.option.Option.Some  (core_models.option.Option.None )) =>
+          do
+          (pure (-1 : i32))
+        | (core_models.option.Option.None ) => do (pure (-2 : i32))
+
+end lean_tests.guards
 
 
 namespace lean_tests.ite
@@ -444,7 +679,226 @@ def test2 (b : Bool) : RustM i32 := do
     let z : i32 ← (y -? x);
     ((← (z +? y)) +? x)
 
+@[spec]
+def if_let_option (x : (core_models.option.Option u32)) : RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  v) => do (v +? (1 : u32))
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def if_let_result (x : (core_models.result.Result u32 i32)) : RustM u32 := do
+  match x with
+    | (core_models.result.Result.Ok  v) => do (v *? (2 : u32))
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def chained_if_let
+    (a : (core_models.option.Option u32))
+    (b : (core_models.option.Option u32)) :
+    RustM u32 := do
+  match a with
+    | (core_models.option.Option.Some  x) => do (pure x)
+    | _ => do
+      match b with
+        | (core_models.option.Option.Some  y) => do (pure y)
+        | _ => do (pure (0 : u32))
+
+@[spec]
+def if_let_tuple
+    (x : (core_models.option.Option (rust_primitives.hax.Tuple2 u32 u32))) :
+    RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  ⟨a, b⟩) => do (a +? b)
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def if_let_nested
+    (x : (core_models.option.Option (core_models.option.Option u32))) :
+    RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  (core_models.option.Option.Some  v)) =>
+      do
+      (pure v)
+    | _ => do (pure (0 : u32))
+
+inductive Action : Type
+| Move : i32 -> i32 -> Action
+| Rotate : f32 -> Action
+| Stop : Action
+
+@[spec]
+def handle_move (a : Action) : RustM (rust_primitives.hax.Tuple2 i32 i32) := do
+  match a with
+    | (Action.Move  dx dy) => do (pure (rust_primitives.hax.Tuple2.mk dx dy))
+    | _ => do (pure (rust_primitives.hax.Tuple2.mk (0 : i32) (0 : i32)))
+
+@[spec]
+def deeply_nested (a : Bool) (b : Bool) (c : Bool) : RustM u32 := do
+  if a then do
+    if b then do
+      if c then do (pure (1 : u32)) else do (pure (2 : u32))
+    else do
+      if c then do (pure (3 : u32)) else do (pure (4 : u32))
+  else do
+    if b then do
+      if c then do (pure (5 : u32)) else do (pure (6 : u32))
+    else do
+      if c then do (pure (7 : u32)) else do (pure (8 : u32))
+
+@[spec]
+def use_as_arg (b : Bool) : RustM u32 := do
+  let f : (u32 -> RustM u32) := (fun x => (do (x +? (1 : u32)) : RustM u32));
+  (core_models.ops.function.Fn.call
+    (u32 -> RustM u32)
+    (rust_primitives.hax.Tuple1 u32)
+    f
+    (rust_primitives.hax.Tuple1.mk
+      (← if b then do (pure (10 : u32)) else do (pure (20 : u32)))))
+
+@[spec]
+def if_unit (b : Bool) : RustM u32 := do
+  let x : u32 := (0 : u32);
+  let x : u32 ←
+    if b then do let x : u32 := (1 : u32); (pure x) else do (pure x);
+  let x : u32 ←
+    if (← (!? b)) then do let x : u32 := (2 : u32); (pure x) else do (pure x);
+  (pure x)
+
+@[spec]
+def chained_else_if (x : u32) : RustM String := do
+  if (← (x ==? (0 : u32))) then do
+    (pure \"zero\")
+  else do
+    if (← (x ==? (1 : u32))) then do
+      (pure \"one\")
+    else do
+      if (← (x <? (10 : u32))) then do
+        (pure \"small\")
+      else do
+        if (← (x <? (100 : u32))) then do (pure \"medium\") else do (pure \"large\")
+
+structure Config where
+  value : u32
+
+inductive Setting : Type
+| On : Config -> Setting
+| Off : Setting
+
+@[spec]
+def read_config (s : Setting) : RustM u32 := do
+  match s with
+    | (Setting.On  {value := value}) => do (pure value)
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def if_in_loop (n : u32) : RustM u32 := do
+  let count : u32 := (0 : u32);
+  let i : u32 := (0 : u32);
+  let ⟨count, i⟩ ←
+    (rust_primitives.hax.while_loop
+      (fun ⟨count, i⟩ => (do (pure true) : RustM Bool))
+      (fun ⟨count, i⟩ => (do (i <? n) : RustM Bool))
+      (fun ⟨count, i⟩ =>
+        (do
+        (rust_primitives.hax.int.from_machine (0 : u32)) :
+        RustM hax_lib.int.Int))
+      (rust_primitives.hax.Tuple2.mk count i)
+      (fun ⟨count, i⟩ =>
+        (do
+        let count : u32 ←
+          if (← ((← (i %? (2 : u32))) ==? (0 : u32))) then do
+            let count : u32 ← (count +? (1 : u32));
+            (pure count)
+          else do
+            (pure count);
+        let i : u32 ← (i +? (1 : u32));
+        (pure (rust_primitives.hax.Tuple2.mk count i)) :
+        RustM (rust_primitives.hax.Tuple2 u32 u32))));
+  (pure count)
+
 end lean_tests.ite
+
+
+namespace lean_tests.let_else
+
+@[spec]
+def basic_option (opt : (core_models.option.Option u32)) : RustM u32 := do
+  match opt with
+    | (core_models.option.Option.Some  x) => do (x +? (1 : u32))
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def basic_result (res : (core_models.result.Result u32 i32)) : RustM u32 := do
+  match res with
+    | (core_models.result.Result.Ok  x) => do (x +? (1 : u32))
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def chained
+    (a : (core_models.option.Option u32))
+    (b : (core_models.option.Option u32)) :
+    RustM u32 := do
+  match a with
+    | (core_models.option.Option.Some  x) => do
+      match b with
+        | (core_models.option.Option.Some  y) => do (x +? y)
+        | _ => do (pure x)
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def tuple_destructure
+    (opt : (core_models.option.Option (rust_primitives.hax.Tuple2 u32 u32))) :
+    RustM u32 := do
+  match opt with
+    | (core_models.option.Option.Some  ⟨a, b⟩) => do (a +? b)
+    | _ => do (pure (0 : u32))
+
+structure Point where
+  x : i32
+  y : i32
+
+inductive Geom : Type
+| Pt : Point -> Geom
+| Nothing : Geom
+
+@[spec]
+def struct_let_else (g : Geom) : RustM i32 := do
+  match g with
+    | (Geom.Pt  {x := x, y := y}) => do (x +? y)
+    | _ => do (pure (-1 : i32))
+
+@[spec]
+def nested_option
+    (opt : (core_models.option.Option (core_models.option.Option u32))) :
+    RustM u32 := do
+  match opt with
+    | (core_models.option.Option.Some  inner) => do
+      match inner with
+        | (core_models.option.Option.Some  v) => do (v +? (2 : u32))
+        | _ => do (pure (1 : u32))
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def with_early_return_result (opt : (core_models.option.Option u32)) :
+    RustM (core_models.result.Result u32 String) := do
+  match opt with
+    | (core_models.option.Option.Some  x) => do
+      (pure (core_models.result.Result.Ok (← (x *? (2 : u32)))))
+    | _ => do (pure (core_models.result.Result.Err \"missing\"))
+
+inductive Token : Type
+| Number : u32 -> Token
+| Plus : Token
+| Minus : Token
+| Eof : Token
+
+@[spec]
+def extract_number (t : Token) : RustM (core_models.option.Option u32) := do
+  match t with
+    | (Token.Number  n) => do (pure (core_models.option.Option.Some n))
+    | _ => do (pure core_models.option.Option.None)
+
+end lean_tests.let_else
 
 
 namespace lean_tests.loops
@@ -797,6 +1251,141 @@ def test_ellipsis_tuples (_ : rust_primitives.hax.Tuple0) :
             &&? (← (d ==? (4 : u8))))));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
+def nested_tuple_match
+    (x :
+    (rust_primitives.hax.Tuple2
+      (rust_primitives.hax.Tuple2 u32 u32)
+      (rust_primitives.hax.Tuple2 u32 u32))) :
+    RustM u32 := do
+  match x with | ⟨⟨a, b⟩, ⟨c, d⟩⟩ => do ((← ((← (a +? b)) +? c)) +? d)
+
+@[spec]
+def multi_arm (x : u32) : RustM u32 := do
+  match x with
+    | 0 => do (pure (100 : u32))
+    | 1 => do (pure (200 : u32))
+    | 2 => do (pure (300 : u32))
+    | 3 => do (pure (400 : u32))
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def match_expressions (x : (core_models.option.Option u32)) : RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  v) => do (v *? (2 : u32))
+    | (core_models.option.Option.None ) => do (pure (0 : u32))
+
+inductive Wrapper : Type
+| Single : u32 -> Wrapper
+| Pair : u32 -> u32 -> Wrapper
+| Empty : Wrapper
+
+@[spec]
+def match_wrapper (w : Wrapper) : RustM u32 := do
+  match w with
+    | (Wrapper.Single  x) => do (pure x)
+    | (Wrapper.Pair  x y) => do (x +? y)
+    | (Wrapper.Empty ) => do (pure (0 : u32))
+
+@[spec]
+def match_nested_option
+    (x : (core_models.option.Option (core_models.option.Option u32))) :
+    RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  (core_models.option.Option.Some  v)) =>
+      do
+      (pure v)
+    | (core_models.option.Option.Some  (core_models.option.Option.None )) => do
+      (pure (1 : u32))
+    | (core_models.option.Option.None ) => do (pure (2 : u32))
+
+@[spec]
+def match_result (x : (core_models.result.Result u32 i32)) : RustM u32 := do
+  match x with
+    | (core_models.result.Result.Ok  v) => do (pure v)
+    | (core_models.result.Result.Err  _) => do (pure (0 : u32))
+
+@[spec]
+def match_bool_exhaustive (b : Bool) : RustM u32 := do
+  match b with | true => do (pure (1 : u32)) | false => do (pure (0 : u32))
+
+@[spec]
+def match_enum_pair
+    (a : (core_models.option.Option u32))
+    (b : (core_models.option.Option u32)) :
+    RustM u32 := do
+  match (rust_primitives.hax.Tuple2.mk a b) with
+    | ⟨(core_models.option.Option.Some  x), (core_models.option.Option.Some  y)⟩
+      => do
+      (x +? y)
+    | ⟨(core_models.option.Option.Some  x), (core_models.option.Option.None )⟩
+      => do
+      (pure x)
+    | ⟨(core_models.option.Option.None ), (core_models.option.Option.Some  y)⟩
+      => do
+      (pure y)
+    | ⟨(core_models.option.Option.None ), (core_models.option.Option.None )⟩ =>
+      do
+      (pure (0 : u32))
+
+@[spec]
+def deep_pattern
+    (x :
+    (core_models.option.Option
+      (core_models.result.Result (rust_primitives.hax.Tuple2 u32 u32) u32))) :
+    RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  (core_models.result.Result.Ok  ⟨a, b⟩))
+      => do
+      (a +? b)
+    | (core_models.option.Option.Some  (core_models.result.Result.Err  e)) => do
+      (pure e)
+    | (core_models.option.Option.None ) => do (pure (0 : u32))
+
+@[spec]
+def match_with_block (x : (core_models.option.Option u32)) : RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  v) => do
+      let doubled : u32 ← (v *? (2 : u32));
+      let tripled : u32 ← (v *? (3 : u32));
+      (doubled +? tripled)
+    | (core_models.option.Option.None ) => do (pure (42 : u32))
+
+@[spec]
+def multiple_let_destruct (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
+  let ⟨a, b⟩ := (rust_primitives.hax.Tuple2.mk (1 : u32) (2 : u32));
+  let ⟨c, ⟨d, e⟩⟩ :=
+    (rust_primitives.hax.Tuple2.mk
+      (3 : u32)
+      (rust_primitives.hax.Tuple2.mk (4 : u32) (5 : u32)));
+  ((← ((← ((← (a +? b)) +? c)) +? d)) +? e)
+
+@[spec]
+def at_binding_enum (x : (core_models.option.Option u32)) : RustM u32 := do
+  match x with
+    | v@(core_models.option.Option.Some  42) => do (pure (100 : u32))
+    | (core_models.option.Option.Some  n) => do (pure n)
+    | (core_models.option.Option.None ) => do (pure (0 : u32))
+
+@[spec]
+def match_on_ref (x : u32) : RustM u32 := do
+  match x with
+    | 0 => do (pure (100 : u32))
+    | 1 => do (pure (200 : u32))
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def match_unit (x : u32) : RustM rust_primitives.hax.Tuple0 := do
+  match x with
+    | 0 => do (pure rust_primitives.hax.Tuple0.mk)
+    | _ => do (pure rust_primitives.hax.Tuple0.mk)
+
+@[spec]
+def match_range (x : u32) : RustM String := do (pure sorry)
+
+@[spec]
+def char_class (c : Char) : RustM u32 := do (pure sorry)
+
 end lean_tests.matching
 
 
@@ -979,6 +1568,262 @@ structure S where
 opaque OpaqueStruct : Type
 
 end lean_tests.opaque
+
+
+namespace lean_tests.pattern_or
+
+inductive Color : Type
+| Red : Color
+| Green : Color
+| Blue : Color
+| Yellow : Color
+| Cyan : Color
+
+@[spec]
+def Color_cast_to_repr (x : Color) : RustM isize := do
+  match x with
+    | (Color.Red ) => do (pure (0 : isize))
+    | (Color.Green ) => do (pure (1 : isize))
+    | (Color.Blue ) => do (pure (2 : isize))
+    | (Color.Yellow ) => do (pure (3 : isize))
+    | (Color.Cyan ) => do (pure (4 : isize))
+
+@[spec]
+def simple_or (c : Color) : RustM u32 := do
+  match c with
+    | (Color.Red ) | (Color.Green ) => do (pure (1 : u32))
+    | (Color.Blue ) | (Color.Yellow ) | (Color.Cyan ) => do (pure (2 : u32))
+
+@[spec]
+def int_or (x : u32) : RustM u32 := do
+  match x with
+    | 0 | 1 => do (pure (10 : u32))
+    | 2 | 3 | 4 => do (pure (20 : u32))
+    | _ => do (pure (30 : u32))
+
+@[spec]
+def nested_option (x : (core_models.option.Option i32)) : RustM i32 := do
+  match x with
+    | (core_models.option.Option.Some  1) | (core_models.option.Option.Some  2)
+      => do
+      (pure (1 : i32))
+    | (core_models.option.Option.Some  3) | (core_models.option.Option.Some  4)
+      | (core_models.option.Option.Some  5) => do
+      (pure (2 : i32))
+    | (core_models.option.Option.Some  x) => do (pure x)
+    | (core_models.option.Option.None ) => do (pure (0 : i32))
+
+@[spec]
+def deep_tuple
+    (x : (rust_primitives.hax.Tuple2 i32 (core_models.option.Option i32))) :
+    RustM i32 := do
+  match x with
+    | ⟨1, (core_models.option.Option.Some  3)⟩ | ⟨1,
+                                                  (core_models.option.Option.Some
+                                                     4)⟩ | ⟨2,
+                                                            (core_models.option.Option.Some
+                                                               3)⟩ | ⟨2,
+                                                                      (core_models.option.Option.Some
+                                                                         4)⟩ =>
+      do
+      (pure (0 : i32))
+    | ⟨5, (core_models.option.Option.None )⟩ | ⟨6,
+                                                (core_models.option.Option.None
+                                                  )⟩ => do
+      (pure (1 : i32))
+    | ⟨x, _⟩ => do (pure x)
+
+@[spec]
+def capture_across_or
+    (x :
+    (core_models.result.Result
+      (rust_primitives.hax.Tuple2 i32 i32)
+      (rust_primitives.hax.Tuple2 i32 i32))) :
+    RustM i32 := do
+  match x with
+    | (core_models.result.Result.Ok  ⟨1, y⟩) | (core_models.result.Result.Ok
+         ⟨2, y⟩) | (core_models.result.Result.Err  ⟨3, y⟩) |
+      (core_models.result.Result.Err  ⟨4, y⟩) => do
+      (pure y)
+    | (core_models.result.Result.Ok  ⟨x, _⟩) | (core_models.result.Result.Err
+         ⟨x, _⟩) => do
+      (pure x)
+
+@[spec]
+def let_or (x : (rust_primitives.hax.Tuple2 u8 u8)) : RustM u8 := do
+  let ⟨a, b⟩ := x;
+  (a +? b)
+
+@[spec]
+def char_or (c : Char) : RustM u32 := do
+  match c with
+    | 'a' | 'e' | 'i' | 'o' | 'u' => do (pure (1 : u32))
+    | 'A' | 'E' | 'I' | 'O' | 'U' => do (pure (2 : u32))
+    | _ => do (pure (0 : u32))
+
+@[spec]
+def bool_or (x : Bool) (y : Bool) : RustM u32 := do
+  match (rust_primitives.hax.Tuple2.mk x y) with
+    | ⟨true, true⟩ | ⟨false, false⟩ => do (pure (1 : u32))
+    | ⟨true, false⟩ | ⟨false, true⟩ => do (pure (2 : u32))
+
+inductive Inner : Type
+| X : Inner
+| Y : u32 -> Inner
+
+inductive Outer : Type
+| A : Inner -> Outer
+| B : Inner -> Outer
+
+@[spec]
+def nested_enum_or (o : Outer) : RustM u32 := do
+  match o with
+    | (Outer.A  (Inner.X )) | (Outer.B  (Inner.X )) => do (pure (0 : u32))
+    | (Outer.A  (Inner.Y  v)) | (Outer.B  (Inner.Y  v)) => do (pure v)
+
+@[spec]
+def or_with_wildcard (x : (rust_primitives.hax.Tuple3 u32 u32 u32)) :
+    RustM u32 := do
+  match x with
+    | ⟨0, _, z⟩ | ⟨1, _, z⟩ => do (pure z)
+    | ⟨_, 0, z⟩ | ⟨_, 1, z⟩ => do (z +? (1 : u32))
+    | ⟨_, _, z⟩ => do (z +? (2 : u32))
+
+@[spec]
+def or_in_if_let (x : (core_models.option.Option u32)) : RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  1) | (core_models.option.Option.Some  2)
+      | (core_models.option.Option.Some  3) => do
+      (pure (42 : u32))
+    | _ => do (pure (0 : u32))
+
+end lean_tests.pattern_or
+
+
+namespace lean_tests.question_mark
+
+@[spec]
+def option_basic (x : (core_models.option.Option u32)) :
+    RustM (core_models.option.Option u32) := do
+  match x with
+    | (core_models.option.Option.Some  v) => do
+      (pure (core_models.option.Option.Some (← (v +? (1 : u32)))))
+    | (core_models.option.Option.None ) => do
+      (pure core_models.option.Option.None)
+
+@[spec]
+def option_multi
+    (x : (core_models.option.Option u32))
+    (y : (core_models.option.Option u32)) :
+    RustM (core_models.option.Option u32) := do
+  match x with
+    | (core_models.option.Option.Some  hoist6) => do
+      match y with
+        | (core_models.option.Option.Some  hoist5) => do
+          (pure (core_models.option.Option.Some (← (hoist6 +? hoist5))))
+        | (core_models.option.Option.None ) => do
+          (pure core_models.option.Option.None)
+    | (core_models.option.Option.None ) => do
+      (pure core_models.option.Option.None)
+
+@[spec]
+def option_in_if (x : (core_models.option.Option u32)) :
+    RustM (core_models.option.Option u32) := do
+  match x with
+    | (core_models.option.Option.Some  v) => do
+      if (← (v >? (10 : u32))) then do
+        (pure (core_models.option.Option.Some (← (v -? (10 : u32)))))
+      else do
+        (pure (core_models.option.Option.Some v))
+    | (core_models.option.Option.None ) => do
+      (pure core_models.option.Option.None)
+
+@[spec]
+def result_basic (x : (core_models.result.Result u32 String)) :
+    RustM (core_models.result.Result u32 String) := do
+  match x with
+    | (core_models.result.Result.Ok  v) => do
+      (pure (core_models.result.Result.Ok (← (v +? (1 : u32)))))
+    | (core_models.result.Result.Err  err) => do
+      (pure (core_models.result.Result.Err err))
+
+@[spec]
+def result_unit
+    (x : (core_models.result.Result rust_primitives.hax.Tuple0 u32)) :
+    RustM (core_models.result.Result i8 u32) := do
+  match x with
+    | (core_models.result.Result.Ok  _) => do
+      (pure (core_models.result.Result.Ok (0 : i8)))
+    | (core_models.result.Result.Err  err) => do
+      (pure (core_models.result.Result.Err err))
+
+@[spec]
+def result_multi
+    (a : (core_models.result.Result u32 String))
+    (b : (core_models.result.Result u32 String)) :
+    RustM (core_models.result.Result u32 String) := do
+  match a with
+    | (core_models.result.Result.Ok  hoist9) => do
+      match b with
+        | (core_models.result.Result.Ok  hoist8) => do
+          (pure (core_models.result.Result.Ok (← (hoist9 +? hoist8))))
+        | (core_models.result.Result.Err  err) => do
+          (pure (core_models.result.Result.Err err))
+    | (core_models.result.Result.Err  err) => do
+      (pure (core_models.result.Result.Err err))
+
+@[spec]
+def chained_transforms (x : (core_models.result.Result u32 String)) :
+    RustM (core_models.result.Result u32 String) := do
+  match x with
+    | (core_models.result.Result.Ok  a) => do
+      match (core_models.result.Result.Ok (← (a +? (1 : u32)))) with
+        | (core_models.result.Result.Ok  b) => do
+          match (core_models.result.Result.Ok (← (b *? (2 : u32)))) with
+            | (core_models.result.Result.Ok  c) => do
+              (pure (core_models.result.Result.Ok c))
+            | (core_models.result.Result.Err  err) => do
+              (pure (core_models.result.Result.Err err))
+        | (core_models.result.Result.Err  err) => do
+          (pure (core_models.result.Result.Err err))
+    | (core_models.result.Result.Err  err) => do
+      (pure (core_models.result.Result.Err err))
+
+@[spec]
+def nested_result_option
+    (x : (core_models.result.Result (core_models.option.Option u32) String)) :
+    RustM (core_models.result.Result u32 String) := do
+  match x with
+    | (core_models.result.Result.Ok  opt) => do
+      match opt with
+        | (core_models.option.Option.Some  v) => do
+          (pure (core_models.result.Result.Ok v))
+        | (core_models.option.Option.None ) => do
+          (pure (core_models.result.Result.Ok (0 : u32)))
+    | (core_models.result.Result.Err  err) => do
+      (pure (core_models.result.Result.Err err))
+
+structure Pair where
+  a : u32
+  b : u32
+
+@[spec]
+def construct_with_question_mark
+    (x : (core_models.option.Option u32))
+    (y : (core_models.option.Option u32)) :
+    RustM (core_models.option.Option Pair) := do
+  match x with
+    | (core_models.option.Option.Some  hoist12) => do
+      match y with
+        | (core_models.option.Option.Some  hoist11) => do
+          (pure (core_models.option.Option.Some
+            (Pair.mk (a := hoist12) (b := hoist11))))
+        | (core_models.option.Option.None ) => do
+          (pure core_models.option.Option.None)
+    | (core_models.option.Option.None ) => do
+      (pure core_models.option.Option.None)
+
+end lean_tests.question_mark
 
 
 namespace lean_tests.specs
@@ -1822,6 +2667,135 @@ abbrev ESMonad (A : Type) (S : Type) (E : Type) :
   Type :=
   (rust_primitives.hax.Tuple2 (core_models.result.Result A E) S)
 
+structure Meters where
+  _0 : f64
+
+structure Seconds where
+  _0 : f64
+
+structure Velocity where
+  _0 : f64
+
+structure Unit where
+  -- no fields
+
+structure Marker where
+  -- no fields
+
+@[spec]
+def make_unit (_ : rust_primitives.hax.Tuple0) : RustM Unit := do (pure Unit.mk)
+
+@[spec]
+def take_marker (_m : Marker) : RustM u32 := do (pure (42 : u32))
+
+structure Tagged (T : Type) where
+  value : u32
+  _phantom : (core_models.marker.PhantomData T)
+
+structure Meters2 where
+  -- no fields
+
+structure Kilograms where
+  -- no fields
+
+@[spec]
+def make_tagged_meters (v : u32) : RustM (Tagged Meters2) := do
+  (pure (Tagged.mk
+    (value := v)
+    (_phantom := core_models.marker.PhantomData.mk)))
+
+@[spec]
+def make_tagged_kg (v : u32) : RustM (Tagged Kilograms) := do
+  (pure (Tagged.mk
+    (value := v)
+    (_phantom := core_models.marker.PhantomData.mk)))
+
+@[spec]
+def read_tagged (T : Type) (t : (Tagged T)) : RustM u32 := do
+  (pure (Tagged.value t))
+
+abbrev Pair (A : Type) : Type := (rust_primitives.hax.Tuple2 A A)
+
+abbrev Triple (A : Type) : Type := (rust_primitives.hax.Tuple3 A A A)
+
+abbrev NestedPair (A : Type) :
+  Type :=
+  (rust_primitives.hax.Tuple2
+    (rust_primitives.hax.Tuple2 A A)
+    (rust_primitives.hax.Tuple2 A A))
+
+abbrev OptionPair (A : Type) :
+  Type :=
+  (core_models.option.Option (rust_primitives.hax.Tuple2 A A))
+
+@[spec]
+def make_pair (x : u32) : RustM (rust_primitives.hax.Tuple2 u32 u32) := do
+  (pure (rust_primitives.hax.Tuple2.mk x x))
+
+@[spec]
+def make_nested_pair (x : u32) :
+    RustM
+    (rust_primitives.hax.Tuple2
+      (rust_primitives.hax.Tuple2 u32 u32)
+      (rust_primitives.hax.Tuple2 u32 u32))
+    := do
+  (pure (rust_primitives.hax.Tuple2.mk
+    (rust_primitives.hax.Tuple2.mk x x)
+    (rust_primitives.hax.Tuple2.mk x x)))
+
+@[spec]
+def unwrap_option_pair
+    (x : (core_models.option.Option (rust_primitives.hax.Tuple2 u32 u32))) :
+    RustM u32 := do
+  match x with
+    | (core_models.option.Option.Some  ⟨a, b⟩) => do (a +? b)
+    | (core_models.option.Option.None ) => do (pure (0 : u32))
+
+abbrev Callback : Type := (u32 -> RustM u32)
+
+@[spec]
+def apply (f : (u32 -> RustM u32)) (x : u32) : RustM u32 := do (f x)
+
+structure Either (L : Type) (R : Type) where
+  is_left : Bool
+  left : (core_models.option.Option L)
+  right : (core_models.option.Option R)
+
+@[spec]
+def make_left (L : Type) (R : Type) (v : L) : RustM (Either L R) := do
+  (pure (Either.mk
+    (is_left := true)
+    (left := (core_models.option.Option.Some v))
+    (right := core_models.option.Option.None)))
+
+@[spec]
+def make_right (L : Type) (R : Type) (v : R) : RustM (Either L R) := do
+  (pure (Either.mk
+    (is_left := false)
+    (left := core_models.option.Option.None)
+    (right := (core_models.option.Option.Some v))))
+
+structure Wrapper (T : Type) where
+  _0 : T
+
+@[spec]
+def wrap (x : u32) : RustM (Wrapper u32) := do (pure (Wrapper.mk x))
+
+@[spec]
+def unwrap (w : (Wrapper u32)) : RustM u32 := do (pure (Wrapper._0 w))
+
+abbrev ParseResult (T : Type) :
+  Type :=
+  (core_models.result.Result (rust_primitives.hax.Tuple2 T String) String)
+
+@[spec]
+def dummy_parse (input : String) :
+    RustM
+    (core_models.result.Result (rust_primitives.hax.Tuple2 u32 String) String)
+    := do
+  (pure (core_models.result.Result.Ok
+    (rust_primitives.hax.Tuple2.mk (42 : u32) input)))
+
 end lean_tests.types
 
 
@@ -2054,6 +3028,17 @@ class Chain1 (Self : Type)
 end lean_tests.traits.associated_types
 
 
+namespace lean_tests.types
+
+inductive Expr : Type
+| Lit : i32 -> Expr
+| Add : Expr -> Expr -> Expr
+| Mul : Expr -> Expr -> Expr
+| Neg : Expr -> Expr
+
+end lean_tests.types
+
+
 namespace lean_tests.associated_types.basic
 
 @[spec]
@@ -2239,6 +3224,25 @@ class T2 (Self : Type)
   [trait_constr_T_associated_type_i1 : T1.AssociatedTypes associatedTypes.T]
   [trait_constr_T_i1 : T1 associatedTypes.T ]
   f (Self) : (Self -> associatedTypes.T -> RustM usize)
+
+end lean_tests.traits.associated_types
+
+
+namespace lean_tests.types
+
+@[spec]
+def eval (e : Expr) : RustM i32 := do
+  match e with
+    | (Expr.Lit  n) => do (pure n)
+    | (Expr.Add  a b) => do ((← (eval a)) +? (← (eval b)))
+    | (Expr.Mul  a b) => do ((← (eval a)) *? (← (eval b)))
+    | (Expr.Neg  a) => do (-? (← (eval a)))
+partial_fixpoint
+
+end lean_tests.types
+
+
+namespace lean_tests.traits.associated_types
 
 @[reducible] instance Impl_1.AssociatedTypes : T2.AssociatedTypes S where
   T := S
