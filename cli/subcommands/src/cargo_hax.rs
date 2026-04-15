@@ -80,7 +80,12 @@ fn rustflags() -> String {
 }
 
 /// Find an external binary: check the given env var, then `PATH`.
-pub(crate) fn find_binary(name: &str, env_var: &str, message_format: MessageFormat) -> PathBuf {
+pub(crate) fn find_binary(
+    name: &str,
+    env_var: &str,
+    message_format: MessageFormat,
+    hint: Option<&str>,
+) -> PathBuf {
     std::env::var(env_var)
         .map(PathBuf::from)
         .or_else(|_| which::which(name))
@@ -88,7 +93,7 @@ pub(crate) fn find_binary(name: &str, env_var: &str, message_format: MessageForm
             HaxMessage::BinaryNotFound {
                 binary_name: name.into(),
                 env_var: env_var.into(),
-                hint: None,
+                hint: hint.map(String::from),
             }
             .report(message_format, None);
             std::process::exit(2);
@@ -161,6 +166,7 @@ fn find_rust_hax_engine(message_format: MessageFormat) -> process::Command {
         RUST_ENGINE_BINARY_NAME,
         RUST_ENGINE_BINARY_ENV,
         message_format,
+        None,
     ))
 }
 
@@ -463,17 +469,15 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
         let mut haxmeta_files = vec![];
         let stderr = child.stderr.take().unwrap();
         let stderr = std::io::BufReader::new(stderr);
-        for line in std::io::BufReader::new(stderr).lines() {
-            if let Ok(line) = line {
-                if let Some(msg) = line.strip_prefix(HAX_DRIVER_STDERR_PREFIX) {
-                    use HaxDriverMessage;
-                    let msg = serde_json::from_str(msg).unwrap();
-                    match msg {
-                        HaxDriverMessage::EmitHaxMeta(data) => haxmeta_files.push(data),
-                    }
-                } else {
-                    eprintln!("{}", line);
+        for line in std::io::BufReader::new(stderr).lines().flatten() {
+            if let Some(msg) = line.strip_prefix(HAX_DRIVER_STDERR_PREFIX) {
+                use HaxDriverMessage;
+                let msg = serde_json::from_str(msg).unwrap();
+                match msg {
+                    HaxDriverMessage::EmitHaxMeta(data) => haxmeta_files.push(data),
                 }
+            } else {
+                eprintln!("{}", line);
             }
         }
         haxmeta_files
@@ -522,17 +526,14 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
                         } else {
                             serde_json::to_writer(dest, &data)
                         }
+                    } else if use_ids {
+                        id_table::WithTable::run(id_table, haxmeta.items, |with_table| {
+                            serde_json::to_writer(dest, with_table)
+                        })
                     } else {
-                        if use_ids {
-                            id_table::WithTable::run(id_table, haxmeta.items, |with_table| {
-                                serde_json::to_writer(dest, with_table)
-                            })
-                        } else {
-                            serde_json::to_writer(dest, &haxmeta.items)
-                        }
-                    })
-                        .unwrap()
-
+                        serde_json::to_writer(dest, &haxmeta.items)
+                    }
+                  ).unwrap()
                 }
             });
             false

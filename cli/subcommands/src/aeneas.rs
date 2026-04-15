@@ -57,7 +57,11 @@ fn report_error_output(
 ) {
     const MAX_LINES: usize = 10;
 
-    let show = if verbose > 0 { lines.len() } else { lines.len().min(MAX_LINES) };
+    let show = if verbose > 0 {
+        lines.len()
+    } else {
+        lines.len().min(MAX_LINES)
+    };
     report_output(&lines[..show], message_format);
 
     if lines.len() > MAX_LINES {
@@ -105,15 +109,31 @@ pub fn run(
     verbose: u8,
     message_format: MessageFormat,
 ) -> bool {
-    let aeneas = find_binary(AENEAS_BINARY_NAME, AENEAS_BINARY_ENV, message_format);
-    let charon = find_binary(CHARON_BINARY_NAME, CHARON_BINARY_ENV, message_format);
+    const INSTALL_HINT: &str = "Install with: ./install-aeneas.sh (or ./setup.sh --aeneas)";
+    let aeneas = find_binary(
+        AENEAS_BINARY_NAME,
+        AENEAS_BINARY_ENV,
+        message_format,
+        Some(INSTALL_HINT),
+    );
+    let charon = find_binary(
+        CHARON_BINARY_NAME,
+        CHARON_BINARY_ENV,
+        message_format,
+        Some(INSTALL_HINT),
+    );
 
     let metadata = cargo_metadata::MetadataCommand::new()
         .exec()
         .expect("Could not read cargo metadata");
     let crate_dir = metadata
         .root_package()
-        .map(|p| PathBuf::from(&p.manifest_path).parent().unwrap().to_path_buf())
+        .map(|p| {
+            PathBuf::from(&p.manifest_path)
+                .parent()
+                .unwrap()
+                .to_path_buf()
+        })
         .unwrap_or_else(|| std::env::current_dir().expect("Could not get current directory"));
     let crate_name = metadata
         .root_package()
