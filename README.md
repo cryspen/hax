@@ -169,6 +169,38 @@ that is where `setup.sh` will install hax.
 
 </details>
 
+<details>
+  <summary><b>Aeneas-Lean backend (optional)</b></summary>
+
+The `aeneas-lean` backend (`cargo hax into aeneas-lean`) uses the
+[charon](https://github.com/AeneasVerif/charon) +
+[aeneas](https://github.com/AeneasVerif/aeneas) pipeline instead of
+the hax engine.  It requires the `aeneas` and `charon` binaries.
+
+**Manual installation:** after installing hax, run:
+
+```bash
+./install-aeneas.sh
+```
+
+This downloads pre-built binaries (at the versions pinned by this
+repository) to `~/.cargo/bin/`.
+You can then use: `cargo hax into aeneas-lean`.
+
+Alternatively, pass `--aeneas` to the setup script:
+`./setup.sh --aeneas`.
+
+You can also build or install `aeneas` and `charon` yourself (e.g.
+from source) and either place them in your `PATH` or point to them
+with the `HAX_AENEAS_BINARY` and `HAX_CHARON_BINARY` environment
+variables.
+
+**Note:** Nix and Docker installations do not yet include
+aeneas and charon. Use `install-aeneas.sh` separately after
+installation.
+
+</details>
+
 ## Supported Subset of the Rust Language
 
 Hax intends to support full Rust, with the one exception, promoting a functional style: mutable references (aka `&mut T`) on return types or when aliasing (see https://github.com/hacspec/hax/issues/420) are forbidden.
