@@ -23,6 +23,49 @@ const CHARON_BINARY_NAME: &str = "charon";
 const CHARON_BINARY_ENV: &str = "HAX_CHARON_BINARY";
 const BACKEND_DIR: &str = "aeneas-lean";
 
+const EXPECTED_AENEAS_VERSION: &str = env!("HAX_EXPECTED_AENEAS_VERSION");
+const EXPECTED_CHARON_VERSION: &str = env!("HAX_EXPECTED_CHARON_VERSION");
+
+/// Check that a binary reports the expected version, warn if not.
+fn check_version(binary: &Path, expected: &str, message_format: MessageFormat) {
+    if expected.is_empty() {
+        return;
+    }
+
+    let is_aeneas = binary.file_name().is_some_and(|n| n == "aeneas");
+    let args: &[&str] = if is_aeneas { &["-version"] } else { &["version"] };
+
+    let output = match process::Command::new(binary).args(args).output() {
+        Ok(o) => String::from_utf8_lossy(&o.stdout).to_string(),
+        Err(_) => return,
+    };
+    let first_line = output.lines().next().unwrap_or("");
+
+    // `aeneas -version` outputs "aeneas <sha>"; compare SHA prefixes.
+    // `charon version` outputs a semver like "0.1.174"; compare exactly.
+    let actual = if is_aeneas {
+        first_line
+            .split_whitespace()
+            .nth(1)
+            .unwrap_or("")
+            .get(..expected.len())
+            .unwrap_or("")
+    } else {
+        first_line.trim()
+    };
+
+    if actual != expected {
+        let name = binary.file_name().unwrap_or_default().to_string_lossy();
+        HaxMessage::GenericWarning {
+            message: format!(
+                "{name} version mismatch: expected {expected}, found {actual}. \
+                 Run ./install-aeneas.sh to get the pinned version."
+            ),
+        }
+        .report(message_format, None);
+    }
+}
+
 /// Convert a snake_case crate name to CamelCase for Lean.
 pub fn to_camel_case(name: &str) -> String {
     name.split('_')
@@ -122,6 +165,9 @@ pub fn run(
         message_format,
         Some(INSTALL_HINT),
     );
+
+    check_version(&aeneas, EXPECTED_AENEAS_VERSION, message_format);
+    check_version(&charon, EXPECTED_CHARON_VERSION, message_format);
 
     let metadata = cargo_metadata::MetadataCommand::new()
         .exec()

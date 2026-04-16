@@ -13,6 +13,7 @@ SCRIPTPATH="$(cd -- "$(dirname "$0")" >/dev/null 2>&1; pwd -P)"
 # ---------- helpers ----------------------------------------------------------
 
 die() { printf '\e[31mError: %s\e[0m\n' "$*" >&2; exit 1; }
+warn() { printf '\e[33mWarning: %s\e[0m\n' "$*" >&2; }
 info() { printf '\e[34m%s\e[0m\n' "$*"; }
 
 # Read a pin file: strip comments and blank lines, return the first
@@ -21,6 +22,12 @@ read_pin() {
     local pin_file="$1"
     [ -f "$pin_file" ] || die "Pin file not found: $pin_file"
     grep -v '^#' "$pin_file" | grep -v '^$' | head -1
+}
+
+# Read a keyed value from a pin file.  Lines have the form "key value".
+read_pin_key() {
+    local pin_file="$1" key="$2"
+    grep -v '^#' "$pin_file" | grep "^${key} " | head -1 | cut -d' ' -f2-
 }
 
 # ---------- detect platform --------------------------------------------------
@@ -47,17 +54,64 @@ PLATFORM="${os_tag}-${arch_tag}"
 AENEAS_TAG="$(read_pin "$SCRIPTPATH/aeneas-pin")"
 CHARON_TAG="$(read_pin "$SCRIPTPATH/charon-pin")"
 
+# Expected versions: aeneas reports a commit SHA prefix, charon reports semver.
+# The aeneas SHA is extracted from the release tag; the charon version is
+# stored explicitly in charon-pin as "version X.Y.Z".
+AENEAS_EXPECTED_SHA=$(echo "$AENEAS_TAG" | sed 's/.*-//' | cut -c1-8)
+CHARON_EXPECTED_VERSION=$(read_pin_key "$SCRIPTPATH/charon-pin" "version")
+
+# ---------- check if already installed at the right version ------------------
+
+check_aeneas_version() {
+    local bin="$1"
+    # `aeneas -version` outputs "aeneas <sha-prefix>"
+    local actual
+    actual=$("$bin" -version 2>/dev/null | awk '{print $2}' | cut -c1-8) || return 1
+    [ "$actual" = "$AENEAS_EXPECTED_SHA" ]
+}
+
+check_charon_version() {
+    local bin="$1"
+    # `charon version` outputs a semver string like "0.1.174"
+    local actual
+    actual=$("$bin" version 2>/dev/null) || return 1
+    [ -z "$CHARON_EXPECTED_VERSION" ] || [ "$actual" = "$CHARON_EXPECTED_VERSION" ]
+}
+
+AENEAS_FOUND=$(command -v aeneas 2>/dev/null || true)
+CHARON_FOUND=$(command -v charon 2>/dev/null || true)
+
+if [ -n "$AENEAS_FOUND" ] && [ -n "$CHARON_FOUND" ]; then
+    AENEAS_OK=false
+    CHARON_OK=false
+    check_aeneas_version "$AENEAS_FOUND" && AENEAS_OK=true
+    check_charon_version "$CHARON_FOUND" && CHARON_OK=true
+
+    if [ "$AENEAS_OK" = true ] && [ "$CHARON_OK" = true ]; then
+        info "aeneas found at $AENEAS_FOUND (version matches pin)"
+        info "charon found at $CHARON_FOUND (version matches pin)"
+        info "Both binaries are already installed at the correct version, skipping download."
+        exit 0
+    fi
+
+    if [ "$AENEAS_OK" = false ]; then
+        printf '\e[31mError: aeneas found at %s but version does not match pin (expected %s)\e[0m\n' "$AENEAS_FOUND" "$AENEAS_EXPECTED_SHA" >&2
+    fi
+    if [ "$CHARON_OK" = false ]; then
+        printf '\e[31mError: charon found at %s but version does not match pin (expected %s)\e[0m\n' "$CHARON_FOUND" "$CHARON_EXPECTED_VERSION" >&2
+    fi
+    die "Remove the existing binaries or update them to the pinned versions."
+fi
+
+# ---------- download & install -----------------------------------------------
+
 info "Pinned versions:"
 info "  aeneas: $AENEAS_TAG"
 info "  charon: $CHARON_TAG"
 info "  platform: $PLATFORM"
 
-# ---------- install directory ------------------------------------------------
-
 INSTALL_DIR="${CARGO_HOME:-$HOME/.cargo}/bin"
 mkdir -p "$INSTALL_DIR"
-
-# ---------- download & extract -----------------------------------------------
 
 AENEAS_URL="https://github.com/AeneasVerif/aeneas/releases/download/${AENEAS_TAG}/aeneas-${PLATFORM}.tar.gz"
 CHARON_URL="https://github.com/AeneasVerif/charon/releases/download/${CHARON_TAG}/charon-${PLATFORM}.tar.gz"
@@ -78,8 +132,6 @@ download_and_extract() {
 download_and_extract "aeneas" "$AENEAS_URL"
 download_and_extract "charon" "$CHARON_URL"
 
-# ---------- install binaries -------------------------------------------------
-
 install_bin() {
     local src="$1" dst="$INSTALL_DIR/$(basename "$1")"
     cp -f "$src" "$dst"
@@ -95,14 +147,14 @@ install_bin "$TMPDIR/charon/charon-driver"
 # ---------- smoke test -------------------------------------------------------
 
 info ""
-if "$INSTALL_DIR/aeneas" --help >/dev/null 2>&1; then
-    info "aeneas --help: OK"
+if "$INSTALL_DIR/aeneas" -version >/dev/null 2>&1; then
+    info "aeneas: OK"
 else
     die "aeneas smoke test failed"
 fi
 
-if "$INSTALL_DIR/charon" --help >/dev/null 2>&1; then
-    info "charon --help: OK"
+if "$INSTALL_DIR/charon" version >/dev/null 2>&1; then
+    info "charon: OK"
 else
     die "charon smoke test failed"
 fi

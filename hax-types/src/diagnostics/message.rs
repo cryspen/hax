@@ -33,6 +33,9 @@ pub enum HaxMessage {
     GenericError {
         message: String,
     } = 7,
+    GenericWarning {
+        message: String,
+    } = 8,
     RunningStep {
         step: String,
     } = 9,
@@ -194,6 +197,10 @@ impl HaxMessage {
             Self::GenericError { message } => {
                 let title = format!("hax: {}", message);
                 format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::GenericWarning { message } => {
+                let title = format!("hax: {}", message);
+                format!("{}", renderer.render(Level::Warning.title(&title)))
             }
             Self::RunningStep { step } => {
                 use colored::Colorize;
