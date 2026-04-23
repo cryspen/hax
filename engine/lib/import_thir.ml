@@ -631,8 +631,8 @@ end) : EXPR = struct
           let arms = List.map ~f:c_arm arms in
           Match { scrutinee; arms }
       | Let _ ->
-          assertion_failure [ e.span ]
-            "`Let` nodes are supposed to be pre-processed"
+          unimplemented ~issue_id:2018 [ e.span ]
+            "Let-chains (e.g. `if let .. && let ..`) are not supported."
       | Block { expr; span; stmts; safety_mode; _ } ->
           let { e; _ } = c_block ~expr ~span ~stmts ~ty:e.ty ~safety_mode in
           e

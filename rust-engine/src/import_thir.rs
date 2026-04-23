@@ -1150,9 +1150,11 @@ impl Import<ast::Expr> for frontend::Expr {
                     })
                     .collect(),
             },
-            frontend::ExprKind::Let { expr: _, pat: _ } => {
-                panic!("Let nodes are preprocessed (those are the ones contained in `if let ...`)")
-            }
+            frontend::ExprKind::Let { expr: _, pat: _ } => ast::ExprKind::Error(unsupported(
+                "Let-chains (e.g. `if let .. && let ..`) are not supported.",
+                2018,
+                span,
+            )),
             frontend::ExprKind::Block { block } => {
                 return import_block_expr(context, block, ty, span, attributes.clone());
             }
