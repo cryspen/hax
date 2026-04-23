@@ -1235,7 +1235,9 @@ end) : EXPR = struct
     | Dyn -> Dyn
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
     | Builtin _ -> Builtin goal
-    | Error str -> failwith @@ "impl_expr_atom: Error " ^ str
+    | Error str ->
+        unimplemented ~issue_id:707 [ span ]
+          ("Could not resolve trait reference: " ^ str)
 
   and c_generic_value (span : Thir.span) (ty : Thir.generic_arg) : generic_value
       =

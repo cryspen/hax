@@ -1934,9 +1934,7 @@ fn import_impl_expr_atom(
         }
         frontend::ImplExprAtom::Dyn => ast::ImplExprKind::Dyn,
         frontend::ImplExprAtom::Builtin { .. } => ast::ImplExprKind::Builtin(goal),
-        frontend::ImplExprAtom::Error(msg) => {
-            ast::ImplExprKind::Error(assertion_failure(msg, span))
-        }
+        frontend::ImplExprAtom::Error(msg) => ast::ImplExprKind::Error(unsupported(msg, 707, span)),
     }
 }
 
