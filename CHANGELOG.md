@@ -13,9 +13,14 @@ Changes to the Rust Engine:
  - Apply resugarings to linked items (pre/post conditions) (#1961)
  - Add new import_thir implemented in Rust and using `FullDef`, activated with `--experimental-full-def` (#1967)
 
+Changes to the engine:
+ - Omit type aliases whose body has unresolvable trait bounds instead of crashing (#2014)
+ - Report let-chains (`if let .. && let ..`) as a soft error instead of panicking (#2014)
+
 Changes to the frontend:
  - Fix support for ellipsis: add wildcard for every field (based on type info
    rather than number of subpatterns) (#2001)
+ - Fix panic on constants of type `&[&T]` (e.g. `&[&str]`) caused by a wrong type for the synthesized array length (#2014)
 
 Changes to cargo-hax:
 
