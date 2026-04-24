@@ -23,6 +23,7 @@ identity_proc_macro_attribute!(
     exclude,
     requires,
     ensures,
+    ensures_ref,
     decreases,
     pv_handwritten,
     pv_constructor,
