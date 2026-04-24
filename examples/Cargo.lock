@@ -10,6 +10,53 @@ dependencies = [
 ]
 
 [[package]]
+name = "anodized"
+version = "0.5.1"
+source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+dependencies = [
+ "anodized-logic",
+ "anodized-macros",
+]
+
+[[package]]
+name = "anodized-core"
+version = "0.5.1"
+source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+dependencies = [
+ "bitflags",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.39",
+]
+
+[[package]]
+name = "anodized-example"
+version = "0.1.0"
+dependencies = [
+ "anodized",
+ "hax-lib",
+]
+
+[[package]]
+name = "anodized-logic"
+version = "0.5.1"
+source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+dependencies = [
+ "num-bigint",
+]
+
+[[package]]
+name = "anodized-macros"
+version = "0.5.1"
+source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+dependencies = [
+ "anodized-core",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.39",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.75"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -56,6 +103,12 @@ dependencies = [
  "quote",
  "syn 1.0.109",
 ]
+
+[[package]]
+name = "bitflags"
+version = "2.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b588b76d00fde79687d7646a9b5bdf3cc0f655e0bbd080335a95d7e96f3587da"
 
 [[package]]
 name = "block-buffer"
@@ -485,11 +538,10 @@ checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
 
 [[package]]
 name = "num-bigint"
-version = "0.4.4"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "608e7659b5c3d7cba262d894801b9ec9d00de989e8a82bd4bef91d08da45cdc0"
+checksum = "c89e69e7e0f03bea5ef08013795c25018e101932225a656383bd384495ecc367"
 dependencies = [
- "autocfg",
  "num-integer",
  "num-traits",
  "serde",
@@ -497,19 +549,18 @@ dependencies = [
 
 [[package]]
 name = "num-integer"
-version = "0.1.45"
+version = "0.1.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "225d3389fb3509a24c93f5c29eb6bde2586b98d9f016636dff58d7c6f7569cd9"
+checksum = "7ce2d95d4b3734dc35aa2f45e1aa22cd416814592a4f9d9205e11affd5b8e10b"
 dependencies = [
- "autocfg",
  "num-traits",
 ]
 
 [[package]]
 name = "num-traits"
-version = "0.2.17"
+version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39e3200413f237f41ab11ad6d161bc7239c84dcb631773ccd7de3dfe4b5c267c"
+checksum = "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841"
 dependencies = [
  "autocfg",
 ]
