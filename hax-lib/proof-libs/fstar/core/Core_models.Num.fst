@@ -489,11 +489,19 @@ val impl_u64__rotate_right': x: u64 -> n: u32 -> u64
 unfold
 let impl_u64__rotate_right = impl_u64__rotate_right'
 
-assume
-val impl_u64__rotate_left': x: u64 -> n: u32 -> u64
-
+(** [u64::rotate_left] — concrete F* model delegating to
+    [Rust_primitives.Integers.rotate_left_u].
+    Rust spec: `(self << (n % 64)) | (self >> ((-n) % 64))`.
+    For [n % 64 == 0] the rotation is the identity; otherwise it's
+    the shift-XOR composition (XOR == OR here because the shifted-left
+    and shifted-right portions occupy disjoint bit positions). *)
 unfold
-let impl_u64__rotate_left = impl_u64__rotate_left'
+let impl_u64__rotate_left (x: u64) (n: u32) : u64 =
+  let m = Rust_primitives.Integers.mk_u32
+            (Rust_primitives.Integers.v n % 64) in
+  if Rust_primitives.Integers.v m = 0
+  then x
+  else Rust_primitives.Integers.rotate_left_u #u64_inttype x m
 
 assume
 val impl_u64__leading_zeros': x: u64 -> u32

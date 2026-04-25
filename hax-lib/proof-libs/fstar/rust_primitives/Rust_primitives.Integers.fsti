@@ -469,7 +469,8 @@ let get_bit (#n: inttype) (x: int_t n) (nth: usize {v nth < bits n}): bit
                     get_bit_nat (pow2 (bits n) + v x) (v nth)
 
 unfold let bit_and (x y: bit): bit = match x, y with | (1, 1) -> 1 | _ -> 0
-unfold let bit_or  (x y: bit): bit = (x + y) % 2
+unfold let bit_or  (x y: bit): bit = match x, y with | (0, 0) -> 0 | _ -> 1
+unfold let bit_xor (x y: bit): bit = (x + y) % 2
 
 /// Bit-wise semantics for `&.`
 val get_bit_and #t (x y: int_t t) (i: usize {v i < bits t})
@@ -480,6 +481,51 @@ val get_bit_and #t (x y: int_t t) (i: usize {v i < bits t})
 val get_bit_or #t (x y: int_t t) (i: usize {v i < bits t})
   : Lemma (get_bit (x |. y) i == get_bit x i `bit_or` get_bit y i)
           [SMTPat (get_bit (x |. y) i)]
+
+/// Bit-wise semantics for `^.`
+val get_bit_xor #t (x y: int_t t) (i: usize {v i < bits t})
+  : Lemma (get_bit (x ^. y) i == get_bit x i `bit_xor` get_bit y i)
+          [SMTPat (get_bit (x ^. y) i)]
+
+/// Bit-wise commutativity of `&.`
+val logand_commutative #t (a b: int_t t)
+  : Lemma ((a &. b) == (b &. a))
+
+/// Bit-extensionality on integer types: two integers are equal iff
+/// they agree on every bit position.  Useful for closing equality
+/// goals that have been reduced to per-bit reasoning via the
+/// [get_bit_*] SMTPats above.
+val lemma_int_t_eq_via_bits #t (x y: int_t t)
+  : Lemma (requires forall (i: usize {v i < bits t}). get_bit x i == get_bit y i)
+          (ensures x == y)
+
+/// Concrete left-rotation of an unsigned integer by [n] bits, where
+/// [0 < n < bits t].  Defined as the shift-XOR composition that the
+/// SIMD intrinsics implement.  For non-zero rotation amounts strictly
+/// below the bit-width the shifted-left and shifted-right portions
+/// occupy disjoint bit positions, so `^.` agrees with `|.` here.
+///
+/// This is the canonical rotate-left in [Rust_primitives]; the
+/// [Core_models.Num.impl_u*__rotate_left] specs delegate to it
+/// (handling the zero / wrap-around cases at the boundary).
+unfold
+let rotate_left_u (#t: inttype{unsigned t})
+                  (x: int_t t)
+                  (n: u32 {v n > 0 /\ v n < bits t /\ bits t < pow2 31})
+              : int_t t =
+  (x <<! n) ^. (x >>! (mk_u32 (bits t) -! n))
+
+/// Per-bit characterization of [rotate_left_u].  For every bit
+/// position [i ∈ [0, bits t)]:
+///     bit i of (rotate_left_u x n)
+///   equals
+///     bit ((i + bits t - n) mod (bits t)) of x
+val lemma_rotate_left_u_get_bit (#t: inttype{unsigned t})
+      (x: int_t t)
+      (n: u32 {v n > 0 /\ v n < bits t /\ bits t < pow2 31})
+      (i: usize {v i < bits t})
+  : Lemma (get_bit (rotate_left_u x n) i ==
+           get_bit x (sz ((v i + bits t - v n) % bits t)))
 
 /// Bit-wise semantics for `<<!`
 val get_bit_shl #t #u (x: int_t t) (y: int_t u) (i: usize {v i < bits t})
