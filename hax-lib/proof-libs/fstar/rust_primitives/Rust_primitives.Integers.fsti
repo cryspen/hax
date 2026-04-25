@@ -487,6 +487,11 @@ val get_bit_xor #t (x y: int_t t) (i: usize {v i < bits t})
   : Lemma (get_bit (x ^. y) i == get_bit x i `bit_xor` get_bit y i)
           [SMTPat (get_bit (x ^. y) i)]
 
+/// Bit-wise semantics for `~.` (logical NOT).
+val get_bit_lognot #t (x: int_t t) (i: usize {v i < bits t})
+  : Lemma (get_bit (~. x) i == (if get_bit x i = 0 then 1 else 0))
+          [SMTPat (get_bit (~. x) i)]
+
 /// Bit-wise commutativity of `&.`
 val logand_commutative #t (a b: int_t t)
   : Lemma ((a &. b) == (b &. a))
