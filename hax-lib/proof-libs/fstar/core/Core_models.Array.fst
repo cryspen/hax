@@ -3,34 +3,48 @@ module Core_models.Array
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::array::TryFromSliceError`]
 type t_TryFromSliceError = | TryFromSliceError : t_TryFromSliceError
 
+/// See [`std::array::map`]
 let impl_23__map
       (#v_T: Type0)
       (v_N: usize)
       (#v_F #v_U: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
-      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F v_T)
       (s: t_Array v_T v_N)
-      (f: (v_T -> v_U))
-    : t_Array v_U v_N = Rust_primitives.Slice.array_map #v_T #v_U v_N #(v_T -> v_U) s f
+      (f: v_F)
+    : t_Array v_U v_N = Rust_primitives.Slice.array_map #v_T #v_U v_N #v_F s f
 
+/// See [`std::array::as_slice`]
 let impl_23__as_slice (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Slice v_T =
   Rust_primitives.Slice.array_as_slice #v_T v_N s
 
+/// See [`std::array::each_ref`]
+let impl_23__each_ref (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Array v_T v_N =
+  Rust_primitives.Slice.array_from_fn #v_T
+    v_N
+    #(usize -> v_T)
+    (fun i ->
+        let i:usize = i in
+        Rust_primitives.Slice.array_index #v_T v_N s i <: v_T)
+
+/// See [`std::array::from_fn`]. The trait bound is `FnMut` (matching std,
+/// which is what Aeneas's downstream extraction expects when it reaches
+/// into a `Fn` instance via `.FnMutInst`).
 let from_fn
       (#v_T: Type0)
       (v_N: usize)
       (#v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F usize)
-      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
-      (f: (usize -> v_T))
-    : t_Array v_T v_N = Rust_primitives.Slice.array_from_fn #v_T v_N #(usize -> v_T) f
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnMut v_F usize)
+      (f: v_F)
+    : t_Array v_T v_N = Rust_primitives.Slice.array_from_fn #v_T v_N #v_F f
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_24 (#v_T: Type0) (v_N: usize)
     : Core_models.Iter.Traits.Collect.t_IntoIterator (t_Array v_T v_N) =
   {
+    f_Item = v_T;
     f_IntoIter = Core_models.Array.Iter.t_IntoIter v_T v_N;
     f_into_iter_pre = (fun (self: t_Array v_T v_N) -> true);
     f_into_iter_post

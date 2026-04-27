@@ -3,16 +3,26 @@ module Core_models.Ops.Range
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::ops::RangeTo`]
 type t_RangeTo (v_T: Type0) = { f_end:v_T }
 
+/// See [`std::ops::RangeFrom`]
 type t_RangeFrom (v_T: Type0) = { f_start:v_T }
 
+/// See [`std::ops::Range`]
 type t_Range (v_T: Type0) = {
   f_start:v_T;
   f_end:v_T
 }
 
+/// See [`std::ops::RangeFull`]
 type t_RangeFull = | RangeFull : t_RangeFull
+
+/// See [`std::ops::RangeInclusive`]
+type t_RangeInclusive (v_T: Type0) = {
+  f_start:v_T;
+  f_end:v_T
+}
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u8) =
