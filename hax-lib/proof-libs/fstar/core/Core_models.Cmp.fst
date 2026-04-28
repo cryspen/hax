@@ -3,6 +3,7 @@ module Core_models.Cmp
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::cmp::PartialEq`]
 class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
   f_eq_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
   f_eq_post:v_Self -> v_Rhs -> bool -> Type0;
@@ -10,6 +11,7 @@ class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
     -> Prims.Pure bool (f_eq_pre x0 x1) (fun result -> f_eq_post x0 x1 result)
 }
 
+/// See [`std::cmp::Eq`]
 class t_Eq (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_PartialEq v_Self v_Self
 }
@@ -17,6 +19,7 @@ class t_Eq (v_Self: Type0) = {
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let _ = fun (v_Self:Type0) {|i: t_Eq v_Self|} -> i._super_i0
 
+/// See [`std::cmp::Ordering`]
 type t_Ordering =
   | Ordering_Less : t_Ordering
   | Ordering_Equal : t_Ordering
@@ -34,6 +37,7 @@ let t_Ordering_cast_to_repr (x: t_Ordering) : isize =
   | Ordering_Equal  -> anon_const_Ordering_Equal__anon_const_0
   | Ordering_Greater  -> anon_const_Ordering_Greater__anon_const_0
 
+/// See [`std::cmp::PartialOrd`]
 class t_PartialOrd (v_Self: Type0) (v_Rhs: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_PartialEq v_Self v_Rhs;
   f_partial_cmp_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
@@ -217,6 +221,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
       | _ -> false
   }
 
+/// See [`std::cmp::Ord`]
 class t_Ord (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Eq v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:t_PartialOrd v_Self v_Self;
@@ -232,16 +237,19 @@ let _ = fun (v_Self:Type0) {|i: t_Ord v_Self|} -> i._super_i0
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let _ = fun (v_Self:Type0) {|i: t_Ord v_Self|} -> i._super_i1
 
+/// See [`std::cmp::max`]
 let max (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_T) (v1 v2: v_T) : v_T =
   match f_cmp #v_T #FStar.Tactics.Typeclasses.solve v1 v2 <: t_Ordering with
   | Ordering_Greater  -> v1
   | _ -> v2
 
+/// See [`std::cmp::min`]
 let min (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_T) (v1 v2: v_T) : v_T =
   match f_cmp #v_T #FStar.Tactics.Typeclasses.solve v1 v2 <: t_Ordering with
   | Ordering_Greater  -> v2
   | _ -> v1
 
+/// See [`std::cmp::Reverse`]
 type t_Reverse (v_T: Type0) = | Reverse : v_T -> t_Reverse v_T
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -1073,3 +1081,95 @@ let impl_Ord_for_isize: t_Ord isize =
       then Ordering_Less <: t_Ordering
       else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering
   }
+
+/// See [`std::cmp::Ordering::is_eq`]
+let impl_Ordering__is_eq (self: t_Ordering) : bool =
+  match self <: t_Ordering with
+  | Ordering_Equal  -> true
+  | _ -> false
+
+/// See [`std::cmp::Ordering::is_ne`]
+let impl_Ordering__is_ne (self: t_Ordering) : bool =
+  match self <: t_Ordering with
+  | Ordering_Less  | Ordering_Greater  -> true
+  | _ -> false
+
+/// See [`std::cmp::Ordering::is_lt`]
+let impl_Ordering__is_lt (self: t_Ordering) : bool =
+  match self <: t_Ordering with
+  | Ordering_Less  -> true
+  | _ -> false
+
+/// See [`std::cmp::Ordering::is_gt`]
+let impl_Ordering__is_gt (self: t_Ordering) : bool =
+  match self <: t_Ordering with
+  | Ordering_Greater  -> true
+  | _ -> false
+
+/// See [`std::cmp::Ordering::is_le`]
+let impl_Ordering__is_le (self: t_Ordering) : bool =
+  match self <: t_Ordering with
+  | Ordering_Less  | Ordering_Equal  -> true
+  | _ -> false
+
+/// See [`std::cmp::Ordering::is_ge`]
+let impl_Ordering__is_ge (self: t_Ordering) : bool =
+  match self <: t_Ordering with
+  | Ordering_Greater  | Ordering_Equal  -> true
+  | _ -> false
+
+/// See [`std::cmp::Ordering::reverse`]
+let impl_Ordering__reverse (self: t_Ordering) : t_Ordering =
+  match self <: t_Ordering with
+  | Ordering_Less  -> Ordering_Greater <: t_Ordering
+  | Ordering_Equal  -> Ordering_Equal <: t_Ordering
+  | Ordering_Greater  -> Ordering_Less <: t_Ordering
+
+/// See [`std::cmp::Ordering::then`]
+let impl_Ordering__then (self other: t_Ordering) : t_Ordering =
+  match self <: t_Ordering with
+  | Ordering_Equal  -> other
+  | _ -> self
+
+/// See [`std::cmp::Ordering::then_with`]
+let impl_Ordering__then_with
+      (#v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F Prims.unit)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Ordering})
+      (self: t_Ordering)
+      (f: v_F)
+    : t_Ordering =
+  match self <: t_Ordering with
+  | Ordering_Equal  ->
+    Core_models.Ops.Function.f_call_once #v_F
+      #Prims.unit
+      #FStar.Tactics.Typeclasses.solve
+      f
+      (() <: Prims.unit)
+  | _ -> self
+
+/// See [`std::cmp::clamp`]
+let clamp
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_T)
+      (value min max: v_T)
+    : Prims.Pure v_T
+      (requires
+        impl_Ordering__is_le (f_cmp #v_T #FStar.Tactics.Typeclasses.solve min max <: t_Ordering))
+      (fun _ -> Prims.l_True) =
+  let _:Prims.unit =
+    if
+      ~.(impl_Ordering__is_le (f_cmp #v_T #FStar.Tactics.Typeclasses.solve min max <: t_Ordering)
+        <:
+        bool)
+    then Core_models.Panicking.Internal.panic #Prims.unit ()
+  in
+  match f_cmp #v_T #FStar.Tactics.Typeclasses.solve value min <: t_Ordering with
+  | Ordering_Less  -> min
+  | Ordering_Equal  -> value
+  | Ordering_Greater  ->
+    match f_cmp #v_T #FStar.Tactics.Typeclasses.solve value max <: t_Ordering with
+    | Ordering_Greater  -> max
+    | _ -> value

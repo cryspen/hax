@@ -8,7 +8,7 @@ type t_Slice t = s:Seq.seq t{Seq.length s <= max_usize}
 type t_Array t (l:usize) = s: Seq.seq t { Seq.length s == v l }
 
 /// Length of a slice
-let length (#a: Type) (s: t_Slice a): usize = sz (Seq.length s)
+let length (#a: Type) (s: t_Slice a): res:usize {res == sz (Seq.length s)} = sz (Seq.length s)
 
 /// Check whether a slice contains an item
 let contains (#t: eqtype) (s: t_Slice t) (x: t): bool = Seq.mem x s

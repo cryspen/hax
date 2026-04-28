@@ -69,6 +69,122 @@ include Core_models.Iter.Bundle {f_zip_post as f_zip_post}
 
 include Core_models.Iter.Bundle {f_zip as f_zip}
 
+include Core_models.Iter.Bundle {f_filter_pre as f_filter_pre}
+
+include Core_models.Iter.Bundle {f_filter_post as f_filter_post}
+
+include Core_models.Iter.Bundle {f_filter as f_filter}
+
+include Core_models.Iter.Bundle {f_chain_pre as f_chain_pre}
+
+include Core_models.Iter.Bundle {f_chain_post as f_chain_post}
+
+include Core_models.Iter.Bundle {f_chain as f_chain}
+
+include Core_models.Iter.Bundle {f_skip_pre as f_skip_pre}
+
+include Core_models.Iter.Bundle {f_skip_post as f_skip_post}
+
+include Core_models.Iter.Bundle {f_skip as f_skip}
+
+include Core_models.Iter.Bundle {f_any_pre as f_any_pre}
+
+include Core_models.Iter.Bundle {f_any_post as f_any_post}
+
+include Core_models.Iter.Bundle {f_any as f_any}
+
+include Core_models.Iter.Bundle {f_find_pre as f_find_pre}
+
+include Core_models.Iter.Bundle {f_find_post as f_find_post}
+
+include Core_models.Iter.Bundle {f_find as f_find}
+
+include Core_models.Iter.Bundle {f_find_map_pre as f_find_map_pre}
+
+include Core_models.Iter.Bundle {f_find_map_post as f_find_map_post}
+
+include Core_models.Iter.Bundle {f_find_map as f_find_map}
+
+include Core_models.Iter.Bundle {f_position_pre as f_position_pre}
+
+include Core_models.Iter.Bundle {f_position_post as f_position_post}
+
+include Core_models.Iter.Bundle {f_position as f_position}
+
+include Core_models.Iter.Bundle {f_count_pre as f_count_pre}
+
+include Core_models.Iter.Bundle {f_count_post as f_count_post}
+
+include Core_models.Iter.Bundle {f_count as f_count}
+
+include Core_models.Iter.Bundle {f_nth_pre as f_nth_pre}
+
+include Core_models.Iter.Bundle {f_nth_post as f_nth_post}
+
+include Core_models.Iter.Bundle {f_nth as f_nth}
+
+include Core_models.Iter.Bundle {f_last_pre as f_last_pre}
+
+include Core_models.Iter.Bundle {f_last_post as f_last_post}
+
+include Core_models.Iter.Bundle {f_last as f_last}
+
+include Core_models.Iter.Bundle {f_for_each_pre as f_for_each_pre}
+
+include Core_models.Iter.Bundle {f_for_each_post as f_for_each_post}
+
+include Core_models.Iter.Bundle {f_for_each as f_for_each}
+
+include Core_models.Iter.Bundle {f_reduce_pre as f_reduce_pre}
+
+include Core_models.Iter.Bundle {f_reduce_post as f_reduce_post}
+
+include Core_models.Iter.Bundle {f_reduce as f_reduce}
+
+include Core_models.Iter.Bundle {f_min_pre as f_min_pre}
+
+include Core_models.Iter.Bundle {f_min_post as f_min_post}
+
+include Core_models.Iter.Bundle {f_min as f_min}
+
+include Core_models.Iter.Bundle {f_max_pre as f_max_pre}
+
+include Core_models.Iter.Bundle {f_max_post as f_max_post}
+
+include Core_models.Iter.Bundle {f_max as f_max}
+
+include Core_models.Iter.Bundle {f_collect_pre as f_collect_pre}
+
+include Core_models.Iter.Bundle {f_collect_post as f_collect_post}
+
+include Core_models.Iter.Bundle {f_collect as f_collect}
+
+include Core_models.Iter.Bundle {iter_fold as iter_fold}
+
+include Core_models.Iter.Bundle {iter_all as iter_all}
+
+include Core_models.Iter.Bundle {iter_any as iter_any}
+
+include Core_models.Iter.Bundle {iter_find as iter_find}
+
+include Core_models.Iter.Bundle {iter_find_map as iter_find_map}
+
+include Core_models.Iter.Bundle {iter_position as iter_position}
+
+include Core_models.Iter.Bundle {iter_count as iter_count}
+
+include Core_models.Iter.Bundle {iter_nth as iter_nth}
+
+include Core_models.Iter.Bundle {iter_last as iter_last}
+
+include Core_models.Iter.Bundle {iter_for_each as iter_for_each}
+
+include Core_models.Iter.Bundle {iter_reduce as iter_reduce}
+
+include Core_models.Iter.Bundle {iter_min as iter_min}
+
+include Core_models.Iter.Bundle {iter_max as iter_max}
+
 include Core_models.Iter.Bundle {impl as impl}
 
 include Core_models.Iter.Bundle {impl_1__from__iterator as impl_1}

@@ -11,11 +11,23 @@ let slice_contains (#a: eqtype) (s: t_Slice a) (v: a): bool = Seq.mem v s
 let slice_index (#t: Type) (s: t_Slice t) (i: usize {i <. length s}): t = Seq.index s (v i)
 let slice_slice (#v_T: Type0) (s: t_Slice v_T) (start: usize {start <=. length s}) (end_: usize {start <=. end_ /\ end_ <=. length s}): t_Slice v_T =
   Seq.slice s (v start) (v end_)
-val array_map (#t: Type) (#u: Type) (l: usize) (#ft: Type)
-  (s: t_Array t l) (f: t -> u): res: t_Array u l {forall i. Seq.index res i == f (Seq.index s i)}
+let slice_clone_from_slice (#v_T: Type0) (s: t_Slice v_T) (src: t_Slice v_T {slice_length src == slice_length s}): t_Slice v_T = src
+val array_map 
+      (#v_T #v_U: Type0)
+      (v_N: usize)
+      (#v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F v_T)
+      (#_: unit{i0._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_U})
+      (s: t_Array v_T v_N)
+      (f: v_F)
+      : res: t_Array v_U v_N {forall i. Seq.index res i == Core_models.Ops.Function.f_call f (Seq.index s i)}
 let array_as_slice (#t: Type) (l: usize) (s: t_Array t l): t_Slice t =
   s
 let array_slice (#t: Type) (l: usize) (s: t_Array t l) = slice_slice s
-val array_from_fn (#t: Type) (len: usize) (#ft: Type) (f: (x: usize {x <. len}) -> t): 
-  Pure (t_Array t len) (requires True) (ensures (fun a -> forall i. Seq.index a i == f (sz i)))
+val array_from_fn 
+      (#v_T: Type0)
+      (v_N: usize)
+      (#v_F: Type0)
+      (f: (i: usize {i <. v_N}) -> v_T): 
+  Pure (t_Array v_T v_N) (requires True) (ensures (fun a -> forall i. Seq.index a i == f (sz i)))
 let array_index (#t: Type) (l: usize) (s: t_Array t l) (i: usize {i <. length s}): t = Seq.index s (v i)

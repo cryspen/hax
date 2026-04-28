@@ -22,7 +22,9 @@ val impl_5__pop_front (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A)
 let impl_6 (#v_T #v_A: Type0) : Core_models.Ops.Index.t_Index (t_VecDeque v_T v_A) usize =
   {
     f_Output = v_T;
-    f_index_pre = (fun (self: t_VecDeque v_T v_A) (i: usize) -> true);
+    f_index_pre
+    =
+    (fun (self_: t_VecDeque v_T v_A) (i: usize) -> i <. (impl_5__len #v_T #v_A self_ <: usize));
     f_index_post = (fun (self: t_VecDeque v_T v_A) (i: usize) (out: v_T) -> true);
     f_index
     =

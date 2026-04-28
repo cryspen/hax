@@ -3,8 +3,10 @@ module Core_models.Hash
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::hash::Hasher`]
 class t_Hasher (v_Self: Type0) = { __marker_trait_t_Hasher:Prims.unit }
 
+/// See [`std::hash::Hash`]
 class t_Hash (v_Self: Type0) = {
   f_hash_pre:#v_H: Type0 -> {| i1: t_Hasher v_H |} -> self_: v_Self -> h: v_H
     -> pred: Type0{true ==> pred};
