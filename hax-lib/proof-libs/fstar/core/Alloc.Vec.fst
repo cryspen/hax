@@ -3,6 +3,8 @@ module Alloc.Vec
 open FStar.Mul
 open Rust_primitives
 
+open Rust_primitives.Notations
+
 type t_Vec (v_T: Type0) (v_A: Type0) =
   | Vec : Rust_primitives.Sequence.t_Seq v_T -> Core_models.Marker.t_PhantomData v_A
     -> t_Vec v_T v_A
@@ -210,7 +212,13 @@ let impl_3
     : Core_models.Ops.Index.t_Index (t_Vec v_T v_A) v_I =
   {
     f_Output = i0.f_Output;
-    f_index_pre = (fun (self: t_Vec v_T v_A) (i: v_I) -> true);
+    f_index_pre
+    =
+    (fun (self_: t_Vec v_T v_A) (i: v_I) ->
+        Core_models.Option.impl__is_some #i0.f_Output
+          (Core_models.Slice.impl__get #v_T #v_I (impl_1__as_slice self_ <: t_Slice v_T) i
+            <:
+            Core_models.Option.t_Option i0.f_Output));
     f_index_post = (fun (self: t_Vec v_T v_A) (i: v_I) (out: i0.f_Output) -> true);
     f_index = fun (self: t_Vec v_T v_A) (i: v_I) -> (impl_1__as_slice self <: t_Slice v_T).[ i ]
   }

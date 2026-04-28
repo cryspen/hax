@@ -26,6 +26,7 @@ val impl__sort_by':
     #v_T: Type0 ->
     #v_F: Type0 ->
     {| i0: Core_models.Ops.Function.t_Fn v_F (v_T & v_T) |} ->
+    #_: unit{i0._super_i0._super_i0.Core_models.Ops.Function.f_Output == Core_models.Cmp.t_Ordering} ->
     s: t_Slice v_T ->
     compare: v_F
   -> t_Slice v_T
@@ -34,4 +35,8 @@ unfold
 let impl__sort_by
       (#v_T #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F (v_T & v_T))
-     = impl__sort_by' #v_T #v_F #i0
+      (#_:
+          unit
+            {i0._super_i0._super_i0.Core_models.Ops.Function.f_Output == Core_models.Cmp.t_Ordering}
+        )
+     = impl__sort_by' #v_T #v_F #i0 #_

@@ -170,7 +170,8 @@ val impl_1__from__filter':
     #v_I: Type0 ->
     #v_P: Type0 ->
     {| i0: t_Iterator v_I |} ->
-    {| i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item |}
+    {| i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item |} ->
+    #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool}
   -> t_Iterator (t_Filter v_I v_P)
 
 unfold
@@ -178,13 +179,15 @@ let impl_1__from__filter
       (#v_I #v_P: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
-     = impl_1__from__filter' #v_I #v_P #i0 #i1
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool})
+     = impl_1__from__filter' #v_I #v_P #i0 #i1 #_
 
 let impl__new__from__flat_map
       (#v_I #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Iterator v_U)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+      (#_: unit{i2._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_U})
       (it: v_I)
       (f: v_F)
     : t_FlatMap v_I v_U v_F =
@@ -204,7 +207,8 @@ val impl_1__from__flat_map':
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: t_Iterator v_U |} ->
-    {| i2: Core_models.Ops.Function.t_Fn v_F i0.f_Item |}
+    {| i2: Core_models.Ops.Function.t_Fn v_F i0.f_Item |} ->
+    #_: unit{i2._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_U}
   -> t_Iterator (t_FlatMap v_I v_U v_F)
 
 unfold
@@ -213,7 +217,8 @@ let impl_1__from__flat_map
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Iterator v_U)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
-     = impl_1__from__flat_map' #v_I #v_U #v_F #i0 #i1 #i2
+      (#_: unit{i2._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_U})
+     = impl_1__from__flat_map' #v_I #v_U #v_F #i0 #i1 #i2 #_
 
 noeq
 
@@ -253,6 +258,7 @@ let impl_1__from__map
       (#v_I #v_O #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_O})
     : t_Iterator (t_Map v_I v_F) =
   {
     f_Item = v_O;
@@ -361,6 +367,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (v_B & (_super_i0).f_Item) |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_B} ->
       v_Self ->
       v_B ->
       v_F
@@ -369,6 +376,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (v_B & (_super_i0).f_Item) |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_B} ->
       v_Self ->
       v_B ->
       v_F ->
@@ -378,12 +386,13 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (v_B & (_super_i0).f_Item) |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_B} ->
       x0: v_Self ->
       x1: v_B ->
       x2: v_F
     -> Prims.Pure v_B
-        (f_fold_pre #v_B #v_F #i1 x0 x1 x2)
-        (fun result -> f_fold_post #v_B #v_F #i1 x0 x1 x2 result);
+        (f_fold_pre #v_B #v_F #i1 #_ x0 x1 x2)
+        (fun result -> f_fold_post #v_B #v_F #i1 #_ x0 x1 x2 result);
   f_enumerate_pre:v_Self -> Type0;
   f_enumerate_post:v_Self -> t_Enumerate v_Self -> Type0;
   f_enumerate:x0: v_Self
@@ -400,6 +409,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_O: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_O} ->
       v_Self ->
       v_F
     -> Type0;
@@ -407,6 +417,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_O: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_O} ->
       v_Self ->
       v_F ->
       t_Map v_Self v_F
@@ -415,20 +426,23 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_O: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_O} ->
       x0: v_Self ->
       x1: v_F
     -> Prims.Pure (t_Map v_Self v_F)
-        (f_map_pre #v_O #v_F #i1 x0 x1)
-        (fun result -> f_map_post #v_O #v_F #i1 x0 x1 result);
+        (f_map_pre #v_O #v_F #i1 #_ x0 x1)
+        (fun result -> f_map_post #v_O #v_F #i1 #_ x0 x1 result);
   f_all_pre:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_F
     -> Type0;
   f_all_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_F ->
       bool
@@ -436,9 +450,12 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_all:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       x0: v_Self ->
       x1: v_F
-    -> Prims.Pure bool (f_all_pre #v_F #i1 x0 x1) (fun result -> f_all_post #v_F #i1 x0 x1 result);
+    -> Prims.Pure bool
+        (f_all_pre #v_F #i1 #_ x0 x1)
+        (fun result -> f_all_post #v_F #i1 #_ x0 x1 result);
   f_take_pre:v_Self -> usize -> Type0;
   f_take_post:v_Self -> usize -> t_Take v_Self -> Type0;
   f_take:x0: v_Self -> x1: usize
@@ -448,6 +465,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_F: Type0 ->
       {| i1: t_Iterator v_U |} ->
       {| i2: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i2._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_U} ->
       v_Self ->
       v_F
     -> Type0;
@@ -456,6 +474,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_F: Type0 ->
       {| i1: t_Iterator v_U |} ->
       {| i2: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i2._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_U} ->
       v_Self ->
       v_F ->
       t_FlatMap v_Self v_U v_F
@@ -465,11 +484,12 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_F: Type0 ->
       {| i1: t_Iterator v_U |} ->
       {| i2: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i2._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_U} ->
       x0: v_Self ->
       x1: v_F
     -> Prims.Pure (t_FlatMap v_Self v_U v_F)
-        (f_flat_map_pre #v_U #v_F #i1 #i2 x0 x1)
-        (fun result -> f_flat_map_post #v_U #v_F #i1 #i2 x0 x1 result);
+        (f_flat_map_pre #v_U #v_F #i1 #i2 #_ x0 x1)
+        (fun result -> f_flat_map_post #v_U #v_F #i1 #i2 #_ x0 x1 result);
   f_flatten_pre:{| i1: t_Iterator (_super_i0).f_Item |} -> v_Self -> Type0;
   f_flatten_post:{| i1: t_Iterator (_super_i0).f_Item |} -> v_Self -> t_Flatten v_Self -> Type0;
   f_flatten:{| i1: t_Iterator (_super_i0).f_Item |} -> x0: v_Self
@@ -486,12 +506,14 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_filter_pre:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_P
     -> Type0;
   f_filter_post:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_P ->
       t_Filter v_Self v_P
@@ -499,11 +521,12 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_filter:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       x0: v_Self ->
       x1: v_P
     -> Prims.Pure (t_Filter v_Self v_P)
-        (f_filter_pre #v_P #i1 x0 x1)
-        (fun result -> f_filter_post #v_P #i1 x0 x1 result);
+        (f_filter_pre #v_P #i1 #_ x0 x1)
+        (fun result -> f_filter_post #v_P #i1 #_ x0 x1 result);
   f_chain_pre:
       #v_U: Type0 ->
       {| i1: t_Iterator v_U |} ->
@@ -535,12 +558,14 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_any_pre:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_F
     -> Type0;
   f_any_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_F ->
       bool
@@ -548,18 +573,23 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_any:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       x0: v_Self ->
       x1: v_F
-    -> Prims.Pure bool (f_any_pre #v_F #i1 x0 x1) (fun result -> f_any_post #v_F #i1 x0 x1 result);
+    -> Prims.Pure bool
+        (f_any_pre #v_F #i1 #_ x0 x1)
+        (fun result -> f_any_post #v_F #i1 #_ x0 x1 result);
   f_find_pre:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_P
     -> Type0;
   f_find_post:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_P ->
       Core_models.Option.t_Option (_super_i0).f_Item
@@ -567,15 +597,20 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_find:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       x0: v_Self ->
       x1: v_P
     -> Prims.Pure (Core_models.Option.t_Option (_super_i0).f_Item)
-        (f_find_pre #v_P #i1 x0 x1)
-        (fun result -> f_find_post #v_P #i1 x0 x1 result);
+        (f_find_pre #v_P #i1 #_ x0 x1)
+        (fun result -> f_find_post #v_P #i1 #_ x0 x1 result);
   f_find_map_pre:
       #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_:
+        unit
+          { i1._super_i0._super_i0.Core_models.Ops.Function.f_Output ==
+            Core_models.Option.t_Option v_B } ->
       v_Self ->
       v_F
     -> Type0;
@@ -583,6 +618,10 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_:
+        unit
+          { i1._super_i0._super_i0.Core_models.Ops.Function.f_Output ==
+            Core_models.Option.t_Option v_B } ->
       v_Self ->
       v_F ->
       Core_models.Option.t_Option v_B
@@ -591,20 +630,26 @@ class t_IteratorMethods (v_Self: Type0) = {
       #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_:
+        unit
+          { i1._super_i0._super_i0.Core_models.Ops.Function.f_Output ==
+            Core_models.Option.t_Option v_B } ->
       x0: v_Self ->
       x1: v_F
     -> Prims.Pure (Core_models.Option.t_Option v_B)
-        (f_find_map_pre #v_B #v_F #i1 x0 x1)
-        (fun result -> f_find_map_post #v_B #v_F #i1 x0 x1 result);
+        (f_find_map_pre #v_B #v_F #i1 #_ x0 x1)
+        (fun result -> f_find_map_post #v_B #v_F #i1 #_ x0 x1 result);
   f_position_pre:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_P
     -> Type0;
   f_position_post:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       v_Self ->
       v_P ->
       Core_models.Option.t_Option usize
@@ -612,11 +657,12 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_position:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
       x0: v_Self ->
       x1: v_P
     -> Prims.Pure (Core_models.Option.t_Option usize)
-        (f_position_pre #v_P #i1 x0 x1)
-        (fun result -> f_position_post #v_P #i1 x0 x1 result);
+        (f_position_pre #v_P #i1 #_ x0 x1)
+        (fun result -> f_position_post #v_P #i1 #_ x0 x1 result);
   f_count_pre:v_Self -> Type0;
   f_count_post:v_Self -> usize -> Type0;
   f_count:x0: v_Self -> Prims.Pure usize (f_count_pre x0) (fun result -> f_count_post x0 result);
@@ -635,12 +681,14 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_for_each_pre:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == Prims.unit} ->
       v_Self ->
       v_F
     -> Type0;
   f_for_each_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == Prims.unit} ->
       v_Self ->
       v_F ->
       Prims.unit
@@ -648,20 +696,23 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_for_each:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == Prims.unit} ->
       x0: v_Self ->
       x1: v_F
     -> Prims.Pure Prims.unit
-        (f_for_each_pre #v_F #i1 x0 x1)
-        (fun result -> f_for_each_post #v_F #i1 x0 x1 result);
+        (f_for_each_pre #v_F #i1 #_ x0 x1)
+        (fun result -> f_for_each_post #v_F #i1 #_ x0 x1 result);
   f_reduce_pre:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F ((_super_i0).f_Item & (_super_i0).f_Item) |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == (_super_i0).f_Item} ->
       v_Self ->
       v_F
     -> Type0;
   f_reduce_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F ((_super_i0).f_Item & (_super_i0).f_Item) |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == (_super_i0).f_Item} ->
       v_Self ->
       v_F ->
       Core_models.Option.t_Option (_super_i0).f_Item
@@ -669,11 +720,12 @@ class t_IteratorMethods (v_Self: Type0) = {
   f_reduce:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F ((_super_i0).f_Item & (_super_i0).f_Item) |} ->
+      #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == (_super_i0).f_Item} ->
       x0: v_Self ->
       x1: v_F
     -> Prims.Pure (Core_models.Option.t_Option (_super_i0).f_Item)
-        (f_reduce_pre #v_F #i1 x0 x1)
-        (fun result -> f_reduce_post #v_F #i1 x0 x1 result);
+        (f_reduce_pre #v_F #i1 #_ x0 x1)
+        (fun result -> f_reduce_post #v_F #i1 #_ x0 x1 result);
   f_min_pre:{| i1: Core_models.Cmp.t_Ord (_super_i0).f_Item |} -> v_Self -> Type0;
   f_min_post:
       {| i1: Core_models.Cmp.t_Ord (_super_i0).f_Item |} ->
@@ -722,6 +774,7 @@ val iter_fold':
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: Core_models.Ops.Function.t_Fn v_F (v_B & i0.f_Item) |} ->
+    #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_B} ->
     iter: v_I ->
     init: v_B ->
     f: v_F
@@ -734,7 +787,8 @@ let iter_fold
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i1:
           Core_models.Ops.Function.t_Fn v_F (v_B & i0.f_Item))
-     = iter_fold' #v_I #v_B #v_F #i0 #i1
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == v_B})
+     = iter_fold' #v_I #v_B #v_F #i0 #i1 #_
 
 assume
 val iter_all':
@@ -742,6 +796,7 @@ val iter_all':
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |} ->
+    #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
     iter: v_I ->
     f: v_F
   -> bool
@@ -751,7 +806,8 @@ let iter_all
       (#v_I #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
-     = iter_all' #v_I #v_F #i0 #i1
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool})
+     = iter_all' #v_I #v_F #i0 #i1 #_
 
 assume
 val iter_any':
@@ -759,6 +815,7 @@ val iter_any':
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |} ->
+    #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
     iter: v_I ->
     f: v_F
   -> bool
@@ -768,7 +825,8 @@ let iter_any
       (#v_I #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
-     = iter_any' #v_I #v_F #i0 #i1
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool})
+     = iter_any' #v_I #v_F #i0 #i1 #_
 
 assume
 val iter_find':
@@ -776,6 +834,7 @@ val iter_find':
     #v_P: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item |} ->
+    #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
     iter: v_I ->
     predicate: v_P
   -> (v_I & Core_models.Option.t_Option i0.f_Item)
@@ -785,7 +844,8 @@ let iter_find
       (#v_I #v_P: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
-     = iter_find' #v_I #v_P #i0 #i1
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool})
+     = iter_find' #v_I #v_P #i0 #i1 #_
 
 assume
 val iter_find_map':
@@ -794,6 +854,10 @@ val iter_find_map':
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |} ->
+    #_:
+      unit
+        { i1._super_i0._super_i0.Core_models.Ops.Function.f_Output ==
+          Core_models.Option.t_Option v_B } ->
     iter: v_I ->
     f: v_F
   -> Core_models.Option.t_Option v_B
@@ -803,7 +867,11 @@ let iter_find_map
       (#v_I #v_B #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
-     = iter_find_map' #v_I #v_B #v_F #i0 #i1
+      (#_:
+          unit
+            { i1._super_i0._super_i0.Core_models.Ops.Function.f_Output ==
+              Core_models.Option.t_Option v_B })
+     = iter_find_map' #v_I #v_B #v_F #i0 #i1 #_
 
 assume
 val iter_position':
@@ -811,6 +879,7 @@ val iter_position':
     #v_P: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item |} ->
+    #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool} ->
     iter: v_I ->
     predicate: v_P
   -> Core_models.Option.t_Option usize
@@ -820,7 +889,8 @@ let iter_position
       (#v_I #v_P: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
-     = iter_position' #v_I #v_P #i0 #i1
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == bool})
+     = iter_position' #v_I #v_P #i0 #i1 #_
 
 assume
 val iter_count': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> iter: v_I -> usize
@@ -851,6 +921,7 @@ val iter_for_each':
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |} ->
+    #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == Prims.unit} ->
     iter: v_I ->
     f: v_F
   -> Prims.unit
@@ -860,7 +931,8 @@ let iter_for_each
       (#v_I #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
-     = iter_for_each' #v_I #v_F #i0 #i1
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == Prims.unit})
+     = iter_for_each' #v_I #v_F #i0 #i1 #_
 
 assume
 val iter_reduce':
@@ -868,6 +940,7 @@ val iter_reduce':
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
     {| i1: Core_models.Ops.Function.t_Fn v_F (i0.f_Item & i0.f_Item) |} ->
+    #_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == i0.f_Item} ->
     iter: v_I ->
     f: v_F
   -> Core_models.Option.t_Option i0.f_Item
@@ -879,7 +952,8 @@ let iter_reduce
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i1:
           Core_models.Ops.Function.t_Fn v_F (i0.f_Item & i0.f_Item))
-     = iter_reduce' #v_I #v_F #i0 #i1
+      (#_: unit{i1._super_i0._super_i0.Core_models.Ops.Function.f_Output == i0.f_Item})
+     = iter_reduce' #v_I #v_F #i0 #i1 #_
 
 assume
 val iter_min':
