@@ -137,28 +137,28 @@ macro "declare_comparison_specs" s:(&"signed" <|> &"unsigned") typeName:ident wi
       namespace $typeName
 
       @[specset int]
-      def eq_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toNat == y.toNat) ⌝ ⦄ := by
-        mvcgen [eq]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
+      def eq_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toInt == y.toInt) ⌝ ⦄ := by
+        mvcgen [eq]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
 
       @[specset int]
-      def ne_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ne x y ⦃ ⇓ r => ⌜ r = (x.toNat != y.toNat) ⌝ ⦄ := by
-        mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
+      def ne_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ne x y ⦃ ⇓ r => ⌜ r = (x.toInt != y.toInt) ⌝ ⦄ := by
+        mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
 
       @[specset int]
-      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = decide (x.toNat < y.toNat) ⌝ ⦄ := by
-        mvcgen [lt]
+      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = decide (x.toInt < y.toInt) ⌝ ⦄ := by
+        mvcgen [lt]; simp [x.lt_iff_toInt_lt]
 
       @[specset int]
-      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = decide (x.toNat ≤ y.toNat) ⌝ ⦄ := by
-        mvcgen [le]
+      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = decide (x.toInt ≤ y.toInt) ⌝ ⦄ := by
+        mvcgen [le]; simp [x.le_iff_toInt_le]
 
       @[specset int]
-      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = decide (x.toNat > y.toNat ) ⌝ ⦄ := by
-        mvcgen [gt]
+      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = decide (x.toInt > y.toInt ) ⌝ ⦄ := by
+        mvcgen [gt]; simp [y.lt_iff_toInt_lt]
 
       @[specset int]
-      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = decide (x.toNat ≥ y.toNat) ⌝ ⦄ := by
-        mvcgen [ge]
+      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = decide (x.toInt ≥ y.toInt) ⌝ ⦄ := by
+        mvcgen [ge]; simp [y.le_iff_toInt_le]
 
       end $typeName
   )
@@ -374,11 +374,11 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   | `unsigned => pure false
   | _ => throw .unsupportedSyntax
 
-  let toX := if signed then mkIdent `toInt else mkIdent `toNat
+  let toX := mkIdent `toInt
   let minValue := mkIdent (typeName.getId ++ `minValue)
   let grind : TSyntax `tactic ←
     if signed then `(tactic| grind)
-    else `(tactic| grind [toNat_add_of_lt, toNat_sub_of_le', toNat_mul_of_lt])
+    else `(tactic| grind [toInt_add_of_lt, toInt_sub_of_le', toInt_mul_of_lt])
 
   let mut cmds ← Syntax.getArgs <$> `(
     namespace $typeName
@@ -438,13 +438,13 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
       /-- Specification for rust multiplication for unsigned integers -/
       @[specset int]
       theorem haxDiv_spec (x y : $typeName) (h : ¬ y = 0) :
-          ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat / y.toNat ⌝ ⦄ := by
+          ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt / y.toInt ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Div.div]
 
       /-- Specification for rust remainder for unsigned integers -/
       @[specset int]
       theorem haxRem_spec (x y : $typeName) (h : ¬ y = 0) :
-          ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat % y.toNat ⌝ ⦄ := by
+          ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt % y.toInt ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Rem.rem]
     )
   cmds := cmds.push $ ← `(

@@ -1,5 +1,13 @@
+import Hax.MissingLean.Init.Data.UInt.Basic
 import Hax.MissingLean.Init.Data.UInt.Lemmas_UInt128
 import Hax.MissingLean.Init.GrindInstances.Ring.UInt
+
+-- The UInt128 toInt declarations live here rather than in `Basic.lean` because
+-- they reference `UInt128.toNat_inj`, `UInt128.lt_iff_toNat_lt`, and
+-- `UInt128.le_iff_toNat_le`, which are produced by `declare_uint_theorems
+-- UInt128 128` in `Lemmas_UInt128.lean`. See
+-- https://github.com/cryspen/hax/issues/1830.
+additional_uint_toInt_decls UInt128 128
 
 attribute [grind =_] UInt8.le_ofNat_iff
 attribute [grind =_] UInt16.le_ofNat_iff
