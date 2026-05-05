@@ -1708,7 +1708,8 @@ struct
               ( F.lid
                   [
                     "__marker_trait_"
-                    ^ FStar_Ident.string_of_lid (pconcrete_ident trait);
+                    ^ List.last_exn
+                        (FStar_Ident.path_of_lid (pconcrete_ident trait));
                   ],
                 pexpr (U.unit_expr e.span) );
             ]
