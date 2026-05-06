@@ -631,8 +631,8 @@ end) : EXPR = struct
           let arms = List.map ~f:c_arm arms in
           Match { scrutinee; arms }
       | Let _ ->
-          assertion_failure [ e.span ]
-            "`Let` nodes are supposed to be pre-processed"
+          unimplemented ~issue_id:2018 [ e.span ]
+            "Let-chains (e.g. `if let .. && let ..`) are not supported."
       | Block { expr; span; stmts; safety_mode; _ } ->
           let { e; _ } = c_block ~expr ~span ~stmts ~ty:e.ty ~safety_mode in
           e
@@ -1235,7 +1235,9 @@ end) : EXPR = struct
     | Dyn -> Dyn
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
     | Builtin _ -> Builtin goal
-    | Error str -> failwith @@ "impl_expr_atom: Error " ^ str
+    | Error str ->
+        unimplemented ~issue_id:707 [ span ]
+          ("Could not resolve trait reference: " ^ str)
 
   and c_generic_value (span : Thir.span) (ty : Thir.generic_arg) : generic_value
       =
