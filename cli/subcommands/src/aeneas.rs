@@ -221,13 +221,17 @@ pub fn run(
     }
     .report(message_format, None);
 
-    let charon_status = process::Command::new(&charon)
-        .args([
-            "cargo",
-            "--preset=aeneas",
-            "--dest-file",
-            llbc_file.to_str().expect("non-UTF8 path"),
-        ])
+    let mut charon_cmd = process::Command::new(&charon);
+    charon_cmd.args([
+        "cargo",
+        "--preset=aeneas",
+        "--dest-file",
+        llbc_file.to_str().expect("non-UTF8 path"),
+    ]);
+    if let Some(extra) = &options.charon_args {
+        charon_cmd.args(extra.split_whitespace());
+    }
+    let charon_status = charon_cmd
         .current_dir(&crate_dir)
         .stderr(process::Stdio::inherit())
         .status();
@@ -275,16 +279,18 @@ pub fn run(
     }
     .report(message_format, None);
 
-    let aeneas_output = process::Command::new(&aeneas)
-        .args([
-            "-backend",
-            "lean",
-            llbc_file.to_str().expect("non-UTF8 path"),
-            "-dest",
-            out_dir.to_str().expect("non-UTF8 path"),
-        ])
-        .current_dir(&crate_dir)
-        .output();
+    let mut aeneas_cmd = process::Command::new(&aeneas);
+    aeneas_cmd.args([
+        "-backend",
+        "lean",
+        llbc_file.to_str().expect("non-UTF8 path"),
+        "-dest",
+        out_dir.to_str().expect("non-UTF8 path"),
+    ]);
+    if let Some(extra) = &options.aeneas_args {
+        aeneas_cmd.args(extra.split_whitespace());
+    }
+    let aeneas_output = aeneas_cmd.current_dir(&crate_dir).output();
 
     let output = match aeneas_output {
         Ok(output) => output,

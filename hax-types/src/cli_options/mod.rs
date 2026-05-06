@@ -175,6 +175,16 @@ pub struct AeneasLeanOptions {
     /// to re-run with this flag after editing the lakefile.
     #[arg(long)]
     pub lakefile: bool,
+
+    /// Extra arguments forwarded to charon, split on whitespace.
+    /// Example: --charon-args="--include foo::bar --opaque crate"
+    #[arg(long)]
+    pub charon_args: Option<String>,
+
+    /// Extra arguments forwarded to aeneas, split on whitespace.
+    /// Example: --aeneas-args="-split-files -no-state"
+    #[arg(long)]
+    pub aeneas_args: Option<String>,
 }
 
 #[derive_group(Serializers)]
