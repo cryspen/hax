@@ -33,7 +33,11 @@ fn check_version(binary: &Path, expected: &str, message_format: MessageFormat) {
     }
 
     let is_aeneas = binary.file_name().is_some_and(|n| n == "aeneas");
-    let args: &[&str] = if is_aeneas { &["-version"] } else { &["version"] };
+    let args: &[&str] = if is_aeneas {
+        &["-version"]
+    } else {
+        &["version"]
+    };
 
     let output = match process::Command::new(binary).args(args).output() {
         Ok(o) => String::from_utf8_lossy(&o.stdout).to_string(),

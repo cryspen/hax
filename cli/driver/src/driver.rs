@@ -152,7 +152,10 @@ fn main() {
                 hax_lib_macros_types::HAX_CFG_OPTION_NAME.into(),
             ])
             .chain(match &options.backend {
-                Some(backend) => vec!["--cfg".into(), format!("hax_backend_{}", backend.to_string().replace('-', "_"))],
+                Some(backend) => vec![
+                    "--cfg".into(),
+                    format!("hax_backend_{}", backend.to_string().replace('-', "_")),
+                ],
                 None => vec![],
             })
             .chain(features.into_iter().map(|s| format!("-Zcrate-attr={}", s)))
