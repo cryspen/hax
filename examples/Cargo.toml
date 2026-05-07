@@ -12,6 +12,7 @@ members = [
     "proverif-psk",
     "coq-example",
     "coverage",
+    "anodized",
 ]
 resolver = "2"
 

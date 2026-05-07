@@ -427,6 +427,7 @@ pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     let item: FnLike = parse_macro_input!(item);
     let kind = FnDecorationKind::Ensures {
         ret_binder: ret_binder.clone(),
+        by_ref: false,
     };
     let (ensures, attr) = make_fn_decoration(phi.clone(), item.sig.clone(), kind, None, None);
     let mut item_with_debug = item.clone();
@@ -439,6 +440,28 @@ pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
         #item
         // #[cfg(    all(not(#HaxCfgOptionName),     debug_assertions )) ] #item_with_debug
         // #[cfg(not(all(not(#HaxCfgOptionName),     debug_assertions )))] #item
+    }
+    .into()
+}
+
+/// Same as [`ensures`], but the closure takes the result by reference:
+/// the binder has type `&T` where `T` is the function's return type.
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn ensures_ref(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let ExprClosure1 {
+        arg: ret_binder,
+        body: phi,
+    } = parse_macro_input!(attr);
+    let item: FnLike = parse_macro_input!(item);
+    let kind = FnDecorationKind::Ensures {
+        ret_binder: ret_binder.clone(),
+        by_ref: true,
+    };
+    let (ensures, attr) = make_fn_decoration(phi.clone(), item.sig.clone(), kind, None, None);
+    quote! {
+        #ensures #attr
+        #item
     }
     .into()
 }
@@ -1136,6 +1159,7 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
 
     let kind = FnDecorationKind::Ensures {
         ret_binder: ret_binder.clone(),
+        by_ref: false,
     };
     let sig = syn::Signature {
         constness: None,
