@@ -3,6 +3,7 @@ module Core_models.Default
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::default::Default`]
 class t_Default (v_Self: Type0) = {
   f_default_pre:x: Prims.unit
     -> pred:

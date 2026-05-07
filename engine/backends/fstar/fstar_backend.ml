@@ -829,13 +829,9 @@ struct
       | GCType { goal; name } ->
           let typ = c_trait_goal span goal in
           Some { kind = Tcresolve; ident = F.id name; typ }
-      | GCProjection { impl = { kind = LocalBound { id }; _ }; assoc_item; typ }
-        ->
-          let proj =
-            F.term
-            @@ F.AST.Project
-                 (F.term @@ F.AST.Var (F.lid [ id ]), pconcrete_ident assoc_item)
-          in
+      | GCProjection { impl; assoc_item; typ } ->
+          let* i = pimpl_expr span impl in
+          let proj = F.term @@ F.AST.Project (i, pconcrete_ident assoc_item) in
           let typ =
             F.mk_refined "_" (F.term_of_string "unit") (fun ~x ->
                 F.term

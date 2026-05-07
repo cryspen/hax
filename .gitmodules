@@ -1,0 +1,3 @@
+[submodule "hax-lib/core-models"]
+	path = hax-lib/core-models
+	url = https://github.com/cryspen/rust-core-models

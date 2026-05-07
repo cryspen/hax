@@ -1,0 +1,11 @@
+[package]
+name = "std"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hax-lib = { path = ".." }
+core-models = { path = "../core-models/core-models" }
+
+# Workaround for https://github.com/rust-lang/cargo/issues/6745
+[workspace]

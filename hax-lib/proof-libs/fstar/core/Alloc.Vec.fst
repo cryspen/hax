@@ -3,6 +3,8 @@ module Alloc.Vec
 open FStar.Mul
 open Rust_primitives
 
+open Rust_primitives.Notations
+
 type t_Vec (v_T: Type0) (v_A: Type0) =
   | Vec : Rust_primitives.Sequence.t_Seq v_T -> Core_models.Marker.t_PhantomData v_A
     -> t_Vec v_T v_A
@@ -32,23 +34,15 @@ let impl_1__len (#v_T #v_A: Type0) (self: t_Vec v_T v_A) : usize =
 
 let impl_1__pop (#v_T #v_A: Type0) (self: t_Vec v_T v_A)
     : (t_Vec v_T v_A & Core_models.Option.t_Option v_T) =
+  let l:usize = Rust_primitives.Sequence.seq_len #v_T self._0 in
   let (self: t_Vec v_T v_A), (hax_temp_output: Core_models.Option.t_Option v_T) =
-    if (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) >. mk_usize 0
+    if l >. mk_usize 0
     then
-      let last:v_T = Rust_primitives.Sequence.seq_last #v_T self._0 in
-      let self:t_Vec v_T v_A =
-        {
-          self with
-          _0
-          =
-          Rust_primitives.Sequence.seq_slice #v_T
-            self._0
-            (mk_usize 0)
-            ((Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) -! mk_usize 1 <: usize)
-        }
-        <:
-        t_Vec v_T v_A
+      let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+        Rust_primitives.Sequence.seq_remove #v_T self._0 (l -! mk_usize 1 <: usize)
       in
+      let self:t_Vec v_T v_A = { self with _0 = tmp0 } <: t_Vec v_T v_A in
+      let last:v_T = out in
       self, (Core_models.Option.Option_Some last <: Core_models.Option.t_Option v_T)
       <:
       (t_Vec v_T v_A & Core_models.Option.t_Option v_T)
@@ -105,16 +99,7 @@ let impl_1__push (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (x: v_T)
         (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) <. Core_models.Num.impl_usize__MAX)
       (fun _ -> Prims.l_True) =
   let self:t_Vec v_T v_A =
-    {
-      self with
-      _0
-      =
-      Rust_primitives.Sequence.seq_concat #v_T
-        self._0
-        (Rust_primitives.Sequence.seq_one #v_T x <: Rust_primitives.Sequence.t_Seq v_T)
-    }
-    <:
-    t_Vec v_T v_A
+    { self with _0 = Rust_primitives.Sequence.seq_push #v_T self._0 x } <: t_Vec v_T v_A
   in
   self
 
@@ -124,24 +109,21 @@ let impl_1__insert (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (index: usize) (elem
         index <=. (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) &&
         (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) <. Core_models.Num.impl_usize__MAX)
       (fun _ -> Prims.l_True) =
-  let left:Rust_primitives.Sequence.t_Seq v_T =
-    Rust_primitives.Sequence.seq_slice #v_T self._0 (mk_usize 0) index
+  let l:usize = Rust_primitives.Sequence.seq_len #v_T self._0 in
+  let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: Rust_primitives.Sequence.t_Seq v_T) =
+    Rust_primitives.Sequence.seq_drain #v_T self._0 index l
   in
-  let right:Rust_primitives.Sequence.t_Seq v_T =
-    Rust_primitives.Sequence.seq_slice #v_T
-      self._0
-      index
-      (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize)
+  let self:t_Vec v_T v_A = { self with _0 = tmp0 } <: t_Vec v_T v_A in
+  let right:Rust_primitives.Sequence.t_Seq v_T = out in
+  let self:t_Vec v_T v_A =
+    { self with _0 = Rust_primitives.Sequence.seq_push #v_T self._0 element } <: t_Vec v_T v_A
   in
-  let left:Rust_primitives.Sequence.t_Seq v_T =
-    Rust_primitives.Sequence.seq_concat #v_T
-      left
-      (Rust_primitives.Sequence.seq_one #v_T element <: Rust_primitives.Sequence.t_Seq v_T)
+  let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (tmp1: Rust_primitives.Sequence.t_Seq v_T) =
+    Rust_primitives.Sequence.seq_concat #v_T self._0 right
   in
-  let left:Rust_primitives.Sequence.t_Seq v_T =
-    Rust_primitives.Sequence.seq_concat #v_T left right
-  in
-  let self:t_Vec v_T v_A = { self with _0 = left } <: t_Vec v_T v_A in
+  let self:t_Vec v_T v_A = { self with _0 = tmp0 } <: t_Vec v_T v_A in
+  let right:Rust_primitives.Sequence.t_Seq v_T = tmp1 in
+  let _:Prims.unit = () in
   self
 
 assume
@@ -174,18 +156,27 @@ let impl_1__append (#v_T #v_A: Type0) (self other: t_Vec v_T v_A)
           Hax_lib.Int.t_Int) <=
         (Rust_primitives.Hax.Int.from_machine Core_models.Num.impl_usize__MAX <: Hax_lib.Int.t_Int))
       (fun _ -> Prims.l_True) =
-  let self:t_Vec v_T v_A =
-    { self with _0 = Rust_primitives.Sequence.seq_concat #v_T self._0 other._0 } <: t_Vec v_T v_A
+  let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (tmp1: Rust_primitives.Sequence.t_Seq v_T) =
+    Rust_primitives.Sequence.seq_concat #v_T self._0 other._0
   in
+  let self:t_Vec v_T v_A = { self with _0 = tmp0 } <: t_Vec v_T v_A in
+  let other:t_Vec v_T v_A = { other with _0 = tmp1 } <: t_Vec v_T v_A in
+  let _:Prims.unit = () in
   let other:t_Vec v_T v_A =
     { other with _0 = Rust_primitives.Sequence.seq_empty #v_T () } <: t_Vec v_T v_A
   in
   self, other <: (t_Vec v_T v_A & t_Vec v_T v_A)
 
-let impl_2__extend_from_slice (#v_T #v_A: Type0) (s: t_Vec v_T v_A) (other: t_Slice v_T)
+let impl_2__extend_from_slice
+      (#v_T #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (self: t_Vec v_T v_A)
+      (other: t_Slice v_T)
     : Prims.Pure (t_Vec v_T v_A)
       (requires
-        ((Rust_primitives.Hax.Int.from_machine (Rust_primitives.Sequence.seq_len #v_T s._0 <: usize)
+        ((Rust_primitives.Hax.Int.from_machine (Rust_primitives.Sequence.seq_len #v_T self._0
+                <:
+                usize)
             <:
             Hax_lib.Int.t_Int) +
           (Rust_primitives.Hax.Int.from_machine (Core_models.Slice.impl__len #v_T other <: usize)
@@ -195,31 +186,41 @@ let impl_2__extend_from_slice (#v_T #v_A: Type0) (s: t_Vec v_T v_A) (other: t_Sl
           Hax_lib.Int.t_Int) <=
         (Rust_primitives.Hax.Int.from_machine Core_models.Num.impl_usize__MAX <: Hax_lib.Int.t_Int))
       (fun _ -> Prims.l_True) =
-  let s:t_Vec v_T v_A =
-    {
-      s with
-      _0
-      =
-      Rust_primitives.Sequence.seq_concat #v_T
-        s._0
-        (Rust_primitives.Sequence.seq_from_slice #v_T other <: Rust_primitives.Sequence.t_Seq v_T)
-    }
-    <:
-    t_Vec v_T v_A
+  let self:t_Vec v_T v_A =
+    { self with _0 = Rust_primitives.Sequence.seq_extend #v_T self._0 other } <: t_Vec v_T v_A
   in
-  s
+  self
 
+/// Generic `Index<I>` impl for `Vec`, matching std\'s
+/// `impl<T, I: SliceIndex<[T]>, A: Allocator> Index<I> for Vec<T, A>`
+/// (in `alloc/src/vec/mod.rs`). Delegates through `Deref` to the
+/// `<[T]>::index` impl, the same body std uses. We omit the
+/// `A: Allocator` bound because we do not model `Allocator` as a
+/// trait — functionally identical for our purposes. The trait bound
+/// references `std::slice::SliceIndex` (the real one) rather than
+/// `core_models::slice::index::SliceIndex` because this crate is
+/// standalone and does not depend on `core_models`; Aeneas\'s name
+/// map for `std::slice::SliceIndex` aligns the extracted Lean path
+/// with `core_models`\'s SliceIndex extraction (both extract under
+/// `core.slice.index.SliceIndex`).
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3 (#v_T #v_A: Type0) : Core_models.Ops.Index.t_Index (t_Vec v_T v_A) usize =
+let impl_3
+      (#v_T #v_I #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Slice.Index.t_SliceIndex v_I (t_Slice v_T))
+    : Core_models.Ops.Index.t_Index (t_Vec v_T v_A) v_I =
   {
-    f_Output = v_T;
+    f_Output = i0.f_Output;
     f_index_pre
     =
-    (fun (self_: t_Vec v_T v_A) (i: usize) -> i <. (impl_1__len #v_T #v_A self_ <: usize));
-    f_index_post = (fun (self: t_Vec v_T v_A) (i: usize) (out: v_T) -> true);
-    f_index
-    =
-    fun (self: t_Vec v_T v_A) (i: usize) -> Rust_primitives.Sequence.seq_index #v_T self._0 i
+    (fun (self_: t_Vec v_T v_A) (i: v_I) ->
+        Core_models.Option.impl__is_some #i0.f_Output
+          (Core_models.Slice.impl__get #v_T #v_I (impl_1__as_slice self_ <: t_Slice v_T) i
+            <:
+            Core_models.Option.t_Option i0.f_Output));
+    f_index_post = (fun (self: t_Vec v_T v_A) (i: v_I) (out: i0.f_Output) -> true);
+    f_index = fun (self: t_Vec v_T v_A) (i: v_I) -> (impl_1__as_slice self <: t_Slice v_T).[ i ]
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
