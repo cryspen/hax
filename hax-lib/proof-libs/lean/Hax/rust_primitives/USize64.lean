@@ -146,6 +146,7 @@ attribute [grind =] USize64.toNat_ofNat_of_lt'
 grind_pattern USize64.toBitVec_ofNat => USize64.toBitVec (OfNat.ofNat n)
 
 additional_uint_decls USize64 64
+additional_uint_toInt_decls USize64 64
 
 @[simp] theorem USize64.toNat_lt (n : USize64) : n.toNat < 2 ^ 64 := n.toFin.isLt
 
