@@ -41,7 +41,7 @@ securely, one of hax' other backends can be used.
 ## Extracting into ProVerif
 To obtain a ProVerif model of the protocol logic functions, run
 ```
-cargo hax into pro-verif
+cargo hax into proverif
 ```
 This will generate a file `./proofs/proverif/extraction/lib.pvl`.
 

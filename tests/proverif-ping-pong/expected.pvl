@@ -1,0 +1,115 @@
+(*****************************************)
+(* Preamble                              *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+type ping_pong__Message.
+fun ping_pong__Message_to_bitstring(ping_pong__Message): bitstring [typeConverter].
+fun ping_pong__Message_from_bitstring(bitstring): ping_pong__Message [typeConverter].
+const ping_pong__Message_default_value: ping_pong__Message.
+letfun ping_pong__Message_default() = ping_pong__Message_default_value.
+letfun ping_pong__Message_err() = let x = construct_fail() in ping_pong__Message_default_value.
+fun ping_pong__Message__Ping(nat): ping_pong__Message [data].
+reduc forall ping_pong__Message__Ping__0: nat;
+  accessor_ping_pong__Message__ping_pong__Message__Ping__0(ping_pong__Message__Ping(ping_pong__Message__Ping__0)) = ping_pong__Message__Ping__0.
+fun ping_pong__Message__Pong(nat): ping_pong__Message [data].
+reduc forall ping_pong__Message__Pong__0: nat;
+  accessor_ping_pong__Message__ping_pong__Message__Pong__0(ping_pong__Message__Pong(ping_pong__Message__Pong__0)) = ping_pong__Message__Pong__0.
+type ping_pong__b__B0.
+fun ping_pong__b__B0_to_bitstring(ping_pong__b__B0): bitstring [typeConverter].
+fun ping_pong__b__B0_from_bitstring(bitstring): ping_pong__b__B0 [typeConverter].
+const ping_pong__b__B0_default_value: ping_pong__b__B0.
+letfun ping_pong__b__B0_default() = ping_pong__b__B0_default_value.
+letfun ping_pong__b__B0_err() = let x = construct_fail() in ping_pong__b__B0_default_value.
+fun ping_pong__b__B0__B0(): ping_pong__b__B0 [data].
+type ping_pong__b__B1.
+fun ping_pong__b__B1_to_bitstring(ping_pong__b__B1): bitstring [typeConverter].
+fun ping_pong__b__B1_from_bitstring(bitstring): ping_pong__b__B1 [typeConverter].
+const ping_pong__b__B1_default_value: ping_pong__b__B1.
+letfun ping_pong__b__B1_default() = ping_pong__b__B1_default_value.
+letfun ping_pong__b__B1_err() = let x = construct_fail() in ping_pong__b__B1_default_value.
+fun ping_pong__b__B1__B1(nat): ping_pong__b__B1 [data].
+reduc forall ping_pong__b__B1__B1__received: nat;
+  accessor_ping_pong__b__B1__ping_pong__b__B1__B1__received(ping_pong__b__B1__B1(ping_pong__b__B1__B1__received)) = ping_pong__b__B1__B1__received.
+type ping_pong__b__B1alt.
+fun ping_pong__b__B1alt_to_bitstring(ping_pong__b__B1alt): bitstring [typeConverter].
+fun ping_pong__b__B1alt_from_bitstring(bitstring): ping_pong__b__B1alt [typeConverter].
+const ping_pong__b__B1alt_default_value: ping_pong__b__B1alt.
+letfun ping_pong__b__B1alt_default() = ping_pong__b__B1alt_default_value.
+letfun ping_pong__b__B1alt_err() = let x = construct_fail() in ping_pong__b__B1alt_default_value.
+fun ping_pong__b__B1alt__B1alt(): ping_pong__b__B1alt [data].
+type ping_pong__b__B2.
+fun ping_pong__b__B2_to_bitstring(ping_pong__b__B2): bitstring [typeConverter].
+fun ping_pong__b__B2_from_bitstring(bitstring): ping_pong__b__B2 [typeConverter].
+const ping_pong__b__B2_default_value: ping_pong__b__B2.
+letfun ping_pong__b__B2_default() = ping_pong__b__B2_default_value.
+letfun ping_pong__b__B2_err() = let x = construct_fail() in ping_pong__b__B2_default_value.
+fun ping_pong__b__B2__B2(): ping_pong__b__B2 [data].
+letfun ping_pong__b__init_b(wildcard: rust_primitives__hax__Tuple0) =
+ping_pong__b__B0__B0().
+letfun ping_pong__b__read_ping(_state: ping_pong__b__B0,
+msg: ping_pong__Message) =
+let ping_pong__Message__Ping(received: nat) = msg in ping_pong__b__B1__B1(received)
+  else let ping_pong__Message__Pong(wildcard: bitstring) = msg in bitstring_err().
+letfun ping_pong__b__read_ping_alt(_state: ping_pong__b__B0,
+msg: ping_pong__Message) =
+let ping_pong__Message__Ping(received: nat) = msg in ping_pong__b__B1alt__B1alt()
+  else bitstring_err().
+letfun ping_pong__b__write_pong(state: ping_pong__b__B1) =
+rust_primitives__hax__Tuple2__Tuple2(ping_pong__b__B2__B2(),
+  ping_pong__Message__Pong(ping_pong__b__B1__B1__received(state))).
+type ping_pong__a__A0.
+fun ping_pong__a__A0_to_bitstring(ping_pong__a__A0): bitstring [typeConverter].
+fun ping_pong__a__A0_from_bitstring(bitstring): ping_pong__a__A0 [typeConverter].
+const ping_pong__a__A0_default_value: ping_pong__a__A0.
+letfun ping_pong__a__A0_default() = ping_pong__a__A0_default_value.
+letfun ping_pong__a__A0_err() = let x = construct_fail() in ping_pong__a__A0_default_value.
+fun ping_pong__a__A0__A0(nat): ping_pong__a__A0 [data].
+reduc forall ping_pong__a__A0__A0__data: nat;
+  accessor_ping_pong__a__A0__ping_pong__a__A0__A0__data(ping_pong__a__A0__A0(ping_pong__a__A0__A0__data)) = ping_pong__a__A0__A0__data.
+type ping_pong__a__A1.
+fun ping_pong__a__A1_to_bitstring(ping_pong__a__A1): bitstring [typeConverter].
+fun ping_pong__a__A1_from_bitstring(bitstring): ping_pong__a__A1 [typeConverter].
+const ping_pong__a__A1_default_value: ping_pong__a__A1.
+letfun ping_pong__a__A1_default() = ping_pong__a__A1_default_value.
+letfun ping_pong__a__A1_err() = let x = construct_fail() in ping_pong__a__A1_default_value.
+fun ping_pong__a__A1__A1(): ping_pong__a__A1 [data].
+type ping_pong__a__A2.
+fun ping_pong__a__A2_to_bitstring(ping_pong__a__A2): bitstring [typeConverter].
+fun ping_pong__a__A2_from_bitstring(bitstring): ping_pong__a__A2 [typeConverter].
+const ping_pong__a__A2_default_value: ping_pong__a__A2.
+letfun ping_pong__a__A2_default() = ping_pong__a__A2_default_value.
+letfun ping_pong__a__A2_err() = let x = construct_fail() in ping_pong__a__A2_default_value.
+fun ping_pong__a__A2__A2(nat): ping_pong__a__A2 [data].
+reduc forall ping_pong__a__A2__A2__received: nat;
+  accessor_ping_pong__a__A2__ping_pong__a__A2__A2__received(ping_pong__a__A2__A2(ping_pong__a__A2__A2__received)) = ping_pong__a__A2__A2__received.
+letfun ping_pong__a__init_a(prologue: bitstring) =
+if core__cmp__PartialOrd__lt(alloc__vec__Impl_1__len(prologue),
+  1) then (bitstring_err()) else (ping_pong__a__A0__A0(core__ops__index__Index__index(prologue,
+  0))).
+letfun ping_pong__a__write_ping(state: ping_pong__a__A0) =
+rust_primitives__hax__Tuple2__Tuple2(ping_pong__a__A1__A1(),
+  ping_pong__Message__Ping(ping_pong__a__A0__A0__data(state))).
+letfun ping_pong__a__read_pong(_state: ping_pong__a__A1,
+msg: ping_pong__Message) =
+let ping_pong__Message__Ping(wildcard: bitstring) = msg in bitstring_err()
+  else let ping_pong__Message__Pong(received: nat) = msg in ping_pong__a__A2__A2(received).

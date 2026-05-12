@@ -273,7 +273,7 @@ fn run_engine(
         impl_infos: haxmeta.impl_infos,
     };
     let mut hax_engine_command = match &engine_options.backend.backend {
-        Backend::Coq | Backend::Ssprove | Backend::Easycrypt | Backend::ProVerif(_) => {
+        Backend::Coq | Backend::Ssprove | Backend::Easycrypt => {
             find_hax_engine(message_format)
         }
         Backend::Fstar(_) if matches!(&engine_options.input, Items::Legacy(_)) => {

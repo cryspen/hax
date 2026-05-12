@@ -183,6 +183,7 @@ pub enum Backend<E: Extension> {
     /// Use the EasyCrypt backend (warning: work in progress!)
     Easycrypt,
     /// Use the ProVerif backend (warning: work in progress!)
+    #[clap(name = "proverif")]
     ProVerif(ProVerifOptions),
     /// Use the Rust backend (warning: work in progress!)
     #[clap(hide = true)]

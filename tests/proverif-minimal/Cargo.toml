@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 
 [package.metadata.hax-tests]
-into."pro-verif" = { broken = false, snapshot = "none" }
+into."proverif" = { broken = false, snapshot = "none" }
