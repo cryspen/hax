@@ -266,6 +266,7 @@ let engine () =
 module ExportFullAst = Export_ast.Make (Features.Full)
 module ExportRustAst = Export_ast.Make (Features.Rust)
 module ExportLeanAst = Export_ast.Make (Lean_backend.InputLanguage)
+module ExportProVerifAst = Export_ast.Make (Proverif_backend.InputLanguage)
 
 let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
     Rust_engine_types.response =
