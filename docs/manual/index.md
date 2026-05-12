@@ -17,7 +17,7 @@ The command `cargo hax` accepts the following subcommands:
  
 Note:
 
-* `BACKEND` can be `fstar`, `coq`, `lean`, `easycrypt` or `pro-verif`. `cargo hax into --help`
+* `BACKEND` can be `fstar`, `coq`, `lean`, `easycrypt` or `proverif`. `cargo hax into --help`
    gives the full list of supported backends.
 * The subcommands `cargo hax`, `cargo hax into` and `cargo hax into
    <BACKEND>` takes options. For instance, you can `cargo hax into

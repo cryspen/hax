@@ -1,0 +1,768 @@
+(*****************************************)
+(* Preamble                              *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+type noise_kkpsk0__noise_crypto__Error.
+fun noise_kkpsk0__noise_crypto__Error_to_bitstring(noise_kkpsk0__noise_crypto__Error): bitstring [typeConverter].
+fun noise_kkpsk0__noise_crypto__Error_from_bitstring(bitstring): noise_kkpsk0__noise_crypto__Error [typeConverter].
+const noise_kkpsk0__noise_crypto__Error_default_value: noise_kkpsk0__noise_crypto__Error.
+letfun noise_kkpsk0__noise_crypto__Error_default() = noise_kkpsk0__noise_crypto__Error_default_value.
+letfun noise_kkpsk0__noise_crypto__Error_err() = let x = construct_fail() in noise_kkpsk0__noise_crypto__Error_default_value.
+fun noise_kkpsk0__noise_crypto__Error__CryptoError(): noise_kkpsk0__noise_crypto__Error [data].
+letfun noise_kkpsk0__noise_crypto__Error_cast_to_repr(x: noise_kkpsk0__noise_crypto__Error) =
+let noise_kkpsk0__noise_crypto__Error__CryptoError() = x in 0.
+type noise_kkpsk0__noise_crypto__KeyPair.
+fun noise_kkpsk0__noise_crypto__KeyPair_to_bitstring(noise_kkpsk0__noise_crypto__KeyPair): bitstring [typeConverter].
+fun noise_kkpsk0__noise_crypto__KeyPair_from_bitstring(bitstring): noise_kkpsk0__noise_crypto__KeyPair [typeConverter].
+const noise_kkpsk0__noise_crypto__KeyPair_default_value: noise_kkpsk0__noise_crypto__KeyPair.
+letfun noise_kkpsk0__noise_crypto__KeyPair_default() = noise_kkpsk0__noise_crypto__KeyPair_default_value.
+letfun noise_kkpsk0__noise_crypto__KeyPair_err() = let x = construct_fail() in noise_kkpsk0__noise_crypto__KeyPair_default_value.
+fun noise_kkpsk0__noise_crypto__KeyPair__KeyPair(hax_lib_protocol__crypto__DHScalar,
+bitstring): noise_kkpsk0__noise_crypto__KeyPair [data].
+reduc forall noise_kkpsk0__noise_crypto__KeyPair__KeyPair__private_key: hax_lib_protocol__crypto__DHScalar,
+noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key: bitstring;
+  accessor_noise_kkpsk0__noise_crypto__KeyPair__noise_kkpsk0__noise_crypto__KeyPair__KeyPair__private_key(noise_kkpsk0__noise_crypto__KeyPair__KeyPair(noise_kkpsk0__noise_crypto__KeyPair__KeyPair__private_key,
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key)) = noise_kkpsk0__noise_crypto__KeyPair__KeyPair__private_key.
+reduc forall noise_kkpsk0__noise_crypto__KeyPair__KeyPair__private_key: hax_lib_protocol__crypto__DHScalar,
+noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key: bitstring;
+  accessor_noise_kkpsk0__noise_crypto__KeyPair__noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(noise_kkpsk0__noise_crypto__KeyPair__KeyPair(noise_kkpsk0__noise_crypto__KeyPair__KeyPair__private_key,
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key)) = noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key.
+const noise_kkpsk0__noise_crypto__DHLEN: bitstring.
+letfun noise_kkpsk0__noise_crypto__generate_keypair(sk: bitstring) =
+let sk = (hax_lib_protocol__crypto__Impl__from_bytes(sk)) in
+  let pk = (hax_lib_protocol__crypto__dh_scalar_multiply_base(hax_lib_protocol__crypto__DHGroup__X25519(),
+  sk)) in
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair(sk,
+  pk).
+letfun noise_kkpsk0__noise_crypto__dh(sk: noise_kkpsk0__noise_crypto__KeyPair,
+pk: bitstring) =
+let pk = (hax_lib_protocol__crypto__Impl_1__from_bytes(pk)) in
+  hax_lib_protocol__crypto__dh_scalar_multiply(hax_lib_protocol__crypto__DHGroup__X25519(),
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__private_key(sk),
+  pk).
+letfun noise_kkpsk0__noise_crypto__encrypt(key: bitstring,
+counter: nat,
+aad: bitstring,
+plain: bitstring) =
+let chacha_iv = (alloc__vec__from_elem(0,
+  4)) in
+  let chacha_iv = (alloc__vec__Impl_2__extend_from_slice(chacha_iv,
+  core__num__Impl_9__to_le_bytes(counter))) in
+  let rust_primitives__hax__Tuple2__Tuple2(cipher: bitstring,
+  tag: bitstring) = (hax_lib_protocol__crypto__aead_encrypt(hax_lib_protocol__crypto__Impl_4__from_bytes(hax_lib_protocol__crypto__AEADAlgorithm__Chacha20Poly1305(),
+  key),
+  hax_lib_protocol__crypto__Impl_5__from_bytes(chacha_iv),
+  aad,
+  plain)) in
+  let cipher = (alloc__vec__Impl_2__extend_from_slice(cipher,
+  tag)) in
+  cipher.
+letfun noise_kkpsk0__noise_crypto__decrypt(key: bitstring,
+counter: nat,
+aad: bitstring,
+cipher: bitstring) =
+let chacha_iv = (alloc__vec__from_elem(0,
+  4)) in
+  let chacha_iv = (alloc__vec__Impl_2__extend_from_slice(chacha_iv,
+  core__num__Impl_9__to_le_bytes(counter))) in
+  let cipher_len = (core__ops__arith__Sub__sub(core__slice__Impl__len(cipher),
+  16)) in
+  let cip = (core__ops__index__Index__index(cipher,
+  core__ops__range__Range__Range(0,
+  cipher_len))) in
+  let tag = (core__ops__index__Index__index(cipher,
+  core__ops__range__Range__Range(cipher_len,
+  core__slice__Impl__len(cipher)))) in
+  core__result__Impl__map_err(hax_lib_protocol__crypto__aead_decrypt(hax_lib_protocol__crypto__Impl_4__from_bytes(hax_lib_protocol__crypto__AEADAlgorithm__Chacha20Poly1305(),
+  key),
+  hax_lib_protocol__crypto__Impl_5__from_bytes(chacha_iv),
+  aad,
+  cip,
+  hax_lib_protocol__crypto__Impl_6__from_bytes(tag)),
+  (* TODO: Closures not supported in ProVerif *)).
+letfun noise_kkpsk0__noise_crypto__rekey(key: bitstring) =
+noise_kkpsk0__noise_crypto__encrypt(key,
+  18446744073709551615,
+  alloc__vec__Impl___new(rust_primitives__hax__Tuple0__Tuple0),
+  rust_primitives__hax__repeat(0,
+  32)).
+const noise_kkpsk0__noise_crypto__HASHLEN: bitstring.
+const noise_kkpsk0__noise_crypto__BLOCKLEN: bitstring.
+letfun noise_kkpsk0__noise_crypto__hash(input: bitstring) =
+hax_lib_protocol__crypto__hash(hax_lib_protocol__crypto__HashAlgorithm__Sha256(),
+  input).
+letfun noise_kkpsk0__noise_crypto__hmac_hash(key: bitstring,
+input: bitstring) =
+hax_lib_protocol__crypto__hmac(hax_lib_protocol__crypto__HMACAlgorithm__Sha256(),
+  key,
+  input).
+letfun noise_kkpsk0__noise_crypto__kdf_next(_secret: bitstring,
+prev: bitstring,
+counter: nat) =
+noise_kkpsk0__noise_crypto__hmac_hash(_secret,
+  alloc__slice__Impl__concat((* TODO: Array expressions not supported in ProVerif *))).
+letfun noise_kkpsk0__noise_crypto__hkdf1(key: bitstring,
+ikm: bitstring) =
+let _secret = (noise_kkpsk0__noise_crypto__hmac_hash(key,
+  ikm)) in
+  noise_kkpsk0__noise_crypto__kdf_next(_secret,
+  alloc__vec__Impl___new(rust_primitives__hax__Tuple0__Tuple0),
+  1).
+letfun noise_kkpsk0__noise_crypto__hkdf2(key: bitstring,
+ikm: bitstring) =
+let _secret = (noise_kkpsk0__noise_crypto__hmac_hash(key,
+  ikm)) in
+  let k1 = (noise_kkpsk0__noise_crypto__kdf_next(_secret,
+  alloc__vec__Impl___new(rust_primitives__hax__Tuple0__Tuple0),
+  1)) in
+  let k2 = (noise_kkpsk0__noise_crypto__kdf_next(_secret,
+  k1,
+  2)) in
+  rust_primitives__hax__Tuple2__Tuple2(k1,
+  k2).
+letfun noise_kkpsk0__noise_crypto__hkdf3(key: bitstring,
+ikm: bitstring) =
+let _secret = (noise_kkpsk0__noise_crypto__hmac_hash(key,
+  ikm)) in
+  let k1 = (noise_kkpsk0__noise_crypto__kdf_next(_secret,
+  alloc__vec__Impl___new(rust_primitives__hax__Tuple0__Tuple0),
+  1)) in
+  let k2 = (noise_kkpsk0__noise_crypto__kdf_next(_secret,
+  k1,
+  2)) in
+  let k3 = (noise_kkpsk0__noise_crypto__kdf_next(_secret,
+  k1,
+  3)) in
+  rust_primitives__hax__Tuple3__Tuple3(k1,
+  k2,
+  k3).
+type noise_kkpsk0__noise_lib__CipherState.
+fun noise_kkpsk0__noise_lib__CipherState_to_bitstring(noise_kkpsk0__noise_lib__CipherState): bitstring [typeConverter].
+fun noise_kkpsk0__noise_lib__CipherState_from_bitstring(bitstring): noise_kkpsk0__noise_lib__CipherState [typeConverter].
+const noise_kkpsk0__noise_lib__CipherState_default_value: noise_kkpsk0__noise_lib__CipherState.
+letfun noise_kkpsk0__noise_lib__CipherState_default() = noise_kkpsk0__noise_lib__CipherState_default_value.
+letfun noise_kkpsk0__noise_lib__CipherState_err() = let x = construct_fail() in noise_kkpsk0__noise_lib__CipherState_default_value.
+fun noise_kkpsk0__noise_lib__CipherState__CipherState(Option,
+nat): noise_kkpsk0__noise_lib__CipherState [data].
+reduc forall noise_kkpsk0__noise_lib__CipherState__CipherState__k: Option,
+noise_kkpsk0__noise_lib__CipherState__CipherState__n: nat;
+  accessor_noise_kkpsk0__noise_lib__CipherState__noise_kkpsk0__noise_lib__CipherState__CipherState__k(noise_kkpsk0__noise_lib__CipherState__CipherState(noise_kkpsk0__noise_lib__CipherState__CipherState__k,
+  noise_kkpsk0__noise_lib__CipherState__CipherState__n)) = noise_kkpsk0__noise_lib__CipherState__CipherState__k.
+reduc forall noise_kkpsk0__noise_lib__CipherState__CipherState__k: Option,
+noise_kkpsk0__noise_lib__CipherState__CipherState__n: nat;
+  accessor_noise_kkpsk0__noise_lib__CipherState__noise_kkpsk0__noise_lib__CipherState__CipherState__n(noise_kkpsk0__noise_lib__CipherState__CipherState(noise_kkpsk0__noise_lib__CipherState__CipherState__k,
+  noise_kkpsk0__noise_lib__CipherState__CipherState__n)) = noise_kkpsk0__noise_lib__CipherState__CipherState__n.
+type noise_kkpsk0__noise_lib__SymmetricState.
+fun noise_kkpsk0__noise_lib__SymmetricState_to_bitstring(noise_kkpsk0__noise_lib__SymmetricState): bitstring [typeConverter].
+fun noise_kkpsk0__noise_lib__SymmetricState_from_bitstring(bitstring): noise_kkpsk0__noise_lib__SymmetricState [typeConverter].
+const noise_kkpsk0__noise_lib__SymmetricState_default_value: noise_kkpsk0__noise_lib__SymmetricState.
+letfun noise_kkpsk0__noise_lib__SymmetricState_default() = noise_kkpsk0__noise_lib__SymmetricState_default_value.
+letfun noise_kkpsk0__noise_lib__SymmetricState_err() = let x = construct_fail() in noise_kkpsk0__noise_lib__SymmetricState_default_value.
+fun noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__CipherState,
+bitstring,
+bitstring): noise_kkpsk0__noise_lib__SymmetricState [data].
+reduc forall noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck: bitstring,
+noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h: bitstring;
+  accessor_noise_kkpsk0__noise_lib__SymmetricState__noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs,
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck,
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h)) = noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs.
+reduc forall noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck: bitstring,
+noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h: bitstring;
+  accessor_noise_kkpsk0__noise_lib__SymmetricState__noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs,
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck,
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h)) = noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck.
+reduc forall noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck: bitstring,
+noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h: bitstring;
+  accessor_noise_kkpsk0__noise_lib__SymmetricState__noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs,
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck,
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h)) = noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h.
+letfun noise_kkpsk0__noise_lib__initialize_key(key: Option) =
+noise_kkpsk0__noise_lib__CipherState__CipherState(key,
+  0).
+letfun noise_kkpsk0__noise_lib__has_key(cs: noise_kkpsk0__noise_lib__CipherState) =
+core__option__Impl__is_some(noise_kkpsk0__noise_lib__CipherState__CipherState__k(cs)).
+letfun noise_kkpsk0__noise_lib__set_nonce(cs: noise_kkpsk0__noise_lib__CipherState,
+n: nat) =
+let noise_kkpsk0__noise_lib__CipherState__CipherState(k: Option,
+  wildcard: bitstring) = (cs) in
+  noise_kkpsk0__noise_lib__CipherState__CipherState(k,
+  n).
+letfun noise_kkpsk0__noise_lib__encrypt_with_ad(cs: noise_kkpsk0__noise_lib__CipherState,
+ad: bitstring,
+plaintext: bitstring) =
+let noise_kkpsk0__noise_lib__CipherState__CipherState(k: Option,
+  n: nat) = (cs) in
+  if core__cmp__PartialEq__eq(n,
+  18446744073709551615) then (bitstring_err()) else (let Some(bitstring_to_bitstring(k)) = k in let cip = (noise_kkpsk0__noise_crypto__encrypt(k,
+  n,
+  ad,
+  plaintext)) in
+  rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(Some(bitstring_to_bitstring(k)),
+  core__ops__arith__Add__add(n,
+  1)),
+  cip)
+  else let None() = k in rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(k,
+  n),
+  alloc__slice__Impl__to_vec(plaintext))).
+letfun noise_kkpsk0__noise_lib__decrypt_with_ad(cs: noise_kkpsk0__noise_lib__CipherState,
+ad: bitstring,
+ciphertext: bitstring) =
+let noise_kkpsk0__noise_lib__CipherState__CipherState(k: Option,
+  n: nat) = (cs) in
+  if core__cmp__PartialEq__eq(n,
+  18446744073709551615) then (bitstring_err()) else (let Some(bitstring_to_bitstring(k)) = k in let plain = noise_kkpsk0__noise_crypto__decrypt(k,
+  n,
+  ad,
+  ciphertext) in rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(Some(bitstring_to_bitstring(k)),
+  core__ops__arith__Add__add(n,
+  1)),
+  plain)
+  else bitstring_err()
+  else let None() = k in rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(k,
+  n),
+  alloc__slice__Impl__to_vec(ciphertext))).
+letfun noise_kkpsk0__noise_lib__rekey(cs: noise_kkpsk0__noise_lib__CipherState) =
+let noise_kkpsk0__noise_lib__CipherState__CipherState(k: Option,
+  n: nat) = (cs) in
+  let Some(bitstring_to_bitstring(k)) = k in let new_k = (noise_kkpsk0__noise_crypto__rekey(k)) in
+  noise_kkpsk0__noise_lib__CipherState__CipherState(Some(bitstring_to_bitstring(new_k)),
+  n)
+  else let None() = k in bitstring_err().
+letfun noise_kkpsk0__noise_lib__initialize_symmetric(protocol_name: bitstring) =
+let pnlen = (core__slice__Impl__len(protocol_name)) in
+  let hv = (if core__cmp__PartialOrd__lt(pnlen,
+  noise_kkpsk0__noise_crypto__HASHLEN) then (alloc__slice__Impl__concat((* TODO: Array expressions not supported in ProVerif *))) else (noise_kkpsk0__noise_crypto__hash(protocol_name))) in
+  let ck = (hv) in
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__initialize_key(None()),
+  ck,
+  hv).
+letfun noise_kkpsk0__noise_lib__mix_key(st: noise_kkpsk0__noise_lib__SymmetricState,
+input_key_material: bitstring) =
+let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(wildcard: bitstring,
+  ck: bitstring,
+  h: bitstring) = (st) in
+  let rust_primitives__hax__Tuple2__Tuple2(ck: bitstring,
+  temp_k: bitstring) = (noise_kkpsk0__noise_crypto__hkdf2(ck,
+  input_key_material)) in
+  let temp_k = (if core__cmp__PartialEq__eq(noise_kkpsk0__noise_crypto__HASHLEN,
+  64) then (let temp_k = (alloc__vec__Impl_1__truncate(temp_k,
+  32)) in
+  temp_k) else (temp_k)) in
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__initialize_key(Some(bitstring_to_bitstring(temp_k))),
+  ck,
+  h).
+letfun noise_kkpsk0__noise_lib__mix_hash(st: noise_kkpsk0__noise_lib__SymmetricState,
+data: bitstring) =
+let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(cs: noise_kkpsk0__noise_lib__CipherState,
+  ck: bitstring,
+  h: bitstring) = (st) in
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(cs,
+  ck,
+  noise_kkpsk0__noise_crypto__hash(alloc__slice__Impl__concat((* TODO: Array expressions not supported in ProVerif *)))).
+letfun noise_kkpsk0__noise_lib__mix_key_and_hash(st: noise_kkpsk0__noise_lib__SymmetricState,
+input_key_material: bitstring) =
+let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(wildcard: bitstring,
+  ck: bitstring,
+  h: bitstring) = (st) in
+  let rust_primitives__hax__Tuple3__Tuple3(ck: bitstring,
+  temp_h: bitstring,
+  temp_k: bitstring) = (noise_kkpsk0__noise_crypto__hkdf3(ck,
+  input_key_material)) in
+  let new_h = (h) in
+  let new_h = (alloc__vec__Impl_2__extend_from_slice(new_h,
+  temp_h)) in
+  let new_h = (noise_kkpsk0__noise_crypto__hash(new_h)) in
+  let temp_k = (if core__cmp__PartialEq__eq(noise_kkpsk0__noise_crypto__HASHLEN,
+  64) then (let temp_k = (alloc__vec__Impl_1__truncate(temp_k,
+  32)) in
+  temp_k) else (temp_k)) in
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__initialize_key(Some(bitstring_to_bitstring(temp_k))),
+  ck,
+  new_h).
+letfun noise_kkpsk0__noise_lib__encrypt_and_hash(st: noise_kkpsk0__noise_lib__SymmetricState,
+plaintext: bitstring) =
+let rust_primitives__hax__Tuple2__Tuple2(new_cs: noise_kkpsk0__noise_lib__CipherState,
+  ciphertext: bitstring) = noise_kkpsk0__noise_lib__encrypt_with_ad(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs(st),
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st),
+  plaintext) in let new_h = (noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st)) in
+  let new_h = (alloc__vec__Impl_2__extend_from_slice(new_h,
+  ciphertext)) in
+  let new_h = (noise_kkpsk0__noise_crypto__hash(new_h)) in
+  rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(new_cs,
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck(st),
+  new_h),
+  ciphertext)
+  else bitstring_err().
+letfun noise_kkpsk0__noise_lib__decrypt_and_hash(st: noise_kkpsk0__noise_lib__SymmetricState,
+ciphertext: bitstring) =
+let rust_primitives__hax__Tuple2__Tuple2(new_cs: noise_kkpsk0__noise_lib__CipherState,
+  plaintext: bitstring) = noise_kkpsk0__noise_lib__decrypt_with_ad(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs(st),
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st),
+  ciphertext) in let new_h = (noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st)) in
+  let new_h = (alloc__vec__Impl_2__extend_from_slice(new_h,
+  ciphertext)) in
+  let new_h = (noise_kkpsk0__noise_crypto__hash(new_h)) in
+  rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(new_cs,
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck(st),
+  new_h),
+  plaintext)
+  else bitstring_err().
+letfun noise_kkpsk0__noise_lib__split(st: noise_kkpsk0__noise_lib__SymmetricState) =
+let rust_primitives__hax__Tuple2__Tuple2(temp_k1: bitstring,
+  temp_k2: bitstring) = (noise_kkpsk0__noise_crypto__hkdf2(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck(st),
+  alloc__vec__Impl___new(rust_primitives__hax__Tuple0__Tuple0))) in
+  let rust_primitives__hax__Tuple2__Tuple2(temp_k1: bitstring,
+  temp_k2: bitstring) = (if core__cmp__PartialEq__eq(noise_kkpsk0__noise_crypto__HASHLEN,
+  64) then (let temp_k1 = (alloc__vec__Impl_1__truncate(temp_k1,
+  32)) in
+  let temp_k2 = (alloc__vec__Impl_1__truncate(temp_k2,
+  32)) in
+  rust_primitives__hax__Tuple2__Tuple2(temp_k1,
+  temp_k2)) else (rust_primitives__hax__Tuple2__Tuple2(temp_k1,
+  temp_k2))) in
+  rust_primitives__hax__Tuple3__Tuple3(noise_kkpsk0__noise_lib__initialize_key(Some(bitstring_to_bitstring(temp_k1))),
+  noise_kkpsk0__noise_lib__initialize_key(Some(bitstring_to_bitstring(temp_k2))),
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st)).
+type noise_kkpsk0__noise_kkpsk0__HandshakeStateI0.
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateI0_to_bitstring(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0): bitstring [typeConverter].
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateI0_from_bitstring(bitstring): noise_kkpsk0__noise_kkpsk0__HandshakeStateI0 [typeConverter].
+const noise_kkpsk0__noise_kkpsk0__HandshakeStateI0_default_value: noise_kkpsk0__noise_kkpsk0__HandshakeStateI0.
+letfun noise_kkpsk0__noise_kkpsk0__HandshakeStateI0_default() = noise_kkpsk0__noise_kkpsk0__HandshakeStateI0_default_value.
+letfun noise_kkpsk0__noise_kkpsk0__HandshakeStateI0_err() = let x = construct_fail() in noise_kkpsk0__noise_kkpsk0__HandshakeStateI0_default_value.
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(noise_kkpsk0__noise_lib__SymmetricState,
+bitstring,
+noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_crypto__KeyPair,
+bitstring): noise_kkpsk0__noise_kkpsk0__HandshakeStateI0 [data].
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0__rs.
+type noise_kkpsk0__noise_kkpsk0__HandshakeStateI1.
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateI1_to_bitstring(noise_kkpsk0__noise_kkpsk0__HandshakeStateI1): bitstring [typeConverter].
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateI1_from_bitstring(bitstring): noise_kkpsk0__noise_kkpsk0__HandshakeStateI1 [typeConverter].
+const noise_kkpsk0__noise_kkpsk0__HandshakeStateI1_default_value: noise_kkpsk0__noise_kkpsk0__HandshakeStateI1.
+letfun noise_kkpsk0__noise_kkpsk0__HandshakeStateI1_default() = noise_kkpsk0__noise_kkpsk0__HandshakeStateI1_default_value.
+letfun noise_kkpsk0__noise_kkpsk0__HandshakeStateI1_err() = let x = construct_fail() in noise_kkpsk0__noise_kkpsk0__HandshakeStateI1_default_value.
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_crypto__KeyPair): noise_kkpsk0__noise_kkpsk0__HandshakeStateI1 [data].
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__e: noise_kkpsk0__noise_crypto__KeyPair;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__st(noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__e)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__st.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__e: noise_kkpsk0__noise_crypto__KeyPair;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__s(noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__e)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__s.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__e: noise_kkpsk0__noise_crypto__KeyPair;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__e(noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__e)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1__e.
+type noise_kkpsk0__noise_kkpsk0__HandshakeStateR0.
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateR0_to_bitstring(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0): bitstring [typeConverter].
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateR0_from_bitstring(bitstring): noise_kkpsk0__noise_kkpsk0__HandshakeStateR0 [typeConverter].
+const noise_kkpsk0__noise_kkpsk0__HandshakeStateR0_default_value: noise_kkpsk0__noise_kkpsk0__HandshakeStateR0.
+letfun noise_kkpsk0__noise_kkpsk0__HandshakeStateR0_default() = noise_kkpsk0__noise_kkpsk0__HandshakeStateR0_default_value.
+letfun noise_kkpsk0__noise_kkpsk0__HandshakeStateR0_err() = let x = construct_fail() in noise_kkpsk0__noise_kkpsk0__HandshakeStateR0_default_value.
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(noise_kkpsk0__noise_lib__SymmetricState,
+bitstring,
+noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_crypto__KeyPair,
+bitstring): noise_kkpsk0__noise_kkpsk0__HandshakeStateR0 [data].
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__psk,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__s,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0__rs.
+type noise_kkpsk0__noise_kkpsk0__HandshakeStateR1.
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateR1_to_bitstring(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1): bitstring [typeConverter].
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateR1_from_bitstring(bitstring): noise_kkpsk0__noise_kkpsk0__HandshakeStateR1 [typeConverter].
+const noise_kkpsk0__noise_kkpsk0__HandshakeStateR1_default_value: noise_kkpsk0__noise_kkpsk0__HandshakeStateR1.
+letfun noise_kkpsk0__noise_kkpsk0__HandshakeStateR1_default() = noise_kkpsk0__noise_kkpsk0__HandshakeStateR1_default_value.
+letfun noise_kkpsk0__noise_kkpsk0__HandshakeStateR1_err() = let x = construct_fail() in noise_kkpsk0__noise_kkpsk0__HandshakeStateR1_default_value.
+fun noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_crypto__KeyPair,
+bitstring,
+bitstring): noise_kkpsk0__noise_kkpsk0__HandshakeStateR1 [data].
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs.
+reduc forall noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st: noise_kkpsk0__noise_lib__SymmetricState,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e: noise_kkpsk0__noise_crypto__KeyPair,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs: bitstring,
+noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__st,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__e,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__rs,
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re)) = noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1__re.
+type noise_kkpsk0__noise_kkpsk0__Transport.
+fun noise_kkpsk0__noise_kkpsk0__Transport_to_bitstring(noise_kkpsk0__noise_kkpsk0__Transport): bitstring [typeConverter].
+fun noise_kkpsk0__noise_kkpsk0__Transport_from_bitstring(bitstring): noise_kkpsk0__noise_kkpsk0__Transport [typeConverter].
+const noise_kkpsk0__noise_kkpsk0__Transport_default_value: noise_kkpsk0__noise_kkpsk0__Transport.
+letfun noise_kkpsk0__noise_kkpsk0__Transport_default() = noise_kkpsk0__noise_kkpsk0__Transport_default_value.
+letfun noise_kkpsk0__noise_kkpsk0__Transport_err() = let x = construct_fail() in noise_kkpsk0__noise_kkpsk0__Transport_default_value.
+fun noise_kkpsk0__noise_kkpsk0__Transport__Transport(noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_lib__CipherState,
+bitstring): noise_kkpsk0__noise_kkpsk0__Transport [data].
+reduc forall noise_kkpsk0__noise_kkpsk0__Transport__Transport__send: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_kkpsk0__Transport__Transport__recv: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_kkpsk0__Transport__Transport__handshake_hash: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__Transport__noise_kkpsk0__noise_kkpsk0__Transport__Transport__send(noise_kkpsk0__noise_kkpsk0__Transport__Transport(noise_kkpsk0__noise_kkpsk0__Transport__Transport__send,
+  noise_kkpsk0__noise_kkpsk0__Transport__Transport__recv,
+  noise_kkpsk0__noise_kkpsk0__Transport__Transport__handshake_hash)) = noise_kkpsk0__noise_kkpsk0__Transport__Transport__send.
+reduc forall noise_kkpsk0__noise_kkpsk0__Transport__Transport__send: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_kkpsk0__Transport__Transport__recv: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_kkpsk0__Transport__Transport__handshake_hash: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__Transport__noise_kkpsk0__noise_kkpsk0__Transport__Transport__recv(noise_kkpsk0__noise_kkpsk0__Transport__Transport(noise_kkpsk0__noise_kkpsk0__Transport__Transport__send,
+  noise_kkpsk0__noise_kkpsk0__Transport__Transport__recv,
+  noise_kkpsk0__noise_kkpsk0__Transport__Transport__handshake_hash)) = noise_kkpsk0__noise_kkpsk0__Transport__Transport__recv.
+reduc forall noise_kkpsk0__noise_kkpsk0__Transport__Transport__send: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_kkpsk0__Transport__Transport__recv: noise_kkpsk0__noise_lib__CipherState,
+noise_kkpsk0__noise_kkpsk0__Transport__Transport__handshake_hash: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__Transport__noise_kkpsk0__noise_kkpsk0__Transport__Transport__handshake_hash(noise_kkpsk0__noise_kkpsk0__Transport__Transport(noise_kkpsk0__noise_kkpsk0__Transport__Transport__send,
+  noise_kkpsk0__noise_kkpsk0__Transport__Transport__recv,
+  noise_kkpsk0__noise_kkpsk0__Transport__Transport__handshake_hash)) = noise_kkpsk0__noise_kkpsk0__Transport__Transport__handshake_hash.
+type noise_kkpsk0__noise_kkpsk0__ProtocolName.
+fun noise_kkpsk0__noise_kkpsk0__ProtocolName_to_bitstring(noise_kkpsk0__noise_kkpsk0__ProtocolName): bitstring [typeConverter].
+fun noise_kkpsk0__noise_kkpsk0__ProtocolName_from_bitstring(bitstring): noise_kkpsk0__noise_kkpsk0__ProtocolName [typeConverter].
+const noise_kkpsk0__noise_kkpsk0__ProtocolName_default_value: noise_kkpsk0__noise_kkpsk0__ProtocolName.
+letfun noise_kkpsk0__noise_kkpsk0__ProtocolName_default() = noise_kkpsk0__noise_kkpsk0__ProtocolName_default_value.
+letfun noise_kkpsk0__noise_kkpsk0__ProtocolName_err() = let x = construct_fail() in noise_kkpsk0__noise_kkpsk0__ProtocolName_default_value.
+fun noise_kkpsk0__noise_kkpsk0__ProtocolName__ProtocolName(bitstring): noise_kkpsk0__noise_kkpsk0__ProtocolName [data].
+reduc forall noise_kkpsk0__noise_kkpsk0__ProtocolName__ProtocolName__0: bitstring;
+  accessor_noise_kkpsk0__noise_kkpsk0__ProtocolName__noise_kkpsk0__noise_kkpsk0__ProtocolName__ProtocolName__0(noise_kkpsk0__noise_kkpsk0__ProtocolName__ProtocolName(noise_kkpsk0__noise_kkpsk0__ProtocolName__ProtocolName__0)) = noise_kkpsk0__noise_kkpsk0__ProtocolName__ProtocolName__0.
+const noise_kkpsk0__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256: noise_kkpsk0__noise_kkpsk0__ProtocolName.
+letfun noise_kkpsk0__noise_kkpsk0__initialize_initiator(prologue: bitstring,
+psk: bitstring,
+s: noise_kkpsk0__noise_crypto__KeyPair,
+e: noise_kkpsk0__noise_crypto__KeyPair,
+rs: bitstring) =
+let st = (noise_kkpsk0__noise_lib__initialize_symmetric(noise_kkpsk0__noise_kkpsk0__ProtocolName__ProtocolName__0(noise_kkpsk0__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256))) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  prologue)) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(s))) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  rs)) in
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(psk,
+  st,
+  s,
+  e,
+  alloc__slice__Impl__to_vec(rs)).
+letfun noise_kkpsk0__noise_kkpsk0__initialize_responder(prologue: bitstring,
+psk: bitstring,
+s: noise_kkpsk0__noise_crypto__KeyPair,
+e: noise_kkpsk0__noise_crypto__KeyPair,
+rs: bitstring) =
+let st = (noise_kkpsk0__noise_lib__initialize_symmetric(noise_kkpsk0__noise_kkpsk0__ProtocolName__ProtocolName__0(noise_kkpsk0__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256))) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  prologue)) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  rs)) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(s))) in
+  noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(st,
+  psk,
+  s,
+  e,
+  alloc__slice__Impl__to_vec(rs)).
+letfun noise_kkpsk0__noise_kkpsk0__write_message1(hs: noise_kkpsk0__noise_kkpsk0__HandshakeStateI0,
+payload: bitstring) =
+let noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(st: noise_kkpsk0__noise_lib__SymmetricState,
+  psk: bitstring,
+  s: noise_kkpsk0__noise_crypto__KeyPair,
+  e: noise_kkpsk0__noise_crypto__KeyPair,
+  rs: bitstring) = (hs) in
+  let st = (noise_kkpsk0__noise_lib__mix_key_and_hash(st,
+  psk)) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(e))) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(e))) in
+  let es = (noise_kkpsk0__noise_crypto__dh(e,
+  rs)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  es)) in
+  let ss = (noise_kkpsk0__noise_crypto__dh(s,
+  rs)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  ss)) in
+  let rust_primitives__hax__Tuple2__Tuple2(st: noise_kkpsk0__noise_lib__SymmetricState,
+  ciphertext: bitstring) = noise_kkpsk0__noise_lib__encrypt_and_hash(st,
+  payload) in let hs = (noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(st,
+  s,
+  e)) in
+  rust_primitives__hax__Tuple2__Tuple2(hs,
+  ciphertext)
+  else bitstring_err().
+letfun noise_kkpsk0__noise_kkpsk0__read_message1(hs: noise_kkpsk0__noise_kkpsk0__HandshakeStateR0,
+ciphertext: bitstring) =
+let noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(st: noise_kkpsk0__noise_lib__SymmetricState,
+  psk: bitstring,
+  s: noise_kkpsk0__noise_crypto__KeyPair,
+  e: noise_kkpsk0__noise_crypto__KeyPair,
+  rs: bitstring) = (hs) in
+  let re = (core__ops__index__Index__index(ciphertext,
+  core__ops__range__Range__Range(0,
+  noise_kkpsk0__noise_crypto__DHLEN))) in
+  let ciphertext = (core__ops__index__Index__index(ciphertext,
+  core__ops__range__Range__Range(noise_kkpsk0__noise_crypto__DHLEN,
+  core__slice__Impl__len(ciphertext)))) in
+  let st = (noise_kkpsk0__noise_lib__mix_key_and_hash(st,
+  psk)) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  re)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  re)) in
+  let es = (noise_kkpsk0__noise_crypto__dh(s,
+  re)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  es)) in
+  let ss = (noise_kkpsk0__noise_crypto__dh(s,
+  rs)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  ss)) in
+  let rust_primitives__hax__Tuple2__Tuple2(st: noise_kkpsk0__noise_lib__SymmetricState,
+  plaintext: bitstring) = noise_kkpsk0__noise_lib__decrypt_and_hash(st,
+  ciphertext) in let hs = (noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(st,
+  e,
+  rs,
+  alloc__slice__Impl__to_vec(re))) in
+  rust_primitives__hax__Tuple2__Tuple2(hs,
+  plaintext)
+  else bitstring_err().
+letfun noise_kkpsk0__noise_kkpsk0__write_message2(hs: noise_kkpsk0__noise_kkpsk0__HandshakeStateR1,
+payload: bitstring) =
+let noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(st: noise_kkpsk0__noise_lib__SymmetricState,
+  e: noise_kkpsk0__noise_crypto__KeyPair,
+  rs: bitstring,
+  re: bitstring) = (hs) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(e))) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(e))) in
+  let ee = (noise_kkpsk0__noise_crypto__dh(e,
+  re)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  ee)) in
+  let se = (noise_kkpsk0__noise_crypto__dh(e,
+  rs)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  se)) in
+  let rust_primitives__hax__Tuple2__Tuple2(st: noise_kkpsk0__noise_lib__SymmetricState,
+  ciphertext: bitstring) = noise_kkpsk0__noise_lib__encrypt_and_hash(st,
+  payload) in let rust_primitives__hax__Tuple3__Tuple3(c1: noise_kkpsk0__noise_lib__CipherState,
+  c2: noise_kkpsk0__noise_lib__CipherState,
+  h: bitstring) = (noise_kkpsk0__noise_lib__split(st)) in
+  let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(c2,
+  c1,
+  h)) in
+  rust_primitives__hax__Tuple2__Tuple2(tx,
+  ciphertext)
+  else bitstring_err().
+letfun noise_kkpsk0__noise_kkpsk0__read_message2(hs: noise_kkpsk0__noise_kkpsk0__HandshakeStateI1,
+ciphertext: bitstring) =
+let noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(st: noise_kkpsk0__noise_lib__SymmetricState,
+  s: noise_kkpsk0__noise_crypto__KeyPair,
+  e: noise_kkpsk0__noise_crypto__KeyPair) = (hs) in
+  let re = (core__ops__index__Index__index(ciphertext,
+  core__ops__range__Range__Range(0,
+  noise_kkpsk0__noise_crypto__DHLEN))) in
+  let ciphertext = (core__ops__index__Index__index(ciphertext,
+  core__ops__range__Range__Range(noise_kkpsk0__noise_crypto__DHLEN,
+  core__slice__Impl__len(ciphertext)))) in
+  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  re)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  re)) in
+  let ee = (noise_kkpsk0__noise_crypto__dh(e,
+  re)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  ee)) in
+  let se = (noise_kkpsk0__noise_crypto__dh(s,
+  re)) in
+  let st = (noise_kkpsk0__noise_lib__mix_key(st,
+  se)) in
+  let rust_primitives__hax__Tuple2__Tuple2(st: noise_kkpsk0__noise_lib__SymmetricState,
+  plaintext: bitstring) = noise_kkpsk0__noise_lib__decrypt_and_hash(st,
+  ciphertext) in let rust_primitives__hax__Tuple3__Tuple3(c1: noise_kkpsk0__noise_lib__CipherState,
+  c2: noise_kkpsk0__noise_lib__CipherState,
+  h: bitstring) = (noise_kkpsk0__noise_lib__split(st)) in
+  let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(c1,
+  c2,
+  h)) in
+  rust_primitives__hax__Tuple2__Tuple2(tx,
+  plaintext)
+  else bitstring_err().
+letfun noise_kkpsk0__noise_kkpsk0__write_transport(tx: noise_kkpsk0__noise_kkpsk0__Transport,
+ad: bitstring,
+payload: bitstring) =
+let noise_kkpsk0__noise_kkpsk0__Transport__Transport(send: noise_kkpsk0__noise_lib__CipherState,
+  recv: noise_kkpsk0__noise_lib__CipherState,
+  handshake_hash: bitstring) = (tx) in
+  let rust_primitives__hax__Tuple2__Tuple2(send: noise_kkpsk0__noise_lib__CipherState,
+  ciphertext: bitstring) = noise_kkpsk0__noise_lib__encrypt_with_ad(send,
+  ad,
+  payload) in let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(send,
+  recv,
+  handshake_hash)) in
+  rust_primitives__hax__Tuple2__Tuple2(tx,
+  ciphertext)
+  else bitstring_err().
+letfun noise_kkpsk0__noise_kkpsk0__read_transport(tx: noise_kkpsk0__noise_kkpsk0__Transport,
+ad: bitstring,
+ciphertext: bitstring) =
+let noise_kkpsk0__noise_kkpsk0__Transport__Transport(send: noise_kkpsk0__noise_lib__CipherState,
+  recv: noise_kkpsk0__noise_lib__CipherState,
+  handshake_hash: bitstring) = (tx) in
+  let rust_primitives__hax__Tuple2__Tuple2(recv: noise_kkpsk0__noise_lib__CipherState,
+  payload: bitstring) = noise_kkpsk0__noise_lib__decrypt_with_ad(recv,
+  ad,
+  ciphertext) in let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(send,
+  recv,
+  handshake_hash)) in
+  rust_primitives__hax__Tuple2__Tuple2(tx,
+  payload)
+  else bitstring_err().
