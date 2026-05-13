@@ -70,6 +70,16 @@ fn check_version(binary: &Path, expected: &str, message_format: MessageFormat) {
     }
 }
 
+/// Format a `Command` as a shell-style invocation for display.
+fn format_command(cmd: &process::Command) -> String {
+    let mut s = cmd.get_program().to_string_lossy().to_string();
+    for arg in cmd.get_args() {
+        s.push(' ');
+        s.push_str(&arg.to_string_lossy());
+    }
+    s
+}
+
 /// Convert a snake_case crate name to CamelCase for Lean.
 pub fn to_camel_case(name: &str) -> String {
     name.split('_')
@@ -235,6 +245,13 @@ pub fn run(
     if let Some(extra) = &options.charon_args {
         charon_cmd.args(extra.split_whitespace());
     }
+    if verbose > 0 {
+        HaxMessage::SubprocessOutput {
+            prefix: "cmd".into(),
+            line: format_command(&charon_cmd),
+        }
+        .report(message_format, None);
+    }
     let charon_status = charon_cmd
         .current_dir(&crate_dir)
         .stderr(process::Stdio::inherit())
@@ -293,6 +310,13 @@ pub fn run(
     ]);
     if let Some(extra) = &options.aeneas_args {
         aeneas_cmd.args(extra.split_whitespace());
+    }
+    if verbose > 0 {
+        HaxMessage::SubprocessOutput {
+            prefix: "cmd".into(),
+            line: format_command(&aeneas_cmd),
+        }
+        .report(message_format, None);
     }
     let aeneas_output = aeneas_cmd.current_dir(&crate_dir).output();
 
