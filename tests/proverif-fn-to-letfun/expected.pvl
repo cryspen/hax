@@ -25,6 +25,11 @@ fun nat_lit(nat): bitstring.
 fun logical_and(bitstring, bitstring): bitstring.
 fun logical_or(bitstring, bitstring): bitstring.
 
+(*****************************************)
+(* Auto-declared external symbols        *)
+(*****************************************)
+const rust_primitives__hax__Tuple0__Tuple0: bitstring.
+
 fun fn_to_letfun__A__A(bitstring,
 bitstring): bitstring [data].
 reduc forall fn_to_letfun__A__A__x: bitstring,

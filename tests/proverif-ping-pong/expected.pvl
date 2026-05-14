@@ -25,6 +25,16 @@ fun nat_lit(nat): bitstring.
 fun logical_and(bitstring, bitstring): bitstring.
 fun logical_or(bitstring, bitstring): bitstring.
 
+(*****************************************)
+(* Auto-declared external symbols        *)
+(*****************************************)
+fun alloc__vec__Impl_1__len(bitstring): bitstring.
+fun core__ops__index__Index__index(bitstring, bitstring): bitstring.
+fun ping_pong__a__A0__A0__data(bitstring): bitstring.
+fun ping_pong__b__B1__B1__received(bitstring): bitstring.
+fun rust_primitives__hax__machine_int__eq(bitstring, bitstring): bitstring.
+fun rust_primitives__hax__machine_int__lt(bitstring, bitstring): bitstring.
+
 fun ping_pong__Message__Ping(bitstring): bitstring [data].
 reduc forall ping_pong__Message__Ping__0: bitstring;
   accessor_ping_pong__Message__ping_pong__Message__Ping__0(ping_pong__Message__Ping(ping_pong__Message__Ping__0)) = ping_pong__Message__Ping__0.
@@ -39,11 +49,11 @@ fun ping_pong__b__B1alt__B1alt(): bitstring [data].
 fun ping_pong__b__B2__B2(): bitstring [data].
 letfun ping_pong__b__init_b(wildcard: bitstring) =
 ping_pong__b__B0__B0().
-letfun ping_pong__b__read_ping(_state: bitstring,
+letfun ping_pong__b__read_ping(u_state: bitstring,
 msg: bitstring) =
 let ping_pong__Message__Ping(received: bitstring) = msg in ping_pong__b__B1__B1(received)
   else let ping_pong__Message__Pong(wildcard: bitstring) = msg in bitstring_err().
-letfun ping_pong__b__read_ping_alt(_state: bitstring,
+letfun ping_pong__b__read_ping_alt(u_state: bitstring,
 msg: bitstring) =
 let ping_pong__Message__Ping(received: bitstring) = msg in ping_pong__b__B1alt__B1alt()
   else bitstring_err().
@@ -64,7 +74,7 @@ let (=True()) = rust_primitives__hax__machine_int__lt(alloc__vec__Impl_1__len(pr
 letfun ping_pong__a__write_ping(state: bitstring) =
 rust_primitives__hax__Tuple2__Tuple2(ping_pong__a__A1__A1(),
   ping_pong__Message__Ping(ping_pong__a__A0__A0__data(state))).
-letfun ping_pong__a__read_pong(_state: bitstring,
+letfun ping_pong__a__read_pong(u_state: bitstring,
 msg: bitstring) =
 let ping_pong__Message__Ping(wildcard: bitstring) = msg in bitstring_err()
   else let ping_pong__Message__Pong(received: bitstring) = msg in ping_pong__a__A2__A2(received).

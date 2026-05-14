@@ -25,6 +25,7 @@ fun nat_lit(nat): bitstring.
 fun logical_and(bitstring, bitstring): bitstring.
 fun logical_or(bitstring, bitstring): bitstring.
 
+
 fun basic_structs__Ainitial__Ainitial(bitstring): bitstring [data].
 reduc forall basic_structs__Ainitial__Ainitial__x: bitstring;
   accessor_basic_structs__Ainitial__basic_structs__Ainitial__Ainitial__x(basic_structs__Ainitial__Ainitial(basic_structs__Ainitial__Ainitial__x)) = basic_structs__Ainitial__Ainitial__x.
