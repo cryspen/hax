@@ -73,20 +73,90 @@ fn meta_has_pv_inline(meta: &Metadata) -> bool {
     ))
 }
 
+fn meta_is_opaque(meta: &Metadata) -> bool {
+    meta.hax_attributes()
+        .any(|a| matches!(a, AttrPayload::Erased))
+}
+
+/// Returns true if any of `params` has an arrow (closure / fn) type — the
+/// signature of a higher-order function. ProVerif has no functions-as-
+/// values, so any such call site must be inlined to make sense.
+fn params_contain_arrow(params: &[Param]) -> bool {
+    params
+        .iter()
+        .any(|p| matches!(p.ty.kind(), TyKind::Arrow { .. }))
+}
+
+/// Walks an expression to detect a reference to `target` — used to avoid
+/// inlining a recursive HOF (which would loop the substitution fixpoint).
+struct SelfRef {
+    target: GlobalId,
+    found: bool,
+}
+
+impl AstVisitor for SelfRef {
+    fn enter_expr_kind(&mut self, x: &ExprKind) {
+        if let ExprKind::GlobalId(id) = x
+            && *id == self.target
+        {
+            self.found = true;
+        }
+    }
+}
+
+fn body_references(body: &Expr, target: GlobalId) -> bool {
+    let mut v = SelfRef {
+        target,
+        found: false,
+    };
+    v.visit_expr(body);
+    v.found
+}
+
 // === Pass 1: collect inlinable items =======================================
 
 struct CollectPVInline {
     shared: Rc<RefCell<Shared>>,
 }
 
+impl CollectPVInline {
+    /// Decide whether `params` + `body` (identified as `name`) should be
+    /// inlinable. Three sources of opt-in, in priority order:
+    ///  1. Explicit `#[hax_lib::pv_inline]` tool attribute on the item.
+    ///  2. Auto-inferred: the item is a higher-order function (some
+    ///     `Param` has a `TyKind::Arrow` type). ProVerif has no
+    ///     functions-as-values, so HOFs only make sense if inlined at
+    ///     every call site.
+    /// We *skip* items tagged `#[hax_lib::opaque]` and items whose body
+    /// references themselves (recursive — would loop the fixpoint).
+    fn should_inline(
+        &self,
+        meta: &Metadata,
+        params: &[Param],
+        body: &Expr,
+        name: GlobalId,
+    ) -> bool {
+        if meta_is_opaque(meta) {
+            return false;
+        }
+        let opt_in = meta_has_pv_inline(meta) || params_contain_arrow(params);
+        if !opt_in {
+            return false;
+        }
+        if body_references(body, name) {
+            // Recursive HOF — leave it as an opaque call.
+            return false;
+        }
+        true
+    }
+}
+
 impl AstVisitorMut for CollectPVInline {
     fn enter_item(&mut self, item: &mut Item) {
-        if !meta_has_pv_inline(&item.meta) {
-            return;
-        }
         if let ItemKind::Fn {
             name, body, params, ..
         } = &item.kind
+            && self.should_inline(&item.meta, params, body, *name)
         {
             self.shared
                 .borrow_mut()
@@ -96,10 +166,9 @@ impl AstVisitorMut for CollectPVInline {
     }
 
     fn enter_impl_item(&mut self, impl_item: &mut ImplItem) {
-        if !meta_has_pv_inline(&impl_item.meta) {
-            return;
-        }
-        if let ImplItemKind::Fn { body, params } = &impl_item.kind {
+        if let ImplItemKind::Fn { body, params } = &impl_item.kind
+            && self.should_inline(&impl_item.meta, params, body, impl_item.ident)
+        {
             self.shared
                 .borrow_mut()
                 .inlinable
@@ -377,7 +446,15 @@ fn pat_local_id(p: &Pat) -> Option<LocalId> {
 impl AstVisitorMut for ApplyPVInline {
     fn enter_item(&mut self, item: &mut Item) {
         // Mark inlinable items as late-skip so the printer drops them.
-        if meta_has_pv_inline(&item.meta) {
+        // We consult the shared map (populated by CollectPVInline) rather
+        // than re-checking the attribute, so the auto-inferred HOFs are
+        // dropped too.
+        let is_inlinable = if let ItemKind::Fn { name, .. } = &item.kind {
+            self.shared.borrow().inlinable.contains_key(name)
+        } else {
+            false
+        };
+        if is_inlinable {
             item.meta.attributes.push(Attribute {
                 kind: AttributeKind::Hax(AttrPayload::ItemStatus(ItemStatus::Included {
                     late_skip: true,
@@ -388,7 +465,7 @@ impl AstVisitorMut for ApplyPVInline {
     }
 
     fn enter_impl_item(&mut self, impl_item: &mut ImplItem) {
-        if meta_has_pv_inline(&impl_item.meta) {
+        if self.shared.borrow().inlinable.contains_key(&impl_item.ident) {
             impl_item.meta.attributes.push(Attribute {
                 kind: AttributeKind::Hax(AttrPayload::ItemStatus(ItemStatus::Included {
                     late_skip: true,
