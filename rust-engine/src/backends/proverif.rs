@@ -1334,8 +1334,25 @@ impl ProVerifBackend {
 /// `proverif_replace!` / `proverif_before!` quote injections that
 /// inline raw ProVerif syntax.
 fn scan_declared_names(rendered: &str) -> Vec<String> {
+    /// State machine: a `reduc forall ...;` header can:
+    ///  - finish on the same line: `reduc forall b1, b2; F(args) = ...`
+    ///  - wrap so `;` lands later but with the destructor name on the
+    ///    same line: `reduc forall <multiline>; F(args) = ...`
+    ///  - wrap further so the destructor name is on yet another line:
+    ///      reduc forall
+    ///        b1: t1,
+    ///        b2: t2;
+    ///
+    ///        F(args)
+    ///        = ...
+    /// We need to pick up `F` in all three shapes.
+    enum ReducState {
+        None,
+        SeenHeader,    // saw `reduc forall`, waiting for `;`
+        AwaitingHead,  // saw `;`, looking for the next non-empty token
+    }
     let mut out: Vec<String> = Vec::new();
-    let mut in_reduc_header = false;
+    let mut state = ReducState::None;
     for line in rendered.lines() {
         let s = line.trim_start();
         // `fun NAME(...)`, `letfun NAME(...)`, `const NAME: ...`
@@ -1350,26 +1367,50 @@ fn scan_declared_names(rendered: &str) -> Vec<String> {
                 }
             }
         }
-        // `reduc forall <bindings>; <name>(...) = ...` defines `<name>`.
-        // The header may wrap across lines: track an `in_reduc_header`
-        // continuation until we see the `;`.
-        if let Some(after) = s.strip_prefix("reduc forall ") {
-            if let Some((_, tail)) = after.split_once(';') {
-                if let Some(name) = extract_call_head(tail) {
+
+        // Strip `reduc forall` followed by either a space or end-of-line.
+        let reduc_after: Option<&str> = s
+            .strip_prefix("reduc forall ")
+            .or_else(|| s.strip_prefix("reduc forall").map(str::trim_start))
+            .filter(|_| {
+                s == "reduc forall"
+                    || s.starts_with("reduc forall ")
+                    || s.starts_with("reduc forall\t")
+            });
+        match state {
+            ReducState::None => {
+                if let Some(after) = reduc_after {
+                    if let Some((_, tail)) = after.split_once(';') {
+                        if let Some(name) = extract_call_head(tail) {
+                            out.push(name);
+                            state = ReducState::None;
+                        } else {
+                            state = ReducState::AwaitingHead;
+                        }
+                    } else {
+                        state = ReducState::SeenHeader;
+                    }
+                }
+            }
+            ReducState::SeenHeader => {
+                if let Some((_, after)) = s.split_once(';') {
+                    if let Some(name) = extract_call_head(after) {
+                        out.push(name);
+                        state = ReducState::None;
+                    } else {
+                        state = ReducState::AwaitingHead;
+                    }
+                }
+            }
+            ReducState::AwaitingHead => {
+                if s.is_empty() {
+                    continue;
+                }
+                if let Some(name) = extract_call_head(s) {
                     out.push(name);
                 }
-            } else {
-                in_reduc_header = true;
+                state = ReducState::None;
             }
-            continue;
-        }
-        if in_reduc_header
-            && let Some((_, after)) = s.split_once(';')
-        {
-            if let Some(name) = extract_call_head(after) {
-                out.push(name);
-            }
-            in_reduc_header = false;
         }
     }
     out
