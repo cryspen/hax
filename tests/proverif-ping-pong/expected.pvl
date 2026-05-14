@@ -36,11 +36,12 @@ letfun ping_pong__b__init_b(wildcard: bitstring) =
 ping_pong__b__B0__B0().
 letfun ping_pong__b__read_ping(u_state: bitstring,
 msg: bitstring) =
-let ping_pong__Message__Ping(received: bitstring) = msg in ping_pong__b__B1__B1(received)
-  else let ping_pong__Message__Pong(wildcard: bitstring) = msg in bitstring_err().
+let ping_pong__Message__Ping(received: bitstring) = msg in (ping_pong__b__B1__B1(received))
+  else let ping_pong__Message__Pong(wildcard: bitstring) = msg in (bitstring_err())
+  else bitstring_err().
 letfun ping_pong__b__read_ping_alt(u_state: bitstring,
 msg: bitstring) =
-let ping_pong__Message__Ping(received: bitstring) = msg in ping_pong__b__B1alt__B1alt()
+let ping_pong__Message__Ping(received: bitstring) = msg in (ping_pong__b__B1alt__B1alt())
   else bitstring_err().
 letfun ping_pong__b__write_pong(state: bitstring) =
 rust_primitives__hax__Tuple2__Tuple2(ping_pong__b__B2__B2(),
@@ -61,5 +62,6 @@ rust_primitives__hax__Tuple2__Tuple2(ping_pong__a__A1__A1(),
   ping_pong__Message__Ping(ping_pong__a__A0__A0__data(state))).
 letfun ping_pong__a__read_pong(u_state: bitstring,
 msg: bitstring) =
-let ping_pong__Message__Ping(wildcard: bitstring) = msg in bitstring_err()
-  else let ping_pong__Message__Pong(received: bitstring) = msg in ping_pong__a__A2__A2(received).
+let ping_pong__Message__Ping(wildcard: bitstring) = msg in (bitstring_err())
+  else let ping_pong__Message__Pong(received: bitstring) = msg in (ping_pong__a__A2__A2(received))
+  else bitstring_err().

@@ -46,7 +46,8 @@ fun hax_lib_protocol__crypto__hmac(bitstring, bitstring, bitstring): bitstring [
 
 fun noise_kkpsk0__noise_crypto__Error__CryptoError(): bitstring [data].
 letfun noise_kkpsk0__noise_crypto__Error_cast_to_repr(x: bitstring) =
-let noise_kkpsk0__noise_crypto__Error__CryptoError() = x in nat_lit(0).
+let noise_kkpsk0__noise_crypto__Error__CryptoError() = x in (nat_lit(0))
+  else bitstring_err().
 fun noise_kkpsk0__noise_crypto__KeyPair__KeyPair(bitstring,
 bitstring): bitstring [data].
 reduc forall noise_kkpsk0__noise_crypto__KeyPair__KeyPair__private_key_v: bitstring,
@@ -83,10 +84,9 @@ let chacha_iv = (alloc__vec__from_elem(nat_lit(0),
   key),
   hax_lib_protocol__crypto__Impl_5__from_bytes(chacha_iv),
   aad,
-  plain)) in
-  let cipher = (alloc__vec__Impl_2__extend_from_slice(cipher,
+  plain)) in (let cipher = (alloc__vec__Impl_2__extend_from_slice(cipher,
   tag)) in
-  cipher.
+  cipher) else bitstring_err().
 letfun noise_kkpsk0__noise_crypto__decrypt(key: bitstring,
 counter: bitstring,
 aad: bitstring,
@@ -205,50 +205,48 @@ core__option__Impl__is_some(noise_kkpsk0__noise_lib__CipherState__CipherState__k
 letfun noise_kkpsk0__noise_lib__set_nonce(cs: bitstring,
 n: bitstring) =
 let noise_kkpsk0__noise_lib__CipherState__CipherState(k: bitstring,
-  wildcard: bitstring) = (cs) in
-  noise_kkpsk0__noise_lib__CipherState__CipherState(k,
-  n).
+  wildcard: bitstring) = (cs) in (noise_kkpsk0__noise_lib__CipherState__CipherState(k,
+  n)) else bitstring_err().
 letfun noise_kkpsk0__noise_lib__encrypt_with_ad(cs: bitstring,
 ad: bitstring,
 plaintext: bitstring) =
 let noise_kkpsk0__noise_lib__CipherState__CipherState(k: bitstring,
-  n: bitstring) = (cs) in
-  let (=True()) = rust_primitives__hax__machine_int__eq(n,
-  nat_lit(18446744073709551615)) in (bitstring_err()) else (let Some(k) = k in let cip = (noise_kkpsk0__noise_crypto__encrypt(k,
+  n: bitstring) = (cs) in (let (=True()) = rust_primitives__hax__machine_int__eq(n,
+  nat_lit(18446744073709551615)) in (bitstring_err()) else (let Some(k) = k in (let cip = (noise_kkpsk0__noise_crypto__encrypt(k,
   n,
   ad,
   plaintext)) in
   rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(Some(k),
   rust_primitives__hax__machine_int__add(n,
   nat_lit(1))),
-  cip)
-  else let None() = k in rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(k,
+  cip))
+  else let None() = k in (rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(k,
   n),
-  alloc__slice__Impl__to_vec(plaintext))).
+  alloc__slice__Impl__to_vec(plaintext)))
+  else bitstring_err())) else bitstring_err().
 letfun noise_kkpsk0__noise_lib__decrypt_with_ad(cs: bitstring,
 ad: bitstring,
 ciphertext: bitstring) =
 let noise_kkpsk0__noise_lib__CipherState__CipherState(k: bitstring,
-  n: bitstring) = (cs) in
-  let (=True()) = rust_primitives__hax__machine_int__eq(n,
-  nat_lit(18446744073709551615)) in (bitstring_err()) else (let Some(k) = k in let plain = noise_kkpsk0__noise_crypto__decrypt(k,
+  n: bitstring) = (cs) in (let (=True()) = rust_primitives__hax__machine_int__eq(n,
+  nat_lit(18446744073709551615)) in (bitstring_err()) else (let Some(k) = k in (let plain = noise_kkpsk0__noise_crypto__decrypt(k,
   n,
   ad,
   ciphertext) in rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(Some(k),
   rust_primitives__hax__machine_int__add(n,
   nat_lit(1))),
-  plain)
-  else bitstring_err()
-  else let None() = k in rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(k,
+  plain))
+  else let None() = k in (rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(k,
   n),
-  alloc__slice__Impl__to_vec(ciphertext))).
+  alloc__slice__Impl__to_vec(ciphertext)))
+  else bitstring_err())) else bitstring_err().
 letfun noise_kkpsk0__noise_lib__rekey(cs: bitstring) =
 let noise_kkpsk0__noise_lib__CipherState__CipherState(k: bitstring,
-  n: bitstring) = (cs) in
-  let Some(k) = k in let new_k = (noise_kkpsk0__noise_crypto__rekey(k)) in
+  n: bitstring) = (cs) in (let Some(k) = k in (let new_k = (noise_kkpsk0__noise_crypto__rekey(k)) in
   noise_kkpsk0__noise_lib__CipherState__CipherState(Some(new_k),
-  n)
-  else let None() = k in bitstring_err().
+  n))
+  else let None() = k in (bitstring_err())
+  else bitstring_err()) else bitstring_err().
 letfun noise_kkpsk0__noise_lib__initialize_symmetric(protocol_name: bitstring) =
 let pnlen = (core__slice__Impl__len(protocol_name)) in
   let hv = (let (=True()) = rust_primitives__hax__machine_int__lt(pnlen,
@@ -261,35 +259,30 @@ letfun noise_kkpsk0__noise_lib__mix_key(st: bitstring,
 input_key_material: bitstring) =
 let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(wildcard: bitstring,
   ck: bitstring,
-  h: bitstring) = (st) in
-  let rust_primitives__hax__Tuple2__Tuple2(ck: bitstring,
+  h: bitstring) = (st) in (let rust_primitives__hax__Tuple2__Tuple2(ck: bitstring,
   temp_k: bitstring) = (noise_kkpsk0__noise_crypto__hkdf2(ck,
-  input_key_material)) in
-  let temp_k = (let (=True()) = rust_primitives__hax__machine_int__eq(noise_kkpsk0__noise_crypto__HASHLEN,
+  input_key_material)) in (let temp_k = (let (=True()) = rust_primitives__hax__machine_int__eq(noise_kkpsk0__noise_crypto__HASHLEN,
   nat_lit(64)) in (let temp_k = (alloc__vec__Impl_1__truncate(temp_k,
   nat_lit(32))) in
   temp_k) else (temp_k)) in
   noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__initialize_key(Some(temp_k)),
   ck,
-  h).
+  h)) else bitstring_err()) else bitstring_err().
 letfun noise_kkpsk0__noise_lib__mix_hash(st: bitstring,
 data: bitstring) =
 let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(cs: bitstring,
   ck: bitstring,
-  h: bitstring) = (st) in
-  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(cs,
+  h: bitstring) = (st) in (noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(cs,
   ck,
-  noise_kkpsk0__noise_crypto__hash(alloc__slice__Impl__concat(bitstring_err() (* Array expressions not supported in ProVerif *)))).
+  noise_kkpsk0__noise_crypto__hash(alloc__slice__Impl__concat(bitstring_err() (* Array expressions not supported in ProVerif *))))) else bitstring_err().
 letfun noise_kkpsk0__noise_lib__mix_key_and_hash(st: bitstring,
 input_key_material: bitstring) =
 let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(wildcard: bitstring,
   ck: bitstring,
-  h: bitstring) = (st) in
-  let rust_primitives__hax__Tuple3__Tuple3(ck: bitstring,
+  h: bitstring) = (st) in (let rust_primitives__hax__Tuple3__Tuple3(ck: bitstring,
   temp_h: bitstring,
   temp_k: bitstring) = (noise_kkpsk0__noise_crypto__hkdf3(ck,
-  input_key_material)) in
-  let new_h = (h) in
+  input_key_material)) in (let new_h = (h) in
   let new_h = (alloc__vec__Impl_2__extend_from_slice(new_h,
   temp_h)) in
   let new_h = (noise_kkpsk0__noise_crypto__hash(new_h)) in
@@ -299,40 +292,39 @@ let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(wildcard: bitstring,
   temp_k) else (temp_k)) in
   noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__initialize_key(Some(temp_k)),
   ck,
-  new_h).
+  new_h)) else bitstring_err()) else bitstring_err().
 letfun noise_kkpsk0__noise_lib__encrypt_and_hash(st: bitstring,
 plaintext: bitstring) =
 let rust_primitives__hax__Tuple2__Tuple2(new_cs: bitstring,
   ciphertext: bitstring) = noise_kkpsk0__noise_lib__encrypt_with_ad(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs(st),
   noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st),
-  plaintext) in let new_h = (noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st)) in
+  plaintext) in (let new_h = (noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st)) in
   let new_h = (alloc__vec__Impl_2__extend_from_slice(new_h,
   ciphertext)) in
   let new_h = (noise_kkpsk0__noise_crypto__hash(new_h)) in
   rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(new_cs,
   noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck(st),
   new_h),
-  ciphertext)
+  ciphertext))
   else bitstring_err().
 letfun noise_kkpsk0__noise_lib__decrypt_and_hash(st: bitstring,
 ciphertext: bitstring) =
 let rust_primitives__hax__Tuple2__Tuple2(new_cs: bitstring,
   plaintext: bitstring) = noise_kkpsk0__noise_lib__decrypt_with_ad(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__cs(st),
   noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st),
-  ciphertext) in let new_h = (noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st)) in
+  ciphertext) in (let new_h = (noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st)) in
   let new_h = (alloc__vec__Impl_2__extend_from_slice(new_h,
   ciphertext)) in
   let new_h = (noise_kkpsk0__noise_crypto__hash(new_h)) in
   rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(new_cs,
   noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck(st),
   new_h),
-  plaintext)
+  plaintext))
   else bitstring_err().
 letfun noise_kkpsk0__noise_lib__split(st: bitstring) =
 let rust_primitives__hax__Tuple2__Tuple2(temp_k1: bitstring,
   temp_k2: bitstring) = (noise_kkpsk0__noise_crypto__hkdf2(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck(st),
-  alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0))) in
-  let rust_primitives__hax__Tuple2__Tuple2(temp_k1: bitstring,
+  alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0))) in (let rust_primitives__hax__Tuple2__Tuple2(temp_k1: bitstring,
   temp_k2: bitstring) = (let (=True()) = rust_primitives__hax__machine_int__eq(noise_kkpsk0__noise_crypto__HASHLEN,
   nat_lit(64)) in (let temp_k1 = (alloc__vec__Impl_1__truncate(temp_k1,
   nat_lit(32))) in
@@ -340,10 +332,9 @@ let rust_primitives__hax__Tuple2__Tuple2(temp_k1: bitstring,
   nat_lit(32))) in
   rust_primitives__hax__Tuple2__Tuple2(temp_k1,
   temp_k2)) else (rust_primitives__hax__Tuple2__Tuple2(temp_k1,
-  temp_k2))) in
-  rust_primitives__hax__Tuple3__Tuple3(noise_kkpsk0__noise_lib__initialize_key(Some(temp_k1)),
+  temp_k2))) in (rust_primitives__hax__Tuple3__Tuple3(noise_kkpsk0__noise_lib__initialize_key(Some(temp_k1)),
   noise_kkpsk0__noise_lib__initialize_key(Some(temp_k2)),
-  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st)).
+  noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__h(st))) else bitstring_err()) else bitstring_err().
 fun noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(bitstring,
 bitstring,
 bitstring,
@@ -576,8 +567,7 @@ let noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(st: bitstring
   psk: bitstring,
   s: bitstring,
   e: bitstring,
-  rs: bitstring) = (hs) in
-  let st = (noise_kkpsk0__noise_lib__mix_key_and_hash(st,
+  rs: bitstring) = (hs) in (let st = (noise_kkpsk0__noise_lib__mix_key_and_hash(st,
   psk)) in
   let st = (noise_kkpsk0__noise_lib__mix_hash(st,
   noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(e))) in
@@ -593,20 +583,19 @@ let noise_kkpsk0__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(st: bitstring
   ss)) in
   let rust_primitives__hax__Tuple2__Tuple2(st: bitstring,
   ciphertext: bitstring) = noise_kkpsk0__noise_lib__encrypt_and_hash(st,
-  payload) in let hs = (noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(st,
+  payload) in (let hs = (noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(st,
   s,
   e)) in
   rust_primitives__hax__Tuple2__Tuple2(hs,
-  ciphertext)
-  else bitstring_err().
+  ciphertext))
+  else bitstring_err()) else bitstring_err().
 letfun noise_kkpsk0__noise_kkpsk0__read_message1(hs: bitstring,
 ciphertext: bitstring) =
 let noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(st: bitstring,
   psk: bitstring,
   s: bitstring,
   e: bitstring,
-  rs: bitstring) = (hs) in
-  let re = (core__ops__index__Index__index(ciphertext,
+  rs: bitstring) = (hs) in (let re = (core__ops__index__Index__index(ciphertext,
   core__ops__range__Range__Range(nat_lit(0),
   noise_kkpsk0__noise_crypto__DHLEN))) in
   let ciphertext = (core__ops__index__Index__index(ciphertext,
@@ -628,20 +617,19 @@ let noise_kkpsk0__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(st: bitstring
   ss)) in
   let rust_primitives__hax__Tuple2__Tuple2(st: bitstring,
   plaintext: bitstring) = noise_kkpsk0__noise_lib__decrypt_and_hash(st,
-  ciphertext) in let hs = (noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(st,
+  ciphertext) in (let hs = (noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(st,
   e,
   rs,
   alloc__slice__Impl__to_vec(re))) in
   rust_primitives__hax__Tuple2__Tuple2(hs,
-  plaintext)
-  else bitstring_err().
+  plaintext))
+  else bitstring_err()) else bitstring_err().
 letfun noise_kkpsk0__noise_kkpsk0__write_message2(hs: bitstring,
 payload: bitstring) =
 let noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(st: bitstring,
   e: bitstring,
   rs: bitstring,
-  re: bitstring) = (hs) in
-  let st = (noise_kkpsk0__noise_lib__mix_hash(st,
+  re: bitstring) = (hs) in (let st = (noise_kkpsk0__noise_lib__mix_hash(st,
   noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(e))) in
   let st = (noise_kkpsk0__noise_lib__mix_key(st,
   noise_kkpsk0__noise_crypto__KeyPair__KeyPair__public_key(e))) in
@@ -655,21 +643,19 @@ let noise_kkpsk0__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(st: bitstring
   se)) in
   let rust_primitives__hax__Tuple2__Tuple2(st: bitstring,
   ciphertext: bitstring) = noise_kkpsk0__noise_lib__encrypt_and_hash(st,
-  payload) in let rust_primitives__hax__Tuple3__Tuple3(c1: bitstring,
+  payload) in (let rust_primitives__hax__Tuple3__Tuple3(c1: bitstring,
   c2: bitstring,
-  h: bitstring) = (noise_kkpsk0__noise_lib__split(st)) in
-  let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(c2,
+  h: bitstring) = (noise_kkpsk0__noise_lib__split(st)) in (let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(c2,
   c1,
   h)) in
   rust_primitives__hax__Tuple2__Tuple2(tx,
-  ciphertext)
-  else bitstring_err().
+  ciphertext)) else bitstring_err())
+  else bitstring_err()) else bitstring_err().
 letfun noise_kkpsk0__noise_kkpsk0__read_message2(hs: bitstring,
 ciphertext: bitstring) =
 let noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(st: bitstring,
   s: bitstring,
-  e: bitstring) = (hs) in
-  let re = (core__ops__index__Index__index(ciphertext,
+  e: bitstring) = (hs) in (let re = (core__ops__index__Index__index(ciphertext,
   core__ops__range__Range__Range(nat_lit(0),
   noise_kkpsk0__noise_crypto__DHLEN))) in
   let ciphertext = (core__ops__index__Index__index(ciphertext,
@@ -689,42 +675,39 @@ let noise_kkpsk0__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(st: bitstring
   se)) in
   let rust_primitives__hax__Tuple2__Tuple2(st: bitstring,
   plaintext: bitstring) = noise_kkpsk0__noise_lib__decrypt_and_hash(st,
-  ciphertext) in let rust_primitives__hax__Tuple3__Tuple3(c1: bitstring,
+  ciphertext) in (let rust_primitives__hax__Tuple3__Tuple3(c1: bitstring,
   c2: bitstring,
-  h: bitstring) = (noise_kkpsk0__noise_lib__split(st)) in
-  let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(c1,
+  h: bitstring) = (noise_kkpsk0__noise_lib__split(st)) in (let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(c1,
   c2,
   h)) in
   rust_primitives__hax__Tuple2__Tuple2(tx,
-  plaintext)
-  else bitstring_err().
+  plaintext)) else bitstring_err())
+  else bitstring_err()) else bitstring_err().
 letfun noise_kkpsk0__noise_kkpsk0__write_transport(tx: bitstring,
 ad: bitstring,
 payload: bitstring) =
 let noise_kkpsk0__noise_kkpsk0__Transport__Transport(send: bitstring,
   recv: bitstring,
-  handshake_hash: bitstring) = (tx) in
-  let rust_primitives__hax__Tuple2__Tuple2(send: bitstring,
+  handshake_hash: bitstring) = (tx) in (let rust_primitives__hax__Tuple2__Tuple2(send: bitstring,
   ciphertext: bitstring) = noise_kkpsk0__noise_lib__encrypt_with_ad(send,
   ad,
-  payload) in let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(send,
+  payload) in (let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(send,
   recv,
   handshake_hash)) in
   rust_primitives__hax__Tuple2__Tuple2(tx,
-  ciphertext)
-  else bitstring_err().
+  ciphertext))
+  else bitstring_err()) else bitstring_err().
 letfun noise_kkpsk0__noise_kkpsk0__read_transport(tx: bitstring,
 ad: bitstring,
 ciphertext: bitstring) =
 let noise_kkpsk0__noise_kkpsk0__Transport__Transport(send: bitstring,
   recv: bitstring,
-  handshake_hash: bitstring) = (tx) in
-  let rust_primitives__hax__Tuple2__Tuple2(recv: bitstring,
+  handshake_hash: bitstring) = (tx) in (let rust_primitives__hax__Tuple2__Tuple2(recv: bitstring,
   payload: bitstring) = noise_kkpsk0__noise_lib__decrypt_with_ad(recv,
   ad,
-  ciphertext) in let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(send,
+  ciphertext) in (let tx = (noise_kkpsk0__noise_kkpsk0__Transport__Transport(send,
   recv,
   handshake_hash)) in
   rust_primitives__hax__Tuple2__Tuple2(tx,
-  payload)
-  else bitstring_err().
+  payload))
+  else bitstring_err()) else bitstring_err().
