@@ -1057,7 +1057,11 @@ const _: () = {
         }
 
         fn error_node(&self, _error_node: &ErrorNode) -> DocBuilder<A> {
-            docs!["(* error node *)"]
+            // ProVerif rejects bare comments in term position. `bitstring_err()`
+            // is the universal "value we don't have" placeholder declared by
+            // the preamble — keeping the surrounding letfun parseable while
+            // still surfacing the failure via the trailing comment.
+            docs!["bitstring_err()", " (* error node *)"]
         }
     }
 };

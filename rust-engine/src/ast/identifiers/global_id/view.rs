@@ -406,7 +406,10 @@ impl PathSegmentPayload {
             DefKind::Use => UnnamedPathSegmentPayload::Use,
             DefKind::ForeignMod => UnnamedPathSegmentPayload::Foreign,
             DefKind::AnonConst => UnnamedPathSegmentPayload::AnonConst,
-            DefKind::InlineConst => UnnamedPathSegmentPayload::InlineConst,
+            // `PromotedConst` is rustc-promoted (e.g. a constant
+            // sub-expression lifted out of a const body). Path-wise
+            // it behaves like an inline constant.
+            DefKind::InlineConst | DefKind::PromotedConst => UnnamedPathSegmentPayload::InlineConst,
             DefKind::OpaqueTy => UnnamedPathSegmentPayload::Opaque,
             DefKind::GlobalAsm => UnnamedPathSegmentPayload::GlobalAsm,
             DefKind::Impl { .. } => UnnamedPathSegmentPayload::Impl,
@@ -445,6 +448,7 @@ impl PathSegmentPayload {
             | DefKind::ForeignMod
             | DefKind::AnonConst
             | DefKind::InlineConst
+            | DefKind::PromotedConst
             | DefKind::OpaqueTy
             | DefKind::GlobalAsm
             | DefKind::Impl { .. }
@@ -453,7 +457,6 @@ impl PathSegmentPayload {
 
             DefKind::TyParam
             | DefKind::ConstParam
-            | DefKind::PromotedConst
             | DefKind::LifetimeParam
             | DefKind::SyntheticCoroutineBody => error_dummy_value(
                 "PathSegmentPayload::from_def_id, kinds should never appear",
@@ -689,6 +692,14 @@ impl PathSegment {
             DefKind::ForeignMod => AnyKind::Foreign,
             DefKind::Macro { .. } => AnyKind::Macro,
             DefKind::AnonConst => AnyKind::AnonConst,
+            // Inline / promoted consts behave like anonymous constants
+            // in the path; they show up e.g. when a `const _: usize =
+            // { ... }` body contains a nested constant expression that
+            // rustc promotes. `from_unnamed` already maps them to
+            // `UnnamedPathSegmentPayload::{Inline,Anon}Const`, so we
+            // just need a matching `AnyKind` here to avoid falling
+            // through to `error_dummy_value`.
+            DefKind::InlineConst | DefKind::PromotedConst => AnyKind::InlineConst,
             DefKind::OpaqueTy => AnyKind::Opaque,
             DefKind::GlobalAsm => AnyKind::GlobalAsm,
             DefKind::Closure => AnyKind::Closure,
