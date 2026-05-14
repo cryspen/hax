@@ -491,6 +491,14 @@ letfun alloc__vec__Impl_1__as_slice(x: bitstring) = x.
 letfun alloc__borrow__ToOwned__to_owned(x: bitstring) = x.
 letfun alloc__boxed__Impl__new_kw(x: bitstring) = x.
 
+(*** rand_core — `RngCore::fill_bytes` returns fresh bytes         ***)
+(* The trait method mutates its `dest: &mut [u8]` to fresh randomness *)
+(* and returns the (state, dest) pair via the `&mut` mutation hax    *)
+(* phase rewrites. Symbolically this is a fresh `new` value. *)
+letfun rand_core__RngCore__fill_bytes(rng: bitstring, dest: bitstring) =
+  new b: bitstring;
+  rust_primitives__hax__Tuple2__Tuple2(rng, b).
+
 (*** hax_lib helpers — `assume`, `Prop::from_bool`                 ***)
 
 fun hax_lib__assume(bitstring): bitstring [data].
