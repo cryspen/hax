@@ -387,8 +387,18 @@ const _: () = {
 
         fn literal(&self, literal: &Literal) -> DocBuilder<A> {
             docs![match literal {
-                Literal::String(symbol) => format!("\"{symbol}\""),
-                Literal::Char(c) => format!("'{c}'"),
+                // ProVerif's lexer doesn't accept `"foo"` or `'c'` as
+                // terms. Encode them as auto-declared opaque constants —
+                // unique per literal value, so distinct strings stay
+                // distinguishable in symbolic reasoning. The auto-decl
+                // pass picks these up because they're referenced via the
+                // synthesised name.
+                Literal::String(symbol) => {
+                    format!("string_lit__{}", sanitize_string_literal(symbol.as_ref()))
+                }
+                Literal::Char(c) => {
+                    format!("char_lit__{}", sanitize_string_literal(&c.to_string()))
+                }
                 Literal::Bool(true) => "True()".to_string(),
                 Literal::Bool(false) => "False()".to_string(),
                 Literal::Int { value, negative, .. } => {
@@ -402,7 +412,13 @@ const _: () = {
                     }
                 }
                 Literal::Float { value, negative, .. } => {
-                    format!("{}{value}", if *negative { "-" } else { "" })
+                    // ProVerif has no floats. Encode as an opaque
+                    // per-value const, same as strings.
+                    let sign = if *negative { "neg_" } else { "" };
+                    format!(
+                        "float_lit__{sign}{}",
+                        sanitize_string_literal(value.as_ref())
+                    )
                 }
             }]
         }
@@ -1132,19 +1148,20 @@ impl Backend for ProVerifBackend {
                 collect_erased_const_generics(item, &mut printer.erased_const_generics);
             }
         }
-        // Compute opaque declarations for any GlobalId referenced inside
-        // expressions but not bound by a top-level item in the module set.
-        // ProVerif rejects calls to undeclared functions, so we forward-
-        // declare every external symbol as a generic opaque `bitstring`
-        // function. The user can later override individual ones via
-        // `proverif_replace!` macros (or, eventually, a `proof-libs`
-        // runtime).
-        let externals = self.collect_external_decls(&modules, &mut printer);
+        // Collect every `GlobalId` referenced in expression / pattern
+        // position from the AST.
+        let referenced = collect_references(&modules, &mut printer);
+        // Render the body.
         let contents = modules
             .into_iter()
             .map(|module: Module| printer.print(module).0)
             .collect::<Vec<String>>()
             .join("\n");
+        // Scan the rendered body for the names it already declares
+        // (including ones synthesized by `proverif_replace_body!`
+        // quote injections such as `reduc forall ...; foo(...) = ...`),
+        // then emit an auto-decl block only for what's still missing.
+        let externals = self.format_external_decls(&referenced, &contents);
         vec![File {
             path,
             contents: format!("{HEADER}{externals}\n{contents}"),
@@ -1179,26 +1196,66 @@ fn collect_erased_const_generics(item: &Item, out: &mut HashSet<LocalId>) {
     }
 }
 
+/// Per-reference info kept while scanning the AST. Tracks max-observed
+/// arity at use sites and whether the symbol appears in `Construct` /
+/// `PatKind::Construct` position (in which case it must be declared
+/// `[data]`).
+struct RefInfo {
+    arity: usize,
+    is_constructor: bool,
+}
+
+/// Walk every `Module` and produce a `name → RefInfo` map of every
+/// `GlobalId` referenced in expression or pattern position. The names
+/// are rendered as strings (ProVerif has one global namespace, so two
+/// `GlobalId`s that share a rendered name are the same identifier).
+fn collect_references(
+    modules: &[Module],
+    printer: &mut ProVerifPrinter,
+) -> HashMap<String, RefInfo> {
+    let mut referenced: HashMap<String, RefInfo> = HashMap::new();
+    for module in modules {
+        for item in &module.items {
+            let mut v = ExternRefCollector::default();
+            v.visit_item(item);
+            for r in v.calls {
+                let name = printer.render_id(&r.id);
+                let info = referenced.entry(name).or_insert(RefInfo {
+                    arity: 0,
+                    is_constructor: false,
+                });
+                info.arity = info.arity.max(r.arity);
+                info.is_constructor |= r.is_constructor;
+            }
+            for name in v.lit_consts {
+                referenced.entry(name).or_insert(RefInfo {
+                    arity: 0,
+                    is_constructor: false,
+                });
+            }
+        }
+    }
+    referenced
+}
+
 impl ProVerifBackend {
-    /// Walk every `Module` and produce the block of opaque `fun ... :
-    /// bitstring.` / `const ... : bitstring.` declarations needed for the
-    /// file to parse. A name is "external" if it appears in expression
-    /// position (call head or bare reference) but is not bound by any
-    /// top-level item (Fn / Type variant / Impl method / Const) in the
-    /// module set.
-    fn collect_external_decls(
+    /// Emit the auto-declared-externals block for the file.
+    ///
+    /// A name in `referenced` is "external" (and needs a declaration)
+    /// unless it's already declared by one of:
+    ///  - the HEADER preamble (built-ins like `Some`, `True`, …);
+    ///  - the bundled `primitives.pvl` library (run ProVerif with
+    ///    `-lib primitives.pvl`);
+    ///  - the *rendered* `rendered` body — picks up `letfun`, `fun [data]`,
+    ///    `const`, and (importantly) `reduc forall ...; F(...) = ...`
+    ///    declarations introduced by `proverif_replace!` /
+    ///    `proverif_before!` quote injections.
+    fn format_external_decls(
         &self,
-        modules: &[Module],
-        printer: &mut ProVerifPrinter,
+        referenced: &HashMap<String, RefInfo>,
+        rendered: &str,
     ) -> String {
-        // We track defined / referenced names by their *rendered string*
-        // rather than by `GlobalId` directly. The same surface name can
-        // appear under different `GlobalId`s when hax has separate
-        // "imported" and "locally-declared" copies of an item, but in
-        // ProVerif there's only one namespace, so string equality is the
-        // right notion.
         let mut defined: HashSet<String> = HashSet::new();
-        // Always defined by the HEADER preamble.
         for s in [
             "construct_fail",
             "empty",
@@ -1217,35 +1274,11 @@ impl ProVerifBackend {
         ] {
             defined.insert(s.to_string());
         }
-        // Names declared in the bundled `primitives.pvl` library. The
-        // user is expected to invoke ProVerif with
-        // `-lib primitives.pvl lib.pvl`, so re-declaring these in the
-        // auto-decl block would just cause "identifier already defined"
-        // errors.
         for name in primitives_pvl_names() {
             defined.insert(name);
         }
-        struct Info {
-            arity: usize,
-            is_constructor: bool,
-        }
-        let mut referenced: HashMap<String, Info> = HashMap::new();
-
-        for module in modules {
-            for item in &module.items {
-                Self::collect_defined_names(item, printer, &mut defined);
-                let mut v = ExternRefCollector::default();
-                v.visit_item(item);
-                for r in v.calls {
-                    let name = printer.render_id(&r.id);
-                    let info = referenced.entry(name).or_insert(Info {
-                        arity: 0,
-                        is_constructor: false,
-                    });
-                    info.arity = info.arity.max(r.arity);
-                    info.is_constructor |= r.is_constructor;
-                }
-            }
+        for name in scan_declared_names(rendered) {
+            defined.insert(name);
         }
 
         let mut decls: Vec<String> = Vec::new();
@@ -1288,36 +1321,80 @@ impl ProVerifBackend {
             )
         }
     }
+}
 
-    fn collect_defined_names(
-        item: &Item,
-        printer: &mut ProVerifPrinter,
-        out: &mut HashSet<String>,
-    ) {
-        match item.kind() {
-            ItemKind::Fn { name, .. } => {
-                out.insert(printer.render_id(name));
-            }
-            ItemKind::Type { variants, .. } => {
-                for v in variants {
-                    out.insert(printer.render_id(&v.name));
+/// Scan rendered `.pvl` text and return every name introduced by a
+/// `fun`, `letfun`, `const`, or `reduc forall ...; <name>(...)` line.
+/// Used by the auto-decl pass to avoid redeclaring identifiers that
+/// the printer has *already* emitted — including those synthesised by
+/// `proverif_replace!` / `proverif_before!` quote injections that
+/// inline raw ProVerif syntax.
+fn scan_declared_names(rendered: &str) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    let mut in_reduc_header = false;
+    for line in rendered.lines() {
+        let s = line.trim_start();
+        // `fun NAME(...)`, `letfun NAME(...)`, `const NAME: ...`
+        for kw in ["fun ", "letfun ", "const "] {
+            if let Some(rest) = s.strip_prefix(kw) {
+                let end = rest
+                    .find(|c: char| c == '(' || c == ':' || c == ' ' || c == '\t')
+                    .unwrap_or(rest.len());
+                let name = rest[..end].trim();
+                if !name.is_empty() {
+                    out.push(name.to_string());
                 }
             }
-            ItemKind::Impl { items, .. } => {
-                for ii in items {
-                    if matches!(ii.kind, ImplItemKind::Fn { .. })
-                        || matches!(
-                            ii.kind,
-                            ImplItemKind::Resugared(ResugaredImplItemKind::Constant { .. })
-                        )
-                    {
-                        out.insert(printer.render_id(&ii.ident));
-                    }
+        }
+        // `reduc forall <bindings>; <name>(...) = ...` defines `<name>`.
+        // The header may wrap across lines: track an `in_reduc_header`
+        // continuation until we see the `;`.
+        if let Some(after) = s.strip_prefix("reduc forall ") {
+            if let Some((_, tail)) = after.split_once(';') {
+                if let Some(name) = extract_call_head(tail) {
+                    out.push(name);
                 }
+            } else {
+                in_reduc_header = true;
             }
-            _ => {}
+            continue;
+        }
+        if in_reduc_header
+            && let Some((_, after)) = s.split_once(';')
+        {
+            if let Some(name) = extract_call_head(after) {
+                out.push(name);
+            }
+            in_reduc_header = false;
         }
     }
+    out
+}
+
+fn extract_call_head(text: &str) -> Option<String> {
+    let t = text.trim_start();
+    let end = t.find(|c: char| c == '(' || c.is_whitespace())?;
+    let name = t[..end].trim();
+    (!name.is_empty()).then(|| name.to_string())
+}
+
+/// Turn a string / char / float-literal value into a valid ProVerif
+/// identifier suffix. Replaces every non-`[A-Za-z0-9_]` byte with
+/// `_xHH` (two-hex), so the mapping is injective (distinct literals →
+/// distinct identifiers). Empty input yields `empty`.
+fn sanitize_string_literal(s: &str) -> String {
+    if s.is_empty() {
+        return "empty".to_string();
+    }
+    let mut out = String::with_capacity(s.len());
+    for b in s.bytes() {
+        if b.is_ascii_alphanumeric() || b == b'_' {
+            out.push(b as char);
+        } else {
+            out.push_str(&format!("_x{b:02x}"));
+        }
+    }
+    out
 }
 
 /// Parse `PRIMITIVES_PVL` once and return the set of `fun NAME(...)`,
@@ -1362,6 +1439,11 @@ fn primitives_pvl_names() -> Vec<String> {
 #[derive(Default)]
 struct ExternRefCollector {
     calls: Vec<Ref>,
+    /// Names synthesised by the printer for string / char / float
+    /// literals — `string_lit__<sanitized>`, `char_lit__<sanitized>`,
+    /// `float_lit__<sanitized>`. These need a `const <name>: bitstring.`
+    /// declaration in the auto-decl block.
+    lit_consts: Vec<String>,
 }
 
 struct Ref {
@@ -1397,6 +1479,27 @@ impl AstVisitor for ExternRefCollector {
                 ..
             } => {
                 self.push(*constructor, fields.len(), true);
+            }
+            ExprKind::Literal(Literal::String(symbol)) => {
+                self.lit_consts.push(format!(
+                    "string_lit__{}",
+                    sanitize_string_literal(symbol.as_ref())
+                ));
+            }
+            ExprKind::Literal(Literal::Char(c)) => {
+                self.lit_consts.push(format!(
+                    "char_lit__{}",
+                    sanitize_string_literal(&c.to_string())
+                ));
+            }
+            ExprKind::Literal(Literal::Float {
+                value, negative, ..
+            }) => {
+                let sign = if *negative { "neg_" } else { "" };
+                self.lit_consts.push(format!(
+                    "float_lit__{sign}{}",
+                    sanitize_string_literal(value.as_ref())
+                ));
             }
             _ => {}
         }
