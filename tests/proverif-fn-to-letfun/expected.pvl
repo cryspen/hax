@@ -7,60 +7,51 @@ channel c.
 fun construct_fail() : bitstring
 reduc construct_fail() = fail.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
 const empty: bitstring.
 letfun bitstring_default() = empty.
 letfun bitstring_err() = let x = construct_fail() in bitstring_default().
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+fun Some(bitstring): bitstring [data].
+fun None(): bitstring [data].
+letfun Option_err() = let x = construct_fail() in None().
 
-letfun bool_default() = false.
+fun True(): bitstring [data].
+fun False(): bitstring [data].
+letfun bool_default() = False().
+letfun bool_err() = let x = construct_fail() in False().
 
-type fn_to_letfun__A.
-fun fn_to_letfun__A_to_bitstring(fn_to_letfun__A): bitstring [typeConverter].
-fun fn_to_letfun__A_from_bitstring(bitstring): fn_to_letfun__A [typeConverter].
-const fn_to_letfun__A_default_value: fn_to_letfun__A.
-letfun fn_to_letfun__A_default() = fn_to_letfun__A_default_value.
-letfun fn_to_letfun__A_err() = let x = construct_fail() in fn_to_letfun__A_default_value.
-fun fn_to_letfun__A__A(nat,
-nat): fn_to_letfun__A [data].
-reduc forall fn_to_letfun__A__A__x: nat,
-fn_to_letfun__A__A__y: nat;
+fun nat_lit(nat): bitstring.
+
+fun logical_and(bitstring, bitstring): bitstring.
+fun logical_or(bitstring, bitstring): bitstring.
+
+fun fn_to_letfun__A__A(bitstring,
+bitstring): bitstring [data].
+reduc forall fn_to_letfun__A__A__x: bitstring,
+fn_to_letfun__A__A__y: bitstring;
   accessor_fn_to_letfun__A__fn_to_letfun__A__A__x(fn_to_letfun__A__A(fn_to_letfun__A__A__x,
   fn_to_letfun__A__A__y)) = fn_to_letfun__A__A__x.
-reduc forall fn_to_letfun__A__A__x: nat,
-fn_to_letfun__A__A__y: nat;
+reduc forall fn_to_letfun__A__A__x: bitstring,
+fn_to_letfun__A__A__y: bitstring;
   accessor_fn_to_letfun__A__fn_to_letfun__A__A__y(fn_to_letfun__A__A(fn_to_letfun__A__A__x,
   fn_to_letfun__A__A__y)) = fn_to_letfun__A__A__y.
-type fn_to_letfun__B.
-fun fn_to_letfun__B_to_bitstring(fn_to_letfun__B): bitstring [typeConverter].
-fun fn_to_letfun__B_from_bitstring(bitstring): fn_to_letfun__B [typeConverter].
-const fn_to_letfun__B_default_value: fn_to_letfun__B.
-letfun fn_to_letfun__B_default() = fn_to_letfun__B_default_value.
-letfun fn_to_letfun__B_err() = let x = construct_fail() in fn_to_letfun__B_default_value.
-fun fn_to_letfun__B__B(bool): fn_to_letfun__B [data].
-reduc forall fn_to_letfun__B__B__b: bool;
+fun fn_to_letfun__B__B(bitstring): bitstring [data].
+reduc forall fn_to_letfun__B__B__b: bitstring;
   accessor_fn_to_letfun__B__fn_to_letfun__B__B__b(fn_to_letfun__B__B(fn_to_letfun__B__B__b)) = fn_to_letfun__B__B__b.
-letfun fn_to_letfun__some_function(wildcard: rust_primitives__hax__Tuple0) =
-true.
-letfun fn_to_letfun__some_other_function(b: bool) =
-5.
+letfun fn_to_letfun__some_function(wildcard: bitstring) =
+True().
+letfun fn_to_letfun__some_other_function(b: bitstring) =
+nat_lit(5).
 letfun fn_to_letfun__longer_function(x: bitstring) =
 let b = (fn_to_letfun__some_function(rust_primitives__hax__Tuple0__Tuple0)) in
   let d = (fn_to_letfun__some_other_function(b)) in
-  fn_to_letfun__A__A(12,
-  9).
-letfun fn_to_letfun__another_longer_function(wildcard: rust_primitives__hax__Tuple0) =
+  fn_to_letfun__A__A(nat_lit(12),
+  nat_lit(9)).
+letfun fn_to_letfun__another_longer_function(wildcard: bitstring) =
 let b = (fn_to_letfun__some_function(rust_primitives__hax__Tuple0__Tuple0)) in
   let d = (fn_to_letfun__some_other_function(b)) in
-  fn_to_letfun__B__B(false).
-letfun fn_to_letfun__void_function(wildcard: rust_primitives__hax__Tuple0) =
+  fn_to_letfun__B__B(False()).
+letfun fn_to_letfun__void_function(wildcard: bitstring) =
 let b = (fn_to_letfun__some_function(rust_primitives__hax__Tuple0__Tuple0)) in
   let d = (fn_to_letfun__some_other_function(b)) in
   rust_primitives__hax__Tuple0__Tuple0.

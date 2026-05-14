@@ -7,52 +7,37 @@ channel c.
 fun construct_fail() : bitstring
 reduc construct_fail() = fail.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
 const empty: bitstring.
 letfun bitstring_default() = empty.
 letfun bitstring_err() = let x = construct_fail() in bitstring_default().
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+fun Some(bitstring): bitstring [data].
+fun None(): bitstring [data].
+letfun Option_err() = let x = construct_fail() in None().
 
-letfun bool_default() = false.
+fun True(): bitstring [data].
+fun False(): bitstring [data].
+letfun bool_default() = False().
+letfun bool_err() = let x = construct_fail() in False().
 
-type basic_structs__Ainitial.
-fun basic_structs__Ainitial_to_bitstring(basic_structs__Ainitial): bitstring [typeConverter].
-fun basic_structs__Ainitial_from_bitstring(bitstring): basic_structs__Ainitial [typeConverter].
-const basic_structs__Ainitial_default_value: basic_structs__Ainitial.
-letfun basic_structs__Ainitial_default() = basic_structs__Ainitial_default_value.
-letfun basic_structs__Ainitial_err() = let x = construct_fail() in basic_structs__Ainitial_default_value.
-fun basic_structs__Ainitial__Ainitial(nat): basic_structs__Ainitial [data].
-reduc forall basic_structs__Ainitial__Ainitial__x: nat;
+fun nat_lit(nat): bitstring.
+
+fun logical_and(bitstring, bitstring): bitstring.
+fun logical_or(bitstring, bitstring): bitstring.
+
+fun basic_structs__Ainitial__Ainitial(bitstring): bitstring [data].
+reduc forall basic_structs__Ainitial__Ainitial__x: bitstring;
   accessor_basic_structs__Ainitial__basic_structs__Ainitial__Ainitial__x(basic_structs__Ainitial__Ainitial(basic_structs__Ainitial__Ainitial__x)) = basic_structs__Ainitial__Ainitial__x.
-type basic_structs__A.
-fun basic_structs__A_to_bitstring(basic_structs__A): bitstring [typeConverter].
-fun basic_structs__A_from_bitstring(bitstring): basic_structs__A [typeConverter].
-const basic_structs__A_default_value: basic_structs__A.
-letfun basic_structs__A_default() = basic_structs__A_default_value.
-letfun basic_structs__A_err() = let x = construct_fail() in basic_structs__A_default_value.
-fun basic_structs__A__A(nat,
-nat): basic_structs__A [data].
-reduc forall basic_structs__A__A__one: nat,
-basic_structs__A__A__two: nat;
+fun basic_structs__A__A(bitstring,
+bitstring): bitstring [data].
+reduc forall basic_structs__A__A__one: bitstring,
+basic_structs__A__A__two: bitstring;
   accessor_basic_structs__A__basic_structs__A__A__one(basic_structs__A__A(basic_structs__A__A__one,
   basic_structs__A__A__two)) = basic_structs__A__A__one.
-reduc forall basic_structs__A__A__one: nat,
-basic_structs__A__A__two: nat;
+reduc forall basic_structs__A__A__one: bitstring,
+basic_structs__A__A__two: bitstring;
   accessor_basic_structs__A__basic_structs__A__A__two(basic_structs__A__A(basic_structs__A__A__one,
   basic_structs__A__A__two)) = basic_structs__A__A__two.
-type basic_structs__B.
-fun basic_structs__B_to_bitstring(basic_structs__B): bitstring [typeConverter].
-fun basic_structs__B_from_bitstring(bitstring): basic_structs__B [typeConverter].
-const basic_structs__B_default_value: basic_structs__B.
-letfun basic_structs__B_default() = basic_structs__B_default_value.
-letfun basic_structs__B_err() = let x = construct_fail() in basic_structs__B_default_value.
-fun basic_structs__B__B(nat): basic_structs__B [data].
-reduc forall basic_structs__B__B__0: nat;
+fun basic_structs__B__B(bitstring): bitstring [data].
+reduc forall basic_structs__B__B__0: bitstring;
   accessor_basic_structs__B__basic_structs__B__B__0(basic_structs__B__B(basic_structs__B__B__0)) = basic_structs__B__B__0.

@@ -7,22 +7,25 @@ channel c.
 fun construct_fail() : bitstring
 reduc construct_fail() = fail.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
 const empty: bitstring.
 letfun bitstring_default() = empty.
 letfun bitstring_err() = let x = construct_fail() in bitstring_default().
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+fun Some(bitstring): bitstring [data].
+fun None(): bitstring [data].
+letfun Option_err() = let x = construct_fail() in None().
 
-letfun bool_default() = false.
+fun True(): bitstring [data].
+fun False(): bitstring [data].
+letfun bool_default() = False().
+letfun bool_err() = let x = construct_fail() in False().
 
-letfun minimal__add(left: nat,
-right: nat) =
+fun nat_lit(nat): bitstring.
+
+fun logical_and(bitstring, bitstring): bitstring.
+fun logical_or(bitstring, bitstring): bitstring.
+
+letfun minimal__add(left: bitstring,
+right: bitstring) =
 core__ops__arith__Add__add(left,
   right).
