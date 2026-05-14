@@ -237,8 +237,44 @@ const _: () = {
             docs!["bitstring_err()", " (* ", message.to_string(), " *)"]
         }
 
+        /// A "trivial" binder is one whose rendered pattern is just `x`
+        /// (or `_`) — i.e., a pattern that cannot fail at runtime. ProVerif
+        /// rejects `else` on these, and they never need a fallback because
+        /// they always match.
+        ///
+        /// We mirror the special cases in `pat`: `ResultOk(inner)` and
+        /// `Ascription` are transparent (they just render their inner pat),
+        /// so trivialness propagates through them.
+        fn is_trivial_binder(pat: &Pat) -> bool {
+            match &*pat.kind {
+                PatKind::Wild => true,
+                PatKind::Binding {
+                    sub_pat: None,
+                    mode: BindingMode::ByValue,
+                    mutable: false,
+                    ..
+                } => true,
+                PatKind::Ascription { pat, .. } => Self::is_trivial_binder(pat),
+                PatKind::Construct {
+                    constructor, fields, ..
+                } if *constructor == names::ResultOk => fields
+                    .first()
+                    .map(|(_, inner)| Self::is_trivial_binder(inner))
+                    .unwrap_or(true),
+                _ => false,
+            }
+        }
+
         /// Print one match-arm as an `if-let` chain piece. Mirrors
         /// `match_arm` (`proverif_backend.ml:229-247`).
+        ///
+        /// For failable arms we wrap the body in `( ... )` so that a
+        /// subsequent `else N` in the enclosing Match chain binds to *this*
+        /// arm's `let`, not to some inner destructure inside `body`.
+        /// Arms whose rendered pattern is a trivial binder (e.g. `Ok(th)`
+        /// → `th`) never fail, so we omit the parens (which would let a
+        /// subsequent `else` attach to this `let` — and ProVerif rejects
+        /// `else` on a simple-binder let).
         fn match_arm<A: 'static + Clone>(
             &self,
             scrutinee: &Expr,
@@ -254,14 +290,12 @@ const _: () = {
                         PatKind::Constant { lit } => docs!["=", lit].parens(),
                         _ => docs![&arm.pat],
                     };
-                    docs![
-                        "let ",
-                        pat,
-                        " = ",
-                        docs![scrutinee],
-                        " in ",
+                    let body = if Self::is_trivial_binder(&arm.pat) {
                         docs![&arm.body]
-                    ]
+                    } else {
+                        docs![&arm.body].parens()
+                    };
+                    docs!["let ", pat, " = ", docs![scrutinee], " in ", body]
                 }
             }
         }
@@ -685,12 +719,59 @@ const _: () = {
                 }
 
                 // ===== Match → if-let chain (lines 450-456) =====
+                //
+                // ProVerif evaluates `letfun` bodies eagerly, so any
+                // destructure that can fail must have an `else` clause —
+                // otherwise the whole letfun call aborts, even from arms
+                // that weren't taken. We therefore append a trailing
+                // `else bitstring_err()` to the arm chain unless the last
+                // arm itself already provides a fallback:
+                //   - `PatKind::Wild` — the arm body is the fallback;
+                //   - trivial binder (e.g. `Ok(x)` which strips to `x`) —
+                //     the arm always succeeds, and ProVerif rejects `else`
+                //     on a simple-binder `let` anyway;
+                //   - `Result::Err(_)` — `match_arm` collapses this to
+                //     `bitstring_err()` directly, which is itself a fallback.
+                //
+                // For (1) and (2), the arm absorbs all subsequent arms
+                // (they're dynamically unreachable and ProVerif's grammar
+                // can't express an `else` after such a `let`). Truncate
+                // the arm list there.
                 ExprKind::Match { scrutinee, arms } => {
-                    let pieces: Vec<DocBuilder<A>> = arms
+                    let arm_always_matches = |arm: &Arm| -> bool {
+                        matches!(*arm.pat.kind, PatKind::Wild)
+                            || Self::is_trivial_binder(&arm.pat)
+                    };
+                    let arm_is_result_err = |arm: &Arm| -> bool {
+                        matches!(
+                            &*arm.pat.kind,
+                            PatKind::Construct { constructor, .. }
+                                if *constructor == names::ResultErr
+                        )
+                    };
+                    // Take arms up to and including the first one that
+                    // always matches.
+                    let mut truncated: Vec<&Arm> = Vec::new();
+                    for arm in arms.iter() {
+                        truncated.push(arm);
+                        if arm_always_matches(arm) {
+                            break;
+                        }
+                    }
+                    let pieces: Vec<DocBuilder<A>> = truncated
                         .iter()
                         .map(|arm| self.match_arm(scrutinee, arm))
                         .collect();
-                    intersperse!(pieces, docs![hardline!(), "else "])
+                    let chain = intersperse!(pieces, docs![hardline!(), "else "]);
+                    let last_provides_fallback = truncated
+                        .last()
+                        .map(|arm| arm_always_matches(arm) || arm_is_result_err(arm))
+                        .unwrap_or(false);
+                    if last_provides_fallback {
+                        chain
+                    } else {
+                        docs![chain, hardline!(), "else bitstring_err()"]
+                    }
                 }
 
                 // ===== If / Let (lines 457-475) =====
@@ -724,15 +805,39 @@ const _: () = {
                         docs![then].parens()
                     ],
                 },
-                ExprKind::Let { lhs, rhs, body } => docs![
-                    "let ",
-                    lhs,
-                    " = ",
-                    docs![rhs].parens(),
-                    " in",
-                    hardline!(),
-                    body
-                ],
+                //
+                // For a non-trivial (i.e., failable) pattern, ProVerif's
+                // eager-evaluation semantics require an `else` clause —
+                // otherwise a destructure that fails aborts the entire
+                // letfun call (even if it's nested inside an unreached
+                // Match arm). Wrap the body in parens so any `else` chain
+                // *inside* `body` doesn't accidentally rebind to this
+                // outer `let`. Trivial binders (`let x = e`) never fail
+                // and ProVerif rejects an `else` clause on them, so we
+                // emit them as-is.
+                ExprKind::Let { lhs, rhs, body } => {
+                    if Self::is_trivial_binder(lhs) {
+                        docs![
+                            "let ",
+                            lhs,
+                            " = ",
+                            docs![rhs].parens(),
+                            " in",
+                            hardline!(),
+                            body
+                        ]
+                    } else {
+                        docs![
+                            "let ",
+                            lhs,
+                            " = ",
+                            docs![rhs].parens(),
+                            " in ",
+                            docs![body].parens(),
+                            " else bitstring_err()"
+                        ]
+                    }
+                }
 
                 // ===== expr_app fallback (357-372) =====
                 ExprKind::App {
