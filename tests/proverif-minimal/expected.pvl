@@ -27,5 +27,5 @@ fun logical_or(bitstring, bitstring): bitstring.
 
 letfun minimal__add(left: bitstring,
 right: bitstring) =
-core__ops__arith__Add__add(left,
+rust_primitives__hax__machine_int__add(left,
   right).

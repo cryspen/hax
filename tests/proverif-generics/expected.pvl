@@ -1,0 +1,43 @@
+(*****************************************)
+(* Preamble                              *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+fun Some(bitstring): bitstring [data].
+fun None(): bitstring [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+fun True(): bitstring [data].
+fun False(): bitstring [data].
+letfun bool_default() = False().
+letfun bool_err() = let x = construct_fail() in False().
+
+fun nat_lit(nat): bitstring.
+
+fun logical_and(bitstring, bitstring): bitstring.
+fun logical_or(bitstring, bitstring): bitstring.
+
+letfun proverif_generics__id(x: bitstring) =
+x.
+fun proverif_generics__Token__Token(bitstring): bitstring [data].
+reduc forall proverif_generics__Token__Token__bytes: bitstring;
+  accessor_proverif_generics__Token__proverif_generics__Token__Token__bytes(proverif_generics__Token__Token(proverif_generics__Token__Token__bytes)) = proverif_generics__Token__Token__bytes.
+
+letfun proverif_generics__Impl__clone_it(self: bitstring) =
+proverif_generics__Token__Token(proverif_generics__Token__Token__bytes(self)).
+letfun proverif_generics__duplicate(t: bitstring) =
+proverif_generics__Cloneable__clone_it(t).
+letfun proverif_generics__Impl_1__fresh(b: bitstring) =
+proverif_generics__Token__Token(b).
+letfun proverif_generics__make_token(wildcard: bitstring) =
+proverif_generics__Impl_1__fresh(nat_lit(42)).
+letfun proverif_generics__pass_through(t: bitstring) =
+proverif_generics__id(t).

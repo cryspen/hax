@@ -31,6 +31,7 @@ members = [
         "proverif-ping-pong",
         "proverif-noise",
         "proverif-fn-to-letfun",
+        "proverif-generics",
         "cli/include-flag",
         "cli/interface-only",
         "recursion",

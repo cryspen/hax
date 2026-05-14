@@ -76,7 +76,7 @@ let chacha_iv = (alloc__vec__from_elem(nat_lit(0),
   nat_lit(4))) in
   let chacha_iv = (alloc__vec__Impl_2__extend_from_slice(chacha_iv,
   core__num__Impl_9__to_le_bytes(counter))) in
-  let cipher_len = (core__ops__arith__Sub__sub(core__slice__Impl__len(cipher),
+  let cipher_len = (rust_primitives__hax__machine_int__sub(core__slice__Impl__len(cipher),
   nat_lit(16))) in
   let cip = (core__ops__index__Index__index(cipher,
   core__ops__range__Range__Range(nat_lit(0),
@@ -194,13 +194,13 @@ ad: bitstring,
 plaintext: bitstring) =
 let noise_kkpsk0__noise_lib__CipherState__CipherState(k: bitstring,
   n: bitstring) = (cs) in
-  let (=True()) = core__cmp__PartialEq__eq(n,
+  let (=True()) = rust_primitives__hax__machine_int__eq(n,
   nat_lit(18446744073709551615)) in (bitstring_err()) else (let Some(k) = k in let cip = (noise_kkpsk0__noise_crypto__encrypt(k,
   n,
   ad,
   plaintext)) in
   rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(Some(k),
-  core__ops__arith__Add__add(n,
+  rust_primitives__hax__machine_int__add(n,
   nat_lit(1))),
   cip)
   else let None() = k in rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(k,
@@ -211,12 +211,12 @@ ad: bitstring,
 ciphertext: bitstring) =
 let noise_kkpsk0__noise_lib__CipherState__CipherState(k: bitstring,
   n: bitstring) = (cs) in
-  let (=True()) = core__cmp__PartialEq__eq(n,
+  let (=True()) = rust_primitives__hax__machine_int__eq(n,
   nat_lit(18446744073709551615)) in (bitstring_err()) else (let Some(k) = k in let plain = noise_kkpsk0__noise_crypto__decrypt(k,
   n,
   ad,
   ciphertext) in rust_primitives__hax__Tuple2__Tuple2(noise_kkpsk0__noise_lib__CipherState__CipherState(Some(k),
-  core__ops__arith__Add__add(n,
+  rust_primitives__hax__machine_int__add(n,
   nat_lit(1))),
   plain)
   else bitstring_err()
@@ -232,7 +232,7 @@ let noise_kkpsk0__noise_lib__CipherState__CipherState(k: bitstring,
   else let None() = k in bitstring_err().
 letfun noise_kkpsk0__noise_lib__initialize_symmetric(protocol_name: bitstring) =
 let pnlen = (core__slice__Impl__len(protocol_name)) in
-  let hv = (let (=True()) = core__cmp__PartialOrd__lt(pnlen,
+  let hv = (let (=True()) = rust_primitives__hax__machine_int__lt(pnlen,
   noise_kkpsk0__noise_crypto__HASHLEN) in (alloc__slice__Impl__concat((* TODO: Array expressions not supported in ProVerif *))) else (noise_kkpsk0__noise_crypto__hash(protocol_name))) in
   let ck = (hv) in
   noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(noise_kkpsk0__noise_lib__initialize_key(None()),
@@ -246,7 +246,7 @@ let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(wildcard: bitstring,
   let rust_primitives__hax__Tuple2__Tuple2(ck: bitstring,
   temp_k: bitstring) = (noise_kkpsk0__noise_crypto__hkdf2(ck,
   input_key_material)) in
-  let temp_k = (let (=True()) = core__cmp__PartialEq__eq(noise_kkpsk0__noise_crypto__HASHLEN,
+  let temp_k = (let (=True()) = rust_primitives__hax__machine_int__eq(noise_kkpsk0__noise_crypto__HASHLEN,
   nat_lit(64)) in (let temp_k = (alloc__vec__Impl_1__truncate(temp_k,
   nat_lit(32))) in
   temp_k) else (temp_k)) in
@@ -274,7 +274,7 @@ let noise_kkpsk0__noise_lib__SymmetricState__SymmetricState(wildcard: bitstring,
   let new_h = (alloc__vec__Impl_2__extend_from_slice(new_h,
   temp_h)) in
   let new_h = (noise_kkpsk0__noise_crypto__hash(new_h)) in
-  let temp_k = (let (=True()) = core__cmp__PartialEq__eq(noise_kkpsk0__noise_crypto__HASHLEN,
+  let temp_k = (let (=True()) = rust_primitives__hax__machine_int__eq(noise_kkpsk0__noise_crypto__HASHLEN,
   nat_lit(64)) in (let temp_k = (alloc__vec__Impl_1__truncate(temp_k,
   nat_lit(32))) in
   temp_k) else (temp_k)) in
@@ -314,7 +314,7 @@ let rust_primitives__hax__Tuple2__Tuple2(temp_k1: bitstring,
   temp_k2: bitstring) = (noise_kkpsk0__noise_crypto__hkdf2(noise_kkpsk0__noise_lib__SymmetricState__SymmetricState__ck(st),
   alloc__vec__Impl___new(rust_primitives__hax__Tuple0__Tuple0))) in
   let rust_primitives__hax__Tuple2__Tuple2(temp_k1: bitstring,
-  temp_k2: bitstring) = (let (=True()) = core__cmp__PartialEq__eq(noise_kkpsk0__noise_crypto__HASHLEN,
+  temp_k2: bitstring) = (let (=True()) = rust_primitives__hax__machine_int__eq(noise_kkpsk0__noise_crypto__HASHLEN,
   nat_lit(64)) in (let temp_k1 = (alloc__vec__Impl_1__truncate(temp_k1,
   nat_lit(32))) in
   let temp_k2 = (alloc__vec__Impl_1__truncate(temp_k2,
