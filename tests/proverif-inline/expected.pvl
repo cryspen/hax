@@ -1,0 +1,31 @@
+(*****************************************)
+(* Preamble                              *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+fun Some(bitstring): bitstring [data].
+fun None(): bitstring [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+fun True(): bitstring [data].
+fun False(): bitstring [data].
+letfun bool_default() = False().
+letfun bool_err() = let x = construct_fail() in False().
+
+fun nat_lit(nat): bitstring.
+
+fun logical_and(bitstring, bitstring): bitstring.
+fun logical_or(bitstring, bitstring): bitstring.
+
+letfun proverif_inline__increment(x: bitstring) =
+x.
+letfun proverif_inline__run(start: bitstring) =
+proverif_inline__increment(proverif_inline__increment(start)).

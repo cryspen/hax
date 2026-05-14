@@ -26,6 +26,7 @@ identity_proc_macro_attribute!(
     decreases,
     pv_handwritten,
     pv_constructor,
+    pv_inline,
     protocol_messages,
     process_init,
     process_write,

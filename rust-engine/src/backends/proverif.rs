@@ -969,8 +969,11 @@ impl Backend for ProVerifBackend {
     }
 
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        // Stage 2 adds protocol-aware resugarings (events, queries, processes).
-        vec![]
+        // Stage 2.2: `#[hax_lib::pv_inline]` β-substitution. Two phases
+        // sharing a state: first collects inlinable items, then rewrites
+        // call sites and marks the originals late-skip.
+        use crate::resugarings::pv_inline_resugarings;
+        pv_inline_resugarings()
     }
 
     /// Collapse every module into a single bag of items so the printer emits
