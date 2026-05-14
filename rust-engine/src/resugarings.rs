@@ -4,6 +4,9 @@
 //! [`hax_rust_engine::ast::Resugaring`] for the definition of a
 //! resugaring). Each backend defines its own set of resugaring phases.
 
+pub mod inline_marked;
+pub use inline_marked::pv_inline_resugarings;
+
 use crate::ast::identifiers::GlobalId;
 use crate::ast::resugared::*;
 use crate::ast::visitors::*;

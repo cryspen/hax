@@ -9,6 +9,7 @@ pub use hax_lib_macros::{
 
 pub use hax_lib_macros::{
     process_init, process_read, process_write, protocol_messages, pv_constructor, pv_handwritten,
+    pv_inline,
 };
 
 include!(concat!(env!("OUT_DIR"), "/proc_macros_generated.rs"));

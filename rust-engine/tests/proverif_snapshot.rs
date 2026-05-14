@@ -105,3 +105,8 @@ fn proverif_noise() {
 fn proverif_generics() {
     run_one("proverif-generics");
 }
+
+#[test]
+fn proverif_inline() {
+    run_one("proverif-inline");
+}

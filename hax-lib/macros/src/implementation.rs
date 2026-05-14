@@ -803,6 +803,27 @@ pub fn pv_handwritten(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::Toke
     quote! {#attr #item}.into()
 }
 
+/// A marker telling the ProVerif backend to β-inline every call to this
+/// function at the use site. Closure arguments are β-reduced into the
+/// inlined body; the marked item itself drops out of the output. Useful
+/// for higher-order helpers (`Option::map`, `iter::fold`, etc.) which
+/// would otherwise extract as opaque function symbols.
+///
+/// The attribute is emitted as a plain tool attribute (`#[_hax::pv_inline]`)
+/// rather than going through the `_hax::json` envelope so it survives the
+/// OCaml engine's attribute decoder untouched and reaches the rust-engine
+/// resugaring directly.
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn pv_inline(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    quote! {
+        #[cfg_attr(#HaxCfgOptionName, #HaxTool::pv_inline)]
+        #item
+    }
+    .into()
+}
+
 /// Create a mathematical integer. This macro expects a Rust integer
 /// literal without suffix.
 ///
