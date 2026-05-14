@@ -1,50 +1,30 @@
-(* Run with:                                                       *)
-(*   proverif -lib primitives.pvl lib.pvl                          *)
-(* The `primitives.pvl` library ships with hax under                *)
-(* `hax-lib/proof-libs/proverif/` and declares the standard         *)
-(* `rust_primitives::*`, `core::*` and `hax_lib::*` symbols every    *)
-(* extraction uses.                                                  *)
-(*****************************************)
-(* Preamble                              *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
-
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-fun Some(bitstring): bitstring [data].
-fun None(): bitstring [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-fun True(): bitstring [data].
-fun False(): bitstring [data].
-letfun bool_default() = False().
-letfun bool_err() = let x = construct_fail() in False().
-
-fun nat_lit(nat): bitstring.
-
-fun logical_and(bitstring, bitstring): bitstring.
-fun logical_or(bitstring, bitstring): bitstring.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+*)
 
 
 fun fn_to_letfun__A__A(bitstring,
 bitstring): bitstring [data].
-reduc forall fn_to_letfun__A__A__x: bitstring,
-fn_to_letfun__A__A__y: bitstring;
-  accessor_fn_to_letfun__A__fn_to_letfun__A__A__x(fn_to_letfun__A__A(fn_to_letfun__A__A__x,
-  fn_to_letfun__A__A__y)) = fn_to_letfun__A__A__x.
-reduc forall fn_to_letfun__A__A__x: bitstring,
-fn_to_letfun__A__A__y: bitstring;
-  accessor_fn_to_letfun__A__fn_to_letfun__A__A__y(fn_to_letfun__A__A(fn_to_letfun__A__A__x,
-  fn_to_letfun__A__A__y)) = fn_to_letfun__A__A__y.
+reduc forall fn_to_letfun__A__A__x_v: bitstring,
+fn_to_letfun__A__A__y_v: bitstring;
+  fn_to_letfun__A__A__x(fn_to_letfun__A__A(fn_to_letfun__A__A__x_v,
+  fn_to_letfun__A__A__y_v)) = fn_to_letfun__A__A__x_v.
+reduc forall fn_to_letfun__A__A__x_v: bitstring,
+fn_to_letfun__A__A__y_v: bitstring;
+  fn_to_letfun__A__A__y(fn_to_letfun__A__A(fn_to_letfun__A__A__x_v,
+  fn_to_letfun__A__A__y_v)) = fn_to_letfun__A__A__y_v.
 fun fn_to_letfun__B__B(bitstring): bitstring [data].
-reduc forall fn_to_letfun__B__B__b: bitstring;
-  accessor_fn_to_letfun__B__fn_to_letfun__B__B__b(fn_to_letfun__B__B(fn_to_letfun__B__B__b)) = fn_to_letfun__B__B__b.
+reduc forall fn_to_letfun__B__B__b_v: bitstring;
+  fn_to_letfun__B__B__b(fn_to_letfun__B__B(fn_to_letfun__B__B__b_v)) = fn_to_letfun__B__B__b_v.
 letfun fn_to_letfun__some_function(wildcard: bitstring) =
 True().
 letfun fn_to_letfun__some_other_function(b: bitstring) =

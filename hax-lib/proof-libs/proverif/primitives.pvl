@@ -1,21 +1,54 @@
 (*****************************************************************)
 (*  hax — ProVerif primitives library                            *)
 (*****************************************************************)
-(* Opaque declarations for the symbols that the hax ProVerif      *)
-(* backend leaves uninterpreted on every extraction. Anything     *)
-(* declared here is a *stable* member of the hax extraction       *)
-(* surface — `rust_primitives::*`, the `core::num`/`core::ops`/  *)
-(* `core::cmp`/`core::slice` trait roots, `hax_lib::*` helpers,   *)
-(* the tuple constructors, the panic sink, etc.                   *)
+(* Anything that used to live in the per-extraction `lib.pvl`     *)
+(* preamble is here instead. Loading this file via `-lib` gives   *)
+(* the extracted file everything it needs to typecheck:           *)
 (*                                                                *)
-(* `core_models::*` symbols are in a sibling file                 *)
-(* `core_models.pvl` since they're a separate library that will   *)
-(* eventually migrate into the source via `#[proverif_replace]`   *)
-(* annotations.                                                   *)
+(*   - `channel c.` — the public attacker channel.                *)
+(*   - `construct_fail` / `empty` — fail/default helpers.         *)
+(*   - `Some`/`None` (`Option_err`) — `Option<T>` constructors.   *)
+(*   - `True`/`False` (`bool_default`/`bool_err`) — booleans.     *)
+(*   - `nat_lit` — encode `usize`/`uN`/`iN` literals.             *)
+(*   - `logical_and`/`logical_or` — opaque `&&`/`||`.            *)
+(*   - `rust_primitives::*`, `core::num`/`ops`/`cmp`/`slice`      *)
+(*     trait roots, `hax_lib::*` helpers, the tuple constructors. *)
+(*                                                                *)
+(* `core_models::*` symbols are out of scope here; they'll        *)
+(* migrate upstream as `#[proverif_replace]` annotations.         *)
 (*                                                                *)
 (* Use:                                                           *)
-(*   proverif -lib primitives.pvl -lib core_models.pvl lib.pvl   *)
+(*   proverif -lib primitives.pvl lib.pvl                         *)
 (*****************************************************************)
+
+(*** Public attacker channel ***)
+channel c.
+
+(*** Fail / default helpers ***)
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+(*** Option<T> ***)
+fun Some(bitstring): bitstring [data].
+fun None(): bitstring [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+(*** Boolean encoding ***)
+fun True(): bitstring [data].
+fun False(): bitstring [data].
+letfun bool_default() = False().
+letfun bool_err() = let x = construct_fail() in False().
+
+(*** Integer literal lifting ***)
+fun nat_lit(nat): bitstring.
+
+(*** Opaque short-circuit operators ***)
+fun logical_and(bitstring, bitstring): bitstring.
+fun logical_or(bitstring, bitstring): bitstring.
 
 (*** rust_primitives::hax — tuple constructors, dropped bodies,    ***)
 (*** machine_int / int operators (output of the Specialize phase)  ***)
@@ -400,7 +433,14 @@ fun core__cmp__PartialOrd__gt(bitstring, bitstring): bitstring [data].
 fun core__cmp__PartialOrd__ge(bitstring, bitstring): bitstring [data].
 fun core__cmp__Ord__cmp(bitstring, bitstring): bitstring [data].
 
-fun core__ops__bit__Not__not_kw(bitstring): bitstring [data].
+(* `core::ops::bit::Not::not` on `bool` — given as a real letfun so that
+   `let (=True()) = not_kw(b) in ...` actually fires under
+   `b = False()`. Without this, the `not` symbol is opaque and ProVerif
+   can't relate `not(False())` to `True()`, breaking every path that
+   uses `if !x { ... }` on a `bool`. *)
+letfun core__ops__bit__Not__not_kw(b: bitstring) =
+  let (=True()) = b in False()
+  else True().
 fun core__ops__function__FnOnce__call_once(bitstring, bitstring): bitstring [data].
 fun core__ops__function__Fn__call(bitstring, bitstring): bitstring [data].
 fun core__ops__function__FnMut__call_mut(bitstring, bitstring): bitstring [data].

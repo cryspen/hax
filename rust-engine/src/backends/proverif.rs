@@ -79,38 +79,18 @@ const PRIMITIVES_PVL: &str =
 /// become `True()`/`False()` data constructors and integer literals are
 /// wrapped in `nat_lit(N)` so they land in the same universe.
 const HEADER: &str = "\
-(* Run with:                                                       *)
-(*   proverif -lib primitives.pvl lib.pvl                          *)
-(* The `primitives.pvl` library ships with hax under                *)
-(* `hax-lib/proof-libs/proverif/` and declares the standard         *)
-(* `rust_primitives::*`, `core::*` and `hax_lib::*` symbols every    *)
-(* extraction uses.                                                  *)
-(*****************************************)
-(* Preamble                              *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
-
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-fun Some(bitstring): bitstring [data].
-fun None(): bitstring [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-fun True(): bitstring [data].
-fun False(): bitstring [data].
-letfun bool_default() = False().
-letfun bool_err() = let x = construct_fail() in False().
-
-fun nat_lit(nat): bitstring.
-
-fun logical_and(bitstring, bitstring): bitstring.
-fun logical_or(bitstring, bitstring): bitstring.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+*)
 
 ";
 
@@ -182,10 +162,23 @@ impl ProVerifPrinter {
         self.render_string(&id.view())
     }
 
-    /// Names the bitstring conversion helpers for a ProVerif type rendering.
-    /// Mirrors `print#field_accessor_prefix` in the legacy printer.
-    fn accessor_name(&self, base: &str, field: &GlobalId) -> String {
-        format!("accessor_{base}__{}", self.render_id(field))
+    /// Name of the per-field destructor function emitted by `fun_and_reduc`.
+    ///
+    /// It must match exactly what the user's field-projection expressions
+    /// render as — when hax extracts `self.psk_mode`, the AST has an
+    /// `ExprKind::App` whose head is the `GlobalId` of the field, which
+    /// renders to e.g. `bertie__tls13crypto__Algorithms__Algorithms__psk_mode`.
+    /// Therefore the destructor's name needs to be that same string, so
+    /// the call site resolves to a real function.
+    ///
+    /// The legacy OCaml printer named the destructor
+    /// `accessor_<base>__<field>` and emitted a separate field-projection
+    /// rewrite in the printer to call that. The new uniform-bitstring
+    /// printer just uses the field's rendered identifier directly, which
+    /// is what the auto-decl pass would otherwise declare as an opaque
+    /// `fun [data].` for the same call site.
+    fn accessor_name(&self, _base: &str, field: &GlobalId) -> String {
+        self.render_id(field)
     }
 }
 
@@ -303,10 +296,20 @@ const _: () = {
                 return fun_line;
             }
 
-            let fun_args_full = self.typed_args::<A>(&typed_args_vec);
-            let fun_args_names = comma_sep!(typed_args_vec
+            // The destructor's name is the field id itself (so the user's
+            // `self.field` call site lines up — see `accessor_name`).
+            // That means the `reduc forall ...;` header must NOT bind any
+            // variable with the same rendered name, or ProVerif emits a
+            // "rebound" warning and shadows the destructor function name
+            // inside the rule. Append a `_v` suffix on each forall-bound
+            // variable to keep them fresh.
+            let bind_name = |id: &GlobalId| format!("{}_v", self.render_id(id));
+            let fun_args_full: DocBuilder<A> = comma_sep!(typed_args_vec.iter().map(|(id, ty)| {
+                docs![bind_name(id), ": ", ty]
+            }));
+            let fun_args_names: DocBuilder<A> = comma_sep!(typed_args_vec
                 .iter()
-                .map(|(id, _)| docs![self.render_id(id)]));
+                .map(|(id, _)| docs![bind_name(id)]));
 
             let reduc_pieces: Vec<DocBuilder<A>> = typed_args_vec
                 .iter()
@@ -322,7 +325,7 @@ const _: () = {
                         "reduc forall ",
                         docs![fun_args_full.clone()],
                         ";",
-                        docs![hardline!(), accessor_call, " = ", self.render_id(id)]
+                        docs![hardline!(), accessor_call, " = ", bind_name(id)]
                             .nest(INDENT)
                     ]
                 })
@@ -1348,6 +1351,7 @@ fn scan_declared_names(rendered: &str) -> Vec<String> {
     /// We need to pick up `F` in all three shapes.
     enum ReducState {
         None,
+        SeenReduc,     // saw bare `reduc`, waiting for `forall`
         SeenHeader,    // saw `reduc forall`, waiting for `;`
         AwaitingHead,  // saw `;`, looking for the next non-empty token
     }
@@ -1381,6 +1385,22 @@ fn scan_declared_names(rendered: &str) -> Vec<String> {
             ReducState::None => {
                 if let Some(after) = reduc_after {
                     if let Some((_, tail)) = after.split_once(';') {
+                        if let Some(name) = extract_call_head(tail) {
+                            out.push(name);
+                            state = ReducState::None;
+                        } else {
+                            state = ReducState::AwaitingHead;
+                        }
+                    } else {
+                        state = ReducState::SeenHeader;
+                    }
+                } else if s == "reduc" {
+                    state = ReducState::SeenReduc;
+                }
+            }
+            ReducState::SeenReduc => {
+                if s.starts_with("forall") {
+                    if let Some((_, tail)) = s.split_once(';') {
                         if let Some(name) = extract_call_head(tail) {
                             out.push(name);
                             state = ReducState::None;
