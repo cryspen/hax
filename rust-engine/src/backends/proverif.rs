@@ -942,12 +942,24 @@ const _: () = {
                         // Empty-param `fn`s are Rust consts. After Stage 2.0
                         // every value lives in `bitstring`.
                         docs!["const ", name, ": bitstring."]
-                    } else if as_constructor {
-                        // `#[hax::proverif::constructor]` (lines 543-559).
+                    } else if as_constructor || is_erased {
+                        // `#[hax::proverif::constructor]` *and* `#[hax_lib::opaque]`
+                        // both render as a free `[data]` constructor — symbolically
+                        // an opaque function with no equations is exactly that:
+                        // a fresh name with injective inputs. Without this,
+                        // `opaque` would land here as a regular letfun with body
+                        // `rust_primitives__hax__dropped_body`, which collides
+                        // with any companion declaration that also names this
+                        // function (e.g. a partner `proverif::replace(reduc ...)`).
                         let arg_types =
                             comma_sep!(params.iter().map(|p| docs![&p.ty]));
+                        let header = if is_erased && !as_constructor {
+                            "(* opaque *)"
+                        } else {
+                            "(* marked as constructor *)"
+                        };
                         docs![
-                            "(* marked as constructor *)",
+                            header,
                             hardline!(),
                             "fun ",
                             name,
