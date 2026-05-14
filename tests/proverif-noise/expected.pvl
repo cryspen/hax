@@ -15,14 +15,12 @@
 (* Auto-declared external symbols        *)
 (*****************************************)
 fun alloc__slice__Impl__concat(bitstring): bitstring [data].
-fun alloc__slice__Impl__to_vec(bitstring): bitstring [data].
 fun alloc__vec__Impl_1__truncate(bitstring, bitstring): bitstring [data].
 fun alloc__vec__Impl_2__extend_from_slice(bitstring, bitstring): bitstring [data].
 fun alloc__vec__Impl__new_kw(bitstring): bitstring [data].
 fun alloc__vec__from_elem(bitstring, bitstring): bitstring [data].
 fun core__clone__Clone__clone(bitstring): bitstring [data].
 fun core__num__Impl_9__to_le_bytes(bitstring): bitstring [data].
-fun core__ops__deref__Deref__deref(bitstring): bitstring [data].
 fun core__ops__range__Range__Range(bitstring, bitstring): bitstring [data].
 fun core__option__Impl__is_some(bitstring): bitstring [data].
 const core__option__Option__None: bitstring.
@@ -45,7 +43,6 @@ fun hax_lib_protocol__crypto__dh_scalar_multiply(bitstring, bitstring, bitstring
 fun hax_lib_protocol__crypto__dh_scalar_multiply_base(bitstring, bitstring): bitstring [data].
 fun hax_lib_protocol__crypto__hash(bitstring, bitstring): bitstring [data].
 fun hax_lib_protocol__crypto__hmac(bitstring, bitstring, bitstring): bitstring [data].
-fun rust_primitives__unsize(bitstring): bitstring [data].
 
 fun noise_kkpsk0__noise_crypto__Error__CryptoError(): bitstring [data].
 letfun noise_kkpsk0__noise_crypto__Error_cast_to_repr(x: bitstring) =

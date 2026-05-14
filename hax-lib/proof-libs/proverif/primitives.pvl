@@ -379,19 +379,29 @@ fun rust_primitives__arithmetic__wrapping_mul_u128(bitstring, bitstring): bitstr
 fun rust_primitives__arithmetic__wrapping_mul_usize(bitstring, bitstring): bitstring [data].
 
 (*** rust_primitives::slice / sequence — slice / array primitives  ***)
+(* Operations that actually compute something useful (`slice_index`,    *)
+(* `array_slice`, `slice_to_array`) stay opaque `[data]` so distinct    *)
+(* inputs stay distinguishable. The "convert one collection wrapper    *)
+(* to another" helpers are identity letfuns: under the uniform-        *)
+(* bitstring scheme there's only one ProVerif universe, so wrapping    *)
+(* doesn't change the value. Without this, a value built via            *)
+(* `&v[..]` symbolically differs from `v.as_slice()` and downstream    *)
+(* equality checks fail vacuously.                                     *)
 
 fun rust_primitives__slice__array_slice(bitstring, bitstring, bitstring): bitstring [data].
 fun rust_primitives__slice__array_from_fn(bitstring): bitstring [data].
 fun rust_primitives__slice__slice_index(bitstring, bitstring): bitstring [data].
 fun rust_primitives__slice__slice_index_range(bitstring, bitstring, bitstring): bitstring [data].
-fun rust_primitives__slice__slice_to_array(bitstring): bitstring [data].
-fun rust_primitives__slice__as_slice(bitstring): bitstring [data].
+letfun rust_primitives__slice__slice_to_array(x: bitstring) = x.
+letfun rust_primitives__slice__as_slice(x: bitstring) = x.
 fun rust_primitives__slice__len(bitstring): bitstring [data].
 
-fun rust_primitives__sequence__seq_to_vec(bitstring): bitstring [data].
-fun rust_primitives__sequence__vec_to_seq(bitstring): bitstring [data].
+letfun rust_primitives__sequence__seq_to_vec(x: bitstring) = x.
+letfun rust_primitives__sequence__vec_to_seq(x: bitstring) = x.
 fun rust_primitives__sequence__seq_len(bitstring): bitstring [data].
 fun rust_primitives__sequence__seq_index(bitstring, bitstring): bitstring [data].
+
+letfun rust_primitives__unsize(x: bitstring) = x.
 
 fun rust_primitives__hax__repeat(bitstring, bitstring): bitstring [data].
 
@@ -424,8 +434,16 @@ const core__num__Impl_11__MIN: bitstring.
 
 (*** core::cmp / ops / slice — trait method roots                  ***)
 
-fun core__cmp__PartialEq__eq(bitstring, bitstring): bitstring [data].
-fun core__cmp__PartialEq__ne(bitstring, bitstring): bitstring [data].
+(* Symbolic equality: `eq(x, x) = True()`, `eq(x, y) = False()` when
+   `x`, `y` are syntactically distinct ProVerif terms. Without this,
+   `PartialEq::eq` is opaque and a guard like
+     let (=True()) = eq(a, b) in ...
+   never fires even when `a` and `b` are *the same* constructor — which
+   silently makes large parts of protocol-state machinery unreachable. *)
+letfun core__cmp__PartialEq__eq(a: bitstring, b: bitstring) =
+  let (=a) = b in True() else False().
+letfun core__cmp__PartialEq__ne(a: bitstring, b: bitstring) =
+  let (=a) = b in False() else True().
 fun core__cmp__PartialOrd__partial_cmp(bitstring, bitstring): bitstring [data].
 fun core__cmp__PartialOrd__lt(bitstring, bitstring): bitstring [data].
 fun core__cmp__PartialOrd__le(bitstring, bitstring): bitstring [data].
@@ -447,6 +465,31 @@ fun core__ops__function__FnMut__call_mut(bitstring, bitstring): bitstring [data]
 fun core__ops__index__Index__index(bitstring, bitstring): bitstring [data].
 
 fun core__slice__Impl__len(bitstring): bitstring [data].
+
+(*** core::convert — identity wrappers                              ***)
+(* `From::from`, `Into::into`, `AsRef::as_ref`, `TryInto::try_into`  *)
+(* are all "wrap/unwrap one bitstring as another bitstring" under   *)
+(* the uniform-bitstring model. Keeping them opaque made `let       *)
+(* (=Pattern()) = X::into(v) in ...` not match its corresponding   *)
+(* `v` constructor. *)
+
+letfun core__convert__From__from(x: bitstring) = x.
+letfun core__convert__Into__into(x: bitstring) = x.
+letfun core__convert__AsRef__as_ref(x: bitstring) = x.
+letfun core__convert__TryInto__try_into(x: bitstring) = x.
+letfun core__convert__TryFrom__try_from(x: bitstring) = x.
+
+(*** core::ops::deref — also identity                               ***)
+letfun core__ops__deref__Deref__deref(x: bitstring) = x.
+letfun core__ops__deref__DerefMut__deref_mut(x: bitstring) = x.
+
+(*** alloc::* — Vec / Box wrappers are identity at the symbolic     ***)
+(*** level. Real protocol semantics don't care which heap-          ***)
+(*** allocation flavour the bytes are in.                           ***)
+letfun alloc__slice__Impl__to_vec(x: bitstring) = x.
+letfun alloc__vec__Impl_1__as_slice(x: bitstring) = x.
+letfun alloc__borrow__ToOwned__to_owned(x: bitstring) = x.
+letfun alloc__boxed__Impl__new_kw(x: bitstring) = x.
 
 (*** hax_lib helpers — `assume`, `Prop::from_bool`                 ***)
 
