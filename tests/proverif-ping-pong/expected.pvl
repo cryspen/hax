@@ -15,6 +15,7 @@
 (* Auto-declared external symbols        *)
 (*****************************************)
 fun alloc__vec__Impl_1__len(bitstring): bitstring [data].
+fun core__ops__index__Index__index(bitstring, bitstring): bitstring [data].
 fun core__result__Result__Err(bitstring): bitstring [data].
 fun core__result__Result__Ok(bitstring): bitstring [data].
 const hax_lib_protocol__ProtocolError__InvalidMessage: bitstring.

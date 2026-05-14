@@ -102,32 +102,17 @@ fun rust_primitives__hax__int__ge(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__int__from_machine(bitstring): bitstring [data].
 fun rust_primitives__hax__int__into_machine(bitstring): bitstring [data].
 
-(*** rust_primitives::arithmetic / slice / sequence — opaque helpers ***)
-(* The ~251 per-int-width arithmetic ops and the bulk of the slice /  *)
-(* sequence primitives are "opaque function" symbols: they take some  *)
-(* bitstrings and return a bitstring with no rewrite rules. Under the *)
-(* uniform-bitstring scheme that's exactly the                        *)
-(*    fun NAME(bitstring,...): bitstring [data].                      *)
-(* form the auto-decl pass already synthesises whenever an extraction *)
-(* references one of these names. Keeping them out of the shipped     *)
-(* library lets the per-extraction `lib.pvl` declare only what it     *)
-(* actually uses (most extractions reference a small fraction of the  *)
-(* arithmetic surface) and keeps `primitives.pvl` slim.               *)
-(*                                                                    *)
-(* The corresponding Rust functions in `rust_primitives::*` carry the *)
-(* `#[cfg_attr(hax_backend_proverif, hax_lib::pv_constructor)]`       *)
-(* annotation so a *direct* extraction of `rust_primitives` produces  *)
-(* the same `fun ... [data]` form, matching the auto-decl shape.     *)
-(*                                                                    *)
-(* What stays here is the small set of items that are *not* shape-    *)
-(* equivalent to the auto-decl fallback:                              *)
-(*  - identity letfuns (`unsize`, `slice::as_slice`, `slice_to_array`, *)
-(*    `seq_to_vec`, `vec_to_seq`) collapse otherwise-distinct wrapper *)
-(*    constructors so equality checks across collection flavours fire. *)
-(*  - the `*SIZE_*` const set since they have no Rust source.         *)
-(*  - `slice::len`, `sequence::seq_len`, `slice_index_range`, `neg`, *)
-(*    `hax::repeat`: synthesised names with no Rust source to attach  *)
-(*    `pv_constructor` to.                                            *)
+(*** rust_primitives::arithmetic / slice / sequence — non-auto-decl ***)
+(* The ~251 per-int-width arithmetic ops and most slice / sequence  *)
+(* primitives are opaque `fun NAME(...): bitstring [data].` shapes,  *)
+(* shape-identical to what the auto-decl pass synthesises, and have *)
+(* `#[cfg_attr(hax_backend_proverif, hax_lib::pv_constructor)]` on   *)
+(* their Rust source. They've been removed from this file.           *)
+(* What stays below is the small set that is *not* shape-equivalent  *)
+(* to auto-decl: identity letfuns that collapse otherwise-distinct  *)
+(* collection wrappers (so equality fires across `&v[..]` vs        *)
+(* `v.as_slice()`), the `*SIZE_*` consts, and synthesised names      *)
+(* (`neg`, `slice_index_range`, `hax::repeat`) with no Rust source. *)
 
 const rust_primitives__arithmetic__ISIZE_MAX: bitstring.
 const rust_primitives__arithmetic__ISIZE_MIN: bitstring.
@@ -149,34 +134,12 @@ letfun rust_primitives__unsize(x: bitstring) = x.
 
 fun rust_primitives__hax__repeat(bitstring, bitstring): bitstring [data].
 
-(*** core::num — per-int-width MAX/MIN constants                   ***)
-
-const core__num__Impl__MAX: bitstring.
-const core__num__Impl__MIN: bitstring.
-const core__num__Impl_1__MAX: bitstring.
-const core__num__Impl_1__MIN: bitstring.
-const core__num__Impl_2__MAX: bitstring.
-const core__num__Impl_2__MIN: bitstring.
-const core__num__Impl_3__MAX: bitstring.
-const core__num__Impl_3__MIN: bitstring.
-const core__num__Impl_4__MAX: bitstring.
-const core__num__Impl_4__MIN: bitstring.
-const core__num__Impl_5__MAX: bitstring.
-const core__num__Impl_5__MIN: bitstring.
-const core__num__Impl_6__MAX: bitstring.
-const core__num__Impl_6__MIN: bitstring.
-const core__num__Impl_7__MAX: bitstring.
-const core__num__Impl_7__MIN: bitstring.
-const core__num__Impl_8__MAX: bitstring.
-const core__num__Impl_8__MIN: bitstring.
-const core__num__Impl_9__MAX: bitstring.
-const core__num__Impl_9__MIN: bitstring.
-const core__num__Impl_10__MAX: bitstring.
-const core__num__Impl_10__MIN: bitstring.
-const core__num__Impl_11__MAX: bitstring.
-const core__num__Impl_11__MIN: bitstring.
-
-(*** core::cmp / ops / slice — trait method roots                  ***)
+(*** core::cmp / ops — letfuns with non-opaque semantics            ***)
+(* These are *not* shape-equivalent to the auto-decl fallback: they  *)
+(* fire ProVerif rewrite rules. Plain opaque ops on the same         *)
+(* trait root (`PartialOrd::lt`, `Index::index`, `Fn::call`,         *)
+(* `slice::Impl::len`, `core::num::Impl_N::MAX/MIN`, etc.) are       *)
+(* equivalent to auto-decl and have been removed.                    *)
 
 (* Symbolic equality: `eq(x, x) = True()`, `eq(x, y) = False()` when
    `x`, `y` are syntactically distinct ProVerif terms. Without this,
@@ -188,12 +151,6 @@ letfun core__cmp__PartialEq__eq(a: bitstring, b: bitstring) =
   let (=a) = b in True() else False().
 letfun core__cmp__PartialEq__ne(a: bitstring, b: bitstring) =
   let (=a) = b in False() else True().
-fun core__cmp__PartialOrd__partial_cmp(bitstring, bitstring): bitstring [data].
-fun core__cmp__PartialOrd__lt(bitstring, bitstring): bitstring [data].
-fun core__cmp__PartialOrd__le(bitstring, bitstring): bitstring [data].
-fun core__cmp__PartialOrd__gt(bitstring, bitstring): bitstring [data].
-fun core__cmp__PartialOrd__ge(bitstring, bitstring): bitstring [data].
-fun core__cmp__Ord__cmp(bitstring, bitstring): bitstring [data].
 
 (* `core::ops::bit::Not::not` on `bool` — given as a real letfun so that
    `let (=True()) = not_kw(b) in ...` actually fires under
@@ -203,12 +160,6 @@ fun core__cmp__Ord__cmp(bitstring, bitstring): bitstring [data].
 letfun core__ops__bit__Not__not_kw(b: bitstring) =
   let (=True()) = b in False()
   else True().
-fun core__ops__function__FnOnce__call_once(bitstring, bitstring): bitstring [data].
-fun core__ops__function__Fn__call(bitstring, bitstring): bitstring [data].
-fun core__ops__function__FnMut__call_mut(bitstring, bitstring): bitstring [data].
-fun core__ops__index__Index__index(bitstring, bitstring): bitstring [data].
-
-fun core__slice__Impl__len(bitstring): bitstring [data].
 
 (*** core::convert — identity wrappers                              ***)
 (* `From::from`, `Into::into`, `AsRef::as_ref`, `TryInto::try_into`  *)
@@ -243,7 +194,5 @@ letfun rand_core__RngCore__fill_bytes(rng: bitstring, dest: bitstring) =
   new b: bitstring;
   rust_primitives__hax__Tuple2__Tuple2(rng, b).
 
-(*** hax_lib helpers — `assume`, `Prop::from_bool`                 ***)
-
-fun hax_lib__assume(bitstring): bitstring [data].
-fun hax_lib__prop__constructors__from_bool(bitstring): bitstring [data].
+(* `hax_lib::assume` and `hax_lib::prop::constructors::from_bool` *)
+(* are opaque `fun ... [data]` — equivalent to auto-decl, dropped. *)
