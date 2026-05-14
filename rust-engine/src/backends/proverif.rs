@@ -1118,39 +1118,77 @@ impl ProVerifBackend {
         modules: &[Module],
         printer: &mut ProVerifPrinter,
     ) -> String {
-        let mut defined: HashSet<GlobalId> = HashSet::new();
-        let mut referenced: HashMap<GlobalId, usize> = HashMap::new();
+        // We track defined / referenced names by their *rendered string*
+        // rather than by `GlobalId` directly. The same surface name can
+        // appear under different `GlobalId`s when hax has separate
+        // "imported" and "locally-declared" copies of an item, but in
+        // ProVerif there's only one namespace, so string equality is the
+        // right notion.
+        let mut defined: HashSet<String> = HashSet::new();
+        // Always defined by the HEADER preamble.
+        for s in [
+            "construct_fail",
+            "empty",
+            "bitstring_default",
+            "bitstring_err",
+            "Some",
+            "None",
+            "Option_err",
+            "True",
+            "False",
+            "bool_default",
+            "bool_err",
+            "nat_lit",
+            "logical_and",
+            "logical_or",
+        ] {
+            defined.insert(s.to_string());
+        }
+        struct Info {
+            arity: usize,
+            is_constructor: bool,
+        }
+        let mut referenced: HashMap<String, Info> = HashMap::new();
 
         for module in modules {
             for item in &module.items {
-                Self::collect_defined_names(item, &mut defined);
+                Self::collect_defined_names(item, printer, &mut defined);
                 let mut v = ExternRefCollector::default();
                 v.visit_item(item);
-                for (id, arity) in v.calls {
-                    let entry = referenced.entry(id).or_insert(0);
-                    *entry = (*entry).max(arity);
+                for r in v.calls {
+                    let name = printer.render_id(&r.id);
+                    let info = referenced.entry(name).or_insert(Info {
+                        arity: 0,
+                        is_constructor: false,
+                    });
+                    info.arity = info.arity.max(r.arity);
+                    info.is_constructor |= r.is_constructor;
                 }
             }
         }
 
         let mut decls: Vec<String> = Vec::new();
-        let mut keys: Vec<GlobalId> = referenced
+        let mut keys: Vec<String> = referenced
             .keys()
-            .filter(|k| !defined.contains(k))
-            .copied()
+            .filter(|k| !defined.contains(k.as_str()))
+            .cloned()
             .collect();
-        keys.sort_by_key(|k| printer.render_id(k));
-        for id in keys {
-            let arity = referenced[&id];
-            let name = printer.render_id(&id);
-            if arity == 0 {
+        keys.sort();
+        for name in keys {
+            let info = &referenced[&name];
+            if info.arity == 0 {
                 decls.push(format!("const {name}: bitstring."));
             } else {
                 let args = std::iter::repeat("bitstring")
-                    .take(arity)
+                    .take(info.arity)
                     .collect::<Vec<_>>()
                     .join(", ");
-                decls.push(format!("fun {name}({args}): bitstring."));
+                // `[data]` makes the symbol a free, injective constructor;
+                // required for `let pat(..) = ...` and `Construct(..)` use
+                // sites. Don't apply `[data]` to plain opaque calls — they
+                // wouldn't satisfy the additional constraints.
+                let tag = if info.is_constructor { " [data]" } else { "" };
+                decls.push(format!("fun {name}({args}): bitstring{tag}."));
             }
         }
         if decls.is_empty() {
@@ -1166,14 +1204,18 @@ impl ProVerifBackend {
         }
     }
 
-    fn collect_defined_names(item: &Item, out: &mut HashSet<GlobalId>) {
+    fn collect_defined_names(
+        item: &Item,
+        printer: &mut ProVerifPrinter,
+        out: &mut HashSet<String>,
+    ) {
         match item.kind() {
             ItemKind::Fn { name, .. } => {
-                out.insert(*name);
+                out.insert(printer.render_id(name));
             }
             ItemKind::Type { variants, .. } => {
                 for v in variants {
-                    out.insert(v.name);
+                    out.insert(printer.render_id(&v.name));
                 }
             }
             ItemKind::Impl { items, .. } => {
@@ -1184,7 +1226,7 @@ impl ProVerifBackend {
                             ImplItemKind::Resugared(ResugaredImplItemKind::Constant { .. })
                         )
                     {
-                        out.insert(ii.ident);
+                        out.insert(printer.render_id(&ii.ident));
                     }
                 }
             }
@@ -1193,12 +1235,30 @@ impl ProVerifBackend {
     }
 }
 
-/// Visitor that records every `GlobalId` referenced in expression
-/// position, paired with the call arity at the use site (`0` for a bare
-/// reference).
+/// Visitor that records every `GlobalId` referenced in expression /
+/// pattern position, along with the call arity at the use site and
+/// whether the use site requires the symbol to be a `[data]` constructor
+/// (true when referenced from `Construct` in either an expression or a
+/// pattern).
 #[derive(Default)]
 struct ExternRefCollector {
-    calls: Vec<(GlobalId, usize)>,
+    calls: Vec<Ref>,
+}
+
+struct Ref {
+    id: GlobalId,
+    arity: usize,
+    is_constructor: bool,
+}
+
+impl ExternRefCollector {
+    fn push(&mut self, id: GlobalId, arity: usize, is_constructor: bool) {
+        self.calls.push(Ref {
+            id,
+            arity,
+            is_constructor,
+        });
+    }
 }
 
 impl AstVisitor for ExternRefCollector {
@@ -1206,13 +1266,30 @@ impl AstVisitor for ExternRefCollector {
         match kind {
             ExprKind::App { head, args, .. } => {
                 if let ExprKind::GlobalId(g) = &*head.kind {
-                    self.calls.push((*g, args.len()));
+                    self.push(*g, args.len(), false);
                 }
             }
             ExprKind::GlobalId(g) => {
-                self.calls.push((*g, 0));
+                self.push(*g, 0, false);
+            }
+            ExprKind::Construct {
+                constructor,
+                fields,
+                ..
+            } => {
+                self.push(*constructor, fields.len(), true);
             }
             _ => {}
+        }
+    }
+    fn enter_pat_kind(&mut self, kind: &PatKind) {
+        if let PatKind::Construct {
+            constructor,
+            fields,
+            ..
+        } = kind
+        {
+            self.push(*constructor, fields.len(), true);
         }
     }
 }

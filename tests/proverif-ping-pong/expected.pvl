@@ -30,8 +30,13 @@ fun logical_or(bitstring, bitstring): bitstring.
 (*****************************************)
 fun alloc__vec__Impl_1__len(bitstring): bitstring.
 fun core__ops__index__Index__index(bitstring, bitstring): bitstring.
+fun core__result__Result__Err(bitstring): bitstring [data].
+fun core__result__Result__Ok(bitstring): bitstring [data].
+const hax_lib_protocol__ProtocolError__InvalidMessage: bitstring.
+const hax_lib_protocol__ProtocolError__InvalidPrologue: bitstring.
 fun ping_pong__a__A0__A0__data(bitstring): bitstring.
 fun ping_pong__b__B1__B1__received(bitstring): bitstring.
+fun rust_primitives__hax__Tuple2__Tuple2(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__eq(bitstring, bitstring): bitstring.
 fun rust_primitives__hax__machine_int__lt(bitstring, bitstring): bitstring.
 
