@@ -347,11 +347,12 @@ const _: () = {
         }
 
         fn ty(&self, ty: &Ty) -> DocBuilder<A> {
-            // Stage 2.0 uniform-bitstring: every type renders as `bitstring`
-            // except a `Param(_)` (which should have been monomorphized away
-            // before printing, but we keep a sensible fallback).
+            // Stage 2.0/2.1 uniform-bitstring: every type renders as
+            // `bitstring`. `Param(_)` survives — Specialize doesn't
+            // monomorphize generic *functions*, only specific named
+            // arithmetic/conversion calls — but a `Param` in output position
+            // is meaningless to ProVerif, so we still flatten to `bitstring`.
             match ty.kind() {
-                TyKind::Param(local_id) => docs![local_id],
                 TyKind::Ref { .. } => unreachable_by_invariant!(Drop_references),
                 TyKind::RawPointer => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
                 TyKind::Dyn(_) => unreachable_by_invariant!(Reject_dyn),
@@ -767,7 +768,15 @@ const _: () = {
 
                 ItemKind::TyAlias { .. } => nil!(),
                 ItemKind::Trait { .. } => nil!(),
-                ItemKind::Impl { .. } => nil!(),
+                ItemKind::Impl { items, .. } => {
+                    // Stage 2.1: render an impl block by flattening its
+                    // items into top-level letfuns / consts. Specialize
+                    // gave each impl item a unique flattened GlobalId
+                    // (`<self_ty>__<trait>__<method>` for trait impls,
+                    // `<self_ty>__<method>` for inherent impls), so we can
+                    // emit them as ordinary items at the file level.
+                    intersperse!(items.iter().map(|i| docs![i]), hardline!())
+                }
                 ItemKind::Alias { .. } => nil!(),
                 ItemKind::Use { .. } | ItemKind::RustModule => nil!(),
                 ItemKind::NotImplementedYet => nil!(),
@@ -872,8 +881,42 @@ const _: () = {
             nil!()
         }
 
-        fn impl_item(&self, _impl_item: &ImplItem) -> DocBuilder<A> {
-            nil!()
+        fn impl_item(&self, impl_item: &ImplItem) -> DocBuilder<A> {
+            // Stage 2.1: render each impl item as a flat top-level
+            // declaration. `Specialize` produces a unique `GlobalId` per
+            // (impl, item) pair, so `impl_item.ident` already carries the
+            // `<self_ty>__<trait>__<method>` flattened name we want.
+            let name = self.render_id(&impl_item.ident);
+            match &impl_item.kind {
+                // Associated types are bitstring; nothing to declare.
+                ImplItemKind::Type { .. } => nil!(),
+                ImplItemKind::Fn { body, params } => {
+                    if params.is_empty() {
+                        docs!["const ", name, ": bitstring."]
+                    } else {
+                        let params_doc =
+                            comma_sep!(params.iter().map(|p| docs![p]));
+                        docs![
+                            "letfun ",
+                            name,
+                            params_doc.parens(),
+                            " =",
+                            hardline!(),
+                            docs![body].nest(INDENT),
+                            "."
+                        ]
+                    }
+                }
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant {
+                    body: _,
+                }) => {
+                    // Associated constants land as opaque `bitstring`. Users
+                    // who care about the value can override with a verbatim
+                    // `proverif_replace!` body.
+                    docs!["const ", name, ": bitstring."]
+                }
+                ImplItemKind::Error(err) => docs![err],
+            }
         }
 
         fn error_node(&self, _error_node: &ErrorNode) -> DocBuilder<A> {
@@ -894,14 +937,17 @@ impl Backend for ProVerifBackend {
         Utf8PathBuf::from("lib.pvl")
     }
 
-    /// The phase pipeline mirrors the OCaml `TransformToInputLanguage`
-    /// at `engine/backends/proverif/proverif_backend.ml:887-910`.
+    /// The phase pipeline. Stage 2.1 inserts `Specialize` between
+    /// `TransformHaxLibInline` and the rest — same shape Lean / F\* use —
+    /// so trait method calls are monomorphized into concrete
+    /// `<self_ty>__<trait>__<method>` letfun calls before the printer runs.
     fn phases(&self) -> Vec<PhaseKind> {
         use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
         vec![
             RejectUnsafe.into(),
             RejectRawOrMutPointer.into(),
             TransformHaxLibInline.into(),
+            Specialize.into(),
             SimplifyQuestionMarks.into(),
             AndMutDefsite.into(),
             ReconstructForLoops.into(),

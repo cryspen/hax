@@ -58,7 +58,7 @@ fun ping_pong__a__A2__A2(bitstring): bitstring [data].
 reduc forall ping_pong__a__A2__A2__received: bitstring;
   accessor_ping_pong__a__A2__ping_pong__a__A2__A2__received(ping_pong__a__A2__A2(ping_pong__a__A2__A2__received)) = ping_pong__a__A2__A2__received.
 letfun ping_pong__a__init_a(prologue: bitstring) =
-let (=True()) = core__cmp__PartialOrd__lt(alloc__vec__Impl_1__len(prologue),
+let (=True()) = rust_primitives__hax__machine_int__lt(alloc__vec__Impl_1__len(prologue),
   nat_lit(1)) in (bitstring_err()) else (ping_pong__a__A0__A0(core__ops__index__Index__index(prologue,
   nat_lit(0)))).
 letfun ping_pong__a__write_ping(state: bitstring) =

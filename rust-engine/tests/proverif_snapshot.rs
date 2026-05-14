@@ -100,3 +100,8 @@ fn proverif_ping_pong() {
 fn proverif_noise() {
     run_one("proverif-noise");
 }
+
+#[test]
+fn proverif_generics() {
+    run_one("proverif-generics");
+}
