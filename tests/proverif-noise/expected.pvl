@@ -21,6 +21,7 @@ fun alloc__vec__Impl__new_kw(bitstring): bitstring [data].
 fun alloc__vec__from_elem(bitstring, bitstring): bitstring [data].
 fun core__clone__Clone__clone(bitstring): bitstring [data].
 fun core__num__Impl_9__to_le_bytes(bitstring): bitstring [data].
+fun core__ops__index__Index__index(bitstring, bitstring): bitstring [data].
 fun core__ops__range__Range__Range(bitstring, bitstring): bitstring [data].
 fun core__option__Impl__is_some(bitstring): bitstring [data].
 const core__option__Option__None: bitstring.
@@ -28,6 +29,7 @@ fun core__option__Option__Some(bitstring): bitstring [data].
 fun core__result__Impl__map_err(bitstring, bitstring): bitstring [data].
 fun core__result__Result__Err(bitstring): bitstring [data].
 fun core__result__Result__Ok(bitstring): bitstring [data].
+fun core__slice__Impl__len(bitstring): bitstring [data].
 const hax_lib_protocol__crypto__AEADAlgorithm__Chacha20Poly1305: bitstring.
 const hax_lib_protocol__crypto__DHGroup__X25519: bitstring.
 const hax_lib_protocol__crypto__HMACAlgorithm__Sha256: bitstring.
