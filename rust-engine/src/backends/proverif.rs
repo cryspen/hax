@@ -51,7 +51,17 @@ mod names {
 /// The ProVerif printer.
 #[setup_printer_struct]
 #[derive(Default, Clone)]
-pub struct ProVerifPrinter {}
+pub struct ProVerifPrinter {
+    /// `LocalId`s that should be rendered as `bitstring_default()`
+    /// rather than as their literal name. Populated up-front from every
+    /// item's `GenericParamKind::Const` so that references to const
+    /// generics (`fn f<const N: usize>(x: [T; N]) -> ...` writing `N`
+    /// in the body) survive into a parseable output. ProVerif has no
+    /// generic-parameter notion; after Stage 2.0 the surrounding type
+    /// collapses to `bitstring` anyway, so the runtime value is
+    /// symbolically irrelevant.
+    erased_const_generics: HashSet<LocalId>,
+}
 
 /// Bundled `primitives.pvl` — declarations for the stable hax extraction
 /// surface (`rust_primitives::*`, the `core::num/ops/cmp/slice` trait
@@ -354,6 +364,14 @@ const _: () = {
         }
 
         fn local_id(&self, local_id: &LocalId) -> DocBuilder<A> {
+            // Const-generic params (`N` in `[T; N]`) survive as bare
+            // `LocalId`s in expression position because Specialize
+            // doesn't yet monomorphize them. They render as
+            // `bitstring_default()` — the type collapses to `bitstring`,
+            // so the runtime value is symbolically irrelevant.
+            if self.erased_const_generics.contains(local_id) {
+                return docs!["bitstring_default()"];
+            }
             // Mirrors the OCaml `local_ident` override: strip `impl ...`
             // wrappers and replace spaces/`+` with `_` so the result is a
             // valid ProVerif identifier.
@@ -1101,6 +1119,19 @@ impl Backend for ProVerifBackend {
             return vec![];
         }
         let path = self.module_path(modules.first().unwrap()).to_string();
+        // Pre-compute the set of const-generic `LocalId`s that the
+        // printer should treat as "erased" — those names show up in
+        // expression position whenever a generic function references
+        // `N` from `[T; N]` or similar, and ProVerif has no notion of
+        // a free type/const parameter standing in for a runtime value.
+        // The surrounding type collapses to `bitstring` anyway, so the
+        // value is symbolically irrelevant; we render any such ref as
+        // `bitstring_default()`.
+        for module in &modules {
+            for item in &module.items {
+                collect_erased_const_generics(item, &mut printer.erased_const_generics);
+            }
+        }
         // Compute opaque declarations for any GlobalId referenced inside
         // expressions but not bound by a top-level item in the module set.
         // ProVerif rejects calls to undeclared functions, so we forward-
@@ -1119,6 +1150,32 @@ impl Backend for ProVerifBackend {
             contents: format!("{HEADER}{externals}\n{contents}"),
             sourcemap: None,
         }]
+    }
+}
+
+fn collect_erased_const_generics(item: &Item, out: &mut HashSet<LocalId>) {
+    let generics = match item.kind() {
+        ItemKind::Fn { generics, .. }
+        | ItemKind::Impl { generics, .. }
+        | ItemKind::Trait { generics, .. }
+        | ItemKind::Type { generics, .. } => Some(generics),
+        _ => None,
+    };
+    if let Some(g) = generics {
+        for p in &g.params {
+            if matches!(p.kind, GenericParamKind::Const { .. }) {
+                out.insert(p.ident.clone());
+            }
+        }
+    }
+    if let ItemKind::Impl { items, .. } = item.kind() {
+        for ii in items {
+            for p in &ii.generics.params {
+                if matches!(p.kind, GenericParamKind::Const { .. }) {
+                    out.insert(p.ident.clone());
+                }
+            }
+        }
     }
 }
 
