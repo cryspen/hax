@@ -25,6 +25,11 @@ fun nat_lit(nat): bitstring.
 fun logical_and(bitstring, bitstring): bitstring.
 fun logical_or(bitstring, bitstring): bitstring.
 
+(*****************************************)
+(* Auto-declared external symbols        *)
+(*****************************************)
+fun rust_primitives__hax__machine_int__add(bitstring, bitstring): bitstring.
+
 letfun minimal__add(left: bitstring,
 right: bitstring) =
 rust_primitives__hax__machine_int__add(left,

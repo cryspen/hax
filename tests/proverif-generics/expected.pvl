@@ -25,6 +25,12 @@ fun nat_lit(nat): bitstring.
 fun logical_and(bitstring, bitstring): bitstring.
 fun logical_or(bitstring, bitstring): bitstring.
 
+(*****************************************)
+(* Auto-declared external symbols        *)
+(*****************************************)
+fun proverif_generics__Cloneable__clone_it(bitstring): bitstring.
+fun proverif_generics__Token__Token__bytes(bitstring): bitstring.
+
 letfun proverif_generics__id(x: bitstring) =
 x.
 fun proverif_generics__Token__Token(bitstring): bitstring [data].

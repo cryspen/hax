@@ -22,11 +22,12 @@
 //! | `concrete_ident'` (653-660) | flattened by `RenderView::separator = "__"` |
 //! | Preamble (811-832) | the [`HEADER`] string constant |
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::sync::OnceLock;
 
 use super::prelude::*;
 use crate::ast::span::Span;
+use crate::ast::visitors::AstVisitor;
 use crate::phase::*;
 use camino::Utf8PathBuf;
 use hax_lib_macros_types::AttrPayload;
@@ -116,6 +117,34 @@ impl RenderView for ProVerifPrinter {
     fn separator(&self) -> &str {
         "__"
     }
+
+    /// Escape so the rendered string is a *valid ProVerif identifier*.
+    ///
+    /// ProVerif's lexer rejects identifiers that:
+    ///  - start with an underscore (`_msg` is *not* an identifier — the
+    ///    lone `_` is a wildcard, and `_` + anything is a syntax error),
+    ///  - clash with one of the reserved keywords (`channel`, `let`, …).
+    ///
+    /// Strategy: replace illegal characters with `_`, then collapse the
+    /// leading-underscore problem by prepending a stable letter `u`, then
+    /// handle keyword clashes with a `_kw` *suffix* (a prefix would just
+    /// re-introduce the leading-underscore problem).
+    fn escape(id: &str) -> String {
+        let id = id.replace([' ', '<', '>'], "_");
+        if id.is_empty() {
+            return "_ERROR_EMPTY_ID_".to_string();
+        }
+        let id = if id.starts_with('_') {
+            format!("u{id}")
+        } else {
+            id
+        };
+        if Self::is_reserved_keyword(&id) {
+            format!("{id}_kw")
+        } else {
+            id
+        }
+    }
 }
 
 impl Printer for ProVerifPrinter {}
@@ -169,6 +198,24 @@ const _: () = {
             comma_sep!(args.iter().map(|(id, ty)| {
                 docs![self.render_id(id), ": ", ty]
             }))
+        }
+
+        /// Emit a syntactically valid placeholder in expression position
+        /// alongside a diagnostic. ProVerif comments (`(* ... *)`) aren't
+        /// terms, so we surface `bitstring_err()` (declared in the preamble)
+        /// instead — that keeps the surrounding letfun parseable.
+        fn expr_error_placeholder<A: 'static + Clone>(
+            &self,
+            message: &str,
+        ) -> DocBuilder<A> {
+            <Self as PrettyAst<A>>::emit_diagnostic(
+                self,
+                hax_types::diagnostics::Kind::Unimplemented {
+                    issue_id: None,
+                    details: Some(message.into()),
+                },
+            );
+            docs!["bitstring_err()", " (* ", message.to_string(), " *)"]
         }
 
         /// Print one match-arm as an `if-let` chain piece. Mirrors
@@ -446,14 +493,44 @@ const _: () = {
                     }
                 }
                 PatKind::Or { .. } => {
-                    emit_error!("ProVerif backend does not support or-patterns")
+                    // ProVerif has no or-patterns. Emit a wildcard so the
+                    // enclosing `let pat = ... in ... else ...` still parses;
+                    // also raise the diagnostic.
+                    <Self as PrettyAst<A>>::emit_diagnostic(
+                        self,
+                        hax_types::diagnostics::Kind::Unimplemented {
+                            issue_id: None,
+                            details: Some(
+                                "ProVerif backend does not support or-patterns".into(),
+                            ),
+                        },
+                    );
+                    docs!["wildcard: bitstring"]
                 }
                 PatKind::Array { .. } => {
-                    emit_error!("ProVerif backend does not support array patterns")
+                    <Self as PrettyAst<A>>::emit_diagnostic(
+                        self,
+                        hax_types::diagnostics::Kind::Unimplemented {
+                            issue_id: None,
+                            details: Some(
+                                "ProVerif backend does not support array patterns".into(),
+                            ),
+                        },
+                    );
+                    docs!["wildcard: bitstring"]
                 }
                 PatKind::Deref { .. } => unreachable_by_invariant!(Drop_references),
                 PatKind::Resugared(_) => {
-                    emit_error!("ProVerif backend does not support resugared patterns")
+                    <Self as PrettyAst<A>>::emit_diagnostic(
+                        self,
+                        hax_types::diagnostics::Kind::Unimplemented {
+                            issue_id: None,
+                            details: Some(
+                                "ProVerif backend does not support resugared patterns".into(),
+                            ),
+                        },
+                    );
+                    docs!["wildcard: bitstring"]
                 }
                 PatKind::Error(_) => docs!["(* error *)"],
             }
@@ -620,18 +697,28 @@ const _: () = {
                 ExprKind::GlobalId(g) => docs![g],
                 ExprKind::LocalId(local_id) => docs![local_id],
                 ExprKind::Ascription { e, ty: _ } => docs![e],
-                ExprKind::Array(_) => emit_error!("Array expressions not supported in ProVerif"),
+                ExprKind::Array(_) => self.expr_error_placeholder::<A>(
+                    "Array expressions not supported in ProVerif",
+                ),
                 ExprKind::Borrow { .. } => unreachable_by_invariant!(Drop_references),
                 ExprKind::AddressOf { .. } => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
                 ExprKind::Assign { .. } => unreachable_by_invariant!(Local_mutation),
-                ExprKind::Loop { .. } => emit_error!("Loops not supported in ProVerif"),
+                ExprKind::Loop { .. } => self.expr_error_placeholder::<A>(
+                    "Loops not supported in ProVerif",
+                ),
                 ExprKind::Break { .. } | ExprKind::Continue { .. } | ExprKind::Return { .. } => {
-                    emit_error!("Early-exit control flow not supported in ProVerif")
+                    self.expr_error_placeholder::<A>(
+                        "Early-exit control flow not supported in ProVerif",
+                    )
                 }
-                ExprKind::Closure { .. } => emit_error!("Closures not supported in ProVerif"),
+                ExprKind::Closure { .. } => self.expr_error_placeholder::<A>(
+                    "Closures not supported in ProVerif",
+                ),
                 ExprKind::Block { .. } => unreachable_by_invariant!(Drop_blocks),
                 ExprKind::Quote { contents } => docs![contents],
-                ExprKind::Resugared(_) => emit_error!("Unsupported resugared expression"),
+                ExprKind::Resugared(_) => self.expr_error_placeholder::<A>(
+                    "Unsupported resugared expression",
+                ),
                 ExprKind::Error(e) => docs![e],
             }
         }
@@ -998,6 +1085,14 @@ impl Backend for ProVerifBackend {
             return vec![];
         }
         let path = self.module_path(modules.first().unwrap()).to_string();
+        // Compute opaque declarations for any GlobalId referenced inside
+        // expressions but not bound by a top-level item in the module set.
+        // ProVerif rejects calls to undeclared functions, so we forward-
+        // declare every external symbol as a generic opaque `bitstring`
+        // function. The user can later override individual ones via
+        // `proverif_replace!` macros (or, eventually, a `proof-libs`
+        // runtime).
+        let externals = self.collect_external_decls(&modules, &mut printer);
         let contents = modules
             .into_iter()
             .map(|module: Module| printer.print(module).0)
@@ -1005,8 +1100,119 @@ impl Backend for ProVerifBackend {
             .join("\n");
         vec![File {
             path,
-            contents: format!("{}{}", HEADER, contents),
+            contents: format!("{HEADER}{externals}\n{contents}"),
             sourcemap: None,
         }]
+    }
+}
+
+impl ProVerifBackend {
+    /// Walk every `Module` and produce the block of opaque `fun ... :
+    /// bitstring.` / `const ... : bitstring.` declarations needed for the
+    /// file to parse. A name is "external" if it appears in expression
+    /// position (call head or bare reference) but is not bound by any
+    /// top-level item (Fn / Type variant / Impl method / Const) in the
+    /// module set.
+    fn collect_external_decls(
+        &self,
+        modules: &[Module],
+        printer: &mut ProVerifPrinter,
+    ) -> String {
+        let mut defined: HashSet<GlobalId> = HashSet::new();
+        let mut referenced: HashMap<GlobalId, usize> = HashMap::new();
+
+        for module in modules {
+            for item in &module.items {
+                Self::collect_defined_names(item, &mut defined);
+                let mut v = ExternRefCollector::default();
+                v.visit_item(item);
+                for (id, arity) in v.calls {
+                    let entry = referenced.entry(id).or_insert(0);
+                    *entry = (*entry).max(arity);
+                }
+            }
+        }
+
+        let mut decls: Vec<String> = Vec::new();
+        let mut keys: Vec<GlobalId> = referenced
+            .keys()
+            .filter(|k| !defined.contains(k))
+            .copied()
+            .collect();
+        keys.sort_by_key(|k| printer.render_id(k));
+        for id in keys {
+            let arity = referenced[&id];
+            let name = printer.render_id(&id);
+            if arity == 0 {
+                decls.push(format!("const {name}: bitstring."));
+            } else {
+                let args = std::iter::repeat("bitstring")
+                    .take(arity)
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                decls.push(format!("fun {name}({args}): bitstring."));
+            }
+        }
+        if decls.is_empty() {
+            String::new()
+        } else {
+            format!(
+                "(*****************************************)\n\
+                 (* Auto-declared external symbols        *)\n\
+                 (*****************************************)\n\
+                 {}\n",
+                decls.join("\n")
+            )
+        }
+    }
+
+    fn collect_defined_names(item: &Item, out: &mut HashSet<GlobalId>) {
+        match item.kind() {
+            ItemKind::Fn { name, .. } => {
+                out.insert(*name);
+            }
+            ItemKind::Type { variants, .. } => {
+                for v in variants {
+                    out.insert(v.name);
+                }
+            }
+            ItemKind::Impl { items, .. } => {
+                for ii in items {
+                    if matches!(ii.kind, ImplItemKind::Fn { .. })
+                        || matches!(
+                            ii.kind,
+                            ImplItemKind::Resugared(ResugaredImplItemKind::Constant { .. })
+                        )
+                    {
+                        out.insert(ii.ident);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
+/// Visitor that records every `GlobalId` referenced in expression
+/// position, paired with the call arity at the use site (`0` for a bare
+/// reference).
+#[derive(Default)]
+struct ExternRefCollector {
+    calls: Vec<(GlobalId, usize)>,
+}
+
+impl AstVisitor for ExternRefCollector {
+    fn enter_expr_kind(&mut self, kind: &ExprKind) {
+        match kind {
+            ExprKind::App { head, args, .. } => {
+                if let ExprKind::GlobalId(g) = &*head.kind {
+                    self.calls.push((*g, args.len()));
+                }
+            }
+            ExprKind::GlobalId(g) => {
+                self.calls.push((*g, 0));
+            }
+            _ => {}
+        }
     }
 }
