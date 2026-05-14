@@ -1,0 +1,414 @@
+(*****************************************************************)
+(*  hax — ProVerif primitives library                            *)
+(*****************************************************************)
+(* Opaque declarations for the symbols that the hax ProVerif      *)
+(* backend leaves uninterpreted on every extraction. Anything     *)
+(* declared here is a *stable* member of the hax extraction       *)
+(* surface — `rust_primitives::*`, the `core::num`/`core::ops`/  *)
+(* `core::cmp`/`core::slice` trait roots, `hax_lib::*` helpers,   *)
+(* the tuple constructors, the panic sink, etc.                   *)
+(*                                                                *)
+(* `core_models::*` symbols are in a sibling file                 *)
+(* `core_models.pvl` since they're a separate library that will   *)
+(* eventually migrate into the source via `#[proverif_replace]`   *)
+(* annotations.                                                   *)
+(*                                                                *)
+(* Use:                                                           *)
+(*   proverif -lib primitives.pvl -lib core_models.pvl lib.pvl   *)
+(*****************************************************************)
+
+(*** rust_primitives::hax — tuple constructors, dropped bodies,    ***)
+(*** machine_int / int operators (output of the Specialize phase)  ***)
+
+const rust_primitives__hax__Tuple0__Tuple0: bitstring.
+fun rust_primitives__hax__Tuple1__Tuple1(bitstring): bitstring [data].
+fun rust_primitives__hax__Tuple2__Tuple2(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__Tuple3__Tuple3(bitstring, bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__Tuple4__Tuple4(bitstring, bitstring, bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__Tuple5__Tuple5(bitstring, bitstring, bitstring, bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__Tuple6__Tuple6(bitstring, bitstring, bitstring, bitstring, bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__Tuple7__Tuple7(bitstring, bitstring, bitstring, bitstring, bitstring, bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__Tuple8__Tuple8(bitstring, bitstring, bitstring, bitstring, bitstring, bitstring, bitstring, bitstring): bitstring [data].
+
+const rust_primitives__hax__dropped_body: bitstring.
+fun rust_primitives__hax__never_to_any(bitstring): bitstring [data].
+fun rust_primitives__hax__cast_op(bitstring): bitstring [data].
+fun rust_primitives__hax__logical_op_and(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__logical_op_or(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__hax__machine_int__add(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__sub(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__mul(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__div(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__rem(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__eq(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__ne(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__lt(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__le(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__gt(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__ge(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__shl(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__shr(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__bitxor(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__bitand(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__bitor(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__not(bitstring): bitstring [data].
+
+fun rust_primitives__hax__int__add(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__sub(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__mul(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__div(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__rem(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__neg(bitstring): bitstring [data].
+fun rust_primitives__hax__int__eq(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__ne(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__lt(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__le(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__gt(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__ge(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__int__from_machine(bitstring): bitstring [data].
+fun rust_primitives__hax__int__into_machine(bitstring): bitstring [data].
+
+(*** rust_primitives::arithmetic — per-int-width opaque ops        ***)
+
+const rust_primitives__arithmetic__ISIZE_MAX: bitstring.
+const rust_primitives__arithmetic__ISIZE_MIN: bitstring.
+const rust_primitives__arithmetic__USIZE_MAX: bitstring.
+const rust_primitives__arithmetic__SIZE_BITS: bitstring.
+
+fun rust_primitives__arithmetic__neg(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__abs_i8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__abs_i16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__abs_i32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__abs_i64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__abs_i128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__abs_isize(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__count_ones_i8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_i16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_i32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_i64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_i128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_isize(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_u8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_u16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_u32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_u64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_u128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__count_ones_usize(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__overflowing_add_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_add_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__overflowing_sub_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_sub_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__overflowing_mul_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__overflowing_mul_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__leading_zeros_i8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_i16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_i32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_i64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_i128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_isize(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_u8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_u16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_u32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_u64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_u128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__leading_zeros_usize(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__trailing_zeros_i8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_i16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_i32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_i64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_i128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_isize(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_u8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_u16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_u32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_u64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_u128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__trailing_zeros_usize(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__rotate_left_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_left_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__rotate_right_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rotate_right_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__to_le_bytes_i8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_i16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_i32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_i64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_i128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_isize(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_u8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_u16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_u32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_u64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_u128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_le_bytes_usize(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__to_be_bytes_i8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_i16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_i32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_i64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_i128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_isize(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_u8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_u16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_u32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_u64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_u128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__to_be_bytes_usize(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__from_le_bytes_i8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_i16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_i32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_i64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_i128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_isize(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_u8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_u16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_u32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_u64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_u128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_le_bytes_usize(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__from_be_bytes_i8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_i16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_i32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_i64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_i128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_isize(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_u8(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_u16(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_u32(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_u64(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_u128(bitstring): bitstring [data].
+fun rust_primitives__arithmetic__from_be_bytes_usize(bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__pow_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__pow_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__rem_euclid_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__rem_euclid_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__saturating_add_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_add_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__saturating_sub_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_sub_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__saturating_mul_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__saturating_mul_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__wrapping_add_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_add_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__wrapping_sub_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_sub_usize(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__arithmetic__wrapping_mul_i8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_i16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_i32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_i64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_i128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_isize(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_u8(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_u16(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_u32(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_u64(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_u128(bitstring, bitstring): bitstring [data].
+fun rust_primitives__arithmetic__wrapping_mul_usize(bitstring, bitstring): bitstring [data].
+
+(*** rust_primitives::slice / sequence — slice / array primitives  ***)
+
+fun rust_primitives__slice__array_slice(bitstring, bitstring, bitstring): bitstring [data].
+fun rust_primitives__slice__array_from_fn(bitstring): bitstring [data].
+fun rust_primitives__slice__slice_index(bitstring, bitstring): bitstring [data].
+fun rust_primitives__slice__slice_index_range(bitstring, bitstring, bitstring): bitstring [data].
+fun rust_primitives__slice__slice_to_array(bitstring): bitstring [data].
+fun rust_primitives__slice__as_slice(bitstring): bitstring [data].
+fun rust_primitives__slice__len(bitstring): bitstring [data].
+
+fun rust_primitives__sequence__seq_to_vec(bitstring): bitstring [data].
+fun rust_primitives__sequence__vec_to_seq(bitstring): bitstring [data].
+fun rust_primitives__sequence__seq_len(bitstring): bitstring [data].
+fun rust_primitives__sequence__seq_index(bitstring, bitstring): bitstring [data].
+
+fun rust_primitives__hax__repeat(bitstring, bitstring): bitstring [data].
+
+(*** core::num — per-int-width MAX/MIN constants                   ***)
+
+const core__num__Impl__MAX: bitstring.
+const core__num__Impl__MIN: bitstring.
+const core__num__Impl_1__MAX: bitstring.
+const core__num__Impl_1__MIN: bitstring.
+const core__num__Impl_2__MAX: bitstring.
+const core__num__Impl_2__MIN: bitstring.
+const core__num__Impl_3__MAX: bitstring.
+const core__num__Impl_3__MIN: bitstring.
+const core__num__Impl_4__MAX: bitstring.
+const core__num__Impl_4__MIN: bitstring.
+const core__num__Impl_5__MAX: bitstring.
+const core__num__Impl_5__MIN: bitstring.
+const core__num__Impl_6__MAX: bitstring.
+const core__num__Impl_6__MIN: bitstring.
+const core__num__Impl_7__MAX: bitstring.
+const core__num__Impl_7__MIN: bitstring.
+const core__num__Impl_8__MAX: bitstring.
+const core__num__Impl_8__MIN: bitstring.
+const core__num__Impl_9__MAX: bitstring.
+const core__num__Impl_9__MIN: bitstring.
+const core__num__Impl_10__MAX: bitstring.
+const core__num__Impl_10__MIN: bitstring.
+const core__num__Impl_11__MAX: bitstring.
+const core__num__Impl_11__MIN: bitstring.
+
+(*** core::cmp / ops / slice — trait method roots                  ***)
+
+fun core__cmp__PartialEq__eq(bitstring, bitstring): bitstring [data].
+fun core__cmp__PartialEq__ne(bitstring, bitstring): bitstring [data].
+fun core__cmp__PartialOrd__partial_cmp(bitstring, bitstring): bitstring [data].
+fun core__cmp__PartialOrd__lt(bitstring, bitstring): bitstring [data].
+fun core__cmp__PartialOrd__le(bitstring, bitstring): bitstring [data].
+fun core__cmp__PartialOrd__gt(bitstring, bitstring): bitstring [data].
+fun core__cmp__PartialOrd__ge(bitstring, bitstring): bitstring [data].
+fun core__cmp__Ord__cmp(bitstring, bitstring): bitstring [data].
+
+fun core__ops__bit__Not__not_kw(bitstring): bitstring [data].
+fun core__ops__function__FnOnce__call_once(bitstring, bitstring): bitstring [data].
+fun core__ops__function__Fn__call(bitstring, bitstring): bitstring [data].
+fun core__ops__function__FnMut__call_mut(bitstring, bitstring): bitstring [data].
+fun core__ops__index__Index__index(bitstring, bitstring): bitstring [data].
+
+fun core__slice__Impl__len(bitstring): bitstring [data].
+
+(*** hax_lib helpers — `assume`, `Prop::from_bool`                 ***)
+
+fun hax_lib__assume(bitstring): bitstring [data].
+fun hax_lib__prop__constructors__from_bool(bitstring): bitstring [data].
