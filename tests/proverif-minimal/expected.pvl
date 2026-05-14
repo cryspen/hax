@@ -1,3 +1,9 @@
+(* Run with:                                                       *)
+(*   proverif -lib primitives.pvl lib.pvl                          *)
+(* The `primitives.pvl` library ships with hax under                *)
+(* `hax-lib/proof-libs/proverif/` and declares the standard         *)
+(* `rust_primitives::*`, `core::*` and `hax_lib::*` symbols every    *)
+(* extraction uses.                                                  *)
 (*****************************************)
 (* Preamble                              *)
 (*****************************************)
@@ -25,10 +31,6 @@ fun nat_lit(nat): bitstring.
 fun logical_and(bitstring, bitstring): bitstring.
 fun logical_or(bitstring, bitstring): bitstring.
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun rust_primitives__hax__machine_int__add(bitstring, bitstring): bitstring.
 
 letfun minimal__add(left: bitstring,
 right: bitstring) =

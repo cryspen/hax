@@ -53,12 +53,28 @@ mod names {
 #[derive(Default, Clone)]
 pub struct ProVerifPrinter {}
 
+/// Bundled `primitives.pvl` — declarations for the stable hax extraction
+/// surface (`rust_primitives::*`, the `core::num/ops/cmp/slice` trait
+/// roots, `hax_lib::*` helpers, tuple constructors, panic sink, etc.).
+///
+/// Lives next to this file at `hax-lib/proof-libs/proverif/primitives.pvl`.
+/// Embedded here so the printer can parse it to know which names *not*
+/// to re-declare in the auto-declared external block.
+const PRIMITIVES_PVL: &str =
+    include_str!("../../../hax-lib/proof-libs/proverif/primitives.pvl");
+
 /// Preamble baked into every `lib.pvl` file.
 ///
 /// Stage 2.0 collapses every Rust type to ProVerif `bitstring`. Booleans
 /// become `True()`/`False()` data constructors and integer literals are
 /// wrapped in `nat_lit(N)` so they land in the same universe.
 const HEADER: &str = "\
+(* Run with:                                                       *)
+(*   proverif -lib primitives.pvl lib.pvl                          *)
+(* The `primitives.pvl` library ships with hax under                *)
+(* `hax-lib/proof-libs/proverif/` and declares the standard         *)
+(* `rust_primitives::*`, `core::*` and `hax_lib::*` symbols every    *)
+(* extraction uses.                                                  *)
 (*****************************************)
 (* Preamble                              *)
 (*****************************************)
@@ -1144,6 +1160,14 @@ impl ProVerifBackend {
         ] {
             defined.insert(s.to_string());
         }
+        // Names declared in the bundled `primitives.pvl` library. The
+        // user is expected to invoke ProVerif with
+        // `-lib primitives.pvl lib.pvl`, so re-declaring these in the
+        // auto-decl block would just cause "identifier already defined"
+        // errors.
+        for name in primitives_pvl_names() {
+            defined.insert(name);
+        }
         struct Info {
             arity: usize,
             is_constructor: bool,
@@ -1183,12 +1207,16 @@ impl ProVerifBackend {
                     .take(info.arity)
                     .collect::<Vec<_>>()
                     .join(", ");
-                // `[data]` makes the symbol a free, injective constructor;
-                // required for `let pat(..) = ...` and `Construct(..)` use
-                // sites. Don't apply `[data]` to plain opaque calls — they
-                // wouldn't satisfy the additional constraints.
-                let tag = if info.is_constructor { " [data]" } else { "" };
-                decls.push(format!("fun {name}({args}): bitstring{tag}."));
+                // Every auto-declared function is marked `[data]`. Without
+                // it, ProVerif treats `f(a,b)` and `f(c,d)` as
+                // indistinguishable opaque outputs, which collapses
+                // arguments in symbolic reasoning. `[data]` makes the
+                // symbol injective so the analyzer can still tell the
+                // inputs apart — exactly what we want for primitives we
+                // know nothing else about. (`[data]` is also required for
+                // any name used in `let pat(..) = ...` / `Construct(..)`
+                // position.)
+                decls.push(format!("fun {name}({args}): bitstring [data]."));
             }
         }
         if decls.is_empty() {
@@ -1233,6 +1261,40 @@ impl ProVerifBackend {
             _ => {}
         }
     }
+}
+
+/// Parse `PRIMITIVES_PVL` once and return the set of `fun NAME(...)`,
+/// `const NAME: ...`, and `reduc forall ...; accessor_NAME(...)` declarations.
+/// We use a simple regex-free scan: any token at the start of a line
+/// after `fun` / `const` / `letfun` (before its `(` or `:` separator).
+fn primitives_pvl_names() -> Vec<String> {
+    static NAMES: OnceLock<Vec<String>> = OnceLock::new();
+    NAMES
+        .get_or_init(|| {
+            let mut out: Vec<String> = Vec::new();
+            for line in PRIMITIVES_PVL.lines() {
+                let line = line.trim_start();
+                let head = if let Some(rest) = line.strip_prefix("fun ") {
+                    rest
+                } else if let Some(rest) = line.strip_prefix("const ") {
+                    rest
+                } else if let Some(rest) = line.strip_prefix("letfun ") {
+                    rest
+                } else {
+                    continue;
+                };
+                // Identifier ends at first `(`, `:`, ` `, or end-of-line.
+                let end = head
+                    .find(|c: char| c == '(' || c == ':' || c == ' ')
+                    .unwrap_or(head.len());
+                let name = head[..end].trim();
+                if !name.is_empty() {
+                    out.push(name.to_string());
+                }
+            }
+            out
+        })
+        .clone()
 }
 
 /// Visitor that records every `GlobalId` referenced in expression /
