@@ -85,11 +85,9 @@ val impl_u8__rotate_right': x: u8 -> n: u32 -> u8
 unfold
 let impl_u8__rotate_right = impl_u8__rotate_right'
 
-assume
-val impl_u8__rotate_left': x: u8 -> n: u32 -> u8
-
-unfold
-let impl_u8__rotate_left = impl_u8__rotate_left'
+let impl_u8__rotate_left (x: u8) (n: u32) : u8 =
+  let m:u32 = n %! mk_u32 8 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u8 x m
 
 assume
 val impl_u8__leading_zeros': x: u8 -> u32
@@ -219,11 +217,9 @@ val impl_u16__rotate_right': x: u16 -> n: u32 -> u16
 unfold
 let impl_u16__rotate_right = impl_u16__rotate_right'
 
-assume
-val impl_u16__rotate_left': x: u16 -> n: u32 -> u16
-
-unfold
-let impl_u16__rotate_left = impl_u16__rotate_left'
+let impl_u16__rotate_left (x: u16) (n: u32) : u16 =
+  let m:u32 = n %! mk_u32 16 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u16 x m
 
 assume
 val impl_u16__leading_zeros': x: u16 -> u32
@@ -354,11 +350,9 @@ val impl_u32__rotate_right': x: u32 -> n: u32 -> u32
 unfold
 let impl_u32__rotate_right = impl_u32__rotate_right'
 
-assume
-val impl_u32__rotate_left': x: u32 -> n: u32 -> u32
-
-unfold
-let impl_u32__rotate_left = impl_u32__rotate_left'
+let impl_u32__rotate_left (x n: u32) : u32 =
+  let m:u32 = n %! mk_u32 32 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u32 x m
 
 assume
 val impl_u32__leading_zeros': x: u32 -> u32
@@ -489,19 +483,9 @@ val impl_u64__rotate_right': x: u64 -> n: u32 -> u64
 unfold
 let impl_u64__rotate_right = impl_u64__rotate_right'
 
-(** [u64::rotate_left] — concrete F* model delegating to
-    [Rust_primitives.Integers.rotate_left_u].
-    Rust spec: `(self << (n % 64)) | (self >> ((-n) % 64))`.
-    For [n % 64 == 0] the rotation is the identity; otherwise it's
-    the shift-XOR composition (XOR == OR here because the shifted-left
-    and shifted-right portions occupy disjoint bit positions). *)
-unfold
 let impl_u64__rotate_left (x: u64) (n: u32) : u64 =
-  let m = Rust_primitives.Integers.mk_u32
-            (Rust_primitives.Integers.v n % 64) in
-  if Rust_primitives.Integers.v m = 0
-  then x
-  else Rust_primitives.Integers.rotate_left_u #u64_inttype x m
+  let m:u32 = n %! mk_u32 64 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u64 x m
 
 assume
 val impl_u64__leading_zeros': x: u64 -> u32
@@ -635,11 +619,9 @@ val impl_u128__rotate_right': x: u128 -> n: u32 -> u128
 unfold
 let impl_u128__rotate_right = impl_u128__rotate_right'
 
-assume
-val impl_u128__rotate_left': x: u128 -> n: u32 -> u128
-
-unfold
-let impl_u128__rotate_left = impl_u128__rotate_left'
+let impl_u128__rotate_left (x: u128) (n: u32) : u128 =
+  let m:u32 = n %! mk_u32 128 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u128 x m
 
 assume
 val impl_u128__leading_zeros': x: u128 -> u32
@@ -776,11 +758,9 @@ val impl_usize__rotate_right': x: usize -> n: u32 -> usize
 unfold
 let impl_usize__rotate_right = impl_usize__rotate_right'
 
-assume
-val impl_usize__rotate_left': x: usize -> n: u32 -> usize
-
-unfold
-let impl_usize__rotate_left = impl_usize__rotate_left'
+let impl_usize__rotate_left (x: usize) (n: u32) : usize =
+  let m:u32 = n %! Rust_primitives.Arithmetic.v_SIZE_BITS in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_usize x m
 
 assume
 val impl_usize__leading_zeros': x: usize -> u32
