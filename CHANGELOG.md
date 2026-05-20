@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+
+Changes to the engine:
+
+Changes to the frontend:
+
+Changes to cargo-hax:
+
+Changes to hax-lib:
+
+Changes to the Lean backend:
+
+Miscellaneous:
+
+## 0.3.7
+
+Changes to the Rust Engine:
  - Rename `GenericConstraint::Type` to `TypeClass` and `::Projection` to `Equality` (#1996)
  - Remove `BinOp` resugaring (#1950)
  - Apply resugarings to linked items (pre/post conditions) (#1961)
