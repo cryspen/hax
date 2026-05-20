@@ -39,6 +39,7 @@ Changes to hax-lib:
  - Lean lib: Refactor `RustM` as `ExceptT Error Option` (#1994)
  - Lean lib: Add Repr instance for tuples (#2000)
  - Lean lib: Make the proof of `RustM.toBVRustM_bind` compatible with Lean 4.29.0 (#2005)
+ - F* lib: Add bit-extensionality (`lemma_int_t_eq_via_bits`), concrete `Core_models.Num.impl_u64__rotate_left` delegating to a new `Rust_primitives.Integers.rotate_left_u`, `logand_commutative`, fixed `bit_or` SMTPat semantics, `bit_xor`/`get_bit_xor`/`get_bit_lognot` SMTPats, and `Rust_primitives.Hax.Monomorphized_update_at_Lemmas.lemma_index_update_at_range` for libcrux SHA-3 equivalence proofs
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)

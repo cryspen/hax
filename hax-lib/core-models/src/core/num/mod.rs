@@ -88,9 +88,13 @@ macro_rules! uint_impl {
             fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_right_ $Name>](x, n) }
             }
-            #[hax_lib::opaque]
             fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
-                paste! { [<rotate_left_ $Name>](x, n) }
+                let m = (n % $Bits);
+                if m == 0 {
+                    x
+                } else {
+                    paste! { [<rotate_left_ $Name>](x, m) }
+                }
             }
             #[hax_lib::opaque]
             fn leading_zeros(x: $Self) -> core::primitive::u32 {
