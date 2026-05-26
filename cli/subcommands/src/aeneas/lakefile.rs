@@ -19,7 +19,9 @@ name = "{pkg_name}"
 
 [[require]]
 name = "aeneas"
-git = {{ url = "https://github.com/AeneasVerif/aeneas", subDir = "backends/lean" }}
+git = "https://github.com/AeneasVerif/aeneas"
+rev = "main"
+subDir = "backends/lean"
 "#
     )
 }
@@ -55,9 +57,10 @@ fn write_if_absent(path: &Path, contents: &str, message_format: MessageFormat) {
     }
 }
 
-/// Generates a `lakefile.toml` and `lean-toolchain` in `lean_dir`.
-/// Existing files are not overwritten.
+/// Generates a `lakefile.toml`, `lean-toolchain`, and root `<PkgName>.lean`
+/// in `lean_dir`. Existing files are not overwritten.
 pub fn generate(lean_dir: &Path, crate_name: &str, message_format: MessageFormat) {
+    let pkg_name = super::to_camel_case(crate_name);
     write_if_absent(
         &lean_dir.join("lakefile.toml"),
         &lakefile_contents(crate_name),
@@ -66,6 +69,11 @@ pub fn generate(lean_dir: &Path, crate_name: &str, message_format: MessageFormat
     write_if_absent(
         &lean_dir.join("lean-toolchain"),
         "leanprover/lean4:v4.28.0-rc1",
+        message_format,
+    );
+    write_if_absent(
+        &lean_dir.join(format!("{pkg_name}.lean")),
+        &root_lean_contents(crate_name),
         message_format,
     );
 }
