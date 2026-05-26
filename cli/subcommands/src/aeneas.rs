@@ -199,9 +199,16 @@ pub fn run(
     check_version(&aeneas, EXPECTED_AENEAS_VERSION, message_format);
     check_version(&charon, EXPECTED_CHARON_VERSION, message_format);
 
-    let metadata = cargo_metadata::MetadataCommand::new()
-        .exec()
-        .expect("Could not read cargo metadata");
+    let metadata = match cargo_metadata::MetadataCommand::new().exec() {
+        Ok(m) => m,
+        Err(e) => {
+            HaxMessage::GenericError {
+                message: format!("could not read cargo metadata: {e}"),
+            }
+            .report(message_format, None);
+            return true;
+        }
+    };
     let crate_dir = metadata
         .root_package()
         .map(|p| {
