@@ -70,6 +70,22 @@ fn check_version(binary: &Path, expected: &str, message_format: MessageFormat) {
     }
 }
 
+/// Shell-split a user-supplied extra-args string, reporting a fatal error on
+/// unmatched quotes. Returns an empty vector if `s` is `None`.
+fn shell_split(s: Option<&str>, who: &str, message_format: MessageFormat) -> Vec<String> {
+    let Some(s) = s else { return Vec::new() };
+    match shlex::split(s) {
+        Some(v) => v,
+        None => {
+            HaxMessage::GenericError {
+                message: format!("could not parse --{who}-args (unmatched quote?): {s}"),
+            }
+            .report(message_format, None);
+            std::process::exit(1);
+        }
+    }
+}
+
 /// Format a `Command` as a shell-style invocation for display.
 fn format_command(cmd: &process::Command) -> String {
     let mut s = cmd.get_program().to_string_lossy().to_string();
@@ -242,9 +258,11 @@ pub fn run(
         "--dest-file",
         llbc_file.to_str().expect("non-UTF8 path"),
     ]);
-    if let Some(extra) = &options.charon_args {
-        charon_cmd.args(extra.split_whitespace());
-    }
+    charon_cmd.args(shell_split(
+        options.charon_args.as_deref(),
+        "charon",
+        message_format,
+    ));
     if verbose > 0 {
         HaxMessage::SubprocessOutput {
             prefix: "cmd".into(),
@@ -308,9 +326,11 @@ pub fn run(
         "-dest",
         out_dir.to_str().expect("non-UTF8 path"),
     ]);
-    if let Some(extra) = &options.aeneas_args {
-        aeneas_cmd.args(extra.split_whitespace());
-    }
+    aeneas_cmd.args(shell_split(
+        options.aeneas_args.as_deref(),
+        "aeneas",
+        message_format,
+    ));
     if verbose > 0 {
         HaxMessage::SubprocessOutput {
             prefix: "cmd".into(),

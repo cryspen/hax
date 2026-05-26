@@ -16,13 +16,19 @@ defaultTargets = ["{pkg_name}"]
 
 [[lean_lib]]
 name = "{pkg_name}"
-roots = ["{pkg_name}"]
 
 [[require]]
 name = "aeneas"
 git = {{ url = "https://github.com/AeneasVerif/aeneas", subDir = "backends/lean" }}
 "#
     )
+}
+
+/// Generate the contents of the root `<PkgName>.lean` file: a single
+/// `import` line that pulls in the extracted module.
+fn root_lean_contents(crate_name: &str) -> String {
+    let pkg_name = super::to_camel_case(crate_name);
+    format!("import {pkg_name}.Extraction.Funs\n")
 }
 
 /// Write `contents` to `path` if the file doesn't already exist.
