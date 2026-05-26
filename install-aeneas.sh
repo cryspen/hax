@@ -95,12 +95,11 @@ if [ -n "$AENEAS_FOUND" ] && [ -n "$CHARON_FOUND" ]; then
     fi
 
     if [ "$AENEAS_OK" = false ]; then
-        printf '\e[31mError: aeneas found at %s but version does not match pin (expected %s)\e[0m\n' "$AENEAS_FOUND" "$AENEAS_EXPECTED_SHA" >&2
+        warn "aeneas found at $AENEAS_FOUND but version does not match pin (expected $AENEAS_EXPECTED_SHA). Will overwrite with pinned version."
     fi
     if [ "$CHARON_OK" = false ]; then
-        printf '\e[31mError: charon found at %s but version does not match pin (expected %s)\e[0m\n' "$CHARON_FOUND" "$CHARON_EXPECTED_VERSION" >&2
+        warn "charon found at $CHARON_FOUND but version does not match pin (expected $CHARON_EXPECTED_VERSION). Will overwrite with pinned version."
     fi
-    die "Remove the existing binaries or update them to the pinned versions."
 fi
 
 # ---------- download & install -----------------------------------------------

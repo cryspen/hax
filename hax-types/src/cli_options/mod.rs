@@ -176,13 +176,14 @@ pub struct AeneasLeanOptions {
     #[arg(long)]
     pub lakefile: bool,
 
-    /// Extra arguments forwarded to charon, split on whitespace.
-    /// Example: --charon-args="--include foo::bar --opaque crate"
+    /// Extra arguments forwarded to charon. Parsed with shell-style quoting,
+    /// so values containing spaces can be single- or double-quoted.
+    /// Example: --charon-args="--opaque '{impl Serialize for _}'"
     #[arg(long)]
     pub charon_args: Option<String>,
 
-    /// Extra arguments forwarded to aeneas, split on whitespace.
-    /// Example: --aeneas-args="-split-files -no-state"
+    /// Extra arguments forwarded to aeneas. Parsed with shell-style quoting.
+    /// Example: --aeneas-args="-split-files"
     #[arg(long)]
     pub aeneas_args: Option<String>,
 }
