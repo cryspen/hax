@@ -6,6 +6,7 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 opam_jobs=4
 CLEANUP_WORKSPACE=on
+SETUP_AENEAS=on
 
 # Parse command line arguments.
 all_args=("$@")
@@ -18,15 +19,24 @@ while [ $# -gt 0 ]; do
     --no-cleanup)
         CLEANUP_WORKSPACE=off
         ;;
+    --no-aeneas)
+        SETUP_AENEAS=off
+        ;;
     --help)
         echo "hax setup script"
         echo ""
         echo "Usage: $0 [OPTIONS]"
         echo ""
         echo "Options:"
-        echo ' -j <JOBS>     The number of opam jobs to run in parallel'
-        echo ' --no-cleanup  Disables the default behavior that runs `cargo clean` and `opam clean`'
+        echo ' -j <JOBS>        The number of opam jobs to run in parallel'
+        echo ' --no-cleanup     Disables the default behavior that runs `cargo clean` and `opam clean`'
+        echo ' --no-aeneas      Skip installing aeneas and charon binaries'
         exit
+        ;;
+    *)
+        printf '\e[31mError: unrecognized option \e[1m%s\e[0m\n' "$1"
+        printf '\e[37mRun \e[1m%s --help\e[0m\e[37m for usage.\e[0m\n' "$0"
+        exit 1
         ;;
     esac
     shift
@@ -112,10 +122,22 @@ install_ocaml_engine() {
 
 warn_if_dirty
 
+REQUIRED_OCAML_VERSION="5.1.1"
+ensure_ocaml_version() {
+    CURRENT_VERSION=$(opam exec -- ocamlc --version 2>/dev/null || echo "none")
+    if [ "$CURRENT_VERSION" != "$REQUIRED_OCAML_VERSION" ]; then
+        printf '\e[31mError: OCaml version \e[1m%s\e[0m\e[31m is required, but the current switch has \e[1m%s\e[0m\e[31m.\e[0m\n' \
+            "$REQUIRED_OCAML_VERSION" "$CURRENT_VERSION"
+        printf '\e[37mHint: run \e[1mopam switch create hax %s && eval $(opam env)\e[0m\e[37m\e[0m\n' "$REQUIRED_OCAML_VERSION"
+        exit 1
+    fi
+}
+
 for binary in opam node rustup jq; do
     ensure_binary_available $binary
 done
 ensure_node_is_recent_enough
+ensure_ocaml_version
 
 # Make sure the correct rust toolchain is installed
 rustup show active-toolchain || rustup toolchain install 
@@ -126,3 +148,7 @@ fi
 
 install_rust_binaries
 install_ocaml_engine
+
+if [ "$SETUP_AENEAS" = "on" ]; then
+    "$SCRIPTPATH/install-aeneas.sh"
+fi

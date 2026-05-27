@@ -52,8 +52,38 @@ fn git_dirty_env_var() {
     println!("cargo:rustc-env=HAX_GIT_IS_DIRTY={}", dirty);
 }
 
+/// Read a pin file and extract values for compile-time embedding.
+fn aeneas_pin_env_vars() {
+    let workspace_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+
+    // aeneas-pin: extract the commit SHA from the release tag
+    let aeneas_pin_path = workspace_root.join("aeneas-pin");
+    println!("cargo:rerun-if-changed={}", aeneas_pin_path.display());
+    let aeneas_pin = std::fs::read_to_string(&aeneas_pin_path).unwrap_or_default();
+    let aeneas_tag = aeneas_pin
+        .lines()
+        .find(|l| !l.starts_with('#') && !l.is_empty())
+        .unwrap_or("");
+    // Tag format: build-YYYY.MM.DD.HHMMSS-<full-sha>  →  extract the SHA prefix
+    let aeneas_sha = aeneas_tag.rsplit('-').next().unwrap_or("");
+    let aeneas_sha_prefix = &aeneas_sha[..aeneas_sha.len().min(8)];
+    println!("cargo:rustc-env=HAX_EXPECTED_AENEAS_VERSION={aeneas_sha_prefix}");
+
+    // charon-pin: read the "version X.Y.Z" line
+    let charon_pin_path = workspace_root.join("charon-pin");
+    println!("cargo:rerun-if-changed={}", charon_pin_path.display());
+    let charon_pin = std::fs::read_to_string(&charon_pin_path).unwrap_or_default();
+    let charon_version = charon_pin
+        .lines()
+        .find(|l| l.starts_with("version "))
+        .and_then(|l| l.strip_prefix("version "))
+        .unwrap_or("");
+    println!("cargo:rustc-env=HAX_EXPECTED_CHARON_VERSION={charon_version}");
+}
+
 fn main() {
     rustc_version_env_var();
     json_schema_static_asset();
     git_dirty_env_var();
+    aeneas_pin_env_vars();
 }
