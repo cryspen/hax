@@ -1,3 +1,13 @@
-# Release tag from https://github.com/AeneasVerif/aeneas/releases
-# Format: build-YYYY.MM.DD.HHMMSS-<commit-sha>
-build-2026.04.10.155707-864eddb4876d0104802e0fd29bd453f67f48c4be
+# Pinned aeneas release.
+#
+# Binaries are downloaded from the release tag below, from the `repo` URL. Only
+# these source repositories are permitted (install-aeneas.sh rejects any other):
+#   - https://github.com/AeneasVerif/aeneas  (upstream)
+#   - https://github.com/cryspen/aeneas       (fork)
+#
+# Release tag (the release must carry assets named aeneas-<platform>.tar.gz).
+tag nightly-2026.05.27
+# Short commit SHA that `aeneas -version` must report.
+commit 004e11fe
+# Source repository URL.
+repo https://github.com/cryspen/aeneas
