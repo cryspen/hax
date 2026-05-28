@@ -16,17 +16,10 @@ die() { printf '\e[31mError: %s\e[0m\n' "$*" >&2; exit 1; }
 warn() { printf '\e[33mWarning: %s\e[0m\n' "$*" >&2; }
 info() { printf '\e[34m%s\e[0m\n' "$*"; }
 
-# Read a pin file: strip comments and blank lines, return the first
-# non-empty line.
-read_pin() {
-    local pin_file="$1"
-    [ -f "$pin_file" ] || die "Pin file not found: $pin_file"
-    grep -v '^#' "$pin_file" | grep -v '^$' | head -1
-}
-
 # Read a keyed value from a pin file.  Lines have the form "key value".
 read_pin_key() {
     local pin_file="$1" key="$2"
+    [ -f "$pin_file" ] || die "Pin file not found: $pin_file"
     grep -v '^#' "$pin_file" | grep "^${key} " | head -1 | cut -d' ' -f2-
 }
 
@@ -51,23 +44,35 @@ PLATFORM="${os_tag}-${arch_tag}"
 
 # ---------- read pins --------------------------------------------------------
 
-AENEAS_TAG="$(read_pin "$SCRIPTPATH/aeneas-pin")"
-CHARON_TAG="$(read_pin "$SCRIPTPATH/charon-pin")"
+# Repository URLs aeneas binaries may be downloaded from. Any other `repo` value
+# in aeneas-pin is rejected, so binaries can only come from a trusted source.
+# (charon is always sourced from AeneasVerif/charon, unaffected by this.)
+AENEAS_ALLOWED_REPOS="https://github.com/AeneasVerif/aeneas https://github.com/cryspen/aeneas"
 
-# Expected versions: aeneas reports a commit SHA prefix, charon reports semver.
-# The aeneas SHA is extracted from the release tag; the charon version is
-# stored explicitly in charon-pin as "version X.Y.Z".
-AENEAS_EXPECTED_SHA=$(echo "$AENEAS_TAG" | sed 's/.*-//' | cut -c1-8)
-CHARON_EXPECTED_VERSION=$(read_pin_key "$SCRIPTPATH/charon-pin" "version")
+# Pin files use "key value" lines: aeneas-pin has tag/commit/repo, charon-pin
+# has tag/version.
+AENEAS_TAG="$(read_pin_key "$SCRIPTPATH/aeneas-pin" "tag")"
+AENEAS_COMMIT="$(read_pin_key "$SCRIPTPATH/aeneas-pin" "commit")"
+AENEAS_REPO="$(read_pin_key "$SCRIPTPATH/aeneas-pin" "repo")"
+[ -n "$AENEAS_TAG" ] || die "Missing 'tag' in aeneas-pin"
+[ -n "$AENEAS_REPO" ] || die "Missing 'repo' in aeneas-pin"
+case " $AENEAS_ALLOWED_REPOS " in
+    *" $AENEAS_REPO "*) ;;
+    *) die "Disallowed aeneas repo in aeneas-pin: '$AENEAS_REPO' (allowed: $AENEAS_ALLOWED_REPOS)" ;;
+esac
+
+CHARON_TAG="$(read_pin_key "$SCRIPTPATH/charon-pin" "tag")"
+CHARON_EXPECTED_VERSION="$(read_pin_key "$SCRIPTPATH/charon-pin" "version")"
+[ -n "$CHARON_TAG" ] || die "Missing 'tag' in charon-pin"
 
 # ---------- check if already installed at the right version ------------------
 
 check_aeneas_version() {
     local bin="$1"
-    # `aeneas -version` outputs "aeneas <sha-prefix>"
+    # `aeneas -version` outputs "aeneas <commit-sha>"; compare the prefix.
     local actual
-    actual=$("$bin" -version 2>/dev/null | awk '{print $2}' | cut -c1-8) || return 1
-    [ "$actual" = "$AENEAS_EXPECTED_SHA" ]
+    actual=$("$bin" -version 2>/dev/null | awk '{print $2}') || return 1
+    [ -z "$AENEAS_COMMIT" ] || [ "${actual:0:${#AENEAS_COMMIT}}" = "$AENEAS_COMMIT" ]
 }
 
 check_charon_version() {
@@ -88,14 +93,14 @@ if [ -n "$AENEAS_FOUND" ] && [ -n "$CHARON_FOUND" ]; then
     check_charon_version "$CHARON_FOUND" && CHARON_OK=true
 
     if [ "$AENEAS_OK" = true ] && [ "$CHARON_OK" = true ]; then
-        info "aeneas found at $AENEAS_FOUND (version matches pin)"
+        info "aeneas found at $AENEAS_FOUND (commit matches pin)"
         info "charon found at $CHARON_FOUND (version matches pin)"
         info "Both binaries are already installed at the correct version, skipping download."
         exit 0
     fi
 
     if [ "$AENEAS_OK" = false ]; then
-        warn "aeneas found at $AENEAS_FOUND but version does not match pin (expected $AENEAS_EXPECTED_SHA). Will overwrite with pinned version."
+        warn "aeneas found at $AENEAS_FOUND but commit does not match pin (expected $AENEAS_COMMIT). Will overwrite with pinned version."
     fi
     if [ "$CHARON_OK" = false ]; then
         warn "charon found at $CHARON_FOUND but version does not match pin (expected $CHARON_EXPECTED_VERSION). Will overwrite with pinned version."
@@ -105,14 +110,14 @@ fi
 # ---------- download & install -----------------------------------------------
 
 info "Pinned versions:"
-info "  aeneas: $AENEAS_TAG"
-info "  charon: $CHARON_TAG"
+info "  aeneas: $AENEAS_REPO@$AENEAS_TAG ($AENEAS_COMMIT)"
+info "  charon: https://github.com/AeneasVerif/charon@$CHARON_TAG"
 info "  platform: $PLATFORM"
 
 INSTALL_DIR="${CARGO_HOME:-$HOME/.cargo}/bin"
 mkdir -p "$INSTALL_DIR"
 
-AENEAS_URL="https://github.com/AeneasVerif/aeneas/releases/download/${AENEAS_TAG}/aeneas-${PLATFORM}.tar.gz"
+AENEAS_URL="${AENEAS_REPO}/releases/download/${AENEAS_TAG}/aeneas-${PLATFORM}.tar.gz"
 CHARON_URL="https://github.com/AeneasVerif/charon/releases/download/${CHARON_TAG}/charon-${PLATFORM}.tar.gz"
 
 TMPDIR="$(mktemp -d)"
@@ -147,7 +152,11 @@ install_bin "$TMPDIR/charon/charon-driver"
 
 info ""
 if "$INSTALL_DIR/aeneas" -version >/dev/null 2>&1; then
-    info "aeneas: OK"
+    if check_aeneas_version "$INSTALL_DIR/aeneas"; then
+        info "aeneas: OK"
+    else
+        warn "aeneas installed but reports '$("$INSTALL_DIR/aeneas" -version 2>/dev/null | awk '{print $2}')', expected commit $AENEAS_COMMIT"
+    fi
 else
     die "aeneas smoke test failed"
 fi
