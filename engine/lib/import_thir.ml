@@ -893,9 +893,9 @@ end) : EXPR = struct
       | Literal lit ->
           let lit, neg = constant_lit_to_lit lit span in
           Literal { lit = { node = lit; span }; neg }
-      | Adt { fields; info } ->
+      | Adt { fields; info; repr } ->
           let fields = List.map ~f:constant_field_expr fields in
-          Adt { fields; info; base = None'; user_ty = None }
+          Adt { fields; info; repr; base = None'; user_ty = None }
       | Array { fields } ->
           Array { fields = List.map ~f:constant_expr_to_expr fields }
       | Tuple { fields } ->
