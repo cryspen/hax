@@ -1637,7 +1637,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              params = c_fn_params item.span params;
              safety = c_header_safety safety;
            }
-  | (Enum (_, generics, _, _) | Struct (_, generics, _)) when erased ->
+  | (Enum (_, generics, _, _) | Struct (_, generics, _, _)) when erased ->
       let generics = c_generics generics in
       let is_struct = match item.kind with Struct _ -> true | _ -> false in
       let def_id = assert_item_def_id () in
@@ -1701,7 +1701,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
         mk_one (Type { name; generics; variants; is_struct }) :: discs
       in
       if is_primitive then cast_fun :: result else result
-  | Struct (_, generics, v) ->
+  | Struct (_, generics, v, _repr) ->
       let generics = c_generics generics in
       let def_id = assert_item_def_id () in
       let is_struct = true in
