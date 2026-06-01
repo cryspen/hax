@@ -87,7 +87,14 @@ This extracts the Rust code from `sha3/src/lib.rs` into
 
 ### Loop Equivalence
 
-TBD
+The loop equivalence example contains two artificially crafted functions that implement a loop
+operating on an array in two different styles. We prove them to be equivalent.
+
+The proofs can be run as follows:
+```sh
+cd loop_equivalence/
+make
+```
 
 ## Lean (legacy backend)
 

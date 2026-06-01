@@ -65,9 +65,8 @@ private def extractStepBody (jFvar : Expr) (loopBodyInner : Expr) :
     MetaM (Option Expr) := do
   let inner ← whnfR loopBodyInner
   unless inner.isAppOfArity ``Bind.bind 6 do return none
-  -- cont = Function.uncurry _ _ _ (fun o iter1 => matchExpr)
   let cont ← whnfR (inner.getArg! 5)
-  unless cont.isAppOfArity ``Function.uncurry 4 do return none
+  unless cont.isAppOfArity ``Aeneas.Std.uncurry 4 do return none
   let uncurryFn ← whnfR (cont.getArg! 3)
   unless uncurryFn.isLambda do return none
   lambdaTelescope uncurryFn fun ys matchExpr => do

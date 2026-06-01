@@ -1,0 +1,10 @@
+name = "LoopEquivalence"
+version = "0.1.0"
+defaultTargets = ["LoopEquivalence"]
+
+[[lean_lib]]
+name = "LoopEquivalence"
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/aeneas-lean"
