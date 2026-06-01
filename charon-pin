@@ -2,6 +2,8 @@
 # Format: build-YYYY.MM.DD.HHMMSS-<commit-sha>
 # IMPORTANT: must match the charon version expected by the pinned aeneas
 # (see charon-pin in the aeneas repo at the pinned commit)
-tag build-2026.03.20.171450-419f53b6eed3fe487a8427fd290a734c49634366
+tag nightly-2026.06.02
 # Expected output of `charon version` for this release
-version 0.1.174
+version 0.1.210
+
+
