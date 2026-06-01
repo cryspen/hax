@@ -2,3 +2,5 @@
 /*/proofs/lean/extraction
 /*/proofs/proverif/extraction
 /*/proofs/lean/.lake
+/*/proofs/aeneas-lean/llbc/*.llbc
+/*/proofs/aeneas-lean/*/Extraction/Funs.lean
