@@ -56,7 +56,7 @@ theorem barrett_spec (value: i32) :
     lean_barrett.FIELD_MODULUS lean_barrett.BARRETT_R
     lean_barrett.BARRETT_MULTIPLIER lean_barrett.BARRETT_SHIFT at *
   -- Invoke bit blasting:
-  hax_bv_decide (timeout := 90)
+  hax_bv_decide (timeout := 120)
 "
 )]
 pub fn barrett_reduce(value: FieldElement) -> FieldElement {
