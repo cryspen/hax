@@ -1,0 +1,11 @@
+name = "Hax"
+version = "0.1.0"
+defaultTargets = ["Hax"]
+
+[[lean_lib]]
+name = "Hax"
+
+[[require]]
+name = "rust-core-models"
+git = { url = "https://github.com/cryspen/rust-core-models", subDir = "lean" }
+rev = "c22543b20ae4cca02ae9839f4142208db6a2bfee"
