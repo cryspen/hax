@@ -30,7 +30,7 @@ def forLoopWithInvariant {β : Type}
   loop (fun x : core.ops.range.Range Usize × β => do
     let (o, r) ←
       core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-        core.iter.range.StepUsize x.1
+        core.Usize.Insts.CoreIterRangeStep x.1
     match o with
     | core.option.Option.None => Result.ok (ControlFlow.done x.2)
     | core.option.Option.Some i => do
