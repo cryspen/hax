@@ -6,8 +6,8 @@
 #   - https://github.com/cryspen/aeneas       (fork)
 #
 # Release tag (the release must carry assets named aeneas-<platform>.tar.gz).
-tag nightly-2026.05.27
+tag nightly-2026.06.03
 # Short commit SHA that `aeneas -version` must report.
-commit 004e11fe
+commit 8d2077c
 # Source repository URL.
 repo https://github.com/cryspen/aeneas

@@ -39,8 +39,11 @@ jobs:
       run: |
         nix build .#rust-by-example-hax-extraction -L
 
+    - name: Install aeneas and charon
+      run: ./install-aeneas.sh
+
     - name: Test the examples
       run: |
         cd examples
-        nix develop ..#ci-examples --command make clean
-        nix develop ..#ci-examples --command make
+        PATH="$HOME/.cargo/bin:$PATH" nix develop ..#ci-examples --command make clean
+        PATH="$HOME/.cargo/bin:$PATH" nix develop ..#ci-examples --command make
