@@ -2065,6 +2065,19 @@ class Chain1 (Self : Type)
 end lean_tests.traits.associated_types
 
 
+namespace lean_tests.traits.trait_constant_in_default_body
+
+class Foo.AssociatedTypes (Self : Type) where
+
+class Foo (Self : Type)
+  [associatedTypes : outParam (Foo.AssociatedTypes (Self : Type))]
+  where
+  F (Self) : Self
+  f (Self) (_ : rust_primitives.hax.Tuple0) :RustM Self := do (pure (F))
+
+end lean_tests.traits.trait_constant_in_default_body
+
+
 namespace lean_tests.associated_types.basic
 
 @[spec]
