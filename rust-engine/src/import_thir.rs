@@ -633,7 +633,7 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
                 }
                 _ => ast::ExprKind::Literal(constant_literal.spanned_import(context, span)),
             },
-            frontend::ConstantExprKind::Adt { info, fields } => {
+            frontend::ConstantExprKind::Adt { info, fields, .. } => {
                 let (is_struct, is_record) = match info.kind {
                     frontend::VariantKind::Struct { named } => (true, named),
                     frontend::VariantKind::Enum { named, .. } => (false, named),
