@@ -40,7 +40,56 @@ Note the generated modules live in the
 For those examples, we generated Coq modules without typechecking them.
 The `<EXAMPLE>/proofs/coq/extraction` folders contain the generated Coq modules.
 
-## Lean
+## Aeneas-Lean
+
+For the Aeneas-Lean backend, we have three examples: `lean_barrett`, `sha3`, and `loop_equivalence`.
+
+### Barrett reduction
+
+Barrett reduction allows to compute remainders without using divisions.
+We prove that the code does not panic and that it correctly computes the remainder,
+provided that the input is small enough.
+
+The proof can be run as follows:
+```sh
+cd lean_barrett/
+make aeneas-lean
+```
+
+This extracts the Rust code from `lean_barrett/src/lib.rs` into
+`examples/lean_barrett/proofs/aeneas-lean/LeanBarrett/Extraction/Funs.lean`. The Lean proof can be found in
+`examples/lean_barrett/proofs/aeneas-lean/LeanBarrett/Verification.lean`.
+
+### SHA-3
+
+The SHA-3 example contains two small parts of two implementations of SHA-3.
+
+The two parts that we consider are: 
+- **Part 1** the `iota` function, and
+- **Part 2** a single round of `keccak_f`.
+
+The two implementations that we prove equivalent are:
+- a realistic SHA-3 implementation taken from the `libcrux` library
+- a reference implementation close to the official FIPS spec of the algorithm
+
+Note that this is only a very small part of SHA-3. Some of the functions that are part of
+a round of `keccak_f`, but that we ignore in this example are simply `unimplemented!()`.
+
+The proofs can be run as follows:
+```sh
+cd sha3/
+make
+```
+
+This extracts the Rust code from `sha3/src/lib.rs` into
+`examples/sha3/proofs/aeneas-lean/Sha3/Extraction/Funs.lean`. The Lean proof can be found in
+`examples/sha3/proofs/aeneas-lean/Sha3/Equivalence.lean`.
+
+### Loop Equivalence
+
+TBD
+
+## Lean (legacy backend)
 
 Three examples are fine-tuned to showcase the Lean backend: `lean_barrett`,
 `lean_chacha20`, and `lean_adc`. For all of them, the lean extraction can be
@@ -67,7 +116,7 @@ The proof can be run by doing (requires `lake`):
 
 ```sh
 cd lean_barrett/
-make
+make lean
 ```
 
 ### ADC (Addition with Carry)
