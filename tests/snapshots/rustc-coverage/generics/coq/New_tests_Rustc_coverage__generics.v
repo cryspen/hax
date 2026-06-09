@@ -26,7 +26,7 @@ Definition impl__set_strength `{v_T : Type} `{t_Copy (v_T)} `{t_Display (v_T)} (
   let self := self <|t_Fireworkf_strength := new_strength |> in
   self.
 
-Instance t_Drop_330220544 `{v_T : Type} `{t_Copy (v_T)} `{t_Display (v_T)} : t_Drop ((t_Firework ((v_T)))) :=
+Instance t_Drop_249120949 `{v_T : Type} `{t_Copy (v_T)} `{t_Display (v_T)} : t_Drop ((t_Firework ((v_T)))) :=
   {
     implaabbcc_t_Drop_f_drop := fun  (self : t_Firework ((v_T)))=>
       let args := (f_strength self) in

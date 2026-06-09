@@ -29,14 +29,14 @@ Record Foo_record : Type :=
   settable! (Build_Foo_record) <Foo_0>.
 Notation "'Foo_Foo_record'" := Build_Foo_record.
 
-Instance t_Add_992847020 : t_Add ((t_Foo)) ((t_Foo)) :=
+Instance t_Add_198089799 : t_Add ((t_Foo)) ((t_Foo)) :=
   {
     implaabbcc_t_Add_f_Output := t_Foo;
     implaabbcc_t_Add_f_add := fun  (self : t_Foo) (rhs : t_Foo)=>
       Foo (f_add (0 self) (0 rhs));
   }.
 
-Instance t_Mul_645558380 : t_Mul ((t_Foo)) ((t_Foo)) :=
+Instance t_Mul_741020341 : t_Mul ((t_Foo)) ((t_Foo)) :=
   {
     implaabbcc_t_Mul_f_Output := t_Foo;
     implaabbcc_t_Mul_f_mul := fun  (self : t_Foo) (rhs : t_Foo)=>
