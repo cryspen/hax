@@ -16,6 +16,7 @@ namespace new_tests.rustc_coverage__auxiliary__executor
 
 --  Dummy "executor" that just repeatedly polls a future until it's ready.
 --  @fail(extraction): fstar(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), ssprove(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008), coq(HAX0008, HAX0003, HAX0003, HAX0003, HAX0003), lean(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), proverif(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008)
+@[spec]
 def block_on
     (F : Type)
     [trait_constr_block_on_associated_type_i0 :

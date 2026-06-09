@@ -14,11 +14,13 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__branch__let_else
 
+@[spec]
 def say (message : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box String message);
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def let_else (value : (core_models.option.Option String)) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -32,11 +34,12 @@ def let_else (value : (core_models.option.Option String)) :
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
   match value with
-    | (core_models.option.Option.Some  x) =>
+    | (core_models.option.Option.Some  x) => do
       let _ ← (say x);
       (pure rust_primitives.hax.Tuple0.mk)
-    | _ => let _ ← (say "none"); (pure rust_primitives.hax.Tuple0.mk)
+    | _ => do let _ ← (say "none"); (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (let_else (core_models.option.Option.Some "x"));

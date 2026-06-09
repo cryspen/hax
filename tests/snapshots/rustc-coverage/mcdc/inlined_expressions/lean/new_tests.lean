@@ -14,8 +14,10 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__mcdc__inlined_expressions
 
+@[spec]
 def inlined_instance (a : Bool) (b : Bool) : RustM Bool := do (a &&? b)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (inlined_instance true false);

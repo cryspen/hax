@@ -14,6 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__closure_unit_return
 
+@[spec]
 def explicit_unit (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let
@@ -29,6 +30,7 @@ def explicit_unit (_ : rust_primitives.hax.Tuple0) :
       (rust_primitives.hax.Tuple0 -> RustM rust_primitives.hax.Tuple0) closure);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def implicit_unit (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let
@@ -44,6 +46,7 @@ def implicit_unit (_ : rust_primitives.hax.Tuple0) :
       (rust_primitives.hax.Tuple0 -> RustM rust_primitives.hax.Tuple0) closure);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (explicit_unit rust_primitives.hax.Tuple0.mk);

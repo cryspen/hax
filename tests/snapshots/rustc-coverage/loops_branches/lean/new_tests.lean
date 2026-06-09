@@ -17,6 +17,7 @@ namespace new_tests.rustc_coverage__loops_branches
 structure DebugTest where
   -- no fields
 
+@[spec]
 def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -25,9 +26,9 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
         rust_primitives.hax.Tuple0
         core_models.fmt.Error))
     := do
-  if true then
+  if true then do
     let _ ←
-      if false then
+      if false then do
         (rust_primitives.hax.while_loop
           (fun _ => (do (pure true) : RustM Bool))
           (fun _ => (do (pure true) : RustM Bool))
@@ -40,15 +41,16 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
             (do
             (pure rust_primitives.hax.Tuple0.mk) :
             RustM rust_primitives.hax.Tuple0)))
-      else
+      else do
         (pure rust_primitives.hax.Tuple0.mk);
     let ⟨tmp0, out⟩ ←
       (core_models.fmt.Impl_11.write_fmt
         f
-        (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["cool"])));
+        (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+          (RustArray.ofVec #v["cool"]))));
     let f : core_models.fmt.Formatter := tmp0;
     match out with
-      | (core_models.result.Result.Ok  _) =>
+      | (core_models.result.Result.Ok  _) => do
         match
           (← (rust_primitives.hax.folds.fold_range_return
             (0 : i32)
@@ -57,9 +59,9 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
             f
             (fun f i =>
               (do
-              if true then
+              if true then do
                 let _ ←
-                  if false then
+                  if false then do
                     (rust_primitives.hax.while_loop
                       (fun _ => (do (pure true) : RustM Bool))
                       (fun _ => (do (pure true) : RustM Bool))
@@ -72,24 +74,24 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
                         (do
                         (pure rust_primitives.hax.Tuple0.mk) :
                         RustM rust_primitives.hax.Tuple0)))
-                  else
+                  else do
                     (pure rust_primitives.hax.Tuple0.mk);
                 let ⟨tmp0, out⟩ ←
                   (core_models.fmt.Impl_11.write_fmt
                     f
                     (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-                      #v["cool"])));
+                      (RustArray.ofVec #v["cool"]))));
                 let f : core_models.fmt.Formatter := tmp0;
                 match out with
-                  | (core_models.result.Result.Ok  _) =>
+                  | (core_models.result.Result.Ok  _) => do
                     (pure (core_models.ops.control_flow.ControlFlow.Continue f))
-                  | (core_models.result.Result.Err  err) =>
+                  | (core_models.result.Result.Err  err) => do
                     (pure (core_models.ops.control_flow.ControlFlow.Break
                       (core_models.ops.control_flow.ControlFlow.Break
                         (rust_primitives.hax.Tuple2.mk
                           f
                           (core_models.result.Result.Err err)))))
-              else
+              else do
                 (pure (core_models.ops.control_flow.ControlFlow.Continue f)) :
               RustM
               (core_models.ops.control_flow.ControlFlow
@@ -104,19 +106,20 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
                     core_models.fmt.Formatter))
                 core_models.fmt.Formatter)))))
         with
-          | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-          | (core_models.ops.control_flow.ControlFlow.Continue  f) =>
+          | (core_models.ops.control_flow.ControlFlow.Break  ret) => do
+            (pure ret)
+          | (core_models.ops.control_flow.ControlFlow.Continue  f) => do
             let
               hax_temp_output : (core_models.result.Result
                 rust_primitives.hax.Tuple0
                 core_models.fmt.Error) :=
               (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk);
             (pure (rust_primitives.hax.Tuple2.mk f hax_temp_output))
-      | (core_models.result.Result.Err  err) =>
+      | (core_models.result.Result.Err  err) => do
         (pure (rust_primitives.hax.Tuple2.mk
           f
           (core_models.result.Result.Err err)))
-  else
+  else do
     match
       (← (rust_primitives.hax.folds.fold_range_return
         (0 : i32)
@@ -125,9 +128,9 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
         f
         (fun f i =>
           (do
-          if true then
+          if true then do
             let _ ←
-              if false then
+              if false then do
                 (rust_primitives.hax.while_loop
                   (fun _ => (do (pure true) : RustM Bool))
                   (fun _ => (do (pure true) : RustM Bool))
@@ -140,24 +143,24 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
                     (do
                     (pure rust_primitives.hax.Tuple0.mk) :
                     RustM rust_primitives.hax.Tuple0)))
-              else
+              else do
                 (pure rust_primitives.hax.Tuple0.mk);
             let ⟨tmp0, out⟩ ←
               (core_models.fmt.Impl_11.write_fmt
                 f
                 (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-                  #v["cool"])));
+                  (RustArray.ofVec #v["cool"]))));
             let f : core_models.fmt.Formatter := tmp0;
             match out with
-              | (core_models.result.Result.Ok  _) =>
+              | (core_models.result.Result.Ok  _) => do
                 (pure (core_models.ops.control_flow.ControlFlow.Continue f))
-              | (core_models.result.Result.Err  err) =>
+              | (core_models.result.Result.Err  err) => do
                 (pure (core_models.ops.control_flow.ControlFlow.Break
                   (core_models.ops.control_flow.ControlFlow.Break
                     (rust_primitives.hax.Tuple2.mk
                       f
                       (core_models.result.Result.Err err)))))
-          else
+          else do
             (pure (core_models.ops.control_flow.ControlFlow.Continue f)) :
           RustM
           (core_models.ops.control_flow.ControlFlow
@@ -172,8 +175,8 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
                 core_models.fmt.Formatter))
             core_models.fmt.Formatter)))))
     with
-      | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-      | (core_models.ops.control_flow.ControlFlow.Continue  f) =>
+      | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
+      | (core_models.ops.control_flow.ControlFlow.Continue  f) => do
         let
           hax_temp_output : (core_models.result.Result
             rust_primitives.hax.Tuple0
@@ -192,6 +195,7 @@ instance Impl : core_models.fmt.Debug DebugTest where
 structure DisplayTest where
   -- no fields
 
+@[spec]
 def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -200,7 +204,7 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
         rust_primitives.hax.Tuple0
         core_models.fmt.Error))
     := do
-  if false then
+  if false then do
     match
       (← (rust_primitives.hax.folds.fold_range_return
         (0 : i32)
@@ -209,11 +213,11 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
         f
         (fun f i =>
           (do
-          if false then
+          if false then do
             (pure (core_models.ops.control_flow.ControlFlow.Continue f))
-          else
+          else do
             let _ ←
-              if false then
+              if false then do
                 (rust_primitives.hax.while_loop
                   (fun _ => (do (pure true) : RustM Bool))
                   (fun _ => (do (pure true) : RustM Bool))
@@ -226,18 +230,18 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
                     (do
                     (pure rust_primitives.hax.Tuple0.mk) :
                     RustM rust_primitives.hax.Tuple0)))
-              else
+              else do
                 (pure rust_primitives.hax.Tuple0.mk);
             let ⟨tmp0, out⟩ ←
               (core_models.fmt.Impl_11.write_fmt
                 f
                 (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-                  #v["cool"])));
+                  (RustArray.ofVec #v["cool"]))));
             let f : core_models.fmt.Formatter := tmp0;
             match out with
-              | (core_models.result.Result.Ok  _) =>
+              | (core_models.result.Result.Ok  _) => do
                 (pure (core_models.ops.control_flow.ControlFlow.Continue f))
-              | (core_models.result.Result.Err  err) =>
+              | (core_models.result.Result.Err  err) => do
                 (pure (core_models.ops.control_flow.ControlFlow.Break
                   (core_models.ops.control_flow.ControlFlow.Break
                     (rust_primitives.hax.Tuple2.mk
@@ -256,17 +260,17 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
                 core_models.fmt.Formatter))
             core_models.fmt.Formatter)))))
     with
-      | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-      | (core_models.ops.control_flow.ControlFlow.Continue  f) =>
+      | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
+      | (core_models.ops.control_flow.ControlFlow.Continue  f) => do
         let
           hax_temp_output : (core_models.result.Result
             rust_primitives.hax.Tuple0
             core_models.fmt.Error) :=
           (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk);
         (pure (rust_primitives.hax.Tuple2.mk f hax_temp_output))
-  else
+  else do
     let _ ←
-      if false then
+      if false then do
         (rust_primitives.hax.while_loop
           (fun _ => (do (pure true) : RustM Bool))
           (fun _ => (do (pure true) : RustM Bool))
@@ -279,15 +283,16 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
             (do
             (pure rust_primitives.hax.Tuple0.mk) :
             RustM rust_primitives.hax.Tuple0)))
-      else
+      else do
         (pure rust_primitives.hax.Tuple0.mk);
     let ⟨tmp0, out⟩ ←
       (core_models.fmt.Impl_11.write_fmt
         f
-        (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["cool"])));
+        (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+          (RustArray.ofVec #v["cool"]))));
     let f : core_models.fmt.Formatter := tmp0;
     match out with
-      | (core_models.result.Result.Ok  _) =>
+      | (core_models.result.Result.Ok  _) => do
         match
           (← (rust_primitives.hax.folds.fold_range_return
             (0 : i32)
@@ -296,11 +301,11 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
             f
             (fun f i =>
               (do
-              if false then
+              if false then do
                 (pure (core_models.ops.control_flow.ControlFlow.Continue f))
-              else
+              else do
                 let _ ←
-                  if false then
+                  if false then do
                     (rust_primitives.hax.while_loop
                       (fun _ => (do (pure true) : RustM Bool))
                       (fun _ => (do (pure true) : RustM Bool))
@@ -313,18 +318,18 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
                         (do
                         (pure rust_primitives.hax.Tuple0.mk) :
                         RustM rust_primitives.hax.Tuple0)))
-                  else
+                  else do
                     (pure rust_primitives.hax.Tuple0.mk);
                 let ⟨tmp0, out⟩ ←
                   (core_models.fmt.Impl_11.write_fmt
                     f
                     (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-                      #v["cool"])));
+                      (RustArray.ofVec #v["cool"]))));
                 let f : core_models.fmt.Formatter := tmp0;
                 match out with
-                  | (core_models.result.Result.Ok  _) =>
+                  | (core_models.result.Result.Ok  _) => do
                     (pure (core_models.ops.control_flow.ControlFlow.Continue f))
-                  | (core_models.result.Result.Err  err) =>
+                  | (core_models.result.Result.Err  err) => do
                     (pure (core_models.ops.control_flow.ControlFlow.Break
                       (core_models.ops.control_flow.ControlFlow.Break
                         (rust_primitives.hax.Tuple2.mk
@@ -343,15 +348,16 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
                     core_models.fmt.Formatter))
                 core_models.fmt.Formatter)))))
         with
-          | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-          | (core_models.ops.control_flow.ControlFlow.Continue  f) =>
+          | (core_models.ops.control_flow.ControlFlow.Break  ret) => do
+            (pure ret)
+          | (core_models.ops.control_flow.ControlFlow.Continue  f) => do
             let
               hax_temp_output : (core_models.result.Result
                 rust_primitives.hax.Tuple0
                 core_models.fmt.Error) :=
               (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk);
             (pure (rust_primitives.hax.Tuple2.mk f hax_temp_output))
-      | (core_models.result.Result.Err  err) =>
+      | (core_models.result.Result.Err  err) => do
         (pure (rust_primitives.hax.Tuple2.mk
           f
           (core_models.result.Result.Err err)))
@@ -365,32 +371,31 @@ instance Impl_1 : core_models.fmt.Display DisplayTest where
   fmt := (Impl_1.fmt_hoisted)
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let debug_test : DebugTest := DebugTest.mk;
   let args : (rust_primitives.hax.Tuple1 DebugTest) :=
     (rust_primitives.hax.Tuple1.mk debug_test);
   let args : (RustArray core_models.fmt.rt.Argument 1) :=
-    #v[(← (core_models.fmt.rt.Impl.new_debug DebugTest
-           (rust_primitives.hax.Tuple1._0 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_debug DebugTest
+                            (rust_primitives.hax.Tuple1._0 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-        #v["", "
-"]
+        (RustArray.ofVec #v["", "\n"])
         args)));
   let _ := rust_primitives.hax.Tuple0.mk;
   let display_test : DisplayTest := DisplayTest.mk;
   let args : (rust_primitives.hax.Tuple1 DisplayTest) :=
     (rust_primitives.hax.Tuple1.mk display_test);
   let args : (RustArray core_models.fmt.rt.Argument 1) :=
-    #v[(← (core_models.fmt.rt.Impl.new_display DisplayTest
-           (rust_primitives.hax.Tuple1._0 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display DisplayTest
+                            (rust_primitives.hax.Tuple1._0 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-        #v["", "
-"]
+        (RustArray.ofVec #v["", "\n"])
         args)));
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure rust_primitives.hax.Tuple0.mk)

@@ -198,6 +198,9 @@ let fn_pointer_cast (_: Prims.unit) : Prims.unit =
   let (f: (u32 -> u32)): u32 -> u32 = fun x -> x in
   ()
 
+/// @fail(extraction): ssprove(HAX0001)
+let null: FStar.Char.char = '\0'
+
 let strings (_: Prims.unit) : Prims.unit =
   let _:string = "hello" in
   let _:string = "hello\"world" in

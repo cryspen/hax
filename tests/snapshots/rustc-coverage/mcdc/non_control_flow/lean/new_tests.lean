@@ -14,40 +14,48 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__mcdc__non_control_flow
 
+@[spec]
 def assign_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let x : Bool ← (a &&? b);
   let _ ← (core_models.hint.black_box Bool x);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def assign_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let x : Bool ← (a ||? b);
   let _ ← (core_models.hint.black_box Bool x);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def assign_3 (a : Bool) (b : Bool) (c : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
   let x : Bool ← (a ||? (← (b &&? c)));
   let _ ← (core_models.hint.black_box Bool x);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def assign_3_bis (a : Bool) (b : Bool) (c : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
   let x : Bool ← ((← (a &&? b)) ||? c);
   let _ ← (core_models.hint.black_box Bool x);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def right_comb_tree (a : Bool) (b : Bool) (c : Bool) (d : Bool) (e : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
   let x : Bool ← (a &&? (← (b &&? (← (c &&? (← (d &&? e)))))));
   let _ ← (core_models.hint.black_box Bool x);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def foo (a : Bool) : RustM Bool := do (core_models.hint.black_box Bool a)
 
+@[spec]
 def func_call (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (foo (← (a &&? b)));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (assign_and true false);

@@ -14,10 +14,12 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__auxiliary__inline_always_with_dead_code.foo
 
+@[spec]
 def called (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def uncalled (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
@@ -27,6 +29,7 @@ end new_tests.rustc_coverage__auxiliary__inline_always_with_dead_code.foo
 
 namespace new_tests.rustc_coverage__auxiliary__inline_always_with_dead_code.bar
 
+@[spec]
 def call_me (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -39,6 +42,7 @@ end new_tests.rustc_coverage__auxiliary__inline_always_with_dead_code.bar
 
 namespace new_tests.rustc_coverage__auxiliary__inline_always_with_dead_code.baz
 
+@[spec]
 def call_me (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←

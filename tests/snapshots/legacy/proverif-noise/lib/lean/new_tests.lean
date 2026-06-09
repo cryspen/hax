@@ -20,8 +20,9 @@ namespace new_tests.legacy__proverif_noise__lib.noise_crypto
 inductive Error : Type
 | CryptoError : Error
 
+@[spec]
 def Error_cast_to_repr (x : Error) : RustM isize := do
-  match x with | (Error.CryptoError ) => (pure (0 : isize))
+  match x with | (Error.CryptoError ) => do (pure (0 : isize))
 
 --  Section 4.1 and 12.1: Diffie-Hellman Functions for Curve25519
 structure KeyPair where
@@ -30,6 +31,7 @@ structure KeyPair where
 
 def DHLEN : usize := (32 : usize)
 
+@[spec]
 def generate_keypair (sk : (RustSlice u8)) : RustM KeyPair := do
   let sk : hax_lib_protocol.crypto.DHScalar ←
     (hax_lib_protocol.crypto.Impl.from_bytes sk);
@@ -39,6 +41,7 @@ def generate_keypair (sk : (RustSlice u8)) : RustM KeyPair := do
       (← (core_models.clone.Clone.clone hax_lib_protocol.crypto.DHScalar sk)));
   (pure (KeyPair.mk (private_key := sk) (public_key := pk)))
 
+@[spec]
 def dh (sk : KeyPair) (pk : (RustSlice u8)) :
     RustM (alloc.vec.Vec u8 alloc.alloc.Global) := do
   let pk : hax_lib_protocol.crypto.DHElement ←
@@ -50,6 +53,7 @@ def dh (sk : KeyPair) (pk : (RustSlice u8)) :
     pk)
 
 --  Section 4.2 and 12.3: Cipher functions for ChaCha20-Poly1305
+@[spec]
 def encrypt
     (key : (RustSlice u8))
     (counter : u64)
@@ -80,6 +84,7 @@ def encrypt
         (alloc.vec.Vec u8 alloc.alloc.Global) tag)));
   (pure cipher)
 
+@[spec]
 def decrypt
     (key : (RustSlice u8))
     (counter : u64)
@@ -126,6 +131,7 @@ def decrypt
       (← (hax_lib_protocol.crypto.Impl_6.from_bytes tag))))
     (fun _ => (do (pure Error.CryptoError) : RustM Error)))
 
+@[spec]
 def rekey (key : (RustSlice u8)) :
     RustM (alloc.vec.Vec u8 alloc.alloc.Global) := do
   (encrypt
@@ -142,12 +148,14 @@ def HASHLEN : usize := (32 : usize)
 
 def BLOCKLEN : usize := (64 : usize)
 
+@[spec]
 def hash (input : (RustSlice u8)) :
     RustM (alloc.vec.Vec u8 alloc.alloc.Global) := do
   (hax_lib_protocol.crypto.hash
     hax_lib_protocol.crypto.HashAlgorithm.Sha256
     input)
 
+@[spec]
 def hmac_hash (key : (RustSlice u8)) (input : (RustSlice u8)) :
     RustM (alloc.vec.Vec u8 alloc.alloc.Global) := do
   (hax_lib_protocol.crypto.hmac
@@ -157,6 +165,7 @@ def hmac_hash (key : (RustSlice u8)) (input : (RustSlice u8)) :
 
 --  HKDF spec as per Noise
 --  Alternative would be to directly use HKDF
+@[spec]
 def kdf_next (secret : (RustSlice u8)) (prev : (RustSlice u8)) (counter : u8) :
     RustM (alloc.vec.Vec u8 alloc.alloc.Global) := do
   (hmac_hash
@@ -165,8 +174,11 @@ def kdf_next (secret : (RustSlice u8)) (prev : (RustSlice u8)) (counter : u8) :
       (alloc.vec.Vec u8 alloc.alloc.Global)
       (← (alloc.slice.Impl.concat (RustSlice u8) u8
         (← (rust_primitives.unsize
-          #v[prev, (← (rust_primitives.unsize #v[counter]))])))))))
+          (RustArray.ofVec #v[prev,
+                                (← (rust_primitives.unsize
+                                  (RustArray.ofVec #v[counter])))]))))))))
 
+@[spec]
 def hkdf1 (key : (RustSlice u8)) (ikm : (RustSlice u8)) :
     RustM (alloc.vec.Vec u8 alloc.alloc.Global) := do
   let secret : (alloc.vec.Vec u8 alloc.alloc.Global) ← (hmac_hash key ikm);
@@ -178,6 +190,7 @@ def hkdf1 (key : (RustSlice u8)) (ikm : (RustSlice u8)) :
       (← (alloc.vec.Impl.new u8 rust_primitives.hax.Tuple0.mk))))
     (1 : u8))
 
+@[spec]
 def hkdf2 (key : (RustSlice u8)) (ikm : (RustSlice u8)) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -202,6 +215,7 @@ def hkdf2 (key : (RustSlice u8)) (ikm : (RustSlice u8)) :
       (2 : u8));
   (pure (rust_primitives.hax.Tuple2.mk k1 k2))
 
+@[spec]
 def hkdf3 (key : (RustSlice u8)) (ikm : (RustSlice u8)) :
     RustM
     (rust_primitives.hax.Tuple3
@@ -245,43 +259,43 @@ structure ProtocolName where
 def Noise_KKpsk0_25519_ChaChaPoly_SHA256 : ProtocolName :=
   RustM.of_isOk
     (do
-    (ProtocolName.mk
-      #v[(78 : u8),
-           (111 : u8),
-           (105 : u8),
-           (115 : u8),
-           (101 : u8),
-           (95 : u8),
-           (75 : u8),
-           (75 : u8),
-           (112 : u8),
-           (115 : u8),
-           (107 : u8),
-           (48 : u8),
-           (95 : u8),
-           (50 : u8),
-           (53 : u8),
-           (53 : u8),
-           (49 : u8),
-           (57 : u8),
-           (95 : u8),
-           (67 : u8),
-           (104 : u8),
-           (97 : u8),
-           (67 : u8),
-           (104 : u8),
-           (97 : u8),
-           (80 : u8),
-           (111 : u8),
-           (108 : u8),
-           (121 : u8),
-           (95 : u8),
-           (83 : u8),
-           (72 : u8),
-           (65 : u8),
-           (50 : u8),
-           (53 : u8),
-           (54 : u8)]))
+    (pure (ProtocolName.mk
+      (RustArray.ofVec #v[(78 : u8),
+                            (111 : u8),
+                            (105 : u8),
+                            (115 : u8),
+                            (101 : u8),
+                            (95 : u8),
+                            (75 : u8),
+                            (75 : u8),
+                            (112 : u8),
+                            (115 : u8),
+                            (107 : u8),
+                            (48 : u8),
+                            (95 : u8),
+                            (50 : u8),
+                            (53 : u8),
+                            (53 : u8),
+                            (49 : u8),
+                            (57 : u8),
+                            (95 : u8),
+                            (67 : u8),
+                            (104 : u8),
+                            (97 : u8),
+                            (67 : u8),
+                            (104 : u8),
+                            (97 : u8),
+                            (80 : u8),
+                            (111 : u8),
+                            (108 : u8),
+                            (121 : u8),
+                            (95 : u8),
+                            (83 : u8),
+                            (72 : u8),
+                            (65 : u8),
+                            (50 : u8),
+                            (53 : u8),
+                            (54 : u8)]))))
     (by rfl)
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
@@ -351,21 +365,25 @@ end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 namespace new_tests.legacy__proverif_noise__lib.noise_lib
 
 --  5.1: The CipherState Object
+@[spec]
 def initialize_key
     (key : (core_models.option.Option (alloc.vec.Vec u8 alloc.alloc.Global))) :
     RustM CipherState := do
   (pure (CipherState.mk (k := key) (n := (0 : u64))))
 
+@[spec]
 def has_key (cs : CipherState) : RustM Bool := do
   (core_models.option.Impl.is_some (alloc.vec.Vec u8 alloc.alloc.Global)
     (CipherState.k cs))
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def set_nonce (cs : CipherState) (n : u64) : RustM CipherState := do
-  let {k := k, n := _} := cs;
+  let {k := k, ..} := cs;
   (pure (CipherState.mk (k := k) (n := n)))
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def encrypt_with_ad
     (cs : CipherState)
     (ad : (RustSlice u8))
@@ -378,13 +396,12 @@ def encrypt_with_ad
       new_tests.legacy__proverif_noise__lib.noise_crypto.Error)
     := do
   let {k := k, n := n} := cs;
-  if
-  (← (rust_primitives.hax.machine_int.eq n (18446744073709551615 : u64))) then
+  if (← (n ==? (18446744073709551615 : u64))) then do
     (pure (core_models.result.Result.Err
       new_tests.legacy__proverif_noise__lib.noise_crypto.Error.CryptoError))
-  else
+  else do
     match k with
-      | (core_models.option.Option.Some  k) =>
+      | (core_models.option.Option.Some  k) => do
         let cip : (alloc.vec.Vec u8 alloc.alloc.Global) ←
           (new_tests.legacy__proverif_noise__lib.noise_crypto.encrypt
             (← (core_models.ops.deref.Deref.deref
@@ -398,7 +415,7 @@ def encrypt_with_ad
               (k := (core_models.option.Option.Some k))
               (n := (← (n +? (1 : u64)))))
             cip)))
-      | (core_models.option.Option.None ) =>
+      | (core_models.option.Option.None ) => do
         (pure (core_models.result.Result.Ok
           (rust_primitives.hax.Tuple2.mk
             (CipherState.mk (k := k) (n := n))
@@ -413,6 +430,7 @@ namespace new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 --     ->
 --     <-
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def write_transport
     (tx : Transport)
     (ad : (RustSlice u8))
@@ -431,7 +449,7 @@ def write_transport
       ad
       payload))
   with
-    | (core_models.result.Result.Ok  ⟨send, ciphertext⟩) =>
+    | (core_models.result.Result.Ok  ⟨send, ciphertext⟩) => do
       let tx : Transport :=
         (Transport.mk
           (send := send)
@@ -439,7 +457,7 @@ def write_transport
           (handshake_hash := handshake_hash));
       (pure (core_models.result.Result.Ok
         (rust_primitives.hax.Tuple2.mk tx ciphertext)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
@@ -448,6 +466,7 @@ end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 namespace new_tests.legacy__proverif_noise__lib.noise_lib
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def decrypt_with_ad
     (cs : CipherState)
     (ad : (RustSlice u8))
@@ -460,13 +479,12 @@ def decrypt_with_ad
       new_tests.legacy__proverif_noise__lib.noise_crypto.Error)
     := do
   let {k := k, n := n} := cs;
-  if
-  (← (rust_primitives.hax.machine_int.eq n (18446744073709551615 : u64))) then
+  if (← (n ==? (18446744073709551615 : u64))) then do
     (pure (core_models.result.Result.Err
       new_tests.legacy__proverif_noise__lib.noise_crypto.Error.CryptoError))
-  else
+  else do
     match k with
-      | (core_models.option.Option.Some  k) =>
+      | (core_models.option.Option.Some  k) => do
         match
           (← (new_tests.legacy__proverif_noise__lib.noise_crypto.decrypt
             (← (core_models.ops.deref.Deref.deref
@@ -475,16 +493,16 @@ def decrypt_with_ad
             ad
             ciphertext))
         with
-          | (core_models.result.Result.Ok  plain) =>
+          | (core_models.result.Result.Ok  plain) => do
             (pure (core_models.result.Result.Ok
               (rust_primitives.hax.Tuple2.mk
                 (CipherState.mk
                   (k := (core_models.option.Option.Some k))
                   (n := (← (n +? (1 : u64)))))
                 plain)))
-          | (core_models.result.Result.Err  err) =>
+          | (core_models.result.Result.Err  err) => do
             (pure (core_models.result.Result.Err err))
-      | (core_models.option.Option.None ) =>
+      | (core_models.option.Option.None ) => do
         (pure (core_models.result.Result.Ok
           (rust_primitives.hax.Tuple2.mk
             (CipherState.mk (k := k) (n := n))
@@ -496,6 +514,7 @@ end new_tests.legacy__proverif_noise__lib.noise_lib
 namespace new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def read_transport
     (tx : Transport)
     (ad : (RustSlice u8))
@@ -514,7 +533,7 @@ def read_transport
       ad
       ciphertext))
   with
-    | (core_models.result.Result.Ok  ⟨recv, payload⟩) =>
+    | (core_models.result.Result.Ok  ⟨recv, payload⟩) => do
       let tx : Transport :=
         (Transport.mk
           (send := send)
@@ -522,7 +541,7 @@ def read_transport
           (handshake_hash := handshake_hash));
       (pure (core_models.result.Result.Ok
         (rust_primitives.hax.Tuple2.mk tx payload)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
@@ -531,6 +550,7 @@ end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 namespace new_tests.legacy__proverif_noise__lib.noise_lib
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def rekey (cs : CipherState) :
     RustM
     (core_models.result.Result
@@ -539,7 +559,7 @@ def rekey (cs : CipherState) :
     := do
   let {k := k, n := n} := cs;
   match k with
-    | (core_models.option.Option.Some  k) =>
+    | (core_models.option.Option.Some  k) => do
       let new_k : (alloc.vec.Vec u8 alloc.alloc.Global) ←
         (new_tests.legacy__proverif_noise__lib.noise_crypto.rekey
           (← (core_models.ops.deref.Deref.deref
@@ -548,28 +568,28 @@ def rekey (cs : CipherState) :
         (CipherState.mk
           (k := (core_models.option.Option.Some new_k))
           (n := n))))
-    | (core_models.option.Option.None ) =>
+    | (core_models.option.Option.None ) => do
       (pure (core_models.result.Result.Err
         new_tests.legacy__proverif_noise__lib.noise_crypto.Error.CryptoError))
 
 --  5.2: The SymmetricState Object
+@[spec]
 def initialize_symmetric (protocol_name : (RustSlice u8)) :
     RustM SymmetricState := do
   let pnlen : usize ← (core_models.slice.Impl.len u8 protocol_name);
   let hv : (alloc.vec.Vec u8 alloc.alloc.Global) ←
     if
-    (← (rust_primitives.hax.machine_int.lt
-      pnlen
-      new_tests.legacy__proverif_noise__lib.noise_crypto.HASHLEN)) then
+    (← (pnlen <? new_tests.legacy__proverif_noise__lib.noise_crypto.HASHLEN))
+    then do
       (alloc.slice.Impl.concat (RustSlice u8) u8
         (← (rust_primitives.unsize
-          #v[protocol_name,
-               (← (core_models.ops.deref.Deref.deref
-                 (alloc.vec.Vec u8 alloc.alloc.Global)
-                 (← (alloc.vec.from_elem u8
-                   (0 : u8)
-                   (← ((32 : usize) -? pnlen))))))])))
-    else
+          (RustArray.ofVec #v[protocol_name,
+                                (← (core_models.ops.deref.Deref.deref
+                                  (alloc.vec.Vec u8 alloc.alloc.Global)
+                                  (← (alloc.vec.from_elem u8
+                                    (0 : u8)
+                                    (← ((32 : usize) -? pnlen))))))]))))
+    else do
       (new_tests.legacy__proverif_noise__lib.noise_crypto.hash protocol_name);
   let ck : (alloc.vec.Vec u8 alloc.alloc.Global) ←
     (core_models.clone.Clone.clone (alloc.vec.Vec u8 alloc.alloc.Global) hv);
@@ -579,9 +599,10 @@ def initialize_symmetric (protocol_name : (RustSlice u8)) :
     (h := hv)))
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def mix_key (st : SymmetricState) (input_key_material : (RustSlice u8)) :
     RustM SymmetricState := do
-  let {cs := _, ck := ck, h := h} := st;
+  let {ck := ck, h := h, ..} := st;
   let ⟨ck, temp_k⟩ ←
     (new_tests.legacy__proverif_noise__lib.noise_crypto.hkdf2
       (← (core_models.ops.deref.Deref.deref
@@ -589,13 +610,12 @@ def mix_key (st : SymmetricState) (input_key_material : (RustSlice u8)) :
       input_key_material);
   let temp_k : (alloc.vec.Vec u8 alloc.alloc.Global) ←
     if
-    (← (rust_primitives.hax.machine_int.eq
-      new_tests.legacy__proverif_noise__lib.noise_crypto.HASHLEN
-      (64 : usize))) then
+    (← (new_tests.legacy__proverif_noise__lib.noise_crypto.HASHLEN
+      ==? (64 : usize))) then do
       let temp_k : (alloc.vec.Vec u8 alloc.alloc.Global) ←
         (alloc.vec.Impl_1.truncate u8 alloc.alloc.Global temp_k (32 : usize));
       (pure temp_k)
-    else
+    else do
       (pure temp_k);
   (pure (SymmetricState.mk
     (cs := (← (initialize_key (core_models.option.Option.Some temp_k))))
@@ -603,6 +623,7 @@ def mix_key (st : SymmetricState) (input_key_material : (RustSlice u8)) :
     (h := h)))
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def mix_hash (st : SymmetricState) (data : (RustSlice u8)) :
     RustM SymmetricState := do
   let {cs := cs, ck := ck, h := h} := st;
@@ -614,9 +635,9 @@ def mix_hash (st : SymmetricState) (data : (RustSlice u8)) :
         (alloc.vec.Vec u8 alloc.alloc.Global)
         (← (alloc.slice.Impl.concat (RustSlice u8) u8
           (← (rust_primitives.unsize
-            #v[(← (core_models.ops.deref.Deref.deref
-                   (alloc.vec.Vec u8 alloc.alloc.Global) h)),
-                 data])))))))))))
+            (RustArray.ofVec #v[(← (core_models.ops.deref.Deref.deref
+                                    (alloc.vec.Vec u8 alloc.alloc.Global) h)),
+                                  data]))))))))))))
 
 end new_tests.legacy__proverif_noise__lib.noise_lib
 
@@ -627,6 +648,7 @@ namespace new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 --     -> s
 --     <- s
 --     ...
+@[spec]
 def initialize_initiator
     (prologue : (RustSlice u8))
     (psk : (alloc.vec.Vec u8 alloc.alloc.Global))
@@ -656,6 +678,7 @@ def initialize_initiator
     (e := e)
     (rs := (← (alloc.slice.Impl.to_vec u8 rs)))))
 
+@[spec]
 def initialize_responder
     (prologue : (RustSlice u8))
     (psk : (alloc.vec.Vec u8 alloc.alloc.Global))
@@ -691,11 +714,12 @@ end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 namespace new_tests.legacy__proverif_noise__lib.noise_lib
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def mix_key_and_hash
     (st : SymmetricState)
     (input_key_material : (RustSlice u8)) :
     RustM SymmetricState := do
-  let {cs := _, ck := ck, h := h} := st;
+  let {ck := ck, h := h, ..} := st;
   let ⟨ck, temp_h, temp_k⟩ ←
     (new_tests.legacy__proverif_noise__lib.noise_crypto.hkdf3
       (← (core_models.ops.deref.Deref.deref
@@ -713,13 +737,12 @@ def mix_key_and_hash
         (alloc.vec.Vec u8 alloc.alloc.Global) new_h)));
   let temp_k : (alloc.vec.Vec u8 alloc.alloc.Global) ←
     if
-    (← (rust_primitives.hax.machine_int.eq
-      new_tests.legacy__proverif_noise__lib.noise_crypto.HASHLEN
-      (64 : usize))) then
+    (← (new_tests.legacy__proverif_noise__lib.noise_crypto.HASHLEN
+      ==? (64 : usize))) then do
       let temp_k : (alloc.vec.Vec u8 alloc.alloc.Global) ←
         (alloc.vec.Impl_1.truncate u8 alloc.alloc.Global temp_k (32 : usize));
       (pure temp_k)
-    else
+    else do
       (pure temp_k);
   (pure (SymmetricState.mk
     (cs := (← (initialize_key (core_models.option.Option.Some temp_k))))
@@ -727,6 +750,7 @@ def mix_key_and_hash
     (h := new_h)))
 
 --  Unclear if we need a special function for psk or we can reuse mix_key_and_hash above
+@[spec]
 def encrypt_and_hash (st : SymmetricState) (plaintext : (RustSlice u8)) :
     RustM
     (core_models.result.Result
@@ -742,7 +766,7 @@ def encrypt_and_hash (st : SymmetricState) (plaintext : (RustSlice u8)) :
         (alloc.vec.Vec u8 alloc.alloc.Global) (SymmetricState.h st)))
       plaintext))
   with
-    | (core_models.result.Result.Ok  ⟨new_cs, ciphertext⟩) =>
+    | (core_models.result.Result.Ok  ⟨new_cs, ciphertext⟩) => do
       let new_h : (alloc.vec.Vec u8 alloc.alloc.Global) ←
         (core_models.clone.Clone.clone
           (alloc.vec.Vec u8 alloc.alloc.Global) (SymmetricState.h st));
@@ -762,7 +786,7 @@ def encrypt_and_hash (st : SymmetricState) (plaintext : (RustSlice u8)) :
             (ck := (SymmetricState.ck st))
             (h := new_h))
           ciphertext)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_lib
@@ -774,6 +798,7 @@ namespace new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 --     ...
 --     -> psk, e, es, ss
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def write_message1 (hs : HandshakeStateI0) (payload : (RustSlice u8)) :
     RustM
     (core_models.result.Result
@@ -827,12 +852,12 @@ def write_message1 (hs : HandshakeStateI0) (payload : (RustSlice u8)) :
       st
       payload))
   with
-    | (core_models.result.Result.Ok  ⟨st, ciphertext⟩) =>
+    | (core_models.result.Result.Ok  ⟨st, ciphertext⟩) => do
       let hs : HandshakeStateI1 :=
         (HandshakeStateI1.mk (st := st) (s := s) (e := e));
       (pure (core_models.result.Result.Ok
         (rust_primitives.hax.Tuple2.mk hs ciphertext)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
@@ -840,6 +865,7 @@ end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 
 namespace new_tests.legacy__proverif_noise__lib.noise_lib
 
+@[spec]
 def decrypt_and_hash (st : SymmetricState) (ciphertext : (RustSlice u8)) :
     RustM
     (core_models.result.Result
@@ -855,7 +881,7 @@ def decrypt_and_hash (st : SymmetricState) (ciphertext : (RustSlice u8)) :
         (alloc.vec.Vec u8 alloc.alloc.Global) (SymmetricState.h st)))
       ciphertext))
   with
-    | (core_models.result.Result.Ok  ⟨new_cs, plaintext⟩) =>
+    | (core_models.result.Result.Ok  ⟨new_cs, plaintext⟩) => do
       let new_h : (alloc.vec.Vec u8 alloc.alloc.Global) ←
         (core_models.clone.Clone.clone
           (alloc.vec.Vec u8 alloc.alloc.Global) (SymmetricState.h st));
@@ -874,7 +900,7 @@ def decrypt_and_hash (st : SymmetricState) (ciphertext : (RustSlice u8)) :
             (ck := (SymmetricState.ck st))
             (h := new_h))
           plaintext)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_lib
@@ -883,6 +909,7 @@ end new_tests.legacy__proverif_noise__lib.noise_lib
 namespace new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def read_message1 (hs : HandshakeStateR0) (ciphertext : (RustSlice u8)) :
     RustM
     (core_models.result.Result
@@ -935,7 +962,7 @@ def read_message1 (hs : HandshakeStateR0) (ciphertext : (RustSlice u8)) :
       st
       ciphertext))
   with
-    | (core_models.result.Result.Ok  ⟨st, plaintext⟩) =>
+    | (core_models.result.Result.Ok  ⟨st, plaintext⟩) => do
       let hs : HandshakeStateR1 :=
         (HandshakeStateR1.mk
           (st := st)
@@ -944,7 +971,7 @@ def read_message1 (hs : HandshakeStateR0) (ciphertext : (RustSlice u8)) :
           (re := (← (alloc.slice.Impl.to_vec u8 re))));
       (pure (core_models.result.Result.Ok
         (rust_primitives.hax.Tuple2.mk hs plaintext)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
@@ -952,6 +979,7 @@ end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 
 namespace new_tests.legacy__proverif_noise__lib.noise_lib
 
+@[spec]
 def split (st : SymmetricState) :
     RustM
     (rust_primitives.hax.Tuple3
@@ -968,15 +996,14 @@ def split (st : SymmetricState) :
         (← (alloc.vec.Impl.new u8 rust_primitives.hax.Tuple0.mk)))));
   let ⟨temp_k1, temp_k2⟩ ←
     if
-    (← (rust_primitives.hax.machine_int.eq
-      new_tests.legacy__proverif_noise__lib.noise_crypto.HASHLEN
-      (64 : usize))) then
+    (← (new_tests.legacy__proverif_noise__lib.noise_crypto.HASHLEN
+      ==? (64 : usize))) then do
       let temp_k1 : (alloc.vec.Vec u8 alloc.alloc.Global) ←
         (alloc.vec.Impl_1.truncate u8 alloc.alloc.Global temp_k1 (32 : usize));
       let temp_k2 : (alloc.vec.Vec u8 alloc.alloc.Global) ←
         (alloc.vec.Impl_1.truncate u8 alloc.alloc.Global temp_k2 (32 : usize));
       (pure (rust_primitives.hax.Tuple2.mk temp_k1 temp_k2))
-    else
+    else do
       (pure (rust_primitives.hax.Tuple2.mk temp_k1 temp_k2));
   (pure (rust_primitives.hax.Tuple3.mk
     (← (initialize_key (core_models.option.Option.Some temp_k1)))
@@ -992,6 +1019,7 @@ namespace new_tests.legacy__proverif_noise__lib.noise_kkpsk0
 --     ...
 --      <- e, ee, se
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def write_message2 (hs : HandshakeStateR1) (payload : (RustSlice u8)) :
     RustM
     (core_models.result.Result
@@ -1040,17 +1068,18 @@ def write_message2 (hs : HandshakeStateR1) (payload : (RustSlice u8)) :
       st
       payload))
   with
-    | (core_models.result.Result.Ok  ⟨st, ciphertext⟩) =>
+    | (core_models.result.Result.Ok  ⟨st, ciphertext⟩) => do
       let ⟨c1, c2, h⟩ ←
         (new_tests.legacy__proverif_noise__lib.noise_lib.split st);
       let tx : Transport :=
         (Transport.mk (send := c2) (recv := c1) (handshake_hash := h));
       (pure (core_models.result.Result.Ok
         (rust_primitives.hax.Tuple2.mk tx ciphertext)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def read_message2 (hs : HandshakeStateI1) (ciphertext : (RustSlice u8)) :
     RustM
     (core_models.result.Result
@@ -1095,14 +1124,14 @@ def read_message2 (hs : HandshakeStateI1) (ciphertext : (RustSlice u8)) :
       st
       ciphertext))
   with
-    | (core_models.result.Result.Ok  ⟨st, plaintext⟩) =>
+    | (core_models.result.Result.Ok  ⟨st, plaintext⟩) => do
       let ⟨c1, c2, h⟩ ←
         (new_tests.legacy__proverif_noise__lib.noise_lib.split st);
       let tx : Transport :=
         (Transport.mk (send := c1) (recv := c2) (handshake_hash := h));
       (pure (core_models.result.Result.Ok
         (rust_primitives.hax.Tuple2.mk tx plaintext)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0

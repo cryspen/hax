@@ -68,29 +68,31 @@ def math_integers (x : hax_lib.int.Int) : RustM u8 := do
   (hax_lib.int.Impl_41.to_u8
     (← (rust_primitives.hax.int.add x (← (rust_primitives.hax.int.mul x x)))))
 
-@[spec]
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
 def math_integers.spec (x : hax_lib.int.Int) :
     Spec
       (requires := do
-        (rust_primitives.hax.logical_op_and
-          (← (rust_primitives.hax.int.gt
+        ((← (rust_primitives.hax.int.gt
             x
             (← (hax_lib.int.Impl_7._unsafe_from_str "0"))))
-          (← (rust_primitives.hax.int.lt
+          &&? (← (rust_primitives.hax.int.lt
             x
             (← (hax_lib.int.Impl_7._unsafe_from_str "16"))))))
       (ensures := fun _ => pure True)
       (math_integers (x : hax_lib.int.Int)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[math_integers] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [math_integers] <;> bv_decide
 }
 
+@[spec]
 def panic_with_msg (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (rust_primitives.hax.never_to_any
     (← (core_models.panicking.panic_fmt
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["with msg"])))))
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["with msg"]))))))
 
 structure Foo where
   field : u8
@@ -119,8 +121,10 @@ structure Foo where
   core_models.cmp.Eq Foo :=
   by constructor <;> exact Inhabited.default
 
-def CONSTANT : Foo := RustM.of_isOk (do (Foo.mk (field := (3 : u8)))) (by rfl)
+def CONSTANT : Foo :=
+  RustM.of_isOk (do (pure (Foo.mk (field := (3 : u8))))) (by rfl)
 
+@[spec]
 def numeric (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ : usize := (123 : usize);
@@ -131,26 +135,30 @@ def numeric (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def patterns (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     match (1 : u8) with
-      | 2 => (pure rust_primitives.hax.Tuple0.mk)
-      | _ => (pure rust_primitives.hax.Tuple0.mk);
+      | 2 => do (pure rust_primitives.hax.Tuple0.mk)
+      | _ => do (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk
         "hello"
-        (rust_primitives.hax.Tuple2.mk (123 : i32) #v["a", "b"]))
+        (rust_primitives.hax.Tuple2.mk
+          (123 : i32)
+          (RustArray.ofVec #v["a", "b"])))
     with
-      | ⟨"hello", ⟨123, _todo⟩⟩ => (pure rust_primitives.hax.Tuple0.mk)
-      | _ => (pure rust_primitives.hax.Tuple0.mk);
+      | ⟨"hello", ⟨123, _todo⟩⟩ => do (pure rust_primitives.hax.Tuple0.mk)
+      | _ => do (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
     match (Foo.mk (field := (4 : u8))) with
-      | {field := 3} => (pure rust_primitives.hax.Tuple0.mk)
-      | _ => (pure rust_primitives.hax.Tuple0.mk);
+      | {field := 3} => do (pure rust_primitives.hax.Tuple0.mk)
+      | _ => do (pure rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def casts (x8 : u8) (x16 : u16) (x32 : u32) (x64 : u64) (xs : usize) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ : u64 ←
@@ -201,12 +209,14 @@ def casts (x8 : u8) (x16 : u16) (x32 : u32) (x64 : u64) (xs : usize) :
       +? (← (rust_primitives.hax.cast_op xs : RustM i8)));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def empty_array (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
-  let _ : (RustSlice u8) ← (rust_primitives.unsize #v[]);
+  let _ : (RustSlice u8) ← (rust_primitives.unsize (RustArray.ofVec #v[]));
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  https://github.com/hacspec/hax/issues/500
+@[spec]
 def fn_pointer_cast (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let f : (u32 -> RustM u32) := (fun x => (do (pure x) : RustM u32));
@@ -214,6 +224,22 @@ def fn_pointer_cast (_ : rust_primitives.hax.Tuple0) :
 
 --  @fail(extraction): ssprove(HAX0001)
 def null : Char := ' '
+
+@[spec]
+def strings (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let _ : String := "hello";
+  let _ : String := "hello\"world";
+  let _ : String := "it\'s";
+  let _ : String := "back\\slash";
+  let _ : String := "line\nbreak";
+  let _ : String := "carriage\rreturn";
+  let _ : String := "tab\there";
+  let _ : String := "null\x00byte";
+  let _ : String := "bell\x07char";
+  let _ : String := "\x1b[0m";
+  let _ : String := "🦀";
+  (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.legacy__literals__lib
 

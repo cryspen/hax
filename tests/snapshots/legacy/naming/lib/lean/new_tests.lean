@@ -31,36 +31,45 @@ structure C where
 structure X where
   -- no fields
 
+@[spec]
 def mk_c (_ : rust_primitives.hax.Tuple0) : RustM C := do
   let _ := (Foo.B (x := (3 : usize)));
   let _ := X.mk;
   (pure (C.mk (x := (3 : usize))))
 
+@[spec]
 def Impl.f (self : Foo) : RustM Foo := do (pure Foo.A)
 
+@[spec]
 def Impl_1.f (self : B) : RustM B := do (pure B.mk)
 
 structure Foobar where
   a : Foo
 
+@[spec]
 def f.g (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def f.g.Impl.g (self : B) : RustM usize := do (pure (0 : usize))
 
 inductive f.g.Impl.g.Foo : Type
 | A : f.g.Impl.g.Foo
 | B (x : usize) : f.g.Impl.g.Foo
 
+@[spec]
 def f.g.Impl_1.g (self : Foo) : RustM usize := do (pure (1 : usize))
 
+@[spec]
 def f (x : Foobar) : RustM usize := do (f.g.Impl_1.g (Foobar.a x))
 
+@[spec]
 def f.g.Impl_1.g.hello.h (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def reserved_names (val : u8) (noeq : u8) (of : u8) : RustM u8 := do
   ((← (val +? noeq)) +? of)
 
@@ -121,6 +130,7 @@ structure StructD where
   a : usize
   b : usize
 
+@[spec]
 def construct_structs (a : usize) (b : usize) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ := (StructA.mk (a := a));
@@ -138,6 +148,7 @@ class FooTrait (Self : Type)
   where
   ASSOCIATED_CONSTANT (Self) : usize
 
+@[spec]
 def constants
     (T : Type)
     [trait_constr_constants_associated_type_i0 : FooTrait.AssociatedTypes T]
@@ -152,23 +163,24 @@ end new_tests.legacy__naming__lib
 namespace new_tests.legacy__naming__lib.ambiguous_names
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def debug (label : u32) (value : u32) : RustM rust_primitives.hax.Tuple0 := do
   let args : (rust_primitives.hax.Tuple2 u32 u32) :=
     (rust_primitives.hax.Tuple2.mk label value);
   let args : (RustArray core_models.fmt.rt.Argument 2) :=
-    #v[(← (core_models.fmt.rt.Impl.new_display u32
-           (rust_primitives.hax.Tuple2._0 args))),
-         (← (core_models.fmt.rt.Impl.new_display u32
-           (rust_primitives.hax.Tuple2._1 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display u32
+                            (rust_primitives.hax.Tuple2._0 args))),
+                          (← (core_models.fmt.rt.Impl.new_display u32
+                            (rust_primitives.hax.Tuple2._1 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((3 : usize)) ((2 : usize))
-        #v["[", "] a=", "
-"]
+        (RustArray.ofVec #v["[", "] a=", "\n"])
         args)));
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  `f` stacks mutliple let bindings declaring different `a`s.
+@[spec]
 def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
   let a_1 : u32 := (104 : u32);
   let a_2 : u32 := (205 : u32);
@@ -187,6 +199,7 @@ def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
 --   [1] a=104
 --   [last] a=123
 --  ```
+@[spec]
 def f_expand (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let a : i32 := (104 : i32);
@@ -204,6 +217,7 @@ end new_tests.legacy__naming__lib.ambiguous_names
 namespace new_tests.legacy__naming__lib
 
 --  From issue https://github.com/hacspec/hax/issues/839
+@[spec]
 def string_shadows (string : String) (n : String) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
@@ -216,6 +230,7 @@ namespace new_tests.legacy__naming__lib.functions_defined_in_trait_impls
 structure A where
   -- no fields
 
+@[spec]
 def Impl.eq_hoisted (self : A) (other : A) : RustM Bool := do
   (rust_primitives.hax.never_to_any
     (← (core_models.panicking.panic "explicit panic")))
@@ -230,6 +245,7 @@ instance Impl : core_models.cmp.PartialEq A A where
 structure B where
   -- no fields
 
+@[spec]
 def Impl_1.eq_hoisted (self : B) (other : B) : RustM Bool := do
   (rust_primitives.hax.never_to_any
     (← (core_models.panicking.panic "explicit panic")))
@@ -247,6 +263,7 @@ end new_tests.legacy__naming__lib.functions_defined_in_trait_impls
 namespace new_tests.legacy__naming__lib
 
 --  From issue https://github.com/cryspen/hax/issues/1450
+@[spec]
 def items_under_closures (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ : (rust_primitives.hax.Tuple0 -> RustM rust_primitives.hax.Tuple0) :=
@@ -255,6 +272,7 @@ def items_under_closures (_ : rust_primitives.hax.Tuple0) :
       (pure rust_primitives.hax.Tuple0.mk) : RustM rust_primitives.hax.Tuple0));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def items_under_closures.Closure.nested_function
     (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -263,6 +281,7 @@ def items_under_closures.Closure.nested_function
 structure items_under_closures.Closure.NestedStruct where
   -- no fields
 
+@[spec]
 def items_under_closures.nested_function (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)

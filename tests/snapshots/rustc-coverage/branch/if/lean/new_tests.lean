@@ -14,11 +14,13 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__branch__if
 
+@[spec]
 def say (message : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box String message);
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def branch_not (a : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -30,29 +32,27 @@ def branch_not (a : Bool) : RustM rust_primitives.hax.Tuple0 := do
         (do
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
-  let _ ← if a then (say "a") else (pure rust_primitives.hax.Tuple0.mk);
+  let _ ← if a then do (say "a") else do (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
-    if (← (core_models.ops.bit.Not.not a)) then
+    if (← (!? a)) then do
       let _ ← (say "not a");
       (pure rust_primitives.hax.Tuple0.mk)
-    else
+    else do
       (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
-    if
-    (← (core_models.ops.bit.Not.not (← (core_models.ops.bit.Not.not a)))) then
+    if (← (!? (← (!? a)))) then do
       let _ ← (say "not not a");
       (pure rust_primitives.hax.Tuple0.mk)
-    else
+    else do
       (pure rust_primitives.hax.Tuple0.mk);
-  if
-  (← (core_models.ops.bit.Not.not
-    (← (core_models.ops.bit.Not.not (← (core_models.ops.bit.Not.not a)))))) then
+  if (← (!? (← (!? (← (!? a)))))) then do
     let _ ← (say "not not not a");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def branch_not_as (a : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -65,27 +65,25 @@ def branch_not_as (a : Bool) : RustM rust_primitives.hax.Tuple0 := do
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
   let _ ←
-    if (← (core_models.ops.bit.Not.not a)) then
+    if (← (!? a)) then do
       let _ ← (say "not (a as bool)");
       (pure rust_primitives.hax.Tuple0.mk)
-    else
+    else do
       (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
-    if
-    (← (core_models.ops.bit.Not.not (← (core_models.ops.bit.Not.not a)))) then
+    if (← (!? (← (!? a)))) then do
       let _ ← (say "not not (a as bool)");
       (pure rust_primitives.hax.Tuple0.mk)
-    else
+    else do
       (pure rust_primitives.hax.Tuple0.mk);
-  if
-  (← (core_models.ops.bit.Not.not
-    (← (core_models.ops.bit.Not.not (← (core_models.ops.bit.Not.not a)))))) then
+  if (← (!? (← (!? (← (!? a)))))) then do
     let _ ← (say "not not (a as bool)");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def branch_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -97,14 +95,15 @@ def branch_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
         (do
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
-  if (← (a &&? b)) then
+  if (← (a &&? b)) then do
     let _ ← (say "both");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "not both");
     (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def branch_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -116,14 +115,15 @@ def branch_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
         (do
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
-  if (← (a ||? b)) then
+  if (← (a ||? b)) then do
     let _ ← (say "either");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "neither");
     (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008, HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -133,7 +133,7 @@ def main (_ : rust_primitives.hax.Tuple0) :
   let _ ←
     (core_models.iter.traits.iterator.Iterator.fold
       (← (core_models.iter.traits.collect.IntoIterator.into_iter
-        (RustArray Bool 3) #v[false, true, true]))
+        (RustArray Bool 3) (RustArray.ofVec #v[false, true, true])))
       rust_primitives.hax.Tuple0.mk
       (fun _ a =>
         (do
@@ -144,13 +144,13 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure (rust_primitives.hax.Tuple2.mk
     (← (core_models.iter.traits.iterator.Iterator.fold
       (← (core_models.iter.traits.collect.IntoIterator.into_iter
-        (RustArray Bool 5) #v[false, true, true, true, true]))
+        (RustArray Bool 5) (RustArray.ofVec #v[false, true, true, true, true])))
       rust_primitives.hax.Tuple0.mk
       (fun _ a =>
         (do
         (core_models.iter.traits.iterator.Iterator.fold
           (← (core_models.iter.traits.collect.IntoIterator.into_iter
-            (RustArray Bool 3) #v[false, true, true]))
+            (RustArray Bool 3) (RustArray.ofVec #v[false, true, true])))
           rust_primitives.hax.Tuple0.mk
           (fun _ b =>
             (do

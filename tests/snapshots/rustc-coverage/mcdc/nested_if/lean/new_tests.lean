@@ -14,43 +14,51 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__mcdc__nested_if
 
+@[spec]
 def say (message : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box String message);
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def nested_if_in_condition (a : Bool) (b : Bool) (c : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
-  if (← (a &&? (← if (← (b ||? c)) then (pure true) else (pure false)))) then
+  if
+  (← (a &&? (← if (← (b ||? c)) then do (pure true) else do (pure false)))) then
+  do
     let _ ← (say "yes");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "no");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def doubly_nested_if_in_condition (a : Bool) (b : Bool) (c : Bool) (d : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
   if
   (← (a
     &&? (← if
-    (← (b ||? (← if (← (c &&? d)) then (pure true) else (pure false)))) then
+    (← (b ||? (← if (← (c &&? d)) then do (pure true) else do (pure false))))
+    then do
       (pure false)
-    else
-      (pure true)))) then
+    else do
+      (pure true)))) then do
     let _ ← (say "yes");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "no");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def nested_single_condition_decision (a : Bool) (b : Bool) :
     RustM rust_primitives.hax.Tuple0 := do
-  if (← (a &&? (← if b then (pure false) else (pure true)))) then
+  if (← (a &&? (← if b then do (pure false) else do (pure true)))) then do
     let _ ← (say "yes");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "no");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def nested_in_then_block_in_condition
     (a : Bool)
     (b : Bool)
@@ -60,16 +68,17 @@ def nested_in_then_block_in_condition
     RustM rust_primitives.hax.Tuple0 := do
   if
   (← (a
-    &&? (← if (← (b ||? c)) then
-      if (← (d &&? e)) then (pure true) else (pure false)
-    else
-      (pure false)))) then
+    &&? (← if (← (b ||? c)) then do
+      if (← (d &&? e)) then do (pure true) else do (pure false)
+    else do
+      (pure false)))) then do
     let _ ← (say "yes");
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ← (say "no");
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (nested_if_in_condition true false false);

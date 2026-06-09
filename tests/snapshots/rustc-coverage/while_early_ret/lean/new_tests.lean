@@ -15,15 +15,14 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__while_early_ret
 
 --  @fail(extraction): proverif(HAX0008), ssprove(HAX0001), coq(HAX0001, HAX0001)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result rust_primitives.hax.Tuple0 u8) := do
   let countdown : i32 := (10 : i32);
   match
     (← (rust_primitives.hax.while_loop_return
       (fun countdown => (do (pure true) : RustM Bool))
-      (fun countdown =>
-        (do
-        (rust_primitives.hax.machine_int.gt countdown (0 : i32)) : RustM Bool))
+      (fun countdown => (do (countdown >? (0 : i32)) : RustM Bool))
       (fun countdown =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :
@@ -31,16 +30,15 @@ def main (_ : rust_primitives.hax.Tuple0) :
       countdown
       (fun countdown =>
         (do
-        if (← (rust_primitives.hax.machine_int.lt countdown (5 : i32))) then
+        if (← (countdown <? (5 : i32))) then do
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (core_models.ops.control_flow.ControlFlow.Break
-              (← if
-              (← (rust_primitives.hax.machine_int.gt countdown (8 : i32))) then
+              (← if (← (countdown >? (8 : i32))) then do
                 (pure (core_models.result.Result.Ok
                   rust_primitives.hax.Tuple0.mk))
-              else
+              else do
                 (pure (core_models.result.Result.Err (1 : u8)))))))
-        else
+        else do
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (← (countdown -? (1 : i32))))) :
         RustM
@@ -50,8 +48,8 @@ def main (_ : rust_primitives.hax.Tuple0) :
             (rust_primitives.hax.Tuple2 rust_primitives.hax.Tuple0 i32))
           i32)))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
-    | (core_models.ops.control_flow.ControlFlow.Continue  countdown) =>
+    | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
+    | (core_models.ops.control_flow.ControlFlow.Continue  countdown) => do
       (pure (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk))
 
 end new_tests.rustc_coverage__while_early_ret

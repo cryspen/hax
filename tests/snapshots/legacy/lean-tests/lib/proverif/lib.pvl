@@ -700,6 +700,246 @@ reduc forall new_tests__legacy__lean_tests__lib__monadic__f_f: nat;
       )
     ) = new_tests__legacy__lean_tests__lib__monadic__f_f.
 
+type new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E.
+
+fun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_to_bitstring(
+      new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E [typeConverter].
+const new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_default_value: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E.
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_default(
+
+       ) =
+       new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_default_value.
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_err(
+
+       ) =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_default_value.
+fun new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+      nat, nat, nat, nat
+    )
+    : new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__t_E_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f3,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records__f_f4.
+
+type new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S.
+
+fun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_default_value: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S.
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_default(
+
+       ) =
+       new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_err(
+
+       ) =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+      nat, nat, nat, nat
+    )
+    : new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__t_S_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f3,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs__f_f4.
+
+type new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F.
+
+fun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_to_bitstring(
+      new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F [typeConverter].
+const new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_default_value: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F.
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_default(
+
+       ) =
+       new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_default_value.
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_err(
+
+       ) =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_default_value.
+fun new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+      nat, nat, nat, nat
+    )
+    : new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2: nat,
+  new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__t_F_new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3(
+      new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__0,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__1,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__2,
+        new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3
+      )
+    ) = new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples__3.
+
 type new_tests__legacy__lean_tests__lib__loops__errors__t_Error.
 
 fun new_tests__legacy__lean_tests__lib__loops__errors__t_Error_to_bitstring(
@@ -908,6 +1148,23 @@ reduc forall
       )
     ) = new_tests__legacy__lean_tests__lib__constants__const_parameters__0.
 
+type new_tests__legacy__lean_tests__lib__binops__t_S.
+
+fun new_tests__legacy__lean_tests__lib__binops__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__binops__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__binops__t_S_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__binops__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__binops__t_S_default_value: new_tests__legacy__lean_tests__lib__binops__t_S.
+letfun new_tests__legacy__lean_tests__lib__binops__t_S_default() =
+       new_tests__legacy__lean_tests__lib__binops__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__binops__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__binops__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__binops__S()
+    : new_tests__legacy__lean_tests__lib__binops__t_S [data].
+
+
 (*****************************************)
 (* Functions *)
 (*****************************************)
@@ -966,6 +1223,15 @@ letfun new_tests__legacy__lean_tests__lib__traits__basic__f(x : v_T) =
        core_models__ops__arith__f_add(
          new_tests__legacy__lean_tests__lib__traits__basic__f_f1(x),
          new_tests__legacy__lean_tests__lib__traits__basic__f_f2(x, x)
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__traits__associated_constant__foo(
+         n : nat
+       ) =
+       core_models__ops__arith__f_add(
+         n,
+         new_tests__legacy__lean_tests__lib__traits__associated_constant__f_One(
+         )
        ).
 
 letfun new_tests__legacy__lean_tests__lib__structs__miscellaneous__test_tuples(
@@ -1244,6 +1510,10 @@ letfun new_tests__legacy__lean_tests__lib__structs__normal_structs(
          end,v_def,theorem,structure,inductive
        ) = s3 in ().
 
+letfun new_tests__legacy__lean_tests__lib__specs__issue_1945___mktuple(a : nat) =
+       let x = (a) in
+       core_models__cmp__f_eq(a, 0).
+
 letfun new_tests__legacy__lean_tests__lib__specs__issue_1852___impl_T__test(
          self : new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T
        ) =
@@ -1257,7 +1527,16 @@ letfun new_tests__legacy__lean_tests__lib__specs__issue_1852___impl_T__func(
 letfun new_tests__legacy__lean_tests__lib__specs__test(x : nat) =
        x.
 
+letfun new_tests__legacy__lean_tests__lib__specs__uuse_previous_result(x : nat) =
+       new_tests__legacy__lean_tests__lib__specs__test(x).
+
 letfun new_tests__legacy__lean_tests__lib__specs__test_proof(x : nat) =
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__specs__square(x : nat) =
+       core_models__ops__arith__f_mul(x, x).
+
+letfun new_tests__legacy__lean_tests__lib__specs__forall_and_exists(x : nat) =
        x.
 
 letfun new_tests__legacy__lean_tests__lib__specs__fn_without_args(
@@ -1267,6 +1546,18 @@ letfun new_tests__legacy__lean_tests__lib__specs__fn_without_args(
 
 letfun new_tests__legacy__lean_tests__lib__specs__custom_pure_proofs(x : nat) =
        ().
+
+letfun new_tests__legacy__lean_tests__lib__recursion__factorial(n : nat) =
+       if core_models__cmp__f_eq(n, 0)
+       then (1)
+       else (
+         core_models__ops__arith__f_mul(
+           n,
+           new_tests__legacy__lean_tests__lib__recursion__factorial(
+             core_models__ops__arith__f_sub(n, 1)
+           )
+         )
+       ).
 
 letfun new_tests__legacy__lean_tests__lib__opaque__an_opaque_fn(
          wildcard45 : bitstring
@@ -1329,8 +1620,367 @@ letfun new_tests__legacy__lean_tests__lib__monadic__test(wildcard57 : bitstring)
        ) in
        ().
 
+letfun new_tests__legacy__lean_tests__lib__matching__test_const_matching(
+         x : nat, c : bitstring, s : bitstring, b : bool
+       ) =
+       let x = (
+         let (=0) = x in 42
+         else 0
+       ) in
+       let c = (
+         let (=`a`) = c in 42
+         else 0
+       ) in
+       let s = (
+         let (="Hello") = s in 42
+         else 0
+       ) in
+       let b = (
+         let (=true) = b in 42
+         else let (=false) = b in 0
+       ) in
+       let hoist6 = (todo return;) in
+       nat_err().
+
+letfun new_tests__legacy__lean_tests__lib__matching__test_binding_subpattern_matching(
+         x : bitstring
+       ) =
+       rust_primitives__hax__failure(
+         "Explicit rejection by a phase in the Hax engine:
+a node of kind [As_pattern] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+         "(match (x) {
+ Tuple2(0, pair @ Tuple2(a, b)) => {
+ core_models::ops::arith::f_add(
+ core_models::ops::arith::f_add(
+ core_models::ops::arith::f_add(a, b),
+ proj_proj_tuple0(pair),
+ ),
+ proj_proj_tuple..."
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records(
+         wildcard74 : bitstring
+       ) =
+       let c = (
+         new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+           1,2,3,4
+         )
+       ) in
+       let wildcard73: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+           wildcard69: bitstring
+           ,wildcard70: bitstring
+           ,wildcard71: bitstring
+           ,wildcard72: bitstring
+         ) = c in (
+           if core_models__ops__bit__f_not(true)
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard68: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+           f1,wildcard65: bitstring,wildcard66: bitstring,wildcard67: bitstring
+         ) = c in (
+           if core_models__ops__bit__f_not(core_models__cmp__f_eq(f1, 1))
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard64: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+           f1,f2,wildcard62: bitstring,wildcard63: bitstring
+         ) = c in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(f1, 1) && core_models__cmp__f_eq(f2, 2)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard61: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+           wildcard59: bitstring,f2,wildcard60: bitstring,f4
+         ) = c in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(f2, 2) && core_models__cmp__f_eq(f4, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard58: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_records__E_C(
+           f1,f2,f3,f4
+         ) = c in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(f1, 1) && core_models__cmp__f_eq(f2, 2) && core_models__cmp__f_eq(
+                   f3, 3
+                 ) && core_models__cmp__f_eq(f4, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs(
+         wildcard91 : bitstring
+       ) =
+       let c = (
+         new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+           1,2,3,4
+         )
+       ) in
+       let wildcard90: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+           wildcard86: bitstring
+           ,wildcard87: bitstring
+           ,wildcard88: bitstring
+           ,wildcard89: bitstring
+         ) = c in (
+           if core_models__ops__bit__f_not(true)
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard85: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+           f1,wildcard82: bitstring,wildcard83: bitstring,wildcard84: bitstring
+         ) = c in (
+           if core_models__ops__bit__f_not(core_models__cmp__f_eq(f1, 1))
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard81: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+           f1,f2,wildcard79: bitstring,wildcard80: bitstring
+         ) = c in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(f1, 1) && core_models__cmp__f_eq(f2, 2)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard78: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+           wildcard76: bitstring,f2,wildcard77: bitstring,f4
+         ) = c in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(f2, 2) && core_models__cmp__f_eq(f4, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard75: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_structs__S(
+           f1,f2,f3,f4
+         ) = c in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(f1, 1) && core_models__cmp__f_eq(f2, 2) && core_models__cmp__f_eq(
+                   f3, 3
+                 ) && core_models__cmp__f_eq(f4, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_bare_tuples(
+         wildcard115 : bitstring
+       ) =
+       let t = ((1, 2, 3, 4)) in
+       let wildcard114: bitstring = (
+         let (
+           wildcard110: bitstring,
+           wildcard111: bitstring,
+           wildcard112: bitstring,
+           wildcard113: bitstring
+         ) = t in (
+           if core_models__ops__bit__f_not(true)
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard109: bitstring = (
+         let (
+           a: nat,
+           wildcard106: bitstring,
+           wildcard107: bitstring,
+           wildcard108: bitstring
+         ) = t in (
+           if core_models__ops__bit__f_not(core_models__cmp__f_eq(a, 1))
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard105: bitstring = (
+         let (a: nat, b: nat, wildcard103: bitstring, wildcard104: bitstring) = t in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(a, 1) && core_models__cmp__f_eq(b, 2)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard102: bitstring = (
+         let (
+           wildcard99: bitstring,
+           wildcard100: bitstring,
+           wildcard101: bitstring,
+           d: nat
+         ) = t in (
+           if core_models__ops__bit__f_not(core_models__cmp__f_eq(d, 4))
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard98: bitstring = (
+         let (wildcard96: bitstring, wildcard97: bitstring, c: nat, d: nat) = t in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(c, 3) && core_models__cmp__f_eq(d, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard95: bitstring = (
+         let (a: nat, wildcard93: bitstring, wildcard94: bitstring, d: nat) = t in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(a, 1) && core_models__cmp__f_eq(d, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard92: bitstring = (
+         let (a: nat, b: nat, c: nat, d: nat) = t in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(a, 1) && core_models__cmp__f_eq(b, 2) && core_models__cmp__f_eq(
+                   c, 3
+                 ) && core_models__cmp__f_eq(d, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples(
+         wildcard139 : bitstring
+       ) =
+       let d = (
+         new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+           1, 2, 3, 4
+         )
+       ) in
+       let wildcard138: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+           wildcard134: bitstring,
+           wildcard135: bitstring,
+           wildcard136: bitstring,
+           wildcard137: bitstring
+         ) = d in (
+           if core_models__ops__bit__f_not(true)
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard133: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+           a,
+           wildcard130: bitstring,
+           wildcard131: bitstring,
+           wildcard132: bitstring
+         ) = d in (
+           if core_models__ops__bit__f_not(core_models__cmp__f_eq(a, 1))
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard129: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+           a, b, wildcard127: bitstring, wildcard128: bitstring
+         ) = d in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(a, 1) && core_models__cmp__f_eq(b, 2)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard126: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+           wildcard123: bitstring,
+           wildcard124: bitstring,
+           wildcard125: bitstring,
+           d
+         ) = d in (
+           if core_models__ops__bit__f_not(core_models__cmp__f_eq(d, 4))
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard122: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+           wildcard120: bitstring, wildcard121: bitstring, c, d
+         ) = d in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(c, 3) && core_models__cmp__f_eq(d, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard119: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+           a, wildcard117: bitstring, wildcard118: bitstring, d
+         ) = d in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(a, 1) && core_models__cmp__f_eq(d, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       let wildcard116: bitstring = (
+         let new_tests__legacy__lean_tests__lib__matching__C_test_ellipsis_tuples__F_D(
+           a, b, c, d
+         ) = d in (
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(a, 1) && core_models__cmp__f_eq(b, 2) && core_models__cmp__f_eq(
+                   c, 3
+                 ) && core_models__cmp__f_eq(d, 4)
+               )
+           then (bitstring_err())
+           else (())
+         )
+       ) in
+       ().
+
 letfun new_tests__legacy__lean_tests__lib__loops__errors__loop3(
-         wildcard58 : bitstring
+         wildcard140 : bitstring
        ) =
        let x = (0) in
        let end:nat = (10) in
@@ -1357,7 +2007,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
        x.
 
 letfun new_tests__legacy__lean_tests__lib__loops__errors__loop4(
-         wildcard59 : bitstring
+         wildcard141 : bitstring
        ) =
        let e = (0) in
        let f = (|()|42) in
@@ -1380,7 +2030,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
        ) in
        (e, e).
 
-letfun new_tests__legacy__lean_tests__lib__loops__loop1(wildcard60 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__loops__loop1(wildcard142 : bitstring) =
        let x:nat = (0) in
        let x = (
          rust_primitives__hax__failure(
@@ -1401,7 +2051,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
        ) in
        x.
 
-letfun new_tests__legacy__lean_tests__lib__loops__loop2(wildcard61 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__loops__loop2(wildcard143 : bitstring) =
        let x:nat = (0) in
        let x = (
          rust_primitives__hax__failure(
@@ -1421,6 +2071,30 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
  (if core_models::cmp::f_eq(i, 5) {
  {
  let ..."
+         )
+       ) in
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__loops__for_loop_with_spec(y : nat) =
+       let x:nat = (y) in
+       let x = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
+ f_start: 0,
+ f_end: y,
+ })) {
+ |x| {
+ {
+ let _: tuple0 = {
+ hax_lib::e_internal_loop_invariant::<
+ int,
+..."
          )
        ) in
        x.
@@ -1450,7 +2124,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
 
 const new_tests__legacy__lean_tests__lib__floats__v_N: bitstring.
 
-letfun new_tests__legacy__lean_tests__lib__floats__test(wildcard62 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__floats__test(wildcard144 : bitstring) =
        let l0 = (1.0f64) in
        let l1 = (0.9f64) in
        let l2 = (5.0f32) in
@@ -1462,7 +2136,7 @@ letfun new_tests__legacy__lean_tests__lib__floats__f(
        ) =
        y.
 
-letfun new_tests__legacy__lean_tests__lib__enums__enums(wildcard64 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__enums__enums(wildcard146 : bitstring) =
        let e_v1 = (new_tests__legacy__lean_tests__lib__enums__E_V1()) in
        let e_v2 = (new_tests__legacy__lean_tests__lib__enums__E_V2()) in
        let e_v3 = (new_tests__legacy__lean_tests__lib__enums__E_V3(23)) in
@@ -1481,7 +2155,7 @@ letfun new_tests__legacy__lean_tests__lib__enums__enums(wildcard64 : bitstring) 
        let new_tests__legacy__lean_tests__lib__enums__E_V1() = e_v1 in ()
        else let new_tests__legacy__lean_tests__lib__enums__E_V2() = e_v1 in ()
        else let new_tests__legacy__lean_tests__lib__enums__E_V3(
-         wildcard63: bitstring
+         wildcard145: bitstring
        ) = e_v1 in ()
        else let new_tests__legacy__lean_tests__lib__enums__E_V4(x1, x2, x3) = e_v1 in (
          let y1 = (core_models__ops__arith__f_add(x1, x2)) in
@@ -1497,7 +2171,7 @@ letfun new_tests__legacy__lean_tests__lib__enums__enums(wildcard64 : bitstring) 
        ) = e_v1 in ().
 
 letfun new_tests__legacy__lean_tests__lib__constants__const_parameters__f(
-         wildcard65 : bitstring
+         wildcard147 : bitstring
        ) =
        v_N.
 
@@ -1506,9 +2180,9 @@ const new_tests__legacy__lean_tests__lib__constants__const_parameters__v_N0: bit
 const new_tests__legacy__lean_tests__lib__constants__const_parameters__v_N1: bitstring.
 
 letfun new_tests__legacy__lean_tests__lib__constants__const_parameters__test(
-         wildcard67 : bitstring
+         wildcard149 : bitstring
        ) =
-       let wildcard66: bitstring = (
+       let wildcard148: bitstring = (
          core_models__ops__arith__f_add(
            new_tests__legacy__lean_tests__lib__constants__const_parameters__f(()
            ),
@@ -1524,7 +2198,7 @@ letfun new_tests__legacy__lean_tests__lib__constants__const_parameters__test2(
        let s = (
          new_tests__legacy__lean_tests__lib__constants__const_parameters__S(9)
        ) in
-       let wildcard68: bitstring = (
+       let wildcard150: bitstring = (
          core_models__ops__arith__f_add(
            new_tests__legacy__lean_tests__lib__constants__const_parameters__f_f(
              s
@@ -1550,8 +2224,12 @@ letfun new_tests__legacy__lean_tests__lib__constants__computation(x : nat) =
 
 const new_tests__legacy__lean_tests__lib__constants__v_C4: bitstring.
 
+const new_tests__legacy__lean_tests__lib__constants__v_C5: bitstring.
+
+const new_tests__legacy__lean_tests__lib__constants__v_C6: bitstring.
+
 letfun new_tests__legacy__lean_tests__lib__constants__test(
-         wildcard69 : bitstring
+         wildcard151 : bitstring
        ) =
        let x = (
          core_models__ops__arith__f_add(
@@ -1592,6 +2270,110 @@ letfun new_tests__legacy__lean_tests__lib__casts__add_after_cast(
        ) =
        core_models__ops__arith__f_add(core_models__ops__arith__f_add(a, b), c).
 
+letfun new_tests__legacy__lean_tests__lib__binops__noop(x : nat) =
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__binops__neg_int(x : nat) =
+       core_models__ops__arith__f_neg(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_int(x : nat) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_bool(x : bool) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__index(x : bitstring) =
+       core_models__ops__index__f_index(x, 0).
+
+letfun new_tests__legacy__lean_tests__lib__binops__add_int(x : nat, y : nat) =
+       core_models__ops__arith__f_add(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__sub_int(x : nat, y : nat) =
+       core_models__ops__arith__f_sub(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__mul_int(x : nat, y : nat) =
+       core_models__ops__arith__f_mul(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__div_int(x : nat, y : nat) =
+       core_models__ops__arith__f_div(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__rem_int(x : nat, y : nat) =
+       core_models__ops__arith__f_rem(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__shr_int(x : nat, y : nat) =
+       core_models__ops__bit__f_shr(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__shl_int(x : nat, y : nat) =
+       core_models__ops__bit__f_shl(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitand_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitand(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitand_bool(
+         x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitand(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitor_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitor_bool(x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitxor_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitxor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitxor_bool(
+         x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitxor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__logical_op_and(
+         x : bool, y : bool
+       ) =
+       x && y.
+
+letfun new_tests__legacy__lean_tests__lib__binops__logical_op_or(
+         x : bool, y : bool
+       ) =
+       x || y.
+
+letfun new_tests__legacy__lean_tests__lib__binops__eq_int(x : nat, y : nat) =
+       core_models__cmp__f_eq(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__eq_bool(x : bool, y : bool) =
+       core_models__cmp__f_eq(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__neq_int(x : nat, y : nat) =
+       core_models__cmp__f_ne(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__neq_bool(x : bool, y : bool) =
+       core_models__cmp__f_ne(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__lt_int(x : nat, y : nat) =
+       core_models__cmp__f_lt(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__le_int(x : nat, y : nat) =
+       core_models__cmp__f_le(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__gt_int(x : nat, y : nat) =
+       core_models__cmp__f_gt(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__ge_int(x : nat, y : nat) =
+       core_models__cmp__f_ge(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_s(
+         x : new_tests__legacy__lean_tests__lib__binops__t_S
+       ) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__add_s(
+         x : new_tests__legacy__lean_tests__lib__binops__t_S,
+         y : new_tests__legacy__lean_tests__lib__binops__t_S
+       ) =
+       core_models__ops__arith__f_add(x, y).
+
 letfun new_tests__legacy__lean_tests__lib__associated_types__multiple_projections__func(
          d : v_D, f : v_F, u : v_U
        ) =
@@ -1610,7 +2392,7 @@ letfun new_tests__legacy__lean_tests__lib__associated_types__multiple_associated
        ).
 
 letfun new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__b(
-         wildcard70 : bitstring
+         wildcard152 : bitstring
        ) =
        let pair = ((42, true)) in
        let both = (
@@ -1644,9 +2426,9 @@ letfun new_tests__legacy__lean_tests__lib__associated_types__basic__first_plus_1
        ).
 
 letfun new_tests__legacy__lean_tests__lib__associated_types__basic__a(
-         wildcard72 : bitstring
+         wildcard154 : bitstring
        ) =
-       let wildcard71: bitstring = (
+       let wildcard153: bitstring = (
          new_tests__legacy__lean_tests__lib__associated_types__basic__first_plus_1_(
            true
          )
@@ -1657,10 +2439,10 @@ letfun new_tests__legacy__lean_tests__lib__array__f(x : bitstring) =
        ().
 
 letfun new_tests__legacy__lean_tests__lib__array__g(x : bitstring) =
-       let wildcard74: bitstring = (
+       let wildcard156: bitstring = (
          new_tests__legacy__lean_tests__lib__array__f(x)
        ) in
-       let wildcard73: bitstring = (
+       let wildcard155: bitstring = (
          new_tests__legacy__lean_tests__lib__array__f(
            rust_primitives__hax__repeat(0, 10)
          )
@@ -1671,7 +2453,7 @@ const new_tests__legacy__lean_tests__lib__v_FORTYTWO: bitstring.
 
 const new_tests__legacy__lean_tests__lib__v_MINUS_FORTYTWO: bitstring.
 
-letfun new_tests__legacy__lean_tests__lib__returns42(wildcard75 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__returns42(wildcard157 : bitstring) =
        new_tests__legacy__lean_tests__lib__v_FORTYTWO.
 
 letfun new_tests__legacy__lean_tests__lib__add_two_numbers(x : nat, y : nat) =
@@ -1683,7 +2465,7 @@ letfun new_tests__legacy__lean_tests__lib__letBinding(x : nat, y : nat) =
        let result2 = (core_models__ops__arith__f_add(result1, 2)) in
        core_models__ops__arith__f_add(result2, 1).
 
-letfun new_tests__legacy__lean_tests__lib__closure(wildcard76 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__closure(wildcard158 : bitstring) =
        let x = (41) in
        let f1 = (|y|core_models__ops__arith__f_add(y, x)) in
        let f2 = (
@@ -1705,18 +2487,28 @@ letfun new_tests__legacy__lean_tests__lib__test_before_verbatim_multi_line(
        ) =
        32.
 
-letfun new_tests__legacy__lean_tests__lib__binop_resugarings(x : nat) =
-       let add = (core_models__ops__arith__f_add(x, 1)) in
-       let sub = (core_models__ops__arith__f_sub(add, 2)) in
-       let mul = (core_models__ops__arith__f_mul(sub, 3)) in
-       let rem = (core_models__ops__arith__f_rem(mul, 4)) in
-       let div = (core_models__ops__arith__f_div(rem, 5)) in
-       let rshift = (core_models__ops__bit__f_shr(div, x)) in
-       let lshift = (core_models__ops__bit__f_shl(div, x)) in
-       x.
+const new_tests__legacy__lean_tests__lib__v_NULL_CHAR: bitstring.
+
+letfun new_tests__legacy__lean_tests__lib__string_escapes(
+         wildcard159 : bitstring
+       ) =
+       let e_empty = ("") in
+       let e_plain = ("hello world") in
+       let e_with_quotes = ("she said "hello"") in
+       let e_with_single_quote = ("it's fine") in
+       let e_with_backslash = ("path\to\file") in
+       let e_with_newline = ("line1
+line2") in
+       let e_with_tab = ("col1	col2") in
+       let e_with_carriage_return = ("beforeafter") in
+       let e_mixed = ("say "hello"
+and	'goodbye'\end") in
+       let e_carriage_return = ("carriagereturn") in
+       let e_control_chars = ("null byte bellchar font[0mreset") in
+       ().
 
 letfun new_tests__legacy__lean_tests__lib__nested_control_flow__nested_control_flow(
-         wildcard77 : bitstring
+         wildcard160 : bitstring
        ) =
        let x1 = (core_models__ops__arith__f_add(1, if true then (0) else (1))) in
        let x2 = (core_models__ops__arith__f_add(1, 0)) in
@@ -1727,7 +2519,7 @@ letfun new_tests__legacy__lean_tests__lib__nested_control_flow__nested_control_f
        ().
 
 letfun new_tests__legacy__lean_tests__lib__nested_control_flow__explicit_hoisting(
-         wildcard78 : bitstring
+         wildcard161 : bitstring
        ) =
        let x1_tmp = (if true then (0) else (1)) in
        let x1 = (core_models__ops__arith__f_add(1, x1_tmp)) in
@@ -1739,7 +2531,7 @@ letfun new_tests__legacy__lean_tests__lib__nested_control_flow__explicit_hoistin
        ().
 
 letfun new_tests__legacy__lean_tests__lib__nested_control_flow__complex_nesting(
-         wildcard79 : bitstring
+         wildcard162 : bitstring
        ) =
        let x1 = (
          if true
@@ -1792,48 +2584,7 @@ letfun new_tests__legacy__lean_tests__lib__nested_control_flow__complex_nesting(
        ) in
        ((), ()).
 
-letfun new_tests__legacy__lean_tests__lib__matching__test_const_matching(
-         x : nat, c : bitstring, s : bitstring, b : bool
-       ) =
-       let x = (
-         let (=0) = x in 42
-         else 0
-       ) in
-       let c = (
-         let (=`a`) = c in 42
-         else 0
-       ) in
-       let s = (
-         let (="Hello") = s in 42
-         else 0
-       ) in
-       let b = (
-         let (=true) = b in 42
-         else let (=false) = b in 0
-       ) in
-       let hoist6 = (todo return;) in
-       nat_err().
-
-letfun new_tests__legacy__lean_tests__lib__matching__test_binding_subpattern_matching(
-         x : bitstring
-       ) =
-       rust_primitives__hax__failure(
-         "Explicit rejection by a phase in the Hax engine:
-a node of kind [As_pattern] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-         "(match (x) {
- Tuple2(0, pair @ Tuple2(a, b)) => {
- core_models::ops::arith::f_add(
- core_models::ops::arith::f_add(
- core_models::ops::arith::f_add(a, b),
- proj_proj_tuple0(pair),
- ),
- proj_proj_tuple..."
-       ).
-
-letfun new_tests__legacy__lean_tests__lib__ite__test1(wildcard80 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__ite__test1(wildcard163 : bitstring) =
        let x = (if true then (0) else (1)) in
        if false then (2) else (3).
 
@@ -1862,11 +2613,11 @@ letfun new_tests__legacy__lean_tests__lib__ite__test2(b : bool) =
          core_models__ops__arith__f_add(core_models__ops__arith__f_add(z, y), x)
        ).
 
-letfun new_tests__legacy__lean_tests__lib__comments__f(wildcard81 : bitstring) =
+letfun new_tests__legacy__lean_tests__lib__comments__f(wildcard164 : bitstring) =
        ().
 
 letfun new_tests__legacy__lean_tests__lib__comments__heavily_documented(
-         wildcard82 : bitstring
+         wildcard165 : bitstring
        ) =
        4.
 

@@ -15,6 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__branch__lazy_boolean
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def branch_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -31,6 +32,7 @@ def branch_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def branch_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -47,6 +49,7 @@ def branch_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def chain (x : u32) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -59,20 +62,19 @@ def chain (x : u32) : RustM rust_primitives.hax.Tuple0 := do
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
   let c : Bool ←
-    ((← ((← ((← (rust_primitives.hax.machine_int.gt x (1 : u32)))
-          &&? (← (rust_primitives.hax.machine_int.gt x (2 : u32)))))
-        &&? (← (rust_primitives.hax.machine_int.gt x (4 : u32)))))
-      &&? (← (rust_primitives.hax.machine_int.gt x (8 : u32))));
+    ((← ((← ((← (x >? (1 : u32))) &&? (← (x >? (2 : u32)))))
+        &&? (← (x >? (4 : u32)))))
+      &&? (← (x >? (8 : u32))));
   let _ ← (core_models.hint.black_box Bool c);
   let d : Bool ←
-    ((← ((← ((← (rust_primitives.hax.machine_int.lt x (1 : u32)))
-          ||? (← (rust_primitives.hax.machine_int.lt x (2 : u32)))))
-        ||? (← (rust_primitives.hax.machine_int.lt x (4 : u32)))))
-      ||? (← (rust_primitives.hax.machine_int.lt x (8 : u32))));
+    ((← ((← ((← (x <? (1 : u32))) ||? (← (x <? (2 : u32)))))
+        ||? (← (x <? (4 : u32)))))
+      ||? (← (x <? (8 : u32))));
   let _ ← (core_models.hint.black_box Bool d);
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def nested_mixed (x : u32) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -85,20 +87,17 @@ def nested_mixed (x : u32) : RustM rust_primitives.hax.Tuple0 := do
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
   let c : Bool ←
-    ((← ((← (rust_primitives.hax.machine_int.lt x (4 : u32)))
-        ||? (← (rust_primitives.hax.machine_int.ge x (9 : u32)))))
-      &&? (← ((← (rust_primitives.hax.machine_int.lt x (2 : u32)))
-        ||? (← (rust_primitives.hax.machine_int.ge x (10 : u32))))));
+    ((← ((← (x <? (4 : u32))) ||? (← (x >=? (9 : u32)))))
+      &&? (← ((← (x <? (2 : u32))) ||? (← (x >=? (10 : u32))))));
   let _ ← (core_models.hint.black_box Bool c);
   let d : Bool ←
-    ((← ((← (rust_primitives.hax.machine_int.lt x (4 : u32)))
-        &&? (← (rust_primitives.hax.machine_int.lt x (1 : u32)))))
-      ||? (← ((← (rust_primitives.hax.machine_int.ge x (8 : u32)))
-        &&? (← (rust_primitives.hax.machine_int.ge x (10 : u32))))));
+    ((← ((← (x <? (4 : u32))) &&? (← (x <? (1 : u32)))))
+      ||? (← ((← (x >=? (8 : u32))) &&? (← (x >=? (10 : u32))))));
   let _ ← (core_models.hint.black_box Bool d);
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008, HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -108,13 +107,13 @@ def main (_ : rust_primitives.hax.Tuple0) :
   let _ ←
     (core_models.iter.traits.iterator.Iterator.fold
       (← (core_models.iter.traits.collect.IntoIterator.into_iter
-        (RustArray Bool 5) #v[false, true, true, true, true]))
+        (RustArray Bool 5) (RustArray.ofVec #v[false, true, true, true, true])))
       rust_primitives.hax.Tuple0.mk
       (fun _ a =>
         (do
         (core_models.iter.traits.iterator.Iterator.fold
           (← (core_models.iter.traits.collect.IntoIterator.into_iter
-            (RustArray Bool 3) #v[false, true, true]))
+            (RustArray Bool 3) (RustArray.ofVec #v[false, true, true])))
           rust_primitives.hax.Tuple0.mk
           (fun _ b =>
             (do

@@ -17,6 +17,7 @@ namespace new_tests.legacy__lean_core_models__lib.default.structs
 structure S where
   f1 : usize
 
+@[spec]
 def Impl.default_hoisted (_ : rust_primitives.hax.Tuple0) : RustM S := do
   (pure (S.mk (f1 := (0 : usize))))
 
@@ -40,6 +41,7 @@ inductive E (T : Type) : Type
 | C1 : u32 -> E (T : Type)
 | C2 : T -> E (T : Type)
 
+@[spec]
 def Impl.default_hoisted
     (T : Type)
     [trait_constr_default_hoisted_associated_type_i0 :
@@ -109,6 +111,7 @@ structure S where
 inductive E : Type
 | C : u32 -> E
 
+@[spec]
 def Impl.default_hoisted (_ : rust_primitives.hax.Tuple0) : RustM S := do
   (pure (S.mk (f1 := (42 : u32))))
 

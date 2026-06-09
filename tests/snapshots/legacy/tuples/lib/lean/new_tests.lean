@@ -15,6 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.legacy__tuples__lib
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def project_tuple1 (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   let tuple1 : (rust_primitives.hax.Tuple1 u8) :=
     (rust_primitives.hax.Tuple1.mk (3 : u8));

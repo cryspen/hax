@@ -23,19 +23,20 @@ class T (Self : Type)
   f (Self) (self : Self) :RustM rust_primitives.hax.Tuple0 := do
     let _ ←
       (std.io.stdio._print
-        (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["default
-"])));
+        (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+          (RustArray.ofVec #v["default\n"]))));
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure rust_primitives.hax.Tuple0.mk)
 
 structure S where
   -- no fields
 
+@[spec]
 def Impl.f_hoisted (self : S) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["impl S
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["impl S\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure rust_primitives.hax.Tuple0.mk)
 
@@ -44,6 +45,7 @@ def Impl.f_hoisted (self : S) : RustM rust_primitives.hax.Tuple0 := do
 instance Impl : T S where
   f := (Impl.f_hoisted)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (T.f S S.mk);

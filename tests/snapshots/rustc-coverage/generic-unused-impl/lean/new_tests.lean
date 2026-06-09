@@ -17,6 +17,7 @@ namespace new_tests.rustc_coverage__generic_unused_impl
 structure W (T : Type) where
   _0 : T
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
@@ -34,6 +35,7 @@ class Foo (Self : Type)
   where
   _from (Self) : (associatedTypes.Assoc -> RustM Self)
 
+@[spec]
 def Impl.from_hoisted
     (T : Type)
     [trait_constr_from_hoisted_associated_type_i0 : Foo.AssociatedTypes T]

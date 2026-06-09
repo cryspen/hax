@@ -14,8 +14,10 @@ set_option linter.unusedVariables false
 
 namespace new_tests.legacy__nested_derefs__lib
 
+@[spec]
 def f (x : usize) : RustM usize := do (pure x)
 
+@[spec]
 def g (x : usize) : RustM usize := do (f x)
 
 end new_tests.legacy__nested_derefs__lib

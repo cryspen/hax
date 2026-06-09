@@ -93,6 +93,8 @@ fn fn_pointer_cast() {
 }
 
 /// @fail(extraction): ssprove(HAX0001)
+const null: char = '\0';
+
 fn strings() {
     let _: &str = "hello";
     let _: &str = "hello\"world";

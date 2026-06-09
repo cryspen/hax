@@ -20,8 +20,9 @@ structure Other where
 inductive Test : Type
 | C1 : Other -> Test
 
+@[spec]
 def Impl.test (self : Test) : RustM i32 := do
-  match self with | (Test.C1  c) => (pure (Other._0 c))
+  match self with | (Test.C1  c) => do (pure (Other._0 c))
 
 end new_tests.legacy__patterns__lib
 

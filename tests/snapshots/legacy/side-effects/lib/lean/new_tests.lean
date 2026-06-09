@@ -15,6 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.legacy__side_effects__lib
 
 --  Helper function
+@[spec]
 def add3 (x : u32) (y : u32) (z : u32) : RustM u32 := do
   (core_models.num.Impl_8.wrapping_add
     (← (core_models.num.Impl_8.wrapping_add x y))
@@ -22,10 +23,11 @@ def add3 (x : u32) (y : u32) (z : u32) : RustM u32 := do
 
 --  Exercise local mutation with control flow and loops
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def local_mutation (x : u32) : RustM u32 := do
   let y : u32 := (0 : u32);
   let x : u32 ← (core_models.num.Impl_8.wrapping_add x (1 : u32));
-  if (← (rust_primitives.hax.machine_int.gt x (3 : u32))) then
+  if (← (x >? (3 : u32))) then do
     let x : u32 ← (core_models.num.Impl_8.wrapping_sub x (3 : u32));
     let y : u32 ← (x /? (2 : u32));
     let y : u32 ← (core_models.num.Impl_8.wrapping_add y (2 : u32));
@@ -40,15 +42,15 @@ def local_mutation (x : u32) : RustM u32 := do
         (fun y i =>
           (do (core_models.num.Impl_8.wrapping_add x i) : RustM u32)));
     (core_models.num.Impl_8.wrapping_add x y)
-  else
+  else do
     let ⟨⟨x, y⟩, hoist7⟩ ←
       match x with
-        | 12 =>
+        | 12 => do
           let y : u32 ← (core_models.num.Impl_8.wrapping_add x y);
           (pure (rust_primitives.hax.Tuple2.mk
             (rust_primitives.hax.Tuple2.mk x y)
             (3 : u32)))
-        | 13 =>
+        | 13 => do
           let x : u32 ← (core_models.num.Impl_8.wrapping_add x (1 : u32));
           (pure (rust_primitives.hax.Tuple2.mk
             (rust_primitives.hax.Tuple2.mk x y)
@@ -56,7 +58,7 @@ def local_mutation (x : u32) : RustM u32 := do
               x
               (← (core_models.num.Impl_8.wrapping_add (123 : u32) x))
               x))))
-        | _ =>
+        | _ => do
           (pure (rust_primitives.hax.Tuple2.mk
             (rust_primitives.hax.Tuple2.mk x y)
             (0 : u32)));
@@ -64,19 +66,20 @@ def local_mutation (x : u32) : RustM u32 := do
     (core_models.num.Impl_8.wrapping_add x y)
 
 --  Exercise early returns with control flow and loops
+@[spec]
 def early_returns (x : u32) : RustM u32 := do
-  if (← (rust_primitives.hax.machine_int.gt x (3 : u32))) then
+  if (← (x >? (3 : u32))) then do
     (pure (0 : u32))
-  else
-    if (← (rust_primitives.hax.machine_int.gt x (30 : u32))) then
+  else do
+    if (← (x >? (30 : u32))) then do
       match true with
-        | true => (pure (34 : u32))
-        | _ =>
+        | true => do (pure (34 : u32))
+        | _ => do
           let ⟨x, hoist11⟩ := (rust_primitives.hax.Tuple2.mk x (3 : u32));
           (core_models.num.Impl_8.wrapping_add
             (← (core_models.num.Impl_8.wrapping_add (123 : u32) hoist11))
             x)
-    else
+    else do
       let x : u32 ← (x +? (9 : u32));
       let ⟨x, hoist11⟩ :=
         (rust_primitives.hax.Tuple2.mk x (← (x +? (1 : u32))));
@@ -84,242 +87,245 @@ def early_returns (x : u32) : RustM u32 := do
         (← (core_models.num.Impl_8.wrapping_add (123 : u32) hoist11))
         x)
 
+@[spec]
 def simplifiable_return (c1 : Bool) (c2 : Bool) (c3 : Bool) : RustM i32 := do
   let x : i32 := (0 : i32);
-  if c1 then
-    if c2 then
+  if c1 then do
+    if c2 then do
       let x : i32 ← (x +? (10 : i32));
-      if c3 then (pure (1 : i32)) else (x +? (1 : i32))
-    else
+      if c3 then do (pure (1 : i32)) else do (x +? (1 : i32))
+    else do
       (x +? (1 : i32))
-  else
+  else do
     (pure x)
 
+@[spec]
 def simplifiable_question_mark
     (c : Bool)
     (x : (core_models.option.Option i32)) :
     RustM (core_models.option.Option i32) := do
-  if c then
+  if c then do
     match x with
-      | (core_models.option.Option.Some  hoist16) =>
+      | (core_models.option.Option.Some  hoist16) => do
         let a : i32 ← (hoist16 +? (10 : i32));
         let b : i32 := (20 : i32);
         (pure (core_models.option.Option.Some (← (a +? b))))
-      | (core_models.option.Option.None ) =>
+      | (core_models.option.Option.None ) => do
         (pure core_models.option.Option.None)
-  else
+  else do
     let a : i32 := (0 : i32);
     let b : i32 := (20 : i32);
     (pure (core_models.option.Option.Some (← (a +? b))))
 
 --  Question mark without error coercion
+@[spec]
 def direct_result_question_mark
     (y : (core_models.result.Result rust_primitives.hax.Tuple0 u32)) :
     RustM (core_models.result.Result i8 u32) := do
   match y with
-    | (core_models.result.Result.Ok  _) =>
+    | (core_models.result.Result.Ok  _) => do
       (pure (core_models.result.Result.Ok (0 : i8)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 --  Question mark with an error coercion
+@[spec]
 def direct_result_question_mark_coercion
     (y : (core_models.result.Result i8 u16)) :
     RustM (core_models.result.Result i8 u32) := do
   match y with
-    | (core_models.result.Result.Ok  hoist17) =>
+    | (core_models.result.Result.Ok  hoist17) => do
       (pure (core_models.result.Result.Ok hoist17))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err
         (← (core_models.convert.From._from u32 u16 err))))
 
 --  Test question mark on `Option`s with some control flow
+@[spec]
 def options
     (x : (core_models.option.Option u8))
     (y : (core_models.option.Option u8))
     (z : (core_models.option.Option u64)) :
     RustM (core_models.option.Option u8) := do
   match x with
-    | (core_models.option.Option.Some  hoist21) =>
-      if (← (rust_primitives.hax.machine_int.gt hoist21 (10 : u8))) then
+    | (core_models.option.Option.Some  hoist21) => do
+      if (← (hoist21 >? (10 : u8))) then do
         match x with
-          | (core_models.option.Option.Some  hoist23) =>
+          | (core_models.option.Option.Some  hoist23) => do
             match
               (core_models.option.Option.Some
                 (← (core_models.num.Impl_6.wrapping_add hoist23 (3 : u8))))
             with
-              | (core_models.option.Option.Some  hoist29) =>
+              | (core_models.option.Option.Some  hoist29) => do
                 match hoist29 with
-                  | 3 =>
+                  | 3 => do
                     match core_models.option.Option.None with
-                      | (core_models.option.Option.Some  some) =>
+                      | (core_models.option.Option.Some  some) => do
                         let v : u8 := some;
                         match x with
-                          | (core_models.option.Option.Some  hoist30) =>
+                          | (core_models.option.Option.Some  hoist30) => do
                             match y with
-                              | (core_models.option.Option.Some  hoist31) =>
+                              | (core_models.option.Option.Some  hoist31) => do
                                 (pure (core_models.option.Option.Some
                                   (← (core_models.num.Impl_6.wrapping_add
                                     (← (core_models.num.Impl_6.wrapping_add
                                       v
                                       hoist30))
                                     hoist31))))
-                              | (core_models.option.Option.None ) =>
+                              | (core_models.option.Option.None ) => do
                                 (pure core_models.option.Option.None)
-                          | (core_models.option.Option.None ) =>
+                          | (core_models.option.Option.None ) => do
                             (pure core_models.option.Option.None)
-                      | (core_models.option.Option.None ) =>
+                      | (core_models.option.Option.None ) => do
                         (pure core_models.option.Option.None)
-                  | 4 =>
+                  | 4 => do
                     match z with
-                      | (core_models.option.Option.Some  hoist18) =>
+                      | (core_models.option.Option.Some  hoist18) => do
                         let v : u8 ←
                           ((4 : u8)
-                            +? (← if
-                            (← (rust_primitives.hax.machine_int.gt
-                              hoist18
-                              (4 : u64))) then
+                            +? (← if (← (hoist18 >? (4 : u64))) then do
                               (pure (0 : u8))
-                            else
+                            else do
                               (pure (3 : u8))));
                         match x with
-                          | (core_models.option.Option.Some  hoist30) =>
+                          | (core_models.option.Option.Some  hoist30) => do
                             match y with
-                              | (core_models.option.Option.Some  hoist31) =>
+                              | (core_models.option.Option.Some  hoist31) => do
                                 (pure (core_models.option.Option.Some
                                   (← (core_models.num.Impl_6.wrapping_add
                                     (← (core_models.num.Impl_6.wrapping_add
                                       v
                                       hoist30))
                                     hoist31))))
-                              | (core_models.option.Option.None ) =>
+                              | (core_models.option.Option.None ) => do
                                 (pure core_models.option.Option.None)
-                          | (core_models.option.Option.None ) =>
+                          | (core_models.option.Option.None ) => do
                             (pure core_models.option.Option.None)
-                      | (core_models.option.Option.None ) =>
+                      | (core_models.option.Option.None ) => do
                         (pure core_models.option.Option.None)
-                  | _ =>
+                  | _ => do
                     let v : u8 := (12 : u8);
                     match x with
-                      | (core_models.option.Option.Some  hoist30) =>
+                      | (core_models.option.Option.Some  hoist30) => do
                         match y with
-                          | (core_models.option.Option.Some  hoist31) =>
+                          | (core_models.option.Option.Some  hoist31) => do
                             (pure (core_models.option.Option.Some
                               (← (core_models.num.Impl_6.wrapping_add
                                 (← (core_models.num.Impl_6.wrapping_add
                                   v
                                   hoist30))
                                 hoist31))))
-                          | (core_models.option.Option.None ) =>
+                          | (core_models.option.Option.None ) => do
                             (pure core_models.option.Option.None)
-                      | (core_models.option.Option.None ) =>
+                      | (core_models.option.Option.None ) => do
                         (pure core_models.option.Option.None)
-              | (core_models.option.Option.None ) =>
+              | (core_models.option.Option.None ) => do
                 (pure core_models.option.Option.None)
-          | (core_models.option.Option.None ) =>
+          | (core_models.option.Option.None ) => do
             (pure core_models.option.Option.None)
-      else
+      else do
         match x with
-          | (core_models.option.Option.Some  hoist26) =>
+          | (core_models.option.Option.Some  hoist26) => do
             match y with
-              | (core_models.option.Option.Some  hoist25) =>
+              | (core_models.option.Option.Some  hoist25) => do
                 match
                   (core_models.option.Option.Some
                     (← (core_models.num.Impl_6.wrapping_add hoist26 hoist25)))
                 with
-                  | (core_models.option.Option.Some  hoist29) =>
+                  | (core_models.option.Option.Some  hoist29) => do
                     match hoist29 with
-                      | 3 =>
+                      | 3 => do
                         match core_models.option.Option.None with
-                          | (core_models.option.Option.Some  some) =>
+                          | (core_models.option.Option.Some  some) => do
                             let v : u8 := some;
                             match x with
-                              | (core_models.option.Option.Some  hoist30) =>
+                              | (core_models.option.Option.Some  hoist30) => do
                                 match y with
                                   | (core_models.option.Option.Some  hoist31) =>
+                                    do
                                     (pure (core_models.option.Option.Some
                                       (← (core_models.num.Impl_6.wrapping_add
                                         (← (core_models.num.Impl_6.wrapping_add
                                           v
                                           hoist30))
                                         hoist31))))
-                                  | (core_models.option.Option.None ) =>
+                                  | (core_models.option.Option.None ) => do
                                     (pure core_models.option.Option.None)
-                              | (core_models.option.Option.None ) =>
+                              | (core_models.option.Option.None ) => do
                                 (pure core_models.option.Option.None)
-                          | (core_models.option.Option.None ) =>
+                          | (core_models.option.Option.None ) => do
                             (pure core_models.option.Option.None)
-                      | 4 =>
+                      | 4 => do
                         match z with
-                          | (core_models.option.Option.Some  hoist18) =>
+                          | (core_models.option.Option.Some  hoist18) => do
                             let v : u8 ←
                               ((4 : u8)
-                                +? (← if
-                                (← (rust_primitives.hax.machine_int.gt
-                                  hoist18
-                                  (4 : u64))) then
+                                +? (← if (← (hoist18 >? (4 : u64))) then do
                                   (pure (0 : u8))
-                                else
+                                else do
                                   (pure (3 : u8))));
                             match x with
-                              | (core_models.option.Option.Some  hoist30) =>
+                              | (core_models.option.Option.Some  hoist30) => do
                                 match y with
                                   | (core_models.option.Option.Some  hoist31) =>
+                                    do
                                     (pure (core_models.option.Option.Some
                                       (← (core_models.num.Impl_6.wrapping_add
                                         (← (core_models.num.Impl_6.wrapping_add
                                           v
                                           hoist30))
                                         hoist31))))
-                                  | (core_models.option.Option.None ) =>
+                                  | (core_models.option.Option.None ) => do
                                     (pure core_models.option.Option.None)
-                              | (core_models.option.Option.None ) =>
+                              | (core_models.option.Option.None ) => do
                                 (pure core_models.option.Option.None)
-                          | (core_models.option.Option.None ) =>
+                          | (core_models.option.Option.None ) => do
                             (pure core_models.option.Option.None)
-                      | _ =>
+                      | _ => do
                         let v : u8 := (12 : u8);
                         match x with
-                          | (core_models.option.Option.Some  hoist30) =>
+                          | (core_models.option.Option.Some  hoist30) => do
                             match y with
-                              | (core_models.option.Option.Some  hoist31) =>
+                              | (core_models.option.Option.Some  hoist31) => do
                                 (pure (core_models.option.Option.Some
                                   (← (core_models.num.Impl_6.wrapping_add
                                     (← (core_models.num.Impl_6.wrapping_add
                                       v
                                       hoist30))
                                     hoist31))))
-                              | (core_models.option.Option.None ) =>
+                              | (core_models.option.Option.None ) => do
                                 (pure core_models.option.Option.None)
-                          | (core_models.option.Option.None ) =>
+                          | (core_models.option.Option.None ) => do
                             (pure core_models.option.Option.None)
-                  | (core_models.option.Option.None ) =>
+                  | (core_models.option.Option.None ) => do
                     (pure core_models.option.Option.None)
-              | (core_models.option.Option.None ) =>
+              | (core_models.option.Option.None ) => do
                 (pure core_models.option.Option.None)
-          | (core_models.option.Option.None ) =>
+          | (core_models.option.Option.None ) => do
             (pure core_models.option.Option.None)
-    | (core_models.option.Option.None ) => (pure core_models.option.Option.None)
+    | (core_models.option.Option.None ) => do
+      (pure core_models.option.Option.None)
 
 --  Test question mark on `Result`s with local mutation
+@[spec]
 def question_mark (x : u32) : RustM (core_models.result.Result u32 u32) := do
-  if (← (rust_primitives.hax.machine_int.gt x (40 : u32))) then
+  if (← (x >? (40 : u32))) then do
     let y : u32 := (0 : u32);
     let x : u32 ← (core_models.num.Impl_8.wrapping_add x (3 : u32));
     let y : u32 ← (core_models.num.Impl_8.wrapping_add x y);
     let x : u32 ← (core_models.num.Impl_8.wrapping_add x y);
-    if (← (rust_primitives.hax.machine_int.gt x (90 : u32))) then
+    if (← (x >? (90 : u32))) then do
       match (core_models.result.Result.Err (12 : u8)) with
-        | (core_models.result.Result.Ok  ok) =>
+        | (core_models.result.Result.Ok  ok) => do
           (pure (core_models.result.Result.Ok
             (← (core_models.num.Impl_8.wrapping_add (3 : u32) x))))
-        | (core_models.result.Result.Err  err) =>
+        | (core_models.result.Result.Err  err) => do
           (pure (core_models.result.Result.Err
             (← (core_models.convert.From._from u32 u8 err))))
-    else
+    else do
       (pure (core_models.result.Result.Ok
         (← (core_models.num.Impl_8.wrapping_add (3 : u32) x))))
-  else
+  else do
     (pure (core_models.result.Result.Ok
       (← (core_models.num.Impl_8.wrapping_add (3 : u32) x))))
 
@@ -330,14 +336,15 @@ structure B where
   -- no fields
 
 --  Combine `?` and early return
+@[spec]
 def monad_lifting (x : u8) : RustM (core_models.result.Result A B) := do
-  if (← (rust_primitives.hax.machine_int.gt x (123 : u8))) then
+  if (← (x >? (123 : u8))) then do
     match (core_models.result.Result.Err B.mk) with
-      | (core_models.result.Result.Ok  hoist35) =>
+      | (core_models.result.Result.Ok  hoist35) => do
         (pure (core_models.result.Result.Ok hoist35))
-      | (core_models.result.Result.Err  err) =>
+      | (core_models.result.Result.Err  err) => do
         (pure (core_models.result.Result.Err err))
-  else
+  else do
     (pure (core_models.result.Result.Ok A.mk))
 
 structure Bar where
@@ -354,6 +361,7 @@ structure Foo where
 
 --  Test assignation on non-trivial places
 --  @fail(extraction): proverif(HAX0002, HAX0002, HAX0002, HAX0002), coq(HAX0002, HAX0002), ssprove(HAX0001)
+@[spec]
 def assign_non_trivial_lhs (foo : Foo) : RustM Foo := do
   let foo : Foo := {foo with x := true};
   let foo : Foo := {foo with bar := {(Foo.bar foo) with a := true}};
@@ -411,6 +419,7 @@ class MyFrom (Self : Type) (T : Type)
   where
   my_from (Self) (T) : (T -> RustM Self)
 
+@[spec]
 def Impl.my_from_hoisted (x : u8) : RustM u16 := do
   (rust_primitives.hax.cast_op x : RustM u16)
 
@@ -419,17 +428,18 @@ def Impl.my_from_hoisted (x : u8) : RustM u16 := do
 instance Impl : MyFrom u16 u8 where
   my_from := (Impl.my_from_hoisted)
 
+@[spec]
 def f (x : u8) : RustM (core_models.result.Result u16 u16) := do
   match
     (← (core_models.ops.try_trait.Try.branch
       (core_models.result.Result rust_primitives.hax.Never u8)
       (core_models.result.Result.Err (1 : u8))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  residual) =>
+    | (core_models.ops.control_flow.ControlFlow.Break  residual) => do
       (core_models.ops.try_trait.FromResidual.from_residual
         (core_models.result.Result u16 u16)
         (core_models.result.Result core_models.convert.Infallible u8) residual)
-    | (core_models.ops.control_flow.ControlFlow.Continue  val) =>
+    | (core_models.ops.control_flow.ControlFlow.Continue  val) => do
       let _ := val;
       (pure (core_models.result.Result.Ok (← (MyFrom.my_from u16 u8 x))))
 
@@ -438,6 +448,7 @@ end new_tests.legacy__side_effects__lib.issue_1083
 
 namespace new_tests.legacy__side_effects__lib.issue_1089
 
+@[spec]
 def test
     (x : (core_models.option.Option i32))
     (y : (core_models.option.Option i32)) :
@@ -451,20 +462,22 @@ def test
       (fun i =>
         (do
         match y with
-          | (core_models.option.Option.Some  hoist38) =>
+          | (core_models.option.Option.Some  hoist38) => do
             (pure (core_models.option.Option.Some (← (i +? hoist38))))
-          | (core_models.option.Option.None ) =>
+          | (core_models.option.Option.None ) => do
             (pure core_models.option.Option.None) :
         RustM (core_models.option.Option i32)))))
   with
-    | (core_models.option.Option.Some  some) => (pure some)
-    | (core_models.option.Option.None ) => (pure core_models.option.Option.None)
+    | (core_models.option.Option.Some  some) => do (pure some)
+    | (core_models.option.Option.None ) => do
+      (pure core_models.option.Option.None)
 
 end new_tests.legacy__side_effects__lib.issue_1089
 
 
 namespace new_tests.legacy__side_effects__lib.nested_return
 
+@[spec]
 def other_fun (rng : i8) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -480,6 +493,7 @@ def other_fun (rng : i8) :
     (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk);
   (pure (rust_primitives.hax.Tuple2.mk rng hax_temp_output))
 
+@[spec]
 def fun (rng : i8) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -491,11 +505,11 @@ def fun (rng : i8) :
   let ⟨tmp0, out⟩ ← (other_fun rng);
   let rng : i8 := tmp0;
   match out with
-    | (core_models.result.Result.Ok  hoist41) =>
+    | (core_models.result.Result.Ok  hoist41) => do
       (pure (rust_primitives.hax.Tuple2.mk
         rng
         (core_models.result.Result.Ok hoist41)))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (rust_primitives.hax.Tuple2.mk
         rng
         (core_models.result.Result.Err err)))
@@ -505,6 +519,7 @@ end new_tests.legacy__side_effects__lib.nested_return
 
 namespace new_tests.legacy__side_effects__lib.issue_1300
 
+@[spec]
 def fun (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result rust_primitives.hax.Tuple0 u8) := do
   match
@@ -538,19 +553,19 @@ def fun (_ : rust_primitives.hax.Tuple0) :
             (core_models.result.Result.Ok
               (← (rust_primitives.hax.repeat (0 : u8) (32 : usize))))
           with
-            | (core_models.result.Result.Ok  hoist45) =>
+            | (core_models.result.Result.Ok  hoist45) => do
               (pure (core_models.result.Result.Ok
                 (rust_primitives.hax.Tuple2.mk prev hoist45)))
-            | (core_models.result.Result.Err  err) =>
+            | (core_models.result.Result.Err  err) => do
               (pure (core_models.result.Result.Err err)) :
           RustM
           (core_models.result.Result
             (rust_primitives.hax.Tuple2 u8 (RustArray u8 32))
             u8)))))))
   with
-    | (core_models.result.Result.Ok  val) =>
+    | (core_models.result.Result.Ok  val) => do
       (pure (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__side_effects__lib.issue_1300
@@ -567,22 +582,24 @@ structure S where
 structure OtherS where
   g : (core_models.option.Option Foo)
 
+@[spec]
 def Impl._from (i : Foo) : RustM Foo := do
   (pure (Foo.mk (y := (← (core_models.clone.Clone.clone u8 (Foo.y i))))))
 
 structure Error where
   -- no fields
 
+@[spec]
 def Impl_1._from (i : OtherS) : RustM (core_models.result.Result S Error) := do
   match
     (← (core_models.option.Impl.ok_or Foo Error
       (← (core_models.option.Impl.as_ref Foo (OtherS.g i)))
       Error.mk))
   with
-    | (core_models.result.Result.Ok  hoist47) =>
+    | (core_models.result.Result.Ok  hoist47) => do
       (pure (core_models.result.Result.Ok
         (S.mk (g := (← (Impl._from hoist47))))))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__side_effects__lib.issue_1299

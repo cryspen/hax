@@ -15,6 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__branch__no_mir_spans
 
 --  @fail(extraction): proverif(HAX0008, HAX0008), ssprove(HAX0001), coq(HAX0001, HAX0001)
+@[spec]
 def while_cond (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple2 i32 rust_primitives.hax.Tuple0) := do
   let _ ←
@@ -31,8 +32,7 @@ def while_cond (_ : rust_primitives.hax.Tuple0) :
   (pure (rust_primitives.hax.Tuple2.mk
     (← (rust_primitives.hax.while_loop
       (fun a => (do (pure true) : RustM Bool))
-      (fun a =>
-        (do (rust_primitives.hax.machine_int.gt a (0 : i32)) : RustM Bool))
+      (fun a => (do (a >? (0 : i32)) : RustM Bool))
       (fun a =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :
@@ -42,6 +42,7 @@ def while_cond (_ : rust_primitives.hax.Tuple0) :
     rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): ssprove(HAX0001), proverif(HAX0008, HAX0008), coq(HAX0001, HAX0001)
+@[spec]
 def while_cond_not (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple2 i32 rust_primitives.hax.Tuple0) := do
   let _ ←
@@ -58,11 +59,7 @@ def while_cond_not (_ : rust_primitives.hax.Tuple0) :
   (pure (rust_primitives.hax.Tuple2.mk
     (← (rust_primitives.hax.while_loop
       (fun a => (do (pure true) : RustM Bool))
-      (fun a =>
-        (do
-        (core_models.ops.bit.Not.not
-          (← (rust_primitives.hax.machine_int.eq a (0 : i32)))) :
-        RustM Bool))
+      (fun a => (do (!? (← (a ==? (0 : i32)))) : RustM Bool))
       (fun a =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :
@@ -72,6 +69,7 @@ def while_cond_not (_ : rust_primitives.hax.Tuple0) :
     rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): ssprove(HAX0001), proverif(HAX0008, HAX0008), coq(HAX0001, HAX0001)
+@[spec]
 def while_op_and (_ : rust_primitives.hax.Tuple0) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -94,10 +92,7 @@ def while_op_and (_ : rust_primitives.hax.Tuple0) :
     (← (rust_primitives.hax.while_loop
       (fun ⟨a, b⟩ => (do (pure true) : RustM Bool))
       (fun ⟨a, b⟩ =>
-        (do
-        ((← (rust_primitives.hax.machine_int.gt a (0 : i32)))
-          &&? (← (rust_primitives.hax.machine_int.gt b (0 : i32)))) :
-        RustM Bool))
+        (do ((← (a >? (0 : i32))) &&? (← (b >? (0 : i32)))) : RustM Bool))
       (fun ⟨a, b⟩ =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :
@@ -112,6 +107,7 @@ def while_op_and (_ : rust_primitives.hax.Tuple0) :
     rust_primitives.hax.Tuple0.mk))
 
 --  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001), proverif(HAX0008, HAX0008)
+@[spec]
 def while_op_or (_ : rust_primitives.hax.Tuple0) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -134,10 +130,7 @@ def while_op_or (_ : rust_primitives.hax.Tuple0) :
     (← (rust_primitives.hax.while_loop
       (fun ⟨a, b⟩ => (do (pure true) : RustM Bool))
       (fun ⟨a, b⟩ =>
-        (do
-        ((← (rust_primitives.hax.machine_int.gt a (0 : i32)))
-          ||? (← (rust_primitives.hax.machine_int.gt b (0 : i32)))) :
-        RustM Bool))
+        (do ((← (a >? (0 : i32))) ||? (← (b >? (0 : i32)))) : RustM Bool))
       (fun ⟨a, b⟩ =>
         (do
         (rust_primitives.hax.int.from_machine (0 : u32)) :
@@ -151,6 +144,7 @@ def while_op_or (_ : rust_primitives.hax.Tuple0) :
         RustM (rust_primitives.hax.Tuple2 i32 i32)))))
     rust_primitives.hax.Tuple0.mk))
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (while_cond rust_primitives.hax.Tuple0.mk);

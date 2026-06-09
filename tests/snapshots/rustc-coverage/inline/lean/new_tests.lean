@@ -14,9 +14,11 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__inline
 
+@[spec]
 def length (T : Type) (xs : (RustSlice T)) : RustM usize := do
   (core_models.slice.Impl.len T xs)
 
+@[spec]
 def swap
     (T : Type)
     [trait_constr_swap_associated_type_i0 :
@@ -38,6 +40,7 @@ def swap
   (pure xs)
 
 --  @fail(extraction): proverif(HAX0008), ssprove(HAX0001)
+@[spec]
 def display
     (T : Type)
     [trait_constr_display_associated_type_i0 :
@@ -56,29 +59,32 @@ def display
         let args : (rust_primitives.hax.Tuple1 T) :=
           (rust_primitives.hax.Tuple1.mk x);
         let args : (RustArray core_models.fmt.rt.Argument 1) :=
-          #v[(← (core_models.fmt.rt.Impl.new_display T
-                 (rust_primitives.hax.Tuple1._0 args)))];
+          (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display T
+                                  (rust_primitives.hax.Tuple1._0 args)))]);
         let _ ←
           (std.io.stdio._print
             (← (core_models.fmt.rt.Impl_1.new_v1 ((1 : usize)) ((1 : usize))
-              #v[""]
+              (RustArray.ofVec #v[""])
               args)));
         (pure rust_primitives.hax.Tuple0.mk) :
         RustM rust_primitives.hax.Tuple0)));
   let _ ←
     (std.io.stdio._print
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["
-"])));
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["\n"]))));
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def error (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (rust_primitives.hax.never_to_any
     (← (core_models.panicking.panic_fmt
-      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize)) #v["error"])))))
+      (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
+        (RustArray.ofVec #v["error"]))))))
 
 --  @fail(extraction): proverif(HAX0008)
+@[spec]
 def permutate
     (T : Type)
     [trait_constr_permutate_associated_type_i0 :
@@ -94,11 +100,11 @@ def permutate
     RustM (RustSlice T) := do
   let n : usize ← (length T xs);
   let xs : (RustSlice T) ←
-    if (← (rust_primitives.hax.machine_int.eq k n)) then
+    if (← (k ==? n)) then do
       let _ ← (display T xs);
       (pure xs)
-    else
-      if (← (rust_primitives.hax.machine_int.lt k n)) then
+    else do
+      if (← (k <? n)) then do
         (rust_primitives.hax.folds.fold_range
           k
           n
@@ -111,11 +117,13 @@ def permutate
             let xs : (RustSlice T) ← (swap T xs i k);
             (pure xs) :
             RustM (RustSlice T))))
-      else
+      else do
         let _ ← (error rust_primitives.hax.Tuple0.mk);
         (pure xs);
   (pure xs)
+partial_fixpoint
 
+@[spec]
 def permutations
     (T : Type)
     [trait_constr_permutations_associated_type_i0 :
@@ -136,9 +144,12 @@ def permutations
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
-  let _ ← (permutations Char (← (rust_primitives.unsize #v['a', 'b', 'c'])));
+  let _ ←
+    (permutations Char
+      (← (rust_primitives.unsize (RustArray.ofVec #v['a', 'b', 'c']))));
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__inline

@@ -14,11 +14,13 @@ set_option linter.unusedVariables false
 
 namespace new_tests.legacy__recursion__lib
 
+@[spec]
 def f (n : u8) : RustM u8 := do
-  if (← (rust_primitives.hax.machine_int.eq n (0 : u8))) then
+  if (← (n ==? (0 : u8))) then do
     (pure (0 : u8))
-  else
+  else do
     (n +? (← (f (← (n -? (1 : u8))))))
+partial_fixpoint
 
 end new_tests.legacy__recursion__lib
 
