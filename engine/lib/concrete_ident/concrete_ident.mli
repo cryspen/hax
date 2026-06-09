@@ -74,6 +74,9 @@ val map_path_strings : f:(string -> string) -> t -> t
 val is_constructor : t -> bool
 (** Returns true if the ident represents a constructor. *)
 
+val is_anon_assoc_ty : t -> bool
+(** Returns true if the ident represents an anonymous associated type. *)
+
 type comparator_witness
 
 val comparator : (t, comparator_witness) Base.Comparator.comparator

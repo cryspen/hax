@@ -108,9 +108,13 @@ macro_rules! uint_impl {
                 paste! { [<rotate_right_ $Name>](x, n) }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-            #[hax_lib::opaque]
             fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
-                paste! { [<rotate_left_ $Name>](x, n) }
+                let m = (n % $Bits);
+                if m == 0 {
+                    x
+                } else {
+                    paste! { [<rotate_left_ $Name>](x, m) }
+                }
             }
             /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
             #[hax_lib::opaque]

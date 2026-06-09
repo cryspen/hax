@@ -106,6 +106,11 @@ install_ocaml_engine() {
     (
         set -x
         opam uninstall hax-engine || true
+        # Lift the soft stack limit for ocamlopt: large preprocessed
+        # files (e.g. `lib/types.pp.ml`) overflow the default stack on
+        # recent GitHub Actions runner images. macOS rejects
+        # `unlimited`, so try `hard` first.
+        ulimit -s hard 2>/dev/null || ulimit -s unlimited 2>/dev/null || true
         opam install --yes ./engine
     )
 }

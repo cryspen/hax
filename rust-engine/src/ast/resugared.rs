@@ -29,6 +29,20 @@ pub enum ResugaredItemKind {
         /// Note: constant supporting generics is a nightly feature (generic_const_items).
         generics: Generics,
     },
+    /// A recursive function definition. Detected by checking whether the function
+    /// body contains a reference to its own name.
+    RecursiveFn {
+        /// The identifier of the function.
+        name: GlobalId,
+        /// The generic arguments and constraints of the function.
+        generics: Generics,
+        /// The body of the function.
+        body: Expr,
+        /// The parameters of the function.
+        params: Vec<Param>,
+        /// The safety of the function.
+        safety: SafetyKind,
+    },
 }
 
 /// Resugared variants for expressions. This represent extra printing-only expressions, see [`super::ExprKind::Resugared`].
@@ -36,22 +50,6 @@ pub enum ResugaredItemKind {
 // TODO: drop `clippy::large_enum_variant` when https://github.com/cryspen/hax/issues/1666 is addressed.
 #[allow(clippy::large_enum_variant)]
 pub enum ResugaredExprKind {
-    /// Binary operations (identified by resugaring) of the form `f(e1, e2)`
-    BinOp {
-        /// The identifier of the operation (`f`)
-        op: GlobalId,
-        /// The left-hand side of the operation (`e1`)
-        lhs: Expr,
-        /// The right-hand side of the operation (`e2`)
-        rhs: Expr,
-        /// The generic arguments applied to the function.
-        generic_args: Vec<GenericValue>,
-        /// If the function requires generic bounds to be called, `bounds_impls`
-        /// is a vector of impl. expressions for those bounds.
-        bounds_impls: Vec<ImplExpr>,
-        /// If we apply an associated function, contains the impl. expr used.
-        trait_: Option<(ImplExpr, Vec<GenericValue>)>,
-    },
     /// A tuple constructor.
     ///
     /// # Example:
@@ -73,7 +71,17 @@ pub enum ResugaredExprKind {
 
 /// Resugared variants for patterns. This represent extra printing-only patterns, see [`super::PatKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredPatKind {}
+pub enum ResugaredPatKind {
+    /// A record constructor pattern where wildcard fields are replaced by `..`.
+    ConstructWithEllipsis {
+        /// The identifier of the constructor we are matching.
+        constructor: GlobalId,
+        /// Is this a struct? (meaning, *not* a variant from an enum)
+        is_struct: bool,
+        /// Only the explicitly-bound (non-wildcard) fields.
+        fields: Vec<(GlobalId, Pat)>,
+    },
+}
 
 /// Resugared variants for types. This represent extra printing-only types, see [`super::TyKind::Resugared`].
 #[derive_group_for_ast]

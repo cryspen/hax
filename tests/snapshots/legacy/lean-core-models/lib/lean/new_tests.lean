@@ -27,6 +27,7 @@ def Impl.default_hoisted (_ : rust_primitives.hax.Tuple0) : RustM S := do
 instance Impl : core_models.default.Default S where
   default := (Impl.default_hoisted)
 
+@[spec]
 def test (_ : rust_primitives.hax.Tuple0) : RustM S := do
   (core_models.default.Default.default S rust_primitives.hax.Tuple0.mk)
 
@@ -74,6 +75,7 @@ end new_tests.legacy__lean_core_models__lib.default.enums
 
 namespace new_tests.legacy__lean_core_models__lib.function
 
+@[spec]
 def test (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
   let f_1 : (u32 -> RustM u32) := (fun _ => (do (pure (9 : u32)) : RustM u32));
   let f_2 : (u32 -> u32 -> RustM u32) := (fun x y => (do (x +? y) : RustM u32));
@@ -117,6 +119,7 @@ def Impl.default_hoisted (_ : rust_primitives.hax.Tuple0) : RustM S := do
 instance Impl : core_models.default.Default S where
   default := (Impl.default_hoisted)
 
+@[spec]
 def test (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let o1 : (core_models.option.Option i32) :=
@@ -125,13 +128,11 @@ def test (_ : rust_primitives.hax.Tuple0) :
   let o3 : Bool ←
     (core_models.option.Impl.is_some_and i32 (i32 -> RustM Bool)
       (← (core_models.clone.Clone.clone (core_models.option.Option i32) o1))
-      (fun x =>
-        (do (rust_primitives.hax.machine_int.eq x (0 : i32)) : RustM Bool)));
+      (fun x => (do (x ==? (0 : i32)) : RustM Bool)));
   let o3 : Bool ←
     (core_models.option.Impl.is_none_or i32 (i32 -> RustM Bool)
       (← (core_models.clone.Clone.clone (core_models.option.Option i32) o1))
-      (fun x =>
-        (do (rust_primitives.hax.machine_int.eq x (0 : i32)) : RustM Bool)));
+      (fun x => (do (x ==? (0 : i32)) : RustM Bool)));
   let o4 : i32 ←
     (core_models.option.Impl.unwrap i32
       (core_models.option.Option.Some (0 : i32)));
@@ -224,6 +225,7 @@ structure Bar
   where
   _phantom : (core_models.marker.PhantomData F)
 
+@[spec]
 def Impl.new
     (F : Type)
     [trait_constr_new_associated_type_i0 : Foo.AssociatedTypes F]
@@ -253,6 +255,7 @@ inductive E2 : Type
 | C1 : E2
 | C2 : u32 -> E2
 
+@[spec]
 def tests (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result u32 E1) := do
   let v1 : (core_models.result.Result u32 E1) :=
@@ -285,8 +288,8 @@ def tests (_ : rust_primitives.hax.Tuple0) :
       (fun e =>
         (do
         match e with
-          | (E1.C1 ) => (pure E2.C1)
-          | (E1.C2  x) => (pure (E2.C2 (← (x +? (1 : u32))))) :
+          | (E1.C1 ) => do (pure E2.C1)
+          | (E1.C2  x) => do (pure (E2.C2 (← (x +? (1 : u32))))) :
         RustM E2)));
   let v9 : Bool ← (core_models.result.Impl.is_ok u32 E1 v1);
   let v10 : Bool ← (core_models.result.Impl.is_err u32 E1 v1);
@@ -315,14 +318,14 @@ def tests (_ : rust_primitives.hax.Tuple0) :
   match
     (← (core_models.result.Impl.map u32 E1 u32 (u32 -> RustM u32) v1 f))
   with
-    | (core_models.result.Result.Ok  hoist2) =>
+    | (core_models.result.Result.Ok  hoist2) => do
       match v2 with
-        | (core_models.result.Result.Ok  hoist1) =>
+        | (core_models.result.Result.Ok  hoist1) => do
           let v3 : u32 ← (hoist2 +? hoist1);
           (pure (core_models.result.Result.Ok v3))
-        | (core_models.result.Result.Err  err) =>
+        | (core_models.result.Result.Err  err) => do
           (pure (core_models.result.Result.Err err))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__lean_core_models__lib.result

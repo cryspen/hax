@@ -246,7 +246,7 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
                         .s_unwrap(s);
                         let valtree = rustc_middle::ty::ValTree::from_scalar_int(tcx, size);
                         let value = rustc_middle::ty::Value {
-                            ty: *inner_ty,
+                            ty: tcx.types.usize,
                             valtree,
                         };
                         let len = tcx.mk_ct_from_kind(rustc_middle::ty::ConstKind::Value(value));

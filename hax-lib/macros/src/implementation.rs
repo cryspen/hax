@@ -858,6 +858,27 @@ pub fn lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) 
     quote! {#attr #item}.into()
 }
 
+/// Use the proof method `grind`. This influences the tactic and spec set used by Lean.
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::Grind);
+    quote! {#attr #item}.into()
+}
+
+/// Use the proof method `bv_decide`. This influences the tactic and spec set used by Lean.
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn lean_proof_method_bv_decide(
+    _attr: pm::TokenStream,
+    item: pm::TokenStream,
+) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::BvDecide);
+    quote! {#attr #item}.into()
+}
+
 macro_rules! make_quoting_item_proc_macro {
     ($backend:ident, $macro_name:ident, $position:expr, $cfg_name:ident) => {
         #[doc = concat!("This macro inlines verbatim ", stringify!($backend)," code before a Rust item.")]

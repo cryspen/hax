@@ -93,4 +93,16 @@ fn fn_pointer_cast() {
 }
 
 /// @fail(extraction): ssprove(HAX0001)
-const null: char = '\0';
+fn strings() {
+    let _: &str = "hello";
+    let _: &str = "hello\"world";
+    let _: &str = "it's";
+    let _: &str = "back\\slash";
+    let _: &str = "line\nbreak";
+    let _: &str = "carriage\rreturn";
+    let _: &str = "tab\there";
+    let _: &str = "null\x00byte";
+    let _: &str = "bell\x07char";
+    let _: &str = "\x1b[0m";
+    let _: &str = "🦀";
+}

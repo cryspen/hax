@@ -4,7 +4,7 @@ weight: 1
 
 # Proving properties
 
-In the last chapter, we proved one property on the `square` function:
+In the previous chapter, we proved one property of the `square` function:
 panic freedom.
 
 This contract stipulates that, given a small input, the function will
@@ -14,7 +14,6 @@ increasing function:
 ```{.rust .playable .lean-backend}
 #[hax_lib::requires(x < 16)]
 #[hax_lib::ensures(|res| res >= x)]
-#[hax_lib::lean::proof("by unfold square; hax_bv_decide")]
 fn square(x: u8) -> u8 {
     x * x
 }

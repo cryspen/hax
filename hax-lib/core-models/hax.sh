@@ -45,15 +45,13 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::num::**::rotate_left"
     LEAN_FILTERS+=" -core_models::num::**::rotate_right"
     
-  
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
     OUT="proofs/lean/extraction/core_models.lean"
 
-    sed -i 's/import Hax/import Hax.MissingCore/g' "$OUT"
-    sed -i 's/def Ordering /def Ordering_ /g' "$OUT" # Issue #1646
+    sed -i 's/import Hax/import Hax.core_models.prologue\nimport Hax.Tactic.HaxSpec/g' "$OUT"
 
-    cp "$OUT" ../proof-libs/lean/Hax/Core_models/Extracted.lean
+    cp "$OUT" ../proof-libs/lean/Hax/core_models/core_models.lean
 }
 
 function init_vars() {

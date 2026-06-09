@@ -23,13 +23,14 @@ let impl_23__as_slice (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Slice 
 
 /// See [`std::array::from_fn`]
 let from_fn
-      (#v_T: Type0)
-      (v_N: usize)
-      (#v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F usize)
-      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
-      (f: (usize -> v_T))
-    : t_Array v_T v_N = Rust_primitives.Slice.array_from_fn #v_T v_N #(usize -> v_T) f
+    (#v_T: Type0)
+    (v_N: usize)
+    (#v_F: Type0)
+    (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F usize)
+    (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
+    (f: (x: usize{x <. v_N}) -> v_T)
+: t_Array v_T v_N =
+    Rust_primitives.Slice.array_from_fn #v_T v_N #(x: usize{x <. v_N} -> v_T) f
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_24 (#v_T: Type0) (v_N: usize)

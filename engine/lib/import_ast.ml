@@ -21,6 +21,8 @@ end
 module U = Ast_utils.Make (F)
 module Build = Ast_builder.Make (F)
 
+exception Item_translation_failure of string
+
 let from_error_node (error_node : Types.error_node) : string =
   match (error_node.fragment, error_node.diagnostics) with
   | ( Unknown "OCamlEngineError",
@@ -175,7 +177,7 @@ and dimpl_expr_kind (i : A.impl_expr_kind) : B.impl_expr_kind =
       B.ImplApp { impl = dimpl_expr impl_; args = List.map ~f:dimpl_expr args }
   | A.Dyn -> B.Dyn
   | A.Builtin tr -> B.Builtin (dtrait_goal tr)
-  | A.Error _ -> failwith "Error node in ImplExprKind"
+  | A.Error s -> raise (Item_translation_failure (from_error_node s))
 
 and dgeneric_value (generic_value : A.generic_value) : B.generic_value =
   match generic_value with
@@ -494,8 +496,8 @@ let dgeneric_constraint (generic_constraint : A.generic_constraint) :
     B.generic_constraint =
   match generic_constraint with
   | Lifetime lf -> GCLifetime (lf, F.lifetime)
-  | Type impl_ident -> GCType (dimpl_ident impl_ident)
-  | Projection projection -> GCProjection (dprojection_predicate projection)
+  | TypeClass impl_ident -> GCType (dimpl_ident impl_ident)
+  | Equality projection -> GCProjection (dprojection_predicate projection)
 
 let dgenerics (g : A.generics) : B.generics =
   {
@@ -635,14 +637,17 @@ let ditem' (item : A.item_kind) : B.item' option =
   | A.RustModule -> None
 
 let ditem (i : A.item) : B.item list =
-  match ditem' i.kind with
-  | Some v ->
-      [
-        {
-          ident = dconcrete_ident i.ident;
-          v;
-          span = dspan i.meta.span;
-          attrs = dattributes i.meta.attributes;
-        };
-      ]
-  | _ -> []
+  try
+    match ditem' i.kind with
+    | Some v ->
+        [
+          {
+            ident = dconcrete_ident i.ident;
+            v;
+            span = dspan i.meta.span;
+            attrs = dattributes i.meta.attributes;
+          };
+        ]
+    | _ -> []
+  with Item_translation_failure msg ->
+    [ B.make_hax_error_item (dspan i.meta.span) (dconcrete_ident i.ident) msg ]

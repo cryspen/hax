@@ -42,8 +42,6 @@ pub trait Resugaring: for<'a> dyn_compatible::AstVisitorMut<'a> {
 
 /// A printer defines a list of resugaring phases.
 pub trait Printer: Sized + PrettyAst<Span> + Default + HasLinkedItemGraph {
-    /// A list of resugaring phases.
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>>;
     /// The name of the printer
     const NAME: &'static str = <Self as PrettyAst<Span>>::NAME;
 }
@@ -80,13 +78,10 @@ impl<P: Printer, T> Print<T> for P
 where
     for<'a> dyn Resugaring: dyn_compatible::AstVisitableMut<'a, T>,
 {
-    fn print_returning_fragment(&mut self, mut fragment: T) -> (String, SourceMap, T)
+    fn print_returning_fragment(&mut self, fragment: T) -> (String, SourceMap, T)
     where
         T: ToDocument<Self, Span>,
     {
-        for mut reguaring_phase in Self::resugaring_phases() {
-            reguaring_phase.visit(&mut fragment)
-        }
         let doc_builder = fragment.to_document(self).into_doc();
         (
             doc_builder.deref().pretty(80).to_string(),

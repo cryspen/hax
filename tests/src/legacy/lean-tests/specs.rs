@@ -6,8 +6,27 @@ fn test(x: u8) -> u8 {
 
 #[hax_lib::requires(x > 0)]
 #[hax_lib::ensures(|r| r == x)]
+fn use_previous_result(x: u8) -> u8 {
+    test(x)
+}
+
+#[hax_lib::requires(x > 0)]
+#[hax_lib::ensures(|r| r == x)]
 #[hax_lib::lean::proof("by unfold lean_tests.specs.test_proof; hax_bv_decide")]
 fn test_proof(x: u8) -> u8 {
+    x
+}
+
+#[hax_lib::requires(x < 16)]
+#[hax_lib::ensures(|res| res >= x)]
+fn square(x: u8) -> u8 {
+    x * x
+}
+
+#[hax_lib::requires(hax_lib::forall(|i:u8| hax_lib::implies(i < 20, x > i)))]
+#[hax_lib::ensures(|r| !hax_lib::exists(|i:u8| !hax_lib::implies(i < 20, r > i)))]
+#[hax_lib::lean::proof_method::grind]
+fn forall_and_exists(x: u8) -> u8 {
     x
 }
 
@@ -37,3 +56,12 @@ mod issue_1852 {
 #[hax_lib::lean::pure_requires_proof("⟨True, by mvcgen⟩")]
 #[hax_lib::lean::pure_ensures_proof("⟨fun _ => True, by intros; mvcgen⟩")]
 fn custom_pure_proofs(x: u8) {}
+
+/// Resugarings need to be apply also to linked items
+/// https://github.com/cryspen/hax/issues/1945
+mod issue_1945 {
+    #[hax_lib::requires({let x = a; a == 0})]
+    fn mktuple(a: i32) -> bool {
+        {let x = a; a == 0}
+    }
+}

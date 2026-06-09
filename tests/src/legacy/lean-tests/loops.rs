@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-// Simple loop
+// Simple for-loop
 /// @fail(extraction): proverif(HAX0008)
 fn loop1() -> u32 {
     let mut x: u32 = 0;
@@ -12,7 +12,7 @@ fn loop1() -> u32 {
     x
 }
 
-// Loop with a return
+// For-loop with a return
 /// @fail(extraction): proverif(HAX0008)
 fn loop2() -> u32 {
     let mut x: u32 = 0;
@@ -25,8 +25,25 @@ fn loop2() -> u32 {
     x
 }
 
+/// For-loop with a spec
+#[hax_lib::requires(y > 0)]
+#[hax_lib::ensures(|res| res > 0)]
+fn for_loop_with_spec(y: u64) -> u64 {
+    let mut x: u64 = y;
+    for i in 0..y {
+        hax_lib::loop_invariant!(|i: u64| x > 0);
+        if x % 5 == 0 {
+            x = 200;
+        } else {
+            x = x % 5;
+        }
+    }
+    x
+}
+
+/// while-loop
 #[hax_lib::ensures(|r| r == 0)]
-#[hax_lib::lean::pure_ensures_proof("by hax_construct_pure <;> grind")]
+#[hax_lib::lean::proof_method::grind]
 /// @fail(extraction): coq(HAX0001, HAX0001), proverif(HAX0008), ssprove(HAX0001)
 fn while_loop1(s: u32) -> u32 {
     let mut x: u32 = s;
@@ -43,7 +60,7 @@ mod errors {
         Bar(u32),
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn loop3() -> Result<u32, Error> {
         let mut x = 0;
         let end: u32 = 10;
@@ -56,7 +73,7 @@ mod errors {
         Ok(x)
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn loop4() -> Result<(u32, u32), Error> {
         let mut e = 0;
         let f = |()| 42;

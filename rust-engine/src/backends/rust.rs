@@ -14,9 +14,7 @@ pub struct RustPrinter {
 }
 
 impl Printer for RustPrinter {
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![Box::new(FunctionsToConstants), Box::new(Tuples)]
-    }
+    const NAME: &str = "Rust";
 }
 
 impl RenderView for RustPrinter {
@@ -52,6 +50,10 @@ pub struct RustBackend;
 
 impl Backend for RustBackend {
     type Printer = RustPrinter;
+
+    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
+        vec![Box::new(FunctionsToConstants), Box::new(Tuples)]
+    }
 
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
         let printer = RustPrinter::default();
@@ -280,8 +282,8 @@ const _: () = {
         fn generic_constraint(&self, generic_constraint: &GenericConstraint) -> DocBuilder<A> {
             match generic_constraint {
                 GenericConstraint::Lifetime(s) => docs![s.clone()],
-                GenericConstraint::Type(impl_ident) => docs![impl_ident],
-                GenericConstraint::Projection(projection_predicate) => docs![projection_predicate],
+                GenericConstraint::TypeClass(impl_ident) => docs![impl_ident],
+                GenericConstraint::Equality(projection_predicate) => docs![projection_predicate],
             }
         }
         fn impl_ident(&self, impl_ident: &ImplIdent) -> DocBuilder<A> {
@@ -589,7 +591,6 @@ const _: () = {
         }
         fn resugared_expr_kind(&self, resugared_expr_kind: &ResugaredExprKind) -> DocBuilder<A> {
             match resugared_expr_kind {
-                ResugaredExprKind::BinOp { .. } => unreachable!("BinOp resugaring not active"),
                 ResugaredExprKind::Tuple(values) => print_tuple!(values),
                 ResugaredExprKind::LetPure { .. } => unreachable!("LetPure resugaring not active"),
             }
@@ -654,6 +655,9 @@ const _: () = {
                         docs![body].braces(),
                         ";"
                     ]
+                }
+                ResugaredItemKind::RecursiveFn { .. } => {
+                    unreachable!("The Rust backend does not use the RecursiveFn resugaring")
                 }
             }
         }

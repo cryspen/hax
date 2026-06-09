@@ -1705,7 +1705,8 @@ struct
               ( F.lid
                   [
                     "__marker_trait_"
-                    ^ FStar_Ident.string_of_lid (pconcrete_ident trait);
+                    ^ List.last_exn
+                        (FStar_Ident.path_of_lid (pconcrete_ident trait));
                   ],
                 pexpr (U.unit_expr e.span) );
             ]
@@ -2026,6 +2027,7 @@ module DepGraphR = Dependencies.Make (Features.Rust)
 module TransformToInputLanguage =
   [%functor_application
     Phases.Reject.RawOrMutPointer(Features.Rust)
+  |> Phases.Reject_impl_type_method
   |> Phases.Rewrite_local_self
   |> Phases.Transform_hax_lib_inline
   |> Phases.Specialize
