@@ -13,7 +13,6 @@ description = "Hax-specific proc-macros for Rust programs"
 proc-macro = true
 
 [target.'cfg(hax)'.dependencies]
-proc-macro-error2 = { version = "2.0" }
 hax-lib-macros-types = { workspace = true }
 syn = { version = "2.0", features = ["full", "visit-mut", "visit"] }
 
