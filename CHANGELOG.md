@@ -16,6 +16,7 @@ Changes to the frontend:
 Changes to cargo-hax:
 
 Changes to hax-lib:
+ - Remove dependency to proc_macro_error2 (unmaintained)
 
 Changes to the Lean backend:
 
