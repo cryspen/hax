@@ -74,6 +74,7 @@ fn ge_int(x : i32, y: i32) -> bool { x >= y }
 
 struct S;
 
+#[hax_lib::exclude]
 impl std::ops::Not for S {
     type Output = S;
     fn not(self) -> S {
@@ -88,6 +89,7 @@ impl std::ops::Add for S {
     }
 }
 
+#[hax_lib::exclude]
 fn not_s(x: S) -> S { !x }
 
 fn add_s(x: S, y: S) -> S { x + y }
