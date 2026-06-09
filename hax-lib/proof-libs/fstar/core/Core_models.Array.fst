@@ -21,7 +21,6 @@ let impl_23__map
 let impl_23__as_slice (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Slice v_T =
   Rust_primitives.Slice.array_as_slice #v_T v_N s
 
-/// See [`std::array::from_fn`]
 let from_fn
     (#v_T: Type0)
     (v_N: usize)
