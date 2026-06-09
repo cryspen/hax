@@ -3,11 +3,10 @@ name: Extract and Run - Coq
 on: [pull_request]
 jobs:
   build:
-    runs-on: linux
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - if: runner.environment == 'github-hosted'
-        uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/nix-installer-action@main
 
       - name: ⤵ Install hax
         run: |
