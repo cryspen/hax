@@ -9,7 +9,6 @@ mod prelude {
     pub use crate::hax_paths::*;
     pub use crate::syn_ext::*;
     pub use proc_macro as pm;
-    pub use proc_macro_error2::*;
     pub use proc_macro2::*;
     pub use quote::*;
     pub use std::collections::HashSet;
@@ -25,9 +24,39 @@ use impl_fn_decoration::*;
 use prelude::*;
 use utils::*;
 
+/// Reports a compile error at `$span` and returns from the enclosing
+/// proc-macro function. The message is either a single value or a `format!`
+/// string with arguments. `$span` may be a `proc_macro::Span` or a
+/// `proc_macro2::Span`.
+macro_rules! abort {
+    ($span:expr, $fmt:literal, $($arg:expr),+ $(,)?) => {
+        return ::syn::Error::new($span.into(), format!($fmt, $($arg),+))
+            .to_compile_error()
+            .into()
+    };
+    ($span:expr, $msg:expr $(,)?) => {
+        return ::syn::Error::new($span.into(), $msg)
+            .to_compile_error()
+            .into()
+    };
+}
+
+/// Like [`abort!`], but reports the error at the macro call site.
+macro_rules! abort_call_site {
+    ($fmt:literal, $($arg:expr),+ $(,)?) => {
+        return ::syn::Error::new(::proc_macro2::Span::call_site(), format!($fmt, $($arg),+))
+            .to_compile_error()
+            .into()
+    };
+    ($msg:expr $(,)?) => {
+        return ::syn::Error::new(::proc_macro2::Span::call_site(), $msg)
+            .to_compile_error()
+            .into()
+    };
+}
+
 /// When extracting to F*, wrap this item in `#push-options "..."` and
 /// `#pop-options`.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn fstar_options(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: TokenStream = item.into();
@@ -111,7 +140,6 @@ pub fn loop_decreases(predicate: pm::TokenStream) -> pm::TokenStream {
 /// When extracting to F*, inform about what is the current
 /// verification status for an item. It can either be `lax` or
 /// `panic_free`.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn fstar_verification_status(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let action = format!("{}", parse_macro_input!(attr as Ident));
@@ -151,7 +179,7 @@ pub fn fstar_verification_status(attr: pm::TokenStream, item: pm::TokenStream) -
                 #item
             }
         }
-        _ => abort_call_site!(format!("Expected `lax` or `panic_free`")),
+        _ => abort_call_site!("Expected `lax` or `panic_free`"),
     }
     .into()
 }
@@ -159,7 +187,6 @@ pub fn fstar_verification_status(attr: pm::TokenStream, item: pm::TokenStream) -
 /// Postprocess an item with a given tactic. This macro takes the tactic in
 /// parameter: this may be a Rust identifier or a raw snippet of F* code as a
 /// string literal.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn fstar_postprocess_with(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: TokenStream = item.into();
@@ -175,7 +202,6 @@ pub fn fstar_postprocess_with(attr: pm::TokenStream, item: pm::TokenStream) -> p
 }
 
 /// Include this item in the Hax translation. This overrides any exclusion resulting of `-i` flag.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn include(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: TokenStream = item.into();
@@ -185,7 +211,6 @@ pub fn include(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
 }
 
 /// Exclude this item from the Hax translation.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn exclude(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: TokenStream = item.into();
@@ -210,7 +235,6 @@ TODO: no support in any backends (see #297)
 ///   println!("{}", line)
 /// }
 /// ```
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn modeled_by(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     use quote::ToTokens;
@@ -245,7 +269,6 @@ pub fn modeled_by(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStre
 /// /// $`\forall n \in \mathbb{N}, \textrm{ackermann}(2, n) = 2 (n + 3) - 3`$
 /// pub fn ackermann_property_m1(n: u64) -> Proof<{ ackermann(2, n) == 2 * (n + 3) - 3 }> {}
 /// ```
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn lemma(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let mut item: syn::ItemFn = parse_macro_input!(item as ItemFn);
@@ -323,7 +346,6 @@ pub fn lemma(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
 ///     }
 /// }
 /// ```
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn decreases(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let phi: syn::Expr = parse_macro_input!(attr);
@@ -340,7 +362,6 @@ pub fn decreases(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStrea
 
 /// Allows to add SMT patterns to a lemma.
 /// For more informations about SMT patterns, please take a look here: https://fstar-lang.org/tutorial/book/under_the_hood/uth_smt.html#designing-a-library-with-smt-patterns.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn fstar_smt_pat(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let phi: syn::Expr = parse_macro_input!(attr);
@@ -374,7 +395,6 @@ pub fn fstar_smt_pat(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
 ///         .collect()
 /// }
 /// ```
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn requires(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let phi: syn::Expr = parse_macro_input!(attr);
@@ -417,7 +437,6 @@ pub fn requires(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream
 ///     x + x
 /// }
 /// ```
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let ExprClosure1 {
@@ -457,7 +476,6 @@ mod kw {
 /// such functions might have a `self` argument: in such cases, we
 /// rewrite function decorations as `#[impl_fn_decoration(<KIND>,
 /// <GENERICS>, <WHERE CLAUSE>, <SELF TYPE>, <BODY>)]`.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn impl_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let ImplFnDecoration {
@@ -474,7 +492,6 @@ pub fn impl_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::T
     quote! {#attr #item}.into()
 }
 
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let ImplFnDecoration {
@@ -541,7 +558,6 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
 ///     }
 /// }
 /// ```
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: Item = parse_macro_input!(item);
@@ -722,7 +738,6 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
 
 /// Mark an item opaque: the extraction will assume the
 /// type without revealing its definition.
-#[proc_macro_error]
 #[proc_macro_attribute]
 #[deprecated(note = "Please use 'opaque' instead")]
 pub fn opaque_type(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
@@ -731,7 +746,6 @@ pub fn opaque_type(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
 
 /// Mark an item opaque: the extraction will assume the
 /// type without revealing its definition.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn opaque(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: Item = parse_macro_input!(item);
@@ -741,7 +755,6 @@ pub fn opaque(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
 
 /// Mark an item transparent: the extraction will not
 /// make it opaque regardless of the `-i` flag default.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn transparent(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: Item = parse_macro_input!(item);
@@ -750,7 +763,6 @@ pub fn transparent(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenSt
 }
 
 /// A marker indicating a `fn` as a ProVerif process read.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn process_read(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -759,7 +771,6 @@ pub fn process_read(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
 }
 
 /// A marker indicating a `fn` as a ProVerif process write.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn process_write(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -768,7 +779,6 @@ pub fn process_write(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::Token
 }
 
 /// A marker indicating a `fn` as a ProVerif process initialization.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn process_init(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -777,7 +787,6 @@ pub fn process_init(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
 }
 
 /// A marker indicating an `enum` as describing the protocol messages.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn protocol_messages(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemEnum = parse_macro_input!(item);
@@ -786,7 +795,6 @@ pub fn protocol_messages(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::T
 }
 
 /// A marker indicating a `fn` should be automatically translated to a ProVerif constructor.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn pv_constructor(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -795,7 +803,6 @@ pub fn pv_constructor(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::Toke
 }
 
 /// A marker indicating a `fn` requires manual modelling in ProVerif.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn pv_handwritten(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -811,7 +818,6 @@ pub fn pv_handwritten(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::Toke
 /// - `int!(42)`
 /// - `int!(0o52)`
 /// - `int!(0h2A)`
-#[proc_macro_error]
 #[proc_macro]
 pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     let n: LitInt = parse_macro_input!(payload);
@@ -824,7 +830,6 @@ pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
 }
 
 /// This macro inserts a verbatim Lean proof into the extracted code.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -835,7 +840,6 @@ pub fn lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
 
 /// This macro inserts a verbatim Lean proof showing that the `requires`-condition is panic-free.
 /// The proof is inserted into the `pureRequires` field of the Lean spec.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn lean_pure_requires_proof(
     payload: pm::TokenStream,
@@ -849,7 +853,6 @@ pub fn lean_pure_requires_proof(
 
 /// This macro inserts a verbatim Lean proof showing that the `ensures`-condition is panic-free.
 /// The proof is inserted into the `pureEnsures` field of the Lean spec.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -859,7 +862,6 @@ pub fn lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) 
 }
 
 /// Use the proof method `grind`. This influences the tactic and spec set used by Lean.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -868,7 +870,6 @@ pub fn lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) ->
 }
 
 /// Use the proof method `bv_decide`. This influences the tactic and spec set used by Lean.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn lean_proof_method_bv_decide(
     _attr: pm::TokenStream,
@@ -891,7 +892,6 @@ macro_rules! make_quoting_item_proc_macro {
         /// comma-separated argument: `interface`, `impl` or
         /// `both`. This controls where the code will apprear: in the
         /// `fst` or `fsti` files or both.
-        #[proc_macro_error]
         #[proc_macro_attribute]
         pub fn $macro_name(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
             let mut fstar_options = None;
@@ -905,7 +905,7 @@ macro_rules! make_quoting_item_proc_macro {
                         r#impl: ident_str == "impl" || ident_str == "both",
                     });
                     if !matches!(ident_str.as_str(), "impl" | "both" | "interface") {
-                        proc_macro_error2::abort!(
+                        abort!(
                             ident.span(),
                             "Expected `impl`, `both` or `interface`"
                         );
@@ -1011,7 +1011,6 @@ macro_rules! make_quoting_proc_macro {
         make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, ItemQuotePosition::After, ${concat(hax_backend_, $backend)});
 
         #[doc = concat!("Replaces a Rust item with some verbatim ", stringify!($backend)," code.")]
-        #[proc_macro_error]
         #[proc_macro_attribute]
         pub fn ${concat($backend, _replace)}(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
             let item: TokenStream = item.into();
@@ -1030,7 +1029,6 @@ macro_rules! make_quoting_proc_macro {
         }
 
         #[doc = concat!("Replaces the body of a Rust function with some verbatim ", stringify!($backend)," code.")]
-        #[proc_macro_error]
         #[proc_macro_attribute]
         pub fn ${concat($backend, _replace_body)}(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
             let payload: TokenStream = payload.into();
@@ -1087,13 +1085,12 @@ make_quoting_proc_macro!(fstar coq proverif lean);
 /// When extracted via hax, this is interpreted in the backend as a
 /// refinement type: the use of such a type yields static proof
 /// obligations.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let mut item = parse_macro_input!(item as syn::ItemStruct);
 
     let syn::Fields::Unnamed(fields) = &item.fields else {
-        proc_macro_error2::abort!(
+        abort!(
             item.generics.span(),
             "Expected a newtype (a struct with one unnamed field), got one or more named field"
         );
@@ -1101,14 +1098,14 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
     let paren_token = fields.paren_token;
     let fields = fields.unnamed.iter().collect::<Vec<_>>();
     let [field] = &fields[..] else {
-        proc_macro_error2::abort!(
+        abort!(
             item.generics.span(),
             "Expected a newtype (a struct with one unnamed field), got {} fields",
             fields.len()
         );
     };
     if !matches!(field.vis, syn::Visibility::Inherited) {
-        proc_macro_error2::abort!(field.vis.span(), "This field was expected to be private");
+        abort!(field.vis.span(), "This field was expected to be private");
     }
 
     let no_debug_assert = {
@@ -1117,10 +1114,10 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
             (tokens.next(), tokens.next())
         {
             if ident.to_string() != "no_debug_runtime_check" {
-                proc_macro_error2::abort!(ident.span(), "Expected 'no_debug_runtime_check'");
+                abort!(ident.span(), "Expected 'no_debug_runtime_check'");
             }
             if comma.as_char() != ',' {
-                proc_macro_error2::abort!(ident.span(), "Expected a comma");
+                abort!(ident.span(), "Expected a comma");
             }
             attr = pm::TokenStream::from_iter(tokens);
             true
