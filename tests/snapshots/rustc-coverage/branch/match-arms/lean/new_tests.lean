@@ -44,11 +44,12 @@ inductive Enum : Type
   core_models.fmt.Debug Enum :=
   by constructor <;> exact Inhabited.default
 
+@[spec]
 def consume (T : Type) (x : T) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box T x);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
+@[spec]
 def match_arms (value : Enum) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -62,14 +63,14 @@ def match_arms (value : Enum) : RustM rust_primitives.hax.Tuple0 := do
         RustM rust_primitives.hax.Tuple0)));
   let _ ←
     match value with
-      | (Enum.D  d) => (consume u32 d)
-      | (Enum.C  c) => (consume u32 c)
-      | (Enum.B  b) => (consume u32 b)
-      | (Enum.A  a) => (consume u32 a);
+      | (Enum.D  d) => do (consume u32 d)
+      | (Enum.C  c) => do (consume u32 c)
+      | (Enum.B  b) => do (consume u32 b)
+      | (Enum.A  a) => do (consume u32 a);
   let _ ← (consume i32 (0 : i32));
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
+@[spec]
 def or_patterns (value : Enum) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -83,12 +84,12 @@ def or_patterns (value : Enum) : RustM rust_primitives.hax.Tuple0 := do
         RustM rust_primitives.hax.Tuple0)));
   let _ ←
     match value with
-      | (Enum.D  x) | (Enum.C  x) => (consume u32 x)
-      | (Enum.B  y) | (Enum.A  y) => (consume u32 y);
+      | (Enum.D  x) | (Enum.C  x) => do (consume u32 x)
+      | (Enum.B  y) | (Enum.A  y) => do (consume u32 y);
   let _ ← (consume i32 (0 : i32));
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008, HAX0008)
+@[spec]
 def guards (value : Enum) (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (rust_primitives.hax.folds.fold_range
@@ -103,55 +104,55 @@ def guards (value : Enum) (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     match
       (← match value with
-        | (Enum.D  d) =>
+        | (Enum.D  d) => do
           match cond with
-            | true =>
+            | true => do
               (pure (core_models.option.Option.Some (← (consume u32 d))))
-            | _ => (pure core_models.option.Option.None)
-        | _ => (pure core_models.option.Option.None))
+            | _ => do (pure core_models.option.Option.None)
+        | _ => do (pure core_models.option.Option.None))
     with
-      | (core_models.option.Option.Some  x) => (pure x)
-      | (core_models.option.Option.None ) =>
+      | (core_models.option.Option.Some  x) => do (pure x)
+      | (core_models.option.Option.None ) => do
         match
           (← match value with
-            | (Enum.C  c) =>
+            | (Enum.C  c) => do
               match cond with
-                | true =>
+                | true => do
                   (pure (core_models.option.Option.Some (← (consume u32 c))))
-                | _ => (pure core_models.option.Option.None)
-            | _ => (pure core_models.option.Option.None))
+                | _ => do (pure core_models.option.Option.None)
+            | _ => do (pure core_models.option.Option.None))
         with
-          | (core_models.option.Option.Some  x) => (pure x)
-          | (core_models.option.Option.None ) =>
+          | (core_models.option.Option.Some  x) => do (pure x)
+          | (core_models.option.Option.None ) => do
             match
               (← match value with
-                | (Enum.B  b) =>
+                | (Enum.B  b) => do
                   match cond with
-                    | true =>
+                    | true => do
                       (pure (core_models.option.Option.Some
                         (← (consume u32 b))))
-                    | _ => (pure core_models.option.Option.None)
-                | _ => (pure core_models.option.Option.None))
+                    | _ => do (pure core_models.option.Option.None)
+                | _ => do (pure core_models.option.Option.None))
             with
-              | (core_models.option.Option.Some  x) => (pure x)
-              | (core_models.option.Option.None ) =>
+              | (core_models.option.Option.Some  x) => do (pure x)
+              | (core_models.option.Option.None ) => do
                 match
                   (← match value with
-                    | (Enum.A  a) =>
+                    | (Enum.A  a) => do
                       match cond with
-                        | true =>
+                        | true => do
                           (pure (core_models.option.Option.Some
                             (← (consume u32 a))))
-                        | _ => (pure core_models.option.Option.None)
-                    | _ => (pure core_models.option.Option.None))
+                        | _ => do (pure core_models.option.Option.None)
+                    | _ => do (pure core_models.option.Option.None))
                 with
-                  | (core_models.option.Option.Some  x) => (pure x)
-                  | (core_models.option.Option.None ) =>
+                  | (core_models.option.Option.Some  x) => do (pure x)
+                  | (core_models.option.Option.None ) => do
                     (consume i32 (0 : i32));
   let _ ← (consume i32 (0 : i32));
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
+@[spec]
 def main.call_everything (e : Enum) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -163,13 +164,12 @@ def main.call_everything (e : Enum) :
   (pure (rust_primitives.hax.Tuple2.mk
     (← (core_models.iter.traits.iterator.Iterator.fold
       (← (core_models.iter.traits.collect.IntoIterator.into_iter
-        (RustArray Bool 3) #v[false, false, true]))
+        (RustArray Bool 3) (RustArray.ofVec #v[false, false, true])))
       rust_primitives.hax.Tuple0.mk
       (fun _ cond => (do (guards e cond) : RustM rust_primitives.hax.Tuple0))))
     rust_primitives.hax.Tuple0.mk))
 
---  @fail(extraction): proverif(HAX0008)
---  @fail(extraction): proverif(HAX0008, HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM
     (rust_primitives.hax.Tuple2

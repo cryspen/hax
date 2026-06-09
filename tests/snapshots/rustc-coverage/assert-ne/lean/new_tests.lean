@@ -41,21 +41,23 @@ structure Foo where
   core_models.cmp.PartialEq Foo Foo :=
   by constructor <;> exact Inhabited.default
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     match
       (rust_primitives.hax.Tuple2.mk
         (← (core_models.hint.black_box Foo (Foo.mk (5 : u32))))
-        (← if (← (core_models.hint.black_box Bool false)) then
+        (← if (← (core_models.hint.black_box Bool false)) then do
           (pure (Foo.mk (0 : u32)))
-        else
+        else do
           (pure (Foo.mk (1 : u32)))))
     with
-      | ⟨left_val, right_val⟩ =>
+      | ⟨left_val, right_val⟩ => do
         (hax_lib.assert
-          (← (core_models.ops.bit.Not.not
-            (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)))));
+          (← (!? (← (core_models.cmp.PartialEq.eq
+            Foo
+            Foo left_val right_val)))));
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__assert_ne

@@ -27,6 +27,7 @@ structure Firework
   where
   strength : T
 
+@[spec]
 def Impl.set_strength
     (T : Type)
     [trait_constr_set_strength_associated_type_i0 :
@@ -43,6 +44,7 @@ def Impl.set_strength
   let self : (Firework T) := {self with strength := new_strength};
   (pure self)
 
+@[spec]
 def Impl_1.drop_hoisted
     (T : Type)
     [trait_constr_drop_hoisted_associated_type_i0 :
@@ -58,13 +60,12 @@ def Impl_1.drop_hoisted
   let args : (rust_primitives.hax.Tuple1 T) :=
     (rust_primitives.hax.Tuple1.mk (Firework.strength self));
   let args : (RustArray core_models.fmt.rt.Argument 1) :=
-    #v[(← (core_models.fmt.rt.Impl.new_display T
-           (rust_primitives.hax.Tuple1._0 args)))];
+    (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display T
+                            (rust_primitives.hax.Tuple1._0 args)))]);
   let _ ←
     (std.io.stdio._print
       (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-        #v["BOOM times ", "!!!
-"]
+        (RustArray.ofVec #v["BOOM times ", "!!!\n"])
         args)));
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure self)
@@ -98,6 +99,7 @@ instance Impl_1
   drop := (Impl_1.drop_hoisted T)
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result rust_primitives.hax.Tuple0 u8) := do
   let firecracker : (Firework i32) := (Firework.mk (strength := (1 : i32)));
@@ -106,15 +108,14 @@ def main (_ : rust_primitives.hax.Tuple0) :
   let tnt : (Firework f64) := (Firework.mk (strength := (100.1 : f64)));
   let tnt : (Firework f64) ← (Impl.set_strength f64 tnt (200.1 : f64));
   let tnt : (Firework f64) ← (Impl.set_strength f64 tnt (300.3 : f64));
-  if true then
+  if true then do
     let _ ←
       (std.io.stdio._print
         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-          #v["Exiting with error...
-"])));
+          (RustArray.ofVec #v["Exiting with error...\n"]))));
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure (core_models.result.Result.Err (1 : u8)))
-  else
+  else do
     let _ := (Firework.mk (strength := (1000 : i32)));
     (pure (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk))
 

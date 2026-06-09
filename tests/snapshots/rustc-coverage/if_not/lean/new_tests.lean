@@ -14,47 +14,45 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__if_not
 
+@[spec]
 def if_not (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
-    if (← (core_models.ops.bit.Not.not cond)) then
+    if (← (!? cond)) then do
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-            #v["cond was false
-"])));
+            (RustArray.ofVec #v["cond was false\n"]))));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk)
-    else
+    else do
       (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
-    if (← (core_models.ops.bit.Not.not cond)) then
+    if (← (!? cond)) then do
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-            #v["cond was false
-"])));
+            (RustArray.ofVec #v["cond was false\n"]))));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk)
-    else
+    else do
       (pure rust_primitives.hax.Tuple0.mk);
-  if (← (core_models.ops.bit.Not.not cond)) then
+  if (← (!? cond)) then do
     let _ ←
       (std.io.stdio._print
         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-          #v["cond was false
-"])));
+          (RustArray.ofVec #v["cond was false\n"]))));
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ←
       (std.io.stdio._print
         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-          #v["cond was true
-"])));
+          (RustArray.ofVec #v["cond was true\n"]))));
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): proverif(HAX0008, HAX0008)
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM
     (rust_primitives.hax.Tuple2

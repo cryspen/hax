@@ -17,26 +17,32 @@ namespace new_tests.rustc_coverage__attr__impl
 structure MyStruct where
   -- no fields
 
+@[spec]
 def Impl.off_inherit (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl.off_on (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl.off_off (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl_1.on_inherit (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl_1.on_on (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl_1.on_off (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
@@ -49,6 +55,7 @@ class MyTrait (Self : Type)
   method (Self) :
     (rust_primitives.hax.Tuple0 -> RustM rust_primitives.hax.Tuple0)
 
+@[spec]
 def Impl_2.method_hoisted (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
@@ -60,6 +67,7 @@ def Impl_2.method_hoisted (_ : rust_primitives.hax.Tuple0) :
 instance Impl_2 : MyTrait MyStruct where
   method := (Impl_2.method_hoisted)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)

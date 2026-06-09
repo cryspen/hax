@@ -14,28 +14,27 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__branch__generics
 
+@[spec]
 def print_size (T : Type) (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   if
-  (← (rust_primitives.hax.machine_int.gt
-    (← (core_models.mem.size_of T rust_primitives.hax.Tuple0.mk))
-    (4 : usize))) then
+  (← ((← (core_models.mem.size_of T rust_primitives.hax.Tuple0.mk))
+    >? (4 : usize))) then do
     let _ ←
       (std.io.stdio._print
         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-          #v["size > 4
-"])));
+          (RustArray.ofVec #v["size > 4\n"]))));
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure rust_primitives.hax.Tuple0.mk)
-  else
+  else do
     let _ ←
       (std.io.stdio._print
         (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
-          #v["size <= 4
-"])));
+          (RustArray.ofVec #v["size <= 4\n"]))));
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (print_size rust_primitives.hax.Tuple0 rust_primitives.hax.Tuple0.mk);

@@ -36,13 +36,17 @@ Definition if_let (input : t_Option ((string))) : unit :=
 
 Definition if_let_chain (a : t_Option ((string))) (b : t_Option ((string))) : unit :=
   let _ := if
-    andb (failure (("Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: `Let` nodes are supposed to be pre-processed
+    andb (failure (("something is not implemented yet.
+Let-chains (e.g. `if let .. && let ..`) are not supported.
 
+This is discussed in issue https://github.com/hacspec/hax/issues/2018.
+Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
-"%string : string)) ((""%string : string))) (failure (("Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: `Let` nodes are supposed to be pre-processed
+"%string : string)) ((""%string : string))) (failure (("something is not implemented yet.
+Let-chains (e.g. `if let .. && let ..`) are not supported.
 
+This is discussed in issue https://github.com/hacspec/hax/issues/2018.
+Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
 "%string : string)) ((""%string : string)))
   then

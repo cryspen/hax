@@ -18,47 +18,46 @@ namespace new_tests.rustc_coverage__coverage_attr_closure
 def GLOBAL_CLOSURE_ON : (String -> RustM rust_primitives.hax.Tuple0) :=
   RustM.of_isOk
     (do
-    (fun input =>
+    (pure (fun input =>
       (do
       let args : (rust_primitives.hax.Tuple1 String) :=
         (rust_primitives.hax.Tuple1.mk input);
       let args : (RustArray core_models.fmt.rt.Argument 1) :=
-        #v[(← (core_models.fmt.rt.Impl.new_display String
-               (rust_primitives.hax.Tuple1._0 args)))];
+        (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display String
+                                (rust_primitives.hax.Tuple1._0 args)))]);
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-            #v["", "
-"]
+            (RustArray.ofVec #v["", "\n"])
             args)));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
-      RustM rust_primitives.hax.Tuple0)))
+      RustM rust_primitives.hax.Tuple0))))
     (by rfl)
 
 --  @fail(extraction): ssprove(HAX0001)
 def GLOBAL_CLOSURE_OFF : (String -> RustM rust_primitives.hax.Tuple0) :=
   RustM.of_isOk
     (do
-    (fun input =>
+    (pure (fun input =>
       (do
       let args : (rust_primitives.hax.Tuple1 String) :=
         (rust_primitives.hax.Tuple1.mk input);
       let args : (RustArray core_models.fmt.rt.Argument 1) :=
-        #v[(← (core_models.fmt.rt.Impl.new_display String
-               (rust_primitives.hax.Tuple1._0 args)))];
+        (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display String
+                                (rust_primitives.hax.Tuple1._0 args)))]);
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-            #v["", "
-"]
+            (RustArray.ofVec #v["", "\n"])
             args)));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
-      RustM rust_primitives.hax.Tuple0)))
+      RustM rust_primitives.hax.Tuple0))))
     (by rfl)
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def contains_closures_on (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _local_closure_on : (String -> RustM rust_primitives.hax.Tuple0) :=
@@ -67,13 +66,12 @@ def contains_closures_on (_ : rust_primitives.hax.Tuple0) :
       let args : (rust_primitives.hax.Tuple1 String) :=
         (rust_primitives.hax.Tuple1.mk input);
       let args : (RustArray core_models.fmt.rt.Argument 1) :=
-        #v[(← (core_models.fmt.rt.Impl.new_display String
-               (rust_primitives.hax.Tuple1._0 args)))];
+        (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display String
+                                (rust_primitives.hax.Tuple1._0 args)))]);
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-            #v["", "
-"]
+            (RustArray.ofVec #v["", "\n"])
             args)));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
@@ -84,13 +82,12 @@ def contains_closures_on (_ : rust_primitives.hax.Tuple0) :
       let args : (rust_primitives.hax.Tuple1 String) :=
         (rust_primitives.hax.Tuple1.mk input);
       let args : (RustArray core_models.fmt.rt.Argument 1) :=
-        #v[(← (core_models.fmt.rt.Impl.new_display String
-               (rust_primitives.hax.Tuple1._0 args)))];
+        (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display String
+                                (rust_primitives.hax.Tuple1._0 args)))]);
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-            #v["", "
-"]
+            (RustArray.ofVec #v["", "\n"])
             args)));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
@@ -98,6 +95,7 @@ def contains_closures_on (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): ssprove(HAX0001)
+@[spec]
 def contains_closures_off (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _local_closure_on : (String -> RustM rust_primitives.hax.Tuple0) :=
@@ -106,13 +104,12 @@ def contains_closures_off (_ : rust_primitives.hax.Tuple0) :
       let args : (rust_primitives.hax.Tuple1 String) :=
         (rust_primitives.hax.Tuple1.mk input);
       let args : (RustArray core_models.fmt.rt.Argument 1) :=
-        #v[(← (core_models.fmt.rt.Impl.new_display String
-               (rust_primitives.hax.Tuple1._0 args)))];
+        (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display String
+                                (rust_primitives.hax.Tuple1._0 args)))]);
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-            #v["", "
-"]
+            (RustArray.ofVec #v["", "\n"])
             args)));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
@@ -123,19 +120,19 @@ def contains_closures_off (_ : rust_primitives.hax.Tuple0) :
       let args : (rust_primitives.hax.Tuple1 String) :=
         (rust_primitives.hax.Tuple1.mk input);
       let args : (RustArray core_models.fmt.rt.Argument 1) :=
-        #v[(← (core_models.fmt.rt.Impl.new_display String
-               (rust_primitives.hax.Tuple1._0 args)))];
+        (RustArray.ofVec #v[(← (core_models.fmt.rt.Impl.new_display String
+                                (rust_primitives.hax.Tuple1._0 args)))]);
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_v1 ((2 : usize)) ((1 : usize))
-            #v["", "
-"]
+            (RustArray.ofVec #v["", "\n"])
             args)));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
       RustM rust_primitives.hax.Tuple0));
   (pure rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ← (contains_closures_on rust_primitives.hax.Tuple0.mk);
