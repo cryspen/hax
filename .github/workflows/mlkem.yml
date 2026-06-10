@@ -13,7 +13,7 @@ env:
 jobs:
   extract-mlkem:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'merge_group' }}
-    runs-on: "ubuntu-latest"
+    runs-on: linux
 
     steps:
       - name: ⤵ Extract libcrux version from PR body
@@ -75,7 +75,8 @@ jobs:
           cargo remove hax-lib -v -p libcrux-ml-kem
           cargo add hax-lib --path "../hax/hax-lib" -v -p libcrux-ml-kem
 
-      - uses: DeterminateSystems/nix-installer-action@main
+      - if: runner.environment == 'github-hosted'
+        uses: DeterminateSystems/nix-installer-action@main
       - name: Set up Cachix
         uses: cachix/cachix-action@v15
         with:
