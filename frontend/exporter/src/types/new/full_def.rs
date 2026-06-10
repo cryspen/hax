@@ -739,9 +739,21 @@ where
                                 };
                                 match decl_assoc.kind {
                                     ty::AssocKind::Type { .. } => {
+                                        // The associated type may have generics of its own (e.g.
+                                        // a GAT, or an RPITIT whose generics include the method's
+                                        // own generics). We must extend the trait args with the
+                                        // assoc type's own generics as identity, otherwise
+                                        // `instantiate` would be missing arguments.
+                                        let item_args =
+                                            ty::GenericArgs::identity_for_item(tcx, decl_def_id);
+                                        let args = item_args.rebase_onto(
+                                            tcx,
+                                            trait_ref.def_id,
+                                            trait_ref.args,
+                                        );
                                         let ty = tcx
                                             .type_of(decl_def_id)
-                                            .instantiate(tcx, trait_ref.args)
+                                            .instantiate(tcx, args)
                                             .sinto(s);
                                         ImplAssocItemValue::DefaultedTy { ty }
                                     }
