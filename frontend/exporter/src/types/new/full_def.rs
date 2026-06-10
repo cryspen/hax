@@ -746,10 +746,18 @@ where
                                         ImplAssocItemValue::DefaultedTy { ty }
                                     }
                                     ty::AssocKind::Fn { .. } => {
-                                        let sig = if tcx.generics_of(decl_def_id).is_own_empty() {
-                                            // The method doesn't have generics of its own, so
-                                            // we can instantiate it with just the trait
-                                            // generics.
+                                        // Only translate the sig when the method has no generics
+                                        // or predicates of its own. Otherwise (e.g. `flatten`, with
+                                        // `where Self::Item: IntoIterator`) we'd have to resolve
+                                        // those predicates, but no `DefId` carries a param env in
+                                        // which they hold, so resolution spuriously fails.
+                                        let has_own_generics_or_predicates =
+                                            !tcx.generics_of(decl_def_id).is_own_empty()
+                                                || !tcx
+                                                    .predicates_of(decl_def_id)
+                                                    .predicates
+                                                    .is_empty();
+                                        let sig = if !has_own_generics_or_predicates {
                                             let sig = tcx
                                                 .fn_sig(decl_def_id)
                                                 .instantiate(tcx, trait_ref.args)
