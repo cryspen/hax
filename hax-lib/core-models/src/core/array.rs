@@ -136,8 +136,7 @@ mod iter {
             if seq_len(&self.0) == 0 {
                 Option::None
             } else {
-                let res = seq_first(&self.0);
-                self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
+                let res = seq_remove(&mut self.0, 0);
                 Option::Some(res)
             }
         }
@@ -158,15 +157,7 @@ mod tests {
     use proptest::prelude::*;
 
     proptest! {
-        // Commented out: array_map is unimplemented in rust_primitives
-        // #[test]
-        // fn test_map(arr in any::<[u8; 4]>(), a in any::<[u8; 256]>()) {
-        //     let model_arr = arr.inject();
-        //     let f = |x: u8| a[x as usize];
-        //     let model_result = super::Dummy::<u8, 4>::map(model_arr, f);
-        //     let std_result = arr.map(f);
-        //     prop_assert_eq!(model_result, std_result.inject());
-        // }
+        // `map` and `from_fn` cannot be tested with the current solution
 
         #[test]
         fn test_as_slice(arr in any::<[u8; 4]>()) {
@@ -176,17 +167,6 @@ mod tests {
                 arr.as_slice()
             );
         }
-
-        // Commented out: array_from_fn is unimplemented in rust_primitives
-        // proptest! {
-        //     #[test]
-        //     fn test_from_fn(n in 0u8..10) {
-        //         let f = |i: usize| (i as u8 + n) % 255;
-        //         let model_result = super::from_fn::<u8, 4, _>(f);
-        //         let std_result = std::array::from_fn::<u8, 4, _>(f);
-        //         prop_assert_eq!(model_result, std_result.inject());
-        //     }
-        // }
 
         #[test]
         fn test_index_usize(arr in any::<[u8; 4]>(), idx in 0usize..4) {

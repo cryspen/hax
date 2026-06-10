@@ -13,7 +13,8 @@
 # Hax
 
 hax is a tool for high assurance translations of a large subset of
-Rust into formal languages such as [F\*](https://www.fstar-lang.org/) or [Rocq](https://rocq-prover.org/).
+Rust into formal languages such as [Lean](https://lean-lang.org/),
+[F\*](https://www.fstar-lang.org/) or [Rocq](https://rocq-prover.org/).
 
 <p align="center">
     <a href="https://hax-playground.cryspen.com/#fstar+tc/latest-main/gist=5252f86237adbca7fdeb7a8fea0b1648">
@@ -34,13 +35,18 @@ Rust into formal languages such as [F\*](https://www.fstar-lang.org/) or [Rocq](
   </tr>
   <tr>
     <td align="center">
+      <a href="https://lean-lang.org/">
+        <picture>
+          <source srcset=".github/assets/lean-dark.svg" media="(prefers-color-scheme: dark)">
+          <source srcset=".github/assets/lean-light.svg" media="(prefers-color-scheme: light)">
+          <img src=".github/assets/lean-light.svg" height="18" alt="Lean">
+        </picture>
+        <br><sub>(via Aeneas)</sub>
+      </a>
+    </td>
+    <td align="center">
       <a href="https://www.fstar-lang.org/">
         F*
-        <!-- <picture>
-          <source srcset=".github/assets/fstar-dark.png" media="(prefers-color-scheme: dark)">
-          <source srcset=".github/assets/fstar-light.png" media="(prefers-color-scheme: light)">
-          <img src=".github/assets/fstar-light.png" height="40" alt="F*">
-        </picture> -->
       </a>
     </td>
     <td align="center">
@@ -49,15 +55,6 @@ Rust into formal languages such as [F\*](https://www.fstar-lang.org/) or [Rocq](
           <source srcset=".github/assets/rocq-dark.svg" media="(prefers-color-scheme: dark)">
           <source srcset=".github/assets/rocq-light.svg" media="(prefers-color-scheme: light)">
           <img src=".github/assets/rocq-light.svg" height="18" alt="Rocq">
-        </picture>
-      </a>
-    </td>
-    <td align="center" style="vertical-align: center; ">
-      <a href="https://lean-lang.org/">
-        <picture>
-          <source srcset=".github/assets/lean-dark.svg" media="(prefers-color-scheme: dark)">
-          <source srcset=".github/assets/lean-light.svg" media="(prefers-color-scheme: light)">
-          <img src=".github/assets/lean-light.svg" height="18" alt="Lean">
         </picture>
       </a>
     </td>
@@ -78,9 +75,9 @@ Rust into formal languages such as [F\*](https://www.fstar-lang.org/) or [Rocq](
   </tr>
   <tr>
     <!-- 🟢🟡🟠🔴 -->
+    <td align="center"><sub>🚀 active dev.</sub></td>
     <td align="center"><sub>🟢 stable</sub></td>
     <td align="center"><sub>🟡 partial</sub></td>
-    <td align="center"><sub>🚀 active dev.</sub></td>
     <td align="center"><sub>🟡 partial</sub></td>
     <td align="center"><sub>🟠 PoC</sub></td>
   </tr>
@@ -100,32 +97,43 @@ Here are some resources for learning more about hax:
 Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub Discussion](https://github.com/cryspen/hax/discussions). For bugs, file an [Issue](https://github.com/cryspen/hax/issues).
 
 ## Usage
-Hax is a cargo subcommand. 
+
+Hax is a cargo subcommand.
 The command `cargo hax` accepts the following subcommands:
- * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `fstar`, `coq`, `lean`).
+
+ * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND`.
  * **`json`** (`cargo hax json`): extract the typed AST of your crate as a JSON file.
- 
-Note:
- * `BACKEND` can be `fstar`, `lean`, `coq`, `easycrypt` or `pro-verif`. `cargo hax into --help`
-   gives the full list of supported backends.
- * The subcommands `cargo hax`, `cargo hax into` and `cargo hax into
-   <BACKEND>` takes options. For instance, you can `cargo hax into
-   fstar --z3rlimit 100`. Use `--help` on those subcommands to list
-   all options.
+
+### Backends
+
+| Backend               | Command                      | Description                                                                                                                   |
+|-----------------------|------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| **Lean** (via Aeneas) | `cargo hax into aeneas-lean` | Recommended for Lean. Uses [charon](https://github.com/AeneasVerif/charon) + [aeneas](https://github.com/AeneasVerif/aeneas). |
+| F\*                   | `cargo hax into fstar`       | Stable.                                                                                                                       |
+| Rocq/Coq              | `cargo hax into coq`         |                                                                                                                               |
+| Lean (legacy)         | `cargo hax into lean`        | Uses the hax engine directly. Prefer `aeneas-lean`.                                                                           |
+| SSProve               | `cargo hax into ssprove`     |                                                                                                                               |
+| ProVerif              | `cargo hax into pro-verif`   |                                                                                                                               |
+
+Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimit 100`).
 
 ## Installation
-<details>
+
+<details open>
   <summary><b>Manual installation</b></summary>
 
 1. Make sure to have the following installed on your system:
 
-- [`opam`](https://opam.ocaml.org/) (`opam switch create 5.1.1`)
-- [`rustup`](https://rustup.rs/)
-- [`nodejs`](https://nodejs.org/)
-- [`jq`](https://jqlang.github.io/jq/)
+  - [`opam`](https://opam.ocaml.org/)
+  - [`rustup`](https://rustup.rs/)
+  - [`nodejs`](https://nodejs.org/)
+  - [`jq`](https://jqlang.github.io/jq/)
 
 2. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
+3. Create (or use an existing) opam *switch* by running `opam switch create hax 5.1.1`
 3. Run the [setup.sh](./setup.sh) script: `./setup.sh`.
+   This installs hax and the aeneas/charon binaries by default.
+   Pass `--no-aeneas` to skip the aeneas/charon installation.
 4. Run `cargo-hax --help`
 
 </details>
@@ -154,6 +162,10 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
 + **Note**: in any of the Nix commands above, replace `github:hacspec/hax` by `./dir` to compile a local checkout of hax that lives in `./some-dir`
 + **Setup binary cache**: [using Cachix](https://app.cachix.org/cache/hax), just `cachix use hax`
 
+**Note:** Nix does not yet include aeneas and charon.
+After installing, run `./install-aeneas.sh` from a hax checkout to
+add the `aeneas-lean` backend.
+
 </details>
 
 <details>
@@ -166,6 +178,34 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
 
 Note: Please make sure that `$HOME/.cargo/bin` is in your `$PATH`, as
 that is where `setup.sh` will install hax.
+
+**Note:** Docker does not yet include aeneas and charon.
+Run `./install-aeneas.sh` inside the container to add the `aeneas-lean` backend.
+
+</details>
+
+<details>
+  <summary><b>Aeneas and Charon (standalone)</b></summary>
+
+The `aeneas-lean` backend (`cargo hax into aeneas-lean`) uses the
+[charon](https://github.com/AeneasVerif/charon) +
+[aeneas](https://github.com/AeneasVerif/aeneas) pipeline instead of
+the hax engine.  It requires the `aeneas` and `charon` binaries.
+
+If you already have hax installed and just need the aeneas/charon
+binaries (e.g. after a Nix or Docker install), run:
+
+```bash
+./install-aeneas.sh
+```
+
+This downloads pre-built binaries (at the versions pinned by this
+repository) to `~/.cargo/bin/`.
+
+You can also build or install `aeneas` and `charon` yourself (e.g.
+from source) and either place them in your `PATH` or point to them
+with the `HAX_AENEAS_BINARY` and `HAX_CHARON_BINARY` environment
+variables.
 
 </details>
 

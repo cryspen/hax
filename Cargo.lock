@@ -232,6 +232,7 @@ dependencies = [
  "serde",
  "serde-jsonlines",
  "serde_json",
+ "shlex",
  "syn 2.0.106",
  "tempfile",
  "tiny_http",

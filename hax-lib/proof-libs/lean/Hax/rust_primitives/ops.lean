@@ -176,6 +176,9 @@ declare_comparison_specs unsigned USize64 64
 
 end rust_primitives.cmp
 
+@[simp, spec, hax_bv_decide]
+def CoreModels.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
+
 set_option linter.unusedVariables false in
 
 /-

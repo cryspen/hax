@@ -52,8 +52,37 @@ fn git_dirty_env_var() {
     println!("cargo:rustc-env=HAX_GIT_IS_DIRTY={}", dirty);
 }
 
+/// Embed the pinned aeneas commit and charon version at compile time for the
+/// runtime version checks.
+fn pin_env_vars() {
+    let workspace_root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+
+    // aeneas-pin: read the "commit <sha>" line (compared against `aeneas -version`)
+    let aeneas_pin_path = workspace_root.join("aeneas-pin");
+    println!("cargo:rerun-if-changed={}", aeneas_pin_path.display());
+    let aeneas_pin = std::fs::read_to_string(&aeneas_pin_path).unwrap_or_default();
+    let aeneas_commit = aeneas_pin
+        .lines()
+        .find_map(|l| l.strip_prefix("commit "))
+        .unwrap_or("")
+        .trim();
+    println!("cargo:rustc-env=HAX_EXPECTED_AENEAS_VERSION={aeneas_commit}");
+
+    // charon-pin: read the "version X.Y.Z" line
+    let charon_pin_path = workspace_root.join("charon-pin");
+    println!("cargo:rerun-if-changed={}", charon_pin_path.display());
+    let charon_pin = std::fs::read_to_string(&charon_pin_path).unwrap_or_default();
+    let charon_version = charon_pin
+        .lines()
+        .find(|l| l.starts_with("version "))
+        .and_then(|l| l.strip_prefix("version "))
+        .unwrap_or("");
+    println!("cargo:rustc-env=HAX_EXPECTED_CHARON_VERSION={charon_version}");
+}
+
 fn main() {
     rustc_version_env_var();
     json_schema_static_asset();
     git_dirty_env_var();
+    pin_env_vars();
 }

@@ -39,6 +39,7 @@ pub trait Extension: 'static {
     type Command: SubcommandExtensionPoint;
     type BackendOptions: ArgsExtensionPoint;
     type FStarOptions: ArgsExtensionPoint;
+    type AeneasLeanOptions: ArgsExtensionPoint;
 }
 
 impl Extension for () {
@@ -46,4 +47,5 @@ impl Extension for () {
     type Command = EmptySubcommandExtension;
     type BackendOptions = EmptyArgsExtension;
     type FStarOptions = EmptyArgsExtension;
+    type AeneasLeanOptions = EmptyArgsExtension;
 }

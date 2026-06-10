@@ -280,6 +280,7 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
                                 value: value.sinto(s),
                             })
                             .collect(),
+                        repr: def.repr().sinto(s),
                     }
                 }
                 _ => unreachable!(),
@@ -362,6 +363,7 @@ fn op_to_const<'tcx, S: UnderOwnerState<'tcx>>(
             ConstantExprKind::Adt {
                 info: variants_info,
                 fields,
+                repr: adt_def.repr().sinto(s),
             }
         }
         ty::Closure(def_id, args) => {
@@ -387,6 +389,8 @@ fn op_to_const<'tcx, S: UnderOwnerState<'tcx>>(
             ConstantExprKind::Adt {
                 info: variants_info,
                 fields,
+                // Closures do not have explicit repr annotations; use default Rust repr.
+                repr: rustc_abi::ReprOptions::default().sinto(s),
             }
         }
         ty::Tuple(args) => {

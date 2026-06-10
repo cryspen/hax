@@ -27,5 +27,4 @@ def to_le_bytes (x : u32) : RustM (RustArray u8 4) :=
 
 end core_models.num.Impl_8
 
-
 attribute [spec] core_models.num.Impl_8.wrapping_add

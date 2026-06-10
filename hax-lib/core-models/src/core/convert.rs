@@ -233,26 +233,19 @@ mod tests {
         i8  i8  i16 isize i8  i16 i32 isize i8   i16  i32  i64  isize i8    i16   i32   i64   i128,
     }
 
-    // Commented out: TryFrom<&[T]> for [T; N] uses array_from_fn which is unimplemented
-    // proptest! {
-    //     #[test]
-    //     fn test_try_from_slice_to_array_success(slice in prop::collection::vec(any::<u8>(), 4..=4)) {
-    //         let result = <[u8; 4] as super::TryFrom<&[u8]>>::try_from(&slice[..]);
-    //         let expected = <[u8; 4]>::try_from(&slice[..]);
-    //         match (result, expected) {
-    //             (super::Result::Ok(v), Ok(e)) => prop_assert_eq!(v.inject(), e.inject()),
-    //             (super::Result::Err(_), Err(_)) => {},
-    //             _ => return Err(TestCaseError::fail("Mismatch")),
-    //         }
-    //     }
-    //
-    //     #[test]
-    //     fn test_try_from_slice_to_array_length_mismatch(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
-    //         let len = slice.len();
-    //         if len != 4 {
-    //             let result = <[u8; 4] as super::TryFrom<&[u8]>>::try_from(&slice[..]);
-    //             prop_assert!(matches!(result, super::Result::Err(_)));
-    //         }
-    //     }
-    // }
+    proptest! {
+        #[test]
+        fn test_try_from_slice_to_array_success(arr in any::<[u8; 4]>()) {
+            prop_assert_eq!(
+                <[u8; 4] as super::TryFrom<&[u8]>>::try_from(arr.as_slice()).unwrap(),
+                arr
+            );
+        }
+
+        #[test]
+        fn test_try_from_slice_to_array_length_mismatch(arr in any::<[u8; 3]>()) {
+            let result = <[u8; 4] as super::TryFrom<&[u8]>>::try_from(arr.as_slice());
+            prop_assert!(result.is_err());
+        }
+    }
 }

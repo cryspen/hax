@@ -1,0 +1,39 @@
+name: Core models
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: tests
+    runs-on: linux
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run core models tests
+      run: |
+        cargo test --manifest-path hax-lib/core-models/Cargo.toml --workspace
+
+  check-extraction:
+    name: check extraction is up to date
+    runs-on: linux
+    steps:
+    - uses: actions/checkout@v4
+    - uses: DeterminateSystems/nix-installer-action@main
+    - uses: cachix/cachix-action@v15
+      with:
+        name: hax
+        skipPush: true
+    - name: Install hax
+      run: |
+        nix profile install .#rustc
+        nix profile install .
+    - name: Regenerate core models
+      run: |
+        cd hax-lib/core-models && ./hax.sh extract
+    - name: Check for diff
+      run: |
+        git diff --exit-code

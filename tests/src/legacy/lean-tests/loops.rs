@@ -26,9 +26,9 @@ fn loop2() -> u32 {
 }
 
 /// For-loop with a spec
-/// @fail(extraction): proverif(HAX0008)
 #[hax_lib::requires(y > 0)]
 #[hax_lib::ensures(|res| res > 0)]
+/// @fail(extraction): proverif(HAX0008)
 fn for_loop_with_spec(y: u64) -> u64 {
     let mut x: u64 = y;
     for i in 0..y {

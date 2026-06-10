@@ -6,6 +6,8 @@ members = [
     "lean_adc",
     "lean_tutorial",
     "limited-order-book",
+    "loop_equivalence",
+    "sha3",
     "sha256",
     "barrett",
     "kyber_compress",

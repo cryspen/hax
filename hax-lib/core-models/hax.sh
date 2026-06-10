@@ -23,33 +23,55 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::result::**::expect_err"
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issue #1818
-    LEAN_FILTERS+=" -core_models::num::**::saturating_add"
-    LEAN_FILTERS+=" -core_models::num::**::overflowing_add"
-    LEAN_FILTERS+=" -core_models::num::**::saturating_sub"
-    LEAN_FILTERS+=" -core_models::num::**::overflowing_sub"
-    LEAN_FILTERS+=" -core_models::num::**::saturating_mul"
-    LEAN_FILTERS+=" -core_models::num::**::overflowing_mul"
-    LEAN_FILTERS+=" -core_models::num::**::count_ones"
-    LEAN_FILTERS+=" -core_models::num::**::rem_euclid"
-    LEAN_FILTERS+=" -core_models::num::**::abs"
-    LEAN_FILTERS+=" -core_models::num::**::checked_add"
-    LEAN_FILTERS+=" -core_models::num::**::checked_sub"
-    LEAN_FILTERS+=" -core_models::num::**::checked_mul"
-    LEAN_FILTERS+=" -core_models::num::**::MIN"
+    LEAN_FILTERS+=" -core_models::iter::traits::iterator::**" # Issue #1710
+    LEAN_FILTERS+=" -core_models::Convert::impl_6"
+    LEAN_FILTERS+=" -core_models::mem::copy"
+    LEAN_FILTERS+=" -core_models::num::**::saturating_add" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::overflowing_add" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::saturating_sub" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::overflowing_sub" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::saturating_mul" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::overflowing_mul" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::count_ones" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::from_str_radix" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::rem_euclid" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::abs" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::checked_add" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::checked_sub" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::checked_mul" # no rust_primitives impl
+    LEAN_FILTERS+=" -core_models::num::**::MIN" # no USIZE/ISIZE MIN/MAX/BITS in rust_primitives
     LEAN_FILTERS+=" -core_models::num::**::MAX"
     LEAN_FILTERS+=" -core_models::num::**::BITS"
-    LEAN_FILTERS+=" -core_models::num::**::from_be_bytes"
-    LEAN_FILTERS+=" -core_models::num::**::from_le_bytes"
-    LEAN_FILTERS+=" -core_models::num::**::to_be_bytes"
-    LEAN_FILTERS+=" -core_models::num::**::to_le_bytes"
-    LEAN_FILTERS+=" -core_models::num::**::rotate_left"
-    LEAN_FILTERS+=" -core_models::num::**::rotate_right"
-    
+    LEAN_FILTERS+=" -core_models::slice::iter::**" # needs Iterator trait + seq_remove
+    LEAN_FILTERS+=" -core_models::slice::**::iter" # returns slice::iter types
+    LEAN_FILTERS+=" -core_models::slice::**::chunks" # returns slice::iter types
+    LEAN_FILTERS+=" -core_models::slice::**::chunks_exact" # returns slice::iter types
+    LEAN_FILTERS+=" -core_models::slice::**::clone_from_slice" # spurious counterexample
+    LEAN_FILTERS+=" -core_models::slice::**::copy_from_slice" # spurious counterexample
+    LEAN_FILTERS+=" -core_models::iter::adapters::step_by::**"
+    LEAN_FILTERS+=" -core_models::iter::adapters::take::**"
+    LEAN_FILTERS+=" -core_models::iter::adapters::flat_map::**"
+    LEAN_FILTERS+=" -core_models::iter::adapters::flatten::**"
+    LEAN_FILTERS+=" -core_models::iter::adapters::zip::**"
+    LEAN_FILTERS+=" -core_models::iter::adapters::enumerate::**"
+    LEAN_FILTERS+=" -core_models::iter::adapters::map::**"
+    LEAN_FILTERS+=" -core_models::f32::**::abs"
+    LEAN_FILTERS+=" -core_models::num::**::from_be_bytes" # extracted as opaque
+    LEAN_FILTERS+=" -core_models::num::**::from_le_bytes" # extracted as opaque
+    LEAN_FILTERS+=" -core_models::num::**::to_be_bytes" # extracted as opaque
+    LEAN_FILTERS+=" -core_models::num::**::to_le_bytes" # extracted as opaque
+    LEAN_FILTERS+=" -core_models::num::**::rotate_left" # extracted as opaque
+    LEAN_FILTERS+=" -core_models::num::**::rotate_right" # extracted as opaque
+
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
     OUT="proofs/lean/extraction/core_models.lean"
 
     sed -i 's/import Hax/import Hax.core_models.prologue\nimport Hax.Tactic.HaxSpec/g' "$OUT"
+
+    # Fix incorrect `core.` namespace references that should be `core_models.`
+    sed -i 's/\bcore\.marker\./core_models.marker./g' "$OUT"
+    sed -i 's/\bcore\.cmp\./core_models.cmp./g' "$OUT"
 
     cp "$OUT" ../proof-libs/lean/Hax/core_models/core_models.lean
 }

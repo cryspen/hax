@@ -9,3 +9,20 @@ pub fn black_box<T>(dummy: T) -> T {
 pub fn must_use<T>(value: T) -> T {
     value
 }
+
+#[cfg(test)]
+mod tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_black_box(x in any::<u8>()) {
+            prop_assert_eq!(super::black_box(x), x);
+        }
+
+        #[test]
+        fn test_must_use(x in any::<u8>()) {
+            prop_assert_eq!(super::must_use(x), x);
+        }
+    }
+}
