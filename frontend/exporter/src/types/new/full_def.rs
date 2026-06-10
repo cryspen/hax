@@ -751,13 +751,11 @@ where
                                         // `where Self::Item: IntoIterator`) we'd have to resolve
                                         // those predicates, but no `DefId` carries a param env in
                                         // which they hold, so resolution spuriously fails.
-                                        let has_own_generics_or_predicates =
-                                            !tcx.generics_of(decl_def_id).is_own_empty()
-                                                || !tcx
-                                                    .predicates_of(decl_def_id)
-                                                    .predicates
-                                                    .is_empty();
-                                        let sig = if !has_own_generics_or_predicates {
+                                        let no_own_generics_or_predicates = tcx
+                                            .generics_of(decl_def_id)
+                                            .is_own_empty()
+                                            && tcx.predicates_of(decl_def_id).predicates.is_empty();
+                                        let sig = if no_own_generics_or_predicates {
                                             let sig = tcx
                                                 .fn_sig(decl_def_id)
                                                 .instantiate(tcx, trait_ref.args)
