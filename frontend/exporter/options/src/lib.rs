@@ -2,7 +2,7 @@ use hax_adt_into::derive_group;
 use schemars::JsonSchema;
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
 pub enum Glob {
     One,  // *
     Many, // **
@@ -19,7 +19,7 @@ impl ToString for Glob {
 }
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
 pub enum NamespaceChunk {
     Glob(Glob),
     Exact(String),
@@ -45,7 +45,7 @@ impl std::convert::From<&str> for NamespaceChunk {
 }
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
 pub struct Namespace {
     pub chunks: Vec<NamespaceChunk>,
 }

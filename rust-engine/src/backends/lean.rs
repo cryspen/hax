@@ -149,53 +149,6 @@ impl Backend for LeanBackend {
         Utf8PathBuf::from(krate).with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<PhaseKind> {
-        use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
-        vec![
-            RejectRawOrMutPointer.into(),
-            RejectImplTypeMethod.into(),
-            RewriteLocalSelf.into(),
-            TransformHaxLibInline.into(),
-            Specialize.into(),
-            DropSizedTrait.into(),
-            SimplifyQuestionMarks.into(),
-            AndMutDefsite.into(),
-            ReconstructAsserts.into(),
-            ReconstructForLoops.into(),
-            ReconstructWhileLoops.into(),
-            DirectAndMut.into(),
-            RejectArbitraryLhs.into(),
-            DropBlocks.into(),
-            DropMatchGuards.into(),
-            DropReferences.into(),
-            TrivializeAssignLhs.into(),
-            HoistSideEffects.into(),
-            HoistDisjunctivePatterns.into(),
-            SimplifyMatchReturn.into(),
-            LocalMutation.into(),
-            RewriteControlFlow.into(),
-            DropReturnBreakContinue.into(),
-            FunctionalizeLoops.into(),
-            RejectQuestionMark.into(),
-            TraitsSpecs.into(),
-            SimplifyHoisting.into(),
-            NewtypeAsRefinement.into(),
-            ReorderFields.into(),
-            SortItems.into(),
-            FilterUnprintableItems,
-            ExplicitMonadic,
-        ]
-    }
-
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![
-            Box::new(RecursiveFunctions),
-            Box::new(FunctionsToConstants),
-            Box::new(LetPure),
-            Box::new(RecordEllipsis),
-        ]
-    }
-
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
         let mut modules: Vec<Module> = Vec::new();
 
@@ -238,6 +191,54 @@ impl Backend for LeanBackend {
             contents: format!("{}{}", HEADER, contents),
             sourcemap: None,
         }]
+    }
+
+    fn phases(&self) -> Vec<PhaseKind> {
+        use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
+        vec![
+            RejectRawOrMutPointer.into(),
+            RejectImplTypeMethod.into(),
+            RewriteLocalSelf.into(),
+            TransformHaxLibInline.into(),
+            Specialize.into(),
+            DropSizedTrait.into(),
+            SimplifyQuestionMarks.into(),
+            AndMutDefsite.into(),
+            ReconstructAsserts.into(),
+            ReconstructForLoops.into(),
+            ReconstructWhileLoops.into(),
+            DirectAndMut.into(),
+            RejectArbitraryLhs.into(),
+            DropBlocks.into(),
+            DropMatchGuards.into(),
+            DropReferences.into(),
+            TrivializeAssignLhs.into(),
+            HoistSideEffects.into(),
+            HoistDisjunctivePatterns.into(),
+            SimplifyMatchReturn.into(),
+            LocalMutation.into(),
+            RewriteControlFlow.into(),
+            DropReturnBreakContinue.into(),
+            FunctionalizeLoops.into(),
+            RejectQuestionMark.into(),
+            TraitsSpecs.into(),
+            SimplifyHoisting.into(),
+            NewtypeAsRefinement.into(),
+            ReorderFields.into(),
+            HoistAssociatedFns,
+            SortItems.into(),
+            FilterUnprintableItems,
+            ExplicitMonadic,
+        ]
+    }
+
+    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
+        vec![
+            Box::new(RecursiveFunctions),
+            Box::new(FunctionsToConstants),
+            Box::new(LetPure),
+            Box::new(RecordEllipsis),
+        ]
     }
 }
 
@@ -514,6 +515,14 @@ const _: () = {
             {
                 // Pure values are displayed directly. Note that constructors, while pure, may
                 // contain sub-expressions that are not, so they must be wrapped in a do-block
+                docs![pure_expr]
+            } else if let ExprKind::App { head, args, .. } = expr.kind()
+                && let ExprKind::GlobalId(PURE) = head.kind()
+                && let [pure_expr] = &args[..]
+                && let ExprKind::App { args, .. } = pure_expr.kind()
+                && args.is_empty()
+            {
+                // Constants are pure values
                 docs![pure_expr]
             } else {
                 // All other expressions are wrapped in a do-block, and extracted out of the monad
@@ -1810,7 +1819,7 @@ const _: () = {
                 ItemKind::Impl {
                     generics,
                     self_ty: _,
-                    of_trait: (trait_, args),
+                    of_trait: TraitGoal { trait_, args },
                     items,
                     parent_bounds: _,
                 } => {
@@ -2004,7 +2013,9 @@ const _: () = {
                 ]
                 .group()
                 .nest(INDENT),
-                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => {
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body })
+                    if generics.params.is_empty() =>
+                {
                     docs![
                         name,
                         softline!(),
@@ -2013,6 +2024,22 @@ const _: () = {
                         self.monad_extract(body)
                     ]
                 }
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => docs![
+                    docs![
+                        name,
+                        softline!(),
+                        ":=",
+                        line!(),
+                        docs!["fun", line!(), generics, line!(), "=>",]
+                            .group()
+                            .nest(INDENT)
+                    ]
+                    .group(),
+                    line!(),
+                    self.monad_extract(body)
+                ]
+                .group()
+                .nest(INDENT),
                 ImplItemKind::Error(err) => docs!(err),
             }
         }

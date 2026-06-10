@@ -1,0 +1,83 @@
+module New_tests.Legacy__lean_tests__lib.Loops
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+/// @fail(extraction): proverif(HAX0008)
+let loop1 (_: Prims.unit) : u32 =
+  let (x: u32):u32 = mk_u32 0 in
+  let x:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 1)
+      (mk_u32 10)
+      (fun x temp_1_ ->
+          let x:u32 = x in
+          let _:u32 = temp_1_ in
+          true)
+      x
+      (fun x i ->
+          let x:u32 = x in
+          let i:u32 = i in
+          x +! i <: u32)
+  in
+  x
+
+/// @fail(extraction): proverif(HAX0008)
+let loop2 (_: Prims.unit) : u32 =
+  let (x: u32):u32 = mk_u32 0 in
+  match
+    Rust_primitives.Hax.Folds.fold_range_return (mk_u32 1)
+      (mk_u32 10)
+      (fun x temp_1_ ->
+          let x:u32 = x in
+          let _:u32 = temp_1_ in
+          true)
+      x
+      (fun x i ->
+          let x:u32 = x in
+          let i:u32 = i in
+          if i =. mk_u32 5 <: bool
+          then
+            Core_models.Ops.Control_flow.ControlFlow_Break
+            (Core_models.Ops.Control_flow.ControlFlow_Break x
+              <:
+              Core_models.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32))
+            <:
+            Core_models.Ops.Control_flow.t_ControlFlow
+              (Core_models.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32)) u32
+          else
+            Core_models.Ops.Control_flow.ControlFlow_Continue (x +! i <: u32)
+            <:
+            Core_models.Ops.Control_flow.t_ControlFlow
+              (Core_models.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32)) u32)
+    <:
+    Core_models.Ops.Control_flow.t_ControlFlow u32 u32
+  with
+  | Core_models.Ops.Control_flow.ControlFlow_Break ret -> ret
+  | Core_models.Ops.Control_flow.ControlFlow_Continue x -> x
+
+/// @fail(extraction): coq(HAX0001, HAX0001), proverif(HAX0008), ssprove(HAX0001)
+let while_loop1 (s: u32)
+    : Prims.Pure u32
+      Prims.l_True
+      (ensures
+        fun r ->
+          let r:u32 = r in
+          true) =
+  let (x: u32):u32 = s in
+  let x:u32 =
+    Rust_primitives.Hax.while_loop (fun x ->
+          let x:u32 = x in
+          true)
+      (fun x ->
+          let x:u32 = x in
+          x >. mk_u32 0 <: bool)
+      (fun x ->
+          let x:u32 = x in
+          Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int)
+      x
+      (fun x ->
+          let x:u32 = x in
+          let x:u32 = x -! mk_u32 1 in
+          x)
+  in
+  x

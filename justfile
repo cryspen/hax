@@ -61,16 +61,9 @@ fmt:
   cargo fmt
   cd engine && dune fmt
 
-# Run hax tests: each test crate has a snapshot, so that we track changes in extracted code. If a snapshot changed, please review them with `just test-review`.
+# Run hax tests
 test *FLAGS:
-  cargo test --test toolchain {{FLAGS}}
-
-_test *FLAGS:
-  CARGO_TESTS_ASSUME_BUILT=1 cargo test --test toolchain {{FLAGS}}
-
-# Review snapshots
-test-review: (_ensure_command_in_path "cargo-insta" "Insta (https://insta.rs)")
-  cargo insta review
+  cargo run --release --bin test-driver -- ./tests {{FLAGS}}
 
 # Serve documentation
 docs: (_ensure_command_in_path "mkdocs" "mkdocs (https://www.mkdocs.org/)")

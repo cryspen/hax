@@ -60,7 +60,7 @@ pub struct Output {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Clone, Hash, Eq, PartialEq)]
 pub struct ProfilingData {
     /// What context are we profiling?
     pub context: String,

@@ -11,6 +11,7 @@ result
 .depend
 .cache
 .lake
+.hax-tests-cache
 proof-libs/fstar/rust_primitives/#*#
 **/proofs/*/extraction/*
 !**/proofs/*/extraction/Makefile

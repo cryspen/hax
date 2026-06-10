@@ -3,6 +3,7 @@ module Core_models.Iter.Bundle
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::iter::Enumerate`]
 type t_Enumerate (v_I: Type0) = {
   f_iter:v_I;
   f_count:usize
@@ -11,12 +12,14 @@ type t_Enumerate (v_I: Type0) = {
 let impl__new (#v_I: Type0) (iter: v_I) : t_Enumerate v_I =
   { f_iter = iter; f_count = mk_usize 0 } <: t_Enumerate v_I
 
+/// See [`std::iter::FlatMap`]
 type t_FlatMap (v_I: Type0) (v_U: Type0) (v_F: Type0) = {
   f_it:v_I;
   f_f:v_F;
   f_current:Core_models.Option.t_Option v_U
 }
 
+/// See [`std::iter::Map`]
 type t_Map (v_I: Type0) (v_F: Type0) = {
   f_iter:v_I;
   f_f:v_F
@@ -25,6 +28,7 @@ type t_Map (v_I: Type0) (v_F: Type0) = {
 let impl__new__from__map (#v_I #v_F: Type0) (iter: v_I) (f: v_F) : t_Map v_I v_F =
   { f_iter = iter; f_f = f } <: t_Map v_I v_F
 
+/// See [`std::iter::StepBy`]
 type t_StepBy (v_I: Type0) = {
   f_iter:v_I;
   f_step:usize
@@ -33,6 +37,7 @@ type t_StepBy (v_I: Type0) = {
 let impl__new__from__step_by (#v_I: Type0) (iter: v_I) (step: usize) : t_StepBy v_I =
   { f_iter = iter; f_step = step } <: t_StepBy v_I
 
+/// See [`std::iter::Take`]
 type t_Take (v_I: Type0) = {
   f_iter:v_I;
   f_n:usize
@@ -41,11 +46,13 @@ type t_Take (v_I: Type0) = {
 let impl__new__from__take (#v_I: Type0) (iter: v_I) (n: usize) : t_Take v_I =
   { f_iter = iter; f_n = n } <: t_Take v_I
 
+/// See [`std::iter::Zip`]
 type t_Zip (v_I1: Type0) (v_I2: Type0) = {
   f_it1:v_I1;
   f_it2:v_I2
 }
 
+/// See [`std::iter::Iterator`]
 class t_Iterator (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
   f_next_pre:self_: v_Self -> pred: Type0{true ==> pred};
@@ -145,6 +152,7 @@ let impl_1__from__flat_map
 
 noeq
 
+/// See [`std::iter::Flatten`]
 type t_Flatten (v_I: Type0) {| i0: t_Iterator v_I |} {| i1: t_Iterator i0.f_Item |} = {
   f_it:v_I;
   f_current:Core_models.Option.t_Option i0.f_Item

@@ -1950,7 +1950,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
 let import_item ~type_only (item : Thir.item) :
     concrete_ident * (item list * Diagnostics.t list) =
   let ident = Concrete_ident.of_def_id ~value:false item.owner_id in
-  let r, reports =
+  let reports, r =
     let f = U.Reducers.disambiguate_local_idents in
     Diagnostics.Core.capture (fun _ ->
         c_item item ~ident ~type_only |> List.map ~f)

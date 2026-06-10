@@ -6,6 +6,7 @@ mod converts {
 }
 
 mod error {
+    /// See [`std::str::Utf8Error`]
     pub struct Utf8Error;
 }
 

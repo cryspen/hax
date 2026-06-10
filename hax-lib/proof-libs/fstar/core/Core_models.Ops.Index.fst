@@ -3,6 +3,7 @@ module Core_models.Ops.Index
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::ops::Index`]
 class t_Index (v_Self: Type0) (v_Idx: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_index_pre:v_Self -> v_Idx -> Type0;

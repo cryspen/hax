@@ -199,7 +199,6 @@
             pkgs.just
             pkgs.cargo-expand
             pkgs.cargo-release
-            pkgs.cargo-insta
             pkgs.openssl.dev
             pkgs.libz.dev
             pkgs.pkg-config
@@ -229,6 +228,9 @@
               export CACHE_DIR=$(mktemp -d)
               export HINT_DIR=$(mktemp -d)
               export SHELL=${pkgs.bash}/bin/bash
+              # Ensure locally-compiled crates (e.g. the test-driver)
+              # embed the same HAX_VERSION as the Nix-built cargo-hax.
+              export HAX_VERSION=${(builtins.fromTOML (builtins.readFile ./Cargo.toml)).workspace.package.version}
             '';
             packages = [
               packages.hax
@@ -236,6 +238,7 @@
               packages.fstar
               packages.proverif
               pkgs.jq
+              pkgs.just
               pkgs.elan
             ];
           };

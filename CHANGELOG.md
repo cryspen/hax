@@ -8,19 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
-
+ - Fix diagnostic reporting (cryspen/hax-evit/159)
+ 
 Changes to the engine:
 
 Changes to the frontend:
+ - Fix all observable issues in the new rust version of the THIR importer (cryspen/hax-evit/155)
 
 Changes to cargo-hax:
 
 Changes to hax-lib:
- - Remove dependency to proc_macro_error2 (unmaintained)
+ - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
+ - Remove dependency to proc_macro_error2 (unmaintained) (#2039)
 
 Changes to the Lean backend:
+- Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
 
 Miscellaneous:
+ - New testing framework for the engine(s) (cryspen/hax-evit/135, cryspen/hax-evit/167)
 
 ## 0.3.7
 
