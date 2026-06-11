@@ -204,7 +204,7 @@ repository) to `~/.cargo/bin/`.
 
 You can also build or install `aeneas` and `charon` yourself (e.g.
 from source) and either place them in your `PATH` or point to them
-with the `HAX_AENEAS_BINARY` and `HAX_CHARON_BINARY` environment
+with the `HAX_AENEAS` and `HAX_CHARON` environment
 variables.
 
 </details>

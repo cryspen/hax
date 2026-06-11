@@ -168,6 +168,13 @@ pub struct FStarOptions {
 
 #[derive_group(Serializers)]
 #[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
+#[command(after_help = "\
+ENVIRONMENT VARIABLES:
+  HAX_CHARON  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
+  HAX_AENEAS  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH.
+
+These let you select a specific charon/aeneas build (e.g. one you compiled from
+source) instead of the binaries installed by `install-aeneas.sh`.")]
 pub struct AeneasLeanOptions {
     /// Generate a `lakefile.toml` and `lean-toolchain` in the
     /// `proofs/aeneas-lean/` directory, with a dependency on the Aeneas
