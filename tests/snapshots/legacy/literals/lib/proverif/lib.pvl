@@ -265,3 +265,18 @@ letfun new_tests__legacy__literals__lib__fn_pointer_cast(wildcard43 : bitstring)
 
 const new_tests__legacy__literals__lib__null: bitstring.
 
+letfun new_tests__legacy__literals__lib__strings(wildcard55 : bitstring) =
+       let wildcard54: bitstring:bitstring = ("hello") in
+       let wildcard53: bitstring:bitstring = ("hello"world") in
+       let wildcard52: bitstring:bitstring = ("it's") in
+       let wildcard51: bitstring:bitstring = ("back\slash") in
+       let wildcard50: bitstring:bitstring = ("line
+break") in
+       let wildcard49: bitstring:bitstring = ("carriagereturn") in
+       let wildcard48: bitstring:bitstring = ("tab	here") in
+       let wildcard47: bitstring:bitstring = ("null byte") in
+       let wildcard46: bitstring:bitstring = ("bellchar") in
+       let wildcard45: bitstring:bitstring = ("[0m") in
+       let wildcard44: bitstring:bitstring = ("🦀") in
+       ().
+

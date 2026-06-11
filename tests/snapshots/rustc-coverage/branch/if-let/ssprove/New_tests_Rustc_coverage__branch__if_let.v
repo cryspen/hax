@@ -58,13 +58,17 @@ Fail Next Obligation.
 
 Equations if_let_chain (a : both (t_Option chString)) (b : both (t_Option chString)) : both 'unit :=
   if_let_chain a b  :=
-    letb _ := ifb andb (failure (ret_both (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: `Let` nodes are supposed to be pre-processed
+    letb _ := ifb andb (failure (ret_both (something is not implemented yet.
+Let-chains (e.g. `if let .. && let ..`) are not supported.
 
+This is discussed in issue https://github.com/hacspec/hax/issues/2018.
+Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
- : chString)) (ret_both ( : chString))) (failure (ret_both (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: `Let` nodes are supposed to be pre-processed
+ : chString)) (ret_both ( : chString))) (failure (ret_both (something is not implemented yet.
+Let-chains (e.g. `if let .. && let ..`) are not supported.
 
+This is discussed in issue https://github.com/hacspec/hax/issues/2018.
+Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
  : chString)) (ret_both ( : chString)))
     then letb _ := say x in

@@ -282,8 +282,8 @@ const _: () = {
         fn generic_constraint(&self, generic_constraint: &GenericConstraint) -> DocBuilder<A> {
             match generic_constraint {
                 GenericConstraint::Lifetime(s) => docs![s.clone()],
-                GenericConstraint::Type(impl_ident) => docs![impl_ident],
-                GenericConstraint::Projection(projection_predicate) => docs![projection_predicate],
+                GenericConstraint::TypeClass(impl_ident) => docs![impl_ident],
+                GenericConstraint::Equality(projection_predicate) => docs![projection_predicate],
             }
         }
         fn impl_ident(&self, impl_ident: &ImplIdent) -> DocBuilder<A> {

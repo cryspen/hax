@@ -22,7 +22,7 @@ fn if_let(input: Option<&str>) {
     say("done");
 }
 
-/// @fail(extraction): coq(HAX0002, HAX0002), ssprove(HAX0002, HAX0002), proverif(HAX0002, HAX0002), lean(HAX0002, HAX0002), fstar(HAX0002, HAX0002)
+/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
 fn if_let_chain(a: Option<&str>, b: Option<&str>) {
     if let Some(x) = a
         && let Some(y) = b

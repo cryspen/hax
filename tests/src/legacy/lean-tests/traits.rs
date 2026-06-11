@@ -226,7 +226,7 @@ mod inheritance {
 
 mod default {
 
-/// @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008), proverif(HAX0008)
+    /// @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008), proverif(HAX0008)
     trait Easy {
         fn dft(&self) -> usize {
             32
@@ -241,7 +241,7 @@ mod default {
 
     impl Easy for u32 {}
 
-/// @fail(extraction): ssprove(HAX0008), coq(HAX0008), proverif(HAX0008), fstar(HAX0008)
+    /// @fail(extraction): ssprove(HAX0008), coq(HAX0008), proverif(HAX0008), fstar(HAX0008)
     trait T1 {
         fn f1(&self) -> usize;
         fn f2(&self) -> usize {
@@ -327,9 +327,10 @@ mod trait_with_constraints {
 }
 
 mod associated_constant {
-    pub trait Foo { 
+    /// @fail(extraction): proverif(HAX0008)
+    pub trait Foo {
         const f: bool;
-        const x: u8;
+        const x: u8 = 0;
     }
 
     pub struct Bar;
@@ -340,18 +341,18 @@ mod associated_constant {
     }
 
     // https://github.com/cryspen/hax/issues/1940
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     trait Baz {
-        const One : u32 = 1;
+        const One: u32 = 1;
     }
 
-    fn foo<F: Baz> (n : u32) -> u32 {
+    fn foo<F: Baz>(n: u32) -> u32 {
         n + F::One
     }
 }
 
 mod methods_hoisting {
-    trait T1<U> : Sized {
+    trait T1<U>: Sized {
         type A;
         fn f<T: T0, const C: u8>(x: T, y: U) -> (T, U, Self, Self::A, u16);
         fn g<T>(x: T) -> T;

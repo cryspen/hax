@@ -11,6 +11,8 @@ const fn computation(x: u32) -> u32 {
 }
 
 const C4: u32 = computation(C1) + C2;
+const C5: (u32, u32) = (0 + 0, 0);
+const C6: [u32; 1] = [0];
 
 fn test() {
     let x = C1 + 1;

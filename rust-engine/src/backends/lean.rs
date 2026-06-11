@@ -149,52 +149,6 @@ impl Backend for LeanBackend {
         Utf8PathBuf::from(krate).with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<PhaseKind> {
-        use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
-        vec![
-            RejectRawOrMutPointer.into(),
-            RewriteLocalSelf.into(),
-            TransformHaxLibInline.into(),
-            Specialize.into(),
-            DropSizedTrait.into(),
-            SimplifyQuestionMarks.into(),
-            AndMutDefsite.into(),
-            ReconstructAsserts.into(),
-            ReconstructForLoops.into(),
-            ReconstructWhileLoops.into(),
-            DirectAndMut.into(),
-            RejectArbitraryLhs.into(),
-            DropBlocks.into(),
-            DropMatchGuards.into(),
-            DropReferences.into(),
-            TrivializeAssignLhs.into(),
-            HoistSideEffects.into(),
-            HoistDisjunctivePatterns.into(),
-            SimplifyMatchReturn.into(),
-            LocalMutation.into(),
-            RewriteControlFlow.into(),
-            DropReturnBreakContinue.into(),
-            FunctionalizeLoops.into(),
-            RejectQuestionMark.into(),
-            TraitsSpecs.into(),
-            SimplifyHoisting.into(),
-            NewtypeAsRefinement.into(),
-            ReorderFields.into(),
-            HoistAssociatedFns,
-            SortItems.into(),
-            FilterUnprintableItems,
-            ExplicitMonadic,
-        ]
-    }
-
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![
-            Box::new(RecursiveFunctions),
-            Box::new(FunctionsToConstants),
-            Box::new(LetPure),
-        ]
-    }
-
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
         let mut modules: Vec<Module> = Vec::new();
 
@@ -237,6 +191,54 @@ impl Backend for LeanBackend {
             contents: format!("{}{}", HEADER, contents),
             sourcemap: None,
         }]
+    }
+
+    fn phases(&self) -> Vec<PhaseKind> {
+        use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
+        vec![
+            RejectRawOrMutPointer.into(),
+            RejectImplTypeMethod.into(),
+            RewriteLocalSelf.into(),
+            TransformHaxLibInline.into(),
+            Specialize.into(),
+            DropSizedTrait.into(),
+            SimplifyQuestionMarks.into(),
+            AndMutDefsite.into(),
+            ReconstructAsserts.into(),
+            ReconstructForLoops.into(),
+            ReconstructWhileLoops.into(),
+            DirectAndMut.into(),
+            RejectArbitraryLhs.into(),
+            DropBlocks.into(),
+            DropMatchGuards.into(),
+            DropReferences.into(),
+            TrivializeAssignLhs.into(),
+            HoistSideEffects.into(),
+            HoistDisjunctivePatterns.into(),
+            SimplifyMatchReturn.into(),
+            LocalMutation.into(),
+            RewriteControlFlow.into(),
+            DropReturnBreakContinue.into(),
+            FunctionalizeLoops.into(),
+            RejectQuestionMark.into(),
+            TraitsSpecs.into(),
+            SimplifyHoisting.into(),
+            NewtypeAsRefinement.into(),
+            ReorderFields.into(),
+            HoistAssociatedFns,
+            SortItems.into(),
+            FilterUnprintableItems,
+            ExplicitMonadic,
+        ]
+    }
+
+    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
+        vec![
+            Box::new(RecursiveFunctions),
+            Box::new(FunctionsToConstants),
+            Box::new(LetPure),
+            Box::new(RecordEllipsis),
+        ]
     }
 }
 
@@ -505,16 +507,23 @@ const _: () = {
         /// Turns an expression of type `RustM T` into one of type `T` (out of the monad), providing
         /// reflexivity as a proof witness.
         fn monad_extract<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
-            if let ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) = expr.kind()
+            if let ExprKind::App { head, args, .. } = expr.kind()
+                && let ExprKind::GlobalId(PURE) = head.kind()
+                && let [pure_expr] = &args[..]
+                && let ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) =
+                    pure_expr.kind()
             {
                 // Pure values are displayed directly. Note that constructors, while pure, may
                 // contain sub-expressions that are not, so they must be wrapped in a do-block
-                docs![expr]
-            } else if let ExprKind::App { args, .. } = expr.kind()
+                docs![pure_expr]
+            } else if let ExprKind::App { head, args, .. } = expr.kind()
+                && let ExprKind::GlobalId(PURE) = head.kind()
+                && let [pure_expr] = &args[..]
+                && let ExprKind::App { args, .. } = pure_expr.kind()
                 && args.is_empty()
             {
                 // Constants are pure values
-                docs![expr]
+                docs![pure_expr]
             } else {
                 // All other expressions are wrapped in a do-block, and extracted out of the monad
                 docs![
@@ -526,18 +535,6 @@ const _: () = {
                 ]
                 .group()
                 .nest(INDENT)
-            }
-        }
-
-        /// When possible, unwraps the `pure` surrounding an expression to simplify it
-        fn monad_extract_simplify<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
-            if let ExprKind::App { head, args, .. } = expr.kind()
-                && let ExprKind::GlobalId(PURE) = head.kind()
-                && let [pure_expr] = &args[..]
-            {
-                self.monad_extract(pure_expr)
-            } else {
-                self.monad_extract(expr)
             }
         }
 
@@ -597,7 +594,7 @@ const _: () = {
                         .group(),
                         line!(),
                         if params.is_empty() {
-                            self.monad_extract_simplify(body)
+                            self.monad_extract(body)
                         } else {
                             docs![body]
                         },
@@ -622,9 +619,9 @@ const _: () = {
                 zip_left!(line!(), &generics.params),
                 zip_left!(
                     line!(),
-                    generics.type_constraints().map(|impl_ident| {
+                    generics.type_class_constraints().map(|impl_ident| {
                         let projections = generics
-                            .projection_constraints()
+                            .equality_constraints()
                             .filter(|p| !matches!(&*p.impl_.kind, ImplExprKind::LocalBound { id } if *id != impl_ident.name ))
                             .map(|p| {
                                 if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
@@ -874,7 +871,7 @@ const _: () = {
         fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
             match generic_value {
                 GenericValue::Ty(ty) => docs![ty],
-                GenericValue::Expr(expr) => docs![self.monad_extract(expr)].parens(),
+                GenericValue::Expr(expr) => docs![expr].parens(),
                 GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
             }
         }
@@ -1224,7 +1221,7 @@ const _: () = {
                             .align()
                             .group()
                         } else {
-                            // Structure-like structure, using named arguments
+                            // Record-like structure, using named arguments
                             docs![intersperse!(
                                 fields.iter().map(|(id, pat)| {
                                     docs![self.render_last(id), reflow!(" :="), line!(), pat]
@@ -1248,8 +1245,51 @@ const _: () = {
                         .nest(INDENT)
                     }
                 }
-                PatKind::Resugared(_) => {
-                    unreachable!("This backend does not use resugarings on patterns")
+                PatKind::Resugared(ResugaredPatKind::ConstructWithEllipsis {
+                    constructor,
+                    is_struct,
+                    fields,
+                }) => {
+                    if *is_struct {
+                        // Struct: render as `{f1 := pat, f2 := pat, ..}` or `_`
+                        if fields.is_empty() {
+                            docs!["_"]
+                        } else {
+                            docs![intersperse!(
+                                fields
+                                    .iter()
+                                    .map(|(id, pat)| {
+                                        docs![self.render_last(id), reflow!(" :="), line!(), pat]
+                                            .group()
+                                    })
+                                    .chain(std::iter::once(docs![".."])),
+                                docs![",", line!()]
+                            )]
+                            .align()
+                            .braces()
+                            .group()
+                        }
+                    } else {
+                        // Enum variant with named fields: (f1 := pat) (f2 := pat) ..
+                        let record_part = if fields.is_empty() {
+                            docs!["_"]
+                        } else {
+                            docs![intersperse!(
+                                fields.iter().map(|(id, pat)| {
+                                    docs![self.render_last(id), reflow!(" :="), line!(), pat]
+                                        .group()
+                                        .parens()
+                                }),
+                                line!()
+                            )]
+                            .align()
+                            .group()
+                        };
+                        docs![constructor, line!(), record_part, " .."]
+                            .parens()
+                            .group()
+                            .nest(INDENT)
+                    }
                 }
                 PatKind::Error(_) => {
                     // TODO : Should be made unreachable by https://github.com/cryspen/hax/pull/1672
@@ -1593,7 +1633,7 @@ const _: () = {
                     items,
                     safety: _,
                 } => {
-                    let generic_types = generics.type_constraints().collect::<Vec<_>>();
+                    let generic_types = generics.type_class_constraints().collect::<Vec<_>>();
                     if generic_types.len() < generics.constraints.len() {
                         emit_error!(issue 1921, "Unsupported equality constraints on associated types")
                     }
@@ -1898,7 +1938,7 @@ const _: () = {
                         ]
                         .group(),
                         line!(),
-                        self.monad_extract_simplify(body),
+                        self.monad_extract(body),
                     ]
                     .group()
                     .nest(INDENT),
@@ -1981,7 +2021,7 @@ const _: () = {
                         softline!(),
                         ":=",
                         softline!(),
-                        self.monad_extract_simplify(body)
+                        self.monad_extract(body)
                     ]
                 }
                 ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => docs![
@@ -1996,7 +2036,7 @@ const _: () = {
                     ]
                     .group(),
                     line!(),
-                    self.monad_extract_simplify(body)
+                    self.monad_extract(body)
                 ]
                 .group()
                 .nest(INDENT),

@@ -47,6 +47,19 @@ impl<T, const N: usize> Dummy<T, N> {
 }
 
 /// See [`std::array::from_fn`]
+#[hax_lib::fstar::replace(
+    r#"
+let from_fn
+    (#v_T: Type0)
+    (v_N: usize)
+    (#v_F: Type0)
+    (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F usize)
+    (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
+    (f: (x: usize{x <. v_N}) -> v_T)
+: t_Array v_T v_N =
+    Rust_primitives.Slice.array_from_fn #v_T v_N #(x: usize{x <. v_N} -> v_T) f
+"#
+)]
 pub fn from_fn<T, const N: usize, F: crate::ops::function::FnOnce<usize, Output = T>>(
     f: fn(usize) -> T, // We cannot use type `F` because it is incompatible with `array_from_fn`
 ) -> [T; N] {

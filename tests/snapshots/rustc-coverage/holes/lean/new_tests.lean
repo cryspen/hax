@@ -22,10 +22,10 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure sorry)
 
 def main.MY_STATIC : rust_primitives.hax.Tuple0 :=
-  RustM.of_isOk (do rust_primitives.hax.Tuple0.mk) (by rfl)
+  RustM.of_isOk (do (pure rust_primitives.hax.Tuple0.mk)) (by rfl)
 
 def main.MY_CONST : rust_primitives.hax.Tuple0 :=
-  RustM.of_isOk (do rust_primitives.hax.Tuple0.mk) (by rfl)
+  RustM.of_isOk (do (pure rust_primitives.hax.Tuple0.mk)) (by rfl)
 
 @[spec]
 def main._unused_fn (_ : rust_primitives.hax.Tuple0) :

@@ -19,14 +19,14 @@ def NO_BLOCK :
   :=
   RustM.of_isOk
     (do
-    (fun _ =>
+    (pure (fun _ =>
       (do
       let _ ←
         (std.io.stdio._print
           (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
             (RustArray.ofVec #v["hello\n"]))));
       (pure rust_primitives.hax.Tuple0.mk) :
-      RustM rust_primitives.hax.Tuple0)))
+      RustM rust_primitives.hax.Tuple0))))
     (by rfl)
 
 def WITH_BLOCK :
@@ -34,7 +34,7 @@ def WITH_BLOCK :
   :=
   RustM.of_isOk
     (do
-    (fun _ =>
+    (pure (fun _ =>
       (do
       let _ ←
         (std.io.stdio._print
@@ -42,7 +42,7 @@ def WITH_BLOCK :
             (RustArray.ofVec #v["hello\n"]))));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
-      RustM rust_primitives.hax.Tuple0)))
+      RustM rust_primitives.hax.Tuple0))))
     (by rfl)
 
 @[spec]

@@ -71,7 +71,17 @@ pub enum ResugaredExprKind {
 
 /// Resugared variants for patterns. This represent extra printing-only patterns, see [`super::PatKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredPatKind {}
+pub enum ResugaredPatKind {
+    /// A record constructor pattern where wildcard fields are replaced by `..`.
+    ConstructWithEllipsis {
+        /// The identifier of the constructor we are matching.
+        constructor: GlobalId,
+        /// Is this a struct? (meaning, *not* a variant from an enum)
+        is_struct: bool,
+        /// Only the explicitly-bound (non-wildcard) fields.
+        fields: Vec<(GlobalId, Pat)>,
+    },
+}
 
 /// Resugared variants for types. This represent extra printing-only types, see [`super::TyKind::Resugared`].
 #[derive_group_for_ast]

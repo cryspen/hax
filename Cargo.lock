@@ -209,7 +209,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-hax"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "annotate-snippets",
  "cargo_metadata",
@@ -315,7 +315,7 @@ version = "4.5.45"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "14cb31bb0a7d536caef2639baa7fad459e15c3144efefa6dbd1c84562c4739f6"
 dependencies = [
- "heck 0.5.0",
+ "heck",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
@@ -479,12 +479,13 @@ dependencies = [
 
 [[package]]
 name = "duplicate"
-version = "1.0.0"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de78e66ac9061e030587b2a2e75cc88f22304913c907b11307bca737141230cb"
+checksum = "8e92f10a49176cbffacaedabfaa11d51db1ea0f80a83c26e1873b43cd1742c24"
 dependencies = [
- "heck 0.4.1",
- "proc-macro-error",
+ "heck",
+ "proc-macro2",
+ "proc-macro2-diagnostics",
 ]
 
 [[package]]
@@ -732,7 +733,7 @@ checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
 
 [[package]]
 name = "hax-adt-into"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "itertools 0.11.0",
  "proc-macro2",
@@ -743,7 +744,7 @@ dependencies = [
 
 [[package]]
 name = "hax-bounded-integers"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "duplicate",
  "hax-lib",
@@ -752,7 +753,7 @@ dependencies = [
 
 [[package]]
 name = "hax-driver"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "clap",
  "colored",
@@ -770,7 +771,7 @@ dependencies = [
 
 [[package]]
 name = "hax-engine-names"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "hax-lib",
  "hax-lib-protocol",
@@ -778,7 +779,7 @@ dependencies = [
 
 [[package]]
 name = "hax-engine-names-extract"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "hax-adt-into",
  "hax-engine-names",
@@ -789,7 +790,7 @@ dependencies = [
 
 [[package]]
 name = "hax-frontend-exporter"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "extension-traits 1.0.1",
  "hax-adt-into",
@@ -805,7 +806,7 @@ dependencies = [
 
 [[package]]
 name = "hax-frontend-exporter-options"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "hax-adt-into",
  "schemars",
@@ -815,7 +816,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -824,11 +825,10 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "hax-lib",
  "hax-lib-macros-types",
- "proc-macro-error2",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
@@ -836,7 +836,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -848,16 +848,15 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-protocol"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "libcrux",
 ]
 
 [[package]]
 name = "hax-lib-protocol-macros"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
- "proc-macro-error2",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
@@ -865,7 +864,7 @@ dependencies = [
 
 [[package]]
 name = "hax-rust-engine"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "axum",
  "camino",
@@ -887,7 +886,7 @@ dependencies = [
 
 [[package]]
 name = "hax-rust-engine-macros"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -897,7 +896,7 @@ dependencies = [
 
 [[package]]
 name = "hax-types"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "annotate-snippets",
  "clap",
@@ -915,12 +914,6 @@ dependencies = [
  "tracing",
  "zstd",
 ]
-
-[[package]]
-name = "heck"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95505c38b4572b2d910cecb0281560f54b440a19336cbbcb27bf6ce6adc6f5a8"
 
 [[package]]
 name = "heck"
@@ -1514,58 +1507,24 @@ dependencies = [
 ]
 
 [[package]]
-name = "proc-macro-error"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da25490ff9892aab3fcf7c36f08cfb902dd3e71ca0f9f9517bea02a73a5ce38c"
-dependencies = [
- "proc-macro-error-attr",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
- "version_check",
-]
-
-[[package]]
-name = "proc-macro-error-attr"
-version = "1.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1be40180e52ecc98ad80b184934baf3d0d29f979574e439af5a55274b35f869"
-dependencies = [
- "proc-macro2",
- "quote",
- "version_check",
-]
-
-[[package]]
-name = "proc-macro-error-attr2"
-version = "2.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96de42df36bb9bba5542fe9f1a054b8cc87e172759a1868aa05c1f3acc89dfc5"
-dependencies = [
- "proc-macro2",
- "quote",
-]
-
-[[package]]
-name = "proc-macro-error2"
-version = "2.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11ec05c52be0a07b08061f7dd003e7d7092e0472bc731b4af7bb1ef876109802"
-dependencies = [
- "proc-macro-error-attr2",
- "proc-macro2",
- "quote",
- "syn 2.0.106",
-]
-
-[[package]]
 name = "proc-macro2"
 version = "1.0.101"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "89ae43fd86e4158d6db51ad8e2b80f313af9cc74f5c0e03ccb87de09998732de"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "proc-macro2-diagnostics"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af066a9c399a26e020ada66a034357a868728e72cd426f3adcd35f80d88d88c8"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.106",
+ "version_check",
 ]
 
 [[package]]
@@ -2026,7 +1985,7 @@ dependencies = [
 
 [[package]]
 name = "test-driver"
-version = "0.3.6"
+version = "0.3.7"
 dependencies = [
  "anyhow",
  "cargo_metadata",

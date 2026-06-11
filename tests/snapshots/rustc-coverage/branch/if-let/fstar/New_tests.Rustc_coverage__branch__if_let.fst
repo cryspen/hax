@@ -34,13 +34,13 @@ let if_let (input: Core_models.Option.t_Option string) : Prims.unit =
   let _:Prims.unit = say "done" in
   ()
 
-/// @fail(extraction): coq(HAX0002, HAX0002), ssprove(HAX0002, HAX0002), proverif(HAX0002, HAX0002), lean(HAX0002, HAX0002), fstar(HAX0002, HAX0002)
+/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
 let if_let_chain (a b: Core_models.Option.t_Option string) : Prims.unit =
   let _:Prims.unit =
     if
-      Rust_primitives.Hax.failure "Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!\nDetails: `Let` nodes are supposed to be pre-processed\n\nNote: the error was labeled with context `AST import`.\n"
+      Rust_primitives.Hax.failure "something is not implemented yet.\nLet-chains (e.g. `if let .. && let ..`) are not supported.\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/2018.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
         "" &&
-      Rust_primitives.Hax.failure "Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!\nDetails: `Let` nodes are supposed to be pre-processed\n\nNote: the error was labeled with context `AST import`.\n"
+      Rust_primitives.Hax.failure "something is not implemented yet.\nLet-chains (e.g. `if let .. && let ..`) are not supported.\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/2018.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
         ""
     then
       let _:Prims.unit = say x in

@@ -121,7 +121,8 @@ structure Foo where
   core_models.cmp.Eq Foo :=
   by constructor <;> exact Inhabited.default
 
-def CONSTANT : Foo := RustM.of_isOk (do (Foo.mk (field := (3 : u8)))) (by rfl)
+def CONSTANT : Foo :=
+  RustM.of_isOk (do (pure (Foo.mk (field := (3 : u8))))) (by rfl)
 
 @[spec]
 def numeric (_ : rust_primitives.hax.Tuple0) :
@@ -223,6 +224,22 @@ def fn_pointer_cast (_ : rust_primitives.hax.Tuple0) :
 
 --  @fail(extraction): ssprove(HAX0001)
 def null : Char := ' '
+
+@[spec]
+def strings (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let _ : String := "hello";
+  let _ : String := "hello\"world";
+  let _ : String := "it\'s";
+  let _ : String := "back\\slash";
+  let _ : String := "line\nbreak";
+  let _ : String := "carriage\rreturn";
+  let _ : String := "tab\there";
+  let _ : String := "null\x00byte";
+  let _ : String := "bell\x07char";
+  let _ : String := "\x1b[0m";
+  let _ : String := "🦀";
+  (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.legacy__literals__lib
 

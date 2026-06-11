@@ -8,11 +8,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+ - Fix diagnostic reporting (cryspen/hax-evit/159)
+ 
+Changes to the engine:
+
+Changes to the frontend:
+ - Fix all observable issues in the new rust version of the THIR importer (cryspen/hax-evit/155)
+
+Changes to cargo-hax:
+
+Changes to hax-lib:
+ - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
+ - Remove dependency to proc_macro_error2 (unmaintained) (#2039)
+
+Changes to the Lean backend:
+- Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
+
+Miscellaneous:
+ - New testing framework for the engine(s) (cryspen/hax-evit/135, cryspen/hax-evit/167)
+
+## 0.3.7
+
+Changes to the Rust Engine:
+ - Rename `GenericConstraint::Type` to `TypeClass` and `::Projection` to `Equality` (#1996)
  - Remove `BinOp` resugaring (#1950)
  - Apply resugarings to linked items (pre/post conditions) (#1961)
  - Add new import_thir implemented in Rust and using `FullDef`, activated with `--experimental-full-def` (#1967)
 
+Changes to the engine:
+ - Omit type aliases whose body has unresolvable trait bounds instead of crashing (#2014)
+ - Report let-chains (`if let .. && let ..`) as a soft error instead of panicking (#2014)
+
 Changes to the frontend:
+ - Fix support for ellipsis: add wildcard for every field (based on type info
+   rather than number of subpatterns) (#2001)
+ - Fix panic on constants of type `&[&T]` (e.g. `&[&str]`) caused by a wrong type for the synthesized array length (#2014)
 
 Changes to cargo-hax:
 
@@ -28,6 +58,10 @@ Changes to hax-lib:
  - Lean lib: For-loops for all unsigned integers (#1951)
  - Lean lib: Upgrade to Lean v4.29.0-rc1 (#1962)
  - Lean lib: Add support for Int128 and UInt128 while waiting for upstream in Lean (#1968)
+ - Lean lib: Refactor `RustM` as `ExceptT Error Option` (#1994)
+ - Lean lib: Add Repr instance for tuples (#2000)
+ - Lean lib: Make the proof of `RustM.toBVRustM_bind` compatible with Lean 4.29.0 (#2005)
+ - F* lib: Add bit-extensionality (`lemma_int_t_eq_via_bits`), concrete `Core_models.Num.impl_u64__rotate_left` delegating to a new `Rust_primitives.Integers.rotate_left_u`, `logand_commutative`, fixed `bit_or` SMTPat semantics, `bit_xor`/`get_bit_xor`/`get_bit_lognot` SMTPats, and `Rust_primitives.Hax.Monomorphized_update_at_Lemmas.lemma_index_update_at_range` for libcrux SHA-3 equivalence proofs
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
@@ -45,8 +79,11 @@ Changes to the Lean backend:
  - Prettier proof_mode annotations (#1943)
  - Detect recursive functions and mark them partial_fixpoint (#1946)
  - Add more binops (#1963)
+ - Add a resugaring for ellipsis patterns (#2002)
 
 Miscellaneous:
+ - Fix Nix development shell: add an `fstar` devShell providing F* and the
+   required environment variables (#1972)
 
 ## 0.3.6
 
@@ -100,9 +137,8 @@ Changes to the Lean backend:
  - Fix string escaping (#1834)
 
 Miscellaneous:
- - Reserve extraction folder for auto-generated files in Lean examples (#1754)
- - Add `lean_adc` example to the Lean examples section, demonstrating tactics introduced in PR(#1933)
- - New testing framework for the engine(s) (cryspen/hax-evit/134)
+- Reserve extraction folder for auto-generated files in Lean examples (#1754)
+- Add `lean_adc` example to the Lean examples section, demonstrating tactics introduced in PR(#1933)
 
 ## 0.3.5
 

@@ -20,7 +20,7 @@ what you are looking for!
 
  - <input type="checkbox" class="user-checkable"/> Create the folder `proofs/fstar/extraction`folder, right next to the `Cargo.toml` of the crate you want to verify.  
    <span style="margin-right:30px;"></span>🪄 `mkdir -p proofs/fstar/extraction`
- - <input type="checkbox" class="user-checkable"/> Copy [this makefile](https://gist.github.com/W95Psp/4c304132a1f85c5af4e4959dd6b356c3) to `proofs/fstar/extraction/Makefile`  
+ - <input type="checkbox" class="user-checkable"/> Copy [this makefile](https://gist.github.com/maximebuyse/95a60c848b199c38eb93a41cfede34bf) to `proofs/fstar/extraction/Makefile`  
    <span style="margin-right:30px;"></span>🪄 `curl -o proofs/fstar/extraction/Makefile https://gist.githubusercontent.com/W95Psp/4c304132a1f85c5af4e4959dd6b356c3/raw/Makefile`
  - <input type="checkbox" class="user-checkable"/> Add `hax-lib` as a dependency to your crate, enabled only when using hax.  
    <span style="margin-right:30px;"></span>🪄 `cargo add --target 'cfg(hax)' --git https://github.com/hacspec/hax hax-lib`  

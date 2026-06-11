@@ -22,17 +22,19 @@ jobs:
           - ubuntu-latest
           - ubuntu-22.04
           - macos-latest
-          - macos-13
+          - macos-15-intel
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
     - if: runner.os == 'macOS'
-      run: brew install opam nodejs rustup-init jq
+      run: brew install opam nodejs jq
     - if: runner.os == 'Linux'
       run: sudo apt-get update
     - if: runner.os == 'Linux'
       run: sudo apt-get install -y opam nodejs jq
     - run: curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
+    - if: runner.os == 'macOS'
+      run: echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
     - run: opam init --bare -y && opam switch create -y 4.14.1
     - name: Run `setup.sh`
       run: |

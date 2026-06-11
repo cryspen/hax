@@ -113,7 +113,7 @@ Class t_T2 (v_Self : Type) : Type :=
   }.
 Arguments t_T2 (_).
 
-Instance t_T2_668425671 : t_T2 ((t_u8)) :=
+Instance t_T2_955806114 : t_T2 ((t_u8)) :=
   {
     implaabbcc_t_T2_f_d := fun  (_ : unit)=>
       tt;

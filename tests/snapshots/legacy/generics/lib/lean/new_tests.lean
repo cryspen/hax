@@ -198,7 +198,8 @@ namespace new_tests.legacy__generics__lib.assoc_const_param
 structure Test (N : usize) where
   -- no fields
 
-def Impl.A (N : usize) : (Test (N)) := RustM.of_isOk (do Test.mk) (by rfl)
+def Impl.A (N : usize) : (Test (N)) :=
+  RustM.of_isOk (do (pure Test.mk)) (by rfl)
 
 @[spec]
 def test (_ : rust_primitives.hax.Tuple0) : RustM (Test ((1 : usize))) := do

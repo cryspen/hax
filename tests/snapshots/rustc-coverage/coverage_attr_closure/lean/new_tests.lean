@@ -18,7 +18,7 @@ namespace new_tests.rustc_coverage__coverage_attr_closure
 def GLOBAL_CLOSURE_ON : (String -> RustM rust_primitives.hax.Tuple0) :=
   RustM.of_isOk
     (do
-    (fun input =>
+    (pure (fun input =>
       (do
       let args : (rust_primitives.hax.Tuple1 String) :=
         (rust_primitives.hax.Tuple1.mk input);
@@ -32,14 +32,14 @@ def GLOBAL_CLOSURE_ON : (String -> RustM rust_primitives.hax.Tuple0) :=
             args)));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
-      RustM rust_primitives.hax.Tuple0)))
+      RustM rust_primitives.hax.Tuple0))))
     (by rfl)
 
 --  @fail(extraction): ssprove(HAX0001)
 def GLOBAL_CLOSURE_OFF : (String -> RustM rust_primitives.hax.Tuple0) :=
   RustM.of_isOk
     (do
-    (fun input =>
+    (pure (fun input =>
       (do
       let args : (rust_primitives.hax.Tuple1 String) :=
         (rust_primitives.hax.Tuple1.mk input);
@@ -53,7 +53,7 @@ def GLOBAL_CLOSURE_OFF : (String -> RustM rust_primitives.hax.Tuple0) :=
             args)));
       let _ := rust_primitives.hax.Tuple0.mk;
       (pure rust_primitives.hax.Tuple0.mk) :
-      RustM rust_primitives.hax.Tuple0)))
+      RustM rust_primitives.hax.Tuple0))))
     (by rfl)
 
 --  @fail(extraction): ssprove(HAX0001)

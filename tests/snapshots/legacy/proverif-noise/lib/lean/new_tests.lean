@@ -259,7 +259,7 @@ structure ProtocolName where
 def Noise_KKpsk0_25519_ChaChaPoly_SHA256 : ProtocolName :=
   RustM.of_isOk
     (do
-    (ProtocolName.mk
+    (pure (ProtocolName.mk
       (RustArray.ofVec #v[(78 : u8),
                             (111 : u8),
                             (105 : u8),
@@ -295,7 +295,7 @@ def Noise_KKpsk0_25519_ChaChaPoly_SHA256 : ProtocolName :=
                             (65 : u8),
                             (50 : u8),
                             (53 : u8),
-                            (54 : u8)])))
+                            (54 : u8)]))))
     (by rfl)
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
@@ -379,7 +379,7 @@ def has_key (cs : CipherState) : RustM Bool := do
 --  @fail(extraction): ssprove(HAX0001)
 @[spec]
 def set_nonce (cs : CipherState) (n : u64) : RustM CipherState := do
-  let {k := k, n := _} := cs;
+  let {k := k, ..} := cs;
   (pure (CipherState.mk (k := k) (n := n)))
 
 --  @fail(extraction): ssprove(HAX0001)
@@ -602,7 +602,7 @@ def initialize_symmetric (protocol_name : (RustSlice u8)) :
 @[spec]
 def mix_key (st : SymmetricState) (input_key_material : (RustSlice u8)) :
     RustM SymmetricState := do
-  let {cs := _, ck := ck, h := h} := st;
+  let {ck := ck, h := h, ..} := st;
   let ⟨ck, temp_k⟩ ←
     (new_tests.legacy__proverif_noise__lib.noise_crypto.hkdf2
       (← (core_models.ops.deref.Deref.deref
@@ -719,7 +719,7 @@ def mix_key_and_hash
     (st : SymmetricState)
     (input_key_material : (RustSlice u8)) :
     RustM SymmetricState := do
-  let {cs := _, ck := ck, h := h} := st;
+  let {ck := ck, h := h, ..} := st;
   let ⟨ck, temp_h, temp_k⟩ ←
     (new_tests.legacy__proverif_noise__lib.noise_crypto.hkdf3
       (← (core_models.ops.deref.Deref.deref

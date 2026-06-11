@@ -58,7 +58,7 @@ fn is_self_type_constraint(
     let trait_ = trait_ref.contents().def_id.import_as_value();
 
     match gc {
-        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) =>
+        ast::GenericConstraint::TypeClass(ast::ImplIdent { goal, .. }) =>
             goal
             .args
             .first()
@@ -333,7 +333,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
                 let trait_ = trait_predicate.trait_ref.def_id.import_as_nonvalue();
                 let goal = ast::TraitGoal { trait_, args };
 
-                Some(ast::GenericConstraint::Type(ast::ImplIdent {
+                Some(ast::GenericConstraint::TypeClass(ast::ImplIdent {
                     goal,
                     name: impl_expr_name(self.id.0),
                 }))
@@ -346,13 +346,11 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
                 let impl_ = impl_expr.spanned_import(context, span);
                 let assoc_item = assoc_item.def_id.import_as_nonvalue();
                 let ty = ty.spanned_import(context, span);
-                Some(ast::GenericConstraint::Projection(
-                    ast::ProjectionPredicate {
-                        impl_,
-                        assoc_item,
-                        ty,
-                    },
-                ))
+                Some(ast::GenericConstraint::Equality(ast::ProjectionPredicate {
+                    impl_,
+                    assoc_item,
+                    ty,
+                }))
             }
             _ => None,
         }
@@ -367,7 +365,7 @@ impl Import<Vec<ast::GenericConstraint>> for frontend::GenericPredicates {
             .filter_map(|(clause, span)| {
                 let span = span.import(context);
                 let mut gc = clause.spanned_import(context, span)?;
-                if let ast::GenericConstraint::Type(impl_ident) = &mut gc {
+                if let ast::GenericConstraint::TypeClass(impl_ident) = &mut gc {
                     impl_ident.name = impl_expr_name(type_idx);
                     type_idx += 1;
                 }
@@ -1152,9 +1150,11 @@ impl Import<ast::Expr> for frontend::Expr {
                     })
                     .collect(),
             },
-            frontend::ExprKind::Let { expr: _, pat: _ } => {
-                panic!("Let nodes are preprocessed (those are the ones contained in `if let ...`)")
-            }
+            frontend::ExprKind::Let { expr: _, pat: _ } => ast::ExprKind::Error(unsupported(
+                "Let-chains (e.g. `if let .. && let ..`) are not supported.",
+                2018,
+                span,
+            )),
             frontend::ExprKind::Block { block } => {
                 return import_block_expr(context, block, ty, span, attributes.clone());
             }
@@ -1828,7 +1828,7 @@ fn import_trait_item(
             let type_constraints = imported_constraints
                 .iter()
                 .filter_map(|gc| match gc {
-                    ast::GenericConstraint::Type(t) => Some(t.clone()),
+                    ast::GenericConstraint::TypeClass(t) => Some(t.clone()),
                     _ => None,
                 })
                 .collect();
@@ -1948,9 +1948,7 @@ fn import_impl_expr_atom(
         }
         frontend::ImplExprAtom::Dyn => ast::ImplExprKind::Dyn,
         frontend::ImplExprAtom::Builtin { .. } => ast::ImplExprKind::Builtin(goal),
-        frontend::ImplExprAtom::Error(msg) => {
-            ast::ImplExprKind::Error(assertion_failure(msg, span))
-        }
+        frontend::ImplExprAtom::Error(msg) => ast::ImplExprKind::Error(unsupported(msg, 707, span)),
     }
 }
 

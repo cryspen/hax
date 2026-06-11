@@ -29,12 +29,14 @@ jobs:
               core.notice(`Using libcrux ref: ${resolved}`);
               return resolved;
             } else if (context.eventName === 'merge_group') {
-              const mergeGroupPRs = context.payload.merge_group?.pull_requests || [];
-              for (const prInfo of mergeGroupPRs) {
-                const pull_number = prInfo.number;
-                const pr = await github.rest.pulls.get({...context.repo, pull_number}).data;
+              const query = 'query {repository(owner:"cryspen", name:"hax") {mergeQueue {entries(first:100) {nodes {pullRequest {body, number}}}}}}';
+              const result = await github.graphql(query);
+              const mergeQueuePRs = result.repository.mergeQueue.entries.nodes;
+              for (const entry of mergeQueuePRs) {
+                const pr = entry.pullRequest
+                core.notice("Found merge queue PR:", pr);
                 const ref = extractLibcruxRef(pr.body);
-                ref && refMap.set(pull_number, ref);
+                ref && refMap.set(pr.number, ref);
               }
               if (refMap.size === 0) {
                 core.notice('No libcrux-ref specified, defaulting to "main"');

@@ -104,11 +104,9 @@ unfold
 let impl_u8__rotate_right = impl_u8__rotate_right'
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_u8__rotate_left': x: u8 -> n: u32 -> u8
-
-unfold
-let impl_u8__rotate_left = impl_u8__rotate_left'
+let impl_u8__rotate_left (x: u8) (n: u32) : u8 =
+  let m:u32 = n %! mk_u32 8 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u8 x m
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -265,11 +263,9 @@ unfold
 let impl_u16__rotate_right = impl_u16__rotate_right'
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_u16__rotate_left': x: u16 -> n: u32 -> u16
-
-unfold
-let impl_u16__rotate_left = impl_u16__rotate_left'
+let impl_u16__rotate_left (x: u16) (n: u32) : u16 =
+  let m:u32 = n %! mk_u32 16 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u16 x m
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -427,11 +423,9 @@ unfold
 let impl_u32__rotate_right = impl_u32__rotate_right'
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_u32__rotate_left': x: u32 -> n: u32 -> u32
-
-unfold
-let impl_u32__rotate_left = impl_u32__rotate_left'
+let impl_u32__rotate_left (x n: u32) : u32 =
+  let m:u32 = n %! mk_u32 32 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u32 x m
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -589,11 +583,9 @@ unfold
 let impl_u64__rotate_right = impl_u64__rotate_right'
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_u64__rotate_left': x: u64 -> n: u32 -> u64
-
-unfold
-let impl_u64__rotate_left = impl_u64__rotate_left'
+let impl_u64__rotate_left (x: u64) (n: u32) : u64 =
+  let m:u32 = n %! mk_u32 64 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u64 x m
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -754,11 +746,9 @@ unfold
 let impl_u128__rotate_right = impl_u128__rotate_right'
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_u128__rotate_left': x: u128 -> n: u32 -> u128
-
-unfold
-let impl_u128__rotate_left = impl_u128__rotate_left'
+let impl_u128__rotate_left (x: u128) (n: u32) : u128 =
+  let m:u32 = n %! mk_u32 128 in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_u128 x m
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -922,11 +912,9 @@ unfold
 let impl_usize__rotate_right = impl_usize__rotate_right'
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_usize__rotate_left': x: usize -> n: u32 -> usize
-
-unfold
-let impl_usize__rotate_left = impl_usize__rotate_left'
+let impl_usize__rotate_left (x: usize) (n: u32) : usize =
+  let m:u32 = n %! Rust_primitives.Arithmetic.v_SIZE_BITS in
+  if m =. mk_u32 0 then x else Rust_primitives.Arithmetic.rotate_left_usize x m
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume

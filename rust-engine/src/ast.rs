@@ -1168,15 +1168,15 @@ pub struct ProjectionPredicate {
     pub ty: Ty,
 }
 
-/// A generic constraint (lifetime, type or projection)
+/// A generic constraint (lifetime, type-class or equality)
 #[derive_group_for_ast]
 pub enum GenericConstraint {
     /// A lifetime
     Lifetime(String), // TODO: Remove `String`
-    /// A type
-    Type(ImplIdent),
-    /// A projection
-    Projection(ProjectionPredicate),
+    /// A type-class constraint (e.g. `T: Foo`)
+    TypeClass(ImplIdent),
+    /// An equality constraint on an associated type (e.g. `T::Assoc = u8`)
+    Equality(ProjectionPredicate),
 }
 
 /// A generic parameter (lifetime, type parameter or const parameter)
@@ -1534,17 +1534,17 @@ pub struct Module {
 }
 
 impl Generics {
-    /// Returns Iterator over all type constraints (`GenericConstraint::Type`)
-    pub fn type_constraints(&self) -> impl Iterator<Item = &ImplIdent> {
+    /// Returns Iterator over all type-class constraints (`GenericConstraint::TypeClass`)
+    pub fn type_class_constraints(&self) -> impl Iterator<Item = &ImplIdent> {
         self.constraints.iter().filter_map(|c| match c {
-            GenericConstraint::Type(impl_id) => Some(impl_id),
+            GenericConstraint::TypeClass(impl_id) => Some(impl_id),
             _ => None,
         })
     }
-    /// Returns Iterator over all projection constraints (`GenericConstraint::Projection`)
-    pub fn projection_constraints(&self) -> impl Iterator<Item = &ProjectionPredicate> {
+    /// Returns Iterator over all equality constraints (`GenericConstraint::Equality`)
+    pub fn equality_constraints(&self) -> impl Iterator<Item = &ProjectionPredicate> {
         self.constraints.iter().filter_map(|c| match c {
-            GenericConstraint::Projection(pp) => Some(pp),
+            GenericConstraint::Equality(pp) => Some(pp),
             _ => None,
         })
     }
