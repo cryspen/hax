@@ -210,6 +210,14 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
     ty: rustc_middle::ty::Ty<'tcx>,
     span: rustc_span::Span,
 ) -> ConstantExpr {
+    // The type may be an unnormalized alias, e.g. the projection
+    // `<i32 as ZeroablePrimitive>::NonZeroInner` for the inner field of
+    // `NonZero<i32>`. Normalize it so it resolves to its concrete type and
+    // matches one of the arms below.
+    let tcx = s.base().tcx;
+    let ty = tcx
+        .try_normalize_erasing_regions(s.typing_env(), ty)
+        .unwrap_or(ty);
     let kind = match (&*valtree, ty.kind()) {
         (_, ty::Ref(_, inner_ty, _)) => {
             ConstantExprKind::Borrow(valtree_to_constant_expr(s, valtree, *inner_ty, span))
