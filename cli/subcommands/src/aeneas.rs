@@ -18,9 +18,9 @@ use super::find_binary;
 mod lakefile;
 
 const AENEAS_BINARY_NAME: &str = "aeneas";
-const AENEAS_BINARY_ENV: &str = "HAX_AENEAS_BINARY";
+const AENEAS_BINARY_ENV: &str = "HAX_AENEAS";
 const CHARON_BINARY_NAME: &str = "charon";
-const CHARON_BINARY_ENV: &str = "HAX_CHARON_BINARY";
+const CHARON_BINARY_ENV: &str = "HAX_CHARON";
 const BACKEND_DIR: &str = "aeneas-lean";
 
 const EXPECTED_AENEAS_VERSION: &str = env!("HAX_EXPECTED_AENEAS_VERSION");
