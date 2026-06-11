@@ -542,8 +542,28 @@ fn gen_vtable_sig<'tcx>(
     full_args.extend(trait_ref.args.iter());
     let trait_args = tcx.mk_args(&full_args);
 
+    // The method may have generics of its own (for a vtable-safe method these can only be
+    // lifetimes, e.g. `fn handle<'m>(&self) -> Box<dyn Trait + 'm>`). We keep them as identity so
+    // that we supply the right number of arguments to `instantiate`; the resulting signature still
+    // mentions those params.
+    let method_args = ty::GenericArgs::identity_for_item(tcx, method_decl_id)
+        .rebase_onto(tcx, trait_id, trait_args);
+
+    // Translate in the context whose param env resolves the signature:
+    // - for a trait method, its own declaration, so the method's own generics (e.g. lifetimes)
+    //   resolve;
+    // - for an impl method, the impl (set above), so the impl's generics and predicates resolve —
+    //   the concrete `dyn_self` may mention them (e.g. `dyn Iterator<Item = <A as Trait>::Id>`).
+    let method_state;
+    let s = if matches!(assoc_item.container, ty::AssocContainer::Trait) {
+        method_state = s.with_owner_id(method_decl_id);
+        &method_state
+    } else {
+        s
+    };
+
     // Instantiate and normalize the signature.
-    let method_decl_sig = tcx.fn_sig(method_decl_id).instantiate(tcx, trait_args);
+    let method_decl_sig = tcx.fn_sig(method_decl_id).instantiate(tcx, method_args);
     let normalized_sig = normalize(tcx, s.typing_env(), method_decl_sig);
 
     Some(normalized_sig.sinto(s))
