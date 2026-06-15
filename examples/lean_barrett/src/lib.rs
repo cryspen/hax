@@ -65,4 +65,4 @@ theorem barrett_spec (value: i32) :
   hax_bv_decide (timeout := 120)
 "
 )]
-pub fn theorem() {}
+pub fn thm() {}
