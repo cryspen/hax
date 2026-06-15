@@ -89,6 +89,20 @@ pub struct Foo {
     pub z: u32,
 }
 
+/// Regression test for https://github.com/cryspen/hax/issues/899: a refinement
+/// on a struct field may mention a const generic (here `LEN`), both in a field
+/// type and in the refinement formula itself.
+#[hax::attributes]
+pub struct FooConstGeneric<const LEN: usize> {
+    #[hax_lib::refine(hax_lib::forall(|i: usize| hax_lib::implies(
+        i < indices.len(),
+        indices[i] as (usize) < 2
+    )))]
+    pub indices: [u8; LEN],
+    #[refine(length < LEN)]
+    pub length: usize,
+}
+
 #[hax::exclude]
 impl Foo {
     fn g(&self) {}

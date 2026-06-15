@@ -194,6 +194,13 @@ structure Foo where
   y : u32
   z : u32
 
+--  Regression test for https://github.com/cryspen/hax/issues/899: a refinement
+--  on a struct field may mention a const generic (here `LEN`), both in a field
+--  type and in the refinement formula itself.
+structure FooConstGeneric (LEN : usize) where
+  indices : (RustArray u8 LEN)
+  length : usize
+
 @[spec]
 def props (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
