@@ -671,6 +671,29 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
             match item {
                 Item::Struct(s) => {
                     let only_one_field = s.fields.len() == 1;
+                    // The generated `refinement` functions need the generics of
+                    // the struct in scope: a field type may mention a generic
+                    // parameter (e.g. a `const LEN: usize` used in `[u8; LEN]`).
+                    // We strip any defaults since those are not allowed on
+                    // function generics. Unused generics are fine on functions.
+                    let generics = {
+                        let mut generics = s.generics.clone();
+                        for param in generics.params.iter_mut() {
+                            match param {
+                                GenericParam::Type(p) => {
+                                    p.eq_token = None;
+                                    p.default = None;
+                                }
+                                GenericParam::Const(p) => {
+                                    p.eq_token = None;
+                                    p.default = None;
+                                }
+                                GenericParam::Lifetime(_) => {}
+                            }
+                        }
+                        generics
+                    };
+                    let where_clause = generics.where_clause.clone();
                     let idents: Vec<_> = s
                         .fields
                         .iter()
@@ -715,7 +738,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                                 const _: () = {
                                     #uid_attr
                                     #status_attr
-                                    fn refinement(#binders) -> ::hax_lib::Prop { ::hax_lib::Prop::from(#refine) }
+                                    fn refinement #generics (#binders) -> ::hax_lib::Prop #where_clause { ::hax_lib::Prop::from(#refine) }
                                 };
                             })
                         }

@@ -55,6 +55,18 @@ type t_Foo = {
   f_z:f_z: u32{b2t (((f_y +! f_x <: u32) +! f_z <: u32) >. mk_u32 3 <: bool)}
 }
 
+/// Regression test for https://github.com/cryspen/hax/issues/899: a refinement
+/// on a struct field may mention a const generic (here `LEN`), both in a field
+/// type and in the refinement formula itself.
+type t_FooConstGeneric (v_LEN: usize) = {
+  f_indices:f_indices:
+  t_Array u8 v_LEN
+    { forall (i: usize).
+        b2t (i <. (Core_models.Slice.impl__len #u8 (f_indices <: t_Slice u8) <: usize) <: bool) ==>
+        b2t ((cast (f_indices.[ i ] <: u8) <: usize) <. mk_usize 2 <: bool) };
+  f_length:f_length: usize{b2t (f_length <. v_LEN <: bool)}
+}
+
 let props (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = Hax_lib.v_assume True in
   let _:Prims.unit = Hax_lib.assert_prop True in
