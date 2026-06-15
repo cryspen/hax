@@ -1,10 +1,10 @@
 import LeanBarrett.Extraction.Funs
 import Hax
 
-open Std.Do Aeneas lean_barrett CoreModels
+open Std.Do Aeneas lean_barrett CoreModels lean_barrett
 set_option mvcgen.warning false
 
-attribute [local spec] barrett_reduce barrett_reduce_precondition barret_reduce_postcondition
+attribute [local spec] barrett_reduce barrett_reduce_precondition barrett_reduce_postcondition
   core.I64.Insts.CoreConvertFromI32.from
 
 attribute [local grind =]
@@ -99,7 +99,7 @@ theorem barrett_reduce_spec value
   (h : (barrett_reduce_precondition value).holds):
     ⦃ ⌜ True ⌝ ⦄
     barrett_reduce value
-    ⦃ ⇓ r => ⌜ (barret_reduce_postcondition value r).holds ⌝ ⦄ := by
+    ⦃ ⇓ r => ⌜ (barrett_reduce_postcondition value r).holds ⌝ ⦄ := by
   hax_mvcgen
     <;> try simp [BARRETT_MULTIPLIER, BARRETT_R, BARRETT_SHIFT, FIELD_MODULUS] at *
     <;> try grind
