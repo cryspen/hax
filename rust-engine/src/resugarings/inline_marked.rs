@@ -67,10 +67,12 @@ pub fn pv_inline_resugarings() -> Vec<Box<dyn Resugaring>> {
 const PV_INLINE_PATH: &str = "_hax::pv_inline";
 
 fn meta_has_pv_inline(meta: &Metadata) -> bool {
-    meta.attributes.iter().any(|a| matches!(
-        &a.kind,
-        AttributeKind::Tool { path, .. } if path == PV_INLINE_PATH
-    ))
+    meta.attributes.iter().any(|a| {
+        matches!(
+            &a.kind,
+            AttributeKind::Tool { path, .. } if path == PV_INLINE_PATH
+        )
+    })
 }
 
 fn meta_is_opaque(meta: &Metadata) -> bool {
@@ -465,7 +467,12 @@ impl AstVisitorMut for ApplyPVInline {
     }
 
     fn enter_impl_item(&mut self, impl_item: &mut ImplItem) {
-        if self.shared.borrow().inlinable.contains_key(&impl_item.ident) {
+        if self
+            .shared
+            .borrow()
+            .inlinable
+            .contains_key(&impl_item.ident)
+        {
             impl_item.meta.attributes.push(Attribute {
                 kind: AttributeKind::Hax(AttrPayload::ItemStatus(ItemStatus::Included {
                     late_skip: true,

@@ -31,17 +31,14 @@ const ALLOWED_TO_FAIL: &[&str] = &["proverif-noise"];
 
 fn run_one(crate_name: &str) {
     if std::env::var("HAX_PROVERIF_SNAPSHOT_RUN").is_err() {
-        eprintln!(
-            "Skipping {crate_name}: set HAX_PROVERIF_SNAPSHOT_RUN=1 to run snapshot tests."
-        );
+        eprintln!("Skipping {crate_name}: set HAX_PROVERIF_SNAPSHOT_RUN=1 to run snapshot tests.");
         return;
     }
     let crate_dir = workspace_root().join("tests").join(crate_name);
     let proofs = crate_dir.join("proofs");
     let _ = std::fs::remove_dir_all(&proofs);
 
-    let cargo_hax = std::env::var("CARGO_HAX_BIN")
-        .unwrap_or_else(|_| "cargo-hax".to_string());
+    let cargo_hax = std::env::var("CARGO_HAX_BIN").unwrap_or_else(|_| "cargo-hax".to_string());
     let mut cmd = Command::new(cargo_hax);
     cmd.current_dir(&crate_dir).args(["into", "proverif"]);
     let output = cmd.output().expect("running cargo-hax");
@@ -56,8 +53,7 @@ fn run_one(crate_name: &str) {
     let actual = std::fs::read_to_string(proofs.join("proverif/extraction/lib.pvl"))
         .expect("reading generated lib.pvl");
     let expected_path = crate_dir.join("expected.pvl");
-    let expected = std::fs::read_to_string(&expected_path)
-        .expect("reading expected.pvl baseline");
+    let expected = std::fs::read_to_string(&expected_path).expect("reading expected.pvl baseline");
 
     if actual != expected {
         let diff_path = crate_dir.join("actual.pvl");

@@ -514,10 +514,11 @@ struct
   and fun_application ~span f args ~trait_generic_args ~generic_args =
     let pgeneric_args ?qualifier =
       let qualifier_or default = Option.value ~default qualifier in
-      List.map ~f:(function
-        | GConst const -> (pexpr const, qualifier_or F.AST.Nothing)
-        | GLifetime _ -> .
-        | GType ty -> (pty span ty, qualifier_or F.AST.Hash))
+      List.filter ~f:(function GType (TArrow _) -> false | _ -> true)
+      >> List.map ~f:(function
+           | GConst const -> (pexpr const, qualifier_or F.AST.Nothing)
+           | GLifetime _ -> .
+           | GType ty -> (pty span ty, qualifier_or F.AST.Hash))
     in
     let args = List.map ~f:(pexpr &&& Fn.const F.AST.Nothing) args in
     let trait_generic_args =
@@ -846,13 +847,7 @@ struct
 
     let of_generics span generics : t list =
       List.map ~f:(of_generic_param span) generics.params
-      @ (generics.constraints
-        |> List.sort ~compare:(fun c1 c2 ->
-               match (c1, c2) with
-               | GCType _, GCProjection _ -> -1
-               | GCProjection _, GCType _ -> 1
-               | _ -> 0)
-        |> List.filter_mapi ~f:(of_generic_constraint span))
+      @ List.filter_mapi ~f:(of_generic_constraint span) generics.constraints
 
     let of_typ span (nth : int) typ : t =
       let ident = F.id ("x" ^ Int.to_string nth) in
@@ -1380,10 +1375,7 @@ struct
                     (*       { typ = TApp { ident = i.ti_ident } }) *)
                     (*     bounds *)
                     (* in *)
-                    ( F.id name,
-                      None,
-                      [ F.term @@ F.AST.Var FStar_Parser_Const.no_method_lid ],
-                      t )
+                    (F.id name, None, [], t)
                     :: List.map
                          ~f:(fun
                              { goal = { trait; args }; name = impl_ident_name }
@@ -1708,8 +1700,7 @@ struct
               ( F.lid
                   [
                     "__marker_trait_"
-                    ^ List.last_exn
-                        (FStar_Ident.path_of_lid (pconcrete_ident trait));
+                    ^ FStar_Ident.string_of_lid (pconcrete_ident trait);
                   ],
                 pexpr (U.unit_expr e.span) );
             ]
@@ -1961,34 +1952,12 @@ let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
   in
 
   List.append [ opts; "open FStar.Mul" ]
-    (if hax_core_models_extraction then [ "open Rust_primitives" ]
+    (if
+       hax_core_models_extraction
+       && String.is_prefix ~prefix:"Core_models" mod_name
+     then []
      else [ "open Core_models" ])
   |> String.concat ~sep:"\n"
-
-(** Rewrites `unsize x` to `x <: τ` when `τ` is in the allowlist described by
-    `unsize_identity_typ` *)
-let unsize_as_identity =
-  (* Tells if a unsize should be treated as identity by type *)
-  let rec unsize_identity_typ = function
-    | TArray _ -> true
-    | TRef { typ; _ } -> unsize_identity_typ typ
-    | _ -> false
-  in
-  let visitor =
-    object
-      inherit [_] U.Visitors.map as super
-
-      method! visit_expr () e =
-        match e.e with
-        | App { f = { e = GlobalVar f; _ }; args = [ x ]; _ }
-          when Global_ident.eq_name Rust_primitives__unsize f
-               && unsize_identity_typ x.typ ->
-            let x = super#visit_expr () x in
-            { e with e = Ascription { e = x; typ = e.typ } }
-        | _ -> super#visit_expr () e
-    end
-  in
-  visitor#visit_item ()
 
 (** Translate as F* (the "legacy" printer) *)
 let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
@@ -2030,7 +1999,6 @@ module DepGraphR = Dependencies.Make (Features.Rust)
 module TransformToInputLanguage =
   [%functor_application
     Phases.Reject.RawOrMutPointer(Features.Rust)
-  |> Phases.Reject_impl_type_method
   |> Phases.Rewrite_local_self
   |> Phases.Transform_hax_lib_inline
   |> Phases.Specialize
@@ -2045,7 +2013,6 @@ module TransformToInputLanguage =
   |> Phases.Drop_blocks
   |> Phases.Drop_match_guards
   |> Phases.Drop_references
-  |> Phases.Explicit_conversions
   |> Phases.Trivialize_assign_lhs
   |> Side_effect_utils.Hoist
   |> Phases.Hoist_disjunctive_patterns
@@ -2062,16 +2029,36 @@ module TransformToInputLanguage =
   |> Phases.Reject.Trait_item_default
   |> Phases.Bundle_cycles
   |> Phases.Reorder_fields
-  |> Phases.Sort_items_namespace_wise
+  |> Phases.Sort_items
   |> SubtypeToInputLanguage
   |> Identity
   ]
   [@ocamlformat "disable"]
 
-let post_process_items =
-  List.map ~f:unsize_as_identity
-  >> List.map ~f:unsize_as_identity
-  >> List.map ~f:U.Mappers.add_typ_ascription
+(** Rewrites `unsize x` to `x <: τ` when `τ` is in the allowlist described by
+    `unsize_identity_typ` *)
+let unsize_as_identity =
+  (* Tells if a unsize should be treated as identity by type *)
+  let rec unsize_identity_typ = function
+    | TArray _ -> true
+    | TRef { typ; _ } -> unsize_identity_typ typ
+    | _ -> false
+  in
+  let visitor =
+    object
+      inherit [_] U.Visitors.map as super
+
+      method! visit_expr () e =
+        match e.e with
+        | App { f = { e = GlobalVar f; _ }; args = [ x ]; _ }
+          when Global_ident.eq_name Rust_primitives__unsize f
+               && unsize_identity_typ x.typ ->
+            let x = super#visit_expr () x in
+            { e with e = Ascription { e = x; typ = e.typ } }
+        | _ -> super#visit_expr () e
+    end
+  in
+  visitor#visit_item ()
 
 let apply_phases (bo : BackendOptions.t) (items : Ast.Rust.item list) :
     AST.item list =
@@ -2088,5 +2075,10 @@ let apply_phases (bo : BackendOptions.t) (items : Ast.Rust.item list) :
     (* else *)
     items
   in
-  let items = TransformToInputLanguage.ditems items |> post_process_items in
+  let items =
+    TransformToInputLanguage.ditems items
+    |> List.map ~f:unsize_as_identity
+    |> List.map ~f:unsize_as_identity
+    |> List.map ~f:U.Mappers.add_typ_ascription
+  in
   items
