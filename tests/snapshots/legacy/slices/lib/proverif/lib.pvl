@@ -1,48 +1,26 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
-
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
-
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+*)
 
 (*****************************************)
-(* Types and Constructors *)
+(* Auto-declared external symbols        *)
 (*****************************************)
+fun core__ops__index__Index__index(bitstring, bitstring): bitstring [data].
 
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-const new_tests__legacy__slices__lib__v_VERSION: bitstring.
-
-letfun new_tests__legacy__slices__lib__do_something(wildcard1 : bitstring) =
-       ().
-
-letfun new_tests__legacy__slices__lib__r#unsized(wildcard2 : bitstring) =
-       ().
-
-letfun new_tests__legacy__slices__lib__sized(x : bitstring) =
-       new_tests__legacy__slices__lib__r#unsized(
-         [core_models__ops__index__f_index(x, 0)]
-       ).
-
+const new_tests__legacy__slices__lib__VERSION: bitstring.
+letfun new_tests__legacy__slices__lib__do_something(wildcard: bitstring) =
+rust_primitives__hax__Tuple0__Tuple0.
+letfun new_tests__legacy__slices__lib__r#unsized(wildcard: bitstring) =
+rust_primitives__hax__Tuple0__Tuple0.
+letfun new_tests__legacy__slices__lib__sized(x: bitstring) =
+new_tests__legacy__slices__lib__r#unsized(rust_primitives__hax__array_cons(core__ops__index__Index__index(x,
+  nat_lit(0)), rust_primitives__hax__array_nil())).

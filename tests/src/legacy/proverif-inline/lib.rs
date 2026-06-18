@@ -1,8 +1,11 @@
-// Exercises Stage 2.2 — `#[hax_lib::pv_inline]` β-substitution.
-//
-// `apply_twice(x, f)` is marked `pv_inline`, so every call to it
-// disappears from the output, replaced by an inlined match shape with
-// the closure body β-reduced into the call positions.
+//! @off: fstar, lean, coq, ssprove
+//!
+//! ProVerif-only test. Exercises Stage 2.2 — `#[hax_lib::pv_inline]`
+//! β-substitution.
+//!
+//! `apply_twice(x, f)` is marked `pv_inline`, so every call to it
+//! disappears from the output, replaced by an inlined match shape with
+//! the closure body β-reduced into the call positions.
 
 #[hax_lib::pv_inline]
 fn apply_twice(x: u8, f: fn(u8) -> u8) -> u8 {

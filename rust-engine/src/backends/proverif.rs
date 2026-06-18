@@ -855,8 +855,25 @@ const _: () = {
                 ExprKind::GlobalId(g) => docs![g],
                 ExprKind::LocalId(local_id) => docs![local_id],
                 ExprKind::Ascription { e, ty: _ } => docs![e],
-                ExprKind::Array(_) => self.expr_error_placeholder::<A>(
-                    "Array expressions not supported in ProVerif",
+                // ProVerif is first-order and has no array literals. Model a
+                // fixed-size array `[a, b, c]` as a cons-list over the opaque
+                // constructors `array_nil` / `array_cons` (declared in
+                // `primitives.pvl`), i.e. `array_cons(a, array_cons(b,
+                // array_cons(c, array_nil())))`. This is length-independent and
+                // keeps everything within the uniform-bitstring encoding.
+                // (Repeat arrays `[e; n]` never reach here — they are lowered
+                // upstream to `rust_primitives::hax::repeat(e, n)`.)
+                ExprKind::Array(elements) => elements.iter().rev().fold(
+                    docs!["rust_primitives__hax__array_nil()"],
+                    |rest, elem| {
+                        docs![
+                            "rust_primitives__hax__array_cons(",
+                            docs![elem],
+                            ", ",
+                            rest,
+                            ")"
+                        ]
+                    },
                 ),
                 ExprKind::Borrow { .. } => unreachable_by_invariant!(Drop_references),
                 ExprKind::AddressOf { .. } => unreachable_by_invariant!(Reject_raw_or_mut_pointer),

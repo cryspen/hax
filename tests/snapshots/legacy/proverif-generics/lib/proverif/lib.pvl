@@ -1,0 +1,34 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
+
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+*)
+
+(*****************************************)
+(* Auto-declared external symbols        *)
+(*****************************************)
+fun new_tests__legacy__proverif_generics__lib__Cloneable__clone_it(bitstring): bitstring [data].
+
+letfun new_tests__legacy__proverif_generics__lib__id(x: bitstring) =
+x.
+fun new_tests__legacy__proverif_generics__lib__Token__Token(bitstring): bitstring [data].
+reduc forall new_tests__legacy__proverif_generics__lib__Token__Token__bytes_v: bitstring;
+  new_tests__legacy__proverif_generics__lib__Token__Token__bytes(new_tests__legacy__proverif_generics__lib__Token__Token(new_tests__legacy__proverif_generics__lib__Token__Token__bytes_v)) = new_tests__legacy__proverif_generics__lib__Token__Token__bytes_v.
+
+letfun new_tests__legacy__proverif_generics__lib__Impl__clone_it(self: bitstring) =
+new_tests__legacy__proverif_generics__lib__Token__Token(new_tests__legacy__proverif_generics__lib__Token__Token__bytes(self)).
+letfun new_tests__legacy__proverif_generics__lib__duplicate(t: bitstring) =
+new_tests__legacy__proverif_generics__lib__Cloneable__clone_it(t).
+letfun new_tests__legacy__proverif_generics__lib__Impl_1__fresh(b: bitstring) =
+new_tests__legacy__proverif_generics__lib__Token__Token(b).
+letfun new_tests__legacy__proverif_generics__lib__make_token(wildcard: bitstring) =
+new_tests__legacy__proverif_generics__lib__Impl_1__fresh(nat_lit(42)).
+letfun new_tests__legacy__proverif_generics__lib__pass_through(t: bitstring) =
+new_tests__legacy__proverif_generics__lib__id(t).

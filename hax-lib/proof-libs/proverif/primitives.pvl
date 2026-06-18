@@ -134,6 +134,12 @@ letfun rust_primitives__unsize(x: bitstring) = x.
 
 fun rust_primitives__hax__repeat(bitstring, bitstring): bitstring [data].
 
+(* Fixed-size array literals `[a, b, c]` are encoded as a cons-list, since   *)
+(* ProVerif is first-order and has no array literals. The backend emits      *)
+(* `array_cons(a, array_cons(b, array_cons(c, array_nil())))`.               *)
+fun rust_primitives__hax__array_nil(): bitstring [data].
+fun rust_primitives__hax__array_cons(bitstring, bitstring): bitstring [data].
+
 (*** core::cmp / ops — letfuns with non-opaque semantics            ***)
 (* These are *not* shape-equivalent to the auto-decl fallback: they  *)
 (* fire ProVerif rewrite rules. Plain opaque ops on the same         *)

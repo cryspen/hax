@@ -1,5 +1,7 @@
-// Exercises Stage 2.1 — generics monomorphized via Specialize, and impl
-// blocks rendered as flat letfuns.
+//! @off: fstar, lean, coq, ssprove
+//!
+//! ProVerif-only test. Exercises Stage 2.1 — generics monomorphized via
+//! `Specialize`, and impl blocks rendered as flat letfuns.
 
 // A trivial generic identity function.
 fn id<T>(x: T) -> T {

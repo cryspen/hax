@@ -820,7 +820,6 @@ pub fn pv_handwritten(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::Toke
 /// rather than going through the `_hax::json` envelope so it survives the
 /// OCaml engine's attribute decoder untouched and reaches the rust-engine
 /// resugaring directly.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn pv_inline(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -843,7 +842,6 @@ pub fn pv_inline(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStre
 /// The declaration arity and the body call's argument names are derived
 /// from the annotated function's signature. Parameters that are not
 /// simple identifiers (e.g. patterns) fall back to `p<i>`.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn pv_extern(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
@@ -880,7 +878,6 @@ pub fn pv_extern(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStre
 
 /// Shorthand for `#[hax_lib::proverif::replace_body(<lit>)]`. Useful for
 /// trivial constant stubs like `pv_stub!("nat_lit(0)")` on length helpers.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn pv_stub(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let payload: LitStr = parse_macro_input!(attr);
@@ -898,7 +895,6 @@ pub fn pv_stub(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
 ///
 /// The argument is the path to the other function in Rust syntax; hax's
 /// `${…}` expansion is used so the path is resolved by the backend.
-#[proc_macro_error]
 #[proc_macro_attribute]
 pub fn pv_inverse_of(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let other_path = parse_macro_input!(attr as syn::Path);

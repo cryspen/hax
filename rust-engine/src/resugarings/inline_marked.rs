@@ -28,6 +28,7 @@ use std::rc::Rc;
 use hax_lib_macros_types::{AttrPayload, ItemStatus};
 
 use crate::ast::identifiers::{GlobalId, LocalId};
+use crate::ast::span::Span;
 use crate::ast::visitors::*;
 use crate::ast::*;
 use crate::printer::Resugaring;
@@ -43,11 +44,71 @@ struct Shared {
     inlinable: HashMap<GlobalId, (Vec<Param>, Expr)>,
 }
 
+/// Built-in inlinable models for the `core` higher-order combinators that a
+/// first-order language like ProVerif cannot express as `letfun`s. They are
+/// seeded into the inlinable map so that *every* call site is β-reduced away,
+/// exactly as if the user had written a `#[hax_lib::pv_inline]` helper.
+///
+/// These mirror the bodies of the `core-models` crate
+/// (`hax-lib/core-models/src/core/...`). We reconstruct them here rather than
+/// pulling them from `core-models` directly because the `core`→`core_models`
+/// rewrite is name-only — `core-models` bodies are never part of a user
+/// crate's extraction surface, so the inliner has nothing to collect.
+///
+/// TODO: link this to the real `rust-core-models` bodies (a single source of
+/// truth) instead of reconstructing them here. See the discussion in the
+/// ProVerif backend notes.
+fn builtin_combinator_models() -> Vec<(GlobalId, Vec<Param>, Expr)> {
+    let unit_ty = || TyKind::unit().promote();
+    // A by-value binder `name`, returning both its `LocalId` (for the body to
+    // reference) and the `Param` (for the inliner to bind to the call arg).
+    let binder = |name: &str| -> (LocalId, Param) {
+        let var = LocalId(Symbol::new(name));
+        let pat = PatKind::Binding {
+            mutable: false,
+            var: var.clone(),
+            mode: BindingMode::ByValue,
+            sub_pat: None,
+        }
+        .promote(unit_ty(), Span::dummy());
+        (
+            var,
+            Param {
+                pat,
+                ty: unit_ty(),
+                ty_span: None,
+                attributes: Vec::new(),
+            },
+        )
+    };
+
+    // `Result::map_err(self, op)` is the *identity* under the uniform-bitstring
+    // error encoding: every `Err(_)` collapses to the single `bitstring_err()`
+    // sentinel, so the error-transforming closure `op` is irrelevant. Model it
+    // as `|self, op| self`; the inliner then drops the closure at every call
+    // site (which is what makes ProVerif's first-order printer happy).
+    let (self_var, self_param) = binder("pv_self");
+    let (_op_var, op_param) = binder("pv_op");
+    let map_err_body = ExprKind::LocalId(self_var).promote(unit_ty(), Span::dummy());
+
+    vec![(
+        crate::names::core::result::Impl::map_err,
+        vec![self_param, op_param],
+        map_err_body,
+    )]
+}
+
 /// Build the two-phase resugaring pipeline (collect + apply) sharing a
 /// single mutable state. Both phases must be registered together for
 /// inlining to work.
 pub fn pv_inline_resugarings() -> Vec<Box<dyn Resugaring>> {
     let shared = Rc::new(RefCell::new(Shared::default()));
+    {
+        let mut state = shared.borrow_mut();
+        for (id, params, body) in builtin_combinator_models() {
+            state.inlinable.insert(id, (params, body));
+        }
+    }
     vec![
         Box::new(CollectPVInline {
             shared: shared.clone(),

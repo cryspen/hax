@@ -1,230 +1,130 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
-
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
-
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+*)
 
 (*****************************************)
-(* Types and Constructors *)
+(* Auto-declared external symbols        *)
 (*****************************************)
+fun core__hint__black_box(bitstring): bitstring [data].
+const string_lit__a_x20and_x20b: bitstring.
+const string_lit__a_x20or_x20b: bitstring.
+const string_lit__b_x20and_x20c: bitstring.
+const string_lit__neither_x20a_x20nor_x20b: bitstring.
+const string_lit__not_x20both: bitstring.
+const string_lit__pass: bitstring.
+const string_lit__reject: bitstring.
 
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__mcdc__if__say(message : bitstring) =
-       let wildcard1: bitstring = (core_models__hint__black_box(message)) in
-       ().
-
-letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_neither(
-         a : bool, b : bool
-       ) =
-       if a && b
-       then
-         (let wildcard2: bitstring = (
-            new_tests__rustc_coverage__mcdc__if__say("a and b")
-          ) in
-          ())
-       else (
-         let wildcard3: bitstring = (
-           new_tests__rustc_coverage__mcdc__if__say("not both")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_a(a : bool, b : bool) =
-       if a && b
-       then
-         (let wildcard4: bitstring = (
-            new_tests__rustc_coverage__mcdc__if__say("a and b")
-          ) in
-          ())
-       else (
-         let wildcard5: bitstring = (
-           new_tests__rustc_coverage__mcdc__if__say("not both")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_b(a : bool, b : bool) =
-       if a && b
-       then
-         (let wildcard6: bitstring = (
-            new_tests__rustc_coverage__mcdc__if__say("a and b")
-          ) in
-          ())
-       else (
-         let wildcard7: bitstring = (
-           new_tests__rustc_coverage__mcdc__if__say("not both")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_both(a : bool, b : bool) =
-       if a && b
-       then
-         (let wildcard8: bitstring = (
-            new_tests__rustc_coverage__mcdc__if__say("a and b")
-          ) in
-          ())
-       else (
-         let wildcard9: bitstring = (
-           new_tests__rustc_coverage__mcdc__if__say("not both")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(
-         a : bool, b : bool, c : bool
-       ) =
-       if a && b || c
-       then
-         (let wildcard10: bitstring = (
-            new_tests__rustc_coverage__mcdc__if__say("pass")
-          ) in
-          ())
-       else (
-         let wildcard11: bitstring = (
-           new_tests__rustc_coverage__mcdc__if__say("reject")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(
-         a : bool, b : bool, c : bool
-       ) =
-       if a || b && c
-       then
-         (let wildcard12: bitstring = (
-            new_tests__rustc_coverage__mcdc__if__say("pass")
-          ) in
-          ())
-       else (
-         let wildcard13: bitstring = (
-           new_tests__rustc_coverage__mcdc__if__say("reject")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__mcdc__if__mcdc_nested_if(
-         a : bool, b : bool, c : bool
-       ) =
-       if a || b
-       then
-         (let wildcard15: bitstring = (
-            new_tests__rustc_coverage__mcdc__if__say("a or b")
-          ) in
-          if b && c
-          then
-            (let wildcard14: bitstring = (
-               new_tests__rustc_coverage__mcdc__if__say("b and c")
-             ) in
-             ())
-          else (()))
-       else (
-         let wildcard16: bitstring = (
-           new_tests__rustc_coverage__mcdc__if__say("neither a nor b")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__mcdc__if__main(wildcard37 : bitstring) =
-       let wildcard36: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_neither(false, false)
-       ) in
-       let wildcard35: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_neither(false, true)
-       ) in
-       let wildcard34: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_a(true, true)
-       ) in
-       let wildcard33: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_a(false, true)
-       ) in
-       let wildcard32: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_b(true, true)
-       ) in
-       let wildcard31: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_b(true, false)
-       ) in
-       let wildcard30: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_both(false, true)
-       ) in
-       let wildcard29: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_both(true, true)
-       ) in
-       let wildcard28: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_both(true, false)
-       ) in
-       let wildcard27: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(
-           false, true, true
-         )
-       ) in
-       let wildcard26: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(
-           true, true, false
-         )
-       ) in
-       let wildcard25: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(
-           true, false, false
-         )
-       ) in
-       let wildcard24: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(
-           true, false, true
-         )
-       ) in
-       let wildcard23: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(
-           false, true, true
-         )
-       ) in
-       let wildcard22: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(
-           true, true, false
-         )
-       ) in
-       let wildcard21: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(
-           true, false, false
-         )
-       ) in
-       let wildcard20: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(
-           true, false, true
-         )
-       ) in
-       let wildcard19: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_nested_if(true, false, true)
-       ) in
-       let wildcard18: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_nested_if(true, true, true)
-       ) in
-       let wildcard17: bitstring = (
-         new_tests__rustc_coverage__mcdc__if__mcdc_nested_if(true, true, false)
-       ) in
-       ().
-
+letfun new_tests__rustc_coverage__mcdc__if__say(message: bitstring) =
+let wildcard: bitstring = (core__hint__black_box(message)) in
+  rust_primitives__hax__Tuple0__Tuple0.
+letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_neither(a: bitstring,
+b: bitstring) =
+let (=True()) = logical_and(a,
+  b) in (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__a_x20and_x20b)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__not_x20both)) in
+  rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_a(a: bitstring,
+b: bitstring) =
+let (=True()) = logical_and(a,
+  b) in (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__a_x20and_x20b)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__not_x20both)) in
+  rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_b(a: bitstring,
+b: bitstring) =
+let (=True()) = logical_and(a,
+  b) in (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__a_x20and_x20b)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__not_x20both)) in
+  rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_both(a: bitstring,
+b: bitstring) =
+let (=True()) = logical_and(a,
+  b) in (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__a_x20and_x20b)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__not_x20both)) in
+  rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(a: bitstring,
+b: bitstring,
+c: bitstring) =
+let (=True()) = logical_and(a,
+  logical_or(b,
+  c)) in (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__pass)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__reject)) in
+  rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(a: bitstring,
+b: bitstring,
+c: bitstring) =
+let (=True()) = logical_and(logical_or(a,
+  b),
+  c) in (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__pass)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__reject)) in
+  rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__mcdc__if__mcdc_nested_if(a: bitstring,
+b: bitstring,
+c: bitstring) =
+let (=True()) = logical_or(a,
+  b) in (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__a_x20or_x20b)) in
+  let (=True()) = logical_and(b,
+  c) in (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__b_x20and_x20c)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (rust_primitives__hax__Tuple0__Tuple0)) else (let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__say(string_lit__neither_x20a_x20nor_x20b)) in
+  rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__mcdc__if__main(wildcard: bitstring) =
+let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_neither(False(),
+  False())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_neither(False(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_a(True(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_a(False(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_b(True(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_b(True(),
+  False())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_both(False(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_both(True(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_both(True(),
+  False())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(False(),
+  True(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(True(),
+  True(),
+  False())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(True(),
+  False(),
+  False())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision(True(),
+  False(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(False(),
+  True(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(True(),
+  True(),
+  False())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(True(),
+  False(),
+  False())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision(True(),
+  False(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_nested_if(True(),
+  False(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_nested_if(True(),
+  True(),
+  True())) in
+  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__if__mcdc_nested_if(True(),
+  True(),
+  False())) in
+  rust_primitives__hax__Tuple0__Tuple0.
