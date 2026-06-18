@@ -19,7 +19,7 @@ fn expect_simple_path(path: &Path) -> Option<Vec<String>> {
 }
 
 /// The various strings allowed as decoration kinds.
-pub const DECORATION_KINDS: &[&str] = &["decreases", "ensures", "requires"];
+pub const DECORATION_KINDS: &[&str] = &["decreases", "ensures", "ensures_ref", "requires"];
 
 /// Expects a `Path` to be a decoration kind: `::hax_lib::<KIND>`,
 /// `hax_lib::<KIND>` or `<KIND>` in (with `KIND` in

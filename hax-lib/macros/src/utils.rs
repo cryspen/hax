@@ -20,7 +20,7 @@ impl ToTokens for HaxQuantifiers {
 /// Meta informations about functions decorations
 pub enum FnDecorationKind {
     Requires,
-    Ensures { ret_binder: Pat },
+    Ensures { ret_binder: Pat, by_ref: bool },
     Decreases,
     SMTPat,
 }
@@ -256,11 +256,16 @@ pub fn make_fn_decoration(
         let decoration_sig = {
             let mut sig = signature.clone();
             sig.ident = format_ident!("{}", kind.to_string());
-            if let FnDecorationKind::Ensures { ret_binder } = &kind {
+            if let FnDecorationKind::Ensures { ret_binder, by_ref } = &kind {
                 add_unit_to_sig_if_needed(&mut sig);
                 let output_typ = match sig.output {
                     syn::ReturnType::Default => parse_quote! {()},
                     syn::ReturnType::Type(_, t) => t,
+                };
+                let output_typ_tokens = if *by_ref {
+                    quote! {&#output_typ}
+                } else {
+                    quote! {#output_typ}
                 };
                 let mut_ref_inputs = mut_ref_inputs
                     .iter()
@@ -289,7 +294,7 @@ pub fn make_fn_decoration(
 
                 if !is_output_typ_unit || pats.is_empty() {
                     pats.push(ret_binder.to_token_stream());
-                    tys.push(quote! {#output_typ});
+                    tys.push(output_typ_tokens);
                 }
 
                 sig.inputs

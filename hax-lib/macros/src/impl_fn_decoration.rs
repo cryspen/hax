@@ -32,12 +32,16 @@ impl parse::Parse for ImplFnDecoration {
             Some(s) => match s.as_str() {
                 "decreases" => FnDecorationKind::Decreases,
                 "requires" => FnDecorationKind::Requires,
-                "ensures" => {
+                "ensures" | "ensures_ref" => {
+                    let by_ref = s.as_str() == "ensures_ref";
                     let (generics, self_ty) = parse_next()?;
                     let ExprClosure1 { arg, body } = input.parse::<ExprClosure1>()?;
                     input.parse::<syn::parse::Nothing>()?;
                     return Ok(ImplFnDecoration {
-                        kind: FnDecorationKind::Ensures { ret_binder: arg },
+                        kind: FnDecorationKind::Ensures {
+                            ret_binder: arg,
+                            by_ref,
+                        },
                         phi: body,
                         generics,
                         self_ty,
