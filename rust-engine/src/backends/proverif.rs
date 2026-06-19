@@ -1431,6 +1431,12 @@ impl Backend for ProVerifBackend {
             TrivializeAssignLhs.into(),
             HoistSideEffects.into(),
             SimplifyMatchReturn.into(),
+            // Functionalize early-exit control flow (`return`/`break`/`continue`)
+            // into if/match, like the F* backend — otherwise `if c { ...; return }`
+            // / `let-else { ...; return }` reach the printer as unsupported
+            // `ExprKind::Return`.
+            RewriteControlFlow.into(),
+            DropReturnBreakContinue.into(),
             LocalMutation.into(),
             RejectContinue.into(),
             RejectDyn.into(),
