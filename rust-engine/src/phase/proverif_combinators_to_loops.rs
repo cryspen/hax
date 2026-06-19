@@ -53,6 +53,16 @@ enum Combinator {
     /// `Iterator::collect(Iterator::map(iter, |x| body))` — rewritten to a
     /// cons-list-building `ForLoop`.
     MapCollect,
+    /// `bool::then(cond, || body)` — rewritten to a scalar
+    /// `if cond { Some(body) } else { None }`.
+    BoolThen,
+    /// `Iterator::for_each(iter, |x| body)` — rewritten to a no-accumulator
+    /// (`state: None`) `ForLoop`.
+    ForEach,
+    /// `Iterator::filter_map(iter, |x| body)` where `body : Option<_>` —
+    /// rewritten to a cons-list-building `ForLoop` keeping only the `Some`
+    /// payloads.
+    FilterMap,
 }
 
 /// Classify the head `GlobalId` of an `App` by its debug path string. Returns
@@ -70,8 +80,14 @@ fn classify(head: &Expr) -> Option<Combinator> {
         Some(Combinator::Any)
     } else if path.ends_with("Iterator::find_map") {
         Some(Combinator::FindMap)
+    } else if path.ends_with("Iterator::for_each") {
+        Some(Combinator::ForEach)
+    } else if path.ends_with("Iterator::filter_map") {
+        Some(Combinator::FilterMap)
     } else if path.ends_with("Iterator::collect") {
         Some(Combinator::MapCollect)
+    } else if path.ends_with("bool::impl::then") || path.ends_with("bool::then") {
+        Some(Combinator::BoolThen)
     } else if path.contains("option") && path.ends_with("::map") {
         Some(Combinator::OptionMap)
     } else {
@@ -90,6 +106,20 @@ fn peel_wrappers(e: &Expr) -> &Expr {
             _ => return current,
         }
     }
+}
+
+/// Extract the payload type `T` of an `Option<T>` type, if `ty` has that
+/// shape. Used to type the `Some(y)` binder in the `filter_map` rewrite. Falls
+/// back to the whole `Option<T>` type otherwise (the ProVerif printer models
+/// every value as `bitstring`, so an imprecise binder type is still sound).
+fn option_payload_ty(ty: &Ty) -> Ty {
+    let Ty(b) = ty;
+    if let TyKind::App { args, .. } = &**b {
+        if let Some(GenericValue::Ty(inner)) = args.first() {
+            return inner.clone();
+        }
+    }
+    ty.clone()
 }
 
 /// Extract the bound `LocalId` of a binding pattern, if any (peeling a single
@@ -506,6 +536,183 @@ impl ProverifCombinatorsToLoopsVisitor {
             label: None,
         })
     }
+
+    /// Build the scalar `if` for a `bool::then(cond, || body)`.
+    /// `args ≈ [cond, closure]` where the closure takes *no* parameters and
+    /// returns the value. Result is `if cond { Some(<closure.body>) } else
+    /// { None }`, matching `bool::then`'s `Option` semantics. This appears
+    /// nested inside `find_map` bodies; the recursive visiting in
+    /// [`AstVisitorMut::visit_expr`] rewrites those before this node is lifted.
+    fn rewrite_bool_then(app_ty: &Ty, span: Span, args: &[Expr]) -> Option<ExprKind> {
+        let [cond, closure] = args else {
+            return None;
+        };
+        let ExprKind::Closure { params, body, .. } = &*closure.kind else {
+            return None;
+        };
+        // `then`'s closure takes no meaningful arguments. In Rust it is written
+        // `|| body`, but the frontend lowers `FnOnce()` to a closure carrying a
+        // single (unit) parameter, so accept either shape — the parameter is
+        // unused, so we drop it.
+        if params.len() > 1 {
+            return None;
+        }
+        // The App's type is `Option<T>` (the produced value type).
+        let option_ty = app_ty.clone();
+
+        let some_ctor = crate::names::core::option::Option::Some::Constructor;
+        let none_ctor = crate::names::core::option::Option::None::Constructor;
+        let some_field = crate::names::core::option::Option::Some::_0;
+
+        // `Some(<closure.body>)`
+        let some_expr = ExprKind::Construct {
+            constructor: some_ctor,
+            is_record: false,
+            is_struct: false,
+            fields: vec![(some_field, body.clone())],
+            base: None,
+        }
+        .promote(option_ty.clone(), span);
+
+        // `None`
+        let none_expr = ExprKind::Construct {
+            constructor: none_ctor,
+            is_record: false,
+            is_struct: false,
+            fields: vec![],
+            base: None,
+        }
+        .promote(option_ty, span);
+
+        Some(ExprKind::If {
+            condition: cond.clone(),
+            then: some_expr,
+            else_: Some(none_expr),
+        })
+    }
+
+    /// Build the no-accumulator `ForLoop` for an `for_each(iter, |x| body)`.
+    /// `args ≈ [iter, closure]`; `body` returns unit. The loop has no
+    /// functional state (`state: None`): the printer threads unit through the
+    /// `unroll_for_loop_nostate` path, running `body` for its effects on each
+    /// element.
+    fn rewrite_for_each(span: Span, args: &[Expr]) -> Option<ExprKind> {
+        let [iter, closure] = args else {
+            return None;
+        };
+        let ExprKind::Closure { params, body, .. } = &*closure.kind else {
+            return None;
+        };
+        let [elem_pat] = &params[..] else {
+            return None;
+        };
+        let _ = span;
+        Some(ExprKind::Loop {
+            body: body.clone(),
+            kind: Box::new(LoopKind::ForLoop {
+                pat: elem_pat.clone(),
+                iterator: iter.clone(),
+            }),
+            state: None,
+            control_flow: None,
+            label: None,
+        })
+    }
+
+    /// Build the cons-list-building `ForLoop` for a
+    /// `filter_map(iter, |x| body)` where `body : Option<U>`. `args ≈ [iter,
+    /// closure]`. The loop starts from an empty Seq and, for each element,
+    /// `match`es the closure body: a `Some(y)` conses `y` onto the
+    /// accumulator, a `None` keeps the accumulator unchanged.
+    fn rewrite_filter_map(app_ty: &Ty, span: Span, args: &[Expr]) -> Option<ExprKind> {
+        let [iter, closure] = args else {
+            return None;
+        };
+        let ExprKind::Closure { params, body, .. } = &*closure.kind else {
+            return None;
+        };
+        let [elem_pat] = &params[..] else {
+            return None;
+        };
+
+        // The collected result type (`Vec<U>`/Seq) is the App's type, and also
+        // the loop-accumulator type.
+        let vec_ty = app_ty.clone();
+        // The closure body's type is `Option<U>`; `U` is the Some payload.
+        let option_ty = body.ty.clone();
+        let payload_ty = option_payload_ty(&option_ty);
+
+        let some_ctor = crate::names::core::option::Option::Some::Constructor;
+        let none_ctor = crate::names::core::option::Option::None::Constructor;
+        let some_field = crate::names::core::option::Option::Some::_0;
+
+        // The accumulator binder threaded by the loop state.
+        let acc_id: LocalId = "__filter_map_acc".into();
+        let acc_pat = PatKind::var_pat(acc_id.clone()).promote(vec_ty.clone(), span);
+        let acc_expr = ExprKind::LocalId(acc_id).promote(vec_ty.clone(), span);
+
+        // Empty Seq: `array_nil()`.
+        let init_expr = Expr::standalone_fn_app(
+            crate::names::rust_primitives::hax::array_nil,
+            vec![],
+            vec![],
+            vec_ty.clone(),
+            span,
+        );
+
+        // Arm `Some(y) => array_cons(y, __filter_map_acc)`
+        let payload_id: LocalId = "__filter_map_y".into();
+        let some_pat = PatKind::Construct {
+            constructor: some_ctor,
+            is_record: false,
+            is_struct: false,
+            fields: vec![(
+                some_field,
+                PatKind::var_pat(payload_id.clone()).promote(payload_ty.clone(), span),
+            )],
+        }
+        .promote(option_ty.clone(), span);
+        let payload_expr = ExprKind::LocalId(payload_id).promote(payload_ty, span);
+        let cons_expr = Expr::standalone_fn_app(
+            crate::names::rust_primitives::hax::array_cons,
+            vec![],
+            vec![payload_expr, acc_expr.clone()],
+            vec_ty.clone(),
+            span,
+        );
+        let some_arm = Arm::non_guarded(some_pat, cons_expr, span);
+
+        // Arm `None => __filter_map_acc`
+        let none_pat = PatKind::Construct {
+            constructor: none_ctor,
+            is_record: false,
+            is_struct: false,
+            fields: vec![],
+        }
+        .promote(option_ty, span);
+        let none_arm = Arm::non_guarded(none_pat, acc_expr, span);
+
+        // `match <closure.body> { Some(y) => array_cons(y, acc), None => acc }`
+        let match_body = ExprKind::Match {
+            scrutinee: body.clone(),
+            arms: vec![some_arm, none_arm],
+        }
+        .promote(vec_ty.clone(), span);
+
+        Some(ExprKind::Loop {
+            body: match_body,
+            kind: Box::new(LoopKind::ForLoop {
+                pat: elem_pat.clone(),
+                iterator: iter.clone(),
+            }),
+            state: Some(LoopState {
+                init: init_expr,
+                body_pat: acc_pat,
+            }),
+            control_flow: None,
+            label: None,
+        })
+    }
 }
 
 /// Helper: build a fresh `None` expression for the `find` loop initial state.
@@ -552,6 +759,15 @@ impl AstVisitorMut for ProverifCombinatorsToLoopsVisitor {
             }
             Combinator::MapCollect => {
                 ProverifCombinatorsToLoopsVisitor::rewrite_map_collect(&app_ty, span, args)
+            }
+            Combinator::BoolThen => {
+                ProverifCombinatorsToLoopsVisitor::rewrite_bool_then(&app_ty, span, args)
+            }
+            Combinator::ForEach => {
+                ProverifCombinatorsToLoopsVisitor::rewrite_for_each(span, args)
+            }
+            Combinator::FilterMap => {
+                ProverifCombinatorsToLoopsVisitor::rewrite_filter_map(&app_ty, span, args)
             }
         };
         if let Some(new_kind) = new_kind {
