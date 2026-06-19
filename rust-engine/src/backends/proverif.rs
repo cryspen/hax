@@ -406,6 +406,77 @@ const _: () = {
             ]
         }
 
+        /// One unrolling level for a *no-accumulator* (side-effecting)
+        /// `for <pat> in <coll> { <body> }` loop, i.e. `state: None`. Same
+        /// arithmetic-free `__iter_empty`/`__iter_head`/`__iter_tail` chain as
+        /// [`Self::unroll_for_loop_level`], but with no `acc` threading: the
+        /// empty-iterator result is unit (`rust_primitives__hax__Tuple0__Tuple0`)
+        /// and each iteration runs `body` for its effects (bound to a
+        /// throwaway `wildcard`).
+        fn unroll_for_loop_nostate_level<A: 'static + Clone>(
+            &self,
+            k: usize,
+            c: &str,
+            pat: &Pat,
+            body: &Expr,
+        ) -> DocBuilder<A> {
+            if k >= LOOP_BOUND {
+                // Overflow terminal: the iterator must be empty by now.
+                return docs![
+                    "let (=True()) = __iter_empty(",
+                    c.to_string(),
+                    ") in (rust_primitives__hax__Tuple0__Tuple0) else bitstring_err()"
+                ];
+            }
+            let next_c = format!("__bl_c{}", k + 1);
+            let inner: DocBuilder<A> =
+                self.unroll_for_loop_nostate_level(k + 1, &next_c, pat, body);
+            docs![
+                "let (=True()) = __iter_empty(",
+                c.to_string(),
+                ") in (rust_primitives__hax__Tuple0__Tuple0)",
+                hardline!(),
+                "else (let ",
+                docs![pat],
+                " = __iter_head(",
+                c.to_string(),
+                ") in",
+                hardline!(),
+                "let ",
+                next_c.clone(),
+                " = __iter_tail(",
+                c.to_string(),
+                ") in",
+                hardline!(),
+                "let wildcard = (",
+                docs![body],
+                ") in",
+                hardline!(),
+                inner,
+                ")"
+            ]
+        }
+
+        /// Emit the full bounded unrolling for a side-effecting
+        /// `for <pat> in <iterator> { <body> }` loop with no functional state
+        /// (`state: None`). See [`Self::unroll_for_loop_nostate_level`].
+        fn unroll_for_loop_nostate<A: 'static + Clone>(
+            &self,
+            pat: &Pat,
+            iterator: &Expr,
+            body: &Expr,
+        ) -> DocBuilder<A> {
+            let inner: DocBuilder<A> = self.unroll_for_loop_nostate_level(0, "__bl_c0", pat, body);
+            docs![
+                "(let __bl_c0 = (",
+                docs![iterator],
+                ") in ",
+                hardline!(),
+                inner,
+                ")"
+            ]
+        }
+
         /// Print the `fun ... [data].` declaration and the matching `reduc`
         /// lines that recover each field. Mirrors `fun_and_reduc` inside
         /// `item_unwrapped`. Stage 2.0: every constructor returns `bitstring`
@@ -1002,6 +1073,20 @@ const _: () = {
                         unreachable!("guarded by the `matches!` above")
                     };
                     self.unroll_for_loop(pat, iterator, body, state)
+                }
+                // No-accumulator side-effecting `for x in coll { stmt }`
+                // (`state: None`, unit body) — same `next()`-style unrolling
+                // but with no threaded accumulator; the empty result is unit.
+                ExprKind::Loop {
+                    body,
+                    kind,
+                    state: None,
+                    ..
+                } if matches!(&**kind, LoopKind::ForLoop { .. }) => {
+                    let LoopKind::ForLoop { pat, iterator } = &**kind else {
+                        unreachable!("guarded by the `matches!` above")
+                    };
+                    self.unroll_for_loop_nostate(pat, iterator, body)
                 }
                 ExprKind::Loop { .. } => self.expr_error_placeholder::<A>(
                     "Loops not supported in ProVerif",
