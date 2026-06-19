@@ -90,6 +90,14 @@ const HEADER: &str = "\
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
 ";
@@ -1504,12 +1512,22 @@ impl Backend for ProVerifBackend {
         // (including ones synthesized by `proverif_replace_body!`
         // quote injections such as `reduc forall ...; foo(...) = ...`),
         // then emit an auto-decl block only for what's still missing.
-        let externals = self.format_external_decls(&referenced, &contents);
-        vec![File {
-            path,
-            contents: format!("{HEADER}{externals}\n{contents}"),
-            sourcemap: None,
-        }]
+        // The auto-declared externals go to a SEPARATE `missingdecl.pvl`
+        // diagnostic file rather than being silently inlined into lib.pvl,
+        // so the unsound stubs are visible and auditable (goal: empty).
+        let missingdecl = self.format_external_decls(&referenced, &contents);
+        vec![
+            File {
+                path,
+                contents: format!("{HEADER}{contents}"),
+                sourcemap: None,
+            },
+            File {
+                path: "missingdecl.pvl".to_string(),
+                contents: missingdecl,
+                sourcemap: None,
+            },
+        ]
     }
 }
 
@@ -1640,29 +1658,39 @@ impl ProVerifBackend {
                     .take(info.arity)
                     .collect::<Vec<_>>()
                     .join(", ");
-                // Every auto-declared function is marked `[data]`. Without
-                // it, ProVerif treats `f(a,b)` and `f(c,d)` as
-                // indistinguishable opaque outputs, which collapses
-                // arguments in symbolic reasoning. `[data]` makes the
-                // symbol injective so the analyzer can still tell the
-                // inputs apart — exactly what we want for primitives we
-                // know nothing else about. (`[data]` is also required for
-                // any name used in `let pat(..) = ...` / `Construct(..)`
-                // position.)
-                decls.push(format!("fun {name}({args}): bitstring [data]."));
+                // NO `[data]`: these are placeholders for symbols we have
+                // no definition for, so we don't know their real nature
+                // (one-way `fun`, data constructor, or `letfun` with
+                // equations). `missingdecl.pvl` is a diagnostic, not part
+                // of the model — every entry is meant to be replaced by a
+                // real definition (by hand, or from another crate's
+                // extraction) — so we must NOT presume the invertible
+                // `[data]` form, which would let an attacker recover a
+                // one-way function's inputs.
+                decls.push(format!("fun {name}({args}): bitstring."));
             }
         }
-        if decls.is_empty() {
-            String::new()
+        let body = if decls.is_empty() {
+            "(* (none — every referenced symbol is defined in lib.pvl, *)\n\
+             (* primitives.pvl, or a -lib'd dependency.)               *)"
+                .to_string()
         } else {
-            format!(
-                "(*****************************************)\n\
-                 (* Auto-declared external symbols        *)\n\
-                 (*****************************************)\n\
-                 {}\n",
-                decls.join("\n")
-            )
-        }
+            decls.join("\n")
+        };
+        format!(
+            "(*****************************************************************)\n\
+             (* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)\n\
+             (*                                                               *)\n\
+             (* DIAGNOSTIC, not part of the model. Each symbol below is       *)\n\
+             (* referenced by lib.pvl but has no definition (and is not in    *)\n\
+             (* primitives.pvl). Supply a real one by hand, or by extracting  *)\n\
+             (* the crate that owns it (e.g. a separately-extracted           *)\n\
+             (* dependency). Declared WITHOUT `[data]` because the real       *)\n\
+             (* nature (one-way fun / data constructor / letfun) is unknown.  *)\n\
+             (* GOAL: this file is EMPTY.                                     *)\n\
+             (*****************************************************************)\n\
+             {body}\n"
+        )
     }
 }
 
