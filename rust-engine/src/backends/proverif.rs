@@ -1367,6 +1367,7 @@ impl Backend for ProVerifBackend {
             ReorderFields.into(),
             BundleCycles.into(),
             SortItemsNamespaceWise.into(),
+            ProverifCombinatorsToLoops,
             FilterUnprintableItems,
         ]
     }

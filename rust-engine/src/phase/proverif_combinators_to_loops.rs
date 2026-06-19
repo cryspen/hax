@@ -1,0 +1,309 @@
+//! ProVerif-backend phase: rewrite iterator-combinator calls into for-loops.
+//!
+//! The ProVerif printer cannot print closures (`[HAX0001] Closures not
+//! supported`). Several common iterator combinators reach the printer as an
+//! `App` whose head is a trait method (`Iterator::fold` / `Iterator::find` /
+//! `Iterator::any`) applied to a `Closure` argument.
+//!
+//! This phase rewrites such calls into `ExprKind::Loop { kind: ForLoop, state:
+//! Some(..), .. }` nodes whose functional shape the printer already knows how to
+//! unroll to a fixed `LOOP_BOUND` depth via the opaque
+//! `__iter_empty`/`__iter_head`/`__iter_tail` helpers (see
+//! `backends/proverif.rs`). The closure parameters are reused directly as the
+//! loop binders (no substitution needed): for `fold` the element pattern is the
+//! `ForLoop` pattern and the accumulator pattern is the loop-state `body_pat`.
+//!
+//! core-models bodies aren't loaded for ProVerif (name-only rewrite), and only
+//! `fold` has a referenceable `GlobalId` in the generated names, so the
+//! combinators are matched by the `GlobalId`'s debug path string instead.
+
+use crate::ast::identifiers::GlobalId;
+use crate::ast::literals::Literal;
+use crate::ast::span::Span;
+use crate::ast::*;
+use crate::ast::{diagnostics::*, visitors::*};
+use crate::phase::Phase;
+
+/// Phase that rewrites iterator combinators (`fold`/`find`/`any`) applied to a
+/// closure into bounded `ForLoop` nodes that the ProVerif printer can unroll.
+#[derive(Default, Debug)]
+pub struct ProverifCombinatorsToLoops;
+
+/// Stateless visitor.
+#[setup_error_handling_struct]
+#[derive(Default)]
+struct ProverifCombinatorsToLoopsVisitor;
+
+impl VisitorWithContext for ProverifCombinatorsToLoopsVisitor {
+    fn context(&self) -> Context {
+        Context::Phase(stringify!(ProverifCombinatorsToLoops).to_string())
+    }
+}
+
+/// Which combinator a call site matched.
+#[derive(Clone, Copy, Debug)]
+enum Combinator {
+    Fold,
+    Find,
+    Any,
+}
+
+/// Classify the head `GlobalId` of an `App` by its debug path string. Returns
+/// `None` if it is not one of the combinators we rewrite.
+fn classify(head: &Expr) -> Option<Combinator> {
+    let ExprKind::GlobalId(g) = &*head.kind else {
+        return None;
+    };
+    let path = g.to_debug_string();
+    if path.ends_with("Iterator::fold") {
+        Some(Combinator::Fold)
+    } else if path.ends_with("Iterator::find") {
+        Some(Combinator::Find)
+    } else if path.ends_with("Iterator::any") {
+        Some(Combinator::Any)
+    } else {
+        None
+    }
+}
+
+/// Extract the bound `LocalId` of a binding pattern, if any (peeling a single
+/// ascription layer). Used to materialize `Some(<element var>)` for `find`.
+fn pat_binding(pat: &Pat) -> Option<LocalId> {
+    match &*pat.kind {
+        PatKind::Binding { var, .. } => Some(var.clone()),
+        PatKind::Ascription { pat, .. } => pat_binding(pat),
+        _ => None,
+    }
+}
+
+impl ProverifCombinatorsToLoopsVisitor {
+    /// Build the `ForLoop` node for a `fold(iter, init, |acc, x| body)`.
+    /// `args ≈ [iter, init, closure]`.
+    fn rewrite_fold(app_ty: &Ty, span: Span, args: &[Expr]) -> Option<ExprKind> {
+        let [iter, init, closure] = args else {
+            return None;
+        };
+        let ExprKind::Closure { params, body, .. } = &*closure.kind else {
+            return None;
+        };
+        let [acc_pat, elem_pat] = &params[..] else {
+            return None;
+        };
+        let _ = (app_ty, span);
+        Some(ExprKind::Loop {
+            body: body.clone(),
+            kind: Box::new(LoopKind::ForLoop {
+                pat: elem_pat.clone(),
+                iterator: iter.clone(),
+            }),
+            state: Some(LoopState {
+                init: init.clone(),
+                body_pat: acc_pat.clone(),
+            }),
+            control_flow: None,
+            label: None,
+        })
+    }
+
+    /// Build the `ForLoop` node for a `find(iter, |x| pred)`.
+    /// `args ≈ [iter, closure]`. The loop folds an `Option`: once it is `Some`,
+    /// keep it; otherwise test the predicate on the current element and set it
+    /// to `Some(x)` if it holds.
+    fn rewrite_find(app_ty: &Ty, span: Span, args: &[Expr]) -> Option<ExprKind> {
+        let [iter, closure] = args else {
+            return None;
+        };
+        let ExprKind::Closure { params, body, .. } = &*closure.kind else {
+            return None;
+        };
+        let [elem_pat] = &params[..] else {
+            return None;
+        };
+        // The result of `find` is `Option<T>`: this is the App's type, and also
+        // the loop-accumulator type.
+        let option_ty = app_ty.clone();
+        let elem_var = pat_binding(elem_pat)?;
+        let elem_ty = elem_pat.ty.clone();
+
+        // Constructors for `Option` and the `Some` payload field.
+        let some_ctor = crate::names::core::option::Option::Some::Constructor;
+        let none_ctor = crate::names::core::option::Option::None::Constructor;
+        let some_field = crate::names::core::option::Option::Some::_0;
+
+        // The accumulator binder threaded by the loop state.
+        let acc_id: LocalId = "__find_acc".into();
+        let acc_pat = PatKind::var_pat(acc_id.clone()).promote(option_ty.clone(), span);
+        let acc_expr =
+            ExprKind::LocalId(acc_id.clone()).promote(option_ty.clone(), span);
+
+        // `None`
+        let none_expr = ExprKind::Construct {
+            constructor: none_ctor,
+            is_record: false,
+            is_struct: false,
+            fields: vec![],
+            base: None,
+        }
+        .promote(option_ty.clone(), span);
+
+        // `Some(<element var>)`
+        let some_expr = ExprKind::Construct {
+            constructor: some_ctor,
+            is_record: false,
+            is_struct: false,
+            fields: vec![(
+                some_field,
+                ExprKind::LocalId(elem_var).promote(elem_ty, span),
+            )],
+            base: None,
+        }
+        .promote(option_ty.clone(), span);
+
+        // `if <pred> { Some(x) } else { None }`
+        let if_expr = ExprKind::If {
+            condition: body.clone(),
+            then: some_expr,
+            else_: Some(none_expr),
+        }
+        .promote(option_ty.clone(), span);
+
+        // Arm `Some(_) => __find_acc`
+        let some_wild_pat = PatKind::Construct {
+            constructor: some_ctor,
+            is_record: false,
+            is_struct: false,
+            fields: vec![(
+                some_field,
+                PatKind::Wild.promote(option_ty.clone(), span),
+            )],
+        }
+        .promote(option_ty.clone(), span);
+        let some_arm = Arm::non_guarded(some_wild_pat, acc_expr.clone(), span);
+
+        // Arm `None => if <pred> ...`
+        let none_pat = PatKind::Construct {
+            constructor: none_ctor,
+            is_record: false,
+            is_struct: false,
+            fields: vec![],
+        }
+        .promote(option_ty.clone(), span);
+        let none_arm = Arm::non_guarded(none_pat, if_expr, span);
+
+        // `match __find_acc { Some(_) => __find_acc, None => if ... }`
+        let match_body = ExprKind::Match {
+            scrutinee: acc_expr,
+            arms: vec![some_arm, none_arm],
+        }
+        .promote(option_ty.clone(), span);
+
+        Some(ExprKind::Loop {
+            body: match_body,
+            kind: Box::new(LoopKind::ForLoop {
+                pat: elem_pat.clone(),
+                iterator: iter.clone(),
+            }),
+            state: Some(LoopState {
+                init: none_expr_for_init(none_ctor, option_ty, span),
+                body_pat: acc_pat,
+            }),
+            control_flow: None,
+            label: None,
+        })
+    }
+
+    /// Build the `ForLoop` node for an `any(iter, |x| pred)`.
+    /// `args ≈ [iter, closure]`. Folds a boolean accumulator with
+    /// `logical_op_or(acc, pred)`, starting from `false`.
+    fn rewrite_any(span: Span, args: &[Expr]) -> Option<ExprKind> {
+        let [iter, closure] = args else {
+            return None;
+        };
+        let ExprKind::Closure { params, body, .. } = &*closure.kind else {
+            return None;
+        };
+        let [elem_pat] = &params[..] else {
+            return None;
+        };
+
+        let bool_ty = Ty::bool();
+        let acc_id: LocalId = "__any_acc".into();
+        let acc_pat = PatKind::var_pat(acc_id.clone()).promote(bool_ty.clone(), span);
+        let acc_expr = ExprKind::LocalId(acc_id).promote(bool_ty.clone(), span);
+
+        let false_expr =
+            ExprKind::Literal(Literal::Bool(false)).promote(bool_ty.clone(), span);
+
+        // `logical_op_or(__any_acc, <pred>)`
+        let or_body = Expr::standalone_fn_app(
+            crate::names::rust_primitives::hax::logical_op_or,
+            vec![],
+            vec![acc_expr, body.clone()],
+            bool_ty.clone(),
+            span,
+        );
+
+        Some(ExprKind::Loop {
+            body: or_body,
+            kind: Box::new(LoopKind::ForLoop {
+                pat: elem_pat.clone(),
+                iterator: iter.clone(),
+            }),
+            state: Some(LoopState {
+                init: false_expr,
+                body_pat: acc_pat,
+            }),
+            control_flow: None,
+            label: None,
+        })
+    }
+}
+
+/// Helper: build a fresh `None` expression for the `find` loop initial state.
+fn none_expr_for_init(none_ctor: GlobalId, option_ty: Ty, span: Span) -> Expr {
+    ExprKind::Construct {
+        constructor: none_ctor,
+        is_record: false,
+        is_struct: false,
+        fields: vec![],
+        base: None,
+    }
+    .promote(option_ty, span)
+}
+
+impl AstVisitorMut for ProverifCombinatorsToLoopsVisitor {
+    setup_error_handling_impl!();
+
+    fn visit_expr(&mut self, expr: &mut Expr) {
+        // Recurse into children first so nested combinators are rewritten and
+        // any closure bodies are visited before we lift this node.
+        self.visit_inner(expr);
+
+        let ExprKind::App { head, args, .. } = &*expr.kind else {
+            return;
+        };
+        let Some(combinator) = classify(head) else {
+            return;
+        };
+        let app_ty = expr.ty.clone();
+        let span = expr.meta.span;
+        let new_kind = match combinator {
+            Combinator::Fold => {
+                ProverifCombinatorsToLoopsVisitor::rewrite_fold(&app_ty, span, args)
+            }
+            Combinator::Find => {
+                ProverifCombinatorsToLoopsVisitor::rewrite_find(&app_ty, span, args)
+            }
+            Combinator::Any => ProverifCombinatorsToLoopsVisitor::rewrite_any(span, args),
+        };
+        if let Some(new_kind) = new_kind {
+            *expr = new_kind.promote(app_ty, span);
+        }
+    }
+}
+
+impl Phase for ProverifCombinatorsToLoops {
+    fn apply(&self, items: &mut Vec<Item>) {
+        ProverifCombinatorsToLoopsVisitor::default().visit(items)
+    }
+}

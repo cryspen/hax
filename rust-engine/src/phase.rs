@@ -25,6 +25,7 @@ pub mod legacy;
 mod explicit_monadic;
 mod filter_unprintable_items;
 mod hoist_associated_fns;
+mod proverif_combinators_to_loops;
 mod reject_not_do_lean_dsl;
 
 macro_rules! declare_phase_kind {
@@ -55,5 +56,6 @@ declare_phase_kind! {
     ExplicitMonadic = explicit_monadic::ExplicitMonadic,
     RejectNotDoLeanDSL = reject_not_do_lean_dsl::RejectNotDoLeanDSL,
     HoistAssociatedFns = hoist_associated_fns::HoistAssociatedFns,
+    ProverifCombinatorsToLoops = proverif_combinators_to_loops::ProverifCombinatorsToLoops,
     FilterUnprintableItems = filter_unprintable_items::FilterUnprintableItems,
 }
