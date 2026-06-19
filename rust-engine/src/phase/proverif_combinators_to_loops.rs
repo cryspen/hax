@@ -466,33 +466,34 @@ impl ProverifCombinatorsToLoopsVisitor {
         // also the loop-accumulator type.
         let vec_ty = app_ty.clone();
 
-        // `alloc::vec::Impl_1::push` — not in the names module, so derive it
-        // from a sibling associated fn in the same impl block (`truncate`) by
-        // renaming the last path segment. The printer renders it as
-        // `alloc__vec__Impl_1__push`, matching real extractions.
-        let push_id = crate::names::alloc::vec::Impl__1::truncate
-            .map_last(&|s: &mut String| *s = "push".to_string());
-
         // The accumulator binder threaded by the loop state.
         let acc_id: LocalId = "__map_acc".into();
         let acc_pat = PatKind::var_pat(acc_id.clone()).promote(vec_ty.clone(), span);
         let acc_expr = ExprKind::LocalId(acc_id).promote(vec_ty.clone(), span);
 
-        // Empty vector: an empty array literal, which the printer renders as
+        // Empty Seq: `array_nil()`, which the printer renders as
         // `rust_primitives__hax__array_nil()`.
-        let init_expr = ExprKind::Array(vec![]).promote(vec_ty.clone(), span);
-
-        // `push(__map_acc, <closure.body>)`
-        let push_body = Expr::standalone_fn_app(
-            push_id,
+        let init_expr = Expr::standalone_fn_app(
+            crate::names::rust_primitives::hax::array_nil,
             vec![],
-            vec![acc_expr, body.clone()],
+            vec![],
+            vec_ty.clone(),
+            span,
+        );
+
+        // `array_cons(<closure.body>, __map_acc)` — cons the mapped element
+        // onto the accumulator Seq (reversed order, which is fine
+        // symbolically).
+        let cons_body = Expr::standalone_fn_app(
+            crate::names::rust_primitives::hax::array_cons,
+            vec![],
+            vec![body.clone(), acc_expr],
             vec_ty.clone(),
             span,
         );
 
         Some(ExprKind::Loop {
-            body: push_body,
+            body: cons_body,
             kind: Box::new(LoopKind::ForLoop {
                 pat: elem_pat.clone(),
                 iterator: iter.clone(),

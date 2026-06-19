@@ -136,22 +136,20 @@ fun rust_primitives__hax__repeat(bitstring, bitstring): bitstring [data].
 
 (* Fixed-size array literals `[a, b, c]` are encoded as a cons-list, since   *)
 (* ProVerif is first-order and has no array literals. The backend emits      *)
-(* `array_cons(a, array_cons(b, array_cons(c, array_nil())))`.               *)
+(* `array_cons(a, array_cons(b, array_cons(c, array_nil())))`. Collections   *)
+(* iterated by a `for` loop are modelled as the same cons-list ("Seq"): the  *)
+(* backend unrolls the loop by *destructuring* `array_cons` off the front a  *)
+(* bounded number of times (peeling real element values), taking the `else`  *)
+(* / done branch once the Seq is `array_nil`, and failing with               *)
+(* `bitstring_err()` if a present element remains past the bound.            *)
 fun rust_primitives__hax__array_nil(): bitstring [data].
 fun rust_primitives__hax__array_cons(bitstring, bitstring): bitstring [data].
 
-(* Bounded `for`-loop unrolling helpers. ProVerif has no loops; the      *)
-(* backend unrolls a collection `for` loop to a fixed depth using a       *)
-(* `next()`-style encoding with NO integer arithmetic:                    *)
-(*   - `__iter_empty(c)` returns the boolean encoding (`True()`/`False()`)*)
-(*     of "is the iterator `c` exhausted?";                               *)
-(*   - `__iter_head(c)` is the current element;                           *)
-(*   - `__iter_tail(c)` is the remaining iterator.                        *)
-(* They are opaque, so ProVerif explores both branches — a sound          *)
-(* over-approximation.                                                    *)
-fun __iter_empty(bitstring): bitstring.
-fun __iter_head(bitstring): bitstring.
-fun __iter_tail(bitstring): bitstring.
+(* `for x in coll` reaches the backend with an iterator of                   *)
+(* `coll.iter()` / `IntoIterator::into_iter(coll)`. For the loop's Seq to be *)
+(* the underlying cons-list, these iterator-producing wrappers are identity. *)
+letfun core__slice__Impl__iter(x: bitstring) = x.
+letfun core__iter__traits__collect__IntoIterator__into_iter(x: bitstring) = x.
 
 (*** core::cmp / ops — letfuns with non-opaque semantics            ***)
 (* These are *not* shape-equivalent to the auto-decl fallback: they  *)

@@ -99,10 +99,11 @@ const INDENT: isize = 2;
 /// Depth to which `for`-loops over a collection are unrolled in the
 /// ProVerif printer. ProVerif has no loops or recursion, so a range/
 /// collection `for` loop is emitted as a fixed `LOOP_BOUND`-deep
-/// `next()`-style unrolling (via the opaque `__iter_empty`/`__iter_head`/
-/// `__iter_tail` helpers declared in `primitives.pvl`) that fails with
-/// `bitstring_err()` if the loop would run more than `LOOP_BOUND`
-/// iterations. This is a sound bounded over-approximation up to
+/// unrolling that *destructures* the iterator Seq (a cons-list over the
+/// `array_cons`/`array_nil` constructors declared in `primitives.pvl`),
+/// peeling real element values off the front. The loop is done once the
+/// Seq is `array_nil`, and fails with `bitstring_err()` if it would run
+/// more than `LOOP_BOUND` iterations. This is a precise model up to
 /// `LOOP_BOUND` iterations, and uses *no integer arithmetic*.
 const LOOP_BOUND: usize = 3;
 
@@ -310,22 +311,25 @@ const _: () = {
             }
         }
 
-        /// Emit one level `k` of the arithmetic-free bounded `for`-loop
-        /// unrolling. `c` / `acc` are the *textual* names of the current
-        /// iterator-rest and accumulator bindings (`__bl_c{k}` /
-        /// `__bl_acc{k}`).
+        /// Emit one level `k` of the bounded `for`-loop unrolling. `seq` /
+        /// `acc` are the *textual* names of the current iterator Seq and
+        /// accumulator bindings (`bl__seq{k}` / `bl__acc{k}`). The prefix has
+        /// no *leading* underscore: ProVerif's lexer rejects identifiers that
+        /// begin with `_`.
         ///
-        /// The unrolling realizes `next()`-style iteration via the opaque
-        /// `__iter_empty` (returns the boolean encoding `True()`/`False()`),
-        /// `__iter_head`, and `__iter_tail` helpers — *no integers*. At each
-        /// level we test "is the iterator empty?"; if so, the accumulator is
-        /// the loop result, otherwise we destructure head/tail, run the body
-        /// once, and recurse one level deeper. At `LOOP_BOUND` we require the
-        /// iterator to be empty (overflow terminal → `bitstring_err()`).
+        /// The iterator is modelled as a cons-list ("Seq") over the
+        /// `array_cons` / `array_nil` constructors. At each level we
+        /// *destructure* the head element off the Seq (`let
+        /// array_cons(<pat>, bl__seq{k+1}) = <seq>`): on success we bind the
+        /// (real) head value, run the body once, and recurse one level
+        /// deeper; the `else` branch (the Seq is `array_nil`, i.e. not a
+        /// `cons`) means "done" and yields the accumulator. At `LOOP_BOUND` a
+        /// still-present `(N+1)`th element fails with `bitstring_err()`;
+        /// otherwise the loop is done. *No integers* are used.
         fn unroll_for_loop_level<A: 'static + Clone>(
             &self,
             k: usize,
-            c: &str,
+            seq: &str,
             acc: &str,
             pat: &Pat,
             body: &Expr,
@@ -333,39 +337,27 @@ const _: () = {
         ) -> DocBuilder<A> {
             if k >= LOOP_BOUND {
                 // Overflow terminal: the loop ran `LOOP_BOUND` times; if the
-                // iterator isn't empty by now, the bound is exceeded.
+                // Seq still has a head element, the bound is exceeded.
                 return docs![
-                    "let (=True()) = __iter_empty(",
-                    c.to_string(),
-                    ") in (",
+                    "let rust_primitives__hax__array_cons(bl__xh, bl__xt) = ",
+                    seq.to_string(),
+                    " in bitstring_err() else (",
                     acc.to_string(),
-                    ") else bitstring_err()"
+                    ")"
                 ];
             }
-            let next_c = format!("__bl_c{}", k + 1);
-            let next_acc = format!("__bl_acc{}", k + 1);
+            let next_seq = format!("bl__seq{}", k + 1);
+            let next_acc = format!("bl__acc{}", k + 1);
             let inner: DocBuilder<A> =
-                self.unroll_for_loop_level(k + 1, &next_c, &next_acc, pat, body, state);
+                self.unroll_for_loop_level(k + 1, &next_seq, &next_acc, pat, body, state);
             docs![
-                "let (=True()) = __iter_empty(",
-                c.to_string(),
-                ") in (",
-                acc.to_string(),
-                ")",
-                hardline!(),
-                "else (let ",
+                "let rust_primitives__hax__array_cons(",
                 docs![pat],
-                " = __iter_head(",
-                c.to_string(),
-                ") in",
-                hardline!(),
-                "let ",
-                next_c.clone(),
-                " = __iter_tail(",
-                c.to_string(),
-                ") in",
-                hardline!(),
-                "let ",
+                ", ",
+                next_seq.clone(),
+                ") = ",
+                seq.to_string(),
+                " in (let ",
                 docs![&state.body_pat],
                 " = ",
                 acc.to_string(),
@@ -378,11 +370,13 @@ const _: () = {
                 ") in",
                 hardline!(),
                 inner,
+                ") else (",
+                acc.to_string(),
                 ")"
             ]
         }
 
-        /// Emit the full arithmetic-free bounded unrolling for a
+        /// Emit the full bounded unrolling for a
         /// `for <pat> in <iterator> { <body> }` loop with functional
         /// `state` (`init` + `body_pat`). See [`Self::unroll_for_loop_level`].
         fn unroll_for_loop<A: 'static + Clone>(
@@ -393,11 +387,11 @@ const _: () = {
             state: &LoopState,
         ) -> DocBuilder<A> {
             let inner: DocBuilder<A> =
-                self.unroll_for_loop_level(0, "__bl_c0", "__bl_acc0", pat, body, state);
+                self.unroll_for_loop_level(0, "bl__seq0", "bl__acc0", pat, body, state);
             docs![
-                "(let __bl_c0 = (",
+                "(let bl__seq0 = (",
                 docs![iterator],
-                ") in let __bl_acc0 = (",
+                ") in let bl__acc0 = (",
                 docs![&state.init],
                 ") in ",
                 hardline!(),
@@ -408,52 +402,42 @@ const _: () = {
 
         /// One unrolling level for a *no-accumulator* (side-effecting)
         /// `for <pat> in <coll> { <body> }` loop, i.e. `state: None`. Same
-        /// arithmetic-free `__iter_empty`/`__iter_head`/`__iter_tail` chain as
+        /// `array_cons`-destructuring Seq chain as
         /// [`Self::unroll_for_loop_level`], but with no `acc` threading: the
-        /// empty-iterator result is unit (`rust_primitives__hax__Tuple0__Tuple0`)
-        /// and each iteration runs `body` for its effects (bound to a
-        /// throwaway `wildcard`).
+        /// "done" result is unit (`rust_primitives__hax__Tuple0__Tuple0`) and
+        /// each iteration runs `body` for its effects (bound to a throwaway
+        /// `wildcard`).
         fn unroll_for_loop_nostate_level<A: 'static + Clone>(
             &self,
             k: usize,
-            c: &str,
+            seq: &str,
             pat: &Pat,
             body: &Expr,
         ) -> DocBuilder<A> {
             if k >= LOOP_BOUND {
-                // Overflow terminal: the iterator must be empty by now.
+                // Overflow terminal: the Seq must be exhausted by now.
                 return docs![
-                    "let (=True()) = __iter_empty(",
-                    c.to_string(),
-                    ") in (rust_primitives__hax__Tuple0__Tuple0) else bitstring_err()"
+                    "let rust_primitives__hax__array_cons(bl__xh, bl__xt) = ",
+                    seq.to_string(),
+                    " in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)"
                 ];
             }
-            let next_c = format!("__bl_c{}", k + 1);
+            let next_seq = format!("bl__seq{}", k + 1);
             let inner: DocBuilder<A> =
-                self.unroll_for_loop_nostate_level(k + 1, &next_c, pat, body);
+                self.unroll_for_loop_nostate_level(k + 1, &next_seq, pat, body);
             docs![
-                "let (=True()) = __iter_empty(",
-                c.to_string(),
-                ") in (rust_primitives__hax__Tuple0__Tuple0)",
-                hardline!(),
-                "else (let ",
+                "let rust_primitives__hax__array_cons(",
                 docs![pat],
-                " = __iter_head(",
-                c.to_string(),
-                ") in",
-                hardline!(),
-                "let ",
-                next_c.clone(),
-                " = __iter_tail(",
-                c.to_string(),
-                ") in",
-                hardline!(),
-                "let wildcard = (",
+                ", ",
+                next_seq.clone(),
+                ") = ",
+                seq.to_string(),
+                " in (let wildcard = (",
                 docs![body],
                 ") in",
                 hardline!(),
                 inner,
-                ")"
+                ") else (rust_primitives__hax__Tuple0__Tuple0)"
             ]
         }
 
@@ -466,9 +450,10 @@ const _: () = {
             iterator: &Expr,
             body: &Expr,
         ) -> DocBuilder<A> {
-            let inner: DocBuilder<A> = self.unroll_for_loop_nostate_level(0, "__bl_c0", pat, body);
+            let inner: DocBuilder<A> =
+                self.unroll_for_loop_nostate_level(0, "bl__seq0", pat, body);
             docs![
-                "(let __bl_c0 = (",
+                "(let bl__seq0 = (",
                 docs![iterator],
                 ") in ",
                 hardline!(),
@@ -1059,10 +1044,10 @@ const _: () = {
                 // which reaches the printer (post-`ReconstructForLoops` and
                 // `LocalMutation`) as `LoopKind::ForLoop` with an explicit
                 // functional `state` — is unrolled to a fixed `LOOP_BOUND`
-                // depth using the arithmetic-free `next()`-style
-                // `__iter_empty`/`__iter_head`/`__iter_tail` encoding. All
-                // other loop shapes (while, unconditional, no-state) are
-                // still unsupported.
+                // depth by destructuring the iterator Seq (`array_cons` /
+                // `array_nil` cons-list) one element at a time. All other
+                // loop shapes (while, unconditional) reaching here without a
+                // matching no-state arm below are still unsupported.
                 ExprKind::Loop {
                     body,
                     kind,

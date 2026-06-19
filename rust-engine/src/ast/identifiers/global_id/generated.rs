@@ -4,8 +4,8 @@
 // calls `rust_engine::names::export_def_ids_to_mod`.
 
 static TABLE_AND_INTERNED_GLOBAL_IDS: (
-    crate::interning::LazyLockNewWithValue<crate::ast::identifiers::global_id::GlobalIdInner, 660>,
-    [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 660],
+    crate::interning::LazyLockNewWithValue<crate::ast::identifiers::global_id::GlobalIdInner, 662>,
+    [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 662],
 ) = {
     crate::interning::InterningTable::new_with_values(|| {
         use crate::ast::identifiers::global_id::ExplicitDefId;
@@ -3955,6 +3955,18 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
                 Some(did_162()),
             )
         }
+        fn did_660() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_cons"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_661() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_nil"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
         [
             did_0().into_global_id_inner(),
             did_1().into_global_id_inner(),
@@ -4616,13 +4628,15 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
             did_657().into_global_id_inner(),
             did_658().into_global_id_inner(),
             did_659().into_global_id_inner(),
+            did_660().into_global_id_inner(),
+            did_661().into_global_id_inner(),
         ]
     })
 };
 
 static INTERNED_GLOBAL_IDS: [crate::interning::Interned<
     crate::ast::identifiers::global_id::GlobalIdInner,
->; 660] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
+>; 662] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
 
 impl crate::interning::Internable for crate::ast::identifiers::global_id::GlobalIdInner {
     fn interning_table() -> &'static std::sync::Mutex<crate::interning::InterningTable<Self>> {
@@ -6856,6 +6870,14 @@ pub mod rust_primitives {
         pub(in crate::ast::identifiers::global_id) const Tuple2:
             crate::ast::identifiers::global_id::GlobalId =
             crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[89]);
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::array_cons`]."##]
+        pub const array_cons: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[660]);
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::array_nil`]."##]
+        pub const array_nil: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[661]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::array_of_list`]."##]
         pub const array_of_list: crate::ast::identifiers::global_id::GlobalId =
