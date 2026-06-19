@@ -213,3 +213,183 @@ letfun rand_core__RngCore__fill_bytes(rng: bitstring, dest: bitstring) =
 
 (* `hax_lib::assume` and `hax_lib::prop::constructors::from_bool` *)
 (* are opaque `fun ... [data]` — equivalent to auto-decl, dropped. *)
+
+(*****************************************************************)
+(*  std prelude — formerly synthesised by the auto-decl pass as  *)
+(*  invertible `[data]`. Made explicit here with real semantics  *)
+(*  (or honest opaque stubs) so `missingdecl.pvl` stays a signal  *)
+(*  and the one-way shapes are not silently destructurable.       *)
+(*****************************************************************)
+
+(*** Tuple field projectors `t.0` .. `t.5` (over the [data] tuple ctors) ***)
+reduc forall a0: bitstring;
+  rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(a0)) = a0.
+reduc forall a0: bitstring, a1: bitstring;
+  rust_primitives__hax__Tuple2__Tuple2__0(rust_primitives__hax__Tuple2__Tuple2(a0,a1)) = a0.
+reduc forall a0: bitstring, a1: bitstring;
+  rust_primitives__hax__Tuple2__Tuple2__1(rust_primitives__hax__Tuple2__Tuple2(a0,a1)) = a1.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring;
+  rust_primitives__hax__Tuple3__Tuple3__0(rust_primitives__hax__Tuple3__Tuple3(a0,a1,a2)) = a0.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring;
+  rust_primitives__hax__Tuple3__Tuple3__1(rust_primitives__hax__Tuple3__Tuple3(a0,a1,a2)) = a1.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring;
+  rust_primitives__hax__Tuple3__Tuple3__2(rust_primitives__hax__Tuple3__Tuple3(a0,a1,a2)) = a2.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring;
+  rust_primitives__hax__Tuple4__Tuple4__0(rust_primitives__hax__Tuple4__Tuple4(a0,a1,a2,a3)) = a0.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring;
+  rust_primitives__hax__Tuple4__Tuple4__1(rust_primitives__hax__Tuple4__Tuple4(a0,a1,a2,a3)) = a1.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring;
+  rust_primitives__hax__Tuple4__Tuple4__2(rust_primitives__hax__Tuple4__Tuple4(a0,a1,a2,a3)) = a2.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring;
+  rust_primitives__hax__Tuple4__Tuple4__3(rust_primitives__hax__Tuple4__Tuple4(a0,a1,a2,a3)) = a3.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring;
+  rust_primitives__hax__Tuple5__Tuple5__0(rust_primitives__hax__Tuple5__Tuple5(a0,a1,a2,a3,a4)) = a0.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring;
+  rust_primitives__hax__Tuple5__Tuple5__1(rust_primitives__hax__Tuple5__Tuple5(a0,a1,a2,a3,a4)) = a1.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring;
+  rust_primitives__hax__Tuple5__Tuple5__2(rust_primitives__hax__Tuple5__Tuple5(a0,a1,a2,a3,a4)) = a2.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring;
+  rust_primitives__hax__Tuple5__Tuple5__3(rust_primitives__hax__Tuple5__Tuple5(a0,a1,a2,a3,a4)) = a3.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring;
+  rust_primitives__hax__Tuple5__Tuple5__4(rust_primitives__hax__Tuple5__Tuple5(a0,a1,a2,a3,a4)) = a4.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring, a5: bitstring;
+  rust_primitives__hax__Tuple6__Tuple6__0(rust_primitives__hax__Tuple6__Tuple6(a0,a1,a2,a3,a4,a5)) = a0.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring, a5: bitstring;
+  rust_primitives__hax__Tuple6__Tuple6__1(rust_primitives__hax__Tuple6__Tuple6(a0,a1,a2,a3,a4,a5)) = a1.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring, a5: bitstring;
+  rust_primitives__hax__Tuple6__Tuple6__2(rust_primitives__hax__Tuple6__Tuple6(a0,a1,a2,a3,a4,a5)) = a2.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring, a5: bitstring;
+  rust_primitives__hax__Tuple6__Tuple6__3(rust_primitives__hax__Tuple6__Tuple6(a0,a1,a2,a3,a4,a5)) = a3.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring, a5: bitstring;
+  rust_primitives__hax__Tuple6__Tuple6__4(rust_primitives__hax__Tuple6__Tuple6(a0,a1,a2,a3,a4,a5)) = a4.
+reduc forall a0: bitstring, a1: bitstring, a2: bitstring, a3: bitstring, a4: bitstring, a5: bitstring;
+  rust_primitives__hax__Tuple6__Tuple6__5(rust_primitives__hax__Tuple6__Tuple6(a0,a1,a2,a3,a4,a5)) = a5.
+
+(*** Option<T> methods, over the `Some`/`None` constructors above.        ***)
+(* `unwrap`/`expect` on `None` is a panic -> `bitstring_err()` kills the    *)
+(* trace; `is_some`/`is_none` branch; `as_ref`/`cloned` are identity.       *)
+letfun core__option__Impl__unwrap(o: bitstring) =
+  let Some(x) = o in x else bitstring_err().
+letfun core__option__Impl__expect(o: bitstring, m: bitstring) =
+  let Some(x) = o in x else bitstring_err().
+letfun core__option__Impl__is_some(o: bitstring) =
+  let Some(x) = o in True() else False().
+letfun core__option__Impl__is_none(o: bitstring) =
+  let Some(x) = o in False() else True().
+letfun core__option__Impl__as_ref(o: bitstring) = o.
+letfun core__option__Impl_2__cloned(o: bitstring) = o.
+(* full-path Option ctors are referenced at a handful of sites; bodies      *)
+(* otherwise use the short `Some`/`None` the backend special-cases to.       *)
+fun core__option__Option__Some(bitstring): bitstring [data].
+const core__option__Option__None: bitstring.
+
+(*** Result<T,E> is transparent under uniform-bitstring: a value that        ***)
+(*** reaches a use is the `Ok` payload, and errors are `bitstring_err()`,    ***)
+(*** so `unwrap` is the identity. `Ok`/`Err` ctors resolve referenced sites. ***)
+letfun core__result__Impl__unwrap(r: bitstring) = r.
+fun core__result__Result__Ok(bitstring): bitstring [data].
+fun core__result__Result__Err(bitstring): bitstring [data].
+
+(*** core::clone — identity at the symbolic level ***)
+letfun core__clone__Clone__clone(x: bitstring) = x.
+
+(*** alloc::string / slice — String is its bytes; these are identity ***)
+letfun alloc__string__Impl__as_bytes(x: bitstring) = x.
+letfun alloc__string__Impl__into_bytes(x: bitstring) = x.
+letfun alloc__string__ToString__to_string(x: bitstring) = x.
+letfun alloc__slice__Impl__into_vec(x: bitstring) = x.
+letfun alloc__slice__Impl__sort(x: bitstring) = x.       (* order-agnostic symbolically *)
+letfun alloc__slice__Impl__join(x: bitstring, sep: bitstring) = x.
+letfun core__hint__must_use(x: bitstring) = x.
+letfun hex__encode(x: bitstring) = x.                    (* bytes <-> hex string, same symbol *)
+
+(*** Iterators: the iterator IS the underlying cons-list, so `collect`/`rev`  ***)
+(*** are identity (membership is order-agnostic). `extend` is Seq append      ***)
+(*** (workstream 2 — opaque for now).                                         ***)
+letfun core__iter__traits__iterator__Iterator__collect(x: bitstring) = x.
+letfun core__iter__traits__iterator__Iterator__rev(x: bitstring) = x.
+fun core__iter__traits__collect__Extend__extend(bitstring, bitstring): bitstring.
+
+(*** core::ops::range — RangeFrom bound as data ***)
+fun core__ops__range__RangeFrom__RangeFrom(bitstring): bitstring [data].
+
+(*** Panics kill the trace (an unreachable path in a sound model). ***)
+letfun core__panicking__panic(x: bitstring) = bitstring_err().
+letfun core__panicking__panic_fmt(x: bitstring) = bitstring_err().
+letfun core__panicking__assert_failed(a: bitstring, b: bitstring, c: bitstring, d: bitstring) = bitstring_err().
+const core__panicking__AssertKind__Eq: bitstring.
+
+(*** Formatting / IO — debug-only, irrelevant to the security model. ***)
+fun core__fmt__rt__Impl__new_debug(bitstring): bitstring.
+fun core__fmt__rt__Impl__new_display(bitstring): bitstring.
+fun core__fmt__rt__Impl_1__new_const(bitstring): bitstring.
+fun core__fmt__rt__Impl_1__new_v1(bitstring, bitstring): bitstring.
+fun alloc__fmt__format(bitstring): bitstring.
+letfun std__io__stdio__u_print(x: bitstring)  = rust_primitives__hax__Tuple0__Tuple0.
+letfun std__io__stdio__u_eprint(x: bitstring) = rust_primitives__hax__Tuple0__Tuple0.
+
+(*** rand_core — fresh randomness, mirroring `RngCore::fill_bytes` above. ***)
+letfun rand_core__TryRngCore__try_fill_bytes(rng: bitstring, dest: bitstring) =
+  new b: bitstring;
+  rust_primitives__hax__Tuple2__Tuple2(rng, b).
+letfun rand__rngs__thread__rng(u: bitstring) = new r: bitstring; r.
+const rand_core__os__OsRng__OsRng: bitstring.
+
+(*** Vec / slice as the array_cons Seq. `new`/`is_empty` are exact;          ***)
+(*** `push`/`append`/`from_elem`/`len`/`index`/`last` need the full Seq      ***)
+(*** model (workstream 2) — opaque stubs until then, so a Vec built outside  ***)
+(*** a `for`-loop is an uninterpreted blob rather than a peelable list.       ***)
+letfun alloc__vec__Impl__new_kw(u: bitstring) = rust_primitives__hax__array_nil().
+letfun alloc__vec__Impl_1__is_empty(v: bitstring) =
+  let rust_primitives__hax__array_nil() = v in True() else False().
+letfun core__slice__Impl__is_empty(v: bitstring) =
+  let rust_primitives__hax__array_nil() = v in True() else False().
+fun alloc__vec__from_elem(bitstring, bitstring): bitstring.
+fun alloc__vec__Impl_1__push(bitstring, bitstring): bitstring.
+fun alloc__vec__Impl_1__append(bitstring, bitstring): bitstring.
+fun alloc__vec__Impl_1__len(bitstring): bitstring.
+fun core__slice__Impl__last(bitstring): bitstring.
+fun core__ops__index__Index__index(bitstring, bitstring): bitstring.
+
+(*****************************************************************)
+(*  More std prelude, surfaced once minos (not just mandrake) is  *)
+(*  composed in. Same conventions: ADT variants are `[data]`,     *)
+(*  Result/Option methods follow the transparent/structural model *)
+(*  above, byte<->int conversions are identity, and the remaining  *)
+(*  Vec/slice ops are Seq stubs (workstream 2).                    *)
+(*****************************************************************)
+
+(*** core::ops::ControlFlow — an ADT that survives some folds; pattern- ***)
+(*** matched in bodies, so it must be `[data]`.                          ***)
+fun core__ops__control_flow__ControlFlow__Break(bitstring): bitstring [data].
+fun core__ops__control_flow__ControlFlow__Continue(bitstring): bitstring [data].
+
+(*** core::ops::range — remaining range bounds as data / unit const ***)
+fun core__ops__range__Range__Range(bitstring, bitstring): bitstring [data].
+fun core__ops__range__RangeTo__RangeTo(bitstring): bitstring [data].
+const core__ops__range__RangeFull__RangeFull: bitstring.
+
+(*** core::num — opaque MAX const; be/le byte<->int reinterpretation is id ***)
+const core__num__Impl_9__MAX: bitstring.
+letfun core__num__Impl_7__from_be_bytes(x: bitstring) = x.
+letfun core__num__Impl_7__to_be_bytes(x: bitstring) = x.
+
+(*** Option / Result — extra methods (see the transparent Result model). ***)
+letfun core__option__Impl__unwrap_or(o: bitstring, d: bitstring) =
+  let Some(x) = o in x else d.
+letfun core__result__Impl__expect(r: bitstring, m: bitstring) = r.
+letfun core__result__Impl__is_ok(r: bitstring)  = True().
+letfun core__result__Impl__is_err(r: bitstring) = False().
+fun core__result__Impl__map(bitstring, bitstring): bitstring.   (* closure apply — workstream 2 *)
+
+(*** str/slice — bytes view is identity; len is opaque (no arithmetic). ***)
+letfun core__str__Impl__as_bytes(x: bitstring) = x.
+fun core__slice__Impl__len(bitstring): bitstring.
+fun core__iter__traits__exact_size__ExactSizeIterator__len(bitstring): bitstring.
+
+(*** Vec — `with_capacity` is an empty cons-list; insert/remove/extend     ***)
+(*** need the full Seq model (workstream 2) and are opaque for now.         ***)
+letfun alloc__vec__Impl__with_capacity(n: bitstring) = rust_primitives__hax__array_nil().
+fun alloc__vec__Impl_1__insert_kw(bitstring, bitstring, bitstring): bitstring.
+fun alloc__vec__Impl_1__remove(bitstring, bitstring): bitstring.
+fun alloc__vec__Impl_2__extend_from_slice(bitstring, bitstring): bitstring.
