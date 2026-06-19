@@ -140,6 +140,19 @@ fun rust_primitives__hax__repeat(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__array_nil(): bitstring [data].
 fun rust_primitives__hax__array_cons(bitstring, bitstring): bitstring [data].
 
+(* Bounded `for`-loop unrolling helpers. ProVerif has no loops; the      *)
+(* backend unrolls a collection `for` loop to a fixed depth using a       *)
+(* `next()`-style encoding with NO integer arithmetic:                    *)
+(*   - `__iter_empty(c)` returns the boolean encoding (`True()`/`False()`)*)
+(*     of "is the iterator `c` exhausted?";                               *)
+(*   - `__iter_head(c)` is the current element;                           *)
+(*   - `__iter_tail(c)` is the remaining iterator.                        *)
+(* They are opaque, so ProVerif explores both branches — a sound          *)
+(* over-approximation.                                                    *)
+fun __iter_empty(bitstring): bitstring.
+fun __iter_head(bitstring): bitstring.
+fun __iter_tail(bitstring): bitstring.
+
 (*** core::cmp / ops — letfuns with non-opaque semantics            ***)
 (* These are *not* shape-equivalent to the auto-decl fallback: they  *)
 (* fire ProVerif rewrite rules. Plain opaque ops on the same         *)

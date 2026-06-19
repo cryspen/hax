@@ -96,6 +96,16 @@ const HEADER: &str = "\
 
 const INDENT: isize = 2;
 
+/// Depth to which `for`-loops over a collection are unrolled in the
+/// ProVerif printer. ProVerif has no loops or recursion, so a range/
+/// collection `for` loop is emitted as a fixed `LOOP_BOUND`-deep
+/// `next()`-style unrolling (via the opaque `__iter_empty`/`__iter_head`/
+/// `__iter_tail` helpers declared in `primitives.pvl`) that fails with
+/// `bitstring_err()` if the loop would run more than `LOOP_BOUND`
+/// iterations. This is a sound bounded over-approximation up to
+/// `LOOP_BOUND` iterations, and uses *no integer arithmetic*.
+const LOOP_BOUND: usize = 3;
+
 impl RenderView for ProVerifPrinter {
     fn reserved_keywords() -> &'static HashSet<String> {
         static SET: OnceLock<HashSet<String>> = OnceLock::new();
@@ -298,6 +308,102 @@ const _: () = {
                     docs!["let ", pat, " = ", docs![scrutinee], " in ", body]
                 }
             }
+        }
+
+        /// Emit one level `k` of the arithmetic-free bounded `for`-loop
+        /// unrolling. `c` / `acc` are the *textual* names of the current
+        /// iterator-rest and accumulator bindings (`__bl_c{k}` /
+        /// `__bl_acc{k}`).
+        ///
+        /// The unrolling realizes `next()`-style iteration via the opaque
+        /// `__iter_empty` (returns the boolean encoding `True()`/`False()`),
+        /// `__iter_head`, and `__iter_tail` helpers — *no integers*. At each
+        /// level we test "is the iterator empty?"; if so, the accumulator is
+        /// the loop result, otherwise we destructure head/tail, run the body
+        /// once, and recurse one level deeper. At `LOOP_BOUND` we require the
+        /// iterator to be empty (overflow terminal → `bitstring_err()`).
+        fn unroll_for_loop_level<A: 'static + Clone>(
+            &self,
+            k: usize,
+            c: &str,
+            acc: &str,
+            pat: &Pat,
+            body: &Expr,
+            state: &LoopState,
+        ) -> DocBuilder<A> {
+            if k >= LOOP_BOUND {
+                // Overflow terminal: the loop ran `LOOP_BOUND` times; if the
+                // iterator isn't empty by now, the bound is exceeded.
+                return docs![
+                    "let (=True()) = __iter_empty(",
+                    c.to_string(),
+                    ") in (",
+                    acc.to_string(),
+                    ") else bitstring_err()"
+                ];
+            }
+            let next_c = format!("__bl_c{}", k + 1);
+            let next_acc = format!("__bl_acc{}", k + 1);
+            let inner: DocBuilder<A> =
+                self.unroll_for_loop_level(k + 1, &next_c, &next_acc, pat, body, state);
+            docs![
+                "let (=True()) = __iter_empty(",
+                c.to_string(),
+                ") in (",
+                acc.to_string(),
+                ")",
+                hardline!(),
+                "else (let ",
+                docs![pat],
+                " = __iter_head(",
+                c.to_string(),
+                ") in",
+                hardline!(),
+                "let ",
+                next_c.clone(),
+                " = __iter_tail(",
+                c.to_string(),
+                ") in",
+                hardline!(),
+                "let ",
+                docs![&state.body_pat],
+                " = ",
+                acc.to_string(),
+                " in",
+                hardline!(),
+                "let ",
+                next_acc.clone(),
+                " = (",
+                docs![body],
+                ") in",
+                hardline!(),
+                inner,
+                ")"
+            ]
+        }
+
+        /// Emit the full arithmetic-free bounded unrolling for a
+        /// `for <pat> in <iterator> { <body> }` loop with functional
+        /// `state` (`init` + `body_pat`). See [`Self::unroll_for_loop_level`].
+        fn unroll_for_loop<A: 'static + Clone>(
+            &self,
+            pat: &Pat,
+            iterator: &Expr,
+            body: &Expr,
+            state: &LoopState,
+        ) -> DocBuilder<A> {
+            let inner: DocBuilder<A> =
+                self.unroll_for_loop_level(0, "__bl_c0", "__bl_acc0", pat, body, state);
+            docs![
+                "(let __bl_c0 = (",
+                docs![iterator],
+                ") in let __bl_acc0 = (",
+                docs![&state.init],
+                ") in ",
+                hardline!(),
+                inner,
+                ")"
+            ]
         }
 
         /// Print the `fun ... [data].` declaration and the matching `reduc`
@@ -878,6 +984,25 @@ const _: () = {
                 ExprKind::Borrow { .. } => unreachable_by_invariant!(Drop_references),
                 ExprKind::AddressOf { .. } => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
                 ExprKind::Assign { .. } => unreachable_by_invariant!(Local_mutation),
+                // ProVerif has no loops. A `for`-loop over a collection —
+                // which reaches the printer (post-`ReconstructForLoops` and
+                // `LocalMutation`) as `LoopKind::ForLoop` with an explicit
+                // functional `state` — is unrolled to a fixed `LOOP_BOUND`
+                // depth using the arithmetic-free `next()`-style
+                // `__iter_empty`/`__iter_head`/`__iter_tail` encoding. All
+                // other loop shapes (while, unconditional, no-state) are
+                // still unsupported.
+                ExprKind::Loop {
+                    body,
+                    kind,
+                    state: Some(state),
+                    ..
+                } if matches!(&**kind, LoopKind::ForLoop { .. }) => {
+                    let LoopKind::ForLoop { pat, iterator } = &**kind else {
+                        unreachable!("guarded by the `matches!` above")
+                    };
+                    self.unroll_for_loop(pat, iterator, body, state)
+                }
                 ExprKind::Loop { .. } => self.expr_error_placeholder::<A>(
                     "Loops not supported in ProVerif",
                 ),
