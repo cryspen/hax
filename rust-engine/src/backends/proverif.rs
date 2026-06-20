@@ -1452,6 +1452,7 @@ impl Backend for ProVerifBackend {
             BundleCycles.into(),
             SortItemsNamespaceWise.into(),
             ProverifCombinatorsToLoops,
+            ProverifExpandStructUpdate,
             FilterUnprintableItems,
         ]
     }
