@@ -731,14 +731,16 @@ const _: () = {
                     constructor,
                     fields,
                     is_record: _,
-                    is_struct,
+                    is_struct: _,
                 } => {
+                    // Every field is rendered (as a wildcard binder for `_`), so a
+                    // multi-field pattern always keeps the constructor's arity. An
+                    // earlier "all fields wild -> emit no args" placeholder produced
+                    // `Constructor()` (0 args), which ProVerif rejects on any
+                    // multi-field constructor (e.g. a `(_, _)` tuple catch-all ->
+                    // `Tuple2()`); emitting `Tuple2(wildcard, wildcard)` is the
+                    // correct always-matching form.
                     let args = if fields.is_empty() {
-                        nil!()
-                    } else if *is_struct && fields.iter().all(|(_, p)| {
-                        matches!(*p.kind, PatKind::Wild)
-                    }) {
-                        // record-style placeholder
                         nil!()
                     } else {
                         comma_sep!(fields.iter().map(|(_, p)| {
