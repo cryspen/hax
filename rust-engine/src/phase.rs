@@ -27,6 +27,7 @@ mod filter_unprintable_items;
 mod hoist_associated_fns;
 mod proverif_combinators_to_loops;
 mod proverif_expand_struct_update;
+mod proverif_resolve_trait_calls;
 mod reject_not_do_lean_dsl;
 
 macro_rules! declare_phase_kind {
@@ -58,6 +59,7 @@ declare_phase_kind! {
     RejectNotDoLeanDSL = reject_not_do_lean_dsl::RejectNotDoLeanDSL,
     HoistAssociatedFns = hoist_associated_fns::HoistAssociatedFns,
     ProverifCombinatorsToLoops = proverif_combinators_to_loops::ProverifCombinatorsToLoops,
+    ProverifResolveTraitCalls = proverif_resolve_trait_calls::ProverifResolveTraitCalls,
     ProverifExpandStructUpdate = proverif_expand_struct_update::ProverifExpandStructUpdate,
     FilterUnprintableItems = filter_unprintable_items::FilterUnprintableItems,
 }
