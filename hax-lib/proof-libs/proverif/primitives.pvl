@@ -161,7 +161,12 @@ fun rust_primitives__hax__array_cons(bitstring, bitstring): bitstring [data].
 (* wise structure is neither known nor needed. This split keeps structural     *)
 (* collections (`Vec<Epoch>`, …) peelable while byte concatenation stays an    *)
 (* opaque, collision-free symbol. *)
-fun array_concat(bitstring, bitstring): bitstring.        (* opaque byte concat fallback *)
+(* Byte concatenation of two opaque blobs. Modeled as an invertible pair
+   ([data]) — the standard symbolic abstraction for length-known concatenation,
+   so a later fixed-offset split (`s[..n]` / `s[n..]`, e.g. unpacking a hybrid
+   KEM encapsulation `classic_encap ++ pq_encap`) recovers the two parts. This
+   is conservative (it only gives the attacker more power). *)
+fun array_concat(bitstring, bitstring): bitstring [data].
 fun array_index_opaque(bitstring, bitstring): bitstring.  (* opaque index fallback       *)
 fun array_insert_opaque(bitstring, bitstring, bitstring): bitstring. (* opaque insert    *)
 fun array_remove_rest(bitstring, bitstring): bitstring.   (* opaque "vec minus pos"      *)
@@ -205,14 +210,18 @@ letfun core__cmp__PartialEq__eq(a: bitstring, b: bitstring) =
 letfun core__cmp__PartialEq__ne(a: bitstring, b: bitstring) =
   let (=a) = b in False() else True().
 
-(* `core::ops::bit::Not::not` on `bool` — given as a real letfun so that
-   `let (=True()) = not_kw(b) in ...` actually fires under
-   `b = False()`. Without this, the `not` symbol is opaque and ProVerif
-   can't relate `not(False())` to `True()`, breaking every path that
-   uses `if !x { ... }` on a `bool`. *)
+(* `core::ops::bit::Not::not` on `bool`. Negates *known* booleans only:
+   `True->False`, `False->True`, and an OPAQUE condition stays opaque. The
+   last case matters for `assert!(cond)` / `if !cond { panic }` where `cond`
+   is an un-modeled comparison (e.g. a length bound `okm_len <= 255*32` using
+   the opaque `<=`): mapping the opaque value to `True()` would make
+   `let (=True()) = not_kw(cond) in panic` fire spuriously and kill the trace.
+   Leaving it opaque means the assert is skipped (sound over-approximation),
+   while real `if !x` on a `True`/`False` value still works. *)
 letfun core__ops__bit__Not__not_kw(b: bitstring) =
   let (=True()) = b in False()
-  else True().
+  else let (=False()) = b in True()
+  else b.
 
 (*** core::convert — identity wrappers                              ***)
 (* `From::from`, `Into::into`, `AsRef::as_ref`, `TryInto::try_into`  *)
@@ -394,7 +403,16 @@ letfun core__ops__index__Index__index(s: bitstring, pos: bitstring) =
     (let rust_primitives__hax__array_cons(x, r) = s in x else array_index_opaque(s, pos))
   else let (= core__ops__range__RangeFrom__RangeFrom(nat_lit(1))) = pos in
     (let rust_primitives__hax__array_cons(x, r) = s in r else array_index_opaque(s, pos))
+  (* Fixed-offset split of a two-part concatenation: `s[..n]` -> first part,
+     `s[n..]` -> second part (the offset itself is abstracted away). *)
+  else let array_concat(a, b) = s in
+    (let core__ops__range__RangeFrom__RangeFrom(n) = pos in b else a)
   else array_index_opaque(s, pos).
+(* `dst.copy_from_slice(src)` overwrites `dst` with `src`: the `&mut self`
+   output becomes `src`. Used to thread a decrypted plaintext into a `&mut`
+   output buffer (e.g. `decrypt_aesgcm256`). *)
+letfun core__slice__Impl__copy_from_slice(self: bitstring, src: bitstring) = src.
+letfun core__slice__Impl__clone_from_slice(self: bitstring, src: bitstring) = src.
 
 (*****************************************************************)
 (*  More std prelude, surfaced once minos (not just mandrake) is  *)
