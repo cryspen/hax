@@ -163,6 +163,8 @@ fun rust_primitives__hax__array_cons(bitstring, bitstring): bitstring [data].
 (* opaque, collision-free symbol. *)
 fun array_concat(bitstring, bitstring): bitstring.        (* opaque byte concat fallback *)
 fun array_index_opaque(bitstring, bitstring): bitstring.  (* opaque index fallback       *)
+fun array_insert_opaque(bitstring, bitstring, bitstring): bitstring. (* opaque insert    *)
+fun array_remove_rest(bitstring, bitstring): bitstring.   (* opaque "vec minus pos"      *)
 (* `a ++ b`: prepend the first few elements of `a` onto `b`; if `a` is opaque  *)
 (* (a byte blob) fall back to opaque concat. `array_extend_rest` finishes the  *)
 (* tail past the unrolled prefix. *)
@@ -431,8 +433,18 @@ fun core__slice__Impl__len(bitstring): bitstring.
 fun core__iter__traits__exact_size__ExactSizeIterator__len(bitstring): bitstring.
 
 (*** Vec — `with_capacity` is an empty cons-list; `extend_from_slice` is Seq  ***)
-(*** append; `insert`/`remove` are positional and opaque for now.            ***)
+(*** append. `insert(s,0,x)` prepends and `remove(s,0)` peels the head — the   ***)
+(*** key/prefix wrappers (`hpke::add_prefix`/`drop_prefix`) use exactly these  ***)
+(*** at position 0, so they must cancel; other positions stay opaque.          ***)
 letfun alloc__vec__Impl__with_capacity(n: bitstring) = rust_primitives__hax__array_nil().
-fun alloc__vec__Impl_1__insert_kw(bitstring, bitstring, bitstring): bitstring.
-fun alloc__vec__Impl_1__remove(bitstring, bitstring): bitstring.
+letfun alloc__vec__Impl_1__insert_kw(s: bitstring, pos: bitstring, x: bitstring) =
+  let (= nat_lit(0)) = pos in rust_primitives__hax__array_cons(x, s)
+  else array_insert_opaque(s, pos, x).
+(* `Vec::remove(&mut self, i) -> T` is functionalized to `(self_without_i, removed_i)`. *)
+letfun alloc__vec__Impl_1__remove(s: bitstring, pos: bitstring) =
+  let (= nat_lit(0)) = pos in
+    (let rust_primitives__hax__array_cons(x, r) = s in
+       rust_primitives__hax__Tuple2__Tuple2(r, x)
+     else rust_primitives__hax__Tuple2__Tuple2(array_remove_rest(s, pos), array_index_opaque(s, pos)))
+  else rust_primitives__hax__Tuple2__Tuple2(array_remove_rest(s, pos), array_index_opaque(s, pos)).
 letfun alloc__vec__Impl_2__extend_from_slice(a: bitstring, b: bitstring) = array_extend(a, b).
