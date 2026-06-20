@@ -298,10 +298,21 @@ const _: () = {
             &self,
             scrutinee: &Expr,
             arm: &Arm,
+            is_last: bool,
         ) -> DocBuilder<A> {
             match &*arm.pat.kind {
                 PatKind::Wild => docs![&arm.body],
-                PatKind::Construct { constructor, .. } if *constructor == names::ResultErr => {
+                // A `Result::Err` arm collapses to a bare `bitstring_err()` only
+                // when it is the final (fallback) arm of the chain — there it
+                // stands in for "no further arm matched -> fail". When such an
+                // arm is NOT last (e.g. `match r { Err(_) => false, Ok(x) => .. }`)
+                // a bare `bitstring_err()` is wrong twice over: the following
+                // `else` has no `let` to bind to (a ProVerif syntax error), and
+                // the arm body (here `false`) would be discarded. So we fall
+                // through and render it as an ordinary destructuring arm.
+                PatKind::Construct { constructor, .. }
+                    if is_last && *constructor == names::ResultErr =>
+                {
                     docs!["bitstring_err()"]
                 }
                 _ => {
@@ -928,9 +939,11 @@ const _: () = {
                             break;
                         }
                     }
+                    let n_truncated = truncated.len();
                     let pieces: Vec<DocBuilder<A>> = truncated
                         .iter()
-                        .map(|arm| self.match_arm(scrutinee, arm))
+                        .enumerate()
+                        .map(|(i, arm)| self.match_arm(scrutinee, arm, i + 1 == n_truncated))
                         .collect();
                     let chain = intersperse!(pieces, docs![hardline!(), "else "]);
                     let last_provides_fallback = truncated
