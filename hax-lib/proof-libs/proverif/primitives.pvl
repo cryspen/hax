@@ -74,8 +74,16 @@ fun rust_primitives__hax__machine_int__sub(bitstring, bitstring): bitstring [dat
 fun rust_primitives__hax__machine_int__mul(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__div(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__rem(bitstring, bitstring): bitstring [data].
-fun rust_primitives__hax__machine_int__eq(bitstring, bitstring): bitstring [data].
-fun rust_primitives__hax__machine_int__ne(bitstring, bitstring): bitstring [data].
+(* Integer (in)equality is *structural* equality on the symbolic terms, like
+   `PartialEq::eq` below. Without this, `eq(x, x)` stays an opaque term that
+   never reduces to `True()`, so every `if a == b` / `assert_eq!(a, b)` /
+   `find(|e| e.id == id)` mis-fires (e.g. a prefix check that always "fails").
+   The ordering comparisons (`lt`/`le`/`gt`/`ge`) and arithmetic stay opaque —
+   the model carries no integer arithmetic. *)
+letfun rust_primitives__hax__machine_int__eq(a: bitstring, b: bitstring) =
+  let (= a) = b in True() else False().
+letfun rust_primitives__hax__machine_int__ne(a: bitstring, b: bitstring) =
+  let (= a) = b in False() else True().
 fun rust_primitives__hax__machine_int__lt(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__le(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__gt(bitstring, bitstring): bitstring [data].
@@ -144,6 +152,32 @@ fun rust_primitives__hax__repeat(bitstring, bitstring): bitstring [data].
 (* `bitstring_err()` if a present element remains past the bound.            *)
 fun rust_primitives__hax__array_nil(): bitstring [data].
 fun rust_primitives__hax__array_cons(bitstring, bitstring): bitstring [data].
+
+(* Seq operations (workstream 2). A `Vec`/slice is the `array_cons` cons-list  *)
+(* above. The operations below give that list *real* semantics, bounded to the *)
+(* first few elements (matching the loop unroll bound), and degrade to an      *)
+(* opaque term when an operand is not an `array_cons` Seq — e.g. a byte buffer *)
+(* (`Vec<u8>`/`Bytes`) carried as an uninterpreted crypto blob, where element- *)
+(* wise structure is neither known nor needed. This split keeps structural     *)
+(* collections (`Vec<Epoch>`, …) peelable while byte concatenation stays an    *)
+(* opaque, collision-free symbol. *)
+fun array_concat(bitstring, bitstring): bitstring.        (* opaque byte concat fallback *)
+fun array_index_opaque(bitstring, bitstring): bitstring.  (* opaque index fallback       *)
+(* `a ++ b`: prepend the first few elements of `a` onto `b`; if `a` is opaque  *)
+(* (a byte blob) fall back to opaque concat. `array_extend_rest` finishes the  *)
+(* tail past the unrolled prefix. *)
+letfun array_extend_rest(r: bitstring, b: bitstring) =
+  let rust_primitives__hax__array_nil() = r in b
+  else array_concat(r, b).
+letfun array_extend(a: bitstring, b: bitstring) =
+  let rust_primitives__hax__array_cons(a0, r0) = a in (
+    let rust_primitives__hax__array_cons(a1, r1) = r0 in (
+      let rust_primitives__hax__array_cons(a2, r2) = r1 in (
+        rust_primitives__hax__array_cons(a0, rust_primitives__hax__array_cons(a1, rust_primitives__hax__array_cons(a2, array_extend_rest(r2, b))))
+      ) else rust_primitives__hax__array_cons(a0, rust_primitives__hax__array_cons(a1, b))
+    ) else rust_primitives__hax__array_cons(a0, b)
+  ) else let rust_primitives__hax__array_nil() = a in b
+  else array_concat(a, b).
 
 (* `for x in coll` reaches the backend with an iterator of                   *)
 (* `coll.iter()` / `IntoIterator::into_iter(coll)`. For the loop's Seq to be *)
@@ -304,11 +338,10 @@ letfun core__hint__must_use(x: bitstring) = x.
 letfun hex__encode(x: bitstring) = x.                    (* bytes <-> hex string, same symbol *)
 
 (*** Iterators: the iterator IS the underlying cons-list, so `collect`/`rev`  ***)
-(*** are identity (membership is order-agnostic). `extend` is Seq append      ***)
-(*** (workstream 2 — opaque for now).                                         ***)
+(*** are identity (membership is order-agnostic). `extend` is Seq append.     ***)
 letfun core__iter__traits__iterator__Iterator__collect(x: bitstring) = x.
 letfun core__iter__traits__iterator__Iterator__rev(x: bitstring) = x.
-fun core__iter__traits__collect__Extend__extend(bitstring, bitstring): bitstring.
+letfun core__iter__traits__collect__Extend__extend(a: bitstring, b: bitstring) = array_extend(a, b).
 
 (*** core::ops::range — RangeFrom bound as data ***)
 fun core__ops__range__RangeFrom__RangeFrom(bitstring): bitstring [data].
@@ -335,21 +368,31 @@ letfun rand_core__TryRngCore__try_fill_bytes(rng: bitstring, dest: bitstring) =
 letfun rand__rngs__thread__rng(u: bitstring) = new r: bitstring; r.
 const rand_core__os__OsRng__OsRng: bitstring.
 
-(*** Vec / slice as the array_cons Seq. `new`/`is_empty` are exact;          ***)
-(*** `push`/`append`/`from_elem`/`len`/`index`/`last` need the full Seq      ***)
-(*** model (workstream 2) — opaque stubs until then, so a Vec built outside  ***)
-(*** a `for`-loop is an uninterpreted blob rather than a peelable list.       ***)
+(*** Vec / slice as the array_cons Seq. `new`/`is_empty` are exact.          ***)
+(*** `push`/`append`/`index` have real Seq semantics (workstream 2);          ***)
+(*** `from_elem`/`len`/`last` remain opaque pending the count/Option model.   ***)
 letfun alloc__vec__Impl__new_kw(u: bitstring) = rust_primitives__hax__array_nil().
 letfun alloc__vec__Impl_1__is_empty(v: bitstring) =
   let rust_primitives__hax__array_nil() = v in True() else False().
 letfun core__slice__Impl__is_empty(v: bitstring) =
   let rust_primitives__hax__array_nil() = v in True() else False().
 fun alloc__vec__from_elem(bitstring, bitstring): bitstring.
-fun alloc__vec__Impl_1__push(bitstring, bitstring): bitstring.
-fun alloc__vec__Impl_1__append(bitstring, bitstring): bitstring.
+(* `push` prepends: the Seq is newest-first, so `last()` (newest) is the head  *)
+(* and order-agnostic searches (`find`/`any`) are unaffected. This is O(1) and *)
+(* avoids a bounded end-append that would overflow the loop bound. *)
+letfun alloc__vec__Impl_1__push(s: bitstring, x: bitstring) =
+  rust_primitives__hax__array_cons(x, s).
+letfun alloc__vec__Impl_1__append(a: bitstring, b: bitstring) = array_extend(a, b).
 fun alloc__vec__Impl_1__len(bitstring): bitstring.
 fun core__slice__Impl__last(bitstring): bitstring.
-fun core__ops__index__Index__index(bitstring, bitstring): bitstring.
+(* `s[0]` -> head, `s[1..]` -> tail; other indices / opaque (byte-buffer)      *)
+(* operands fall back to an opaque accessor. *)
+letfun core__ops__index__Index__index(s: bitstring, pos: bitstring) =
+  let (= nat_lit(0)) = pos in
+    (let rust_primitives__hax__array_cons(x, r) = s in x else array_index_opaque(s, pos))
+  else let (= core__ops__range__RangeFrom__RangeFrom(nat_lit(1))) = pos in
+    (let rust_primitives__hax__array_cons(x, r) = s in r else array_index_opaque(s, pos))
+  else array_index_opaque(s, pos).
 
 (*****************************************************************)
 (*  More std prelude, surfaced once minos (not just mandrake) is  *)
@@ -387,9 +430,9 @@ letfun core__str__Impl__as_bytes(x: bitstring) = x.
 fun core__slice__Impl__len(bitstring): bitstring.
 fun core__iter__traits__exact_size__ExactSizeIterator__len(bitstring): bitstring.
 
-(*** Vec — `with_capacity` is an empty cons-list; insert/remove/extend     ***)
-(*** need the full Seq model (workstream 2) and are opaque for now.         ***)
+(*** Vec — `with_capacity` is an empty cons-list; `extend_from_slice` is Seq  ***)
+(*** append; `insert`/`remove` are positional and opaque for now.            ***)
 letfun alloc__vec__Impl__with_capacity(n: bitstring) = rust_primitives__hax__array_nil().
 fun alloc__vec__Impl_1__insert_kw(bitstring, bitstring, bitstring): bitstring.
 fun alloc__vec__Impl_1__remove(bitstring, bitstring): bitstring.
-fun alloc__vec__Impl_2__extend_from_slice(bitstring, bitstring): bitstring.
+letfun alloc__vec__Impl_2__extend_from_slice(a: bitstring, b: bitstring) = array_extend(a, b).
