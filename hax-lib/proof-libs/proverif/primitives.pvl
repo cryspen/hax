@@ -44,7 +44,7 @@ letfun bool_default() = False().
 letfun bool_err() = let x = construct_fail() in False().
 
 (*** Integer literal lifting ***)
-fun nat_lit(nat): bitstring.
+fun nat_lit(nat): bitstring [data].
 
 (*** Opaque short-circuit operators ***)
 fun logical_and(bitstring, bitstring): bitstring.
@@ -69,7 +69,16 @@ fun rust_primitives__hax__cast_op(bitstring): bitstring [data].
 fun rust_primitives__hax__logical_op_and(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__logical_op_or(bitstring, bitstring): bitstring [data].
 
-fun rust_primitives__hax__machine_int__add(bitstring, bitstring): bitstring [data].
+(* `+ 1` on a `nat_lit` reduces concretely (`nat_lit(x) + nat_lit(1) = nat_lit(x+1)`)
+   so loop/epoch counters become `nat_lit(1)`, `nat_lit(2)`, ... that queries can
+   name and order (ProVerif `nat` supports only `x + constant`). Any other operands
+   (byte arithmetic on opaque blobs) fall through to an opaque `[data]` term. *)
+fun rust_primitives__hax__machine_int__add_opaque(bitstring, bitstring): bitstring [data].
+letfun rust_primitives__hax__machine_int__add(a: bitstring, b: bitstring) =
+  let nat_lit(x) = a in
+    (let nat_lit(1) = b in nat_lit(x + 1)
+     else rust_primitives__hax__machine_int__add_opaque(a, b))
+  else rust_primitives__hax__machine_int__add_opaque(a, b).
 fun rust_primitives__hax__machine_int__sub(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__mul(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__div(bitstring, bitstring): bitstring [data].
