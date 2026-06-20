@@ -348,6 +348,18 @@ letfun alloc__slice__Impl__join(x: bitstring, sep: bitstring) = x.
 letfun core__hint__must_use(x: bitstring) = x.
 letfun hex__encode(x: bitstring) = x.                    (* bytes <-> hex string, same symbol *)
 
+(* Injective serialization of two fixed-length byte fields (`a || b`).
+   Real serialization concatenates FIXED-LENGTH fields, so the byte string
+   determines the split unambiguously and the encoding is INJECTIVE in
+   (a, b). The flat `array_extend`/`array_concat` byte model is deliberately
+   NOT injective (boundaries shift, e.g. `array_extend(nil, x) = x`), which is
+   fine for opaque blobs but UNSOUND when a multi-field serialization feeds a
+   hash or signature: an attacker could re-partition a signed structure
+   (move bytes across the field boundary) into a different struct with the
+   same bytes, breaking authenticity. Use this constructor where a fixed-field
+   serialization is hashed/signed and never re-parsed. *)
+fun serialize_fields2(bitstring, bitstring): bitstring.
+
 (*** Iterators: the iterator IS the underlying cons-list, so `collect`/`rev`  ***)
 (*** are identity (membership is order-agnostic). `extend` is Seq append.     ***)
 letfun core__iter__traits__iterator__Iterator__collect(x: bitstring) = x.
@@ -441,8 +453,15 @@ letfun core__num__Impl_7__to_be_bytes(x: bitstring) = x.
 letfun core__option__Impl__unwrap_or(o: bitstring, d: bitstring) =
   let Some(x) = o in x else d.
 letfun core__result__Impl__expect(r: bitstring, m: bitstring) = r.
-letfun core__result__Impl__is_ok(r: bitstring)  = True().
-letfun core__result__Impl__is_err(r: bitstring) = False().
+(* Under the transparent Result model a value reaching `is_ok`/`is_err` is the
+   bare `Ok` payload (treated as ok) unless it is an EXPLICIT `Err(_)` ctor.
+   Some boundaries (e.g. signature `verify`) must distinguish a real failure
+   from success WITHOUT killing the trace, so they return `Err(())` rather than
+   letting a destructor fail; these checks honor that `Err`. *)
+letfun core__result__Impl__is_ok(r: bitstring)  =
+  let core__result__Result__Err(e) = r in False() else True().
+letfun core__result__Impl__is_err(r: bitstring) =
+  let core__result__Result__Err(e) = r in True()  else False().
 fun core__result__Impl__map(bitstring, bitstring): bitstring.   (* closure apply — workstream 2 *)
 
 (*** str/slice — bytes view is identity; len is opaque (no arithmetic). ***)
