@@ -122,6 +122,25 @@ fn option_payload_ty(ty: &Ty) -> Ty {
     ty.clone()
 }
 
+/// If `ty` is a 2-tuple `(A, B)`, return its second component `B`.
+///
+/// `Iterator::find`/`find_map`/`any` take `&mut self`, so by the time this
+/// phase runs the receiver mutation has been functionalized and the call's
+/// result type is `(iterator', result)` — the caller destructures a
+/// `Tuple2(_, out)`. The loop we synthesize only produces `result`, so we must
+/// re-wrap it in that tuple (see `visit_expr`). `fold`/`collect` take `self` by
+/// value and have no such tuple.
+fn tuple_second_ty(ty: &Ty) -> Option<Ty> {
+    let Ty(kind) = ty;
+    if let TyKind::App { head, args } = &**kind
+        && let Some(global_id::TupleId::Type { length: 2 }) = head.expect_tuple()
+        && let Some(GenericValue::Ty(second)) = args.get(1)
+    {
+        return Some(second.clone());
+    }
+    None
+}
+
 /// Extract the bound `LocalId` of a binding pattern, if any (peeling a single
 /// ascription layer). Used to materialize `Some(<element var>)` for `find`.
 fn pat_binding(pat: &Pat) -> Option<LocalId> {
@@ -770,8 +789,28 @@ impl AstVisitorMut for ProverifCombinatorsToLoopsVisitor {
                 ProverifCombinatorsToLoopsVisitor::rewrite_filter_map(&app_ty, span, args)
             }
         };
+        // `find`/`find_map`/`any` take `&mut self`: after receiver-mutation
+        // functionalization the call's result type is `(iterator', result)` and
+        // the caller destructures `Tuple2(_, out)`. Our loop only yields
+        // `result`, so wrap it back into that tuple (the iterator slot is
+        // discarded by the caller — we pass the original iterator). Clone the
+        // iterator out of `args` now, before we overwrite `*expr`.
+        let iter_for_tuple = if matches!(
+            combinator,
+            Combinator::Find | Combinator::FindMap | Combinator::Any
+        ) {
+            args.first().cloned().zip(tuple_second_ty(&app_ty))
+        } else {
+            None
+        };
         if let Some(new_kind) = new_kind {
-            *expr = new_kind.promote(app_ty, span);
+            match iter_for_tuple {
+                Some((iter, result_ty)) => {
+                    let loop_expr = new_kind.promote(result_ty, span);
+                    *expr = Expr::tuple(vec![iter, loop_expr], span);
+                }
+                None => *expr = new_kind.promote(app_ty, span),
+            }
         }
     }
 }
