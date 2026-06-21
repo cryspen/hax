@@ -1267,6 +1267,28 @@ const _: () = {
                             paren_doc!(arg_types),
                             ": bitstring [data]."
                         ]
+                    } else if matches!(
+                        &*body.kind,
+                        ExprKind::App { head, .. }
+                            if matches!(&*head.kind, ExprKind::GlobalId(g) if g == name)
+                    ) {
+                        // A letfun whose body is a call to itself (`f(..) = f(..)`)
+                        // is a degenerate stub the frontend emits for an
+                        // unresolvable external trait method (e.g. tls_codec's
+                        // `Size::tls_serialized_len`). ProVerif forbids recursive
+                        // letfuns, so emit an opaque `fun` instead — sound, since
+                        // such serialization helpers are never security-relevant
+                        // (the crypto boundary bypasses serialization).
+                        let arg_types =
+                            comma_sep!(params.iter().map(|p| docs![&p.ty]));
+                        docs![
+                            "(* self-recursive stub (unresolved trait method) *)",
+                            hardline!(),
+                            "fun ",
+                            name,
+                            paren_doc!(arg_types),
+                            ": bitstring."
+                        ]
                     } else {
                         // Regular letfun (lines 560-588).
                         let comment = if as_handwritten {
@@ -1450,6 +1472,26 @@ const _: () = {
                 ImplItemKind::Fn { body, params } => {
                     if params.is_empty() {
                         docs!["const ", name, ": bitstring."]
+                    } else if matches!(
+                        &*body.kind,
+                        ExprKind::App { head, .. }
+                            if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == impl_item.ident)
+                    ) {
+                        // `f(..) = f(..)` — a degenerate self-recursive stub for
+                        // an unresolvable external trait method (e.g. tls_codec's
+                        // `Size::tls_serialized_len`). ProVerif forbids recursive
+                        // letfuns; emit an opaque `fun` instead (sound — these
+                        // serialization helpers are never security-relevant).
+                        let arg_types =
+                            comma_sep!(params.iter().map(|p| docs![&p.ty]));
+                        docs![
+                            "(* self-recursive stub (unresolved trait method) *)",
+                            hardline!(),
+                            "fun ",
+                            name,
+                            paren_doc!(arg_types),
+                            ": bitstring."
+                        ]
                     } else {
                         let params_doc =
                             comma_sep!(params.iter().map(|p| docs![p]));
