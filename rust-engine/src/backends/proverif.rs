@@ -172,7 +172,13 @@ impl RenderView for ProVerifPrinter {
     }
 }
 
-impl Printer for ProVerifPrinter {}
+impl Printer for ProVerifPrinter {
+    // ProVerif's flattened identifiers (`bertie__tls13crypto__AeadKeyIV__…`)
+    // are long, so an 80-column page forces nearly every declaration to
+    // break. A wider page lets short declarations/calls collapse onto one
+    // line while still breaking the genuinely long ones.
+    const RENDER_WIDTH: usize = 100;
+}
 
 impl ProVerifPrinter {
     /// Returns the joined identifier used by ProVerif declarations. Mirrors
@@ -223,6 +229,33 @@ const _: () = {
     macro_rules! comma_sep {
         ($it:expr) => {
             intersperse!($it, docs![",", line!()])
+        };
+    }
+
+    // Wrap an already-built (typically comma-separated) document in
+    // parentheses with adaptive Wadler-style layout: the whole thing stays
+    // on one line when it fits the page, and otherwise breaks after `(`,
+    // indenting the contents by `INDENT` and dropping `)` back onto its own
+    // line. ProVerif is whitespace-insensitive between tokens, so this is a
+    // purely cosmetic reflow.
+    //
+    //   flat:   (a, b, c)
+    //   broken: (
+    //             a,
+    //             b,
+    //             c
+    //           )
+    macro_rules! paren_doc {
+        ($d:expr) => {
+            docs!["(", docs![line_!(), $d].nest(INDENT), line_!(), ")"].group()
+        };
+    }
+
+    // Build a grouped, parenthesized, comma-separated list from an iterator
+    // of `ToDocument` values. Combines [`comma_sep!`] and [`paren_doc!`].
+    macro_rules! paren_list {
+        ($it:expr) => {
+            paren_doc!(comma_sep!($it))
         };
     }
 
@@ -325,7 +358,10 @@ const _: () = {
                     } else {
                         docs![&arm.body].parens()
                     };
-                    docs!["let ", pat, " = ", docs![scrutinee], " in ", body]
+                    docs![
+                        "let ", pat, " = ", docs![scrutinee], " in",
+                        docs![line!(), body].nest(INDENT).group()
+                    ]
                 }
             }
         }
@@ -498,12 +534,12 @@ const _: () = {
                 .map(|(id, ty, _)| (*id, ty.clone()))
                 .collect();
             let arg_types_doc =
-                comma_sep!(typed_args_vec.iter().map(|(_, ty)| docs![ty]));
+                paren_list!(typed_args_vec.iter().map(|(_, ty)| docs![ty]));
 
             let fun_line = docs![
                 "fun ",
                 constructor_name.clone(),
-                arg_types_doc.parens(),
+                arg_types_doc,
                 ": bitstring [data]."
             ];
 
@@ -532,16 +568,18 @@ const _: () = {
                     let accessor = self.accessor_name(&base, id);
                     let constructor_call = docs![
                         constructor_name.clone(),
-                        docs![fun_args_names.clone()].parens()
+                        paren_doc!(fun_args_names.clone())
                     ];
                     let accessor_call =
-                        docs![accessor, docs![constructor_call].parens()];
+                        docs![accessor, paren_doc!(constructor_call)];
                     docs![
-                        "reduc forall ",
-                        docs![fun_args_full.clone()],
-                        ";",
-                        docs![hardline!(), accessor_call, " = ", bind_name(id)]
+                        docs!["reduc forall ", fun_args_full.clone()]
                             .nest(INDENT)
+                            .group(),
+                        ";",
+                        docs![line!(), accessor_call, " = ", bind_name(id)]
+                            .nest(INDENT)
+                            .group()
                     ]
                 })
                 .collect();
@@ -759,7 +797,7 @@ const _: () = {
                     if fields.is_empty() {
                         docs![constructor, "()"]
                     } else {
-                        docs![constructor, args.parens()]
+                        docs![constructor, paren_doc!(args)]
                     }
                 }
                 PatKind::Or { .. } => {
@@ -853,14 +891,14 @@ const _: () = {
                 {
                     let lhs = args.first().map(|a| docs![a]).unwrap_or(nil!());
                     let rhs = args.get(1).map(|a| docs![a]).unwrap_or(nil!());
-                    docs!["logical_and", comma_sep!(vec![lhs, rhs]).parens()]
+                    docs!["logical_and", paren_list!(vec![lhs, rhs])]
                 }
                 ExprKind::App { head, args, .. }
                     if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::logical_op_or) =>
                 {
                     let lhs = args.first().map(|a| docs![a]).unwrap_or(nil!());
                     let rhs = args.get(1).map(|a| docs![a]).unwrap_or(nil!());
-                    docs!["logical_or", comma_sep!(vec![lhs, rhs]).parens()]
+                    docs!["logical_or", paren_list!(vec![lhs, rhs])]
                 }
                 ExprKind::App { head, args, .. }
                     if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::cast_op) =>
@@ -894,10 +932,10 @@ const _: () = {
                         docs![constructor, "()"]
                     } else if *is_record {
                         let payload = comma_sep!(fields.iter().map(|(_, v)| docs![v]));
-                        docs![constructor, payload.parens()]
+                        docs![constructor, paren_doc!(payload)]
                     } else {
                         let payload = comma_sep!(fields.iter().map(|(_, v)| docs![v]));
-                        docs![constructor, payload.parens()]
+                        docs![constructor, paren_doc!(payload)]
                     }
                 }
 
@@ -978,17 +1016,24 @@ const _: () = {
                     Some(e) => docs![
                         "let (=True()) = ",
                         condition,
-                        " in ",
+                        line!(),
+                        "in ",
                         docs![then].parens(),
-                        " else ",
+                        line!(),
+                        "else ",
                         docs![e].parens()
-                    ],
+                    ]
+                    .nest(INDENT)
+                    .group(),
                     None => docs![
                         "let (=True()) = ",
                         condition,
-                        " in ",
+                        line!(),
+                        "in ",
                         docs![then].parens()
-                    ],
+                    ]
+                    .nest(INDENT)
+                    .group(),
                 },
                 //
                 // For a non-trivial (i.e., failable) pattern, ProVerif's
@@ -1032,7 +1077,7 @@ const _: () = {
                     if args.is_empty() {
                         docs![head_doc, "()"]
                     } else {
-                        docs![head_doc, comma_sep!(args.iter().map(|a| docs![a])).parens()]
+                        docs![head_doc, paren_list!(args.iter().map(|a| docs![a]))]
                     }
                 }
 
@@ -1143,7 +1188,7 @@ const _: () = {
             // Used only when emitted directly; the actual struct/enum
             // constructor declarations come out of `fn item`.
             let args = comma_sep!(variant.arguments.iter().map(|(_, ty, _)| docs![ty]));
-            docs![&variant.name, args.parens()]
+            docs![&variant.name, paren_doc!(args)]
         }
 
         fn item(&self, item: &Item) -> DocBuilder<A> {
@@ -1198,7 +1243,7 @@ const _: () = {
                             hardline!(),
                             "fun ",
                             name,
-                            arg_types.parens(),
+                            paren_doc!(arg_types),
                             ": bitstring [data]."
                         ]
                     } else {
@@ -1219,10 +1264,9 @@ const _: () = {
                             comment,
                             "letfun ",
                             name,
-                            params_doc.parens(),
+                            paren_doc!(params_doc),
                             " =",
-                            hardline!(),
-                            docs![body_doc].nest(INDENT),
+                            docs![line!(), body_doc].nest(INDENT).group(),
                             "."
                         ]
                     }
@@ -1391,10 +1435,9 @@ const _: () = {
                         docs![
                             "letfun ",
                             name,
-                            params_doc.parens(),
+                            paren_doc!(params_doc),
                             " =",
-                            hardline!(),
-                            docs![body].nest(INDENT),
+                            docs![line!(), body].nest(INDENT).group(),
                             "."
                         ]
                     }

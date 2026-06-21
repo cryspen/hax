@@ -44,6 +44,13 @@ pub trait Resugaring: for<'a> dyn_compatible::AstVisitorMut<'a> {
 pub trait Printer: Sized + PrettyAst<Span> + Default + HasLinkedItemGraph {
     /// The name of the printer
     const NAME: &'static str = <Self as PrettyAst<Span>>::NAME;
+
+    /// Target page width handed to the `pretty` layout algorithm. Backends
+    /// may override this; e.g. the ProVerif backend uses a wider page
+    /// because its flattened `a__b__c` identifiers are long, so an 80-column
+    /// page would force almost every list to break. Defaults to 80 (matching
+    /// the Lean backend).
+    const RENDER_WIDTH: usize = 80;
 }
 
 /// Getter and setter for `LinkedItemGraph`, useful for printers.
@@ -84,7 +91,10 @@ where
     {
         let doc_builder = fragment.to_document(self).into_doc();
         (
-            doc_builder.deref().pretty(80).to_string(),
+            doc_builder
+                .deref()
+                .pretty(<Self as Printer>::RENDER_WIDTH)
+                .to_string(),
             SourceMap,
             fragment,
         )
