@@ -970,10 +970,31 @@ const _: () = {
                                 if *constructor == names::ResultErr
                         )
                     };
+                    // ProVerif has no or-patterns. After
+                    // `HoistDisjunctivePatterns` the alternatives sit at the top
+                    // of the arm pattern, so split each `A | B => e` arm into one
+                    // arm per alternative (sharing body + guard); the if-let chain
+                    // below then renders one `let pat = scrutinee in body else ...`
+                    // clause each.
+                    let expanded: Vec<Arm> = arms
+                        .iter()
+                        .flat_map(|arm| match &*arm.pat.kind {
+                            PatKind::Or { sub_pats } => sub_pats
+                                .iter()
+                                .map(|sp| Arm {
+                                    pat: sp.clone(),
+                                    body: arm.body.clone(),
+                                    guard: arm.guard.clone(),
+                                    meta: arm.meta.clone(),
+                                })
+                                .collect::<Vec<_>>(),
+                            _ => vec![arm.clone()],
+                        })
+                        .collect();
                     // Take arms up to and including the first one that
                     // always matches.
                     let mut truncated: Vec<&Arm> = Vec::new();
-                    for arm in arms.iter() {
+                    for arm in expanded.iter() {
                         truncated.push(arm);
                         if arm_always_matches(arm) {
                             break;
@@ -1496,6 +1517,10 @@ impl Backend for ProVerifBackend {
             DropReferences.into(),
             TrivializeAssignLhs.into(),
             HoistSideEffects.into(),
+            // Expand or-patterns (`A | B => e`) into one arm per constructor,
+            // like the F* and Lean backends — ProVerif has no or-patterns, and
+            // without this the printer hits them and emits a HAX0001 error.
+            HoistDisjunctivePatterns.into(),
             SimplifyMatchReturn.into(),
             // Functionalize early-exit control flow (`return`/`break`/`continue`)
             // into if/match, like the F* backend — otherwise `if c { ...; return }`
