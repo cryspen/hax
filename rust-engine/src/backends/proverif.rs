@@ -1962,6 +1962,428 @@ impl Freshen {
     }
 }
 
+// ===========================================================================
+// Readability pass: capture-avoiding inlining of single-use pure binders.
+//
+// ANF lowering introduces a flurry of throwaway aliases — `let hoist21 = out1
+// in …`, `let hax_temp_output = C(…) in (…, hax_temp_output)` — that name a
+// value used exactly once at the next step. Folding `let x = E in …x…` back to
+// `…E…` removes that noise and brings the generated term close to the Rust
+// expression it came from.
+//
+// Soundness. This runs AFTER the SSA-freshening pass, so every binder name in a
+// function is unique — the "never inline E past a rebinding of E's free vars"
+// and "never merge two live bindings" constraints are therefore automatic.
+// What remains is ProVerif's *eager* `let`: `let x = E in body` evaluates E
+// before `body`, so if E can fail, moving it into a conditionally-evaluated
+// position would change when the failure happens. Hence:
+//   * a total leaf (variable / global / literal) — which can never fail and has
+//     no sub-evaluation — is inlined at its single use wherever that use is;
+//   * any other atomic term (a function/constructor application) is inlined only
+//     when its single use sits in an *unconditionally* evaluated position, so E
+//     is evaluated exactly when it was before.
+// Non-atomic E (a nested `let`/`if`/match) is never inlined — that keeps
+// failable evaluation in place and avoids nesting a statement into an argument.
+struct Inline;
+
+/// The `LocalId` bound by a simple, infallible single-variable binder
+/// (`let x = …`), peeling a type ascription. Tuple/`Some`/constructor
+/// destructures and `x @ pat` are not simple binders and return `None`.
+fn simple_binder(pat: &Pat) -> Option<LocalId> {
+    match &*pat.kind {
+        PatKind::Binding {
+            var,
+            sub_pat: None,
+            mutable: false,
+            mode: BindingMode::ByValue,
+        } => Some(var.clone()),
+        PatKind::Ascription { pat, .. } => simple_binder(pat),
+        _ => None,
+    }
+}
+
+/// A term that can never fail and carries no sub-evaluation: a local, a global,
+/// or a literal (peeling ascriptions). Safe to inline into any position.
+fn is_total_leaf(e: &Expr) -> bool {
+    match &*e.kind {
+        ExprKind::LocalId(_) | ExprKind::GlobalId(_) | ExprKind::Literal(_) => true,
+        ExprKind::Ascription { e, .. } => is_total_leaf(e),
+        _ => false,
+    }
+}
+
+impl Inline {
+    /// Entry point: inline within one top-level item.
+    fn item(item: &mut Item) {
+        match &mut item.kind {
+            ItemKind::Fn { body, .. } => Self::go(body),
+            ItemKind::Impl { items, .. } => {
+                for ii in items.iter_mut() {
+                    if let ImplItemKind::Fn { body, .. } = &mut ii.kind {
+                        Self::go(body);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    /// Inline bottom-up: fold inlinable lets inside the children first (so a use
+    /// count is final by the time the enclosing let is considered), then fold
+    /// this node if it is an inlinable `let`.
+    fn go(expr: &mut Expr) {
+        Self::recurse(expr);
+        let folded = if let ExprKind::Let { lhs, rhs, body } = &*expr.kind {
+            match simple_binder(lhs) {
+                Some(x) => {
+                    let (count, in_quote) = count_uses(body, &x);
+                    let safe = count == 1
+                        && !in_quote
+                        && (is_total_leaf(rhs)
+                            || (ProVerifPrinter::expr_is_atomic(rhs) && uncond_use(body, &x)));
+                    if safe {
+                        let mut new_body = body.clone();
+                        subst_once(&mut new_body, &x, rhs);
+                        Some(new_body)
+                    } else {
+                        None
+                    }
+                }
+                None => None,
+            }
+        } else {
+            None
+        };
+        if let Some(nb) = folded {
+            *expr = nb;
+        }
+    }
+
+    /// Recurse `go` into every sub-expression (all positions; quotes are left
+    /// untouched — a quote is verbatim ProVerif naming its own variables).
+    fn recurse(expr: &mut Expr) {
+        match &mut *expr.kind {
+            ExprKind::Let { rhs, body, .. } => {
+                Self::go(rhs);
+                Self::go(body);
+            }
+            ExprKind::App { head, args, .. } => {
+                Self::go(head);
+                for a in args.iter_mut() {
+                    Self::go(a);
+                }
+            }
+            ExprKind::Construct { fields, base, .. } => {
+                for (_, v) in fields.iter_mut() {
+                    Self::go(v);
+                }
+                if let Some(b) = base {
+                    Self::go(b);
+                }
+            }
+            ExprKind::Array(es) => {
+                for e in es.iter_mut() {
+                    Self::go(e);
+                }
+            }
+            ExprKind::If {
+                condition,
+                then,
+                else_,
+            } => {
+                Self::go(condition);
+                Self::go(then);
+                if let Some(e) = else_ {
+                    Self::go(e);
+                }
+            }
+            ExprKind::Match { scrutinee, arms } => {
+                Self::go(scrutinee);
+                for arm in arms.iter_mut() {
+                    if let Some(g) = &mut arm.guard {
+                        let GuardKind::IfLet { rhs, .. } = &mut g.kind;
+                        Self::go(rhs);
+                    }
+                    Self::go(&mut arm.body);
+                }
+            }
+            ExprKind::Ascription { e, .. } => Self::go(e),
+            ExprKind::Closure { body, captures, .. } => {
+                for c in captures.iter_mut() {
+                    Self::go(c);
+                }
+                Self::go(body);
+            }
+            ExprKind::Loop {
+                body, kind, state, ..
+            } => {
+                match &mut **kind {
+                    LoopKind::ForLoop { iterator, .. } => Self::go(iterator),
+                    LoopKind::ForIndexLoop { start, end, .. } => {
+                        Self::go(start);
+                        Self::go(end);
+                    }
+                    LoopKind::WhileLoop { condition } => Self::go(condition),
+                    LoopKind::UnconditionalLoop => {}
+                }
+                if let Some(st) = state {
+                    Self::go(&mut st.init);
+                }
+                Self::go(body);
+            }
+            ExprKind::Borrow { inner, .. } | ExprKind::AddressOf { inner, .. } => Self::go(inner),
+            ExprKind::Block { body, .. } => Self::go(body),
+            ExprKind::Assign { value, .. } => Self::go(value),
+            ExprKind::Return { value } => Self::go(value),
+            ExprKind::Break { value, .. } => Self::go(value),
+            ExprKind::Continue { state, .. } => {
+                if let Some(s) = state {
+                    Self::go(s);
+                }
+            }
+            ExprKind::Literal(_)
+            | ExprKind::GlobalId(_)
+            | ExprKind::LocalId(_)
+            | ExprKind::Quote { .. }
+            | ExprKind::Resugared(_)
+            | ExprKind::Error(_) => {}
+        }
+    }
+}
+
+/// Count free uses of `x` in `e` (by exact `LocalId`), and report whether any
+/// occurrence sits inside a verbatim quote. A quote occurrence makes `x`
+/// ineligible for inlining: the substitution does not rewrite quote interiors,
+/// so dropping the `let` would leave a dangling reference. Over-counting is
+/// safe (we only inline at count 1); we never under-count.
+fn count_uses(e: &Expr, x: &LocalId) -> (usize, bool) {
+    let mut n = 0usize;
+    let mut in_quote = false;
+    count_uses_rec(e, x, &mut n, &mut in_quote);
+    (n, in_quote)
+}
+
+fn count_uses_rec(e: &Expr, x: &LocalId, n: &mut usize, in_quote: &mut bool) {
+    match &*e.kind {
+        ExprKind::LocalId(id) => {
+            if id == x {
+                *n += 1;
+            }
+        }
+        ExprKind::Quote { .. } => {
+            // We never substitute into a verbatim quote; conservatively treat
+            // any quote in the binder's scope as making it ineligible (the ANF
+            // let-chains we inline never contain quotes, so no real target is
+            // lost). Avoids leaving a dangling reference if the quote uses `x`.
+            *in_quote = true;
+        }
+        ExprKind::Let { rhs, body, .. } => {
+            count_uses_rec(rhs, x, n, in_quote);
+            count_uses_rec(body, x, n, in_quote);
+        }
+        ExprKind::App { head, args, .. } => {
+            count_uses_rec(head, x, n, in_quote);
+            for a in args {
+                count_uses_rec(a, x, n, in_quote);
+            }
+        }
+        ExprKind::Construct { fields, base, .. } => {
+            for (_, v) in fields {
+                count_uses_rec(v, x, n, in_quote);
+            }
+            if let Some(b) = base {
+                count_uses_rec(b, x, n, in_quote);
+            }
+        }
+        ExprKind::Array(es) => {
+            for e in es {
+                count_uses_rec(e, x, n, in_quote);
+            }
+        }
+        ExprKind::If {
+            condition,
+            then,
+            else_,
+        } => {
+            count_uses_rec(condition, x, n, in_quote);
+            count_uses_rec(then, x, n, in_quote);
+            if let Some(e) = else_ {
+                count_uses_rec(e, x, n, in_quote);
+            }
+        }
+        ExprKind::Match { scrutinee, arms } => {
+            count_uses_rec(scrutinee, x, n, in_quote);
+            for arm in arms {
+                if let Some(g) = &arm.guard {
+                    let GuardKind::IfLet { rhs, .. } = &g.kind;
+                    count_uses_rec(rhs, x, n, in_quote);
+                }
+                count_uses_rec(&arm.body, x, n, in_quote);
+            }
+        }
+        ExprKind::Ascription { e, .. } => count_uses_rec(e, x, n, in_quote),
+        ExprKind::Closure { body, captures, .. } => {
+            for c in captures {
+                count_uses_rec(c, x, n, in_quote);
+            }
+            count_uses_rec(body, x, n, in_quote);
+        }
+        ExprKind::Loop {
+            body, kind, state, ..
+        } => {
+            match &**kind {
+                LoopKind::ForLoop { iterator, .. } => count_uses_rec(iterator, x, n, in_quote),
+                LoopKind::ForIndexLoop { start, end, .. } => {
+                    count_uses_rec(start, x, n, in_quote);
+                    count_uses_rec(end, x, n, in_quote);
+                }
+                LoopKind::WhileLoop { condition } => count_uses_rec(condition, x, n, in_quote),
+                LoopKind::UnconditionalLoop => {}
+            }
+            if let Some(st) = state {
+                count_uses_rec(&st.init, x, n, in_quote);
+            }
+            count_uses_rec(body, x, n, in_quote);
+        }
+        ExprKind::Borrow { inner, .. } | ExprKind::AddressOf { inner, .. } => {
+            count_uses_rec(inner, x, n, in_quote)
+        }
+        ExprKind::Block { body, .. } => count_uses_rec(body, x, n, in_quote),
+        ExprKind::Assign { value, .. } => count_uses_rec(value, x, n, in_quote),
+        ExprKind::Return { value } => count_uses_rec(value, x, n, in_quote),
+        ExprKind::Break { value, .. } => count_uses_rec(value, x, n, in_quote),
+        ExprKind::Continue { state, .. } => {
+            if let Some(s) = state {
+                count_uses_rec(s, x, n, in_quote);
+            }
+        }
+        ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::Resugared(_) | ExprKind::Error(_) => {}
+    }
+}
+
+/// Whether the single occurrence of `x` in `e` sits in an *unconditionally*
+/// evaluated position — i.e. it is reached without first passing through an
+/// `if`/match arm, closure, or loop body. Only the always-evaluated parts of
+/// each node are descended (a `let`'s rhs and body; every argument of an
+/// application; an `if`/match scrutinee/condition).
+fn uncond_use(e: &Expr, x: &LocalId) -> bool {
+    match &*e.kind {
+        ExprKind::LocalId(id) => id == x,
+        ExprKind::Let { rhs, body, .. } => uncond_use(rhs, x) || uncond_use(body, x),
+        ExprKind::App { head, args, .. } => {
+            uncond_use(head, x) || args.iter().any(|a| uncond_use(a, x))
+        }
+        ExprKind::Construct { fields, base, .. } => {
+            fields.iter().any(|(_, v)| uncond_use(v, x))
+                || base.as_ref().is_some_and(|b| uncond_use(b, x))
+        }
+        ExprKind::Array(es) => es.iter().any(|e| uncond_use(e, x)),
+        ExprKind::Ascription { e, .. } => uncond_use(e, x),
+        // Only the condition / scrutinee is unconditional; branches are not.
+        ExprKind::If { condition, .. } => uncond_use(condition, x),
+        ExprKind::Match { scrutinee, .. } => uncond_use(scrutinee, x),
+        ExprKind::Borrow { inner, .. } | ExprKind::AddressOf { inner, .. } => uncond_use(inner, x),
+        ExprKind::Block { body, .. } => uncond_use(body, x),
+        ExprKind::Return { value } => uncond_use(value, x),
+        // Closures / loops defer evaluation; everything else is a leaf.
+        _ => false,
+    }
+}
+
+/// Replace each free `LocalId(x)` in `e` with a clone of `replacement`. After
+/// SSA there is exactly one such occurrence; quotes are not descended.
+fn subst_once(e: &mut Expr, x: &LocalId, replacement: &Expr) {
+    match &mut *e.kind {
+        ExprKind::LocalId(id) => {
+            if id == x {
+                *e = replacement.clone();
+            }
+        }
+        ExprKind::Quote { .. } => {}
+        ExprKind::Let { rhs, body, .. } => {
+            subst_once(rhs, x, replacement);
+            subst_once(body, x, replacement);
+        }
+        ExprKind::App { head, args, .. } => {
+            subst_once(head, x, replacement);
+            for a in args.iter_mut() {
+                subst_once(a, x, replacement);
+            }
+        }
+        ExprKind::Construct { fields, base, .. } => {
+            for (_, v) in fields.iter_mut() {
+                subst_once(v, x, replacement);
+            }
+            if let Some(b) = base {
+                subst_once(b, x, replacement);
+            }
+        }
+        ExprKind::Array(es) => {
+            for e in es.iter_mut() {
+                subst_once(e, x, replacement);
+            }
+        }
+        ExprKind::If {
+            condition,
+            then,
+            else_,
+        } => {
+            subst_once(condition, x, replacement);
+            subst_once(then, x, replacement);
+            if let Some(e) = else_ {
+                subst_once(e, x, replacement);
+            }
+        }
+        ExprKind::Match { scrutinee, arms } => {
+            subst_once(scrutinee, x, replacement);
+            for arm in arms.iter_mut() {
+                if let Some(g) = &mut arm.guard {
+                    let GuardKind::IfLet { rhs, .. } = &mut g.kind;
+                    subst_once(rhs, x, replacement);
+                }
+                subst_once(&mut arm.body, x, replacement);
+            }
+        }
+        ExprKind::Ascription { e, .. } => subst_once(e, x, replacement),
+        ExprKind::Closure { body, captures, .. } => {
+            for c in captures.iter_mut() {
+                subst_once(c, x, replacement);
+            }
+            subst_once(body, x, replacement);
+        }
+        ExprKind::Loop {
+            body, kind, state, ..
+        } => {
+            match &mut **kind {
+                LoopKind::ForLoop { iterator, .. } => subst_once(iterator, x, replacement),
+                LoopKind::ForIndexLoop { start, end, .. } => {
+                    subst_once(start, x, replacement);
+                    subst_once(end, x, replacement);
+                }
+                LoopKind::WhileLoop { condition } => subst_once(condition, x, replacement),
+                LoopKind::UnconditionalLoop => {}
+            }
+            if let Some(st) = state {
+                subst_once(&mut st.init, x, replacement);
+            }
+            subst_once(body, x, replacement);
+        }
+        ExprKind::Borrow { inner, .. } | ExprKind::AddressOf { inner, .. } => {
+            subst_once(inner, x, replacement)
+        }
+        ExprKind::Block { body, .. } => subst_once(body, x, replacement),
+        ExprKind::Assign { value, .. } => subst_once(value, x, replacement),
+        ExprKind::Return { value } => subst_once(value, x, replacement),
+        ExprKind::Break { value, .. } => subst_once(value, x, replacement),
+        ExprKind::Continue { state, .. } => {
+            if let Some(s) = state {
+                subst_once(s, x, replacement);
+            }
+        }
+        ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::Resugared(_) | ExprKind::Error(_) => {}
+    }
+}
+
 /// The ProVerif backend.
 pub struct ProVerifBackend;
 
@@ -2054,6 +2476,9 @@ impl Backend for ProVerifBackend {
         for module in &mut modules {
             for item in &mut module.items {
                 Freshen::item(item);
+                // Inline single-use pure binders (the SSA pass above first makes
+                // every binder unique, so this inlining is capture-free).
+                Inline::item(item);
             }
         }
         let path = self.module_path(modules.first().unwrap()).to_string();
