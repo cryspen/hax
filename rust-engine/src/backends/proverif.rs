@@ -581,6 +581,46 @@ const _: () = {
             ]
         }
 
+        /// Render the leading Rust doc comments (`///` / `//!`) of an item's
+        /// attribute list as ProVerif `(* … *)` comment lines, so the
+        /// generated model carries the same prose that documents the Rust
+        /// source — the readability goal of side-by-side translation. Tool
+        /// and Hax attributes carry no ProVerif meaning and are skipped.
+        ///
+        /// Each physical line of the doc body becomes its own `(* … *)` so we
+        /// never hand the `pretty` layout engine a string with embedded
+        /// newlines (it counts columns and would mislay the rest of the line).
+        /// Any `(*` / `*)` appearing inside the prose is defused (`( *` / `* )`)
+        /// so it can neither open nor prematurely close the surrounding
+        /// ProVerif comment.
+        fn doc_comments<A: 'static + Clone>(&self, attrs: &[Attribute]) -> DocBuilder<A> {
+            let mut doc = nil!();
+            for a in attrs {
+                if let AttributeKind::DocComment { body, .. } = &a.kind {
+                    let defuse =
+                        |s: &str| s.replace("*)", "* )").replace("(*", "( *");
+                    if body.is_empty() {
+                        doc = docs![doc, "(* *)", hardline!()];
+                        continue;
+                    }
+                    for line in body.lines() {
+                        doc = docs![
+                            doc,
+                            "(*",
+                            if line.is_empty() {
+                                String::new()
+                            } else {
+                                format!(" {} ", defuse(line.trim_end()))
+                            },
+                            "*)",
+                            hardline!()
+                        ];
+                    }
+                }
+            }
+            doc
+        }
+
         /// Print the `fun ... [data].` declaration and the matching `reduc`
         /// lines that recover each field. Mirrors `fun_and_reduc` inside
         /// `item_unwrapped`. Stage 2.0: every constructor returns `bitstring`
@@ -1307,7 +1347,22 @@ const _: () = {
                 .any(|a| matches!(a, AttrPayload::Erased));
             let _ = attrs;
 
-            match item.kind() {
+            // Leading Rust doc comments → ProVerif `(* … *)`, but only for
+            // items that actually emit something: an erased type / trait /
+            // use / alias renders nothing, and a dangling comment would
+            // visually attach to the *next* item.
+            let renders_output = match item.kind() {
+                ItemKind::Fn { .. } | ItemKind::Quote { .. } | ItemKind::Impl { .. } => true,
+                ItemKind::Type { .. } => !is_erased,
+                _ => false,
+            };
+            let leading_docs = if renders_output {
+                self.doc_comments(&item.meta.attributes)
+            } else {
+                nil!()
+            };
+
+            let rendered = match item.kind() {
                 ItemKind::Fn {
                     name, body, params, ..
                 } => {
@@ -1433,7 +1488,8 @@ const _: () = {
                 ItemKind::NotImplementedYet => nil!(),
                 ItemKind::Resugared(_) => nil!(),
                 ItemKind::Error(e) => docs![e],
-            }
+            };
+            docs![leading_docs, rendered]
         }
 
         fn metadata(&self, _metadata: &Metadata) -> DocBuilder<A> {
@@ -1538,7 +1594,15 @@ const _: () = {
             // (impl, item) pair, so `impl_item.ident` already carries the
             // `<self_ty>__<trait>__<method>` flattened name we want.
             let name = self.render_id(&impl_item.ident);
-            match &impl_item.kind {
+            // Leading Rust doc comments on the method/const → ProVerif comments
+            // (associated types emit nothing, so skip them to avoid a dangling
+            // comment).
+            let leading_docs = if matches!(&impl_item.kind, ImplItemKind::Type { .. }) {
+                nil!()
+            } else {
+                self.doc_comments(&impl_item.meta.attributes)
+            };
+            let rendered = match &impl_item.kind {
                 // Associated types are bitstring; nothing to declare.
                 ImplItemKind::Type { .. } => nil!(),
                 ImplItemKind::Fn { body, params } => {
@@ -1586,7 +1650,8 @@ const _: () = {
                     docs!["const ", name, ": bitstring."]
                 }
                 ImplItemKind::Error(err) => docs![err],
-            }
+            };
+            docs![leading_docs, rendered]
         }
 
         fn error_node(&self, _error_node: &ErrorNode) -> DocBuilder<A> {
