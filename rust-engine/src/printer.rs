@@ -65,6 +65,104 @@ pub trait HasLinkedItemGraph {
 /// Placeholder type for sourcemaps.
 pub struct SourceMap;
 
+/// A `pretty` renderer that, while producing the rendered text exactly as
+/// [`pretty::DocBuilder::pretty`] would, also captures the output position
+/// `(line, col)` (both 0-based) at which every [`Span`]-annotated sub-document
+/// begins. Backends opt in by wrapping the doc nodes they want mapped with
+/// [`pretty::DocBuilder::annotate`] (e.g. each top-level item); the resulting
+/// `(line, col, span)` list is everything a source map needs.
+///
+/// The text is byte-identical to the plain `.pretty(width).to_string()` path:
+/// the same `pretty::Doc::render` layout algorithm runs, and annotations are
+/// zero-width (they never affect layout), so this can be used as a drop-in that
+/// additionally yields provenance. Shared here (over the common `A = Span`
+/// annotation type) so any backend — ProVerif today, Lean/Rust later — can
+/// produce a source map the same way.
+#[derive(Default)]
+pub struct SpanPositionRenderer {
+    /// Accumulated rendered text.
+    pub out: String,
+    /// Current output line (0-based).
+    line: usize,
+    /// Current output column (0-based, counted in `char`s).
+    col: usize,
+    /// Annotation stack: each entry is `(span, already_anchored)`.
+    stack: Vec<(Span, bool)>,
+    /// Captured `(line, col, span)` anchors, one per annotated region.
+    pub positions: Vec<(usize, usize, Span)>,
+}
+
+impl SpanPositionRenderer {
+    /// Anchor every not-yet-anchored span on the stack to the current output
+    /// position (called right before the next chunk of text is written, so a
+    /// region maps to the position of its first character).
+    fn anchor(&mut self) {
+        let (line, col) = (self.line, self.col);
+        for entry in self.stack.iter_mut() {
+            if !entry.1 {
+                self.positions.push((line, col, entry.0));
+                entry.1 = true;
+            }
+        }
+    }
+}
+
+impl pretty::Render for SpanPositionRenderer {
+    type Error = ();
+
+    fn write_str(&mut self, s: &str) -> Result<usize, Self::Error> {
+        if s.is_empty() {
+            return Ok(0);
+        }
+        self.anchor();
+        for c in s.chars() {
+            if c == '\n' {
+                self.line += 1;
+                self.col = 0;
+            } else {
+                self.col += 1;
+            }
+        }
+        self.out.push_str(s);
+        Ok(s.len())
+    }
+
+    fn fail_doc(&self) -> Self::Error {}
+}
+
+impl<'a> pretty::RenderAnnotated<'a, Span> for SpanPositionRenderer {
+    fn push_annotation(&mut self, span: &'a Span) -> Result<(), Self::Error> {
+        self.stack.push((*span, false));
+        Ok(())
+    }
+
+    fn pop_annotation(&mut self) -> Result<(), Self::Error> {
+        // A region that produced no text leaves an un-anchored entry; dropping
+        // it here keeps its (stale) span from being anchored to later text.
+        self.stack.pop();
+        Ok(())
+    }
+}
+
+/// Render `fragment` with `printer`, returning the text (byte-identical to
+/// [`Print::print`]) together with the output `(line, col, span)` of every
+/// `Span`-annotated sub-document. See [`SpanPositionRenderer`].
+pub fn render_with_span_positions<P: Printer, T>(
+    printer: &P,
+    fragment: T,
+    width: usize,
+) -> (String, Vec<(usize, usize, Span)>)
+where
+    T: ToDocument<P, Span>,
+{
+    let doc = fragment.to_document(printer).into_doc();
+    let mut renderer = SpanPositionRenderer::default();
+    // The proverif/Lean/Rust printers never emit `Doc::fail`, so render is
+    // infallible; ignore the `Result<(), ()>`.
+    let _ = doc.deref().render_raw(width, &mut renderer);
+    (renderer.out, renderer.positions)
+}
+
 /// Helper trait to print AST fragments.
 pub trait Print<T>
 where

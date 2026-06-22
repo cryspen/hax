@@ -30,8 +30,9 @@ use crate::ast::span::Span;
 use crate::ast::visitors::AstVisitor;
 use crate::phase::*;
 use camino::Utf8PathBuf;
+use crate::printer::render_with_span_positions;
 use hax_lib_macros_types::AttrPayload;
-use hax_types::engine_api::File;
+use hax_types::engine_api::{File, SourceMap};
 
 /// Constructor IDs used by the ProVerif special-cases. Mirror the OCaml
 /// `Global_ident.eq_name`-style equality tests.
@@ -579,6 +580,46 @@ const _: () = {
                 inner,
                 ")"
             ]
+        }
+
+        /// Attach `span` as a `pretty` document annotation, but only when the
+        /// printer's annotation type `A` is actually `Span` — which is the case
+        /// during real rendering, since the [`Printer`] trait pins `A = Span`.
+        /// The `PrettyAst<A>` methods are generic in `A`, so this guarded helper
+        /// lets them record per-item provenance (harvested by
+        /// [`crate::printer::SpanPositionRenderer`]) without constraining `A`;
+        /// for any other `A` it is a no-op. Annotations never affect layout, so
+        /// the rendered text is unchanged either way.
+        fn annotate_with_span<A: 'static + Clone>(
+            doc: DocBuilder<A>,
+            span: Span,
+        ) -> DocBuilder<A> {
+            if std::any::TypeId::of::<A>() == std::any::TypeId::of::<Span>() {
+                // SAFETY: `A == Span` (checked just above) and `Span: Copy`, so
+                // reinterpreting the `Span` value as an `A` is a valid,
+                // leak-free bitwise copy.
+                let a: A = unsafe { std::mem::transmute_copy::<Span, A>(&span) };
+                doc.annotate(a)
+            } else {
+                doc
+            }
+        }
+
+        /// Emit a source-provenance comment `(* src: file:line name *)` above a
+        /// generated declaration, tying the ProVerif output back to the Rust
+        /// definition it came from (the side-by-side / explainability anchor).
+        /// Only emitted for items carrying a real source span — phase-synthesized
+        /// nodes (`Span::dummy()`, no on-disk file) get nothing.
+        fn src_comment<A: 'static + Clone>(&self, span: Span, name: &GlobalId) -> DocBuilder<A> {
+            if let Some(fs) = span.as_frontend_spans().first()
+                && let Some(path) = fs.filename.to_path()
+            {
+                return docs![
+                    format!("(* src: {}:{} {} *)", path.display(), fs.lo.line, self.render_id(name)),
+                    hardline!()
+                ];
+            }
+            nil!()
         }
 
         /// Render the leading Rust doc comments (`///` / `//!`) of an item's
@@ -1356,8 +1397,21 @@ const _: () = {
                 ItemKind::Type { .. } => !is_erased,
                 _ => false,
             };
+            // Source-provenance comment for the items that carry a real def
+            // span and a single name (Fn / Type); Impl methods get theirs in
+            // `impl_item`.
+            let src = if renders_output {
+                match item.kind() {
+                    ItemKind::Fn { name, .. } | ItemKind::Type { name, .. } => {
+                        self.src_comment(item.meta.span, name)
+                    }
+                    _ => nil!(),
+                }
+            } else {
+                nil!()
+            };
             let leading_docs = if renders_output {
-                self.doc_comments(&item.meta.attributes)
+                docs![src, self.doc_comments(&item.meta.attributes)]
             } else {
                 nil!()
             };
@@ -1489,6 +1543,15 @@ const _: () = {
                 ItemKind::Resugared(_) => nil!(),
                 ItemKind::Error(e) => docs![e],
             };
+            // Annotate the rendered declaration (Fn / Type) with its source span
+            // for the source map. Impl items are annotated individually in
+            // `impl_item`; other kinds render nothing to map.
+            let rendered = match item.kind() {
+                ItemKind::Fn { .. } | ItemKind::Type { .. } if renders_output => {
+                    Self::annotate_with_span(rendered, item.meta.span)
+                }
+                _ => rendered,
+            };
             docs![leading_docs, rendered]
         }
 
@@ -1600,7 +1663,10 @@ const _: () = {
             let leading_docs = if matches!(&impl_item.kind, ImplItemKind::Type { .. }) {
                 nil!()
             } else {
-                self.doc_comments(&impl_item.meta.attributes)
+                docs![
+                    self.src_comment(impl_item.meta.span, &impl_item.ident),
+                    self.doc_comments(&impl_item.meta.attributes)
+                ]
             };
             let rendered = match &impl_item.kind {
                 // Associated types are bitstring; nothing to declare.
@@ -1651,7 +1717,10 @@ const _: () = {
                 }
                 ImplItemKind::Error(err) => docs![err],
             };
-            docs![leading_docs, rendered]
+            docs![
+                leading_docs,
+                Self::annotate_with_span(rendered, impl_item.meta.span)
+            ]
         }
 
         fn error_node(&self, _error_node: &ErrorNode) -> DocBuilder<A> {
@@ -2498,12 +2567,25 @@ impl Backend for ProVerifBackend {
         // Collect every `GlobalId` referenced in expression / pattern
         // position from the AST.
         let referenced = collect_references(&modules, &mut printer);
-        // Render the body.
-        let contents = modules
-            .into_iter()
-            .map(|module: Module| printer.print(module).0)
-            .collect::<Vec<String>>()
-            .join("\n");
+        // Render the body, harvesting per-item source-span anchors as we go so
+        // we can emit a v3 source map alongside `lib.pvl`. `render_with_span_
+        // positions` produces text byte-identical to `printer.print(..)` (the
+        // span annotations are zero-width) plus the output `(line, col, span)`
+        // of each annotated item.
+        let mut parts: Vec<String> = Vec::new();
+        let mut positions: Vec<(usize, usize, Span)> = Vec::new();
+        let mut line_base = 0usize;
+        for module in modules.into_iter() {
+            let (text, pos) =
+                render_with_span_positions(&printer, module, ProVerifPrinter::RENDER_WIDTH);
+            for (l, c, span) in pos {
+                positions.push((l + line_base, c, span));
+            }
+            // Modules are joined by a single "\n" below.
+            line_base += text.matches('\n').count() + 1;
+            parts.push(text);
+        }
+        let contents = parts.join("\n");
         // Scan the rendered body for the names it already declares
         // (including ones synthesized by `proverif_replace_body!`
         // quote injections such as `reduc forall ...; foo(...) = ...`),
@@ -2512,11 +2594,15 @@ impl Backend for ProVerifBackend {
         // diagnostic file rather than being silently inlined into lib.pvl,
         // so the unsound stubs are visible and auditable (goal: empty).
         let missingdecl = self.format_external_decls(&referenced, &contents);
+        // The body is prepended with `HEADER`, so shift the harvested generated
+        // line numbers down by the preamble's line count before building the map.
+        let header_lines = HEADER.matches('\n').count();
+        let sourcemap = build_source_map(&path, header_lines, &positions);
         vec![
             File {
-                path,
                 contents: format!("{HEADER}{contents}"),
-                sourcemap: None,
+                sourcemap,
+                path,
             },
             File {
                 path: "missingdecl.pvl".to_string(),
@@ -2939,4 +3025,111 @@ impl AstVisitor for ExternRefCollector {
             self.push(*constructor, fields.len(), true);
         }
     }
+}
+
+/// Base64 alphabet for source-map VLQ encoding (RFC-style, `+/` tail).
+const VLQ_B64: &[u8; 64] =
+    b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+/// Append the base64 VLQ encoding of a signed integer to `out` (source-map v3
+/// "mappings" use this for every delta-encoded field).
+fn vlq_encode(value: i64, out: &mut String) {
+    // Sign goes in the low bit; the rest is the magnitude.
+    let mut v: u64 = if value < 0 {
+        ((value.unsigned_abs()) << 1) | 1
+    } else {
+        (value as u64) << 1
+    };
+    loop {
+        let mut digit = (v & 0b1_1111) as usize;
+        v >>= 5;
+        if v != 0 {
+            digit |= 0b10_0000; // continuation bit
+        }
+        out.push(VLQ_B64[digit] as char);
+        if v == 0 {
+            break;
+        }
+    }
+}
+
+/// Build a source-map v3 from harvested `(gen_line, gen_col, span)` anchors.
+///
+/// `header_lines` is the number of lines prepended (the `HEADER` preamble) ahead
+/// of the rendered body, so generated line numbers line up with the final file.
+/// Only anchors whose span resolves to a real on-disk file contribute a mapping
+/// (phase-synthesized `Span::dummy()` nodes are skipped). Returns `None` when no
+/// anchor maps anywhere.
+fn build_source_map(
+    out_file: &str,
+    header_lines: usize,
+    positions: &[(usize, usize, Span)],
+) -> Option<SourceMap> {
+    // Resolve each anchor to (gen_line, gen_col, source_index, src_line0, src_col0).
+    let mut sources: Vec<String> = Vec::new();
+    let mut source_index = |path: String, sources: &mut Vec<String>| -> usize {
+        if let Some(i) = sources.iter().position(|p| *p == path) {
+            i
+        } else {
+            sources.push(path);
+            sources.len() - 1
+        }
+    };
+    // (gen_line, gen_col, src_idx, src_line0, src_col0)
+    let mut segs: Vec<(usize, usize, usize, usize, usize)> = Vec::new();
+    for (gl, gc, span) in positions {
+        let Some(fs) = span.as_frontend_spans().first() else {
+            continue;
+        };
+        let Some(path) = fs.filename.to_path() else {
+            continue;
+        };
+        let idx = source_index(path.display().to_string(), &mut sources);
+        // rustc lines are 1-based; source-map lines/cols are 0-based.
+        let src_line0 = fs.lo.line.saturating_sub(1);
+        segs.push((gl + header_lines, *gc, idx, src_line0, fs.lo.col));
+    }
+    if segs.is_empty() {
+        return None;
+    }
+    // Order by generated position; encode line-by-line with delta fields.
+    segs.sort_by_key(|s| (s.0, s.1));
+    let max_line = segs.iter().map(|s| s.0).max().unwrap_or(0);
+    let mut mappings = String::new();
+    let (mut p_src, mut p_sl, mut p_sc) = (0i64, 0i64, 0i64);
+    let mut seg_i = 0;
+    for line in 0..=max_line {
+        if line > 0 {
+            mappings.push(';');
+        }
+        let mut p_gc = 0i64; // generated column resets each line
+        let mut first = true;
+        while seg_i < segs.len() && segs[seg_i].0 == line {
+            let (_, gc, idx, sl, sc) = segs[seg_i];
+            if !first {
+                mappings.push(',');
+            }
+            first = false;
+            vlq_encode(gc as i64 - p_gc, &mut mappings);
+            vlq_encode(idx as i64 - p_src, &mut mappings);
+            vlq_encode(sl as i64 - p_sl, &mut mappings);
+            vlq_encode(sc as i64 - p_sc, &mut mappings);
+            p_gc = gc as i64;
+            p_src = idx as i64;
+            p_sl = sl as i64;
+            p_sc = sc as i64;
+            seg_i += 1;
+        }
+    }
+    Some(SourceMap {
+        version: 3,
+        file: out_file.to_string(),
+        sourceRoot: String::new(),
+        sources,
+        // `cargo-hax` fills `sourcesContent` from disk when it writes the
+        // `<file>.map` sidecar, so leave it empty here.
+        sourcesContent: Vec::new(),
+        names: Vec::new(),
+        mappings,
+    })
 }
