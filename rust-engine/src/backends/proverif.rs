@@ -317,6 +317,70 @@ const _: () = {
             }
         }
 
+        /// Whether `expr` renders to a *self-delimiting* ProVerif term — one
+        /// that needs no surrounding parentheses when it appears as the RHS of
+        /// a `let`, as a branch of the `if`-rewrite, or as a match-arm body.
+        ///
+        /// Atomic forms are variables, literals, and (possibly nested through
+        /// the identity passthroughs `into`/`clone`/…) function- and
+        /// constructor-applications `f(...)` / `C(...)` / `bitstring_err()`,
+        /// all of which are bounded by their own parentheses. Compound forms
+        /// (`let … in …`, the `if`-rewrite, match-chains, loop unrollings,
+        /// verbatim quotes) are NOT atomic: they end in a position where a
+        /// following `else`/`in` could rebind, so they keep the parens that
+        /// isolate them. Deliberately conservative — when unsure, returns
+        /// `false` (keeps the parens), so dropping them is always sound.
+        fn expr_is_atomic(expr: &Expr) -> bool {
+            match &*expr.kind {
+                ExprKind::LocalId(_) | ExprKind::GlobalId(_) | ExprKind::Literal(_) => true,
+                ExprKind::Ascription { e, .. } => Self::expr_is_atomic(e),
+                // Identity passthroughs render their single argument verbatim,
+                // so atomicity propagates through them (see `expr`).
+                ExprKind::App { head, args, .. }
+                    if matches!(&*head.kind, ExprKind::GlobalId(g)
+                        if *g == names::into
+                            || *g == names::clone
+                            || *g == names::unsize
+                            || *g == names::deref
+                            || *g == names::cast_op) =>
+                {
+                    args.first().map(|a| Self::expr_is_atomic(a)).unwrap_or(true)
+                }
+                // Any other application renders `f(args)` / `f()` — and the
+                // `logical_and`/`logical_or`/`never_to_any` special cases all
+                // render as function applications too: self-delimiting.
+                ExprKind::App { .. } => true,
+                // `Ok(inner)` strips to `inner`; everything else
+                // (`Err`→`bitstring_err()`, `None()`, `Some(_)`, `C(_)`) is a
+                // constructor application.
+                ExprKind::Construct { constructor, fields, .. }
+                    if *constructor == names::ResultOk =>
+                {
+                    fields
+                        .first()
+                        .map(|(_, inner)| Self::expr_is_atomic(inner))
+                        .unwrap_or(true)
+                }
+                ExprKind::Construct { .. } => true,
+                // Cons-list `array_cons(...)` form.
+                ExprKind::Array(_) => true,
+                _ => false,
+            }
+        }
+
+        /// Render `expr` in a position that would otherwise be parenthesized,
+        /// dropping the parens when [`Self::expr_is_atomic`] proves they are
+        /// redundant. Used for `let` RHSs, the `if`-rewrite branches, and
+        /// match-arm bodies — turning `let x = (f(a)) in` into the readable
+        /// `let x = f(a) in` while keeping parens around compound terms.
+        fn paren_unless_atomic<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
+            if Self::expr_is_atomic(expr) {
+                docs![expr]
+            } else {
+                docs![expr].parens()
+            }
+        }
+
         /// Print one match-arm as an `if-let` chain piece. Mirrors
         /// `match_arm` (`proverif_backend.ml:229-247`).
         ///
@@ -356,7 +420,7 @@ const _: () = {
                     let body = if Self::is_trivial_binder(&arm.pat) {
                         docs![&arm.body]
                     } else {
-                        docs![&arm.body].parens()
+                        self.paren_unless_atomic(&arm.body)
                     };
                     docs![
                         "let ", pat, " = ", docs![scrutinee], " in",
@@ -1047,10 +1111,10 @@ const _: () = {
                         condition,
                         line!(),
                         "in ",
-                        docs![then].parens(),
+                        self.paren_unless_atomic(then),
                         line!(),
                         "else ",
-                        docs![e].parens()
+                        self.paren_unless_atomic(e)
                     ]
                     .nest(INDENT)
                     .group(),
@@ -1059,7 +1123,7 @@ const _: () = {
                         condition,
                         line!(),
                         "in ",
-                        docs![then].parens()
+                        self.paren_unless_atomic(then)
                     ]
                     .nest(INDENT)
                     .group(),
@@ -1080,7 +1144,7 @@ const _: () = {
                             "let ",
                             lhs,
                             " = ",
-                            docs![rhs].parens(),
+                            self.paren_unless_atomic(rhs),
                             " in",
                             hardline!(),
                             body
@@ -1090,9 +1154,9 @@ const _: () = {
                             "let ",
                             lhs,
                             " = ",
-                            docs![rhs].parens(),
+                            self.paren_unless_atomic(rhs),
                             " in ",
-                            docs![body].parens(),
+                            self.paren_unless_atomic(body),
                             " else bitstring_err()"
                         ]
                     }
