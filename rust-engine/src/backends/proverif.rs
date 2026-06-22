@@ -1664,6 +1664,304 @@ const _: () = {
     }
 };
 
+// ===========================================================================
+// Readability pass: SSA-freshen rebound local bindings.
+//
+// hax's `&mut` lowering + ANF threads state through a *chain* of `let`s that
+// reuse the same name: `let self = … in … let self = … in …`. ProVerif
+// tolerates this (letfun bodies allow shadowing) but warns `identifier self
+// rebound` on every reuse, and the reader loses track of which `self` is the
+// current one. This pass renames each successive rebinding to a fresh SSA name
+// (`self`, `self_1`, `self_2`, …) and rewrites every later use to the latest
+// version, turning the shadowed chain into a readable sequence that maps
+// one-to-one onto the Rust mutation steps. It is a pure α-renaming —
+// alpha-equivalent, so the model's meaning (and every verdict) is unchanged.
+#[derive(Default)]
+struct Freshen {
+    /// Per-function map: rendered base name → number of bindings seen so far.
+    /// Version 0 keeps the original name; version `v ≥ 1` renders `{base}_{v}`.
+    counter: HashMap<String, usize>,
+}
+
+/// The `LocalId` bound by a simple (possibly ascribed) binding pattern, if any.
+fn pat_binding_id(p: &Pat) -> Option<LocalId> {
+    match &*p.kind {
+        PatKind::Binding { var, .. } => Some(var.clone()),
+        PatKind::Ascription { pat, .. } => pat_binding_id(pat),
+        _ => None,
+    }
+}
+
+impl Freshen {
+    /// The rendered (ProVerif-escaped) base name of a local, mirroring
+    /// `ProVerifPrinter::local_id` so rebind detection matches what ProVerif
+    /// actually sees and generated suffixes render cleanly.
+    fn base(id: &LocalId) -> String {
+        let name = id.0.to_string();
+        let rendered = if let Some(rest) = name.strip_prefix("impl ") {
+            format!("impl_{}", rest.replace(' ', "_").replace('+', "_"))
+        } else {
+            name
+        };
+        ProVerifPrinter::escape(&rendered)
+    }
+
+    /// Allocate the SSA name for a freshly-bound variable. The first binding of
+    /// a base name keeps the original `LocalId`; each subsequent (re)binding of
+    /// a still-live name becomes `{base}_{v}`.
+    fn alloc(&mut self, original: &LocalId) -> LocalId {
+        let b = Self::base(original);
+        let slot = self.counter.entry(b.clone()).or_insert(0);
+        let cur = *slot;
+        *slot += 1;
+        if cur == 0 {
+            original.clone()
+        } else {
+            LocalId(Symbol::new(&format!("{b}_{cur}")))
+        }
+    }
+
+    /// Entry point: SSA-freshen one top-level item.
+    fn item(item: &mut Item) {
+        match &mut item.kind {
+            ItemKind::Fn { body, params, .. } => Self::function(params, body),
+            ItemKind::Impl { items, .. } => {
+                for ii in items.iter_mut() {
+                    if let ImplItemKind::Fn { body, params } = &mut ii.kind {
+                        Self::function(params, body);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    /// Freshen one function body, seeding the scope with its parameters so the
+    /// first `let self = …` in the body counts as a rebinding of the `self`
+    /// parameter (yielding `self_1`).
+    fn function(params: &[Param], body: &mut Expr) {
+        let mut f = Freshen::default();
+        let mut subst: HashMap<String, LocalId> = HashMap::new();
+        for p in params {
+            if let Some(id) = pat_binding_id(&p.pat) {
+                let b = Self::base(&id);
+                f.counter.insert(b.clone(), 1);
+                subst.insert(b, id);
+            }
+        }
+        f.expr(body, &subst);
+    }
+
+    /// `subst` maps a rendered base name to the `LocalId` that uses of that
+    /// name currently resolve to. It is read-only here: scopes that introduce
+    /// bindings (`let`/match-arm/closure/loop) build an extended *copy* and
+    /// pass it down, so sibling branches never see each other's bindings. The
+    /// version counter (`self.counter`) is intentionally shared across the
+    /// whole function so suffixes stay globally unique.
+    fn expr(&mut self, expr: &mut Expr, subst: &HashMap<String, LocalId>) {
+        match &mut *expr.kind {
+            ExprKind::LocalId(id) => {
+                if let Some(cur) = subst.get(&Self::base(id)) {
+                    *id = cur.clone();
+                }
+            }
+            ExprKind::Let { lhs, rhs, body } => {
+                // RHS is evaluated in the *outer* scope (before the binding).
+                self.expr(rhs, subst);
+                let mut inner = subst.clone();
+                self.pat(lhs, &mut inner);
+                self.expr(body, &inner);
+            }
+            ExprKind::App { head, args, .. } => {
+                self.expr(head, subst);
+                for a in args.iter_mut() {
+                    self.expr(a, subst);
+                }
+            }
+            ExprKind::Construct { fields, base, .. } => {
+                for (_, v) in fields.iter_mut() {
+                    self.expr(v, subst);
+                }
+                if let Some(b) = base {
+                    self.expr(b, subst);
+                }
+            }
+            ExprKind::Array(es) => {
+                for e in es.iter_mut() {
+                    self.expr(e, subst);
+                }
+            }
+            ExprKind::If {
+                condition,
+                then,
+                else_,
+            } => {
+                self.expr(condition, subst);
+                self.expr(then, subst);
+                if let Some(e) = else_ {
+                    self.expr(e, subst);
+                }
+            }
+            ExprKind::Match { scrutinee, arms } => {
+                self.expr(scrutinee, subst);
+                for arm in arms.iter_mut() {
+                    let mut inner = subst.clone();
+                    self.pat(&mut arm.pat, &mut inner);
+                    if let Some(guard) = &mut arm.guard {
+                        let GuardKind::IfLet { lhs, rhs } = &mut guard.kind;
+                        // Guard RHS is in the arm's pre-guard scope; its
+                        // pattern then binds into the arm body's scope.
+                        self.expr(rhs, &inner);
+                        self.pat(lhs, &mut inner);
+                    }
+                    self.expr(&mut arm.body, &inner);
+                }
+            }
+            ExprKind::Ascription { e, .. } => self.expr(e, subst),
+            ExprKind::Closure {
+                params,
+                body,
+                captures,
+            } => {
+                for c in captures.iter_mut() {
+                    self.expr(c, subst);
+                }
+                let mut inner = subst.clone();
+                for p in params.iter_mut() {
+                    self.pat(p, &mut inner);
+                }
+                self.expr(body, &inner);
+            }
+            ExprKind::Loop {
+                body,
+                kind,
+                state,
+                ..
+            } => {
+                let mut inner = subst.clone();
+                match &mut **kind {
+                    LoopKind::ForLoop { pat, iterator } => {
+                        self.expr(iterator, subst);
+                        self.pat(pat, &mut inner);
+                    }
+                    LoopKind::ForIndexLoop {
+                        start, end, var, ..
+                    } => {
+                        self.expr(start, subst);
+                        self.expr(end, subst);
+                        let new = self.alloc(var);
+                        inner.insert(Self::base(var), new.clone());
+                        *var = new;
+                    }
+                    LoopKind::WhileLoop { condition } => self.expr(condition, &inner),
+                    LoopKind::UnconditionalLoop => {}
+                }
+                if let Some(st) = state {
+                    self.expr(&mut st.init, subst);
+                    self.pat(&mut st.body_pat, &mut inner);
+                }
+                self.expr(body, &inner);
+            }
+            ExprKind::Borrow { inner, .. } | ExprKind::AddressOf { inner, .. } => {
+                self.expr(inner, subst)
+            }
+            ExprKind::Block { body, .. } => self.expr(body, subst),
+            ExprKind::Assign { value, .. } => self.expr(value, subst),
+            ExprKind::Return { value } => self.expr(value, subst),
+            ExprKind::Break { value, .. } => self.expr(value, subst),
+            ExprKind::Continue { state, .. } => {
+                if let Some(s) = state {
+                    self.expr(s, subst);
+                }
+            }
+            // Leaves and verbatim quotes (left untouched: a quote is
+            // user-authored ProVerif that names its own variables).
+            ExprKind::Literal(_)
+            | ExprKind::GlobalId(_)
+            | ExprKind::Quote { .. }
+            | ExprKind::Resugared(_)
+            | ExprKind::Error(_) => {}
+        }
+    }
+
+    /// Allocate fresh SSA names for every binder in `pat`, recording each in
+    /// `subst` so later uses resolve to it.
+    fn pat(&mut self, pat: &mut Pat, subst: &mut HashMap<String, LocalId>) {
+        match &mut *pat.kind {
+            PatKind::Binding { var, sub_pat, .. } => {
+                let new = self.alloc(var);
+                subst.insert(Self::base(var), new.clone());
+                *var = new;
+                if let Some(sp) = sub_pat {
+                    self.pat(sp, subst);
+                }
+            }
+            PatKind::Construct { fields, .. } => {
+                for (_, p) in fields.iter_mut() {
+                    self.pat(p, subst);
+                }
+            }
+            PatKind::Ascription { pat, .. } => self.pat(pat, subst),
+            PatKind::Array { args } => {
+                for p in args.iter_mut() {
+                    self.pat(p, subst);
+                }
+            }
+            PatKind::Deref { sub_pat } => self.pat(sub_pat, subst),
+            PatKind::Or { sub_pats } => {
+                // Or-alternatives bind the SAME variables; allocate from the
+                // first and copy the mapping onto the rest so all alternatives
+                // agree and the shared arm body sees one consistent name.
+                if let Some((first, rest)) = sub_pats.split_first_mut() {
+                    self.pat(first, subst);
+                    for p in rest.iter_mut() {
+                        Self::rebind_pat(p, subst);
+                    }
+                }
+            }
+            // `=lit` constant patterns and wildcards bind no nameable variable.
+            PatKind::Constant { .. }
+            | PatKind::Wild
+            | PatKind::Resugared(_)
+            | PatKind::Error(_) => {}
+        }
+    }
+
+    /// Rename binders in `pat` to the names already chosen in `subst` (the
+    /// non-first alternatives of an Or-pattern), without allocating new
+    /// versions.
+    fn rebind_pat(pat: &mut Pat, subst: &HashMap<String, LocalId>) {
+        match &mut *pat.kind {
+            PatKind::Binding { var, sub_pat, .. } => {
+                if let Some(cur) = subst.get(&Self::base(var)) {
+                    *var = cur.clone();
+                }
+                if let Some(sp) = sub_pat {
+                    Self::rebind_pat(sp, subst);
+                }
+            }
+            PatKind::Construct { fields, .. } => {
+                for (_, p) in fields.iter_mut() {
+                    Self::rebind_pat(p, subst);
+                }
+            }
+            PatKind::Ascription { pat, .. } => Self::rebind_pat(pat, subst),
+            PatKind::Array { args } => {
+                for p in args.iter_mut() {
+                    Self::rebind_pat(p, subst);
+                }
+            }
+            PatKind::Deref { sub_pat } => Self::rebind_pat(sub_pat, subst),
+            PatKind::Or { sub_pats } => {
+                for p in sub_pats.iter_mut() {
+                    Self::rebind_pat(p, subst);
+                }
+            }
+            _ => {}
+        }
+    }
+}
+
 /// The ProVerif backend.
 pub struct ProVerifBackend;
 
@@ -1745,9 +2043,18 @@ impl Backend for ProVerifBackend {
         }]
     }
 
-    fn modules_to_files(&self, modules: Vec<Module>, mut printer: Self::Printer) -> Vec<File> {
+    fn modules_to_files(&self, mut modules: Vec<Module>, mut printer: Self::Printer) -> Vec<File> {
         if modules.is_empty() {
             return vec![];
+        }
+        // Readability pass: SSA-freshen rebound local bindings so the
+        // generated model reads as a sequence of distinct state versions
+        // (`self`, `self_1`, …) instead of a shadowed chain, and ProVerif
+        // stops warning `identifier X rebound`. Pure α-renaming.
+        for module in &mut modules {
+            for item in &mut module.items {
+                Freshen::item(item);
+            }
         }
         let path = self.module_path(modules.first().unwrap()).to_string();
         // Pre-compute the set of const-generic `LocalId`s that the
