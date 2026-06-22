@@ -71,6 +71,17 @@ Record Foo_record : Type :=
 #[export] Instance settable_Foo_record : Settable _ :=
   settable! (Build_Foo_record) <Foo_f_x; Foo_f_y; Foo_f_z>.
 
+Record FooConstGeneric_record (v_LEN : t_usize) : Type :=
+  {
+    FooConstGeneric_f_indices : t_Array (t_u8) (v_LEN);
+    FooConstGeneric_f_length : t_usize;
+  }.
+Arguments Build_FooConstGeneric_record {_}.
+Arguments FooConstGeneric_f_indices {_}.
+Arguments FooConstGeneric_f_length {_}.
+#[export] Instance settable_FooConstGeneric_record `{v_LEN : t_usize} : Settable _ :=
+  settable! (Build_FooConstGeneric_record (v_LEN := v_LEN)) <FooConstGeneric_f_indices; FooConstGeneric_f_length>.
+
 Definition props '(_ : unit) : unit :=
   let _ := assume (f_from (impl_Prop__from_bool ((true : bool)))) in
   let _ := assert_prop (f_from (impl_Prop__from_bool ((true : bool)))) in

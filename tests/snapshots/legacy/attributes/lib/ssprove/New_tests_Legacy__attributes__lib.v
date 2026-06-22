@@ -91,6 +91,27 @@ Notation "'Build_t_Foo' '[' x ']' '(' 'f_x' ':=' y ')'" := (Build_t_Foo (f_x := 
 Notation "'Build_t_Foo' '[' x ']' '(' 'f_y' ':=' y ')'" := (Build_t_Foo (f_x := f_x x) (f_y := y) (f_z := f_z x)).
 Notation "'Build_t_Foo' '[' x ']' '(' 'f_z' ':=' y ')'" := (Build_t_Foo (f_x := f_x x) (f_y := f_y x) (f_z := y)).
 
+Definition t_FooConstGeneric {v_LEN : both uint_size} : choice_type :=
+  (nseq int8 (is_pure (v_LEN)) × uint_size).
+Equations f_indices {v_LEN : both uint_size} (s : both t_FooConstGeneric) : both (nseq int8 (is_pure (v_LEN))) :=
+  f_indices s  :=
+    bind_both s (fun x =>
+      ret_both (fst x : (nseq int8 (is_pure (v_LEN))))) : both (nseq int8 (is_pure (v_LEN))).
+Fail Next Obligation.
+Equations f_length {v_LEN : both uint_size} (s : both t_FooConstGeneric) : both uint_size :=
+  f_length s  :=
+    bind_both s (fun x =>
+      ret_both (snd x : uint_size)) : both uint_size.
+Fail Next Obligation.
+Equations Build_t_FooConstGeneric {v_LEN : both uint_size} {f_indices : both (nseq int8 (is_pure (v_LEN)))} {f_length : both uint_size} : both (t_FooConstGeneric) :=
+  Build_t_FooConstGeneric  :=
+    bind_both f_length (fun f_length =>
+      bind_both f_indices (fun f_indices =>
+        ret_both ((f_indices,f_length) : (t_FooConstGeneric)))) : both (t_FooConstGeneric).
+Fail Next Obligation.
+Notation "'Build_t_FooConstGeneric' '[' x ']' '(' 'f_indices' ':=' y ')'" := (Build_t_FooConstGeneric (f_indices := y) (f_length := f_length x)).
+Notation "'Build_t_FooConstGeneric' '[' x ']' '(' 'f_length' ':=' y ')'" := (Build_t_FooConstGeneric (f_indices := f_indices x) (f_length := y)).
+
 Equations props (_ : both 'unit) : both 'unit :=
   props _  :=
     letb _ := assume (f_from (impl_Prop__from_bool (ret_both (true : 'bool)))) in
