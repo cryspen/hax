@@ -552,19 +552,27 @@ const _: () = {
             // That means the `reduc forall ...;` header must NOT bind any
             // variable with the same rendered name, or ProVerif emits a
             // "rebound" warning and shadows the destructor function name
-            // inside the rule. Append a `_v` suffix on each forall-bound
-            // variable to keep them fresh.
-            let bind_name = |id: &GlobalId| format!("{}_v", self.render_id(id));
-            let fun_args_full: DocBuilder<A> = comma_sep!(typed_args_vec.iter().map(|(id, ty)| {
-                docs![bind_name(id), ": ", ty]
-            }));
-            let fun_args_names: DocBuilder<A> = comma_sep!(typed_args_vec
-                .iter()
-                .map(|(id, _)| docs![bind_name(id)]));
+            // inside the rule. The forall-bound variables are LOCAL to the
+            // rule and only need to be fresh w.r.t. the (fully-qualified,
+            // global) accessor/constructor function symbols used in it, so we
+            // give them short positional names `v_0`, `v_1`, … rather than the
+            // fully-qualified field id — only globals deserve qualified names,
+            // and the qualified form produced unreadable binders like
+            // `libcrux_psq__aead__AEADError__Deserialize__0_v`.
+            let bind_names: Vec<String> = (0..typed_args_vec.len())
+                .map(|i| format!("v_{i}"))
+                .collect();
+            let fun_args_full: DocBuilder<A> =
+                comma_sep!(typed_args_vec.iter().enumerate().map(|(i, (_, ty))| {
+                    docs![bind_names[i].clone(), ": ", ty]
+                }));
+            let fun_args_names: DocBuilder<A> =
+                comma_sep!((0..typed_args_vec.len()).map(|i| docs![bind_names[i].clone()]));
 
             let reduc_pieces: Vec<DocBuilder<A>> = typed_args_vec
                 .iter()
-                .map(|(id, _ty)| {
+                .enumerate()
+                .map(|(i, (id, _ty))| {
                     let accessor = self.accessor_name(&base, id);
                     let constructor_call = docs![
                         constructor_name.clone(),
@@ -577,7 +585,7 @@ const _: () = {
                             .nest(INDENT)
                             .group(),
                         ";",
-                        docs![line!(), accessor_call, " = ", bind_name(id)]
+                        docs![line!(), accessor_call, " = ", bind_names[i].clone()]
                             .nest(INDENT)
                             .group()
                     ]
