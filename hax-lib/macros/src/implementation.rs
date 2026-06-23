@@ -74,7 +74,10 @@ pub fn loop_invariant(predicate: pm::TokenStream) -> pm::TokenStream {
         ),
     };
     let ts: pm::TokenStream = quote! {
-        #[cfg(#HaxCfgOptionName)]
+        // The ProVerif/Aeneas backend does not consume loop invariants, and the
+        // emitted (non-const) `_internal_loop_invariant` call breaks `const fn`s
+        // that carry an invariant. Suppress the spec under `hax_backend_proverif`.
+        #[cfg(all(#HaxCfgOptionName, not(hax_backend_proverif)))]
         {
             #invariant_f({
                 #HaxQuantifiers
@@ -95,7 +98,9 @@ pub fn loop_invariant(predicate: pm::TokenStream) -> pm::TokenStream {
 pub fn loop_decreases(predicate: pm::TokenStream) -> pm::TokenStream {
     let predicate: TokenStream = predicate.into();
     let ts: pm::TokenStream = quote! {
-        #[cfg(#HaxCfgOptionName)]
+        // Suppressed for the ProVerif/Aeneas backend (see `loop_invariant`): the
+        // `_internal_loop_decreases` / `to_int` calls are non-const and unused.
+        #[cfg(all(#HaxCfgOptionName, not(hax_backend_proverif)))]
         {
             hax_lib::_internal_loop_decreases({
                 #HaxQuantifiers
@@ -694,7 +699,10 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             let status_attr =
                                 &AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
                             extra.push(syn::parse_quote! {
-                                #[cfg(#HaxCfgOptionName)]
+                                // Refinement-type predicate: a verification spec the
+                                // ProVerif/Aeneas backend ignores; suppress under
+                                // `hax_backend_proverif` (see `make_fn_decoration`).
+                                #[cfg(all(#HaxCfgOptionName, not(hax_backend_proverif)))]
                                 #status_attr
                                 const _: () = {
                                     #uid_attr
