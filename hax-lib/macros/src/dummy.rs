@@ -24,7 +24,12 @@ identity_proc_macro_attribute!(
     requires,
     ensures,
     decreases,
+    pv_handwritten,
+    pv_constructor,
     pv_inline,
+    pv_extern,
+    pv_stub,
+    pv_inverse_of,
     protocol_messages,
     process_init,
     process_write,
@@ -36,15 +41,19 @@ identity_proc_macro_attribute!(
     fstar_replace,
     coq_replace,
     lean_replace,
+    proverif_replace,
     fstar_replace_body,
     coq_replace_body,
     lean_replace_body,
+    proverif_replace_body,
     fstar_before,
     coq_before,
     lean_before,
+    proverif_before,
     fstar_after,
     coq_after,
     lean_after,
+    proverif_after,
     fstar_smt_pat,
     fstar_postprocess_with,
     lean_proof,
@@ -53,143 +62,6 @@ identity_proc_macro_attribute!(
     lean_proof_method_grind,
     lean_proof_method_bv_decide,
 );
-
-// ---------------------------------------------------------------------------
-// ProVerif `pv_*` / `proverif::*` macros (Aeneas/Charon path).
-//
-// This `dummy.rs` is the code that runs whenever `--cfg hax` is *not* set —
-// i.e. both a normal `cargo build`/`test` of a client crate AND the
-// charon/Aeneas ProVerif extraction (charon does not set `--cfg hax`). On the
-// `--cfg hax` (OCaml hax-engine) path, `implementation.rs` runs instead.
-//
-// To make these annotations survive into the Aeneas Pure-IR, each lowers to an
-// inert `#[cfg_attr(pv_extract, pv::<kind>(..))]` tool attribute. It is dropped
-// by rustc on a normal build (`pv_extract` unset, so no `register_tool(pv)`
-// needed); the charon dump step sets `--cfg pv_extract` + `register_tool(pv)`,
-// so the attribute then survives to MIR as `AttrUnknown { path, args }` for the
-// backend's `attrs.rs` to read. Arg shapes (M0 / M3 / M4):
-//   - bare marker          → `#[pv::constructor]`        (args = None)
-//   - `= "<text>"`         → `#[pv::handwritten = ".."]` (args = quoted string)
-//   - `(text = "<text>")`  → `#[pv::before(text = "..")]`(args = `text = ".."`)
-// `pv_inline` stays a plain identity above: on the Aeneas path it is blocked
-// upstream (the closure→fn-ptr cast is an Aeneas `EError`), so emitting a
-// `pv::inline` tool attribute would have nothing to act on.
-
-/// A marker indicating a `fn` should be translated to a ProVerif constructor.
-#[proc_macro_attribute]
-pub fn pv_constructor(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let item: proc_macro2::TokenStream = item.into();
-    quote! {
-        #[allow(unexpected_cfgs)]
-        #[cfg_attr(pv_extract, pv::constructor)]
-        #item
-    }
-    .into()
-}
-
-/// A marker indicating a `fn` requires manual modelling in ProVerif (the bare
-/// `pv::handwritten` makes the backend emit a `bitstring_default()` placeholder).
-#[proc_macro_attribute]
-pub fn pv_handwritten(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let item: proc_macro2::TokenStream = item.into();
-    quote! {
-        #[allow(unexpected_cfgs)]
-        #[cfg_attr(pv_extract, pv::handwritten)]
-        #item
-    }
-    .into()
-}
-
-/// Model a `fn` as a single opaque `extern__<fn>` letfun of uniform-bitstring
-/// arity: declare the symbol (`pv::before`) and call it from the body
-/// (`pv::handwritten`). Mirrors `implementation.rs`'s `pv_extern`.
-#[proc_macro_attribute]
-pub fn pv_extern(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let fn_name = item.sig.ident.to_string();
-    let arity = item.sig.inputs.len();
-    let arg_names: Vec<String> = item
-        .sig
-        .inputs
-        .iter()
-        .enumerate()
-        .map(|(i, arg)| match arg {
-            FnArg::Receiver(_) => "self".to_string(),
-            FnArg::Typed(pat_type) => match &*pat_type.pat {
-                Pat::Ident(pat_ident) => pat_ident.ident.to_string(),
-                _ => format!("p{}", i),
-            },
-        })
-        .collect();
-    let bitstring_args = std::iter::repeat("bitstring")
-        .take(arity)
-        .collect::<Vec<_>>()
-        .join(", ");
-    let decl = format!("fun extern__{fn_name}({bitstring_args}): bitstring.");
-    let body_call = format!("extern__{fn_name}({})", arg_names.join(", "));
-    quote! {
-        #[allow(unexpected_cfgs)]
-        #[cfg_attr(pv_extract, pv::before(text = #decl))]
-        #[cfg_attr(pv_extract, pv::handwritten(text = #body_call))]
-        #item
-    }
-    .into()
-}
-
-/// Shorthand for `pv::handwritten = "<lit>"` — a trivial constant/body stub.
-#[proc_macro_attribute]
-pub fn pv_stub(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let payload: proc_macro2::TokenStream = attr.into();
-    let item: proc_macro2::TokenStream = item.into();
-    quote! {
-        #[allow(unexpected_cfgs)]
-        #[cfg_attr(pv_extract, pv::handwritten(text = #payload))]
-        #item
-    }
-    .into()
-}
-
-/// Declare this letfun as the (one-sided) inverse of another function via a
-/// `reduc` rule, emitted verbatim. Mirrors `implementation.rs`'s `pv_inverse_of`.
-#[proc_macro_attribute]
-pub fn pv_inverse_of(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let other_path = parse_macro_input!(attr as syn::Path);
-    let other_str = quote! { #other_path }.to_string().replace(' ', "");
-    let item_fn: ItemFn = parse_macro_input!(item);
-    let self_name = item_fn.sig.ident.to_string();
-    let body = format!("reduc forall x: bitstring; ${{{self_name}}}(${{{other_str}}}(x)) = x.");
-    quote! {
-        #[allow(unexpected_cfgs)]
-        #[cfg_attr(pv_extract, pv::verbatim(text = #body))]
-        #item_fn
-    }
-    .into()
-}
-
-// All four lower to the delimited `pv::<kind>(text = "…")` shape: charon reads
-// delimited args token-wise (works for macro-synthesized literals), whereas the
-// `= "…"` shape is read from the source span and breaks for synthesized text.
-// The backend's `attr_text` accepts either shape, so this is uniform.
-macro_rules! proverif_quoting_dummy {
-    ($name:ident, $kind:ident) => {
-        #[proc_macro_attribute]
-        pub fn $name(payload: TokenStream, item: TokenStream) -> TokenStream {
-            let payload: proc_macro2::TokenStream = payload.into();
-            let item: proc_macro2::TokenStream = item.into();
-            quote! {
-                #[allow(unexpected_cfgs)]
-                #[cfg_attr(pv_extract, pv::$kind(text = #payload))]
-                #item
-            }
-            .into()
-        }
-    };
-}
-
-proverif_quoting_dummy!(proverif_before, before);
-proverif_quoting_dummy!(proverif_after, after);
-proverif_quoting_dummy!(proverif_replace, verbatim);
-proverif_quoting_dummy!(proverif_replace_body, handwritten);
 
 #[proc_macro]
 pub fn fstar_expr(_payload: TokenStream) -> TokenStream {
