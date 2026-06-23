@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "bip-340",
     "chacha20",
     "lean_chacha20",
     "lean_barrett",
