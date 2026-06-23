@@ -786,21 +786,40 @@ pub fn protocol_messages(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::T
 }
 
 /// A marker indicating a `fn` should be automatically translated to a ProVerif constructor.
+///
+/// The `#[cfg_attr(pv_extract, pv::constructor)]` line additionally lowers the
+/// marker to an inert `pv::` tool attribute for the Aeneas/Charon ProVerif path
+/// (active only under `--cfg pv_extract`, so the OCaml hax-engine path, which
+/// reads `#attr`, is untouched).
 #[proc_macro_error]
 #[proc_macro_attribute]
 pub fn pv_constructor(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
     let attr = AttrPayload::PVConstructor;
-    quote! {#attr #item}.into()
+    quote! {
+        #attr
+        #[cfg_attr(pv_extract, pv::constructor)]
+        #item
+    }
+    .into()
 }
 
 /// A marker indicating a `fn` requires manual modelling in ProVerif.
+///
+/// On the Aeneas/Charon path (`--cfg pv_extract`) the bare `pv::handwritten`
+/// tool attribute makes the backend emit a `bitstring_default()` body with a
+/// `REPLACE` comment; the OCaml hax-engine path reads `#attr` as before.
 #[proc_macro_error]
 #[proc_macro_attribute]
 pub fn pv_handwritten(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
     let attr = AttrPayload::PVHandwritten;
-    quote! {#attr #item}.into()
+    quote! {
+        #attr
+        #[cfg_attr(pv_extract, pv::handwritten)]
+        #item
+    }
+    .into()
 }
 
 /// A marker telling the ProVerif backend to β-inline every call to this
@@ -986,7 +1005,7 @@ pub fn lean_proof_method_bv_decide(
 }
 
 macro_rules! make_quoting_item_proc_macro {
-    ($backend:ident, $macro_name:ident, $position:expr, $cfg_name:ident) => {
+    ($backend:ident, $macro_name:ident, $position:expr, $cfg_name:ident $(, pv = $pv_kind:ident)?) => {
         #[doc = concat!("This macro inlines verbatim ", stringify!($backend)," code before a Rust item.")]
         ///
         /// This macro takes a string literal containing backend
@@ -1025,6 +1044,21 @@ macro_rules! make_quoting_item_proc_macro {
                 pm::TokenStream::from_iter(tokens)
             };
 
+            // For the ProVerif Aeneas/Charon path only, also lower the verbatim
+            // string to an inert `pv::<kind>(text = "…")` tool attribute on the
+            // item, active only under `--cfg pv_extract`. This is additive: the
+            // OCaml hax-engine path (driven by the carrier `const` below) is
+            // untouched. The `$(…)?` expands iff a `pv = <kind>` was supplied,
+            // i.e. only for the ProVerif backend.
+            #[allow(unused_mut)]
+            let mut pv_attr = TokenStream::new();
+            $(
+                let pv_payload: TokenStream = payload.clone().into();
+                pv_attr = quote! {
+                    #[cfg_attr(pv_extract, pv::$pv_kind(text = #pv_payload))]
+                };
+            )?
+
             let ts: TokenStream = quote::item(
                 ItemQuote {
                     position: $position,
@@ -1035,13 +1069,13 @@ macro_rules! make_quoting_item_proc_macro {
                 quote! {#item}.into(),
             )
             .into();
-            ts.into()
+            quote! { #pv_attr #ts }.into()
         }
     };
 }
 
 macro_rules! make_quoting_proc_macro {
-    ($backend:ident) => {
+    ($backend:ident $(, pv_kinds($before_k:ident, $after_k:ident, $replace_k:ident, $body_k:ident))?) => {
         #[doc = concat!("Embed ", stringify!($backend), " expression inside a Rust expression. This macro takes only one argument: some raw ", stringify!($backend), " code as a string literal.")]
         ///
 
@@ -1113,8 +1147,8 @@ macro_rules! make_quoting_proc_macro {
             }}.into()
         }
 
-        make_quoting_item_proc_macro!($backend, ${concat($backend, _before)}, ItemQuotePosition::Before, ${concat(hax_backend_, $backend)});
-        make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, ItemQuotePosition::After, ${concat(hax_backend_, $backend)});
+        make_quoting_item_proc_macro!($backend, ${concat($backend, _before)}, ItemQuotePosition::Before, ${concat(hax_backend_, $backend)} $(, pv = $before_k)?);
+        make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, ItemQuotePosition::After, ${concat(hax_backend_, $backend)} $(, pv = $after_k)?);
 
         #[doc = concat!("Replaces a Rust item with some verbatim ", stringify!($backend)," code.")]
         #[proc_macro_error]
@@ -1129,7 +1163,11 @@ macro_rules! make_quoting_proc_macro {
                 #attr
                 #item
 
+                // ProVerif Aeneas/Charon path: replace the item with verbatim
+                // text via the `pv::verbatim` tool attribute (active only under
+                // `--cfg pv_extract`). Emitted only for the ProVerif backend.
                 #[cfg(not(${concat(hax_backend_, $backend)}))]
+                $( #[cfg_attr(pv_extract, pv::$replace_k(text = #payload))] )?
                 #item
             }
             .into()
@@ -1151,7 +1189,16 @@ macro_rules! make_quoting_proc_macro {
                 #[cfg(${concat(hax_backend_, $backend)})]
                 #hax_item
 
+                // ProVerif Aeneas/Charon path: replace the body with verbatim
+                // text via the `pv::handwritten(text = "…")` tool attribute
+                // (active only under `--cfg pv_extract`). Emitted only for
+                // ProVerif. The `(text = …)` (delimited) shape is required, not
+                // `= "…"`: charon reads `= "…"` args from the source span, which
+                // for a macro-synthesized literal (e.g. `pv_extern`'s body call)
+                // points at the *invocation*, not the literal — the delimited
+                // form is read token-wise and round-trips correctly.
                 #[cfg(not(${concat(hax_backend_, $backend)}))]
+                $( #[cfg_attr(pv_extract, pv::$body_k(text = #payload))] )?
                 #item
             }.into()
         }
@@ -1161,7 +1208,12 @@ macro_rules! make_quoting_proc_macro {
     }
 }
 
-make_quoting_proc_macro!(fstar coq proverif lean);
+make_quoting_proc_macro!(fstar coq lean);
+// ProVerif additionally lowers its verbatim-injection macros to inert `pv::`
+// tool attributes for the Aeneas/Charon path: before→`pv::before`,
+// after→`pv::after`, replace→`pv::verbatim`, replace_body→`pv::handwritten`
+// (all gated on `--cfg pv_extract`, so the OCaml hax-engine path is untouched).
+make_quoting_proc_macro!(proverif, pv_kinds(before, after, verbatim, handwritten));
 
 /// Marks a newtype `struct RefinedT(T);` as a refinement type. The
 /// struct should have exactly one unnamed private field.
