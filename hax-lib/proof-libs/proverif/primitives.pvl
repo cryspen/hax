@@ -37,6 +37,23 @@ fun Some(bitstring): bitstring [data].
 fun None(): bitstring [data].
 letfun Option_err() = let x = construct_fail() in None().
 
+(*** core::ops::ControlFlow + the `?` (Try) machinery on Result ***)
+(* `x?` desugars to `match Try::branch(x) { Continue(v) => v, Break(r) =>
+   return FromResidual::from_residual(r) }`. In the uniform-bitstring model the
+   crypto/protocol functions return bare success values — an *error* is the
+   partial-destructor failure of `extern__aead_dec` / `extern__deserialize` /
+   … (no reduction clause ⇒ the enclosing `let` fails ⇒ the process is cut),
+   not an `Err` value that flows. So `Try::branch` is modelled as
+   always-`Continue`: `?` simply threads the (already-checked) value through,
+   matching the old hax backend's flattening of the `?`/`ControlFlow` plumbing.
+   `branch` is the monomorphic `core::result` Try impl, so the name is stable
+   across crates. *)
+fun core__ops__control_flow__ControlFlow__Continue(bitstring): bitstring [data].
+fun core__ops__control_flow__ControlFlow__Break(bitstring): bitstring [data].
+reduc forall x: bitstring;
+  core__result__Infallible__E___for_Result_T__E___branch(x) =
+    core__ops__control_flow__ControlFlow__Continue(x).
+
 (*** Boolean encoding ***)
 fun True(): bitstring [data].
 fun False(): bitstring [data].
@@ -185,6 +202,12 @@ letfun alloc__slice__Impl__to_vec(x: bitstring) = x.
 letfun alloc__vec__Impl_1__as_slice(x: bitstring) = x.
 letfun alloc__borrow__ToOwned__to_owned(x: bitstring) = x.
 letfun alloc__boxed__Impl__new_kw(x: bitstring) = x.
+(* `<Vec<T> as Deref>::deref` — Aeneas resolves the `Deref` trait method to this
+   concrete `Vec` impl name (not the generic `core::ops::deref::Deref::deref`
+   above), so it needs its own identity letfun. Without it, `&v[..]` / `&*v`
+   coercions wrap the bytes in an opaque `deref(..)` and break round-trips like
+   `deserialize(serialize(x))`. *)
+letfun alloc__vec__Deref__T___for_Vec_T___deref(x: bitstring) = x.
 
 (*** rand_core — `RngCore::fill_bytes` returns fresh bytes         ***)
 (* The trait method mutates its `dest: &mut [u8]` to fresh randomness *)
