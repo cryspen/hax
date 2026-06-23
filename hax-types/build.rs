@@ -24,7 +24,58 @@ fn git_command(args: &[&str]) -> String {
         .unwrap_or(UNKNOWN.to_string())
 }
 
+/// Bake the workspace-root tool pins (`pins.toml`) so they are available as
+/// `hax_types::pins` (used by the aeneas-lean backend's version checks, generated
+/// lakefiles, and `--help`). Read here once, in the shared crate, rather than in
+/// each consumer. A missing file/section/key bakes an empty string (so `env!`
+/// still resolves); the version check then skips and `--lakefile` errors out.
+fn pin_env_vars() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("pins.toml");
+    println!("cargo:rerun-if-changed={}", path.display());
+    let pins: toml::Value = std::fs::read_to_string(&path)
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or_else(|| toml::Value::Table(Default::default()));
+
+    let get = |section: &str, key: &str| -> String {
+        pins.get(section)
+            .and_then(|t| t.get(key))
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string()
+    };
+
+    println!(
+        "cargo:rustc-env=HAX_AENEAS_PIN_VERSION={}",
+        get("aeneas", "commit")
+    );
+    println!(
+        "cargo:rustc-env=HAX_AENEAS_PIN_REPO={}",
+        get("aeneas", "repo")
+    );
+    println!(
+        "cargo:rustc-env=HAX_CHARON_PIN_VERSION={}",
+        get("charon", "version")
+    );
+    println!(
+        "cargo:rustc-env=HAX_LEAN_PIN_TOOLCHAIN={}",
+        get("lean", "toolchain")
+    );
+    println!(
+        "cargo:rustc-env=HAX_LEAN_LIB_PIN_REPO={}",
+        get("hax-lean-lib", "repo")
+    );
+    println!(
+        "cargo:rustc-env=HAX_LEAN_LIB_PIN_COMMIT={}",
+        get("hax-lean-lib", "commit")
+    );
+}
+
 fn main() {
+    pin_env_vars();
+
     let commit_hash =
         set_empty_env_var_with!("HAX_GIT_COMMIT_HASH", git_command(&["rev-parse", "HEAD"]));
 

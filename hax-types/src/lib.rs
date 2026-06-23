@@ -29,3 +29,22 @@ pub mod engine_api;
 
 /// Compile-time version of hax
 pub const HAX_VERSION: &str = env!("HAX_VERSION");
+
+/// Tool pins, baked in at build time from the workspace-root `pins.toml` (see
+/// `build.rs`). Read here once so every consumer (`cargo-hax`'s aeneas-lean
+/// backend, the `--help` text) shares a single source of truth. A value is empty
+/// when its pin is missing/malformed (e.g. a packaged build without `pins.toml`).
+pub mod pins {
+    /// Short commit SHA `aeneas -version` is expected to report.
+    pub const AENEAS_VERSION: &str = env!("HAX_AENEAS_PIN_VERSION");
+    /// Source repository of the pinned aeneas.
+    pub const AENEAS_REPO: &str = env!("HAX_AENEAS_PIN_REPO");
+    /// Version `charon version` is expected to report.
+    pub const CHARON_VERSION: &str = env!("HAX_CHARON_PIN_VERSION");
+    /// Lean toolchain written to generated `lean-toolchain` files.
+    pub const LEAN_TOOLCHAIN: &str = env!("HAX_LEAN_PIN_TOOLCHAIN");
+    /// Source repository of the Hax aeneas-lean proof library.
+    pub const LEAN_LIB_REPO: &str = env!("HAX_LEAN_LIB_PIN_REPO");
+    /// Commit of the Hax aeneas-lean proof library.
+    pub const LEAN_LIB_COMMIT: &str = env!("HAX_LEAN_LIB_PIN_COMMIT");
+}

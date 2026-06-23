@@ -168,13 +168,27 @@ pub struct FStarOptions {
 
 #[derive_group(Serializers)]
 #[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
-#[command(after_help = "\
+#[command(after_help = concat!("\
+TOOLS:
+  This backend runs `charon`, then `aeneas`, and scaffolds a Lean proof project.
+  Each tool is pinned; the pinned version is checked against the resolved binary
+  at runtime (a mismatch is a non-fatal warning).
+
+  charon   expected version   ", env!("HAX_CHARON_PIN_VERSION"), "
+           located at $HAX_CHARON_BINARY (absolute path) if set, else `charon` found in PATH
+  aeneas   expected commit     ", env!("HAX_AENEAS_PIN_VERSION"), "
+           located at $HAX_AENEAS_BINARY (absolute path) if set, else `aeneas` found in PATH
+  lean     expected toolchain  ", env!("HAX_LEAN_PIN_TOOLCHAIN"), "
+           used by the generated proof project (written to its `lean-toolchain`)
+
+  Install charon/aeneas with `install-aeneas.sh`.
+
 ENVIRONMENT VARIABLES:
-  HAX_CHARON  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
-  HAX_AENEAS  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH.
+  HAX_CHARON_BINARY  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
+  HAX_AENEAS_BINARY  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH.
 
 These let you select a specific charon/aeneas build (e.g. one you compiled from
-source) instead of the binaries installed by `install-aeneas.sh`.")]
+source) instead of the binaries installed by `install-aeneas.sh`."))]
 pub struct AeneasLeanOptions {
     /// Generate a `lakefile.toml` and `lean-toolchain` in the
     /// `proofs/aeneas-lean/` directory, with a dependency on the Aeneas

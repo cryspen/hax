@@ -6,8 +6,18 @@ use std::fs;
 use std::path::Path;
 
 /// Generate the contents of a `lakefile.toml` for an aeneas-lean project.
+///
+/// The `aeneas` Lean proof library is pinned to the same source repo + commit as
+/// the `aeneas` binary hax expects (baked from `pins.toml`'s `[aeneas]`, see
+/// build.rs), so the proof library matches the extraction. The `Hax` Lean proof
+/// library is pinned from `[hax-lean-lib]`. All pins are required — `generate`
+/// rejects empty ones before we get here, so there are no fallbacks.
 fn lakefile_contents(crate_name: &str) -> String {
     let pkg_name = super::to_camel_case(crate_name);
+    let aeneas_git = super::AENEAS_PIN_REPO;
+    let aeneas_rev = super::AENEAS_PIN_VERSION;
+    let hax_git = super::LEAN_LIB_PIN_REPO;
+    let hax_rev = super::LEAN_LIB_PIN_COMMIT;
 
     format!(
         r#"name = "{pkg_name}"
@@ -19,9 +29,15 @@ name = "{pkg_name}"
 
 [[require]]
 name = "aeneas"
-git = "https://github.com/AeneasVerif/aeneas"
-rev = "main"
+git = "{aeneas_git}"
+rev = "{aeneas_rev}"
 subDir = "backends/lean"
+
+[[require]]
+name = "Hax"
+git = "{hax_git}"
+rev = "{hax_rev}"
+subDir = "hax-lib/proof-libs/aeneas-lean"
 "#
     )
 }
@@ -60,6 +76,30 @@ fn write_if_absent(path: &Path, contents: &str, message_format: MessageFormat) {
 /// Generates a `lakefile.toml`, `lean-toolchain`, and root `<PkgName>.lean`
 /// in `lean_dir`. Existing files are not overwritten.
 pub fn generate(lean_dir: &Path, crate_name: &str, message_format: MessageFormat) {
+    // Every pin consumed below is mandatory: a proof project generated with a
+    // missing pin would be irreproducible, so refuse rather than guess. (There
+    // are deliberately no fallbacks.)
+    let missing: Vec<&str> = [
+        ("[aeneas].repo", super::AENEAS_PIN_REPO),
+        ("[aeneas].commit", super::AENEAS_PIN_VERSION),
+        ("[lean].toolchain", super::LEAN_PIN_TOOLCHAIN),
+        ("[hax-lean-lib].repo", super::LEAN_LIB_PIN_REPO),
+        ("[hax-lean-lib].commit", super::LEAN_LIB_PIN_COMMIT),
+    ]
+    .into_iter()
+    .filter(|(_, value)| value.is_empty())
+    .map(|(name, _)| name)
+    .collect();
+    if !missing.is_empty() {
+        HaxMessage::GenericError {
+            message: format!(
+                "broken pins: {} missing from pins.toml (cannot generate lakefile)",
+                missing.join(", ")
+            ),
+        }
+        .report(message_format, None);
+        return;
+    }
     let pkg_name = super::to_camel_case(crate_name);
     write_if_absent(
         &lean_dir.join("lakefile.toml"),
@@ -68,7 +108,7 @@ pub fn generate(lean_dir: &Path, crate_name: &str, message_format: MessageFormat
     );
     write_if_absent(
         &lean_dir.join("lean-toolchain"),
-        "leanprover/lean4:v4.28.0-rc1",
+        super::LEAN_PIN_TOOLCHAIN,
         message_format,
     );
     write_if_absent(

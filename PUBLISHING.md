@@ -51,9 +51,11 @@ engine. Those should not be published on `crate.io`.
 ## Procedure
  1. Move the contents of `CHANGELOG.md` under the `[Unreleased]` section to a new section named following the target version. Commit this change.
  2. Bump the version number with `cargo release LEVEL --workspace --no-publish --no-tag --execute` (`cargo release --help` for more details on `LEVEL`, `cargo install cargo-release` if you don't already have this package). This will bump the version of every Rust crate, but also the version in `engine/dune-project`. This will also regenerate `engine/hax-engine.opam`. Note this will *not* publish the crate.
- 3. Update the aeneas/charon pins:
-    - In `aeneas-pin`, set the bare tag line to the release carrying `aeneas-<platform>.tar.gz` assets, the `commit` line to the short SHA that release's `aeneas -version` reports, and the `repo` line to the source URL. `repo` must be either `https://github.com/AeneasVerif/aeneas` (upstream) or `https://github.com/cryspen/aeneas` (fork); `install-aeneas.sh` rejects any other value.
-    - Set `charon-pin` to the release tag matching the charon commit pinned by that aeneas version (check `charon-pin` in the aeneas repo at the pinned commit). Update the `version` line to match `charon version` output for that release. (charon is always sourced from AeneasVerif/charon.)
+ 3. Update the pins in `pins.toml`:
+    - In `[aeneas]`, set `tag` to the release carrying `aeneas-<platform>.tar.gz` assets, `commit` to the short SHA that release's `aeneas -version` reports, and `repo` to the source URL. `repo` must be either `https://github.com/AeneasVerif/aeneas` (upstream) or `https://github.com/cryspen/aeneas` (fork); `install-aeneas.sh` rejects any other value.
+    - In `[charon]`, set `tag` to the release tag matching the charon commit pinned by that aeneas version (check `charon-pin` in the aeneas repo at the pinned commit), and `version` to match `charon version` output for that release. (charon is always sourced from AeneasVerif/charon.)
+    - In `[lean]`, set `toolchain` to the Lean toolchain used by the aeneas Lean library and the Hax proof library (e.g. `leanprover/lean4:v4.30.0-rc2`). It is baked in and written to the `lean-toolchain` of projects scaffolded by `cargo hax into aeneas-lean --lakefile`, so it must match those libraries' Lean version. It should remain in sync with `[aeneas]`.
+    - In `[hax-lean-lib]`, set `commit` and `repo` for the Hax aeneas-lean proof library (`subDir = hax-lib/proof-libs/aeneas-lean`); this is emitted as the `require Hax` of generated lakefiles, so it must be compatible with the pinned aeneas.
     - Verify with `./install-aeneas.sh` that the pinned versions download and work.
  4. PR the change
  5. when the PR is merged in main, checkout `main` and run `cargo release --workspace --execute`
