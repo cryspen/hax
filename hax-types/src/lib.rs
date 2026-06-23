@@ -32,8 +32,9 @@ pub const HAX_VERSION: &str = env!("HAX_VERSION");
 
 /// Tool pins, baked in at build time from the workspace-root `pins.toml` (see
 /// `build.rs`). Read here once so every consumer (`cargo-hax`'s aeneas-lean
-/// backend, the `--help` text) shares a single source of truth. A value is empty
-/// when its pin is missing/malformed (e.g. a packaged build without `pins.toml`).
+/// backend, the `--help` text) shares a single source of truth. `build.rs`
+/// requires a complete `pins.toml` (failing the build otherwise), so these are
+/// always present and non-empty in a successfully built binary.
 pub mod pins {
     /// Short commit SHA `aeneas -version` is expected to report.
     pub const AENEAS_VERSION: &str = env!("HAX_AENEAS_PIN_VERSION");

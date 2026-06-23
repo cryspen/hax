@@ -4,7 +4,6 @@
 #   - install-aeneas.sh  (downloads/verifies the aeneas + charon binaries)
 #   - hax-types/build.rs (bakes the values into `hax_types::pins`, used by the
 #     backend's version checks, generated lakefiles, and `--help`)
-#
 
 [aeneas]
 # Release tag (the release must carry assets named aeneas-<platform>.tar.gz).
@@ -26,7 +25,7 @@ tag = "nightly-2026.06.02"
 version = "0.1.210"
 
 [lean]
-# Lean toolchain written verbatim into the `lean-toolchain` of projects
+# Lean toolchain written into the `lean-toolchain` of projects
 toolchain = "leanprover/lean4:v4.30.0-rc2"
 
 [hax-lean-lib]

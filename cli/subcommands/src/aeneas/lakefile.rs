@@ -76,30 +76,6 @@ fn write_if_absent(path: &Path, contents: &str, message_format: MessageFormat) {
 /// Generates a `lakefile.toml`, `lean-toolchain`, and root `<PkgName>.lean`
 /// in `lean_dir`. Existing files are not overwritten.
 pub fn generate(lean_dir: &Path, crate_name: &str, message_format: MessageFormat) {
-    // Every pin consumed below is mandatory: a proof project generated with a
-    // missing pin would be irreproducible, so refuse rather than guess. (There
-    // are deliberately no fallbacks.)
-    let missing: Vec<&str> = [
-        ("[aeneas].repo", super::AENEAS_PIN_REPO),
-        ("[aeneas].commit", super::AENEAS_PIN_VERSION),
-        ("[lean].toolchain", super::LEAN_PIN_TOOLCHAIN),
-        ("[hax-lean-lib].repo", super::LEAN_LIB_PIN_REPO),
-        ("[hax-lean-lib].commit", super::LEAN_LIB_PIN_COMMIT),
-    ]
-    .into_iter()
-    .filter(|(_, value)| value.is_empty())
-    .map(|(name, _)| name)
-    .collect();
-    if !missing.is_empty() {
-        HaxMessage::GenericError {
-            message: format!(
-                "broken pins: {} missing from pins.toml (cannot generate lakefile)",
-                missing.join(", ")
-            ),
-        }
-        .report(message_format, None);
-        return;
-    }
     let pkg_name = super::to_camel_case(crate_name);
     write_if_absent(
         &lean_dir.join("lakefile.toml"),
