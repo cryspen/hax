@@ -183,12 +183,18 @@ TOOLS:
 
   Install charon/aeneas with `install-aeneas.sh`.
 
+INVOCATION:
+  The tools are run with some fixed flags (to which any --charon-args/--aeneas-args
+  are appended). Pass `-v` (`cargo hax into -v aeneas-lean`) to print the exact command
+  before each tool runs.
+
+  Overriding a flag that controls where output is written (aeneas's -backend,
+  -dest, -subdir, or -split-files, or charon's --dest-file) may break the extraction
+  or the generated proof project.
+
 ENVIRONMENT VARIABLES:
   HAX_CHARON_BINARY  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
-  HAX_AENEAS_BINARY  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH.
-
-These let you select a specific charon/aeneas build (e.g. one you compiled from
-source) instead of the binaries installed by `install-aeneas.sh`."))]
+  HAX_AENEAS_BINARY  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH."))]
 pub struct AeneasLeanOptions {
     /// Generate a `lakefile.toml` and `lean-toolchain` in the
     /// `proofs/aeneas-lean/` directory, with a dependency on the Aeneas

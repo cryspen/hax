@@ -3,7 +3,8 @@
 //!
 //! The pipeline is:
 //!   1. Run charon on the crate to produce an LLBC file
-//!   2. Run aeneas on the LLBC file to produce Lean extraction
+//!   2. Run aeneas (`-split-files -specs hax -subdir <PkgName>/Extraction`) on
+//!      the LLBC file to produce the Lean extraction under `<PkgName>/Extraction/`
 //!   3. Optionally generate a lakefile for the Lean project
 
 use hax_types::cli_options::*;
@@ -31,6 +32,10 @@ const LEAN_PIN_TOOLCHAIN: &str = pins::LEAN_TOOLCHAIN;
 const LEAN_LIB_PIN_REPO: &str = pins::LEAN_LIB_REPO;
 const LEAN_LIB_PIN_COMMIT: &str = pins::LEAN_LIB_COMMIT;
 const CHARON_PIN_VERSION: &str = pins::CHARON_VERSION;
+
+// Flags that should trigger a warning when passed to charon/aeneas
+const CHARON_WARN_FLAGS: &[&str] = &["--dest-file"];
+const AENEAS_WARN_FLAGS: &[&str] = &["-backend", "-dest", "-subdir", "-split-files"];
 
 /// Check that a binary reports the expected version, warn if not.
 fn check_version(binary: &Path, expected: &str, message_format: MessageFormat) {
@@ -89,6 +94,40 @@ fn shell_split(s: Option<&str>, who: &str, message_format: MessageFormat) -> Vec
             .report(message_format, None);
             std::process::exit(1);
         }
+    }
+}
+
+/// Warn if the user's extra args re-specify a flag that the pipeline already
+/// sets and relies on (e.g. those controlling where output is written). Such
+/// flags are still forwarded — the tools keep the last occurrence — but
+/// overriding them can break the charon→aeneas handoff or the layout the
+/// generated proof project assumes. Matches both `-flag` and `-flag=value`.
+fn warn_on_reserved_flags(
+    user_args: &[String],
+    reserved: &[&str],
+    tool: &str,
+    message_format: MessageFormat,
+) {
+    let overridden: Vec<&str> = reserved
+        .iter()
+        .copied()
+        .filter(|&flag| {
+            let prefix = format!("{flag}=");
+            user_args
+                .iter()
+                .any(|arg| arg == flag || arg.starts_with(&prefix))
+        })
+        .collect();
+    if !overridden.is_empty() {
+        HaxMessage::GenericWarning {
+            message: format!(
+                "--{tool}-args re-specifies {tool} flag(s) the pipeline sets and relies on: {}. \
+                 They are still forwarded, but overriding where output is written may break \
+                 the extraction or the generated proof project.",
+                overridden.join(", ")
+            ),
+        }
+        .report(message_format, None);
     }
 }
 
@@ -264,18 +303,40 @@ pub fn run(
     }
     .report(message_format, None);
 
+    // Parse once so we can both inspect and forward the user's charon flags.
+    // `--dest-file` is reserved: its value is fed verbatim to aeneas below.
+    let user_charon_args = shell_split(options.charon_args.as_deref(), "charon", message_format);
+    warn_on_reserved_flags(
+        &user_charon_args,
+        CHARON_WARN_FLAGS,
+        "charon",
+        message_format,
+    );
+
     let mut charon_cmd = process::Command::new(&charon);
     charon_cmd.args([
         "cargo",
         "--preset=aeneas",
         "--dest-file",
         llbc_file.to_str().expect("non-UTF8 path"),
+        // Compile the crate as hax does: set `--cfg=hax_compilation` (so hax-lib
+        // proc macros emit their verification artifacts) and register the `_hax`
+        // tool attribute namespace.
+        "--rustc-arg=--cfg=hax_compilation",
+        "--rustc-arg=-Zcrate-attr=feature(register_tool)",
+        "--rustc-arg=-Zcrate-attr=register_tool(_hax)",
     ]);
-    charon_cmd.args(shell_split(
-        options.charon_args.as_deref(),
-        "charon",
-        message_format,
-    ));
+    // User-supplied charon flags go before the `--` cargo separator.
+    charon_cmd.args(&user_charon_args);
+    // Everything after `--` is forwarded to cargo: build the host (proc-macro)
+    // crates with `--cfg hax` too, so hax-lib macros expand consistently.
+    charon_cmd.args([
+        "--",
+        "-Zhost-config",
+        "-Ztarget-applies-to-host",
+        "--config",
+        r#"host.rustflags=["--cfg","hax"]"#,
+    ]);
     if verbose > 0 {
         HaxMessage::SubprocessOutput {
             prefix: "cmd".into(),
@@ -311,6 +372,17 @@ pub fn run(
 
     // Running Aeneas
 
+    // Parse once so we can both inspect and forward the user's aeneas flags. The
+    // output-layout flags are reserved: overriding them moves the output away
+    // from where the per-file report and `--lakefile` generation expect it.
+    let user_aeneas_args = shell_split(options.aeneas_args.as_deref(), "aeneas", message_format);
+    warn_on_reserved_flags(
+        &user_aeneas_args,
+        AENEAS_WARN_FLAGS,
+        "aeneas",
+        message_format,
+    );
+
     // Snapshot modification times of .lean files before aeneas runs
     let mtimes_before: HashMap<PathBuf, SystemTime> = fs::read_dir(&out_dir)
         .into_iter()
@@ -331,19 +403,26 @@ pub fn run(
     }
     .report(message_format, None);
 
+    // We run aeneas with `-split-files` so it emits the function and type files
+    // (`Funs.lean`/`Types.lean`, and any proof-obligation / external-template
+    // files) separately, and `-subdir <PkgName>/Extraction` so they land in
+    // `<lean_dir>/<PkgName>/Extraction/` with import paths prefixed by
+    // `<PkgName>.Extraction.`
+    let subdir = format!("{pkg_name}/Extraction");
     let mut aeneas_cmd = process::Command::new(&aeneas);
     aeneas_cmd.args([
         "-backend",
         "lean",
+        "-split-files",
+        "-specs",
+        "hax",
         llbc_file.to_str().expect("non-UTF8 path"),
         "-dest",
-        out_dir.to_str().expect("non-UTF8 path"),
+        lean_dir.to_str().expect("non-UTF8 path"),
+        "-subdir",
+        &subdir,
     ]);
-    aeneas_cmd.args(shell_split(
-        options.aeneas_args.as_deref(),
-        "aeneas",
-        message_format,
-    ));
+    aeneas_cmd.args(&user_aeneas_args);
     if verbose > 0 {
         HaxMessage::SubprocessOutput {
             prefix: "cmd".into(),
@@ -371,13 +450,6 @@ pub fn run(
         report_error_output(&all_lines, &lean_dir, verbose, message_format);
     } else if verbose > 0 {
         report_output(&all_lines, message_format);
-    }
-
-    // Rename the main output file from <PkgName>.lean to Funs.lean
-    let aeneas_main_file = out_dir.join(format!("{}.lean", pkg_name));
-    let funs_file = out_dir.join("Funs.lean");
-    if aeneas_main_file.exists() {
-        let _ = fs::rename(&aeneas_main_file, &funs_file);
     }
 
     // Report results
