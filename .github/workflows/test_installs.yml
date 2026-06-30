@@ -39,7 +39,7 @@ jobs:
     - name: Run `setup.sh`
       run: |
         export OPAMERRLOGLEN=0
-        ./setup.sh
+        ./setup.sh --no-aeneas
     - run: cargo hax --version
     - name: Test an extraction
       run: |
