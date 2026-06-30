@@ -122,7 +122,7 @@ fn warn_on_reserved_flags(
         HaxMessage::GenericWarning {
             message: format!(
                 "--{tool}-args re-specifies {tool} flag(s) the pipeline sets and relies on: {}. \
-                 They are still forwarded, but overriding where output is written may break \
+                 They are still forwarded, but this may break \
                  the extraction or the generated proof project.",
                 overridden.join(", ")
             ),
