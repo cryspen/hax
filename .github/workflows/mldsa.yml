@@ -27,6 +27,7 @@ jobs:
         working-directory: libcrux
         run: |
           printf '\n[patch.crates-io]\nhax-lib = { path = "../hax/hax-lib" }\n' >> Cargo.toml
+          cargo update -p hax-lib
 
       - uses: DeterminateSystems/nix-installer-action@main
       - name: Set up Cachix

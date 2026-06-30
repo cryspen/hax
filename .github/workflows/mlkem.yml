@@ -71,6 +71,7 @@ jobs:
         working-directory: libcrux
         run: |
           printf '\n[patch.crates-io]\nhax-lib = { path = "../hax/hax-lib" }\n' >> Cargo.toml
+          cargo update -p hax-lib
 
       - if: runner.environment == 'github-hosted'
         uses: DeterminateSystems/nix-installer-action@main
