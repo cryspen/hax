@@ -36,7 +36,7 @@ verification tool's logic) has three advantages:
   Aeneas-Lean — instead of each tool maintaining its own shadow `core`.
 
 CI verifies that the *committed* extracted Lean files in
-`lean/CoreModels/{Funs,Types,…}.lean` match what a fresh extraction produces
+`../proof-libs/aeneas-lean/CoreModels/{Funs,Types,…}.lean` match what a fresh extraction produces
 against the pinned toolchain. That means a downstream Lean consumer can
 just `lake update` this repo without installing the Rust toolchain.
 
@@ -60,10 +60,6 @@ across machines.
 │                          #   can be extracted with charon's
 │                          #   `alloc_models` rename trick — see Makefile)
 ├── rust_primitives/       # tiny crate of helpers (slice/array primitives)
-├── lean/                  # the distributed Lean library
-│   ├── lakefile.toml
-│   ├── lean-toolchain
-│   └── CoreModels/        # hand-written + extracted, both committed
 ├── tests/                 # test suite (workspace; see Testing section)
 │   ├── client_test/       #   client-surface extraction smoke test
 │   └── rust_lean_equiv_test/  # rust↔lean equivalence framework
@@ -80,6 +76,11 @@ across machines.
 ├── Makefile               # extraction + build orchestration
 └── .github/workflows/ci.yml
 ```
+
+The distributed Lean library lives outside this crate at
+`../proof-libs/aeneas-lean/` (`lakefile.toml`, `lean-toolchain`, and the
+`CoreModels/` tree of hand-written + extracted files, all committed). The
+extraction pipeline below writes into it.
 
 ## Building
 
@@ -174,7 +175,7 @@ equivalence test exercises Aeneas's translation of the same item.
 - **Excluded items**: things listed in `CHARON_EXCLUDES` /
   `ALLOC_CHARON_EXCLUDES` (`core::mem::swap`, `core::slice::index::*`,
   most `Vec` indexing, `BinaryHeap`, …) come from hand-written Lean
-  definitions in `lean/CoreModels/{Funs,Types}External.lean`. Their
+  definitions in `../proof-libs/aeneas-lean/CoreModels/{Funs,Types}External.lean`. Their
   equivalence tests live in the same file as the rest of the items
   in the same module (e.g. `core::mem::swap` tests live in
   `source/src/core/mem.rs`) — flagged with a section header noting
@@ -182,7 +183,7 @@ equivalence test exercises Aeneas's translation of the same item.
 
 ## Using the Lean library downstream
 
-See [lean/README.md](lean/README.md)
+See [../proof-libs/aeneas-lean/README.md](../proof-libs/aeneas-lean/README.md)
 
 ## Contributing
 
@@ -203,7 +204,7 @@ PRs welcome. Please:
   a section header like
   `// ----- foo (manually defined in Lean, not extracted) -----` so a
   reader knows the Lean side is hitting a hand-written definition in
-  `lean/CoreModels/FunsExternal.lean` rather than the extraction.
+  `../proof-libs/aeneas-lean/CoreModels/FunsExternal.lean` rather than the extraction.
 
 ## License
 

@@ -1,0 +1,12 @@
+# Lean / Lake
+**/.lake
+**/.cache
+*.olean
+*.ilean
+*.c.o
+
+# Aeneas / charon intermediates
+*.llbc
+.alloc-extract/
+FunsExternal_Template.lean
+TypesExternal_Template.lean

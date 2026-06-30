@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'hax-lib/core-models/**'
+      - 'hax-lib/proof-libs/aeneas-lean/**'
       - '.github/workflows/core_models.yml'
   pull_request:
     branches: [main]
     paths:
       - 'hax-lib/core-models/**'
+      - 'hax-lib/proof-libs/aeneas-lean/**'
       - '.github/workflows/core_models.yml'
 
 # Version pins for core-models:
@@ -204,9 +206,9 @@ jobs:
       - name: Committed extraction must match a fresh re-extraction
         run: |
           git diff --exit-code -- \
-            lean/CoreModels/Funs.lean \
-            lean/CoreModels/Types.lean \
-            lean/CoreModels/FunsExternal_Template.lean \
-            lean/CoreModels/TypesExternal_Template.lean \
-            lean/CoreModels/Alloc/Funs.lean \
-            lean/CoreModels/Alloc/Types.lean
+            ../proof-libs/aeneas-lean/CoreModels/Funs.lean \
+            ../proof-libs/aeneas-lean/CoreModels/Types.lean \
+            ../proof-libs/aeneas-lean/CoreModels/FunsExternal_Template.lean \
+            ../proof-libs/aeneas-lean/CoreModels/TypesExternal_Template.lean \
+            ../proof-libs/aeneas-lean/CoreModels/Alloc/Funs.lean \
+            ../proof-libs/aeneas-lean/CoreModels/Alloc/Types.lean

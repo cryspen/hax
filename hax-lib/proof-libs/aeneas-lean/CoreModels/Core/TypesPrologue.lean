@@ -1,5 +1,15 @@
 import Aeneas
 
+/-!
+
+# Types Prologue
+
+This file contains workarounds required to be present before `Types.lean` runs. The file
+`Types.lean` contains the types automatically generated from our Rust implementation of core.
+Since it's automatically generated, we cannot move this material there.
+
+-/
+
 open Aeneas.Std
 
 namespace CoreModels.core
@@ -19,16 +29,8 @@ structure Fn (Self : Type) (Args : Type) (Self_Clause0_Output : Type) where
   call : Self → Args → Result Self_Clause0_Output
 end ops.function
 
-/-! ## Phantom — used by `Aeneas/Alloc/Types.lean` rewrite
-
-`vec.Vec T A` in core-models is `Seq T × PhantomData<A>`. We can't reuse
-the existing `core.marker.PhantomData T := T` for the alloc rewrite (the
-extracted constructor sites use `()`, which is `Unit`). We instead rewrite
-the `core.marker.PhantomData A` field type to `core.Phantom A`.
--/
-
-structure marker.PhantomData (A : Type) where mk ::
-deriving Inhabited
+def marker.PhantomData (A : Type) := Unit
+def marker.PhantomData.mk: Unit := ()
 
 /-! ## Option
 

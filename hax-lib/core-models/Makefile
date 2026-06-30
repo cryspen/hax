@@ -10,7 +10,7 @@ HAX_LIB_REV := $(shell sed -n 's/.*hax-lib.*rev = "\([^"]*\)".*/\1/p' Cargo.toml
 
 CRATE_NAME = core_models
 LLBC_FILE = $(CRATE_NAME).llbc
-LEAN_DIR = lean
+LEAN_DIR = ../proof-libs/aeneas-lean
 # The main Rust crate (`core-models`) lives under ./core-models/ — its
 # Cargo.toml is the package manifest. The root Cargo.toml is the
 # workspace.
