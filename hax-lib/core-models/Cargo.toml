@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = [
+    "core-models",
+    "alloc",
+    "rust_primitives",
+]
+# `tests` is intentionally NOT a member — it is its own cargo
+# workspace (see `tests/Cargo.toml`) holding the two test surfaces
+# (`client_test/`, `rust_lean_equiv_test/`). Keeping it separate ensures
+# the model being extracted by charon/Aeneas is the pure
+# `core-models`/`alloc`/`rust_primitives` triple, with no test-only
+# items in the LLBC.
+
+[workspace.dependencies]
+# `hax-lib` provides the `#[hax_lib::attributes]`, `#[hax_lib::requires]`
+# etc. attribute procmacros our model uses. Pinned to a specific commit
+# of cryspen/hax.
+hax-lib = { git = "https://github.com/cryspen/hax", rev = "492a34e33c8744b9672eb3cf1c982ac40469f7d4" }

@@ -1,0 +1,10 @@
+name = "ClientTest"
+version = "0.1.0"
+defaultTargets = ["ClientTest"]
+
+[[lean_lib]]
+name = "ClientTest"
+
+[[require]]
+name = "CoreModels"
+path = "../../../lean"

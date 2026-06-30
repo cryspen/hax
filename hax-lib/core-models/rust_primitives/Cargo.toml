@@ -1,0 +1,12 @@
+[package]
+name = "rust_primitives"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pastey = "0.1.1"
+hax-lib.workspace = true
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)', 'cfg(hax_backend_lean)'] }
+

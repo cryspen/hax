@@ -1,0 +1,17 @@
+name = "RustLeanTests"
+version = "0.1.0"
+defaultTargets = ["RustLeanTests"]
+
+# Bump Lean's per-file error cap (default 100) so a full build can
+# report every broken extraction across the hundreds of `#guard` tests
+# we emit. Without this, the first 100 failures hide all the others.
+leanOptions = [
+  { name = "maxErrors", value = "10000" },
+]
+
+[[lean_lib]]
+name = "RustLeanTests"
+
+[[require]]
+name = "CoreModels"
+path = "../../../lean"

@@ -1,0 +1,198 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# All version pins live here.
+env:
+  RUST_TOOLCHAIN: nightly-2026-02-07
+  CHARON_REV:    6f058254eb741c12e9b388df07adaf7cc8aac8ed
+  AENEAS_REV:    925d6131d76b77db6eb78d83c0b730df999bfdea
+  # Where the cache step stages the charon / aeneas binaries.
+  AENEAS_DIR: ${{ github.workspace }}/.tools/aeneas
+
+jobs:
+  # ---------------------------------------------------------------- formatting
+  rust-fmt:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: rustfmt
+
+      - run: cargo fmt --all -- --check
+
+      # `tests/` is a separate workspace; `cargo fmt --all` from the
+      # root doesn't reach it.
+      - run: cargo fmt --all -- --check
+        working-directory: tests
+
+  # ---------------------------------------------------------------- rust tests
+  rust-test:
+    name: cargo test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - run: cargo test --workspace
+
+      # `tests/` is its own workspace (members: client_test,
+      # rust_lean_equiv_test/{source,macro}) — the root `cargo test
+      # --workspace` doesn't reach it. The `cargo test --lib` here runs
+      # the Rust half of every `#[rust_lean_test]` (the Lean half runs
+      # in the lean-build job below).
+      - run: cargo test --workspace --lib
+        working-directory: tests
+
+  # ----------------------------------------------------------- lean extraction
+  lean-build:
+    name: aeneas extraction + lake build
+    runs-on: ubuntu-latest
+    needs: [rust-fmt]   # don't waste cycles on a formatting-broken PR
+    steps:
+      - uses: actions/checkout@v5
+
+      # ---- Rust toolchain (needed to compile the workspace; charon's
+      # nix-built binary brings its own pinned rustc but `cargo` itself
+      # must still be on PATH so charon's cargo-wrapping can intercept
+      # the compile of `core-models/` and the `tests/` crate).
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      # ---- Cache: charon + aeneas binaries (built from source, slow) ------
+      # Use restore + save (instead of the combined `actions/cache@v5`)
+      # so the save runs unconditionally — including when a *later* step
+      # like the diff-check fails. The combined action skips its save on
+      # job failure, which means a single bad diff would force every
+      # subsequent run to rebuild charon + aeneas from scratch.
+      - name: Restore cached charon + aeneas binaries
+        id: cache-tools
+        uses: actions/cache/restore@v5
+        with:
+          path: ${{ env.AENEAS_DIR }}
+          # Bump the `v3` suffix when the build invocation changes
+          # (e.g. switching between `#charon` and `#charon-portable`)
+          # or to discard a poisoned cache, to invalidate caches built
+          # with the previous flavour.
+          key: aeneas-v3-${{ runner.os }}-${{ env.CHARON_REV }}-${{ env.AENEAS_REV }}
+
+      # ---- Build charon + aeneas via the upstream nix flakes -------------
+      # Both projects officially support only Nix; rolling our own opam
+      # install pulled 100+ Jane Street packages and hit core_unix build
+      # failures. Nix evaluates the pinned flake, builds in a sandbox,
+      # and we copy the resulting binaries out.
+      - name: Install Nix
+        if: steps.cache-tools.outputs.cache-hit != 'true'
+        uses: cachix/install-nix-action@v27
+
+      # NOTE: we deliberately do NOT cache the Nix store. The store builds
+      # to ~6 GiB, and GitHub Actions enforces a 10 GiB per-repo cache cap
+      # with LRU eviction. A cached Nix store crowds out the small
+      # charon+aeneas binaries cache below (and everything else), so the
+      # binary cache silently disappeared between runs even though the key
+      # was stable. Trade-off: on a CHARON_REV / AENEAS_REV bump the nix
+      # builds start from a cold store (~10–15 min). That's rare — the
+      # steady-state path is a binary cache hit and skips Nix entirely.
+
+      # Use the `*-portable` / `*-static` flake outputs: the regular
+      # `#charon` / `#aeneas` derivations hardcode `/nix/store/...`
+      # interpreter paths in their ELF headers, so they only run while
+      # those store paths still exist on the runner. After a binary
+      # cache hit on a later run (where we skip the Nix install step),
+      # the store is gone and the kernel reports the binary as
+      # "not found" (exit 127). The portable charon is patchelf'd to
+      # `/lib64/ld-linux-x86-64.so.2`; aeneas-static is statically
+      # linked. Both work on any standard Linux without Nix.
+      - name: Build charon (cache miss)
+        id: build-charon
+        if: steps.cache-tools.outputs.cache-hit != 'true'
+        # We build via `nix/charon-portable-nocheck.nix` rather than the
+        # upstream `#charon-portable` output: that output runs charon's full
+        # `cargo test` suite as its check phase, and two tests (`toml`,
+        # `error-dependencies`) fail in the nix sandbox with EACCES because
+        # they spawn a fresh cargo to compile crates with dependencies. The
+        # wrapper reproduces the portable binary with `doCheck = false`. See
+        # that file for the full rationale.
+        run: |
+          mkdir -p $AENEAS_DIR/charon/bin
+          charon_out=$(nix build --print-out-paths --no-link --impure \
+            --expr "import ./nix/charon-portable-nocheck.nix { rev = \"$CHARON_REV\"; }")
+          cp -L "$charon_out"/bin/* $AENEAS_DIR/charon/bin/
+
+      - name: Build aeneas (cache miss)
+        id: build-aeneas
+        if: steps.cache-tools.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p $AENEAS_DIR/bin
+          aeneas_out=$(nix build --print-out-paths --no-link \
+            "github:cryspen/aeneas/$AENEAS_REV#aeneas-static")
+          cp -L "$aeneas_out"/bin/aeneas $AENEAS_DIR/bin/aeneas
+
+      - name: Save charon + aeneas binaries
+        # `always()` so the binaries persist even if a *later* step (e.g.
+        # the extraction diff-check) fails — but ONLY once both build
+        # steps actually succeeded. Without the `outcome == 'success'`
+        # guards, a failed build would still save a half-empty $AENEAS_DIR
+        # (e.g. an empty `charon/bin/`), poisoning the cache: subsequent
+        # runs hit it, skip the rebuild, and fail with charon "not found"
+        # (exit 127).
+        if: >-
+          always()
+          && steps.cache-tools.outputs.cache-hit != 'true'
+          && steps.build-charon.outcome == 'success'
+          && steps.build-aeneas.outcome == 'success'
+        uses: actions/cache/save@v5
+        with:
+          path: ${{ env.AENEAS_DIR }}
+          key: aeneas-v3-${{ runner.os }}-${{ env.CHARON_REV }}-${{ env.AENEAS_REV }}
+
+      # ---- Lean toolchain ------------------------------------------------
+      - name: Install elan
+        # Bypass elan-init.sh: it does its own curl with no retries, so a
+        # transient 502 from github.com/.../releases/latest/download/...
+        # fails the whole job. Download the tarball ourselves with curl
+        # retries, then run the bundled elan-init binary directly.
+        run: |
+          set -euo pipefail
+          curl -sSfL --retry 5 --retry-delay 5 --retry-all-errors \
+            -o /tmp/elan.tar.gz \
+            https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz
+          tar -xzf /tmp/elan.tar.gz -C /tmp
+          /tmp/elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> $GITHUB_PATH
+
+      # NOTE: no Lean/mathlib or cargo cache here — see the Nix store note
+      # above. Only the charon+aeneas binaries are cached, so the 10 GiB
+      # repo cache cap can't evict the one cache that actually matters.
+
+      # ---- The actual pipeline ------------------------------------------
+      - name: Extract Lean library, build Lean library, run regression tests
+        run: make CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas lean tests
+
+      # ---- Enforce that committed extraction matches re-extraction ------
+      # If this fails: someone changed Rust source / patcher without
+      # re-running `make lean` and committing the resulting diff.
+      - name: Committed extraction must match a fresh re-extraction
+        run: |
+          git diff --exit-code -- \
+            lean/CoreModels/Funs.lean \
+            lean/CoreModels/Types.lean \
+            lean/CoreModels/FunsExternal_Template.lean \
+            lean/CoreModels/TypesExternal_Template.lean \
+            lean/CoreModels/Alloc/Funs.lean \
+            lean/CoreModels/Alloc/Types.lean
