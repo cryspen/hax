@@ -92,6 +92,11 @@ in stdenv.mkDerivation {
           --prefix RUSTFLAGS : "-C link-arg=-L${libiconv}/lib" \
           --suffix DYLD_LIBRARY_PATH : ${lib.makeLibraryPath [ libz rustc ]}
         ''
+      } \
+      ${
+        lib.optionalString stdenv.isLinux ''
+          --suffix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ libz rustc ]}
+        ''
       }
   '';
   meta.mainProgram = "cargo-hax";
