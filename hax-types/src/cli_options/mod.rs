@@ -167,12 +167,43 @@ pub struct FStarOptions {
 }
 
 #[derive_group(Serializers)]
+#[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
+#[command(after_help = "\
+ENVIRONMENT VARIABLES:
+  HAX_CHARON  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
+  HAX_AENEAS  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH.
+
+These let you select a specific charon/aeneas build (e.g. one you compiled from
+source) instead of the binaries installed by `install-aeneas.sh`.")]
+pub struct AeneasLeanOptions {
+    /// Generate a `lakefile.toml` and `lean-toolchain` in the
+    /// `proofs/aeneas-lean/` directory, with a dependency on the Aeneas
+    /// Lean library. Existing files are not overwritten, so it is safe
+    /// to re-run with this flag after editing the lakefile.
+    #[arg(long)]
+    pub lakefile: bool,
+
+    /// Extra arguments forwarded to charon. Parsed with shell-style quoting,
+    /// so values containing spaces can be single- or double-quoted.
+    /// Example: --charon-args="--opaque '{impl Serialize for _}'"
+    #[arg(long)]
+    pub charon_args: Option<String>,
+
+    /// Extra arguments forwarded to aeneas. Parsed with shell-style quoting.
+    /// Example: --aeneas-args="-split-files"
+    #[arg(long)]
+    pub aeneas_args: Option<String>,
+}
+
+#[derive_group(Serializers)]
 #[derive(JsonSchema, Subcommand, Debug, Clone, Hash, Eq, PartialEq)]
 pub enum Backend {
     /// Use the F* backend
     Fstar(FStarOptions),
     /// Use the Lean backend (warning: experimental)
     Lean,
+    /// Use the Aeneas Lean backend (charon + aeneas pipeline)
+    AeneasLean(AeneasLeanOptions),
     /// Use the Coq backend
     Coq,
     /// Use the SSProve backend
@@ -605,6 +636,7 @@ pub enum BackendName {
     #[clap(alias("proverif"))]
     ProVerif,
     Lean,
+    AeneasLean,
     Rust,
     GenerateRustEngineNames,
     Debugger,
@@ -619,6 +651,7 @@ impl BackendName {
             Self::Easycrypt,
             Self::ProVerif,
             Self::Lean,
+            Self::AeneasLean,
             Self::Rust,
             Self::GenerateRustEngineNames,
         ]
@@ -635,6 +668,7 @@ impl fmt::Display for BackendName {
             BackendName::Easycrypt => "easycrypt",
             BackendName::ProVerif => "proverif",
             BackendName::Lean => "lean",
+            BackendName::AeneasLean => "aeneas-lean",
             BackendName::Rust => "rust",
             BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
             BackendName::Debugger => "debugger",
@@ -664,6 +698,7 @@ impl From<&Backend> for BackendName {
             Backend::Easycrypt { .. } => BackendName::Easycrypt,
             Backend::ProVerif { .. } => BackendName::ProVerif,
             Backend::Lean { .. } => BackendName::Lean,
+            Backend::AeneasLean { .. } => BackendName::AeneasLean,
             Backend::Rust { .. } => BackendName::Rust,
             Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,
             Backend::Debugger { .. } => BackendName::Debugger,

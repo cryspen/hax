@@ -304,6 +304,7 @@ impl BackendTestsContext {
 /// Backend disabled by default.
 const DISABLED_BACKENDS: &[BackendName] = &[
     BackendName::Easycrypt,
+    BackendName::AeneasLean,
     BackendName::Rust,
     BackendName::GenerateRustEngineNames,
 ];

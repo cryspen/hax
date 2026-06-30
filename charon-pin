@@ -1,0 +1,9 @@
+# Release tag from https://github.com/AeneasVerif/charon/releases
+# Format: build-YYYY.MM.DD.HHMMSS-<commit-sha>
+# IMPORTANT: must match the charon version expected by the pinned aeneas
+# (see charon-pin in the aeneas repo at the pinned commit)
+tag nightly-2026.06.02
+# Expected output of `charon version` for this release
+version 0.1.210
+
+

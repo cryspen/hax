@@ -39,4 +39,13 @@ def alloc.slice.Impl.to_vec α (a: rust_primitives.sequence.Seq α) :
     RustM (alloc.vec.Vec α alloc.alloc.Global) :=
   pure a
 
+@[reducible] instance alloc.vec.Deref.AssociatedTypes (T : Type) (A : Type) :
+  core_models.ops.deref.Deref.AssociatedTypes (alloc.vec.Vec T A)
+  where
+  Target := Seq T
+
+@[spec]
+instance alloc.vec.Deref (T : Type) (A : Type) : core_models.ops.deref.Deref (alloc.vec.Vec T A) where
+  deref := fun self => pure self
+
 end RustVectors

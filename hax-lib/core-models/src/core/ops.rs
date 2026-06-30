@@ -246,3 +246,27 @@ pub mod range {
 
     impl_iterator_range_int!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::testing::Inject;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_add_assign(x in 0u8..128, y in 0u8..128) {
+            let mut model = x.inject();
+            super::arith::AddAssign::add_assign(&mut model, y.inject());
+            prop_assert_eq!(model, x + y);
+        }
+
+        #[test]
+        fn test_sub_assign(x in any::<u8>(), y in any::<u8>()) {
+            if x >= y {
+                let mut model = x.inject();
+                super::arith::SubAssign::sub_assign(&mut model, y.inject());
+                prop_assert_eq!(model, x - y);
+            }
+        }
+    }
+}

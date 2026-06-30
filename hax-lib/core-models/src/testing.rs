@@ -77,3 +77,17 @@ impl Inject for std::num::TryFromIntError {
         crate::num::error::TryFromIntError(())
     }
 }
+
+impl<'a, T> Inject for &'a [T] {
+    type Model = &'a [T];
+    fn inject(&self) -> Self::Model {
+        self
+    }
+}
+
+impl<A: Inject, B: Inject> Inject for (A, B) {
+    type Model = (A::Model, B::Model);
+    fn inject(&self) -> Self::Model {
+        (self.0.inject(), self.1.inject())
+    }
+}

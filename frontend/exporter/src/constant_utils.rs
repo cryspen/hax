@@ -38,6 +38,7 @@ pub enum ConstantExprKind {
     Adt {
         info: VariantInformations,
         fields: Vec<ConstantFieldExpr>,
+        repr: ReprOptions,
     },
     Array {
         fields: Vec<ConstantExpr>,
@@ -153,11 +154,12 @@ impl From<ConstantExpr> for Expr {
                 let lit = Spanned { span, node };
                 ExprKind::Literal { lit, neg }
             }
-            Adt { info, fields } => ExprKind::Adt(AdtExpr {
+            Adt { info, fields, repr } => ExprKind::Adt(AdtExpr {
                 info,
                 fields: fields.into_iter().map(|field| field.into()).collect(),
                 base: AdtExprBase::None,
                 user_ty: None,
+                repr,
             }),
             GlobalName(item) => ExprKind::GlobalName {
                 item,

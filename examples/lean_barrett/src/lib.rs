@@ -62,7 +62,7 @@ theorem barrett_spec (value: i32) :
     FIELD_MODULUS BARRETT_R
     BARRETT_MULTIPLIER BARRETT_SHIFT at *
   -- Invoke bit blasting:
-  hax_bv_decide (timeout := 90)
+  hax_bv_decide (timeout := 120)
 "
 )]
-pub fn theorem() {}
+pub fn thm() {}

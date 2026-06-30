@@ -8,8 +8,8 @@ pub mod slice {
     pub fn slice_split_at<T>(s: &[T], mid: usize) -> (&[T], &[T]) {
         s.split_at(mid)
     }
-    pub fn slice_contains<T>(s: &[T], v: T) -> bool {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn slice_contains<T: PartialEq>(s: &[T], v: &T) -> bool {
+        s.contains(v)
     }
     #[hax_lib::requires(i < slice_length(s))]
     pub fn slice_index<T>(s: &[T], i: usize) -> &T {
@@ -18,15 +18,18 @@ pub mod slice {
     pub fn slice_slice<T>(s: &[T], b: usize, e: usize) -> &[T] {
         &s[b..e]
     }
+    pub fn slice_clone_from_slice<T: Clone>(s: &mut [T], src: &[T]) {
+        s.clone_from_slice(src)
+    }
     // In the following two functions, F is actually a function type.
     // Not constraining that here allows to call it with closures,
     // or to pass parameters that implement the `Fn` trait for core_models.
     // Each backend can type `f` as needed.
-    pub fn array_from_fn<T, const N: usize, F>(f: F) -> [T; N] {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn array_from_fn<T, const N: usize, F: Fn(usize) -> T>(f: F) -> [T; N] {
+        std::array::from_fn(f)
     }
-    pub fn array_map<T, U, const N: usize, F>(s: [T; N], f: F) -> [U; N] {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn array_map<T, U, const N: usize, F: Fn(T) -> U>(s: [T; N], f: F) -> [U; N] {
+        s.map(f)
     }
     pub fn array_as_slice<T, const N: usize>(s: &[T; N]) -> &[T] {
         &s[..]
@@ -40,42 +43,52 @@ pub mod slice {
 }
 
 pub mod sequence {
-    pub struct Seq<T>(Option<T>);
+    #[derive(PartialEq, Debug)]
+    pub struct Seq<T>(Vec<T>);
     pub fn seq_empty<T>() -> Seq<T> {
-        Seq(None)
+        Seq(Vec::new())
     }
-    pub fn seq_from_slice<T>(_s: &[T]) -> Seq<T> {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn seq_from_slice<T>(s: &[T]) -> Seq<&T> {
+        Seq(s.iter().collect())
     }
-    pub fn seq_from_array<T, const N: usize>(_s: [T; N]) -> Seq<T> {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn seq_from_boxed_slice<T>(s: Box<[T]>) -> Seq<T> {
+        Seq(s.into_vec())
     }
-    pub fn seq_to_slice<T>(_s: &Seq<T>) -> &[T] {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn seq_from_array<T, const N: usize>(s: [T; N]) -> Seq<T> {
+        Seq(s.into_iter().collect())
     }
-    pub fn seq_concat<T>(s1: &mut Seq<T>, s2: &Seq<T>) {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn seq_to_slice<T>(s: &Seq<T>) -> &[T] {
+        s.0.as_slice()
+    }
+    pub fn seq_concat<T>(s1: &mut Seq<T>, s2: &mut Seq<T>) {
+        s1.0.append(&mut s2.0)
+    }
+    pub fn seq_extend<T>(s1: &mut Seq<T>, s2: &[T])
+    where
+        T: Clone,
+    {
+        s1.0.extend_from_slice(s2)
+    }
+    pub fn seq_push<T>(s1: &mut Seq<T>, v: T) {
+        s1.0.push(v)
     }
     pub fn seq_one<T>(x: T) -> Seq<T> {
-        unimplemented!("This is a stub that is implemented in each backend")
+        Seq(vec![x])
     }
-    pub fn seq_create<T>(x: T, n: usize) -> Seq<T> {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn seq_create<T: Clone>(x: T, n: usize) -> Seq<T> {
+        Seq(vec![x; n])
     }
     pub fn seq_len<T>(s: &Seq<T>) -> usize {
-        unimplemented!("This is a stub that is implemented in each backend")
+        s.0.len()
     }
-    pub fn seq_slice<T>(s: &Seq<T>, b: usize, e: usize) -> Seq<T> {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn seq_drain<T>(s: &mut Seq<T>, b: usize, e: usize) -> Seq<T> {
+        Seq(s.0.drain(b..e).collect())
     }
-    pub fn seq_last<T>(s: &Seq<T>) -> T {
-        unimplemented!("This is a stub that is implemented in each backend")
-    }
-    pub fn seq_first<T>(s: &Seq<T>) -> T {
-        unimplemented!("This is a stub that is implemented in each backend")
+    pub fn seq_remove<T>(s: &mut Seq<T>, n: usize) -> T {
+        s.0.remove(n)
     }
     pub fn seq_index<T>(s: &Seq<T>, i: usize) -> &T {
-        unimplemented!("This is a stub that is implemented in each backend")
+        &s.0[i]
     }
 }
 
@@ -103,15 +116,6 @@ pub mod string {
     }
     pub fn str_index(s: &'static str, i: usize) -> char {
         s.chars().nth(i).unwrap()
-    }
-}
-
-pub mod mem {
-    pub fn replace<'a, T: ?Sized>(dest: &'a mut T, src: &'a T) -> &'a T {
-        unimplemented!("This is a stub that is implemented in each backend")
-    }
-    pub fn copy<T>(x: &T) -> T {
-        unimplemented!("This is a stub that is implemented in each backend")
     }
 }
 

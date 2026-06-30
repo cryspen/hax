@@ -31,7 +31,7 @@ let impl_2 (#v_T: Type0) : Core_models.Iter.Traits.Iterator.t_Iterator (t_Iter v
     f_next_pre = (fun (self: t_Iter v_T) -> true);
     f_next_post
     =
-    (fun (self: t_Iter v_T) (out: (t_Iter v_T & Core_models.Option.t_Option v_T)) -> true);
+    (fun (self: t_Iter v_T) (out1: (t_Iter v_T & Core_models.Option.t_Option v_T)) -> true);
     f_next
     =
     fun (self: t_Iter v_T) ->
@@ -42,20 +42,11 @@ let impl_2 (#v_T: Type0) : Core_models.Iter.Traits.Iterator.t_Iterator (t_Iter v
           <:
           (t_Iter v_T & Core_models.Option.t_Option v_T)
         else
-          let res:v_T = Rust_primitives.Sequence.seq_first #v_T self._0 in
-          let self:t_Iter v_T =
-            {
-              self with
-              _0
-              =
-              Rust_primitives.Sequence.seq_slice #v_T
-                self._0
-                (mk_usize 1)
-                (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize)
-            }
-            <:
-            t_Iter v_T
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+            Rust_primitives.Sequence.seq_remove #v_T self._0 (mk_usize 0)
           in
+          let self:t_Iter v_T = { self with _0 = tmp0 } <: t_Iter v_T in
+          let res:v_T = out in
           self, (Core_models.Option.Option_Some res <: Core_models.Option.t_Option v_T)
           <:
           (t_Iter v_T & Core_models.Option.t_Option v_T)
