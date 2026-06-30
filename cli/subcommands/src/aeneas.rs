@@ -131,14 +131,17 @@ fn warn_on_reserved_flags(
     }
 }
 
-/// Format a `Command` as a shell-style invocation for display.
+/// Format a `Command` as a copy-pasteable, shell-quoted invocation for display.
+/// Args containing spaces or shell metacharacters (e.g. `{impl X for _}`,
+/// `register_tool(_hax)`, `host.rustflags=["--cfg","hax"]`) are quoted so the
+/// printed line can be pasted into a shell verbatim. Display-only: the real
+/// command is executed without a shell, so quoting never affects execution.
 fn format_command(cmd: &process::Command) -> String {
-    let mut s = cmd.get_program().to_string_lossy().to_string();
-    for arg in cmd.get_args() {
-        s.push(' ');
-        s.push_str(&arg.to_string_lossy());
-    }
-    s
+    let parts: Vec<String> = std::iter::once(cmd.get_program())
+        .chain(cmd.get_args())
+        .map(|p| p.to_string_lossy().into_owned())
+        .collect();
+    shlex::try_join(parts.iter().map(String::as_str)).unwrap_or_else(|_| parts.join(" "))
 }
 
 /// Convert a snake_case crate name to CamelCase for Lean.
