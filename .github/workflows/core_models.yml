@@ -1,18 +1,28 @@
-name: CI
+name: core-models
 
 on:
   push:
     branches: [main]
+    paths:
+      - 'hax-lib/core-models/**'
+      - '.github/workflows/core_models.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'hax-lib/core-models/**'
+      - '.github/workflows/core_models.yml'
 
-# All version pins live here.
+# Version pins for core-models:
 env:
   RUST_TOOLCHAIN: nightly-2026-02-07
   CHARON_REV:    6f058254eb741c12e9b388df07adaf7cc8aac8ed
   AENEAS_REV:    925d6131d76b77db6eb78d83c0b730df999bfdea
   # Where the cache step stages the charon / aeneas binaries.
   AENEAS_DIR: ${{ github.workspace }}/.tools/aeneas
+
+defaults:
+  run:
+    working-directory: hax-lib/core-models
 
 jobs:
   # ---------------------------------------------------------------- formatting
@@ -33,7 +43,7 @@ jobs:
       # `tests/` is a separate workspace; `cargo fmt --all` from the
       # root doesn't reach it.
       - run: cargo fmt --all -- --check
-        working-directory: tests
+        working-directory: hax-lib/core-models/tests
 
   # ---------------------------------------------------------------- rust tests
   rust-test:
@@ -48,6 +58,8 @@ jobs:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
 
       - run: cargo test --workspace
+        env:
+          RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
 
       # `tests/` is its own workspace (members: client_test,
       # rust_lean_equiv_test/{source,macro}) — the root `cargo test
@@ -55,7 +67,9 @@ jobs:
       # the Rust half of every `#[rust_lean_test]` (the Lean half runs
       # in the lean-build job below).
       - run: cargo test --workspace --lib
-        working-directory: tests
+        working-directory: hax-lib/core-models/tests
+        env:
+          RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
 
   # ----------------------------------------------------------- lean extraction
   lean-build:
