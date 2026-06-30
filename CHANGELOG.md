@@ -14,8 +14,10 @@ Changes to the engine:
 
 Changes to the frontend:
  - Fix all observable issues in the new rust version of the THIR importer (cryspen/hax-evit/155)
+ - Add access to representation information of other types than just enums (cryspen/hax-evit/187)
 
 Changes to cargo-hax:
+ - Add Lean/Aeneas as a new backend (cryspen/hax-evit/184, cryspen/hax-evit/186, cryspen/hax-evit/189)
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
@@ -23,9 +25,11 @@ Changes to hax-lib:
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
+- Lean library for the new Lean/Aeneas backend (cryspen/hax-evit/188)
 
 Miscellaneous:
  - New testing framework for the engine(s) (cryspen/hax-evit/135, cryspen/hax-evit/167)
+ - Three examples for the new Aeneas/Lean backend (cryspen/hax-evit/190, cryspen/hax-evit/191, cryspen/hax-evit/192)
 
 ## 0.3.7
 
