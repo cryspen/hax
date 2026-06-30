@@ -1,0 +1,69 @@
+name: Check Changelog Update
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    if: github.actor != 'github-merge-queue[bot]'
+
+jobs:
+  check-changelog:
+    if: github.actor != 'github-merge-queue[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check for [skip changelog] tag in PR body
+        id: skip_check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || "";
+            core.debug(body);
+            if (body.includes('[skip changelog]')) {
+              core.notice("Skipping changelog check because [skip changelog] was found in PR body.");
+              core.setOutput("skip", "true");
+            } else {
+              core.setOutput("skip", "false");
+            }
+
+      - name: Checkout full git history
+        if: steps.skip_check.outputs.skip == 'false'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        if: steps.skip_check.outputs.skip == 'false'
+        run: git fetch origin ${{ github.base_ref }}
+
+      - name: Check if CHANGELOG.md was updated
+        if: steps.skip_check.outputs.skip == 'false'
+        id: updated
+        run: |
+          git diff --name-only origin/${{ github.base_ref }} HEAD > changed_files.txt
+          echo "::group::Changed files"
+          cat changed_files.txt
+          echo "::endgroup::"
+
+          if ! grep -q 'CHANGELOG.md' changed_files.txt; then
+            {
+              echo '**Missing `CHANGELOG.md` entry**'
+              echo ''
+              echo 'Please do one of the following:'
+              echo '- Add relevant changes to `CHANGELOG.md`'
+              echo '- Or add `[skip changelog]` to the pull request body'
+              echo ''
+              echo 'Once done, re-run this workflow by clicking **"Re-run jobs"**.'
+              echo ''
+              cat CONTRIBUTING.md | awk '/^### Changelog$/{f=1;next} /^##?#? /&&f{exit} f' | sed 's/^###\s*//'
+            } > error-message
+            cat error-message >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Fail with markdown error
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const msg = require('fs').readFileSync('error-message', 'utf8');
+            core.setFailed(msg);

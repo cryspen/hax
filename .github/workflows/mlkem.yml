@@ -13,7 +13,7 @@ env:
 jobs:
   extract-mlkem:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'merge_group' }}
-    runs-on: linux
+    runs-on: "ubuntu-latest"
 
     steps:
       - name: ⤵ Extract libcrux version from PR body

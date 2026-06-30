@@ -1,0 +1,56 @@
+name: Extract and lax-check libcrux ML-DSA
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  extract-and-lax-mldsa:
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: ⤵ Clone Libcrux repository
+        uses: actions/checkout@v4
+        with:
+          repository: cryspen/libcrux
+          path: libcrux
+
+      - uses: actions/checkout@v4
+        with:
+          path: hax
+
+      - name: Use local hax-lib
+        working-directory: libcrux
+        run: |
+          cargo remove hax-lib -v -p libcrux-ml-dsa
+          cargo add hax-lib --path "../hax/hax-lib" -v -p libcrux-ml-dsa
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: Set up Cachix
+        uses: cachix/cachix-action@v15
+        with:
+          name: fstar-nix-versions
+          push: false
+    
+      - name: ⤵ Install hax
+        run: |
+          nix profile install ./hax
+
+      - name: ⤵ Install FStar
+        run: nix profile install github:FStarLang/FStar/v2025.03.25
+
+      - name: 🏃 Extract ML-DSA crate
+        working-directory: libcrux/libcrux-ml-dsa
+        run: ./hax.py extract
+  
+      - name: 🏃 Lax ML-DSA crate
+        working-directory: libcrux/libcrux-ml-dsa
+        run: |
+          env FSTAR_HOME=${{ github.workspace }}/fstar \
+              HAX_HOME=${{ github.workspace }}/hax \
+              PATH="${PATH}:${{ github.workspace }}/fstar/bin" \
+              ./hax.py prove --admit

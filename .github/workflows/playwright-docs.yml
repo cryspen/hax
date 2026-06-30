@@ -1,0 +1,49 @@
+name: Playwright Docs Tests
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+jobs:
+  test:
+    timeout-minutes: 45
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: DeterminateSystems/determinate-nix-action@v3
+    - uses: actions/setup-node@v5
+      with:
+        node-version: lts/*
+    - name: Install dependencies
+      working-directory: docs/.test
+      run: npm ci
+    - name: Install Playwright Browsers
+      working-directory: docs/.test
+      run: npx playwright install --with-deps
+    - name: Replace version with commit hash
+      run: sed -i "s/const HAX_PLAYGROUND_FORCED_VERSION = false;/const HAX_PLAYGROUND_FORCED_VERSION = \"${GITHUB_SHA}\";/" hax_playground.js
+      working-directory: docs/javascripts
+    - name: Playground warmup and build docs
+      run: |
+        set -euo pipefail
+
+        nix build .#docs & pid1=$!
+        curl -sS "https://hax-playground.cryspen.com/query/$GITHUB_SHA/fstar" \
+          -X POST \
+          -H 'User-Agent: bot' \
+          -H 'Accept: application/json' \
+          -H 'Content-Type: application/json' \
+          --data-raw '[["src/lib.rs","fn f(){}"]]' & pid2=$!
+
+        wait $pid1 || exit_code1=$?
+        wait $pid2 || exit_code2=$?
+
+        exit ${exit_code1:-0} || exit ${exit_code2:-0}
+    - name: Run Playwright tests
+      working-directory: docs/.test
+      run: npx playwright test --reporter github,html --trace on 
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: docs/.test/playwright-report/
+        retention-days: 30
