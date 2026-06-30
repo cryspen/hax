@@ -70,8 +70,10 @@ jobs:
       - name: Use local hax-lib
         working-directory: libcrux
         run: |
-          cargo remove hax-lib -v -p libcrux-ml-kem
-          cargo add hax-lib --path "../hax/hax-lib" -v -p libcrux-ml-kem
+          HAX_LIB_VERSION=$(cargo metadata --manifest-path ../hax/hax-lib/Cargo.toml --format-version 1 --no-deps | jq -r '.packages[0].version')
+          sed -i "s/hax-lib = { version = \".*\" }/hax-lib = { version = \"=${HAX_LIB_VERSION}\" }/" Cargo.toml
+          printf '\n[patch.crates-io]\nhax-lib = { path = "../hax/hax-lib" }\n' >> Cargo.toml
+          cargo update -p hax-lib
 
       - if: runner.environment == 'github-hosted'
         uses: DeterminateSystems/nix-installer-action@main

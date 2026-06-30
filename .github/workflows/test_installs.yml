@@ -35,11 +35,11 @@ jobs:
     - run: curl --proto '=https' --tlsv1.3 https://sh.rustup.rs -sSf | sh -s -- -y
     - if: runner.os == 'macOS'
       run: echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-    - run: opam init --bare -y && opam switch create -y 4.14.1
+    - run: opam init --bare -y && opam switch create -y 5.1.1
     - name: Run `setup.sh`
       run: |
         export OPAMERRLOGLEN=0
-        ./setup.sh
+        ./setup.sh --no-aeneas
     - run: cargo hax --version
     - name: Test an extraction
       run: |
