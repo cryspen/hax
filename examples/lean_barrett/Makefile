@@ -1,4 +1,7 @@
 .PHONY: default lean aeneas-lean clean
+
+default: lean aeneas-lean
+
 lean:
 	cargo hax into lean
 	(cd proofs/lean && \
@@ -11,9 +14,9 @@ aeneas-lean:
    elan default v4.30.0-rc2 && \
    lake exe cache get && \
    lake build)
-   
-default: lean aeneas-lean
 
 clean:
 	-rm -f proofs/lean/extraction/Lean_barrett.lean
 	-cd proofs/lean && lake clean
+	-rm -f proofs/aeneas-lean/LeanBarrett/Extraction/Funs.lean
+	-cd proofs/aeneas-lean && lake clean
