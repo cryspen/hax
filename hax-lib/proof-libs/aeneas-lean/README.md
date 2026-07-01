@@ -8,10 +8,9 @@ Add to your downstream `lakefile.toml`:
 
 ```toml
 [[require]]
-name = "CoreModels"
-git = "https://github.com/cryspen/rust-core-models"
+name = "hax"
+git = "https://github.com/cryspen/hax-lean"
 rev = "COMMIT_HASH_HERE"
-subDir = "lean"
 ```
 
 Use aeneas with the `-core-models-lib` option (currently only available with 
