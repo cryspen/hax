@@ -12,17 +12,7 @@ jobs:
     name: nix-action
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4    
-    - name: Free disk space by removing preinstalled packages
-      uses: jlumbroso/free-disk-space@main
-      with:
-        tool-cache: false
-        android: true
-        dotnet: true
-        haskell: true
-        large-packages: true
-        docker-images: true
-        swap-storage: false
+    - uses: actions/checkout@v4
     - uses: DeterminateSystems/nix-installer-action@main
     - uses: cachix/cachix-action@v15
       with:
@@ -49,11 +39,43 @@ jobs:
       run: |
         nix build .#rust-by-example-hax-extraction -L
 
+  examples:
+    name: example-${{ matrix.example }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        example:
+          - limited-order-book
+          - chacha20
+          - sha3
+          - sha256
+          - barrett
+          - kyber_compress
+          - loop_equivalence
+          - proverif-psk
+          - lean_chacha20
+          - lean_barrett
+    steps:
+    - uses: actions/checkout@v4
+    - uses: DeterminateSystems/nix-installer-action@main
+    - uses: cachix/cachix-action@v15
+      with:
+        name: hax
+        skipPush: true
+        extraPullNames: fstar-nix-versions, z3-nix-versions
+
+    - name: Install the toolchain
+      run: |
+        nix profile install nixpkgs#yq
+        nix profile install .#rustc
+        nix profile install .
+
     - name: Install aeneas and charon
       run: ./install-aeneas.sh
 
-    - name: Test the examples
+    - name: Build the example
       run: |
-        cd examples
+        cd examples/${{ matrix.example }}
         PATH="$HOME/.cargo/bin:$PATH" nix develop ..#ci-examples --command make clean
         PATH="$HOME/.cargo/bin:$PATH" nix develop ..#ci-examples --command make
