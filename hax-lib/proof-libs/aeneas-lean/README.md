@@ -1,6 +1,6 @@
 # Rust core models Lean package
 
-This Lean package contains the Lean extraction of our Rust model and supporting infrastructure.
+This Lean package contains the Lean extraction of our model of Rust core/std/alloc libraries and supporting infrastructure.
 
 ## Using the Lean library downstream
 
