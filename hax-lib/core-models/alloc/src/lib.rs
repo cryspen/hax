@@ -9,8 +9,13 @@ mod testing {
 }
 
 mod alloc {
+    pub trait Allocator {}
+
     #[cfg_attr(test, derive(PartialEq, Debug))]
+    #[derive(Clone)]
     pub struct Global;
+
+    impl Allocator for Global {}
 }
 
 mod borrow {
@@ -42,7 +47,7 @@ mod collections {
     mod binary_heap {
         #[hax_lib::fstar::before("open Rust_primitives.Notations")]
         use crate::vec::*;
-        struct BinaryHeap<T, A>(Vec<T, A>);
+        struct BinaryHeap<T, A>(Vec<T>, std::marker::PhantomData<A>);
 
         impl BinaryHeap<(), ()> {}
         impl BinaryHeap<(), ()> {}
@@ -56,12 +61,12 @@ mod collections {
         impl BinaryHeap<(), ()> {}
 
         #[hax_lib::attributes]
-        impl<T: Ord, A> BinaryHeap<T, A> {
+        impl<T: Ord, A: crate::alloc::Allocator> BinaryHeap<T, A> {
             fn new() -> BinaryHeap<T, A> {
-                BinaryHeap(Vec(
-                    rust_primitives::sequence::seq_empty(),
+                BinaryHeap(
+                    Vec(rust_primitives::sequence::seq_empty()),
                     std::marker::PhantomData::<A>,
-                ))
+                )
             }
             #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
             fn push(&mut self, v: T) {
@@ -87,7 +92,7 @@ mod collections {
         }
 
         #[hax_lib::attributes]
-        impl<T: Ord, A> BinaryHeap<T, A> {
+        impl<T: Ord, A: crate::alloc::Allocator> BinaryHeap<T, A> {
             fn len(&self) -> usize {
                 self.0.len()
             }
@@ -176,6 +181,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             impl BTreeSet<(), ()> {}
 
             impl<T, U> BTreeSet<T, U> {
+                #[hax_lib::opaque]
                 fn new() -> BTreeSet<T, U> {
                     BTreeSet(None, None)
                 }
@@ -207,10 +213,58 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             }
         }
 
+        #[hax_lib::attributes]
         impl<T, A> std::ops::Index<usize> for VecDeque<T, A> {
             type Output = T;
+            #[hax_lib::requires(i < self.len())]
             fn index(&self, i: usize) -> &T {
                 seq_index(&self.0, i)
+            }
+        }
+
+        pub mod into_iter {
+            use rust_primitives::sequence::*;
+            pub struct IntoIter<T, A>(pub Seq<T>, pub std::marker::PhantomData<A>);
+            impl<T, A> Iterator for IntoIter<T, A> {
+                type Item = T;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+            }
+        }
+
+        impl<T, A> IntoIterator for VecDeque<T, A> {
+            type Item = T;
+            type IntoIter = into_iter::IntoIter<T, A>;
+            fn into_iter(self) -> Self::IntoIter {
+                into_iter::IntoIter(self.0, std::marker::PhantomData)
+            }
+        }
+
+        // Like `Vec`, `FromIterator` is only implemented for the `Global`
+        // allocator (std has no way to thread an allocator through
+        // `from_iter`), so `Self` is `VecDeque<T, Global>` — matching the
+        // `VecDequeTGlobal` impl name downstream expects.
+        #[hax_lib::attributes]
+        #[hax_lib::opaque]
+        impl<T> std::iter::FromIterator<T> for VecDeque<T, crate::alloc::Global> {
+            fn from_iter<I>(iter: I) -> Self
+            where
+                I: IntoIterator<Item = T>,
+            {
+                // The impl is `#[opaque]`, so this body is axiomatised and need
+                // not actually consume `iter`. We deliberately avoid a `for`
+                // loop: hax hoists the loop into a separate function that is
+                // *not* covered by `#[opaque]`, and Aeneas then fails to
+                // extract it (`type_var_id: 1` — the iterator type `I`). A
+                // straight-line construction extracts cleanly. (`Vec`'s
+                // analogous impl sidesteps this by being `--exclude`d in the
+                // Makefile, but we need this symbol to exist.)
+                VecDeque(seq_empty(), std::marker::PhantomData)
             }
         }
     }
@@ -231,16 +285,16 @@ mod slice {
     use rust_primitives::sequence::*;
 
     impl<T> Dummy<T> {
-        fn to_vec(s: &[T]) -> Vec<T, crate::alloc::Global>
+        fn to_vec(s: &[T]) -> Vec<T>
         where
             T: Clone,
         {
             let mut seq = seq_empty();
             seq_extend(&mut seq, s);
-            Vec(seq, std::marker::PhantomData::<crate::alloc::Global>)
+            Vec(seq)
         }
-        fn into_vec<A>(s: Box<[T]>) -> Vec<T, A> {
-            Vec(seq_from_boxed_slice(s), std::marker::PhantomData::<A>)
+        fn into_vec(s: Box<[T]>) -> Vec<T> {
+            Vec(seq_from_boxed_slice(s))
         }
         #[hax_lib::opaque]
         fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
@@ -260,7 +314,7 @@ mod slice {
             #[test]
             fn test_into_vec(v in prop::collection::vec(any::<u8>(), 0..100)) {
                 let boxed: Box<[u8]> = v.clone().into_boxed_slice();
-                let model: crate::vec::Vec<u8, crate::alloc::Global> = super::Dummy::<u8>::into_vec(boxed);
+                let model: crate::vec::Vec<u8> = super::Dummy::<u8>::into_vec(boxed);
                 prop_assert_eq!(model.as_slice(), v.as_slice());
             }
         }
@@ -331,30 +385,80 @@ pub mod vec {
     use rust_primitives::sequence::*;
 
     #[cfg_attr(test, derive(Debug))]
-    pub struct Vec<T, A>(pub Seq<T>, pub std::marker::PhantomData<A>);
+    #[hax_lib::fstar::before("open Rust_primitives.Notations")]
+    pub struct Vec<T>(pub Seq<T>);
 
-    fn from_elem<T: Clone>(item: T, len: usize) -> Vec<T, crate::alloc::Global> {
-        Vec(
-            seq_create(item, len),
-            std::marker::PhantomData::<crate::alloc::Global>,
-        )
+    impl<T: Clone> Clone for Vec<T> {
+        fn clone(&self) -> Self {
+            let mut new_vec = seq_empty();
+            for it in self.iter() {
+                seq_push(&mut new_vec, it.clone());
+            }
+            Vec(new_vec)
+        }
+    }
+    impl<T, U> PartialEq<Vec<U>> for Vec<T>
+    where
+        T: PartialEq<U>,
+    {
+        fn eq(&self, other: &Vec<U>) -> bool {
+            if !(self.len() == other.len()) {
+                false
+            } else {
+                let mut res = true;
+                for i in 0..self.len() {
+                    if !(self[i] == other[i]) {
+                        res = false
+                    }
+                }
+                res
+            }
+        }
+    }
+
+    /// Opaque model of `std::vec::IntoIter<T, A>`. Downstream Aeneas
+    /// extractions reference this type via its full path
+    /// `alloc::vec::into_iter::IntoIter<T, A>`, so we expose it under a
+    /// matching submodule.
+    pub mod into_iter {
+        use rust_primitives::sequence::*;
+        pub struct IntoIter<T>(pub Seq<T>);
+        impl<T> Iterator for IntoIter<T> {
+            type Item = T;
+            fn next(&mut self) -> Option<Self::Item> {
+                if seq_len(&self.0) == 0 {
+                    None
+                } else {
+                    Some(seq_remove(&mut self.0, 0))
+                }
+            }
+        }
+    }
+
+    impl<T> IntoIterator for Vec<T> {
+        type Item = T;
+        type IntoIter = into_iter::IntoIter<T>;
+        fn into_iter(self) -> Self::IntoIter {
+            into_iter::IntoIter(self.0)
+        }
+    }
+
+    fn from_elem<T: Clone>(item: T, len: usize) -> Vec<T> {
+        Vec(seq_create(item, len))
     }
 
     #[hax_lib::attributes]
-    impl<T> Vec<T, crate::alloc::Global> {
-        pub fn new() -> Vec<T, crate::alloc::Global> {
-            Vec(
-                seq_empty(),
-                std::marker::PhantomData::<crate::alloc::Global>,
-            )
+    impl<T> Vec<T> {
+        pub fn new() -> Vec<T> {
+            Vec(seq_empty())
         }
-        pub fn with_capacity(_c: usize) -> Vec<T, crate::alloc::Global> {
+        pub fn with_capacity(_c: usize) -> Vec<T> {
             Vec::new()
         }
     }
 
     #[hax_lib::attributes]
-    impl<T, A> Vec<T, A> {
+    impl<T> Vec<T> {
         pub fn len(&self) -> usize {
             seq_len(&self.0)
         }
@@ -392,7 +496,11 @@ pub mod vec {
         }
         #[hax_lib::opaque]
         #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T) {}
+        pub fn resize(&mut self, new_size: usize, value: &T)
+        where
+            T: Clone,
+        {
+        }
         #[hax_lib::opaque]
         pub fn remove(&mut self, index: usize) -> T {
             seq_remove(&mut self.0, index)
@@ -400,14 +508,20 @@ pub mod vec {
         #[hax_lib::opaque]
         pub fn clear(&mut self) {}
         #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= usize::MAX.to_int())]
-        pub fn append(&mut self, other: &mut Vec<T, A>) {
+        pub fn append(&mut self, other: &mut Vec<T>) {
             seq_concat(&mut self.0, &mut other.0);
             other.0 = seq_empty()
         }
         #[hax_lib::opaque]
-        pub fn drain<R /* : RangeBounds<usize> */>(&mut self, _range: R) -> drain::Drain<T, A> {
+        pub fn drain<R /* : RangeBounds<usize> */>(
+            &mut self,
+            _range: R,
+        ) -> drain::Drain<T, crate::alloc::Global> {
             let l = seq_len(&self.0);
-            drain::Drain(seq_drain(&mut self.0, 0, l), std::marker::PhantomData::<A>) // TODO use range bounds
+            drain::Drain(
+                seq_drain(&mut self.0, 0, l),
+                std::marker::PhantomData::<crate::alloc::Global>,
+            ) // TODO use range bounds
         }
     }
     pub mod drain {
@@ -427,24 +541,39 @@ pub mod vec {
     }
 
     #[hax_lib::attributes]
-    impl<T: Clone, A> Vec<T, A> {
+    impl<T: Clone> Vec<T> {
         #[hax_lib::requires(seq_len(&self.0).to_int() + other.len().to_int() <= usize::MAX.to_int())]
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
     }
 
+    /// Generic `Index<I>` impl for `Vec`, matching std's
+    /// `impl<T, I: SliceIndex<[T]>, A: Allocator> Index<I> for Vec<T, A>`
+    /// (in `alloc/src/vec/mod.rs`). Delegates through `Deref` to the
+    /// `<[T]>::index` impl, the same body std uses. We omit the
+    /// `A: Allocator` bound because we do not model `Allocator` as a
+    /// trait — functionally identical for our purposes. The trait bound
+    /// references `std::slice::SliceIndex` (the real one) rather than
+    /// `core_models::slice::index::SliceIndex` because this crate is
+    /// standalone and does not depend on `core_models`; Aeneas's name
+    /// map for `std::slice::SliceIndex` aligns the extracted Lean path
+    /// with `core_models`'s SliceIndex extraction (both extract under
+    /// `core.slice.index.SliceIndex`).
     #[hax_lib::attributes]
-    impl<T, A> std::ops::Index<usize> for Vec<T, A> {
-        type Output = T;
-        #[hax_lib::requires(i < self.len())]
-        fn index(&self, i: usize) -> &T {
-            seq_index(&self.0, i)
+    impl<T, I> std::ops::Index<I> for Vec<T>
+    where
+        I: std::slice::SliceIndex<[T]>,
+    {
+        type Output = I::Output;
+        #[hax_lib::requires(self.get(i).is_some())]
+        fn index(&self, i: I) -> &I::Output {
+            std::ops::Index::index(&**self, i)
         }
     }
 
     #[hax_lib::attributes]
-    impl<T, A> core::ops::Deref for Vec<T, A> {
+    impl<T> core::ops::Deref for Vec<T> {
         type Target = [T];
 
         fn deref(&self) -> &[T] {
@@ -454,7 +583,7 @@ pub mod vec {
 
     #[hax_lib::attributes]
     #[hax_lib::opaque]
-    impl<T> std::iter::FromIterator<T> for Vec<T, crate::alloc::Global> {
+    impl<T> std::iter::FromIterator<T> for Vec<T> {
         fn from_iter<I>(iter: I) -> Self
         where
             I: IntoIterator<Item = T>,
@@ -473,20 +602,11 @@ pub mod vec {
         use proptest::prelude::*;
 
         impl<T: Clone> Inject for Vec<T> {
-            type Model = super::Vec<T, crate::alloc::Global>;
-            fn inject(&self) -> super::Vec<T, crate::alloc::Global> {
-                super::Vec::<T, crate::alloc::Global>(
-                    rust_primitives::sequence::seq_from_boxed_slice(
-                        self.clone().into_boxed_slice(),
-                    ),
-                    std::marker::PhantomData::<crate::alloc::Global>,
-                )
-            }
-        }
-
-        impl<T: PartialEq, A> PartialEq for super::Vec<T, A> {
-            fn eq(&self, other: &Self) -> bool {
-                self.0 == other.0
+            type Model = super::Vec<T>;
+            fn inject(&self) -> super::Vec<T> {
+                super::Vec::<T>(rust_primitives::sequence::seq_from_boxed_slice(
+                    self.clone().into_boxed_slice(),
+                ))
             }
         }
 
@@ -576,18 +696,46 @@ pub mod vec {
                 let model = super::from_elem(x, len);
                 prop_assert_eq!(model, vec![x; len].inject());
             }
+
+            // ----- Clone / PartialEq / IntoIterator -------
+
+            #[test]
+            fn test_vec_clone(v in prop::collection::vec(any::<u8>(), 0..30)) {
+                // Compare the clone's contents to std directly (independent of
+                // the model's own `PartialEq`, which is tested separately).
+                let cloned = v.inject().clone();
+                prop_assert_eq!(cloned.as_slice(), v.as_slice());
+            }
+
+            #[test]
+            fn test_vec_eq(
+                a in prop::collection::vec(any::<u8>(), 0..15),
+                b in prop::collection::vec(any::<u8>(), 0..15),
+            ) {
+                prop_assert_eq!(a.inject() == b.inject(), a == b);
+            }
+
+            #[test]
+            fn test_vec_into_iter(v in prop::collection::vec(any::<u8>(), 0..30)) {
+                let mut it = v.inject().into_iter();
+                let mut collected: std::vec::Vec<u8> = std::vec::Vec::new();
+                while let Some(x) = it.next() {
+                    collected.push(x);
+                }
+                prop_assert_eq!(collected.as_slice(), v.as_slice());
+            }
         }
 
         #[test]
         fn test_new() {
-            let model: super::Vec<u8, crate::alloc::Global> = super::Vec::new();
+            let model: super::Vec<u8> = super::Vec::new();
             let std_v: std::vec::Vec<u8> = std::vec::Vec::new();
             assert_eq!(model, std_v.inject());
         }
 
         #[test]
         fn test_with_capacity() {
-            let model: super::Vec<u8, crate::alloc::Global> = super::Vec::with_capacity(10);
+            let model: super::Vec<u8> = super::Vec::with_capacity(10);
             let std_v: std::vec::Vec<u8> = std::vec::Vec::with_capacity(10);
             assert_eq!(model, std_v.inject());
         }

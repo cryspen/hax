@@ -22,6 +22,7 @@ Changes to cargo-hax:
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
  - Remove dependency to proc_macro_error2 (unmaintained) (#2039)
+ - Migrate `rust-core-models` repo into this repo (#2049)
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)

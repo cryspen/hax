@@ -25,7 +25,7 @@ pub mod slice {
     // Not constraining that here allows to call it with closures,
     // or to pass parameters that implement the `Fn` trait for core_models.
     // Each backend can type `f` as needed.
-    pub fn array_from_fn<T, const N: usize, F: Fn(usize) -> T>(f: F) -> [T; N] {
+    pub fn array_from_fn<T, const N: usize, F: FnMut(usize) -> T>(f: F) -> [T; N] {
         std::array::from_fn(f)
     }
     pub fn array_map<T, U, const N: usize, F: Fn(T) -> U>(s: [T; N], f: F) -> [U; N] {

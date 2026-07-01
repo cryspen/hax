@@ -1,0 +1,24 @@
+[package]
+name = "core-models"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+pastey = "0.2.1"
+rust_primitives = { path = "../rust_primitives" }
+hax-lib.workspace = true
+
+[dev-dependencies]
+proptest = "1.9.0"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = [
+    'cfg(hax)',
+    'cfg(charon)',
+    'cfg(hax_compilation)',
+    'cfg(hax_backend_fstar)',
+    'cfg(hax_backend_lean)',
+] }

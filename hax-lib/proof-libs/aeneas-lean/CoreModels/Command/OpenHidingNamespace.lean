@@ -1,6 +1,18 @@
 import Lean
 open Lean Elab Command
 
+/-!
+
+# Command `open ... hiding namespace ...`
+
+This module extends Lean's `open ... hiding ...` command with the option to provide entire
+namespaces that should not be opened. The syntax is `open ... hiding namespace ...`.
+
+The command allows us to open the `Aeneas.Std` namespace without opening `Aeneas.Std.core` and
+`Aeneas.Std.alloc`. That way, we can provide our own definitions for core items.
+
+-/
+
 namespace CoreModels.Command
 
 syntax (name := openHidingNs) "open" ident "hiding" "namespace" ident+ : command

@@ -1,0 +1,65 @@
+name: Deploy cryspen/hax-lean
+
+# On every commit that lands on `main`, mirror the current state of
+# `hax-lib/proof-libs/aeneas-lean` into the `cryspen/hax-lean` repository.
+
+on:
+  push:
+    branches: [main]
+
+# Serialize runs so that concurrent merges into `main` cannot race each other
+# when pushing to the mirror. We do *not* cancel in-progress runs: every merged
+# commit should produce a mirror commit, and cancelling mid-push could leave the
+# mirror in a half-updated state.
+concurrency:
+  group: sync-hax-lean
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Don't run on forks.
+    if: github.repository == 'cryspen/hax'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repo (cryspen/hax)
+        uses: actions/checkout@v5
+        with:
+          path: source
+
+      - name: Checkout target repo (cryspen/hax-lean)
+        uses: actions/checkout@v5
+        with:
+          repository: cryspen/hax-lean
+          token: ${{ secrets.HAX_LEAN_DEPLOY_TOKEN }}
+          path: target
+
+      - name: Take snapshot of aeneas-lean
+        run: |
+          # Mirror the directory contents into the root of the target repo.
+          # --delete makes this a true snapshot: files removed upstream are
+          # removed downstream. The target's `.git` is preserved.
+          rsync -a --delete \
+            --exclude='.git/' \
+            source/hax-lib/proof-libs/aeneas-lean/ target/
+
+      - name: Commit and push if there are changes
+        working-directory: target
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to mirror; nothing to commit."
+            exit 0
+          fi
+
+          MSG=$(git -C ../source log -1 --format=%B)
+          SHA=$(git -C ../source rev-parse HEAD)
+          AUTHOR=$(git -C ../source log -1 --format='%an <%ae>')
+
+          git commit \
+            --author="$AUTHOR" \
+            -m "$MSG" \
+            -m "Snapshot of cryspen/hax@${SHA}"
+          git push
