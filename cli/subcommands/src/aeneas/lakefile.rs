@@ -6,8 +6,18 @@ use std::fs;
 use std::path::Path;
 
 /// Generate the contents of a `lakefile.toml` for an aeneas-lean project.
+///
+/// The `aeneas` Lean proof library is pinned to the same source repo + commit as
+/// the `aeneas` binary hax expects (baked from `pins.toml`'s `[aeneas]`, see
+/// build.rs), so the proof library matches the extraction. The `Hax` Lean proof
+/// library is pinned from `[hax-lean-lib]`. All pins are required — `generate`
+/// rejects empty ones before we get here, so there are no fallbacks.
 fn lakefile_contents(crate_name: &str) -> String {
     let pkg_name = super::to_camel_case(crate_name);
+    let aeneas_git = super::AENEAS_PIN_REPO;
+    let aeneas_rev = super::AENEAS_PIN_VERSION;
+    let hax_lean_git = super::LEAN_LIB_PIN_REPO;
+    let hax_lean_rev = super::LEAN_LIB_PIN_VERSION;
 
     format!(
         r#"name = "{pkg_name}"
@@ -19,9 +29,14 @@ name = "{pkg_name}"
 
 [[require]]
 name = "aeneas"
-git = "https://github.com/AeneasVerif/aeneas"
-rev = "main"
+git = "{aeneas_git}"
+rev = "{aeneas_rev}"
 subDir = "backends/lean"
+
+[[require]]
+name = "Hax"
+git = {{ url = "{hax_lean_git}" }}
+rev = "{hax_lean_rev}"
 "#
     )
 }
@@ -68,7 +83,7 @@ pub fn generate(lean_dir: &Path, crate_name: &str, message_format: MessageFormat
     );
     write_if_absent(
         &lean_dir.join("lean-toolchain"),
-        "leanprover/lean4:v4.28.0-rc1",
+        super::LEAN_PIN_TOOLCHAIN,
         message_format,
     );
     write_if_absent(

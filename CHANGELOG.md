@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Changes to the Rust Engine:
  - Fix diagnostic reporting (cryspen/hax-evit/159)
- 
+
 Changes to the engine:
 
 Changes to the frontend:
@@ -18,6 +18,7 @@ Changes to the frontend:
 
 Changes to cargo-hax:
  - Add Lean/Aeneas as a new backend (cryspen/hax-evit/184, cryspen/hax-evit/186, cryspen/hax-evit/189)
+ - Unify pining mechanism for aeneas, charon, lean and hax-lib (#2050)
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)

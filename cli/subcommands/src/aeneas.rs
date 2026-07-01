@@ -18,13 +18,19 @@ use super::find_binary;
 mod lakefile;
 
 const AENEAS_BINARY_NAME: &str = "aeneas";
-const AENEAS_BINARY_ENV: &str = "HAX_AENEAS";
+const AENEAS_BINARY_ENV: &str = "HAX_AENEAS_BINARY";
 const CHARON_BINARY_NAME: &str = "charon";
-const CHARON_BINARY_ENV: &str = "HAX_CHARON";
+const CHARON_BINARY_ENV: &str = "HAX_CHARON_BINARY";
 const BACKEND_DIR: &str = "aeneas-lean";
 
-const EXPECTED_AENEAS_VERSION: &str = env!("HAX_EXPECTED_AENEAS_VERSION");
-const EXPECTED_CHARON_VERSION: &str = env!("HAX_EXPECTED_CHARON_VERSION");
+// Tool pins, read once in `hax-types` from the workspace-root `pins.toml`.
+use hax_types::pins;
+const AENEAS_PIN_VERSION: &str = pins::AENEAS_VERSION;
+const AENEAS_PIN_REPO: &str = pins::AENEAS_REPO;
+const LEAN_PIN_TOOLCHAIN: &str = pins::LEAN_TOOLCHAIN;
+const LEAN_LIB_PIN_REPO: &str = pins::LEAN_LIB_REPO;
+const LEAN_LIB_PIN_VERSION: &str = pins::LEAN_LIB_VERSION;
+const CHARON_PIN_VERSION: &str = pins::CHARON_VERSION;
 
 /// Check that a binary reports the expected version, warn if not.
 fn check_version(binary: &Path, expected: &str, message_format: MessageFormat) {
@@ -196,8 +202,8 @@ pub fn run(
         Some(INSTALL_HINT),
     );
 
-    check_version(&aeneas, EXPECTED_AENEAS_VERSION, message_format);
-    check_version(&charon, EXPECTED_CHARON_VERSION, message_format);
+    check_version(&aeneas, AENEAS_PIN_VERSION, message_format);
+    check_version(&charon, CHARON_PIN_VERSION, message_format);
 
     let metadata = match cargo_metadata::MetadataCommand::new().exec() {
         Ok(m) => m,

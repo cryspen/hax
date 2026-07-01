@@ -16,11 +16,30 @@ die() { printf '\e[31mError: %s\e[0m\n' "$*" >&2; exit 1; }
 warn() { printf '\e[33mWarning: %s\e[0m\n' "$*" >&2; }
 info() { printf '\e[34m%s\e[0m\n' "$*"; }
 
-# Read a keyed value from a pin file.  Lines have the form "key value".
+# Read `key = "value"` from a `[section]` table of a TOML pin file. Minimal
+# parser: tracks the current table, strips comments and surrounding quotes. Only
+# the simple values in pins.toml are supported (no arrays/multiline).
 read_pin_key() {
-    local pin_file="$1" key="$2"
+    local pin_file="$1" section="$2" key="$3"
     [ -f "$pin_file" ] || die "Pin file not found: $pin_file"
-    grep -v '^#' "$pin_file" | grep "^${key} " | head -1 | cut -d' ' -f2-
+    awk -v want="[$section]" -v key="$key" '
+        /^[[:space:]]*#/ { next }                       # full-line comment
+        { sub(/[[:space:]]+#.*$/, "") }                 # inline comment
+        /^[[:space:]]*\[/ {                             # table header
+            hdr = $0
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", hdr)
+            in_section = (hdr == want)
+            next
+        }
+        in_section && $0 ~ ("^[[:space:]]*" key "[[:space:]]*=") {
+            val = $0
+            sub(/^[^=]*=[[:space:]]*/, "", val)         # drop "key ="
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", val)
+            gsub(/^"|"$/, "", val)                       # strip surrounding quotes
+            print val
+            exit
+        }
+    ' "$pin_file"
 }
 
 # ---------- detect platform --------------------------------------------------
@@ -45,25 +64,25 @@ PLATFORM="${os_tag}-${arch_tag}"
 # ---------- read pins --------------------------------------------------------
 
 # Repository URLs aeneas binaries may be downloaded from. Any other `repo` value
-# in aeneas-pin is rejected, so binaries can only come from a trusted source.
+# in [aeneas] is rejected, so binaries can only come from a trusted source.
 # (charon is always sourced from AeneasVerif/charon, unaffected by this.)
 AENEAS_ALLOWED_REPOS="https://github.com/AeneasVerif/aeneas https://github.com/cryspen/aeneas"
 
-# Pin files use "key value" lines: aeneas-pin has tag/commit/repo, charon-pin
-# has tag/version.
-AENEAS_TAG="$(read_pin_key "$SCRIPTPATH/aeneas-pin" "tag")"
-AENEAS_COMMIT="$(read_pin_key "$SCRIPTPATH/aeneas-pin" "commit")"
-AENEAS_REPO="$(read_pin_key "$SCRIPTPATH/aeneas-pin" "repo")"
-[ -n "$AENEAS_TAG" ] || die "Missing 'tag' in aeneas-pin"
-[ -n "$AENEAS_REPO" ] || die "Missing 'repo' in aeneas-pin"
+# Pins live in pins.toml: [aeneas] has tag/commit/repo, [charon] has tag/version.
+PINS="$SCRIPTPATH/pins.toml"
+AENEAS_TAG="$(read_pin_key "$PINS" "aeneas" "tag")"
+AENEAS_COMMIT="$(read_pin_key "$PINS" "aeneas" "commit")"
+AENEAS_REPO="$(read_pin_key "$PINS" "aeneas" "repo")"
+[ -n "$AENEAS_TAG" ] || die "Missing 'tag' in [aeneas] of pins.toml"
+[ -n "$AENEAS_REPO" ] || die "Missing 'repo' in [aeneas] of pins.toml"
 case " $AENEAS_ALLOWED_REPOS " in
     *" $AENEAS_REPO "*) ;;
-    *) die "Disallowed aeneas repo in aeneas-pin: '$AENEAS_REPO' (allowed: $AENEAS_ALLOWED_REPOS)" ;;
+    *) die "Disallowed aeneas repo in pins.toml: '$AENEAS_REPO' (allowed: $AENEAS_ALLOWED_REPOS)" ;;
 esac
 
-CHARON_TAG="$(read_pin_key "$SCRIPTPATH/charon-pin" "tag")"
-CHARON_EXPECTED_VERSION="$(read_pin_key "$SCRIPTPATH/charon-pin" "version")"
-[ -n "$CHARON_TAG" ] || die "Missing 'tag' in charon-pin"
+CHARON_TAG="$(read_pin_key "$PINS" "charon" "tag")"
+CHARON_EXPECTED_VERSION="$(read_pin_key "$PINS" "charon" "version")"
+[ -n "$CHARON_TAG" ] || die "Missing 'tag' in [charon] of pins.toml"
 
 # ---------- check if already installed at the right version ------------------
 
