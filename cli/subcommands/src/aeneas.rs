@@ -29,7 +29,7 @@ const AENEAS_PIN_VERSION: &str = pins::AENEAS_VERSION;
 const AENEAS_PIN_REPO: &str = pins::AENEAS_REPO;
 const LEAN_PIN_TOOLCHAIN: &str = pins::LEAN_TOOLCHAIN;
 const LEAN_LIB_PIN_REPO: &str = pins::LEAN_LIB_REPO;
-const LEAN_LIB_PIN_COMMIT: &str = pins::LEAN_LIB_COMMIT;
+const LEAN_LIB_PIN_VERSION: &str = pins::LEAN_LIB_VERSION;
 const CHARON_PIN_VERSION: &str = pins::CHARON_VERSION;
 
 /// Check that a binary reports the expected version, warn if not.

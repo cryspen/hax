@@ -30,5 +30,5 @@ toolchain = "leanprover/lean4:v4.30.0-rc2"
 
 [hax-lean-lib]
 # Hax library emitted as the `require Hax` of generated lakefiles
-commit = "ffdf432705d409b62ec025d253a340234b59766f"
-repo = "https://github.com/cryspen/hax-evit"
+version = "v0.1.0"
+repo = "https://github.com/cryspen/hax-lean"

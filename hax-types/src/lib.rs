@@ -3,7 +3,7 @@
 //!  - the command line (the `cargo-hax` binary);
 //!  - the custom rustc driver;
 //!  - the hax engine (the `hax-engine` binary).
-//!  
+//!
 //! Those three component send and receive messages in JSON or CBOR on
 //! stdin and stdout.
 
@@ -47,5 +47,5 @@ pub mod pins {
     /// Source repository of the Hax aeneas-lean proof library.
     pub const LEAN_LIB_REPO: &str = env!("HAX_LEAN_LIB_PIN_REPO");
     /// Commit of the Hax aeneas-lean proof library.
-    pub const LEAN_LIB_COMMIT: &str = env!("HAX_LEAN_LIB_PIN_COMMIT");
+    pub const LEAN_LIB_VERSION: &str = env!("HAX_LEAN_LIB_PIN_VERSION");
 }

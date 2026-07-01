@@ -16,8 +16,8 @@ fn lakefile_contents(crate_name: &str) -> String {
     let pkg_name = super::to_camel_case(crate_name);
     let aeneas_git = super::AENEAS_PIN_REPO;
     let aeneas_rev = super::AENEAS_PIN_VERSION;
-    let hax_git = super::LEAN_LIB_PIN_REPO;
-    let hax_rev = super::LEAN_LIB_PIN_COMMIT;
+    let hax_lean_git = super::LEAN_LIB_PIN_REPO;
+    let hax_lean_rev = super::LEAN_LIB_PIN_VERSION;
 
     format!(
         r#"name = "{pkg_name}"
@@ -35,9 +35,8 @@ subDir = "backends/lean"
 
 [[require]]
 name = "Hax"
-git = "{hax_git}"
-rev = "{hax_rev}"
-subDir = "hax-lib/proof-libs/aeneas-lean"
+git = {{ url = "{hax_lean_git}" }}
+rev = "{hax_lean_rev}"
 "#
     )
 }

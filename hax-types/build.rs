@@ -33,7 +33,7 @@ const REQUIRED_PINS: &[(&str, &str)] = &[
     ("charon", "tag"),
     ("charon", "version"),
     ("lean", "toolchain"),
-    ("hax-lean-lib", "commit"),
+    ("hax-lean-lib", "version"),
     ("hax-lean-lib", "repo"),
 ];
 
@@ -100,8 +100,8 @@ fn pin_env_vars() {
         get("hax-lean-lib", "repo")
     );
     println!(
-        "cargo:rustc-env=HAX_LEAN_LIB_PIN_COMMIT={}",
-        get("hax-lean-lib", "commit")
+        "cargo:rustc-env=HAX_LEAN_LIB_PIN_VERSION={}",
+        get("hax-lean-lib", "version")
     );
 }
 
