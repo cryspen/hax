@@ -4,3 +4,7 @@
 /*/proofs/lean/.lake
 /*/proofs/aeneas-lean/llbc/*.llbc
 /*/proofs/aeneas-lean/*/Extraction/Funs.lean
+/*/proofs/aeneas-lean/*/Extraction/FunsExternal_Template.lean
+/*/proofs/aeneas-lean/*/Extraction/ProofObligations.lean
+/*/proofs/aeneas-lean/*/Extraction/Specs.lean
+/*/proofs/aeneas-lean/*/Extraction/Types.lean
