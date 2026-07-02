@@ -31,7 +31,7 @@ Changes to the Lean backend:
 
 Miscellaneous:
  - New testing framework for the engine(s) (cryspen/hax-evit/135, cryspen/hax-evit/167)
- - Three examples for the new Aeneas/Lean backend (cryspen/hax-evit/190, cryspen/hax-evit/191, cryspen/hax-evit/192)
+ - Three examples for the new Aeneas/Lean backend (cryspen/hax-evit/190, cryspen/hax-evit/191, cryspen/hax-evit/192, #2058)
  - Update flags for the charon/aeneas pipeline (#2051)
 
 ## 0.3.7
