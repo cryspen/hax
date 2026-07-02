@@ -110,6 +110,69 @@ additional_uint_decls UInt64 64
 additional_uint_decls UInt128 128
 additional_uint_decls USize System.Platform.numBits
 
+-- Per-type `toInt` declarations for unsigned integer types.
+--
+-- Lean 4.29.0-rc1 stdlib does not provide `UInt*.toInt`, which prevents the
+-- Hax spec macros (`declare_comparison_specs`, `declare_Hax_int_ops_spec`)
+-- from formulating unsigned specs in terms of mathematical integers, the way
+-- signed specs already do.  See https://github.com/cryspen/hax/issues/1830.
+--
+-- This macro emits the missing accessor and the bridging lemmas that compose
+-- the existing `toNat`-based lemmas with `Int.ofNat_*` casts.
+open Lean in
+set_option hygiene false in
+macro "additional_uint_toInt_decls" typeName:ident width:term : command => do
+  let tyDot (n : Name) := mkIdent (typeName.getId ++ n)
+  let toIntEq := tyDot `toInt_eq_toNat
+  let toNatInj := tyDot `toNat_inj
+  let ltIff := tyDot `lt_iff_toNat_lt
+  let leIff := tyDot `le_iff_toNat_le
+  let addLem := tyDot `toNat_add_of_lt
+  let subLem := tyDot `toNat_sub_of_le'
+  let mulLem := tyDot `toNat_mul_of_lt
+  let cmds ← Syntax.getArgs <$> `(
+    namespace $typeName
+
+    /-- Mathematical-integer view of an unsigned integer. -/
+    @[reducible] def toInt (x : $typeName) : Int := (x.toNat : Int)
+
+    @[simp] theorem toInt_eq_toNat (x : $typeName) : x.toInt = (x.toNat : Int) := rfl
+
+    theorem toInt_inj {x y : $typeName} : x.toInt = y.toInt ↔ x = y := by
+      constructor
+      · intro h; exact ($toNatInj:ident).mp (Int.ofNat_inj.mp h)
+      · intro h; exact h ▸ rfl
+
+    theorem lt_iff_toInt_lt {x y : $typeName} : x < y ↔ x.toInt < y.toInt := by
+      rw [$ltIff:ident, $toIntEq:ident, $toIntEq:ident, Int.ofNat_lt]
+
+    theorem le_iff_toInt_le {x y : $typeName} : x ≤ y ↔ x.toInt ≤ y.toInt := by
+      rw [$leIff:ident, $toIntEq:ident, $toIntEq:ident, Int.ofNat_le]
+
+    theorem toInt_add_of_lt {x y : $typeName} (h : x.toNat + y.toNat < 2 ^ $width) :
+        (x + y).toInt = x.toInt + y.toInt := by
+      simp [$toIntEq:ident, $addLem:ident h]
+
+    theorem toInt_sub_of_le' {x y : $typeName} (h : y.toNat ≤ x.toNat) :
+        (x - y).toInt = x.toInt - y.toInt := by
+      simp [$toIntEq:ident, $subLem:ident h, Int.ofNat_sub h]
+
+    theorem toInt_mul_of_lt {x y : $typeName} (h : x.toNat * y.toNat < 2 ^ $width) :
+        (x * y).toInt = x.toInt * y.toInt := by
+      simp [$toIntEq:ident, $mulLem:ident h]
+
+    end $typeName
+  )
+  return ⟨mkNullNode cmds⟩
+
+additional_uint_toInt_decls UInt8 8
+additional_uint_toInt_decls UInt16 16
+additional_uint_toInt_decls UInt32 32
+additional_uint_toInt_decls UInt64 64
+-- UInt128 toInt decls are emitted in `Lemmas.lean` (which imports
+-- `Lemmas_UInt128.lean`), since `UInt128.toNat_inj`, `lt_iff_toNat_lt`, and
+-- `le_iff_toNat_le` are not yet in scope at this point in the import graph.
+
 open Lean in
 set_option hygiene false in
 macro "declare_missing_uint_conversions" : command => do
