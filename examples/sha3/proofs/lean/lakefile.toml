@@ -7,4 +7,4 @@ name = "Sha3"
 
 [[require]]
 name = "Hax"
-path = "../../../../hax-lib/proof-libs/aeneas-lean"
+path = "../../../../hax-lib/proof-libs/lean"

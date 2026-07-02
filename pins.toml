@@ -1,4 +1,4 @@
-# Pinned external tools and proof libraries for the aeneas-lean backend.
+# Pinned external tools and proof libraries for the lean backend.
 #
 # Consumed by:
 #   - install-aeneas.sh  (downloads/verifies the aeneas + charon binaries)

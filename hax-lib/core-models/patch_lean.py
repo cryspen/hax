@@ -3,13 +3,13 @@
 Post-process Aeneas-generated Lean files into the layout expected by our
 Aeneas core replacement library.
 
-For `core`, Aeneas writes the following files into ../proof-libs/aeneas-lean/CoreModels/Core :
+For `core`, Aeneas writes the following files into ../proof-libs/lean/CoreModels/Core :
     Funs.lean
     Types.lean
     FunsExternal_Template.lean
     TypesExternal_Template.lean
     
-For `alloc`, Aeneas writes the following files into ../proof-libs/aeneas-lean/CoreModels/Alloc :
+For `alloc`, Aeneas writes the following files into ../proof-libs/lean/CoreModels/Alloc :
     Funs.lean
     Types.lean
     FunsExternal_Template.lean
@@ -35,7 +35,7 @@ import shutil
 import sys
 from pathlib import Path
 
-LEAN_DIR = Path(__file__).parent.parent / "proof-libs" / "aeneas-lean"
+LEAN_DIR = Path(__file__).parent.parent / "proof-libs" / "lean"
 CORE_DIR = LEAN_DIR / "CoreModels" / "Core"
 ALLOC_DIR = LEAN_DIR / "CoreModels" / "Alloc"
 

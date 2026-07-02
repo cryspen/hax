@@ -62,7 +62,7 @@ fn main() {
         | Backend::Ssprove
         | Backend::Easycrypt
         | Backend::ProVerif { .. }
-        | Backend::AeneasLean { .. } => panic!(
+        | Backend::Lean { .. } => panic!(
             "The Rust engine cannot be called with backend {}.",
             value.backend.backend
         ),

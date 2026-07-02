@@ -53,12 +53,12 @@ provided that the input is small enough.
 The proof can be run as follows:
 ```sh
 cd lean_barrett/
-make aeneas-lean
+make lean
 ```
 
 This extracts the Rust code from `lean_barrett/src/lib.rs` into
-`examples/lean_barrett/proofs/aeneas-lean/LeanBarrett/Extraction/Funs.lean`. The Lean proof can be found in
-`examples/lean_barrett/proofs/aeneas-lean/LeanBarrett/Verification.lean`.
+`examples/lean_barrett/proofs/lean/LeanBarrett/Extraction/Funs.lean`. The Lean proof can be found in
+`examples/lean_barrett/proofs/lean/LeanBarrett/Verification.lean`.
 
 ### SHA-3
 
@@ -82,8 +82,8 @@ make
 ```
 
 This extracts the Rust code from `sha3/src/lib.rs` into
-`examples/sha3/proofs/aeneas-lean/Sha3/Extraction/Funs.lean`. The Lean proof can be found in
-`examples/sha3/proofs/aeneas-lean/Sha3/Equivalence.lean`.
+`examples/sha3/proofs/lean/Sha3/Extraction/Funs.lean`. The Lean proof can be found in
+`examples/sha3/proofs/lean/Sha3/Equivalence.lean`.
 
 ### Loop Equivalence
 

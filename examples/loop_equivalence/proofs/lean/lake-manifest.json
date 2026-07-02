@@ -6,7 +6,7 @@
    "name": "Hax",
    "manifestFile": "lake-manifest.json",
    "inherited": false,
-   "dir": "../../../../hax-lib/proof-libs/aeneas-lean",
+   "dir": "../../../../hax-lib/proof-libs/lean",
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/cryspen/rust-core-models",
    "type": "git",

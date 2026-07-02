@@ -38,7 +38,7 @@ const REQUIRED_PINS: &[(&str, &str)] = &[
 ];
 
 /// Bake the workspace-root tool pins (`pins.toml`) so they are available as
-/// `hax_types::pins` (used by the aeneas-lean backend's version checks, generated
+/// `hax_types::pins` (used by the lean backend's version checks, generated
 /// lakefiles, and `--help`). Read here once, in the shared crate, rather than in
 /// each consumer. `pins.toml` is required and must be complete: a missing,
 /// malformed, or incomplete file (any [`REQUIRED_PINS`] key missing or empty)

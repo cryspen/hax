@@ -31,7 +31,7 @@ pub mod engine_api;
 pub const HAX_VERSION: &str = env!("HAX_VERSION");
 
 /// Tool pins, baked in at build time from the workspace-root `pins.toml` (see
-/// `build.rs`). Read here once so every consumer (`cargo-hax`'s aeneas-lean
+/// `build.rs`). Read here once so every consumer (`cargo-hax`'s lean
 /// backend, the `--help` text) shares a single source of truth. `build.rs`
 /// requires a complete `pins.toml` (failing the build otherwise), so these are
 /// always present and non-empty in a successfully built binary.
@@ -44,8 +44,8 @@ pub mod pins {
     pub const CHARON_VERSION: &str = env!("HAX_CHARON_PIN_VERSION");
     /// Lean toolchain written to generated `lean-toolchain` files.
     pub const LEAN_TOOLCHAIN: &str = env!("HAX_LEAN_PIN_TOOLCHAIN");
-    /// Source repository of the Hax aeneas-lean proof library.
+    /// Source repository of the Hax lean proof library.
     pub const LEAN_LIB_REPO: &str = env!("HAX_LEAN_LIB_PIN_REPO");
-    /// Commit of the Hax aeneas-lean proof library.
+    /// Commit of the Hax lean proof library.
     pub const LEAN_LIB_VERSION: &str = env!("HAX_LEAN_LIB_PIN_VERSION");
 }

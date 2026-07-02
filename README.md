@@ -108,10 +108,10 @@ The command `cargo hax` accepts the following subcommands:
 
 | Backend               | Command                      | Description                                                                                                                   |
 |-----------------------|------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| **Lean** (via Aeneas) | `cargo hax into aeneas-lean` | Recommended for Lean. Uses [charon](https://github.com/AeneasVerif/charon) + [aeneas](https://github.com/AeneasVerif/aeneas). |
+| **Lean** (via Aeneas) | `cargo hax into lean` | Recommended for Lean. Uses [charon](https://github.com/AeneasVerif/charon) + [aeneas](https://github.com/AeneasVerif/aeneas). |
 | F\*                   | `cargo hax into fstar`       | Stable.                                                                                                                       |
 | Rocq/Coq              | `cargo hax into coq`         |                                                                                                                               |
-| Lean (legacy)         | `cargo hax into legacy-lean` | Uses the hax engine directly. Prefer `aeneas-lean`.                                                                           |
+| Lean (legacy)         | `cargo hax into legacy-lean` | Uses the hax engine directly. Prefer `lean`.                                                                           |
 | SSProve               | `cargo hax into ssprove`     |                                                                                                                               |
 | ProVerif              | `cargo hax into pro-verif`   |                                                                                                                               |
 
@@ -164,7 +164,7 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
 
 **Note:** Nix does not yet include aeneas and charon.
 After installing, run `./install-aeneas.sh` from a hax checkout to
-add the `aeneas-lean` backend.
+add the `lean` backend.
 
 </details>
 
@@ -180,14 +180,14 @@ Note: Please make sure that `$HOME/.cargo/bin` is in your `$PATH`, as
 that is where `setup.sh` will install hax.
 
 **Note:** Docker does not yet include aeneas and charon.
-Run `./install-aeneas.sh` inside the container to add the `aeneas-lean` backend.
+Run `./install-aeneas.sh` inside the container to add the `lean` backend.
 
 </details>
 
 <details>
   <summary><b>Aeneas and Charon (standalone)</b></summary>
 
-The `aeneas-lean` backend (`cargo hax into aeneas-lean`) uses the
+The `lean` backend (`cargo hax into lean`) uses the
 [charon](https://github.com/AeneasVerif/charon) +
 [aeneas](https://github.com/AeneasVerif/aeneas) pipeline instead of
 the hax engine.  It requires the `aeneas` and `charon` binaries.

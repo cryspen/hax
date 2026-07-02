@@ -188,4 +188,4 @@ fi
 
 info ""
 info "Done! aeneas and charon are installed in $INSTALL_DIR"
-info "You can now run: cargo hax into aeneas-lean"
+info "You can now run: cargo hax into lean"

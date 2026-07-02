@@ -32,11 +32,11 @@ verification tool's logic) has three advantages:
   ordinary Rust, so we can compile and run it side-by-side with `std`
   and check behavioral agreement.
 - **Shareable across verification tools**: a single Rust model feeds
-  multiple downstream backends — currently hax-F\*, hax-Lean, and
-  Aeneas-Lean — instead of each tool maintaining its own shadow `core`.
+  multiple downstream backends — currently hax-F\* and hax-Lean — instead
+  of each tool maintaining its own shadow `core`.
 
 CI verifies that the *committed* extracted Lean files in
-`../proof-libs/aeneas-lean/CoreModels/{Funs,Types,…}.lean` match what a fresh extraction produces
+`../proof-libs/lean/CoreModels/{Funs,Types,…}.lean` match what a fresh extraction produces
 against the pinned toolchain. That means a downstream Lean consumer can
 just `lake update` this repo without installing the Rust toolchain.
 
@@ -78,7 +78,7 @@ across machines.
 ```
 
 The distributed Lean library lives outside this crate at
-`../proof-libs/aeneas-lean/` (`lakefile.toml`, `lean-toolchain`, and the
+`../proof-libs/lean/` (`lakefile.toml`, `lean-toolchain`, and the
 `CoreModels/` tree of hand-written + extracted files, all committed). The
 extraction pipeline below writes into it.
 
@@ -175,7 +175,7 @@ equivalence test exercises Aeneas's translation of the same item.
 - **Excluded items**: things listed in `CHARON_EXCLUDES` /
   `ALLOC_CHARON_EXCLUDES` (`core::mem::swap`, `core::slice::index::*`,
   most `Vec` indexing, `BinaryHeap`, …) come from hand-written Lean
-  definitions in `../proof-libs/aeneas-lean/CoreModels/{Funs,Types}External.lean`. Their
+  definitions in `../proof-libs/lean/CoreModels/{Funs,Types}External.lean`. Their
   equivalence tests live in the same file as the rest of the items
   in the same module (e.g. `core::mem::swap` tests live in
   `source/src/core/mem.rs`) — flagged with a section header noting
@@ -183,7 +183,7 @@ equivalence test exercises Aeneas's translation of the same item.
 
 ## Using the Lean library downstream
 
-See [../proof-libs/aeneas-lean/README.md](../proof-libs/aeneas-lean/README.md)
+See [../proof-libs/lean/README.md](../proof-libs/lean/README.md)
 
 ## Contributing
 
@@ -204,7 +204,7 @@ PRs welcome. Please:
   a section header like
   `// ----- foo (manually defined in Lean, not extracted) -----` so a
   reader knows the Lean side is hitting a hand-written definition in
-  `../proof-libs/aeneas-lean/CoreModels/FunsExternal.lean` rather than the extraction.
+  `../proof-libs/lean/CoreModels/FunsExternal.lean` rather than the extraction.
 
 ## License
 

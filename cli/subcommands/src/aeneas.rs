@@ -1,4 +1,4 @@
-//! Aeneas-Lean backend: runs the charon + aeneas pipeline to translate Rust to Lean.
+//! Lean backend: runs the charon + aeneas pipeline to translate Rust to Lean.
 //! This bypasses the hax frontend exporter and engine entirely.
 //!
 //! The pipeline is:
@@ -22,7 +22,7 @@ const AENEAS_BINARY_NAME: &str = "aeneas";
 const AENEAS_BINARY_ENV: &str = "HAX_AENEAS_BINARY";
 const CHARON_BINARY_NAME: &str = "charon";
 const CHARON_BINARY_ENV: &str = "HAX_CHARON_BINARY";
-const BACKEND_DIR: &str = "aeneas-lean";
+const BACKEND_DIR: &str = "lean";
 
 // Tool pins, read once in `hax-types` from the workspace-root `pins.toml`.
 use hax_types::pins;
@@ -222,10 +222,10 @@ fn collect_output_lines(output: &process::Output) -> Vec<String> {
 
     lines
 }
-/// Runs the charon + aeneas pipeline for the `aeneas-lean` backend.
+/// Runs the charon + aeneas pipeline for the `lean` backend.
 /// Returns `true` if an error occurred.
 pub fn run(
-    options: &AeneasLeanOptions,
+    options: &LeanOptions,
     output_dir: Option<PathBuf>,
     verbose: u8,
     message_format: MessageFormat,
