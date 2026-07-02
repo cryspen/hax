@@ -28,6 +28,9 @@ fn f<const N: usize>(mut arr: [u64; N]) -> [u64; N] {
 
 /// Unrolled loop: processes two elements per iteration, then handles the
 /// leftover element when `N` is odd. This computes the same result as [`f`].
+///
+/// Postcondition: its output equals the result of `f` on the same input.
+#[hax_lib::ensures(|_| future(arr) == &f(*arr))]
 fn g<const N: usize>(arr: &mut [u64; N]) {
     let initial = arr.clone();
 
@@ -62,9 +65,4 @@ fn g_loop_inv<const N: usize>(arr: &[u64; N], _initial: &[u64; N], i: usize, j: 
     } else {
         true
     }
-}
-
-// Postcondition for `g`: its output equals the result of `f` on the same input.
-fn g_post<const N: usize>(arr: &[u64; N], future_arr: &[u64; N]) -> bool {
-    future_arr == &f(*arr)
 }
