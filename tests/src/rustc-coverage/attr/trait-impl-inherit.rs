@@ -1,5 +1,5 @@
 //! @fail(tc): fstar(2)
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 #![feature(coverage_attribute)]
 // Checks that `#[coverage(..)]` in a trait method is not inherited in an
 // implementation.

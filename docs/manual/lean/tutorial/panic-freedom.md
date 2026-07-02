@@ -6,7 +6,7 @@ weight: 0
 
 Let's start with a simple example: a function that squares a `u8`
 integer. To extract this function to Lean using hax, we simply need to
-run the command `cargo hax into lean` in the directory of the crate
+run the command `cargo hax into legacy-lean` in the directory of the crate
 in which the function `square` is defined.
 
 *Note: throughout this tutorial, you can edit the snippets of code and

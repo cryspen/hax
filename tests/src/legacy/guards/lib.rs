@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 #![feature(if_let_guard)]
 #![allow(dead_code)]
 

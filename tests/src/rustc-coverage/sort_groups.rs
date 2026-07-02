@@ -1,4 +1,4 @@
-//! @fail(tc): fstar(2), lean(1)
+//! @fail(tc): fstar(2), legacy-lean(1)
 //@ edition: 2021
 
 // Demonstrate that `sort_subviews.py` can sort instantiation groups into a

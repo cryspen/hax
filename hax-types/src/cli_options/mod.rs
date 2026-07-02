@@ -220,9 +220,9 @@ pub struct AeneasLeanOptions {
 pub enum Backend {
     /// Use the F* backend
     Fstar(FStarOptions),
-    /// Use the Lean backend (warning: experimental)
-    Lean,
-    /// Use the Aeneas Lean backend (charon + aeneas pipeline)
+    /// Use the legacy Lean backend (warning: experimental)
+    LegacyLean,
+    /// Use the Lean backend (charon + aeneas pipeline)
     AeneasLean(AeneasLeanOptions),
     /// Use the Coq backend
     Coq,
@@ -655,7 +655,7 @@ pub enum BackendName {
     Easycrypt,
     #[clap(alias("proverif"))]
     ProVerif,
-    Lean,
+    LegacyLean,
     AeneasLean,
     Rust,
     GenerateRustEngineNames,
@@ -670,7 +670,7 @@ impl BackendName {
             Self::Ssprove,
             Self::Easycrypt,
             Self::ProVerif,
-            Self::Lean,
+            Self::LegacyLean,
             Self::AeneasLean,
             Self::Rust,
             Self::GenerateRustEngineNames,
@@ -687,7 +687,7 @@ impl fmt::Display for BackendName {
             BackendName::Ssprove => "ssprove",
             BackendName::Easycrypt => "easycrypt",
             BackendName::ProVerif => "proverif",
-            BackendName::Lean => "lean",
+            BackendName::LegacyLean => "legacy-lean",
             BackendName::AeneasLean => "aeneas-lean",
             BackendName::Rust => "rust",
             BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
@@ -717,7 +717,7 @@ impl From<&Backend> for BackendName {
             Backend::Ssprove { .. } => BackendName::Ssprove,
             Backend::Easycrypt { .. } => BackendName::Easycrypt,
             Backend::ProVerif { .. } => BackendName::ProVerif,
-            Backend::Lean { .. } => BackendName::Lean,
+            Backend::LegacyLean { .. } => BackendName::LegacyLean,
             Backend::AeneasLean { .. } => BackendName::AeneasLean,
             Backend::Rust { .. } => BackendName::Rust,
             Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,

@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 #[path = "auxiliary/unused_mod_helper.rs"]
 mod unused_module;
 

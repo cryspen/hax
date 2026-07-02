@@ -7,9 +7,9 @@ weight: 102
 The encoding of Rust in Lean has three main components:
 
 * the *syntax* (items, functions, `if`-`else`, `match`, etc), defined by the *backend*
-  ([`/rust-engine/src/backends/lean.rs`](https://github.com/cryspen/hax/blob/main/rust-engine/src/backends/lean.rs))
+  ([`/rust-engine/src/backends/legacy_lean.rs`](https://github.com/cryspen/hax/blob/main/rust-engine/src/backends/legacy_lean.rs))
 * the *primitives/intrinsics* (`u32`, `isize`, slices, etc) defined by in the *Prelude*
-  ([`hax-lib/proof-libs/lean`](https://github.com/cryspen/hax/tree/main/hax-lib/proof-libs/lean))
+  ([`hax-lib/proof-libs/legacy-lean`](https://github.com/cryspen/hax/tree/main/hax-lib/proof-libs/legacy-lean))
 * the models of *core* and *std* libraries.
 
 While mostly separated, the Backend make some assumption on the Prelude,
@@ -532,4 +532,4 @@ class T2 (Self : Type) where
 
 ## Prelude
 
-See the [Hax Lean library](https://github.com/cryspen/hax/tree/main/hax-lib/proof-libs/lean)
+See the [Hax Lean library](https://github.com/cryspen/hax/tree/main/hax-lib/proof-libs/legacy-lean)

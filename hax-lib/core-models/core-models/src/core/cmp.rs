@@ -153,7 +153,7 @@ impl<T: Ord> Ord for Reverse<T> {
 
 macro_rules! int_impls {
     ($($t:ty)*) => ($(
-        #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+        #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
         #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
         impl PartialOrd<$t> for $t {
@@ -171,7 +171,7 @@ macro_rules! int_impls {
                 else {Option::Some(Ordering::Equal)}
             }
         }
-        #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+        #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
         #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
         impl Ord for $t {
@@ -188,7 +188,7 @@ macro_rules! int_impls {
                 else {Ordering::Equal}
             }
         }
-        #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+        #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
         #[cfg_attr(charon, aeneas::exclude)]
         impl PartialEq<$t> for $t {
             fn eq(&self, other: &Self) -> bool {
@@ -196,7 +196,7 @@ macro_rules! int_impls {
             }
         }
         #[cfg_attr(charon, aeneas::exclude)]
-        #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+        #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
         impl Eq for $t {}
     )*)
 }

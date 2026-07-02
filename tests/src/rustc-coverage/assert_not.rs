@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 //@ edition: 2021
 
 // Regression test for <https://github.com/rust-lang/rust/issues/118904>.

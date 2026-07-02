@@ -230,7 +230,7 @@ pub enum TestDirective {
         /// The raw body of the directive
         directive: String,
     },
-    /// e.g. `@off: fstar, lean`
+    /// e.g. `@off: fstar, legacy-lean`
     Off {
         /// The backends being disabled
         backends: HashSet<BackendName>,

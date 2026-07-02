@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 //! @fail(tc): fstar(72)
 
 #![allow(dead_code)]
@@ -60,7 +60,7 @@ pub fn closure_impl_expr<I: Iterator<Item = ()>>(it: I) -> Vec<()> {
     it.map(|x| x).collect()
 }
 
-/// @fail(extraction): lean(HAX0001)
+/// @fail(extraction): legacy-lean(HAX0001)
 pub fn closure_impl_expr_fngen<I: Iterator<Item = ()>, F: FnMut(()) -> ()>(it: I, f: F) -> Vec<()> {
     it.map(f).collect()
 }
@@ -120,7 +120,7 @@ mod for_clauses {
         mod minimized_3 {
             pub trait Trait {}
 
-            /// @fail(extraction): lean(HAX0001)
+            /// @fail(extraction): legacy-lean(HAX0001)
             impl<P: FnMut(&u8) -> bool> Trait for P {}
         }
     }

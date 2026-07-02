@@ -854,7 +854,7 @@ pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
 
 /// This macro inserts a verbatim Lean proof into the extracted code.
 #[proc_macro_attribute]
-pub fn lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+pub fn legacy_lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
     let payload = parse_macro_input!(payload as LitStr).value();
     let attr = AttrPayload::Proof(payload);
@@ -864,7 +864,7 @@ pub fn lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
 /// This macro inserts a verbatim Lean proof showing that the `requires`-condition is panic-free.
 /// The proof is inserted into the `pureRequires` field of the Lean spec.
 #[proc_macro_attribute]
-pub fn lean_pure_requires_proof(
+pub fn legacy_lean_pure_requires_proof(
     payload: pm::TokenStream,
     item: pm::TokenStream,
 ) -> pm::TokenStream {
@@ -877,7 +877,7 @@ pub fn lean_pure_requires_proof(
 /// This macro inserts a verbatim Lean proof showing that the `ensures`-condition is panic-free.
 /// The proof is inserted into the `pureEnsures` field of the Lean spec.
 #[proc_macro_attribute]
-pub fn lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+pub fn legacy_lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
     let payload = parse_macro_input!(payload as LitStr).value();
     let attr = AttrPayload::PureEnsuresProof(payload);
@@ -886,7 +886,7 @@ pub fn lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) 
 
 /// Use the proof method `grind`. This influences the tactic and spec set used by Lean.
 #[proc_macro_attribute]
-pub fn lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+pub fn legacy_lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
     let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::Grind);
     quote! {#attr #item}.into()
@@ -894,7 +894,7 @@ pub fn lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) ->
 
 /// Use the proof method `bv_decide`. This influences the tactic and spec set used by Lean.
 #[proc_macro_attribute]
-pub fn lean_proof_method_bv_decide(
+pub fn legacy_lean_proof_method_bv_decide(
     _attr: pm::TokenStream,
     item: pm::TokenStream,
 ) -> pm::TokenStream {
@@ -1076,7 +1076,7 @@ macro_rules! make_quoting_proc_macro {
     }
 }
 
-make_quoting_proc_macro!(fstar coq proverif lean);
+make_quoting_proc_macro!(fstar coq proverif legacy_lean);
 
 /// Marks a newtype `struct RefinedT(T);` as a refinement type. The
 /// struct should have exactly one unnamed private field.

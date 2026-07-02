@@ -44,7 +44,7 @@ fn for_loop_with_spec(y: u64) -> u64 {
 
 /// while-loop
 #[hax_lib::ensures(|r| r == 0)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 /// @fail(extraction): coq(HAX0001, HAX0001), proverif(HAX0008), ssprove(HAX0001)
 fn while_loop1(s: u32) -> u32 {
     let mut x: u32 = s;

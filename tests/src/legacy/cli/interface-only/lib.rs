@@ -1,5 +1,5 @@
-//! @fail(tc): lean(1)
-//! @fail(extraction): lean(HAX0001, HAX0001, HAX0001)
+//! @fail(tc): legacy-lean(1)
+//! @fail(extraction): legacy-lean(HAX0001, HAX0001, HAX0001)
 //! @fail(tc): fstar(47)
 
 #![allow(dead_code)]
@@ -13,7 +13,7 @@
 #[hax_lib::requires(x < 254)]
 #[hax_lib::ensures(|r| r[0] > x)]
 /// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
-/// @fail(extraction): lean(HAX0008, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): legacy-lean(HAX0008, HAX0008, HAX0008, HAX0008)
 fn f(x: u8) -> [u8; 4] {
     let y = x as *const i8;
 
@@ -28,7 +28,7 @@ fn f(x: u8) -> [u8; 4] {
 /// not supported by hax. This item cannot be extracted at all: we
 /// need to exclude it with `-i '-*::Foo'`.
 /// @fail(extraction): proverif(HAX0008), fstar(HAX0008), coq(HAX0008), ssprove(HAX0008)
-/// @fail(extraction): lean(HAX0008)
+/// @fail(extraction): legacy-lean(HAX0008)
 struct Foo {
     unsupported_field: *const u8,
 }

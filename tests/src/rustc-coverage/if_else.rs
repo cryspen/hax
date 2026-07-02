@@ -1,4 +1,4 @@
-//! @fail(tc): fstar(2), lean(1)
+//! @fail(tc): fstar(2), legacy-lean(1)
 #![allow(unused_assignments, unused_variables)]
 
 #[rustfmt::skip]

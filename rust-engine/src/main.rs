@@ -80,7 +80,7 @@ fn main() {
             };
             return;
         }
-        Backend::Lean => backends::apply_backend(backends::lean::LeanBackend, items),
+        Backend::LegacyLean => backends::apply_backend(backends::legacy_lean::LeanBackend, items),
         Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
         Backend::Debugger { interactive } => {
             use hax_rust_engine::debugger::*;

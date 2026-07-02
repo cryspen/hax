@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 #![feature(coverage_attribute, stmt_expr_attributes)]
 #![allow(dead_code)]
 

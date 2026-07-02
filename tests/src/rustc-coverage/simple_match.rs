@@ -1,8 +1,8 @@
-//! @fail(tc): lean(1), fstar(2)
+//! @fail(tc): legacy-lean(1), fstar(2)
 #![allow(unused_assignments, unused_variables)]
 
 #[rustfmt::skip]
-/// @fail(extraction): proverif(HAX0001, HAX0008), fstar(HAX0001), lean(HAX0001), ssprove(HAX0001), coq(HAX0001)
+/// @fail(extraction): proverif(HAX0001, HAX0008), fstar(HAX0001), legacy-lean(HAX0001), ssprove(HAX0001), coq(HAX0001)
 fn main() {
     // Initialize test constants in a way that cannot be determined at compile time, to ensure
     // rustc and LLVM cannot optimize out statements (or coverage counters) downstream from

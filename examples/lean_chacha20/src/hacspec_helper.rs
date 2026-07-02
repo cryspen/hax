@@ -2,7 +2,7 @@ use super::State;
 
 #[hax_lib::requires(bytes.len() == 12)]
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub(super) fn to_le_u32s_3(bytes: &[u8]) -> [u32; 3] {
     // assert_eq!($l, bytes.len() / 4);
     let mut out = [0; 3];
@@ -15,7 +15,7 @@ pub(super) fn to_le_u32s_3(bytes: &[u8]) -> [u32; 3] {
 
 #[hax_lib::requires(bytes.len() == 32)]
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub(super) fn to_le_u32s_8(bytes: &[u8]) -> [u32; 8] {
     // assert_eq!(8, bytes.len() / 4);
     let mut out = [0; 8];
@@ -28,7 +28,7 @@ pub(super) fn to_le_u32s_8(bytes: &[u8]) -> [u32; 8] {
 
 #[hax_lib::requires(bytes.len() == 64)]
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub(super) fn to_le_u32s_16(bytes: &[u8]) -> [u32; 16] {
     // assert_eq!(16, bytes.len() / 4);
     let mut out = [0; 16];
@@ -40,7 +40,7 @@ pub(super) fn to_le_u32s_16(bytes: &[u8]) -> [u32; 16] {
 }
 
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub(super) fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
     // <const L: usize>
     let mut out = [0; 64];
@@ -54,7 +54,7 @@ pub(super) fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
 }
 
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub(super) fn xor_state(mut state: State, other: State) -> State {
     for i in 0..16 {
         state[i] = state[i] ^ other[i];
@@ -63,7 +63,7 @@ pub(super) fn xor_state(mut state: State, other: State) -> State {
 }
 
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub(super) fn add_state(mut state: State, other: State) -> State {
     for i in 0..16 {
         state[i] = state[i].wrapping_add(other[i]);
@@ -73,7 +73,7 @@ pub(super) fn add_state(mut state: State, other: State) -> State {
 
 #[hax_lib::requires(val.len() <= 64)]
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub(super) fn update_array(mut array: [u8; 64], val: &[u8]) -> [u8; 64] {
     // <const L: usize>
     assert!(64 >= val.len());

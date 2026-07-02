@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1), fstar(2)
+//! @fail(tc): legacy-lean(1), fstar(2)
 #![allow(dead_code, unused_assignments, unused_variables)]
 
 pub fn unused_pub_fn_not_in_library() {

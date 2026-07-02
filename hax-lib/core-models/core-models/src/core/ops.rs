@@ -55,7 +55,7 @@ pub mod arith {
             use hax_lib::ToInt;
             $(
             #[hax_lib::attributes]
-            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+            #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
             impl crate::ops::arith::AddAssign<$Self> for $Self {
                 #[hax_lib::requires(self.to_int() + rhs.to_int() <= $Self::MAX.to_int())]
                 fn add_assign(&mut self, rhs: $Self) {
@@ -63,7 +63,7 @@ pub mod arith {
                 }
             }
             #[hax_lib::attributes]
-            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+            #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
             impl crate::ops::arith::SubAssign<$Self> for $Self {
                 #[hax_lib::requires(self.to_int() - rhs.to_int() >= 0.to_int())]
                 fn sub_assign(&mut self, rhs: $Self) {
@@ -306,7 +306,7 @@ pub mod range {
         ($($int_type: ident)*) => {
             use crate::option::Option;
             $(
-                #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+                #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
                 impl crate::iter::traits::iterator::Iterator for Range<$int_type> {
                     type Item = $int_type;
                     fn next(&mut self) -> Option<$int_type> {

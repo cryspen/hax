@@ -1,5 +1,5 @@
 //! @fail(tc): fstar(2)
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 #![allow(unused_assignments, unused_variables, dead_code)]
 
 fn main() {

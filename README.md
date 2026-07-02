@@ -111,7 +111,7 @@ The command `cargo hax` accepts the following subcommands:
 | **Lean** (via Aeneas) | `cargo hax into aeneas-lean` | Recommended for Lean. Uses [charon](https://github.com/AeneasVerif/charon) + [aeneas](https://github.com/AeneasVerif/aeneas). |
 | F\*                   | `cargo hax into fstar`       | Stable.                                                                                                                       |
 | Rocq/Coq              | `cargo hax into coq`         |                                                                                                                               |
-| Lean (legacy)         | `cargo hax into lean`        | Uses the hax engine directly. Prefer `aeneas-lean`.                                                                           |
+| Lean (legacy)         | `cargo hax into legacy-lean` | Uses the hax engine directly. Prefer `aeneas-lean`.                                                                           |
 | SSProve               | `cargo hax into ssprove`     |                                                                                                                               |
 | ProVerif              | `cargo hax into pro-verif`   |                                                                                                                               |
 

@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 #![allow(unused_assignments)]
 //@ compile-flags: -Coverflow-checks=yes
 //@ failure-status: 101

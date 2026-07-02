@@ -6,9 +6,9 @@ This Rust engine is designed so that it can re-use some bits of the OCaml engine
 The plan is to slowly deprecate the OCaml engine, rewrite most of its components and drop it.
 
 ## Usage
-The Rust engine supports only one backend for now: `Lean`.
+The Rust engine supports only one backend for now: `legacy-lean`.
 
 To run it, use the following command:
 ```bash
-cargo hax into lean
+cargo hax into legacy-lean
 ```

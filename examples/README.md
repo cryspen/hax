@@ -100,7 +100,7 @@ make
 
 Three examples are fine-tuned to showcase the Lean backend: `lean_barrett`,
 `lean_chacha20`, and `lean_adc`. For all of them, the lean extraction can be
-obtained by running `cargo hax into lean`.
+obtained by running `cargo hax into legacy-lean`.
 
 ### Barrett
 
@@ -117,7 +117,7 @@ limit the computation time, the bound `BARRETT_R` was lowered compared to the
 normal example in the `barrett` folder.
 
 The proofs are backported in the rust code (in `lean_barrett/src/lib.rs`): doing
-`cargo hax into lean` extracts a valid lean file that contains the proof.
+`cargo hax into legacy-lean` extracts a valid lean file that contains the proof.
 
 The proof can be run by doing (requires `lake`):
 
@@ -130,7 +130,7 @@ make lean
 
 The *ADC* (addition with carry) example verifies a 32-bit limb addition with
 carry, a fundamental building block in multi-precision (bignum) arithmetic.
-It uses `#[hax_lib::lean::after(...)]` to embed a Lean 4 correctness theorem
+It uses `#[hax_lib::legacy_lean::after(...)]` to embed a Lean 4 correctness theorem
 directly after the extracted function definition. The precondition and
 postcondition are expressed as pure Lean propositions in a Hoare triple, and
 the proof is fully automated via `hax_mvcgen` and Lean's `bv_decide`

@@ -33,7 +33,7 @@ jobs:
     - name: Verify Lean tests
       run: |
         nix develop .#ci-examples --command bash -c \
-          "elan default \$(cat hax-lib/proof-libs/lean/lean-toolchain) && lake build --dir hax-lib/proof-libs/lean && just test -b lean"
+          "elan default \$(cat hax-lib/proof-libs/legacy-lean/lean-toolchain) && lake build --dir hax-lib/proof-libs/legacy-lean && just test -b legacy-lean"
 
     - name: Try to extract Rust By Examples
       run: |

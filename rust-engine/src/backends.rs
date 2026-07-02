@@ -15,7 +15,7 @@
 //! See [`rust`] for an example implementation.
 
 pub mod fstar;
-pub mod lean;
+pub mod legacy_lean;
 pub mod rust;
 
 use std::{collections::HashMap, rc::Rc};

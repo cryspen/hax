@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1), fstar(2)
+//! @fail(tc): legacy-lean(1), fstar(2)
 #![allow(unused_assignments, unused_variables, while_true)]
 
 // This test confirms that (1) unexecuted infinite loops are handled correctly by the
