@@ -1,1 +1,1 @@
-import Sha3.Equivalence
+import Sha3.Extraction.Funs

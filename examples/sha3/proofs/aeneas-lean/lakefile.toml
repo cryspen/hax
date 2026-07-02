@@ -6,5 +6,13 @@ defaultTargets = ["Sha3"]
 name = "Sha3"
 
 [[require]]
+name = "aeneas"
+git = "https://github.com/cryspen/aeneas"
+rev = "8d2077c"
+subDir = "backends/lean"
+
+[[require]]
 name = "Hax"
-path = "../../../../hax-lib/proof-libs/aeneas-lean"
+git = "https://github.com/cryspen/hax-evit"
+rev = "ffdf432705d409b62ec025d253a340234b59766f"
+subDir = "hax-lib/proof-libs/aeneas-lean"

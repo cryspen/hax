@@ -62,7 +62,6 @@ mod reference {
     /// ι step — FIPS 202, Algorithm 6.
     ///
     ///   A′[0,0] = A[0,0] ⊕ RC[ir]
-    #[hax_lib::requires(round < 24)]
     pub fn iota(mut state: State, round: usize) -> State {
         state[0] ^= ROUND_CONSTANTS[round];
         state
@@ -199,65 +198,53 @@ mod implementation {
     // Theta and rho don't perfectly match the reference implementation. So we call `rho` from the
     // postcondition of theta. In this way, we can state a specification for `theta` and `rho` together.
 
-    fn _requires_theta(_st: &KeccakState<1, u64>) -> bool {
-        true
-    }
-
-    fn _ensures_theta(st: &KeccakState<1, u64>, res: &KeccakState<1, u64>, d: [u64; 5]) -> bool {
-        let mut res = res.clone();
+    #[hax_lib::ensures(|d| {
+        let mut res = future(st).clone();
         res.rho(d);
-        res.st == reference::rho(reference::theta(st.st))
+        res.st == reference::rho(reference::theta(st.st))})]
+    fn theta(st: &mut KeccakState<1, u64>) -> [u64; 5] {
+        KeccakState::theta(st)
     }
 
     // =========================================================================
     // Pi
     // =========================================================================
 
-    fn _requires_pi(_st: &KeccakState<1, u64>) -> bool {
-        true
-    }
-
-    fn _ensures_pi(st: &KeccakState<1, u64>, res: &KeccakState<1, u64>) -> bool {
-        res.st == reference::pi(st.st)
+    #[hax_lib::ensures(|_| future(st).st == reference::pi(st.st))]
+    fn pi(st: &mut KeccakState<1, u64>) {
+        KeccakState::pi(st)
     }
 
     // =========================================================================
     // Chi
     // =========================================================================
 
-    fn _requires_chi(_st: &KeccakState<1, u64>) -> bool {
-        true
-    }
-
-    fn _ensures_chi(st: &KeccakState<1, u64>, res: &KeccakState<1, u64>) -> bool {
-        res.st == reference::chi(st.st)
+    #[hax_lib::ensures(|_| future(st).st == reference::chi(st.st))]
+    fn chi(st: &mut KeccakState<1, u64>) {
+        KeccakState::chi(st)
     }
 
     // =========================================================================
     // Iota
     // =========================================================================
 
-    fn _requires_iota(_st: &KeccakState<1, u64>, i: usize) -> bool {
-        i < ROUNDCONSTANTS.len()
-    }
-
-    fn _ensures_iota(st: &KeccakState<1, u64>, i: usize, res: &KeccakState<1, u64>) -> bool {
-        res.st == reference::iota(st.st, i)
+    #[hax_lib::requires(i < ROUNDCONSTANTS.len())]
+    #[hax_lib::ensures(|_| future(st).st == reference::iota(st.st, i))]
+    fn iota(st: &mut KeccakState<1, u64>, i: usize) {
+        KeccakState::iota(st, i)
     }
 
     // =========================================================================
     // Round
     // =========================================================================
 
-    fn _requires_round(_st: &KeccakState<1, u64>, i: usize) -> bool {
-        i < ROUNDCONSTANTS.len()
-    }
-
-    fn _ensures_round(st: &KeccakState<1, u64>, i: usize, res: &KeccakState<1, u64>) -> bool {
-        res.st
-            == reference::iota(
-                reference::chi(reference::pi(reference::rho(reference::theta(st.st)))),
-                i,
-            )
+    #[hax_lib::requires(i < ROUNDCONSTANTS.len())]
+    #[hax_lib::ensures(|_| future(st).st
+        == reference::iota(
+            reference::chi(reference::pi(reference::rho(reference::theta(st.st)))),
+            i,
+        ))]
+    fn round(st: &mut KeccakState<1, u64>, i: usize) {
+        KeccakState::round(st, i)
     }
 }
