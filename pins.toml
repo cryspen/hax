@@ -20,9 +20,9 @@ repo = "https://github.com/cryspen/aeneas"
 # Must match the charon version expected by the pinned aeneas: check the
 # `charon-pin` file in the AeneasVerif/aeneas repo at [aeneas].commit (that is
 # aeneas's own pin, not this file).
-tag = "nightly-2026.06.02"
+tag = "nightly-2026.07.01"
 # Expected output of `charon version` for this release.
-version = "0.1.210"
+version = "0.1.218"
 
 [lean]
 # Lean toolchain written into the `lean-toolchain` of projects
