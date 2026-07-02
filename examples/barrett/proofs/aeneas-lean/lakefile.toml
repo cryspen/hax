@@ -1,9 +1,9 @@
-name = "LeanBarrett"
+name = "Barrett"
 version = "0.1.0"
-defaultTargets = ["LeanBarrett"]
+defaultTargets = ["Barrett"]
 
 [[lean_lib]]
-name = "LeanBarrett"
+name = "Barrett"
 
 [[require]]
 name = "Hax"

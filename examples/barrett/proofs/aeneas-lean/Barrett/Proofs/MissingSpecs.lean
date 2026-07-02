@@ -1,10 +1,10 @@
 -- Missing core model specs, to upstream
 import Aeneas
-import LeanBarrett.Extraction.Types
-import LeanBarrett.Extraction.Funs
-import LeanBarrett.Extraction.Specs
+import Barrett.Extraction.Types
+import Barrett.Extraction.Funs
+import Barrett.Extraction.Specs
 open Aeneas Aeneas.Std Result ControlFlow Error
-open Std.Do Aeneas lean_barrett CoreModels lean_barrett
+open Std.Do Aeneas CoreModels barrett
 set_option mvcgen.warning false
 
 @[grind =]

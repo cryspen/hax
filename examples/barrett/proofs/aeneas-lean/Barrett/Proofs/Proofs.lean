@@ -1,13 +1,13 @@
 import Aeneas
-import LeanBarrett.Extraction.Types
-import LeanBarrett.Extraction.Funs
-import LeanBarrett.Extraction.Specs
-import LeanBarrett.Proofs.MissingSpecs
-open Std.Do Aeneas lean_barrett CoreModels lean_barrett
+import Barrett.Extraction.Types
+import Barrett.Extraction.Funs
+import Barrett.Extraction.Specs
+import Barrett.Proofs.MissingSpecs
+open Std.Do Aeneas CoreModels barrett
 set_option mvcgen.warning false
-namespace lean_barrett
+namespace barrett
 
-open Std.Do Aeneas lean_barrett CoreModels lean_barrett
+open Std.Do Aeneas CoreModels barrett
 set_option mvcgen.warning false
 set_option hax_mvcgen.warnings false
 
@@ -28,4 +28,4 @@ theorem barrett_reduce.spec.proof (value : Std.I32) : barrett_reduce.spec value 
     <;> try simp [BARRETT_MULTIPLIER, BARRETT_R, BARRETT_SHIFT, FIELD_MODULUS] at *
     <;> try grind
 
-end lean_barrett
+end barrett
