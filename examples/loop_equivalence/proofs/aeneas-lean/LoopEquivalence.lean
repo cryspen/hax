@@ -1,1 +1,1 @@
-import LoopEquivalence.Spec
+import LoopEquivalence.Proofs.Proofs
