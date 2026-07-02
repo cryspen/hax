@@ -1,2 +1,2 @@
 import LeanBarrett.Extraction.Funs
-import LeanBarrett.Verification
+import LeanBarrett.Proofs.Proofs
