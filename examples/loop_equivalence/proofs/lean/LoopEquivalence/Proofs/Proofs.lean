@@ -17,11 +17,8 @@ attribute [local spec] g f op g_loop g_loop.body f_loop f_loop.body g_loop_inv f
 attribute [local spec] core.Array.Insts.CoreCloneClone.clone
 
 set_option maxHeartbeats 1000000
-theorem g_spec {N : Usize} (arr : Array U64 N) :
-    ⦃ ⌜ True ⌝ ⦄
-    g arr
-    ⦃ ⇓ future_arr => ⌜(do let x ← f arr; pure (future_arr == x) : Result Bool).holds ⌝ ⦄ := by
-  unfold g g_loop g_loop.body f f_loop f_loop.body
+theorem g.spec.proof {N : Std.Usize} (arr : Array Std.U64 N) : g.spec arr := by
+  unfold spec g g_loop g_loop.body post f f_loop f_loop.body
   for_loop_with_invariant
     fun i r =>
       pure
@@ -52,7 +49,6 @@ theorem g_spec {N : Usize} (arr : Array U64 N) :
     apply h_22 j <;> grind
   · -- N%2>0 post: g's update at N-1 vs f_loop's full result.
     simp at *; try subst_vars
-    apply Subtype.ext
     rw [Array.set_val_eq]
     apply List.ext_getElem (by grind) fun i hi1 hi2 => ?_
     simp only [List.getElem_set]
@@ -72,7 +68,6 @@ theorem g_spec {N : Usize} (arr : Array U64 N) :
     apply h_17 j <;> grind
   · -- N%2=0 post: direct element-wise equality.
     simp at *
-    apply Subtype.ext
     apply List.ext_getElem (by grind) fun i hi1 hi2 => ?_
     expose_names
     apply h_4 (Usize.ofNatCore i (by grind)) <;>
