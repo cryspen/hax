@@ -682,6 +682,44 @@ reduc forall
       )
     ) = new_tests__legacy__attributes__lib__f_z.
 
+type new_tests__legacy__attributes__lib__t_FooConstGeneric.
+
+fun new_tests__legacy__attributes__lib__t_FooConstGeneric_to_bitstring(
+      new_tests__legacy__attributes__lib__t_FooConstGeneric
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__attributes__lib__t_FooConstGeneric_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__attributes__lib__t_FooConstGeneric [typeConverter].
+const new_tests__legacy__attributes__lib__t_FooConstGeneric_default_value: new_tests__legacy__attributes__lib__t_FooConstGeneric.
+letfun new_tests__legacy__attributes__lib__t_FooConstGeneric_default() =
+       new_tests__legacy__attributes__lib__t_FooConstGeneric_default_value.
+letfun new_tests__legacy__attributes__lib__t_FooConstGeneric_err() =
+       let x = construct_fail() in new_tests__legacy__attributes__lib__t_FooConstGeneric_default_value.
+fun new_tests__legacy__attributes__lib__FooConstGeneric(bitstring, nat)
+    : new_tests__legacy__attributes__lib__t_FooConstGeneric [data].
+reduc forall 
+  new_tests__legacy__attributes__lib__f_indices: bitstring,
+  new_tests__legacy__attributes__lib__f_length: nat
+;
+    accessor_new_tests__legacy__attributes__lib__t_FooConstGeneric_new_tests__legacy__attributes__lib__f_indices(
+      new_tests__legacy__attributes__lib__FooConstGeneric(
+        new_tests__legacy__attributes__lib__f_indices,
+        new_tests__legacy__attributes__lib__f_length
+      )
+    ) = new_tests__legacy__attributes__lib__f_indices.
+reduc forall 
+  new_tests__legacy__attributes__lib__f_indices: bitstring,
+  new_tests__legacy__attributes__lib__f_length: nat
+;
+    accessor_new_tests__legacy__attributes__lib__t_FooConstGeneric_new_tests__legacy__attributes__lib__f_length(
+      new_tests__legacy__attributes__lib__FooConstGeneric(
+        new_tests__legacy__attributes__lib__f_indices,
+        new_tests__legacy__attributes__lib__f_length
+      )
+    ) = new_tests__legacy__attributes__lib__f_length.
+
 (*****************************************)
 (* Functions *)
 (*****************************************)
