@@ -42,6 +42,15 @@ jobs:
             --exclude='.git/' \
             source/hax-lib/proof-libs/aeneas-lean/ target/
 
+      - name: Update note in README
+        working-directory: target
+        env:
+          NOTE: "**Note: The contents of this repo are copied mechanically from the [hax repo](https://github.com/cryspen/hax/tree/main/hax-lib/proof-libs/aeneas-lean). Please file any issues or PRs there.**"
+        run: |
+          # The upstream README carries a note between ⚠️ markers.
+          # Overwrite whatever text sits between them with the note above.
+          perl -i -pe 's/⚠️.*⚠️/⚠️ $ENV{NOTE} ⚠️/' README.md
+
       - name: Commit and push if there are changes
         working-directory: target
         run: |
