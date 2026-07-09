@@ -9354,8 +9354,24 @@ def option.Option.and_then
     coreopsfunctionFnOnceFTupleTOptionInst.call_once f x
   | option.Option.None => ok option.Option.None
 
+/-- [core_models::option::{core_models::option::Option<T>}::filter]:
+    Source: 'core-models/src/core/option.rs', lines 181:4-192:5
+    Visibility: public -/
+def option.Option.filter
+  {T : Type} {P : Type} (coreopsfunctionFnOncePTupleSharedTBoolInst :
+  core.ops.function.FnOnce P T Bool) (self : option.Option T) (predicate : P) :
+  Result (option.Option T)
+  := do
+  match self with
+  | option.Option.Some x =>
+    let b ← coreopsfunctionFnOncePTupleSharedTBoolInst.call_once predicate x
+    if b
+    then ok self
+    else ok option.Option.None
+  | option.Option.None => ok option.Option.None
+
 /-- [core_models::option::{core_models::option::Option<T>}::or]:
-    Source: 'core-models/src/core/option.rs', lines 196:4-201:5
+    Source: 'core-models/src/core/option.rs', lines 195:4-200:5
     Visibility: public -/
 def option.Option.or
   {T : Type} (self : option.Option T) (optb : option.Option T) :
@@ -9366,7 +9382,7 @@ def option.Option.or
   | option.Option.None => ok optb
 
 /-- [core_models::option::{core_models::option::Option<T>}::or_else]:
-    Source: 'core-models/src/core/option.rs', lines 204:4-209:5
+    Source: 'core-models/src/core/option.rs', lines 203:4-208:5
     Visibility: public -/
 def option.Option.or_else
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleOptionInst :
@@ -9379,7 +9395,7 @@ def option.Option.or_else
   | option.Option.None => coreopsfunctionFnOnceFTupleOptionInst.call_once f ()
 
 /-- [core_models::option::{core_models::option::Option<T>}::xor]:
-    Source: 'core-models/src/core/option.rs', lines 212:4-218:5
+    Source: 'core-models/src/core/option.rs', lines 211:4-217:5
     Visibility: public -/
 def option.Option.xor
   {T : Type} (self : option.Option T) (optb : option.Option T) :
@@ -9396,7 +9412,7 @@ def option.Option.xor
     | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::zip]:
-    Source: 'core-models/src/core/option.rs', lines 221:4-226:5
+    Source: 'core-models/src/core/option.rs', lines 220:4-225:5
     Visibility: public -/
 def option.Option.zip
   {T : Type} {U : Type} (self : option.Option T) (other : option.Option U) :
@@ -9409,8 +9425,22 @@ def option.Option.zip
     | option.Option.None => ok option.Option.None
   | option.Option.None => ok option.Option.None
 
+/-- [core_models::option::{core_models::option::Option<T>}::inspect]:
+    Source: 'core-models/src/core/option.rs', lines 228:4-233:5
+    Visibility: public -/
+def option.Option.inspect
+  {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedTTupleInst :
+  core.ops.function.FnOnce F T Unit) (self : option.Option T) (f : F) :
+  Result (option.Option T)
+  := do
+  match self with
+  | option.Option.Some x =>
+    coreopsfunctionFnOnceFTupleSharedTTupleInst.call_once f x
+    ok self
+  | option.Option.None => ok option.Option.None
+
 /-- [core_models::option::{core_models::option::Option<core_models::option::Option<T>>}::flatten]:
-    Source: 'core-models/src/core/option.rs', lines 241:4-246:5
+    Source: 'core-models/src/core/option.rs', lines 239:4-244:5
     Visibility: public -/
 def option.OptionOption.flatten
   {T : Type} (self : option.Option (option.Option T)) :
@@ -9421,14 +9451,14 @@ def option.OptionOption.flatten
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}::default]:
-    Source: 'core-models/src/core/option.rs', lines 252:4-254:5
+    Source: 'core-models/src/core/option.rs', lines 250:4-252:5
     Visibility: public -/
 def option.Option.Insts.CoreDefaultDefault.default
   (T : Type) : Result (option.Option T) := do
   ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 250:0-255:1 -/
+    Source: 'core-models/src/core/option.rs', lines 248:0-253:1 -/
 @[reducible]
 def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
   (option.Option T) := {
@@ -9436,7 +9466,7 @@ def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
 }
 
 /-- [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}::clone]:
-    Source: 'core-models/src/core/option.rs', lines 258:4-263:5
+    Source: 'core-models/src/core/option.rs', lines 256:4-261:5
     Visibility: public -/
 def option.Option.Insts.CoreCloneClone.clone
   {T : Type} (cloneCloneInst : clone.Clone T) (self : option.Option T) :
@@ -9449,7 +9479,7 @@ def option.Option.Insts.CoreCloneClone.clone
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 257:0-264:1 -/
+    Source: 'core-models/src/core/option.rs', lines 255:0-262:1 -/
 @[reducible]
 def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
   clone.Clone T) : clone.Clone (option.Option T) := {
@@ -9457,7 +9487,7 @@ def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
 }
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::eq]:
-    Source: 'core-models/src/core/option.rs', lines 267:4-273:5
+    Source: 'core-models/src/core/option.rs', lines 265:4-271:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.eq
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -9475,7 +9505,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.eq
     | option.Option.None => ok true
 
 /-- Trait implementation: [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 266:0-274:1 -/
+    Source: 'core-models/src/core/option.rs', lines 264:0-272:1 -/
 @[reducible]
 def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
   (cmpPartialEqInst : cmp.PartialEq T T) : cmp.PartialEq (option.Option T)

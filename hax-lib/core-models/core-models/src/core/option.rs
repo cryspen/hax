@@ -178,7 +178,6 @@ impl<T> Option<T> {
     /// See [`std::option::Option::filter`]
     // opaque: F* cannot prove that the Fn output projection equals bool in an if-condition
     #[hax_lib::opaque]
-    #[cfg_attr(charon, aeneas::exclude)] // https://github.com/AeneasVerif/aeneas/issues/891
     pub fn filter<P: FnOnce(&T) -> bool>(self, predicate: P) -> Option<T> {
         match self {
             Some(x) => {
@@ -226,7 +225,6 @@ impl<T> Option<T> {
     }
 
     /// See [`std::option::Option::inspect`]
-    #[cfg_attr(charon, aeneas::exclude)] // https://github.com/AeneasVerif/aeneas/issues/891
     pub fn inspect<F: FnOnce(&T)>(self, f: F) -> Option<T> {
         if let Some(ref x) = self {
             f(x);
