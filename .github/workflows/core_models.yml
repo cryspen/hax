@@ -2,13 +2,13 @@ name: core-models
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
     paths:
       - 'hax-lib/core-models/**'
       - 'hax-lib/proof-libs/aeneas-lean/**'
       - '.github/workflows/core_models.yml'
   pull_request:
-    branches: [main]
+    branches: [main, dev]
     paths:
       - 'hax-lib/core-models/**'
       - 'hax-lib/proof-libs/aeneas-lean/**'
