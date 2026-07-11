@@ -16,6 +16,7 @@
 
 pub mod fstar;
 pub mod legacy_lean;
+pub mod proverif;
 pub mod rust;
 
 use std::{collections::HashMap, rc::Rc};
