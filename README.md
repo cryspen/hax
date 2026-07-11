@@ -113,7 +113,7 @@ The command `cargo hax` accepts the following subcommands:
 | Rocq/Coq              | `cargo hax into coq`         |                                                                                                                               |
 | Lean (legacy)         | `cargo hax into lean`        | Uses the hax engine directly. Prefer `aeneas-lean`.                                                                           |
 | SSProve               | `cargo hax into ssprove`     |                                                                                                                               |
-| ProVerif              | `cargo hax into pro-verif`   |                                                                                                                               |
+| ProVerif              | `cargo hax into proverif`    | Extracts a symbolic (Dolev-Yao) model via the rust-engine backend.                                                            |
 
 Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimit 100`).
 
