@@ -1,76 +1,37 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
-
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
-
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+*)
 
 (*****************************************)
-(* Types and Constructors *)
+(* Auto-declared external symbols        *)
 (*****************************************)
+fun core__iter__traits__exact_size__ExactSizeIterator__len(bitstring): bitstring [data].
+fun std__env__args(bitstring): bitstring [data].
 
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__dead_code__unused_pub_fn_not_in_library(
-         wildcard1 : bitstring
-       ) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (0) in
-       if is_true
-       then
-         (let countdown = (10) in
-          ())
-       else (()).
-
-letfun new_tests__rustc_coverage__dead_code__unused_fn(wildcard2 : bitstring) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (0) in
-       if is_true
-       then
-         (let countdown = (10) in
-          ())
-       else (()).
-
-letfun new_tests__rustc_coverage__dead_code__main(wildcard3 : bitstring) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (0) in
-       if is_true
-       then
-         (let countdown = (10) in
-          ())
-       else (()).
-
+letfun new_tests__rustc_coverage__dead_code__unused_pub_fn_not_in_library(wildcard: bitstring) =
+let is_true = (rust_primitives__hax__machine_int__eq(core__iter__traits__exact_size__ExactSizeIterator__len(std__env__args(rust_primitives__hax__Tuple0__Tuple0)),
+  nat_lit(1))) in
+  let countdown = (nat_lit(0)) in
+  let (=True()) = is_true in (let countdown = (nat_lit(10)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__dead_code__unused_fn(wildcard: bitstring) =
+let is_true = (rust_primitives__hax__machine_int__eq(core__iter__traits__exact_size__ExactSizeIterator__len(std__env__args(rust_primitives__hax__Tuple0__Tuple0)),
+  nat_lit(1))) in
+  let countdown = (nat_lit(0)) in
+  let (=True()) = is_true in (let countdown = (nat_lit(10)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (rust_primitives__hax__Tuple0__Tuple0).
+letfun new_tests__rustc_coverage__dead_code__main(wildcard: bitstring) =
+let is_true = (rust_primitives__hax__machine_int__eq(core__iter__traits__exact_size__ExactSizeIterator__len(std__env__args(rust_primitives__hax__Tuple0__Tuple0)),
+  nat_lit(1))) in
+  let countdown = (nat_lit(0)) in
+  let (=True()) = is_true in (let countdown = (nat_lit(10)) in
+  rust_primitives__hax__Tuple0__Tuple0) else (rust_primitives__hax__Tuple0__Tuple0).
