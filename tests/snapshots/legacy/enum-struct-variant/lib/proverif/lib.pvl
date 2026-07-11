@@ -1,90 +1,21 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
-
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
-
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+*)
 
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
+fun new_tests__legacy__enum_struct_variant__lib__Money__Money(bitstring): bitstring [data].
+reduc forall new_tests__legacy__enum_struct_variant__lib__Money__Money__value_v: bitstring;
+  new_tests__legacy__enum_struct_variant__lib__Money__Money__value(new_tests__legacy__enum_struct_variant__lib__Money__Money(new_tests__legacy__enum_struct_variant__lib__Money__Money__value_v)) = new_tests__legacy__enum_struct_variant__lib__Money__Money__value_v.
 
-type new_tests__legacy__enum_struct_variant__lib__t_Money.
-
-fun new_tests__legacy__enum_struct_variant__lib__t_Money_to_bitstring(
-      new_tests__legacy__enum_struct_variant__lib__t_Money
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__enum_struct_variant__lib__t_Money_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__enum_struct_variant__lib__t_Money [typeConverter].
-const new_tests__legacy__enum_struct_variant__lib__t_Money_default_value: new_tests__legacy__enum_struct_variant__lib__t_Money.
-letfun new_tests__legacy__enum_struct_variant__lib__t_Money_default() =
-       new_tests__legacy__enum_struct_variant__lib__t_Money_default_value.
-letfun new_tests__legacy__enum_struct_variant__lib__t_Money_err() =
-       let x = construct_fail() in new_tests__legacy__enum_struct_variant__lib__t_Money_default_value.
-fun new_tests__legacy__enum_struct_variant__lib__Money(nat)
-    : new_tests__legacy__enum_struct_variant__lib__t_Money [data].
-reduc forall new_tests__legacy__enum_struct_variant__lib__f_value: nat;
-    accessor_new_tests__legacy__enum_struct_variant__lib__t_Money_new_tests__legacy__enum_struct_variant__lib__f_value(
-      new_tests__legacy__enum_struct_variant__lib__Money(
-        new_tests__legacy__enum_struct_variant__lib__f_value
-      )
-    ) = new_tests__legacy__enum_struct_variant__lib__f_value.
-
-type new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant.
-
-fun new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_to_bitstring(
-      new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant [typeConverter].
-const new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_default_value: new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant.
-letfun new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_default(
-
-       ) =
-       new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_default_value.
-letfun new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_err(
-       ) =
-       let x = construct_fail() in new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_default_value.
-fun new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant_Funds(
-      new_tests__legacy__enum_struct_variant__lib__t_Money
-    )
-    : new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant [data].
-reduc forall 
-  new_tests__legacy__enum_struct_variant__lib__f_balance: new_tests__legacy__enum_struct_variant__lib__t_Money
-;
-    accessor_new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_new_tests__legacy__enum_struct_variant__lib__f_balance(
-      new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant_Funds(
-        new_tests__legacy__enum_struct_variant__lib__f_balance
-      )
-    ) = new_tests__legacy__enum_struct_variant__lib__f_balance.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-
-
+fun new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds(bitstring): bitstring [data].
+reduc forall new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds__balance_v: bitstring;
+  new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds__balance(new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds(new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds__balance_v)) = new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds__balance_v.

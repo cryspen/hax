@@ -11,12 +11,8 @@
   function the extraction surface needs.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__option__Option__Some(bitstring): bitstring [data].
 
-letfun new_tests__legacy__if_let__lib__fun_with_if_let(wildcard: bitstring) =
-let x = (Some(nat_lit(5))) in
-  let Some(x) = x in (x)
-  else nat_lit(7).
+letfun new_tests__legacy__proverif_inline__lib__increment(x: bitstring) =
+x.
+letfun new_tests__legacy__proverif_inline__lib__run(start: bitstring) =
+new_tests__legacy__proverif_inline__lib__increment(new_tests__legacy__proverif_inline__lib__increment(start)).
