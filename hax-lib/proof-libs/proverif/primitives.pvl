@@ -265,8 +265,15 @@ letfun rand_core__RngCore__fill_bytes(rng: bitstring, dest: bitstring) =
   new b: bitstring;
   rust_primitives__hax__Tuple2__Tuple2(rng, b).
 
-(* `hax_lib::assume` and `hax_lib::prop::constructors::from_bool` *)
-(* are opaque `fun ... [data]` — equivalent to auto-decl, dropped. *)
+(* `hax_lib::prop::constructors::from_bool` is a bool -> prop coercion  *)
+(* (identity in the bitstring model); `hax_lib::assume` is a proof hint *)
+(* with no runtime effect, and the extracted code discards its result   *)
+(* (`let wildcard = assume(..)`). Both are identity `letfun`s: faithful *)
+(* and footprint-free (an opaque `fun` would add a spurious constructor *)
+(* to the attacker term algebra). Defining them here also keeps them    *)
+(* out of the auto-declared `missingdecl` diagnostic.                   *)
+letfun hax_lib__prop__constructors__from_bool(b: bitstring) = b.
+letfun hax_lib__assume(p: bitstring) = p.
 
 (*****************************************************************)
 (*  std prelude — formerly synthesised by the auto-decl pass as  *)
