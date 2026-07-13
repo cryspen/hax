@@ -64,8 +64,7 @@ fn adc_precondition(carry_in: u32) -> bool {
 /// proof uses pure Lean propositions instead of this monadic function.
 fn adc_postcondition(a: u32, b: u32, carry_in: u32, sum: u32, carry_out: u32) -> bool {
     carry_out <= 1
-        && (a as u64 + b as u64 + carry_in as u64)
-            == (sum as u64 + ((carry_out as u64) << 32u64))
+        && (a as u64 + b as u64 + carry_in as u64) == (sum as u64 + ((carry_out as u64) << 32u64))
 }
 
 /// 32-bit addition with carry.
@@ -91,24 +90,19 @@ fn adc_postcondition(a: u32, b: u32, carry_in: u32, sum: u32, carry_out: u32) ->
 ///      from the monadic function body.
 ///   2. `bv_decide` — Lean's bit-blasting procedure to
 ///      automatically verify the remaining BitVec goals.
-#[hax_lib::lean::after(
-    // The specification is stated with pure Lean propositions (not through the
-    // monadic adc_precondition/adc_postcondition Rust functions), so that
-    // bv_decide can reason about the BitVec properties directly.
-    "
-set_option maxHeartbeats 1000000 in
-set_option hax_mvcgen.specset \"bv\" in
-theorem adc_u32_spec (a b carry_in : u32) :
-  ⦃ ⌜ carry_in ≤ 1 ⌝ ⦄
-  lean_adc.adc_u32 a b carry_in
-  ⦃ ⇓ ⟨sum, carry_out⟩ =>
-    ⌜ carry_out ≤ 1 ∧
-      UInt32.toUInt64 a + UInt32.toUInt64 b + UInt32.toUInt64 carry_in =
-        UInt32.toUInt64 sum + (UInt32.toUInt64 carry_out <<< (32 : UInt64)) ⌝ ⦄
-:= by
-  hax_mvcgen [lean_adc.adc_u32]
-    <;> bv_decide (timeout := 90)
-"
+#[hax_lib::lean::before("attribute [local irreducible] rust_primitives.ops.bit.Shl.shl")]
+#[hax_lib::lean::proof("by
+    have : ∀ (a b : PostCond (rust_primitives.hax.Tuple2 u32 u32) (PostShape.except Error PostShape.pure)) (heq : a = b), a = b := fun _ _ h => h
+    rw [this (PostCond.noThrow _)]
+    hax_mvcgen [adc_u32]
+    case heq => rfl
+    · bv_decide
+    · bv_decide
+    · simp only [Int32.reduceToNatClampNeg, Nat.toUInt64_eq, UInt64.reduceOfNat, SPred.down_pure]
+      bv_decide")]
+#[hax_lib::requires(carry_in <= 1)]
+#[hax_lib::ensures(|res|
+    res.1 <= 1 && a as u64 + b as u64 + carry_in as u64 == res.0 as u64 + ((res.1 as u64) << 32)
 )]
 pub fn adc_u32(a: u32, b: u32, carry_in: u32) -> (u32, u32) {
     // Widen to u64 so the addition cannot overflow.
