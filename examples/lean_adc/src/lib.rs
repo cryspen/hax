@@ -1,8 +1,9 @@
 //! # 32-bit Addition with Carry (ADC)
 //!
 //! This example demonstrates formal verification of a 32-bit
-//! addition-with-carry (ADC) operation using the hax toolchain and
-//! Lean 4's `bv_decide` bit-vector decision procedure.
+//! addition-with-carry (ADC) operation using the hax toolchain: the Rust
+//! function is extracted to Lean and proved correct in
+//! `proofs/lean/LeanAdc/Proofs/Proofs.lean`.
 //!
 //! ## What is ADC?
 //!
@@ -23,18 +24,14 @@
 //!
 //! ## Verification approach
 //!
-//! The precondition and postcondition are expressed as plain Rust
-//! functions (`adc_precondition`, `adc_postcondition`) for documentation.
-//! A correctness theorem is embedded via `#[hax_lib::legacy_lean::after(...)]`
-//! using a Hoare triple with pure Lean propositions (not the monadic
-//! Rust functions), since `bv_decide` requires pure BitVec goals.
+//! The precondition and postcondition are attached to `adc_u32` with
+//! `#[hax_lib::requires(..)]` and `#[hax_lib::ensures(..)]`. The Lean
+//! backend turns them into a specification `adc_u32.spec`
+//! in the generated `Extraction/Specs.lean`, proved correct in 
+//! `proofs/lean/LeanAdc/Proofs/Proofs.lean`.
 //!
-//! The proof is fully automated using the tactics from Hax:
-//!
-//!   1. `hax_mvcgen` — generates pure verification conditions from
-//!      the monadic function body using the `bv` specset lemmas.
-//!   2. `bv_decide` — Lean's bit-blasting decision procedure
-//!      automatically verifies the remaining BitVec goals.
+//! The proof uses `hax_mvcgen` to generate the verification conditions, which in turn are
+//! discharged using `simp`, `grind`, and `scalar_tac`.
 //!
 //! The key property verified:
 //!
@@ -43,30 +40,6 @@
 //! ```
 //!
 //! where the left-hand side is computed in `u64` to avoid overflow.
-
-/// Precondition: the input carry must be 0 or 1 (a single bit).
-///
-/// This function documents the precondition and is extracted to Lean,
-/// but the proof theorem states the precondition as a pure Lean
-/// proposition (`carry_in ≤ 1`) rather than using this monadic function.
-fn adc_precondition(carry_in: u32) -> bool {
-    carry_in <= 1
-}
-
-/// Postcondition: the 64-bit sum `a + b + carry_in` is correctly
-/// represented as `sum + carry_out * 2^32`.
-///
-/// We verify two properties:
-///   1. `carry_out` is 0 or 1 (it is a single bit).
-///   2. The full equation holds: the wide sum equals the split result.
-///
-/// Like `adc_precondition`, this documents the postcondition but the
-/// proof uses pure Lean propositions instead of this monadic function.
-fn adc_postcondition(a: u32, b: u32, carry_in: u32, sum: u32, carry_out: u32) -> bool {
-    carry_out <= 1
-        && (a as u64 + b as u64 + carry_in as u64)
-            == (sum as u64 + ((carry_out as u64) << 32u64))
-}
 
 /// 32-bit addition with carry.
 ///
@@ -80,36 +53,16 @@ fn adc_postcondition(a: u32, b: u32, carry_in: u32, sum: u32, carry_out: u32) ->
 ///
 /// # Verification
 ///
-/// The `#[hax_lib::legacy_lean::after(...)]` attribute embeds a Lean 4
-/// theorem directly after the extracted function definition. This
-/// theorem states: given the precondition (carry_in is 0 or 1),
-/// the function satisfies the postcondition (the full sum equation
-/// holds and carry_out is 0 or 1).
-///
-/// The proof uses:
-///   1. `hax_mvcgen` — to generate pure verification conditions
-///      from the monadic function body.
-///   2. `bv_decide` — Lean's bit-blasting procedure to
-///      automatically verify the remaining BitVec goals.
-#[hax_lib::legacy_lean::after(
-    // The specification is stated with pure Lean propositions (not through the
-    // monadic adc_precondition/adc_postcondition Rust functions), so that
-    // bv_decide can reason about the BitVec properties directly.
-    "
-set_option maxHeartbeats 1000000 in
-set_option hax_mvcgen.specset \"bv\" in
-theorem adc_u32_spec (a b carry_in : u32) :
-  ⦃ ⌜ carry_in ≤ 1 ⌝ ⦄
-  lean_adc.adc_u32 a b carry_in
-  ⦃ ⇓ ⟨sum, carry_out⟩ =>
-    ⌜ carry_out ≤ 1 ∧
-      UInt32.toUInt64 a + UInt32.toUInt64 b + UInt32.toUInt64 carry_in =
-        UInt32.toUInt64 sum + (UInt32.toUInt64 carry_out <<< (32 : UInt64)) ⌝ ⦄
-:= by
-  hax_mvcgen [lean_adc.adc_u32]
-    <;> bv_decide (timeout := 90)
-"
-)]
+/// The precondition (`carry_in` is 0 or 1) and postcondition (the wide sum
+/// `a + b + carry_in` equals `sum + carry_out * 2^32`, and `carry_out` is 0
+/// or 1) are attached below with `#[hax_lib::requires]` / `#[hax_lib::ensures]`.
+#[hax_lib::requires(carry_in <= 1)]
+#[hax_lib::ensures(|result| {
+    let (sum, carry_out) = result;
+    carry_out <= 1
+        && (a as u64 + b as u64 + carry_in as u64)
+            == (sum as u64 + ((carry_out as u64) << 32u64))
+})]
 pub fn adc_u32(a: u32, b: u32, carry_in: u32) -> (u32, u32) {
     // Widen to u64 so the addition cannot overflow.
     let wide: u64 = a as u64 + b as u64 + carry_in as u64;

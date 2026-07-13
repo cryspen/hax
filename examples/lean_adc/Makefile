@@ -1,10 +1,11 @@
 .PHONY: default clean
 default:
-	cargo hax into lean
+	cargo hax into lean --aeneas-args="-core-models-lib"
 	(cd proofs/lean && \
-   elan default v4.29.0-rc1 && \
-   lake build)
+		elan default v4.30.0-rc2 && \
+		lake exe cache get && \
+		lake build)
 
 clean:
-	-rm -f proofs/lean/extraction/lean_adc.lean
+	-find proofs/lean/LeanAdc/Extraction -type f ! -name FunsExternal.lean -delete
 	-cd proofs/lean && lake clean

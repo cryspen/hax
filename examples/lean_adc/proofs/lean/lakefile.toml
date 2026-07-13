@@ -1,10 +1,9 @@
 name = "lean_adc"
 version = "0.1.0"
-defaultTargets = ["lean_adc"]
+defaultTargets = ["LeanAdc"]
 
 [[lean_lib]]
-name = "lean_adc"
-roots = ["extraction.lean_adc"]
+name = "LeanAdc"
 
 [[require]]
 name = "Hax"
