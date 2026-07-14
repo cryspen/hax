@@ -1,5 +1,5 @@
-import LeanAdc.Extraction.Funs
-import LeanAdc.Extraction.Specs
+import Adc.Extraction.Funs
+import Adc.Extraction.Specs
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
@@ -9,7 +9,7 @@ open Std.Do
 set_option mvcgen.warning false
 set_option hax_mvcgen.warnings false
 
-namespace lean_adc
+namespace adc
 
 set_option maxHeartbeats 1000000
 
@@ -41,4 +41,4 @@ theorem adc_u32.spec.proof (a b carry_in : U32) : adc_u32.spec a b carry_in := b
     scalar_tac
   all_goals grind [UScalar.cast_val_eq, opaque32_def]
 
-end lean_adc
+end adc

@@ -99,7 +99,7 @@ make
 ## Lean (legacy backend)
 
 Three examples are fine-tuned to showcase the Lean backend: `lean_barrett`,
-`lean_chacha20`, and `lean_adc`. For all of them, the lean extraction can be
+`lean_chacha20`, and `adc`. For all of them, the lean extraction can be
 obtained by running `cargo hax into legacy-lean`.
 
 ### Barrett
@@ -142,7 +142,7 @@ split into a 32-bit sum and a 1-bit carry output.
 The proof can be run by doing (requires `lake`):
 
 ```sh
-cd lean_adc/
+cd adc/
 make
 ```
 

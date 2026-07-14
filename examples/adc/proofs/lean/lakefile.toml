@@ -1,9 +1,9 @@
-name = "lean_adc"
+name = "adc"
 version = "0.1.0"
-defaultTargets = ["LeanAdc"]
+defaultTargets = ["Adc"]
 
 [[lean_lib]]
-name = "LeanAdc"
+name = "Adc"
 
 [[require]]
 name = "Hax"

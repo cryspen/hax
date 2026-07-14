@@ -1,7 +1,7 @@
--- [lean_adc]: external functions.
+-- [adc]: external functions.
 import Aeneas
 import CoreModels
-import LeanAdc.Extraction.Types
+import Adc.Extraction.Types
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
 open Result ControlFlow Error
@@ -15,4 +15,4 @@ set_option maxHeartbeats 1000000
 
 /- You can set the `maxRecDepth` value with the `-max-recdepth` CLI option -/
 set_option maxRecDepth 2048
-open lean_adc
+open adc

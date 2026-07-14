@@ -3,7 +3,7 @@
 //! This example demonstrates formal verification of a 32-bit
 //! addition-with-carry (ADC) operation using the hax toolchain: the Rust
 //! function is extracted to Lean and proved correct in
-//! `proofs/lean/LeanAdc/Proofs/Proofs.lean`.
+//! `proofs/lean/Adc/Proofs/Proofs.lean`.
 //!
 //! ## What is ADC?
 //!
@@ -28,7 +28,7 @@
 //! `#[hax_lib::requires(..)]` and `#[hax_lib::ensures(..)]`. The Lean
 //! backend turns them into a specification `adc_u32.spec`
 //! in the generated `Extraction/Specs.lean`, proved correct in 
-//! `proofs/lean/LeanAdc/Proofs/Proofs.lean`.
+//! `proofs/lean/Adc/Proofs/Proofs.lean`.
 //!
 //! The proof uses `hax_mvcgen` to generate the verification conditions, which in turn are
 //! discharged using `simp`, `grind`, and `scalar_tac`.
