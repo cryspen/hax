@@ -28,6 +28,8 @@ identity_proc_macro_attribute!(
     pv_constructor,
     pv_inline,
     pv_extern,
+    symbolic_model,
+    symbolic_trace,
     pv_stub,
     pv_inverse_of,
     protocol_messages,

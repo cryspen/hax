@@ -907,6 +907,73 @@ pub fn pv_extern(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStre
     .into()
 }
 
+/// Models a Rust function as a *generic, pre-declared* symbolic operation from
+/// the shared symbolic library (`primitives.pvl` / `cryptolib.pvl`). Writing
+///
+/// ```ignore
+/// #[hax_lib::symbolic_model("aead_enc")]
+/// fn encrypt(key: &Key, msg: &[u8]) -> Vec<u8> { … }
+/// ```
+///
+/// makes the ProVerif backend emit `letfun encrypt(key, msg) = aead_enc(key,
+/// msg).`, where `aead_enc` is an opaque symbol defined *once* in the trusted
+/// library and shared by every protocol. Unlike [`pv_extern`], no per-function
+/// `fun` declaration is generated: the op already lives in the library, so
+/// many protocol wrappers reuse one audited symbol (and crypto is modelled
+/// one-way, never an invertible `[data]` constructor).
+///
+/// The annotation is **backend-neutral**: it names one fact — the symbolic op —
+/// which the ProVerif backend lowers to a `letfun`, the runtime symbolic tracer
+/// records as `op(args)→result`, and future symbolic backends can consume the
+/// same way. (ProVerif is the first consumer; the current lowering routes
+/// through `proverif::replace_body`.)
+///
+/// The op's argument list is the annotated function's parameters (a receiver
+/// becomes `self`, non-identifier patterns fall back to `p<i>`), so the
+/// library op's arity must line up. Randomness and fixed constants (an empty
+/// AAD, a domain-separation tag) are folded into the op's *library* definition,
+/// never passed at the call site.
+///
+/// Serializers of a single struct map onto the `identity` op (the wire bytes
+/// carry the struct's own term); multi-value combiners onto a `tupleN` op.
+#[proc_macro_attribute]
+pub fn symbolic_model(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let op: LitStr = parse_macro_input!(attr);
+    let item: ItemFn = parse_macro_input!(item);
+    let arg_names: Vec<String> = item
+        .sig
+        .inputs
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| match arg {
+            FnArg::Receiver(_) => "self".to_string(),
+            FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) => pat_ident.ident.to_string(),
+                _ => format!("p{}", i),
+            },
+        })
+        .collect();
+    let body_call = format!("{}({})", op.value(), arg_names.join(", "));
+    let body_lit = LitStr::new(&body_call, Span::call_site());
+    quote! {
+        #[::hax_lib::proverif::replace_body(#body_lit)]
+        #item
+    }
+    .into()
+}
+
+/// Marks a *compiled* protocol / state-machine function as a trace event: the
+/// runtime symbolic tracer records an entry each time it runs, mirroring a
+/// ProVerif `event`. For the ProVerif backend this is currently a no-op — the
+/// function is extracted and analyzed exactly as written (its accept/reject
+/// logic *compiles*); the annotation's effect is realized on the tracer side.
+/// Backend-neutral, and kept distinct from [`symbolic_model`] because a traced
+/// fn is *analyzed*, not abstracted into a library op.
+#[proc_macro_attribute]
+pub fn symbolic_trace(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    item
+}
+
 /// Shorthand for `#[hax_lib::proverif::replace_body(<lit>)]`. Useful for
 /// trivial constant stubs like `pv_stub!("nat_lit(0)")` on length helpers.
 #[proc_macro_attribute]

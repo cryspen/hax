@@ -122,3 +122,26 @@ reduc forall x: bitstring;
 fun crypto__serialize_tagged(bitstring, bitstring): bitstring.   (* tag, payload -> bytes *)
 reduc forall t: bitstring, x: bitstring;
   crypto__deserialize_tagged(t, crypto__serialize_tagged(t, x)) = x.
+
+(*===============================================================*)
+(* Generic op surface for `#[hax_lib::symbolic_model("op")]`.           *)
+(*                                                                *)
+(* Each entry is a short, protocol-independent op name aliased    *)
+(* onto a canonical primitive above. `#[symbolic_model("op")]` on *)
+(* Rust wrapper emits `letfun wrapper(args) = op(args)`, so the   *)
+(* op's arity is the wrapper's parameter count, and any fixed     *)
+(* constants (an empty AAD) or freshness are folded into the op   *)
+(* here — never passed at the call site. These are thin aliases   *)
+(* that inline to exactly the terms the older `crypto__…`         *)
+(* `replace_body` redirects produced, so a migrated protocol's    *)
+(* model is unchanged. The generic `identity` op (single-struct   *)
+(* serializers) lives in `primitives.pvl`.                        *)
+(*===============================================================*)
+
+(* AEAD with an empty AAD — the common single-format case         *)
+(* (proverif-psk, …). Inverts via the `crypto__aead_dec` reduc.   *)
+letfun aead_enc(key: bitstring, msg: bitstring) = crypto__aead_enc(key, msg, empty).
+letfun aead_dec(key: bitstring, ct: bitstring)  = crypto__aead_dec(key, ct, empty).
+
+(* One-way key derivation: (ikm, info) -> okm.                    *)
+letfun kdf(ikm: bitstring, info: bitstring) = crypto__kdf(ikm, info).
