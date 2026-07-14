@@ -951,7 +951,6 @@ pub fn pv_extern(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStre
 pub fn symbolic_model(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let op: LitStr = parse_macro_input!(attr);
     let item: ItemFn = parse_macro_input!(item);
-    let has_receiver = matches!(item.sig.inputs.first(), Some(FnArg::Receiver(_)));
     let arg_names: Vec<String> = item
         .sig
         .inputs
@@ -967,24 +966,44 @@ pub fn symbolic_model(attr: pm::TokenStream, item: pm::TokenStream) -> pm::Token
         .collect();
     let body_call = format!("{}({})", op.value(), arg_names.join(", "));
     let body_lit = LitStr::new(&body_call, Span::call_site());
-    // Tracer arm: record this call at runtime under the same op name the
-    // ProVerif model uses. `skip(self)` keeps a method's receiver out of the
-    // recorded term's fields (it still colours the trace's member column).
-    let traced_arm = if has_receiver {
-        quote! {
-            #[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(symbolic, name = #op, skip(self)))]
-        }
-    } else {
-        quote! {
-            #[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(symbolic, name = #op))]
-        }
-    };
+    let traced_arm = symbolic_traced_arm(&op, &item);
     quote! {
         #traced_arm
         #[::hax_lib::proverif::replace_body(#body_lit)]
         #item
     }
     .into()
+}
+
+/// Build the runtime-tracer arm shared by the real and dummy `symbolic_model`:
+/// `#[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(symbolic,
+/// name = "op"[, skip(self, <&mut args>)]))]`. The tracer skips the receiver
+/// (its state colours the trace's member column) and every `&mut` argument (an
+/// out-param / RNG source — not a symbolic input, and generic `&mut R` would
+/// otherwise fail the tracer's arg probe).
+fn symbolic_traced_arm(op: &LitStr, item: &ItemFn) -> proc_macro2::TokenStream {
+    let mut skip_toks: Vec<proc_macro2::TokenStream> = Vec::new();
+    if matches!(item.sig.inputs.first(), Some(FnArg::Receiver(_))) {
+        skip_toks.push(quote!(self));
+    }
+    for arg in item.sig.inputs.iter() {
+        if let FnArg::Typed(pt) = arg {
+            if matches!(&*pt.ty, syn::Type::Reference(r) if r.mutability.is_some()) {
+                if let syn::Pat::Ident(pi) = &*pt.pat {
+                    let id = &pi.ident;
+                    skip_toks.push(quote!(#id));
+                }
+            }
+        }
+    }
+    let skip_arm = if skip_toks.is_empty() {
+        quote!()
+    } else {
+        quote!(, skip(#(#skip_toks),*))
+    };
+    quote! {
+        #[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(symbolic, name = #op #skip_arm))]
+    }
 }
 
 /// Marks a *compiled* protocol / state-machine function as a trace event: the
