@@ -26,7 +26,7 @@ pub(crate) const FIELD_MODULUS: i32 = 3329;
 #[hax_lib::fstar::options("--z3rlimit 100")]
 #[hax::requires((i64::from(value) >= -BARRETT_R && i64::from(value) <= BARRETT_R))]
 #[hax::ensures(|result| result > -FIELD_MODULUS && result < FIELD_MODULUS &&
-                   result % FIELD_MODULUS == value % FIELD_MODULUS)]
+                   result.rem_euclid(FIELD_MODULUS) == value.rem_euclid(FIELD_MODULUS))]
 pub fn barrett_reduce(value: FieldElement) -> FieldElement {
     let t = i64::from(value) * BARRETT_MULTIPLIER;
     // assert!(9223372036854775807 - (BARRETT_R >> 1) > t);

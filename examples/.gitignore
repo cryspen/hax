@@ -1,10 +1,12 @@
 /*/target
 /*/proofs/lean/extraction
 /*/proofs/proverif/extraction
+/*/proofs/fstar/extraction
 /*/proofs/lean/.lake
 /*/proofs/lean/llbc/*.llbc
 /*/proofs/lean/*/Extraction/Funs.lean
 /*/proofs/lean/*/Extraction/FunsExternal_Template.lean
+/*/proofs/lean/*/Extraction/TypesExternal_Template.lean
 /*/proofs/lean/*/Extraction/ProofObligations.lean
 /*/proofs/lean/*/Extraction/Specs.lean
 /*/proofs/lean/*/Extraction/Types.lean
