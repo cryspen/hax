@@ -1,6 +1,7 @@
 .PHONY: default
 default:
 	make -C limited-order-book
+	make -C bip-340
 	make -C chacha20
 	make -C sha3
 	make -C sha256
@@ -13,6 +14,7 @@ default:
 
 clean:
 	make -C limited-order-book clean
+	make -C bip-340            clean
 	make -C chacha20           clean
 	make -C sha3               clean
 	make -C sha256             clean
