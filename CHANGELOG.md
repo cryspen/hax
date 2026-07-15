@@ -19,6 +19,7 @@ Changes to the frontend:
 Changes to cargo-hax:
  - Add Lean/Aeneas as a new backend (cryspen/hax-evit/184, cryspen/hax-evit/186, cryspen/hax-evit/189)
  - Unify pining mechanism for aeneas, charon, lean and hax-lib (#2050)
+ - Fix `into aeneas-lean` failing to build crates with `cfg(hax)`-gated dependencies: set `--cfg hax` for the target build via `RUSTFLAGS` (not only host builds), so `[target.'cfg(hax)'.dependencies]` resolve and dependency spec code compiles against the real (non-dummy) hax-lib (#2069)
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
