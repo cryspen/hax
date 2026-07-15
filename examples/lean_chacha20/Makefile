@@ -1,5 +1,6 @@
-.PHONY: default clean
-default:
+.PHONY: legacy-lean clean
+
+legacy-lean:
 	cargo hax into legacy-lean
 	(cd proofs/legacy-lean && \
    elan default v4.29.0-rc1 && \
