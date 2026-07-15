@@ -216,7 +216,14 @@ pub fn exclude(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     let item: TokenStream = item.into();
     let _ = parse_macro_input!(attr as parse::Nothing);
     let attr = AttrPayload::ItemStatus(ItemStatus::Excluded { modeled_by: None });
-    quote! {#attr #item}.into()
+    // See `opaque`: also emit charon's native marker for the charon+aeneas backend,
+    // gated on `cfg(charon)` (set only by the aeneas-lean backend).
+    quote! {
+        #attr
+        #[cfg_attr(charon, charon::exclude)]
+        #item
+    }
+    .into()
 }
 
 /*
@@ -773,7 +780,16 @@ pub fn opaque_type(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
 pub fn opaque(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: Item = parse_macro_input!(item);
     let attr = AttrPayload::Erased;
-    quote! {#attr #item}.into()
+    // Also emit charon's native opacity marker, so the charon+aeneas backend (which
+    // bypasses the hax engine and thus never sees `#attr`) makes the body opaque too.
+    // Gated on `cfg(charon)`, which only the aeneas-lean backend sets — normal builds
+    // and `into fstar` never see it.
+    quote! {
+        #attr
+        #[cfg_attr(charon, charon::opaque)]
+        #item
+    }
+    .into()
 }
 
 /// Mark an item transparent: the extraction will not

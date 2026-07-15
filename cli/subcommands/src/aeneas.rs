@@ -328,6 +328,17 @@ pub fn run(
         "--rustc-arg=--cfg=hax_compilation",
         "--rustc-arg=-Zcrate-attr=feature(register_tool)",
         "--rustc-arg=-Zcrate-attr=register_tool(_hax)",
+        // Enable charon's native tool-attribute namespace and the `charon` cfg, so
+        // hax-lib markers (`hax_lib::opaque`/`exclude`) that emit a gated
+        // `#[cfg_attr(charon, charon::opaque)]` take effect here. This lane bypasses
+        // the hax engine, so charon's own attributes are how opacity reaches aeneas.
+        "--rustc-arg=--cfg=charon",
+        "--rustc-arg=-Zcrate-attr=register_tool(charon)",
+        // Backend identifier for per-backend scoping, matching the engine's
+        // `hax_backend_<name>` convention (e.g. `hax_backend_fstar`). Lets crates
+        // write `#[cfg_attr(hax_backend_lean, hax_lib::opaque)]` to target only this
+        // backend; the bare `cfg(hax)` form still applies to all backends.
+        "--rustc-arg=--cfg=hax_backend_lean",
     ]);
     // User-supplied charon flags go before the `--` cargo separator.
     charon_cmd.args(&user_charon_args);
