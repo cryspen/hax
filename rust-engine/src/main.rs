@@ -58,13 +58,12 @@ fn main() {
     };
 
     let files = match &value.backend.backend {
-        Backend::Coq
-        | Backend::Ssprove
-        | Backend::Easycrypt
-        | Backend::AeneasLean { .. } => panic!(
-            "The Rust engine cannot be called with backend {}.",
-            value.backend.backend
-        ),
+        Backend::Coq | Backend::Ssprove | Backend::Easycrypt | Backend::AeneasLean { .. } => {
+            panic!(
+                "The Rust engine cannot be called with backend {}.",
+                value.backend.backend
+            )
+        }
         Backend::Fstar(_) => {
             let mut items = items;
             hax_rust_engine::phase::Phase::apply(&backends::fstar::FStarBackend, &mut items);

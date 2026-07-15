@@ -128,10 +128,12 @@ pub fn pv_inline_resugarings() -> Vec<Box<dyn Resugaring>> {
 const PV_INLINE_PATH: &str = "_hax::pv_inline";
 
 fn meta_has_pv_inline(meta: &Metadata) -> bool {
-    meta.attributes.iter().any(|a| matches!(
-        &a.kind,
-        AttributeKind::Tool { path, .. } if path == PV_INLINE_PATH
-    ))
+    meta.attributes.iter().any(|a| {
+        matches!(
+            &a.kind,
+            AttributeKind::Tool { path, .. } if path == PV_INLINE_PATH
+        )
+    })
 }
 
 fn meta_is_opaque(meta: &Metadata) -> bool {
@@ -188,6 +190,7 @@ impl CollectPVInline {
     ///     `Param` has a `TyKind::Arrow` type). ProVerif has no
     ///     functions-as-values, so HOFs only make sense if inlined at
     ///     every call site.
+    ///
     /// We *skip* items tagged `#[hax_lib::opaque]` and items whose body
     /// references themselves (recursive — would loop the fixpoint).
     fn should_inline(
@@ -256,7 +259,7 @@ impl ApplyPVInline {
     /// Mint a fresh local id by prefixing the existing name with a counter.
     fn fresh_id(&mut self, base: &LocalId) -> LocalId {
         self.next_fresh += 1;
-        LocalId(Symbol::new(&format!("inl{}__{}", self.next_fresh, base.0)))
+        LocalId(Symbol::new(format!("inl{}__{}", self.next_fresh, base.0)))
     }
 
     /// Inline a single App if its head is a known inlinable.
@@ -520,18 +523,23 @@ impl AstVisitorMut for ApplyPVInline {
                 kind: AttributeKind::Hax(AttrPayload::ItemStatus(ItemStatus::Included {
                     late_skip: true,
                 })),
-                span: item.meta.span.clone(),
+                span: item.meta.span,
             });
         }
     }
 
     fn enter_impl_item(&mut self, impl_item: &mut ImplItem) {
-        if self.shared.borrow().inlinable.contains_key(&impl_item.ident) {
+        if self
+            .shared
+            .borrow()
+            .inlinable
+            .contains_key(&impl_item.ident)
+        {
             impl_item.meta.attributes.push(Attribute {
                 kind: AttributeKind::Hax(AttrPayload::ItemStatus(ItemStatus::Included {
                     late_skip: true,
                 })),
-                span: impl_item.meta.span.clone(),
+                span: impl_item.meta.span,
             });
         }
     }
