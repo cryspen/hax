@@ -87,7 +87,6 @@ end
 module U = Ast_utils.Make (InputLanguage)
 module RenderId = Concrete_ident.MakeRenderAPI (ProVerifNamePolicy)
 open AST
-
 open Phase_utils
 module DepGraph = Dependencies.Make (InputLanguage)
 module DepGraphR = Dependencies.Make (Features.Rust)
