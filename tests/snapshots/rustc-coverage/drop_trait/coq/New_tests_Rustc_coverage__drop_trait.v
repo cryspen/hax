@@ -22,7 +22,7 @@ Record Firework_record : Type :=
 #[export] Instance settable_Firework_record : Settable _ :=
   settable! (Build_Firework_record) <Firework_f_strength>.
 
-Instance t_Drop_974857416 : t_Drop ((t_Firework)) :=
+Instance t_Drop_693388175 : t_Drop ((t_Firework)) :=
   {
     implaabbcc_t_Drop_f_drop := fun  (self : t_Firework)=>
       let args := (f_strength self) in

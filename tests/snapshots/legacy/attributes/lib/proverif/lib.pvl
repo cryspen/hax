@@ -1,1043 +1,586 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
-
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__legacy__attributes__lib__replace_body__t_Foo.
-
-fun new_tests__legacy__attributes__lib__replace_body__t_Foo_to_bitstring(
-      new_tests__legacy__attributes__lib__replace_body__t_Foo
+(* src: src/legacy/attributes/lib.rs:461 new_tests__legacy__attributes__lib__requires_mut__Impl__f *)
+letfun new_tests__legacy__attributes__lib__requires_mut__Impl__f(x: bitstring, y: bitstring) =
+  let y_1 = rust_primitives__hax__machine_int__add(y, x) in
+  rust_primitives__hax__Tuple2__Tuple2(y_1, y_1).
+(* src: src/legacy/attributes/lib.rs:468 new_tests__legacy__attributes__lib__requires_mut__Impl__g *)
+letfun new_tests__legacy__attributes__lib__requires_mut__Impl__g(x: bitstring, y: bitstring) = y.
+(* src: src/legacy/attributes/lib.rs:474 new_tests__legacy__attributes__lib__requires_mut__Impl__h *)
+letfun new_tests__legacy__attributes__lib__requires_mut__Impl__h(x: bitstring, y: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0().
+(* src: src/legacy/attributes/lib.rs:480 new_tests__legacy__attributes__lib__requires_mut__Impl__i *)
+letfun new_tests__legacy__attributes__lib__requires_mut__Impl__i(x: bitstring, y: bitstring) =
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0() in
+  y.
+(* src: src/legacy/attributes/lib.rs:249 new_tests__legacy__attributes__lib__replace_body__f *)
+letfun new_tests__legacy__attributes__lib__replace_body__f(x: bitstring, y: bitstring) =
+  rust_primitives__hax__machine_int__add(nat_lit(1), nat_lit(2)).
+(* src: src/legacy/attributes/lib.rs:252 new_tests__legacy__attributes__lib__replace_body__Foo *)
+fun new_tests__legacy__attributes__lib__replace_body__Foo__Foo(): bitstring [data].
+(* src: src/legacy/attributes/lib.rs:255 new_tests__legacy__attributes__lib__replace_body__Impl__assoc_fn *)
+letfun new_tests__legacy__attributes__lib__replace_body__Impl__assoc_fn(
+  self: bitstring,
+  x: bitstring
+) = rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:259 new_tests__legacy__attributes__lib__replace_body__Impl_1__to_string *)
+letfun new_tests__legacy__attributes__lib__replace_body__Impl_1__to_string(self: bitstring) =
+  string_lit__Hello.
+(* src: src/legacy/attributes/lib.rs:506 new_tests__legacy__attributes__lib__reorder__Foo *)
+fun new_tests__legacy__attributes__lib__reorder__Foo__Foo(
+  bitstring,
+  bitstring,
+  bitstring,
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring, v_3: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Foo__Foo__field_3(
+    new_tests__legacy__attributes__lib__reorder__Foo__Foo(v_0, v_1, v_2, v_3)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring, v_3: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Foo__Foo__field_4(
+    new_tests__legacy__attributes__lib__reorder__Foo__Foo(v_0, v_1, v_2, v_3)
+  ) = v_1.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring, v_3: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Foo__Foo__field_2(
+    new_tests__legacy__attributes__lib__reorder__Foo__Foo(v_0, v_1, v_2, v_3)
+  ) = v_2.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring, v_3: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Foo__Foo__field_1(
+    new_tests__legacy__attributes__lib__reorder__Foo__Foo(v_0, v_1, v_2, v_3)
+  ) = v_3.
+(* src: src/legacy/attributes/lib.rs:516 new_tests__legacy__attributes__lib__reorder__Bar *)
+fun new_tests__legacy__attributes__lib__reorder__Bar__A(
+  bitstring,
+  bitstring,
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Bar__A__a_field_3(
+    new_tests__legacy__attributes__lib__reorder__Bar__A(v_0, v_1, v_2)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Bar__A__a_field_1(
+    new_tests__legacy__attributes__lib__reorder__Bar__A(v_0, v_1, v_2)
+  ) = v_1.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Bar__A__a_field_2(
+    new_tests__legacy__attributes__lib__reorder__Bar__A(v_0, v_1, v_2)
+  ) = v_2.
+fun new_tests__legacy__attributes__lib__reorder__Bar__B(
+  bitstring,
+  bitstring,
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Bar__B__b_field_1(
+    new_tests__legacy__attributes__lib__reorder__Bar__B(v_0, v_1, v_2)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Bar__B__b_field_3(
+    new_tests__legacy__attributes__lib__reorder__Bar__B(v_0, v_1, v_2)
+  ) = v_1.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__reorder__Bar__B__b_field_2(
+    new_tests__legacy__attributes__lib__reorder__Bar__B(v_0, v_1, v_2)
+  ) = v_2.
+(* src: src/legacy/attributes/lib.rs:346 new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__BoundedU8__BoundedU8 *)
+fun new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__BoundedU8__BoundedU8__BoundedU8(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__BoundedU8__BoundedU8__BoundedU8__0(
+    new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__BoundedU8__BoundedU8__BoundedU8(
+      v_0
     )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__replace_body__t_Foo_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__replace_body__t_Foo [typeConverter].
-const new_tests__legacy__attributes__lib__replace_body__t_Foo_default_value: new_tests__legacy__attributes__lib__replace_body__t_Foo.
-letfun new_tests__legacy__attributes__lib__replace_body__t_Foo_default() =
-       new_tests__legacy__attributes__lib__replace_body__t_Foo_default_value.
-letfun new_tests__legacy__attributes__lib__replace_body__t_Foo_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__replace_body__t_Foo_default_value.
-fun new_tests__legacy__attributes__lib__replace_body__Foo()
-    : new_tests__legacy__attributes__lib__replace_body__t_Foo [data].
-
-
-type new_tests__legacy__attributes__lib__reorder__t_Foo.
-
-fun new_tests__legacy__attributes__lib__reorder__t_Foo_to_bitstring(
-      new_tests__legacy__attributes__lib__reorder__t_Foo
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__reorder__t_Foo_from_bitstring(bitstring)
-    : new_tests__legacy__attributes__lib__reorder__t_Foo [typeConverter].
-const new_tests__legacy__attributes__lib__reorder__t_Foo_default_value: new_tests__legacy__attributes__lib__reorder__t_Foo.
-letfun new_tests__legacy__attributes__lib__reorder__t_Foo_default() =
-       new_tests__legacy__attributes__lib__reorder__t_Foo_default_value.
-letfun new_tests__legacy__attributes__lib__reorder__t_Foo_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__reorder__t_Foo_default_value.
-fun new_tests__legacy__attributes__lib__reorder__Foo(nat, nat, nat, nat)
-    : new_tests__legacy__attributes__lib__reorder__t_Foo [data].
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_4_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_2_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_1_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Foo_new_tests__legacy__attributes__lib__reorder__f_field_3_(
-      new_tests__legacy__attributes__lib__reorder__Foo(
-        new_tests__legacy__attributes__lib__reorder__f_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_field_4_,
-        new_tests__legacy__attributes__lib__reorder__f_field_2_,
-        new_tests__legacy__attributes__lib__reorder__f_field_1_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_field_3_.
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_4_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_2_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_1_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Foo_new_tests__legacy__attributes__lib__reorder__f_field_4_(
-      new_tests__legacy__attributes__lib__reorder__Foo(
-        new_tests__legacy__attributes__lib__reorder__f_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_field_4_,
-        new_tests__legacy__attributes__lib__reorder__f_field_2_,
-        new_tests__legacy__attributes__lib__reorder__f_field_1_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_field_4_.
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_4_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_2_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_1_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Foo_new_tests__legacy__attributes__lib__reorder__f_field_2_(
-      new_tests__legacy__attributes__lib__reorder__Foo(
-        new_tests__legacy__attributes__lib__reorder__f_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_field_4_,
-        new_tests__legacy__attributes__lib__reorder__f_field_2_,
-        new_tests__legacy__attributes__lib__reorder__f_field_1_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_field_2_.
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_4_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_2_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_field_1_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Foo_new_tests__legacy__attributes__lib__reorder__f_field_1_(
-      new_tests__legacy__attributes__lib__reorder__Foo(
-        new_tests__legacy__attributes__lib__reorder__f_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_field_4_,
-        new_tests__legacy__attributes__lib__reorder__f_field_2_,
-        new_tests__legacy__attributes__lib__reorder__f_field_1_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_field_1_.
-
-type new_tests__legacy__attributes__lib__reorder__t_Bar.
-
-fun new_tests__legacy__attributes__lib__reorder__t_Bar_to_bitstring(
-      new_tests__legacy__attributes__lib__reorder__t_Bar
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__reorder__t_Bar_from_bitstring(bitstring)
-    : new_tests__legacy__attributes__lib__reorder__t_Bar [typeConverter].
-const new_tests__legacy__attributes__lib__reorder__t_Bar_default_value: new_tests__legacy__attributes__lib__reorder__t_Bar.
-letfun new_tests__legacy__attributes__lib__reorder__t_Bar_default() =
-       new_tests__legacy__attributes__lib__reorder__t_Bar_default_value.
-letfun new_tests__legacy__attributes__lib__reorder__t_Bar_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__reorder__t_Bar_default_value.
-fun new_tests__legacy__attributes__lib__reorder__Bar_A(nat, nat, nat)
-    : new_tests__legacy__attributes__lib__reorder__t_Bar [data].
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_a_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_a_field_1_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_a_field_2_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Bar_new_tests__legacy__attributes__lib__reorder__f_a_field_3_(
-      new_tests__legacy__attributes__lib__reorder__Bar_A(
-        new_tests__legacy__attributes__lib__reorder__f_a_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_a_field_1_,
-        new_tests__legacy__attributes__lib__reorder__f_a_field_2_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_a_field_3_.
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_a_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_a_field_1_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_a_field_2_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Bar_new_tests__legacy__attributes__lib__reorder__f_a_field_1_(
-      new_tests__legacy__attributes__lib__reorder__Bar_A(
-        new_tests__legacy__attributes__lib__reorder__f_a_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_a_field_1_,
-        new_tests__legacy__attributes__lib__reorder__f_a_field_2_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_a_field_1_.
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_a_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_a_field_1_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_a_field_2_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Bar_new_tests__legacy__attributes__lib__reorder__f_a_field_2_(
-      new_tests__legacy__attributes__lib__reorder__Bar_A(
-        new_tests__legacy__attributes__lib__reorder__f_a_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_a_field_1_,
-        new_tests__legacy__attributes__lib__reorder__f_a_field_2_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_a_field_2_.
-fun new_tests__legacy__attributes__lib__reorder__Bar_B(nat, nat, nat)
-    : new_tests__legacy__attributes__lib__reorder__t_Bar [data].
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_b_field_1_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_b_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_b_field_2_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Bar_new_tests__legacy__attributes__lib__reorder__f_b_field_1_(
-      new_tests__legacy__attributes__lib__reorder__Bar_B(
-        new_tests__legacy__attributes__lib__reorder__f_b_field_1_,
-        new_tests__legacy__attributes__lib__reorder__f_b_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_b_field_2_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_b_field_1_.
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_b_field_1_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_b_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_b_field_2_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Bar_new_tests__legacy__attributes__lib__reorder__f_b_field_3_(
-      new_tests__legacy__attributes__lib__reorder__Bar_B(
-        new_tests__legacy__attributes__lib__reorder__f_b_field_1_,
-        new_tests__legacy__attributes__lib__reorder__f_b_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_b_field_2_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_b_field_3_.
-reduc forall 
-  new_tests__legacy__attributes__lib__reorder__f_b_field_1_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_b_field_3_: nat,
-  new_tests__legacy__attributes__lib__reorder__f_b_field_2_: nat
-;
-    accessor_new_tests__legacy__attributes__lib__reorder__t_Bar_new_tests__legacy__attributes__lib__reorder__f_b_field_2_(
-      new_tests__legacy__attributes__lib__reorder__Bar_B(
-        new_tests__legacy__attributes__lib__reorder__f_b_field_1_,
-        new_tests__legacy__attributes__lib__reorder__f_b_field_3_,
-        new_tests__legacy__attributes__lib__reorder__f_b_field_2_
-      )
-    ) = new_tests__legacy__attributes__lib__reorder__f_b_field_2_.
-
-type new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8.
-
-fun new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_to_bitstring(
-      new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8 [typeConverter].
-const new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_default_value: new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_default(
-
-       ) =
-       new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_default_value.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_default_value.
-fun new_tests__legacy__attributes__lib__refinement_types__BoundedU8(nat)
-    : new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8 [data].
-reduc forall new_tests__legacy__attributes__lib__refinement_types__0: nat;
-    accessor_new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_new_tests__legacy__attributes__lib__refinement_types__0(
-      new_tests__legacy__attributes__lib__refinement_types__BoundedU8(
-        new_tests__legacy__attributes__lib__refinement_types__0
-      )
-    ) = new_tests__legacy__attributes__lib__refinement_types__0.
-
-type new_tests__legacy__attributes__lib__refinement_types__t_Even.
-
-fun new_tests__legacy__attributes__lib__refinement_types__t_Even_to_bitstring(
-      new_tests__legacy__attributes__lib__refinement_types__t_Even
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refinement_types__t_Even_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refinement_types__t_Even [typeConverter].
-const new_tests__legacy__attributes__lib__refinement_types__t_Even_default_value: new_tests__legacy__attributes__lib__refinement_types__t_Even.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_Even_default() =
-       new_tests__legacy__attributes__lib__refinement_types__t_Even_default_value.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_Even_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refinement_types__t_Even_default_value.
-fun new_tests__legacy__attributes__lib__refinement_types__Even(nat)
-    : new_tests__legacy__attributes__lib__refinement_types__t_Even [data].
-reduc forall new_tests__legacy__attributes__lib__refinement_types__0: nat;
-    accessor_new_tests__legacy__attributes__lib__refinement_types__t_Even_new_tests__legacy__attributes__lib__refinement_types__0(
-      new_tests__legacy__attributes__lib__refinement_types__Even(
-        new_tests__legacy__attributes__lib__refinement_types__0
-      )
-    ) = new_tests__legacy__attributes__lib__refinement_types__0.
-
-type new_tests__legacy__attributes__lib__refinement_types__t_NoE.
-
-fun new_tests__legacy__attributes__lib__refinement_types__t_NoE_to_bitstring(
-      new_tests__legacy__attributes__lib__refinement_types__t_NoE
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refinement_types__t_NoE_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refinement_types__t_NoE [typeConverter].
-const new_tests__legacy__attributes__lib__refinement_types__t_NoE_default_value: new_tests__legacy__attributes__lib__refinement_types__t_NoE.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_NoE_default() =
-       new_tests__legacy__attributes__lib__refinement_types__t_NoE_default_value.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_NoE_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refinement_types__t_NoE_default_value.
-fun new_tests__legacy__attributes__lib__refinement_types__NoE(
-      alloc__string__t_String
-    )
-    : new_tests__legacy__attributes__lib__refinement_types__t_NoE [data].
-reduc forall 
-  new_tests__legacy__attributes__lib__refinement_types__0: alloc__string__t_String
-;
-    accessor_new_tests__legacy__attributes__lib__refinement_types__t_NoE_new_tests__legacy__attributes__lib__refinement_types__0(
-      new_tests__legacy__attributes__lib__refinement_types__NoE(
-        new_tests__legacy__attributes__lib__refinement_types__0
-      )
-    ) = new_tests__legacy__attributes__lib__refinement_types__0.
-
-type new_tests__legacy__attributes__lib__refinement_types__t_ModInverse.
-
-fun new_tests__legacy__attributes__lib__refinement_types__t_ModInverse_to_bitstring(
-      new_tests__legacy__attributes__lib__refinement_types__t_ModInverse
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refinement_types__t_ModInverse_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refinement_types__t_ModInverse [typeConverter].
-const new_tests__legacy__attributes__lib__refinement_types__t_ModInverse_default_value: new_tests__legacy__attributes__lib__refinement_types__t_ModInverse.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_ModInverse_default(
-
-       ) =
-       new_tests__legacy__attributes__lib__refinement_types__t_ModInverse_default_value.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_ModInverse_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refinement_types__t_ModInverse_default_value.
-fun new_tests__legacy__attributes__lib__refinement_types__ModInverse(nat)
-    : new_tests__legacy__attributes__lib__refinement_types__t_ModInverse [data].
-reduc forall new_tests__legacy__attributes__lib__refinement_types__0: nat;
-    accessor_new_tests__legacy__attributes__lib__refinement_types__t_ModInverse_new_tests__legacy__attributes__lib__refinement_types__0(
-      new_tests__legacy__attributes__lib__refinement_types__ModInverse(
-        new_tests__legacy__attributes__lib__refinement_types__0
-      )
-    ) = new_tests__legacy__attributes__lib__refinement_types__0.
-
-type new_tests__legacy__attributes__lib__refinement_types__t_FieldElement.
-
-fun new_tests__legacy__attributes__lib__refinement_types__t_FieldElement_to_bitstring(
-      new_tests__legacy__attributes__lib__refinement_types__t_FieldElement
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refinement_types__t_FieldElement_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refinement_types__t_FieldElement [typeConverter].
-const new_tests__legacy__attributes__lib__refinement_types__t_FieldElement_default_value: new_tests__legacy__attributes__lib__refinement_types__t_FieldElement.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_FieldElement_default(
-
-       ) =
-       new_tests__legacy__attributes__lib__refinement_types__t_FieldElement_default_value.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_FieldElement_err(
-       ) =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refinement_types__t_FieldElement_default_value.
-fun new_tests__legacy__attributes__lib__refinement_types__FieldElement(nat)
-    : new_tests__legacy__attributes__lib__refinement_types__t_FieldElement [data].
-reduc forall new_tests__legacy__attributes__lib__refinement_types__0: nat;
-    accessor_new_tests__legacy__attributes__lib__refinement_types__t_FieldElement_new_tests__legacy__attributes__lib__refinement_types__0(
-      new_tests__legacy__attributes__lib__refinement_types__FieldElement(
-        new_tests__legacy__attributes__lib__refinement_types__0
-      )
-    ) = new_tests__legacy__attributes__lib__refinement_types__0.
-
-type new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor.
-
-fun new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor_to_bitstring(
-      new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor [typeConverter].
-const new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor_default_value: new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor_default(
-
-       ) =
-       new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor_default_value.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor_err(
-
-       ) =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor_default_value.
-fun new_tests__legacy__attributes__lib__refinement_types__CompressionFactor(nat)
-    : new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor [data].
-reduc forall new_tests__legacy__attributes__lib__refinement_types__0: nat;
-    accessor_new_tests__legacy__attributes__lib__refinement_types__t_CompressionFactor_new_tests__legacy__attributes__lib__refinement_types__0(
-      new_tests__legacy__attributes__lib__refinement_types__CompressionFactor(
-        new_tests__legacy__attributes__lib__refinement_types__0
-      )
-    ) = new_tests__legacy__attributes__lib__refinement_types__0.
-
-type new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16.
-
-fun new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_to_bitstring(
-      new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16 [typeConverter].
-const new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_default_value: new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_default(
-
-       ) =
-       new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_default_value.
-letfun new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_err(
-
-       ) =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_default_value.
-fun new_tests__legacy__attributes__lib__refinement_types__BoundedAbsI16(nat)
-    : new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16 [data].
-reduc forall new_tests__legacy__attributes__lib__refinement_types__0: nat;
-    accessor_new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_new_tests__legacy__attributes__lib__refinement_types__0(
-      new_tests__legacy__attributes__lib__refinement_types__BoundedAbsI16(
-        new_tests__legacy__attributes__lib__refinement_types__0
-      )
-    ) = new_tests__legacy__attributes__lib__refinement_types__0.
-
-type new_tests__legacy__attributes__lib__refined_indexes__t_MyArray.
-
-fun new_tests__legacy__attributes__lib__refined_indexes__t_MyArray_to_bitstring(
-      new_tests__legacy__attributes__lib__refined_indexes__t_MyArray
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refined_indexes__t_MyArray_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refined_indexes__t_MyArray [typeConverter].
-const new_tests__legacy__attributes__lib__refined_indexes__t_MyArray_default_value: new_tests__legacy__attributes__lib__refined_indexes__t_MyArray.
-letfun new_tests__legacy__attributes__lib__refined_indexes__t_MyArray_default() =
-       new_tests__legacy__attributes__lib__refined_indexes__t_MyArray_default_value.
-letfun new_tests__legacy__attributes__lib__refined_indexes__t_MyArray_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refined_indexes__t_MyArray_default_value.
-fun new_tests__legacy__attributes__lib__refined_indexes__MyArray(bitstring)
-    : new_tests__legacy__attributes__lib__refined_indexes__t_MyArray [data].
-reduc forall new_tests__legacy__attributes__lib__refined_indexes__0: bitstring;
-    accessor_new_tests__legacy__attributes__lib__refined_indexes__t_MyArray_new_tests__legacy__attributes__lib__refined_indexes__0(
-      new_tests__legacy__attributes__lib__refined_indexes__MyArray(
-        new_tests__legacy__attributes__lib__refined_indexes__0
-      )
-    ) = new_tests__legacy__attributes__lib__refined_indexes__0.
-
-type new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo.
-
-fun new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo_to_bitstring(
-      new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo [typeConverter].
-const new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo_default_value: new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo.
-letfun new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo_default() =
-       new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo_default_value.
-letfun new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo_default_value.
-fun new_tests__legacy__attributes__lib__refined_arithmetic__Foo(nat)
-    : new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo [data].
-reduc forall new_tests__legacy__attributes__lib__refined_arithmetic__0: nat;
-    accessor_new_tests__legacy__attributes__lib__refined_arithmetic__t_Foo_new_tests__legacy__attributes__lib__refined_arithmetic__0(
-      new_tests__legacy__attributes__lib__refined_arithmetic__Foo(
-        new_tests__legacy__attributes__lib__refined_arithmetic__0
-      )
-    ) = new_tests__legacy__attributes__lib__refined_arithmetic__0.
-
-type new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd.
-
-fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd_to_bitstring(
-      new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd [typeConverter].
-const new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd_default_value: new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd.
-letfun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd_default(
-
-       ) =
-       new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd_default_value.
-letfun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd_err(
-
-       ) =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd_default_value.
-fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__ViaAdd()
-    : new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaAdd [data].
-
-
-type new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul.
-
-fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul_to_bitstring(
-      new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul [typeConverter].
-const new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul_default_value: new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul.
-letfun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul_default(
-
-       ) =
-       new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul_default_value.
-letfun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul_err(
-
-       ) =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul_default_value.
-fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__ViaMul()
-    : new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__t_ViaMul [data].
-
-
-type new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex.
-
-fun new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_to_bitstring(
-      new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex [typeConverter].
-const new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_default_value: new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex.
-letfun new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_default(
-       ) =
-       new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_default_value.
-letfun new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_default_value.
-fun new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex(nat)
-    : new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex [data].
-reduc forall new_tests__legacy__attributes__lib__newtype_pattern__f_i: nat;
-    accessor_new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_new_tests__legacy__attributes__lib__newtype_pattern__f_i(
-      new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex(
-        new_tests__legacy__attributes__lib__newtype_pattern__f_i
-      )
-    ) = new_tests__legacy__attributes__lib__newtype_pattern__f_i.
-
-type new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement.
-
-fun new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement_to_bitstring(
-      new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement [typeConverter].
-const new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement_default_value: new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement.
-letfun new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement_default(
-
-       ) =
-       new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement_default_value.
-letfun new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement_err(
-
-       ) =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement_default_value.
-fun new_tests__legacy__attributes__lib__nested_refinement_elim__DummyRefinement(
-      nat
-    )
-    : new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement [data].
-reduc forall new_tests__legacy__attributes__lib__nested_refinement_elim__0: nat;
-    accessor_new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement_new_tests__legacy__attributes__lib__nested_refinement_elim__0(
-      new_tests__legacy__attributes__lib__nested_refinement_elim__DummyRefinement(
-        new_tests__legacy__attributes__lib__nested_refinement_elim__0
-      )
-    ) = new_tests__legacy__attributes__lib__nested_refinement_elim__0.
-
-type new_tests__legacy__attributes__lib__issue_evit_57___t_Foo.
-
-fun new_tests__legacy__attributes__lib__issue_evit_57___t_Foo_to_bitstring(
-      new_tests__legacy__attributes__lib__issue_evit_57___t_Foo
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__issue_evit_57___t_Foo_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__issue_evit_57___t_Foo [typeConverter].
-const new_tests__legacy__attributes__lib__issue_evit_57___t_Foo_default_value: new_tests__legacy__attributes__lib__issue_evit_57___t_Foo.
-letfun new_tests__legacy__attributes__lib__issue_evit_57___t_Foo_default() =
-       new_tests__legacy__attributes__lib__issue_evit_57___t_Foo_default_value.
-letfun new_tests__legacy__attributes__lib__issue_evit_57___t_Foo_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__issue_evit_57___t_Foo_default_value.
-fun new_tests__legacy__attributes__lib__issue_evit_57___Foo()
-    : new_tests__legacy__attributes__lib__issue_evit_57___t_Foo [data].
-
-
-type new_tests__legacy__attributes__lib__issue_1276___t_S.
-
-fun new_tests__legacy__attributes__lib__issue_1276___t_S_to_bitstring(
-      new_tests__legacy__attributes__lib__issue_1276___t_S
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__issue_1276___t_S_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__issue_1276___t_S [typeConverter].
-const new_tests__legacy__attributes__lib__issue_1276___t_S_default_value: new_tests__legacy__attributes__lib__issue_1276___t_S.
-letfun new_tests__legacy__attributes__lib__issue_1276___t_S_default() =
-       new_tests__legacy__attributes__lib__issue_1276___t_S_default_value.
-letfun new_tests__legacy__attributes__lib__issue_1276___t_S_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__issue_1276___t_S_default_value.
-fun new_tests__legacy__attributes__lib__issue_1276___S(nat)
-    : new_tests__legacy__attributes__lib__issue_1276___t_S [data].
-reduc forall new_tests__legacy__attributes__lib__issue_1276___0: nat;
-    accessor_new_tests__legacy__attributes__lib__issue_1276___t_S_new_tests__legacy__attributes__lib__issue_1276___0(
-      new_tests__legacy__attributes__lib__issue_1276___S(
-        new_tests__legacy__attributes__lib__issue_1276___0
-      )
-    ) = new_tests__legacy__attributes__lib__issue_1276___0.
-
-type new_tests__legacy__attributes__lib__int_model__t_Int.
-
-fun new_tests__legacy__attributes__lib__int_model__t_Int_to_bitstring(
-      new_tests__legacy__attributes__lib__int_model__t_Int
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__int_model__t_Int_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__int_model__t_Int [typeConverter].
-const new_tests__legacy__attributes__lib__int_model__t_Int_default_value: new_tests__legacy__attributes__lib__int_model__t_Int.
-letfun new_tests__legacy__attributes__lib__int_model__t_Int_default() =
-       new_tests__legacy__attributes__lib__int_model__t_Int_default_value.
-letfun new_tests__legacy__attributes__lib__int_model__t_Int_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__int_model__t_Int_default_value.
-fun new_tests__legacy__attributes__lib__int_model__Int(nat)
-    : new_tests__legacy__attributes__lib__int_model__t_Int [data].
-reduc forall new_tests__legacy__attributes__lib__int_model__0: nat;
-    accessor_new_tests__legacy__attributes__lib__int_model__t_Int_new_tests__legacy__attributes__lib__int_model__0(
-      new_tests__legacy__attributes__lib__int_model__Int(
-        new_tests__legacy__attributes__lib__int_model__0
-      )
-    ) = new_tests__legacy__attributes__lib__int_model__0.
-
-type new_tests__legacy__attributes__lib__future_self__t_Dummy.
-
-fun new_tests__legacy__attributes__lib__future_self__t_Dummy_to_bitstring(
-      new_tests__legacy__attributes__lib__future_self__t_Dummy
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__future_self__t_Dummy_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__future_self__t_Dummy [typeConverter].
-const new_tests__legacy__attributes__lib__future_self__t_Dummy_default_value: new_tests__legacy__attributes__lib__future_self__t_Dummy.
-letfun new_tests__legacy__attributes__lib__future_self__t_Dummy_default() =
-       new_tests__legacy__attributes__lib__future_self__t_Dummy_default_value.
-letfun new_tests__legacy__attributes__lib__future_self__t_Dummy_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__future_self__t_Dummy_default_value.
-fun new_tests__legacy__attributes__lib__future_self__Dummy()
-    : new_tests__legacy__attributes__lib__future_self__t_Dummy [data].
-
-
-type new_tests__legacy__attributes__lib__t_Foo.
-
-fun new_tests__legacy__attributes__lib__t_Foo_to_bitstring(
-      new_tests__legacy__attributes__lib__t_Foo
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__t_Foo_from_bitstring(bitstring)
-    : new_tests__legacy__attributes__lib__t_Foo [typeConverter].
-const new_tests__legacy__attributes__lib__t_Foo_default_value: new_tests__legacy__attributes__lib__t_Foo.
-letfun new_tests__legacy__attributes__lib__t_Foo_default() =
-       new_tests__legacy__attributes__lib__t_Foo_default_value.
-letfun new_tests__legacy__attributes__lib__t_Foo_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__t_Foo_default_value.
-fun new_tests__legacy__attributes__lib__Foo(nat, nat, nat)
-    : new_tests__legacy__attributes__lib__t_Foo [data].
-reduc forall 
-  new_tests__legacy__attributes__lib__f_x: nat,
-  new_tests__legacy__attributes__lib__f_y: nat,
-  new_tests__legacy__attributes__lib__f_z: nat
-;
-    accessor_new_tests__legacy__attributes__lib__t_Foo_new_tests__legacy__attributes__lib__f_x(
-      new_tests__legacy__attributes__lib__Foo(
-        new_tests__legacy__attributes__lib__f_x,
-        new_tests__legacy__attributes__lib__f_y,
-        new_tests__legacy__attributes__lib__f_z
-      )
-    ) = new_tests__legacy__attributes__lib__f_x.
-reduc forall 
-  new_tests__legacy__attributes__lib__f_x: nat,
-  new_tests__legacy__attributes__lib__f_y: nat,
-  new_tests__legacy__attributes__lib__f_z: nat
-;
-    accessor_new_tests__legacy__attributes__lib__t_Foo_new_tests__legacy__attributes__lib__f_y(
-      new_tests__legacy__attributes__lib__Foo(
-        new_tests__legacy__attributes__lib__f_x,
-        new_tests__legacy__attributes__lib__f_y,
-        new_tests__legacy__attributes__lib__f_z
-      )
-    ) = new_tests__legacy__attributes__lib__f_y.
-reduc forall 
-  new_tests__legacy__attributes__lib__f_x: nat,
-  new_tests__legacy__attributes__lib__f_y: nat,
-  new_tests__legacy__attributes__lib__f_z: nat
-;
-    accessor_new_tests__legacy__attributes__lib__t_Foo_new_tests__legacy__attributes__lib__f_z(
-      new_tests__legacy__attributes__lib__Foo(
-        new_tests__legacy__attributes__lib__f_x,
-        new_tests__legacy__attributes__lib__f_y,
-        new_tests__legacy__attributes__lib__f_z
-      )
-    ) = new_tests__legacy__attributes__lib__f_z.
-
-type new_tests__legacy__attributes__lib__t_FooConstGeneric.
-
-fun new_tests__legacy__attributes__lib__t_FooConstGeneric_to_bitstring(
-      new_tests__legacy__attributes__lib__t_FooConstGeneric
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attributes__lib__t_FooConstGeneric_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attributes__lib__t_FooConstGeneric [typeConverter].
-const new_tests__legacy__attributes__lib__t_FooConstGeneric_default_value: new_tests__legacy__attributes__lib__t_FooConstGeneric.
-letfun new_tests__legacy__attributes__lib__t_FooConstGeneric_default() =
-       new_tests__legacy__attributes__lib__t_FooConstGeneric_default_value.
-letfun new_tests__legacy__attributes__lib__t_FooConstGeneric_err() =
-       let x = construct_fail() in new_tests__legacy__attributes__lib__t_FooConstGeneric_default_value.
-fun new_tests__legacy__attributes__lib__FooConstGeneric(bitstring, nat)
-    : new_tests__legacy__attributes__lib__t_FooConstGeneric [data].
-reduc forall 
-  new_tests__legacy__attributes__lib__f_indices: bitstring,
-  new_tests__legacy__attributes__lib__f_length: nat
-;
-    accessor_new_tests__legacy__attributes__lib__t_FooConstGeneric_new_tests__legacy__attributes__lib__f_indices(
-      new_tests__legacy__attributes__lib__FooConstGeneric(
-        new_tests__legacy__attributes__lib__f_indices,
-        new_tests__legacy__attributes__lib__f_length
-      )
-    ) = new_tests__legacy__attributes__lib__f_indices.
-reduc forall 
-  new_tests__legacy__attributes__lib__f_indices: bitstring,
-  new_tests__legacy__attributes__lib__f_length: nat
-;
-    accessor_new_tests__legacy__attributes__lib__t_FooConstGeneric_new_tests__legacy__attributes__lib__f_length(
-      new_tests__legacy__attributes__lib__FooConstGeneric(
-        new_tests__legacy__attributes__lib__f_indices,
-        new_tests__legacy__attributes__lib__f_length
-      )
-    ) = new_tests__legacy__attributes__lib__f_length.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__attributes__lib__verifcation_status__a_function_which_only_laxes(
-         wildcard1 : bitstring
-       ) =
-       if core_models__ops__bit__f_not(false) then (bitstring_err()) else (()).
-
-letfun new_tests__legacy__attributes__lib__verifcation_status__a_panicfree_function(
-         wildcard3 : bitstring
-       ) =
-       let a = (3) in
-       let b = (6) in
-       let result = (core_models__ops__arith__f_add(a, b)) in
-       let wildcard2: bitstring = (()) in
-       result.
-
-letfun new_tests__legacy__attributes__lib__verifcation_status__another_panicfree_function(
-         wildcard4 : bitstring
-       ) =
-       let not_much = (0) in
-       let nothing = (0) in
-       let still_not_much = (core_models__ops__arith__f_add(not_much, nothing)) in
-       ().
-
-letfun new_tests__legacy__attributes__lib__replace_body__f(x : nat, y : nat) =
-       core_models__ops__arith__f_add(1, 2).
-
-letfun new_tests__legacy__attributes__lib__replace_body__impl_Foo__assoc_fn(
-         self : new_tests__legacy__attributes__lib__replace_body__t_Foo, x : nat
-       ) =
-       ().
-
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:349 new_tests__legacy__attributes__lib__refinement_types__bounded_u8 *)
 letfun new_tests__legacy__attributes__lib__refinement_types__bounded_u8(
-         x : new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_of_12_15,
-         y : new_tests__legacy__attributes__lib__refinement_types__t_BoundedU8_of_10_11
-       ) =
-       hax_lib__f_new(
-         core_models__ops__arith__f_add(hax_lib__f_get(x), hax_lib__f_get(y))
-       ).
+  x: bitstring,
+  y: bitstring
+) =
+  hax_lib__Refinement__new_kw(
+    rust_primitives__hax__machine_int__add(
+      hax_lib__Refinement__get_kw(x),
+      hax_lib__Refinement__get_kw(y)
+    )
+  ).
+(* src: src/legacy/attributes/lib.rs:355 new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__Even__Even *)
+(*  Even `u8` numbers. Constructing pub Even values triggers static *)
+(*  proofs in the extraction. *)
+fun new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__Even__Even__Even(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__Even__Even__Even__0(
+    new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__Even__Even__Even(
+      v_0
+    )
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:359 new_tests__legacy__attributes__lib__refinement_types__double *)
+letfun new_tests__legacy__attributes__lib__refinement_types__double(x: bitstring) =
+  hax_lib__Refinement__new_kw(rust_primitives__hax__machine_int__add(x, x)).
+(* src: src/legacy/attributes/lib.rs:364 new_tests__legacy__attributes__lib__refinement_types__double_refine *)
+letfun new_tests__legacy__attributes__lib__refinement_types__double_refine(x: bitstring) =
+  hax_lib__RefineAs__into_checked(rust_primitives__hax__machine_int__add(x, x)).
+(* src: src/legacy/attributes/lib.rs:369 new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__NoE__NoE *)
+(*  A string that contains no space. *)
+fun new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__NoE__NoE__NoE(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__NoE__NoE__NoE__0(
+    new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__NoE__NoE__NoE(
+      v_0
+    )
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:373 new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__ModInverse__ModInverse *)
+(*  A modular mutliplicative inverse *)
+fun new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__ModInverse__ModInverse__ModInverse(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__ModInverse__ModInverse__ModInverse__0(
+    new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__ModInverse__ModInverse__ModInverse(
+      v_0
+    )
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:377 new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__FieldElement__FieldElement *)
+(*  A field element *)
+fun new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__FieldElement__FieldElement__FieldElement(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__FieldElement__FieldElement__FieldElement__0(
+    new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__FieldElement__FieldElement__FieldElement(
+      v_0
+    )
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:381 new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__CompressionFactor__CompressionFactor *)
+(*  Example of a specific constraint on a value *)
+fun new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__CompressionFactor__CompressionFactor__CompressionFactor(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__CompressionFactor__CompressionFactor__CompressionFactor__0(
+    new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__CompressionFactor__CompressionFactor__CompressionFactor(
+      v_0
+    )
+  ) = v_0.
+(* src: /Users/karthik/hax-proverif-backend/hax-bounded-integers/src/lib.rs:300 new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__BoundedAbsI16__BoundedAbsI16 *)
+fun new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__BoundedAbsI16__BoundedAbsI16__BoundedAbsI16(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__BoundedAbsI16__BoundedAbsI16__BoundedAbsI16__0(
+    new_tests__legacy__attributes__lib__refinement_types__hax__autogenerated_refinement__BoundedAbsI16__BoundedAbsI16__BoundedAbsI16(
+      v_0
+    )
+  ) = v_0.
 
-letfun new_tests__legacy__attributes__lib__refinement_types__double(x : nat) =
-       hax_lib__f_new(core_models__ops__arith__f_add(x, x)).
 
-letfun new_tests__legacy__attributes__lib__refinement_types__double_refine(
-         x : nat
-       ) =
-       hax_lib__f_into_checked(core_models__ops__arith__f_add(x, x)).
 
-letfun new_tests__legacy__attributes__lib__refinement_types__double_abs_i16(
-         x : new_tests__legacy__attributes__lib__refinement_types__t_BoundedAbsI16_of_v_N
-       ) =
-       hax_lib__f_into_checked(core_models__ops__arith__f_mul(x, 2)).
 
-const new_tests__legacy__attributes__lib__refined_indexes__v_MAX: bitstring.
 
+
+
+
+(* src: src/legacy/attributes/lib.rs:391 new_tests__legacy__attributes__lib__refinement_types__double_abs_i16 *)
+letfun new_tests__legacy__attributes__lib__refinement_types__double_abs_i16(x: bitstring) =
+  hax_lib__RefineAs__into_checked(core__ops__arith__Mul__mul(x, nat_lit(2))).
+(* src: src/legacy/attributes/lib.rs:147 new_tests__legacy__attributes__lib__refined_indexes__MAX *)
+const new_tests__legacy__attributes__lib__refined_indexes__MAX: bitstring.
+(* src: src/legacy/attributes/lib.rs:148 new_tests__legacy__attributes__lib__refined_indexes__MyArray *)
+fun new_tests__legacy__attributes__lib__refined_indexes__MyArray__MyArray(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refined_indexes__MyArray__MyArray__0(
+    new_tests__legacy__attributes__lib__refined_indexes__MyArray__MyArray(v_0)
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:170 new_tests__legacy__attributes__lib__refined_indexes__mutation_example *)
+(*  Triple dash comment *)
+(*  Multiline double star comment Maecenas blandit accumsan feugiat. *)
+(*     Done vitae ullamcorper est. *)
+(*     Curabitur id dui eget sem viverra interdum. *)
 letfun new_tests__legacy__attributes__lib__refined_indexes__mutation_example(
-         uuse_generic_update_at : new_tests__legacy__attributes__lib__refined_indexes__t_MyArray,
-         uuse_specialized_update_at : bitstring,
-         specialized_as_well : bitstring
-       ) =
-       let uuse_generic_update_at = (
-         rust_primitives__hax__update_at(uuse_generic_update_at, 2, 0)
-       ) in
-       let uuse_specialized_update_at = (
-         rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           uuse_specialized_update_at, 2, 0
-         )
-       ) in
-       let specialized_as_well = (
-         alloc__slice__impl__to_vec(
-           rust_primitives__hax__monomorphized_update_at__update_at_usize(
-             alloc__vec__impl_1__as_slice(specialized_as_well), 2, 0
-           )
-         )
-       ) in
-       (uuse_generic_update_at, uuse_specialized_update_at, specialized_as_well).
+  use_generic_update_at: bitstring,
+  use_specialized_update_at: bitstring,
+  specialized_as_well: bitstring
+) =
+  rust_primitives__hax__Tuple3__Tuple3(
+    rust_primitives__hax__update_at(use_generic_update_at, nat_lit(2), nat_lit(0)),
+    rust_primitives__hax__monomorphized_update_at__update_at_usize(
+      use_specialized_update_at,
+      nat_lit(2),
+      nat_lit(0)
+    ),
+    alloc__slice__Impl__to_vec(
+      rust_primitives__hax__monomorphized_update_at__update_at_usize(
+        alloc__vec__Impl_1__as_slice(specialized_as_well),
+        nat_lit(2),
+        nat_lit(0)
+      )
+    )
+  ).
 
-letfun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__test(
-         x : v_T
-       ) =
-       core_models__ops__arith__f_sub(
-         new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__f_method(
-           x, 99
-         ),
-         88
-       ).
+(* src: src/legacy/attributes/lib.rs:154 new_tests__legacy__attributes__lib__refined_indexes__Impl_1__index *)
+(* self-recursive stub (unresolved trait method) *)
+fun new_tests__legacy__attributes__lib__refined_indexes__Impl_1__index(
+  bitstring,
+  bitstring
+): bitstring.
+(* src: src/legacy/attributes/lib.rs:126 new_tests__legacy__attributes__lib__refined_arithmetic__Foo *)
+fun new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo__0(
+    new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo(v_0)
+  ) = v_0.
 
-const new_tests__legacy__attributes__lib__newtype_pattern__v_MAX: bitstring.
+(* src: src/legacy/attributes/lib.rs:131 new_tests__legacy__attributes__lib__refined_arithmetic__Impl__add *)
+letfun new_tests__legacy__attributes__lib__refined_arithmetic__Impl__add(
+  self: bitstring,
+  rhs: bitstring
+) =
+  new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo(
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo__0(self),
+      new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo__0(rhs)
+    )
+  ).
 
-letfun new_tests__legacy__attributes__lib__newtype_pattern__impl_SafeIndex__new(
-         i : nat
-       ) =
-       if
-         core_models__cmp__f_lt(
-             i, new_tests__legacy__attributes__lib__newtype_pattern__v_MAX
-           )
-       then
-         (Some(
-            new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_to_bitstring(
-              new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex(i)
-            )
-          ))
-       else (None()).
+(* src: src/legacy/attributes/lib.rs:139 new_tests__legacy__attributes__lib__refined_arithmetic__Impl_1__mul *)
+letfun new_tests__legacy__attributes__lib__refined_arithmetic__Impl_1__mul(
+  self: bitstring,
+  rhs: bitstring
+) =
+  new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo(
+    rust_primitives__hax__machine_int__mul(
+      new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo__0(self),
+      new_tests__legacy__attributes__lib__refined_arithmetic__Foo__Foo__0(rhs)
+    )
+  ).
 
-letfun new_tests__legacy__attributes__lib__newtype_pattern__impl_SafeIndex__as_usize(
-         self : new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex
-       ) =
-       accessor_new_tests__legacy__attributes__lib__newtype_pattern__t_SafeIndex_new_tests__legacy__attributes__lib__newtype_pattern__f_i(
-         self
-       ).
+(* src: src/legacy/attributes/lib.rs:276 new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__ViaAdd *)
+fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__ViaAdd__ViaAdd(
 
-letfun new_tests__legacy__attributes__lib__nested_refinement_elim__elim_twice(
-         x : new_tests__legacy__attributes__lib__nested_refinement_elim__t_DummyRefinement
-       ) =
-       hax_lib__f_get(hax_lib__f_new(hax_lib__f_get(x))).
+): bitstring [data].
+(* src: src/legacy/attributes/lib.rs:277 new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__ViaMul *)
+fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__ViaMul__ViaMul(
 
-letfun new_tests__legacy__attributes__lib__issue_evit_57___impl_Foo__f(
-         self : new_tests__legacy__attributes__lib__issue_evit_57___t_Foo
-       ) =
-       ().
+): bitstring [data].
+(* src: src/legacy/attributes/lib.rs:283 new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__Impl__double *)
+letfun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__Impl__double(
+  x: bitstring
+) = rust_primitives__hax__machine_int__add(x, x).
+(* src: src/legacy/attributes/lib.rs:292 new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__Impl_1__double *)
+letfun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__Impl_1__double(
+  x: bitstring
+) = rust_primitives__hax__machine_int__mul(x, nat_lit(2)).
 
-letfun new_tests__legacy__attributes__lib__issue_1276___impl_S__f(
-         self : new_tests__legacy__attributes__lib__issue_1276___t_S,
-         self_ : nat,
-         self_0_ : nat,
-         self_1_ : nat,
-         self_2_ : nat
-       ) =
-       ().
+(* src: src/legacy/attributes/lib.rs:304 new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__test *)
+letfun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__test(x: bitstring) =
+  rust_primitives__hax__machine_int__sub(
+    new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__TraitWithRequiresAndEnsures__method(
+      x,
+      nat_lit(99)
+    ),
+    nat_lit(88)
+  ).
+(* src: src/legacy/attributes/lib.rs:183 new_tests__legacy__attributes__lib__newtype_pattern__MAX *)
+const new_tests__legacy__attributes__lib__newtype_pattern__MAX: bitstring.
+(* src: src/legacy/attributes/lib.rs:185 new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex *)
+fun new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex__SafeIndex(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex__SafeIndex__i(
+    new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex__SafeIndex(v_0)
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:190 new_tests__legacy__attributes__lib__newtype_pattern__Impl__new_kw *)
+letfun new_tests__legacy__attributes__lib__newtype_pattern__Impl__new_kw(i: bitstring) =
+  let (=True()) = rust_primitives__hax__machine_int__lt(
+      i,
+      new_tests__legacy__attributes__lib__newtype_pattern__MAX
+    )
+    in Some(new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex__SafeIndex(i))
+    else None().
+(* src: src/legacy/attributes/lib.rs:197 new_tests__legacy__attributes__lib__newtype_pattern__Impl__as_usize *)
+letfun new_tests__legacy__attributes__lib__newtype_pattern__Impl__as_usize(self: bitstring) =
+  new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex__SafeIndex__i(self).
 
-letfun new_tests__legacy__attributes__lib__int_model__add(
-         x : new_tests__legacy__attributes__lib__int_model__t_Int,
-         y : new_tests__legacy__attributes__lib__int_model__t_Int
-       ) =
-       new_tests__legacy__attributes__lib__int_model__Int(
-         core_models__ops__arith__f_add(
-           accessor_new_tests__legacy__attributes__lib__int_model__t_Int_new_tests__legacy__attributes__lib__int_model__0(
-             x
-           ),
-           accessor_new_tests__legacy__attributes__lib__int_model__t_Int_new_tests__legacy__attributes__lib__int_model__0(
-             y
-           )
-         )
-       ).
+(* src: src/legacy/attributes/lib.rs:204 new_tests__legacy__attributes__lib__newtype_pattern__Impl_1__index *)
+letfun new_tests__legacy__attributes__lib__newtype_pattern__Impl_1__index(
+  self: bitstring,
+  index: bitstring
+) =
+  core__ops__index__Index__index(
+    self,
+    new_tests__legacy__attributes__lib__newtype_pattern__SafeIndex__SafeIndex__i(index)
+  ).
+(* src: src/legacy/attributes/lib.rs:397 new_tests__legacy__attributes__lib__nested_refinement_elim__hax__autogenerated_refinement__DummyRefinement__DummyRefinement *)
+fun new_tests__legacy__attributes__lib__nested_refinement_elim__hax__autogenerated_refinement__DummyRefinement__DummyRefinement__DummyRefinement(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__nested_refinement_elim__hax__autogenerated_refinement__DummyRefinement__DummyRefinement__DummyRefinement__0(
+    new_tests__legacy__attributes__lib__nested_refinement_elim__hax__autogenerated_refinement__DummyRefinement__DummyRefinement__DummyRefinement(
+      v_0
+    )
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:400 new_tests__legacy__attributes__lib__nested_refinement_elim__elim_twice *)
+letfun new_tests__legacy__attributes__lib__nested_refinement_elim__elim_twice(x: bitstring) =
+  hax_lib__Refinement__get_kw(hax_lib__Refinement__new_kw(hax_lib__Refinement__get_kw(x))).
+(* src: src/legacy/attributes/lib.rs:543 new_tests__legacy__attributes__lib__issue_evit_57__Foo *)
+fun new_tests__legacy__attributes__lib__issue_evit_57__Foo__Foo(): bitstring [data].
+(* src: src/legacy/attributes/lib.rs:548 new_tests__legacy__attributes__lib__issue_evit_57__Impl__f *)
+letfun new_tests__legacy__attributes__lib__issue_evit_57__Impl__f(self: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:533 new_tests__legacy__attributes__lib__issue_1276__S *)
+fun new_tests__legacy__attributes__lib__issue_1276__S__S(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__issue_1276__S__S__0(
+    new_tests__legacy__attributes__lib__issue_1276__S__S(v_0)
+  ) = v_0.
+(* src: src/legacy/attributes/lib.rs:538 new_tests__legacy__attributes__lib__issue_1276__Impl__f *)
+letfun new_tests__legacy__attributes__lib__issue_1276__Impl__f(
+  self: bitstring,
+  self_: bitstring,
+  self_0: bitstring,
+  self_1: bitstring,
+  self_2: bitstring
+) = rust_primitives__hax__Tuple0__Tuple0.
 
-letfun new_tests__legacy__attributes__lib__inlined_code_ensures_requires__increment_array(
-         v : bitstring
-       ) =
-       let v = (
-         rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           v,
-           0,
-           core_models__ops__arith__f_add(
-             core_models__ops__index__f_index(v, 0), 1
-           )
-         )
-       ) in
-       let v = (
-         rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           v,
-           1,
-           core_models__ops__arith__f_add(
-             core_models__ops__index__f_index(v, 1), 1
-           )
-         )
-       ) in
-       let v = (
-         rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           v,
-           2,
-           core_models__ops__arith__f_add(
-             core_models__ops__index__f_index(v, 2), 1
-           )
-         )
-       ) in
-       let v = (
-         rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           v,
-           3,
-           core_models__ops__arith__f_add(
-             core_models__ops__index__f_index(v, 3), 1
-           )
-         )
-       ) in
-       v.
+(* src: src/legacy/attributes/lib.rs:314 new_tests__legacy__attributes__lib__int_model__Int *)
+fun new_tests__legacy__attributes__lib__int_model__Int__Int(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__attributes__lib__int_model__Int__Int__0(
+    new_tests__legacy__attributes__lib__int_model__Int__Int(v_0)
+  ) = v_0.
 
-letfun new_tests__legacy__attributes__lib__future_self__impl_Dummy__f(
-         self : new_tests__legacy__attributes__lib__future_self__t_Dummy
-       ) =
-       self.
 
-letfun new_tests__legacy__attributes__lib__ensures_on_arity_zero_fns__doing_nothing(
-         wildcard5 : bitstring
-       ) =
-       ().
+(* src: src/legacy/attributes/lib.rs:317 new_tests__legacy__attributes__lib__int_model__add *)
+letfun new_tests__legacy__attributes__lib__int_model__add(x: bitstring, y: bitstring) =
+  new_tests__legacy__attributes__lib__int_model__Int__Int(
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__attributes__lib__int_model__Int__Int__0(x),
+      new_tests__legacy__attributes__lib__int_model__Int__Int__0(y)
+    )
+  ).
 
-letfun new_tests__legacy__attributes__lib__ensures_on_arity_zero_fns__basically_a_constant(
-         wildcard6 : bitstring
-       ) =
-       127.
+(* src: src/legacy/attributes/lib.rs:336 new_tests__legacy__attributes__lib__int_model__Impl__sub *)
+letfun new_tests__legacy__attributes__lib__int_model__Impl__sub(self: bitstring, other: bitstring) =
+  new_tests__legacy__attributes__lib__int_model__Int__Int(
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__attributes__lib__int_model__Int__Int__0(self),
+      new_tests__legacy__attributes__lib__int_model__Int__Int__0(other)
+    )
+  ).
+(* src: src/legacy/attributes/lib.rs:238 new_tests__legacy__attributes__lib__future_self__Dummy *)
+fun new_tests__legacy__attributes__lib__future_self__Dummy__Dummy(): bitstring [data].
 
+
+
+(* src: src/legacy/attributes/lib.rs:243 new_tests__legacy__attributes__lib__future_self__Impl_3__f *)
+letfun new_tests__legacy__attributes__lib__future_self__Impl_3__f(self: bitstring) = self.
+(* src: src/legacy/attributes/lib.rs:8 new_tests__legacy__attributes__lib__u32_max *)
 const new_tests__legacy__attributes__lib__u32_max: bitstring.
-
-letfun new_tests__legacy__attributes__lib__add3(x : nat, y : nat, z : nat) =
-       core_models__ops__arith__f_add(core_models__ops__arith__f_add(x, y), z).
-
-letfun new_tests__legacy__attributes__lib__swap_and_mut_req_ens(x : nat, y : nat
-       ) =
-       let x0 = (x) in
-       let x = (y) in
-       let y = (x0) in
-       let hax_temp_output = (core_models__ops__arith__f_add(x, y)) in
-       (x, y, hax_temp_output).
-
-letfun new_tests__legacy__attributes__lib__issue_844_(e_x : nat) =
-       e_x.
-
-letfun new_tests__legacy__attributes__lib__add3_lemma(x : nat) =
-       ().
-
-letfun new_tests__legacy__attributes__lib__dummy_function(x : nat) =
-       x.
-
-letfun new_tests__legacy__attributes__lib__apply_dummy_function_lemma(x : nat) =
-       ().
-
-letfun new_tests__legacy__attributes__lib__props(wildcard10 : bitstring) =
-       let wildcard9: bitstring = (
-         hax_lib__assume(
-           core_models__convert__f_from(
-             hax_lib__prop__impl_Prop__from_bool(true)
-           )
-         )
-       ) in
-       let wildcard8: bitstring = (
-         hax_lib__assert_prop(
-           core_models__convert__f_from(
-             hax_lib__prop__impl_Prop__from_bool(true)
-           )
-         )
-       ) in
-       let wildcard7: bitstring = (()) in
-       ().
-
-letfun new_tests__legacy__attributes__lib__inlined_code(
-         foo : new_tests__legacy__attributes__lib__t_Foo
-       ) =
-       let vv_a = (13) in
-       let wildcard11: bitstring = (()) in
-       ().
-
-const new_tests__legacy__attributes__lib__inlined_code__v_V: bitstring.
-
-letfun new_tests__legacy__attributes__lib__mutliple_before_after(
-         wildcard12 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__attributes__lib__some_function(wildcard13 : bitstring) =
-       core_models__convert__f_from("hello from Rust").
-
-letfun new_tests__legacy__attributes__lib__fib(x : nat) =
-       if core_models__cmp__f_le(x, 2)
-       then (x)
-       else (
-         core_models__num__impl_usize__wrapping_add(
-           new_tests__legacy__attributes__lib__fib(
-             core_models__ops__arith__f_sub(x, 1)
-           ),
-           new_tests__legacy__attributes__lib__fib(
-             core_models__ops__arith__f_sub(x, 2)
-           )
-         )
-       ).
-
-letfun new_tests__legacy__attributes__lib__props__f(
-         x : hax_lib__prop__t_Prop, y : bool
-       ) =
-       let xprop:hax_lib__prop__t_Prop = (
-         hax_lib__prop__t_Prop_from_bitstring(y)
-       ) in
-       let p = (
-         core_models__ops__bit__f_bitand(
-           core_models__ops__bit__f_bitand(
-             core_models__ops__bit__f_bitand(
-               hax_lib__abstraction__f_lift(y), xprop
-             ),
-             y
-           ),
-           hax_lib__prop__f_to_prop(y)
-         )
-       ) in
-       core_models__ops__bit__f_not(
-         hax_lib__prop__impl_Prop__implies(
-           core_models__ops__bit__f_bitor(p, y),
-           core_models__ops__bit__f_bitand(
-             hax_lib__prop__v_forall(
-               |x|core_models__cmp__f_le(x, core_models__num__impl_u8__MAX)
-             ),
-             hax_lib__prop__exists(|x|core_models__cmp__f_gt(x, 300))
-           )
-         )
-       ).
-
+(* src: src/legacy/attributes/lib.rs:14 new_tests__legacy__attributes__lib__add3 *)
+(*  A doc comment on `add3` *)
+(* another doc comment on add3 *)
+letfun new_tests__legacy__attributes__lib__add3(x: bitstring, y: bitstring, z: bitstring) =
+  rust_primitives__hax__machine_int__add(rust_primitives__hax__machine_int__add(x, y), z).
+(* src: src/legacy/attributes/lib.rs:20 new_tests__legacy__attributes__lib__swap_and_mut_req_ens *)
+letfun new_tests__legacy__attributes__lib__swap_and_mut_req_ens(x: bitstring, y: bitstring) =
+  let x_1 = y in
+  let y_1 = x in
+  rust_primitives__hax__Tuple3__Tuple3(x_1, y_1, rust_primitives__hax__machine_int__add(x_1, y_1)).
+(* src: src/legacy/attributes/lib.rs:28 new_tests__legacy__attributes__lib__issue_844 *)
+letfun new_tests__legacy__attributes__lib__issue_844(u_x: bitstring) = u_x.
+(* src: src/legacy/attributes/lib.rs:43 new_tests__legacy__attributes__lib__add3_lemma *)
+letfun new_tests__legacy__attributes__lib__add3_lemma(x: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:45 new_tests__legacy__attributes__lib__dummy_function *)
+letfun new_tests__legacy__attributes__lib__dummy_function(x: bitstring) = x.
+(* src: src/legacy/attributes/lib.rs:51 new_tests__legacy__attributes__lib__apply_dummy_function_lemma *)
+letfun new_tests__legacy__attributes__lib__apply_dummy_function_lemma(x: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:85 new_tests__legacy__attributes__lib__Foo *)
+fun new_tests__legacy__attributes__lib__Foo__Foo(bitstring, bitstring, bitstring): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__Foo__Foo__x(
+    new_tests__legacy__attributes__lib__Foo__Foo(v_0, v_1, v_2)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__Foo__Foo__y(
+    new_tests__legacy__attributes__lib__Foo__Foo(v_0, v_1, v_2)
+  ) = v_1.
+reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
+  new_tests__legacy__attributes__lib__Foo__Foo__z(
+    new_tests__legacy__attributes__lib__Foo__Foo(v_0, v_1, v_2)
+  ) = v_2.
+(* src: src/legacy/attributes/lib.rs:97 new_tests__legacy__attributes__lib__FooConstGeneric *)
+(*  Regression test for https://github.com/cryspen/hax/issues/899: a refinement *)
+(*  on a struct field may mention a const generic (here `LEN`), both in a field *)
+(*  type and in the refinement formula itself. *)
+fun new_tests__legacy__attributes__lib__FooConstGeneric__FooConstGeneric(
+  bitstring,
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__attributes__lib__FooConstGeneric__FooConstGeneric__indices(
+    new_tests__legacy__attributes__lib__FooConstGeneric__FooConstGeneric(v_0, v_1)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__attributes__lib__FooConstGeneric__FooConstGeneric__length(
+    new_tests__legacy__attributes__lib__FooConstGeneric__FooConstGeneric(v_0, v_1)
+  ) = v_1.
+(* src: src/legacy/attributes/lib.rs:117 new_tests__legacy__attributes__lib__props *)
+letfun new_tests__legacy__attributes__lib__props(wildcard: bitstring) =
+  let wildcard: bitstring = hax_lib__assume(hax_lib__prop__Impl__from_bool(True())) in
+  let wildcard: bitstring = hax_lib__assert_prop(hax_lib__prop__Impl__from_bool(True())) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:212 new_tests__legacy__attributes__lib__inlined_code *)
+letfun new_tests__legacy__attributes__lib__inlined_code(foo: bitstring) =
+  let v_a = nat_lit(13) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:213 new_tests__legacy__attributes__lib__inlined_code__V *)
+const new_tests__legacy__attributes__lib__inlined_code__V: bitstring.
+(* src: src/legacy/attributes/lib.rs:229 new_tests__legacy__attributes__lib__mutliple_before_after *)
+letfun new_tests__legacy__attributes__lib__mutliple_before_after(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:232 new_tests__legacy__attributes__lib__some_function *)
+letfun new_tests__legacy__attributes__lib__some_function(wildcard: bitstring) =
+  core__convert__From__from(string_lit__hello_x20from_x20Rust).
+(* src: src/legacy/attributes/lib.rs:76 new_tests__legacy__attributes__lib__fib *)
+letfun new_tests__legacy__attributes__lib__fib(x: bitstring) =
+  let (=True()) = rust_primitives__hax__machine_int__le(x, nat_lit(2))
+    in x
+    else core__num__Impl_11__wrapping_add(
+      new_tests__legacy__attributes__lib__fib(
+        rust_primitives__hax__machine_int__sub(x, nat_lit(1))
+      ),
+      new_tests__legacy__attributes__lib__fib(rust_primitives__hax__machine_int__sub(x, nat_lit(2)))
+    ).
+(* src: src/legacy/attributes/lib.rs:422 new_tests__legacy__attributes__lib__verifcation_status__a_function_which_only_laxes *)
+letfun new_tests__legacy__attributes__lib__verifcation_status__a_function_which_only_laxes(
+  wildcard: bitstring
+) =
+  let (=True()) = core__ops__bit__Not__not_kw(False())
+    in bitstring_err()
+    else rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:428 new_tests__legacy__attributes__lib__verifcation_status__a_panicfree_function *)
+letfun new_tests__legacy__attributes__lib__verifcation_status__a_panicfree_function(
+  wildcard: bitstring
+) =
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__machine_int__add(nat_lit(3), nat_lit(6)).
+(* src: src/legacy/attributes/lib.rs:436 new_tests__legacy__attributes__lib__verifcation_status__another_panicfree_function *)
+letfun new_tests__legacy__attributes__lib__verifcation_status__another_panicfree_function(
+  wildcard: bitstring
+) =
+  let still_not_much = rust_primitives__hax__machine_int__add(nat_lit(0), nat_lit(0)) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:497 new_tests__legacy__attributes__lib__props__f *)
+letfun new_tests__legacy__attributes__lib__props__f(x: bitstring, y: bitstring) =
+  hax_lib__prop__constructors__not_kw(
+    hax_lib__prop__constructors__implies(
+      hax_lib__prop__constructors__or_kw(
+        hax_lib__prop__constructors__and(
+          hax_lib__prop__constructors__and(
+            hax_lib__prop__constructors__and(
+              hax_lib__prop__constructors__from_bool(y),
+              hax_lib__prop__constructors__from_bool(y)
+            ),
+            hax_lib__prop__constructors__from_bool(y)
+          ),
+          hax_lib__prop__constructors__from_bool(y)
+        ),
+        hax_lib__prop__constructors__from_bool(y)
+      ),
+      hax_lib__prop__constructors__and(
+        hax_lib__prop__constructors__forall_kw(
+          bitstring_err() (* Closures not supported in ProVerif *)
+        ),
+        hax_lib__prop__constructors__exists(
+          bitstring_err() (* Closures not supported in ProVerif *)
+        )
+      )
+    )
+  ).
+(* src: src/legacy/attributes/lib.rs:58 new_tests__legacy__attributes__lib__postprocess_with__somewhere__some_hypothetical_tactic *)
 letfun new_tests__legacy__attributes__lib__postprocess_with__somewhere__some_hypothetical_tactic(
-         some_param : nat
-       ) =
-       ().
-
-letfun new_tests__legacy__attributes__lib__postprocess_with__f(
-         wildcard14 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__attributes__lib__postprocess_with__g(
-         wildcard15 : bitstring
-       ) =
-       ().
-
+  some_param: bitstring
+) = rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:55 new_tests__legacy__attributes__lib__postprocess_with__f *)
+letfun new_tests__legacy__attributes__lib__postprocess_with__f(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:63 new_tests__legacy__attributes__lib__postprocess_with__g *)
+letfun new_tests__legacy__attributes__lib__postprocess_with__g(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:412 new_tests__legacy__attributes__lib__inlined_code_ensures_requires__increment_array *)
+letfun new_tests__legacy__attributes__lib__inlined_code_ensures_requires__increment_array(
+  v: bitstring
+) =
+  let v_1 = rust_primitives__hax__monomorphized_update_at__update_at_usize(
+    v,
+    nat_lit(0),
+    rust_primitives__hax__machine_int__add(
+      core__ops__index__Index__index(v, nat_lit(0)),
+      nat_lit(1)
+    )
+  ) in
+  let v_2 = rust_primitives__hax__monomorphized_update_at__update_at_usize(
+    v_1,
+    nat_lit(1),
+    rust_primitives__hax__machine_int__add(
+      core__ops__index__Index__index(v_1, nat_lit(1)),
+      nat_lit(1)
+    )
+  ) in
+  let v_3 = rust_primitives__hax__monomorphized_update_at__update_at_usize(
+    v_2,
+    nat_lit(2),
+    rust_primitives__hax__machine_int__add(
+      core__ops__index__Index__index(v_2, nat_lit(2)),
+      nat_lit(1)
+    )
+  ) in
+  rust_primitives__hax__monomorphized_update_at__update_at_usize(
+    v_3,
+    nat_lit(3),
+    rust_primitives__hax__machine_int__add(
+      core__ops__index__Index__index(v_3, nat_lit(3)),
+      nat_lit(1)
+    )
+  ).
+(* src: src/legacy/attributes/lib.rs:34 new_tests__legacy__attributes__lib__ensures_on_arity_zero_fns__doing_nothing *)
+letfun new_tests__legacy__attributes__lib__ensures_on_arity_zero_fns__doing_nothing(
+  wildcard: bitstring
+) = rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/attributes/lib.rs:37 new_tests__legacy__attributes__lib__ensures_on_arity_zero_fns__basically_a_constant *)
+letfun new_tests__legacy__attributes__lib__ensures_on_arity_zero_fns__basically_a_constant(
+  wildcard: bitstring
+) = nat_lit(127).

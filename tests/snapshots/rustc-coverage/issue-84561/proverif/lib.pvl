@@ -419,8 +419,9 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/issue-84561.rs:158 new_tests__rustc_coverage__issue_84561__test1 *)
-(*  @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), proverif(HAX0002, HAX0008, HAX0008, HAX0008), lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008) *)
+(* src: src/rustc-coverage/issue-84561.rs:160 new_tests__rustc_coverage__issue_84561__test1 *)
+(*  @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0002) *)
 letfun new_tests__rustc_coverage__issue_84561__test1(wildcard: bitstring) =
   let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
     in (let wildcard: bitstring = std__io__stdio__u_print(
@@ -462,7 +463,7 @@ letfun new_tests__rustc_coverage__issue_84561__test1(wildcard: bitstring) =
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/issue-84561.rs:172 new_tests__rustc_coverage__issue_84561__test2__call_print *)
+(* src: src/rustc-coverage/issue-84561.rs:174 new_tests__rustc_coverage__issue_84561__test2__call_print *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__issue_84561__test2__call_print(s: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
@@ -475,8 +476,9 @@ letfun new_tests__rustc_coverage__issue_84561__test2__call_print(s: bitstring) =
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/issue-84561.rs:182 new_tests__rustc_coverage__issue_84561__test2 *)
-(*  @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008), lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008) *)
+(* src: src/rustc-coverage/issue-84561.rs:185 new_tests__rustc_coverage__issue_84561__test2 *)
+(*  @fail(extraction): ssprove(HAX0008), coq(HAX0008), lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008) *)
 letfun new_tests__rustc_coverage__issue_84561__test2(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__issue_84561__test2__call_print(
     string_lit__called_x20from_x20call_debug_x3a_x20
@@ -491,7 +493,7 @@ letfun new_tests__rustc_coverage__issue_84561__test2(wildcard: bitstring) =
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/issue-84561.rs:186 new_tests__rustc_coverage__issue_84561__main *)
+(* src: src/rustc-coverage/issue-84561.rs:189 new_tests__rustc_coverage__issue_84561__main *)
 letfun new_tests__rustc_coverage__issue_84561__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__issue_84561__test1(
     rust_primitives__hax__Tuple0__Tuple0

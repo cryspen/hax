@@ -1,0 +1,18 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* DIAGNOSTIC, not part of the model. Each symbol below is       *)
+(* referenced by lib.pvl but has no definition (and is not in    *)
+(* primitives.pvl). Supply a real one by hand, or by extracting  *)
+(* the crate that owns it (e.g. a separately-extracted           *)
+(* dependency). Declared WITHOUT `[data]` because the real       *)
+(* nature (one-way fun / data constructor / letfun) is unknown.  *)
+(* GOAL: this file is EMPTY.                                     *)
+(*****************************************************************)
+const new_tests__legacy__naming__lib__FooTrait__ASSOCIATED_CONSTANT: bitstring.
+fun rust_primitives__hax__Tuple2__Tuple2__0(bitstring): bitstring.
+fun rust_primitives__hax__Tuple2__Tuple2__1(bitstring): bitstring.
+const string_lit___x0a: bitstring.
+const string_lit___x5b: bitstring.
+const string_lit___x5d_x20a_x3d: bitstring.
+const string_lit__explicit_x20panic: bitstring.

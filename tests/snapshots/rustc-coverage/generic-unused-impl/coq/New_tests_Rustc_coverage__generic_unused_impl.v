@@ -33,7 +33,7 @@ Class t_Foo (v_Self : Type) : Type :=
   }.
 Arguments t_Foo (_).
 
-Instance t_From_176612673 `{v_T : Type} `{t_Foo (v_T)} : t_From ((t_W ((v_T)))) ((t_Array (f_Assoc) ((1 : t_usize)))) :=
+Instance t_From_717185663 `{v_T : Type} `{t_Foo (v_T)} : t_From ((t_W ((v_T)))) ((t_Array (f_Assoc) ((1 : t_usize)))) :=
   {
     implaabbcc_t_From_f_from := fun  (from : t_Array (f_Assoc) ((1 : t_usize)))=>
       failure (("something is not implemented yet.

@@ -189,8 +189,9 @@ letfun new_tests__rustc_coverage__bad_counter_ids__ne_bad_message(wildcard: bits
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:61 new_tests__rustc_coverage__bad_counter_ids__main *)
-(*  @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008), proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008) *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:62 new_tests__rustc_coverage__bad_counter_ids__main *)
+(*  @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008) *)
 letfun new_tests__rustc_coverage__bad_counter_ids__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__bad_counter_ids__eq_good(
     rust_primitives__hax__Tuple0__Tuple0

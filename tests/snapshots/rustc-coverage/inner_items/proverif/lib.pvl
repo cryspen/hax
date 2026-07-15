@@ -1,105 +1,83 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__rustc_coverage__inner_items__main__t_InStruct.
-
-fun new_tests__rustc_coverage__inner_items__main__t_InStruct_to_bitstring(
-      new_tests__rustc_coverage__inner_items__main__t_InStruct
+(* src: src/rustc-coverage/inner_items.rs:17 new_tests__rustc_coverage__inner_items__main__in_mod__IN_MOD_CONST *)
+const new_tests__rustc_coverage__inner_items__main__in_mod__IN_MOD_CONST: bitstring.
+(* src: src/rustc-coverage/inner_items.rs:21 new_tests__rustc_coverage__inner_items__main__in_func *)
+(*  @fail(extraction): ssprove(HAX0001) *)
+letfun new_tests__rustc_coverage__inner_items__main__in_func(a: bitstring) =
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__c_x20_x3d_x20, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_display(
+        rust_primitives__hax__Tuple1__Tuple1__0(
+          rust_primitives__hax__Tuple1__Tuple1(
+            rust_primitives__hax__machine_int__add(a, nat_lit(1))
+          )
+        )
+      ), rust_primitives__hax__array_nil())
     )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__inner_items__main__t_InStruct_from_bitstring(
-      bitstring
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/inner_items.rs:27 new_tests__rustc_coverage__inner_items__main__InStruct *)
+fun new_tests__rustc_coverage__inner_items__main__InStruct__InStruct(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__rustc_coverage__inner_items__main__InStruct__InStruct__in_struct_field(
+    new_tests__rustc_coverage__inner_items__main__InStruct__InStruct(v_0)
+  ) = v_0.
+(* src: src/rustc-coverage/inner_items.rs:31 new_tests__rustc_coverage__inner_items__main__IN_CONST *)
+const new_tests__rustc_coverage__inner_items__main__IN_CONST: bitstring.
+
+
+(* src: src/rustc-coverage/inner_items.rs:44 new_tests__rustc_coverage__inner_items__main__Impl__trait_func *)
+letfun new_tests__rustc_coverage__inner_items__main__Impl__trait_func(
+  self: bitstring,
+  incr: bitstring
+) =
+  let self_1 = new_tests__rustc_coverage__inner_items__main__InStruct__InStruct(
+    rust_primitives__hax__machine_int__add(
+      new_tests__rustc_coverage__inner_items__main__InStruct__InStruct__in_struct_field(self),
+      incr
     )
-    : new_tests__rustc_coverage__inner_items__main__t_InStruct [typeConverter].
-const new_tests__rustc_coverage__inner_items__main__t_InStruct_default_value: new_tests__rustc_coverage__inner_items__main__t_InStruct.
-letfun new_tests__rustc_coverage__inner_items__main__t_InStruct_default() =
-       new_tests__rustc_coverage__inner_items__main__t_InStruct_default_value.
-letfun new_tests__rustc_coverage__inner_items__main__t_InStruct_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__inner_items__main__t_InStruct_default_value.
-fun new_tests__rustc_coverage__inner_items__C_main__InStruct(nat)
-    : new_tests__rustc_coverage__inner_items__main__t_InStruct [data].
-reduc forall 
-  new_tests__rustc_coverage__inner_items__main__f_in_struct_field: nat
-;
-    accessor_new_tests__rustc_coverage__inner_items__main__t_InStruct_new_tests__rustc_coverage__inner_items__main__f_in_struct_field(
-      new_tests__rustc_coverage__inner_items__C_main__InStruct(
-        new_tests__rustc_coverage__inner_items__main__f_in_struct_field
-      )
-    ) = new_tests__rustc_coverage__inner_items__main__f_in_struct_field.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-const new_tests__rustc_coverage__inner_items__main__t_in_mod__v_IN_MOD_CONST: bitstring.
-
-letfun new_tests__rustc_coverage__inner_items__main__in_func(a : nat) =
-       let b = (1) in
-       let c = (core_models__ops__arith__f_add(a, b)) in
-       let args = ((c)) in
-       let args = ([core_models__fmt__rt__impl__new_display(args.0)]) in
-       let wildcard1: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["c = ","
-"], args)
-         )
-       ) in
-       ().
-
-const new_tests__rustc_coverage__inner_items__main__v_IN_CONST: bitstring.
-
-letfun new_tests__rustc_coverage__inner_items__main(wildcard4 : bitstring) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (0) in
-       let countdown = (
-         if is_true
-         then
-           (let countdown = (10) in
-            countdown)
-         else (countdown)
-       ) in
-       let wildcard3: bitstring = (
-         if is_true
-         then
-           (let wildcard2: bitstring = (
-              new_tests__rustc_coverage__inner_items__main__in_func(countdown)
-            ) in
-            ())
-         else (())
-       ) in
-       let val = (new_tests__rustc_coverage__inner_items__C_main__InStruct(101)) in
-       let val = (
-         new_tests__rustc_coverage__inner_items__main__f_default_trait_func(val)
-       ) in
-       ().
-
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__inner_items__main__in_func(
+    new_tests__rustc_coverage__inner_items__main__InStruct__InStruct__in_struct_field(self_1)
+  ) in
+  self_1.
+(* src: src/rustc-coverage/inner_items.rs:5 new_tests__rustc_coverage__inner_items__main *)
+letfun new_tests__rustc_coverage__inner_items__main(wildcard: bitstring) =
+  let is_true = rust_primitives__hax__machine_int__eq(
+    core__iter__traits__exact_size__ExactSizeIterator__len(
+      std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+    ),
+    nat_lit(1)
+  ) in
+  let countdown_2 = (let (=True()) = is_true in nat_lit(10) else nat_lit(0)) in
+  let wildcard: bitstring = (let (=True()) = is_true
+    in (let wildcard: bitstring = new_tests__rustc_coverage__inner_items__main__in_func(
+      countdown_2
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let val_1 = new_tests__rustc_coverage__inner_items__main__InTrait__default_trait_func(
+    new_tests__rustc_coverage__inner_items__main__InStruct__InStruct(nat_lit(101))
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

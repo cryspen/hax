@@ -19,18 +19,21 @@
   definition that was silently stubbed out.
 *)
 
-(* src: src/rustc-coverage/unreachable.rs:16 new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE *)
-(*  @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008) *)
+(* src: src/rustc-coverage/unreachable.rs:17 new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE *)
+(*  @fail(extraction): ssprove(HAX0008), coq(HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008) *)
 const new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE: bitstring.
-(* src: src/rustc-coverage/unreachable.rs:19 new_tests__rustc_coverage__unreachable__unreachable_function *)
-(*  @fail(extraction): coq(HAX0008), ssprove(HAX0008), proverif(HAX0008) *)
+(* src: src/rustc-coverage/unreachable.rs:21 new_tests__rustc_coverage__unreachable__unreachable_function *)
+(*  @fail(extraction): coq(HAX0008), ssprove(HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008) *)
 letfun new_tests__rustc_coverage__unreachable__unreachable_function(wildcard: bitstring) =
   bitstring_err() (* error node *).
-(* src: src/rustc-coverage/unreachable.rs:25 new_tests__rustc_coverage__unreachable__unreachable_intrinsic *)
-(*  @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008) *)
+(* src: src/rustc-coverage/unreachable.rs:28 new_tests__rustc_coverage__unreachable__unreachable_intrinsic *)
+(*  @fail(extraction): ssprove(HAX0008), coq(HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008) *)
 letfun new_tests__rustc_coverage__unreachable__unreachable_intrinsic(wildcard: bitstring) =
   bitstring_err() (* error node *).
-(* src: src/rustc-coverage/unreachable.rs:30 new_tests__rustc_coverage__unreachable__main *)
+(* src: src/rustc-coverage/unreachable.rs:33 new_tests__rustc_coverage__unreachable__main *)
 letfun new_tests__rustc_coverage__unreachable__main(wildcard: bitstring) =
   let wildcard: bitstring = (let (=True()) = core__hint__black_box(False())
     in (let wildcard: bitstring = new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE(

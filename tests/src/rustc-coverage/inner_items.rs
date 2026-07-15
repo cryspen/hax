@@ -30,7 +30,7 @@ fn main() {
 
     const IN_CONST: u32 = 1234;
 
-/// @fail(extraction): ssprove(HAX0008), fstar(HAX0008), proverif(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), fstar(HAX0008), coq(HAX0008)
     trait InTrait {
         fn trait_func(&mut self, incr: u32);
 

@@ -19,8 +19,9 @@
   definition that was silently stubbed out.
 *)
 
-(* src: src/rustc-coverage/auxiliary/executor.rs:12 new_tests__rustc_coverage__auxiliary__executor__block_on *)
+(* src: src/rustc-coverage/auxiliary/executor.rs:13 new_tests__rustc_coverage__auxiliary__executor__block_on *)
 (*  Dummy "executor" that just repeatedly polls a future until it's ready. *)
-(*  @fail(extraction): fstar(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), ssprove(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008), coq(HAX0008, HAX0003, HAX0003, HAX0003, HAX0003), lean(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), proverif(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008) *)
+(*  @fail(extraction): fstar(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), ssprove(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008), coq(HAX0008, HAX0003, HAX0003, HAX0003, HAX0003), lean(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003) *)
+(*  @fail(extraction): proverif(HAX0008, HAX0003, HAX0003, HAX0003, HAX0003) *)
 letfun new_tests__rustc_coverage__auxiliary__executor__block_on(future: bitstring) =
   bitstring_err() (* error node *).

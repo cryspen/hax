@@ -19,11 +19,12 @@
   definition that was silently stubbed out.
 *)
 
-(* src: src/rustc-coverage/mcdc/condition-limit.rs:7 new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions *)
-(*  @fail(extraction): coq(HAX0001), proverif(HAX0001), fstar(HAX0001), ssprove(HAX0001), lean(HAX0001) *)
+(* src: src/rustc-coverage/mcdc/condition-limit.rs:8 new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions *)
+(*  @fail(extraction): coq(HAX0001), fstar(HAX0001), ssprove(HAX0001), lean(HAX0001) *)
+(*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions(bool_arr: bitstring) =
   bitstring_err() (* error node *).
-(* src: src/rustc-coverage/mcdc/condition-limit.rs:15 new_tests__rustc_coverage__mcdc__condition_limit__main *)
+(* src: src/rustc-coverage/mcdc/condition-limit.rs:16 new_tests__rustc_coverage__mcdc__condition_limit__main *)
 letfun new_tests__rustc_coverage__mcdc__condition_limit__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions(
     rust_primitives__hax__repeat(False(), nat_lit(7))
