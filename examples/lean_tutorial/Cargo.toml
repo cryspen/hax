@@ -1,5 +1,5 @@
 [package]
-name = "legacy_lean_tutorial"
+name = "lean_tutorial"
 version = "0.1.0"
 
 [dependencies]
