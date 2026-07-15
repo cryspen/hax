@@ -406,7 +406,8 @@ pub fn run(
     }
     .report(message_format, None);
 
-    // We run aeneas with `-split-files` so it emits the function and type files
+    // We run aeneas with `-core-models-lib` so it uses hax's core models library
+    // for the translation, `-split-files` so it emits the function and type files
     // (`Funs.lean`/`Types.lean`, and any proof-obligation / external-template
     // files) separately, and `-subdir <PkgName>/Extraction` so they land in
     // `<lean_dir>/<PkgName>/Extraction/` with import paths prefixed by
@@ -416,6 +417,7 @@ pub fn run(
     aeneas_cmd.args([
         "-backend",
         "lean",
+        "-core-models-lib",
         "-split-files",
         "-specs",
         "hax",

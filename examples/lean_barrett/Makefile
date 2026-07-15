@@ -1,7 +1,7 @@
 .PHONY:  lean clean
 
 lean:
-	cargo hax into lean --aeneas-args="-core-models-lib"
+	cargo hax into lean
 	(cd proofs/lean && \
    lake exe cache get && \
    lake build)
