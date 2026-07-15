@@ -9,13 +9,17 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring [data].
-
+(* src: src/legacy/tuples/lib.rs:4 new_tests__legacy__tuples__lib__project_tuple1 *)
+(*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__tuples__lib__project_tuple1(wildcard: bitstring) =
-let tuple1 = (rust_primitives__hax__Tuple1__Tuple1(nat_lit(3))) in
-  rust_primitives__hax__Tuple1__Tuple1__0(tuple1).
+  rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(nat_lit(3))).

@@ -1,79 +1,60 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__rustc_coverage__drop_trait__t_Firework.
-
-fun new_tests__rustc_coverage__drop_trait__t_Firework_to_bitstring(
-      new_tests__rustc_coverage__drop_trait__t_Firework
+(* src: src/rustc-coverage/drop_trait.rs:5 new_tests__rustc_coverage__drop_trait__Firework *)
+fun new_tests__rustc_coverage__drop_trait__Firework__Firework(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__rustc_coverage__drop_trait__Firework__Firework__strength(
+    new_tests__rustc_coverage__drop_trait__Firework__Firework(v_0)
+  ) = v_0.
+(*  @fail(extraction): ssprove(HAX0001) *)
+(* src: src/rustc-coverage/drop_trait.rs:11 new_tests__rustc_coverage__drop_trait__Impl__drop *)
+letfun new_tests__rustc_coverage__drop_trait__Impl__drop(self: bitstring) =
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__BOOM_x20times_x20, rust_primitives__hax__array_cons(string_lit___x21_x21_x21_x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_display(
+        rust_primitives__hax__Tuple1__Tuple1__0(
+          rust_primitives__hax__Tuple1__Tuple1(
+            new_tests__rustc_coverage__drop_trait__Firework__Firework__strength(self)
+          )
+        )
+      ), rust_primitives__hax__array_nil())
     )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__drop_trait__t_Firework_from_bitstring(bitstring)
-    : new_tests__rustc_coverage__drop_trait__t_Firework [typeConverter].
-const new_tests__rustc_coverage__drop_trait__t_Firework_default_value: new_tests__rustc_coverage__drop_trait__t_Firework.
-letfun new_tests__rustc_coverage__drop_trait__t_Firework_default() =
-       new_tests__rustc_coverage__drop_trait__t_Firework_default_value.
-letfun new_tests__rustc_coverage__drop_trait__t_Firework_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__drop_trait__t_Firework_default_value.
-fun new_tests__rustc_coverage__drop_trait__Firework(nat)
-    : new_tests__rustc_coverage__drop_trait__t_Firework [data].
-reduc forall new_tests__rustc_coverage__drop_trait__f_strength: nat;
-    accessor_new_tests__rustc_coverage__drop_trait__t_Firework_new_tests__rustc_coverage__drop_trait__f_strength(
-      new_tests__rustc_coverage__drop_trait__Firework(
-        new_tests__rustc_coverage__drop_trait__f_strength
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  self.
+(* src: src/rustc-coverage/drop_trait.rs:16 new_tests__rustc_coverage__drop_trait__main *)
+letfun new_tests__rustc_coverage__drop_trait__main(wildcard: bitstring) =
+  let u_firecracker = new_tests__rustc_coverage__drop_trait__Firework__Firework(nat_lit(1)) in
+  let u_tnt = new_tests__rustc_coverage__drop_trait__Firework__Firework(nat_lit(100)) in
+  let (=True()) = True()
+    in (let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__Exiting_x20with_x20error_x2e_x2e_x2e_x0a, rust_primitives__hax__array_nil())
       )
-    ) = new_tests__rustc_coverage__drop_trait__f_strength.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__drop_trait__main(wildcard5 : bitstring) =
-       let e_firecracker = (new_tests__rustc_coverage__drop_trait__Firework(1)) in
-       let e_tnt = (new_tests__rustc_coverage__drop_trait__Firework(100)) in
-       let wildcard4: bitstring = (
-         if true
-         then
-           (let wildcard3: bitstring = (
-              std__io__stdio__e_print(
-                core_models__fmt__rt__impl_1__new_const(
-                  ["Exiting with error...
-"]
-                )
-              )
-            ) in
-            let wildcard2: bitstring = (()) in
-            let hoist1 = (todo return;) in
-            bitstring_err())
-         else (())
-       ) in
-       let wildcard1: bitstring = (
-         new_tests__rustc_coverage__drop_trait__Firework(1000)
-       ) in
-       ().
-
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    bitstring_err())
+    else (let wildcard: bitstring = new_tests__rustc_coverage__drop_trait__Firework__Firework(
+      nat_lit(1000)
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0()).

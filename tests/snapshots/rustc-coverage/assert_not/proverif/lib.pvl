@@ -9,20 +9,34 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__panicking__panic(bitstring): bitstring [data].
-const string_lit__assertion_x20failed_x3a_x20_x21_x21_x21false: bitstring.
-const string_lit__assertion_x20failed_x3a_x20_x21_x21true: bitstring.
-const string_lit__assertion_x20failed_x3a_x20_x21false: bitstring.
-const string_lit__assertion_x20failed_x3a_x20true: bitstring.
-
+(* src: src/rustc-coverage/assert_not.rs:7 new_tests__rustc_coverage__assert_not__main *)
 letfun new_tests__rustc_coverage__assert_not__main(wildcard: bitstring) =
-let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(True()) in (bitstring_err()) else (rust_primitives__hax__Tuple0__Tuple0)) in
-  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(False())) in (bitstring_err()) else (rust_primitives__hax__Tuple0__Tuple0)) in
-  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(True()))) in (bitstring_err()) else (rust_primitives__hax__Tuple0__Tuple0)) in
-  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(False())))) in (bitstring_err()) else (rust_primitives__hax__Tuple0__Tuple0)) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(True())
+    in bitstring_err()
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
+      core__ops__bit__Not__not_kw(False())
+    )
+    in bitstring_err()
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
+      core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(True()))
+    )
+    in bitstring_err()
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
+      core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(False())))
+    )
+    in bitstring_err()
+    else rust_primitives__hax__Tuple0__Tuple0) in
   rust_primitives__hax__Tuple0__Tuple0.

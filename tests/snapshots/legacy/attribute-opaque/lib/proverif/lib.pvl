@@ -9,27 +9,40 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
 
 
-
+(* src: src/legacy/attribute-opaque/lib.rs:17 new_tests__legacy__attribute_opaque__lib__f_generic *)
 (* opaque *)
 fun new_tests__legacy__attribute_opaque__lib__f_generic(bitstring): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:22 new_tests__legacy__attribute_opaque__lib__f *)
 (* opaque *)
-fun new_tests__legacy__attribute_opaque__lib__f(bitstring,
-bitstring): bitstring [data].
+fun new_tests__legacy__attribute_opaque__lib__f(bitstring, bitstring): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:29 new_tests__legacy__attribute_opaque__lib__f_pre_post *)
 (* opaque *)
-fun new_tests__legacy__attribute_opaque__lib__f_pre_post(bitstring,
-bitstring): bitstring [data].
+fun new_tests__legacy__attribute_opaque__lib__f_pre_post(bitstring, bitstring): bitstring [data].
 
 
 
 
+(* src: src/legacy/attribute-opaque/lib.rs:74 new_tests__legacy__attribute_opaque__lib__C *)
 const new_tests__legacy__attribute_opaque__lib__C: bitstring.
+(* src: src/legacy/attribute-opaque/lib.rs:76 new_tests__legacy__attribute_opaque__lib__S1 *)
 fun new_tests__legacy__attribute_opaque__lib__S1__S1(): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:80 new_tests__legacy__attribute_opaque__lib__Impl__f_s1 *)
 (* opaque *)
 fun new_tests__legacy__attribute_opaque__lib__Impl__f_s1(bitstring): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:83 new_tests__legacy__attribute_opaque__lib__S2 *)
 fun new_tests__legacy__attribute_opaque__lib__S2__S2(): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:87 new_tests__legacy__attribute_opaque__lib__Impl_3__f_s2 *)
 (* opaque *)
 fun new_tests__legacy__attribute_opaque__lib__Impl_3__f_s2(bitstring): bitstring [data].

@@ -9,60 +9,107 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun alloc__vec__Impl_1__len(bitstring): bitstring [data].
-fun core__ops__index__Index__index(bitstring, bitstring): bitstring [data].
-fun core__result__Result__Err(bitstring): bitstring [data].
-fun core__result__Result__Ok(bitstring): bitstring [data].
-const hax_lib_protocol__ProtocolError__InvalidMessage: bitstring.
-const hax_lib_protocol__ProtocolError__InvalidPrologue: bitstring.
-
+(* src: src/legacy/proverif-ping-pong/lib.rs:8 new_tests__legacy__proverif_ping_pong__lib__Message *)
 fun new_tests__legacy__proverif_ping_pong__lib__Message__Ping(bitstring): bitstring [data].
-reduc forall new_tests__legacy__proverif_ping_pong__lib__Message__Ping__0_v: bitstring;
-  new_tests__legacy__proverif_ping_pong__lib__Message__Ping__0(new_tests__legacy__proverif_ping_pong__lib__Message__Ping(new_tests__legacy__proverif_ping_pong__lib__Message__Ping__0_v)) = new_tests__legacy__proverif_ping_pong__lib__Message__Ping__0_v.
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_ping_pong__lib__Message__Ping__0(
+    new_tests__legacy__proverif_ping_pong__lib__Message__Ping(v_0)
+  ) = v_0.
 fun new_tests__legacy__proverif_ping_pong__lib__Message__Pong(bitstring): bitstring [data].
-reduc forall new_tests__legacy__proverif_ping_pong__lib__Message__Pong__0_v: bitstring;
-  new_tests__legacy__proverif_ping_pong__lib__Message__Pong__0(new_tests__legacy__proverif_ping_pong__lib__Message__Pong(new_tests__legacy__proverif_ping_pong__lib__Message__Pong__0_v)) = new_tests__legacy__proverif_ping_pong__lib__Message__Pong__0_v.
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_ping_pong__lib__Message__Pong__0(
+    new_tests__legacy__proverif_ping_pong__lib__Message__Pong(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-ping-pong/b.rs:6 new_tests__legacy__proverif_ping_pong__lib__b__B0 *)
 fun new_tests__legacy__proverif_ping_pong__lib__b__B0__B0(): bitstring [data].
+(* src: src/legacy/proverif-ping-pong/b.rs:8 new_tests__legacy__proverif_ping_pong__lib__b__B1 *)
 fun new_tests__legacy__proverif_ping_pong__lib__b__B1__B1(bitstring): bitstring [data].
-reduc forall new_tests__legacy__proverif_ping_pong__lib__b__B1__B1__received_v: bitstring;
-  new_tests__legacy__proverif_ping_pong__lib__b__B1__B1__received(new_tests__legacy__proverif_ping_pong__lib__b__B1__B1(new_tests__legacy__proverif_ping_pong__lib__b__B1__B1__received_v)) = new_tests__legacy__proverif_ping_pong__lib__b__B1__B1__received_v.
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_ping_pong__lib__b__B1__B1__received(
+    new_tests__legacy__proverif_ping_pong__lib__b__B1__B1(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-ping-pong/b.rs:13 new_tests__legacy__proverif_ping_pong__lib__b__B1alt *)
 fun new_tests__legacy__proverif_ping_pong__lib__b__B1alt__B1alt(): bitstring [data].
+(* src: src/legacy/proverif-ping-pong/b.rs:15 new_tests__legacy__proverif_ping_pong__lib__b__B2 *)
 fun new_tests__legacy__proverif_ping_pong__lib__b__B2__B2(): bitstring [data].
+(* src: src/legacy/proverif-ping-pong/b.rs:19 new_tests__legacy__proverif_ping_pong__lib__b__init_b *)
 letfun new_tests__legacy__proverif_ping_pong__lib__b__init_b(wildcard: bitstring) =
-new_tests__legacy__proverif_ping_pong__lib__b__B0__B0().
-letfun new_tests__legacy__proverif_ping_pong__lib__b__read_ping(u_state: bitstring,
-msg: bitstring) =
-let new_tests__legacy__proverif_ping_pong__lib__Message__Ping(received: bitstring) = msg in (new_tests__legacy__proverif_ping_pong__lib__b__B1__B1(received))
-  else let new_tests__legacy__proverif_ping_pong__lib__Message__Pong(wildcard: bitstring) = msg in (bitstring_err())
+  new_tests__legacy__proverif_ping_pong__lib__b__B0__B0().
+(* src: src/legacy/proverif-ping-pong/b.rs:37 new_tests__legacy__proverif_ping_pong__lib__b__read_ping *)
+letfun new_tests__legacy__proverif_ping_pong__lib__b__read_ping(
+  u_state: bitstring,
+  msg: bitstring
+) =
+  let new_tests__legacy__proverif_ping_pong__lib__Message__Ping(received: bitstring) = msg in
+    new_tests__legacy__proverif_ping_pong__lib__b__B1__B1(received)
+  else let new_tests__legacy__proverif_ping_pong__lib__Message__Pong(wildcard: bitstring) = msg in
+    bitstring_err()
   else bitstring_err().
-letfun new_tests__legacy__proverif_ping_pong__lib__b__read_ping_alt(u_state: bitstring,
-msg: bitstring) =
-let new_tests__legacy__proverif_ping_pong__lib__Message__Ping(received: bitstring) = msg in (new_tests__legacy__proverif_ping_pong__lib__b__B1alt__B1alt())
+(* src: src/legacy/proverif-ping-pong/b.rs:63 new_tests__legacy__proverif_ping_pong__lib__b__read_ping_alt *)
+letfun new_tests__legacy__proverif_ping_pong__lib__b__read_ping_alt(
+  u_state: bitstring,
+  msg: bitstring
+) =
+  let new_tests__legacy__proverif_ping_pong__lib__Message__Ping(received: bitstring) = msg in
+    new_tests__legacy__proverif_ping_pong__lib__b__B1alt__B1alt()
   else bitstring_err().
+(* src: src/legacy/proverif-ping-pong/b.rs:89 new_tests__legacy__proverif_ping_pong__lib__b__write_pong *)
 letfun new_tests__legacy__proverif_ping_pong__lib__b__write_pong(state: bitstring) =
-rust_primitives__hax__Tuple2__Tuple2(new_tests__legacy__proverif_ping_pong__lib__b__B2__B2(),
-  new_tests__legacy__proverif_ping_pong__lib__Message__Pong(new_tests__legacy__proverif_ping_pong__lib__b__B1__B1__received(state))).
+  rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__legacy__proverif_ping_pong__lib__b__B2__B2(),
+    new_tests__legacy__proverif_ping_pong__lib__Message__Pong(
+      new_tests__legacy__proverif_ping_pong__lib__b__B1__B1__received(state)
+    )
+  ).
+(* src: src/legacy/proverif-ping-pong/a.rs:6 new_tests__legacy__proverif_ping_pong__lib__a__A0 *)
 fun new_tests__legacy__proverif_ping_pong__lib__a__A0__A0(bitstring): bitstring [data].
-reduc forall new_tests__legacy__proverif_ping_pong__lib__a__A0__A0__data_v: bitstring;
-  new_tests__legacy__proverif_ping_pong__lib__a__A0__A0__data(new_tests__legacy__proverif_ping_pong__lib__a__A0__A0(new_tests__legacy__proverif_ping_pong__lib__a__A0__A0__data_v)) = new_tests__legacy__proverif_ping_pong__lib__a__A0__A0__data_v.
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_ping_pong__lib__a__A0__A0__data(
+    new_tests__legacy__proverif_ping_pong__lib__a__A0__A0(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-ping-pong/a.rs:10 new_tests__legacy__proverif_ping_pong__lib__a__A1 *)
 fun new_tests__legacy__proverif_ping_pong__lib__a__A1__A1(): bitstring [data].
+(* src: src/legacy/proverif-ping-pong/a.rs:12 new_tests__legacy__proverif_ping_pong__lib__a__A2 *)
 fun new_tests__legacy__proverif_ping_pong__lib__a__A2__A2(bitstring): bitstring [data].
-reduc forall new_tests__legacy__proverif_ping_pong__lib__a__A2__A2__received_v: bitstring;
-  new_tests__legacy__proverif_ping_pong__lib__a__A2__A2__received(new_tests__legacy__proverif_ping_pong__lib__a__A2__A2(new_tests__legacy__proverif_ping_pong__lib__a__A2__A2__received_v)) = new_tests__legacy__proverif_ping_pong__lib__a__A2__A2__received_v.
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_ping_pong__lib__a__A2__A2__received(
+    new_tests__legacy__proverif_ping_pong__lib__a__A2__A2(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-ping-pong/a.rs:19 new_tests__legacy__proverif_ping_pong__lib__a__init_a *)
 letfun new_tests__legacy__proverif_ping_pong__lib__a__init_a(prologue: bitstring) =
-let (=True()) = rust_primitives__hax__machine_int__lt(alloc__vec__Impl_1__len(prologue),
-  nat_lit(1)) in (bitstring_err()) else (new_tests__legacy__proverif_ping_pong__lib__a__A0__A0(core__ops__index__Index__index(prologue,
-  nat_lit(0)))).
+  let (=True()) = rust_primitives__hax__machine_int__lt(
+      alloc__vec__Impl_1__len(prologue),
+      nat_lit(1)
+    )
+    in bitstring_err()
+    else new_tests__legacy__proverif_ping_pong__lib__a__A0__A0(
+      core__ops__index__Index__index(prologue, nat_lit(0))
+    ).
+(* src: src/legacy/proverif-ping-pong/a.rs:50 new_tests__legacy__proverif_ping_pong__lib__a__write_ping *)
 letfun new_tests__legacy__proverif_ping_pong__lib__a__write_ping(state: bitstring) =
-rust_primitives__hax__Tuple2__Tuple2(new_tests__legacy__proverif_ping_pong__lib__a__A1__A1(),
-  new_tests__legacy__proverif_ping_pong__lib__Message__Ping(new_tests__legacy__proverif_ping_pong__lib__a__A0__A0__data(state))).
-letfun new_tests__legacy__proverif_ping_pong__lib__a__read_pong(u_state: bitstring,
-msg: bitstring) =
-let new_tests__legacy__proverif_ping_pong__lib__Message__Ping(wildcard: bitstring) = msg in (bitstring_err())
-  else let new_tests__legacy__proverif_ping_pong__lib__Message__Pong(received: bitstring) = msg in (new_tests__legacy__proverif_ping_pong__lib__a__A2__A2(received))
+  rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__legacy__proverif_ping_pong__lib__a__A1__A1(),
+    new_tests__legacy__proverif_ping_pong__lib__Message__Ping(
+      new_tests__legacy__proverif_ping_pong__lib__a__A0__A0__data(state)
+    )
+  ).
+(* src: src/legacy/proverif-ping-pong/a.rs:75 new_tests__legacy__proverif_ping_pong__lib__a__read_pong *)
+letfun new_tests__legacy__proverif_ping_pong__lib__a__read_pong(
+  u_state: bitstring,
+  msg: bitstring
+) =
+  let new_tests__legacy__proverif_ping_pong__lib__Message__Ping(wildcard: bitstring) = msg in
+    bitstring_err()
+  else let new_tests__legacy__proverif_ping_pong__lib__Message__Pong(received: bitstring) = msg in
+    new_tests__legacy__proverif_ping_pong__lib__a__A2__A2(received)
   else bitstring_err().

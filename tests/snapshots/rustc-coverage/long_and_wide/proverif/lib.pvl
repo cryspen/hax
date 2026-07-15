@@ -9,18 +9,35 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
+(* src: src/rustc-coverage/long_and_wide.rs:14 new_tests__rustc_coverage__long_and_wide__wide_function *)
 letfun new_tests__rustc_coverage__long_and_wide__wide_function(wildcard: bitstring) =
-let wildcard: bitstring = (rust_primitives__hax__Tuple0__Tuple0()) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0() in
   rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/long_and_wide.rs:16 new_tests__rustc_coverage__long_and_wide__long_function *)
 letfun new_tests__rustc_coverage__long_and_wide__long_function(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/long_and_wide.rs:150 new_tests__rustc_coverage__long_and_wide__far_function *)
 letfun new_tests__rustc_coverage__long_and_wide__far_function(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/long_and_wide.rs:7 new_tests__rustc_coverage__long_and_wide__main *)
 letfun new_tests__rustc_coverage__long_and_wide__main(wildcard: bitstring) =
-let wildcard: bitstring = (new_tests__rustc_coverage__long_and_wide__wide_function(rust_primitives__hax__Tuple0__Tuple0)) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__long_and_wide__long_function(rust_primitives__hax__Tuple0__Tuple0)) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__long_and_wide__far_function(rust_primitives__hax__Tuple0__Tuple0)) in
+  let wildcard: bitstring = new_tests__rustc_coverage__long_and_wide__wide_function(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__long_and_wide__long_function(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__long_and_wide__far_function(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.

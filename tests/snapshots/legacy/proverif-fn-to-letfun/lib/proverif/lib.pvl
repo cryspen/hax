@@ -9,36 +9,58 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
-fun new_tests__legacy__proverif_fn_to_letfun__lib__A__A(bitstring,
-bitstring): bitstring [data].
-reduc forall new_tests__legacy__proverif_fn_to_letfun__lib__A__A__x_v: bitstring,
-new_tests__legacy__proverif_fn_to_letfun__lib__A__A__y_v: bitstring;
-  new_tests__legacy__proverif_fn_to_letfun__lib__A__A__x(new_tests__legacy__proverif_fn_to_letfun__lib__A__A(new_tests__legacy__proverif_fn_to_letfun__lib__A__A__x_v,
-  new_tests__legacy__proverif_fn_to_letfun__lib__A__A__y_v)) = new_tests__legacy__proverif_fn_to_letfun__lib__A__A__x_v.
-reduc forall new_tests__legacy__proverif_fn_to_letfun__lib__A__A__x_v: bitstring,
-new_tests__legacy__proverif_fn_to_letfun__lib__A__A__y_v: bitstring;
-  new_tests__legacy__proverif_fn_to_letfun__lib__A__A__y(new_tests__legacy__proverif_fn_to_letfun__lib__A__A(new_tests__legacy__proverif_fn_to_letfun__lib__A__A__x_v,
-  new_tests__legacy__proverif_fn_to_letfun__lib__A__A__y_v)) = new_tests__legacy__proverif_fn_to_letfun__lib__A__A__y_v.
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:1 new_tests__legacy__proverif_fn_to_letfun__lib__A *)
+fun new_tests__legacy__proverif_fn_to_letfun__lib__A__A(bitstring, bitstring): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_fn_to_letfun__lib__A__A__x(
+    new_tests__legacy__proverif_fn_to_letfun__lib__A__A(v_0, v_1)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_fn_to_letfun__lib__A__A__y(
+    new_tests__legacy__proverif_fn_to_letfun__lib__A__A(v_0, v_1)
+  ) = v_1.
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:5 new_tests__legacy__proverif_fn_to_letfun__lib__B *)
 fun new_tests__legacy__proverif_fn_to_letfun__lib__B__B(bitstring): bitstring [data].
-reduc forall new_tests__legacy__proverif_fn_to_letfun__lib__B__B__b_v: bitstring;
-  new_tests__legacy__proverif_fn_to_letfun__lib__B__B__b(new_tests__legacy__proverif_fn_to_letfun__lib__B__B(new_tests__legacy__proverif_fn_to_letfun__lib__B__B__b_v)) = new_tests__legacy__proverif_fn_to_letfun__lib__B__B__b_v.
-letfun new_tests__legacy__proverif_fn_to_letfun__lib__some_function(wildcard: bitstring) =
-True().
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_fn_to_letfun__lib__B__B__b(
+    new_tests__legacy__proverif_fn_to_letfun__lib__B__B(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:9 new_tests__legacy__proverif_fn_to_letfun__lib__some_function *)
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__some_function(wildcard: bitstring) = True().
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:13 new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(b: bitstring) =
-nat_lit(5).
+  nat_lit(5).
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:17 new_tests__legacy__proverif_fn_to_letfun__lib__longer_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__longer_function(x: bitstring) =
-let b = (new_tests__legacy__proverif_fn_to_letfun__lib__some_function(rust_primitives__hax__Tuple0__Tuple0)) in
-  let d = (new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(b)) in
-  new_tests__legacy__proverif_fn_to_letfun__lib__A__A(nat_lit(12),
-  nat_lit(9)).
+  let d = new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(
+    new_tests__legacy__proverif_fn_to_letfun__lib__some_function(
+      rust_primitives__hax__Tuple0__Tuple0
+    )
+  ) in
+  new_tests__legacy__proverif_fn_to_letfun__lib__A__A(nat_lit(12), nat_lit(9)).
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:24 new_tests__legacy__proverif_fn_to_letfun__lib__another_longer_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__another_longer_function(wildcard: bitstring) =
-let b = (new_tests__legacy__proverif_fn_to_letfun__lib__some_function(rust_primitives__hax__Tuple0__Tuple0)) in
-  let d = (new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(b)) in
+  let d = new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(
+    new_tests__legacy__proverif_fn_to_letfun__lib__some_function(
+      rust_primitives__hax__Tuple0__Tuple0
+    )
+  ) in
   new_tests__legacy__proverif_fn_to_letfun__lib__B__B(False()).
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:31 new_tests__legacy__proverif_fn_to_letfun__lib__void_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__void_function(wildcard: bitstring) =
-let b = (new_tests__legacy__proverif_fn_to_letfun__lib__some_function(rust_primitives__hax__Tuple0__Tuple0)) in
-  let d = (new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(b)) in
+  let d = new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(
+    new_tests__legacy__proverif_fn_to_letfun__lib__some_function(
+      rust_primitives__hax__Tuple0__Tuple0
+    )
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.

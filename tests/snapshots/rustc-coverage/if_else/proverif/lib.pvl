@@ -9,20 +9,28 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__iter__traits__exact_size__ExactSizeIterator__len(bitstring): bitstring [data].
-fun std__env__args(bitstring): bitstring [data].
-
+(* src: src/rustc-coverage/if_else.rs:5 new_tests__rustc_coverage__if_else__main *)
 letfun new_tests__rustc_coverage__if_else__main(wildcard: bitstring) =
-let is_true = (rust_primitives__hax__machine_int__eq(core__iter__traits__exact_size__ExactSizeIterator__len(std__env__args(rust_primitives__hax__Tuple0__Tuple0)),
-  nat_lit(1))) in
-  let countdown = (nat_lit(0)) in
-  let countdown = (let (=True()) = is_true in (let countdown = (nat_lit(10)) in
-  countdown) else (nat_lit(100))) in
-  let (=True()) = is_true in (let countdown = (nat_lit(10)) in
-  rust_primitives__hax__Tuple0__Tuple0) else (let countdown = (nat_lit(100)) in
-  rust_primitives__hax__Tuple0__Tuple0).
+  let is_true = rust_primitives__hax__machine_int__eq(
+    core__iter__traits__exact_size__ExactSizeIterator__len(
+      std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+    ),
+    nat_lit(1)
+  ) in
+  let countdown = nat_lit(0) in
+  let countdown_2 = (let (=True()) = is_true in nat_lit(10) else nat_lit(100)) in
+  let (=True()) = is_true
+    in (let countdown_3 = nat_lit(10) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else (let countdown_4 = nat_lit(100) in
+    rust_primitives__hax__Tuple0__Tuple0).

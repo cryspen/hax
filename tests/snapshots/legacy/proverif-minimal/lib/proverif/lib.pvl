@@ -9,10 +9,16 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
-letfun new_tests__legacy__proverif_minimal__lib__add(left: bitstring,
-right: bitstring) =
-rust_primitives__hax__machine_int__add(left,
-  right).
+(* src: src/legacy/proverif-minimal/lib.rs:1 new_tests__legacy__proverif_minimal__lib__add *)
+letfun new_tests__legacy__proverif_minimal__lib__add(left: bitstring, right: bitstring) =
+  rust_primitives__hax__machine_int__add(left, right).
