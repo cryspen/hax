@@ -2525,13 +2525,22 @@ impl Backend for ProVerifBackend {
             // without this the printer hits them and emits a HAX0001 error.
             HoistDisjunctivePatterns.into(),
             SimplifyMatchReturn.into(),
+            // `LocalMutation` must run *before* the control-flow phases below.
+            // It is what threads a loop's mutable state into the `Loop` /
+            // `Break` / `Continue` nodes (`LoopState`), and
+            // `DropReturnBreakContinue` needs that state to encode `break` /
+            // `continue` into the `ControlFlow` enum. Ordered after them, those
+            // nodes instead survive into `dexpr'` and raise the HAX0002
+            // "Return/Break/Continue are expected to be gone as this point"
+            // fatal. Both the F* pipeline and the legacy OCaml ProVerif backend
+            // run it directly after `SimplifyMatchReturn`.
+            LocalMutation.into(),
             // Functionalize early-exit control flow (`return`/`break`/`continue`)
             // into if/match, like the F* backend — otherwise `if c { ...; return }`
             // / `let-else { ...; return }` reach the printer as unsupported
             // `ExprKind::Return`.
             RewriteControlFlow.into(),
             DropReturnBreakContinue.into(),
-            LocalMutation.into(),
             RejectContinue.into(),
             RejectDyn.into(),
             ReorderFields.into(),
