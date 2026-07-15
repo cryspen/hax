@@ -275,6 +275,14 @@ letfun rand_core__RngCore__fill_bytes(rng: bitstring, dest: bitstring) =
 letfun hax_lib__prop__constructors__from_bool(b: bitstring) = b.
 letfun hax_lib__assume(p: bitstring) = p.
 
+(* `identity` — the generic pass-through op referenced by
+   `#[hax_lib::symbolic_model("identity")]`. A byte-serializer of a *single* struct
+   is identity on the struct's term: the wire bytes carry the struct's own
+   symbolic value (its `[data]` constructor / accessors are auto-emitted), so
+   `serialize`/`deserialize` collapse to this. Multi-value combiners use a
+   `tupleN` op instead. *)
+letfun identity(x: bitstring) = x.
+
 (*****************************************************************)
 (*  std prelude — formerly synthesised by the auto-decl pass as  *)
 (*  invertible `[data]`. Made explicit here with real semantics  *)

@@ -63,6 +63,56 @@ identity_proc_macro_attribute!(
     lean_proof_method_bv_decide,
 );
 
+/// Non-hax build of `symbolic_model`. The ProVerif lowering is a no-op here
+/// (it only matters under `cfg(hax)` during extraction — see
+/// `implementation.rs`), but the **runtime tracer arm** must still be emitted:
+/// under `cfg(feature = "symbolic_trace")` this fn is recorded as a symbolic
+/// call named after its op, so a live `symbolic_trace::TracerSession` sees the
+/// same op the ProVerif model uses. Without the feature it is a plain identity.
+#[proc_macro_attribute]
+pub fn symbolic_model(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let op: LitStr = parse_macro_input!(attr);
+    let item_fn: ItemFn = parse_macro_input!(item as ItemFn);
+    // Skip the receiver and any `&mut` argument (out-param / RNG source) so the
+    // tracer's arg probe never sees a generic `&mut R` — mirrors the real macro.
+    let mut skip_toks: Vec<proc_macro2::TokenStream> = Vec::new();
+    if matches!(item_fn.sig.inputs.first(), Some(FnArg::Receiver(_))) {
+        skip_toks.push(quote!(self));
+    }
+    for arg in item_fn.sig.inputs.iter() {
+        if let FnArg::Typed(pt) = arg {
+            if matches!(&*pt.ty, syn::Type::Reference(r) if r.mutability.is_some()) {
+                if let syn::Pat::Ident(pi) = &*pt.pat {
+                    let id = &pi.ident;
+                    skip_toks.push(quote!(#id));
+                }
+            }
+        }
+    }
+    let skip_arm = if skip_toks.is_empty() {
+        quote!()
+    } else {
+        quote!(, skip(#(#skip_toks),*))
+    };
+    quote! {
+        #[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(symbolic, name = #op #skip_arm))]
+        #item_fn
+    }
+    .into()
+}
+
+/// Non-hax build of `symbolic_trace`. Emits the tracer's exit-event marker under
+/// `cfg(feature = "symbolic_trace")`; a plain identity otherwise.
+#[proc_macro_attribute]
+pub fn symbolic_trace(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let item_fn: ItemFn = parse_macro_input!(item as ItemFn);
+    quote! {
+        #[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(exit, skip))]
+        #item_fn
+    }
+    .into()
+}
+
 #[proc_macro]
 pub fn fstar_expr(_payload: TokenStream) -> TokenStream {
     quote! { () }.into()
