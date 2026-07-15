@@ -1,236 +1,216 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__branch__if__say(message : bitstring) =
-       let wildcard1: bitstring = (core_models__hint__black_box(message)) in
-       ().
-
-letfun new_tests__rustc_coverage__branch__if__branch_not(a : bool) =
-       let wildcard8: bitstring = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 1,
- })) {
- Tuple0
- }
- }"
-         )
-       ) in
-       let wildcard7: bitstring = (
-         if a then (new_tests__rustc_coverage__branch__if__say("a")) else (())
-       ) in
-       let wildcard6: bitstring = (
-         if core_models__ops__bit__f_not(a)
-         then
-           (let wildcard5: bitstring = (
-              new_tests__rustc_coverage__branch__if__say("not a")
-            ) in
-            ())
-         else (())
-       ) in
-       let wildcard4: bitstring = (
-         if core_models__ops__bit__f_not(core_models__ops__bit__f_not(a))
-         then
-           (let wildcard3: bitstring = (
-              new_tests__rustc_coverage__branch__if__say("not not a")
-            ) in
-            ())
-         else (())
-       ) in
-       if
-         core_models__ops__bit__f_not(
-             core_models__ops__bit__f_not(core_models__ops__bit__f_not(a))
-           )
-       then
-         (let wildcard2: bitstring = (
-            new_tests__rustc_coverage__branch__if__say("not not not a")
-          ) in
-          ())
-       else (()).
-
-letfun new_tests__rustc_coverage__branch__if__branch_not_as(a : bool) =
-       let wildcard14: bitstring = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 1,
- })) {
- Tuple0
- }
- }"
-         )
-       ) in
-       let wildcard13: bitstring = (
-         if core_models__ops__bit__f_not(a)
-         then
-           (let wildcard12: bitstring = (
-              new_tests__rustc_coverage__branch__if__say("not (a as bool)")
-            ) in
-            ())
-         else (())
-       ) in
-       let wildcard11: bitstring = (
-         if core_models__ops__bit__f_not(core_models__ops__bit__f_not(a))
-         then
-           (let wildcard10: bitstring = (
-              new_tests__rustc_coverage__branch__if__say("not not (a as bool)")
-            ) in
-            ())
-         else (())
-       ) in
-       if
-         core_models__ops__bit__f_not(
-             core_models__ops__bit__f_not(core_models__ops__bit__f_not(a))
-           )
-       then
-         (let wildcard9: bitstring = (
-            new_tests__rustc_coverage__branch__if__say("not not (a as bool)")
-          ) in
-          ())
-       else (()).
-
-letfun new_tests__rustc_coverage__branch__if__branch_and(a : bool, b : bool) =
-       let wildcard17: bitstring = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 1,
- })) {
- Tuple0
- }
- }"
-         )
-       ) in
-       if a && b
-       then
-         (let wildcard15: bitstring = (
-            new_tests__rustc_coverage__branch__if__say("both")
-          ) in
-          ())
-       else (
-         let wildcard16: bitstring = (
-           new_tests__rustc_coverage__branch__if__say("not both")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__branch__if__branch_or(a : bool, b : bool) =
-       let wildcard20: bitstring = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 1,
- })) {
- Tuple0
- }
- }"
-         )
-       ) in
-       if a || b
-       then
-         (let wildcard18: bitstring = (
-            new_tests__rustc_coverage__branch__if__say("either")
-          ) in
-          ())
-       else (
-         let wildcard19: bitstring = (
-           new_tests__rustc_coverage__branch__if__say("neither")
-         ) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__branch__if__main(wildcard22 : bitstring) =
-       let wildcard21: bitstring = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- for a in (core_models::iter::traits::collect::f_into_iter([false, true, true])) {
- {
- let _: tuple0 = { new_tests::rustc_coverage__branch__if::branch_not(a) };
- {
- let _: tuple0 = {
- new_tests::rus..."
-         )
-       ) in
-       (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- for a in (core_models::iter::traits::collect::f_into_iter([
- false, true, true, true, true,
- ])) {
- {
- for b in (core_models::iter::traits::collect::f_into_iter([
- false, true, true,
- ])) {
- {
- let..."
-         ),
-         ()
-       ).
-
+(* src: src/rustc-coverage/branch/if.rs:65 new_tests__rustc_coverage__branch__if__say *)
+letfun new_tests__rustc_coverage__branch__if__say(message: bitstring) =
+  let wildcard: bitstring = core__hint__black_box(message) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/branch/if.rs:13 new_tests__rustc_coverage__branch__if__branch_not *)
+letfun new_tests__rustc_coverage__branch__if__branch_not(a: bitstring) =
+  let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+  )) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
+  let wildcard: bitstring = (let (=True()) = a
+    in new_tests__rustc_coverage__branch__if__say(string_lit__a)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(a)
+    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(
+      string_lit__not_x20a
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
+      core__ops__bit__Not__not_kw(a)
+    )
+    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(
+      string_lit__not_x20not_x20a
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let (=True()) = core__ops__bit__Not__not_kw(
+      core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(a))
+    )
+    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(
+      string_lit__not_x20not_x20not_x20a
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/branch/if.rs:30 new_tests__rustc_coverage__branch__if__branch_not_as *)
+letfun new_tests__rustc_coverage__branch__if__branch_not_as(a: bitstring) =
+  let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+  )) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(a)
+    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(
+      string_lit__not_x20_x28a_x20as_x20bool_x29
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
+      core__ops__bit__Not__not_kw(a)
+    )
+    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(
+      string_lit__not_x20not_x20_x28a_x20as_x20bool_x29
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let (=True()) = core__ops__bit__Not__not_kw(
+      core__ops__bit__Not__not_kw(core__ops__bit__Not__not_kw(a))
+    )
+    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(
+      string_lit__not_x20not_x20_x28a_x20as_x20bool_x29
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/branch/if.rs:44 new_tests__rustc_coverage__branch__if__branch_and *)
+letfun new_tests__rustc_coverage__branch__if__branch_and(a: bitstring, b: bitstring) =
+  let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+  )) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
+  let (=True()) = logical_and(a, b)
+    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(string_lit__both) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(
+      string_lit__not_x20both
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0).
+(* src: src/rustc-coverage/branch/if.rs:54 new_tests__rustc_coverage__branch__if__branch_or *)
+letfun new_tests__rustc_coverage__branch__if__branch_or(a: bitstring, b: bitstring) =
+  let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+  )) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
+  let (=True()) = logical_or(a, b)
+    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(string_lit__either) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__say(
+      string_lit__neither
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0).
+(* src: src/rustc-coverage/branch/if.rs:70 new_tests__rustc_coverage__branch__if__main *)
+letfun new_tests__rustc_coverage__branch__if__main(wildcard: bitstring) =
+  let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    rust_primitives__hax__array_cons(False(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_nil())))
+  )) in 
+  let rust_primitives__hax__array_cons(a, bl__seq1) = bl__seq0 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_not(
+    a
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_not_as(a) in
+  rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(a, bl__seq2) = bl__seq1 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_not(
+    a
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_not_as(a) in
+  rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(a, bl__seq3) = bl__seq2 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_not(
+    a
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_not_as(a) in
+  rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
+  rust_primitives__hax__Tuple2__Tuple2(
+    (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+      rust_primitives__hax__array_cons(False(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_nil())))))
+    )) in 
+    let rust_primitives__hax__array_cons(a_1, bl__seq1) = bl__seq0 in (let wildcard = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+      rust_primitives__hax__array_cons(False(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_nil())))
+    )) in 
+    let rust_primitives__hax__array_cons(b, bl__seq1) = bl__seq0 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(b, bl__seq2) = bl__seq1 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(b, bl__seq3) = bl__seq2 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
+    let rust_primitives__hax__array_cons(a_1, bl__seq2) = bl__seq1 in (let wildcard = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+      rust_primitives__hax__array_cons(False(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_nil())))
+    )) in 
+    let rust_primitives__hax__array_cons(b, bl__seq1) = bl__seq0 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(b, bl__seq2) = bl__seq1 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(b, bl__seq3) = bl__seq2 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
+    let rust_primitives__hax__array_cons(a_1, bl__seq3) = bl__seq2 in (let wildcard = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+      rust_primitives__hax__array_cons(False(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_nil())))
+    )) in 
+    let rust_primitives__hax__array_cons(b, bl__seq1) = bl__seq0 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(b, bl__seq2) = bl__seq1 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(b, bl__seq3) = bl__seq2 in (let wildcard = (let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_and(
+      a_1,
+      b
+    ) in
+    let wildcard: bitstring = new_tests__rustc_coverage__branch__if__branch_or(a_1, b) in
+    rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
+    let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)),
+    rust_primitives__hax__Tuple0__Tuple0
+  ).

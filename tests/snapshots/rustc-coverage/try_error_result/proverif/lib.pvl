@@ -1,145 +1,781 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__rustc_coverage__try_error_result__t_Thing1.
-
-fun new_tests__rustc_coverage__try_error_result__t_Thing1_to_bitstring(
-      new_tests__rustc_coverage__try_error_result__t_Thing1
-    )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__try_error_result__t_Thing1_from_bitstring(
-      bitstring
-    )
-    : new_tests__rustc_coverage__try_error_result__t_Thing1 [typeConverter].
-const new_tests__rustc_coverage__try_error_result__t_Thing1_default_value: new_tests__rustc_coverage__try_error_result__t_Thing1.
-letfun new_tests__rustc_coverage__try_error_result__t_Thing1_default() =
-       new_tests__rustc_coverage__try_error_result__t_Thing1_default_value.
-letfun new_tests__rustc_coverage__try_error_result__t_Thing1_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__try_error_result__t_Thing1_default_value.
-fun new_tests__rustc_coverage__try_error_result__Thing1()
-    : new_tests__rustc_coverage__try_error_result__t_Thing1 [data].
-
-
-type new_tests__rustc_coverage__try_error_result__t_Thing2.
-
-fun new_tests__rustc_coverage__try_error_result__t_Thing2_to_bitstring(
-      new_tests__rustc_coverage__try_error_result__t_Thing2
-    )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__try_error_result__t_Thing2_from_bitstring(
-      bitstring
-    )
-    : new_tests__rustc_coverage__try_error_result__t_Thing2 [typeConverter].
-const new_tests__rustc_coverage__try_error_result__t_Thing2_default_value: new_tests__rustc_coverage__try_error_result__t_Thing2.
-letfun new_tests__rustc_coverage__try_error_result__t_Thing2_default() =
-       new_tests__rustc_coverage__try_error_result__t_Thing2_default_value.
-letfun new_tests__rustc_coverage__try_error_result__t_Thing2_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__try_error_result__t_Thing2_default_value.
-fun new_tests__rustc_coverage__try_error_result__Thing2()
-    : new_tests__rustc_coverage__try_error_result__t_Thing2 [data].
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__try_error_result__call(return_error : bool) =
-       if return_error then (bitstring_err()) else (()).
-
-letfun new_tests__rustc_coverage__try_error_result__test1(wildcard1 : bitstring) =
-       let countdown = (10) in
-       let countdown = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 10,
- })) {
- |countdown| {
- {
- let countdown: int = {
- core_models::ops::arith::f_sub..."
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__try_error_result__impl_Thing1__get_thing_2_(
-         self : new_tests__rustc_coverage__try_error_result__t_Thing1,
-         return_error : bool
-       ) =
-       if return_error
-       then (new_tests__rustc_coverage__try_error_result__t_Thing2_err())
-       else (new_tests__rustc_coverage__try_error_result__Thing2()).
-
-letfun new_tests__rustc_coverage__try_error_result__impl_Thing2__call(
-         self : new_tests__rustc_coverage__try_error_result__t_Thing2,
-         return_error : bool
-       ) =
-       if return_error then (nat_err()) else (57).
-
-letfun new_tests__rustc_coverage__try_error_result__test2(wildcard2 : bitstring) =
-       let thing1 = (new_tests__rustc_coverage__try_error_result__Thing1()) in
-       let countdown = (10) in
-       let countdown = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 10,
- })) {
- |countdown| {
- {
- let countdown: int = {
- core_models::ops::arith::f_sub..."
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__try_error_result__main(wildcard5 : bitstring) =
-       let wildcard4: bitstring = (
-         core_models__result__impl__expect_err(
-           new_tests__rustc_coverage__try_error_result__test1(()),
-           "test1 should fail"
-         )
-       ) in
-       let wildcard3: bitstring = new_tests__rustc_coverage__try_error_result__test2(
-         ()
-       ) in ()
-       else bitstring_err().
-
+(* src: src/rustc-coverage/try_error_result.rs:6 new_tests__rustc_coverage__try_error_result__call *)
+letfun new_tests__rustc_coverage__try_error_result__call(return_error: bitstring) =
+  let (=True()) = return_error in bitstring_err() else rust_primitives__hax__Tuple0__Tuple0().
+(* src: src/rustc-coverage/try_error_result.rs:14 new_tests__rustc_coverage__try_error_result__test1 *)
+letfun new_tests__rustc_coverage__try_error_result__test1(wildcard: bitstring) =
+  let core__ops__control_flow__ControlFlow__Break(
+    ret: bitstring
+  ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (nat_lit(10)) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let countdown_1 = bl__acc0 in
+  let bl__acc1 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(True()) in
+      let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+        core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+      core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let countdown_1 = bl__acc1 in
+  let bl__acc2 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(True()) in
+      let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+        core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+      core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let countdown_1 = bl__acc2 in
+  let bl__acc3 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(True()) in
+      let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+        core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+      core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+    ret
+  else let core__ops__control_flow__ControlFlow__Continue(
+    countdown_3: bitstring
+  ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (nat_lit(10)) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let countdown_1 = bl__acc0 in
+  let bl__acc1 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(True()) in
+      let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+        core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+      core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let countdown_1 = bl__acc1 in
+  let bl__acc2 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(True()) in
+      let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+        core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+      core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let countdown_1 = bl__acc2 in
+  let bl__acc3 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(True()) in
+      let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+        core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__call(False()) in
+      core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+    rust_primitives__hax__Tuple0__Tuple0()
+  else bitstring_err().
+(* src: src/rustc-coverage/try_error_result.rs:40 new_tests__rustc_coverage__try_error_result__Thing1 *)
+fun new_tests__rustc_coverage__try_error_result__Thing1__Thing1(): bitstring [data].
+(* src: src/rustc-coverage/try_error_result.rs:51 new_tests__rustc_coverage__try_error_result__Thing2 *)
+fun new_tests__rustc_coverage__try_error_result__Thing2__Thing2(): bitstring [data].
+(* src: src/rustc-coverage/try_error_result.rs:42 new_tests__rustc_coverage__try_error_result__Impl__get_thing_2 *)
+letfun new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+  self: bitstring,
+  return_error: bitstring
+) =
+  let (=True()) = return_error
+    in bitstring_err()
+    else new_tests__rustc_coverage__try_error_result__Thing2__Thing2().
+(* src: src/rustc-coverage/try_error_result.rs:53 new_tests__rustc_coverage__try_error_result__Impl_1__call *)
+letfun new_tests__rustc_coverage__try_error_result__Impl_1__call(
+  self: bitstring,
+  return_error: bitstring
+) = let (=True()) = return_error in bitstring_err() else nat_lit(57).
+(* src: src/rustc-coverage/try_error_result.rs:62 new_tests__rustc_coverage__try_error_result__test2 *)
+letfun new_tests__rustc_coverage__try_error_result__test2(wildcard: bitstring) =
+  let thing1 = new_tests__rustc_coverage__try_error_result__Thing1__Thing1() in
+  let core__ops__control_flow__ControlFlow__Break(
+    ret: bitstring
+  ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (nat_lit(10)) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let countdown_1 = bl__acc0 in
+  let bl__acc1 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let hoist1 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let wildcard: bitstring = core__result__Impl__expect_err(
+        new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist1, True()),
+        string_lit__call_x20should_x20fail
+      ) in
+      let hoist3 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+        thing1,
+        False()
+      ) in
+        let wildcard: bitstring = core__result__Impl__expect_err(
+          new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist3, True()),
+          string_lit__call_x20should_x20fail
+        ) in
+        let hoist5 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          True()
+        ) in
+          let val = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist5, True()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val: bitstring,
+              right_val: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val, right_val)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist7 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              True()
+            ) in
+              let val_1 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist7,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_1: bitstring,
+                  right_val_1: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_1, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_1, right_val_1)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let hoist9 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let val_2 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist9, False()) in
+        let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+          left_val_2: bitstring,
+          right_val_2: bitstring
+        ) = rust_primitives__hax__Tuple2__Tuple2(val_2, nat_lit(57)) in
+          (let (=True()) = core__ops__bit__Not__not_kw(
+              rust_primitives__hax__machine_int__eq(left_val_2, right_val_2)
+            )
+            in bitstring_err()
+            else rust_primitives__hax__Tuple0__Tuple0)
+        else bitstring_err()) in
+        let hoist11 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          False()
+        ) in
+          let val_3 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist11, False()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val_3: bitstring,
+              right_val_3: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val_3, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val_3, right_val_3)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist13 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              False()
+            ) in
+              let val_4 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist13,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_4: bitstring,
+                  right_val_4: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_4, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_4, right_val_4)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let countdown_1 = bl__acc1 in
+  let bl__acc2 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let hoist1 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let wildcard: bitstring = core__result__Impl__expect_err(
+        new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist1, True()),
+        string_lit__call_x20should_x20fail
+      ) in
+      let hoist3 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+        thing1,
+        False()
+      ) in
+        let wildcard: bitstring = core__result__Impl__expect_err(
+          new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist3, True()),
+          string_lit__call_x20should_x20fail
+        ) in
+        let hoist5 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          True()
+        ) in
+          let val = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist5, True()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val: bitstring,
+              right_val: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val, right_val)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist7 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              True()
+            ) in
+              let val_1 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist7,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_1: bitstring,
+                  right_val_1: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_1, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_1, right_val_1)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let hoist9 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let val_2 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist9, False()) in
+        let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+          left_val_2: bitstring,
+          right_val_2: bitstring
+        ) = rust_primitives__hax__Tuple2__Tuple2(val_2, nat_lit(57)) in
+          (let (=True()) = core__ops__bit__Not__not_kw(
+              rust_primitives__hax__machine_int__eq(left_val_2, right_val_2)
+            )
+            in bitstring_err()
+            else rust_primitives__hax__Tuple0__Tuple0)
+        else bitstring_err()) in
+        let hoist11 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          False()
+        ) in
+          let val_3 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist11, False()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val_3: bitstring,
+              right_val_3: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val_3, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val_3, right_val_3)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist13 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              False()
+            ) in
+              let val_4 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist13,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_4: bitstring,
+                  right_val_4: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_4, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_4, right_val_4)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let countdown_1 = bl__acc2 in
+  let bl__acc3 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let hoist1 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let wildcard: bitstring = core__result__Impl__expect_err(
+        new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist1, True()),
+        string_lit__call_x20should_x20fail
+      ) in
+      let hoist3 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+        thing1,
+        False()
+      ) in
+        let wildcard: bitstring = core__result__Impl__expect_err(
+          new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist3, True()),
+          string_lit__call_x20should_x20fail
+        ) in
+        let hoist5 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          True()
+        ) in
+          let val = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist5, True()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val: bitstring,
+              right_val: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val, right_val)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist7 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              True()
+            ) in
+              let val_1 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist7,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_1: bitstring,
+                  right_val_1: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_1, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_1, right_val_1)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let hoist9 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let val_2 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist9, False()) in
+        let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+          left_val_2: bitstring,
+          right_val_2: bitstring
+        ) = rust_primitives__hax__Tuple2__Tuple2(val_2, nat_lit(57)) in
+          (let (=True()) = core__ops__bit__Not__not_kw(
+              rust_primitives__hax__machine_int__eq(left_val_2, right_val_2)
+            )
+            in bitstring_err()
+            else rust_primitives__hax__Tuple0__Tuple0)
+        else bitstring_err()) in
+        let hoist11 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          False()
+        ) in
+          let val_3 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist11, False()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val_3: bitstring,
+              right_val_3: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val_3, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val_3, right_val_3)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist13 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              False()
+            ) in
+              let val_4 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist13,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_4: bitstring,
+                  right_val_4: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_4, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_4, right_val_4)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+    ret
+  else let core__ops__control_flow__ControlFlow__Continue(
+    countdown_3: bitstring
+  ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (nat_lit(10)) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let countdown_1 = bl__acc0 in
+  let bl__acc1 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let hoist1 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let wildcard: bitstring = core__result__Impl__expect_err(
+        new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist1, True()),
+        string_lit__call_x20should_x20fail
+      ) in
+      let hoist3 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+        thing1,
+        False()
+      ) in
+        let wildcard: bitstring = core__result__Impl__expect_err(
+          new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist3, True()),
+          string_lit__call_x20should_x20fail
+        ) in
+        let hoist5 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          True()
+        ) in
+          let val = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist5, True()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val: bitstring,
+              right_val: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val, right_val)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist7 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              True()
+            ) in
+              let val_1 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist7,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_1: bitstring,
+                  right_val_1: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_1, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_1, right_val_1)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let hoist9 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let val_2 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist9, False()) in
+        let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+          left_val_2: bitstring,
+          right_val_2: bitstring
+        ) = rust_primitives__hax__Tuple2__Tuple2(val_2, nat_lit(57)) in
+          (let (=True()) = core__ops__bit__Not__not_kw(
+              rust_primitives__hax__machine_int__eq(left_val_2, right_val_2)
+            )
+            in bitstring_err()
+            else rust_primitives__hax__Tuple0__Tuple0)
+        else bitstring_err()) in
+        let hoist11 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          False()
+        ) in
+          let val_3 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist11, False()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val_3: bitstring,
+              right_val_3: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val_3, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val_3, right_val_3)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist13 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              False()
+            ) in
+              let val_4 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist13,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_4: bitstring,
+                  right_val_4: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_4, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_4, right_val_4)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let countdown_1 = bl__acc1 in
+  let bl__acc2 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let hoist1 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let wildcard: bitstring = core__result__Impl__expect_err(
+        new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist1, True()),
+        string_lit__call_x20should_x20fail
+      ) in
+      let hoist3 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+        thing1,
+        False()
+      ) in
+        let wildcard: bitstring = core__result__Impl__expect_err(
+          new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist3, True()),
+          string_lit__call_x20should_x20fail
+        ) in
+        let hoist5 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          True()
+        ) in
+          let val = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist5, True()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val: bitstring,
+              right_val: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val, right_val)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist7 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              True()
+            ) in
+              let val_1 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist7,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_1: bitstring,
+                  right_val_1: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_1, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_1, right_val_1)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let hoist9 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let val_2 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist9, False()) in
+        let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+          left_val_2: bitstring,
+          right_val_2: bitstring
+        ) = rust_primitives__hax__Tuple2__Tuple2(val_2, nat_lit(57)) in
+          (let (=True()) = core__ops__bit__Not__not_kw(
+              rust_primitives__hax__machine_int__eq(left_val_2, right_val_2)
+            )
+            in bitstring_err()
+            else rust_primitives__hax__Tuple0__Tuple0)
+        else bitstring_err()) in
+        let hoist11 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          False()
+        ) in
+          let val_3 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist11, False()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val_3: bitstring,
+              right_val_3: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val_3, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val_3, right_val_3)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist13 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              False()
+            ) in
+              let val_4 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist13,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_4: bitstring,
+                  right_val_4: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_4, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_4, right_val_4)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let countdown_1 = bl__acc2 in
+  let bl__acc3 = (let countdown_2 = rust_primitives__hax__machine_int__sub(
+    countdown_1,
+    nat_lit(1)
+  ) in
+  let (=True()) = rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(5))
+    in (let hoist1 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let wildcard: bitstring = core__result__Impl__expect_err(
+        new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist1, True()),
+        string_lit__call_x20should_x20fail
+      ) in
+      let hoist3 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+        thing1,
+        False()
+      ) in
+        let wildcard: bitstring = core__result__Impl__expect_err(
+          new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist3, True()),
+          string_lit__call_x20should_x20fail
+        ) in
+        let hoist5 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          True()
+        ) in
+          let val = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist5, True()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val: bitstring,
+              right_val: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val, right_val)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist7 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              True()
+            ) in
+              let val_1 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist7,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_1: bitstring,
+                  right_val_1: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_1, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_1, right_val_1)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))
+    else (let hoist9 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+      thing1,
+      False()
+    ) in
+      let val_2 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist9, False()) in
+        let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+          left_val_2: bitstring,
+          right_val_2: bitstring
+        ) = rust_primitives__hax__Tuple2__Tuple2(val_2, nat_lit(57)) in
+          (let (=True()) = core__ops__bit__Not__not_kw(
+              rust_primitives__hax__machine_int__eq(left_val_2, right_val_2)
+            )
+            in bitstring_err()
+            else rust_primitives__hax__Tuple0__Tuple0)
+        else bitstring_err()) in
+        let hoist11 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+          thing1,
+          False()
+        ) in
+          let val_3 = new_tests__rustc_coverage__try_error_result__Impl_1__call(hoist11, False()) in
+            let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+              left_val_3: bitstring,
+              right_val_3: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(val_3, nat_lit(57)) in
+              (let (=True()) = core__ops__bit__Not__not_kw(
+                  rust_primitives__hax__machine_int__eq(left_val_3, right_val_3)
+                )
+                in bitstring_err()
+                else rust_primitives__hax__Tuple0__Tuple0)
+            else bitstring_err()) in
+            let hoist13 = new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
+              thing1,
+              False()
+            ) in
+              let val_4 = new_tests__rustc_coverage__try_error_result__Impl_1__call(
+                hoist13,
+                False()
+              ) in
+                let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+                  left_val_4: bitstring,
+                  right_val_4: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(val_4, nat_lit(57)) in
+                  (let (=True()) = core__ops__bit__Not__not_kw(
+                      rust_primitives__hax__machine_int__eq(left_val_4, right_val_4)
+                    )
+                    in bitstring_err()
+                    else rust_primitives__hax__Tuple0__Tuple0)
+                else bitstring_err()) in
+                core__ops__control_flow__ControlFlow__Continue(countdown_2))) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+    rust_primitives__hax__Tuple0__Tuple0()
+  else bitstring_err().
+(* src: src/rustc-coverage/try_error_result.rs:114 new_tests__rustc_coverage__try_error_result__main *)
+letfun new_tests__rustc_coverage__try_error_result__main(wildcard: bitstring) =
+  let wildcard: bitstring = core__result__Impl__expect_err(
+    new_tests__rustc_coverage__try_error_result__test1(rust_primitives__hax__Tuple0__Tuple0),
+    string_lit__test1_x20should_x20fail
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__try_error_result__test2(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in rust_primitives__hax__Tuple0__Tuple0().

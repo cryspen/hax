@@ -1,166 +1,140 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__continue__main(wildcard2 : bitstring) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let x = (0) in
-       let x = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 10,
- })) {
- |x| {
- {
- let x: int = {
- (match (is_true) {
- true => {
- #[note("rhs.typ..."
-         )
-       ) in
-       let x = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 10,
- })) {
- |x| {
- {
- let x: int = {
- (match (is_true) {
- false => {
- let x: int = {..."
-         )
-       ) in
-       let x = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 10,
- })) {
- |x| {
- {
- let x: int = {
- (match (is_true) {
- true => {
- let x: int = { ..."
-         )
-       ) in
-       let x = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 10,
- })) {
- |x| {
- {
- let _: tuple0 = {
- (if is_true {
- {
- #[note("rhs.typ=int")]
- l..."
-         )
-       ) in
-       let x = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 10,
- })) {
- |x| {
- {
- let x: int = {
- (match (is_true) {
- false => {
- let x: int = {..."
-         )
-       ) in
-       let x = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
- f_start: 0,
- f_end: 10,
- })) {
- |x| {
- {
- let x: int = {
- (match (is_true) {
- false => {
- let x: int = {..."
-         )
-       ) in
-       let wildcard1: bitstring = (x) in
-       ().
-
+(* src: src/rustc-coverage/continue.rs:5 new_tests__rustc_coverage__continue__main *)
+(*  @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001), ssprove(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001) *)
+letfun new_tests__rustc_coverage__continue__main(wildcard: bitstring) =
+  let is_true = rust_primitives__hax__machine_int__eq(
+    core__iter__traits__exact_size__ExactSizeIterator__len(
+      std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+    ),
+    nat_lit(1)
+  ) in
+  let x_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (nat_lit(0)) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_1 = bl__acc0 in
+  let bl__acc1 = (let (=True()) = is_true in x_1
+  else let x_2 = nat_lit(1) in
+  nat_lit(3)) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_1 = bl__acc1 in
+  let bl__acc2 = (let (=True()) = is_true in x_1
+  else let x_2 = nat_lit(1) in
+  nat_lit(3)) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_1 = bl__acc2 in
+  let bl__acc3 = (let (=True()) = is_true in x_1
+  else let x_2 = nat_lit(1) in
+  nat_lit(3)) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
+  let x_6 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (x_3) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_4 = bl__acc0 in
+  let bl__acc1 = (let (=False()) = is_true in
+    (let x_5 = nat_lit(1) in
+    nat_lit(3))
+  else x_4) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_4 = bl__acc1 in
+  let bl__acc2 = (let (=False()) = is_true in
+    (let x_5 = nat_lit(1) in
+    nat_lit(3))
+  else x_4) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_4 = bl__acc2 in
+  let bl__acc3 = (let (=False()) = is_true in
+    (let x_5 = nat_lit(1) in
+    nat_lit(3))
+  else x_4) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
+  let x_9 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (x_6) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_7 = bl__acc0 in
+  let bl__acc1 = (let (=True()) = is_true in
+    (let x_8 = nat_lit(1) in
+    nat_lit(3))
+  else x_7) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_7 = bl__acc1 in
+  let bl__acc2 = (let (=True()) = is_true in
+    (let x_8 = nat_lit(1) in
+    nat_lit(3))
+  else x_7) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_7 = bl__acc2 in
+  let bl__acc3 = (let (=True()) = is_true in
+    (let x_8 = nat_lit(1) in
+    nat_lit(3))
+  else x_7) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
+  let x_11 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (x_9) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_10 = bl__acc0 in
+  let bl__acc1 = (let (=True()) = is_true in x_10 else nat_lit(3)) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_10 = bl__acc1 in
+  let bl__acc2 = (let (=True()) = is_true in x_10 else nat_lit(3)) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_10 = bl__acc2 in
+  let bl__acc3 = (let (=True()) = is_true in x_10 else nat_lit(3)) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
+  let x_16 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (x_11) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_12 = bl__acc0 in
+  let bl__acc1 = (let x_14 = (let (=False()) = is_true in nat_lit(1)
+  else let wildcard: bitstring = x_12 in
+  x_12) in
+  nat_lit(3)) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_12 = bl__acc1 in
+  let bl__acc2 = (let x_14 = (let (=False()) = is_true in nat_lit(1)
+  else let wildcard: bitstring = x_12 in
+  x_12) in
+  nat_lit(3)) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_12 = bl__acc2 in
+  let bl__acc3 = (let x_14 = (let (=False()) = is_true in nat_lit(1)
+  else let wildcard: bitstring = x_12 in
+  x_12) in
+  nat_lit(3)) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
+  let x_19 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+  )) in let bl__acc0 = (x_16) in 
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_17 = bl__acc0 in
+  let bl__acc1 = (let (=False()) = is_true in
+    (let x_18 = nat_lit(1) in
+    core__ops__control_flow__ControlFlow__Continue(nat_lit(3)))
+  else core__ops__control_flow__ControlFlow__Break(
+    rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, x_17)
+  )) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_17 = bl__acc1 in
+  let bl__acc2 = (let (=False()) = is_true in
+    (let x_18 = nat_lit(1) in
+    core__ops__control_flow__ControlFlow__Continue(nat_lit(3)))
+  else core__ops__control_flow__ControlFlow__Break(
+    rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, x_17)
+  )) in
+  let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_17 = bl__acc2 in
+  let bl__acc3 = (let (=False()) = is_true in
+    (let x_18 = nat_lit(1) in
+    core__ops__control_flow__ControlFlow__Continue(nat_lit(3)))
+  else core__ops__control_flow__ControlFlow__Break(
+    rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, x_17)
+  )) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
+  let wildcard: bitstring = x_19 in
+  rust_primitives__hax__Tuple0__Tuple0.

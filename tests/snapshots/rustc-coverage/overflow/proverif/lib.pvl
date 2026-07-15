@@ -1,104 +1,61 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__overflow__might_overflow(to_add : nat) =
-       let wildcard7: bitstring = (
-         if core_models__cmp__f_gt(to_add, 5)
-         then
-           (let wildcard6: bitstring = (
-              std__io__stdio__e_print(
-                core_models__fmt__rt__impl_1__new_const(
-                  ["this will probably overflow
-"]
-                )
-              )
-            ) in
-            let wildcard5: bitstring = (()) in
-            ())
-         else (())
-       ) in
-       let add_to = (
-         core_models__ops__arith__f_sub(core_models__num__impl_u32__MAX, 5)
-       ) in
-       let args = ((add_to, to_add)) in
-       let args = (
-         [core_models__fmt__rt__impl__new_display(args.0),core_models__fmt__rt__impl__new_display(
-           args.1
-         )]
-       ) in
-       let wildcard4: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(
-             ["does "," + "," overflow?
-"], args
-           )
-         )
-       ) in
-       let wildcard3: bitstring = (()) in
-       let result = (core_models__ops__arith__f_add(to_add, add_to)) in
-       let wildcard2: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(
-             ["continuing after overflow check
-"]
-           )
-         )
-       ) in
-       let wildcard1: bitstring = (()) in
-       result.
-
-letfun new_tests__rustc_coverage__overflow__main(wildcard8 : bitstring) =
-       let countdown = (10) in
-       let countdown = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (loop {
- |countdown| {
- (if core_models::cmp::f_gt(countdown, 0) {
- {
- let _: tuple0 = {
- (if core_models::cmp::f_eq(countdown, 1) {
- {
- let result: int = {
- new_tests::rustc_coverage__overflow::mi..."
-         )
-       ) in
-       ().
-
+(* src: src/rustc-coverage/overflow.rs:8 new_tests__rustc_coverage__overflow__might_overflow *)
+(*  @fail(extraction): ssprove(HAX0001) *)
+letfun new_tests__rustc_coverage__overflow__might_overflow(to_add: bitstring) =
+  let wildcard: bitstring = (let (=True()) = rust_primitives__hax__machine_int__gt(
+      to_add,
+      nat_lit(5)
+    )
+    in (let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__this_x20will_x20probably_x20overflow_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let add_to = rust_primitives__hax__machine_int__sub(core__num__Impl_8__MAX, nat_lit(5)) in
+  let args = rust_primitives__hax__Tuple2__Tuple2(add_to, to_add) in
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__does_x20, rust_primitives__hax__array_cons(string_lit___x20_x2b_x20, rust_primitives__hax__array_cons(string_lit___x20overflow_x3f_x0a, rust_primitives__hax__array_nil()))),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_display(
+        rust_primitives__hax__Tuple2__Tuple2__0(args)
+      ), rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_display(
+        rust_primitives__hax__Tuple2__Tuple2__1(args)
+      ), rust_primitives__hax__array_nil()))
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__continuing_x20after_x20overflow_x20check_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__machine_int__add(to_add, add_to).
+(* src: src/rustc-coverage/overflow.rs:20 new_tests__rustc_coverage__overflow__main *)
+(*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
+letfun new_tests__rustc_coverage__overflow__main(wildcard: bitstring) =
+  let countdown_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in
+  rust_primitives__hax__Tuple0__Tuple0().
