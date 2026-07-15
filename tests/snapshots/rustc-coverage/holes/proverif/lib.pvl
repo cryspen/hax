@@ -9,25 +9,42 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
+(* src: src/rustc-coverage/holes.rs:10 new_tests__rustc_coverage__holes__main *)
+(*  @fail(extraction): coq(HAX0001), lean(HAX0001), ssprove(HAX0001), proverif(HAX0001), fstar(HAX0001) *)
+(*  @fail(tc): lean(1) *)
 letfun new_tests__rustc_coverage__holes__main(wildcard: bitstring) =
-bitstring_err() (* error node *).
+  bitstring_err() (* error node *).
+(* src: src/rustc-coverage/holes.rs:13 new_tests__rustc_coverage__holes__main__MY_STATIC *)
 const new_tests__rustc_coverage__holes__main__MY_STATIC: bitstring.
+(* src: src/rustc-coverage/holes.rs:17 new_tests__rustc_coverage__holes__main__MY_CONST *)
 const new_tests__rustc_coverage__holes__main__MY_CONST: bitstring.
+(* src: src/rustc-coverage/holes.rs:33 new_tests__rustc_coverage__holes__main__u_unused_fn *)
 letfun new_tests__rustc_coverage__holes__main__u_unused_fn(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
-fun new_tests__rustc_coverage__holes__main__MyStruct__MyStruct(bitstring,
-bitstring): bitstring [data].
-reduc forall new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_x_v: bitstring,
-new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_y_v: bitstring;
-  new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_x(new_tests__rustc_coverage__holes__main__MyStruct__MyStruct(new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_x_v,
-  new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_y_v)) = new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_x_v.
-reduc forall new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_x_v: bitstring,
-new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_y_v: bitstring;
-  new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_y(new_tests__rustc_coverage__holes__main__MyStruct__MyStruct(new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_x_v,
-  new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_y_v)) = new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_y_v.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/holes.rs:37 new_tests__rustc_coverage__holes__main__MyStruct *)
+fun new_tests__rustc_coverage__holes__main__MyStruct__MyStruct(
+  bitstring,
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_x(
+    new_tests__rustc_coverage__holes__main__MyStruct__MyStruct(v_0, v_1)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_y(
+    new_tests__rustc_coverage__holes__main__MyStruct__MyStruct(v_0, v_1)
+  ) = v_1.
+(* src: src/rustc-coverage/holes.rs:45 new_tests__rustc_coverage__holes__main__Impl__u_method *)
 letfun new_tests__rustc_coverage__holes__main__Impl__u_method(self: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
 

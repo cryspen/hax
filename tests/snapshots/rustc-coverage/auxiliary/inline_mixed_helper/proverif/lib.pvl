@@ -9,12 +9,23 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
+(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:5 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__inline_me *)
 letfun new_tests__rustc_coverage__auxiliary__inline_mixed_helper__inline_me(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__auxiliary__inline_mixed_helper__no_inlining_please(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:8 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__no_inlining_please *)
+letfun new_tests__rustc_coverage__auxiliary__inline_mixed_helper__no_inlining_please(
+  wildcard: bitstring
+) = rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:10 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__generic *)
 letfun new_tests__rustc_coverage__auxiliary__inline_mixed_helper__generic(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.

@@ -9,26 +9,35 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__option__Impl__map(bitstring, bitstring): bitstring [data].
-const core__option__Option__None: bitstring.
+(* src: src/rustc-coverage/issue-93054.rs:9 new_tests__rustc_coverage__issue_93054__Never *)
 
-
+(* src: src/rustc-coverage/issue-93054.rs:9 new_tests__rustc_coverage__issue_93054__Never_cast_to_repr *)
 letfun new_tests__rustc_coverage__issue_93054__Never_cast_to_repr(x: bitstring) =
-
+  
   else bitstring_err().
-letfun new_tests__rustc_coverage__issue_93054__Impl__bar(self: bitstring) =
-bitstring_err().
+(* src: src/rustc-coverage/issue-93054.rs:17 new_tests__rustc_coverage__issue_93054__Impl__bar *)
+letfun new_tests__rustc_coverage__issue_93054__Impl__bar(self: bitstring) = bitstring_err().
+(* src: src/rustc-coverage/issue-93054.rs:24 new_tests__rustc_coverage__issue_93054__foo2 *)
+(*  @fail(extraction): fstar(HAX0001), ssprove(HAX0001), lean(HAX0001), coq(HAX0001) *)
+(*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__rustc_coverage__issue_93054__foo2(never: bitstring) =
-bitstring_err() (* error node *).
-letfun new_tests__rustc_coverage__issue_93054__make(wildcard: bitstring) =
-None().
+  bitstring_err() (* error node *).
+(* src: src/rustc-coverage/issue-93054.rs:28 new_tests__rustc_coverage__issue_93054__make *)
+letfun new_tests__rustc_coverage__issue_93054__make(wildcard: bitstring) = None().
+(* src: src/rustc-coverage/issue-93054.rs:12 new_tests__rustc_coverage__issue_93054__Impl__foo *)
 letfun new_tests__rustc_coverage__issue_93054__Impl__foo(self: bitstring) =
-let wildcard: bitstring = (bitstring_err()) in
+  let wildcard: bitstring = bitstring_err() in
   bitstring_err().
+(* src: src/rustc-coverage/issue-93054.rs:32 new_tests__rustc_coverage__issue_93054__main *)
 letfun new_tests__rustc_coverage__issue_93054__main(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.

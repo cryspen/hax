@@ -9,22 +9,37 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
+(* src: src/rustc-coverage/attr/module.rs:21 new_tests__rustc_coverage__attr__module__on__inherit *)
 letfun new_tests__rustc_coverage__attr__module__on__inherit(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/module.rs:24 new_tests__rustc_coverage__attr__module__on__on *)
 letfun new_tests__rustc_coverage__attr__module__on__on(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/module.rs:27 new_tests__rustc_coverage__attr__module__on__off *)
 letfun new_tests__rustc_coverage__attr__module__on__off(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/module.rs:10 new_tests__rustc_coverage__attr__module__off__inherit *)
 letfun new_tests__rustc_coverage__attr__module__off__inherit(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/module.rs:13 new_tests__rustc_coverage__attr__module__off__on *)
 letfun new_tests__rustc_coverage__attr__module__off__on(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/module.rs:16 new_tests__rustc_coverage__attr__module__off__off *)
 letfun new_tests__rustc_coverage__attr__module__off__off(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/module.rs:33 new_tests__rustc_coverage__attr__module__nested_a__nested_b__inner *)
 letfun new_tests__rustc_coverage__attr__module__nested_a__nested_b__inner(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/module.rs:38 new_tests__rustc_coverage__attr__module__main *)
 letfun new_tests__rustc_coverage__attr__module__main(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.

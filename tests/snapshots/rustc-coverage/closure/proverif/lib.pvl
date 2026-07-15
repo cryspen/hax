@@ -9,8 +9,17 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
+(* src: src/rustc-coverage/closure.rs:10 new_tests__rustc_coverage__closure__main *)
+(*  @fail(extraction): coq(HAX0006, HAX0003), proverif(HAX0006, HAX0003), fstar(HAX0006, HAX0003), ssprove(HAX0006, HAX0003), lean(HAX0003, HAX0006) *)
 letfun new_tests__rustc_coverage__closure__main(wildcard: bitstring) =
-bitstring_err() (* error node *).
+  bitstring_err() (* error node *).

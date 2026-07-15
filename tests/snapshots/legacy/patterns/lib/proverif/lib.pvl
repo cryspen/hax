@@ -9,15 +9,30 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
+(* src: src/legacy/patterns/lib.rs:3 new_tests__legacy__patterns__lib__Other *)
 fun new_tests__legacy__patterns__lib__Other__Other(bitstring): bitstring [data].
-reduc forall new_tests__legacy__patterns__lib__Other__Other__0_v: bitstring;
-  new_tests__legacy__patterns__lib__Other__Other__0(new_tests__legacy__patterns__lib__Other__Other(new_tests__legacy__patterns__lib__Other__Other__0_v)) = new_tests__legacy__patterns__lib__Other__Other__0_v.
+reduc forall v_0: bitstring;
+  new_tests__legacy__patterns__lib__Other__Other__0(
+    new_tests__legacy__patterns__lib__Other__Other(v_0)
+  ) = v_0.
+(* src: src/legacy/patterns/lib.rs:5 new_tests__legacy__patterns__lib__Test *)
 fun new_tests__legacy__patterns__lib__Test__C1(bitstring): bitstring [data].
-reduc forall new_tests__legacy__patterns__lib__Test__C1__0_v: bitstring;
-  new_tests__legacy__patterns__lib__Test__C1__0(new_tests__legacy__patterns__lib__Test__C1(new_tests__legacy__patterns__lib__Test__C1__0_v)) = new_tests__legacy__patterns__lib__Test__C1__0_v.
+reduc forall v_0: bitstring;
+  new_tests__legacy__patterns__lib__Test__C1__0(
+    new_tests__legacy__patterns__lib__Test__C1(v_0)
+  ) = v_0.
+(* src: src/legacy/patterns/lib.rs:10 new_tests__legacy__patterns__lib__Impl__test *)
 letfun new_tests__legacy__patterns__lib__Impl__test(self: bitstring) =
-let new_tests__legacy__patterns__lib__Test__C1(c: bitstring) = self in (new_tests__legacy__patterns__lib__Other__Other__0(c))
+  let new_tests__legacy__patterns__lib__Test__C1(c: bitstring) = self in
+    new_tests__legacy__patterns__lib__Other__Other__0(c)
   else bitstring_err().

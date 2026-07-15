@@ -1,700 +1,505 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
+(* src: src/rustc-coverage/issue-84561.rs:6 new_tests__rustc_coverage__issue_84561__Foo *)
+fun new_tests__rustc_coverage__issue_84561__Foo__Foo(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__rustc_coverage__issue_84561__Foo__Foo__0(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(v_0)
+  ) = v_0.
 
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
 
-type new_tests__rustc_coverage__issue_84561___t_Foo.
-
-fun new_tests__rustc_coverage__issue_84561___t_Foo_to_bitstring(
-      new_tests__rustc_coverage__issue_84561___t_Foo
+(* src: src/rustc-coverage/issue-84561.rs:140 new_tests__rustc_coverage__issue_84561__Impl__fmt *)
+letfun new_tests__rustc_coverage__issue_84561__Impl__fmt(self: bitstring, f: bitstring) =
+  let rust_primitives__hax__Tuple2__Tuple2(
+    tmp0: bitstring,
+    out_kw: bitstring
+  ) = core__fmt__Impl_11__write_fmt(
+    f,
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__try_x20and_x20succeed, rust_primitives__hax__array_nil())
     )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__issue_84561___t_Foo_from_bitstring(bitstring)
-    : new_tests__rustc_coverage__issue_84561___t_Foo [typeConverter].
-const new_tests__rustc_coverage__issue_84561___t_Foo_default_value: new_tests__rustc_coverage__issue_84561___t_Foo.
-letfun new_tests__rustc_coverage__issue_84561___t_Foo_default() =
-       new_tests__rustc_coverage__issue_84561___t_Foo_default_value.
-letfun new_tests__rustc_coverage__issue_84561___t_Foo_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__issue_84561___t_Foo_default_value.
-fun new_tests__rustc_coverage__issue_84561___Foo(nat)
-    : new_tests__rustc_coverage__issue_84561___t_Foo [data].
-reduc forall new_tests__rustc_coverage__issue_84561___0: nat;
-    accessor_new_tests__rustc_coverage__issue_84561___t_Foo_new_tests__rustc_coverage__issue_84561___0(
-      new_tests__rustc_coverage__issue_84561___Foo(
-        new_tests__rustc_coverage__issue_84561___0
+  ) in (let f_1 = tmp0 in
+  let wildcard: bitstring = out_kw in
+    rust_primitives__hax__Tuple2__Tuple2(
+      f_1,
+      rust_primitives__hax__Tuple0__Tuple0()
+    )) else bitstring_err().
+(* src: src/rustc-coverage/issue-84561.rs:10 new_tests__rustc_coverage__issue_84561__test3 *)
+(*  @fail(extraction): ssprove(HAX0001) *)
+letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
+  let is_true = rust_primitives__hax__machine_int__eq(
+    core__iter__traits__exact_size__ExactSizeIterator__len(
+      std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+    ),
+    nat_lit(1)
+  ) in
+  let bar = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val: bitstring,
+    right_val: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    bar,
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val, right_val))
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let baz = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_1: bitstring,
+    right_val_1: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    baz,
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_1, right_val_1)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__empty, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(
+          rust_primitives__hax__Tuple1__Tuple1(
+            new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+          )
+        )
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__empty, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(bar))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__empty, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(baz))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_2: bitstring,
+    right_val_2: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val_2, right_val_2))
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_3: bitstring,
+    right_val_3: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_3, right_val_3)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_4: bitstring,
+    right_val_4: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(2)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(2))
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val_4, right_val_4))
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let bar_1 = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_5: bitstring,
+    right_val_5: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    bar_1,
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_5, right_val_5)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_6: bitstring,
+    right_val_6: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(4))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_6, right_val_6)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_7: bitstring,
+    right_val_7: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val_7, right_val_7))
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__empty, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(bar_1))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__empty, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(
+          rust_primitives__hax__Tuple1__Tuple1(
+            new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+          )
+        )
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_8: bitstring,
+    right_val_8: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_8, right_val_8)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_9: bitstring,
+    right_val_9: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_9, right_val_9)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let is_true_1 = rust_primitives__hax__machine_int__eq(
+    core__iter__traits__exact_size__ExactSizeIterator__len(
+      std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+    ),
+    nat_lit(1)
+  ) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_10: bitstring,
+    right_val_10: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(
+        core__cmp__PartialEq__eq(left_val_10, right_val_10)
       )
-    ) = new_tests__rustc_coverage__issue_84561___0.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__issue_84561___test3(wildcard38 : bitstring) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let bar = (new_tests__rustc_coverage__issue_84561___Foo(1)) in
-       let wildcard37: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (bar, new_tests__rustc_coverage__issue_84561___Foo(1)) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let baz = (new_tests__rustc_coverage__issue_84561___Foo(0)) in
-       let wildcard36: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (baz, new_tests__rustc_coverage__issue_84561___Foo(1)) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let args = ((new_tests__rustc_coverage__issue_84561___Foo(1))) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard35: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["","
-"], args)
-         )
-       ) in
-       let wildcard34: bitstring = (()) in
-       let args = ((bar)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard33: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["","
-"], args)
-         )
-       ) in
-       let wildcard32: bitstring = (()) in
-       let args = ((baz)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard31: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["","
-"], args)
-         )
-       ) in
-       let wildcard30: bitstring = (()) in
-       let wildcard29: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(1),
-           new_tests__rustc_coverage__issue_84561___Foo(1)
-         ) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard28: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(0),
-           new_tests__rustc_coverage__issue_84561___Foo(1)
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard27: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(2),
-           new_tests__rustc_coverage__issue_84561___Foo(2)
-         ) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let bar = (new_tests__rustc_coverage__issue_84561___Foo(0)) in
-       let wildcard26: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (bar, new_tests__rustc_coverage__issue_84561___Foo(3)) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard25: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(0),
-           new_tests__rustc_coverage__issue_84561___Foo(4)
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard24: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(3),
-           new_tests__rustc_coverage__issue_84561___Foo(3)
-         ) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let args = ((bar)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard23: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["","
-"], args)
-         )
-       ) in
-       let wildcard22: bitstring = (()) in
-       let args = ((new_tests__rustc_coverage__issue_84561___Foo(1))) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard21: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["","
-"], args)
-         )
-       ) in
-       let wildcard20: bitstring = (()) in
-       let wildcard19: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(0),
-           new_tests__rustc_coverage__issue_84561___Foo(5)
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              let args = (
-                (if is_true then ("true message") else ("false message"))
-              ) in
-              let args = ([core_models__fmt__rt__impl__new_display(args.0)]) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard18: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(0),
-           new_tests__rustc_coverage__issue_84561___Foo(5)
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              let args = (
-                (if is_true then ("true message") else ("false message"))
-              ) in
-              let args = ([core_models__fmt__rt__impl__new_display(args.0)]) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let wildcard17: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(1),
-           new_tests__rustc_coverage__issue_84561___Foo(1)
-         ) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard16: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(0),
-           new_tests__rustc_coverage__issue_84561___Foo(1)
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard15: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(2),
-           new_tests__rustc_coverage__issue_84561___Foo(2)
-         ) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let bar = (new_tests__rustc_coverage__issue_84561___Foo(1)) in
-       let wildcard14: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (bar, new_tests__rustc_coverage__issue_84561___Foo(3)) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard13: bitstring = (
-         if is_true
-         then
-           (let wildcard11: bitstring = (
-              let (
-                left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-                right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-              ) = (
-                new_tests__rustc_coverage__issue_84561___Foo(0),
-                new_tests__rustc_coverage__issue_84561___Foo(4)
-              ) in (
-                if core_models__cmp__f_eq(left_val, right_val)
-                then
-                  (let kind = (core_models__panicking__AssertKind_Ne()) in
-                   bitstring_err())
-                else (())
-              )
-            ) in
-            ())
-         else (
-           let wildcard12: bitstring = (
-             let (
-               left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-               right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-             ) = (
-               new_tests__rustc_coverage__issue_84561___Foo(3),
-               new_tests__rustc_coverage__issue_84561___Foo(3)
-             ) in (
-               if
-                 core_models__ops__bit__f_not(
-                     core_models__cmp__f_eq(left_val, right_val)
-                   )
-               then
-                 (let kind = (core_models__panicking__AssertKind_Eq()) in
-                  bitstring_err())
-               else (())
-             )
-           ) in
-           ()
-         )
-       ) in
-       let wildcard10: bitstring = (
-         if is_true
-         then
-           (let wildcard8: bitstring = (
-              let (
-                left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-                right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-              ) = (
-                new_tests__rustc_coverage__issue_84561___Foo(0),
-                new_tests__rustc_coverage__issue_84561___Foo(4)
-              ) in (
-                if core_models__cmp__f_eq(left_val, right_val)
-                then
-                  (let kind = (core_models__panicking__AssertKind_Ne()) in
-                   bitstring_err())
-                else (())
-              )
-            ) in
-            ())
-         else (
-           let wildcard9: bitstring = (
-             let (
-               left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-               right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-             ) = (
-               new_tests__rustc_coverage__issue_84561___Foo(3),
-               new_tests__rustc_coverage__issue_84561___Foo(3)
-             ) in (
-               if
-                 core_models__ops__bit__f_not(
-                     core_models__cmp__f_eq(left_val, right_val)
-                   )
-               then
-                 (let kind = (core_models__panicking__AssertKind_Eq()) in
-                  bitstring_err())
-               else (())
-             )
-           ) in
-           ()
-         )
-       ) in
-       let wildcard7: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           if is_true
-           then (new_tests__rustc_coverage__issue_84561___Foo(0))
-           else (new_tests__rustc_coverage__issue_84561___Foo(1)),
-           new_tests__rustc_coverage__issue_84561___Foo(5)
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard6: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(5),
-           if is_true
-           then (new_tests__rustc_coverage__issue_84561___Foo(0))
-           else (new_tests__rustc_coverage__issue_84561___Foo(1))
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard5: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           if is_true
-           then
-             (let wildcard3: bitstring = (
-                let (
-                  left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-                  right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-                ) = (
-                  new_tests__rustc_coverage__issue_84561___Foo(3),
-                  new_tests__rustc_coverage__issue_84561___Foo(3)
-                ) in (
-                  if
-                    core_models__ops__bit__f_not(
-                        core_models__cmp__f_eq(left_val, right_val)
-                      )
-                  then
-                    (let kind = (core_models__panicking__AssertKind_Eq()) in
-                     bitstring_err())
-                  else (())
-                )
-              ) in
-              new_tests__rustc_coverage__issue_84561___Foo(0))
-           else (
-             let wildcard4: bitstring = (
-               let (
-                 left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-                 right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-               ) = (
-                 if is_true
-                 then (new_tests__rustc_coverage__issue_84561___Foo(0))
-                 else (new_tests__rustc_coverage__issue_84561___Foo(1)),
-                 new_tests__rustc_coverage__issue_84561___Foo(5)
-               ) in (
-                 if core_models__cmp__f_eq(left_val, right_val)
-                 then
-                   (let kind = (core_models__panicking__AssertKind_Ne()) in
-                    bitstring_err())
-                 else (())
-               )
-             ) in
-             new_tests__rustc_coverage__issue_84561___Foo(1)
-           ),
-           new_tests__rustc_coverage__issue_84561___Foo(5)
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard2: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(1),
-           new_tests__rustc_coverage__issue_84561___Foo(3)
-         ) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard1: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__issue_84561___t_Foo,
-           right_val: new_tests__rustc_coverage__issue_84561___t_Foo
-         ) = (
-           new_tests__rustc_coverage__issue_84561___Foo(3),
-           new_tests__rustc_coverage__issue_84561___Foo(3)
-         ) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__issue_84561___test1(wildcard54 : bitstring) =
-       let wildcard53: bitstring = (
-         if
-           rust_primitives__hax__failure(
-               "Explicit rejection by a phase in the Hax engine:
-a node of kind [Unsafe] have been found in the AST
-
-Note: the error was labeled with context `reject_Unsafe`.
-",
-               "unsafe { deref(new_tests::rustc_coverage__issue_84561_::v_DEBUG_LEVEL_ENABLED) }"
-             )
-         then
-           (let wildcard52: bitstring = (
-              std__io__stdio__e_print(
-                core_models__fmt__rt__impl_1__new_const(["debug is enabled
-"])
-              )
-            ) in
-            let wildcard51: bitstring = (()) in
-            ())
-         else (())
-       ) in
-       let wildcard50: bitstring = (
-         if
-           rust_primitives__hax__failure(
-               "Explicit rejection by a phase in the Hax engine:
-a node of kind [Unsafe] have been found in the AST
-
-Note: the error was labeled with context `reject_Unsafe`.
-",
-               "unsafe { deref(new_tests::rustc_coverage__issue_84561_::v_DEBUG_LEVEL_ENABLED) }"
-             )
-         then
-           (let wildcard49: bitstring = (
-              std__io__stdio__e_print(
-                core_models__fmt__rt__impl_1__new_const(["debug is enabled
-"])
-              )
-            ) in
-            let wildcard48: bitstring = (()) in
-            ())
-         else (())
-       ) in
-       let wildcard47: bitstring = (0) in
-       let wildcard46: bitstring = (
-         if
-           rust_primitives__hax__failure(
-               "Explicit rejection by a phase in the Hax engine:
-a node of kind [Unsafe] have been found in the AST
-
-Note: the error was labeled with context `reject_Unsafe`.
-",
-               "unsafe { deref(new_tests::rustc_coverage__issue_84561_::v_DEBUG_LEVEL_ENABLED) }"
-             )
-         then
-           (let wildcard45: bitstring = (
-              std__io__stdio__e_print(
-                core_models__fmt__rt__impl_1__new_const(["debug is enabled
-"])
-              )
-            ) in
-            let wildcard44: bitstring = (()) in
-            ())
-         else (())
-       ) in
-       let wildcard43: bitstring = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Arbitrary_lhs] have been found in the AST
-
-Note: the error was labeled with context `reject_ArbitraryLhs`.
-",
-           "(rust_primitives::hax::failure(
- "Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!\nDetails: expected an arrow type here\n\nNote: the e..."
-         )
-       ) in
-       let wildcard42: bitstring = (()) in
-       let wildcard41: bitstring = (
-         if
-           rust_primitives__hax__failure(
-               "Explicit rejection by a phase in the Hax engine:
-a node of kind [Unsafe] have been found in the AST
-
-Note: the error was labeled with context `reject_Unsafe`.
-",
-               "unsafe { deref(new_tests::rustc_coverage__issue_84561_::v_DEBUG_LEVEL_ENABLED) }"
-             )
-         then
-           (let wildcard40: bitstring = (
-              std__io__stdio__e_print(
-                core_models__fmt__rt__impl_1__new_const(["debug is enabled
-"])
-              )
-            ) in
-            let wildcard39: bitstring = (()) in
-            ())
-         else (())
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__issue_84561___test2__call_print(s : bitstring) =
-       let args = ((s)) in
-       let args = ([core_models__fmt__rt__impl__new_display(args.0)]) in
-       let wildcard56: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1([""], args)
-         )
-       ) in
-       let wildcard55: bitstring = (()) in
-       ().
-
-letfun new_tests__rustc_coverage__issue_84561___test2(wildcard61 : bitstring) =
-       let wildcard60: bitstring = (
-         new_tests__rustc_coverage__issue_84561___test2__call_print(
-           "called from call_debug: "
-         )
-       ) in
-       let wildcard59: bitstring = (
-         if
-           rust_primitives__hax__failure(
-               "Explicit rejection by a phase in the Hax engine:
-a node of kind [Unsafe] have been found in the AST
-
-Note: the error was labeled with context `reject_Unsafe`.
-",
-               "unsafe { deref(new_tests::rustc_coverage__issue_84561_::v_DEBUG_LEVEL_ENABLED) }"
-             )
-         then
-           (let wildcard58: bitstring = (
-              std__io__stdio__e_print(
-                core_models__fmt__rt__impl_1__new_const(["debug is enabled
-"])
-              )
-            ) in
-            let wildcard57: bitstring = (()) in
-            ())
-         else (())
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__issue_84561___main(wildcard65 : bitstring) =
-       let wildcard64: bitstring = (
-         new_tests__rustc_coverage__issue_84561___test1(())
-       ) in
-       let wildcard63: bitstring = (
-         new_tests__rustc_coverage__issue_84561___test2(())
-       ) in
-       let wildcard62: bitstring = (
-         new_tests__rustc_coverage__issue_84561___test3(())
-       ) in
-       ().
-
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_11: bitstring,
+    right_val_11: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_11, right_val_11)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_12: bitstring,
+    right_val_12: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(2)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(2))
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(
+        core__cmp__PartialEq__eq(left_val_12, right_val_12)
+      )
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_13: bitstring,
+    right_val_13: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_13, right_val_13)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let (=True()) = is_true_1
+    in (let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+      left_val_14: bitstring,
+      right_val_14: bitstring
+    ) = rust_primitives__hax__Tuple2__Tuple2(
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(4))
+    ) in
+      (let (=True()) = core__cmp__PartialEq__eq(left_val_14, right_val_14)
+        in bitstring_err()
+        else rust_primitives__hax__Tuple0__Tuple0)
+    else bitstring_err()) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else (let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+      left_val_15: bitstring,
+      right_val_15: bitstring
+    ) = rust_primitives__hax__Tuple2__Tuple2(
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+    ) in
+      (let (=True()) = core__ops__bit__Not__not_kw(
+          core__cmp__PartialEq__eq(left_val_15, right_val_15)
+        )
+        in bitstring_err()
+        else rust_primitives__hax__Tuple0__Tuple0)
+    else bitstring_err()) in
+    rust_primitives__hax__Tuple0__Tuple0)) in
+  let wildcard: bitstring = (let (=True()) = is_true_1
+    in (let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+      left_val_16: bitstring,
+      right_val_16: bitstring
+    ) = rust_primitives__hax__Tuple2__Tuple2(
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(4))
+    ) in
+      (let (=True()) = core__cmp__PartialEq__eq(left_val_16, right_val_16)
+        in bitstring_err()
+        else rust_primitives__hax__Tuple0__Tuple0)
+    else bitstring_err()) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else (let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+      left_val_17: bitstring,
+      right_val_17: bitstring
+    ) = rust_primitives__hax__Tuple2__Tuple2(
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+    ) in
+      (let (=True()) = core__ops__bit__Not__not_kw(
+          core__cmp__PartialEq__eq(left_val_17, right_val_17)
+        )
+        in bitstring_err()
+        else rust_primitives__hax__Tuple0__Tuple0)
+    else bitstring_err()) in
+    rust_primitives__hax__Tuple0__Tuple0)) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_18: bitstring,
+    right_val_18: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    let (=True()) = is_true_1
+      in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0))
+      else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_18, right_val_18)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_19: bitstring,
+    right_val_19: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5)),
+    let (=True()) = is_true_1
+      in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0))
+      else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_19, right_val_19)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_22: bitstring,
+    right_val_22: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    let (=True()) = is_true_1
+      in (let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+        left_val_20: bitstring,
+        right_val_20: bitstring
+      ) = rust_primitives__hax__Tuple2__Tuple2(
+        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
+        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+      ) in
+        (let (=True()) = core__ops__bit__Not__not_kw(
+            core__cmp__PartialEq__eq(left_val_20, right_val_20)
+          )
+          in bitstring_err()
+          else rust_primitives__hax__Tuple0__Tuple0)
+      else bitstring_err()) in
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)))
+      else (let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+        left_val_21: bitstring,
+        right_val_21: bitstring
+      ) = rust_primitives__hax__Tuple2__Tuple2(
+        let (=True()) = is_true_1
+          in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0))
+          else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
+        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+      ) in
+        (let (=True()) = core__cmp__PartialEq__eq(left_val_21, right_val_21)
+          in bitstring_err()
+          else rust_primitives__hax__Tuple0__Tuple0)
+      else bitstring_err()) in
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val_22, right_val_22)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_23: bitstring,
+    right_val_23: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(
+        core__cmp__PartialEq__eq(left_val_23, right_val_23)
+      )
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_24: bitstring,
+    right_val_24: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(
+        core__cmp__PartialEq__eq(left_val_24, right_val_24)
+      )
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/issue-84561.rs:158 new_tests__rustc_coverage__issue_84561__test1 *)
+(*  @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), proverif(HAX0002, HAX0008, HAX0008, HAX0008), lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008) *)
+letfun new_tests__rustc_coverage__issue_84561__test1(wildcard: bitstring) =
+  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
+    in (let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
+    in (let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = nat_lit(0) in
+  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
+    in (let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (bitstring_err() (* error node *)) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
+    in (let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/issue-84561.rs:172 new_tests__rustc_coverage__issue_84561__test2__call_print *)
+(*  @fail(extraction): ssprove(HAX0001) *)
+letfun new_tests__rustc_coverage__issue_84561__test2__call_print(s: bitstring) =
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__empty, rust_primitives__hax__array_nil()),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_display(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(s))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/issue-84561.rs:182 new_tests__rustc_coverage__issue_84561__test2 *)
+(*  @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008), lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008) *)
+letfun new_tests__rustc_coverage__issue_84561__test2(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__issue_84561__test2__call_print(
+    string_lit__called_x20from_x20call_debug_x3a_x20
+  ) in
+  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
+    in (let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/issue-84561.rs:186 new_tests__rustc_coverage__issue_84561__main *)
+letfun new_tests__rustc_coverage__issue_84561__main(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__issue_84561__test1(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__issue_84561__test2(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__issue_84561__test3(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

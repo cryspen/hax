@@ -9,95 +9,135 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__hint__black_box(bitstring): bitstring [data].
-
+(* src: src/rustc-coverage/condition/conditions.rs:8 new_tests__rustc_coverage__condition__conditions__simple_assign *)
 letfun new_tests__rustc_coverage__condition__conditions__simple_assign(a: bitstring) =
-let x = (a) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+  let wildcard: bitstring = core__hint__black_box(a) in
   rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__condition__conditions__assign_and(a: bitstring,
-b: bitstring) =
-let x = (logical_and(a,
-  b)) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/condition/conditions.rs:13 new_tests__rustc_coverage__condition__conditions__assign_and *)
+letfun new_tests__rustc_coverage__condition__conditions__assign_and(a: bitstring, b: bitstring) =
+  let wildcard: bitstring = core__hint__black_box(logical_and(a, b)) in
   rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__condition__conditions__assign_or(a: bitstring,
-b: bitstring) =
-let x = (logical_or(a,
-  b)) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/condition/conditions.rs:18 new_tests__rustc_coverage__condition__conditions__assign_or *)
+letfun new_tests__rustc_coverage__condition__conditions__assign_or(a: bitstring, b: bitstring) =
+  let wildcard: bitstring = core__hint__black_box(logical_or(a, b)) in
   rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__condition__conditions__assign_3_or_and(a: bitstring,
-b: bitstring,
-c: bitstring) =
-let x = (logical_or(a,
-  logical_and(b,
-  c))) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/condition/conditions.rs:23 new_tests__rustc_coverage__condition__conditions__assign_3_or_and *)
+letfun new_tests__rustc_coverage__condition__conditions__assign_3_or_and(
+  a: bitstring,
+  b: bitstring,
+  c: bitstring
+) =
+  let wildcard: bitstring = core__hint__black_box(logical_or(a, logical_and(b, c))) in
   rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__condition__conditions__assign_3_and_or(a: bitstring,
-b: bitstring,
-c: bitstring) =
-let x = (logical_or(logical_and(a,
-  b),
-  c)) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/condition/conditions.rs:28 new_tests__rustc_coverage__condition__conditions__assign_3_and_or *)
+letfun new_tests__rustc_coverage__condition__conditions__assign_3_and_or(
+  a: bitstring,
+  b: bitstring,
+  c: bitstring
+) =
+  let wildcard: bitstring = core__hint__black_box(logical_or(logical_and(a, b), c)) in
   rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/condition/conditions.rs:33 new_tests__rustc_coverage__condition__conditions__foo *)
 letfun new_tests__rustc_coverage__condition__conditions__foo(a: bitstring) =
-core__hint__black_box(a).
-letfun new_tests__rustc_coverage__condition__conditions__func_call(a: bitstring,
-b: bitstring) =
-let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__foo(logical_and(a,
-  b))) in
+  core__hint__black_box(a).
+(* src: src/rustc-coverage/condition/conditions.rs:37 new_tests__rustc_coverage__condition__conditions__func_call *)
+letfun new_tests__rustc_coverage__condition__conditions__func_call(a: bitstring, b: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__foo(
+    logical_and(a, b)
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/condition/conditions.rs:42 new_tests__rustc_coverage__condition__conditions__main *)
 letfun new_tests__rustc_coverage__condition__conditions__main(wildcard: bitstring) =
-let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__simple_assign(True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__simple_assign(False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_and(True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_and(True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_and(False(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_or(True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_or(True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_or(False(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_3_or_and(True(),
-  False(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_3_or_and(True(),
-  True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_3_or_and(False(),
-  False(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_3_or_and(False(),
-  True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_3_and_or(True(),
-  False(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_3_and_or(True(),
-  True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_3_and_or(False(),
-  False(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__assign_3_and_or(False(),
-  True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__func_call(True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__func_call(True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__condition__conditions__func_call(False(),
-  False())) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__simple_assign(
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__simple_assign(
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_and(
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_and(
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_and(
+    False(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_or(
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_or(
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_or(
+    False(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_3_or_and(
+    True(),
+    False(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_3_or_and(
+    True(),
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_3_or_and(
+    False(),
+    False(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_3_or_and(
+    False(),
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_3_and_or(
+    True(),
+    False(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_3_and_or(
+    True(),
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_3_and_or(
+    False(),
+    False(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__assign_3_and_or(
+    False(),
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__func_call(
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__func_call(
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__condition__conditions__func_call(
+    False(),
+    False()
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.

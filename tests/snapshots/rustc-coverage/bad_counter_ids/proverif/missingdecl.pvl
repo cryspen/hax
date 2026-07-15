@@ -1,0 +1,28 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* DIAGNOSTIC, not part of the model. Each symbol below is       *)
+(* referenced by lib.pvl but has no definition (and is not in    *)
+(* primitives.pvl). Supply a real one by hand, or by extracting  *)
+(* the crate that owns it (e.g. a separately-extracted           *)
+(* dependency). Declared WITHOUT `[data]` because the real       *)
+(* nature (one-way fun / data constructor / letfun) is unknown.  *)
+(* GOAL: this file is EMPTY.                                     *)
+(*****************************************************************)
+const core__panicking__AssertKind__Ne: bitstring.
+const string_lit__a_x0a: bitstring.
+const string_lit__assertion_x20failed_x3a_x20std_x3a_x3apanic_x3a_x3acatch_unwind_x28eq_bad_message_x29_x2eis_err_x28_x29: bitstring.
+const string_lit__assertion_x20failed_x3a_x20std_x3a_x3apanic_x3a_x3acatch_unwind_x28eq_bad_x29_x2eis_err_x28_x29: bitstring.
+const string_lit__assertion_x20failed_x3a_x20std_x3a_x3apanic_x3a_x3acatch_unwind_x28ne_bad_message_x29_x2eis_err_x28_x29: bitstring.
+const string_lit__assertion_x20failed_x3a_x20std_x3a_x3apanic_x3a_x3acatch_unwind_x28ne_bad_x29_x2eis_err_x28_x29: bitstring.
+const string_lit__b_x0a: bitstring.
+const string_lit__c_x0a: bitstring.
+const string_lit__d_x0a: bitstring.
+const string_lit__e_x0a: bitstring.
+const string_lit__f_x0a: bitstring.
+const string_lit__g_x0a: bitstring.
+const string_lit__h_x0a: bitstring.
+const string_lit__message_x20b: bitstring.
+const string_lit__message_x20d: bitstring.
+const string_lit__message_x20f: bitstring.
+const string_lit__message_x20h: bitstring.

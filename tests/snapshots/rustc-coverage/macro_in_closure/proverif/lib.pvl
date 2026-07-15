@@ -9,18 +9,26 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__fmt__rt__Impl_1__new_const(bitstring): bitstring [data].
-fun std__io__stdio__u_print(bitstring): bitstring [data].
-const string_lit__hello_x0a: bitstring.
-
+(* src: src/rustc-coverage/macro_in_closure.rs:8 new_tests__rustc_coverage__macro_in_closure__NO_BLOCK *)
 const new_tests__rustc_coverage__macro_in_closure__NO_BLOCK: bitstring.
+(* src: src/rustc-coverage/macro_in_closure.rs:10 new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK *)
 const new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK: bitstring.
+(* src: src/rustc-coverage/macro_in_closure.rs:15 new_tests__rustc_coverage__macro_in_closure__main *)
 letfun new_tests__rustc_coverage__macro_in_closure__main(wildcard: bitstring) =
-let wildcard: bitstring = (new_tests__rustc_coverage__macro_in_closure__NO_BLOCK(rust_primitives__hax__Tuple0__Tuple0)) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK(rust_primitives__hax__Tuple0__Tuple0)) in
+  let wildcard: bitstring = new_tests__rustc_coverage__macro_in_closure__NO_BLOCK(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.

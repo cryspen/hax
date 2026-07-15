@@ -9,11 +9,24 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
+(* src: src/rustc-coverage/no_spans_if_not.rs:18 new_tests__rustc_coverage__no_spans_if_not__affected_function *)
 letfun new_tests__rustc_coverage__no_spans_if_not__affected_function(wildcard: bitstring) =
-let (=True()) = core__ops__bit__Not__not_kw(False()) in (rust_primitives__hax__Tuple0__Tuple0()) else (rust_primitives__hax__Tuple0__Tuple0()).
+  let (=True()) = core__ops__bit__Not__not_kw(False())
+    in rust_primitives__hax__Tuple0__Tuple0()
+    else rust_primitives__hax__Tuple0__Tuple0().
+(* src: src/rustc-coverage/no_spans_if_not.rs:12 new_tests__rustc_coverage__no_spans_if_not__main *)
 letfun new_tests__rustc_coverage__no_spans_if_not__main(wildcard: bitstring) =
-let wildcard: bitstring = (new_tests__rustc_coverage__no_spans_if_not__affected_function(rust_primitives__hax__Tuple0__Tuple0)) in
+  let wildcard: bitstring = new_tests__rustc_coverage__no_spans_if_not__affected_function(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.

@@ -9,116 +9,158 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__hint__black_box(bitstring): bitstring [data].
-
-letfun new_tests__rustc_coverage__mcdc__non_control_flow__assign_and(a: bitstring,
-b: bitstring) =
-let x = (logical_and(a,
-  b)) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/mcdc/non_control_flow.rs:11 new_tests__rustc_coverage__mcdc__non_control_flow__assign_and *)
+letfun new_tests__rustc_coverage__mcdc__non_control_flow__assign_and(a: bitstring, b: bitstring) =
+  let wildcard: bitstring = core__hint__black_box(logical_and(a, b)) in
   rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__mcdc__non_control_flow__assign_or(a: bitstring,
-b: bitstring) =
-let x = (logical_or(a,
-  b)) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/mcdc/non_control_flow.rs:16 new_tests__rustc_coverage__mcdc__non_control_flow__assign_or *)
+letfun new_tests__rustc_coverage__mcdc__non_control_flow__assign_or(a: bitstring, b: bitstring) =
+  let wildcard: bitstring = core__hint__black_box(logical_or(a, b)) in
   rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(a: bitstring,
-b: bitstring,
-c: bitstring) =
-let x = (logical_or(a,
-  logical_and(b,
-  c))) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/mcdc/non_control_flow.rs:21 new_tests__rustc_coverage__mcdc__non_control_flow__assign_3 *)
+letfun new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(
+  a: bitstring,
+  b: bitstring,
+  c: bitstring
+) =
+  let wildcard: bitstring = core__hint__black_box(logical_or(a, logical_and(b, c))) in
   rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(a: bitstring,
-b: bitstring,
-c: bitstring) =
-let x = (logical_or(logical_and(a,
-  b),
-  c)) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/mcdc/non_control_flow.rs:26 new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis *)
+letfun new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(
+  a: bitstring,
+  b: bitstring,
+  c: bitstring
+) =
+  let wildcard: bitstring = core__hint__black_box(logical_or(logical_and(a, b), c)) in
   rust_primitives__hax__Tuple0__Tuple0.
-letfun new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree(a: bitstring,
-b: bitstring,
-c: bitstring,
-d: bitstring,
-e: bitstring) =
-let x = (logical_and(a,
-  logical_and(b,
-  logical_and(c,
-  logical_and(d,
-  e))))) in
-  let wildcard: bitstring = (core__hint__black_box(x)) in
+(* src: src/rustc-coverage/mcdc/non_control_flow.rs:31 new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree *)
+letfun new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree(
+  a: bitstring,
+  b: bitstring,
+  c: bitstring,
+  d: bitstring,
+  e: bitstring
+) =
+  let wildcard: bitstring = core__hint__black_box(
+    logical_and(a, logical_and(b, logical_and(c, logical_and(d, e))))
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/mcdc/non_control_flow.rs:36 new_tests__rustc_coverage__mcdc__non_control_flow__foo *)
 letfun new_tests__rustc_coverage__mcdc__non_control_flow__foo(a: bitstring) =
-core__hint__black_box(a).
-letfun new_tests__rustc_coverage__mcdc__non_control_flow__func_call(a: bitstring,
-b: bitstring) =
-let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__foo(logical_and(a,
-  b))) in
+  core__hint__black_box(a).
+(* src: src/rustc-coverage/mcdc/non_control_flow.rs:40 new_tests__rustc_coverage__mcdc__non_control_flow__func_call *)
+letfun new_tests__rustc_coverage__mcdc__non_control_flow__func_call(a: bitstring, b: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__foo(
+    logical_and(a, b)
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/mcdc/non_control_flow.rs:45 new_tests__rustc_coverage__mcdc__non_control_flow__main *)
 letfun new_tests__rustc_coverage__mcdc__non_control_flow__main(wildcard: bitstring) =
-let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_and(True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_and(True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_and(False(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_or(True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_or(True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_or(False(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(True(),
-  False(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(True(),
-  True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(False(),
-  False(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(False(),
-  True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(True(),
-  False(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(True(),
-  True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(False(),
-  False(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(False(),
-  True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree(False(),
-  False(),
-  False(),
-  True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree(True(),
-  False(),
-  False(),
-  True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree(True(),
-  True(),
-  True(),
-  True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__func_call(True(),
-  False())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__func_call(True(),
-  True())) in
-  let wildcard: bitstring = (new_tests__rustc_coverage__mcdc__non_control_flow__func_call(False(),
-  False())) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_and(
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_and(
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_and(
+    False(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_or(
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_or(
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_or(
+    False(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(
+    True(),
+    False(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(
+    True(),
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(
+    False(),
+    False(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_3(
+    False(),
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(
+    True(),
+    False(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(
+    True(),
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(
+    False(),
+    False(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__assign_3_bis(
+    False(),
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree(
+    False(),
+    False(),
+    False(),
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree(
+    True(),
+    False(),
+    False(),
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__right_comb_tree(
+    True(),
+    True(),
+    True(),
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__func_call(
+    True(),
+    False()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__func_call(
+    True(),
+    True()
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__mcdc__non_control_flow__func_call(
+    False(),
+    False()
+  ) in
   rust_primitives__hax__Tuple0__Tuple0.

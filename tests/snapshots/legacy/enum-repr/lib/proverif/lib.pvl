@@ -9,23 +9,43 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-
+(* src: src/legacy/enum-repr/lib.rs:4 new_tests__legacy__enum_repr__lib__EnumWithRepr *)
 fun new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr1(): bitstring [data].
 fun new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2(): bitstring [data].
 fun new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyTuple(): bitstring [data].
 fun new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyStruct(): bitstring [data].
+(* src: src/legacy/enum-repr/lib.rs:4 new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr1__AnonConst *)
 const new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr1__AnonConst: bitstring.
+(* src: src/legacy/enum-repr/lib.rs:4 new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst *)
 const new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst: bitstring.
+(* src: src/legacy/enum-repr/lib.rs:4 new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr *)
 letfun new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(x: bitstring) =
-let new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr1() = x in (new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr1__AnonConst)
-  else let new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2() = x in (new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst)
-  else let new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyTuple() = x in (rust_primitives__hax__machine_int__add(new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst,
-  nat_lit(1)))
-  else let new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyStruct() = x in (rust_primitives__hax__machine_int__add(new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst,
-  nat_lit(2)))
+  let new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr1() = x in
+    new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr1__AnonConst
+  else let new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2() = x in
+    new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst
+  else let new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyTuple() = x in
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst,
+      nat_lit(1)
+    )
+  else let new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyStruct() = x in
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst,
+      nat_lit(2)
+    )
   else bitstring_err().
+(* src: src/legacy/enum-repr/lib.rs:12 new_tests__legacy__enum_repr__lib__ImplicitReprs *)
 fun new_tests__legacy__enum_repr__lib__ImplicitReprs__A(): bitstring [data].
 fun new_tests__legacy__enum_repr__lib__ImplicitReprs__B(): bitstring [data].
 fun new_tests__legacy__enum_repr__lib__ImplicitReprs__C(): bitstring [data].
@@ -35,29 +55,56 @@ fun new_tests__legacy__enum_repr__lib__ImplicitReprs__F(): bitstring [data].
 fun new_tests__legacy__enum_repr__lib__ImplicitReprs__G(): bitstring [data].
 fun new_tests__legacy__enum_repr__lib__ImplicitReprs__H(): bitstring [data].
 fun new_tests__legacy__enum_repr__lib__ImplicitReprs__I(): bitstring [data].
+(* src: src/legacy/enum-repr/lib.rs:12 new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst *)
 const new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst: bitstring.
+(* src: src/legacy/enum-repr/lib.rs:12 new_tests__legacy__enum_repr__lib__ImplicitReprs_cast_to_repr *)
 letfun new_tests__legacy__enum_repr__lib__ImplicitReprs_cast_to_repr(x: bitstring) =
-let new_tests__legacy__enum_repr__lib__ImplicitReprs__A() = x in (nat_lit(0))
-  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__B() = x in (nat_lit(1))
-  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__C() = x in (nat_lit(2))
-  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__D() = x in (nat_lit(3))
-  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__E() = x in (new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst)
-  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__F() = x in (rust_primitives__hax__machine_int__add(new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst,
-  nat_lit(1)))
-  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__G() = x in (rust_primitives__hax__machine_int__add(new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst,
-  nat_lit(2)))
-  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__H() = x in (rust_primitives__hax__machine_int__add(new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst,
-  nat_lit(3)))
-  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__I() = x in (rust_primitives__hax__machine_int__add(new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst,
-  nat_lit(4)))
+  let new_tests__legacy__enum_repr__lib__ImplicitReprs__A() = x in nat_lit(0)
+  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__B() = x in nat_lit(1)
+  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__C() = x in nat_lit(2)
+  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__D() = x in nat_lit(3)
+  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__E() = x in
+    new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst
+  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__F() = x in
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst,
+      nat_lit(1)
+    )
+  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__G() = x in
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst,
+      nat_lit(2)
+    )
+  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__H() = x in
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst,
+      nat_lit(3)
+    )
+  else let new_tests__legacy__enum_repr__lib__ImplicitReprs__I() = x in
+    rust_primitives__hax__machine_int__add(
+      new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst,
+      nat_lit(4)
+    )
   else bitstring_err().
+(* src: src/legacy/enum-repr/lib.rs:24 new_tests__legacy__enum_repr__lib__f *)
 letfun new_tests__legacy__enum_repr__lib__f(wildcard: bitstring) =
-let u_x = (rust_primitives__hax__machine_int__add(new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst,
-  nat_lit(0))) in
-  rust_primitives__hax__machine_int__add(new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyTuple()),
-  new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyStruct())).
+  let u_x = rust_primitives__hax__machine_int__add(
+    new_tests__legacy__enum_repr__lib__EnumWithRepr__ExplicitDiscr2__AnonConst,
+    nat_lit(0)
+  ) in
+  rust_primitives__hax__machine_int__add(
+    new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(
+      new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyTuple()
+    ),
+    new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(
+      new_tests__legacy__enum_repr__lib__EnumWithRepr__ImplicitDiscrEmptyStruct()
+    )
+  ).
+(* src: src/legacy/enum-repr/lib.rs:25 new_tests__legacy__enum_repr__lib__f__CONST *)
 const new_tests__legacy__enum_repr__lib__f__CONST: bitstring.
+(* src: src/legacy/enum-repr/lib.rs:31 new_tests__legacy__enum_repr__lib__get_repr *)
 letfun new_tests__legacy__enum_repr__lib__get_repr(x: bitstring) =
-new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(x).
+  new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(x).
+(* src: src/legacy/enum-repr/lib.rs:35 new_tests__legacy__enum_repr__lib__get_casted_repr *)
 letfun new_tests__legacy__enum_repr__lib__get_casted_repr(x: bitstring) =
-new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(x).
+  new_tests__legacy__enum_repr__lib__EnumWithRepr_cast_to_repr(x).

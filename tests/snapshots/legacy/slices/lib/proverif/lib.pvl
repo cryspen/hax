@@ -9,18 +9,29 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__ops__index__Index__index(bitstring, bitstring): bitstring [data].
-
+(* src: src/legacy/slices/lib.rs:7 new_tests__legacy__slices__lib__VERSION *)
 const new_tests__legacy__slices__lib__VERSION: bitstring.
+(* src: src/legacy/slices/lib.rs:11 new_tests__legacy__slices__lib__do_something *)
 letfun new_tests__legacy__slices__lib__do_something(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/slices/lib.rs:17 new_tests__legacy__slices__lib__r#unsized *)
 letfun new_tests__legacy__slices__lib__r#unsized(wildcard: bitstring) =
-rust_primitives__hax__Tuple0__Tuple0.
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/slices/lib.rs:13 new_tests__legacy__slices__lib__sized *)
 letfun new_tests__legacy__slices__lib__sized(x: bitstring) =
-new_tests__legacy__slices__lib__r#unsized(rust_primitives__hax__array_cons(core__ops__index__Index__index(x,
-  nat_lit(0)), rust_primitives__hax__array_nil())).
+  new_tests__legacy__slices__lib__r#unsized(
+    rust_primitives__hax__array_cons(core__ops__index__Index__index(
+      x,
+      nat_lit(0)
+    ), rust_primitives__hax__array_nil())
+  ).

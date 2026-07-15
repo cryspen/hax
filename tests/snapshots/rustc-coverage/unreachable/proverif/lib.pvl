@@ -9,22 +9,44 @@
   `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
 *)
 
-(*****************************************)
-(* Auto-declared external symbols        *)
-(*****************************************)
-fun core__hint__black_box(bitstring): bitstring [data].
-
+(* src: src/rustc-coverage/unreachable.rs:16 new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE *)
+(*  @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008) *)
 const new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE: bitstring.
+(* src: src/rustc-coverage/unreachable.rs:19 new_tests__rustc_coverage__unreachable__unreachable_function *)
+(*  @fail(extraction): coq(HAX0008), ssprove(HAX0008), proverif(HAX0008) *)
 letfun new_tests__rustc_coverage__unreachable__unreachable_function(wildcard: bitstring) =
-bitstring_err() (* error node *).
+  bitstring_err() (* error node *).
+(* src: src/rustc-coverage/unreachable.rs:25 new_tests__rustc_coverage__unreachable__unreachable_intrinsic *)
+(*  @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008) *)
 letfun new_tests__rustc_coverage__unreachable__unreachable_intrinsic(wildcard: bitstring) =
-bitstring_err() (* error node *).
+  bitstring_err() (* error node *).
+(* src: src/rustc-coverage/unreachable.rs:30 new_tests__rustc_coverage__unreachable__main *)
 letfun new_tests__rustc_coverage__unreachable__main(wildcard: bitstring) =
-let wildcard: bitstring = (let (=True()) = core__hint__black_box(False()) in (let wildcard: bitstring = (new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE(rust_primitives__hax__Tuple0__Tuple0)) in
-  rust_primitives__hax__Tuple0__Tuple0) else (rust_primitives__hax__Tuple0__Tuple0)) in
-  let wildcard: bitstring = (let (=True()) = core__hint__black_box(False()) in (let wildcard: bitstring = (new_tests__rustc_coverage__unreachable__unreachable_function(rust_primitives__hax__Tuple0__Tuple0)) in
-  rust_primitives__hax__Tuple0__Tuple0) else (rust_primitives__hax__Tuple0__Tuple0)) in
-  let (=True()) = core__hint__black_box(False()) in (let wildcard: bitstring = (new_tests__rustc_coverage__unreachable__unreachable_intrinsic(rust_primitives__hax__Tuple0__Tuple0)) in
-  rust_primitives__hax__Tuple0__Tuple0) else (rust_primitives__hax__Tuple0__Tuple0).
+  let wildcard: bitstring = (let (=True()) = core__hint__black_box(False())
+    in (let wildcard: bitstring = new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE(
+      rust_primitives__hax__Tuple0__Tuple0
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__hint__black_box(False())
+    in (let wildcard: bitstring = new_tests__rustc_coverage__unreachable__unreachable_function(
+      rust_primitives__hax__Tuple0__Tuple0
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let (=True()) = core__hint__black_box(False())
+    in (let wildcard: bitstring = new_tests__rustc_coverage__unreachable__unreachable_intrinsic(
+      rust_primitives__hax__Tuple0__Tuple0
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0.

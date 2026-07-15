@@ -1,213 +1,1143 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-const new_tests__rustc_coverage__conditions__main__v_B: bitstring.
-
-letfun new_tests__rustc_coverage__conditions__main(wildcard4 : bitstring) =
-       let countdown = (0) in
-       let countdown = (
-         if true
-         then
-           (let countdown = (10) in
-            countdown)
-         else (countdown)
-       ) in
-       let (countdown: nat, x: nat) = (
-         if core_models__cmp__f_gt(countdown, 7)
-         then
-           (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-            (countdown, new_tests__rustc_coverage__conditions__main__v_B))
-         else (
-           if core_models__cmp__f_gt(countdown, 2)
-           then
-             (let countdown = (
-                if
-                  core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                      countdown, 5
-                    ) || core_models__cmp__f_ne(countdown, 9)
-                then
-                  (let countdown = (0) in
-                   countdown)
-                else (countdown)
-              ) in
-              let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-              (countdown, countdown))
-           else (
-             let hoist1 = (todo return;) in
-             (countdown, nat_err())
-           )
-         )
-       ) in
-       let countdown = (0) in
-       let countdown = (
-         if true
-         then
-           (let countdown = (10) in
-            countdown)
-         else (countdown)
-       ) in
-       let countdown = (
-         if core_models__cmp__f_gt(countdown, 7)
-         then
-           (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-            countdown)
-         else (
-           if core_models__cmp__f_gt(countdown, 2)
-           then
-             (let countdown = (
-                if
-                  core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                      countdown, 5
-                    ) || core_models__cmp__f_ne(countdown, 9)
-                then
-                  (let countdown = (0) in
-                   countdown)
-                else (countdown)
-              ) in
-              let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-              countdown)
-           else (
-             let hoist2 = (todo return;) in
-             countdown
-           )
-         )
-       ) in
-       let wildcard3: bitstring = (
-         if true
-         then
-           (let countdown = (0) in
-            let countdown = (
-              if true
-              then
-                (let countdown = (10) in
-                 countdown)
-              else (countdown)
+(* src: src/rustc-coverage/conditions.rs:10 new_tests__rustc_coverage__conditions__main__B *)
+const new_tests__rustc_coverage__conditions__main__B: bitstring.
+(* src: src/rustc-coverage/conditions.rs:4 new_tests__rustc_coverage__conditions__main *)
+letfun new_tests__rustc_coverage__conditions__main(wildcard: bitstring) =
+  let countdown_2 = (let (=True()) = True() in nat_lit(10) else nat_lit(0)) in
+  let (=True()) = rust_primitives__hax__machine_int__gt(countdown_2, nat_lit(7))
+    in (let countdown_3 = rust_primitives__hax__machine_int__sub(countdown_2, nat_lit(4)) in
+    let x = new_tests__rustc_coverage__conditions__main__B in
+    let countdown_6 = (let (=True()) = True() in nat_lit(10) else nat_lit(0)) in
+    let (=True()) = rust_primitives__hax__machine_int__gt(countdown_6, nat_lit(7))
+      in (let countdown_7 = rust_primitives__hax__machine_int__sub(countdown_6, nat_lit(4)) in
+      let (=True()) = True()
+        in (let countdown_10 = (let (=True()) = True() in nat_lit(10) else nat_lit(0)) in
+        let (=True()) = rust_primitives__hax__machine_int__gt(countdown_10, nat_lit(7))
+          in (let countdown_11 = rust_primitives__hax__machine_int__sub(countdown_10, nat_lit(4)) in
+          let countdown_14 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+          let (=True()) = rust_primitives__hax__machine_int__gt(countdown_14, nat_lit(7))
+            in (let countdown_15 = rust_primitives__hax__machine_int__sub(
+              countdown_14,
+              nat_lit(4)
             ) in
-            if core_models__cmp__f_gt(countdown, 7)
-            then
-              (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-               ())
-            else (
-              if core_models__cmp__f_gt(countdown, 2)
-              then
-                (let countdown = (
-                   if
-                     core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                         countdown, 5
-                       ) || core_models__cmp__f_ne(countdown, 9)
-                   then
-                     (let countdown = (0) in
-                      countdown)
-                   else (countdown)
-                 ) in
-                 let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-                 ())
-              else (
-                let hoist3 = (todo return;) in
-                bitstring_err()
+            let z = rust_primitives__hax__Tuple0__Tuple0 in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_15, nat_lit(7))
+              in (let countdown_16 = rust_primitives__hax__machine_int__sub(
+                countdown_15,
+                nat_lit(4)
+              ) in
+              let w = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0)
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_15, nat_lit(2))
+                in (let countdown_18 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_15, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_15, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_15, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_15) in
+                let countdown_19 = rust_primitives__hax__machine_int__sub(
+                  countdown_18,
+                  nat_lit(5)
+                ) in
+                let w_1 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else rust_primitives__hax__Tuple0__Tuple0))
+            else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_14, nat_lit(2))
+              in (let countdown_21 = (let (=True()) = logical_or(
+                  logical_or(
+                    rust_primitives__hax__machine_int__lt(countdown_14, nat_lit(1)),
+                    rust_primitives__hax__machine_int__gt(countdown_14, nat_lit(5))
+                  ),
+                  rust_primitives__hax__machine_int__ne(countdown_14, nat_lit(9))
+                )
+                in nat_lit(0)
+                else countdown_14) in
+              let countdown_22 = rust_primitives__hax__machine_int__sub(countdown_21, nat_lit(5)) in
+              let z_1 = rust_primitives__hax__Tuple0__Tuple0 in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_22, nat_lit(7))
+                in (let countdown_23 = rust_primitives__hax__machine_int__sub(
+                  countdown_22,
+                  nat_lit(4)
+                ) in
+                let w_2 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_22,
+                    nat_lit(2)
+                  )
+                  in (let countdown_25 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_22, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_22, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_22, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_22) in
+                  let countdown_26 = rust_primitives__hax__machine_int__sub(
+                    countdown_25,
+                    nat_lit(5)
+                  ) in
+                  let w_3 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else rust_primitives__hax__Tuple0__Tuple0))
+              else (let should_be_reachable = countdown_14 in
+              let wildcard: bitstring = std__io__stdio__u_print(
+                core__fmt__rt__Impl_1__new_const(
+                  rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                )
+              ) in
+              let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0)))
+          else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_10, nat_lit(2))
+            in (let countdown_28 = (let (=True()) = logical_or(
+                logical_or(
+                  rust_primitives__hax__machine_int__lt(countdown_10, nat_lit(1)),
+                  rust_primitives__hax__machine_int__gt(countdown_10, nat_lit(5))
+                ),
+                rust_primitives__hax__machine_int__ne(countdown_10, nat_lit(9))
               )
-            ))
-         else (())
-       ) in
-       let countdown = (0) in
-       let countdown = (
-         if true
-         then
-           (let countdown = (1) in
-            countdown)
-         else (countdown)
-       ) in
-       let (countdown: nat, z: bitstring) = (
-         if core_models__cmp__f_gt(countdown, 7)
-         then
-           (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-            (countdown, ()))
-         else (
-           if core_models__cmp__f_gt(countdown, 2)
-           then
-             (let countdown = (
-                if
-                  core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                      countdown, 5
-                    ) || core_models__cmp__f_ne(countdown, 9)
-                then
-                  (let countdown = (0) in
-                   countdown)
-                else (countdown)
+              in nat_lit(0)
+              else countdown_10) in
+            let countdown_29 = rust_primitives__hax__machine_int__sub(countdown_28, nat_lit(5)) in
+            let countdown_32 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_32, nat_lit(7))
+              in (let countdown_33 = rust_primitives__hax__machine_int__sub(
+                countdown_32,
+                nat_lit(4)
               ) in
-              let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-              (countdown, ()))
-           else (
-             let should_be_reachable = (countdown) in
-             let wildcard2: bitstring = (
-               std__io__stdio__e_print(
-                 core_models__fmt__rt__impl_1__new_const(["reached
-"])
-               )
-             ) in
-             let wildcard1: bitstring = (()) in
-             let hoist4 = (todo return;) in
-             (countdown, bitstring_err())
-           )
-         )
-       ) in
-       let (countdown: nat, w: bitstring) = (
-         if core_models__cmp__f_gt(countdown, 7)
-         then
-           (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-            (countdown, ()))
-         else (
-           if core_models__cmp__f_gt(countdown, 2)
-           then
-             (let countdown = (
-                if
-                  core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                      countdown, 5
-                    ) || core_models__cmp__f_ne(countdown, 9)
-                then
-                  (let countdown = (0) in
-                   countdown)
-                else (countdown)
+              let z_2 = rust_primitives__hax__Tuple0__Tuple0 in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_33, nat_lit(7))
+                in (let countdown_34 = rust_primitives__hax__machine_int__sub(
+                  countdown_33,
+                  nat_lit(4)
+                ) in
+                let w_4 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_33,
+                    nat_lit(2)
+                  )
+                  in (let countdown_36 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_33, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_33, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_33, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_33) in
+                  let countdown_37 = rust_primitives__hax__machine_int__sub(
+                    countdown_36,
+                    nat_lit(5)
+                  ) in
+                  let w_5 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else rust_primitives__hax__Tuple0__Tuple0))
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_32, nat_lit(2))
+                in (let countdown_39 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_32, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_32, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_32, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_32) in
+                let countdown_40 = rust_primitives__hax__machine_int__sub(
+                  countdown_39,
+                  nat_lit(5)
+                ) in
+                let z_3 = rust_primitives__hax__Tuple0__Tuple0 in
+                let (=True()) = rust_primitives__hax__machine_int__gt(countdown_40, nat_lit(7))
+                  in (let countdown_41 = rust_primitives__hax__machine_int__sub(
+                    countdown_40,
+                    nat_lit(4)
+                  ) in
+                  let w_6 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                      countdown_40,
+                      nat_lit(2)
+                    )
+                    in (let countdown_43 = (let (=True()) = logical_or(
+                        logical_or(
+                          rust_primitives__hax__machine_int__lt(countdown_40, nat_lit(1)),
+                          rust_primitives__hax__machine_int__gt(countdown_40, nat_lit(5))
+                        ),
+                        rust_primitives__hax__machine_int__ne(countdown_40, nat_lit(9))
+                      )
+                      in nat_lit(0)
+                      else countdown_40) in
+                    let countdown_44 = rust_primitives__hax__machine_int__sub(
+                      countdown_43,
+                      nat_lit(5)
+                    ) in
+                    let w_7 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else rust_primitives__hax__Tuple0__Tuple0))
+                else (let should_be_reachable_1 = countdown_32 in
+                let wildcard: bitstring = std__io__stdio__u_print(
+                  core__fmt__rt__Impl_1__new_const(
+                    rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                  )
+                ) in
+                let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)))
+            else rust_primitives__hax__Tuple0__Tuple0))
+        else (let countdown_47 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+        let (=True()) = rust_primitives__hax__machine_int__gt(countdown_47, nat_lit(7))
+          in (let countdown_48 = rust_primitives__hax__machine_int__sub(countdown_47, nat_lit(4)) in
+          let z_4 = rust_primitives__hax__Tuple0__Tuple0 in
+          let (=True()) = rust_primitives__hax__machine_int__gt(countdown_48, nat_lit(7))
+            in (let countdown_49 = rust_primitives__hax__machine_int__sub(
+              countdown_48,
+              nat_lit(4)
+            ) in
+            let w_8 = rust_primitives__hax__Tuple0__Tuple0 in
+            rust_primitives__hax__Tuple0__Tuple0)
+            else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_48, nat_lit(2))
+              in (let countdown_51 = (let (=True()) = logical_or(
+                  logical_or(
+                    rust_primitives__hax__machine_int__lt(countdown_48, nat_lit(1)),
+                    rust_primitives__hax__machine_int__gt(countdown_48, nat_lit(5))
+                  ),
+                  rust_primitives__hax__machine_int__ne(countdown_48, nat_lit(9))
+                )
+                in nat_lit(0)
+                else countdown_48) in
+              let countdown_52 = rust_primitives__hax__machine_int__sub(countdown_51, nat_lit(5)) in
+              let w_9 = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0)
+              else rust_primitives__hax__Tuple0__Tuple0))
+          else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_47, nat_lit(2))
+            in (let countdown_54 = (let (=True()) = logical_or(
+                logical_or(
+                  rust_primitives__hax__machine_int__lt(countdown_47, nat_lit(1)),
+                  rust_primitives__hax__machine_int__gt(countdown_47, nat_lit(5))
+                ),
+                rust_primitives__hax__machine_int__ne(countdown_47, nat_lit(9))
+              )
+              in nat_lit(0)
+              else countdown_47) in
+            let countdown_55 = rust_primitives__hax__machine_int__sub(countdown_54, nat_lit(5)) in
+            let z_5 = rust_primitives__hax__Tuple0__Tuple0 in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_55, nat_lit(7))
+              in (let countdown_56 = rust_primitives__hax__machine_int__sub(
+                countdown_55,
+                nat_lit(4)
               ) in
-              let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-              (countdown, ()))
-           else (
-             let hoist5 = (todo return;) in
-             (countdown, bitstring_err())
-           )
-         )
-       ) in
-       ().
-
+              let w_10 = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0)
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_55, nat_lit(2))
+                in (let countdown_58 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_55, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_55, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_55, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_55) in
+                let countdown_59 = rust_primitives__hax__machine_int__sub(
+                  countdown_58,
+                  nat_lit(5)
+                ) in
+                let w_11 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else rust_primitives__hax__Tuple0__Tuple0))
+            else (let should_be_reachable_2 = countdown_47 in
+            let wildcard: bitstring = std__io__stdio__u_print(
+              core__fmt__rt__Impl_1__new_const(
+                rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+              )
+            ) in
+            let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+            rust_primitives__hax__Tuple0__Tuple0))))
+      else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_6, nat_lit(2))
+        in (let countdown_61 = (let (=True()) = logical_or(
+            logical_or(
+              rust_primitives__hax__machine_int__lt(countdown_6, nat_lit(1)),
+              rust_primitives__hax__machine_int__gt(countdown_6, nat_lit(5))
+            ),
+            rust_primitives__hax__machine_int__ne(countdown_6, nat_lit(9))
+          )
+          in nat_lit(0)
+          else countdown_6) in
+        let countdown_62 = rust_primitives__hax__machine_int__sub(countdown_61, nat_lit(5)) in
+        let (=True()) = True()
+          in (let countdown_65 = (let (=True()) = True() in nat_lit(10) else nat_lit(0)) in
+          let (=True()) = rust_primitives__hax__machine_int__gt(countdown_65, nat_lit(7))
+            in (let countdown_66 = rust_primitives__hax__machine_int__sub(
+              countdown_65,
+              nat_lit(4)
+            ) in
+            let countdown_69 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_69, nat_lit(7))
+              in (let countdown_70 = rust_primitives__hax__machine_int__sub(
+                countdown_69,
+                nat_lit(4)
+              ) in
+              let z_6 = rust_primitives__hax__Tuple0__Tuple0 in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_70, nat_lit(7))
+                in (let countdown_71 = rust_primitives__hax__machine_int__sub(
+                  countdown_70,
+                  nat_lit(4)
+                ) in
+                let w_12 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_70,
+                    nat_lit(2)
+                  )
+                  in (let countdown_73 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_70, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_70, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_70, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_70) in
+                  let countdown_74 = rust_primitives__hax__machine_int__sub(
+                    countdown_73,
+                    nat_lit(5)
+                  ) in
+                  let w_13 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else rust_primitives__hax__Tuple0__Tuple0))
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_69, nat_lit(2))
+                in (let countdown_76 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_69, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_69, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_69, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_69) in
+                let countdown_77 = rust_primitives__hax__machine_int__sub(
+                  countdown_76,
+                  nat_lit(5)
+                ) in
+                let z_7 = rust_primitives__hax__Tuple0__Tuple0 in
+                let (=True()) = rust_primitives__hax__machine_int__gt(countdown_77, nat_lit(7))
+                  in (let countdown_78 = rust_primitives__hax__machine_int__sub(
+                    countdown_77,
+                    nat_lit(4)
+                  ) in
+                  let w_14 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                      countdown_77,
+                      nat_lit(2)
+                    )
+                    in (let countdown_80 = (let (=True()) = logical_or(
+                        logical_or(
+                          rust_primitives__hax__machine_int__lt(countdown_77, nat_lit(1)),
+                          rust_primitives__hax__machine_int__gt(countdown_77, nat_lit(5))
+                        ),
+                        rust_primitives__hax__machine_int__ne(countdown_77, nat_lit(9))
+                      )
+                      in nat_lit(0)
+                      else countdown_77) in
+                    let countdown_81 = rust_primitives__hax__machine_int__sub(
+                      countdown_80,
+                      nat_lit(5)
+                    ) in
+                    let w_15 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else rust_primitives__hax__Tuple0__Tuple0))
+                else (let should_be_reachable_3 = countdown_69 in
+                let wildcard: bitstring = std__io__stdio__u_print(
+                  core__fmt__rt__Impl_1__new_const(
+                    rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                  )
+                ) in
+                let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)))
+            else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_65, nat_lit(2))
+              in (let countdown_83 = (let (=True()) = logical_or(
+                  logical_or(
+                    rust_primitives__hax__machine_int__lt(countdown_65, nat_lit(1)),
+                    rust_primitives__hax__machine_int__gt(countdown_65, nat_lit(5))
+                  ),
+                  rust_primitives__hax__machine_int__ne(countdown_65, nat_lit(9))
+                )
+                in nat_lit(0)
+                else countdown_65) in
+              let countdown_84 = rust_primitives__hax__machine_int__sub(countdown_83, nat_lit(5)) in
+              let countdown_87 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_87, nat_lit(7))
+                in (let countdown_88 = rust_primitives__hax__machine_int__sub(
+                  countdown_87,
+                  nat_lit(4)
+                ) in
+                let z_8 = rust_primitives__hax__Tuple0__Tuple0 in
+                let (=True()) = rust_primitives__hax__machine_int__gt(countdown_88, nat_lit(7))
+                  in (let countdown_89 = rust_primitives__hax__machine_int__sub(
+                    countdown_88,
+                    nat_lit(4)
+                  ) in
+                  let w_16 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                      countdown_88,
+                      nat_lit(2)
+                    )
+                    in (let countdown_91 = (let (=True()) = logical_or(
+                        logical_or(
+                          rust_primitives__hax__machine_int__lt(countdown_88, nat_lit(1)),
+                          rust_primitives__hax__machine_int__gt(countdown_88, nat_lit(5))
+                        ),
+                        rust_primitives__hax__machine_int__ne(countdown_88, nat_lit(9))
+                      )
+                      in nat_lit(0)
+                      else countdown_88) in
+                    let countdown_92 = rust_primitives__hax__machine_int__sub(
+                      countdown_91,
+                      nat_lit(5)
+                    ) in
+                    let w_17 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else rust_primitives__hax__Tuple0__Tuple0))
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_87,
+                    nat_lit(2)
+                  )
+                  in (let countdown_94 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_87, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_87, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_87, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_87) in
+                  let countdown_95 = rust_primitives__hax__machine_int__sub(
+                    countdown_94,
+                    nat_lit(5)
+                  ) in
+                  let z_9 = rust_primitives__hax__Tuple0__Tuple0 in
+                  let (=True()) = rust_primitives__hax__machine_int__gt(countdown_95, nat_lit(7))
+                    in (let countdown_96 = rust_primitives__hax__machine_int__sub(
+                      countdown_95,
+                      nat_lit(4)
+                    ) in
+                    let w_18 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                        countdown_95,
+                        nat_lit(2)
+                      )
+                      in (let countdown_98 = (let (=True()) = logical_or(
+                          logical_or(
+                            rust_primitives__hax__machine_int__lt(countdown_95, nat_lit(1)),
+                            rust_primitives__hax__machine_int__gt(countdown_95, nat_lit(5))
+                          ),
+                          rust_primitives__hax__machine_int__ne(countdown_95, nat_lit(9))
+                        )
+                        in nat_lit(0)
+                        else countdown_95) in
+                      let countdown_99 = rust_primitives__hax__machine_int__sub(
+                        countdown_98,
+                        nat_lit(5)
+                      ) in
+                      let w_19 = rust_primitives__hax__Tuple0__Tuple0 in
+                      rust_primitives__hax__Tuple0__Tuple0)
+                      else rust_primitives__hax__Tuple0__Tuple0))
+                  else (let should_be_reachable_4 = countdown_87 in
+                  let wildcard: bitstring = std__io__stdio__u_print(
+                    core__fmt__rt__Impl_1__new_const(
+                      rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                    )
+                  ) in
+                  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)))
+              else rust_primitives__hax__Tuple0__Tuple0))
+          else (let countdown_102 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+          let (=True()) = rust_primitives__hax__machine_int__gt(countdown_102, nat_lit(7))
+            in (let countdown_103 = rust_primitives__hax__machine_int__sub(
+              countdown_102,
+              nat_lit(4)
+            ) in
+            let z_10 = rust_primitives__hax__Tuple0__Tuple0 in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_103, nat_lit(7))
+              in (let countdown_104 = rust_primitives__hax__machine_int__sub(
+                countdown_103,
+                nat_lit(4)
+              ) in
+              let w_20 = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0)
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_103, nat_lit(2))
+                in (let countdown_106 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_103, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_103, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_103, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_103) in
+                let countdown_107 = rust_primitives__hax__machine_int__sub(
+                  countdown_106,
+                  nat_lit(5)
+                ) in
+                let w_21 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else rust_primitives__hax__Tuple0__Tuple0))
+            else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_102, nat_lit(2))
+              in (let countdown_109 = (let (=True()) = logical_or(
+                  logical_or(
+                    rust_primitives__hax__machine_int__lt(countdown_102, nat_lit(1)),
+                    rust_primitives__hax__machine_int__gt(countdown_102, nat_lit(5))
+                  ),
+                  rust_primitives__hax__machine_int__ne(countdown_102, nat_lit(9))
+                )
+                in nat_lit(0)
+                else countdown_102) in
+              let countdown_110 = rust_primitives__hax__machine_int__sub(
+                countdown_109,
+                nat_lit(5)
+              ) in
+              let z_11 = rust_primitives__hax__Tuple0__Tuple0 in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_110, nat_lit(7))
+                in (let countdown_111 = rust_primitives__hax__machine_int__sub(
+                  countdown_110,
+                  nat_lit(4)
+                ) in
+                let w_22 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_110,
+                    nat_lit(2)
+                  )
+                  in (let countdown_113 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_110, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_110, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_110, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_110) in
+                  let countdown_114 = rust_primitives__hax__machine_int__sub(
+                    countdown_113,
+                    nat_lit(5)
+                  ) in
+                  let w_23 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else rust_primitives__hax__Tuple0__Tuple0))
+              else (let should_be_reachable_5 = countdown_102 in
+              let wildcard: bitstring = std__io__stdio__u_print(
+                core__fmt__rt__Impl_1__new_const(
+                  rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                )
+              ) in
+              let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0))))
+        else rust_primitives__hax__Tuple0__Tuple0))
+    else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_2, nat_lit(2))
+      in (let countdown_116 = (let (=True()) = logical_or(
+          logical_or(
+            rust_primitives__hax__machine_int__lt(countdown_2, nat_lit(1)),
+            rust_primitives__hax__machine_int__gt(countdown_2, nat_lit(5))
+          ),
+          rust_primitives__hax__machine_int__ne(countdown_2, nat_lit(9))
+        )
+        in nat_lit(0)
+        else countdown_2) in
+      let x_1 = rust_primitives__hax__machine_int__sub(countdown_116, nat_lit(5)) in
+      let countdown_120 = (let (=True()) = True() in nat_lit(10) else nat_lit(0)) in
+      let (=True()) = rust_primitives__hax__machine_int__gt(countdown_120, nat_lit(7))
+        in (let countdown_121 = rust_primitives__hax__machine_int__sub(countdown_120, nat_lit(4)) in
+        let (=True()) = True()
+          in (let countdown_124 = (let (=True()) = True() in nat_lit(10) else nat_lit(0)) in
+          let (=True()) = rust_primitives__hax__machine_int__gt(countdown_124, nat_lit(7))
+            in (let countdown_125 = rust_primitives__hax__machine_int__sub(
+              countdown_124,
+              nat_lit(4)
+            ) in
+            let countdown_128 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_128, nat_lit(7))
+              in (let countdown_129 = rust_primitives__hax__machine_int__sub(
+                countdown_128,
+                nat_lit(4)
+              ) in
+              let z_12 = rust_primitives__hax__Tuple0__Tuple0 in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_129, nat_lit(7))
+                in (let countdown_130 = rust_primitives__hax__machine_int__sub(
+                  countdown_129,
+                  nat_lit(4)
+                ) in
+                let w_24 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_129,
+                    nat_lit(2)
+                  )
+                  in (let countdown_132 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_129, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_129, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_129, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_129) in
+                  let countdown_133 = rust_primitives__hax__machine_int__sub(
+                    countdown_132,
+                    nat_lit(5)
+                  ) in
+                  let w_25 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else rust_primitives__hax__Tuple0__Tuple0))
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_128, nat_lit(2))
+                in (let countdown_135 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_128, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_128, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_128, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_128) in
+                let countdown_136 = rust_primitives__hax__machine_int__sub(
+                  countdown_135,
+                  nat_lit(5)
+                ) in
+                let z_13 = rust_primitives__hax__Tuple0__Tuple0 in
+                let (=True()) = rust_primitives__hax__machine_int__gt(countdown_136, nat_lit(7))
+                  in (let countdown_137 = rust_primitives__hax__machine_int__sub(
+                    countdown_136,
+                    nat_lit(4)
+                  ) in
+                  let w_26 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                      countdown_136,
+                      nat_lit(2)
+                    )
+                    in (let countdown_139 = (let (=True()) = logical_or(
+                        logical_or(
+                          rust_primitives__hax__machine_int__lt(countdown_136, nat_lit(1)),
+                          rust_primitives__hax__machine_int__gt(countdown_136, nat_lit(5))
+                        ),
+                        rust_primitives__hax__machine_int__ne(countdown_136, nat_lit(9))
+                      )
+                      in nat_lit(0)
+                      else countdown_136) in
+                    let countdown_140 = rust_primitives__hax__machine_int__sub(
+                      countdown_139,
+                      nat_lit(5)
+                    ) in
+                    let w_27 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else rust_primitives__hax__Tuple0__Tuple0))
+                else (let should_be_reachable_6 = countdown_128 in
+                let wildcard: bitstring = std__io__stdio__u_print(
+                  core__fmt__rt__Impl_1__new_const(
+                    rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                  )
+                ) in
+                let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)))
+            else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_124, nat_lit(2))
+              in (let countdown_142 = (let (=True()) = logical_or(
+                  logical_or(
+                    rust_primitives__hax__machine_int__lt(countdown_124, nat_lit(1)),
+                    rust_primitives__hax__machine_int__gt(countdown_124, nat_lit(5))
+                  ),
+                  rust_primitives__hax__machine_int__ne(countdown_124, nat_lit(9))
+                )
+                in nat_lit(0)
+                else countdown_124) in
+              let countdown_143 = rust_primitives__hax__machine_int__sub(
+                countdown_142,
+                nat_lit(5)
+              ) in
+              let countdown_146 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_146, nat_lit(7))
+                in (let countdown_147 = rust_primitives__hax__machine_int__sub(
+                  countdown_146,
+                  nat_lit(4)
+                ) in
+                let z_14 = rust_primitives__hax__Tuple0__Tuple0 in
+                let (=True()) = rust_primitives__hax__machine_int__gt(countdown_147, nat_lit(7))
+                  in (let countdown_148 = rust_primitives__hax__machine_int__sub(
+                    countdown_147,
+                    nat_lit(4)
+                  ) in
+                  let w_28 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                      countdown_147,
+                      nat_lit(2)
+                    )
+                    in (let countdown_150 = (let (=True()) = logical_or(
+                        logical_or(
+                          rust_primitives__hax__machine_int__lt(countdown_147, nat_lit(1)),
+                          rust_primitives__hax__machine_int__gt(countdown_147, nat_lit(5))
+                        ),
+                        rust_primitives__hax__machine_int__ne(countdown_147, nat_lit(9))
+                      )
+                      in nat_lit(0)
+                      else countdown_147) in
+                    let countdown_151 = rust_primitives__hax__machine_int__sub(
+                      countdown_150,
+                      nat_lit(5)
+                    ) in
+                    let w_29 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else rust_primitives__hax__Tuple0__Tuple0))
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_146,
+                    nat_lit(2)
+                  )
+                  in (let countdown_153 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_146, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_146, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_146, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_146) in
+                  let countdown_154 = rust_primitives__hax__machine_int__sub(
+                    countdown_153,
+                    nat_lit(5)
+                  ) in
+                  let z_15 = rust_primitives__hax__Tuple0__Tuple0 in
+                  let (=True()) = rust_primitives__hax__machine_int__gt(countdown_154, nat_lit(7))
+                    in (let countdown_155 = rust_primitives__hax__machine_int__sub(
+                      countdown_154,
+                      nat_lit(4)
+                    ) in
+                    let w_30 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                        countdown_154,
+                        nat_lit(2)
+                      )
+                      in (let countdown_157 = (let (=True()) = logical_or(
+                          logical_or(
+                            rust_primitives__hax__machine_int__lt(countdown_154, nat_lit(1)),
+                            rust_primitives__hax__machine_int__gt(countdown_154, nat_lit(5))
+                          ),
+                          rust_primitives__hax__machine_int__ne(countdown_154, nat_lit(9))
+                        )
+                        in nat_lit(0)
+                        else countdown_154) in
+                      let countdown_158 = rust_primitives__hax__machine_int__sub(
+                        countdown_157,
+                        nat_lit(5)
+                      ) in
+                      let w_31 = rust_primitives__hax__Tuple0__Tuple0 in
+                      rust_primitives__hax__Tuple0__Tuple0)
+                      else rust_primitives__hax__Tuple0__Tuple0))
+                  else (let should_be_reachable_7 = countdown_146 in
+                  let wildcard: bitstring = std__io__stdio__u_print(
+                    core__fmt__rt__Impl_1__new_const(
+                      rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                    )
+                  ) in
+                  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)))
+              else rust_primitives__hax__Tuple0__Tuple0))
+          else (let countdown_161 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+          let (=True()) = rust_primitives__hax__machine_int__gt(countdown_161, nat_lit(7))
+            in (let countdown_162 = rust_primitives__hax__machine_int__sub(
+              countdown_161,
+              nat_lit(4)
+            ) in
+            let z_16 = rust_primitives__hax__Tuple0__Tuple0 in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_162, nat_lit(7))
+              in (let countdown_163 = rust_primitives__hax__machine_int__sub(
+                countdown_162,
+                nat_lit(4)
+              ) in
+              let w_32 = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0)
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_162, nat_lit(2))
+                in (let countdown_165 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_162, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_162, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_162, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_162) in
+                let countdown_166 = rust_primitives__hax__machine_int__sub(
+                  countdown_165,
+                  nat_lit(5)
+                ) in
+                let w_33 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else rust_primitives__hax__Tuple0__Tuple0))
+            else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_161, nat_lit(2))
+              in (let countdown_168 = (let (=True()) = logical_or(
+                  logical_or(
+                    rust_primitives__hax__machine_int__lt(countdown_161, nat_lit(1)),
+                    rust_primitives__hax__machine_int__gt(countdown_161, nat_lit(5))
+                  ),
+                  rust_primitives__hax__machine_int__ne(countdown_161, nat_lit(9))
+                )
+                in nat_lit(0)
+                else countdown_161) in
+              let countdown_169 = rust_primitives__hax__machine_int__sub(
+                countdown_168,
+                nat_lit(5)
+              ) in
+              let z_17 = rust_primitives__hax__Tuple0__Tuple0 in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_169, nat_lit(7))
+                in (let countdown_170 = rust_primitives__hax__machine_int__sub(
+                  countdown_169,
+                  nat_lit(4)
+                ) in
+                let w_34 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_169,
+                    nat_lit(2)
+                  )
+                  in (let countdown_172 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_169, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_169, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_169, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_169) in
+                  let countdown_173 = rust_primitives__hax__machine_int__sub(
+                    countdown_172,
+                    nat_lit(5)
+                  ) in
+                  let w_35 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else rust_primitives__hax__Tuple0__Tuple0))
+              else (let should_be_reachable_8 = countdown_161 in
+              let wildcard: bitstring = std__io__stdio__u_print(
+                core__fmt__rt__Impl_1__new_const(
+                  rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                )
+              ) in
+              let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0))))
+        else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_120, nat_lit(2))
+          in (let countdown_175 = (let (=True()) = logical_or(
+              logical_or(
+                rust_primitives__hax__machine_int__lt(countdown_120, nat_lit(1)),
+                rust_primitives__hax__machine_int__gt(countdown_120, nat_lit(5))
+              ),
+              rust_primitives__hax__machine_int__ne(countdown_120, nat_lit(9))
+            )
+            in nat_lit(0)
+            else countdown_120) in
+          let countdown_176 = rust_primitives__hax__machine_int__sub(countdown_175, nat_lit(5)) in
+          let (=True()) = True()
+            in (let countdown_179 = (let (=True()) = True() in nat_lit(10) else nat_lit(0)) in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_179, nat_lit(7))
+              in (let countdown_180 = rust_primitives__hax__machine_int__sub(
+                countdown_179,
+                nat_lit(4)
+              ) in
+              let countdown_183 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_183, nat_lit(7))
+                in (let countdown_184 = rust_primitives__hax__machine_int__sub(
+                  countdown_183,
+                  nat_lit(4)
+                ) in
+                let z_18 = rust_primitives__hax__Tuple0__Tuple0 in
+                let (=True()) = rust_primitives__hax__machine_int__gt(countdown_184, nat_lit(7))
+                  in (let countdown_185 = rust_primitives__hax__machine_int__sub(
+                    countdown_184,
+                    nat_lit(4)
+                  ) in
+                  let w_36 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                      countdown_184,
+                      nat_lit(2)
+                    )
+                    in (let countdown_187 = (let (=True()) = logical_or(
+                        logical_or(
+                          rust_primitives__hax__machine_int__lt(countdown_184, nat_lit(1)),
+                          rust_primitives__hax__machine_int__gt(countdown_184, nat_lit(5))
+                        ),
+                        rust_primitives__hax__machine_int__ne(countdown_184, nat_lit(9))
+                      )
+                      in nat_lit(0)
+                      else countdown_184) in
+                    let countdown_188 = rust_primitives__hax__machine_int__sub(
+                      countdown_187,
+                      nat_lit(5)
+                    ) in
+                    let w_37 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else rust_primitives__hax__Tuple0__Tuple0))
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_183,
+                    nat_lit(2)
+                  )
+                  in (let countdown_190 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_183, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_183, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_183, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_183) in
+                  let countdown_191 = rust_primitives__hax__machine_int__sub(
+                    countdown_190,
+                    nat_lit(5)
+                  ) in
+                  let z_19 = rust_primitives__hax__Tuple0__Tuple0 in
+                  let (=True()) = rust_primitives__hax__machine_int__gt(countdown_191, nat_lit(7))
+                    in (let countdown_192 = rust_primitives__hax__machine_int__sub(
+                      countdown_191,
+                      nat_lit(4)
+                    ) in
+                    let w_38 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                        countdown_191,
+                        nat_lit(2)
+                      )
+                      in (let countdown_194 = (let (=True()) = logical_or(
+                          logical_or(
+                            rust_primitives__hax__machine_int__lt(countdown_191, nat_lit(1)),
+                            rust_primitives__hax__machine_int__gt(countdown_191, nat_lit(5))
+                          ),
+                          rust_primitives__hax__machine_int__ne(countdown_191, nat_lit(9))
+                        )
+                        in nat_lit(0)
+                        else countdown_191) in
+                      let countdown_195 = rust_primitives__hax__machine_int__sub(
+                        countdown_194,
+                        nat_lit(5)
+                      ) in
+                      let w_39 = rust_primitives__hax__Tuple0__Tuple0 in
+                      rust_primitives__hax__Tuple0__Tuple0)
+                      else rust_primitives__hax__Tuple0__Tuple0))
+                  else (let should_be_reachable_9 = countdown_183 in
+                  let wildcard: bitstring = std__io__stdio__u_print(
+                    core__fmt__rt__Impl_1__new_const(
+                      rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                    )
+                  ) in
+                  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)))
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_179, nat_lit(2))
+                in (let countdown_197 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_179, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_179, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_179, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_179) in
+                let countdown_198 = rust_primitives__hax__machine_int__sub(
+                  countdown_197,
+                  nat_lit(5)
+                ) in
+                let countdown_201 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+                let (=True()) = rust_primitives__hax__machine_int__gt(countdown_201, nat_lit(7))
+                  in (let countdown_202 = rust_primitives__hax__machine_int__sub(
+                    countdown_201,
+                    nat_lit(4)
+                  ) in
+                  let z_20 = rust_primitives__hax__Tuple0__Tuple0 in
+                  let (=True()) = rust_primitives__hax__machine_int__gt(countdown_202, nat_lit(7))
+                    in (let countdown_203 = rust_primitives__hax__machine_int__sub(
+                      countdown_202,
+                      nat_lit(4)
+                    ) in
+                    let w_40 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                        countdown_202,
+                        nat_lit(2)
+                      )
+                      in (let countdown_205 = (let (=True()) = logical_or(
+                          logical_or(
+                            rust_primitives__hax__machine_int__lt(countdown_202, nat_lit(1)),
+                            rust_primitives__hax__machine_int__gt(countdown_202, nat_lit(5))
+                          ),
+                          rust_primitives__hax__machine_int__ne(countdown_202, nat_lit(9))
+                        )
+                        in nat_lit(0)
+                        else countdown_202) in
+                      let countdown_206 = rust_primitives__hax__machine_int__sub(
+                        countdown_205,
+                        nat_lit(5)
+                      ) in
+                      let w_41 = rust_primitives__hax__Tuple0__Tuple0 in
+                      rust_primitives__hax__Tuple0__Tuple0)
+                      else rust_primitives__hax__Tuple0__Tuple0))
+                  else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                      countdown_201,
+                      nat_lit(2)
+                    )
+                    in (let countdown_208 = (let (=True()) = logical_or(
+                        logical_or(
+                          rust_primitives__hax__machine_int__lt(countdown_201, nat_lit(1)),
+                          rust_primitives__hax__machine_int__gt(countdown_201, nat_lit(5))
+                        ),
+                        rust_primitives__hax__machine_int__ne(countdown_201, nat_lit(9))
+                      )
+                      in nat_lit(0)
+                      else countdown_201) in
+                    let countdown_209 = rust_primitives__hax__machine_int__sub(
+                      countdown_208,
+                      nat_lit(5)
+                    ) in
+                    let z_21 = rust_primitives__hax__Tuple0__Tuple0 in
+                    let (=True()) = rust_primitives__hax__machine_int__gt(countdown_209, nat_lit(7))
+                      in (let countdown_210 = rust_primitives__hax__machine_int__sub(
+                        countdown_209,
+                        nat_lit(4)
+                      ) in
+                      let w_42 = rust_primitives__hax__Tuple0__Tuple0 in
+                      rust_primitives__hax__Tuple0__Tuple0)
+                      else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                          countdown_209,
+                          nat_lit(2)
+                        )
+                        in (let countdown_212 = (let (=True()) = logical_or(
+                            logical_or(
+                              rust_primitives__hax__machine_int__lt(countdown_209, nat_lit(1)),
+                              rust_primitives__hax__machine_int__gt(countdown_209, nat_lit(5))
+                            ),
+                            rust_primitives__hax__machine_int__ne(countdown_209, nat_lit(9))
+                          )
+                          in nat_lit(0)
+                          else countdown_209) in
+                        let countdown_213 = rust_primitives__hax__machine_int__sub(
+                          countdown_212,
+                          nat_lit(5)
+                        ) in
+                        let w_43 = rust_primitives__hax__Tuple0__Tuple0 in
+                        rust_primitives__hax__Tuple0__Tuple0)
+                        else rust_primitives__hax__Tuple0__Tuple0))
+                    else (let should_be_reachable_10 = countdown_201 in
+                    let wildcard: bitstring = std__io__stdio__u_print(
+                      core__fmt__rt__Impl_1__new_const(
+                        rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                      )
+                    ) in
+                    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)))
+                else rust_primitives__hax__Tuple0__Tuple0))
+            else (let countdown_216 = (let (=True()) = True() in nat_lit(1) else nat_lit(0)) in
+            let (=True()) = rust_primitives__hax__machine_int__gt(countdown_216, nat_lit(7))
+              in (let countdown_217 = rust_primitives__hax__machine_int__sub(
+                countdown_216,
+                nat_lit(4)
+              ) in
+              let z_22 = rust_primitives__hax__Tuple0__Tuple0 in
+              let (=True()) = rust_primitives__hax__machine_int__gt(countdown_217, nat_lit(7))
+                in (let countdown_218 = rust_primitives__hax__machine_int__sub(
+                  countdown_217,
+                  nat_lit(4)
+                ) in
+                let w_44 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)
+                else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                    countdown_217,
+                    nat_lit(2)
+                  )
+                  in (let countdown_220 = (let (=True()) = logical_or(
+                      logical_or(
+                        rust_primitives__hax__machine_int__lt(countdown_217, nat_lit(1)),
+                        rust_primitives__hax__machine_int__gt(countdown_217, nat_lit(5))
+                      ),
+                      rust_primitives__hax__machine_int__ne(countdown_217, nat_lit(9))
+                    )
+                    in nat_lit(0)
+                    else countdown_217) in
+                  let countdown_221 = rust_primitives__hax__machine_int__sub(
+                    countdown_220,
+                    nat_lit(5)
+                  ) in
+                  let w_45 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else rust_primitives__hax__Tuple0__Tuple0))
+              else (let (=True()) = rust_primitives__hax__machine_int__gt(countdown_216, nat_lit(2))
+                in (let countdown_223 = (let (=True()) = logical_or(
+                    logical_or(
+                      rust_primitives__hax__machine_int__lt(countdown_216, nat_lit(1)),
+                      rust_primitives__hax__machine_int__gt(countdown_216, nat_lit(5))
+                    ),
+                    rust_primitives__hax__machine_int__ne(countdown_216, nat_lit(9))
+                  )
+                  in nat_lit(0)
+                  else countdown_216) in
+                let countdown_224 = rust_primitives__hax__machine_int__sub(
+                  countdown_223,
+                  nat_lit(5)
+                ) in
+                let z_23 = rust_primitives__hax__Tuple0__Tuple0 in
+                let (=True()) = rust_primitives__hax__machine_int__gt(countdown_224, nat_lit(7))
+                  in (let countdown_225 = rust_primitives__hax__machine_int__sub(
+                    countdown_224,
+                    nat_lit(4)
+                  ) in
+                  let w_46 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)
+                  else (let (=True()) = rust_primitives__hax__machine_int__gt(
+                      countdown_224,
+                      nat_lit(2)
+                    )
+                    in (let countdown_227 = (let (=True()) = logical_or(
+                        logical_or(
+                          rust_primitives__hax__machine_int__lt(countdown_224, nat_lit(1)),
+                          rust_primitives__hax__machine_int__gt(countdown_224, nat_lit(5))
+                        ),
+                        rust_primitives__hax__machine_int__ne(countdown_224, nat_lit(9))
+                      )
+                      in nat_lit(0)
+                      else countdown_224) in
+                    let countdown_228 = rust_primitives__hax__machine_int__sub(
+                      countdown_227,
+                      nat_lit(5)
+                    ) in
+                    let w_47 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)
+                    else rust_primitives__hax__Tuple0__Tuple0))
+                else (let should_be_reachable_11 = countdown_216 in
+                let wildcard: bitstring = std__io__stdio__u_print(
+                  core__fmt__rt__Impl_1__new_const(
+                    rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                  )
+                ) in
+                let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0))))
+          else rust_primitives__hax__Tuple0__Tuple0))
+      else rust_primitives__hax__Tuple0__Tuple0).
