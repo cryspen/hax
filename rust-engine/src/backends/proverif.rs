@@ -29,8 +29,8 @@ use super::prelude::*;
 use crate::ast::span::Span;
 use crate::ast::visitors::AstVisitor;
 use crate::phase::*;
-use camino::Utf8PathBuf;
 use crate::printer::render_with_span_positions;
+use camino::Utf8PathBuf;
 use hax_lib_macros_types::AttrPayload;
 use hax_types::engine_api::{File, SourceMap};
 
@@ -44,8 +44,8 @@ mod names {
     pub use crate::names::core::option::Option::Some::Constructor as OptionSome;
     pub use crate::names::core::result::Result::Err::Constructor as ResultErr;
     pub use crate::names::core::result::Result::Ok::Constructor as ResultOk;
-    pub use crate::names::rust_primitives::hax::{cast_op, logical_op_and, logical_op_or};
     pub use crate::names::rust_primitives::hax::never_to_any;
+    pub use crate::names::rust_primitives::hax::{cast_op, logical_op_and, logical_op_or};
     pub use crate::names::rust_primitives::unsize;
 }
 
@@ -71,8 +71,7 @@ pub struct ProVerifPrinter {
 /// Lives next to this file at `hax-lib/proof-libs/proverif/primitives.pvl`.
 /// Embedded here so the printer can parse it to know which names *not*
 /// to re-declare in the auto-declared external block.
-const PRIMITIVES_PVL: &str =
-    include_str!("../../../hax-lib/proof-libs/proverif/primitives.pvl");
+const PRIMITIVES_PVL: &str = include_str!("../../../hax-lib/proof-libs/proverif/primitives.pvl");
 
 /// Preamble baked into every `lib.pvl` file.
 ///
@@ -123,14 +122,66 @@ impl RenderView for ProVerifPrinter {
             // Mirrors `ProVerifNamePolicy.reserved_words` in
             // `engine/backends/proverif/proverif_backend.ml:102-104`.
             [
-                "among", "axiom", "channel", "choice", "clauses", "const", "def", "diff", "do",
-                "elimtrue", "else", "equation", "equivalence", "event", "expand", "fail", "for",
-                "forall", "foreach", "free", "fun", "get", "if", "implementation", "in",
-                "inj-event", "insert", "lemma", "let", "letfun", "letproba", "new", "noninterf",
-                "noselect", "not", "nounif", "or", "otherwise", "out", "param", "phase", "pred",
-                "proba", "process", "proof", "public vars", "putbegin", "query", "reduc",
-                "restriction", "secret", "select", "set", "suchthat", "sync", "table", "then",
-                "type", "weaksecret", "yield",
+                "among",
+                "axiom",
+                "channel",
+                "choice",
+                "clauses",
+                "const",
+                "def",
+                "diff",
+                "do",
+                "elimtrue",
+                "else",
+                "equation",
+                "equivalence",
+                "event",
+                "expand",
+                "fail",
+                "for",
+                "forall",
+                "foreach",
+                "free",
+                "fun",
+                "get",
+                "if",
+                "implementation",
+                "in",
+                "inj-event",
+                "insert",
+                "lemma",
+                "let",
+                "letfun",
+                "letproba",
+                "new",
+                "noninterf",
+                "noselect",
+                "not",
+                "nounif",
+                "or",
+                "otherwise",
+                "out",
+                "param",
+                "phase",
+                "pred",
+                "proba",
+                "process",
+                "proof",
+                "public vars",
+                "putbegin",
+                "query",
+                "reduc",
+                "restriction",
+                "secret",
+                "select",
+                "set",
+                "suchthat",
+                "sync",
+                "table",
+                "then",
+                "type",
+                "weaksecret",
+                "yield",
             ]
             .into_iter()
             .map(|s| s.to_string())
@@ -261,25 +312,11 @@ const _: () = {
     }
 
     impl ProVerifPrinter {
-        /// Print a list of typed parameters as `name: ty, ...`. Mirrors the
-        /// `fun_args_full` helper in the legacy printer (`item_unwrapped`).
-        fn typed_args<A: 'static + Clone>(
-            &self,
-            args: &[(GlobalId, Ty)],
-        ) -> DocBuilder<A> {
-            comma_sep!(args.iter().map(|(id, ty)| {
-                docs![self.render_id(id), ": ", ty]
-            }))
-        }
-
         /// Emit a syntactically valid placeholder in expression position
         /// alongside a diagnostic. ProVerif comments (`(* ... *)`) aren't
         /// terms, so we surface `bitstring_err()` (declared in the preamble)
         /// instead — that keeps the surrounding letfun parseable.
-        fn expr_error_placeholder<A: 'static + Clone>(
-            &self,
-            message: &str,
-        ) -> DocBuilder<A> {
+        fn expr_error_placeholder<A: 'static + Clone>(&self, message: &str) -> DocBuilder<A> {
             <Self as PrettyAst<A>>::emit_diagnostic(
                 self,
                 hax_types::diagnostics::Kind::Unimplemented {
@@ -309,7 +346,9 @@ const _: () = {
                 } => true,
                 PatKind::Ascription { pat, .. } => Self::is_trivial_binder(pat),
                 PatKind::Construct {
-                    constructor, fields, ..
+                    constructor,
+                    fields,
+                    ..
                 } if *constructor == names::ResultOk => fields
                     .first()
                     .map(|(_, inner)| Self::is_trivial_binder(inner))
@@ -345,7 +384,7 @@ const _: () = {
                             || *g == names::deref
                             || *g == names::cast_op) =>
                 {
-                    args.first().map(|a| Self::expr_is_atomic(a)).unwrap_or(true)
+                    args.first().map(Self::expr_is_atomic).unwrap_or(true)
                 }
                 // Any other application renders `f(args)` / `f()` — and the
                 // `logical_and`/`logical_or`/`never_to_any` special cases all
@@ -354,14 +393,14 @@ const _: () = {
                 // `Ok(inner)` strips to `inner`; everything else
                 // (`Err`→`bitstring_err()`, `None()`, `Some(_)`, `C(_)`) is a
                 // constructor application.
-                ExprKind::Construct { constructor, fields, .. }
-                    if *constructor == names::ResultOk =>
-                {
-                    fields
-                        .first()
-                        .map(|(_, inner)| Self::expr_is_atomic(inner))
-                        .unwrap_or(true)
-                }
+                ExprKind::Construct {
+                    constructor,
+                    fields,
+                    ..
+                } if *constructor == names::ResultOk => fields
+                    .first()
+                    .map(|(_, inner)| Self::expr_is_atomic(inner))
+                    .unwrap_or(true),
                 ExprKind::Construct { .. } => true,
                 // Cons-list `array_cons(...)` form.
                 ExprKind::Array(_) => true,
@@ -424,7 +463,11 @@ const _: () = {
                         self.paren_unless_atomic(&arm.body)
                     };
                     docs![
-                        "let ", pat, " = ", docs![scrutinee], " in",
+                        "let ",
+                        pat,
+                        " = ",
+                        docs![scrutinee],
+                        " in",
                         docs![line!(), body].nest(INDENT).group()
                     ]
                 }
@@ -570,8 +613,7 @@ const _: () = {
             iterator: &Expr,
             body: &Expr,
         ) -> DocBuilder<A> {
-            let inner: DocBuilder<A> =
-                self.unroll_for_loop_nostate_level(0, "bl__seq0", pat, body);
+            let inner: DocBuilder<A> = self.unroll_for_loop_nostate_level(0, "bl__seq0", pat, body);
             docs![
                 "(let bl__seq0 = (",
                 docs![iterator],
@@ -590,10 +632,7 @@ const _: () = {
         /// [`crate::printer::SpanPositionRenderer`]) without constraining `A`;
         /// for any other `A` it is a no-op. Annotations never affect layout, so
         /// the rendered text is unchanged either way.
-        fn annotate_with_span<A: 'static + Clone>(
-            doc: DocBuilder<A>,
-            span: Span,
-        ) -> DocBuilder<A> {
+        fn annotate_with_span<A: 'static + Clone>(doc: DocBuilder<A>, span: Span) -> DocBuilder<A> {
             if std::any::TypeId::of::<A>() == std::any::TypeId::of::<Span>() {
                 // SAFETY: `A == Span` (checked just above) and `Span: Copy`, so
                 // reinterpreting the `Span` value as an `A` is a valid,
@@ -615,7 +654,12 @@ const _: () = {
                 && let Some(path) = fs.filename.to_path()
             {
                 return docs![
-                    format!("(* src: {}:{} {} *)", path.display(), fs.lo.line, self.render_id(name)),
+                    format!(
+                        "(* src: {}:{} {} *)",
+                        path.display(),
+                        fs.lo.line,
+                        self.render_id(name)
+                    ),
                     hardline!()
                 ];
             }
@@ -638,8 +682,7 @@ const _: () = {
             let mut doc = nil!();
             for a in attrs {
                 if let AttributeKind::DocComment { body, .. } = &a.kind {
-                    let defuse =
-                        |s: &str| s.replace("*)", "* )").replace("(*", "( *");
+                    let defuse = |s: &str| s.replace("*)", "* )").replace("(*", "( *");
                     if body.is_empty() {
                         doc = docs![doc, "(* *)", hardline!()];
                         continue;
@@ -678,8 +721,7 @@ const _: () = {
                 .iter()
                 .map(|(id, ty, _)| (*id, ty.clone()))
                 .collect();
-            let arg_types_doc =
-                paren_list!(typed_args_vec.iter().map(|(_, ty)| docs![ty]));
+            let arg_types_doc = paren_list!(typed_args_vec.iter().map(|(_, ty)| docs![ty]));
 
             let fun_line = docs![
                 "fun ",
@@ -707,10 +749,12 @@ const _: () = {
             let bind_names: Vec<String> = (0..typed_args_vec.len())
                 .map(|i| format!("v_{i}"))
                 .collect();
-            let fun_args_full: DocBuilder<A> =
-                comma_sep!(typed_args_vec.iter().enumerate().map(|(i, (_, ty))| {
-                    docs![bind_names[i].clone(), ": ", ty]
-                }));
+            let fun_args_full: DocBuilder<A> = comma_sep!(
+                typed_args_vec
+                    .iter()
+                    .enumerate()
+                    .map(|(i, (_, ty))| { docs![bind_names[i].clone(), ": ", ty] })
+            );
             let fun_args_names: DocBuilder<A> =
                 comma_sep!((0..typed_args_vec.len()).map(|i| docs![bind_names[i].clone()]));
 
@@ -719,12 +763,9 @@ const _: () = {
                 .enumerate()
                 .map(|(i, (id, _ty))| {
                     let accessor = self.accessor_name(&base, id);
-                    let constructor_call = docs![
-                        constructor_name.clone(),
-                        paren_doc!(fun_args_names.clone())
-                    ];
-                    let accessor_call =
-                        docs![accessor, paren_doc!(constructor_call)];
+                    let constructor_call =
+                        docs![constructor_name.clone(), paren_doc!(fun_args_names.clone())];
+                    let accessor_call = docs![accessor, paren_doc!(constructor_call)];
                     docs![
                         docs!["reduc forall ", fun_args_full.clone()]
                             .nest(INDENT)
@@ -786,7 +827,7 @@ const _: () = {
             // valid ProVerif identifier.
             let name = &local_id.0.to_string();
             let rendered = if let Some(rest) = name.strip_prefix("impl ") {
-                let rest = rest.replace(' ', "_").replace('+', "_");
+                let rest = rest.replace([' ', '+'], "_");
                 format!("impl_{rest}")
             } else {
                 name.clone()
@@ -810,7 +851,9 @@ const _: () = {
                 }
                 Literal::Bool(true) => "True()".to_string(),
                 Literal::Bool(false) => "False()".to_string(),
-                Literal::Int { value, negative, .. } => {
+                Literal::Int {
+                    value, negative, ..
+                } => {
                     // ProVerif's `nat` is unsigned; spell negative literals as
                     // `nat_lit(0 - N)` (the only way to coax a negative term
                     // into the universal bitstring encoding).
@@ -820,7 +863,9 @@ const _: () = {
                         format!("nat_lit({value})")
                     }
                 }
-                Literal::Float { value, negative, .. } => {
+                Literal::Float {
+                    value, negative, ..
+                } => {
                     // ProVerif has no floats. Encode as an opaque
                     // per-value const, same as strings.
                     let sign = if *negative { "neg_" } else { "" };
@@ -849,7 +894,7 @@ const _: () = {
         }
 
         fn symbol(&self, symbol: &Symbol) -> DocBuilder<A> {
-            docs![Self::escape(&symbol.to_string())]
+            docs![Self::escape(symbol.as_ref())]
         }
 
         fn ty(&self, ty: &Ty) -> DocBuilder<A> {
@@ -940,7 +985,9 @@ const _: () = {
                             // `tuple_elem_pat'`).
                             match &*p.kind {
                                 PatKind::Binding {
-                                    sub_pat: None, var, mutable: false,
+                                    sub_pat: None,
+                                    var,
+                                    mutable: false,
                                     mode: BindingMode::ByValue,
                                 } => docs![var, ": ", &p.ty],
                                 _ => docs![p],
@@ -961,9 +1008,7 @@ const _: () = {
                         self,
                         hax_types::diagnostics::Kind::Unimplemented {
                             issue_id: None,
-                            details: Some(
-                                "ProVerif backend does not support or-patterns".into(),
-                            ),
+                            details: Some("ProVerif backend does not support or-patterns".into()),
                         },
                     );
                     docs!["wildcard: bitstring"]
@@ -1002,32 +1047,30 @@ const _: () = {
             // `print#expr_app` (357-372).
             match &*expr.kind {
                 // ===== outer `expr` overrides (lines 703-730) =====
-                ExprKind::App {
-                    head, args, ..
-                } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::into) => {
+                ExprKind::App { head, args, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::into) =>
+                {
                     // After Stage 2.0 the surface type of every value is
                     // `bitstring`, so `Into::into` is a no-op.
                     args.first().map(|a| docs![a]).unwrap_or(nil!())
                 }
-                ExprKind::App {
-                    head, ..
-                } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::never_to_any) => {
+                ExprKind::App { head, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::never_to_any) =>
+                {
                     docs!["bitstring_err()"]
                 }
 
                 // ===== Result-typed expressions (lines 712-730) =====
-                ExprKind::Construct { constructor, fields, .. }
-                    if *constructor == names::ResultOk =>
-                {
+                ExprKind::Construct {
+                    constructor,
+                    fields,
+                    ..
+                } if *constructor == names::ResultOk => {
                     if let Some((_, inner)) = fields.first() {
                         docs![inner]
                     } else {
                         docs![""]
                     }
                 }
-                ExprKind::Construct { constructor, .. }
-                    if *constructor == names::ResultErr =>
-                {
+                ExprKind::Construct { constructor, .. } if *constructor == names::ResultErr => {
                     docs!["bitstring_err()"]
                 }
 
@@ -1039,22 +1082,19 @@ const _: () = {
                     // Identity passthrough (lines 386-405).
                     args.first().map(|a| docs![a]).unwrap_or(nil!())
                 }
-                ExprKind::App { head, args, .. }
-                    if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::logical_op_and) =>
+                ExprKind::App { head, args, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::logical_op_and) =>
                 {
                     let lhs = args.first().map(|a| docs![a]).unwrap_or(nil!());
                     let rhs = args.get(1).map(|a| docs![a]).unwrap_or(nil!());
                     docs!["logical_and", paren_list!(vec![lhs, rhs])]
                 }
-                ExprKind::App { head, args, .. }
-                    if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::logical_op_or) =>
+                ExprKind::App { head, args, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::logical_op_or) =>
                 {
                     let lhs = args.first().map(|a| docs![a]).unwrap_or(nil!());
                     let rhs = args.get(1).map(|a| docs![a]).unwrap_or(nil!());
                     docs!["logical_or", paren_list!(vec![lhs, rhs])]
                 }
-                ExprKind::App { head, args, .. }
-                    if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::cast_op) =>
+                ExprKind::App { head, args, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::cast_op) =>
                 {
                     // Cast → just the inner argument (line 401).
                     args.first().map(|a| docs![a]).unwrap_or(nil!())
@@ -1064,9 +1104,11 @@ const _: () = {
                 ExprKind::Construct { constructor, .. } if *constructor == names::OptionNone => {
                     docs!["None()"]
                 }
-                ExprKind::Construct { constructor, fields, .. }
-                    if *constructor == names::OptionSome =>
-                {
+                ExprKind::Construct {
+                    constructor,
+                    fields,
+                    ..
+                } if *constructor == names::OptionSome => {
                     if let Some((_, inner)) = fields.first() {
                         docs!["Some", docs![inner].parens()]
                     } else {
@@ -1113,8 +1155,7 @@ const _: () = {
                 // the arm list there.
                 ExprKind::Match { scrutinee, arms } => {
                     let arm_always_matches = |arm: &Arm| -> bool {
-                        matches!(*arm.pat.kind, PatKind::Wild)
-                            || Self::is_trivial_binder(&arm.pat)
+                        matches!(*arm.pat.kind, PatKind::Wild) || Self::is_trivial_binder(&arm.pat)
                     };
                     let arm_is_result_err = |arm: &Arm| -> bool {
                         matches!(
@@ -1244,9 +1285,7 @@ const _: () = {
                 }
 
                 // ===== expr_app fallback (357-372) =====
-                ExprKind::App {
-                    head, args, ..
-                } => {
+                ExprKind::App { head, args, .. } => {
                     let head_doc = docs![head];
                     if args.is_empty() {
                         docs![head_doc, "()"]
@@ -1315,22 +1354,22 @@ const _: () = {
                     };
                     self.unroll_for_loop_nostate(pat, iterator, body)
                 }
-                ExprKind::Loop { .. } => self.expr_error_placeholder::<A>(
-                    "Loops not supported in ProVerif",
-                ),
+                ExprKind::Loop { .. } => {
+                    self.expr_error_placeholder::<A>("Loops not supported in ProVerif")
+                }
                 ExprKind::Break { .. } | ExprKind::Continue { .. } | ExprKind::Return { .. } => {
                     self.expr_error_placeholder::<A>(
                         "Early-exit control flow not supported in ProVerif",
                     )
                 }
-                ExprKind::Closure { .. } => self.expr_error_placeholder::<A>(
-                    "Closures not supported in ProVerif",
-                ),
+                ExprKind::Closure { .. } => {
+                    self.expr_error_placeholder::<A>("Closures not supported in ProVerif")
+                }
                 ExprKind::Block { .. } => unreachable_by_invariant!(Drop_blocks),
                 ExprKind::Quote { contents } => docs![contents],
-                ExprKind::Resugared(_) => self.expr_error_placeholder::<A>(
-                    "Unsupported resugared expression",
-                ),
+                ExprKind::Resugared(_) => {
+                    self.expr_error_placeholder::<A>("Unsupported resugared expression")
+                }
                 ExprKind::Error(e) => docs![e],
             }
         }
@@ -1433,8 +1472,7 @@ const _: () = {
                         // `rust_primitives__hax__dropped_body`, which collides
                         // with any companion declaration that also names this
                         // function (e.g. a partner `proverif::replace(reduc ...)`).
-                        let arg_types =
-                            comma_sep!(params.iter().map(|p| docs![&p.ty]));
+                        let arg_types = comma_sep!(params.iter().map(|p| docs![&p.ty]));
                         let header = if is_erased && !as_constructor {
                             "(* opaque *)"
                         } else {
@@ -1460,8 +1498,7 @@ const _: () = {
                         // letfuns, so emit an opaque `fun` instead — sound, since
                         // such serialization helpers are never security-relevant
                         // (the crypto boundary bypasses serialization).
-                        let arg_types =
-                            comma_sep!(params.iter().map(|p| docs![&p.ty]));
+                        let arg_types = comma_sep!(params.iter().map(|p| docs![&p.ty]));
                         docs![
                             "(* self-recursive stub (unresolved trait method) *)",
                             hardline!(),
@@ -1477,8 +1514,7 @@ const _: () = {
                         } else {
                             nil!()
                         };
-                        let params_doc =
-                            comma_sep!(params.iter().map(|p| docs![p]));
+                        let params_doc = comma_sep!(params.iter().map(|p| docs![p]));
                         let body_doc: DocBuilder<A> = if as_handwritten {
                             docs!["bitstring_default()"]
                         } else {
@@ -1684,8 +1720,7 @@ const _: () = {
                         // `Size::tls_serialized_len`). ProVerif forbids recursive
                         // letfuns; emit an opaque `fun` instead (sound — these
                         // serialization helpers are never security-relevant).
-                        let arg_types =
-                            comma_sep!(params.iter().map(|p| docs![&p.ty]));
+                        let arg_types = comma_sep!(params.iter().map(|p| docs![&p.ty]));
                         docs![
                             "(* self-recursive stub (unresolved trait method) *)",
                             hardline!(),
@@ -1695,8 +1730,7 @@ const _: () = {
                             ": bitstring."
                         ]
                     } else {
-                        let params_doc =
-                            comma_sep!(params.iter().map(|p| docs![p]));
+                        let params_doc = comma_sep!(params.iter().map(|p| docs![p]));
                         docs![
                             "letfun ",
                             name,
@@ -1707,9 +1741,7 @@ const _: () = {
                         ]
                     }
                 }
-                ImplItemKind::Resugared(ResugaredImplItemKind::Constant {
-                    body: _,
-                }) => {
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body: _ }) => {
                     // Associated constants land as opaque `bitstring`. Users
                     // who care about the value can override with a verbatim
                     // `proverif_replace!` body.
@@ -1768,7 +1800,7 @@ impl Freshen {
     fn base(id: &LocalId) -> String {
         let name = id.0.to_string();
         let rendered = if let Some(rest) = name.strip_prefix("impl ") {
-            format!("impl_{}", rest.replace(' ', "_").replace('+', "_"))
+            format!("impl_{}", rest.replace([' ', '+'], "_"))
         } else {
             name
         };
@@ -1786,7 +1818,7 @@ impl Freshen {
         if cur == 0 {
             original.clone()
         } else {
-            LocalId(Symbol::new(&format!("{b}_{cur}")))
+            LocalId(Symbol::new(format!("{b}_{cur}")))
         }
     }
 
@@ -1902,10 +1934,7 @@ impl Freshen {
                 self.expr(body, &inner);
             }
             ExprKind::Loop {
-                body,
-                kind,
-                state,
-                ..
+                body, kind, state, ..
             } => {
                 let mut inner = subst.clone();
                 match &mut **kind {
@@ -2326,7 +2355,10 @@ fn count_uses_rec(e: &Expr, x: &LocalId, n: &mut usize, in_quote: &mut bool) {
                 count_uses_rec(s, x, n, in_quote);
             }
         }
-        ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::Resugared(_) | ExprKind::Error(_) => {}
+        ExprKind::Literal(_)
+        | ExprKind::GlobalId(_)
+        | ExprKind::Resugared(_)
+        | ExprKind::Error(_) => {}
     }
 }
 
@@ -2449,7 +2481,10 @@ fn subst_once(e: &mut Expr, x: &LocalId, replacement: &Expr) {
                 subst_once(s, x, replacement);
             }
         }
-        ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::Resugared(_) | ExprKind::Error(_) => {}
+        ExprKind::Literal(_)
+        | ExprKind::GlobalId(_)
+        | ExprKind::Resugared(_)
+        | ExprKind::Error(_) => {}
     }
 }
 
@@ -2736,8 +2771,7 @@ impl ProVerifBackend {
             if info.arity == 0 {
                 decls.push(format!("const {name}: bitstring."));
             } else {
-                let args = std::iter::repeat("bitstring")
-                    .take(info.arity)
+                let args = std::iter::repeat_n("bitstring", info.arity)
                     .collect::<Vec<_>>()
                     .join(", ");
                 // NO `[data]`: these are placeholders for symbols we have
@@ -2788,18 +2822,22 @@ fn scan_declared_names(rendered: &str) -> Vec<String> {
     ///  - wrap so `;` lands later but with the destructor name on the
     ///    same line: `reduc forall <multiline>; F(args) = ...`
     ///  - wrap further so the destructor name is on yet another line:
-    ///      reduc forall
-    ///        b1: t1,
-    ///        b2: t2;
     ///
-    ///        F(args)
-    ///        = ...
+    /// ```text
+    /// reduc forall
+    ///   b1: t1,
+    ///   b2: t2;
+    ///
+    ///   F(args)
+    ///   = ...
+    /// ```
+    ///
     /// We need to pick up `F` in all three shapes.
     enum ReducState {
         None,
-        SeenReduc,     // saw bare `reduc`, waiting for `forall`
-        SeenHeader,    // saw `reduc forall`, waiting for `;`
-        AwaitingHead,  // saw `;`, looking for the next non-empty token
+        SeenReduc,    // saw bare `reduc`, waiting for `forall`
+        SeenHeader,   // saw `reduc forall`, waiting for `;`
+        AwaitingHead, // saw `;`, looking for the next non-empty token
     }
     let mut out: Vec<String> = Vec::new();
     let mut state = ReducState::None;
@@ -2808,9 +2846,7 @@ fn scan_declared_names(rendered: &str) -> Vec<String> {
         // `fun NAME(...)`, `letfun NAME(...)`, `const NAME: ...`
         for kw in ["fun ", "letfun ", "const "] {
             if let Some(rest) = s.strip_prefix(kw) {
-                let end = rest
-                    .find(|c: char| c == '(' || c == ':' || c == ' ' || c == '\t')
-                    .unwrap_or(rest.len());
+                let end = rest.find(['(', ':', ' ', '\t']).unwrap_or(rest.len());
                 let name = rest[..end].trim();
                 if !name.is_empty() {
                     out.push(name.to_string());
@@ -2929,9 +2965,7 @@ fn primitives_pvl_names() -> Vec<String> {
                     continue;
                 };
                 // Identifier ends at first `(`, `:`, ` `, or end-of-line.
-                let end = head
-                    .find(|c: char| c == '(' || c == ':' || c == ' ')
-                    .unwrap_or(head.len());
+                let end = head.find(['(', ':', ' ']).unwrap_or(head.len());
                 let name = head[..end].trim();
                 if !name.is_empty() {
                     out.push(name.to_string());
@@ -3028,8 +3062,7 @@ impl AstVisitor for ExternRefCollector {
 }
 
 /// Base64 alphabet for source-map VLQ encoding (RFC-style, `+/` tail).
-const VLQ_B64: &[u8; 64] =
-    b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const VLQ_B64: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /// Append the base64 VLQ encoding of a signed integer to `out` (source-map v3
 /// "mappings" use this for every delta-encoded field).
@@ -3067,7 +3100,7 @@ fn build_source_map(
 ) -> Option<SourceMap> {
     // Resolve each anchor to (gen_line, gen_col, source_index, src_line0, src_col0).
     let mut sources: Vec<String> = Vec::new();
-    let mut source_index = |path: String, sources: &mut Vec<String>| -> usize {
+    let source_index = |path: String, sources: &mut Vec<String>| -> usize {
         if let Some(i) = sources.iter().position(|p| *p == path) {
             i
         } else {

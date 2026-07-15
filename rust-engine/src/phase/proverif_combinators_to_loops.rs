@@ -114,10 +114,10 @@ fn peel_wrappers(e: &Expr) -> &Expr {
 /// every value as `bitstring`, so an imprecise binder type is still sound).
 fn option_payload_ty(ty: &Ty) -> Ty {
     let Ty(b) = ty;
-    if let TyKind::App { args, .. } = &**b {
-        if let Some(GenericValue::Ty(inner)) = args.first() {
-            return inner.clone();
-        }
+    if let TyKind::App { args, .. } = &**b
+        && let Some(GenericValue::Ty(inner)) = args.first()
+    {
+        return inner.clone();
     }
     ty.clone()
 }
@@ -208,8 +208,7 @@ impl ProverifCombinatorsToLoopsVisitor {
         // The accumulator binder threaded by the loop state.
         let acc_id: LocalId = "__find_acc".into();
         let acc_pat = PatKind::var_pat(acc_id.clone()).promote(option_ty.clone(), span);
-        let acc_expr =
-            ExprKind::LocalId(acc_id.clone()).promote(option_ty.clone(), span);
+        let acc_expr = ExprKind::LocalId(acc_id.clone()).promote(option_ty.clone(), span);
 
         // `None`
         let none_expr = ExprKind::Construct {
@@ -247,10 +246,7 @@ impl ProverifCombinatorsToLoopsVisitor {
             constructor: some_ctor,
             is_record: false,
             is_struct: false,
-            fields: vec![(
-                some_field,
-                PatKind::Wild.promote(option_ty.clone(), span),
-            )],
+            fields: vec![(some_field, PatKind::Wild.promote(option_ty.clone(), span))],
         }
         .promote(option_ty.clone(), span);
         let some_arm = Arm::non_guarded(some_wild_pat, acc_expr.clone(), span);
@@ -306,8 +302,7 @@ impl ProverifCombinatorsToLoopsVisitor {
         let acc_pat = PatKind::var_pat(acc_id.clone()).promote(bool_ty.clone(), span);
         let acc_expr = ExprKind::LocalId(acc_id).promote(bool_ty.clone(), span);
 
-        let false_expr =
-            ExprKind::Literal(Literal::Bool(false)).promote(bool_ty.clone(), span);
+        let false_expr = ExprKind::Literal(Literal::Bool(false)).promote(bool_ty.clone(), span);
 
         // `logical_op_or(__any_acc, <pred>)`
         let or_body = Expr::standalone_fn_app(
@@ -782,9 +777,7 @@ impl AstVisitorMut for ProverifCombinatorsToLoopsVisitor {
             Combinator::BoolThen => {
                 ProverifCombinatorsToLoopsVisitor::rewrite_bool_then(&app_ty, span, args)
             }
-            Combinator::ForEach => {
-                ProverifCombinatorsToLoopsVisitor::rewrite_for_each(span, args)
-            }
+            Combinator::ForEach => ProverifCombinatorsToLoopsVisitor::rewrite_for_each(span, args),
             Combinator::FilterMap => {
                 ProverifCombinatorsToLoopsVisitor::rewrite_filter_map(&app_ty, span, args)
             }
