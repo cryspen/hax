@@ -9,7 +9,6 @@ default:
 	make -C loop_equivalence
 	make -C proverif-psk
 	make -C lean_chacha20
-	make -C lean_barrett
 
 clean:
 	make -C limited-order-book clean
@@ -21,4 +20,3 @@ clean:
 	make -C loop_equivalence   clean
 	make -C proverif-psk       clean
 	make -C lean_chacha20      clean
-	make -C lean_barrett       clean

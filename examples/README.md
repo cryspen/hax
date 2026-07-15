@@ -42,7 +42,7 @@ The `<EXAMPLE>/proofs/coq/extraction` folders contain the generated Coq modules.
 
 ## Aeneas-Lean
 
-For the Aeneas-Lean backend, we have three examples: `lean_barrett`, `sha3`, and `loop_equivalence`.
+For the Aeneas-Lean backend, we have three examples: `barrett`, `sha3`, and `loop_equivalence`.
 
 ### Barrett reduction
 
@@ -52,13 +52,13 @@ provided that the input is small enough.
 
 The proof can be run as follows:
 ```sh
-cd lean_barrett/
+cd barrett/
 make lean
 ```
 
-This extracts the Rust code from `lean_barrett/src/lib.rs` into
-`examples/lean_barrett/proofs/lean/LeanBarrett/Extraction/Funs.lean`. The Lean proof can be found in
-`examples/lean_barrett/proofs/lean/LeanBarrett/Verification.lean`.
+This extracts the Rust code from `barrett/src/lib.rs` into
+`examples/barrett/proofs/lean/Barrett/Extraction/Funs.lean`. The Lean proof can be found in
+`examples/barrett/proofs/lean/Barrett/Verification.lean`.
 
 ### SHA-3
 
@@ -98,7 +98,7 @@ make
 
 ## Lean (legacy backend)
 
-Three examples are fine-tuned to showcase the Lean backend: `lean_barrett`,
+Three examples are fine-tuned to showcase the Lean backend: `barrett`,
 `lean_chacha20`, and `adc`. For all of them, the lean extraction can be
 obtained by running `cargo hax into legacy-lean`.
 
@@ -116,13 +116,13 @@ arithmetic operations, and then we prove that the result is indeed the modulus
 limit the computation time, the bound `BARRETT_R` was lowered compared to the
 normal example in the `barrett` folder.
 
-The proofs are backported in the rust code (in `lean_barrett/src/lib.rs`): doing
+The proofs are backported in the rust code (in `barrett/src/lib.rs`): doing
 `cargo hax into legacy-lean` extracts a valid lean file that contains the proof.
 
 The proof can be run by doing (requires `lake`):
 
 ```sh
-cd lean_barrett/
+cd barrett/
 make lean
 ```
 
