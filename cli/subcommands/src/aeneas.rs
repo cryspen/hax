@@ -340,6 +340,16 @@ pub fn run(
         "--config",
         r#"host.rustflags=["--cfg","hax"]"#,
     ]);
+    // Target-side `--cfg hax`: cargo applies `RUSTFLAGS` to every *target* crate —
+    // the root crate AND all its dependencies — and uses it to resolve
+    // `[target.'cfg(hax)'.dependencies]`. The `host.rustflags` above only reaches
+    // host (proc-macro) builds; without this, dependencies compile with their
+    // `#[hax_lib::…]` spec code active but hax-lib in its non-`hax` (dummy) mode.
+    // Concretely a dep like libcrux strips its `#[cfg(hax)] use hax_lib::int::*`
+    // while its `requires`/`ensures` predicates still reference `int!`/`to_int`,
+    // and fails to compile. This mirrors the main frontend (`cargo_hax::rustflags`).
+    let rustflags = std::env::var("RUSTFLAGS").unwrap_or_default();
+    charon_cmd.env("RUSTFLAGS", format!("{rustflags} --cfg hax"));
     if verbose > 0 {
         HaxMessage::SubprocessOutput {
             prefix: "cmd".into(),
