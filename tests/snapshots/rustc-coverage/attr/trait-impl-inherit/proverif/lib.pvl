@@ -1,62 +1,39 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
-
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__rustc_coverage__attr__trait_impl_inherit__t_S.
-
-fun new_tests__rustc_coverage__attr__trait_impl_inherit__t_S_to_bitstring(
-      new_tests__rustc_coverage__attr__trait_impl_inherit__t_S
+(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:17 new_tests__rustc_coverage__attr__trait_impl_inherit__S *)
+fun new_tests__rustc_coverage__attr__trait_impl_inherit__S__S(): bitstring [data].
+(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:20 new_tests__rustc_coverage__attr__trait_impl_inherit__Impl__f *)
+letfun new_tests__rustc_coverage__attr__trait_impl_inherit__Impl__f(self: bitstring) =
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__impl_x20S_x0a, rust_primitives__hax__array_nil())
     )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__attr__trait_impl_inherit__t_S_from_bitstring(
-      bitstring
-    )
-    : new_tests__rustc_coverage__attr__trait_impl_inherit__t_S [typeConverter].
-const new_tests__rustc_coverage__attr__trait_impl_inherit__t_S_default_value: new_tests__rustc_coverage__attr__trait_impl_inherit__t_S.
-letfun new_tests__rustc_coverage__attr__trait_impl_inherit__t_S_default() =
-       new_tests__rustc_coverage__attr__trait_impl_inherit__t_S_default_value.
-letfun new_tests__rustc_coverage__attr__trait_impl_inherit__t_S_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__attr__trait_impl_inherit__t_S_default_value.
-fun new_tests__rustc_coverage__attr__trait_impl_inherit__S()
-    : new_tests__rustc_coverage__attr__trait_impl_inherit__t_S [data].
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__attr__trait_impl_inherit__main(
-         wildcard2 : bitstring
-       ) =
-       let wildcard1: bitstring = (
-         new_tests__rustc_coverage__attr__trait_impl_inherit__f_f(
-           new_tests__rustc_coverage__attr__trait_impl_inherit__S()
-         )
-       ) in
-       ().
-
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:26 new_tests__rustc_coverage__attr__trait_impl_inherit__main *)
+letfun new_tests__rustc_coverage__attr__trait_impl_inherit__main(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__trait_impl_inherit__Impl__f(
+    new_tests__rustc_coverage__attr__trait_impl_inherit__S__S()
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

@@ -1,138 +1,103 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__legacy__cli__include_flag__lib__t_Foo.
-
-fun new_tests__legacy__cli__include_flag__lib__t_Foo_to_bitstring(
-      new_tests__legacy__cli__include_flag__lib__t_Foo
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__cli__include_flag__lib__t_Foo_from_bitstring(bitstring)
-    : new_tests__legacy__cli__include_flag__lib__t_Foo [typeConverter].
-const new_tests__legacy__cli__include_flag__lib__t_Foo_default_value: new_tests__legacy__cli__include_flag__lib__t_Foo.
-letfun new_tests__legacy__cli__include_flag__lib__t_Foo_default() =
-       new_tests__legacy__cli__include_flag__lib__t_Foo_default_value.
-letfun new_tests__legacy__cli__include_flag__lib__t_Foo_err() =
-       let x = construct_fail() in new_tests__legacy__cli__include_flag__lib__t_Foo_default_value.
-fun new_tests__legacy__cli__include_flag__lib__Foo()
-    : new_tests__legacy__cli__include_flag__lib__t_Foo [data].
+(* src: src/legacy/cli/include-flag/lib.rs:27 new_tests__legacy__cli__include_flag__lib__Foo *)
+fun new_tests__legacy__cli__include_flag__lib__Foo__Foo(): bitstring [data].
 
 
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__cli__include_flag__lib__main_a_a(wildcard1 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_b_a(wildcard2 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_c_a(wildcard3 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_a_b(wildcard4 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_b_b(wildcard5 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_c_b(wildcard6 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_a_c(wildcard7 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_a(x : v_T) =
-       let wildcard10: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_a_a(())
-       ) in
-       let wildcard9: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_a_b(())
-       ) in
-       let wildcard8: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_a_c(())
-       ) in
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_b_c(
-         wildcard11 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_b(wildcard15 : bitstring) =
-       let wildcard14: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_b_a(())
-       ) in
-       let wildcard13: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_b_b(())
-       ) in
-       let wildcard12: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_b_c(())
-       ) in
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_c_c(
-         wildcard16 : bitstring
-       ) =
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main_c(wildcard20 : bitstring) =
-       let wildcard19: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_c_a(())
-       ) in
-       let wildcard18: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_c_b(())
-       ) in
-       let wildcard17: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_c_c(())
-       ) in
-       ().
-
-letfun new_tests__legacy__cli__include_flag__lib__main(wildcard24 : bitstring) =
-       let wildcard23: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_a(
-           new_tests__legacy__cli__include_flag__lib__Foo()
-         )
-       ) in
-       let wildcard22: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_b(())
-       ) in
-       let wildcard21: bitstring = (
-         new_tests__legacy__cli__include_flag__lib__main_c(())
-       ) in
-       ().
-
+(* src: src/legacy/cli/include-flag/lib.rs:33 new_tests__legacy__cli__include_flag__lib__main_a_a *)
+(*  Indirect dependencies *)
+letfun new_tests__legacy__cli__include_flag__lib__main_a_a(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:34 new_tests__legacy__cli__include_flag__lib__main_b_a *)
+letfun new_tests__legacy__cli__include_flag__lib__main_b_a(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:35 new_tests__legacy__cli__include_flag__lib__main_c_a *)
+letfun new_tests__legacy__cli__include_flag__lib__main_c_a(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:37 new_tests__legacy__cli__include_flag__lib__main_a_b *)
+letfun new_tests__legacy__cli__include_flag__lib__main_a_b(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:38 new_tests__legacy__cli__include_flag__lib__main_b_b *)
+letfun new_tests__legacy__cli__include_flag__lib__main_b_b(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:39 new_tests__legacy__cli__include_flag__lib__main_c_b *)
+letfun new_tests__legacy__cli__include_flag__lib__main_c_b(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:41 new_tests__legacy__cli__include_flag__lib__main_a_c *)
+letfun new_tests__legacy__cli__include_flag__lib__main_a_c(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:12 new_tests__legacy__cli__include_flag__lib__main_a *)
+(*  Direct dependencies *)
+letfun new_tests__legacy__cli__include_flag__lib__main_a(x: bitstring) =
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_a_a(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_a_b(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_a_c(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:42 new_tests__legacy__cli__include_flag__lib__main_b_c *)
+letfun new_tests__legacy__cli__include_flag__lib__main_b_c(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:17 new_tests__legacy__cli__include_flag__lib__main_b *)
+letfun new_tests__legacy__cli__include_flag__lib__main_b(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_b_a(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_b_b(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_b_c(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:43 new_tests__legacy__cli__include_flag__lib__main_c_c *)
+letfun new_tests__legacy__cli__include_flag__lib__main_c_c(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:22 new_tests__legacy__cli__include_flag__lib__main_c *)
+letfun new_tests__legacy__cli__include_flag__lib__main_c(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_c_a(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_c_b(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_c_c(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/include-flag/lib.rs:5 new_tests__legacy__cli__include_flag__lib__main *)
+(*  Entrypoint *)
+letfun new_tests__legacy__cli__include_flag__lib__main(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_a(
+    new_tests__legacy__cli__include_flag__lib__Foo__Foo()
+  ) in
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_b(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__legacy__cli__include_flag__lib__main_c(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

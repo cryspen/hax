@@ -1,96 +1,797 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__rustc_coverage__loops_branches__t_DebugTest.
-
-fun new_tests__rustc_coverage__loops_branches__t_DebugTest_to_bitstring(
-      new_tests__rustc_coverage__loops_branches__t_DebugTest
+(* src: src/rustc-coverage/loops_branches.rs:8 new_tests__rustc_coverage__loops_branches__DebugTest *)
+fun new_tests__rustc_coverage__loops_branches__DebugTest__DebugTest(): bitstring [data].
+(*  @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001) *)
+(* src: src/rustc-coverage/loops_branches.rs:12 new_tests__rustc_coverage__loops_branches__Impl__fmt *)
+letfun new_tests__rustc_coverage__loops_branches__Impl__fmt(self: bitstring, f: bitstring) =
+  let (=True()) = True()
+    in (let wildcard: bitstring = (let (=True()) = False()
+      in (bitstring_err() (* Loops not supported in ProVerif *))
+      else rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__Tuple2__Tuple2(
+      tmp0: bitstring,
+      out_kw: bitstring
+    ) = core__fmt__Impl_11__write_fmt(
+      f,
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+      )
+    ) in (let f_1 = tmp0 in
+    let wildcard: bitstring = out_kw in
+      let core__ops__control_flow__ControlFlow__Break(
+        ret: bitstring
+      ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+        core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      )) in let bl__acc0 = (f_1) in 
+      let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let f_2 = bl__acc0 in
+      let bl__acc1 = (let (=True()) = True()
+        in (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_1: bitstring,
+            out_kw_1: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_3 = tmp0_1 in
+          let wildcard: bitstring = out_kw_1 in
+            core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_2: bitstring,
+            out_kw_2: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_4 = tmp0_2 in
+          let wildcard: bitstring = out_kw_2 in
+            core__ops__control_flow__ControlFlow__Continue(f_4)) else bitstring_err()))
+        else core__ops__control_flow__ControlFlow__Continue(f_2)) in
+      let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let f_2 = bl__acc1 in
+      let bl__acc2 = (let (=True()) = True()
+        in (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_1: bitstring,
+            out_kw_1: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_3 = tmp0_1 in
+          let wildcard: bitstring = out_kw_1 in
+            core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_2: bitstring,
+            out_kw_2: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_4 = tmp0_2 in
+          let wildcard: bitstring = out_kw_2 in
+            core__ops__control_flow__ControlFlow__Continue(f_4)) else bitstring_err()))
+        else core__ops__control_flow__ControlFlow__Continue(f_2)) in
+      let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let f_2 = bl__acc2 in
+      let bl__acc3 = (let (=True()) = True()
+        in (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_1: bitstring,
+            out_kw_1: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_3 = tmp0_1 in
+          let wildcard: bitstring = out_kw_1 in
+            core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_2: bitstring,
+            out_kw_2: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_4 = tmp0_2 in
+          let wildcard: bitstring = out_kw_2 in
+            core__ops__control_flow__ControlFlow__Continue(f_4)) else bitstring_err()))
+        else core__ops__control_flow__ControlFlow__Continue(f_2)) in
+      let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+        ret
+      else let core__ops__control_flow__ControlFlow__Continue(
+        f_5: bitstring
+      ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+        core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      )) in let bl__acc0 = (f_1) in 
+      let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let f_2 = bl__acc0 in
+      let bl__acc1 = (let (=True()) = True()
+        in (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_1: bitstring,
+            out_kw_1: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_3 = tmp0_1 in
+          let wildcard: bitstring = out_kw_1 in
+            core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_2: bitstring,
+            out_kw_2: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_4 = tmp0_2 in
+          let wildcard: bitstring = out_kw_2 in
+            core__ops__control_flow__ControlFlow__Continue(f_4)) else bitstring_err()))
+        else core__ops__control_flow__ControlFlow__Continue(f_2)) in
+      let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let f_2 = bl__acc1 in
+      let bl__acc2 = (let (=True()) = True()
+        in (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_1: bitstring,
+            out_kw_1: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_3 = tmp0_1 in
+          let wildcard: bitstring = out_kw_1 in
+            core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_2: bitstring,
+            out_kw_2: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_4 = tmp0_2 in
+          let wildcard: bitstring = out_kw_2 in
+            core__ops__control_flow__ControlFlow__Continue(f_4)) else bitstring_err()))
+        else core__ops__control_flow__ControlFlow__Continue(f_2)) in
+      let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let f_2 = bl__acc2 in
+      let bl__acc3 = (let (=True()) = True()
+        in (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_1: bitstring,
+            out_kw_1: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_3 = tmp0_1 in
+          let wildcard: bitstring = out_kw_1 in
+            core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_2: bitstring,
+            out_kw_2: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_2,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_4 = tmp0_2 in
+          let wildcard: bitstring = out_kw_2 in
+            core__ops__control_flow__ControlFlow__Continue(f_4)) else bitstring_err()))
+        else core__ops__control_flow__ControlFlow__Continue(f_2)) in
+      let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+        rust_primitives__hax__Tuple2__Tuple2(f_5, rust_primitives__hax__Tuple0__Tuple0())
+      else bitstring_err()) else bitstring_err())
+    else (let core__ops__control_flow__ControlFlow__Break(
+      ret_1: bitstring
+    ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    )) in let bl__acc0 = (f) in 
+    let rust_primitives__hax__array_cons(i_1, bl__seq1) = bl__seq0 in (let f_6 = bl__acc0 in
+    let bl__acc1 = (let (=True()) = True()
+      in (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_3: bitstring,
+          out_kw_3: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_7 = tmp0_3 in
+        let wildcard: bitstring = out_kw_3 in
+          core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_4: bitstring,
+          out_kw_4: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_8 = tmp0_4 in
+        let wildcard: bitstring = out_kw_4 in
+          core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))
+      else core__ops__control_flow__ControlFlow__Continue(f_6)) in
+    let rust_primitives__hax__array_cons(i_1, bl__seq2) = bl__seq1 in (let f_6 = bl__acc1 in
+    let bl__acc2 = (let (=True()) = True()
+      in (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_3: bitstring,
+          out_kw_3: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_7 = tmp0_3 in
+        let wildcard: bitstring = out_kw_3 in
+          core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_4: bitstring,
+          out_kw_4: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_8 = tmp0_4 in
+        let wildcard: bitstring = out_kw_4 in
+          core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))
+      else core__ops__control_flow__ControlFlow__Continue(f_6)) in
+    let rust_primitives__hax__array_cons(i_1, bl__seq3) = bl__seq2 in (let f_6 = bl__acc2 in
+    let bl__acc3 = (let (=True()) = True()
+      in (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_3: bitstring,
+          out_kw_3: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_7 = tmp0_3 in
+        let wildcard: bitstring = out_kw_3 in
+          core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_4: bitstring,
+          out_kw_4: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_8 = tmp0_4 in
+        let wildcard: bitstring = out_kw_4 in
+          core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))
+      else core__ops__control_flow__ControlFlow__Continue(f_6)) in
+    let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+      ret_1
+    else let core__ops__control_flow__ControlFlow__Continue(
+      f_9: bitstring
+    ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    )) in let bl__acc0 = (f) in 
+    let rust_primitives__hax__array_cons(i_1, bl__seq1) = bl__seq0 in (let f_6 = bl__acc0 in
+    let bl__acc1 = (let (=True()) = True()
+      in (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_3: bitstring,
+          out_kw_3: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_7 = tmp0_3 in
+        let wildcard: bitstring = out_kw_3 in
+          core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_4: bitstring,
+          out_kw_4: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_8 = tmp0_4 in
+        let wildcard: bitstring = out_kw_4 in
+          core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))
+      else core__ops__control_flow__ControlFlow__Continue(f_6)) in
+    let rust_primitives__hax__array_cons(i_1, bl__seq2) = bl__seq1 in (let f_6 = bl__acc1 in
+    let bl__acc2 = (let (=True()) = True()
+      in (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_3: bitstring,
+          out_kw_3: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_7 = tmp0_3 in
+        let wildcard: bitstring = out_kw_3 in
+          core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_4: bitstring,
+          out_kw_4: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_8 = tmp0_4 in
+        let wildcard: bitstring = out_kw_4 in
+          core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))
+      else core__ops__control_flow__ControlFlow__Continue(f_6)) in
+    let rust_primitives__hax__array_cons(i_1, bl__seq3) = bl__seq2 in (let f_6 = bl__acc2 in
+    let bl__acc3 = (let (=True()) = True()
+      in (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_3: bitstring,
+          out_kw_3: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_7 = tmp0_3 in
+        let wildcard: bitstring = out_kw_3 in
+          core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_4: bitstring,
+          out_kw_4: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_6,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_8 = tmp0_4 in
+        let wildcard: bitstring = out_kw_4 in
+          core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))
+      else core__ops__control_flow__ControlFlow__Continue(f_6)) in
+    let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+      rust_primitives__hax__Tuple2__Tuple2(f_9, rust_primitives__hax__Tuple0__Tuple0())
+    else bitstring_err()).
+(* src: src/rustc-coverage/loops_branches.rs:34 new_tests__rustc_coverage__loops_branches__DisplayTest *)
+fun new_tests__rustc_coverage__loops_branches__DisplayTest__DisplayTest(): bitstring [data].
+(*  @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001) *)
+(* src: src/rustc-coverage/loops_branches.rs:38 new_tests__rustc_coverage__loops_branches__Impl_1__fmt *)
+letfun new_tests__rustc_coverage__loops_branches__Impl_1__fmt(self: bitstring, f: bitstring) =
+  let (=True()) = False()
+    in (let core__ops__control_flow__ControlFlow__Break(
+      ret: bitstring
+    ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    )) in let bl__acc0 = (f) in 
+    let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let f_1 = bl__acc0 in
+    let bl__acc1 = (let (=True()) = False()
+      in core__ops__control_flow__ControlFlow__Continue(f_1)
+      else (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0: bitstring,
+          out_kw: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_2 = tmp0 in
+        let wildcard: bitstring = out_kw in
+          core__ops__control_flow__ControlFlow__Continue(f_2)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_1: bitstring,
+          out_kw_1: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_3 = tmp0_1 in
+        let wildcard: bitstring = out_kw_1 in
+          core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err()))) in
+    let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let f_1 = bl__acc1 in
+    let bl__acc2 = (let (=True()) = False()
+      in core__ops__control_flow__ControlFlow__Continue(f_1)
+      else (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0: bitstring,
+          out_kw: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_2 = tmp0 in
+        let wildcard: bitstring = out_kw in
+          core__ops__control_flow__ControlFlow__Continue(f_2)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_1: bitstring,
+          out_kw_1: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_3 = tmp0_1 in
+        let wildcard: bitstring = out_kw_1 in
+          core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err()))) in
+    let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let f_1 = bl__acc2 in
+    let bl__acc3 = (let (=True()) = False()
+      in core__ops__control_flow__ControlFlow__Continue(f_1)
+      else (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0: bitstring,
+          out_kw: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_2 = tmp0 in
+        let wildcard: bitstring = out_kw in
+          core__ops__control_flow__ControlFlow__Continue(f_2)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_1: bitstring,
+          out_kw_1: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_3 = tmp0_1 in
+        let wildcard: bitstring = out_kw_1 in
+          core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err()))) in
+    let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+      ret
+    else let core__ops__control_flow__ControlFlow__Continue(
+      f_4: bitstring
+    ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    )) in let bl__acc0 = (f) in 
+    let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let f_1 = bl__acc0 in
+    let bl__acc1 = (let (=True()) = False()
+      in core__ops__control_flow__ControlFlow__Continue(f_1)
+      else (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0: bitstring,
+          out_kw: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_2 = tmp0 in
+        let wildcard: bitstring = out_kw in
+          core__ops__control_flow__ControlFlow__Continue(f_2)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_1: bitstring,
+          out_kw_1: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_3 = tmp0_1 in
+        let wildcard: bitstring = out_kw_1 in
+          core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err()))) in
+    let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let f_1 = bl__acc1 in
+    let bl__acc2 = (let (=True()) = False()
+      in core__ops__control_flow__ControlFlow__Continue(f_1)
+      else (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0: bitstring,
+          out_kw: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_2 = tmp0 in
+        let wildcard: bitstring = out_kw in
+          core__ops__control_flow__ControlFlow__Continue(f_2)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_1: bitstring,
+          out_kw_1: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_3 = tmp0_1 in
+        let wildcard: bitstring = out_kw_1 in
+          core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err()))) in
+    let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let f_1 = bl__acc2 in
+    let bl__acc3 = (let (=True()) = False()
+      in core__ops__control_flow__ControlFlow__Continue(f_1)
+      else (let (=True()) = False()
+        in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+        let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0: bitstring,
+          out_kw: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_2 = tmp0 in
+        let wildcard: bitstring = out_kw in
+          core__ops__control_flow__ControlFlow__Continue(f_2)) else bitstring_err())
+        else (let rust_primitives__hax__Tuple2__Tuple2(
+          tmp0_1: bitstring,
+          out_kw_1: bitstring
+        ) = core__fmt__Impl_11__write_fmt(
+          f_1,
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+          )
+        ) in (let f_3 = tmp0_1 in
+        let wildcard: bitstring = out_kw_1 in
+          core__ops__control_flow__ControlFlow__Continue(f_3)) else bitstring_err()))) in
+    let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+      rust_primitives__hax__Tuple2__Tuple2(f_4, rust_primitives__hax__Tuple0__Tuple0())
+    else bitstring_err())
+    else (let wildcard: bitstring = (let (=True()) = False()
+      in (bitstring_err() (* Loops not supported in ProVerif *))
+      else rust_primitives__hax__Tuple0__Tuple0) in
+    let rust_primitives__hax__Tuple2__Tuple2(
+      tmp0_2: bitstring,
+      out_kw_2: bitstring
+    ) = core__fmt__Impl_11__write_fmt(
+      f,
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+      )
+    ) in (let f_5 = tmp0_2 in
+    let wildcard: bitstring = out_kw_2 in
+      let core__ops__control_flow__ControlFlow__Break(
+        ret_1: bitstring
+      ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+        core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      )) in let bl__acc0 = (f_5) in 
+      let rust_primitives__hax__array_cons(i_1, bl__seq1) = bl__seq0 in (let f_6 = bl__acc0 in
+      let bl__acc1 = (let (=True()) = False()
+        in core__ops__control_flow__ControlFlow__Continue(f_6)
+        else (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_3: bitstring,
+            out_kw_3: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_7 = tmp0_3 in
+          let wildcard: bitstring = out_kw_3 in
+            core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_4: bitstring,
+            out_kw_4: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_8 = tmp0_4 in
+          let wildcard: bitstring = out_kw_4 in
+            core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))) in
+      let rust_primitives__hax__array_cons(i_1, bl__seq2) = bl__seq1 in (let f_6 = bl__acc1 in
+      let bl__acc2 = (let (=True()) = False()
+        in core__ops__control_flow__ControlFlow__Continue(f_6)
+        else (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_3: bitstring,
+            out_kw_3: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_7 = tmp0_3 in
+          let wildcard: bitstring = out_kw_3 in
+            core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_4: bitstring,
+            out_kw_4: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_8 = tmp0_4 in
+          let wildcard: bitstring = out_kw_4 in
+            core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))) in
+      let rust_primitives__hax__array_cons(i_1, bl__seq3) = bl__seq2 in (let f_6 = bl__acc2 in
+      let bl__acc3 = (let (=True()) = False()
+        in core__ops__control_flow__ControlFlow__Continue(f_6)
+        else (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_3: bitstring,
+            out_kw_3: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_7 = tmp0_3 in
+          let wildcard: bitstring = out_kw_3 in
+            core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_4: bitstring,
+            out_kw_4: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_8 = tmp0_4 in
+          let wildcard: bitstring = out_kw_4 in
+            core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))) in
+      let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+        ret_1
+      else let core__ops__control_flow__ControlFlow__Continue(
+        f_9: bitstring
+      ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+        core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      )) in let bl__acc0 = (f_5) in 
+      let rust_primitives__hax__array_cons(i_1, bl__seq1) = bl__seq0 in (let f_6 = bl__acc0 in
+      let bl__acc1 = (let (=True()) = False()
+        in core__ops__control_flow__ControlFlow__Continue(f_6)
+        else (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_3: bitstring,
+            out_kw_3: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_7 = tmp0_3 in
+          let wildcard: bitstring = out_kw_3 in
+            core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_4: bitstring,
+            out_kw_4: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_8 = tmp0_4 in
+          let wildcard: bitstring = out_kw_4 in
+            core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))) in
+      let rust_primitives__hax__array_cons(i_1, bl__seq2) = bl__seq1 in (let f_6 = bl__acc1 in
+      let bl__acc2 = (let (=True()) = False()
+        in core__ops__control_flow__ControlFlow__Continue(f_6)
+        else (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_3: bitstring,
+            out_kw_3: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_7 = tmp0_3 in
+          let wildcard: bitstring = out_kw_3 in
+            core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_4: bitstring,
+            out_kw_4: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_8 = tmp0_4 in
+          let wildcard: bitstring = out_kw_4 in
+            core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))) in
+      let rust_primitives__hax__array_cons(i_1, bl__seq3) = bl__seq2 in (let f_6 = bl__acc2 in
+      let bl__acc3 = (let (=True()) = False()
+        in core__ops__control_flow__ControlFlow__Continue(f_6)
+        else (let (=True()) = False()
+          in (let wildcard: bitstring = (bitstring_err() (* Loops not supported in ProVerif *)) in
+          let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_3: bitstring,
+            out_kw_3: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_7 = tmp0_3 in
+          let wildcard: bitstring = out_kw_3 in
+            core__ops__control_flow__ControlFlow__Continue(f_7)) else bitstring_err())
+          else (let rust_primitives__hax__Tuple2__Tuple2(
+            tmp0_4: bitstring,
+            out_kw_4: bitstring
+          ) = core__fmt__Impl_11__write_fmt(
+            f_6,
+            core__fmt__rt__Impl_1__new_const(
+              rust_primitives__hax__array_cons(string_lit__cool, rust_primitives__hax__array_nil())
+            )
+          ) in (let f_8 = tmp0_4 in
+          let wildcard: bitstring = out_kw_4 in
+            core__ops__control_flow__ControlFlow__Continue(f_8)) else bitstring_err()))) in
+      let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
+        rust_primitives__hax__Tuple2__Tuple2(f_9, rust_primitives__hax__Tuple0__Tuple0())
+      else bitstring_err()) else bitstring_err()).
+(* src: src/rustc-coverage/loops_branches.rs:60 new_tests__rustc_coverage__loops_branches__main *)
+(*  @fail(extraction): ssprove(HAX0001) *)
+letfun new_tests__rustc_coverage__loops_branches__main(wildcard: bitstring) =
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__empty, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(
+          rust_primitives__hax__Tuple1__Tuple1(
+            new_tests__rustc_coverage__loops_branches__DebugTest__DebugTest()
+          )
+        )
+      ), rust_primitives__hax__array_nil())
     )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__loops_branches__t_DebugTest_from_bitstring(
-      bitstring
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__empty, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_display(
+        rust_primitives__hax__Tuple1__Tuple1__0(
+          rust_primitives__hax__Tuple1__Tuple1(
+            new_tests__rustc_coverage__loops_branches__DisplayTest__DisplayTest()
+          )
+        )
+      ), rust_primitives__hax__array_nil())
     )
-    : new_tests__rustc_coverage__loops_branches__t_DebugTest [typeConverter].
-const new_tests__rustc_coverage__loops_branches__t_DebugTest_default_value: new_tests__rustc_coverage__loops_branches__t_DebugTest.
-letfun new_tests__rustc_coverage__loops_branches__t_DebugTest_default() =
-       new_tests__rustc_coverage__loops_branches__t_DebugTest_default_value.
-letfun new_tests__rustc_coverage__loops_branches__t_DebugTest_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__loops_branches__t_DebugTest_default_value.
-fun new_tests__rustc_coverage__loops_branches__DebugTest()
-    : new_tests__rustc_coverage__loops_branches__t_DebugTest [data].
-
-
-type new_tests__rustc_coverage__loops_branches__t_DisplayTest.
-
-fun new_tests__rustc_coverage__loops_branches__t_DisplayTest_to_bitstring(
-      new_tests__rustc_coverage__loops_branches__t_DisplayTest
-    )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__loops_branches__t_DisplayTest_from_bitstring(
-      bitstring
-    )
-    : new_tests__rustc_coverage__loops_branches__t_DisplayTest [typeConverter].
-const new_tests__rustc_coverage__loops_branches__t_DisplayTest_default_value: new_tests__rustc_coverage__loops_branches__t_DisplayTest.
-letfun new_tests__rustc_coverage__loops_branches__t_DisplayTest_default() =
-       new_tests__rustc_coverage__loops_branches__t_DisplayTest_default_value.
-letfun new_tests__rustc_coverage__loops_branches__t_DisplayTest_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__loops_branches__t_DisplayTest_default_value.
-fun new_tests__rustc_coverage__loops_branches__DisplayTest()
-    : new_tests__rustc_coverage__loops_branches__t_DisplayTest [data].
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__loops_branches__main(wildcard5 : bitstring) =
-       let debug_test = (new_tests__rustc_coverage__loops_branches__DebugTest()) in
-       let args = ((debug_test)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard4: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["","
-"], args)
-         )
-       ) in
-       let wildcard3: bitstring = (()) in
-       let display_test = (
-         new_tests__rustc_coverage__loops_branches__DisplayTest()
-       ) in
-       let args = ((display_test)) in
-       let args = ([core_models__fmt__rt__impl__new_display(args.0)]) in
-       let wildcard2: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["","
-"], args)
-         )
-       ) in
-       let wildcard1: bitstring = (()) in
-       ().
-
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.

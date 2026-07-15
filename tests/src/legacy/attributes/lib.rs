@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001)
 //! @fail(tc): lean(1)
 //! @fail(extraction): ssprove(HAX0001), coq(HAX0002, HAX0002, HAX0002, HAX0002, HAX0002)
 //! @fail(tc): fstar(47)

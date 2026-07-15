@@ -1,95 +1,48 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__guards__lib__if_let_guard(x : Option) =
-       rust_primitives__hax__failure(
-         "Explicit rejection by a phase in the Hax engine:
-a node of kind [Match_guard] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-         "(match (x) {
- core_models::option::Option_None => 0,
- core_models::option::Option_Some(
- v,
- ) if let core_models::result::Result_Ok(y) = v => y,
- core_models::option::Option_Some(core_models::result:..."
-       ).
-
-letfun new_tests__legacy__guards__lib__equivalent(x : Option) =
-       let None() = x in 0
-       else let Some(nat_to_bitstring(y)) = let Some(nat_to_bitstring(v)) = x in let y = v in Some(
-         nat_to_bitstring(y)
-       )
-       else None()
-       else None() in y
-       else let None() = let Some(nat_to_bitstring(v)) = x in let y = v in Some(
-         nat_to_bitstring(y)
-       )
-       else None()
-       else None() in let Some(
-         nat_to_bitstring(core_models__result__Result_Err(y))
-       ) = x in y
-       else 1.
-
-letfun new_tests__legacy__guards__lib__multiple_guards(x : Option) =
-       rust_primitives__hax__failure(
-         "Explicit rejection by a phase in the Hax engine:
-a node of kind [Match_guard] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-         "(match (x) {
- core_models::option::Option_None => 0,
- core_models::option::Option_Some(
- core_models::result::Result_Ok(v),
- ) if let core_models::option::Option_Some(1) = core_models::option::Option_..."
-       ).
-
-letfun new_tests__legacy__guards__lib__if_guard(x : Option) =
-       rust_primitives__hax__failure(
-         "Explicit rejection by a phase in the Hax engine:
-a node of kind [Match_guard] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-         "(match (x) {
- core_models::option::Option_Some(
- v,
- ) if let true = core_models::cmp::f_gt(v, 0) => v,
- _ => 0,
- })"
-       ).
-
+(* src: src/legacy/guards/lib.rs:5 new_tests__legacy__guards__lib__if_let_guard *)
+letfun new_tests__legacy__guards__lib__if_let_guard(x: bitstring) =
+  let None() = x in nat_lit(0)
+  else let Some(v) = x in y
+  else let Some(core__result__Result__Err(y_1: bitstring)) = x in y_1
+  else nat_lit(1).
+(* src: src/legacy/guards/lib.rs:14 new_tests__legacy__guards__lib__equivalent *)
+letfun new_tests__legacy__guards__lib__equivalent(x: bitstring) =
+  let None() = x in nat_lit(0)
+  else let Some(y_1) = let Some(v) = x in (let y = v in Some(y))
+  else None() in y_1
+  else let None() = let Some(v) = x in (let y = v in Some(y))
+  else None() in
+    (let Some(core__result__Result__Err(y_2: bitstring)) = x in y_2
+    else nat_lit(1))
+  else bitstring_err().
+(* src: src/legacy/guards/lib.rs:33 new_tests__legacy__guards__lib__multiple_guards *)
+letfun new_tests__legacy__guards__lib__multiple_guards(x: bitstring) =
+  let None() = x in nat_lit(0)
+  else let Some(v) = x in nat_lit(0)
+  else let Some(v_1) = x in y
+  else let Some(core__result__Result__Err(y_1: bitstring)) = x in y_1
+  else nat_lit(1).
+(* src: src/legacy/guards/lib.rs:43 new_tests__legacy__guards__lib__if_guard *)
+letfun new_tests__legacy__guards__lib__if_guard(x: bitstring) =
+  let Some(v) = x in v
+  else nat_lit(0).

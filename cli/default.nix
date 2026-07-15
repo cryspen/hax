@@ -4,6 +4,14 @@ let
   pname = "hax";
   is-webapp-static-asset = path:
     builtins.match ".*(script[.]js|index[.]html)" path != null;
+  # The ProVerif backend embeds its symbolic model with `include_str!` (see
+  # `rust-engine/src/backends/proverif.rs`). `primitives.pvl` lives under
+  # `hax-lib/proof-libs/proverif`, so the filter below drops it twice over:
+  # once via the `proof-libs` exclusion, and again because `.pvl` is not a
+  # cargo source. Without it `hax-rust-engine` fails to compile. Let that
+  # directory and its `.pvl` files back in, as is done for `renamings`.
+  is-proverif-proof-lib = path:
+    builtins.match ".*/hax-lib/proof-libs/proverif(/.*[.]pvl)?" path != null;
   buildInputs = lib.optionals stdenv.isDarwin [ libiconv libz.dev ];
   binaries = [ hax hax-engine.bin rustc gcc hax_rust_engine ] ++ buildInputs;
   commonArgs = {
@@ -16,7 +24,8 @@ let
         && builtins.isNull (builtins.match ".*[.](md|svg)" path)
         && (craneLib.filterCargoSources path type
           || is-webapp-static-asset path))
-        || !(builtins.isNull (builtins.match ".*/renamings" path));
+        || !(builtins.isNull (builtins.match ".*/renamings" path))
+        || is-proverif-proof-lib path;
     };
     inherit buildInputs doCheck;
     doNotRemoveReferencesToRustToolchain = true;

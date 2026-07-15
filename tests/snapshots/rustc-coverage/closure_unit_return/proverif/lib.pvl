@@ -1,66 +1,40 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__closure_unit_return__explicit_unit(
-         wildcard4 : bitstring
-       ) =
-       let closure = (
-         |wildcard2: bitstring|let wildcard3: bitstring = (()) in
-         ()
-       ) in
-       let wildcard1: bitstring = (core_models__mem__drop(closure)) in
-       ().
-
-letfun new_tests__rustc_coverage__closure_unit_return__implicit_unit(
-         wildcard8 : bitstring
-       ) =
-       let closure = (
-         |wildcard6: bitstring|let wildcard7: bitstring = (()) in
-         ()
-       ) in
-       let wildcard5: bitstring = (core_models__mem__drop(closure)) in
-       ().
-
-letfun new_tests__rustc_coverage__closure_unit_return__main(
-         wildcard11 : bitstring
-       ) =
-       let wildcard10: bitstring = (
-         new_tests__rustc_coverage__closure_unit_return__explicit_unit(())
-       ) in
-       let wildcard9: bitstring = (
-         new_tests__rustc_coverage__closure_unit_return__implicit_unit(())
-       ) in
-       ().
-
+(* src: src/rustc-coverage/closure_unit_return.rs:8 new_tests__rustc_coverage__closure_unit_return__explicit_unit *)
+letfun new_tests__rustc_coverage__closure_unit_return__explicit_unit(wildcard: bitstring) =
+  let closure = (bitstring_err() (* Closures not supported in ProVerif *)) in
+  let wildcard: bitstring = core__mem__drop(closure) in
+  rust_primitives__hax__Tuple0__Tuple0().
+(* src: src/rustc-coverage/closure_unit_return.rs:17 new_tests__rustc_coverage__closure_unit_return__implicit_unit *)
+letfun new_tests__rustc_coverage__closure_unit_return__implicit_unit(wildcard: bitstring) =
+  let closure = (bitstring_err() (* Closures not supported in ProVerif *)) in
+  let wildcard: bitstring = core__mem__drop(closure) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/closure_unit_return.rs:27 new_tests__rustc_coverage__closure_unit_return__main *)
+letfun new_tests__rustc_coverage__closure_unit_return__main(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__closure_unit_return__explicit_unit(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__closure_unit_return__implicit_unit(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

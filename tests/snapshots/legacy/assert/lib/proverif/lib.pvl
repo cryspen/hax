@@ -1,67 +1,50 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__assert__lib__asserts(wildcard5 : bitstring) =
-       let wildcard4: bitstring = (
-         if core_models__ops__bit__f_not(true) then (bitstring_err()) else (())
-       ) in
-       let wildcard3: bitstring = (
-         if core_models__ops__bit__f_not(core_models__cmp__f_eq(1, 1))
-         then (bitstring_err())
-         else (())
-       ) in
-       let wildcard2: bitstring = (
-         let (left_val: nat, right_val: nat) = (2, 2) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       let wildcard1: bitstring = (
-         let (left_val: nat, right_val: nat) = (1, 2) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       ().
-
+(* src: src/legacy/assert/lib.rs:4 new_tests__legacy__assert__lib__asserts *)
+letfun new_tests__legacy__assert__lib__asserts(wildcard: bitstring) =
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(True())
+    in bitstring_err()
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
+      rust_primitives__hax__machine_int__eq(nat_lit(1), nat_lit(1))
+    )
+    in bitstring_err()
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val: bitstring,
+    right_val: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(nat_lit(2), nat_lit(2)) in
+    (let (=True()) = core__ops__bit__Not__not_kw(
+        rust_primitives__hax__machine_int__eq(left_val, right_val)
+      )
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val_1: bitstring,
+    right_val_1: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(nat_lit(1), nat_lit(2)) in
+    (let (=True()) = rust_primitives__hax__machine_int__eq(left_val_1, right_val_1)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  rust_primitives__hax__Tuple0__Tuple0.

@@ -1,0 +1,12 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* DIAGNOSTIC, not part of the model. Each symbol below is       *)
+(* referenced by lib.pvl but has no definition (and is not in    *)
+(* primitives.pvl). Supply a real one by hand, or by extracting  *)
+(* the crate that owns it (e.g. a separately-extracted           *)
+(* dependency). Declared WITHOUT `[data]` because the real       *)
+(* nature (one-way fun / data constructor / letfun) is unknown.  *)
+(* GOAL: this file is EMPTY.                                     *)
+(*****************************************************************)
+fun core__mem__drop(bitstring): bitstring.

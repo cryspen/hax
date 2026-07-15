@@ -1,151 +1,107 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__attr__off_on_sandwich__do_stuff(
-         wildcard1 : bitstring
-       ) =
-       ().
-
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:9 new_tests__rustc_coverage__attr__off_on_sandwich__do_stuff *)
+letfun new_tests__rustc_coverage__attr__off_on_sandwich__do_stuff(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:20 new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b__dense_c *)
 letfun new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b__dense_c(
-         wildcard3 : bitstring
-       ) =
-       let wildcard2: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__do_stuff(())
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b(
-         wildcard6 : bitstring
-       ) =
-       let wildcard5: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b__dense_c(
-           ()
-         )
-       ) in
-       let wildcard4: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b__dense_c(
-           ()
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__attr__off_on_sandwich__dense_a(
-         wildcard9 : bitstring
-       ) =
-       let wildcard8: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b(())
-       ) in
-       let wildcard7: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b(())
-       ) in
-       ().
-
+  wildcard: bitstring
+) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__do_stuff(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:16 new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b *)
+letfun new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b__dense_c(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b__dense_c(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:12 new_tests__rustc_coverage__attr__off_on_sandwich__dense_a *)
+letfun new_tests__rustc_coverage__attr__off_on_sandwich__dense_a(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__dense_a__dense_b(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:41 new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d__sparse_e *)
 letfun new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d__sparse_e(
-         wildcard11 : bitstring
-       ) =
-       let wildcard10: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__do_stuff(())
-       ) in
-       ().
-
+  wildcard: bitstring
+) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__do_stuff(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:37 new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d *)
 letfun new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d(
-         wildcard14 : bitstring
-       ) =
-       let wildcard13: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d__sparse_e(
-           ()
-         )
-       ) in
-       let wildcard12: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d__sparse_e(
-           ()
-         )
-       ) in
-       ().
-
+  wildcard: bitstring
+) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d__sparse_e(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d__sparse_e(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:34 new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c *)
 letfun new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c(
-         wildcard17 : bitstring
-       ) =
-       let wildcard16: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d(
-           ()
-         )
-       ) in
-       let wildcard15: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d(
-           ()
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b(
-         wildcard20 : bitstring
-       ) =
-       let wildcard19: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c(
-           ()
-         )
-       ) in
-       let wildcard18: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c(
-           ()
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a(
-         wildcard23 : bitstring
-       ) =
-       let wildcard22: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b(()
-         )
-       ) in
-       let wildcard21: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b(()
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__attr__off_on_sandwich__main(
-         wildcard26 : bitstring
-       ) =
-       let wildcard25: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__dense_a(())
-       ) in
-       let wildcard24: bitstring = (
-         new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a(())
-       ) in
-       ().
-
+  wildcard: bitstring
+) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c__sparse_d(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:30 new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b *)
+letfun new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b__sparse_c(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:27 new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a *)
+letfun new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a__sparse_b(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/off-on-sandwich.rs:50 new_tests__rustc_coverage__attr__off_on_sandwich__main *)
+letfun new_tests__rustc_coverage__attr__off_on_sandwich__main(wildcard: bitstring) =
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__dense_a(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard: bitstring = new_tests__rustc_coverage__attr__off_on_sandwich__sparse_a(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

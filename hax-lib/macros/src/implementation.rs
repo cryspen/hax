@@ -103,7 +103,10 @@ pub fn loop_invariant(predicate: pm::TokenStream) -> pm::TokenStream {
         ),
     };
     let ts: pm::TokenStream = quote! {
-        #[cfg(#HaxCfgOptionName)]
+        // The ProVerif/Aeneas backend does not consume loop invariants, and the
+        // emitted (non-const) `_internal_loop_invariant` call breaks `const fn`s
+        // that carry an invariant. Suppress the spec under `hax_backend_proverif`.
+        #[cfg(all(#HaxCfgOptionName, not(hax_backend_proverif)))]
         {
             #invariant_f({
                 #HaxQuantifiers
@@ -124,7 +127,9 @@ pub fn loop_invariant(predicate: pm::TokenStream) -> pm::TokenStream {
 pub fn loop_decreases(predicate: pm::TokenStream) -> pm::TokenStream {
     let predicate: TokenStream = predicate.into();
     let ts: pm::TokenStream = quote! {
-        #[cfg(#HaxCfgOptionName)]
+        // Suppressed for the ProVerif/Aeneas backend (see `loop_invariant`): the
+        // `_internal_loop_decreases` / `to_int` calls are non-const and unused.
+        #[cfg(all(#HaxCfgOptionName, not(hax_backend_proverif)))]
         {
             hax_lib::_internal_loop_decreases({
                 #HaxQuantifiers
@@ -733,7 +738,10 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             let status_attr =
                                 &AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
                             extra.push(syn::parse_quote! {
-                                #[cfg(#HaxCfgOptionName)]
+                                // Refinement-type predicate: a verification spec the
+                                // ProVerif/Aeneas backend ignores; suppress under
+                                // `hax_backend_proverif` (see `make_fn_decoration`).
+                                #[cfg(all(#HaxCfgOptionName, not(hax_backend_proverif)))]
                                 #status_attr
                                 const _: () = {
                                     #uid_attr
@@ -831,6 +839,108 @@ pub fn pv_handwritten(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::Toke
     let item: ItemFn = parse_macro_input!(item);
     let attr = AttrPayload::PVHandwritten;
     quote! {#attr #item}.into()
+}
+
+/// A marker telling the ProVerif backend to β-inline every call to this
+/// function at the use site. Closure arguments are β-reduced into the
+/// inlined body; the marked item itself drops out of the output. Useful
+/// for higher-order helpers (`Option::map`, `iter::fold`, etc.) which
+/// would otherwise extract as opaque function symbols.
+///
+/// The attribute is emitted as a plain tool attribute (`#[_hax::pv_inline]`)
+/// rather than going through the `_hax::json` envelope so it survives the
+/// OCaml engine's attribute decoder untouched and reaches the rust-engine
+/// resugaring directly.
+#[proc_macro_attribute]
+pub fn pv_inline(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    quote! {
+        #[cfg_attr(#HaxCfgOptionName, #HaxTool::pv_inline)]
+        #item
+    }
+    .into()
+}
+
+/// Shorthand for the common ProVerif idiom where a Rust function is
+/// modelled as a single `extern__<fn_name>` ProVerif letfun of
+/// uniform-bitstring arity. Equivalent to writing, by hand, the pair:
+///
+/// ```ignore
+/// #[hax_lib::proverif::before("fun extern__<fn>(bitstring, …): bitstring.")]
+/// #[hax_lib::proverif::replace_body("extern__<fn>(p1, …, pn)")]
+/// ```
+///
+/// The declaration arity and the body call's argument names are derived
+/// from the annotated function's signature. Parameters that are not
+/// simple identifiers (e.g. patterns) fall back to `p<i>`.
+#[proc_macro_attribute]
+pub fn pv_extern(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    let fn_name = item.sig.ident.to_string();
+    let arity = item.sig.inputs.len();
+    let arg_names: Vec<String> = item
+        .sig
+        .inputs
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| match arg {
+            FnArg::Receiver(_) => "self".to_string(),
+            FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) => pat_ident.ident.to_string(),
+                _ => format!("p{}", i),
+            },
+        })
+        .collect();
+    let bitstring_args = std::iter::repeat("bitstring")
+        .take(arity)
+        .collect::<Vec<_>>()
+        .join(", ");
+    let decl = format!("fun extern__{fn_name}({bitstring_args}): bitstring.");
+    let body_call = format!("extern__{fn_name}({})", arg_names.join(", "));
+    let decl_lit = LitStr::new(&decl, Span::call_site());
+    let body_lit = LitStr::new(&body_call, Span::call_site());
+    quote! {
+        #[::hax_lib::proverif::before(#decl_lit)]
+        #[::hax_lib::proverif::replace_body(#body_lit)]
+        #item
+    }
+    .into()
+}
+
+/// Shorthand for `#[hax_lib::proverif::replace_body(<lit>)]`. Useful for
+/// trivial constant stubs like `pv_stub!("nat_lit(0)")` on length helpers.
+#[proc_macro_attribute]
+pub fn pv_stub(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let payload: LitStr = parse_macro_input!(attr);
+    let item: TokenStream = item.into();
+    quote! {
+        #[::hax_lib::proverif::replace_body(#payload)]
+        #item
+    }
+    .into()
+}
+
+/// Shorthand for declaring this ProVerif letfun as the (one-sided) inverse
+/// of another function. Generates the `reduc` rule
+/// `reduc forall x: bitstring; <self>(<other>(x)) = x.`
+///
+/// The argument is the path to the other function in Rust syntax; hax's
+/// `${…}` expansion is used so the path is resolved by the backend.
+#[proc_macro_attribute]
+pub fn pv_inverse_of(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let other_path = parse_macro_input!(attr as syn::Path);
+    let other_str = other_path.to_token_stream().to_string().replace(' ', "");
+    let item_fn: ItemFn = parse_macro_input!(item);
+    let self_name = item_fn.sig.ident.to_string();
+    let body = format!(
+        "reduc forall x: bitstring; ${{{self_name}}}(${{{other_str}}}(x)) = x."
+    );
+    let body_lit = LitStr::new(&body, Span::call_site());
+    quote! {
+        #[::hax_lib::proverif::replace(#body_lit)]
+        #item_fn
+    }
+    .into()
 }
 
 /// Create a mathematical integer. This macro expects a Rust integer

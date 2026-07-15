@@ -1,90 +1,38 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__legacy__patterns__lib__t_Other.
-
-fun new_tests__legacy__patterns__lib__t_Other_to_bitstring(
-      new_tests__legacy__patterns__lib__t_Other
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__patterns__lib__t_Other_from_bitstring(bitstring)
-    : new_tests__legacy__patterns__lib__t_Other [typeConverter].
-const new_tests__legacy__patterns__lib__t_Other_default_value: new_tests__legacy__patterns__lib__t_Other.
-letfun new_tests__legacy__patterns__lib__t_Other_default() =
-       new_tests__legacy__patterns__lib__t_Other_default_value.
-letfun new_tests__legacy__patterns__lib__t_Other_err() =
-       let x = construct_fail() in new_tests__legacy__patterns__lib__t_Other_default_value.
-fun new_tests__legacy__patterns__lib__Other(nat)
-    : new_tests__legacy__patterns__lib__t_Other [data].
-reduc forall new_tests__legacy__patterns__lib__0: nat;
-    accessor_new_tests__legacy__patterns__lib__t_Other_new_tests__legacy__patterns__lib__0(
-      new_tests__legacy__patterns__lib__Other(
-        new_tests__legacy__patterns__lib__0
-      )
-    ) = new_tests__legacy__patterns__lib__0.
-
-type new_tests__legacy__patterns__lib__t_Test.
-
-fun new_tests__legacy__patterns__lib__t_Test_to_bitstring(
-      new_tests__legacy__patterns__lib__t_Test
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__patterns__lib__t_Test_from_bitstring(bitstring)
-    : new_tests__legacy__patterns__lib__t_Test [typeConverter].
-const new_tests__legacy__patterns__lib__t_Test_default_value: new_tests__legacy__patterns__lib__t_Test.
-letfun new_tests__legacy__patterns__lib__t_Test_default() =
-       new_tests__legacy__patterns__lib__t_Test_default_value.
-letfun new_tests__legacy__patterns__lib__t_Test_err() =
-       let x = construct_fail() in new_tests__legacy__patterns__lib__t_Test_default_value.
-fun new_tests__legacy__patterns__lib__Test_C1(
-      new_tests__legacy__patterns__lib__t_Other
-    )
-    : new_tests__legacy__patterns__lib__t_Test [data].
-reduc forall 
-  new_tests__legacy__patterns__lib__0: new_tests__legacy__patterns__lib__t_Other
-;
-    accessor_new_tests__legacy__patterns__lib__t_Test_new_tests__legacy__patterns__lib__0(
-      new_tests__legacy__patterns__lib__Test_C1(
-        new_tests__legacy__patterns__lib__0
-      )
-    ) = new_tests__legacy__patterns__lib__0.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__patterns__lib__impl__test(
-         self : new_tests__legacy__patterns__lib__t_Test
-       ) =
-       let {
-         new_tests__legacy__patterns__lib__Test_C1(c):new_tests__legacy__patterns__lib__t_Test
-       } = self in accessor_new_tests__legacy__patterns__lib__t_Other_new_tests__legacy__patterns__lib__0(
-         c
-       ).
-
+(* src: src/legacy/patterns/lib.rs:3 new_tests__legacy__patterns__lib__Other *)
+fun new_tests__legacy__patterns__lib__Other__Other(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__patterns__lib__Other__Other__0(
+    new_tests__legacy__patterns__lib__Other__Other(v_0)
+  ) = v_0.
+(* src: src/legacy/patterns/lib.rs:5 new_tests__legacy__patterns__lib__Test *)
+fun new_tests__legacy__patterns__lib__Test__C1(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__patterns__lib__Test__C1__0(
+    new_tests__legacy__patterns__lib__Test__C1(v_0)
+  ) = v_0.
+(* src: src/legacy/patterns/lib.rs:10 new_tests__legacy__patterns__lib__Impl__test *)
+letfun new_tests__legacy__patterns__lib__Impl__test(self: bitstring) =
+  let new_tests__legacy__patterns__lib__Test__C1(c: bitstring) = self in
+    new_tests__legacy__patterns__lib__Other__Other__0(c)
+  else bitstring_err().

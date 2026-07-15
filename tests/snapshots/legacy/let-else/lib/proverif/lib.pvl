@@ -1,48 +1,32 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__let_else__lib__let_else(opt : Option) =
-       let Some(nat_to_bitstring(x)) = opt in true
-       else todo return;.
-
-letfun new_tests__legacy__let_else__lib__let_else_different_type(opt : Option) =
-       let Some(nat_to_bitstring(x)) = opt in (
-         let hoist1 = (
-           Some(nat_to_bitstring(core_models__ops__arith__f_add(x, 1)))
-         ) in
-         new_tests__legacy__let_else__lib__let_else(hoist1)
-       )
-       else todo return;.
-
+(* src: src/legacy/let-else/lib.rs:3 new_tests__legacy__let_else__lib__let_else *)
+letfun new_tests__legacy__let_else__lib__let_else(opt: bitstring) =
+  let Some(x) = opt in True()
+  else False().
+(* src: src/legacy/let-else/lib.rs:8 new_tests__legacy__let_else__lib__let_else_different_type *)
+letfun new_tests__legacy__let_else__lib__let_else_different_type(opt: bitstring) =
+  let Some(x) = opt in
+    new_tests__legacy__let_else__lib__let_else(
+      Some(rust_primitives__hax__machine_int__add(x, nat_lit(1)))
+    )
+  else False().

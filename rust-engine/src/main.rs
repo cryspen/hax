@@ -58,14 +58,12 @@ fn main() {
     };
 
     let files = match &value.backend.backend {
-        Backend::Coq
-        | Backend::Ssprove
-        | Backend::Easycrypt
-        | Backend::ProVerif { .. }
-        | Backend::AeneasLean { .. } => panic!(
-            "The Rust engine cannot be called with backend {}.",
-            value.backend.backend
-        ),
+        Backend::Coq | Backend::Ssprove | Backend::Easycrypt | Backend::AeneasLean { .. } => {
+            panic!(
+                "The Rust engine cannot be called with backend {}.",
+                value.backend.backend
+            )
+        }
         Backend::Fstar(_) => {
             let mut items = items;
             hax_rust_engine::phase::Phase::apply(&backends::fstar::FStarBackend, &mut items);
@@ -81,6 +79,7 @@ fn main() {
             return;
         }
         Backend::Lean => backends::apply_backend(backends::lean::LeanBackend, items),
+        Backend::ProVerif(_) => backends::apply_backend(backends::proverif::ProVerifBackend, items),
         Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
         Backend::Debugger { interactive } => {
             use hax_rust_engine::debugger::*;

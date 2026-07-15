@@ -323,7 +323,12 @@ pub fn make_fn_decoration(
         };
         use AttrPayload::NeverErased;
         quote! {
-            #[cfg(#DebugOrHaxCfgExpr)]
+            // The ProVerif/Aeneas backend does not consume function contracts
+            // (`requires`/`ensures`/`decreases`). The decoration `const _` typechecks
+            // the predicate `#phi`, which can reference `#[cfg(hax)]`-only spec
+            // helpers (e.g. libcrux's `cshake_inv`) and so would force `--cfg hax`
+            // on the whole dependency tree. Suppress it under `hax_backend_proverif`.
+            #[cfg(all(#DebugOrHaxCfgExpr, not(hax_backend_proverif)))]
             #late_skip
             const _: () = {
                 #quantifiers

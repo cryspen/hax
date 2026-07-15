@@ -1,84 +1,52 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__assert__might_fail_assert(one_plus_one : nat) =
-       let args = ((one_plus_one)) in
-       let args = ([core_models__fmt__rt__impl__new_display(args.0)]) in
-       let wildcard3: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(["does 1 + 1 = ","?
-"], args)
-         )
-       ) in
-       let wildcard2: bitstring = (()) in
-       let wildcard1: bitstring = (
-         let (left_val: nat, right_val: nat) = (
-           core_models__ops__arith__f_add(1, 1), one_plus_one
-         ) in (
-           if
-             core_models__ops__bit__f_not(
-                 core_models__cmp__f_eq(left_val, right_val)
-               )
-           then
-             (let kind = (core_models__panicking__AssertKind_Eq()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__assert__main(wildcard4 : bitstring) =
-       let countdown = (10) in
-       let countdown = (
-         rust_primitives__hax__failure(
-           "Explicit rejection by a phase in the Hax engine:
-a node of kind [Loop] have been found in the AST
-
-Note: the error was labeled with context `reject_not_in_ProVerif`.
-",
-           "{
- (loop {
- |countdown| {
- (if core_models::cmp::f_gt(countdown, 0) {
- {
- let _: tuple0 = {
- (if core_models::cmp::f_eq(countdown, 1) {
- {
- let _: tuple0 = {
- new_tests::rustc_coverage__assert::might_..."
-         )
-       ) in
-       ().
-
+(* src: src/rustc-coverage/assert.rs:7 new_tests__rustc_coverage__assert__might_fail_assert *)
+(*  @fail(extraction): ssprove(HAX0001) *)
+letfun new_tests__rustc_coverage__assert__might_fail_assert(one_plus_one: bitstring) =
+  let wildcard: bitstring = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__does_x201_x20_x2b_x201_x20_x3d_x20, rust_primitives__hax__array_cons(string_lit___x3f_x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_display(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(one_plus_one))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val: bitstring,
+    right_val: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    rust_primitives__hax__machine_int__add(nat_lit(1), nat_lit(1)),
+    one_plus_one
+  ) in
+    (let (=True()) = core__ops__bit__Not__not_kw(
+        rust_primitives__hax__machine_int__eq(left_val, right_val)
+      )
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/assert.rs:13 new_tests__rustc_coverage__assert__main *)
+(*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
+letfun new_tests__rustc_coverage__assert__main(wildcard: bitstring) =
+  let countdown_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in
+  rust_primitives__hax__Tuple0__Tuple0().

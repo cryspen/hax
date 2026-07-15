@@ -1,94 +1,55 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-const new_tests__rustc_coverage__unreachable__v_UNREACHABLE_CLOSURE: bitstring.
-
-letfun new_tests__rustc_coverage__unreachable__unreachable_function(
-         wildcard1 : bitstring
-       ) =
-       rust_primitives__hax__failure(
-         "Explicit rejection by a phase in the Hax engine:
-a node of kind [Unsafe] have been found in the AST
-
-Note: the error was labeled with context `reject_Unsafe`.
-",
-         "unsafe {
- rust_primitives::hax::never_to_any(
- core_models::hint::unreachable_unchecked(Tuple0),
- )
- }"
-       ).
-
-letfun new_tests__rustc_coverage__unreachable__unreachable_intrinsic(
-         wildcard2 : bitstring
-       ) =
-       rust_primitives__hax__failure(
-         "Explicit rejection by a phase in the Hax engine:
-a node of kind [Unsafe] have been found in the AST
-
-Note: the error was labeled with context `reject_Unsafe`.
-",
-         "unsafe {
- rust_primitives::hax::never_to_any(core_models::intrinsics::unreachable(Tuple0))
- }"
-       ).
-
-letfun new_tests__rustc_coverage__unreachable__main(wildcard8 : bitstring) =
-       let wildcard7: bitstring = (
-         if core_models__hint__black_box(false)
-         then
-           (let wildcard6: bitstring = (
-              new_tests__rustc_coverage__unreachable__v_UNREACHABLE_CLOSURE(())
-            ) in
-            ())
-         else (())
-       ) in
-       let wildcard5: bitstring = (
-         if core_models__hint__black_box(false)
-         then
-           (let wildcard4: bitstring = (
-              new_tests__rustc_coverage__unreachable__unreachable_function(())
-            ) in
-            ())
-         else (())
-       ) in
-       if core_models__hint__black_box(false)
-       then
-         (let wildcard3: bitstring = (
-            new_tests__rustc_coverage__unreachable__unreachable_intrinsic(())
-          ) in
-          ())
-       else (()).
-
+(* src: src/rustc-coverage/unreachable.rs:17 new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE *)
+(*  @fail(extraction): ssprove(HAX0008), coq(HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008) *)
+const new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE: bitstring.
+(* src: src/rustc-coverage/unreachable.rs:21 new_tests__rustc_coverage__unreachable__unreachable_function *)
+(*  @fail(extraction): coq(HAX0008), ssprove(HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008) *)
+letfun new_tests__rustc_coverage__unreachable__unreachable_function(wildcard: bitstring) =
+  bitstring_err() (* error node *).
+(* src: src/rustc-coverage/unreachable.rs:28 new_tests__rustc_coverage__unreachable__unreachable_intrinsic *)
+(*  @fail(extraction): ssprove(HAX0008), coq(HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008) *)
+letfun new_tests__rustc_coverage__unreachable__unreachable_intrinsic(wildcard: bitstring) =
+  bitstring_err() (* error node *).
+(* src: src/rustc-coverage/unreachable.rs:33 new_tests__rustc_coverage__unreachable__main *)
+letfun new_tests__rustc_coverage__unreachable__main(wildcard: bitstring) =
+  let wildcard: bitstring = (let (=True()) = core__hint__black_box(False())
+    in (let wildcard: bitstring = new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE(
+      rust_primitives__hax__Tuple0__Tuple0
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (let (=True()) = core__hint__black_box(False())
+    in (let wildcard: bitstring = new_tests__rustc_coverage__unreachable__unreachable_function(
+      rust_primitives__hax__Tuple0__Tuple0
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0) in
+  let (=True()) = core__hint__black_box(False())
+    in (let wildcard: bitstring = new_tests__rustc_coverage__unreachable__unreachable_intrinsic(
+      rust_primitives__hax__Tuple0__Tuple0
+    ) in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0.

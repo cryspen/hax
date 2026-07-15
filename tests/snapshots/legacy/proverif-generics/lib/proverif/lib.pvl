@@ -1,0 +1,47 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
+
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
+
+(* src: src/legacy/proverif-generics/lib.rs:7 new_tests__legacy__proverif_generics__lib__id *)
+letfun new_tests__legacy__proverif_generics__lib__id(x: bitstring) = x.
+(* src: src/legacy/proverif-generics/lib.rs:12 new_tests__legacy__proverif_generics__lib__Token *)
+fun new_tests__legacy__proverif_generics__lib__Token__Token(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_generics__lib__Token__Token__bytes(
+    new_tests__legacy__proverif_generics__lib__Token__Token(v_0)
+  ) = v_0.
+
+(* src: src/legacy/proverif-generics/lib.rs:21 new_tests__legacy__proverif_generics__lib__Impl__clone_it *)
+letfun new_tests__legacy__proverif_generics__lib__Impl__clone_it(self: bitstring) =
+  new_tests__legacy__proverif_generics__lib__Token__Token(
+    new_tests__legacy__proverif_generics__lib__Token__Token__bytes(self)
+  ).
+(* src: src/legacy/proverif-generics/lib.rs:28 new_tests__legacy__proverif_generics__lib__duplicate *)
+letfun new_tests__legacy__proverif_generics__lib__duplicate(t: bitstring) =
+  new_tests__legacy__proverif_generics__lib__Impl__clone_it(t).
+(* src: src/legacy/proverif-generics/lib.rs:34 new_tests__legacy__proverif_generics__lib__Impl_1__fresh *)
+letfun new_tests__legacy__proverif_generics__lib__Impl_1__fresh(b: bitstring) =
+  new_tests__legacy__proverif_generics__lib__Token__Token(b).
+(* src: src/legacy/proverif-generics/lib.rs:39 new_tests__legacy__proverif_generics__lib__make_token *)
+letfun new_tests__legacy__proverif_generics__lib__make_token(wildcard: bitstring) =
+  new_tests__legacy__proverif_generics__lib__Impl_1__fresh(nat_lit(42)).
+(* src: src/legacy/proverif-generics/lib.rs:44 new_tests__legacy__proverif_generics__lib__pass_through *)
+letfun new_tests__legacy__proverif_generics__lib__pass_through(t: bitstring) =
+  new_tests__legacy__proverif_generics__lib__id(t).
