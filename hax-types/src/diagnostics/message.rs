@@ -52,6 +52,22 @@ pub enum HaxMessage {
         option: String,
         backend: BackendName,
     } = 12,
+    HaxTomlWarning {
+        path: PathBuf,
+        message: String,
+    } = 13,
+    HaxTomlError {
+        path: PathBuf,
+        message: String,
+    } = 14,
+    MemberToolOverrides {
+        crate_name: String,
+        path: PathBuf,
+        entries: Vec<String>,
+    } = 15,
+    StrayHaxToml {
+        path: PathBuf,
+    } = 16,
 }
 
 impl HaxMessage {
@@ -225,6 +241,36 @@ impl HaxMessage {
                 let title = format!(
                     "hax: option {} is not supported by the {} backend and will be ignored",
                     option, backend
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::HaxTomlWarning { path, message } => {
+                let title = format!("hax: {}: {}", path.display(), message);
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::HaxTomlError { path, message } => {
+                let title = format!("hax: {}: {}", path.display(), message);
+                format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::MemberToolOverrides {
+                crate_name,
+                path,
+                entries,
+            } => {
+                let title = format!(
+                    "hax: crate `{}` overrides the workspace tool configuration ({}) in {}. \
+                     Prefer a single workspace-wide pin where possible.",
+                    crate_name,
+                    entries.join(", "),
+                    path.display()
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::StrayHaxToml { path } => {
+                let title = format!(
+                    "hax: found {} outside the workspace root and member crate roots; \
+                     it has no effect and is ignored",
+                    path.display()
                 );
                 format!("{}", renderer.render(Level::Warning.title(&title)))
             }

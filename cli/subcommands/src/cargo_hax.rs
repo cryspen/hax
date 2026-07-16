@@ -16,6 +16,7 @@ use std::process;
 
 mod aeneas;
 mod engine_debug_webapp;
+mod tools;
 use hax_frontend_exporter::id_table;
 
 /// Return a toolchain argument to pass to `cargo`: when the correct nightly is
@@ -614,6 +615,8 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
             }
             false
         }
+        // Dispatched directly in `main`, before the frontend runs.
+        Command::Tools(_) => unreachable!("`tools` subcommands are handled in `main`"),
     }
 }
 
@@ -637,6 +640,12 @@ fn main() {
         _ => Options::parse_from(args.iter()),
     };
     options.normalize_paths();
+
+    // The `tools` subcommands never involve the hax frontend: handle them
+    // directly and exit.
+    if let Command::Tools(ref command) = options.command {
+        std::process::exit(tools::run(command, options.message_format));
+    }
 
     // Lean bypasses the hax frontend entirely: run charon + aeneas directly
     if let Command::Backend(ref backend) = options.command
