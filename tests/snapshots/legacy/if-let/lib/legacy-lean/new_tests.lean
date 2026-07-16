@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -23,4 +23,3 @@ def fun_with_if_let (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
     | _ => do (pure (7 : u8))
 
 end new_tests.legacy__if_let__lib
-

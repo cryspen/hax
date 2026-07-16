@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -37,4 +37,3 @@ inductive EnumWithStructVariant : Type
   by constructor <;> exact Inhabited.default
 
 end new_tests.legacy__enum_struct_variant__lib
-

@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -25,4 +25,3 @@ structure B where
   _0 : usize
 
 end new_tests.legacy__proverif_basic_structs__lib
-

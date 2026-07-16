@@ -47,7 +47,7 @@ pub struct LeanPrinter {
 const INDENT: isize = 2;
 
 const HEADER: &str = "
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do

@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -451,4 +451,3 @@ def g1 (x : T) : RustM T := do
   match x with | (T.t1 ) => do (g2 x) | (T.t2 ) => do (pure T.t1)
 
 end new_tests.legacy__cyclic_modules__lib.rec
-

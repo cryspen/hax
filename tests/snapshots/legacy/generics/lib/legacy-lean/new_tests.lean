@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -206,4 +206,3 @@ def test (_ : rust_primitives.hax.Tuple0) : RustM (Test ((1 : usize))) := do
   (Impl.A (1 : usize))
 
 end new_tests.legacy__generics__lib.assoc_const_param
-

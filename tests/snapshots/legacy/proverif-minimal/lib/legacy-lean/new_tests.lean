@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -18,4 +18,3 @@ namespace new_tests.legacy__proverif_minimal__lib
 def add (left : usize) (right : usize) : RustM usize := do (left +? right)
 
 end new_tests.legacy__proverif_minimal__lib
-

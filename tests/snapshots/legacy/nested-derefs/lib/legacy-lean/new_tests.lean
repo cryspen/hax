@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -21,4 +21,3 @@ def f (x : usize) : RustM usize := do (pure x)
 def g (x : usize) : RustM usize := do (f x)
 
 end new_tests.legacy__nested_derefs__lib
-

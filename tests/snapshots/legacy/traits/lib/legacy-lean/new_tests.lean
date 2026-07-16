@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -1473,4 +1473,3 @@ class Trait2 (Self : Type)
 attribute [instance_reducible, instance] Trait2.trait_constr_Trait2_i0
 
 end new_tests.legacy__traits__lib.recursive_trait_with_assoc_type
-

@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -303,7 +303,7 @@ instance Impl_1 : core_models.ops.index.Index MyArray usize where
 /--
    Multiline double star comment Maecenas blandit accumsan feugiat.
       Done vitae ullamcorper est.
-      Curabitur id dui eget sem viverra interdum. 
+      Curabitur id dui eget sem viverra interdum.
   -/
 @[spec]
 def mutation_example
@@ -1193,4 +1193,3 @@ def fib (x : usize) : RustM usize := do
 partial_fixpoint
 
 end new_tests.legacy__attributes__lib
-

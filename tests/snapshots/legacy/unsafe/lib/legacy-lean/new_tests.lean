@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -20,7 +20,7 @@ inductive Impossible : Type
 @[spec]
 def Impossible_cast_to_repr (x : Impossible) :
     RustM rust_primitives.hax.Never := do
-  match x with 
+  match x with
 
 --  @fail(extraction): coq(HAX0008), ssprove(HAX0008)
 def impossible (_ : rust_primitives.hax.Tuple0) : RustM Impossible := do
@@ -57,4 +57,3 @@ def get_unchecked_example.spec (slice : (RustSlice u8)) :
 }
 
 end new_tests.legacy__unsafe__lib
-

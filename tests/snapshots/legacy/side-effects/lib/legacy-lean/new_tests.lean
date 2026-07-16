@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -603,4 +603,3 @@ def Impl_1._from (i : OtherS) : RustM (core_models.result.Result S Error) := do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__side_effects__lib.issue_1299
-

@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -86,4 +86,3 @@ def deep_capture
       (pure x)
 
 end new_tests.legacy__pattern_or__lib
-

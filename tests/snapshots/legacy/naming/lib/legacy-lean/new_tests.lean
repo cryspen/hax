@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -192,7 +192,7 @@ def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
   (debug (4 : u32) a)
 
 --  `f` is expanded into `f_expand` below, while the execution of `f` gives:
--- 
+--
 --  ```plaintext
 --   [3] a=306
 --   [2] a=205
@@ -290,4 +290,3 @@ structure items_under_closures.NestedStruct where
   -- no fields
 
 end new_tests.legacy__naming__lib
-

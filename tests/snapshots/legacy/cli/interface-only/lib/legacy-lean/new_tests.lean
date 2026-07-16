@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -17,7 +17,7 @@ namespace new_tests.legacy__cli__interface_only__lib
 --  This item contains unsafe blocks and raw references, two features
 --  not supported by hax. Thanks to the `-i` flag and the `+:`
 --  modifier, `f` is still extractable as an interface.
--- 
+--
 --  Expressions within type are still extracted, as well as pre- and
 --  post-conditions.
 --  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
@@ -181,4 +181,3 @@ def padlen.spec (b : (RustSlice u8)) (n : usize) :
 partial_fixpoint
 
 end new_tests.legacy__cli__interface_only__lib
-

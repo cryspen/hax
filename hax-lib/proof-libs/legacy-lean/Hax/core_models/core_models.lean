@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax.core_models.prologue
 import Hax.Tactic.HaxSpec
@@ -1472,7 +1472,7 @@ def Impl.unwrap_or_default
       (core_models.default.Default.default T rust_primitives.hax.Tuple0.mk)
 
 --  See [`std::option::Option::take`]
--- 
+--
 --  Note: The interface in Rust is wrong, but is good after extraction.
 --  We cannot make a useful model with the right interface so we lose the executability.
 @[spec]
@@ -1548,7 +1548,7 @@ def Impl.hash_hoisted
 instance Impl (T : Type) : Hash T where
   hash :=
     fun
-      
+
       (H : Type)
       [trait_constr__associated_type_i0 : Hasher.AssociatedTypes H]
       [trait_constr__i0 : Hasher H ]
@@ -3066,4 +3066,3 @@ def Impl.get
   (SliceIndex.get I (RustSlice T) index s)
 
 end core_models.slice
-

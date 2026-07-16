@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -1135,4 +1135,3 @@ def read_message2 (hs : HandshakeStateI1) (ciphertext : (RustSlice u8)) :
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
-

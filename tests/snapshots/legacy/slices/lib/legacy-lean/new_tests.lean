@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -35,4 +35,3 @@ def sized (x : (RustArray (RustArray u8 4) 1)) :
     (RustArray.ofVec #v[(← (rust_primitives.unsize (← x[(0 : usize)]_?)))]))
 
 end new_tests.legacy__slices__lib
-

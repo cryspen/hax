@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -58,4 +58,3 @@ def 他 (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := d
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__unicode
-

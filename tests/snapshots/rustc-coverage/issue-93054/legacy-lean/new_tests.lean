@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -19,7 +19,7 @@ inductive Never : Type
 
 @[spec]
 def Never_cast_to_repr (x : Never) : RustM rust_primitives.hax.Never := do
-  match x with 
+  match x with
 
 @[spec]
 def Impl.bar (self : Never) : RustM rust_primitives.hax.Tuple0 := do
@@ -52,4 +52,3 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__issue_93054
-

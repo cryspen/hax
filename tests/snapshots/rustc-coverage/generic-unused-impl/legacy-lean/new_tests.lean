@@ -1,5 +1,5 @@
 
--- Experimental lean backend for Hax
+-- Legacy lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/legacy-lean
 import Hax
 import Std.Tactic.Do
@@ -61,4 +61,3 @@ instance Impl
   _from := (Impl.from_hoisted T)
 
 end new_tests.rustc_coverage__generic_unused_impl
-
