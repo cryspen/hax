@@ -4,66 +4,13 @@
 //! manifest injected via the internal `HAX_TOOLS_MANIFEST` override and
 //! the cache redirected via `XDG_CACHE_HOME`.
 
+mod common;
+
 use std::collections::HashMap;
-use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::sync::Arc;
 
-use sha2::Digest;
-
-fn platform() -> String {
-    format!("{}-{}", std::env::consts::OS, std::env::consts::ARCH)
-}
-
-/// Build a gzipped tar archive holding the given (path, contents) files.
-fn make_archive(files: &[(&str, &str)]) -> Vec<u8> {
-    let mut builder = tar::Builder::new(flate2::write::GzEncoder::new(
-        Vec::new(),
-        flate2::Compression::fast(),
-    ));
-    for (path, contents) in files {
-        let mut header = tar::Header::new_gnu();
-        header.set_size(contents.len() as u64);
-        header.set_mode(0o755);
-        header.set_cksum();
-        builder
-            .append_data(&mut header, path, contents.as_bytes())
-            .unwrap();
-    }
-    builder.into_inner().unwrap().finish().unwrap()
-}
-
-fn sha256_hex(data: &[u8]) -> String {
-    hex::encode(sha2::Sha256::digest(data))
-}
-
-/// A fixture HTTP server serving a fixed set of paths.
-struct Server {
-    base_url: String,
-    _handle: std::thread::JoinHandle<()>,
-}
-
-fn serve(files: HashMap<String, Vec<u8>>) -> Server {
-    let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
-    let port = server.server_addr().to_ip().unwrap().port();
-    let files = Arc::new(files);
-    let handle = std::thread::spawn(move || {
-        for request in server.incoming_requests() {
-            let url = request.url().to_string();
-            match files.get(&url) {
-                Some(data) => request
-                    .respond(tiny_http::Response::from_data(data.clone()))
-                    .unwrap(),
-                None => request.respond(tiny_http::Response::empty(404)).unwrap(),
-            }
-        }
-    });
-    Server {
-        base_url: format!("http://127.0.0.1:{port}"),
-        _handle: handle,
-    }
-}
+use common::{make_archive, platform, serve, sha256_hex, write_crate};
 
 /// A test environment: manifest file, cache dir, and helpers to run the
 /// binary with the right overrides.
@@ -233,10 +180,12 @@ entry_points = {{ charon = "charon", charon-driver = "charon-driver" }}
     let (output, success) = env.run(&["tools", "install", "charon@nightly-9"]);
     assert!(success, "{output}");
     assert!(
-        output.contains("not known to this cargo-hax release"),
+        output.contains("not in this release's manifest"),
         "{output}"
     );
     assert!(output.contains("without checksum verification"), "{output}");
+    // The remedy is offered as a `= help:` footer.
+    assert!(output.contains("--force` to verify"), "{output}");
     assert!(
         output.contains("Installed charon nightly-9 (unverified)"),
         "{output}"
@@ -492,17 +441,6 @@ fn malformed_install_specs_are_rejected() {
         output.contains("not a valid version identifier"),
         "{output}"
     );
-}
-
-fn write_crate(dir: &Path, name: &str) {
-    std::fs::create_dir_all(dir.join("src")).unwrap();
-    let mut manifest = std::fs::File::create(dir.join("Cargo.toml")).unwrap();
-    writeln!(
-        manifest,
-        "[package]\nname = \"{name}\"\nversion = \"0.1.0\"\nedition = \"2021\"",
-    )
-    .unwrap();
-    std::fs::write(dir.join("src/lib.rs"), "").unwrap();
 }
 
 /// A server that accepts connections and reads requests but never sends a

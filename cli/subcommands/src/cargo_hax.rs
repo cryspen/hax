@@ -81,12 +81,7 @@ fn rustflags() -> String {
 }
 
 /// Find an external binary: check the given env var, then `PATH`.
-pub(crate) fn find_binary(
-    name: &str,
-    env_var: &str,
-    message_format: MessageFormat,
-    hint: Option<&str>,
-) -> PathBuf {
+fn find_binary(name: &str, env_var: &str, message_format: MessageFormat) -> PathBuf {
     std::env::var(env_var)
         .map(PathBuf::from)
         .or_else(|_| which::which(name))
@@ -94,7 +89,7 @@ pub(crate) fn find_binary(
             HaxMessage::BinaryNotFound {
                 binary_name: name.into(),
                 env_var: env_var.into(),
-                hint: hint.map(String::from),
+                hint: None,
             }
             .report(message_format, None);
             std::process::exit(2);
@@ -167,7 +162,6 @@ fn find_rust_hax_engine(message_format: MessageFormat) -> process::Command {
         RUST_ENGINE_BINARY_NAME,
         RUST_ENGINE_BINARY_ENV,
         message_format,
-        None,
     ))
 }
 

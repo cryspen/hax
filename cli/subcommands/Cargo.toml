@@ -18,6 +18,12 @@ name = "cargo-hax"
 path = "src/json_schema.rs"
 name = "hax-export-json-schemas"
 
+# Fixtures the integration tests share, not a test target of its own.
+[[test]]
+path = "tests/common.rs"
+name = "common"
+test = false
+
 [dependencies]
 serde.workspace = true
 serde_json.workspace = true
@@ -57,6 +63,7 @@ tar = "0.4"
 flate2 = "1"
 zstd = "0.13.1"
 hex = "0.4"
+indicatif = "0.18.0"
 
 [build-dependencies]
 serde.workspace = true
