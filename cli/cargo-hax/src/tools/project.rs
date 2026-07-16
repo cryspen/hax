@@ -13,6 +13,60 @@ use hax_types::diagnostics::message::HaxMessage;
 
 use super::config::{self, HaxToml};
 
+/// The `-C <cargo-args> ;` arguments discovery must honor: they go to the
+/// `cargo check` invocation that drives the frontend, so they decide which
+/// manifest and which crates a run processes. Everything else in
+/// `-C ... ;` is `cargo check`'s business alone.
+#[derive(Debug, Default)]
+struct CargoArgs {
+    /// `--manifest-path`, verbatim (Cargo resolves a relative value
+    /// against the invocation directory, and so does `cargo metadata`).
+    manifest_path: Option<String>,
+    /// Whether the invocation selects packages itself (`-p`, `--workspace`,
+    /// …). *Which* ones is Cargo's answer to give: `cargo metadata` takes no
+    /// selection, and reconstructing Cargo's package-spec semantics here
+    /// would only approximate them.
+    selects_packages: bool,
+    /// Valueless arguments `cargo metadata` accepts too, forwarded so that
+    /// discovery cannot contradict the build: `--offline` must not reach the
+    /// network, `--locked`/`--frozen` must not rewrite `Cargo.lock`, and
+    /// dropping default features can drop the `hax-lib` dependency.
+    metadata_args: Vec<String>,
+}
+
+impl CargoArgs {
+    fn parse(flags: &[String]) -> Self {
+        const FORWARDED: &[&str] = &[
+            "--offline",
+            "--locked",
+            "--frozen",
+            "--all-features",
+            "--no-default-features",
+        ];
+        const SELECTION: &[&str] = &["-p", "--package", "--exclude", "--workspace", "--all"];
+        let mut args = Self::default();
+        let mut flags = flags.iter();
+        while let Some(flag) = flags.next() {
+            // Everything after a bare `--` goes to rustc, not to Cargo.
+            if flag == "--" {
+                break;
+            }
+            // A value is attached (`--flag=value`) or is the next argument.
+            let name = flag.split('=').next().unwrap_or(flag);
+            if flag == "--manifest-path" {
+                args.manifest_path = flags.next().cloned();
+            } else if let Some(path) = flag.strip_prefix("--manifest-path=") {
+                args.manifest_path = Some(path.to_string());
+            } else if SELECTION.contains(&name) || flag.starts_with("-p") {
+                args.selects_packages = true;
+            } else if FORWARDED.contains(&name) {
+                args.metadata_args.push(flag.clone());
+            }
+        }
+        args
+    }
+}
+
 /// One workspace member crate.
 #[derive(Debug, Clone)]
 pub struct MemberCrate {
@@ -21,6 +75,10 @@ pub struct MemberCrate {
     /// The member's own `hax.toml`, if it has one. `None` for the crate
     /// whose root is the workspace root itself: the workspace file covers it.
     pub config: Option<HaxToml>,
+    /// The version of `hax-lib` this crate's own *direct* dependency edge
+    /// resolved to, if it has one. A transitive-only `hax-lib` is ignored:
+    /// it is not what this crate's annotations compile against.
+    pub hax_lib: Option<String>,
 }
 
 /// The `hax.toml` configuration of the current project.
@@ -32,6 +90,10 @@ pub struct ProjectContext {
     /// The package `cargo metadata` reports as the root of the current
     /// invocation, if any (a virtual workspace has none).
     pub root_package: Option<RootPackage>,
+    /// Whether the invocation selects the packages to process itself, so
+    /// that `root_package` is not what it processes. See
+    /// [`CargoArgs::selects_packages`].
+    pub selects_packages: bool,
 }
 
 /// The package the current invocation processes.
@@ -53,23 +115,74 @@ impl ProjectContext {
 }
 
 impl ProjectContext {
-    /// Discover the current project with `cargo metadata` and load its
-    /// `hax.toml` files. Parse warnings are reported immediately; a
-    /// malformed file or a failing `cargo metadata` is an error.
+    /// Discovery for an invocation that takes no Cargo arguments (the
+    /// `tools` subcommands): the project of the invocation directory.
     pub fn load(message_format: MessageFormat) -> Result<Self, String> {
-        let metadata = cargo_metadata::MetadataCommand::new()
-            .exec()
-            .map_err(|e| match e {
-                cargo_metadata::Error::CargoMetadata { stderr } => format!(
+        Self::load_for(&[], message_format)
+    }
+
+    /// Discover the project with `cargo metadata` and load its `hax.toml`
+    /// files. Parse warnings are reported immediately; a malformed file or
+    /// a failing `cargo metadata` is an error.
+    ///
+    /// `cargo_flags` are the arguments given with `-C ... ;`, which is what
+    /// the `cargo check` invocation is driven with: discovery must ask
+    /// `cargo metadata` about the same manifest, and gate on the same
+    /// crates, as that build processes.
+    pub fn load_for(cargo_flags: &[String], message_format: MessageFormat) -> Result<Self, String> {
+        let cargo_args = CargoArgs::parse(cargo_flags);
+        let mut command = cargo_metadata::MetadataCommand::new();
+        if let Some(path) = &cargo_args.manifest_path {
+            command.manifest_path(path);
+        }
+        command.other_options(cargo_args.metadata_args);
+        let metadata = command.exec().map_err(|e| match e {
+            cargo_metadata::Error::CargoMetadata { stderr }
+                if cargo_args.manifest_path.is_none() =>
+            {
+                format!(
                     "`cargo metadata` failed (this command must be run inside a \
                      Cargo project):\n{}",
                     stderr.trim()
-                ),
-                e => format!("`cargo metadata` failed: {e}"),
-            })?;
+                )
+            }
+            cargo_metadata::Error::CargoMetadata { stderr } => {
+                format!("`cargo metadata` failed:\n{}", stderr.trim())
+            }
+            e => format!("`cargo metadata` failed: {e}"),
+        })?;
 
         let workspace_root: PathBuf = metadata.workspace_root.clone().into();
         let workspace_config = load_hax_toml(&workspace_root, message_format)?;
+
+        // The resolved version each package's direct `hax-lib` dependency
+        // edge points to, from the resolve graph.
+        let packages_by_id: std::collections::HashMap<_, _> = metadata
+            .packages
+            .iter()
+            .map(|package| (&package.id, package))
+            .collect();
+        let direct_hax_lib = |id: &cargo_metadata::PackageId| -> Option<String> {
+            let nodes = &metadata.resolve.as_ref()?.nodes;
+            let node = nodes.iter().find(|node| &node.id == id)?;
+            node.deps.iter().find_map(|dep| {
+                // Only a normal dependency edge means this crate's own
+                // annotations compile against `hax-lib`; a dev- or
+                // build-dependency does not. `dep_kinds` is empty on very
+                // old metadata formats, which predate the distinction, so
+                // treat that as normal.
+                let is_normal = dep.dep_kinds.is_empty()
+                    || dep
+                        .dep_kinds
+                        .iter()
+                        .any(|kind| kind.kind == cargo_metadata::DependencyKind::Normal);
+                if !is_normal {
+                    return None;
+                }
+                let package = packages_by_id.get(&dep.pkg)?;
+                (package.name == "hax-lib").then(|| package.version.to_string())
+            })
+        };
 
         let mut members = Vec::new();
         for package in metadata
@@ -91,6 +204,7 @@ impl ProjectContext {
                 name: package.name.clone(),
                 root,
                 config,
+                hax_lib: direct_hax_lib(&package.id),
             });
         }
 
@@ -107,6 +221,7 @@ impl ProjectContext {
             workspace_config,
             members,
             root_package,
+            selects_packages: cargo_args.selects_packages,
         };
         ctx.warn_member_overrides(message_format);
         ctx.warn_stray_files(message_format);
@@ -186,5 +301,57 @@ fn load_hax_toml(dir: &Path, message_format: MessageFormat) -> Result<Option<Hax
             .report(message_format, None);
             Err(format!("invalid {}", path.display()))
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn parse(flags: &[&str]) -> CargoArgs {
+        CargoArgs::parse(&flags.iter().map(|f| f.to_string()).collect::<Vec<_>>())
+    }
+
+    #[test]
+    fn the_manifest_path_is_read_in_both_spellings() {
+        for flags in [
+            vec!["--manifest-path", "../a/Cargo.toml"],
+            vec!["--manifest-path=../a/Cargo.toml"],
+        ] {
+            let args = parse(&flags);
+            assert_eq!(args.manifest_path.as_deref(), Some("../a/Cargo.toml"));
+            assert!(!args.selects_packages);
+        }
+    }
+
+    #[test]
+    fn every_spelling_of_a_package_selection_is_noticed() {
+        for flags in [
+            vec!["-p", "app"],
+            vec!["-papp"],
+            vec!["--package=app"],
+            vec!["--package", "a,b"],
+            vec!["--workspace"],
+            vec!["--all"],
+            vec!["--workspace", "--exclude", "legacy"],
+        ] {
+            assert!(parse(&flags).selects_packages, "{flags:?}");
+        }
+        // Arguments past a bare `--` are rustc's, and no other Cargo
+        // argument selects packages.
+        assert!(!parse(&["--", "-p", "app"]).selects_packages);
+        assert!(!parse(&["--release", "--profile", "test"]).selects_packages);
+    }
+
+    #[test]
+    fn only_arguments_cargo_metadata_shares_are_forwarded_to_it() {
+        let args = parse(&[
+            "--offline",
+            "--no-default-features",
+            "--release",
+            "--target-dir",
+            "/tmp/x",
+        ]);
+        assert_eq!(args.metadata_args, ["--offline", "--no-default-features"]);
     }
 }

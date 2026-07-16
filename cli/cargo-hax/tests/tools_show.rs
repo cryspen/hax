@@ -131,12 +131,19 @@ fn json_message_format_emits_structured_output() {
     let output = cmd.output().unwrap();
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
-    // The last line is the `show` payload; earlier lines are JSON messages.
-    let payload = stdout.lines().last().unwrap();
-    let json: serde_json::Value = serde_json::from_str(payload).expect("invalid JSON payload");
-    assert_eq!(json["member_overrides"][0]["crate"], serde_json::json!("b"));
+    // Every line, the report included, is one `HaxMessage`: a consumer needs
+    // no rule beyond that to tell the report from the warnings around it.
+    let messages: Vec<serde_json::Value> = stdout
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap_or_else(|e| panic!("{line}: {e}")))
+        .collect();
+    let show = messages
+        .iter()
+        .find_map(|message| message.get("ToolsShow"))
+        .expect("no `ToolsShow` message");
+    assert_eq!(show["member_overrides"][0]["crate"], serde_json::json!("b"));
     assert_eq!(
-        json["member_overrides"][0]["tools"][0]["version"],
+        show["member_overrides"][0]["tools"][0]["version"],
         serde_json::json!("nightly-8888.01.01")
     );
 }
