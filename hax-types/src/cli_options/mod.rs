@@ -530,6 +530,10 @@ pub enum ToolsCommand {
         /// machine-wide cache. When absent, installs what the current
         /// project's configuration resolves to.
         spec: Option<String>,
+        /// Re-download and verify even if the version is already cached
+        /// (e.g. to verify a copy installed before its checksum shipped).
+        #[arg(long)]
+        force: bool,
     },
     /// List the tool versions this release of hax can install with
     /// checksum verification.
