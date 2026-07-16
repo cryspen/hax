@@ -508,8 +508,44 @@ pub enum Command<E: Extension> {
         backend: Option<BackendName>,
     },
 
+    /// Manage the external tools hax depends on (e.g. charon and
+    /// aeneas): show the versions the current project resolves to,
+    /// list installable versions, and install them.
+    #[command(subcommand)]
+    Tools(ToolsCommand),
+
     #[command(flatten)]
     CliExtension(E::Command),
+}
+
+/// Subcommands of `cargo hax tools`.
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Eq, PartialEq)]
+pub enum ToolsCommand {
+    /// Download and cache the tool versions the current project
+    /// resolves to, or a specific `<tool>@<version>`.
+    Install {
+        /// A `<tool>@<version>` specification (e.g.
+        /// `charon@nightly-2026.07.01`) to install into the
+        /// machine-wide cache. When absent, installs what the current
+        /// project's configuration resolves to.
+        spec: Option<String>,
+    },
+    /// List the tool versions this release of hax can install with
+    /// checksum verification.
+    List {
+        /// Restrict the listing to one tool.
+        tool: Option<String>,
+        /// Only show versions present in the local cache.
+        #[arg(long)]
+        installed: bool,
+        /// Show every version instead of only the most recent ones.
+        #[arg(long)]
+        all: bool,
+    },
+    /// Show which tool versions are active in the current project,
+    /// and where each one comes from.
+    Show,
 }
 
 impl<E: Extension> Command<E> {
@@ -517,7 +553,9 @@ impl<E: Extension> Command<E> {
         match self {
             Command::JSON { kind, .. } => kind.clone(),
             Command::Serialize { kind, .. } => kind.clone(),
-            Command::Backend { .. } | Command::CliExtension { .. } => vec![ExportBodyKind::Thir],
+            Command::Backend { .. } | Command::Tools { .. } | Command::CliExtension { .. } => {
+                vec![ExportBodyKind::Thir]
+            }
         }
     }
     pub fn backend_name(&self) -> Option<BackendName> {
@@ -525,6 +563,7 @@ impl<E: Extension> Command<E> {
             Command::Backend(backend_options) => Some((&backend_options.backend).into()),
             Command::JSON { .. } => None,
             Command::Serialize { backend, .. } => backend.clone(),
+            Command::Tools(_) => None,
             Command::CliExtension(_) => None,
         }
     }
