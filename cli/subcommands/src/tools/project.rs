@@ -29,6 +29,27 @@ pub struct ProjectContext {
     pub workspace_root: PathBuf,
     pub workspace_config: Option<HaxToml>,
     pub members: Vec<MemberCrate>,
+    /// The package `cargo metadata` reports as the root of the current
+    /// invocation, if any (a virtual workspace has none).
+    pub root_package: Option<RootPackage>,
+}
+
+/// The package the current invocation processes.
+#[derive(Debug, Clone)]
+pub struct RootPackage {
+    pub name: String,
+    pub dir: PathBuf,
+}
+
+impl ProjectContext {
+    /// The `hax.toml` of the member crate rooted at `dir`, for per-crate
+    /// resolution.
+    pub fn member_config(&self, dir: &Path) -> Option<&HaxToml> {
+        self.members
+            .iter()
+            .find(|member| member.root == dir)
+            .and_then(|member| member.config.as_ref())
+    }
 }
 
 impl ProjectContext {
@@ -73,10 +94,19 @@ impl ProjectContext {
             });
         }
 
+        let root_package = metadata.root_package().map(|package| RootPackage {
+            name: package.name.clone(),
+            dir: package
+                .manifest_path
+                .parent()
+                .expect("a Cargo.toml always has a parent directory")
+                .into(),
+        });
         let ctx = ProjectContext {
             workspace_root,
             workspace_config,
             members,
+            root_package,
         };
         ctx.warn_member_overrides(message_format);
         ctx.warn_stray_files(message_format);

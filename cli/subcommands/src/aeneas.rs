@@ -14,69 +14,15 @@ use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 use std::{fs, process};
 
-use super::find_binary;
+use super::tools;
 
 mod lakefile;
 
-const AENEAS_BINARY_NAME: &str = "aeneas";
-const AENEAS_BINARY_ENV: &str = "HAX_AENEAS_BINARY";
-const CHARON_BINARY_NAME: &str = "charon";
-const CHARON_BINARY_ENV: &str = "HAX_CHARON_BINARY";
 const BACKEND_DIR: &str = "lean";
-
-// Tool pins, read once in `hax-types` from the workspace-root `pins.toml`.
-use hax_types::pins;
-const AENEAS_PIN_VERSION: &str = pins::AENEAS_VERSION;
-const AENEAS_PIN_REPO: &str = pins::AENEAS_REPO;
-const LEAN_PIN_TOOLCHAIN: &str = pins::LEAN_TOOLCHAIN;
-const LEAN_LIB_PIN_REPO: &str = pins::LEAN_LIB_REPO;
-const LEAN_LIB_PIN_VERSION: &str = pins::LEAN_LIB_VERSION;
-const CHARON_PIN_VERSION: &str = pins::CHARON_VERSION;
 
 // Flags that should trigger a warning when passed to charon/aeneas
 const CHARON_WARN_FLAGS: &[&str] = &["--dest-file"];
 const AENEAS_WARN_FLAGS: &[&str] = &["-backend", "-dest", "-subdir", "-split-files"];
-
-/// Check that a binary reports the expected version, warn if not.
-fn check_version(binary: &Path, expected: &str, message_format: MessageFormat) {
-    if expected.is_empty() {
-        return;
-    }
-
-    let is_aeneas = binary.file_name().is_some_and(|n| n == "aeneas");
-    let args: &[&str] = if is_aeneas {
-        &["-version"]
-    } else {
-        &["version"]
-    };
-
-    let output = match process::Command::new(binary).args(args).output() {
-        Ok(o) => String::from_utf8_lossy(&o.stdout).to_string(),
-        Err(_) => return,
-    };
-    let first_line = output.lines().next().unwrap_or("");
-
-    let actual = first_line.trim();
-
-    // `aeneas -version` outputs different strings, depending on whether it was built in CI or
-    // or locally; just check whether it contains the expected string.
-    // `charon version` outputs a semver like "0.1.174"; compare exactly.
-    let matches = if is_aeneas {
-        actual.contains(expected)
-    } else {
-        actual == expected
-    };
-    if !matches {
-        let name = binary.file_name().unwrap_or_default().to_string_lossy();
-        HaxMessage::GenericWarning {
-            message: format!(
-                "{name} version mismatch: expected {expected}, found {actual}. \
-                Run ./install-aeneas.sh to get the pinned version."
-            ),
-        }
-        .report(message_format, None);
-    };
-}
 
 /// Shell-split a user-supplied extra-args string, reporting a fatal error on
 /// unmatched quotes. Returns an empty vector if `s` is `None`.
@@ -227,46 +173,49 @@ pub fn run(
     verbose: u8,
     message_format: MessageFormat,
 ) -> bool {
-    const INSTALL_HINT: &str = "Install with: ./install-aeneas.sh (or ./setup.sh --aeneas)";
-    let aeneas = find_binary(
-        AENEAS_BINARY_NAME,
-        AENEAS_BINARY_ENV,
-        message_format,
-        Some(INSTALL_HINT),
-    );
-    let charon = find_binary(
-        CHARON_BINARY_NAME,
-        CHARON_BINARY_ENV,
-        message_format,
-        Some(INSTALL_HINT),
-    );
-
-    check_version(&aeneas, AENEAS_PIN_VERSION, message_format);
-    check_version(&charon, CHARON_PIN_VERSION, message_format);
-
-    let metadata = match cargo_metadata::MetadataCommand::new().exec() {
-        Ok(m) => m,
-        Err(e) => {
-            HaxMessage::GenericError {
-                message: format!("could not read cargo metadata: {e}"),
-            }
-            .report(message_format, None);
+    // Project discovery and per-crate tool resolution: the crate being
+    // processed is the root package of the current invocation.
+    let project = match tools::project::ProjectContext::load(message_format) {
+        Ok(project) => project,
+        Err(message) => {
+            HaxMessage::GenericError { message }.report(message_format, None);
             return true;
         }
     };
-    let crate_dir = metadata
-        .root_package()
-        .map(|p| {
-            PathBuf::from(&p.manifest_path)
-                .parent()
-                .unwrap()
-                .to_path_buf()
-        })
+    let crate_dir = project
+        .root_package
+        .as_ref()
+        .map(|package| package.dir.clone())
         .unwrap_or_else(|| std::env::current_dir().expect("Could not get current directory"));
-    let crate_name = metadata
-        .root_package()
-        .map(|p| p.name.replace('-', "_"))
+    let crate_name = project
+        .root_package
+        .as_ref()
+        .map(|package| package.name.replace('-', "_"))
         .unwrap_or_else(|| "output".to_string());
+
+    let member = project.member_config(&crate_dir);
+    let workspace = project.workspace_config.as_ref();
+    let provide = |tool: &str| match tools::provide_tool(tool, member, workspace, message_format) {
+        Ok(provided) => Some(provided),
+        Err(message) => {
+            HaxMessage::GenericError { message }.report(message_format, None);
+            None
+        }
+    };
+    // Charon finds `charon-driver` next to its own executable; providing
+    // the tool guarantees the sibling is there.
+    let (Some(charon), Some(aeneas)) = (provide("charon"), provide("aeneas")) else {
+        return true;
+    };
+    let charon = charon.executables["charon"].clone();
+    // Keep aeneas's resolution: the generated lakefile pins the aeneas Lean
+    // library to the matching version, reusing this resolution rather than
+    // resolving aeneas a second time.
+    let tools::Provided {
+        executables: aeneas_executables,
+        resolution: aeneas_resolution,
+    } = aeneas;
+    let aeneas = aeneas_executables["aeneas"].clone();
 
     // Convert crate name to PascalCase for the Lean package/directory name.
     let pkg_name = to_camel_case(&crate_name);
@@ -481,7 +430,42 @@ pub fn run(
 
     // Generate lakefile if requested
     if options.lakefile {
-        lakefile::generate(&lean_dir, &crate_name, message_format);
+        use tools::resolve::{Resolved, resolve_version};
+        let defaults = tools::defaults::defaults();
+        let version_of = |resolution: tools::resolve::Resolution| match resolution.kind {
+            Resolved::Version(version) => version,
+            Resolved::Path(_) => unreachable!("`[versions]` entries always resolve to versions"),
+        };
+        // The aeneas Lean proof library must match the aeneas binary; its
+        // rev is the resolved aeneas version, reused from the resolution
+        // that selected the binary above. A path-resolved aeneas has no
+        // version hax can name, so the default is pinned instead.
+        let aeneas_rev = match aeneas_resolution.kind {
+            Resolved::Version(version) => version,
+            Resolved::Path(path) => {
+                let default = defaults.tools["aeneas"].clone();
+                HaxMessage::GenericWarning {
+                    message: format!(
+                        "aeneas resolves to the local binary {}; pinning the aeneas Lean \
+                         library to the default {default} in the generated lakefile",
+                        path.display()
+                    ),
+                }
+                .report(message_format, None);
+                default
+            }
+        };
+        let pins = lakefile::LakefilePins {
+            aeneas_rev,
+            lean_toolchain: version_of(resolve_version("lean", member, workspace, defaults)),
+            hax_lean_lib_rev: version_of(resolve_version(
+                "hax-lean-lib",
+                member,
+                workspace,
+                defaults,
+            )),
+        };
+        lakefile::generate(&lean_dir, &crate_name, &pins, message_format);
     }
 
     if !output.status.success() {

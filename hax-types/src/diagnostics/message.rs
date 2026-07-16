@@ -74,6 +74,11 @@ pub enum HaxMessage {
         version: String,
         url: String,
     } = 17,
+    NonDefaultToolVersion {
+        tool: String,
+        used: String,
+        tested: String,
+    } = 18,
 }
 
 impl HaxMessage {
@@ -272,16 +277,31 @@ impl HaxMessage {
                 );
                 format!("{}", renderer.render(Level::Warning.title(&title)))
             }
+            Self::NonDefaultToolVersion { tool, used, tested } => {
+                let title = format!(
+                    "hax: using {tool} {used}; this hax release was tested with {tested}"
+                );
+                format!("{}", renderer.render(Level::Info.title(&title)))
+            }
             Self::UnverifiedInstall { tool, version, url } => {
                 let title = format!(
-                    "hax: {tool} {version} is not known to this cargo-hax release ({})\n\
-                     downloading without checksum verification from\n\
-                     {url}\n\
-                     if a later cargo-hax release ships a checksum for it, reinstall with\n\
-                     `cargo hax tools install {tool}@{version} --force` to verify",
-                    crate::HAX_VERSION,
+                    "{tool} {version} is not in this release's manifest; \
+                     installing without checksum verification"
                 );
-                format!("{}", renderer.render(Level::Warning.title(&title)))
+                let source = format!("source {url}");
+                let remedy = format!(
+                    "once a checksum ships, run \
+                     `cargo hax tools install {tool}@{version} --force` to verify"
+                );
+                format!(
+                    "{}",
+                    renderer.render(
+                        Level::Warning
+                            .title(&title)
+                            .footer(Level::Note.title(&source))
+                            .footer(Level::Help.title(&remedy))
+                    )
+                )
             }
             Self::StrayHaxToml { path } => {
                 let title = format!(

@@ -236,10 +236,12 @@ entry_points = {{ charon = "charon", charon-driver = "charon-driver" }}
     let (output, success) = env.run(&["tools", "install", "charon@nightly-9"]);
     assert!(success, "{output}");
     assert!(
-        output.contains("not known to this cargo-hax release"),
+        output.contains("not in this release's manifest"),
         "{output}"
     );
     assert!(output.contains("without checksum verification"), "{output}");
+    // The remedy is offered as a `= help:` footer.
+    assert!(output.contains("--force` to verify"), "{output}");
     assert!(
         output.contains("Installed charon nightly-9 (unverified)"),
         "{output}"

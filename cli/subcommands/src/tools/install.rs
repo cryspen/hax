@@ -11,6 +11,9 @@
 use std::collections::BTreeMap;
 use std::io::Read;
 use std::path::Path;
+use std::time::Duration;
+
+use is_terminal::IsTerminal;
 
 use hax_types::cli_options::MessageFormat;
 use hax_types::diagnostics::message::HaxMessage;
@@ -104,6 +107,15 @@ pub fn ensure_installed(
         }
     };
 
+    // Announce the download only after resolving the artifact, so any
+    // unverified-fallback warning above explains this line rather than
+    // following it.
+    HaxMessage::Step {
+        verb: "Downloading".to_string(),
+        target: format!("{tool} {version}"),
+    }
+    .report(message_format, None);
+
     // Work in a temporary directory next to the final location, so the
     // commit rename stays on one filesystem.
     let tool_dir = final_dir
@@ -121,10 +133,20 @@ pub fn ensure_installed(
             )
         })?;
 
-    let archive = download(&artifact.url, staging.path())?;
+    let archive = download(&artifact.url, staging.path(), message_format)?;
     if let Some(expected) = &artifact.sha256 {
+        HaxMessage::Step {
+            verb: "Verifying".to_string(),
+            target: format!("{tool} {version}"),
+        }
+        .report(message_format, None);
         verify_sha256(&archive, expected, &artifact.url)?;
     }
+    HaxMessage::Step {
+        verb: "Extracting".to_string(),
+        target: format!("{tool} {version}"),
+    }
+    .report(message_format, None);
     let contents = staging.path().join("contents");
     extract(&archive, &artifact.url, &contents)?;
 
@@ -195,22 +217,28 @@ pub fn ensure_installed(
 const READ_TIMEOUT_OVERRIDE_ENV: &str = "HAX_TOOLS_READ_TIMEOUT_SECS";
 
 /// The per-read timeout for downloads: five minutes, overridable for tests.
-fn read_timeout() -> std::time::Duration {
+fn read_timeout() -> Duration {
     std::env::var(READ_TIMEOUT_OVERRIDE_ENV)
         .ok()
         .and_then(|value| value.parse().ok())
-        .map(std::time::Duration::from_secs)
-        .unwrap_or(std::time::Duration::from_secs(300))
+        .map(Duration::from_secs)
+        .unwrap_or(Duration::from_secs(300))
 }
 
-/// Download a URL into `dir`, returning the file path.
-fn download(url: &str, dir: &Path) -> Result<std::path::PathBuf, String> {
+/// Download a URL into `dir`, returning the file path. Shows a progress bar
+/// on an interactive terminal (skipped under `--message-format json` and in
+/// non-terminal output such as CI logs).
+fn download(
+    url: &str,
+    dir: &Path,
+    message_format: MessageFormat,
+) -> Result<std::path::PathBuf, String> {
     // Bound both connecting and each read, so a stalled or throttled
     // mirror fails the install instead of hanging the build (and CI)
     // indefinitely. `timeout_read` resets per read, so it does not cap a
     // large-but-progressing download.
     let agent = ureq::AgentBuilder::new()
-        .timeout_connect(std::time::Duration::from_secs(30))
+        .timeout_connect(Duration::from_secs(30))
         .timeout_read(read_timeout())
         .build();
     let response = agent.get(url).call().map_err(|e| match e {
@@ -219,12 +247,55 @@ fn download(url: &str, dir: &Path) -> Result<std::path::PathBuf, String> {
         }
         e => format!("download failed for {url}: {e}"),
     })?;
+    let total: Option<u64> = response
+        .header("Content-Length")
+        .and_then(|value| value.parse().ok());
     let path = dir.join("artifact");
     let mut file = std::fs::File::create(&path)
         .map_err(|e| format!("could not create {}: {e}", path.display()))?;
-    std::io::copy(&mut response.into_reader(), &mut file)
-        .map_err(|e| format!("download of {url} was interrupted: {e}"))?;
+
+    let progress = (matches!(message_format, MessageFormat::Human)
+        && std::io::stderr().is_terminal())
+    .then(|| progress_bar(total));
+
+    let mut reader = response.into_reader();
+    let result = match &progress {
+        Some(bar) => std::io::copy(&mut bar.wrap_read(&mut reader), &mut file),
+        None => std::io::copy(&mut reader, &mut file),
+    };
+    if let Some(bar) = &progress {
+        bar.finish_and_clear();
+    }
+    result.map_err(|e| format!("download of {url} was interrupted: {e}"))?;
     Ok(path)
+}
+
+/// A progress bar for a download of `total` bytes (a spinner when the size
+/// is unknown). Draws to stderr.
+fn progress_bar(total: Option<u64>) -> indicatif::ProgressBar {
+    use indicatif::{ProgressBar, ProgressStyle};
+    match total {
+        Some(len) => {
+            let bar = ProgressBar::new(len);
+            bar.set_style(
+                ProgressStyle::with_template(
+                    "  {bar:30} {percent:>3}%  {bytes}/{total_bytes}  {bytes_per_sec}",
+                )
+                .expect("valid template")
+                .progress_chars("█▉▊▋▌▍▎▏ "),
+            );
+            bar
+        }
+        None => {
+            let bar = ProgressBar::new_spinner();
+            bar.set_style(
+                ProgressStyle::with_template("  {spinner} {bytes} ({bytes_per_sec})")
+                    .expect("valid template"),
+            );
+            bar.enable_steady_tick(Duration::from_millis(100));
+            bar
+        }
+    }
 }
 
 fn verify_sha256(file: &Path, expected: &str, url: &str) -> Result<(), String> {
@@ -260,4 +331,18 @@ fn extract(archive: &Path, url: &str, dest: &Path) -> Result<(), String> {
         .unpack(dest)
         .map_err(|e| format!("could not extract the archive from {url}: {e}"))?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // The progress-bar templates are only rendered on a terminal, so they
+    // are never exercised by the integration tests; build both here to catch
+    // an invalid template (which would otherwise panic at download time).
+    #[test]
+    fn progress_bar_templates_are_valid() {
+        let _ = progress_bar(Some(1024));
+        let _ = progress_bar(None);
+    }
 }
