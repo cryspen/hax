@@ -72,16 +72,12 @@ jobs:
         skipPush: true
         extraPullNames: fstar-nix-versions, z3-nix-versions
 
-    - name: Install aeneas and charon
-      run: ./install-aeneas.sh
-
     - name: Build the example
       env:
         EXAMPLE: ${{ matrix.example }}
       run: |
         unset CI # Allows us to use Aeneas's olean cache
-        PATH="$HOME/.cargo/bin:$PATH" nix develop .#ci-examples \
-          --command just check-example "$EXAMPLE"
+        nix develop .#ci-examples --command just check-example "$EXAMPLE"
 
   # Stable check for all examples: a skipped matrix (e.g. because listing the
   # examples failed) must be reported as a failure, not as a success.
