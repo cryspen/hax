@@ -7,9 +7,9 @@
 
 [aeneas]
 # Release tag (the release must carry assets named aeneas-<platform>.tar.gz).
-tag = "nightly-2026.07.01"
+tag = "nightly-2026.07.21-52fd438"
 # Short commit SHA that `aeneas -version` must report.
-commit = "e0a1596"
+commit = "nightly-2026.07.21-52fd438"
 # Source repository URL. install-aeneas.sh rejects any value other than:
 #   - https://github.com/AeneasVerif/aeneas  (upstream)
 #   - https://github.com/cryspen/aeneas      (fork)
@@ -20,13 +20,13 @@ repo = "https://github.com/cryspen/aeneas"
 # Must match the charon version expected by the pinned aeneas: check the
 # `charon-pin` file in the AeneasVerif/aeneas repo at [aeneas].commit (that is
 # aeneas's own pin, not this file).
-tag = "nightly-2026.07.01"
+tag = "nightly-2026.07.16"
 # Expected output of `charon version` for this release.
-version = "0.1.218"
+version = "0.1.223"
 
 [lean]
 # Lean toolchain written into the `lean-toolchain` of projects
-toolchain = "leanprover/lean4:v4.30.0-rc2"
+toolchain = "leanprover/lean4:v4.31.0"
 
 [hax-lean-lib]
 # Hax library emitted as the `require Hax` of generated lakefiles

@@ -11,7 +11,7 @@ theorem Result.ok_spec {α : Type} {a : α} {Q} (hQ : (Q.1 a).down) :
   ⦃ ⌜ True ⌝ ⦄ Result.ok a ⦃ Q ⦄ := by simpa [Triple]
 
 @[spec]
-theorem Result.fail_spec {α : Type} {e : Error} {Q} (hQ : (Q.2.1 e).down) :
+theorem Result.fail_spec {α : Type} {e : Error} {Q} (hQ : (Q.2.1 (.up e)).down) :
   ⦃ ⌜ True ⌝ ⦄ (Result.fail e : Result α) ⦃ Q ⦄ := by simpa [Triple]
 
 theorem Result.deterministic (f : Result α) [Inhabited α]:

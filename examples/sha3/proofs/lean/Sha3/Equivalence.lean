@@ -75,8 +75,7 @@ private theorem list_eq_of_pointwise {α} [Inhabited α] [DecidableEq α] (xs ys
 private theorem add_one_usize (j : Usize) (h : j.val + 1 ≤ Usize.max) :
     ∃ k : Usize, (j + 1#usize : Result Usize) = .ok k ∧ k.val = j.val + 1 := by
   have hSpec : (j + 1#usize : Result Usize) ⦃ k => k.val = j.val + 1#usize.val ⦄ := by
-    apply UScalar.add_spec
-    show j.val + 1#usize.val ≤ UScalar.max .Usize
+    apply UScalar.add_spec.step_spec
     scalar_tac
   obtain ⟨k, hk, hkVal⟩ := Aeneas.Std.WP.spec_imp_exists hSpec
   refine ⟨k, hk, ?_⟩
@@ -203,20 +202,12 @@ theorem iota_spec
     reference.iota]
   -- Call `hax_mvcgen`. This tactic will run `mvcgen` on triples in both hypotheses and in goals
   hax_mvcgen
-  -- This yields 9 verification conditions, which `grind` can largely discharge:
-  · grind
-  · grind
-  · grind
-  · grind
-  · grind
-  · expose_names
-    unfold ROUNDCONSTANTS reference.ROUND_CONSTANTS at *;
-    have : r_10 = r_9 ^^^ r_8 := by grind
-    simp_all only [UScalar.ofNatCore_val_eq]
+  · have hr : ROUNDCONSTANTS = reference.ROUND_CONSTANTS := by
+      unfold ROUNDCONSTANTS reference.ROUND_CONSTANTS; rfl
+    expose_names
+    have hx : r_9 = r_8 ^^^ r_7 := by grind
     grind
-  · grind
-  · grind
-  · grind
+  all_goals grind
 
 /-
 ## Part 2: Equivalence of `round`
