@@ -18,5 +18,6 @@
    "inputRev": "v4.29.0-rc1",
    "inherited": true,
    "configFile": "lakefile.toml"}],
- "name": "lean_chacha20",
+ "name": "legacy_lean_chacha20",
  "lakeDir": ".lake"}
+

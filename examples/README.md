@@ -111,7 +111,7 @@ See [./coq-example/README.md]()
 
 ## Lean (legacy backend)
 
-Only one example is still running on the legacy lean backend: `lean_chacha20`.
+Only one example is still running on the legacy lean backend: `legacy_lean_chacha20`.
 
 ### Chacha20
 
@@ -121,6 +121,6 @@ which involves arithmetic on size of arrays.
 
 The extraction and proofs can be run as follows:
 ```sh
-cd lean_chacha20/
+cd legacy_lean_chacha20/
 make
 ```

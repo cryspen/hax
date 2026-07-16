@@ -54,7 +54,7 @@ jobs:
           - kyber_compress
           - loop_equivalence
           - proverif-psk
-          - lean_chacha20
+          - legacy_lean_chacha20
           - adc
     steps:
     - uses: actions/checkout@v4

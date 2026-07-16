@@ -404,7 +404,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
-name = "lean_chacha20"
+name = "leb128"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "884e2677b40cc8c339eaefcb701c32ef1fd2493d71118dc0ca4b6a736c93bd67"
+
+[[package]]
+name = "legacy_lean_chacha20"
 version = "0.1.0"
 dependencies = [
  "hax-bounded-integers",
@@ -412,17 +418,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "lean_tutorial"
+name = "legacy_lean_tutorial"
 version = "0.1.0"
 dependencies = [
  "hax-lib",
 ]
-
-[[package]]
-name = "leb128"
-version = "0.2.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "884e2677b40cc8c339eaefcb701c32ef1fd2493d71118dc0ca4b6a736c93bd67"
 
 [[package]]
 name = "libc"

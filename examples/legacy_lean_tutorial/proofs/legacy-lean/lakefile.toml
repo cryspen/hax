@@ -1,0 +1,11 @@
+name = "Legacy_lean_tutorial"
+version = "0.1.0"
+defaultTargets = ["Legacy_lean_tutorial"]
+
+[[lean_lib]]
+name = "Legacy_lean_tutorial"
+roots = ["extraction.Legacy_lean_tutorial"]
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/lean"

@@ -6,5 +6,5 @@ default:
    lake build)
 
 clean:
-	-rm -f proofs/legacy-lean/extraction/lean_tutorial.lean
+	-rm -f proofs/legacy-lean/extraction/legacy_lean_tutorial.lean
 	-cd proofs/legacy-lean && lake clean

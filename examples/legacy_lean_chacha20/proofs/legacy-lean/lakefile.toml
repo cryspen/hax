@@ -1,0 +1,11 @@
+name = "legacy_lean_chacha20"
+version = "0.1.0"
+defaultTargets = ["legacy_lean_chacha20"]
+
+[[lean_lib]]
+name = "legacy_lean_chacha20"
+roots = ["extraction.legacy_lean_chacha20"]
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/legacy-lean"

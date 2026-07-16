@@ -8,5 +8,6 @@
    "inherited": false,
    "dir": "../../../../hax-lib/proof-libs/lean",
    "configFile": "lakefile.toml"}],
- "name": "Lean_tutorial",
+ "name": "Legacy_lean_tutorial",
  "lakeDir": ".lake"}
+
