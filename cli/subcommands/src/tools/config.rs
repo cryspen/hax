@@ -114,8 +114,16 @@ fn parse_tool_entry(
     dir: &Path,
     warnings: &mut Vec<String>,
 ) -> Result<ToolEntry, String> {
+    // A pinned version is checked here rather than only where it is
+    // installed, so an unusable pin is reported as the configuration error
+    // it is, by every command that reads the file.
+    let version_entry = |version: &str| {
+        super::manifest::validate_version_id(version)
+            .map_err(|e| format!("the entry for tool `{tool}` is invalid: {e}"))?;
+        Ok(ToolEntry::Version(version.to_string()))
+    };
     match entry {
-        toml::Value::String(version) => Ok(ToolEntry::Version(version.clone())),
+        toml::Value::String(version) => version_entry(version),
         toml::Value::Table(table) => {
             for key in table.keys() {
                 if key != "version" && key != "path" {
@@ -135,7 +143,7 @@ fn parse_tool_entry(
                     let Some(version) = version.as_str() else {
                         return Err(format!("`version` of tool `{tool}` must be a string"));
                     };
-                    Ok(ToolEntry::Version(version.to_string()))
+                    version_entry(version)
                 }
                 (None, Some(path)) => {
                     let Some(path) = path.as_str() else {
@@ -304,6 +312,19 @@ unknown-thing = "1""#,
     #[test]
     fn non_string_version_is_an_error() {
         assert!(parse_str("[versions]\nlean = 4").is_err());
+    }
+
+    #[test]
+    fn tool_versions_are_validated() {
+        for entry in [
+            r#"charon = "../escape""#,
+            r#"charon = "nightly 1""#,
+            r#"charon = { version = "a/b" }"#,
+            r#"charon = """#,
+        ] {
+            let err = parse_str(&format!("[tools]\n{entry}")).unwrap_err();
+            assert!(err.contains("`charon`"), "{entry}: {err}");
+        }
     }
 
     #[test]
