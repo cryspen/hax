@@ -310,7 +310,7 @@ fn project_install_covers_the_union_and_skips_path_pins() {
             .unwrap();
         let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
         let json: serde_json::Value = serde_json::from_str(stdout.lines().last().unwrap()).unwrap();
-        json["tools"]
+        json["ToolsShow"]["tools"]
             .as_array()
             .unwrap()
             .iter()

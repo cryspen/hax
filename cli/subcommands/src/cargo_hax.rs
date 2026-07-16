@@ -641,6 +641,35 @@ fn main() {
         std::process::exit(tools::run(command, options.message_format));
     }
 
+    // Every other command processes source: discover the project once
+    // (hax.toml configuration and dependency graph) and gate on `hax-lib`
+    // compatibility before any tool runs. Discovery is driven by the same
+    // Cargo arguments as the build it precedes, so that it finds the
+    // manifest, and gates the crates, that are actually processed.
+    //
+    // `--haxmeta` reuses an already-extracted crate and runs no Cargo
+    // command, so it needs no Cargo project around it; the lean backend
+    // ignores the option and needs the project either way.
+    let lean_backend = matches!(&options.command,
+        Command::Backend(backend) if matches!(backend.backend, Backend::Lean(_)));
+    let project = if options.haxmeta.is_some() && !lean_backend {
+        None
+    } else {
+        match tools::project::ProjectContext::load_for(&options.cargo_flags, options.message_format)
+        {
+            Ok(project) => Some(project),
+            Err(message) => {
+                HaxMessage::GenericError { message }.report(options.message_format, None);
+                std::process::exit(1);
+            }
+        }
+    };
+    if let Some(project) = &project
+        && tools::haxlib::enforce(project, options.message_format)
+    {
+        std::process::exit(1);
+    }
+
     // Lean bypasses the hax frontend entirely: run charon + aeneas directly
     if let Command::Backend(ref backend) = options.command
         && let Backend::Lean(ref aeneas_opts) = backend.backend
@@ -671,6 +700,9 @@ fn main() {
             backend.output_dir.clone(),
             backend.verbose,
             options.message_format,
+            project
+                .as_ref()
+                .expect("the lean backend always discovers the project"),
         );
         std::process::exit(if error { 1 } else { 0 });
     }

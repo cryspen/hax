@@ -3,7 +3,10 @@
 use std::collections::BTreeSet;
 
 use hax_types::cli_options::MessageFormat;
-use hax_types::diagnostics::message::HaxMessage;
+use hax_types::diagnostics::message::{
+    HaxLibStatus, HaxMessage, InstallStatus, InstalledTool, MemberOverride, ResolvedValue,
+    ToolListing, ToolResolution, ToolVersionListing,
+};
 
 use super::defaults::defaults;
 use super::install::{Installed, ensure_installed};
@@ -14,6 +17,18 @@ use super::{DECLARED_VERSION_KEYS, MANAGED_TOOLS, cache, manifest};
 fn error(message: String, message_format: MessageFormat) -> i32 {
     HaxMessage::GenericError { message }.report(message_format, None);
     1
+}
+
+/// A resolution as it is reported, for a named entry.
+fn reported(name: &str, resolution: &Resolution) -> ToolResolution {
+    ToolResolution {
+        name: name.to_string(),
+        resolved: match &resolution.kind {
+            Resolved::Version(version) => ResolvedValue::Version(version.clone()),
+            Resolved::Path(path) => ResolvedValue::Path(path.display().to_string()),
+        },
+        source: resolution.source.describe(),
+    }
 }
 
 /// `cargo hax tools install`: populate the machine-wide cache.
@@ -93,12 +108,17 @@ pub fn install(spec: Option<&str>, force: bool, message_format: MessageFormat) -
     };
 
     let mut failed = false;
-    let mut statuses = Vec::new();
+    let mut installed = Vec::new();
     for (tool, version) in &requests {
         match ensure_installed(tool, version, force, message_format) {
-            Ok(outcome) => {
-                statuses.push((tool.clone(), version.clone(), outcome));
-            }
+            Ok(outcome) => installed.push(InstalledTool {
+                tool: tool.clone(),
+                version: version.clone(),
+                status: match outcome {
+                    Installed::AlreadyCached { verified } => InstallStatus::Cached { verified },
+                    Installed::Fresh { verified } => InstallStatus::Installed { verified },
+                },
+            }),
             Err(message) => {
                 failed = true;
                 HaxMessage::GenericError {
@@ -108,46 +128,7 @@ pub fn install(spec: Option<&str>, force: bool, message_format: MessageFormat) -
             }
         }
     }
-    match message_format {
-        MessageFormat::Human => {
-            for (tool, version, outcome) in &statuses {
-                let (verb, suffix) = match outcome {
-                    Installed::AlreadyCached { verified: true } => ("Cached", ""),
-                    Installed::AlreadyCached { verified: false } => ("Cached", " (unverified)"),
-                    Installed::Fresh { verified: true } => ("Installed", ""),
-                    Installed::Fresh { verified: false } => ("Installed", " (unverified)"),
-                };
-                HaxMessage::Step {
-                    verb: verb.to_string(),
-                    target: format!("{tool} {version}{suffix}"),
-                }
-                .report(message_format, None);
-            }
-        }
-        MessageFormat::Json => {
-            let json = serde_json::json!({
-                "installed": statuses
-                    .iter()
-                    .map(|(tool, version, outcome)| {
-                        let status = match outcome {
-                            Installed::AlreadyCached { verified: true } => "already cached",
-                            Installed::AlreadyCached { verified: false } => {
-                                "already cached (NOT verified)"
-                            }
-                            Installed::Fresh { verified: true } => "installed (checksum verified)",
-                            Installed::Fresh { verified: false } => "installed (NOT verified)",
-                        };
-                        serde_json::json!({
-                            "tool": tool,
-                            "version": version,
-                            "status": status,
-                        })
-                    })
-                    .collect::<Vec<_>>(),
-            });
-            println!("{json}");
-        }
-    }
+    HaxMessage::ToolsInstalled { installed }.report(message_format, None);
     if failed { 1 } else { 0 }
 }
 
@@ -195,7 +176,7 @@ pub fn list(
         let ordered: Vec<String> = all_versions.into_iter().rev().collect();
 
         let recent = if all { ordered.len() } else { LIST_RECENT };
-        let mut entries = Vec::new();
+        let mut versions = Vec::new();
         let mut omitted = 0;
         for (index, version) in ordered.iter().enumerate() {
             let is_installed = installed.contains(version);
@@ -209,99 +190,34 @@ pub fn list(
                 omitted += 1;
                 continue;
             }
-            let in_manifest = manifest.knows_version(tool, version);
-            // Whether the cached copy was checksum-verified at install time,
-            // read from its metadata; a fallback install records `false`.
-            let verified = is_installed
-                && cache::version_dir(tool, version)
-                    .ok()
-                    .and_then(|dir| cache::read_metadata(&dir).ok().flatten())
-                    .and_then(|metadata| metadata.checksum_verified)
-                    .unwrap_or(false);
-            entries.push((
-                version.clone(),
-                is_installed,
-                in_manifest,
-                is_default,
-                verified,
-            ));
+            versions.push(ToolVersionListing {
+                version: version.clone(),
+                installed: is_installed,
+                in_manifest: manifest.knows_version(tool, version),
+                default: is_default,
+                // Whether the cached copy was checksum-verified at install
+                // time, read from its metadata; a fallback install records
+                // `false`.
+                verified: is_installed
+                    && cache::version_dir(tool, version)
+                        .ok()
+                        .and_then(|dir| cache::read_metadata(&dir).ok().flatten())
+                        .and_then(|metadata| metadata.checksum_verified)
+                        .unwrap_or(false),
+            });
         }
-        report.push((tool.to_string(), entries, omitted));
+        report.push(ToolListing {
+            tool: tool.to_string(),
+            versions,
+            omitted,
+        });
     }
 
-    match message_format {
-        MessageFormat::Human => {
-            for (index, (tool, entries, omitted)) in report.iter().enumerate() {
-                if index > 0 {
-                    println!();
-                }
-                println!("{tool}:");
-                if entries.is_empty() {
-                    let none = if installed_only {
-                        "none installed"
-                    } else {
-                        "none"
-                    };
-                    println!("  ({none})");
-                }
-                // Pad the version column so the markers line up.
-                let width = entries
-                    .iter()
-                    .map(|(version, ..)| version.len())
-                    .max()
-                    .unwrap_or(0);
-                for (version, is_installed, in_manifest, is_default, verified) in entries {
-                    let mut marks = Vec::new();
-                    if *is_default {
-                        marks.push("default");
-                    }
-                    if *is_installed {
-                        marks.push("installed");
-                        if !*verified {
-                            marks.push("unverified");
-                        }
-                    }
-                    if !*in_manifest {
-                        marks.push("not in manifest");
-                    }
-                    if marks.is_empty() {
-                        println!("  {version}");
-                    } else {
-                        println!("  {version:width$}  ({})", marks.join(", "));
-                    }
-                }
-                if *omitted > 0 {
-                    println!("  ... {omitted} older versions omitted (use --all)");
-                }
-            }
-        }
-        MessageFormat::Json => {
-            let json = serde_json::json!({
-                "tools": report
-                    .iter()
-                    .map(|(tool, entries, omitted)| {
-                        serde_json::json!({
-                            "tool": tool,
-                            "omitted": omitted,
-                            "versions": entries
-                                .iter()
-                                .map(|(version, is_installed, in_manifest, is_default, verified)| {
-                                    serde_json::json!({
-                                        "version": version,
-                                        "installed": is_installed,
-                                        "in_manifest": in_manifest,
-                                        "default": is_default,
-                                        "verified": verified,
-                                    })
-                                })
-                                .collect::<Vec<_>>(),
-                        })
-                    })
-                    .collect::<Vec<_>>(),
-            });
-            println!("{json}");
-        }
+    HaxMessage::ToolsList {
+        tools: report,
+        installed_only,
     }
+    .report(message_format, None);
     0
 }
 
@@ -365,92 +281,35 @@ pub fn show(message_format: MessageFormat) -> i32 {
         }
     }
 
-    match message_format {
-        MessageFormat::Human => {
-            // Align the name and value columns across every section so the
-            // source annotations line up in a single grid.
-            let all: Vec<&(String, Resolution)> = tools
-                .iter()
-                .chain(&versions)
-                .chain(
-                    member_reports
-                        .iter()
-                        .flat_map(|(_, member_tools, member_versions)| {
-                            member_tools.iter().chain(member_versions.iter())
-                        }),
-                )
-                .collect();
-            let name_width = all.iter().map(|(name, _)| name.len()).max().unwrap_or(0);
-            let value_width = all
-                .iter()
-                .map(|(_, resolution)| resolution_value(resolution).len())
-                .max()
-                .unwrap_or(0);
-
-            println!("tools:");
-            print_entries(&tools, name_width, value_width);
-            println!();
-            println!("versions:");
-            print_entries(&versions, name_width, value_width);
-            for (name, member_tools, member_versions) in &member_reports {
-                println!();
-                println!("crate `{name}` (overrides):");
-                print_entries(member_tools, name_width, value_width);
-                print_entries(member_versions, name_width, value_width);
-            }
-        }
-        MessageFormat::Json => {
-            let json = serde_json::json!({
-                "tools": entries_json(&tools),
-                "versions": entries_json(&versions),
-                "member_overrides": member_reports
-                    .iter()
-                    .map(|(name, tools, versions)| {
-                        serde_json::json!({
-                            "crate": name,
-                            "tools": entries_json(tools),
-                            "versions": entries_json(versions),
-                        })
-                    })
-                    .collect::<Vec<_>>(),
-            });
-            println!("{json}");
-        }
-    }
-    0
-}
-
-/// The value shown for a resolution: a version string or a path.
-fn resolution_value(resolution: &Resolution) -> String {
-    match &resolution.kind {
-        Resolved::Version(version) => version.clone(),
-        Resolved::Path(path) => path.display().to_string(),
-    }
-}
-
-fn print_entries(entries: &[(String, Resolution)], name_width: usize, value_width: usize) {
-    for (name, resolution) in entries {
-        println!(
-            "  {name:name_width$}  {value:value_width$}  ({source})",
-            value = resolution_value(resolution),
-            source = resolution.source.describe(),
-        );
-    }
-}
-
-fn entries_json(entries: &[(String, Resolution)]) -> serde_json::Value {
-    entries
-        .iter()
-        .map(|(name, resolution)| {
-            let (kind, value) = match &resolution.kind {
-                Resolved::Version(version) => ("version", version.clone()),
-                Resolved::Path(path) => ("path", path.display().to_string()),
-            };
-            serde_json::json!({
-                "name": name,
-                kind: value,
-                "source": resolution.source.describe(),
-            })
+    // The hax-lib compatibility of every crate with a direct dependency.
+    let hax_lib = super::haxlib::check(&ctx)
+        .into_iter()
+        .map(|result| HaxLibStatus {
+            crate_name: result.crate_name,
+            version: result.found,
+            compatibility: result.compatibility,
         })
-        .collect()
+        .collect();
+
+    let reported_entries = |entries: &[(String, Resolution)]| {
+        entries
+            .iter()
+            .map(|(name, resolution)| reported(name, resolution))
+            .collect()
+    };
+    HaxMessage::ToolsShow {
+        tools: reported_entries(&tools),
+        versions: reported_entries(&versions),
+        hax_lib,
+        member_overrides: member_reports
+            .iter()
+            .map(|(name, tools, versions)| MemberOverride {
+                crate_name: name.clone(),
+                tools: reported_entries(tools),
+                versions: reported_entries(versions),
+            })
+            .collect(),
+    }
+    .report(message_format, None);
+    0
 }

@@ -172,16 +172,10 @@ pub fn run(
     output_dir: Option<PathBuf>,
     verbose: u8,
     message_format: MessageFormat,
+    project: &tools::project::ProjectContext,
 ) -> bool {
-    // Project discovery and per-crate tool resolution: the crate being
-    // processed is the root package of the current invocation.
-    let project = match tools::project::ProjectContext::load(message_format) {
-        Ok(project) => project,
-        Err(message) => {
-            HaxMessage::GenericError { message }.report(message_format, None);
-            return true;
-        }
-    };
+    // Per-crate tool resolution: the crate being processed is the root
+    // package of the current invocation.
     let crate_dir = project
         .root_package
         .as_ref()
