@@ -12,7 +12,7 @@ rust:
 	cargo build
 
 lean:
-	cargo hax into lean --aeneas-args="-core-models-lib"
+	cargo hax into lean
 	(cd proofs/lean && \
 		elan default v4.30.0-rc2 && \
 		lake exe cache get && \
