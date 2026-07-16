@@ -231,14 +231,24 @@ You can also just use [direnv](https://github.com/nix-community/nix-direnv), wit
 
 ### Structure of this repository
 
-- `rust-frontend/`: Rust library that hooks in the rust compiler and
-  extract its internal typed abstract syntax tree
+- `frontend/`: Rust library that hooks into the Rust compiler and
+  extracts its internal typed abstract syntax tree
   [**THIR**](https://rustc-dev-guide.rust-lang.org/thir.html) as JSON.
 - `engine/`: the simplification and elaboration engine that translates programs
   from the Rust language to various backends (see `engine/backends/`). Written
   in OCaml.
 - `rust-engine/`: an on-going rewrite of our engine from OCaml to Rust.
-- `cli/`: the `hax` subcommand for Cargo.
+- `cli/`: the `cargo hax` subcommand and the custom rustc drivers it
+  uses to run the frontend.
+- `hax-lib/`: helper crate providing hax-specific macros (e.g.
+  `requires`, `ensures`) for annotating Rust programs.
+- `hax-types/`: types shared between the frontend, the CLI, and the engine.
+- `proof-libs/`: a symlink to `hax-lib/proof-libs/`, the per-backend
+  proof libraries that the extracted code builds against.
+- `examples/`: examples showing what hax can do.
+- `tests/`: integration tests.
+- `docs/`: sources of the [hax website](https://hax.cryspen.com/),
+  including the manual and the blog.
 
 ### Compiling, formatting, and more
 We use the [`just` command runner](https://just.systems/). If you use
