@@ -1,11 +1,11 @@
 # Architecture
 
-hax is a software pipeline designed to transform Rust code into various formal verification backends such as **F\***, **Coq**, **ProVerif**, and **EasyCrypt**. It comprises two main components:
+hax is a software pipeline designed to transform Rust code into various formal verification backends such as **Lean**, **F\***, **Coq**, **ProVerif**, and **EasyCrypt**. It comprises two main components:
 
 1. **The Frontend** (written in Rust)
 2. **The Engine** (written in OCaml)
 
-The frontend hooks into the Rust compiler, producing a abstract syntax tree for a given crate. The engine then takes this AST in input, applies various transformation, to reach in the end the language of the backend: F*, Coq...
+The frontend hooks into the Rust compiler, producing a abstract syntax tree for a given crate. The engine then takes this AST in input, applies various transformation, to reach in the end the language of the backend: Lean, F*, Coq...
 
 ## The Frontend (Rust)
 

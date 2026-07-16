@@ -1,11 +1,11 @@
 # Frontend
 
-hax is a tool designed to facilitate the formal verification of Rust programs. It enables the translation of Rust crates into formal languages like F* or Coq. Once translated, these formal representations allow to write formal proofs about the behavior and correctness of their Rust code.
+hax is a tool designed to facilitate the formal verification of Rust programs. It enables the translation of Rust crates into formal languages like Lean, F* or Coq. Once translated, these formal representations allow to write formal proofs about the behavior and correctness of their Rust code.
 
 ## User flow
 
 This document focuses on a specific user flow: extracting F\* code. The process
-described here applies similarly to all other backends, including F*, Rocq,
+described here applies similarly to all other backends, including Lean, Rocq,
 SSProve, ProVerif, and EasyCrypt.
 
 The goal is for the user to prove a property on a Rust function, `f`, using the F\* formal language. The function `f` is defined in the module `mymod`, within the crate `mycrate`.
@@ -32,7 +32,7 @@ each numbered step directly corresponding to its labeled section in the diagram:
    transforming the Rust program as needed.
 3. The **backends** --one per target language-- request the engine to simplify
    the Rust program for their specific target and then pretty-print the program
-   as F*, Roq, PV, or other formats.
+   as Lean, F*, Rocq, ProVerif, or other formats.
 4. The Rust helper crate, **hax-lib**, provides hax-specific helpers and macros
    to annotate a Rust program with properties, invariants, or proof hints.
 5. The **annotated standard library** is a work in progress partial model for the
@@ -112,8 +112,8 @@ Our custom export logic extends this by generating additional artifacts:
 
 After calling `cargo check`, `cargo hax` parses the `*.haxmeta` files and
 continues further along the hax toolchain, either by outputting JSON directly or
-by calling the engine to generate files for targets such as F\*, ProVerif, or
-Roqc.
+by calling the engine to generate files for targets such as Lean, F\*, Rocq,
+or ProVerif.
 
 `cargo-hax`, `driver-hax-frontend-exporter`, and `hax-frontend-exporter`
 together form what we refer to as "the frontend". The engine is represented by

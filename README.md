@@ -88,8 +88,8 @@ Rust into formal languages such as [Lean](https://lean-lang.org/),
 Here are some resources for learning more about hax:
 
  - [Manual](https://hax.cryspen.com/manual/index.html) (work in progress)
-    + Quick start: [F*](https://hax.cryspen.com/manual/fstar/quick_start/), [Lean](https://hax.cryspen.com/manual/lean/quick_start/)
-    + Tutorial: [F*](https://hax.cryspen.com/manual/fstar/tutorial/), [Lean](https://hax.cryspen.com/manual/lean/tutorial/)
+    + Quick start: [Lean](https://hax.cryspen.com/manual/lean/quick_start/), [F*](https://hax.cryspen.com/manual/fstar/quick_start/)
+    + Tutorial: [Lean](https://hax.cryspen.com/manual/lean/tutorial/), [F*](https://hax.cryspen.com/manual/fstar/tutorial/)
  - [Examples](./examples/): the [examples directory](./examples/) contains
    a set of examples that show what hax can do for you.
  - Other [specifications](https://github.com/hacspec/specs) of cryptographic protocols.
@@ -155,7 +155,7 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
 
 </details>
 
-+ **Run hax on a crate directly** to get F\*/Coq/Lean/... (assuming you are in the crate's folder):
++ **Run hax on a crate directly** to get Lean/F\*/Coq/... (assuming you are in the crate's folder):
    - `nix run github:hacspec/hax -- into fstar` extracts F*.
 
 + **Install hax**:  `nix profile install github:hacspec/hax`, then run `cargo hax --help` anywhere

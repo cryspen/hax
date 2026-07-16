@@ -1,5 +1,5 @@
 ---
-weight: 1
+weight: 12
 ---
 
 # Tutorial
@@ -9,7 +9,7 @@ programs using the hax toolchain. hax is a tool that translates Rust
 programs to various formal programming languages.
 
 The formal programming languages we target are called *backends*. Some
-of them, e.g. [F\*](https://fstar-lang.org/), [Lean](https://lean-lang.org/) or
+of them, e.g. [Lean](https://lean-lang.org/), [F\*](https://fstar-lang.org/) or
 [Coq](https://coq.inria.fr/), are general purpose formal programming
 languages. Others are specialized tools:
 [ProVerif](https://bblanche.gitlabpages.inria.fr/proverif/) is

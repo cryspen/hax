@@ -5,19 +5,19 @@ weight: -5
 # Introduction
 
 hax is a tool for high assurance translations of a large subset of
-Rust into formal languages such as [F\*](https://www.fstar-lang.org/), [Lean](https://lean-lang.org/) or [Rocq](https://rocq-prover.org/).
+Rust into formal languages such as [Lean](https://lean-lang.org/), [F\*](https://www.fstar-lang.org/) or [Rocq](https://rocq-prover.org/).
 
 ## Usage
 
 hax is a cargo subcommand. 
 The command `cargo hax` accepts the following subcommands:
 
-* **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `fstar`, `coq`, `lean`).
+* **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `lean`, `fstar`, `coq`).
 * **`json`** (`cargo hax json`): extract the typed AST of your crate as a JSON file.
  
 Note:
 
-* `BACKEND` can be `fstar`, `coq`, `lean`, `easycrypt` or `pro-verif`. `cargo hax into --help`
+* `BACKEND` can be `lean`, `fstar`, `coq`, `easycrypt` or `pro-verif`. `cargo hax into --help`
    gives the full list of supported backends.
 * The subcommands `cargo hax`, `cargo hax into` and `cargo hax into
    <BACKEND>` takes options. For instance, you can `cargo hax into
@@ -52,7 +52,7 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
     ```
   - or following [those steps](https://github.com/mschwaig/howto-install-nix-with-flake-support).
 
-+ **Run hax on a crate directly** to get F\*/Coq/... (assuming you are in the crate's folder):
++ **Run hax on a crate directly** to get Lean/F\*/Coq/... (assuming you are in the crate's folder):
    - `nix run github:hacspec/hax -- into fstar` extracts F\*.
 
 + **Install hax**:  `nix profile install github:hacspec/hax`, then run `cargo hax --help` anywhere
