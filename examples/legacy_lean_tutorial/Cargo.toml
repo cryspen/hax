@@ -1,0 +1,6 @@
+[package]
+name = "legacy_lean_tutorial"
+version = "0.1.0"
+
+[dependencies]
+hax-lib.workspace = true

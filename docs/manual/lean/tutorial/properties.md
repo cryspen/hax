@@ -20,8 +20,8 @@ fn square(x: u8) -> u8 {
 ```
 This works as well.
 
-The property that we prove above demonstrates a very simple case of a proof using hax and Lean. For a more complex example, a version of the Barrett example is available in the 
-[`examples`](https://github.com/cryspen/hax/tree/main/examples/lean_barrett) 
+The property that we prove above demonstrates a very simple case of a proof using hax and Lean. For a more complex example, have a look at the Barrett example in the 
+[`examples`](https://github.com/cryspen/hax/tree/main/examples/barrett) 
 section of hax. 
 
 

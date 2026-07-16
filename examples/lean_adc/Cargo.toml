@@ -1,7 +1,0 @@
-[package]
-name = "lean_adc"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-hax-lib.workspace = true

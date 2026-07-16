@@ -1,0 +1,10 @@
+name = "barrett"
+version = "0.1.0"
+defaultTargets = ["Barrett"]
+
+[[lean_lib]]
+name = "Barrett"
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/lean"

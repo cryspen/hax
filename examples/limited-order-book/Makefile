@@ -1,5 +1,6 @@
-.PHONY: default
-default:
+.PHONY: fstar
+
+fstar:
 	make -C proofs/fstar/extraction
 
 clean:
