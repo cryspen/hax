@@ -8,6 +8,7 @@ on:
 jobs:
   # Build job
   build:
+    if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,6 +22,7 @@ jobs:
           path: result/
   # Deploy job
   deploy:
+    if: github.repository == 'cryspen/hax'
     needs: build
     permissions:
       pages: write      # to deploy to Pages
