@@ -50,7 +50,7 @@ your hax installation.
 specific crate you want to extract.*
 
 Run the command `cargo hax into legacy-lean` to extract every item of your
-crate as F\* modules in the subfolder `proofs/legacy-lean/extraction`.
+crate as Lean files in the subfolder `proofs/legacy-lean/extraction`.
 
 **What is critical? What is worth verifying?**  
 Probably, your Rust crate contains mixed kinds of code: some parts are
