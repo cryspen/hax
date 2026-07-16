@@ -30,7 +30,7 @@ fn square(x: u8) -> u8 {
     x * x
 }
 ```
-Adding a `hax_lib::requires` and a `hax_lib::ensures` annotation will make Hax generate a specification of the function, asserting panic freedom as well as the postcondition. Here, we used the trivial postcondition `true`, so we only assert panic freedom.
+Adding a `hax_lib::requires` and a `hax_lib::ensures` annotation will make hax generate a specification of the function, asserting panic freedom as well as the postcondition. Here, we used the trivial postcondition `true`, so we only assert panic freedom.
 
 If we try running `lake build`
 after extracting this code, we get an error: 

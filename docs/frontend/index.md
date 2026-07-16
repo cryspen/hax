@@ -16,13 +16,13 @@ To achieve this, the user follows these steps:
  2. Run the command `cargo hax into -i '-** +mycrate::mymod::f' fstar`.
  3. Execute F\*. If F\* fails to prove the specified properties, the user revisits step (1) to refine the annotations and proof hints.
 
-For a practical guide on using Hax, please refer to the [manual](../manual/index.md).
+For a practical guide on using hax, please refer to the [manual](../manual/index.md).
 
 ![](./user-flow.excalidraw.png)
 
-## High-Level Architecture of Hax {#high-level-arch}
+## High-Level Architecture of hax {#high-level-arch}
 
-Hax consists of five main components, as illustrated in the diagram below, with
+hax consists of five main components, as illustrated in the diagram below, with
 each numbered step directly corresponding to its labeled section in the diagram:
 
 1. The **frontend** handles the extraction and export of given [Rust
@@ -33,7 +33,7 @@ each numbered step directly corresponding to its labeled section in the diagram:
 3. The **backends** --one per target language-- request the engine to simplify
    the Rust program for their specific target and then pretty-print the program
    as F*, Roq, PV, or other formats.
-4. The Rust helper crate, **hax-lib**, provides Hax-specific helpers and macros
+4. The Rust helper crate, **hax-lib**, provides hax-specific helpers and macros
    to annotate a Rust program with properties, invariants, or proof hints.
 5. The **annotated standard library** is a work in progress partial model for the
    Rust base libraries (`core`, `std`, `alloc`), enriched with logical
@@ -57,7 +57,7 @@ The input crate passes through the hax toolchain as follows:
 - Finally, the **F\*** backend generates the corresponding F\* files (➌).
 
 Since the input crate depends on both `std` and `hax-lib`, the generated F\*
-modules maintain these dependencies. To handle this, Hax translates `hax-lib` to
+modules maintain these dependencies. To handle this, hax translates `hax-lib` to
 F\* (➍) and also translates our model of the `std` library (➎) into F\*.
 
 

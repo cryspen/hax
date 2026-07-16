@@ -9,7 +9,7 @@ Rust into formal languages such as [F\*](https://www.fstar-lang.org/), [Lean](ht
 
 ## Usage
 
-Hax is a cargo subcommand. 
+hax is a cargo subcommand. 
 The command `cargo hax` accepts the following subcommands:
 
 * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `fstar`, `coq`, `lean`).

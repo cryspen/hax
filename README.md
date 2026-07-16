@@ -10,7 +10,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0"></a>
 </p>
 
-# Hax
+# hax
 
 hax is a tool for high assurance translations of a large subset of
 Rust into formal languages such as [Lean](https://lean-lang.org/),
@@ -98,7 +98,7 @@ Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub 
 
 ## Usage
 
-Hax is a cargo subcommand.
+hax is a cargo subcommand.
 The command `cargo hax` accepts the following subcommands:
 
  * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND`.
@@ -211,7 +211,7 @@ variables.
 
 ## Supported Subset of the Rust Language
 
-Hax intends to support full Rust, with the one exception, promoting a functional style: mutable references (aka `&mut T`) on return types or when aliasing (see https://github.com/hacspec/hax/issues/420) are forbidden.
+hax intends to support full Rust, with the one exception, promoting a functional style: mutable references (aka `&mut T`) on return types or when aliasing (see https://github.com/hacspec/hax/issues/420) are forbidden.
 
 Each unsupported Rust feature is documented as an issue labeled [`unsupported-rust`](https://github.com/hacspec/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust). When the issue is labeled [`wontfix-v1`](https://github.com/hacspec/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1), that means we don't plan on supporting that feature soon.
 
@@ -219,7 +219,7 @@ Quicklinks:
  - [🔨 Rejected rust we want to support](https://github.com/hacspec/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+-label%3Awontfix%2Cwontfix-v1);
  - [💭 Rejected rust we don't plan to support in v1](https://github.com/hacspec/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1).
 
-## Hacking on Hax
+## Hacking on hax
 The documentation of the internal crate of hax and its engine can be
 found [here for the engine](https://hax.cryspen.com/engine/index.html)
 and [here for the frontend](https://hax.cryspen.com/frontend/index.html).
