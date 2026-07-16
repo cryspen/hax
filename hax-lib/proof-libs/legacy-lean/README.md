@@ -1,4 +1,4 @@
-# Hax Lean library
+# Hax Lean library (legacy)
 
 This folder contains the Lean library necessary to use hax-extracted rust code
 in Lean. It is organized as follows:
