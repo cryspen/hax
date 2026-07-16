@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 //! @fail(extraction): ssprove(HAX0001)
 //! @fail(tc): fstar(228)
 

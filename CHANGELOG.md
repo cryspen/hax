@@ -19,6 +19,7 @@ Changes to the frontend:
 Changes to cargo-hax:
  - Add Lean/Aeneas as a new backend (cryspen/hax-evit/184, cryspen/hax-evit/186, cryspen/hax-evit/189)
  - Unify pining mechanism for aeneas, charon, lean and hax-lib (#2050)
+ - rename `lean` backend to `legacy-lean` and `aeneas-lean` to `lean` (#2064)
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)

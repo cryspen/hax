@@ -32,4 +32,4 @@ syn = { version = "2.0.114", features = ["full"] }
 [workspace]
 
 [lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_backend_fstar)', 'cfg(hax_compilation)', 'cfg(hax_backend_lean)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_backend_fstar)', 'cfg(hax_compilation)', 'cfg(hax_backend_legacy_lean)'] }

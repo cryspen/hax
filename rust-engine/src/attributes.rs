@@ -322,12 +322,12 @@ pub struct FnLikeAssocatedExpressions {
 
 /// The various linked expressions one can usually find on a (linked or not) function.
 pub struct ProofAttributes {
-    /// A custom proof, see [`hax_lib::lean::proof`]
+    /// A custom proof, see [`hax_lib::legacy_lean::proof`]
     pub proof: Option<String>,
-    /// A proof that the precondition is pure, see [`hax_lib::lean::pure_requires_proof`]
+    /// A proof that the precondition is pure, see [`hax_lib::legacy_lean::pure_requires_proof`]
     pub pure_requires_proof: Option<String>,
-    /// A proof that the postcondition is pure, see [`hax_lib::lean::pure_ensures_proof`]
+    /// A proof that the postcondition is pure, see [`hax_lib::legacy_lean::pure_ensures_proof`]
     pub pure_ensures_proof: Option<String>,
-    /// A proof method, see [`hax_lib::lean::proof_method`]
+    /// A proof method, see [`hax_lib::legacy_lean::proof_method`]
     pub proof_method: Option<ProofMethod>,
 }

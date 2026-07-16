@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1), fstar(2)
+//! @fail(tc): legacy-lean(1), fstar(2)
 //! @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008)
 #![feature(coverage_attribute)]
 //@ edition: 2021

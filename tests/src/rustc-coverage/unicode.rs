@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 //! @fail(tc): fstar(2)
 //@ edition: 2021
 //@ ignore-windows - we can't force `llvm-cov` to use ANSI escapes on Windows

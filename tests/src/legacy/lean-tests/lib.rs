@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 //! @off: ssprove, fstar, coq
 #![allow(dead_code)]
 #![allow(unused_variables)]
@@ -50,12 +50,12 @@ fn closure() -> i32 {
     res1 + res2
 }
 
-#[hax_lib::lean::before("example : Nat := 42")]
+#[hax_lib::legacy_lean::before("example : Nat := 42")]
 fn test_before_verbatime_single_line(x: u8) -> u8 {
     42
 }
 
-#[hax_lib::lean::before(
+#[hax_lib::legacy_lean::before(
     "
 def multiline : Unit := ()
 

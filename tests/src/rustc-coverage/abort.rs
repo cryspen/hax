@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 #![allow(unused_assignments)]
 
 extern "C" fn might_abort(should_abort: bool) {

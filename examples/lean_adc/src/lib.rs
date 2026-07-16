@@ -25,7 +25,7 @@
 //!
 //! The precondition and postcondition are expressed as plain Rust
 //! functions (`adc_precondition`, `adc_postcondition`) for documentation.
-//! A correctness theorem is embedded via `#[hax_lib::lean::after(...)]`
+//! A correctness theorem is embedded via `#[hax_lib::legacy_lean::after(...)]`
 //! using a Hoare triple with pure Lean propositions (not the monadic
 //! Rust functions), since `bv_decide` requires pure BitVec goals.
 //!
@@ -80,7 +80,7 @@ fn adc_postcondition(a: u32, b: u32, carry_in: u32, sum: u32, carry_out: u32) ->
 ///
 /// # Verification
 ///
-/// The `#[hax_lib::lean::after(...)]` attribute embeds a Lean 4
+/// The `#[hax_lib::legacy_lean::after(...)]` attribute embeds a Lean 4
 /// theorem directly after the extracted function definition. This
 /// theorem states: given the precondition (carry_in is 0 or 1),
 /// the function satisfies the postcondition (the full sum equation
@@ -91,7 +91,7 @@ fn adc_postcondition(a: u32, b: u32, carry_in: u32, sum: u32, carry_out: u32) ->
 ///      from the monadic function body.
 ///   2. `bv_decide` — Lean's bit-blasting procedure to
 ///      automatically verify the remaining BitVec goals.
-#[hax_lib::lean::after(
+#[hax_lib::legacy_lean::after(
     // The specification is stated with pure Lean propositions (not through the
     // monadic adc_precondition/adc_postcondition Rust functions), so that
     // bv_decide can reason about the BitVec properties directly.

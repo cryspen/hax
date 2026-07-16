@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 mod typ_a {
     pub enum TRec {
         T(super::typ_b::T1Rec),

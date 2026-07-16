@@ -185,7 +185,7 @@ TOOLS:
 
 INVOCATION:
   The tools are run with some fixed flags (to which any --charon-args/--aeneas-args
-  are appended). Pass `-v` (`cargo hax into -v aeneas-lean`) to print the exact command
+  are appended). Pass `-v` (`cargo hax into -v lean`) to print the exact command
   before each tool runs.
 
   Overriding a flag that controls where output is written (aeneas's -backend,
@@ -195,9 +195,9 @@ INVOCATION:
 ENVIRONMENT VARIABLES:
   HAX_CHARON_BINARY  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
   HAX_AENEAS_BINARY  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH."))]
-pub struct AeneasLeanOptions {
+pub struct LeanOptions {
     /// Generate a `lakefile.toml` and `lean-toolchain` in the
-    /// `proofs/aeneas-lean/` directory, with a dependency on the Aeneas
+    /// `proofs/lean/` directory, with a dependency on the Aeneas
     /// Lean library. Existing files are not overwritten, so it is safe
     /// to re-run with this flag after editing the lakefile.
     #[arg(long)]
@@ -220,10 +220,10 @@ pub struct AeneasLeanOptions {
 pub enum Backend {
     /// Use the F* backend
     Fstar(FStarOptions),
-    /// Use the Lean backend (warning: experimental)
-    Lean,
-    /// Use the Aeneas Lean backend (charon + aeneas pipeline)
-    AeneasLean(AeneasLeanOptions),
+    /// Use the legacy Lean backend (warning: experimental)
+    LegacyLean,
+    /// Use the Lean backend (charon + aeneas pipeline)
+    Lean(LeanOptions),
     /// Use the Coq backend
     Coq,
     /// Use the SSProve backend
@@ -655,8 +655,8 @@ pub enum BackendName {
     Easycrypt,
     #[clap(alias("proverif"))]
     ProVerif,
+    LegacyLean,
     Lean,
-    AeneasLean,
     Rust,
     GenerateRustEngineNames,
     Debugger,
@@ -670,8 +670,8 @@ impl BackendName {
             Self::Ssprove,
             Self::Easycrypt,
             Self::ProVerif,
+            Self::LegacyLean,
             Self::Lean,
-            Self::AeneasLean,
             Self::Rust,
             Self::GenerateRustEngineNames,
         ]
@@ -687,8 +687,8 @@ impl fmt::Display for BackendName {
             BackendName::Ssprove => "ssprove",
             BackendName::Easycrypt => "easycrypt",
             BackendName::ProVerif => "proverif",
+            BackendName::LegacyLean => "legacy-lean",
             BackendName::Lean => "lean",
-            BackendName::AeneasLean => "aeneas-lean",
             BackendName::Rust => "rust",
             BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
             BackendName::Debugger => "debugger",
@@ -717,8 +717,8 @@ impl From<&Backend> for BackendName {
             Backend::Ssprove { .. } => BackendName::Ssprove,
             Backend::Easycrypt { .. } => BackendName::Easycrypt,
             Backend::ProVerif { .. } => BackendName::ProVerif,
+            Backend::LegacyLean { .. } => BackendName::LegacyLean,
             Backend::Lean { .. } => BackendName::Lean,
-            Backend::AeneasLean { .. } => BackendName::AeneasLean,
             Backend::Rust { .. } => BackendName::Rust,
             Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,
             Backend::Debugger { .. } => BackendName::Debugger,

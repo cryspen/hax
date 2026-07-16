@@ -1,17 +1,14 @@
-name = "Hax"
+name = "hax"
 version = "0.1.0"
-defaultTargets = ["Hax"]
-
-[leanOptions]
-autoImplicit = false
-relaxedAutoImplicit = false
-weak.linter.mathlibStandardSet = true
-maxSynthPendingDepth = 3
+defaultTargets = ["Hax", "CoreModels"]
 
 [[lean_lib]]
 name = "Hax"
 
+[[lean_lib]]
+name = "CoreModels"
+
 [[require]]
-name = "Qq"
-git = "https://github.com/leanprover-community/quote4"
-rev = "v4.29.0-rc1"
+name = "aeneas"
+git = { url = "https://github.com/cryspen/aeneas", subDir = "backends/lean" }
+rev = "8d2077ce4946b52d2d199fe9d2f2d520a4bf8184"

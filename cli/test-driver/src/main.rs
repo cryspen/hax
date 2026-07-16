@@ -233,7 +233,7 @@ impl BackendTestContext {
         let dir = self.path_to_snapshots().await?;
         let output = match self.backend {
             BackendName::Fstar => run_fstar(true, dir).await?,
-            BackendName::Lean => run_lean(dir).await?,
+            BackendName::LegacyLean => run_lean(dir).await?,
             _ => unreachable!(),
         };
         if output.error_code != 0 {
@@ -304,7 +304,7 @@ impl BackendTestsContext {
 /// Backend disabled by default.
 const DISABLED_BACKENDS: &[BackendName] = &[
     BackendName::Easycrypt,
-    BackendName::AeneasLean,
+    BackendName::Lean,
     BackendName::Rust,
     BackendName::GenerateRustEngineNames,
 ];

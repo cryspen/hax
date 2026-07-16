@@ -1,10 +1,1 @@
-import Hax.MissingLean.Init.Data.Array.Lemmas
-import Hax.MissingLean.Init.Data.BitVec.Basic
-import Hax.MissingLean.Init.Data.Nat.Div.Basic
-import Hax.MissingLean.Init.Data.UInt.Basic
-import Hax.MissingLean.Init.Data.UInt.Lemmas
-import Hax.MissingLean.Init.Data.SInt.Basic
-import Hax.MissingLean.Init.Data.SInt.Lemmas
-import Hax.MissingLean.Init.Data.Vector.Basic
-import Hax.MissingLean.Init.Data.Nat.MinMax
-import Hax.MissingLean.Init.Data.Int.DivMod.Lemmas
+import Hax.MissingLean.Std.Do.Triple.Basic

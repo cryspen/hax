@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1), fstar(2)
+//! @fail(tc): legacy-lean(1), fstar(2)
 #![allow(unused_assignments, unused_variables)]
 // Verify that coverage works with optimizations:
 //@ compile-flags: -C opt-level=3

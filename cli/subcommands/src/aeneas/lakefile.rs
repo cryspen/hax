@@ -1,11 +1,11 @@
-//! Lakefile generation for aeneas-lean projects.
+//! Lakefile generation for lean projects.
 
 use hax_types::cli_options::*;
 use hax_types::diagnostics::message::HaxMessage;
 use std::fs;
 use std::path::Path;
 
-/// Generate the contents of a `lakefile.toml` for an aeneas-lean project.
+/// Generate the contents of a `lakefile.toml` for an lean project.
 ///
 /// The `aeneas` Lean proof library is pinned to the same source repo + commit as
 /// the `aeneas` binary hax expects (baked from `pins.toml`'s `[aeneas]`, see

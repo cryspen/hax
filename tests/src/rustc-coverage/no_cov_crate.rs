@@ -1,4 +1,4 @@
-//! @fail(tc): fstar(2), lean(1)
+//! @fail(tc): fstar(2), legacy-lean(1)
 #![feature(coverage_attribute)]
 // Enables `coverage(off)` on the entire crate
 //@ reference: attributes.coverage.intro

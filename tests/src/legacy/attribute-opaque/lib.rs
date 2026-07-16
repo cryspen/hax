@@ -1,4 +1,4 @@
-//! @off: lean
+//! @off: legacy-lean
 
 #[hax_lib::opaque]
 /// @fail(extraction): coq(HAX0002)

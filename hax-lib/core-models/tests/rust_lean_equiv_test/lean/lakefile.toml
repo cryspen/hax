@@ -14,4 +14,4 @@ name = "RustLeanTests"
 
 [[require]]
 name = "CoreModels"
-path = "../../../../proof-libs/aeneas-lean"
+path = "../../../../proof-libs/lean"

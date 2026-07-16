@@ -1,7 +1,7 @@
 name: Deploy cryspen/hax-lean
 
 # On every commit that lands on `main`, mirror the current state of
-# `hax-lib/proof-libs/aeneas-lean` into the `cryspen/hax-lean` repository.
+# `hax-lib/proof-libs/lean` into the `cryspen/hax-lean` repository.
 
 on:
   push:
@@ -33,14 +33,14 @@ jobs:
           token: ${{ secrets.HAX_LEAN_DEPLOY_TOKEN }}
           path: target
 
-      - name: Take snapshot of aeneas-lean
+      - name: Take snapshot of lean
         run: |
           # Mirror the directory contents into the root of the target repo.
           # --delete makes this a true snapshot: files removed upstream are
           # removed downstream. The target's `.git` is preserved.
           rsync -a --delete \
             --exclude='.git/' \
-            source/hax-lib/proof-libs/aeneas-lean/ target/
+            source/hax-lib/proof-libs/lean/ target/
 
       - name: Update note in README
         working-directory: target

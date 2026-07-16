@@ -8,5 +8,5 @@ pastey = "0.1.1"
 hax-lib.workspace = true
 
 [lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)', 'cfg(hax_backend_lean)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)', 'cfg(hax_backend_legacy_lean)'] }
 

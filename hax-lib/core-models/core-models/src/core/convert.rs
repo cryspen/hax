@@ -51,7 +51,7 @@ impl<T, U: From<T>> TryFrom<T> for U {
 }
 
 use crate::array::TryFromSliceError;
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T: Copy, const N: usize> TryFrom<&[T]> for [T; N] {
     type Error = TryFromSliceError;
     fn try_from(x: &[T]) -> Result<[T; N], TryFromSliceError> {
@@ -98,7 +98,7 @@ macro_rules! int_from {
         $($To_t: ident)*,
     ) => {
         $(
-            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+            #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
             impl From<$From_t> for $To_t {
                 fn from(x: $From_t) -> $To_t {
                     x as $To_t
@@ -116,7 +116,7 @@ macro_rules! int_try_from {
         $($To_t: ident)*,
     ) => {
         $(
-            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+            #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
             impl TryFrom<$From_t> for $To_t {
                 type Error = TryFromIntError;
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
@@ -137,7 +137,7 @@ macro_rules! int_try_from_trivial {
         $($To_t: ident)*,
     ) => {
         $(
-            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+            #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
             impl TryFrom<$From_t> for $To_t {
                 type Error = TryFromIntError;
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
@@ -185,7 +185,7 @@ macro_rules! int_try_from_u_to_i {
         $($To_t: ident)*,
     ) => {
         $(
-            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+            #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
             impl TryFrom<$From_t> for $To_t {
                 type Error = TryFromIntError;
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
@@ -206,7 +206,7 @@ macro_rules! int_try_from_i_to_u {
         $($To_t: ident)*,
     ) => {
         $(
-            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+            #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
             impl TryFrom<$From_t> for $To_t {
                 type Error = TryFromIntError;
                 #[allow(unused_comparisons)]

@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 //@ edition: 2021
 //@ ignore-coverage-map
 //@ ignore-windows

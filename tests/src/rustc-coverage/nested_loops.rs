@@ -1,4 +1,4 @@
-//! @fail(tc): fstar(2), lean(1)
+//! @fail(tc): fstar(2), legacy-lean(1)
 /// @fail(extraction): ssprove(HAX0001, HAX0001, HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001, HAX0001, HAX0001)
 
 fn main() {

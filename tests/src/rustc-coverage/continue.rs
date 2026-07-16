@@ -1,4 +1,4 @@
-//! @fail(tc): fstar(2), lean(1)
+//! @fail(tc): fstar(2), legacy-lean(1)
 #![allow(unused_assignments, unused_variables)]
 /// @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001), proverif(HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001)
 

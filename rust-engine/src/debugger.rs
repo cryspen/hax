@@ -71,7 +71,7 @@ macro_rules! declare_backends {
 }
 
 declare_backends! {
-    Lean = crate::backends::lean::LeanBackend,
+    LegacyLean = crate::backends::legacy_lean::LeanBackend,
 }
 
 declare_printers! {}

@@ -6,7 +6,7 @@ pub struct FStarBackend;
 impl super::Backend for FStarBackend {
     // TODO Replace by an empty printer
     // This is a dummy value. The fstar backend's printer is implemented in OCaml
-    type Printer = super::lean::LeanPrinter;
+    type Printer = super::legacy_lean::LeanPrinter;
 
     fn module_path(&self, _module: &super::Module) -> camino::Utf8PathBuf {
         todo!("The fstar backend's printer is implemented in OCaml")

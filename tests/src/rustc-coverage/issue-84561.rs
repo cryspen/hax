@@ -1,4 +1,4 @@
-//! @fail(tc): fstar(2), lean(1)
+//! @fail(tc): fstar(2), legacy-lean(1)
 // This demonstrated Issue #84561: function-like macros produce unintuitive coverage results.
 
 //@ failure-status: 101
@@ -143,7 +143,7 @@ impl std::fmt::Debug for Foo {
     }
 }
 
-/// @fail(extraction): proverif(HAX0001), fstar(HAX0001), coq(HAX0001), ssprove(HAX0001), lean(HAX0001)
+/// @fail(extraction): proverif(HAX0001), fstar(HAX0001), coq(HAX0001), ssprove(HAX0001), legacy-lean(HAX0001)
 static mut DEBUG_LEVEL_ENABLED: bool = false;
 
 macro_rules! debug {
@@ -154,7 +154,7 @@ macro_rules! debug {
     );
 }
 
-/// @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), proverif(HAX0002, HAX0008, HAX0008, HAX0008), lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), proverif(HAX0002, HAX0008, HAX0008, HAX0008), legacy-lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008)
 fn test1() {
     debug!("debug is enabled");
     debug!("debug is enabled");
@@ -178,7 +178,7 @@ macro_rules! call_debug {
     );
 }
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008), lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008)
+/// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008), legacy-lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008)
 fn test2() {
     call_debug!("debug is enabled");
 }

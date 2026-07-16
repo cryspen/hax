@@ -55,7 +55,7 @@ pub fn from_fn<T, const N: usize, F: FnMut(usize) -> T>(f: F) -> [T; N] {
     array_from_fn(f)
 }
 
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> crate::iter::traits::collect::IntoIterator for [T; N] {
     type Item = T;
     type IntoIter = iter::IntoIter<T, N>;
@@ -70,7 +70,7 @@ use crate::ops::{
 };
 
 #[hax_lib::attributes]
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, I, const N: usize> crate::ops::index::Index<I> for [T; N]
 where
     [T]: Index<I>,
@@ -83,7 +83,7 @@ where
 }
 
 /* #[hax_lib::attributes]
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<usize> for [T; N] {
     type Output = T;
     #[hax_lib::requires(i < self.len())]
@@ -93,7 +93,7 @@ impl<T, const N: usize> Index<usize> for [T; N] {
 }
 
 #[hax_lib::attributes]
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<Range<usize>> for [T; N] {
     type Output = [T];
     #[hax_lib::requires(i.start <= i.end && i.end <= self.len())]
@@ -102,7 +102,7 @@ impl<T, const N: usize> Index<Range<usize>> for [T; N] {
     }
 }
 #[hax_lib::attributes]
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<RangeTo<usize>> for [T; N] {
     type Output = [T];
     #[hax_lib::requires(i.end <= self.len())]
@@ -111,7 +111,7 @@ impl<T, const N: usize> Index<RangeTo<usize>> for [T; N] {
     }
 }
 #[hax_lib::attributes]
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<RangeFrom<usize>> for [T; N] {
     type Output = [T];
     #[hax_lib::requires(i.start <= self.len())]
@@ -120,7 +120,7 @@ impl<T, const N: usize> Index<RangeFrom<usize>> for [T; N] {
     }
 }
 #[hax_lib::attributes]
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<RangeFull> for [T; N] {
     type Output = [T];
     fn index(&self, i: RangeFull) -> &[T] {
@@ -156,7 +156,7 @@ mod iter {
     use crate::option::Option;
     use rust_primitives::sequence::*;
     pub struct IntoIter<T, const N: usize>(pub Seq<T>);
-    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+    #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
     impl<T, const N: usize> crate::iter::traits::iterator::Iterator for IntoIter<T, N> {
         type Item = T;
         fn next(&mut self) -> Option<T> {

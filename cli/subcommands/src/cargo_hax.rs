@@ -638,11 +638,11 @@ fn main() {
     };
     options.normalize_paths();
 
-    // AeneasLean bypasses the hax frontend entirely: run charon + aeneas directly
+    // Lean bypasses the hax frontend entirely: run charon + aeneas directly
     if let Command::Backend(ref backend) = options.command
-        && let Backend::AeneasLean(ref aeneas_opts) = backend.backend
+        && let Backend::Lean(ref aeneas_opts) = backend.backend
     {
-        // Warn about options that are not supported by the aeneas-lean backend
+        // Warn about options that are not supported by the lean backend
         for (set, name) in [
             (backend.dry_run, "--dry-run"),
             (backend.stats, "--stats"),
@@ -657,7 +657,7 @@ fn main() {
             if set {
                 HaxMessage::UnsupportedOption {
                     option: name.into(),
-                    backend: BackendName::AeneasLean,
+                    backend: BackendName::Lean,
                 }
                 .report(options.message_format, None);
             }

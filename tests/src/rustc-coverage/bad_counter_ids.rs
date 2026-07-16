@@ -1,6 +1,6 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 //! @fail(tc): fstar(2)
-//! @fail(extraction): lean(HAX0001, HAX0001, HAX0001, HAX0001)
+//! @fail(extraction): legacy-lean(HAX0001, HAX0001, HAX0001, HAX0001)
 #![feature(coverage_attribute)]
 //@ edition: 2021
 //@ compile-flags: -Copt-level=0 -Zmir-opt-level=3

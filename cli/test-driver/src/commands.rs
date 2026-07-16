@@ -269,7 +269,7 @@ pub async fn run_lean(dir: PathBuf) -> Result<BackendOutput> {
 
         // Resolve the local path to the Hax proof library.
         let hax_lib_path = root_path
-            .join("../hax-lib/proof-libs/lean")
+            .join("../hax-lib/proof-libs/legacy-lean")
             .canonicalize()
             .context("Could not resolve hax proof lib path")?;
 

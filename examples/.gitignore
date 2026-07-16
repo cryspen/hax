@@ -2,9 +2,9 @@
 /*/proofs/lean/extraction
 /*/proofs/proverif/extraction
 /*/proofs/lean/.lake
-/*/proofs/aeneas-lean/llbc/*.llbc
-/*/proofs/aeneas-lean/*/Extraction/Funs.lean
-/*/proofs/aeneas-lean/*/Extraction/FunsExternal_Template.lean
-/*/proofs/aeneas-lean/*/Extraction/ProofObligations.lean
-/*/proofs/aeneas-lean/*/Extraction/Specs.lean
-/*/proofs/aeneas-lean/*/Extraction/Types.lean
+/*/proofs/lean/llbc/*.llbc
+/*/proofs/lean/*/Extraction/Funs.lean
+/*/proofs/lean/*/Extraction/FunsExternal_Template.lean
+/*/proofs/lean/*/Extraction/ProofObligations.lean
+/*/proofs/lean/*/Extraction/Specs.lean
+/*/proofs/lean/*/Extraction/Types.lean

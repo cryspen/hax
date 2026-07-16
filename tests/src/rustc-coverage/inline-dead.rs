@@ -1,4 +1,4 @@
-//! @fail(tc): fstar(2), lean(1)
+//! @fail(tc): fstar(2), legacy-lean(1)
 // Regression test for issue #98833.
 //@ compile-flags: -Zinline-mir -Cdebug-assertions=off
 

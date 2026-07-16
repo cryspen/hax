@@ -12,7 +12,7 @@ fn use_previous_result(x: u8) -> u8 {
 
 #[hax_lib::requires(x > 0)]
 #[hax_lib::ensures(|r| r == x)]
-#[hax_lib::lean::proof("by unfold lean_tests.specs.test_proof; hax_bv_decide")]
+#[hax_lib::legacy_lean::proof("by unfold lean_tests.specs.test_proof; hax_bv_decide")]
 fn test_proof(x: u8) -> u8 {
     x
 }
@@ -25,7 +25,7 @@ fn square(x: u8) -> u8 {
 
 #[hax_lib::requires(hax_lib::forall(|i:u8| hax_lib::implies(i < 20, x > i)))]
 #[hax_lib::ensures(|r| !hax_lib::exists(|i:u8| !hax_lib::implies(i < 20, r > i)))]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 fn forall_and_exists(x: u8) -> u8 {
     x
 }
@@ -53,8 +53,8 @@ mod issue_1852 {
 
 #[hax_lib::requires(true)]
 #[hax_lib::ensures(|r| true)]
-#[hax_lib::lean::pure_requires_proof("⟨True, by mvcgen⟩")]
-#[hax_lib::lean::pure_ensures_proof("⟨fun _ => True, by intros; mvcgen⟩")]
+#[hax_lib::legacy_lean::pure_requires_proof("⟨True, by mvcgen⟩")]
+#[hax_lib::legacy_lean::pure_ensures_proof("⟨fun _ => True, by intros; mvcgen⟩")]
 fn custom_pure_proofs(x: u8) {}
 
 /// Resugarings need to be apply also to linked items

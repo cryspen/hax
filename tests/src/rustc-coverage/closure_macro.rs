@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1), fstar(2)
+//! @fail(tc): legacy-lean(1), fstar(2)
 //@ edition: 2018
 
 macro_rules! bail {

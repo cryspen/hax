@@ -14,7 +14,7 @@ type StateIdx = usize;
 
 #[hax_lib::requires(a <= 15 && b <= 15 && d <= 15)]
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 fn chacha20_line(a: StateIdx, b: StateIdx, d: StateIdx, s: u32, m: State) -> State {
     let mut state = m;
     state[a] = state[a].wrapping_add(state[b]);
@@ -25,7 +25,7 @@ fn chacha20_line(a: StateIdx, b: StateIdx, d: StateIdx, s: u32, m: State) -> Sta
 
 #[hax_lib::requires(a <= 15 && b <= 15 && c <= 15 && d <= 15)]
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub fn chacha20_quarter_round(
     a: StateIdx,
     b: StateIdx,
@@ -103,7 +103,7 @@ pub fn chacha20_key_block0(key: &ChaChaKey, iv: &ChaChaIV) -> Block {
 }
 
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub fn chacha20_encrypt_block(st0: State, ctr: u32, plain: &Block) -> Block {
     let st = chacha20_core(ctr, st0);
     let pl: State = to_le_u32s_16(plain);
@@ -113,7 +113,7 @@ pub fn chacha20_encrypt_block(st0: State, ctr: u32, plain: &Block) -> Block {
 
 #[hax_lib::requires(plain.len() <= 64)]
 #[hax_lib::ensures(|res| res.len() == plain.len())]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
     let mut b: Block = [0; 64];
     b = update_array(b, plain);
@@ -121,7 +121,7 @@ pub fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
     b[0..plain.len()].to_vec()
 }
 
-#[hax_lib::lean::proof(
+#[hax_lib::legacy_lean::proof(
     "by
     hax_mvcgen [chacha20_update]
       <;> try grind [USize64.toNat_add, Array.append_eq_append]
@@ -130,7 +130,7 @@ pub fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
       grind"
 )]
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub fn chacha20_update(st0: State, m: &[u8]) -> Vec<u8> {
     let mut blocks_out = Vec::new();
     let num_blocks = m.len() / 64;
@@ -155,7 +155,7 @@ pub fn chacha20_update(st0: State, m: &[u8]) -> Vec<u8> {
 }
 
 #[hax_lib::ensures(|_| true)]
-#[hax_lib::lean::proof_method::grind]
+#[hax_lib::legacy_lean::proof_method::grind]
 pub fn chacha20(m: &[u8], key: &ChaChaKey, iv: &ChaChaIV, ctr: u32) -> Vec<u8> {
     let state = chacha20_init(key, iv, ctr);
     chacha20_update(state, m)

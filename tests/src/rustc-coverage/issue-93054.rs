@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1), fstar(2)
+//! @fail(tc): legacy-lean(1), fstar(2)
 #![allow(dead_code, unreachable_code)]
 //@ edition: 2021
 
@@ -19,7 +19,7 @@ impl Never {
     }
 }
 
-/// @fail(extraction): fstar(HAX0001), ssprove(HAX0001), lean(HAX0001), coq(HAX0001)
+/// @fail(extraction): fstar(HAX0001), ssprove(HAX0001), legacy-lean(HAX0001), coq(HAX0001)
 /// @fail(extraction): proverif(HAX0001)
 async fn foo2(never: Never) {
     match never {}

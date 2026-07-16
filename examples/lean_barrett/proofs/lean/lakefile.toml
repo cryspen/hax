@@ -1,10 +1,9 @@
-name = "lean_barrett"
+name = "LeanBarrett"
 version = "0.1.0"
-defaultTargets = ["lean_barrett"]
+defaultTargets = ["LeanBarrett"]
 
 [[lean_lib]]
-name = "lean_barrett"
-roots = ["extraction.lean_barrett"]
+name = "LeanBarrett"
 
 [[require]]
 name = "Hax"

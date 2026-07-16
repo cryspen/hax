@@ -20,5 +20,5 @@ unexpected_cfgs = { level = "warn", check-cfg = [
     'cfg(charon)',
     'cfg(hax_compilation)',
     'cfg(hax_backend_fstar)',
-    'cfg(hax_backend_lean)',
+    'cfg(hax_backend_legacy_lean)',
 ] }

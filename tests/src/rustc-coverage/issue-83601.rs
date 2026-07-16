@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1)
+//! @fail(tc): legacy-lean(1)
 // Shows that rust-lang/rust/83601 is resolved
 
 #[derive(Debug, PartialEq, Eq)]

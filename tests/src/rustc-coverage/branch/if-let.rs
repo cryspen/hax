@@ -1,4 +1,4 @@
-//! @fail(tc): lean(1), fstar(2)
+//! @fail(tc): legacy-lean(1), fstar(2)
 #![feature(coverage_attribute, let_chains)]
 //@ edition: 2021
 //@ compile-flags: -Zcoverage-options=branch
@@ -22,7 +22,7 @@ fn if_let(input: Option<&str>) {
     say("done");
 }
 
-/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
+/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
 fn if_let_chain(a: Option<&str>, b: Option<&str>) {
     if let Some(x) = a
         && let Some(y) = b
