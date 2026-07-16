@@ -278,9 +278,8 @@ impl HaxMessage {
                 format!("{}", renderer.render(Level::Warning.title(&title)))
             }
             Self::NonDefaultToolVersion { tool, used, tested } => {
-                let title = format!(
-                    "hax: using {tool} {used}; this hax release was tested with {tested}"
-                );
+                let title =
+                    format!("hax: using {tool} {used}; this hax release was tested with {tested}");
                 format!("{}", renderer.render(Level::Info.title(&title)))
             }
             Self::UnverifiedInstall { tool, version, url } => {

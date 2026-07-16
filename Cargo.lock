@@ -970,7 +970,6 @@ dependencies = [
  "serde",
  "serde-brief",
  "serde_json",
- "toml",
  "tracing",
  "zstd",
 ]

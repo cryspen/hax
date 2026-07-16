@@ -168,20 +168,17 @@ pub struct FStarOptions {
 
 #[derive_group(Serializers)]
 #[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
-#[command(after_help = concat!("\
+#[command(after_help = "\
 TOOLS:
   This backend runs `charon`, then `aeneas`, and scaffolds a Lean proof project.
-  Each tool is pinned; the pinned version is checked against the resolved binary
-  at runtime (a mismatch is a non-fatal warning).
+  Tool versions are managed by hax: each tool resolves through, in order, a
+  HAX_<TOOL>_BINARY override, the project's `hax.toml` (member crate, then
+  workspace root), and the built-in default version this release was tested
+  with, and is downloaded into the tool cache on demand with checksum
+  verification.
 
-  charon   expected version   ", env!("HAX_CHARON_PIN_VERSION"), "
-           located at $HAX_CHARON_BINARY (absolute path) if set, else `charon` found in PATH
-  aeneas   expected commit     ", env!("HAX_AENEAS_PIN_VERSION"), "
-           located at $HAX_AENEAS_BINARY (absolute path) if set, else `aeneas` found in PATH
-  lean     expected toolchain  ", env!("HAX_LEAN_PIN_TOOLCHAIN"), "
-           used by the generated proof project (written to its `lean-toolchain`)
-
-  Install charon/aeneas with `install-aeneas.sh`.
+  Inspect the active versions and their sources with `cargo hax tools show`;
+  pre-install them with `cargo hax tools install`.
 
 INVOCATION:
   The tools are run with some fixed flags (to which any --charon-args/--aeneas-args
@@ -193,8 +190,8 @@ INVOCATION:
   or the generated proof project.
 
 ENVIRONMENT VARIABLES:
-  HAX_CHARON_BINARY  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
-  HAX_AENEAS_BINARY  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH."))]
+  HAX_CHARON_BINARY  Path to the `charon` binary to use, bypassing version management.
+  HAX_AENEAS_BINARY  Path to the `aeneas` binary to use, bypassing version management.")]
 pub struct LeanOptions {
     /// Generate a `lakefile.toml` and `lean-toolchain` in the
     /// `proofs/lean/` directory, with a dependency on the Aeneas

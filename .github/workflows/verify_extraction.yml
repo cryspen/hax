@@ -75,7 +75,7 @@ jobs:
         nix profile install .
 
     - name: Install aeneas and charon
-      run: ./install-aeneas.sh
+      run: cargo hax tools install
 
     - name: Build the example
       run: |

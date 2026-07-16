@@ -3,8 +3,9 @@
 # project's `hax.toml`: a project without a `hax.toml` (or without an
 # entry for a given tool) resolves to these versions.
 #
-# Kept in lockstep with the workspace-root `pins.toml` (enforced by a
-# test) until `pins.toml` is retired.
+# These are the versions this release of hax is tested against. Every
+# `[tools]` entry must be installable through `tools-manifest.toml`
+# (enforced by a test).
 
 [tools]
 # Managed tools, pinned by upstream release tag.
@@ -16,4 +17,4 @@ charon = "nightly-2026.07.16"
 # The Lean toolchain, written verbatim into generated `lean-toolchain` files.
 lean = "leanprover/lean4:v4.31.0"
 # The Lean library that extracted code builds against.
-hax-lean-lib = "v0.1.0"
+hax-lean-lib = "v0.2.0"

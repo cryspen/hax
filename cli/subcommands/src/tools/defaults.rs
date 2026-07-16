@@ -51,30 +51,4 @@ mod tests {
             assert!(super::super::DECLARED_VERSION_KEYS.contains(&key.as_str()));
         }
     }
-
-    /// Until `pins.toml` is retired, the embedded defaults must agree with
-    /// it: both are consumed (by `hax_types::pins` and by this module
-    /// respectively) and silently diverging pins would be confusing.
-    #[test]
-    fn defaults_agree_with_pins_toml() {
-        let pins_path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../pins.toml");
-        let pins: toml::Table = std::fs::read_to_string(pins_path)
-            .expect("pins.toml not found next to the workspace root")
-            .parse()
-            .expect("pins.toml is not valid TOML");
-        let pin = |table: &str, key: &str| -> String {
-            pins[table][key]
-                .as_str()
-                .unwrap_or_else(|| panic!("pins.toml [{table}].{key} is not a string"))
-                .to_string()
-        };
-        let defaults = defaults();
-        assert_eq!(defaults.tools["aeneas"], pin("aeneas", "tag"));
-        assert_eq!(defaults.tools["charon"], pin("charon", "tag"));
-        assert_eq!(defaults.versions["lean"], pin("lean", "toolchain"));
-        assert_eq!(
-            defaults.versions["hax-lean-lib"],
-            pin("hax-lean-lib", "version")
-        );
-    }
 }
