@@ -11,6 +11,7 @@ use hax_types::cli_options::{MessageFormat, ToolsCommand};
 pub mod cache;
 pub mod config;
 pub mod defaults;
+pub mod haxlib;
 pub mod install;
 pub mod manifest;
 pub mod project;
@@ -84,7 +85,19 @@ pub fn provide_tool(
             if version != default_version {
                 notice(version.clone());
             }
-            install::ensure_installed(tool, version, false, message_format)?;
+            // A fresh unverified install already warns during download; warn
+            // too when reusing an unverified copy from the cache, so the
+            // missing-checksum status is not silently dropped on later runs.
+            if matches!(
+                install::ensure_installed(tool, version, false, message_format)?,
+                install::Installed::AlreadyCached { verified: false }
+            ) {
+                HaxMessage::CachedUnverifiedToolInUse {
+                    tool: tool.to_string(),
+                    version: version.clone(),
+                }
+                .report(message_format, None);
+            }
             let dir = cache::version_dir(tool, version)?;
             for executable in tool_executables(tool) {
                 executables.insert(*executable, cache::executable_path(&dir, executable)?);

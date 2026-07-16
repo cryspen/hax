@@ -366,6 +366,22 @@ pub fn show(message_format: MessageFormat) -> i32 {
         }
     }
 
+    // The hax-lib compatibility of every crate with a direct dependency,
+    // reported once in the common uniform case.
+    let hax_lib = super::haxlib::check(&ctx);
+    let status = |result: &super::haxlib::CrateCompatibility| {
+        use super::haxlib::Compatibility::*;
+        match result.compatibility {
+            Compatible => "compatible",
+            TooOld => "INCOMPATIBLE: too old for this cargo-hax",
+            TooNew => "INCOMPATIBLE: newer than this cargo-hax",
+        }
+    };
+    let uniform = hax_lib.len() > 1
+        && hax_lib
+            .iter()
+            .all(|r| (&r.found, r.compatibility) == (&hax_lib[0].found, hax_lib[0].compatibility));
+
     match message_format {
         MessageFormat::Human => {
             // Align the name and value columns across every section so the
@@ -381,10 +397,19 @@ pub fn show(message_format: MessageFormat) -> i32 {
                         }),
                 )
                 .collect();
-            let name_width = all.iter().map(|(name, _)| name.len()).max().unwrap_or(0);
+            // The `hax-lib` rows share the grid too, under the `libraries`
+            // header, so `hax-lib` reads as a named row rather than a bare
+            // version line.
+            let name_width = all
+                .iter()
+                .map(|(name, _)| name.len())
+                .chain(hax_lib.iter().map(|_| "hax-lib".len()))
+                .max()
+                .unwrap_or(0);
             let value_width = all
                 .iter()
                 .map(|(_, resolution)| resolution_value(resolution).len())
+                .chain(hax_lib.iter().map(|result| result.found.len()))
                 .max()
                 .unwrap_or(0);
 
@@ -393,6 +418,35 @@ pub fn show(message_format: MessageFormat) -> i32 {
             println!();
             println!("versions:");
             print_entries(&versions, name_width, value_width);
+            match &hax_lib[..] {
+                [] => {}
+                // One version across the project (or a single crate): one row.
+                results if uniform || results.len() == 1 => {
+                    let result = &results[0];
+                    println!();
+                    println!("libraries:");
+                    println!(
+                        "  {name:name_width$}  {value:value_width$}  ({status})",
+                        name = "hax-lib",
+                        value = result.found,
+                        status = status(result),
+                    );
+                }
+                // Crates disagree on the version: one row each, named crate.
+                results => {
+                    println!();
+                    println!("libraries:");
+                    for result in results {
+                        println!(
+                            "  {name:name_width$}  {value:value_width$}  (crate `{crate_name}`: {status})",
+                            name = "hax-lib",
+                            value = result.found,
+                            crate_name = result.crate_name,
+                            status = status(result),
+                        );
+                    }
+                }
+            }
             for (name, member_tools, member_versions) in &member_reports {
                 println!();
                 println!("crate `{name}` (overrides):");
@@ -404,6 +458,17 @@ pub fn show(message_format: MessageFormat) -> i32 {
             let json = serde_json::json!({
                 "tools": entries_json(&tools),
                 "versions": entries_json(&versions),
+                "hax_lib": hax_lib
+                    .iter()
+                    .map(|result| {
+                        serde_json::json!({
+                            "crate": result.crate_name,
+                            "version": result.found,
+                            "compatible": result.compatibility
+                                == super::haxlib::Compatibility::Compatible,
+                        })
+                    })
+                    .collect::<Vec<_>>(),
                 "member_overrides": member_reports
                     .iter()
                     .map(|(name, tools, versions)| {

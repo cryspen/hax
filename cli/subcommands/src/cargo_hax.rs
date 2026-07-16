@@ -647,6 +647,20 @@ fn main() {
         std::process::exit(tools::run(command, options.message_format));
     }
 
+    // Every other command processes source: discover the project once
+    // (hax.toml configuration and dependency graph) and gate on `hax-lib`
+    // compatibility before any tool runs.
+    let project = match tools::project::ProjectContext::load(options.message_format) {
+        Ok(project) => project,
+        Err(message) => {
+            HaxMessage::GenericError { message }.report(options.message_format, None);
+            std::process::exit(1);
+        }
+    };
+    if tools::haxlib::enforce(&project, options.message_format) {
+        std::process::exit(1);
+    }
+
     // Lean bypasses the hax frontend entirely: run charon + aeneas directly
     if let Command::Backend(ref backend) = options.command
         && let Backend::Lean(ref aeneas_opts) = backend.backend
@@ -677,6 +691,7 @@ fn main() {
             backend.output_dir.clone(),
             backend.verbose,
             options.message_format,
+            &project,
         );
         std::process::exit(if error { 1 } else { 0 });
     }

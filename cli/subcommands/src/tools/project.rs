@@ -21,6 +21,10 @@ pub struct MemberCrate {
     /// The member's own `hax.toml`, if it has one. `None` for the crate
     /// whose root is the workspace root itself: the workspace file covers it.
     pub config: Option<HaxToml>,
+    /// The version of `hax-lib` this crate's own *direct* dependency edge
+    /// resolved to, if it has one. A transitive-only `hax-lib` is ignored:
+    /// it is not what this crate's annotations compile against.
+    pub hax_lib: Option<String>,
 }
 
 /// The `hax.toml` configuration of the current project.
@@ -71,6 +75,35 @@ impl ProjectContext {
         let workspace_root: PathBuf = metadata.workspace_root.clone().into();
         let workspace_config = load_hax_toml(&workspace_root, message_format)?;
 
+        // The resolved version each package's direct `hax-lib` dependency
+        // edge points to, from the resolve graph.
+        let packages_by_id: std::collections::HashMap<_, _> = metadata
+            .packages
+            .iter()
+            .map(|package| (&package.id, package))
+            .collect();
+        let direct_hax_lib = |id: &cargo_metadata::PackageId| -> Option<String> {
+            let nodes = &metadata.resolve.as_ref()?.nodes;
+            let node = nodes.iter().find(|node| &node.id == id)?;
+            node.deps.iter().find_map(|dep| {
+                // Only a normal dependency edge means this crate's own
+                // annotations compile against `hax-lib`; a dev- or
+                // build-dependency does not. `dep_kinds` is empty on very
+                // old metadata formats, which predate the distinction, so
+                // treat that as normal.
+                let is_normal = dep.dep_kinds.is_empty()
+                    || dep
+                        .dep_kinds
+                        .iter()
+                        .any(|kind| kind.kind == cargo_metadata::DependencyKind::Normal);
+                if !is_normal {
+                    return None;
+                }
+                let package = packages_by_id.get(&dep.pkg)?;
+                (package.name == "hax-lib").then(|| package.version.to_string())
+            })
+        };
+
         let mut members = Vec::new();
         for package in metadata
             .packages
@@ -91,6 +124,7 @@ impl ProjectContext {
                 name: package.name.clone(),
                 root,
                 config,
+                hax_lib: direct_hax_lib(&package.id),
             });
         }
 
