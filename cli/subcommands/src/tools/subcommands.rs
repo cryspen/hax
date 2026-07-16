@@ -1,12 +1,310 @@
 //! Handlers for the `cargo hax tools` subcommands.
 
+use std::collections::BTreeSet;
+
 use hax_types::cli_options::MessageFormat;
 use hax_types::diagnostics::message::HaxMessage;
 
 use super::defaults::defaults;
+use super::install::{Installed, ensure_installed};
 use super::project::ProjectContext;
-use super::resolve::{Resolution, Resolved, resolve_tool, resolve_version};
-use super::{DECLARED_VERSION_KEYS, MANAGED_TOOLS};
+use super::resolve::{Resolution, Resolved, resolve_tool, resolve_tool_committed, resolve_version};
+use super::{DECLARED_VERSION_KEYS, MANAGED_TOOLS, cache, manifest};
+
+fn error(message: String, message_format: MessageFormat) -> i32 {
+    HaxMessage::GenericError { message }.report(message_format, None);
+    1
+}
+
+/// `cargo hax tools install`: populate the machine-wide cache.
+///
+/// With a `<tool>@<version>` argument, installs exactly that; without one,
+/// resolves the current project's committed configuration (ignoring
+/// `HAX_<TOOL>_BINARY` overrides) and installs the union across all
+/// workspace crates: pins, member overrides, and defaults.
+pub fn install(spec: Option<&str>, force: bool, message_format: MessageFormat) -> i32 {
+    let requests: Vec<(String, String)> = match spec {
+        Some(spec) => {
+            let Some((tool, version)) = spec.split_once('@') else {
+                return error(
+                    format!("`{spec}` is not a `<tool>@<version>` specification"),
+                    message_format,
+                );
+            };
+            if !MANAGED_TOOLS.contains(&tool) {
+                return error(
+                    format!(
+                        "`{tool}` is not a managed tool (managed tools: {})",
+                        MANAGED_TOOLS.join(", ")
+                    ),
+                    message_format,
+                );
+            }
+            if version.is_empty() {
+                return error(format!("`{spec}` lacks a version"), message_format);
+            }
+            vec![(tool.to_string(), version.to_string())]
+        }
+        None => {
+            let ctx = match ProjectContext::load(message_format) {
+                Ok(ctx) => ctx,
+                Err(message) => return error(message, message_format),
+            };
+            let workspace = ctx.workspace_config.as_ref();
+            let defaults = defaults();
+            let mut versions = BTreeSet::new();
+            for tool in MANAGED_TOOLS {
+                // The workspace-wide resolution, plus each member's: the
+                // cache must cover whatever any member's processing
+                // resolves to.
+                let mut resolutions = vec![resolve_tool_committed(tool, None, workspace, defaults)];
+                for member in &ctx.members {
+                    if member.config.is_some() {
+                        resolutions.push(resolve_tool_committed(
+                            tool,
+                            member.config.as_ref(),
+                            workspace,
+                            defaults,
+                        ));
+                    }
+                }
+                for resolution in resolutions {
+                    match resolution.kind {
+                        Resolved::Version(version) => {
+                            versions.insert((tool.to_string(), version));
+                        }
+                        // The committed configuration itself states that
+                        // this binary is provided outside the cache.
+                        Resolved::Path(path) => {
+                            HaxMessage::GenericWarning {
+                                message: format!(
+                                    "tool `{tool}` resolves to the path {} ({}); \
+                                     nothing to install for it",
+                                    path.display(),
+                                    resolution.source.describe(),
+                                ),
+                            }
+                            .report(message_format, None);
+                        }
+                    }
+                }
+            }
+            versions.into_iter().collect()
+        }
+    };
+
+    let mut failed = false;
+    let mut statuses = Vec::new();
+    for (tool, version) in &requests {
+        match ensure_installed(tool, version, force, message_format) {
+            Ok(outcome) => {
+                statuses.push((tool.clone(), version.clone(), outcome));
+            }
+            Err(message) => {
+                failed = true;
+                HaxMessage::GenericError {
+                    message: format!("could not install {tool} {version}: {message}"),
+                }
+                .report(message_format, None);
+            }
+        }
+    }
+    match message_format {
+        MessageFormat::Human => {
+            for (tool, version, outcome) in &statuses {
+                let (verb, suffix) = match outcome {
+                    Installed::AlreadyCached { verified: true } => ("Cached", ""),
+                    Installed::AlreadyCached { verified: false } => ("Cached", " (unverified)"),
+                    Installed::Fresh { verified: true } => ("Installed", ""),
+                    Installed::Fresh { verified: false } => ("Installed", " (unverified)"),
+                };
+                HaxMessage::Step {
+                    verb: verb.to_string(),
+                    target: format!("{tool} {version}{suffix}"),
+                }
+                .report(message_format, None);
+            }
+        }
+        MessageFormat::Json => {
+            let json = serde_json::json!({
+                "installed": statuses
+                    .iter()
+                    .map(|(tool, version, outcome)| {
+                        let status = match outcome {
+                            Installed::AlreadyCached { verified: true } => "already cached",
+                            Installed::AlreadyCached { verified: false } => {
+                                "already cached (NOT verified)"
+                            }
+                            Installed::Fresh { verified: true } => "installed (checksum verified)",
+                            Installed::Fresh { verified: false } => "installed (NOT verified)",
+                        };
+                        serde_json::json!({
+                            "tool": tool,
+                            "version": version,
+                            "status": status,
+                        })
+                    })
+                    .collect::<Vec<_>>(),
+            });
+            println!("{json}");
+        }
+    }
+    if failed { 1 } else { 0 }
+}
+
+/// How many versions per tool `list` shows without `--all`.
+const LIST_RECENT: usize = 10;
+
+/// `cargo hax tools list`: the versions installable with verification, as
+/// recorded in the embedded manifest, plus locally cached ones. Machine
+/// wide: works outside a Cargo project.
+pub fn list(
+    tool: Option<&str>,
+    installed_only: bool,
+    all: bool,
+    message_format: MessageFormat,
+) -> i32 {
+    let tools: Vec<&str> = match tool {
+        Some(tool) if !MANAGED_TOOLS.contains(&tool) => {
+            return error(
+                format!(
+                    "`{tool}` is not a managed tool (managed tools: {})",
+                    MANAGED_TOOLS.join(", ")
+                ),
+                message_format,
+            );
+        }
+        Some(tool) => vec![tool],
+        None => MANAGED_TOOLS.to_vec(),
+    };
+
+    let manifest = manifest::manifest();
+    let defaults = defaults();
+    let mut report = Vec::new();
+    for tool in tools {
+        let installed: BTreeSet<String> = cache::installed_versions(tool).into_iter().collect();
+        let default = defaults.tools.get(tool);
+
+        // The manifest's versions and any cached ones, merged into one list,
+        // newest first. A version installed through the fallback path can be
+        // newer than the manifest, so the two sets are sorted together rather
+        // than concatenated. Lexicographic order matches release order for
+        // the `nightly-YYYY.MM.DD` tags in use.
+        let mut all_versions: BTreeSet<String> = BTreeSet::new();
+        all_versions.extend(manifest.versions_of(tool).into_iter().map(String::from));
+        all_versions.extend(installed.iter().cloned());
+        let ordered: Vec<String> = all_versions.into_iter().rev().collect();
+
+        let recent = if all { ordered.len() } else { LIST_RECENT };
+        let mut entries = Vec::new();
+        let mut omitted = 0;
+        for (index, version) in ordered.iter().enumerate() {
+            let is_installed = installed.contains(version);
+            if installed_only && !is_installed {
+                continue;
+            }
+            let is_default = default == Some(version);
+            // Installed and default versions are always shown; the rest are
+            // truncated to the most recent ones.
+            if index >= recent && !is_installed && !is_default {
+                omitted += 1;
+                continue;
+            }
+            let in_manifest = manifest.knows_version(tool, version);
+            // Whether the cached copy was checksum-verified at install time,
+            // read from its metadata; a fallback install records `false`.
+            let verified = is_installed
+                && cache::version_dir(tool, version)
+                    .ok()
+                    .and_then(|dir| cache::read_metadata(&dir).ok().flatten())
+                    .and_then(|metadata| metadata.checksum_verified)
+                    .unwrap_or(false);
+            entries.push((
+                version.clone(),
+                is_installed,
+                in_manifest,
+                is_default,
+                verified,
+            ));
+        }
+        report.push((tool.to_string(), entries, omitted));
+    }
+
+    match message_format {
+        MessageFormat::Human => {
+            for (index, (tool, entries, omitted)) in report.iter().enumerate() {
+                if index > 0 {
+                    println!();
+                }
+                println!("{tool}:");
+                if entries.is_empty() {
+                    let none = if installed_only {
+                        "none installed"
+                    } else {
+                        "none"
+                    };
+                    println!("  ({none})");
+                }
+                // Pad the version column so the markers line up.
+                let width = entries
+                    .iter()
+                    .map(|(version, ..)| version.len())
+                    .max()
+                    .unwrap_or(0);
+                for (version, is_installed, in_manifest, is_default, verified) in entries {
+                    let mut marks = Vec::new();
+                    if *is_default {
+                        marks.push("default");
+                    }
+                    if *is_installed {
+                        marks.push("installed");
+                        if !*verified {
+                            marks.push("unverified");
+                        }
+                    }
+                    if !*in_manifest {
+                        marks.push("not in manifest");
+                    }
+                    if marks.is_empty() {
+                        println!("  {version}");
+                    } else {
+                        println!("  {version:width$}  ({})", marks.join(", "));
+                    }
+                }
+                if *omitted > 0 {
+                    println!("  ... {omitted} older versions omitted (use --all)");
+                }
+            }
+        }
+        MessageFormat::Json => {
+            let json = serde_json::json!({
+                "tools": report
+                    .iter()
+                    .map(|(tool, entries, omitted)| {
+                        serde_json::json!({
+                            "tool": tool,
+                            "omitted": omitted,
+                            "versions": entries
+                                .iter()
+                                .map(|(version, is_installed, in_manifest, is_default, verified)| {
+                                    serde_json::json!({
+                                        "version": version,
+                                        "installed": is_installed,
+                                        "in_manifest": in_manifest,
+                                        "default": is_default,
+                                        "verified": verified,
+                                    })
+                                })
+                                .collect::<Vec<_>>(),
+                        })
+                    })
+                    .collect::<Vec<_>>(),
+            });
+            println!("{json}");
+        }
+    }
+    0
+}
 
 /// `cargo hax tools show`: report which tool versions are active in the
 /// current project and where each one comes from.

@@ -36,8 +36,9 @@ pub enum HaxMessage {
     GenericWarning {
         message: String,
     } = 8,
-    RunningStep {
-        step: String,
+    Step {
+        verb: String,
+        target: String,
     } = 9,
     SubprocessOutput {
         prefix: String,
@@ -68,6 +69,11 @@ pub enum HaxMessage {
     StrayHaxToml {
         path: PathBuf,
     } = 16,
+    UnverifiedInstall {
+        tool: String,
+        version: String,
+        url: String,
+    } = 17,
 }
 
 impl HaxMessage {
@@ -218,9 +224,9 @@ impl HaxMessage {
                 let title = format!("hax: {}", message);
                 format!("{}", renderer.render(Level::Warning.title(&title)))
             }
-            Self::RunningStep { step } => {
+            Self::Step { verb, target } => {
                 use colored::Colorize;
-                format!("{:>12} {}", "Running".bold().green(), step)
+                format!("{:>12} {}", verb.bold().green(), target)
             }
             Self::SubprocessOutput { prefix, line } => {
                 format!("{:>12} > {}", prefix, line)
@@ -263,6 +269,17 @@ impl HaxMessage {
                     crate_name,
                     entries.join(", "),
                     path.display()
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::UnverifiedInstall { tool, version, url } => {
+                let title = format!(
+                    "hax: {tool} {version} is not known to this cargo-hax release ({})\n\
+                     downloading without checksum verification from\n\
+                     {url}\n\
+                     if a later cargo-hax release ships a checksum for it, reinstall with\n\
+                     `cargo hax tools install {tool}@{version} --force` to verify",
+                    crate::HAX_VERSION,
                 );
                 format!("{}", renderer.render(Level::Warning.title(&title)))
             }

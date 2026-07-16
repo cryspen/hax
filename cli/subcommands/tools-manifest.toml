@@ -1,0 +1,84 @@
+# Version manifest of hax's managed external tools, embedded into the
+# `cargo-hax` binary at build time.
+#
+# It maps tool name, version, and platform to a download URL and SHA-256
+# checksum, plus `entry_points` where the archive layout deviates from the
+# `bin/<name>` convention. Only versions listed here install with checksum
+# verification; other versions go through the `[fallback]` templates below,
+# unverified and with a warning.
+#
+# Entries are only added, never removed: every version ever published stays
+# installable with verification. Adding a version is a single reviewed
+# commit; record the artifact's provenance in a comment when it is not
+# obvious from the URL.
+
+# ---- aeneas -----------------------------------------------------------------
+# Provenance: pre-built archives published by the cryspen/aeneas fork's
+# nightly releases (upstream: AeneasVerif/aeneas). Archives are flat, with
+# the executable at the archive root.
+
+[tools.aeneas."nightly-2026.07.21-52fd438".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-linux-x86_64.tar.gz"
+sha256 = "5efe308ae41bd195b17bd40d64efef83510698657c8e3964af45827a788d209d"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.07.21-52fd438".macos-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-macos-x86_64.tar.gz"
+sha256 = "35023a75488567155bbc8e695dfd2af856089c9a6d670f329c68527fb4c8b43c"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.07.21-52fd438".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-macos-aarch64.tar.gz"
+sha256 = "791ea4a091f02aa628375a796c76ef33b161fb19d0a45c830aa22af18c74d3d5"
+entry_points = { aeneas = "aeneas" }
+
+# ---- charon -----------------------------------------------------------------
+# Provenance: upstream AeneasVerif/charon nightly releases. Archives are
+# flat: `charon`, `charon-driver` and a `rust-toolchain` file at the root.
+
+[tools.charon."nightly-2026.07.16".linux-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.16/charon-linux-x86_64.tar.gz"
+sha256 = "21e42e2ff23ef96f3c342c5232d2e1cbfbd836008791adeb6d267ab188a1eb7a"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.07.16".macos-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.16/charon-macos-x86_64.tar.gz"
+sha256 = "44ac5d23b2d300f61c16a63e3140a694e2fd1856209dc2d9a6e35fb9fbbac89e"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.07.16".macos-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.16/charon-macos-aarch64.tar.gz"
+sha256 = "beade7d7d0a3618c3fae4c242741c1575e376fd709a124273a73207f28ceef15"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+# ---- fallback templates -----------------------------------------------------
+# Used for versions this manifest does not list (typically ones published
+# after this release of hax): `{version}` is substituted with the requested
+# version, the download is not checksum-verified, and a warning is printed.
+# The aeneas template points at the repository the defaults come from
+# (the cryspen fork); versions published only upstream are not reachable
+# through it.
+
+[fallback.aeneas.linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-linux-x86_64.tar.gz"
+entry_points = { aeneas = "aeneas" }
+
+[fallback.aeneas.macos-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-macos-x86_64.tar.gz"
+entry_points = { aeneas = "aeneas" }
+
+[fallback.aeneas.macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-macos-aarch64.tar.gz"
+entry_points = { aeneas = "aeneas" }
+
+[fallback.charon.linux-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/{version}/charon-linux-x86_64.tar.gz"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[fallback.charon.macos-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/{version}/charon-macos-x86_64.tar.gz"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[fallback.charon.macos-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/{version}/charon-macos-aarch64.tar.gz"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }

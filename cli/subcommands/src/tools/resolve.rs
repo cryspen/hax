@@ -67,32 +67,63 @@ pub fn resolve_tool(
     if let Some(resolution) = env_override(tool) {
         return resolution;
     }
+    resolve_tool_committed(tool, member, workspace, defaults)
+}
+
+/// The shared member→workspace→default walk. `lookup` reads a config's
+/// entry for the key; `default` supplies the built-in fallback, which is
+/// always a version.
+fn resolve_with(
+    member: Option<&HaxToml>,
+    workspace: Option<&HaxToml>,
+    lookup: impl Fn(&HaxToml) -> Option<Resolved>,
+    default: impl FnOnce() -> String,
+) -> Resolution {
     for (config, source) in [
         (member, Source::member as fn(&HaxToml) -> Source),
         (workspace, Source::workspace as fn(&HaxToml) -> Source),
     ] {
         if let Some(config) = config
-            && let Some(entry) = config.tools.get(tool)
+            && let Some(kind) = lookup(config)
         {
-            let kind = match entry {
-                ToolEntry::Version(version) => Resolved::Version(version.clone()),
-                ToolEntry::Path(path) => Resolved::Path(path.clone()),
-            };
             return Resolution {
                 kind,
                 source: source(config),
             };
         }
     }
-    let version = defaults
-        .tools
-        .get(tool)
-        .unwrap_or_else(|| panic!("no built-in default version for tool `{tool}`"))
-        .clone();
     Resolution {
-        kind: Resolved::Version(version),
+        kind: Resolved::Version(default()),
         source: Source::Default,
     }
+}
+
+/// Resolve a managed tool from the committed configuration only, ignoring
+/// environment overrides. This is what `tools install` installs: the cache
+/// should hold what teammates and CI will use, not a transient override.
+pub fn resolve_tool_committed(
+    tool: &str,
+    member: Option<&HaxToml>,
+    workspace: Option<&HaxToml>,
+    defaults: &Defaults,
+) -> Resolution {
+    resolve_with(
+        member,
+        workspace,
+        |config| {
+            config.tools.get(tool).map(|entry| match entry {
+                ToolEntry::Version(version) => Resolved::Version(version.clone()),
+                ToolEntry::Path(path) => Resolved::Path(path.clone()),
+            })
+        },
+        || {
+            defaults
+                .tools
+                .get(tool)
+                .unwrap_or_else(|| panic!("no built-in default version for tool `{tool}`"))
+                .clone()
+        },
+    )
 }
 
 /// Resolve a declared-only `[versions]` entry for one crate.
@@ -102,28 +133,23 @@ pub fn resolve_version(
     workspace: Option<&HaxToml>,
     defaults: &Defaults,
 ) -> Resolution {
-    for (config, source) in [
-        (member, Source::member as fn(&HaxToml) -> Source),
-        (workspace, Source::workspace as fn(&HaxToml) -> Source),
-    ] {
-        if let Some(config) = config
-            && let Some(version) = config.versions.get(key)
-        {
-            return Resolution {
-                kind: Resolved::Version(version.clone()),
-                source: source(config),
-            };
-        }
-    }
-    let version = defaults
-        .versions
-        .get(key)
-        .unwrap_or_else(|| panic!("no built-in default for `[versions]` key `{key}`"))
-        .clone();
-    Resolution {
-        kind: Resolved::Version(version),
-        source: Source::Default,
-    }
+    resolve_with(
+        member,
+        workspace,
+        |config| {
+            config
+                .versions
+                .get(key)
+                .map(|version| Resolved::Version(version.clone()))
+        },
+        || {
+            defaults
+                .versions
+                .get(key)
+                .unwrap_or_else(|| panic!("no built-in default for `[versions]` key `{key}`"))
+                .clone()
+        },
+    )
 }
 
 impl Source {

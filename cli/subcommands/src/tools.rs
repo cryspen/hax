@@ -8,8 +8,11 @@
 
 use hax_types::cli_options::{MessageFormat, ToolsCommand};
 
+pub mod cache;
 pub mod config;
 pub mod defaults;
+pub mod install;
+pub mod manifest;
 pub mod project;
 pub mod resolve;
 mod subcommands;
@@ -22,19 +25,28 @@ pub const MANAGED_TOOLS: &[&str] = &["aeneas", "charon"];
 /// managing an installation.
 pub const DECLARED_VERSION_KEYS: &[&str] = &["lean", "hax-lean-lib"];
 
+/// The executables a managed tool comprises. The first one carries the
+/// tool's name.
+pub fn tool_executables(tool: &str) -> &'static [&'static str] {
+    match tool {
+        "aeneas" => &["aeneas"],
+        "charon" => &["charon", "charon-driver"],
+        _ => &[],
+    }
+}
+
 /// Entry point for `cargo hax tools <subcommand>`. Returns the process
 /// exit code.
 pub fn run(command: &ToolsCommand, message_format: MessageFormat) -> i32 {
     match command {
         ToolsCommand::Show => subcommands::show(message_format),
-        ToolsCommand::Install { .. } | ToolsCommand::List { .. } => {
-            hax_types::diagnostics::message::HaxMessage::GenericError {
-                message: "this subcommand is not implemented yet; \
-                          only `cargo hax tools show` is available in this release"
-                    .into(),
-            }
-            .report(message_format, None);
-            2
+        ToolsCommand::Install { spec, force } => {
+            subcommands::install(spec.as_deref(), *force, message_format)
         }
+        ToolsCommand::List {
+            tool,
+            installed,
+            all,
+        } => subcommands::list(tool.as_deref(), *installed, *all, message_format),
     }
 }

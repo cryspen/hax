@@ -298,8 +298,9 @@ pub fn run(
 
     // Running charon
 
-    HaxMessage::RunningStep {
-        step: "charon".into(),
+    HaxMessage::Step {
+        verb: "Running".to_string(),
+        target: "charon".to_string(),
     }
     .report(message_format, None);
 
@@ -398,8 +399,9 @@ pub fn run(
         })
         .collect();
 
-    HaxMessage::RunningStep {
-        step: format!("aeneas on {}", llbc_file.display()),
+    HaxMessage::Step {
+        verb: "Running".to_string(),
+        target: format!("aeneas on {}", llbc_file.display()),
     }
     .report(message_format, None);
 
