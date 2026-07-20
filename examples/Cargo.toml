@@ -11,8 +11,6 @@ members = [
     "sha256",
     "kyber_compress",
     "proverif-psk",
-    "coq-example",
-    "coverage",
 ]
 resolver = "2"
 
