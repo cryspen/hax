@@ -104,11 +104,6 @@ Note the generated modules live in the
 | barrett            | Typechecks                   |
 | kyber_compress     | Typechecks                   |
 
-## Coq
-
-See [./coq-example/README.md]()
-
-
 ## Lean (legacy backend)
 
 Only one example is still running on the legacy lean backend: `legacy_lean_chacha20`.
