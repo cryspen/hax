@@ -3,8 +3,8 @@ module Core_models.Iter.Adapters.Flatten
 open FStar.Mul
 open Rust_primitives
 
-include Core_models.Iter.Bundle {t_Flatten as t_Flatten}
+include Core_models.Bundle {t_Flatten as t_Flatten}
 
-include Core_models.Iter.Bundle {impl__new__from__flatten as impl__new}
+include Core_models.Bundle {impl__new__from__flatten as impl__new}
 
-include Core_models.Iter.Bundle {impl_1__from__flatten as impl_1}
+include Core_models.Bundle {impl_1__from__flatten as impl_1}

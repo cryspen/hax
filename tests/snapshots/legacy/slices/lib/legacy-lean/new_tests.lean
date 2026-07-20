@@ -35,3 +35,4 @@ def sized (x : (RustArray (RustArray u8 4) 1)) :
     (RustArray.ofVec #v[(← (rust_primitives.unsize (← x[(0 : usize)]_?)))]))
 
 end new_tests.legacy__slices__lib
+

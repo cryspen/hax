@@ -248,6 +248,8 @@ impl<T> Slice<T> {
     }
 }
 
+#[hax_lib::attributes]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 impl<U, T: crate::cmp::PartialEq<U>> crate::cmp::PartialEq<[U]> for [T] {
     fn eq(&self, other: &[U]) -> bool {
         if self.len() != other.len() {
@@ -265,8 +267,11 @@ impl<U, T: crate::cmp::PartialEq<U>> crate::cmp::PartialEq<[U]> for [T] {
     }
 }
 
+#[hax_lib::attributes]
 impl<T: crate::cmp::Eq> crate::cmp::Eq for [T] {}
 
+#[hax_lib::attributes]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 impl<T: crate::cmp::PartialOrd<T>> crate::cmp::PartialOrd<[T]> for [T] {
     fn partial_cmp(&self, other: &[T]) -> crate::option::Option<crate::cmp::Ordering> {
         // Lexicographic order: compare elements pairwise up to the shorter
@@ -293,6 +298,8 @@ impl<T: crate::cmp::PartialOrd<T>> crate::cmp::PartialOrd<[T]> for [T] {
     }
 }
 
+#[hax_lib::attributes]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 impl<T: crate::cmp::Ord> crate::cmp::Ord for [T] {
     fn cmp(&self, other: &[T]) -> crate::cmp::Ordering {
         // Lexicographic order: compare elements pairwise up to the shorter
@@ -467,7 +474,7 @@ use crate::ops::{
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T> Index<Range<usize>> for &[T] {
     type Output = [T];
-    #[hax_lib::requires(i.start <= i.end && i.end <= self.len())]
+    #[hax_lib::requires(i.start <= i.end && i.end <= slice_length(self))]
     fn index(&self, i: Range<usize>) -> &[T] {
         slice_slice(self, i.start, i.end)
     }
@@ -476,7 +483,7 @@ impl<T> Index<Range<usize>> for &[T] {
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T> Index<RangeTo<usize>> for &[T] {
     type Output = [T];
-    #[hax_lib::requires(i.end <= self.len())]
+    #[hax_lib::requires(i.end <= slice_length(self))]
     fn index(&self, i: RangeTo<usize>) -> &[T] {
         slice_slice(self, 0, i.end)
     }
@@ -485,7 +492,7 @@ impl<T> Index<RangeTo<usize>> for &[T] {
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T> Index<RangeFrom<usize>> for &[T] {
     type Output = [T];
-    #[hax_lib::requires(i.start <= self.len())]
+    #[hax_lib::requires(i.start <= slice_length(self))]
     fn index(&self, i: RangeFrom<usize>) -> &[T] {
         slice_slice(self, i.start, slice_length(self))
     }
@@ -503,7 +510,7 @@ impl<T> Index<RangeFull> for &[T] {
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T> crate::ops::index::Index<usize> for &[T] {
     type Output = T;
-    #[hax_lib::requires(i < self.len())]
+    #[hax_lib::requires(i < slice_length(self))]
     fn index(&self, i: usize) -> &T {
         rust_primitives::slice::slice_index(self, i)
     }

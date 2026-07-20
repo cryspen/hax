@@ -89,3 +89,4 @@ def f_2 (_ : rust_primitives.hax.Tuple0) :
   (f rust_primitives.hax.Tuple0.mk)
 
 end new_tests.legacy__reordering__lib.mut_rec
+

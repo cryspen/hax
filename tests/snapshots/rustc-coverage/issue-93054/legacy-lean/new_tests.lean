@@ -19,13 +19,13 @@ inductive Never : Type
 
 @[spec]
 def Never_cast_to_repr (x : Never) : RustM rust_primitives.hax.Never := do
-  match x with
+  match x with 
 
 @[spec]
 def Impl.bar (self : Never) : RustM rust_primitives.hax.Tuple0 := do
   (rust_primitives.hax.never_to_any (← match self with ))
 
---  @fail(extraction): fstar(HAX0001), ssprove(HAX0001), lean(HAX0001), coq(HAX0001)
+--  @fail(extraction): fstar(HAX0001), ssprove(HAX0001), legacy-lean(HAX0001), coq(HAX0001)
 --  @fail(extraction): proverif(HAX0001)
 @[spec]
 def foo2 (never : Never) : RustM sorry := do (pure sorry)
@@ -52,3 +52,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__issue_93054
+

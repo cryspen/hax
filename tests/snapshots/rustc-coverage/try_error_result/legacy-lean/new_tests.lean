@@ -285,3 +285,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
       (pure (core_models.result.Result.Err err))
 
 end new_tests.rustc_coverage__try_error_result
+

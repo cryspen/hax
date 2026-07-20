@@ -259,3 +259,4 @@ def array (x : (RustArray u8 10)) : RustM (RustArray u8 10) := do
   (pure x)
 
 end new_tests.legacy__mut_ref_functionalization__lib
+

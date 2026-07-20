@@ -59,7 +59,7 @@ let cclosure_iimpl_expr
       <:
       Core_models.Iter.Adapters.Map.t_Map v_I (Prims.unit -> Prims.unit))
 
-/// @fail(extraction): lean(HAX0001)
+/// @fail(extraction): legacy-lean(HAX0001)
 let cclosure_iimpl_expr_fngen
       (#v_I #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()]

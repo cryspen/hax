@@ -42,7 +42,7 @@ def if_let (input : (core_models.option.Option String)) :
   let _ ← (say "done");
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
+--  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
 @[spec]
 def if_let_chain
     (a : (core_models.option.Option String))
@@ -109,3 +109,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__branch__if_let
+

@@ -52,3 +52,4 @@ def print (a : sorry) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.legacy__dyn__lib
+

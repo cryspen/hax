@@ -44,5 +44,5 @@ copy_impl_for_int!(
 
 /// See [`std::marker::PhantomData`]
 #[hax_lib::fstar::replace("type t_PhantomData (v_T: Type0) = | PhantomData : t_PhantomData v_T")]
-#[hax_lib::lean::replace("structure PhantomData (T : Type) where")]
+#[hax_lib::legacy_lean::replace("structure PhantomData (T : Type) where")]
 struct PhantomData<T>(T);

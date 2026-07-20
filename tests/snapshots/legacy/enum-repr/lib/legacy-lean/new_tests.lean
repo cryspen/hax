@@ -91,3 +91,4 @@ def get_casted_repr (x : EnumWithRepr) : RustM u64 := do
   (rust_primitives.hax.cast_op (← (EnumWithRepr_cast_to_repr x)) : RustM u64)
 
 end new_tests.legacy__enum_repr__lib
+

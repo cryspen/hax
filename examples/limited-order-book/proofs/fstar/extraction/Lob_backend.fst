@@ -40,7 +40,7 @@ let impl_Order__try_match (self other: t_Order) : Core_models.Option.t_Option t_
   if is_match self other
   then
     let quantity:u64 = Core_models.Cmp.min #u64 self.f_quantity other.f_quantity in
-    let bid_id, ask_id:(u64 & u64) =
+    let (bid_id: u64), (ask_id: u64) =
       if self.f_side =. (Side_Buy <: t_Side)
       then self.f_id, other.f_id <: (u64 & u64)
       else other.f_id, self.f_id <: (u64 & u64)
@@ -65,15 +65,19 @@ let process_order
       (Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global & Core_models.Option.t_Option t_Order)) =
   let matches:Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global = Alloc.Vec.impl__new #t_Match () in
   let done:bool = false in
-  let done, matches, order, other_side:(bool & Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global &
-    t_Order &
-    Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global) =
+  let
+  (done: bool),
+  (matches: Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global),
+  (order: t_Order),
+  (other_side: Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 1)
       (Alloc.Collections.Binary_heap.impl_11__len #v_T #Alloc.Alloc.t_Global other_side <: usize)
       (fun temp_0_ temp_1_ ->
-          let done, matches, order, other_side:(bool & Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global &
-            t_Order &
-            Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global) =
+          let
+          (done: bool),
+          (matches: Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global),
+          (order: t_Order),
+          (other_side: Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global) =
             temp_0_
           in
           let _:usize = temp_1_ in
@@ -83,9 +87,11 @@ let process_order
         (bool & Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global & t_Order &
           Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global))
       (fun temp_0_ e_i ->
-          let done, matches, order, other_side:(bool & Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global &
-            t_Order &
-            Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global) =
+          let
+          (done: bool),
+          (matches: Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global),
+          (order: t_Order),
+          (other_side: Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global) =
             temp_0_
           in
           let e_i:usize = e_i in
@@ -94,6 +100,7 @@ let process_order
             match
               Core_models.Option.impl__and_then #v_T
                 #t_Match
+                #(v_T -> Core_models.Option.t_Option t_Match)
                 (Alloc.Collections.Binary_heap.impl_11__peek #v_T #Alloc.Alloc.t_Global other_side
                   <:
                   Core_models.Option.t_Option v_T)
@@ -117,8 +124,9 @@ let process_order
               let order:t_Order =
                 { order with f_quantity = order.f_quantity -! m.f_quantity } <: t_Order
               in
-              let tmp0, out:(Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global &
-                Core_models.Option.t_Option v_T) =
+              let
+              (tmp0: Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global),
+              (out: Core_models.Option.t_Option v_T) =
                 Alloc.Collections.Binary_heap.impl_10__pop #v_T #Alloc.Alloc.t_Global other_side
               in
               let other_side:Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global =

@@ -17,11 +17,11 @@ namespace new_tests.legacy__cli__interface_only__lib
 --  This item contains unsafe blocks and raw references, two features
 --  not supported by hax. Thanks to the `-i` flag and the `+:`
 --  modifier, `f` is still extractable as an interface.
---
+-- 
 --  Expressions within type are still extracted, as well as pre- and
 --  post-conditions.
 --  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
---  @fail(extraction): lean(HAX0008, HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): legacy-lean(HAX0008, HAX0008, HAX0008, HAX0008)
 def f (x : u8) : RustM (RustArray u8 4) := do (pure sorry)
 
 set_option hax_mvcgen.specset "bv" in
@@ -181,3 +181,4 @@ def padlen.spec (b : (RustSlice u8)) (n : usize) :
 partial_fixpoint
 
 end new_tests.legacy__cli__interface_only__lib
+

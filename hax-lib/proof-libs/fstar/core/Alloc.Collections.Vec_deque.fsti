@@ -22,9 +22,18 @@ val impl_5__pop_front (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A)
 let impl_6 (#v_T #v_A: Type0) : Core_models.Ops.Index.t_Index (t_VecDeque v_T v_A) usize =
   {
     f_Output = v_T;
-    f_index_pre = (fun (self: t_VecDeque v_T v_A) (i: usize) -> true);
+    f_index_pre
+    =
+    (fun (self_: t_VecDeque v_T v_A) (i: usize) -> i <. (impl_5__len #v_T #v_A self_ <: usize));
     f_index_post = (fun (self: t_VecDeque v_T v_A) (i: usize) (out: v_T) -> true);
     f_index
     =
     fun (self: t_VecDeque v_T v_A) (i: usize) -> Rust_primitives.Sequence.seq_index #v_T self._0 i
   }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_7 (#v_T #v_A: Type0) : Core_models.Iter.Traits.Collect.t_IntoIterator (t_VecDeque v_T v_A)
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_8 (#v_T: Type0)
+    : Core_models.Iter.Traits.Collect.t_FromIterator (t_VecDeque v_T Alloc.Alloc.t_Global) v_T

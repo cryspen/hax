@@ -5,7 +5,7 @@ open Core_models
 
 class t_Trait (v_Self: Type0) = { __marker_trait_t_Trait:Prims.unit }
 
-/// @fail(extraction): lean(HAX0001)
+/// @fail(extraction): legacy-lean(HAX0001)
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl
       (#v_P: Type0)

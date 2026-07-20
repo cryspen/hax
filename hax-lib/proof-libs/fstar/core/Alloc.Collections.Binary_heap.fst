@@ -6,44 +6,51 @@ open Rust_primitives
 open Rust_primitives.Notations
 
 type t_BinaryHeap (v_T: Type0) (v_A: Type0) =
-  | BinaryHeap : Alloc.Vec.t_Vec v_T v_A -> t_BinaryHeap v_T v_A
+  | BinaryHeap : Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global -> Core_models.Marker.t_PhantomData v_A
+    -> t_BinaryHeap v_T v_A
 
 let impl_10__new
       (#v_T: Type0)
       (#v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Alloc.Alloc.t_Allocator v_A)
       (_: Prims.unit)
     : t_BinaryHeap v_T v_A =
   BinaryHeap
-  (Alloc.Vec.Vec (Rust_primitives.Sequence.seq_empty #v_T ())
-      (Core_models.Marker.PhantomData <: Core_models.Marker.t_PhantomData v_A)
-    <:
-    Alloc.Vec.t_Vec v_T v_A)
+    (Alloc.Vec.from_seq #v_T
+        #Alloc.Alloc.t_Global
+        (Rust_primitives.Sequence.seq_empty #v_T () <: Rust_primitives.Sequence.t_Seq v_T))
+    (Core_models.Marker.PhantomData <: Core_models.Marker.t_PhantomData v_A)
   <:
   t_BinaryHeap v_T v_A
 
 let impl_11__len
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Alloc.Alloc.t_Allocator v_A)
       (self: t_BinaryHeap v_T v_A)
-    : usize = Alloc.Vec.impl_1__len #v_T #v_A self._0
+    : usize = Alloc.Vec.impl_1__len #v_T #Alloc.Alloc.t_Global self._0
 
 let impl_10__push
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Alloc.Alloc.t_Allocator v_A)
       (self: t_BinaryHeap v_T v_A)
       (v: v_T)
     : Prims.Pure (t_BinaryHeap v_T v_A)
       (requires (impl_11__len #v_T #v_A self <: usize) <. Core_models.Num.impl_usize__MAX)
       (fun _ -> Prims.l_True) =
   let self:t_BinaryHeap v_T v_A =
-    { self with _0 = Alloc.Vec.impl_1__push #v_T #v_A self._0 v } <: t_BinaryHeap v_T v_A
+    { self with _0 = Alloc.Vec.impl_1__push #v_T #Alloc.Alloc.t_Global self._0 v }
+    <:
+    t_BinaryHeap v_T v_A
   in
   self
 
 let impl_10__pop
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Alloc.Alloc.t_Allocator v_A)
       (self: t_BinaryHeap v_T v_A)
     : Prims.Pure (t_BinaryHeap v_T v_A & Core_models.Option.t_Option v_T)
       Prims.l_True
@@ -95,8 +102,8 @@ let impl_10__pop
   let (self: t_BinaryHeap v_T v_A), (hax_temp_output: Core_models.Option.t_Option v_T) =
     if Core_models.Option.impl__is_some #v_T max
     then
-      let (tmp0: Alloc.Vec.t_Vec v_T v_A), (out: v_T) =
-        Alloc.Vec.impl_1__remove #v_T #v_A self._0 index
+      let (tmp0: Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global), (out: v_T) =
+        Alloc.Vec.impl_1__remove #v_T #Alloc.Alloc.t_Global self._0 index
       in
       let self:t_BinaryHeap v_T v_A = { self with _0 = tmp0 } <: t_BinaryHeap v_T v_A in
       self, (Core_models.Option.Option_Some out <: Core_models.Option.t_Option v_T)
@@ -112,6 +119,7 @@ let impl_10__pop
 let impl_11__peek
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Alloc.Alloc.t_Allocator v_A)
       (self: t_BinaryHeap v_T v_A)
     : Prims.Pure (Core_models.Option.t_Option v_T)
       Prims.l_True
@@ -158,6 +166,7 @@ let impl_11__peek
   in
   max
 
-assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t) -> h: t_BinaryHeap t a
+assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t) 
+  -> (#i1: Alloc.Alloc.t_Allocator a) -> h: t_BinaryHeap t a
   -> Lemma (impl_11__peek h == snd (impl_10__pop h))
           [SMTPat (impl_11__peek #t #a h)]

@@ -29,3 +29,4 @@ def let_else_different_type (opt : (core_models.option.Option u32)) :
     | _ => do (pure false)
 
 end new_tests.legacy__let_else__lib
+

@@ -135,3 +135,19 @@ let impl_4 (#v_T: Type0) : Core_models.Iter.Traits.Iterator.t_Iterator (t_Chunks
       in
       self, hax_temp_output <: (t_ChunksExact v_T & Core_models.Option.t_Option (t_Slice v_T))
   }
+
+/// See [`std::slice::Windows`]
+type t_Windows (v_T: Type0) = {
+  f_size:usize;
+  f_elements:t_Slice v_T
+}
+
+let impl_5__new (#v_T: Type0) (size: usize) (elements: t_Slice v_T) : t_Windows v_T =
+  { f_size = size; f_elements = elements } <: t_Windows v_T
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_6': #v_T: Type0 -> Core_models.Iter.Traits.Iterator.t_Iterator (t_Windows v_T)
+
+unfold
+let impl_6 (#v_T: Type0) = impl_6' #v_T
