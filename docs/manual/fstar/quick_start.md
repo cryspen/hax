@@ -18,7 +18,7 @@ what you are looking for!
 *Note: the instructions below assume you are in the folder of the specific crate (**not workspace!**) you want to extract.*
 
 
- - <input type="checkbox" class="user-checkable"/> Create the folder `proofs/fstar/extraction`folder, right next to the `Cargo.toml` of the crate you want to verify.  
+ - <input type="checkbox" class="user-checkable"/> Create the folder `proofs/fstar/extraction`, right next to the `Cargo.toml` of the crate you want to verify.  
    <span style="margin-right:30px;"></span>🪄 `mkdir -p proofs/fstar/extraction`
  - <input type="checkbox" class="user-checkable"/> Copy [this makefile](https://gist.github.com/maximebuyse/95a60c848b199c38eb93a41cfede34bf) to `proofs/fstar/extraction/Makefile`  
    <span style="margin-right:30px;"></span>🪄 `curl -o proofs/fstar/extraction/Makefile https://gist.githubusercontent.com/maximebuyse/95a60c848b199c38eb93a41cfede34bf/raw/Makefile`
@@ -41,7 +41,7 @@ some others are not (e.g. the binary driver that wraps the
 library). In this case, you likely want to extract only partially your
 crate, so that you can focus on the important part.
 
-**Partial extraction.**  
+**Using the `-i` flag.**  
 If you want to extract a function
 `your_crate::some_module::my_function`, you need to tell `hax` to
 extract nothing but `my_function`:
@@ -75,7 +75,7 @@ with various F\* modules in the `proofs/fstar/extraction` folder. The
    important because there might be missing libraries. If F\* is not
    able to find a definition, it is probably a `libcore` issue: you
    probably need to edit the F\* library, which lives in the
-   `proofs-libs` directory in the root of the hax repo.
+   `proof-libs` directory in the root of the hax repo.
 2. **Typecheck:** the second step is to run `make`. This will ask F\*
    to typecheck fully your crate. This is very likely that you need to
    add preconditions and postconditions at this stage. Indeed, this

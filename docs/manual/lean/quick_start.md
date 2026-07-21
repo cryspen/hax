@@ -19,7 +19,7 @@ weight: 1
 *Note: the instructions below assume you are in the folder of the specific crate (**not workspace!**) you want to extract.*
 
 
- - <input type="checkbox" class="user-checkable"/> Create the folder `proofs/legacy-lean/extraction`folder, right next to the `Cargo.toml` of the crate you want to verify.  
+ - <input type="checkbox" class="user-checkable"/> Create the folder `proofs/legacy-lean/extraction`, right next to the `Cargo.toml` of the crate you want to verify.  
    <span style="margin-right:30px;"></span>🪄 `mkdir -p proofs/legacy-lean/extraction`
  - <input type="checkbox" class="user-checkable"/> Create `proofs/legacy-lean/extraction/lakefile.toml`, and add the following content:  
 ```toml
