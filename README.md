@@ -29,7 +29,7 @@ Rust into formal languages such as [Lean](https://lean-lang.org/),
     <td align="center" colspan="3">
       General purpose proof assistants
     </td>
-    <td align="center" colspan="2">
+    <td align="center" colspan="3">
       Cryptography & protocols
     </td>
   </tr>
@@ -59,6 +59,11 @@ Rust into formal languages such as [Lean](https://lean-lang.org/),
       </a>
     </td>
     <td align="center">
+      <a href="https://proverif.inria.fr/">
+        <b>ProVerif</b>
+      </a>
+    </td>
+    <td align="center">
       <a href="https://github.com/SSProve/ssprove">
         <picture>
           <source srcset=".github/assets/ssprove-dark.svg" media="(prefers-color-scheme: dark)">
@@ -68,8 +73,8 @@ Rust into formal languages such as [Lean](https://lean-lang.org/),
       </a>
     </td>
     <td align="center">
-      <a href="https://proverif.inria.fr/">
-        <b>ProVerif</b>
+      <a href="https://www.easycrypt.info/">
+        <b>EasyCrypt</b>
       </a>
     </td>
   </tr>
@@ -77,9 +82,10 @@ Rust into formal languages such as [Lean](https://lean-lang.org/),
     <!-- 🟢🟡🟠🔴 -->
     <td align="center"><sub>🚀 active dev.</sub></td>
     <td align="center"><sub>🟢 stable</sub></td>
-    <td align="center"><sub>🟡 partial</sub></td>
-    <td align="center"><sub>🟡 partial</sub></td>
-    <td align="center"><sub>🟠 PoC</sub></td>
+    <td align="center"><sub>🟠 experimental</sub></td>
+    <td align="center"><sub>🟠 experimental</sub></td>
+    <td align="center"><sub>🟠 experimental</sub></td>
+    <td align="center"><sub>🟠 experimental</sub></td>
   </tr>
 </table>
 
@@ -108,12 +114,13 @@ The command `cargo hax` accepts the following subcommands:
 
 | Backend               | Command                      | Description                                                                                                                   |
 |-----------------------|------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| **Lean** (via Aeneas) | `cargo hax into lean` | Recommended for Lean. Uses [charon](https://github.com/AeneasVerif/charon) + [aeneas](https://github.com/AeneasVerif/aeneas). |
+| **Lean** (via Aeneas) | `cargo hax into lean`        | Recommended for Lean. Uses [charon](https://github.com/AeneasVerif/charon) + [aeneas](https://github.com/AeneasVerif/aeneas). |
+| Lean (legacy)         | `cargo hax into legacy-lean` | Uses the hax engine directly. Prefer `lean`.                                                                                  |
 | F\*                   | `cargo hax into fstar`       | Stable.                                                                                                                       |
-| Rocq/Coq              | `cargo hax into coq`         |                                                                                                                               |
-| Lean (legacy)         | `cargo hax into legacy-lean` | Uses the hax engine directly. Prefer `lean`.                                                                           |
-| SSProve               | `cargo hax into ssprove`     |                                                                                                                               |
-| ProVerif              | `cargo hax into pro-verif`   |                                                                                                                               |
+| Rocq/Coq              | `cargo hax into coq`         | Experimental.                                                                                                                 |
+| ProVerif              | `cargo hax into pro-verif`   | Experimental.                                                                                                                 |
+| SSProve               | `cargo hax into ssprove`     | Experimental.                                                                                                                 |
+| EasyCrypt             | `cargo hax into easycrypt`   | Experimental.                                                                                                                 |
 
 Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimit 100`).
 
