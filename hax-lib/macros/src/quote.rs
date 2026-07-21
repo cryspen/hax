@@ -60,8 +60,35 @@ impl ToTokens for Antiquote {
     }
 }
 
+/// Re-span every token of a token stream (recursively) to `span`.
+///
+/// Antiquotation snippets are parsed out of the *contents* of a string
+/// literal with `syn::parse_str`, which spans every produced token at
+/// `Span::call_site()`. When a quotation macro (e.g. `fstar!`) is invoked
+/// via a `macro_rules!` wrapper, that call site is the wrapper's expansion
+/// context, so identifiers cannot resolve to the user's locals (hygiene).
+/// The string literal token itself, however, travels through wrappers
+/// carrying the original span: re-spanning the antiquotation tokens onto
+/// the literal's span makes them resolve at the place the user actually
+/// wrote them. For direct invocations the literal's span belongs to the
+/// same call-site context as before, so behavior is unchanged.
+fn respan(ts: TokenStream, span: proc_macro2::Span) -> TokenStream {
+    ts.into_iter()
+        .map(|mut tt| {
+            if let proc_macro2::TokenTree::Group(ref mut g) = tt {
+                *g = proc_macro2::Group::new(g.delimiter(), respan(g.stream(), span));
+            }
+            tt.set_span(span);
+            tt
+        })
+        .collect()
+}
+
 /// Extract antiquotations (`$[?][$][:]...`, `$[?][$][:]{...}`) and parses them.
-fn process_string(s: &str) -> std::result::Result<(String, Vec<Antiquote>), String> {
+fn process_string(
+    s: &str,
+    span: proc_macro2::Span,
+) -> std::result::Result<(String, Vec<Antiquote>), String> {
     let mut chars = s.chars().peekable();
     let mut antiquotations = vec![];
     let mut output = String::new();
@@ -116,7 +143,7 @@ fn process_string(s: &str) -> std::result::Result<(String, Vec<Antiquote>), Stri
                     // panicking, but also makes rustc to exit earlier.
                     panic!("{message}");
                 }
-                let ts: pm::TokenStream = ts?.into();
+                let ts: pm::TokenStream = respan(ts?, span).into();
                 antiquotations.push(Antiquote { ts, kind })
             }
             _ => output.push(ch),
@@ -182,11 +209,13 @@ pub(super) enum InlineExprType {
 
 pub(super) fn expression(typ: InlineExprType, payload: pm::TokenStream) -> pm::TokenStream {
     let (mut backend_code, antiquotes) = {
-        let payload = parse_macro_input!(payload as LitStr).value();
+        let payload_lit = parse_macro_input!(payload as LitStr);
+        let payload_span = payload_lit.span();
+        let payload = payload_lit.value();
         if payload.contains(SPLIT_MARK) {
             return quote! {std::compile_error!(std::concat!($SPLIT_MARK, " is reserved"))}.into();
         }
-        let (string, antiquotes) = match process_string(&payload) {
+        let (string, antiquotes) = match process_string(&payload, payload_span) {
             Ok(x) => x,
             Err(message) => return quote! {std::compile_error!(#message)}.into(),
         };
@@ -222,7 +251,11 @@ pub(super) fn expression(typ: InlineExprType, payload: pm::TokenStream) -> pm::T
     };
 
     quote! {
-        ::hax_lib::#function(#[allow(unused_variables)]{#backend_code})
+        // `unused_qualifications` (and lint friends) used to be silenced
+        // implicitly because antiquotation tokens carried macro-expansion
+        // spans; now that they carry the payload literal's span (see
+        // `respan`), suppress them explicitly.
+        ::hax_lib::#function(#[allow(unused_variables, unused_qualifications, unreachable_code, deprecated)]{#backend_code})
     }
     .into()
 }
