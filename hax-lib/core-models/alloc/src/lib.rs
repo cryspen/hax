@@ -609,149 +609,7 @@ pub mod vec {
     }
 
     #[cfg(test)]
-    mod tests {
-        use crate::testing::Inject;
-        use proptest::prelude::*;
-
-        impl<T: Clone> Inject for Vec<T> {
-            type Model = super::Vec<T>;
-            fn inject(&self) -> super::Vec<T> {
-                super::Vec::<T>(rust_primitives::sequence::seq_from_boxed_slice(
-                    self.clone().into_boxed_slice(),
-                ))
-            }
-        }
-
-        proptest! {
-            #[test]
-            fn test_len(v in prop::collection::vec(any::<u8>(), 0..100)) {
-                prop_assert_eq!(v.inject().len(), v.len());
-            }
-
-            #[test]
-            fn test_is_empty(v in prop::collection::vec(any::<u8>(), 0..100)) {
-                prop_assert_eq!(v.inject().is_empty(), v.is_empty());
-            }
-
-            #[test]
-            fn test_as_slice(v in prop::collection::vec(any::<u8>(), 0..100)) {
-                let model = v.inject();
-                prop_assert_eq!(model.as_slice(), v.as_slice());
-            }
-
-            #[test]
-            fn test_push(v in prop::collection::vec(any::<u8>(), 0..50), x in any::<u8>()) {
-                let mut model = v.inject();
-                model.push(x);
-                let mut std_v = v.clone();
-                std_v.push(x);
-                prop_assert_eq!(model, std_v.inject());
-            }
-
-            #[test]
-            fn test_pop(v in prop::collection::vec(any::<u8>(), 0..50)) {
-                let mut model = v.inject();
-                let mut std_v = v.clone();
-                prop_assert_eq!(model.pop(), std_v.pop());
-                prop_assert_eq!(model, std_v.inject());
-            }
-
-            #[test]
-            fn test_index(v in prop::collection::vec(any::<u8>(), 1..50)) {
-                let model = v.inject();
-                for i in 0..v.len() {
-                    prop_assert_eq!(model[i], v[i]);
-                }
-            }
-
-            #[test]
-            fn test_insert(v in prop::collection::vec(any::<u8>(), 0..50), x in any::<u8>(), idx in 0usize..50) {
-                if idx <= v.len() {
-                    let mut model = v.inject();
-                    model.insert(idx, x);
-                    let mut std_v = v.clone();
-                    std_v.insert(idx, x);
-                    prop_assert_eq!(model, std_v.inject());
-                }
-            }
-
-            #[test]
-            fn test_remove(v in prop::collection::vec(any::<u8>(), 1..50), idx in 0usize..50) {
-                if idx < v.len() {
-                    let mut model = v.inject();
-                    let mut std_v = v.clone();
-                    prop_assert_eq!(model.remove(idx), std_v.remove(idx));
-                    prop_assert_eq!(model, std_v.inject());
-                }
-            }
-
-            #[test]
-            fn test_append(v1 in prop::collection::vec(any::<u8>(), 0..50), v2 in prop::collection::vec(any::<u8>(), 0..50)) {
-                let mut model1 = v1.inject();
-                model1.append(&mut v2.inject());
-                let mut std_v = v1.clone();
-                std_v.append(&mut v2.clone());
-                prop_assert_eq!(model1, std_v.inject());
-            }
-
-            #[test]
-            fn test_extend_from_slice(v in prop::collection::vec(any::<u8>(), 0..50), ext in prop::collection::vec(any::<u8>(), 0..50)) {
-                let mut model = v.inject();
-                model.extend_from_slice(&ext);
-                let mut std_v = v.clone();
-                std_v.extend_from_slice(&ext);
-                prop_assert_eq!(model, std_v.inject());
-            }
-
-            #[test]
-            fn test_from_elem(x in any::<u8>(), len in 0usize..100) {
-                let model = super::from_elem(x, len);
-                prop_assert_eq!(model, vec![x; len].inject());
-            }
-
-            // ----- Clone / PartialEq / IntoIterator -------
-
-            #[test]
-            fn test_vec_clone(v in prop::collection::vec(any::<u8>(), 0..30)) {
-                // Compare the clone's contents to std directly (independent of
-                // the model's own `PartialEq`, which is tested separately).
-                let cloned = v.inject().clone();
-                prop_assert_eq!(cloned.as_slice(), v.as_slice());
-            }
-
-            #[test]
-            fn test_vec_eq(
-                a in prop::collection::vec(any::<u8>(), 0..15),
-                b in prop::collection::vec(any::<u8>(), 0..15),
-            ) {
-                prop_assert_eq!(a.inject() == b.inject(), a == b);
-            }
-
-            #[test]
-            fn test_vec_into_iter(v in prop::collection::vec(any::<u8>(), 0..30)) {
-                let mut it = v.inject().into_iter();
-                let mut collected: std::vec::Vec<u8> = std::vec::Vec::new();
-                while let Some(x) = it.next() {
-                    collected.push(x);
-                }
-                prop_assert_eq!(collected.as_slice(), v.as_slice());
-            }
-        }
-
-        #[test]
-        fn test_new() {
-            let model: super::Vec<u8> = super::Vec::new();
-            let std_v: std::vec::Vec<u8> = std::vec::Vec::new();
-            assert_eq!(model, std_v.inject());
-        }
-
-        #[test]
-        fn test_with_capacity() {
-            let model: super::Vec<u8> = super::Vec::with_capacity(10);
-            let std_v: std::vec::Vec<u8> = std::vec::Vec::with_capacity(10);
-            assert_eq!(model, std_v.inject());
-        }
-    }
+    mod tests;
 }
 
 // The F* backend keeps the explicit allocator type parameter `A` on `Vec`
@@ -762,7 +620,10 @@ pub mod vec {
     use rust_primitives::sequence::*;
     use std::marker::PhantomData;
 
-    #[cfg_attr(test, derive(Debug))]
+    // Unlike the default variant, this `Vec` models no `PartialEq`; the
+    // derive is test-only (invisible to extraction) so that the shared test
+    // suite in `vec_tests.rs` can compare models with `assert_eq!`.
+    #[cfg_attr(test, derive(Debug, PartialEq))]
     #[hax_lib::fstar::before("open Rust_primitives.Notations")]
     pub struct Vec<T, A = Global>(pub Seq<T>, pub PhantomData<A>);
 
@@ -923,4 +784,7 @@ pub mod vec {
             res
         }
     }
+
+    #[cfg(test)]
+    mod tests;
 }

@@ -65,6 +65,11 @@ jobs:
         env:
           RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
 
+      # `alloc` has a second, cfg-exclusive `vec` model for the F* backend
+      - run: cargo test -p alloc
+        env:
+          RUSTFLAGS: "--cfg hax_backend_fstar"
+
       # `tests/` is its own workspace (members: client_test,
       # rust_lean_equiv_test/{source,macro}) — the root `cargo test
       # --workspace` doesn't reach it. The `cargo test --lib` here runs

@@ -6,6 +6,7 @@ mod collections {
             #[hax_lib::opaque]
             struct HashMap<K, V, S>(Option<K>, Option<V>, Option<S>);
             impl<K, V> HashMap<K, V, crate::hash::random::RandomState> {
+                #[hax_lib::opaque]
                 fn new() -> HashMap<K, V, crate::hash::random::RandomState> {
                     HashMap(None, None, None)
                 }
@@ -13,9 +14,11 @@ mod collections {
             // Dummy impl for disambiguator (https://github.com/cryspen/hax/issues/828)
             impl HashMap<usize, usize, usize> {}
             impl<K, V, S> HashMap<K, V, S> {
+                #[hax_lib::opaque]
                 fn get<Y>(m: HashMap<K, V, S>, k: K) -> core_models::option::Option<V> {
                     core_models::panicking::internal::panic()
                 }
+                #[hax_lib::opaque]
                 fn insert(
                     m: HashMap<K, V, S>,
                     k: K,
@@ -183,6 +186,94 @@ mod io {
         }
     }
     mod stdio {
+        #[hax_lib::opaque]
         fn e_print(args: core::fmt::Arguments) {}
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::{Read, Write};
+        use proptest::prelude::*;
+
+        proptest! {
+            #[test]
+            fn test_read(
+                src in prop::collection::vec(any::<u8>(), 0..50),
+                buf_len in 0usize..50,
+            ) {
+                let mut model_src: &[u8] = &src;
+                let mut model_buf = vec![0u8; buf_len];
+                let model_n = Read::read(&mut model_src, &mut model_buf);
+
+                let mut std_src: &[u8] = &src;
+                let mut std_buf = vec![0u8; buf_len];
+                let std_n = std::io::Read::read(&mut std_src, &mut std_buf);
+
+                prop_assert_eq!(model_n.ok(), std_n.ok());
+                prop_assert_eq!(model_buf, std_buf);
+                prop_assert_eq!(model_src, std_src);
+            }
+
+            #[test]
+            fn test_read_exact(
+                src in prop::collection::vec(any::<u8>(), 0..50),
+                buf_len in 0usize..50,
+            ) {
+                let mut model_src: &[u8] = &src;
+                let mut model_buf = vec![0u8; buf_len];
+                let model_res = Read::read_exact(&mut model_src, &mut model_buf);
+
+                let mut std_src: &[u8] = &src;
+                let mut std_buf = vec![0u8; buf_len];
+                let std_res = std::io::Read::read_exact(&mut std_src, &mut std_buf);
+
+                prop_assert_eq!(model_res.is_err(), std_res.is_err());
+                prop_assert_eq!(model_src, std_src);
+                if std_res.is_ok() {
+                    prop_assert_eq!(model_buf, std_buf);
+                }
+            }
+
+            #[test]
+            fn test_write(
+                init in prop::collection::vec(any::<u8>(), 0..50),
+                data in prop::collection::vec(any::<u8>(), 0..50),
+            ) {
+                let mut model = init.clone();
+                let model_n = Write::write(&mut model, &data);
+
+                let mut std_v = init.clone();
+                let std_n = std::io::Write::write(&mut std_v, &data);
+
+                prop_assert_eq!(model_n.ok(), std_n.ok());
+                prop_assert_eq!(model, std_v);
+            }
+
+            #[test]
+            fn test_write_all(
+                init in prop::collection::vec(any::<u8>(), 0..50),
+                data in prop::collection::vec(any::<u8>(), 0..50),
+            ) {
+                let mut model = init.clone();
+                prop_assert!(Write::write_all(&mut model, &data).is_ok());
+
+                let mut std_v = init.clone();
+                prop_assert!(std::io::Write::write_all(&mut std_v, &data).is_ok());
+
+                prop_assert_eq!(model, std_v);
+            }
+
+            #[test]
+            fn test_flush(init in prop::collection::vec(any::<u8>(), 0..50)) {
+                let mut model = init.clone();
+                let model_res = Write::flush(&mut model);
+
+                let mut std_v = init.clone();
+                let std_res = std::io::Write::flush(&mut std_v);
+
+                prop_assert_eq!(model_res.is_err(), std_res.is_err());
+                prop_assert_eq!(model, std_v);
+            }
+        }
     }
 }

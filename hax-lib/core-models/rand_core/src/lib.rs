@@ -12,6 +12,7 @@ pub trait CryptoRng: RngCore {}
 mod os {
     pub struct OsRng;
     // Dummy impl
+    #[hax_lib::opaque]
     impl super::RngCore for OsRng {
         fn next_u32(&mut self) -> u32 {
             0
