@@ -1,5 +1,5 @@
 ---
-weight: 102
+weight: 3
 ---
 
 # Internals
@@ -17,7 +17,7 @@ typically when it inserts notations for some symbol (i.e. `+?` for addition).
 
 [!Disclaimer] : The lean backend is still experimental. See the list of [open
 issues](https://github.com/cryspen/hax/issues?q=is%3Aissue%20state%3Aopen%20label%3Alean)
-for known problems and workaround. See also the [Hax
+for known problems and workaround. See also the [hax
 Zulip](https://hacspec.zulipchat.com/) for technical support.
 
 ## Backend
@@ -380,7 +380,7 @@ def enums (_ : Tuple0)
 ### Traits
 
 Rust traits are represented as Lean classes, while Rust impl are Lean
-instances. The Lean code relies on the typeclass inference of Lean. Hax exposes
+instances. The Lean code relies on the typeclass inference of Lean. hax exposes
 identifiers for rust impls (that are otherwise implicit), like
 `8040238289193487104`. Lean uses them for naming fields or parameters.
 
@@ -532,4 +532,4 @@ class T2 (Self : Type) where
 
 ## Prelude
 
-See the [Hax Lean library](https://github.com/cryspen/hax/tree/main/hax-lib/proof-libs/legacy-lean)
+See the [hax Lean library](https://github.com/cryspen/hax/tree/main/hax-lib/proof-libs/legacy-lean)

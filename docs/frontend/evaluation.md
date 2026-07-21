@@ -96,7 +96,7 @@ For the crates that successfully generated ASTs, we compared the time taken by `
 
 <div class="center-table" markdown>
 
-| Statistic       | Cargo Check | Cargo Hax |
+| Statistic       | cargo check | cargo hax |
 |-----------------|------------:|----------:|
 | **Median**      |       0.147 |     0.780 |
 | **Mean**        |       0.215 |     0.771 |
@@ -108,7 +108,7 @@ For the crates that successfully generated ASTs, we compared the time taken by `
 
 <!-- #### Cryptography Crates
 
-| Statistic       | Cargo Check | Cargo Hax |
+| Statistic       | cargo check | cargo hax |
 |-----------------|------------:|----------:|
 | **Median**      |       0.148 |     0.796 |
 | **Mean**        |       0.199 |     0.777 |
