@@ -6,12 +6,12 @@ weight: 1
 
 ## Setup the tools
 
- - <input type="checkbox" class="user-checkable"/> [Install the hax toolchain](https://github.com/hacspec/hax?tab=readme-ov-file#installation).  
+ - <input type="checkbox" class="user-checkable"/> [Install the hax toolchain](https://github.com/cryspen/hax?tab=readme-ov-file#installation).  
    <span style="margin-right:30px;"></span>🪄 Running `cargo hax --version` should print some version info.
  - <input type="checkbox" class="user-checkable"/> [Install Lean](https://lean-lang.org/install/)
  - <input type="checkbox" class="user-checkable"/> *(Optional, for `lean` backend only)* Install aeneas and charon by running `./install-aeneas.sh` from the hax repository root.
   - <input type="checkbox" class="user-checkable"/> Add `hax-lib` as a dependency to your crate, enabled only when using hax.  
-   <span style="margin-right:30px;"></span>🪄 `cargo add --target 'cfg(hax)' --git https://github.com/hacspec/hax hax-lib`  
+   <span style="margin-right:30px;"></span>🪄 `cargo add --target 'cfg(hax)' --git https://github.com/cryspen/hax hax-lib`  
    <span style="margin-right:30px;"></span><span style="opacity: 0;">🪄</span> *(`hax-lib` is not mandatory, but this guide assumes it is present)*
 
 ## Setup the crate you want to verify
@@ -72,7 +72,7 @@ This command will remove all items from extraction (`-**`) and add back `my_func
 
 **Unsupported Rust code.**  
 hax [doesn't support every Rust
-constructs](https://github.com/hacspec/hax?tab=readme-ov-file#supported-subset-of-the-rust-language),
+constructs](https://github.com/cryspen/hax?tab=readme-ov-file#supported-subset-of-the-rust-language),
 `unsafe` code, or complicated mutation scheme. That is another reason
 for extracting only a part of your crate. When running hax, if an item
 of your crate, say a function `my_crate::f`, is not handled by hax,

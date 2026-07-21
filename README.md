@@ -156,10 +156,10 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
 </details>
 
 + **Run hax on a crate directly** to get Lean/F\*/Coq/... (assuming you are in the crate's folder):
-   - `nix run github:hacspec/hax -- into fstar` extracts F*.
+   - `nix run github:cryspen/hax -- into fstar` extracts F*.
 
-+ **Install hax**:  `nix profile install github:hacspec/hax`, then run `cargo hax --help` anywhere
-+ **Note**: in any of the Nix commands above, replace `github:hacspec/hax` by `./dir` to compile a local checkout of hax that lives in `./some-dir`
++ **Install hax**:  `nix profile install github:cryspen/hax`, then run `cargo hax --help` anywhere
++ **Note**: in any of the Nix commands above, replace `github:cryspen/hax` by `./dir` to compile a local checkout of hax that lives in `./some-dir`
 + **Setup binary cache**: [using Cachix](https://app.cachix.org/cache/hax), just `cachix use hax`
 
 **Note:** Nix does not yet include aeneas and charon.
@@ -171,7 +171,7 @@ add the `lean` backend.
 <details>
   <summary><b>Using Docker</b></summary>
 
-1. Clone this repo: `git clone git@github.com:hacspec/hax.git && cd hax`
+1. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
 3. Build the docker image: `docker build -f .docker/Dockerfile . -t hax`
 4. Get a shell: `docker run -it --rm -v /some/dir/with/a/crate:/work hax bash`
 5. You can now run `cargo-hax --help` (notice here we use `cargo-hax` instead of `cargo hax`)
@@ -211,13 +211,13 @@ variables.
 
 ## Supported Subset of the Rust Language
 
-hax intends to support full Rust, with the one exception, promoting a functional style: mutable references (aka `&mut T`) on return types or when aliasing (see https://github.com/hacspec/hax/issues/420) are forbidden.
+hax intends to support full Rust, with the one exception, promoting a functional style: mutable references (aka `&mut T`) on return types or when aliasing (see https://github.com/cryspen/hax/issues/420) are forbidden.
 
-Each unsupported Rust feature is documented as an issue labeled [`unsupported-rust`](https://github.com/hacspec/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust). When the issue is labeled [`wontfix-v1`](https://github.com/hacspec/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1), that means we don't plan on supporting that feature soon.
+Each unsupported Rust feature is documented as an issue labeled [`unsupported-rust`](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust). When the issue is labeled [`wontfix-v1`](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1), that means we don't plan on supporting that feature soon.
 
 Quicklinks:
- - [🔨 Rejected rust we want to support](https://github.com/hacspec/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+-label%3Awontfix%2Cwontfix-v1);
- - [💭 Rejected rust we don't plan to support in v1](https://github.com/hacspec/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1).
+ - [🔨 Rejected rust we want to support](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+-label%3Awontfix%2Cwontfix-v1);
+ - [💭 Rejected rust we don't plan to support in v1](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1).
 
 ## Hacking on hax
 The documentation of the internal crate of hax and its engine can be
@@ -277,7 +277,7 @@ the commands.
 
 ## Contributing
 
-Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/hacspec/hax/discussions), or file an [issue](https://github.com/hacspec/hax/issues) to discuss your contribution.
+Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/cryspen/hax/discussions), or file an [issue](https://github.com/cryspen/hax/issues) to discuss your contribution.
 
 
 [chat-link]: https://hacspec.zulipchat.com
