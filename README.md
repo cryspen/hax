@@ -202,8 +202,7 @@ cargo hax tools show
 cargo hax tools install
 ```
 
-To pin different versions per project, declare them in a `hax.toml` at
-your project's root:
+The default versions shipped with a hax release are tested together and are the recommended choice. Pinning versions yourself is an advanced option: combinations other than the defaults are untested, so establishing that one works is up to you. To pin versions for a project, declare them in a `hax.toml` at your project's root:
 
 ```toml
 [tools]
@@ -212,6 +211,8 @@ charon = "nightly-2026.07.01"
 ```
 
 You can also build or install `aeneas` and `charon` yourself (e.g. from source) and point to them with a `path` entry in `hax.toml` (e.g. `charon = { path = "vendor/bin/charon" }`).
+
+See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in the manual for the full reference (`cargo hax tools`, the `hax.toml` schema, resolution order, and the `hax-lib` compatibility check).
 
 </details>
 
