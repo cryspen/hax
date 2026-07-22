@@ -40,6 +40,8 @@ for hax code:
 3. `hax-lib` (`hax-lib`)
 4. `hax-bounded-integers` (`hax-bounded-integers`)
 
+`cargo-hax` accepts only the `hax-lib` of its own version, so every `cargo-hax` release must publish a matching `hax-lib`, even for changes that only touch the binary.
+
 ### The Rust engine
 
 1. `hax-rust-engine-macros` (`rust-engine/macros`)
