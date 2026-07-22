@@ -224,6 +224,10 @@ from source) and point to them with the `HAX_AENEAS_BINARY` and
 `HAX_CHARON_BINARY` environment variables, or with a committed
 `path` entry in `hax.toml` (e.g. `charon = { path = "vendor/bin/charon" }`).
 
+See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in
+the manual for the full reference (`cargo hax tools`, the `hax.toml`
+schema, resolution order, and the `hax-lib` compatibility check).
+
 </details>
 
 ## Supported Subset of the Rust Language
