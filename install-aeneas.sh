@@ -88,10 +88,11 @@ CHARON_EXPECTED_VERSION="$(read_pin_key "$PINS" "charon" "version")"
 
 check_aeneas_version() {
     local bin="$1"
-    # `aeneas -version` outputs "aeneas <commit-sha>"; compare the prefix.
+    # `aeneas -version` outputs different strings, depending on whether it was built in CI or
+    # or locally; just check whether it contains the expected string.
     local actual
-    actual=$("$bin" -version 2>/dev/null | awk '{print $2}') || return 1
-    [ -z "$AENEAS_COMMIT" ] || [ "${actual:0:${#AENEAS_COMMIT}}" = "$AENEAS_COMMIT" ]
+    actual=$("$bin" -version 2>/dev/null) || return 1
+    [ -z "$AENEAS_COMMIT" ] || [[ "$actual" == *"$AENEAS_COMMIT"* ]]
 }
 
 check_charon_version() {

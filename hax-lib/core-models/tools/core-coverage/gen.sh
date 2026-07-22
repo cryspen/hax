@@ -13,7 +13,7 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO_ROOT"
 
 # Pinned so coverage numbers are comparable across regenerations; kept in step
-# with CI's RUST_TOOLCHAIN (.github/workflows/ci.yml). Override with
+# with CI's RUST_TOOLCHAIN (.github/workflows/core_models.yml). Override with
 # TOOLCHAIN=nightly-YYYY-MM-DD.
 TOOLCHAIN="${TOOLCHAIN:-nightly-2026-02-07}"
 
@@ -23,7 +23,7 @@ install_hint() {
   echo "  install the matching nightly and its rustdoc JSON of std with:" >&2
   echo "      rustup toolchain install $TOOLCHAIN" >&2
   echo "      rustup component add rust-docs-json --toolchain $TOOLCHAIN" >&2
-  echo "  (TOOLCHAIN must match RUST_TOOLCHAIN in .github/workflows/ci.yml;" >&2
+  echo "  (TOOLCHAIN must match RUST_TOOLCHAIN in .github/workflows/core_models.yml;" >&2
   echo "   override with: TOOLCHAIN=nightly-YYYY-MM-DD make coverage)" >&2
 }
 

@@ -71,7 +71,7 @@ private abbrev ResultPS := PostShape.except Error (PostShape.except PUnit PostSh
 private theorem triple_noThrow_elim {x : Result α} {Q : α → Assertion ResultPS}
     (h : ⦃ ⌜ True ⌝ ⦄ x ⦃ PostCond.noThrow Q ⦄) {v : α} (hv : x = ok v) :
     (Q v).down := by
-  subst hv; simpa [Triple, WP.wp] using h
+  subst hv; simpa [Triple, WP.wp, PredTrans.apply] using h
 
 private theorem triple_noThrow_exists_ok {x : Result α} {Q : α → Assertion ResultPS}
     (h : ⦃ ⌜ True ⌝ ⦄ x ⦃ PostCond.noThrow Q ⦄) : ∃ v, x = ok v := by
