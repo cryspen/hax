@@ -9,7 +9,7 @@
 # Release tag (the release must carry assets named aeneas-<platform>.tar.gz).
 tag = "nightly-2026.07.21-52fd438"
 # Short commit SHA that `aeneas -version` must report.
-commit = "nightly-2026.07.21-52fd438"
+commit = "52fd438"
 # Source repository URL. install-aeneas.sh rejects any value other than:
 #   - https://github.com/AeneasVerif/aeneas  (upstream)
 #   - https://github.com/cryspen/aeneas      (fork)
