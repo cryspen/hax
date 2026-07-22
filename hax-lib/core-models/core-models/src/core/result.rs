@@ -293,6 +293,7 @@ impl<T, E> Result<Result<T, E>, E> {
 /// the behaviour is axiomatised. The body below exists only to typecheck —
 /// it delegates to `V`'s own `from_iter`.
 #[hax_lib::opaque]
+#[hax_lib::attributes]
 impl<A, E, V: crate::iter::traits::collect::FromIterator<A>>
     crate::iter::traits::collect::FromIterator<Result<A, E>> for Result<V, E>
 {
@@ -301,6 +302,7 @@ impl<A, E, V: crate::iter::traits::collect::FromIterator<A>>
     }
 }
 
+#[hax_lib::attributes]
 impl<T, E> crate::ops::try_trait::Try for Result<T, E> {
     type Output = T;
     type Residual = Result<crate::convert::Infallible, E>;

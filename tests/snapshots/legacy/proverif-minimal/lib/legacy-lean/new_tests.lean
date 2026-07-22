@@ -18,3 +18,4 @@ namespace new_tests.legacy__proverif_minimal__lib
 def add (left : usize) (right : usize) : RustM usize := do (left +? right)
 
 end new_tests.legacy__proverif_minimal__lib
+

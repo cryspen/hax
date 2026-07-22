@@ -48,3 +48,4 @@ def void_function (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.legacy__proverif_fn_to_letfun__lib
+

@@ -112,3 +112,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.legacy__cli__include_flag__lib
+

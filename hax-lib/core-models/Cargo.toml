@@ -4,6 +4,10 @@ members = [
     "core-models",
     "alloc",
     "rust_primitives",
+    # `std` and `rand_core` are extracted to F* only (see the `fstar` target
+    # in the Makefile). They have no Aeneas/Lean counterpart.
+    "std",
+    "rand_core",
 ]
 # `tests` is intentionally NOT a member — it is its own cargo
 # workspace (see `tests/Cargo.toml`) holding the two test surfaces
@@ -14,6 +18,8 @@ members = [
 
 [workspace.dependencies]
 # `hax-lib` provides the `#[hax_lib::attributes]`, `#[hax_lib::requires]`
-# etc. attribute procmacros our model uses. Pinned to a specific commit
-# of cryspen/hax.
-hax-lib = { git = "https://github.com/cryspen/hax", rev = "492a34e33c8744b9672eb3cf1c982ac40469f7d4" }
+# etc. attribute procmacros our model uses. This is the `hax-lib` of the
+# surrounding checkout, so it always matches the `cargo hax` that `make
+# fstar` runs. (This crate is `exclude`d from the root workspace, but a
+# path dependency across workspaces is fine.)
+hax-lib = { path = ".." }

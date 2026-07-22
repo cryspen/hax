@@ -49,41 +49,41 @@ structure borrow.ToOwned (Self : Type) where
 def boxed.Box (T : Type) := T
 
 /-- [alloc::collections::btree::set::BTreeSet]
-    Source: 'src/lib.rs', lines 169:12-169:56 -/
+    Source: 'src/lib.rs', lines 172:12-172:56 -/
 def collections.btree.set.BTreeSet (T : Type) (U : Type) :=
   core.option.Option T × core.option.Option U
 
 /-- [alloc::collections::vec_deque::VecDeque]
-    Source: 'src/lib.rs', lines 193:8-193:75
+    Source: 'src/lib.rs', lines 196:8-196:75
     Visibility: public -/
 def collections.vec_deque.VecDeque (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::collections::vec_deque::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 227:12-227:83
+    Source: 'src/lib.rs', lines 230:12-230:83
     Visibility: public -/
 def collections.vec_deque.into_iter.IntoIter (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::slice::Dummy]
-    Source: 'src/lib.rs', lines 282:4-282:23 -/
+    Source: 'src/lib.rs', lines 286:4-286:23 -/
 @[reducible]
 def slice.Dummy (T : Type) := T
 
 /-- [alloc::vec::Vec]
-    Source: 'src/lib.rs', lines 389:4-389:34
+    Source: 'src/lib.rs', lines 394:4-394:34
     Visibility: public -/
 @[reducible]
 def vec.Vec (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 425:8-425:43
+    Source: 'src/lib.rs', lines 437:8-437:43
     Visibility: public -/
 @[reducible]
 def vec.into_iter.IntoIter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::drain::Drain]
-    Source: 'src/lib.rs', lines 529:8-529:76
+    Source: 'src/lib.rs', lines 541:8-541:76
     Visibility: public -/
 def vec.drain.Drain (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A

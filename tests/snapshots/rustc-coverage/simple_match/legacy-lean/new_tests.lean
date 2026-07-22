@@ -14,7 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__simple_match
 
---  @fail(extraction): proverif(HAX0001, HAX0008), fstar(HAX0001), lean(HAX0001), ssprove(HAX0001), coq(HAX0001)
+--  @fail(extraction): proverif(HAX0001, HAX0008), fstar(HAX0001), legacy-lean(HAX0001), ssprove(HAX0001), coq(HAX0001)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM
@@ -43,3 +43,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
     rust_primitives.hax.Tuple0.mk))
 
 end new_tests.rustc_coverage__simple_match
+

@@ -252,6 +252,8 @@ impl<T> Default for Option<T> {
     }
 }
 
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
 impl<T: super::clone::Clone> super::clone::Clone for Option<T> {
     fn clone(self) -> Self {
         match self {
@@ -261,6 +263,7 @@ impl<T: super::clone::Clone> super::clone::Clone for Option<T> {
     }
 }
 
+#[hax_lib::attributes]
 impl<T: super::cmp::PartialEq<T>> super::cmp::PartialEq<Option<T>> for Option<T> {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {

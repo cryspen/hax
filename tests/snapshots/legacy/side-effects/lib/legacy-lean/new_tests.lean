@@ -603,3 +603,4 @@ def Impl_1._from (i : OtherS) : RustM (core_models.result.Result S Error) := do
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__side_effects__lib.issue_1299
+

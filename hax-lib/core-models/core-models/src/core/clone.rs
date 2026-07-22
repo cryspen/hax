@@ -15,8 +15,8 @@ pub trait Clone {
     fn clone(self) -> Self;
 }
 
-// In our model, everything is clonable
-#[cfg(hax)]
+// In our model for F*, everything is clonable
+#[cfg(hax_backend_fstar)]
 impl<T> Clone for T {
     fn clone(self) -> Self {
         self
@@ -35,7 +35,7 @@ macro_rules! clone_impl_for_int {
     };
 }
 
-#[cfg(not(hax))]
+#[cfg(not(hax_backend_fstar))]
 clone_impl_for_int!(
     core::primitive::u8,
     core::primitive::u16,

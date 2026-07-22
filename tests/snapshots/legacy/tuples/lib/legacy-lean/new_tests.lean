@@ -22,3 +22,4 @@ def project_tuple1 (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   (pure (rust_primitives.hax.Tuple1._0 tuple1))
 
 end new_tests.legacy__tuples__lib
+

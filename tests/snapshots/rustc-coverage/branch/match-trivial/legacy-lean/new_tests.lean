@@ -20,7 +20,7 @@ inductive Uninhabited : Type
 @[spec]
 def Uninhabited_cast_to_repr (x : Uninhabited) :
     RustM rust_primitives.hax.Never := do
-  match x with
+  match x with 
 
 inductive Trivial : Type
 | Value : Trivial
@@ -74,3 +74,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__branch__match_trivial
+

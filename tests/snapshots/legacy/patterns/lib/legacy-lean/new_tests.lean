@@ -25,3 +25,4 @@ def Impl.test (self : Test) : RustM i32 := do
   match self with | (Test.C1  c) => do (pure (Other._0 c))
 
 end new_tests.legacy__patterns__lib
+

@@ -746,3 +746,4 @@ def looping_2 (array : (RustArray u8 5)) : RustM (RustArray u8 5) := do
   (pure array)
 
 end new_tests.legacy__loops__lib.and_mut_side_effect_loop
+

@@ -164,82 +164,92 @@ pub mod function {
     }
 
     /// See [`std::ops::Fn`]
-    #[hax_lib::attributes]
-    pub trait Fn<Args>: FnMut<Args> {
-        #[hax_lib::requires(true)]
-        fn call(&self, args: Args) -> Self::Output;
-    }
-
-    /* These instances provide implementations of the F* type classes corresponding to Fn traits for anonymous functions.
-    This ensures that passing a closure where something implementing Fn works when translated to F* */
-    #[cfg(all(not(test), hax_backend_fstar))]
-    #[hax_lib::fstar::after(
-        "unfold instance fnonce_arrow_binder t u
+    /* Instances of the `Fn*` classes for F* arrows (arities 1 to 3), so that a
+    closure can be passed where a `Fn*` bound is expected. Hand-written rather
+    than extracted from Rust impls on `fn(..) -> _`: hax emits
+    `_super_i0 = FStar.Tactics.Typeclasses.solve`, which F* cannot relate to the
+    arrow's return type. Writing them out also gives the post-conditions (`res == x0 x1`). */
+    #[cfg_attr(
+        all(not(test), hax_backend_fstar),
+        hax_lib::fstar::after(
+            "unfold instance fnonce_arrow_binder t u
   : t_FnOnce (_:t -> u) t = {
     f_Output = u;
     f_call_once_pre = (fun _ _ -> true);
     f_call_once_post = (fun (x0: (_:t -> u)) (x1: t) (res: u) -> res == x0 x1);
     f_call_once = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
+  }
+
+unfold instance fnmut_arrow_binder t u
+  : t_FnMut (_:t -> u) t = {
+    _super_i0 = fnonce_arrow_binder t u;
+    f_call_mut_pre = (fun _ _ -> true);
+    f_call_mut_post = (fun (x0: (_:t -> u)) (x1: t) (res: u) -> res == x0 x1);
+    f_call_mut = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
+  }
+
+unfold instance fn_arrow_binder t u
+  : t_Fn (_:t -> u) t = {
+    _super_i0 = fnmut_arrow_binder t u;
+    f_call_pre = (fun _ _ -> true);
+    f_call_post = (fun (x0: (_:t -> u)) (x1: t) (res: u) -> res == x0 x1);
+    f_call = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
+  }
+
+unfold instance fnonce_arrow_binder2 t1 t2 u
+  : t_FnOnce (t1 -> t2 -> u) (t1 & t2) = {
+    f_Output = u;
+    f_call_once_pre = (fun _ _ -> true);
+    f_call_once_post = (fun (x0: (t1 -> t2 -> u)) (x1: (t1 & t2)) (res: u) -> res == x0 x1._1 x1._2);
+    f_call_once = (fun (x0: (t1 -> t2 -> u)) (x1: (t1 & t2)) -> x0 x1._1 x1._2);
+  }
+
+unfold instance fnmut_arrow_binder2 t1 t2 u
+  : t_FnMut (t1 -> t2 -> u) (t1 & t2) = {
+    _super_i0 = fnonce_arrow_binder2 t1 t2 u;
+    f_call_mut_pre = (fun _ _ -> true);
+    f_call_mut_post = (fun (x0: (t1 -> t2 -> u)) (x1: (t1 & t2)) (res: u) -> res == x0 x1._1 x1._2);
+    f_call_mut = (fun (x0: (t1 -> t2 -> u)) (x1: (t1 & t2)) -> x0 x1._1 x1._2);
+  }
+
+unfold instance fn_arrow_binder2 t1 t2 u
+  : t_Fn (t1 -> t2 -> u) (t1 & t2) = {
+    _super_i0 = fnmut_arrow_binder2 t1 t2 u;
+    f_call_pre = (fun _ _ -> true);
+    f_call_post = (fun (x0: (t1 -> t2 -> u)) (x1: (t1 & t2)) (res: u) -> res == x0 x1._1 x1._2);
+    f_call = (fun (x0: (t1 -> t2 -> u)) (x1: (t1 & t2)) -> x0 x1._1 x1._2);
+  }
+
+unfold instance fnonce_arrow_binder3 t1 t2 t3 u
+  : t_FnOnce (t1 -> t2 -> t3 -> u) (t1 & t2 & t3) = {
+    f_Output = u;
+    f_call_once_pre = (fun _ _ -> true);
+    f_call_once_post = (fun (x0: (t1 -> t2 -> t3 -> u)) (x1: (t1 & t2 & t3)) (res: u) -> res == x0 x1._1 x1._2 x1._3);
+    f_call_once = (fun (x0: (t1 -> t2 -> t3 -> u)) (x1: (t1 & t2 & t3)) -> x0 x1._1 x1._2 x1._3);
+  }
+
+unfold instance fnmut_arrow_binder3 t1 t2 t3 u
+  : t_FnMut (t1 -> t2 -> t3 -> u) (t1 & t2 & t3) = {
+    _super_i0 = fnonce_arrow_binder3 t1 t2 t3 u;
+    f_call_mut_pre = (fun _ _ -> true);
+    f_call_mut_post = (fun (x0: (t1 -> t2 -> t3 -> u)) (x1: (t1 & t2 & t3)) (res: u) -> res == x0 x1._1 x1._2 x1._3);
+    f_call_mut = (fun (x0: (t1 -> t2 -> t3 -> u)) (x1: (t1 & t2 & t3)) -> x0 x1._1 x1._2 x1._3);
+  }
+
+unfold instance fn_arrow_binder3 t1 t2 t3 u
+  : t_Fn (t1 -> t2 -> t3 -> u) (t1 & t2 & t3) = {
+    _super_i0 = fnmut_arrow_binder3 t1 t2 t3 u;
+    f_call_pre = (fun _ _ -> true);
+    f_call_post = (fun (x0: (t1 -> t2 -> t3 -> u)) (x1: (t1 & t2 & t3)) (res: u) -> res == x0 x1._1 x1._2 x1._3);
+    f_call = (fun (x0: (t1 -> t2 -> t3 -> u)) (x1: (t1 & t2 & t3)) -> x0 x1._1 x1._2 x1._3);
   }"
+        )
     )]
-    impl<Arg, Out> FnOnce<Arg> for fn(Arg) -> Out {
-        type Output = Out;
-        fn call_once(&self, arg: Arg) -> Out {
-            self(arg)
-        }
+    #[hax_lib::attributes]
+    pub trait Fn<Args>: FnMut<Args> {
+        #[hax_lib::requires(true)]
+        fn call(&self, args: Args) -> Self::Output;
     }
-    #[cfg(all(not(test), hax_backend_fstar))]
-    impl<Arg1, Arg2, Out> FnOnce<(Arg1, Arg2)> for fn(Arg1, Arg2) -> Out {
-        type Output = Out;
-        fn call_once(&self, arg: (Arg1, Arg2)) -> Out {
-            self(arg.0, arg.1)
-        }
-    }
-    #[cfg(all(not(test), hax_backend_fstar))]
-    impl<Arg1, Arg2, Arg3, Out> FnOnce<(Arg1, Arg2, Arg3)> for fn(Arg1, Arg2, Arg3) -> Out {
-        type Output = Out;
-        fn call_once(&self, arg: (Arg1, Arg2, Arg3)) -> Out {
-            self(arg.0, arg.1, arg.2)
-        }
-    }
-
-    /* #[cfg(all(not(test), hax_backend_fstar))]
-    impl<Arg, Out> FnMut<Arg> for fn(Arg) -> Out {
-        fn call_mut(&self, arg: Arg) -> Out {
-            self(arg)
-        }
-    }
-    #[cfg(all(not(test), hax_backend_fstar))]
-    impl<Arg1, Arg2, Out> FnMut<(Arg1, Arg2)> for fn(Arg1, Arg2) -> Out {
-        fn call_mut(&self, arg: (Arg1, Arg2)) -> Out {
-            self(arg.0, arg.1)
-        }
-    }
-    #[cfg(all(not(test), hax_backend_fstar))]
-    impl<Arg1, Arg2, Arg3, Out> FnMut<(Arg1, Arg2, Arg3)> for fn(Arg1, Arg2, Arg3) -> Out {
-        fn call_mut(&self, arg: (Arg1, Arg2, Arg3)) -> Out {
-            self(arg.0, arg.1, arg.2)
-        }
-    }
-
-    #[cfg(all(not(test), hax_backend_fstar))]
-    impl<Arg, Out> Fn<Arg> for fn(Arg) -> Out {
-        fn call(&self, arg: Arg) -> Out {
-            self(arg)
-        }
-    }
-    #[cfg(all(not(test), hax_backend_fstar))]
-    impl<Arg1, Arg2, Out> Fn<(Arg1, Arg2)> for fn(Arg1, Arg2) -> Out {
-        fn call(&self, arg: (Arg1, Arg2)) -> Out {
-            self(arg.0, arg.1)
-        }
-    }
-    #[cfg(all(not(test), hax_backend_fstar))]
-    impl<Arg1, Arg2, Arg3, Out> Fn<(Arg1, Arg2, Arg3)> for fn(Arg1, Arg2, Arg3) -> Out {
-        fn call(&self, arg: (Arg1, Arg2, Arg3)) -> Out {
-            self(arg.0, arg.1, arg.2)
-        }
-    } */
 }
 
 pub mod try_trait {

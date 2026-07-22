@@ -229,3 +229,4 @@ def used_inline_function (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__auxiliary__used_inline_crate
+

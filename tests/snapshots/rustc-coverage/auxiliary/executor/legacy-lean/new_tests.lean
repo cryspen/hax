@@ -15,7 +15,7 @@ set_option linter.unusedVariables false
 namespace new_tests.rustc_coverage__auxiliary__executor
 
 --  Dummy "executor" that just repeatedly polls a future until it's ready.
---  @fail(extraction): fstar(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), ssprove(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008), coq(HAX0008, HAX0003, HAX0003, HAX0003, HAX0003), lean(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), proverif(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008)
+--  @fail(extraction): fstar(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), ssprove(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008), coq(HAX0008, HAX0003, HAX0003, HAX0003, HAX0003), legacy-lean(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), proverif(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008)
 @[spec]
 def block_on
     (F : Type)
@@ -28,3 +28,4 @@ def block_on
   (pure sorry)
 
 end new_tests.rustc_coverage__auxiliary__executor
+

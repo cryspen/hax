@@ -3,8 +3,8 @@ module Core_models.Iter.Adapters.Take
 open FStar.Mul
 open Rust_primitives
 
-include Core_models.Iter.Bundle {t_Take as t_Take}
+include Core_models.Bundle {t_Take as t_Take}
 
-include Core_models.Iter.Bundle {impl__new__from__take as impl__new}
+include Core_models.Bundle {impl__new__from__take as impl__new}
 
-include Core_models.Iter.Bundle {impl_1__from__take as impl_1}
+include Core_models.Bundle {impl_1__from__take as impl_1}

@@ -23,3 +23,4 @@ def f (n : u8) : RustM u8 := do
 partial_fixpoint
 
 end new_tests.legacy__recursion__lib
+

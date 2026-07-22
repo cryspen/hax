@@ -3,8 +3,8 @@ module Core_models.Iter.Adapters.Map
 open FStar.Mul
 open Rust_primitives
 
-include Core_models.Iter.Bundle {t_Map as t_Map}
+include Core_models.Bundle {t_Map as t_Map}
 
-include Core_models.Iter.Bundle {impl__new__from__map as impl__new}
+include Core_models.Bundle {impl__new__from__map as impl__new}
 
-include Core_models.Iter.Bundle {impl_1__from__map as impl_1}
+include Core_models.Bundle {impl_1__from__map as impl_1}

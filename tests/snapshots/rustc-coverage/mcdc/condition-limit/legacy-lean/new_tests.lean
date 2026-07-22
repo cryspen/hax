@@ -14,7 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__mcdc__condition_limit
 
---  @fail(extraction): coq(HAX0001), proverif(HAX0001), fstar(HAX0001), ssprove(HAX0001), lean(HAX0001)
+--  @fail(extraction): coq(HAX0001), proverif(HAX0001), fstar(HAX0001), ssprove(HAX0001), legacy-lean(HAX0001)
 @[spec]
 def accept_7_conditions (bool_arr : (RustArray Bool 7)) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -30,3 +30,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__mcdc__condition_limit
+
