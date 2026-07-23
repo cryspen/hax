@@ -4,7 +4,7 @@ members = [
     "barrett",
     "chacha20",
     "legacy_lean_chacha20",
-    "legacy_lean_tutorial",
+    "lean_tutorial",
     "limited-order-book",
     "loop_equivalence",
     "sha3",
