@@ -469,6 +469,13 @@ pub mod vec {
         }
     }
 
+    /// See [`std::vec::Vec::default`]: an empty `Vec`.
+    impl<T> Default for Vec<T> {
+        fn default() -> Vec<T> {
+            Vec::new()
+        }
+    }
+
     #[hax_lib::attributes]
     impl<T> Vec<T> {
         pub fn len(&self) -> usize {
@@ -523,6 +530,13 @@ pub mod vec {
         pub fn append(&mut self, other: &mut Vec<T>) {
             seq_concat(&mut self.0, &mut other.0);
             other.0 = seq_empty()
+        }
+        /// See [`std::vec::Vec::split_off`]: truncate `self` to `[0, at)` and
+        /// return the tail `[at, len)` as a new `Vec`.
+        #[hax_lib::requires(at <= self.len())]
+        pub fn split_off(&mut self, at: usize) -> Vec<T> {
+            let l = seq_len(&self.0);
+            Vec(seq_drain(&mut self.0, at, l))
         }
         #[hax_lib::opaque]
         pub fn drain<R /* : RangeBounds<usize> */>(

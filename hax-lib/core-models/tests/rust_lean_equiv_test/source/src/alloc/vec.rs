@@ -381,3 +381,29 @@ pub fn test_vec_into_iter_first() -> bool {
         None => false,
     }
 }
+
+// ----- default ---------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_default_empty() -> bool {
+    let a: Vec<u8> = Default::default();
+    let b: Vec<u8> = Vec::new();
+    (a == b) == true
+}
+
+// ----- split_off -------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_split_off() -> bool {
+    let mut a: Vec<u8> = Vec::new();
+    a.push(1u8);
+    a.push(2u8);
+    a.push(3u8);
+    let b = a.split_off(1);
+    let mut ea: Vec<u8> = Vec::new();
+    ea.push(1u8);
+    let mut eb: Vec<u8> = Vec::new();
+    eb.push(2u8);
+    eb.push(3u8);
+    (a == ea) && (b == eb)
+}

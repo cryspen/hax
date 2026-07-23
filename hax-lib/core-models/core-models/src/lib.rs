@@ -26,7 +26,8 @@
 //! proof assistants and other verification tools.
 
 #![allow(dead_code, unused)]
-#![cfg_attr(test, feature(step_trait))]
+// int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
+#![cfg_attr(test, feature(step_trait, int_roundings))]
 #![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
@@ -52,6 +53,8 @@ pub mod fmt;
 pub mod hash;
 #[path = "core/hint.rs"]
 pub mod hint;
+#[path = "core/intrinsics.rs"]
+pub mod intrinsics;
 #[path = "core/iter.rs"]
 pub mod iter;
 #[path = "core/marker.rs"]

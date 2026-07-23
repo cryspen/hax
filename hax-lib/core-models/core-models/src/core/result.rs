@@ -94,14 +94,6 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See [`std::result::Result::unwrap_or`]
-    pub fn unwrap_or(self, default: T) -> T {
-        match self {
-            Ok(t) => t,
-            Err(_) => default,
-        }
-    }
-
     /// See [`std::result::Result::unwrap_or_else`]
     pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
         match self {
@@ -164,17 +156,6 @@ impl<T, E> Result<T, E> {
         match self {
             Ok(t) => f(t),
             Err(_) => U::default(),
-        }
-    }
-
-    /// See [`std::result::Result::map_err`]
-    pub fn map_err<F, O>(self, op: O) -> Result<T, F>
-    where
-        O: FnOnce(E) -> F,
-    {
-        match self {
-            Ok(t) => Ok(t),
-            Err(e) => Err(op(e)),
         }
     }
 
@@ -242,6 +223,30 @@ impl<T, E> Result<T, E> {
         match self {
             Ok(t) => Ok(t),
             Err(e) => op(e),
+        }
+    }
+
+    // F* names inherent methods by impl-block order, so `unwrap_or`/`map_err`
+    // live in this first block for F* to keep their `impl__` name. The
+    // aeneas/lean copies (which, unlike this excluded block, must be extracted)
+    // are in the `cfg(not(hax_backend_fstar))` block below.
+    /// See [`std::result::Result::unwrap_or`]
+    #[cfg(hax_backend_fstar)]
+    pub fn unwrap_or(self, default: T) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => default,
+        }
+    }
+    /// See [`std::result::Result::map_err`]
+    #[cfg(hax_backend_fstar)]
+    pub fn map_err<F, O>(self, op: O) -> Result<T, F>
+    where
+        O: FnOnce(E) -> F,
+    {
+        match self {
+            Ok(t) => Ok(t),
+            Err(e) => Err(op(e)),
         }
     }
 }
@@ -317,6 +322,48 @@ impl<T, E> crate::ops::try_trait::Try for Result<T, E> {
         match self {
             Ok(v) => crate::ops::control_flow::ControlFlow::Continue(v),
             Err(e) => crate::ops::control_flow::ControlFlow::Break(Err(e)),
+        }
+    }
+}
+
+/// aeneas/lean copies of `unwrap_or`/`map_err`: not in Aeneas's builtin `Result`
+/// and the `impl` above is excluded, so they're extracted here. Also defined in
+/// the F* `impl__` block above (see the comment there) to keep the F* name.
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T, E> Result<T, E> {
+    /// See [`std::result::Result::unwrap_or`]
+    pub fn unwrap_or(self, default: T) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => default,
+        }
+    }
+
+    /// See [`std::result::Result::map_err`]
+    pub fn map_err<F, O>(self, op: O) -> Result<T, F>
+    where
+        O: FnOnce(E) -> F,
+    {
+        match self {
+            Ok(t) => Ok(t),
+            Err(e) => Err(op(e)),
+        }
+    }
+}
+
+/// The error half of `?`: re-inject the `Err(e)` residual, widening the error
+/// via `From` (mirrors std's `impl<T, E, F: From<E>> ... for Result<T, F>`). `Ok`
+/// is unreachable — the residual's payload is `Infallible`.
+// opaque for F*: can't prove the `Ok(_)` arm (`Infallible`) unreachable.
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+impl<T, E, F: crate::convert::From<E>>
+    crate::ops::try_trait::FromResidual<Result<crate::convert::Infallible, E>> for Result<T, F>
+{
+    fn from_residual(residual: Result<crate::convert::Infallible, E>) -> Self {
+        match residual {
+            Err(e) => Err(<F as crate::convert::From<E>>::from(e)),
+            Ok(_) => super::panicking::internal::panic(),
         }
     }
 }

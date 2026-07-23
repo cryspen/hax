@@ -70,6 +70,11 @@ pub fn result_pattern(x: Result<u8, u8>) -> u8 {
     }
 }
 
+// ----- fmt ------------------------------------------------------------------
+//
+// No fmt smoke test: extracting a call into the fmt traits makes Aeneas abort
+// (internal `Unreachable`); the impls themselves elaborate fine.
+
 // ----- mem ------------------------------------------------------------------
 
 pub fn mem_swap_u32(a: &mut u32, b: &mut u32) {
