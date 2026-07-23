@@ -168,20 +168,17 @@ pub struct FStarOptions {
 
 #[derive_group(Serializers)]
 #[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
-#[command(after_help = concat!("\
+#[command(after_help = "\
 TOOLS:
   This backend runs `charon`, then `aeneas`, and scaffolds a Lean proof project.
-  Each tool is pinned; the pinned version is checked against the resolved binary
-  at runtime (a mismatch is a non-fatal warning).
+  Tool versions are managed by hax: each tool resolves through, in order, a
+  HAX_<TOOL>_BINARY override, the project's `hax.toml` (member crate, then
+  workspace root), and the built-in default version this release was tested
+  with, and is downloaded into the tool cache on demand with checksum
+  verification.
 
-  charon   expected version   ", env!("HAX_CHARON_PIN_VERSION"), "
-           located at $HAX_CHARON_BINARY (absolute path) if set, else `charon` found in PATH
-  aeneas   expected commit     ", env!("HAX_AENEAS_PIN_VERSION"), "
-           located at $HAX_AENEAS_BINARY (absolute path) if set, else `aeneas` found in PATH
-  lean     expected toolchain  ", env!("HAX_LEAN_PIN_TOOLCHAIN"), "
-           used by the generated proof project (written to its `lean-toolchain`)
-
-  Install charon/aeneas with `install-aeneas.sh`.
+  Inspect the active versions and their sources with `cargo hax tools show`;
+  pre-install them with `cargo hax tools install`.
 
 INVOCATION:
   The tools are run with some fixed flags (to which any --charon-args/--aeneas-args
@@ -193,8 +190,8 @@ INVOCATION:
   or the generated proof project.
 
 ENVIRONMENT VARIABLES:
-  HAX_CHARON_BINARY  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
-  HAX_AENEAS_BINARY  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH."))]
+  HAX_CHARON_BINARY  Path to the `charon` binary to use, bypassing version management.
+  HAX_AENEAS_BINARY  Path to the `aeneas` binary to use, bypassing version management.")]
 pub struct LeanOptions {
     /// Generate a `lakefile.toml` and `lean-toolchain` in the
     /// `proofs/lean/` directory, with a dependency on the Aeneas
@@ -508,8 +505,48 @@ pub enum Command<E: Extension> {
         backend: Option<BackendName>,
     },
 
+    /// Manage the external tools hax depends on (e.g. charon and
+    /// aeneas): show the versions the current project resolves to,
+    /// list installable versions, and install them.
+    #[command(subcommand)]
+    Tools(ToolsCommand),
+
     #[command(flatten)]
     CliExtension(E::Command),
+}
+
+/// Subcommands of `cargo hax tools`.
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Eq, PartialEq)]
+pub enum ToolsCommand {
+    /// Download and cache the tool versions the current project
+    /// resolves to, or a specific `<tool>@<version>`.
+    Install {
+        /// A `<tool>@<version>` specification (e.g.
+        /// `charon@nightly-2026.07.01`) to install into the
+        /// machine-wide cache. When absent, installs what the current
+        /// project's configuration resolves to.
+        spec: Option<String>,
+        /// Re-download and verify even if the version is already cached
+        /// (e.g. to verify a copy installed before its checksum shipped).
+        #[arg(long)]
+        force: bool,
+    },
+    /// List the tool versions this release of hax can install with
+    /// checksum verification.
+    List {
+        /// Restrict the listing to one tool.
+        tool: Option<String>,
+        /// Only show versions present in the local cache.
+        #[arg(long)]
+        installed: bool,
+        /// Show every version instead of only the most recent ones.
+        #[arg(long)]
+        all: bool,
+    },
+    /// Show which tool versions are active in the current project,
+    /// and where each one comes from.
+    Show,
 }
 
 impl<E: Extension> Command<E> {
@@ -517,7 +554,9 @@ impl<E: Extension> Command<E> {
         match self {
             Command::JSON { kind, .. } => kind.clone(),
             Command::Serialize { kind, .. } => kind.clone(),
-            Command::Backend { .. } | Command::CliExtension { .. } => vec![ExportBodyKind::Thir],
+            Command::Backend { .. } | Command::Tools { .. } | Command::CliExtension { .. } => {
+                vec![ExportBodyKind::Thir]
+            }
         }
     }
     pub fn backend_name(&self) -> Option<BackendName> {
@@ -525,6 +564,7 @@ impl<E: Extension> Command<E> {
             Command::Backend(backend_options) => Some((&backend_options.backend).into()),
             Command::JSON { .. } => None,
             Command::Serialize { backend, .. } => backend.clone(),
+            Command::Tools(_) => None,
             Command::CliExtension(_) => None,
         }
     }

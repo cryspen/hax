@@ -56,5 +56,4 @@ fn main() {
     rustc_version_env_var();
     json_schema_static_asset();
     git_dirty_env_var();
-    // Tool pins are read once in `hax-types` and exposed as `hax_types::pins`.
 }

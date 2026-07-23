@@ -139,8 +139,7 @@ Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimi
 2. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
 3. Create (or use an existing) opam *switch* by running `opam switch create hax 5.1.1`
 3. Run the [setup.sh](./setup.sh) script: `./setup.sh`.
-   This installs hax and the aeneas/charon binaries by default.
-   Pass `--no-aeneas` to skip the aeneas/charon installation.
+   This installs hax; aeneas and charon are downloaded on demand when first needed.
 4. Run `cargo-hax --help`
 
 </details>
@@ -169,9 +168,9 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
 + **Note**: in any of the Nix commands above, replace `github:cryspen/hax` by `./dir` to compile a local checkout of hax that lives in `./some-dir`
 + **Setup binary cache**: [using Cachix](https://app.cachix.org/cache/hax), just `cachix use hax`
 
-**Note:** Nix does not yet include aeneas and charon.
-After installing, run `./install-aeneas.sh` from a hax checkout to
-add the `lean` backend.
+**Note:** the `lean` backend downloads its aeneas and charon
+binaries on demand (see *Aeneas and Charon* below); no extra install
+step is needed.
 
 </details>
 
@@ -186,8 +185,9 @@ add the `lean` backend.
 Note: Please make sure that `$HOME/.cargo/bin` is in your `$PATH`, as
 that is where `setup.sh` will install hax.
 
-**Note:** Docker does not yet include aeneas and charon.
-Run `./install-aeneas.sh` inside the container to add the `lean` backend.
+**Note:** the `lean` backend downloads its aeneas and charon
+binaries on demand (see *Aeneas and Charon* below); no extra install
+step is needed.
 
 </details>
 
@@ -199,20 +199,34 @@ The `lean` backend (`cargo hax into lean`) uses the
 [aeneas](https://github.com/AeneasVerif/aeneas) pipeline instead of
 the hax engine.  It requires the `aeneas` and `charon` binaries.
 
-If you already have hax installed and just need the aeneas/charon
-binaries (e.g. after a Nix or Docker install), run:
+Their versions are managed by hax: pre-built binaries are downloaded
+on demand, verified against the version manifest shipped with the
+release, and cached under `$XDG_CACHE_HOME/hax/tools/`. To see the
+active versions or pre-populate the cache (e.g. in CI or before going
+offline), run, inside your project:
 
 ```bash
-./install-aeneas.sh
+cargo hax tools show
+cargo hax tools install
 ```
 
-This downloads pre-built binaries (at the versions pinned by this
-repository) to `~/.cargo/bin/`.
+To pin different versions per project, declare them in a `hax.toml` at
+your project's root:
+
+```toml
+[tools]
+aeneas = "nightly-2026.07.01"
+charon = "nightly-2026.07.01"
+```
 
 You can also build or install `aeneas` and `charon` yourself (e.g.
-from source) and either place them in your `PATH` or point to them
-with the `HAX_AENEAS_BINARY` and `HAX_CHARON_BINARY` environment
-variables.
+from source) and point to them with the `HAX_AENEAS_BINARY` and
+`HAX_CHARON_BINARY` environment variables, or with a committed
+`path` entry in `hax.toml` (e.g. `charon = { path = "vendor/bin/charon" }`).
+
+See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in
+the manual for the full reference (`cargo hax tools`, the `hax.toml`
+schema, resolution order, and the `hax-lib` compatibility check).
 
 </details>
 

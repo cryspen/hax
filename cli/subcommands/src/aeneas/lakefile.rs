@@ -5,19 +5,32 @@ use hax_types::diagnostics::message::HaxMessage;
 use std::fs;
 use std::path::Path;
 
-/// Generate the contents of a `lakefile.toml` for an lean project.
-///
-/// The `aeneas` Lean proof library is pinned to the same source repo + commit as
-/// the `aeneas` binary hax expects (baked from `pins.toml`'s `[aeneas]`, see
-/// build.rs), so the proof library matches the extraction. The `Hax` Lean proof
-/// library is pinned from `[hax-lean-lib]`. All pins are required — `generate`
-/// rejects empty ones before we get here, so there are no fallbacks.
-fn lakefile_contents(crate_name: &str) -> String {
+/// The source repository of the aeneas Lean proof library: the repository
+/// the managed aeneas binaries are built from, so a resolved aeneas
+/// version doubles as the library's rev.
+const AENEAS_REPO: &str = "https://github.com/cryspen/aeneas";
+
+/// The source repository of the `Hax` Lean proof library.
+const HAX_LEAN_LIB_REPO: &str = "https://github.com/cryspen/hax-lean";
+
+/// The resolved versions a generated Lean project pins: the aeneas rev
+/// (matching the aeneas binary, so the proof library matches the
+/// extraction), the Lean toolchain, and the `Hax` library rev. All come
+/// from the project's resolution ([versions] entries and the aeneas
+/// resolution, or the built-in defaults).
+pub struct LakefilePins {
+    pub aeneas_rev: String,
+    pub lean_toolchain: String,
+    pub hax_lean_lib_rev: String,
+}
+
+/// Generate the contents of a `lakefile.toml` for a lean project.
+fn lakefile_contents(crate_name: &str, pins: &LakefilePins) -> String {
     let pkg_name = super::to_camel_case(crate_name);
-    let aeneas_git = super::AENEAS_PIN_REPO;
-    let aeneas_rev = super::AENEAS_PIN_VERSION;
-    let hax_lean_git = super::LEAN_LIB_PIN_REPO;
-    let hax_lean_rev = super::LEAN_LIB_PIN_VERSION;
+    let aeneas_git = AENEAS_REPO;
+    let aeneas_rev = &pins.aeneas_rev;
+    let hax_lean_git = HAX_LEAN_LIB_REPO;
+    let hax_lean_rev = &pins.hax_lean_lib_rev;
 
     format!(
         r#"name = "{pkg_name}"
@@ -74,16 +87,21 @@ fn write_if_absent(path: &Path, contents: &str, message_format: MessageFormat) {
 
 /// Generates a `lakefile.toml`, `lean-toolchain`, and root `<PkgName>.lean`
 /// in `lean_dir`. Existing files are not overwritten.
-pub fn generate(lean_dir: &Path, crate_name: &str, message_format: MessageFormat) {
+pub fn generate(
+    lean_dir: &Path,
+    crate_name: &str,
+    pins: &LakefilePins,
+    message_format: MessageFormat,
+) {
     let pkg_name = super::to_camel_case(crate_name);
     write_if_absent(
         &lean_dir.join("lakefile.toml"),
-        &lakefile_contents(crate_name),
+        &lakefile_contents(crate_name, pins),
         message_format,
     );
     write_if_absent(
         &lean_dir.join("lean-toolchain"),
-        super::LEAN_PIN_TOOLCHAIN,
+        &pins.lean_toolchain,
         message_format,
     );
     write_if_absent(

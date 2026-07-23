@@ -36,8 +36,9 @@ pub enum HaxMessage {
     GenericWarning {
         message: String,
     } = 8,
-    RunningStep {
-        step: String,
+    Step {
+        verb: String,
+        target: String,
     } = 9,
     SubprocessOutput {
         prefix: String,
@@ -52,6 +53,44 @@ pub enum HaxMessage {
         option: String,
         backend: BackendName,
     } = 12,
+    HaxTomlWarning {
+        path: PathBuf,
+        message: String,
+    } = 13,
+    HaxTomlError {
+        path: PathBuf,
+        message: String,
+    } = 14,
+    MemberToolOverrides {
+        crate_name: String,
+        path: PathBuf,
+        entries: Vec<String>,
+    } = 15,
+    StrayHaxToml {
+        path: PathBuf,
+    } = 16,
+    UnverifiedInstall {
+        tool: String,
+        version: String,
+        url: String,
+    } = 17,
+    NonDefaultToolVersion {
+        tool: String,
+        used: String,
+        tested: String,
+    } = 18,
+    HaxLibIncompatible {
+        crate_name: String,
+        found: String,
+        binary: String,
+        min: String,
+        max: String,
+        newer: bool,
+    } = 19,
+    CachedUnverifiedToolInUse {
+        tool: String,
+        version: String,
+    } = 20,
 }
 
 impl HaxMessage {
@@ -202,9 +241,9 @@ impl HaxMessage {
                 let title = format!("hax: {}", message);
                 format!("{}", renderer.render(Level::Warning.title(&title)))
             }
-            Self::RunningStep { step } => {
+            Self::Step { verb, target } => {
                 use colored::Colorize;
-                format!("{:>12} {}", "Running".bold().green(), step)
+                format!("{:>12} {}", verb.bold().green(), target)
             }
             Self::SubprocessOutput { prefix, line } => {
                 format!("{:>12} > {}", prefix, line)
@@ -227,6 +266,106 @@ impl HaxMessage {
                     option, backend
                 );
                 format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::HaxTomlWarning { path, message } => {
+                let title = format!("hax: {}: {}", path.display(), message);
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::HaxTomlError { path, message } => {
+                let title = format!("hax: {}: {}", path.display(), message);
+                format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::MemberToolOverrides {
+                crate_name,
+                path,
+                entries,
+            } => {
+                let title = format!(
+                    "hax: crate `{}` overrides the workspace tool configuration ({}) in {}. \
+                     Prefer a single workspace-wide pin where possible.",
+                    crate_name,
+                    entries.join(", "),
+                    path.display()
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::HaxLibIncompatible {
+                crate_name,
+                found,
+                binary,
+                min,
+                max,
+                newer,
+            } => {
+                let remedy = if newer {
+                    format!(
+                        "update cargo-hax to the release matching hax-lib {found}, or pin\n\
+                         the `hax-lib` dependency to {max} in Cargo.toml"
+                    )
+                } else {
+                    format!(
+                        "update the `hax-lib` dependency in Cargo.toml, or install a\n\
+                         version of cargo-hax compatible with hax-lib {found}"
+                    )
+                };
+                let title = format!(
+                    "incompatible `hax-lib` version\n\n\
+                     this cargo-hax binary ({binary}) requires hax-lib >={min}, <={max}\n\
+                     found hax-lib {found} in Cargo.lock (crate `{crate_name}`)\n\n\
+                     {remedy}"
+                );
+                format!("{}", renderer.render(Level::Error.title(&title)))
+            }
+            Self::NonDefaultToolVersion { tool, used, tested } => {
+                let title =
+                    format!("hax: using {tool} {used}; this hax release was tested with {tested}");
+                format!("{}", renderer.render(Level::Info.title(&title)))
+            }
+            Self::UnverifiedInstall { tool, version, url } => {
+                let title = format!(
+                    "{tool} {version} is not in this release's manifest; \
+                     installing without checksum verification"
+                );
+                let source = format!("source {url}");
+                let remedy = format!(
+                    "once a checksum ships, run \
+                     `cargo hax tools install {tool}@{version} --force` to verify"
+                );
+                format!(
+                    "{}",
+                    renderer.render(
+                        Level::Warning
+                            .title(&title)
+                            .footer(Level::Note.title(&source))
+                            .footer(Level::Help.title(&remedy))
+                    )
+                )
+            }
+            Self::StrayHaxToml { path } => {
+                let title = format!(
+                    "hax: found {} outside the workspace root and member crate roots; \
+                     it has no effect and is ignored",
+                    path.display()
+                );
+                format!("{}", renderer.render(Level::Warning.title(&title)))
+            }
+            Self::CachedUnverifiedToolInUse { tool, version } => {
+                let title = format!(
+                    "using {tool} {version} from the cache; it was installed \
+                     without checksum verification"
+                );
+                let remedy = format!(
+                    "run `cargo hax tools install {tool}@{version} --force` to \
+                     re-download and verify it once a checksum ships"
+                );
+                format!(
+                    "{}",
+                    renderer.render(
+                        Level::Warning
+                            .title(&title)
+                            .footer(Level::Help.title(&remedy))
+                    )
+                )
             }
         }
     }
