@@ -6,7 +6,8 @@ import CoreModels
 This file implements a tactic `for_loop_with_invariant` allows us to replace occurrences of
 Aeneas's `loop` constant with a simpler construct `forLoopWithInvariant`, provided that
 the original Rust loops is a for-loop. We support for-loops over any integer scalar type
-(signed or unsigned) carrying a `Step` instance, without early returns. -/
+(signed or unsigned) whose `Step` dictionary is recovered from the loop body, without
+early returns. -/
 
 set_option autoImplicit false
 set_option linter.unusedVariables false
@@ -16,41 +17,17 @@ open Aeneas CoreModels
 open Aeneas.Std hiding namespace core alloc
 namespace Hax
 
-/-! ## `Step` instances
-
-Aeneas emits `core.iter.range.Step` as a plain `structure` and the per-type
-`core.<T>.Insts.CoreIterRangeStep` as plain `def`s, not `instance`s. To let
-`forLoopWithInvariant`'s instance-implicit `[Step ι]` binder be synthesized (and stay
-definitionally equal to the dictionary the extracted `loop` uses, which `Conv.changeLhs`
-needs), we (a) promote the generated structure to a class here — without editing the
-generated file — and (b) register the per-type dictionaries as instances. There is no
-pre-existing `instance : core.iter.range.Step _`, so no coherence clash. -/
-
-attribute [class] core.iter.range.Step
-
-@[reducible] instance instStepUsize : core.iter.range.Step Std.Usize := core.Usize.Insts.CoreIterRangeStep
-@[reducible] instance instStepU8    : core.iter.range.Step Std.U8    := core.U8.Insts.CoreIterRangeStep
-@[reducible] instance instStepU16   : core.iter.range.Step Std.U16   := core.U16.Insts.CoreIterRangeStep
-@[reducible] instance instStepU32   : core.iter.range.Step Std.U32   := core.U32.Insts.CoreIterRangeStep
-@[reducible] instance instStepU64   : core.iter.range.Step Std.U64   := core.U64.Insts.CoreIterRangeStep
-@[reducible] instance instStepU128  : core.iter.range.Step Std.U128  := core.U128.Insts.CoreIterRangeStep
-@[reducible] instance instStepIsize : core.iter.range.Step Std.Isize := core.Isize.Insts.CoreIterRangeStep
-@[reducible] instance instStepI8    : core.iter.range.Step Std.I8    := core.I8.Insts.CoreIterRangeStep
-@[reducible] instance instStepI16   : core.iter.range.Step Std.I16   := core.I16.Insts.CoreIterRangeStep
-@[reducible] instance instStepI32   : core.iter.range.Step Std.I32   := core.I32.Insts.CoreIterRangeStep
-@[reducible] instance instStepI64   : core.iter.range.Step Std.I64   := core.I64.Insts.CoreIterRangeStep
-@[reducible] instance instStepI128  : core.iter.range.Step Std.I128  := core.I128.Insts.CoreIterRangeStep
-
 /-- A `for i in s..e` loop carrying its invariant as a marker.
 
 The argument `body : ι → β → Result β` takes the current index and accumulator
 and returns the new accumulator. The index scalar type `ι` is polymorphic; its
-`Step` dictionary is taken as an instance argument `StepInst`, so unsigned uses (over
-`Usize`) and signed uses (over `I8`, …, `Isize`) both resolve automatically. The
-iterator and `ControlFlow` plumbing live entirely inside this definition. The first
-argument `_inv` is a marker read off by the `for_loop_with_invariant` tactic and by
-spec lemmas; it has no computational role. -/
-def forLoopWithInvariant {ι β : Type} [StepInst : core.iter.range.Step ι]
+`Step` dictionary is taken as an explicit argument `stepInst`, which the
+`for_loop_with_invariant` tactic reads directly off the extracted loop body, so
+unsigned uses (over `Usize`) and signed uses (over `I8`, …, `Isize`) are both
+supported without any type-class search. The iterator and `ControlFlow` plumbing live
+entirely inside this definition. The first argument `_inv` is a marker read off by the
+`for_loop_with_invariant` tactic and by spec lemmas; it has no computational role. -/
+def forLoopWithInvariant {ι β : Type} (stepInst : core.iter.range.Step ι)
     (_inv : ι → β → Result Prop)
     (body : ι → β → Result β)
     (rng : core.ops.range.Range ι) (init : β) :
@@ -58,7 +35,7 @@ def forLoopWithInvariant {ι β : Type} [StepInst : core.iter.range.Step ι]
   loop (fun x : core.ops.range.Range ι × β => do
     let (o, r) ←
       core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-        StepInst x.1
+        stepInst x.1
     match o with
     | core.option.Option.None => Result.ok (ControlFlow.done x.2)
     | core.option.Option.Some i => do
@@ -88,11 +65,22 @@ Bind.bind (next StepUsize x.1) <|
       fun i => Bind.bind userBody fun acc' =>
         Result.ok (ControlFlow.cont (iter1, acc'))
 ```
-Returns `userBody` with the match-bound index substituted by `jFvar`. -/
+Also returns the `Step` dictionary the loop's `next` call is applied to (the argument
+of type `core.iter.range.Step _`), so the caller can pass it to `forLoopWithInvariant`
+directly instead of relying on type-class search.
+
+Returns `(userBody, stepDict)` with the match-bound index substituted by `jFvar`. -/
 private def extractStepBody (jFvar : Expr) (loopBodyInner : Expr) :
-    MetaM (Option Expr) := do
+    MetaM (Option (Expr × Expr)) := do
   let inner ← whnfR loopBodyInner
   unless inner.isAppOfArity ``Bind.bind 6 do return none
+  -- The bound action is the iterator `next` call; recover its `Step` dictionary
+  -- argument (the one of type `core.iter.range.Step _`).
+  let nextAction := inner.getArg! 4
+  let some stepDict ← nextAction.getAppArgs.findSomeM? (fun a => do
+      let t ← inferType a
+      return if t.isAppOf ``core.iter.range.Step then some a else none)
+    | return none
   let cont ← whnfR (inner.getArg! 5)
   unless cont.isAppOfArity ``Aeneas.Std.uncurry 4 do return none
   let uncurryFn ← whnfR (cont.getArg! 3)
@@ -115,7 +103,7 @@ private def extractStepBody (jFvar : Expr) (loopBodyInner : Expr) :
       let userBody := bodyInSome.getArg! 4
       let result := userBody.replace fun e' =>
         if e' == i then some jFvar else none
-      return some result
+      return some (result, stepDict)
 
 /-- Given a `loop B (Prod.mk _ _ iter init)` expression and an already-elaborated
 invariant `inv`, build `Hax.forLoopWithInvariant inv body iter init` by extracting
@@ -134,9 +122,9 @@ private def buildForLoopWithInvariant
   let elemTy ← inferType init
   let loopBody := loopExpr.getArg! 2
   -- Recover the index scalar type `ι` from the iterator's type
-  -- `core.ops.range.Range ι` rather than hardcoding `Usize`.
+  -- `core.ops.range.Range ι`.
   let ι := (← inferType iter).getArg! 0
-  let stepLambda ← withLocalDeclD `j ι fun j =>
+  let (stepLambda, stepDict) ← withLocalDeclD `j ι fun j =>
     withLocalDeclD `a elemTy fun a => do
       let loopBody ← whnfR loopBody
       unless loopBody.isLambda do
@@ -146,12 +134,13 @@ private def buildForLoopWithInvariant
           throwError "for_loop_with_invariant: loop body has unexpected arity"
         let x := xs[0]!
         let inner := substXSnd inner x a
-        let some body ← extractStepBody j inner
+        let some (body, stepDict) ← extractStepBody j inner
           | throwError "for_loop_with_invariant: could not extract the loop \
               step body (expected shape \
               `Bind.bind userBody (fun acc' => ok (cont (_, acc')))`)"
-        mkLambdaFVars #[j, a] body
-  mkAppM ``Hax.forLoopWithInvariant #[inv, stepLambda, iter, init]
+        let stepLambda ← mkLambdaFVars #[j, a] body
+        return (stepLambda, stepDict)
+  mkAppM ``Hax.forLoopWithInvariant #[stepDict, inv, stepLambda, iter, init]
 
 /-- Elaborate the user-supplied invariant against the expected type
 `ι → β → Result Prop`, where `β` is the element type taken from `init` and the index

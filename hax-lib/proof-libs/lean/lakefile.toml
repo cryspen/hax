@@ -8,6 +8,11 @@ name = "Hax"
 [[lean_lib]]
 name = "CoreModels"
 
+# Test module. Deliberately excluded from `defaultTargets` so it is not part of the
+# regular build; build it explicitly with `lake build Tests`.
+[[lean_lib]]
+name = "Tests"
+
 [[require]]
 name = "aeneas"
 git = { url = "https://github.com/cryspen/aeneas", subDir = "backends/lean" }
