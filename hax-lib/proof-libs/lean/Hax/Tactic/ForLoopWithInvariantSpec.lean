@@ -34,24 +34,9 @@ with `i.val < e.val`, `next` yields `some i` and advances `start` to a value wit
 
 section next_spec_helpers
 
-/-- The step `1 : usize`, cast to `u32` and `hcast` into `i32`, has value `1`. We reduce
-`hcast`/`cast` through `BitVec.toInt_setWidth` (rather than kernel-reducing the opaque
-`usize` bit-width), rewrite the inner `u32` value to `1` (`simp` proves the narrowing
-cast value), and finish the resulting `Int.bmod 1 (2^32) = 1` by case split + `omega`. -/
 private theorem hcast_cast_one_val :
     (UScalar.hcast IScalarTy.I32 (UScalar.cast UScalarTy.U32 (1#usize))).val = 1 := by
-  have hcv : (UScalar.cast UScalarTy.U32 1#usize).bv.toNat = 1 := by
-    have h : (UScalar.cast UScalarTy.U32 1#usize).val = 1 := by simp
-    simpa only [UScalar.val] using h
-  simp only [UScalar.hcast, BitVec.truncate_eq_setWidth, IScalar.val, BitVec.toInt_setWidth,
-    UScalarTy.numBits, IScalarTy.numBits, hcv]
-  grind
-
-/-- No signed wrap: for `z` within the `i32` range, `bmod` over `2^32` is the identity.
-This is what makes `wrapping_add i 1` equal to `i + 1` when `i < i32::MAX`. -/
-private theorem bmod_add_one (z : Int) (h1 : -2147483648 ≤ z) (h2 : z ≤ 2147483647) :
-    Int.bmod z 4294967296 = z := by
-  grind
+  simp only [UScalar.hcast, IScalar.val, BitVec.toInt_setWidth]; grind
 
 /-- The value produced by the `i32` `forward_checked` step: `wrapping_add i 1 = i + 1`
 whenever `i` stays below `i32::MAX` (so no wrap occurs). -/
@@ -60,7 +45,7 @@ private theorem i32_wrapping_add_one_val (i : I32)
     (i.wrapping_add (UScalar.hcast IScalarTy.I32 (UScalar.cast UScalarTy.U32 1#usize))).val
       = i.val + 1 := by
   simp only [I32.wrapping_add_val_eq, hcast_cast_one_val, Nat.reducePow]
-  exact bmod_add_one _ (by scalar_tac) (by scalar_tac)
+  grind
 
 end next_spec_helpers
 
@@ -87,25 +72,18 @@ theorem IteratorRange_next_spec (i e : I32) {Q}
       core.num.I32.wrapping_add, rust_primitives.arithmetic.wrapping_add_i32]
     mvcgen
     all_goals first
-      | (refine h_lt' _ ?_
-         subst_vars
-         exact i32_wrapping_add_one_val i (by scalar_tac) (by scalar_tac))
-      | (exfalso
-         subst_vars
-         simp only [U32.rMax, hcast_cast_one_val] at *
-         first
-           | scalar_tac
-           | (rw [bmod_add_one (i.val + 1) (by scalar_tac) (by scalar_tac)] at *
-              scalar_tac))
+      | refine h_lt' _ ?_
+        subst_vars
+        exact i32_wrapping_add_one_val i (by scalar_tac) (by scalar_tac)
+      | simp_all only [U32.rMax, hcast_cast_one_val]
+        first | scalar_tac | grind
   · have h_ge' := h_ge (by omega)
-    simp_all [compare, compareOfLessAndEq,
+    simp only [compare, compareOfLessAndEq,
       core.I32.Insts.CoreCmpPartialOrdI32, core.mkIPartialOrd]
     mvcgen
-    all_goals first
-      | exact h_ge'
-      | (exfalso
-         have hlt : ¬ (i.val < e.val) := by omega
-         by_cases hie : i.val = e.val <;> simp_all)
+    exfalso
+    have hlt : ¬ (i.val < e.val) := by omega
+    by_cases hie : i.val = e.val <;> simp_all
 
 /-! ## Iterator `next` spec (unsigned, `Usize`)
 
