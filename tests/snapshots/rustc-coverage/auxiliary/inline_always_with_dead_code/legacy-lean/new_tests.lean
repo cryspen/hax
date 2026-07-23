@@ -51,3 +51,4 @@ def call_me (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__auxiliary__inline_always_with_dead_code.baz
+

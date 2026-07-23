@@ -152,3 +152,4 @@ def write_pong (state : B1) :
         (B1.received state)))))
 
 end new_tests.legacy__proverif_ping_pong__lib.b
+

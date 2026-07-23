@@ -3,9 +3,16 @@ module Alloc.Vec
 open FStar.Mul
 open Rust_primitives
 
+open Rust_primitives.Notations
+
 type t_Vec (v_T: Type0) (v_A: Type0) =
   | Vec : Rust_primitives.Sequence.t_Seq v_T -> Core_models.Marker.t_PhantomData v_A
     -> t_Vec v_T v_A
+
+/// See the `from_seq` in the non-F* `vec` module: same role, but threads
+/// the allocator parameter so external constructor sites are identical.
+let from_seq (#v_T #v_A: Type0) (s: Rust_primitives.Sequence.t_Seq v_T) : t_Vec v_T v_A =
+  Vec s (Core_models.Marker.PhantomData <: Core_models.Marker.t_PhantomData v_A) <: t_Vec v_T v_A
 
 let from_elem
       (#v_T: Type0)
@@ -128,6 +135,7 @@ assume
 val impl_1__resize':
     #v_T: Type0 ->
     #v_A: Type0 ->
+    {| i0: Core_models.Clone.t_Clone v_T |} ->
     self: t_Vec v_T v_A ->
     new_size: usize ->
     value: v_T
@@ -139,7 +147,10 @@ val impl_1__resize':
           (impl_1__len #v_T #v_A self_e_future <: usize) =. new_size)
 
 unfold
-let impl_1__resize (#v_T #v_A: Type0) = impl_1__resize' #v_T #v_A
+let impl_1__resize
+      (#v_T #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+     = impl_1__resize' #v_T #v_A #i0
 
 let impl_1__append (#v_T #v_A: Type0) (self other: t_Vec v_T v_A)
     : Prims.Pure (t_Vec v_T v_A & t_Vec v_T v_A)
@@ -189,17 +200,26 @@ let impl_2__extend_from_slice
   in
   self
 
+/// Generic `Index<I>` impl, mirroring std\'s
+/// `impl<T, I: SliceIndex<[T]>, A: Allocator> Index<I> for Vec<T, A>`.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3 (#v_T #v_A: Type0) : Core_models.Ops.Index.t_Index (t_Vec v_T v_A) usize =
+let impl_3
+      (#v_T #v_I #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Slice.Index.t_SliceIndex v_I (t_Slice v_T))
+    : Core_models.Ops.Index.t_Index (t_Vec v_T v_A) v_I =
   {
-    f_Output = v_T;
+    f_Output = i0.f_Output;
     f_index_pre
     =
-    (fun (self_: t_Vec v_T v_A) (i: usize) -> i <. (impl_1__len #v_T #v_A self_ <: usize));
-    f_index_post = (fun (self: t_Vec v_T v_A) (i: usize) (out: v_T) -> true);
-    f_index
-    =
-    fun (self: t_Vec v_T v_A) (i: usize) -> Rust_primitives.Sequence.seq_index #v_T self._0 i
+    (fun (self_: t_Vec v_T v_A) (i: v_I) ->
+        Core_models.Option.impl__is_some #i0.f_Output
+          (Core_models.Slice.impl__get #v_T #v_I (impl_1__as_slice self_ <: t_Slice v_T) i
+            <:
+            Core_models.Option.t_Option i0.f_Output));
+    f_index_post = (fun (self: t_Vec v_T v_A) (i: v_I) (out: i0.f_Output) -> true);
+    f_index = fun (self: t_Vec v_T v_A) (i: v_I) -> (impl_1__as_slice self <: t_Slice v_T).[ i ]
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]

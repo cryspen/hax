@@ -34,7 +34,15 @@ impl<T> Array<T, 0> {}
 
 impl<T, const N: usize> Array<T, N> {
     /// See [`std::array::map`]
+    #[cfg(not(hax_backend_fstar))]
     pub fn map<F: Fn(T) -> U, U>(s: [T; N], f: F) -> [U; N] {
+        array_map(s, f)
+    }
+    #[cfg(hax_backend_fstar)]
+    pub fn map<F: crate::ops::function::FnOnce<T, Output = U>, U>(
+        s: [T; N],
+        f: fn(T) -> U,
+    ) -> [U; N] {
         array_map(s, f)
     }
     /// See [`std::array::as_slice`]
@@ -69,6 +77,7 @@ use crate::ops::{
     range::{Range, RangeFrom, RangeFull, RangeTo},
 };
 
+#[cfg(not(hax_backend_fstar))]
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, I, const N: usize> crate::ops::index::Index<I> for [T; N]
@@ -76,49 +85,52 @@ where
     [T]: Index<I>,
 {
     type Output = <[T] as Index<I>>::Output;
-    #[hax_lib::requires(i.get(self).is_some())]
     fn index(&self, i: I) -> &Self::Output {
         self.as_slice().index(i)
     }
 }
 
-/* #[hax_lib::attributes]
-#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+#[cfg(hax_backend_fstar)]
+#[hax_lib::attributes]
 impl<T, const N: usize> Index<usize> for [T; N] {
     type Output = T;
-    #[hax_lib::requires(i < self.len())]
+    #[hax_lib::requires(i < N)]
     fn index(&self, i: usize) -> &T {
         rust_primitives::slice::array_index(self, i)
     }
 }
 
+#[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<Range<usize>> for [T; N] {
     type Output = [T];
-    #[hax_lib::requires(i.start <= i.end && i.end <= self.len())]
+    #[hax_lib::requires(i.start <= i.end && i.end <= N)]
     fn index(&self, i: Range<usize>) -> &[T] {
         array_slice(self, i.start, i.end)
     }
 }
+#[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<RangeTo<usize>> for [T; N] {
     type Output = [T];
-    #[hax_lib::requires(i.end <= self.len())]
+    #[hax_lib::requires(i.end <= N)]
     fn index(&self, i: RangeTo<usize>) -> &[T] {
         array_slice(self, 0, i.end)
     }
 }
+#[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<RangeFrom<usize>> for [T; N] {
     type Output = [T];
-    #[hax_lib::requires(i.start <= self.len())]
+    #[hax_lib::requires(i.start <= N)]
     fn index(&self, i: RangeFrom<usize>) -> &[T] {
         array_slice(self, i.start, N)
     }
 }
+#[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
 impl<T, const N: usize> Index<RangeFull> for [T; N] {
@@ -126,7 +138,7 @@ impl<T, const N: usize> Index<RangeFull> for [T; N] {
     fn index(&self, i: RangeFull) -> &[T] {
         array_slice(self, 0, N)
     }
-} */
+}
 
 #[cfg(not(hax))]
 impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
@@ -138,6 +150,7 @@ impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
 pub mod equality {
     use rust_primitives::slice::array_index;
 
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<T: crate::cmp::PartialEq<U>, U, const N: usize> crate::cmp::PartialEq<[U; N]> for [T; N] {
         fn eq(&self, other: &[U; N]) -> bool {
             let mut i = 0;

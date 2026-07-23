@@ -1135,3 +1135,4 @@ def read_message2 (hs : HandshakeStateI1) (ciphertext : (RustSlice u8)) :
       (pure (core_models.result.Result.Err err))
 
 end new_tests.legacy__proverif_noise__lib.noise_kkpsk0
+

@@ -5,6 +5,7 @@ open Rust_primitives
 
 /// See [`std::iter::IntoIterator`]
 class t_IntoIterator (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
   [@@@ FStar.Tactics.Typeclasses.no_method]f_IntoIter:Type0;
   f_into_iter_pre:v_Self -> Type0;
   f_into_iter_post:v_Self -> f_IntoIter -> Type0;

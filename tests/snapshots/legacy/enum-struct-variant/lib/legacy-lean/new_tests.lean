@@ -37,3 +37,4 @@ inductive EnumWithStructVariant : Type
   by constructor <;> exact Inhabited.default
 
 end new_tests.legacy__enum_struct_variant__lib
+

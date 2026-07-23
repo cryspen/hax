@@ -57,3 +57,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
     (pure (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk))
 
 end new_tests.rustc_coverage__drop_trait
+

@@ -57,3 +57,4 @@ def call_via_deref (_ : rust_primitives.hax.Tuple0) : RustM Bool := do
     rust_primitives.hax.Tuple0.mk)
 
 end new_tests.legacy__functions__lib.issue_1048
+

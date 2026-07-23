@@ -29,7 +29,7 @@ structure Fn (Self : Type) (Args : Type) (Self_Clause0_Output : Type) where
   call : Self → Args → Result Self_Clause0_Output
 end ops.function
 
-def marker.PhantomData (A : Type) := Unit
+def marker.PhantomData (_ : Type) := Unit
 def marker.PhantomData.mk: Unit := ()
 
 /-! ## Option

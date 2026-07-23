@@ -14,8 +14,8 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__holes
 
---  @fail(extraction): coq(HAX0001), lean(HAX0001), ssprove(HAX0001), proverif(HAX0001), fstar(HAX0001)
---  @fail(tc): lean(1)
+--  @fail(extraction): coq(HAX0001), legacy-lean(HAX0001), ssprove(HAX0001), proverif(HAX0001), fstar(HAX0001)
+--  @fail(tc): legacy-lean(1)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -54,3 +54,4 @@ class main.MyTrait (Self : Type)
 instance main.Impl_1 : main.MyTrait main.MyStruct where
 
 end new_tests.rustc_coverage__holes
+

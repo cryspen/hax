@@ -20,3 +20,4 @@ def unused (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__test_harness
+

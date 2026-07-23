@@ -12,7 +12,7 @@ theorem Result.ok_spec {α : Type} {a : α} {Q} (hQ : (Q.1 a).down) :
   ⦃ ⌜ True ⌝ ⦄ Result.ok a ⦃ Q ⦄ := by simpa [Triple]
 
 @[spec]
-theorem Result.fail_spec {α : Type} {e : Error} {Q} (hQ : (Q.2.1 e).down) :
+theorem Result.fail_spec {α : Type} {e : Error} {Q} (hQ : (Q.2.1 (.up e)).down) :
   ⦃ ⌜ True ⌝ ⦄ (Result.fail e : Result α) ⦃ Q ⦄ := by simpa [Triple]
 
 theorem Result.deterministic (f : Result α) [Inhabited α]:
@@ -62,7 +62,7 @@ variable {α : Type}
 theorem triple_noThrow_elim {x : Result α} {Q : α → Assertion ResultPS}
     (h : ⦃ ⌜ True ⌝ ⦄ x ⦃ PostCond.noThrow Q ⦄) {v : α} (hv : x = ok v) :
     (Q v).down := by
-  subst hv; simpa [Triple, WP.wp] using h
+  subst hv; simpa [Triple, WP.wp, PredTrans.apply] using h
 
 theorem triple_noThrow_exists_ok {x : Result α} {Q : α → Assertion ResultPS}
     (h : ⦃ ⌜ True ⌝ ⦄ x ⦃ PostCond.noThrow Q ⦄) : ∃ v, x = ok v := by

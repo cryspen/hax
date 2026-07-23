@@ -478,6 +478,7 @@ pub mod adapters {
         }
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator, O, F: Fn(I::Item) -> O> Iterator for Map<I, F> {
             type Item = O;
 

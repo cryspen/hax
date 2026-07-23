@@ -23,3 +23,4 @@ def fun_with_if_let (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
     | _ => do (pure (7 : u8))
 
 end new_tests.legacy__if_let__lib
+

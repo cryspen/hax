@@ -58,3 +58,4 @@ def 他 (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := d
   (pure rust_primitives.hax.Tuple0.mk)
 
 end new_tests.rustc_coverage__unicode
+

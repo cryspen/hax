@@ -24,14 +24,22 @@ pub trait Display {
 /// See [`std::fmt::Debug`]
 pub trait Debug {
     /// See [`std::fmt::Debug::fmt`]
+    #[cfg(not(hax_backend_fstar))]
     fn fmt(&self, f: &mut Formatter) -> Result;
+    #[cfg(hax_backend_fstar)]
+    fn dbg_fmt(&self, f: &mut Formatter) -> Result;
 }
 
 /// See [`std::fmt::Arguments`]
 pub struct Arguments<'a>(&'a ());
 
 impl<T> Debug for T {
+    #[cfg(not(hax_backend_fstar))]
     fn fmt(&self, f: &mut Formatter) -> Result {
+        Result::Ok(())
+    }
+    #[cfg(hax_backend_fstar)]
+    fn dbg_fmt(&self, f: &mut Formatter) -> Result {
         Result::Ok(())
     }
 }

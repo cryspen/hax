@@ -82,3 +82,4 @@ def main (_ : rust_primitives.hax.Tuple0) :
     rust_primitives.hax.Tuple0.mk))
 
 end new_tests.rustc_coverage__if_not
+

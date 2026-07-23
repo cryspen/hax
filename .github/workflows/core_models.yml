@@ -6,19 +6,21 @@ on:
     paths:
       - 'hax-lib/core-models/**'
       - 'hax-lib/proof-libs/lean/**'
+      - 'hax-lib/proof-libs/fstar/**'
       - '.github/workflows/core_models.yml'
   pull_request:
     branches: [main, dev]
     paths:
       - 'hax-lib/core-models/**'
       - 'hax-lib/proof-libs/lean/**'
+      - 'hax-lib/proof-libs/fstar/**'
       - '.github/workflows/core_models.yml'
 
 # Version pins for core-models:
 env:
   RUST_TOOLCHAIN: nightly-2026-02-07
-  CHARON_REV:    909ff09ad0f144f83d354f2c3d26f631fb9f8e9a
-  AENEAS_REV:    87f107998e67dbeb549fd5d673ad5a0d20b6cd34
+  CHARON_REV:    6bd9163653707dcb07b0e78e8f694d0de448d69c
+  AENEAS_REV:    9f5df8b
   # Where the cache step stages the charon / aeneas binaries.
   AENEAS_DIR: ${{ github.workspace }}/.tools/aeneas
 
@@ -62,6 +64,11 @@ jobs:
       - run: cargo test --workspace
         env:
           RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
+
+      # `alloc` has a second, cfg-exclusive `vec` model for the F* backend
+      - run: cargo test -p alloc
+        env:
+          RUSTFLAGS: "--cfg hax_backend_fstar"
 
       # `tests/` is its own workspace (members: client_test,
       # rust_lean_equiv_test/{source,macro}) — the root `cargo test
@@ -212,3 +219,40 @@ jobs:
             ../proof-libs/lean/CoreModels/TypesExternal_Template.lean \
             ../proof-libs/lean/CoreModels/Alloc/Funs.lean \
             ../proof-libs/lean/CoreModels/Alloc/Types.lean
+
+  fstar-build:
+    name: hax F* extraction + typecheck
+    runs-on: ubuntu-latest
+    needs: [rust-fmt]
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+          extraPullNames: fstar-nix-versions, z3-nix-versions
+
+      - name: Install hax + rustc
+        run: |
+          nix profile install .#rustc
+          nix profile install .
+
+      - name: F* extraction of core-models
+        run: make -C hax-lib/core-models fstar
+
+      - name: Committed F* extraction must match a fresh re-extraction
+        run: |
+          if [ -n "$(git status --porcelain -- hax-lib/proof-libs/fstar/core)" ]; then
+            echo "::error::Committed F* extraction is stale — run 'make fstar' in hax-lib/core-models and commit the result."
+            git status --porcelain -- hax-lib/proof-libs/fstar/core
+            git diff -- hax-lib/proof-libs/fstar/core
+            exit 1
+          fi
+
+      - name: F* library type-checks
+        run: nix develop .#fstar --command make -C hax-lib/proof-libs/fstar/core

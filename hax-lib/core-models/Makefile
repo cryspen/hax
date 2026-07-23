@@ -1,16 +1,20 @@
 CHARON ?= charon
 AENEAS ?= aeneas
+HAX ?= cargo hax
 RUSTFLAGS ?= "--cfg charon"
 
-# `hax-lib` git revision, derived from the workspace Cargo.toml so the
-# alloc-staging step (which inlines an explicit `hax-lib = { git, rev }`
-# line, see below) can never disagree with the version the rest of the
-# workspace pulls in via `hax-lib.workspace = true`.
-HAX_LIB_REV := $(shell sed -n 's/.*hax-lib.*rev = "\([^"]*\)".*/\1/p' Cargo.toml)
+# Absolute path to the `hax-lib` crate, for the alloc-staging step below.
+# The workspace Cargo.toml reaches it as a *relative* path (`..`), which
+# the staged copy cannot reuse: a workspace-inherited path dependency
+# resolves against the workspace root, and $(ALLOC_STAGE_DIR) is one level
+# below it. Resolving to an absolute path here keeps the two independent of
+# where the staging directory sits.
+HAX_LIB_DIR := $(abspath ..)
 
 CRATE_NAME = core_models
 LLBC_FILE = $(CRATE_NAME).llbc
 LEAN_DIR = ../proof-libs/lean
+FSTAR_DIR = ../proof-libs/fstar/core
 # The main Rust crate (`core-models`) lives under ./core-models/ — its
 # Cargo.toml is the package manifest. The root Cargo.toml is the
 # workspace.
@@ -43,9 +47,10 @@ ALLOC_CHARON_EXCLUDES = \
 
 .PHONY: all llbc extract patch lean build clean clean-generated tests \
         tests-clean alloc-stage alloc-llbc alloc-extract alloc-clean \
-        coverage
+        coverage fstar fstar-clean fstar-core-models fstar-std fstar-alloc \
+        fstar-rand-core
 
-all: lean coverage
+all: lean fstar coverage
 
 # 1. Run charon to produce LLBC from the Rust crate.
 #
@@ -92,7 +97,9 @@ extract: $(LLBC_FILE) alloc-extract
 # Stage a renamed copy of `alloc/` so charon sees a crate named `alloc_models`
 # (avoids the Aeneas builtin name collision on `alloc::vec::Vec`). The src/
 # tree is symlinked so any source edit is picked up automatically.
-$(ALLOC_STAGE_DIR)/Cargo.toml: alloc/Cargo.toml
+# Depends on the Makefile too: the recipe below bakes manifest content in,
+# so a change here has to re-stage rather than leave a stale copy in place.
+$(ALLOC_STAGE_DIR)/Cargo.toml: alloc/Cargo.toml Makefile
 	rm -rf $(ALLOC_STAGE_DIR)
 	mkdir -p $(ALLOC_STAGE_DIR)
 	cp alloc/Cargo.toml $(ALLOC_STAGE_DIR)/Cargo.toml
@@ -101,7 +108,7 @@ $(ALLOC_STAGE_DIR)/Cargo.toml: alloc/Cargo.toml
 	# the staged crate can be built standalone (the `[workspace]` block
 	# appended at the end opts the staged crate out of our root workspace).
 	sed -i 's|^name = "alloc"$$|name = "alloc_models"|' $(ALLOC_STAGE_DIR)/Cargo.toml
-	sed -i 's|^hax-lib\.workspace = true$$|hax-lib = { git = "https://github.com/cryspen/hax", rev = "$(HAX_LIB_REV)" }|' $(ALLOC_STAGE_DIR)/Cargo.toml
+	sed -i 's|^hax-lib\.workspace = true$$|hax-lib = { path = "$(HAX_LIB_DIR)" }|' $(ALLOC_STAGE_DIR)/Cargo.toml
 	printf '\n[workspace]\n' >> $(ALLOC_STAGE_DIR)/Cargo.toml
 
 alloc-stage: $(ALLOC_STAGE_DIR)/Cargo.toml
@@ -146,9 +153,53 @@ alloc-clean:
 	rm -f $(ALLOC_LLBC_FILE)
 
 # Full clean: drop the LLBC and the build cache too.
-clean: clean-generated alloc-clean
+clean: clean-generated alloc-clean fstar-clean
 	rm -f $(LLBC_FILE)
 	rm -rf $(LEAN_DIR)/.lake
+
+FSTAR_CRATES = core-models std alloc rand_core
+
+CORE_MODELS_FSTAR_INTERFACES = \
+    '+!core_models::str::* +!**::num::error +!**::panicking::internal \
+     +!core_models::borrow +!core_models::default +!core_models::error \
+     +!core_models::hash +!core_models::hint +!core_models::ops::bit \
+     +!core_models::ops::arith +!core_models::fmt +!core_models::fmt::rt \
+     +!core_models::mem +!core_models::mem::*'
+
+
+CORE_MODELS_FSTAR_EXCLUDES = -core_models::iter::range::**
+
+
+STD_FSTAR_EXCLUDES = -core_models::**
+
+ALLOC_FSTAR_INTERFACES = '+!**::collections::btree::** +!**::collections::vec_deque::**'
+
+
+fstar-core-models:
+	RUSTFLAGS= HAX_CORE_MODELS_EXTRACTION_MODE=on $(HAX) -C -p core-models \; \
+	    into -i '$(CORE_MODELS_FSTAR_EXCLUDES)' \
+	    fstar --interfaces $(CORE_MODELS_FSTAR_INTERFACES)
+	cp $(CORE_MODELS_DIR)/proofs/fstar/extraction/*.fst* $(FSTAR_DIR)
+
+fstar-std:
+	RUSTFLAGS= HAX_CORE_MODELS_EXTRACTION_MODE=on $(HAX) -C -p std \; \
+	    into -i '$(STD_FSTAR_EXCLUDES)' fstar --interfaces '+!**'
+	cp std/proofs/fstar/extraction/*.fst* $(FSTAR_DIR)
+
+fstar-alloc:
+	RUSTFLAGS= HAX_CORE_MODELS_EXTRACTION_MODE=on $(HAX) -C -p alloc \; \
+	    into fstar --interfaces $(ALLOC_FSTAR_INTERFACES)
+	cp alloc/proofs/fstar/extraction/*.fst* $(FSTAR_DIR)
+
+fstar-rand-core:
+	RUSTFLAGS= HAX_CORE_MODELS_EXTRACTION_MODE=on $(HAX) -C -p rand_core \; \
+	    into fstar --interfaces '+!**'
+	cp rand_core/proofs/fstar/extraction/*.fst* $(FSTAR_DIR)
+
+fstar: fstar-core-models fstar-std fstar-alloc fstar-rand-core
+
+fstar-clean:
+	rm -rf $(foreach c,$(FSTAR_CRATES),$(c)/proofs)
 
 # -----------------------------------------------------------------------------
 # Tests: a small Rust crate (./tests) that exercises items from `core::*` and

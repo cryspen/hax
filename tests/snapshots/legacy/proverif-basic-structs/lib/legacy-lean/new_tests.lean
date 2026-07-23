@@ -25,3 +25,4 @@ structure B where
   _0 : usize
 
 end new_tests.legacy__proverif_basic_structs__lib
+

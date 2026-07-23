@@ -61,7 +61,7 @@ Last available AST for this item:
 /// not supported by hax. This item cannot be extracted at all: we
 /// need to exclude it with `-i '-*::Foo'`.
 /// @fail(extraction): proverif(HAX0008), fstar(HAX0008), coq(HAX0008), ssprove(HAX0008)
-/// @fail(extraction): lean(HAX0008)
+/// @fail(extraction): legacy-lean(HAX0008)
 #[allow(dead_code)]
 #[allow(dead_code, unused, unconditional_recursion)]
 #[feature(register_tool, if_let_guard)]

@@ -103,7 +103,7 @@ def closure_impl_expr
       it
       (fun x => (do (pure x) : RustM rust_primitives.hax.Tuple0)))))
 
---  @fail(extraction): lean(HAX0001)
+--  @fail(extraction): legacy-lean(HAX0001)
 @[spec]
 def closure_impl_expr_fngen
     (I : Type)
@@ -259,7 +259,7 @@ class Trait (Self : Type)
   [associatedTypes : outParam (Trait.AssociatedTypes (Self : Type))]
   where
 
---  @fail(extraction): lean(HAX0001)
+--  @fail(extraction): legacy-lean(HAX0001)
 @[reducible] instance Impl.AssociatedTypes
   (P : Type)
   [trait_constr_Impl_associated_type_i0 :
@@ -1473,3 +1473,4 @@ class Trait2 (Self : Type)
 attribute [instance_reducible, instance] Trait2.trait_constr_Trait2_i0
 
 end new_tests.legacy__traits__lib.recursive_trait_with_assoc_type
+

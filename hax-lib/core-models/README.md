@@ -2,13 +2,18 @@
 
 A model of Rust's `core` and `alloc` libraries, packaged as:
 
-1. **Rust crates** (`core-models`, `alloc`, `rust_primitives`) that mirror the
-   `core::*` and `alloc::*` items downstream verified-Rust code uses.
+1. **Rust crates** (`core-models`, `alloc`, `rust_primitives`, `std`,
+   `rand_core`) that mirror the `core::*` and `alloc::*` items downstream
+   verified-Rust code uses.
 2. A **Lean library** (`CoreModels`) extracted from those crates by
    [Aeneas](https://github.com/AeneasVerif/aeneas), suitable for
    downstream Aeneas-extracted Lean projects to depend on as a drop-in
    `core` model.
-3. A **test suite** (`tests/`) split into two surfaces:
+3. An **F\* library** extracted from the same crates by
+   [hax](https://github.com/cryspen/hax) into
+   [`../proof-libs/fstar/core`](../proof-libs/fstar/core), where the
+   generated files sit alongside hand-written F\* models.
+4. A **test suite** (`tests/`) split into two surfaces:
    - `tests/client_test/` — a regression "client" crate that exercises
      items from `core::*` / `std::*` end-to-end. Its only assertion is
      that the Aeneas extraction of the crate elaborates against our
@@ -60,6 +65,9 @@ across machines.
 │                          #   can be extracted with charon's
 │                          #   `alloc_models` rename trick — see Makefile)
 ├── rust_primitives/       # tiny crate of helpers (slice/array primitives)
+├── std/                   # model of the few `std::*` items proofs mention
+│                          #   (F* only — no Aeneas/Lean counterpart)
+├── rand_core/             # model of `rand_core::*` (F* only, as above)
 ├── tests/                 # test suite (workspace; see Testing section)
 │   ├── client_test/       #   client-surface extraction smoke test
 │   └── rust_lean_equiv_test/  # rust↔lean equivalence framework
@@ -73,36 +81,46 @@ across machines.
 ├── tools/                 # auxiliary tooling
 │   └── core-coverage/     #   generates COVERAGE.md (rustdoc-JSON based)
 ├── COVERAGE.md            # per-module core/alloc coverage report (generated)
-├── Makefile               # extraction + build orchestration
-└── .github/workflows/ci.yml
+└── Makefile               # extraction + build orchestration
 ```
 
-The distributed Lean library lives outside this crate at
+Both extracted libraries live outside this crate and are committed:
 `../proof-libs/lean/` (`lakefile.toml`, `lean-toolchain`, and the
-`CoreModels/` tree of hand-written + extracted files, all committed). The
-extraction pipeline below writes into it.
+`CoreModels/` tree of hand-written + extracted files) and
+`../proof-libs/fstar/core/`. The extraction pipelines below write into them.
 
 ## Building
 
 ### Prerequisites
 
 - Rust toolchain pinned by `rust-toolchain.toml`.
-- `charon` and `aeneas` on `PATH` (the upstream nix flakes are the
-  recommended build path; CI uses `nix build github:AeneasVerif/{charon,aeneas}`).
-  Override the Makefile lookup with `make CHARON=/path/to/charon AENEAS=/path/to/aeneas`.
-- [`elan`](https://github.com/leanprover/elan) for Lean.
+- For the Lean pipeline: `charon` and `aeneas` on `PATH` (the upstream nix
+  flakes are the recommended build path; CI uses
+  `nix build github:AeneasVerif/{charon,aeneas}`). Override the Makefile
+  lookup with `make CHARON=/path/to/charon AENEAS=/path/to/aeneas`.
+- For the Lean pipeline: [`elan`](https://github.com/leanprover/elan).
+- For the F\* pipeline: `cargo hax` on `PATH` (`./setup.sh` at the root of
+  this repository installs it). Override with `make HAX=/path/to/cargo-hax`.
 
 ### Targets
 
 ```sh
 make lean           # extract Rust → Lean, patch, build the Aeneas library
+make fstar          # extract Rust → F*, copy into ../proof-libs/fstar/core
 make tests          # full test suite (both client_test/ and rust_lean_equiv_test/)
 
-make clean          # remove all generated Lean + LLBC, keep hand-written
+make clean          # remove all generated Lean + F* + LLBC, keep hand-written
 ```
 
+`make lean` and `make fstar` are independent pipelines over the same Rust
+sources — neither is a prerequisite of the other. 
 `make lean` is idempotent: re-running without source changes is a no-op
 modulo Lake's incremental build.
+
+The F\* pipeline covers all five crates; the Lean one covers only
+`core-models` and `alloc`. To extract a single crate, use the per-crate
+targets (`make fstar-core-models`, `fstar-std`, `fstar-alloc`,
+`fstar-rand-core`).
 
 To run just one test surface in isolation:
 
@@ -188,8 +206,8 @@ See [../proof-libs/lean/README.md](../proof-libs/lean/README.md)
 ## Contributing
 
 PRs welcome. Please:
-- Run `cargo fmt --all` and `make lean tests` before opening a PR (CI
-  enforces both).
+- Run `cargo fmt --all` and `make lean tests` and `make fstar` before opening a PR 
+  (CI enforces all of them).
 - For every new `core::*` / `alloc::*` item:
   - Add **one property-based test** in the model crate's `#[cfg(test)]`
     block (see existing `proptest!` blocks in

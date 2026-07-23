@@ -206,3 +206,4 @@ def test (_ : rust_primitives.hax.Tuple0) : RustM (Test ((1 : usize))) := do
   (Impl.A (1 : usize))
 
 end new_tests.legacy__generics__lib.assoc_const_param
+

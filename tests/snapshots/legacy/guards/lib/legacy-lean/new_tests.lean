@@ -115,3 +115,4 @@ def if_guard (x : (core_models.option.Option i32)) : RustM i32 := do
     | (core_models.option.Option.None ) => do (pure (0 : i32))
 
 end new_tests.legacy__guards__lib
+

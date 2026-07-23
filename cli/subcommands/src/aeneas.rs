@@ -56,29 +56,26 @@ fn check_version(binary: &Path, expected: &str, message_format: MessageFormat) {
     };
     let first_line = output.lines().next().unwrap_or("");
 
-    // `aeneas -version` outputs "aeneas <sha>"; compare SHA prefixes.
-    // `charon version` outputs a semver like "0.1.174"; compare exactly.
-    let actual = if is_aeneas {
-        first_line
-            .split_whitespace()
-            .nth(1)
-            .unwrap_or("")
-            .get(..expected.len())
-            .unwrap_or("")
-    } else {
-        first_line.trim()
-    };
+    let actual = first_line.trim();
 
-    if actual != expected {
+    // `aeneas -version` outputs different strings, depending on whether it was built in CI or
+    // or locally; just check whether it contains the expected string.
+    // `charon version` outputs a semver like "0.1.174"; compare exactly.
+    let matches = if is_aeneas {
+        actual.contains(expected)
+    } else {
+        actual == expected
+    };
+    if !matches {
         let name = binary.file_name().unwrap_or_default().to_string_lossy();
         HaxMessage::GenericWarning {
             message: format!(
                 "{name} version mismatch: expected {expected}, found {actual}. \
-                 Run ./install-aeneas.sh to get the pinned version."
+                Run ./install-aeneas.sh to get the pinned version."
             ),
         }
         .report(message_format, None);
-    }
+    };
 }
 
 /// Shell-split a user-supplied extra-args string, reporting a fatal error on

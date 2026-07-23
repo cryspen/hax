@@ -19,10 +19,10 @@ inductive False : Type
 
 @[spec]
 def False_cast_to_repr (x : False) : RustM rust_primitives.hax.Never := do
-  match x with
+  match x with 
 
 @[spec]
-def never (h : False) : RustM rust_primitives.hax.Never := do match h with
+def never (h : False) : RustM rust_primitives.hax.Never := do match h with 
 
 @[spec]
 def test (b : Bool) : RustM u8 := do
@@ -40,3 +40,4 @@ def any (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T := do
     (← (core_models.panicking.panic "explicit panic")))
 
 end new_tests.legacy__never_type__lib
+

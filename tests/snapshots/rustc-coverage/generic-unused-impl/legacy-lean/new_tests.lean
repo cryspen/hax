@@ -44,7 +44,7 @@ def Impl.from_hoisted
     RustM (W T) := do
   (pure sorry)
 
---  @fail(extraction): fstar(HAX0001), coq(HAX0001), proverif(HAX0001), ssprove(HAX0001), lean(HAX0001)
+--  @fail(extraction): fstar(HAX0001), coq(HAX0001), proverif(HAX0001), ssprove(HAX0001), legacy-lean(HAX0001)
 @[reducible] instance Impl.AssociatedTypes
   (T : Type)
   [trait_constr_Impl_associated_type_i0 : Foo.AssociatedTypes T]
@@ -61,3 +61,4 @@ instance Impl
   _from := (Impl.from_hoisted T)
 
 end new_tests.rustc_coverage__generic_unused_impl
+
