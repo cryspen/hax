@@ -108,6 +108,10 @@ let impl_u8__to_le_bytes = impl_u8__to_le_bytes'
 let impl_u8__is_power_of_two (x: u8) : bool =
   x <>. mk_u8 0 && (x &. (x -! mk_u8 1 <: u8) <: u8) =. mk_u8 0
 
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_u8__is_multiple_of (x y: u8) : bool =
+  if y =. mk_u8 0 then x =. mk_u8 0 else (x %! y <: u8) =. mk_u8 0
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u8__unchecked_add (x y: u8)
     : Prims.Pure u8
@@ -145,6 +149,12 @@ let impl_u8__unchecked_div (x y: u8)
 /// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
 let impl_u8__unchecked_rem (x y: u8)
     : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_u8__div_ceil (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  let d:u8 = x /! y in
+  let r:u8 = x %! y in
+  if r >. mk_u8 0 then d +! mk_u8 1 else d
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_u16__MIN: u16 = mk_u16 0
@@ -251,6 +261,10 @@ let impl_u16__to_le_bytes = impl_u16__to_le_bytes'
 let impl_u16__is_power_of_two (x: u16) : bool =
   x <>. mk_u16 0 && (x &. (x -! mk_u16 1 <: u16) <: u16) =. mk_u16 0
 
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_u16__is_multiple_of (x y: u16) : bool =
+  if y =. mk_u16 0 then x =. mk_u16 0 else (x %! y <: u16) =. mk_u16 0
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u16__unchecked_add (x y: u16)
     : Prims.Pure u16
@@ -289,6 +303,12 @@ let impl_u16__unchecked_div (x y: u16)
 /// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
 let impl_u16__unchecked_rem (x y: u16)
     : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_u16__div_ceil (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  let d:u16 = x /! y in
+  let r:u16 = x %! y in
+  if r >. mk_u16 0 then d +! mk_u16 1 else d
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_u32__MIN: u32 = mk_u32 0
@@ -395,6 +415,10 @@ let impl_u32__to_le_bytes = impl_u32__to_le_bytes'
 let impl_u32__is_power_of_two (x: u32) : bool =
   x <>. mk_u32 0 && (x &. (x -! mk_u32 1 <: u32) <: u32) =. mk_u32 0
 
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_u32__is_multiple_of (x y: u32) : bool =
+  if y =. mk_u32 0 then x =. mk_u32 0 else (x %! y <: u32) =. mk_u32 0
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u32__unchecked_add (x y: u32)
     : Prims.Pure u32
@@ -433,6 +457,12 @@ let impl_u32__unchecked_div (x y: u32)
 /// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
 let impl_u32__unchecked_rem (x y: u32)
     : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_u32__div_ceil (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  let d:u32 = x /! y in
+  let r:u32 = x %! y in
+  if r >. mk_u32 0 then d +! mk_u32 1 else d
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_u64__MIN: u64 = mk_u64 0
@@ -539,6 +569,10 @@ let impl_u64__to_le_bytes = impl_u64__to_le_bytes'
 let impl_u64__is_power_of_two (x: u64) : bool =
   x <>. mk_u64 0 && (x &. (x -! mk_u64 1 <: u64) <: u64) =. mk_u64 0
 
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_u64__is_multiple_of (x y: u64) : bool =
+  if y =. mk_u64 0 then x =. mk_u64 0 else (x %! y <: u64) =. mk_u64 0
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u64__unchecked_add (x y: u64)
     : Prims.Pure u64
@@ -577,6 +611,12 @@ let impl_u64__unchecked_div (x y: u64)
 /// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
 let impl_u64__unchecked_rem (x y: u64)
     : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_u64__div_ceil (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  let d:u64 = x /! y in
+  let r:u64 = x %! y in
+  if r >. mk_u64 0 then d +! mk_u64 1 else d
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_u128__MIN: u128 = mk_u128 0
@@ -686,6 +726,10 @@ let impl_u128__to_le_bytes = impl_u128__to_le_bytes'
 let impl_u128__is_power_of_two (x: u128) : bool =
   x <>. mk_u128 0 && (x &. (x -! mk_u128 1 <: u128) <: u128) =. mk_u128 0
 
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_u128__is_multiple_of (x y: u128) : bool =
+  if y =. mk_u128 0 then x =. mk_u128 0 else (x %! y <: u128) =. mk_u128 0
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u128__unchecked_add (x y: u128)
     : Prims.Pure u128
@@ -724,6 +768,13 @@ let impl_u128__unchecked_div (x y: u128)
 /// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
 let impl_u128__unchecked_rem (x y: u128)
     : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_u128__div_ceil (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
+  let d:u128 = x /! y in
+  let r:u128 = x %! y in
+  if r >. mk_u128 0 then d +! mk_u128 1 else d
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_usize__MIN: usize = mk_usize 0
@@ -836,6 +887,10 @@ let impl_usize__to_le_bytes = impl_usize__to_le_bytes'
 let impl_usize__is_power_of_two (x: usize) : bool =
   x <>. mk_usize 0 && (x &. (x -! mk_usize 1 <: usize) <: usize) =. mk_usize 0
 
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_usize__is_multiple_of (x y: usize) : bool =
+  if y =. mk_usize 0 then x =. mk_usize 0 else (x %! y <: usize) =. mk_usize 0
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_usize__unchecked_add (x y: usize)
     : Prims.Pure usize
@@ -874,6 +929,13 @@ let impl_usize__unchecked_div (x y: usize)
 /// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
 let impl_usize__unchecked_rem (x y: usize)
     : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_usize__div_ceil (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
+  let d:usize = x /! y in
+  let r:usize = x %! y in
+  if r >. mk_usize 0 then d +! mk_usize 1 else d
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_i8__MIN: i8 = mk_i8 (-128)
@@ -1046,6 +1108,15 @@ let impl_i8__unchecked_rem (x y: i8)
     : Prims.Pure i8
       (requires y <>. mk_i8 0 && (x <>. impl_i8__MIN || y <>. mk_i8 (-1)))
       (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_i8__div_ceil (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_i8__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i8 = x /! y in
+  let r:i8 = x %! y in
+  if r >. mk_i8 0 && y >. mk_i8 0 || r <. mk_i8 0 && y <. mk_i8 0 then d +! mk_i8 1 else d
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_i16__MIN: i16 = mk_i16 (-32768)
@@ -1220,6 +1291,15 @@ let impl_i16__unchecked_rem (x y: i16)
       (requires y <>. mk_i16 0 && (x <>. impl_i16__MIN || y <>. mk_i16 (-1)))
       (fun _ -> Prims.l_True) = x %! y
 
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_i16__div_ceil (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_i16__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i16 = x /! y in
+  let r:i16 = x %! y in
+  if r >. mk_i16 0 && y >. mk_i16 0 || r <. mk_i16 0 && y <. mk_i16 0 then d +! mk_i16 1 else d
+
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_i32__MIN: i32 = mk_i32 (-2147483648)
 
@@ -1393,6 +1473,15 @@ let impl_i32__unchecked_rem (x y: i32)
       (requires y <>. mk_i32 0 && (x <>. impl_i32__MIN || y <>. mk_i32 (-1)))
       (fun _ -> Prims.l_True) = x %! y
 
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_i32__div_ceil (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_i32__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i32 = x /! y in
+  let r:i32 = x %! y in
+  if r >. mk_i32 0 && y >. mk_i32 0 || r <. mk_i32 0 && y <. mk_i32 0 then d +! mk_i32 1 else d
+
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_i64__MIN: i64 = mk_i64 (-9223372036854775808)
 
@@ -1565,6 +1654,15 @@ let impl_i64__unchecked_rem (x y: i64)
     : Prims.Pure i64
       (requires y <>. mk_i64 0 && (x <>. impl_i64__MIN || y <>. mk_i64 (-1)))
       (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_i64__div_ceil (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_i64__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i64 = x /! y in
+  let r:i64 = x %! y in
+  if r >. mk_i64 0 && y >. mk_i64 0 || r <. mk_i64 0 && y <. mk_i64 0 then d +! mk_i64 1 else d
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_i128__MIN: i128 = mk_i128 (-170141183460469231731687303715884105728)
@@ -1742,6 +1840,15 @@ let impl_i128__unchecked_rem (x y: i128)
     : Prims.Pure i128
       (requires y <>. mk_i128 0 && (x <>. impl_i128__MIN || y <>. mk_i128 (-1)))
       (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_i128__div_ceil (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_i128__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i128 = x /! y in
+  let r:i128 = x %! y in
+  if r >. mk_i128 0 && y >. mk_i128 0 || r <. mk_i128 0 && y <. mk_i128 0 then d +! mk_i128 1 else d
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_isize__MIN: isize = Rust_primitives.Arithmetic.v_ISIZE_MIN
@@ -1922,6 +2029,18 @@ let impl_isize__unchecked_rem (x y: isize)
     : Prims.Pure isize
       (requires y <>. mk_isize 0 && (x <>. impl_isize__MIN || y <>. mk_isize (-1)))
       (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_isize__div_ceil (x y: isize)
+    : Prims.Pure isize
+      (requires
+        y <>. mk_isize 0 && ~.((x =. impl_isize__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:isize = x /! y in
+  let r:isize = x %! y in
+  if r >. mk_isize 0 && y >. mk_isize 0 || r <. mk_isize 0 && y <. mk_isize 0
+  then d +! mk_isize 1
+  else d
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_18: Core_models.Default.t_Default u8 =

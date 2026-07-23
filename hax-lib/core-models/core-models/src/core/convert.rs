@@ -19,7 +19,7 @@ trait Into<T> {
 
 /// See [`std::convert::From`]
 #[hax_lib::attributes]
-trait From<T> {
+pub trait From<T> {
     /// See [`std::convert::From::from`]
     #[hax_lib::requires(true)]
     fn from(x: T) -> Self;
@@ -80,14 +80,16 @@ impl<T> From<T> for T {
 
 /// See [`std::convert::AsRef`]
 #[hax_lib::attributes]
-trait AsRef<T> {
+pub trait AsRef<T: ?Sized> {
     /// See [`std::convert::AsRef::as_ref`]
     #[hax_lib::requires(true)]
-    fn as_ref(self) -> T;
+    fn as_ref(&self) -> &T;
 }
 
-impl<T> AsRef<T> for T {
-    fn as_ref(self) -> T {
+// The blanket `AsRef<T> for T` can't cover the unsized `[T]`, so we provide the
+// concrete slice impl.
+impl<T> AsRef<[T]> for [T] {
+    fn as_ref(&self) -> &[T] {
         self
     }
 }
@@ -249,9 +251,14 @@ mod tests {
             prop_assert_eq!(super::Into::<u8>::into(x.inject()), x);
         }
 
+        // Model's `AsRef<[u8]>` vs std's, both projecting a slice to itself.
         #[test]
-        fn test_as_ref_identity(x in any::<u8>()) {
-            prop_assert_eq!(super::AsRef::as_ref(x.inject()), x);
+        fn test_as_ref_slice_identity(v in prop::collection::vec(any::<u8>(), 0..=8)) {
+            let s: &[u8] = &v[..];
+            prop_assert_eq!(
+                super::AsRef::<[u8]>::as_ref(s),
+                core::convert::AsRef::<[u8]>::as_ref(s)
+            );
         }
     }
 

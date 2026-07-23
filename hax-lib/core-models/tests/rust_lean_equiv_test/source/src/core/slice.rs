@@ -569,25 +569,26 @@ pub fn test_ends_with_false() -> bool {
 //     a.as_slice()[..] == [1, 2, 3, 4]
 // }
 
-// TODO(mut-slice-extraction): `copy_from_slice`, `clone_from_slice`, `swap`,
-// `reverse`, `fill` take `&mut [T]`; Lean extraction through Aeneas for
-// indexed mutation goes through a separate path. Revisit later.
-// pub fn test_copy_from_slice() -> bool {
-//     let src: [u8; 3] = [1, 2, 3];
-//     let mut dest: [u8; 3] = [0, 0, 0];
-//     dest.as_mut_slice().copy_from_slice(src.as_slice());
-//     dest == [1, 2, 3]
-// }
-// pub fn test_swap() -> bool {
-//     let mut a: [u8; 3] = [1, 2, 3];
-//     a.as_mut_slice().swap(0, 2);
-//     a == [3, 2, 1]
-// }
-// pub fn test_reverse() -> bool {
-//     let mut a: [u8; 4] = [1, 2, 3, 4];
-//     a.as_mut_slice().reverse();
-//     a == [4, 3, 2, 1]
-// }
+// ----- swap / reverse (mutate through &mut [T]) ------------------------------
+
+#[rust_lean_test]
+pub fn test_slice_swap() -> bool {
+    let mut a = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    s.swap(0, 2);
+    a == [3u8, 2, 1]
+}
+
+#[rust_lean_test]
+pub fn test_slice_reverse() -> bool {
+    let mut a = [1u8, 2, 3, 4];
+    let s: &mut [u8] = &mut a;
+    s.reverse();
+    a == [4u8, 3, 2, 1]
+}
+
+// TODO(mut-slice-extraction): `copy_from_slice`, `clone_from_slice`, `fill` take
+// `&mut [T]` and remain opaque; revisit later.
 // pub fn test_fill() -> bool {
 //     let mut a: [u8; 4] = [0, 0, 0, 0];
 //     a.as_mut_slice().fill(7);
@@ -757,4 +758,100 @@ pub fn test_slice_eq_diff_len() -> bool {
     let a: &[u8] = &[1, 2];
     let b: &[u8] = &[1, 2, 3];
     (a == b) == false
+}
+
+// ----- get_unchecked (in-bounds) ---------------------------------------------
+// In-bounds is the only defined behaviour; the model projects like `index`.
+
+#[rust_lean_test]
+pub fn test_slice_get_unchecked_first() -> bool {
+    let s: &[u8] = &[10u8, 20, 30];
+    unsafe { *s.get_unchecked(0) == 10 }
+}
+
+#[rust_lean_test]
+pub fn test_slice_get_unchecked_last() -> bool {
+    let s: &[u8] = &[10u8, 20, 30];
+    unsafe { *s.get_unchecked(2) == 30 }
+}
+
+#[rust_lean_test]
+pub fn test_slice_get_unchecked_range() -> bool {
+    let s: &[u8] = &[10u8, 20, 30, 40];
+    let sub: &[u8] = unsafe { s.get_unchecked(1..3) };
+    let expected: &[u8] = &[20u8, 30];
+    sub == expected
+}
+
+#[rust_lean_test]
+pub fn test_slice_get_unchecked_range_from() -> bool {
+    let s: &[u8] = &[10u8, 20, 30, 40];
+    let sub: &[u8] = unsafe { s.get_unchecked(2..) };
+    let expected: &[u8] = &[30u8, 40];
+    sub == expected
+}
+
+#[rust_lean_test]
+pub fn test_slice_get_unchecked_range_to() -> bool {
+    let s: &[u8] = &[10u8, 20, 30, 40];
+    let sub: &[u8] = unsafe { s.get_unchecked(..2) };
+    let expected: &[u8] = &[10u8, 20];
+    sub == expected
+}
+
+#[rust_lean_test]
+pub fn test_slice_get_unchecked_range_full() -> bool {
+    let s: &[u8] = &[10u8, 20, 30, 40];
+    let sub: &[u8] = unsafe { s.get_unchecked(..) };
+    sub == s
+}
+
+// ----- get_mut / get_unchecked_mut (mutate through the &mut) -----------------
+
+#[rust_lean_test]
+pub fn test_slice_get_mut_usize() -> bool {
+    let mut a = [10u8, 20, 30];
+    let s: &mut [u8] = &mut a;
+    if let Some(r) = s.get_mut(1) {
+        *r = 99;
+    }
+    a == [10u8, 99, 30]
+}
+
+#[rust_lean_test]
+pub fn test_slice_get_mut_usize_oob() -> bool {
+    let mut a = [10u8, 20, 30];
+    let s: &mut [u8] = &mut a;
+    // out of bounds: `get_mut` returns `None`, leaving the slice unchanged
+    s.get_mut(5).is_none() && a == [10u8, 20, 30]
+}
+
+#[rust_lean_test]
+pub fn test_slice_get_unchecked_mut_usize() -> bool {
+    let mut a = [10u8, 20, 30];
+    let s: &mut [u8] = &mut a;
+    unsafe {
+        *s.get_unchecked_mut(2) = 99;
+    }
+    a == [10u8, 20, 99]
+}
+
+// ----- PartialEq<[T; N]> for [T]  (slice == array) ---------------------------
+
+#[rust_lean_test]
+pub fn test_slice_eq_array_true() -> bool {
+    let s: &[u8] = &[1u8, 2, 3];
+    *s == [1u8, 2, 3]
+}
+
+#[rust_lean_test]
+pub fn test_slice_eq_array_false_value() -> bool {
+    let s: &[u8] = &[1u8, 2, 3];
+    (*s == [1u8, 2, 9]) == false
+}
+
+#[rust_lean_test]
+pub fn test_slice_eq_array_false_len() -> bool {
+    let s: &[u8] = &[1u8, 2];
+    (*s == [1u8, 2, 3]) == false
 }

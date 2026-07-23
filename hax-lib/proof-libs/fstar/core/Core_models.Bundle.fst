@@ -377,11 +377,11 @@ class t_AsRef (v_Self: Type0) (v_T: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5 (#v_T: Type0) : t_AsRef v_T v_T =
+let impl_5 (#v_T: Type0) : t_AsRef (t_Slice v_T) (t_Slice v_T) =
   {
-    f_as_ref_pre = (fun (self: v_T) -> true);
-    f_as_ref_post = (fun (self: v_T) (out: v_T) -> true);
-    f_as_ref = fun (self: v_T) -> self
+    f_as_ref_pre = (fun (self: t_Slice v_T) -> true);
+    f_as_ref_post = (fun (self: t_Slice v_T) (out: t_Slice v_T) -> true);
+    f_as_ref = fun (self: t_Slice v_T) -> self
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -1955,12 +1955,6 @@ let impl__as_ref__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_R
   | Result_Ok t -> Result_Ok t <: t_Result v_T v_E
   | Result_Err e -> Result_Err e <: t_Result v_T v_E
 
-/// See [`std::result::Result::unwrap_or`]
-let impl__unwrap_or__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) (v_default: v_T) : v_T =
-  match self <: t_Result v_T v_E with
-  | Result_Ok t -> t
-  | Result_Err _ -> v_default
-
 /// See [`std::result::Result::unwrap_or_else`]
 let impl__unwrap_or_else__from__result
       (#v_T #v_E #v_F: Type0)
@@ -2048,22 +2042,6 @@ let impl__map_or_default__from__result
   | Result_Ok t ->
     Core_models.Ops.Function.f_call_once #v_F #v_T #FStar.Tactics.Typeclasses.solve f (t <: v_T)
   | Result_Err _ -> Core_models.Default.f_default #v_U #FStar.Tactics.Typeclasses.solve ()
-
-/// See [`std::result::Result::map_err`]
-let impl__map_err
-      (#v_T #v_E #v_F #v_O: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_O v_E)
-      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_F})
-      (self: t_Result v_T v_E)
-      (op: v_O)
-    : t_Result v_T v_F =
-  match self <: t_Result v_T v_E with
-  | Result_Ok t -> Result_Ok t <: t_Result v_T v_F
-  | Result_Err e ->
-    Result_Err
-    (Core_models.Ops.Function.f_call_once #v_O #v_E #FStar.Tactics.Typeclasses.solve op (e <: v_E))
-    <:
-    t_Result v_T v_F
 
 /// See [`std::result::Result::inspect`]
 let impl__inspect__from__result
@@ -2154,6 +2132,28 @@ let impl__or_else__from__result
   | Result_Ok t -> Result_Ok t <: t_Result v_T v_F
   | Result_Err e ->
     Core_models.Ops.Function.f_call_once #v_O #v_E #FStar.Tactics.Typeclasses.solve op (e <: v_E)
+
+/// See [`std::result::Result::unwrap_or`]
+let impl__unwrap_or__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) (v_default: v_T) : v_T =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> t
+  | Result_Err _ -> v_default
+
+/// See [`std::result::Result::map_err`]
+let impl__map_err
+      (#v_T #v_E #v_F #v_O: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_O v_E)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_F})
+      (self: t_Result v_T v_E)
+      (op: v_O)
+    : t_Result v_T v_F =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> Result_Ok t <: t_Result v_T v_F
+  | Result_Err e ->
+    Result_Err
+    (Core_models.Ops.Function.f_call_once #v_O #v_E #FStar.Tactics.Typeclasses.solve op (e <: v_E))
+    <:
+    t_Result v_T v_F
 
 /// See [`std::result::Result::expect`]
 let impl__expect__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) (e_msg: string)
@@ -2265,6 +2265,20 @@ let impl_5__from__result (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t
         <:
         Core_models.Ops.Control_flow.t_ControlFlow (t_Result t_Infallible v_E) v_T
   }
+
+/// The error half of `?`: re-inject the `Err(e)` residual, widening the error
+/// via `From` (mirrors std\'s `impl<T, E, F: From<E>> ... for Result<T, F>`). `Ok`
+/// is unreachable — the residual\'s payload is `Infallible`.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_6__from__result': #v_T: Type0 -> #v_E: Type0 -> #v_F: Type0 -> {| i0: t_From v_F v_E |}
+  -> Core_models.Ops.Try_trait.t_FromResidual (t_Result v_T v_F) (t_Result t_Infallible v_E)
+
+unfold
+let impl_6__from__result
+      (#v_T #v_E #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_From v_F v_E)
+     = impl_6__from__result' #v_T #v_E #v_F #i0
 
 /// See [`std::convert::TryInto`]
 class t_TryInto (v_Self: Type0) (v_T: Type0) = {

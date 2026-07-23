@@ -8,7 +8,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 
 ## `core`
 
-**Targeted coverage: 683/3888 items (18%) across 35 modules — 21 have at least a partial model.**
+**Targeted coverage: 706/3888 items (18%) across 35 modules — 21 have at least a partial model.**
 
 | module | covered | total | coverage |
 |---|--:|--:|---|
@@ -30,13 +30,13 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `f64` | 0 | 107 | 0% |
 | `fmt` | 9 | 111 | 8% |
 | `from` | 0 | 1 | 0% |
-| `hash` | 3 | 29 | 10% |
+| `hash` | 5 | 29 | 17% |
 | `hint` | 2 | 15 | 13% |
 | `index` | 0 | 2 | 0% |
 | `iter` | 27 | 170 | 16% |
 | `marker` | 6 | 35 | 17% |
 | `mem` | 19 | 80 | 24% |
-| `num` | 417 | 1835 | 23% |
+| `num` | 435 | 1835 | 24% |
 | `ops` | 84 | 151 | 56% |
 | `option` | 26 | 57 | 46% |
 | `panicking` | 2 | 31 | 6% |
@@ -45,18 +45,18 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `ptr` | 0 | 191 | 0% |
 | `range` | 0 | 19 | 0% |
 | `result` | 30 | 42 | 71% |
-| `slice` | 8 | 205 | 4% |
+| `slice` | 11 | 205 | 5% |
 | `str` | 6 | 160 | 4% |
-| **subtotal** | **683** | **3888** | **18%** |
+| **subtotal** | **706** | **3888** | **18%** |
 
-<details><summary>Non-targeted modules: 20 modules, 0/14842 items</summary>
+<details><summary>Non-targeted modules: 20 modules, 1/14842 items</summary>
 
 `alloc`, `arch`, `async_iter`, `autodiff`, `bstr`, `contracts`, `ffi`, `future`, `intrinsics`, `io`, `net`, `os`, `panic`, `pat`, `random`, `simd`, `sync`, `task`, `time`, `unsafe_binder`
 </details>
 
 ## `alloc`
 
-**Targeted coverage: 44/608 items (7%) across 11 modules — 7 have at least a partial model.**
+**Targeted coverage: 45/608 items (7%) across 11 modules — 7 have at least a partial model.**
 
 | module | covered | total | coverage |
 |---|--:|--:|---|
@@ -70,8 +70,8 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `slice` | 0 | 6 | 0% |
 | `str` | 0 | 1 | 0% |
 | `string` | 5 | 63 | 8% |
-| `vec` | 19 | 80 | 24% |
-| **subtotal** | **44** | **608** | **7%** |
+| `vec` | 20 | 80 | 25% |
+| **subtotal** | **45** | **608** | **7%** |
 
 <details><summary>Non-targeted modules: 4 modules, 0/106 items</summary>
 

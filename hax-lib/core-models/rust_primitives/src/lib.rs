@@ -15,11 +15,29 @@ pub mod slice {
     pub fn slice_index<T>(s: &[T], i: usize) -> &T {
         &s[i]
     }
+    #[hax_lib::requires(i < slice_length(s))]
+    pub fn slice_index_mut<T>(s: &mut [T], i: usize) -> &mut T {
+        &mut s[i]
+    }
     pub fn slice_slice<T>(s: &[T], b: usize, e: usize) -> &[T] {
         &s[b..e]
     }
+    #[hax_lib::requires(b <= e && e <= slice_length(s))]
+    pub fn slice_slice_mut<T>(s: &mut [T], b: usize, e: usize) -> &mut [T] {
+        &mut s[b..e]
+    }
     pub fn slice_clone_from_slice<T: Clone>(s: &mut [T], src: &[T]) {
         s.clone_from_slice(src)
+    }
+    // `reverse`/`swap` mutate in place; with no `Clone`/`Copy` bound the elements
+    // can't be read out of the shared-ref `slice_index`/`slice_slice` and written
+    // back, so they are primitives.
+    pub fn slice_reverse<T>(s: &mut [T]) {
+        s.reverse()
+    }
+    #[hax_lib::requires(a < slice_length(s) && b < slice_length(s))]
+    pub fn slice_swap<T>(s: &mut [T], a: usize, b: usize) {
+        s.swap(a, b)
     }
     // In the following two functions, F is actually a function type.
     // Not constraining that here allows to call it with closures,
