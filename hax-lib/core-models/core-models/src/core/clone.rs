@@ -23,7 +23,7 @@ impl<T> Clone for T {
     }
 }
 
-macro_rules! clone_impl_for_int {
+macro_rules! clone_impl_for_copy {
     ($($t:ty),*) => {
         $(
             impl crate::clone::Clone for $t {
@@ -36,7 +36,8 @@ macro_rules! clone_impl_for_int {
 }
 
 #[cfg(not(hax_backend_fstar))]
-clone_impl_for_int!(
+clone_impl_for_copy!(
+    core::primitive::bool,
     core::primitive::u8,
     core::primitive::u16,
     core::primitive::u32,
@@ -54,13 +55,25 @@ clone_impl_for_int!(
 #[cfg(test)]
 mod tests {
     use crate::testing::Inject;
+    use pastey::paste;
     use proptest::prelude::*;
 
-    proptest! {
-        #[test]
-        fn test_clone(x in any::<u8>()) {
-            let model = x.inject();
-            prop_assert_eq!(model.clone(), model);
-        }
+    // For every `Copy` type with a `Clone` impl, check the model's `Clone`
+    // agrees with std's on a random value.
+    macro_rules! clone_tests {
+        ($($t:ident),*) => {
+            paste! { $(
+                proptest! {
+                    #[test]
+                    fn [<test_clone_ $t>](x in any::<$t>()) {
+                        prop_assert_eq!(crate::clone::Clone::clone(x.inject()), x.clone().inject());
+                    }
+                }
+            )* }
+        };
     }
+
+    clone_tests!(
+        bool, u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
+    );
 }

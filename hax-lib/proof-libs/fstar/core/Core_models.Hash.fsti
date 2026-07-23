@@ -4,7 +4,15 @@ open FStar.Mul
 open Rust_primitives
 
 /// See [`std::hash::Hasher`]
-class t_Hasher (v_Self: Type0) = { __marker_trait_t_Hasher:Prims.unit }
+class t_Hasher (v_Self: Type0) = {
+  f_finish_pre:v_Self -> Type0;
+  f_finish_post:v_Self -> u64 -> Type0;
+  f_finish:x0: v_Self -> Prims.Pure u64 (f_finish_pre x0) (fun result -> f_finish_post x0 result);
+  f_write_pre:v_Self -> t_Slice u8 -> Type0;
+  f_write_post:v_Self -> t_Slice u8 -> v_Self -> Type0;
+  f_write:x0: v_Self -> x1: t_Slice u8
+    -> Prims.Pure v_Self (f_write_pre x0 x1) (fun result -> f_write_post x0 x1 result)
+}
 
 /// See [`std::hash::Hash`]
 class t_Hash (v_Self: Type0) = {
@@ -16,4 +24,37 @@ class t_Hash (v_Self: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl (#v_T: Type0) : t_Hash v_T
+val impl:t_Hash u8
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_u16:t_Hash u16
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_u32:t_Hash u32
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_u64:t_Hash u64
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_u128:t_Hash u128
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_usize:t_Hash usize
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_i8:t_Hash i8
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_i16:t_Hash i16
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_i32:t_Hash i32
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_i64:t_Hash i64
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_i128:t_Hash i128
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_Hash_for_isize:t_Hash isize

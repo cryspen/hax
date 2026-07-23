@@ -199,6 +199,21 @@ macro_rules! uint_impl {
             pub fn is_power_of_two(x: $Self) -> bool {
                 x != 0 && (x & (x - 1)) == 0
             }
+            /// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+            #[hax_lib::requires(y != 0)]
+            pub fn div_ceil(x: $Self, y: $Self) -> $Self {
+                let d = x / y;
+                let r = x % y;
+                if r > 0 { d + 1 } else { d }
+            }
+            /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+            pub fn is_multiple_of(x: $Self, y: $Self) -> bool {
+                if y == 0 {
+                    x == 0 // 0 divides only 0
+                } else {
+                    x % y == 0
+                }
+            }
             // The following methods require additions to rust_primitives:
             // /// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
             // #[hax_lib::opaque]
@@ -443,6 +458,19 @@ macro_rules! iint_impl {
                     0
                 } else {
                     -1
+                }
+            }
+            /// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+            // `requires` rules out the div-by-zero and `MIN / -1` panics.
+            #[hax_lib::requires(y != 0 && !(x == $Self::MIN && y == -1))]
+            pub fn div_ceil(x: $Self, y: $Self) -> $Self {
+                let d = x / y;
+                let r = x % y;
+                // round up only when the remainder shares the divisor's sign
+                if (r > 0 && y > 0) || (r < 0 && y < 0) {
+                    d + 1
+                } else {
+                    d
                 }
             }
             // The following methods require additions to rust_primitives:
@@ -800,6 +828,14 @@ mod tests {
                         fn [<test_ $t _checked_rem>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assert_eq!(super::$t::checked_rem(x.inject(), y.inject()), x.checked_rem(y).inject());
                         }
+
+                        #[test]
+                        fn [<test_ $t _div_ceil>](x in any::<$t>(), y in any::<$t>()) {
+                            // skip inputs where div_ceil panics (same cases as checked_div == None)
+                            if x.checked_div(y).is_some() {
+                                prop_assert_eq!(super::$t::div_ceil(x.inject(), y.inject()), x.div_ceil(y));
+                            }
+                        }
                     }
                 )*
             }
@@ -829,6 +865,11 @@ mod tests {
                         #[test]
                         fn [<test_ $t _is_power_of_two>](x in any::<$t>()) {
                             prop_assert_eq!(super::$t::is_power_of_two(x.inject()), x.is_power_of_two());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _is_multiple_of>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assert_eq!(super::$t::is_multiple_of(x.inject(), y.inject()), x.is_multiple_of(y));
                         }
                     }
                 )*

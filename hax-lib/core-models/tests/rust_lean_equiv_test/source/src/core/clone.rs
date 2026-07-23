@@ -144,3 +144,17 @@ pub fn test_clone_i64_min() -> bool {
     let x: i64 = i64::MIN;
     x.clone() == x
 }
+
+// ----- bool ------------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_clone_bool_true() -> bool {
+    let x: bool = true;
+    x.clone() == x
+}
+
+#[rust_lean_test]
+pub fn test_clone_bool_false() -> bool {
+    let x: bool = false;
+    x.clone() == x
+}

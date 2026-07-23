@@ -176,6 +176,24 @@ let impl_1__append (#v_T #v_A: Type0) (self other: t_Vec v_T v_A)
   in
   self, other <: (t_Vec v_T v_A & t_Vec v_T v_A)
 
+/// See [`std::vec::Vec::split_off`]: truncate `self` to `[0, at)` and
+/// return the tail `[at, len)` as a new `Vec`.
+let impl_1__split_off (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (at: usize)
+    : Prims.Pure (t_Vec v_T v_A & t_Vec v_T v_A)
+      (requires at <=. (impl_1__len #v_T #v_A self <: usize))
+      (fun _ -> Prims.l_True) =
+  let l:usize = Rust_primitives.Sequence.seq_len #v_T self._0 in
+  let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: Rust_primitives.Sequence.t_Seq v_T) =
+    Rust_primitives.Sequence.seq_drain #v_T self._0 at l
+  in
+  let self:t_Vec v_T v_A = { self with _0 = tmp0 } <: t_Vec v_T v_A in
+  let hax_temp_output:t_Vec v_T v_A =
+    Vec out (Core_models.Marker.PhantomData <: Core_models.Marker.t_PhantomData v_A)
+    <:
+    t_Vec v_T v_A
+  in
+  self, hax_temp_output <: (t_Vec v_T v_A & t_Vec v_T v_A)
+
 let impl_2__extend_from_slice
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)

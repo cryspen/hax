@@ -46,6 +46,12 @@ end iter.range
 abbrev ops.range.Range.Insts.Core_modelsIterTraitsIteratorIterator.next :=
   @iter.range.IteratorRange.next
 
+/-- Downstream `?` references this `Try::branch` impl under the un-suffixed name
+    `…CoreOpsTry_traitTry.branch`, but our own extraction suffixes it
+    `…TResultInfallibleE.branch`. Alias so `?` on `Result` elaborates. -/
+abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
+  @result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
+
 end core
 
 namespace alloc
