@@ -114,6 +114,20 @@ macro_rules! uint_impl {
             pub fn pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 paste! { [<pow_ $Name>](x, exp) }
             }
+            /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+            pub fn overflowing_pow(x: $Self, exp: core::primitive::u32) -> ($Self, bool) {
+                paste! { [<overflowing_pow_ $Name>](x, exp) }
+            }
+            /// See [`std::primitive::u8::checked_pow`] (and similar for other integer types)
+            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
+            pub fn checked_pow(x: $Self, exp: core::primitive::u32) -> Option<$Self> {
+                let (result, overflowed) = Self::overflowing_pow(x, exp);
+                if overflowed {
+                    Option::None
+                } else {
+                    Option::Some(result)
+                }
+            }
             /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
             pub fn count_ones(x: $Self) -> core::primitive::u32 {
                 paste! { [<count_ones_ $Name>](x) }
@@ -348,6 +362,20 @@ macro_rules! iint_impl {
             /// See [`std::primitive::u8::pow`] (and similar for other integer types)
             pub fn pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 paste! { [<pow_ $Name>](x, exp) }
+            }
+            /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+            pub fn overflowing_pow(x: $Self, exp: core::primitive::u32) -> ($Self, bool) {
+                paste! { [<overflowing_pow_ $Name>](x, exp) }
+            }
+            /// See [`std::primitive::u8::checked_pow`] (and similar for other integer types)
+            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
+            pub fn checked_pow(x: $Self, exp: core::primitive::u32) -> Option<$Self> {
+                let (result, overflowed) = Self::overflowing_pow(x, exp);
+                if overflowed {
+                    Option::None
+                } else {
+                    Option::Some(result)
+                }
             }
             /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
             pub fn count_ones(x: $Self) -> core::primitive::u32 {
@@ -712,6 +740,16 @@ mod tests {
                         #[test]
                         fn [<test_ $t _checked_mul>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assert_eq!(super::$t::checked_mul(x.inject(), y.inject()), x.checked_mul(y).inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _overflowing_pow>](x in any::<$t>(), exp in 0u32..=140) {
+                            prop_assert_eq!(super::$t::overflowing_pow(x.inject(), exp), x.overflowing_pow(exp));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _checked_pow>](x in any::<$t>(), exp in 0u32..=140) {
+                            prop_assert_eq!(super::$t::checked_pow(x.inject(), exp), x.checked_pow(exp).inject());
                         }
 
                         #[test]
