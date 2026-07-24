@@ -45,6 +45,10 @@ let impl_u8__overflowing_mul (x y: u8) : (u8 & bool) =
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_u8__pow (x: u8) (exp: u32) : u8 = Rust_primitives.Arithmetic.pow_u8 x exp
 
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_u8__overflowing_pow (x: u8) (exp: u32) : (u8 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_u8 x exp
+
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_u8__count_ones (x: u8) : u32 = Rust_primitives.Arithmetic.count_ones_u8 x
 
@@ -187,6 +191,10 @@ let impl_u16__overflowing_mul (x y: u16) : (u16 & bool) =
 
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_u16__pow (x: u16) (exp: u32) : u16 = Rust_primitives.Arithmetic.pow_u16 x exp
+
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_u16__overflowing_pow (x: u16) (exp: u32) : (u16 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_u16 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_u16__count_ones (x: u16) : u32 = Rust_primitives.Arithmetic.count_ones_u16 x
@@ -332,6 +340,10 @@ let impl_u32__overflowing_mul (x y: u32) : (u32 & bool) =
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_u32__pow (x exp: u32) : u32 = Rust_primitives.Arithmetic.pow_u32 x exp
 
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_u32__overflowing_pow (x exp: u32) : (u32 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_u32 x exp
+
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_u32__count_ones (x: u32) : u32 = Rust_primitives.Arithmetic.count_ones_u32 x
 
@@ -475,6 +487,10 @@ let impl_u64__overflowing_mul (x y: u64) : (u64 & bool) =
 
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_u64__pow (x: u64) (exp: u32) : u64 = Rust_primitives.Arithmetic.pow_u64 x exp
+
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_u64__overflowing_pow (x: u64) (exp: u32) : (u64 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_u64 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_u64__count_ones (x: u64) : u32 = Rust_primitives.Arithmetic.count_ones_u64 x
@@ -622,6 +638,10 @@ let impl_u128__overflowing_mul (x y: u128) : (u128 & bool) =
 
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_u128__pow (x: u128) (exp: u32) : u128 = Rust_primitives.Arithmetic.pow_u128 x exp
+
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_u128__overflowing_pow (x: u128) (exp: u32) : (u128 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_u128 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_u128__count_ones (x: u128) : u32 = Rust_primitives.Arithmetic.count_ones_u128 x
@@ -773,6 +793,10 @@ let impl_usize__overflowing_mul (x y: usize) : (usize & bool) =
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_usize__pow (x: usize) (exp: u32) : usize = Rust_primitives.Arithmetic.pow_usize x exp
 
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_usize__overflowing_pow (x: usize) (exp: u32) : (usize & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_usize x exp
+
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_usize__count_ones (x: usize) : u32 = Rust_primitives.Arithmetic.count_ones_usize x
 
@@ -915,6 +939,10 @@ let impl_i8__overflowing_mul (x y: i8) : (i8 & bool) =
 
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_i8__pow (x: i8) (exp: u32) : i8 = Rust_primitives.Arithmetic.pow_i8 x exp
+
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_i8__overflowing_pow (x: i8) (exp: u32) : (i8 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_i8 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_i8__count_ones (x: i8) : u32 = Rust_primitives.Arithmetic.count_ones_i8 x
@@ -1087,6 +1115,10 @@ let impl_i16__overflowing_mul (x y: i16) : (i16 & bool) =
 
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_i16__pow (x: i16) (exp: u32) : i16 = Rust_primitives.Arithmetic.pow_i16 x exp
+
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_i16__overflowing_pow (x: i16) (exp: u32) : (i16 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_i16 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_i16__count_ones (x: i16) : u32 = Rust_primitives.Arithmetic.count_ones_i16 x
@@ -1261,6 +1293,10 @@ let impl_i32__overflowing_mul (x y: i32) : (i32 & bool) =
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_i32__pow (x: i32) (exp: u32) : i32 = Rust_primitives.Arithmetic.pow_i32 x exp
 
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_i32__overflowing_pow (x: i32) (exp: u32) : (i32 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_i32 x exp
+
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_i32__count_ones (x: i32) : u32 = Rust_primitives.Arithmetic.count_ones_i32 x
 
@@ -1433,6 +1469,10 @@ let impl_i64__overflowing_mul (x y: i64) : (i64 & bool) =
 
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_i64__pow (x: i64) (exp: u32) : i64 = Rust_primitives.Arithmetic.pow_i64 x exp
+
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_i64__overflowing_pow (x: i64) (exp: u32) : (i64 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_i64 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_i64__count_ones (x: i64) : u32 = Rust_primitives.Arithmetic.count_ones_i64 x
@@ -1609,6 +1649,10 @@ let impl_i128__overflowing_mul (x y: i128) : (i128 & bool) =
 
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_i128__pow (x: i128) (exp: u32) : i128 = Rust_primitives.Arithmetic.pow_i128 x exp
+
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_i128__overflowing_pow (x: i128) (exp: u32) : (i128 & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_i128 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_i128__count_ones (x: i128) : u32 = Rust_primitives.Arithmetic.count_ones_i128 x
@@ -1789,6 +1833,10 @@ let impl_isize__overflowing_mul (x y: isize) : (isize & bool) =
 
 /// See [`std::primitive::u8::pow`] (and similar for other integer types)
 let impl_isize__pow (x: isize) (exp: u32) : isize = Rust_primitives.Arithmetic.pow_isize x exp
+
+/// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+let impl_isize__overflowing_pow (x: isize) (exp: u32) : (isize & bool) =
+  Rust_primitives.Arithmetic.overflowing_pow_isize x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_isize__count_ones (x: isize) : u32 = Rust_primitives.Arithmetic.count_ones_isize x
