@@ -159,6 +159,9 @@ pub mod arithmetic {
                 pub fn [<pow_ $Self>](x: $Self, exp: u32) -> $Self {
                     x.pow(exp)
                 }
+                pub fn [<overflowing_pow_ $Self>](x: $Self, exp: u32) -> ($Self, bool) {
+                    x.overflowing_pow(exp)
+                }
                 pub fn [<count_ones_ $Self>](x: $Self) -> u32 {
                     x.count_ones()
                 }
