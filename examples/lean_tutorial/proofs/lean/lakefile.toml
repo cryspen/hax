@@ -1,0 +1,10 @@
+name = "lean_tutorial"
+version = "0.1.0"
+defaultTargets = ["LeanTutorial"]
+
+[[lean_lib]]
+name = "LeanTutorial"
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/lean"

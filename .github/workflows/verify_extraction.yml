@@ -56,8 +56,11 @@ jobs:
           - proverif-psk
           - legacy_lean_chacha20
           - adc
+          - lean_tutorial
     steps:
     - uses: actions/checkout@v4
+    - name: Free disk space by removing preinstalled packages
+      uses: jlumbroso/free-disk-space@main
     - uses: DeterminateSystems/nix-installer-action@main
     - uses: cachix/cachix-action@v15
       with:
