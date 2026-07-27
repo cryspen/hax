@@ -64,6 +64,14 @@ pub fn parse(contents: &str) -> Result<Manifest, String> {
     toml::from_str(contents).map_err(|e| e.to_string())
 }
 
+/// The manifest embedded in this binary, regardless of any override. Tests
+/// that check what a release actually ships must not be redirected by
+/// [`MANIFEST_OVERRIDE_ENV`].
+#[cfg(test)]
+pub fn embedded() -> Manifest {
+    parse(MANIFEST_TOML).expect("the embedded manifest must parse")
+}
+
 /// The platforms hax publishes pre-built tool artifacts for, as the keys
 /// the manifest uses. A platform outside this set installs nothing: it
 /// resolves to the escape hatch of a user-provided binary.

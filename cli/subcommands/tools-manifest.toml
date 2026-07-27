@@ -9,8 +9,13 @@
 #
 # Entries are only added, never removed: every version ever published stays
 # installable with verification. Adding a version is a single reviewed
-# commit; record the artifact's provenance in a comment when it is not
-# obvious from the URL.
+# commit; generate its entries with `just add-tool-version <tool> <version>`,
+# which hashes the artifacts themselves, and record the provenance in a
+# comment when it is not obvious from the URL.
+#
+# The `tools_manifest` CI workflow checks these entries against the artifacts
+# they name: a pull request touching this file verifies every version listed
+# here, the nightly run verifies the defaults and checks the rest still resolve.
 
 # ---- aeneas -----------------------------------------------------------------
 # Provenance: pre-built archives published by the cryspen/aeneas fork's
