@@ -440,6 +440,8 @@ fn extract(archive: &Path, url: &str, dest: &Path) -> Result<(), String> {
 }
 
 #[cfg(test)]
+mod host_install;
+#[cfg(test)]
 mod manifest_artifacts;
 
 #[cfg(test)]

@@ -131,6 +131,22 @@ add-tool-version tool version:
     echo
   done <<< "$templates"
 
+# Install the managed tools from their real artifacts and run them. Reaches the network, and installs into the tool cache.
+test-tools-install:
+  cargo test -p cargo-hax --bin cargo-hax -- --ignored host_install
+
+# Walk the documented tool setup flow from inside an example project, the way a user would: resolution, the `hax-lib` check, and the install of what the project resolves to. Reaches the network.
+test-tools-cli:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cargo build -q -p cargo-hax --bin cargo-hax
+  # `examples/` is its own workspace, so the binary is invoked by path.
+  HAX="$PWD/target/debug/cargo-hax"
+  cd examples/chacha20
+  "$HAX" tools show
+  "$HAX" tools install
+  "$HAX" tools list --installed
+
 # Serve documentation
 docs: (_ensure_command_in_path "mkdocs" "mkdocs (https://www.mkdocs.org/)")
   mkdocs serve
