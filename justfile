@@ -91,6 +91,10 @@ docs: (_ensure_command_in_path "mkdocs" "mkdocs (https://www.mkdocs.org/)")
       | sd '[-](\d+)' '#$1\t is labeled `marked-unimplemented`, but was not found in the code' \
       | sd '[+](\d+)' '#$1\t is *not* labeled `marked-unimplemented` or is closed'
 
+# Check that the documentation of a published crate builds the way docs.rs builds it
+check-docs-rs CRATE='hax-lib':
+  ./.utils/check-docs-rs.sh {{CRATE}}
+
 # Check that the licenses of every crate and every package are compliant with `deny.toml`
 check-licenses:
   #!/usr/bin/env bash

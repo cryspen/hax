@@ -1,0 +1,39 @@
+name: Check docs.rs builds
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-rs:
+    strategy:
+      fail-fast: false
+      matrix:
+        crate:
+          - hax-lib
+          - hax-lib-macros
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read the toolchain pinned by `rust-toolchain.toml`
+        id: toolchain
+        run: echo "channel=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' rust-toolchain.toml)" >> "$GITHUB_OUTPUT"
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.toolchain.outputs.channel }}
+
+      - uses: dtolnay/install@cargo-docs-rs
+
+      - name: Build the documentation of `${{ matrix.crate }}` as docs.rs would
+        run: ./.utils/check-docs-rs.sh ${{ matrix.crate }}
