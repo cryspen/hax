@@ -33,8 +33,6 @@ const REQUIRED_PINS: &[(&str, &str)] = &[
     ("charon", "tag"),
     ("charon", "version"),
     ("lean", "toolchain"),
-    ("hax-lean-lib", "version"),
-    ("hax-lean-lib", "repo"),
 ];
 
 /// Bake the workspace-root tool pins (`pins.toml`) so they are available as

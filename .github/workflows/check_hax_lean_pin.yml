@@ -1,0 +1,68 @@
+name: Check hax-lean pin
+
+# When a PR modifies the hax-lean library (`hax-lib/proof-libs/lean`),
+# `pins.toml` must NOT carry a `[hax-lean-lib]` pin. A pin makes lakefiles
+# generated via `cargo hax into lean --lakefile` depend on https://github.com/cryspen/hax-lean,
+# which can't contain the current changes yet. Removing the pin will make
+# `cargo hax into lean --lakefile` use the current `hax` commit instead.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  check-hax-lean-pin:
+    if: github.actor != 'github-merge-queue[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full git history
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}
+
+      - name: Enforce no hax-lean pin when the in-tree library changes
+        run: |
+          git diff --name-only origin/${{ github.base_ref }} HEAD > changed_files.txt
+          echo "::group::Changed files"
+          cat changed_files.txt
+          echo "::endgroup::"
+
+          # Did this PR touch the in-tree Hax lean library?
+          if ! grep -q '^hax-lib/proof-libs/lean/' changed_files.txt; then
+            echo "No changes to hax-lib/proof-libs/lean; nothing to check."
+            exit 0
+          fi
+
+          # Is there a `[hax-lean-lib]` section in pins.toml?
+          if grep -qE '^\[hax-lean-lib\]' pins.toml; then
+            {
+              echo '**`hax-lib/proof-libs/lean` changed while a `[hax-lean-lib]` pin is set**'
+              echo ''
+              echo 'This PR edits the Hax lean library, but `pins.toml` still'
+              echo 'pins `[hax-lean-lib]` to a published release. Generated lakefiles'
+              echo 'would depend on the pinned release, not on your changes.'
+              echo ''
+              echo 'Remove the `[hax-lean-lib]` section from `pins.toml` so that'
+              echo '`cargo hax into lean --lakefile` points to the new changes'
+              echo '(`cryspen/hax` at the built commit), or revert the changes to'
+              echo '`hax-lib/proof-libs/lean`.'
+            } > error-message
+            cat error-message >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "hax-lib/proof-libs/lean changed and no hax-lean pin is set. OK."
+
+      - name: Fail with markdown error
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let msg = 'Check failed.';
+            try { msg = fs.readFileSync('error-message', 'utf8'); } catch (e) {}
+            core.setFailed(msg);

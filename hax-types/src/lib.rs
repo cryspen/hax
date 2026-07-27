@@ -30,6 +30,9 @@ pub mod engine_api;
 /// Compile-time version of hax
 pub const HAX_VERSION: &str = env!("HAX_VERSION");
 
+/// Git commit hax was built from (`"unknown"` outside a git checkout).
+pub const HAX_COMMIT: &str = env!("HAX_GIT_COMMIT_HASH");
+
 /// Tool pins, baked in at build time from the workspace-root `pins.toml` (see
 /// `build.rs`). Read here once so every consumer (`cargo-hax`'s lean
 /// backend, the `--help` text) shares a single source of truth. `build.rs`

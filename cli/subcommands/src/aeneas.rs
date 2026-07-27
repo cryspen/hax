@@ -32,6 +32,7 @@ const LEAN_PIN_TOOLCHAIN: &str = pins::LEAN_TOOLCHAIN;
 const LEAN_LIB_PIN_REPO: &str = pins::LEAN_LIB_REPO;
 const LEAN_LIB_PIN_VERSION: &str = pins::LEAN_LIB_VERSION;
 const CHARON_PIN_VERSION: &str = pins::CHARON_VERSION;
+const HAX_COMMIT: &str = hax_types::HAX_COMMIT;
 
 // Flags that should trigger a warning when passed to charon/aeneas
 const CHARON_WARN_FLAGS: &[&str] = &["--dest-file"];
