@@ -47,11 +47,9 @@ namespace Hax
 
 /-! ## Loop-over-range specs
 
-`loop`-over-`core.ops.range.Range` characterisations (the Aeneas encoding of a Rust
-`for i in s..e` loop): one for signed index types (`IScalar ty`, `.val : Int`) and one
-for the unsigned `Usize` index type (`.val : Nat`). Each takes the loop body and its
-per-step contract abstractly, so it never mentions the iterator `Step` dictionary. These
-belong in Aeneas proper; they live here until they can be upstreamed. -/
+`loop`-over-`core.ops.range.Range` characterisations of a Rust `for i in s..e` loop,
+signed (`IScalar ty`) and unsigned (`Usize`). These belong in Aeneas proper; they live
+here until they can be upstreamed. -/
 
 section loop_range_helpers
 
@@ -78,8 +76,7 @@ theorem triple_of_ok {x : Result α} {v : α} {P : α → Prop}
 
 end loop_range_helpers
 
-/-- Loop-over-range spec, signed index type (`IScalar ty`, `.val : Int`). The proof
-inducts on the number of remaining steps `(e.val - start.val).toNat`. -/
+/-- Loop-over-range spec, signed index type; induction on `(e.val - start.val).toNat`. -/
 theorem loop_range_spec {ty : IScalarTy} {β : Type}
     (body : (core.ops.range.Range (IScalar ty) × β) →
       Result (ControlFlow (core.ops.range.Range (IScalar ty) × β) β))
@@ -137,8 +134,7 @@ theorem loop_range_spec {ty : IScalarTy} {β : Type}
         (by rw [hstart]; omega) (by rw [hstart]; omega) (by rw [hstart]; omega) hinv'
 
 set_option maxHeartbeats 2000000 in
-/-- Loop-over-range spec, unsigned `Usize` index type (`.val : Nat`). The proof inducts
-on the number of remaining steps `e.val - start.val`. -/
+/-- Loop-over-range spec, unsigned `Usize` index type; induction on `e.val - start.val`. -/
 theorem loop_range_spec_unsigned {β : Type}
     (body : (core.ops.range.Range Usize × β) →
       Result (ControlFlow (core.ops.range.Range Usize × β) β))

@@ -2,9 +2,7 @@ import Hax
 
 /-! # Tests for `Hax.forLoopWithInvariant`
 
-Not part of the regular proof-library build: `Tests` is not a default target, so it is
-only built when requested explicitly (`lake build Tests`). These exercise the user-facing
-spec lemmas end-to-end on concrete loops. -/
+Not a default target; build explicitly with `lake build Tests`. -/
 
 set_option mvcgen.warning false
 
@@ -18,10 +16,8 @@ namespace Hax.Tests
 
 /-! ## End-to-end signed test
 
-A concrete `for i in (0 : i32) .. 5` loop with the invariant `acc.val = 0`, proven purely
-through the signed `forLoopWithInvariant_spec` (which itself routes through `loop_range_spec`
-and the signed `IteratorRange_next_spec`). No extraction is involved: `lake build Tests`
-alone validates the signed end-to-end path. -/
+A concrete `for i in (0 : i32) .. 5` loop with invariant `acc.val = 0`, proven through
+the signed `forLoopWithInvariant_spec`; no extraction involved. -/
 
 example :
     ⦃ ⌜ True ⌝ ⦄

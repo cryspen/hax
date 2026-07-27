@@ -19,14 +19,11 @@ namespace Hax
 
 /-- A `for i in s..e` loop carrying its invariant as a marker.
 
-The argument `body : ι → β → Result β` takes the current index and accumulator
-and returns the new accumulator. The index scalar type `ι` is polymorphic; its
-`Step` dictionary is taken as an explicit argument `stepInst`, which the
-`for_loop_with_invariant` tactic reads directly off the extracted loop body, so
-unsigned uses (over `Usize`) and signed uses (over `I8`, …, `Isize`) are both
-supported without any type-class search. The iterator and `ControlFlow` plumbing live
-entirely inside this definition. The first argument `_inv` is a marker read off by the
-`for_loop_with_invariant` tactic and by spec lemmas; it has no computational role. -/
+The argument `body : ι → β → Result β` takes the current index and accumulator and
+returns the new accumulator; `stepInst` is the `Step` dictionary of the index type `ι`.
+The iterator and `ControlFlow` plumbing live entirely inside this definition. The first
+argument `_inv` is a marker read off by the `for_loop_with_invariant` tactic and by
+spec lemmas; it has no computational role. -/
 def forLoopWithInvariant {ι β : Type} (stepInst : core.iter.range.Step ι)
     (_inv : ι → β → Result Prop)
     (body : ι → β → Result β)
@@ -65,17 +62,13 @@ Bind.bind (next StepUsize x.1) <|
       fun i => Bind.bind userBody fun acc' =>
         Result.ok (ControlFlow.cont (iter1, acc'))
 ```
-Also returns the `Step` dictionary the loop's `next` call is applied to (the argument
-of type `core.iter.range.Step _`), so the caller can pass it to `forLoopWithInvariant`
-directly instead of relying on type-class search.
-
-Returns `(userBody, stepDict)` with the match-bound index substituted by `jFvar`. -/
+Returns `(userBody, stepDict)` with the match-bound index substituted by `jFvar`,
+where `stepDict` is the `Step` dictionary taken from the loop's `next` call. -/
 private def extractStepBody (jFvar : Expr) (loopBodyInner : Expr) :
     MetaM (Option (Expr × Expr)) := do
   let inner ← whnfR loopBodyInner
   unless inner.isAppOfArity ``Bind.bind 6 do return none
-  -- The bound action is the iterator `next` call; recover its `Step` dictionary
-  -- argument (the one of type `core.iter.range.Step _`).
+  -- Recover the `Step` dictionary argument of the iterator `next` call.
   let nextAction := inner.getArg! 4
   let some stepDict ← nextAction.getAppArgs.findSomeM? (fun a => do
       let t ← inferType a
@@ -121,8 +114,6 @@ private def buildForLoopWithInvariant
   let init := initialPair.getArg! 3
   let elemTy ← inferType init
   let loopBody := loopExpr.getArg! 2
-  -- Recover the index scalar type `ι` from the iterator's type
-  -- `core.ops.range.Range ι`.
   let ι := (← inferType iter).getArg! 0
   let (stepLambda, stepDict) ← withLocalDeclD `j ι fun j =>
     withLocalDeclD `a elemTy fun a => do
