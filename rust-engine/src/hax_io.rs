@@ -61,3 +61,8 @@ pub fn write(message: &FromEngine) {
     stdout.write_all(b"\n").unwrap();
     stdout.flush().unwrap();
 }
+
+/// Report a diagnostic
+pub fn report_diagnostic(diagnostic: hax_types::diagnostics::Diagnostics) {
+    write(&FromEngine::Diagnostic(diagnostic))
+}

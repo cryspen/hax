@@ -90,7 +90,6 @@
 
           check-toolchain = checks.toolchain;
           check-examples = checks.examples;
-          check-coq-coverage = checks.coverage;
           check-readme-coherency = checks.readme-coherency;
 
           rust-by-example-hax-extraction = pkgs.stdenv.mkDerivation {
@@ -119,11 +118,6 @@
           examples = pkgs.callPackage ./examples {
             inherit (packages) hax;
             inherit craneLib fstar hacl-star hax-env;
-          };
-          coverage = pkgs.callPackage ./examples/coverage {
-            inherit (packages) hax;
-            inherit craneLib;
-            coqPackages = pkgs.coqPackages_8_19;
           };
           readme-coherency =
             let src = pkgs.lib.sourceFilesBySuffices ./. [ ".md" ];
@@ -199,7 +193,6 @@
             pkgs.just
             pkgs.cargo-expand
             pkgs.cargo-release
-            pkgs.cargo-insta
             pkgs.openssl.dev
             pkgs.libz.dev
             pkgs.pkg-config
@@ -229,6 +222,9 @@
               export CACHE_DIR=$(mktemp -d)
               export HINT_DIR=$(mktemp -d)
               export SHELL=${pkgs.bash}/bin/bash
+              # Ensure locally-compiled crates (e.g. the test-driver)
+              # embed the same HAX_VERSION as the Nix-built cargo-hax.
+              export HAX_VERSION=${(builtins.fromTOML (builtins.readFile ./Cargo.toml)).workspace.package.version}
             '';
             packages = [
               packages.hax
@@ -236,6 +232,7 @@
               packages.fstar
               packages.proverif
               pkgs.jq
+              pkgs.just
               pkgs.elan
             ];
           };

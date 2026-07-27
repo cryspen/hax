@@ -1,9 +1,0 @@
-[package]
-name = "lean_chacha20"
-version = "0.1.0"
-authors = ["Clement Blaudeau <clement@cryspen.com>"]
-edition = "2021"
-
-[dependencies]
-hax-lib.workspace = true
-hax-bounded-integers.workspace = true

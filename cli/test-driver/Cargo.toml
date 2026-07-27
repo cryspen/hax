@@ -1,0 +1,32 @@
+[package]
+name = "test-driver"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+edition.workspace = true
+repository.workspace = true
+readme.workspace = true
+description = "The custom rustc driver used by hax."
+
+[package.metadata.rust-analyzer]
+rustc_private = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+clap = { workspace = true, features = ["string"] }
+colored.workspace = true
+hax-types = { workspace = true, features = ["rustc"] }
+hax-frontend-exporter.workspace = true
+anyhow = "1.0.100"
+shlex = "1.3.0"
+tokio = { version = "1.47.1", features = ["full"] }
+cargo_metadata.workspace = true
+extension-traits = "2.0.1"
+futures = "0.3.31"
+indicatif = "0.18.0"
+pest = "2.8.2"
+pest_derive = "2.8.2"
+num_cpus = "1.17.0"
+walkdir = "2.5.0"

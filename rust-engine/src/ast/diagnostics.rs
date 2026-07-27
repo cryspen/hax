@@ -30,14 +30,12 @@ pub struct DiagnosticInfo {
 impl DiagnosticInfo {
     /// Emits the diagnostic information.
     pub fn emit(&self) {
-        crate::hax_io::write(&hax_types::engine_api::protocol::FromEngine::Diagnostic(
-            hax_types::diagnostics::Diagnostics {
-                kind: self.kind.clone(),
-                span: self.span.as_frontend_spans().to_vec(),
-                context: format!("{}", self.context),
-                owner_id: None,
-            },
-        ))
+        crate::hax_io::report_diagnostic(hax_types::diagnostics::Diagnostics {
+            kind: self.kind.clone(),
+            span: self.span.as_frontend_spans().to_vec(),
+            context: format!("{}", self.context),
+            owner_id: None,
+        })
     }
 }
 

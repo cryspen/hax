@@ -114,6 +114,16 @@ pub fn required_predicates<'tcx>(
         // `predicates_defined_on` ICEs on other def kinds.
         _ => Default::default(),
     };
+    // Recover the bounds a type alias's body needs but doesn't declare (see
+    // `type_alias_implied_predicates`).
+    if matches!(def_kind, TyAlias) {
+        let predicates = predicates.to_mut();
+        for (clause, span) in type_alias_implied_predicates(tcx, def_id) {
+            if !predicates.iter().any(|(c, _)| *c == clause) {
+                predicates.push((clause, span));
+            }
+        }
+    }
     // For methods and assoc consts in trait definitions, we add an explicit `Self: Trait` clause.
     // Associated types get to use the implicit `Self: Trait` clause instead.
     if !matches!(def_kind, AssocTy)
@@ -131,6 +141,48 @@ pub fn required_predicates<'tcx>(
         prune_sized_predicates(tcx, &mut predicates);
     }
     predicates
+}
+
+/// Bounds that a free type alias's body needs but that Rust doesn't record on the alias. E.g. for
+/// `type F<G> = <G as T>::A`, translating the body requires `G: T`, yet that bound isn't part of the
+/// alias's predicates. We recover such bounds from the well-formedness obligations of the body.
+pub fn type_alias_implied_predicates<'tcx>(
+    tcx: TyCtxt<'tcx>,
+    def_id: DefId,
+) -> Vec<(Clause<'tcx>, Span)> {
+    use super::resolution::shallow_resolve_trait_ref;
+    use rustc_infer::infer::TyCtxtInferExt;
+    use rustc_middle::ty::TypeVisitableExt;
+    use rustc_trait_selection::traits::wf;
+    if !matches!(tcx.def_kind(def_id), DefKind::TyAlias) {
+        return vec![];
+    }
+    let Some(local_def_id) = def_id.as_local() else {
+        return vec![];
+    };
+    let ty = tcx.type_of(def_id).instantiate_identity();
+    let span = tcx.def_span(def_id);
+    let param_env = tcx.param_env(def_id);
+    let typing_env = TypingEnv {
+        param_env,
+        typing_mode: TypingMode::PostAnalysis,
+    };
+    let (infcx, wf_param_env) = tcx.infer_ctxt().build_with_typing_env(typing_env);
+    let Some(obligations) = wf::obligations(&infcx, wf_param_env, local_def_id, 0, ty.into(), span)
+    else {
+        return vec![];
+    };
+    obligations
+        .into_iter()
+        .filter_map(|obligation| obligation.predicate.as_clause())
+        .filter_map(|clause| Some((clause, clause.as_trait_clause()?.to_poly_trait_ref())))
+        // Inference variables can't be turned into bounds (and would make selection panic below).
+        .filter(|(_, trait_ref)| !trait_ref.has_infer())
+        // Keep only the bounds that don't already hold: e.g. `Global: Allocator` resolves on its
+        // own, while `G: T` is the one we need to assume.
+        .filter(|(_, trait_ref)| shallow_resolve_trait_ref(tcx, param_env, *trait_ref).is_err())
+        .map(|(clause, _)| (clause, span))
+        .collect()
 }
 
 /// The special "self" predicate on a trait.

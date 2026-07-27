@@ -1304,7 +1304,7 @@ sinto_todo!(rustc_middle::ty, AdtFlags);
 
 /// Reflects [`ty::ReprOptions`]
 #[derive_group(Serializers)]
-#[derive(AdtInto, Clone, Debug, JsonSchema)]
+#[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_abi::ReprOptions, state: S as s)]
 pub struct ReprOptions {
     /// Whether an explicit integer representation was specified.
@@ -1324,7 +1324,7 @@ pub struct ReprOptions {
 
 /// The representation flags without the ones irrelevant outside of rustc.
 #[derive_group(Serializers)]
-#[derive(Default, Clone, Debug, JsonSchema)]
+#[derive(Default, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ReprFlags {
     pub is_c: bool,
     pub is_transparent: bool,

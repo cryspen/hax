@@ -1,19 +1,25 @@
-[package]
-name = "core-models"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-pastey = "0.1.1"
-rust_primitives = { "path" = "rust_primitives" }
-hax-lib.workspace = true
+[workspace]
+resolver = "2"
+members = [
+    "core-models",
+    "alloc",
+    "rust_primitives",
+    # `std` and `rand_core` are extracted to F* only (see the `fstar` target
+    # in the Makefile). They have no Aeneas/Lean counterpart.
+    "std",
+    "rand_core",
+]
+# `tests` is intentionally NOT a member — it is its own cargo
+# workspace (see `tests/Cargo.toml`) holding the two test surfaces
+# (`client_test/`, `rust_lean_equiv_test/`). Keeping it separate ensures
+# the model being extracted by charon/Aeneas is the pure
+# `core-models`/`alloc`/`rust_primitives` triple, with no test-only
+# items in the LLBC.
 
 [workspace.dependencies]
-hax-lib = { "path" = ".." }
-
-# Workaround for https://github.com/rust-lang/cargo/issues/6745
-[workspace]
-members = ["alloc", "rand_core", "rust_primitives", "std"]
-
-[lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)'] }
+# `hax-lib` provides the `#[hax_lib::attributes]`, `#[hax_lib::requires]`
+# etc. attribute procmacros our model uses. This is the `hax-lib` of the
+# surrounding checkout, so it always matches the `cargo hax` that `make
+# fstar` runs. (This crate is `exclude`d from the root workspace, but a
+# path dependency across workspaces is fine.)
+hax-lib = { path = ".." }

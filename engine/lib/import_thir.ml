@@ -631,8 +631,8 @@ end) : EXPR = struct
           let arms = List.map ~f:c_arm arms in
           Match { scrutinee; arms }
       | Let _ ->
-          assertion_failure [ e.span ]
-            "`Let` nodes are supposed to be pre-processed"
+          unimplemented ~issue_id:2018 [ e.span ]
+            "Let-chains (e.g. `if let .. && let ..`) are not supported."
       | Block { expr; span; stmts; safety_mode; _ } ->
           let { e; _ } = c_block ~expr ~span ~stmts ~ty:e.ty ~safety_mode in
           e
@@ -893,9 +893,9 @@ end) : EXPR = struct
       | Literal lit ->
           let lit, neg = constant_lit_to_lit lit span in
           Literal { lit = { node = lit; span }; neg }
-      | Adt { fields; info } ->
+      | Adt { fields; info; repr } ->
           let fields = List.map ~f:constant_field_expr fields in
-          Adt { fields; info; base = None'; user_ty = None }
+          Adt { fields; info; repr; base = None'; user_ty = None }
       | Array { fields } ->
           Array { fields = List.map ~f:constant_expr_to_expr fields }
       | Tuple { fields } ->
@@ -1235,7 +1235,9 @@ end) : EXPR = struct
     | Dyn -> Dyn
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
     | Builtin _ -> Builtin goal
-    | Error str -> failwith @@ "impl_expr_atom: Error " ^ str
+    | Error str ->
+        unimplemented ~issue_id:707 [ span ]
+          ("Could not resolve trait reference: " ^ str)
 
   and c_generic_value (span : Thir.span) (ty : Thir.generic_arg) : generic_value
       =
@@ -1637,7 +1639,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              params = c_fn_params item.span params;
              safety = c_header_safety safety;
            }
-  | (Enum (_, generics, _, _) | Struct (_, generics, _)) when erased ->
+  | (Enum (_, generics, _, _) | Struct (_, generics, _, _)) when erased ->
       let generics = c_generics generics in
       let is_struct = match item.kind with Struct _ -> true | _ -> false in
       let def_id = assert_item_def_id () in
@@ -1701,7 +1703,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
         mk_one (Type { name; generics; variants; is_struct }) :: discs
       in
       if is_primitive then cast_fun :: result else result
-  | Struct (_, generics, v) ->
+  | Struct (_, generics, v, _repr) ->
       let generics = c_generics generics in
       let def_id = assert_item_def_id () in
       let is_struct = true in
@@ -1948,7 +1950,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
 let import_item ~type_only (item : Thir.item) :
     concrete_ident * (item list * Diagnostics.t list) =
   let ident = Concrete_ident.of_def_id ~value:false item.owner_id in
-  let r, reports =
+  let reports, r =
     let f = U.Reducers.disambiguate_local_idents in
     Diagnostics.Core.capture (fun _ ->
         c_item item ~ident ~type_only |> List.map ~f)

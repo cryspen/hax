@@ -1,10 +1,9 @@
-name = "Lean_tutorial"
+name = "lean_tutorial"
 version = "0.1.0"
-defaultTargets = ["Lean_tutorial"]
+defaultTargets = ["LeanTutorial"]
 
 [[lean_lib]]
-name = "Lean_tutorial"
-roots = ["extraction.Lean_tutorial"]
+name = "LeanTutorial"
 
 [[require]]
 name = "Hax"

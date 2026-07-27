@@ -542,8 +542,28 @@ fn gen_vtable_sig<'tcx>(
     full_args.extend(trait_ref.args.iter());
     let trait_args = tcx.mk_args(&full_args);
 
+    // The method may have generics of its own (for a vtable-safe method these can only be
+    // lifetimes, e.g. `fn handle<'m>(&self) -> Box<dyn Trait + 'm>`). We keep them as identity so
+    // that we supply the right number of arguments to `instantiate`; the resulting signature still
+    // mentions those params.
+    let method_args = ty::GenericArgs::identity_for_item(tcx, method_decl_id)
+        .rebase_onto(tcx, trait_id, trait_args);
+
+    // Translate in the context whose param env resolves the signature:
+    // - for a trait method, its own declaration, so the method's own generics (e.g. lifetimes)
+    //   resolve;
+    // - for an impl method, the impl (set above), so the impl's generics and predicates resolve —
+    //   the concrete `dyn_self` may mention them (e.g. `dyn Iterator<Item = <A as Trait>::Id>`).
+    let method_state;
+    let s = if matches!(assoc_item.container, ty::AssocContainer::Trait) {
+        method_state = s.with_owner_id(method_decl_id);
+        &method_state
+    } else {
+        s
+    };
+
     // Instantiate and normalize the signature.
-    let method_decl_sig = tcx.fn_sig(method_decl_id).instantiate(tcx, trait_args);
+    let method_decl_sig = tcx.fn_sig(method_decl_id).instantiate(tcx, method_args);
     let normalized_sig = normalize(tcx, s.typing_env(), method_decl_sig);
 
     Some(normalized_sig.sinto(s))
@@ -739,17 +759,35 @@ where
                                 };
                                 match decl_assoc.kind {
                                     ty::AssocKind::Type { .. } => {
+                                        // The associated type may have generics of its own (e.g.
+                                        // a GAT, or an RPITIT whose generics include the method's
+                                        // own generics). We must extend the trait args with the
+                                        // assoc type's own generics as identity, otherwise
+                                        // `instantiate` would be missing arguments.
+                                        let item_args =
+                                            ty::GenericArgs::identity_for_item(tcx, decl_def_id);
+                                        let args = item_args.rebase_onto(
+                                            tcx,
+                                            trait_ref.def_id,
+                                            trait_ref.args,
+                                        );
                                         let ty = tcx
                                             .type_of(decl_def_id)
-                                            .instantiate(tcx, trait_ref.args)
+                                            .instantiate(tcx, args)
                                             .sinto(s);
                                         ImplAssocItemValue::DefaultedTy { ty }
                                     }
                                     ty::AssocKind::Fn { .. } => {
-                                        let sig = if tcx.generics_of(decl_def_id).is_own_empty() {
-                                            // The method doesn't have generics of its own, so
-                                            // we can instantiate it with just the trait
-                                            // generics.
+                                        // Only translate the sig when the method has no generics
+                                        // or predicates of its own. Otherwise (e.g. `flatten`, with
+                                        // `where Self::Item: IntoIterator`) we'd have to resolve
+                                        // those predicates, but no `DefId` carries a param env in
+                                        // which they hold, so resolution spuriously fails.
+                                        let no_own_generics_or_predicates = tcx
+                                            .generics_of(decl_def_id)
+                                            .is_own_empty()
+                                            && tcx.predicates_of(decl_def_id).predicates.is_empty();
+                                        let sig = if no_own_generics_or_predicates {
                                             let sig = tcx
                                                 .fn_sig(decl_def_id)
                                                 .instantiate(tcx, trait_ref.args)

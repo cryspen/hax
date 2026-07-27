@@ -3,7 +3,9 @@ module Core_models.Iter.Traits.Collect
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::iter::IntoIterator`]
 class t_IntoIterator (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
   [@@@ FStar.Tactics.Typeclasses.no_method]f_IntoIter:Type0;
   f_into_iter_pre:v_Self -> Type0;
   f_into_iter_post:v_Self -> f_IntoIter -> Type0;
@@ -11,6 +13,7 @@ class t_IntoIterator (v_Self: Type0) = {
     -> Prims.Pure f_IntoIter (f_into_iter_pre x0) (fun result -> f_into_iter_post x0 result)
 }
 
+/// See [`std::iter::FromIterator`]
 class t_FromIterator (v_Self: Type0) (v_A: Type0) = {
   f_from_iter_pre:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> iter: v_T
     -> pred: Type0{true ==> pred};

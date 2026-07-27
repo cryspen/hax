@@ -2,7 +2,7 @@ name: Test Workspace
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
   merge_group:
   workflow_dispatch:

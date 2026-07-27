@@ -448,8 +448,11 @@ module Make (Options : OPTS) : MAKE = struct
                 | Some (name, translation) -> translation fields
                 | None -> super#expr' ctx e)
             | Match { scrutinee; arms } ->
-                let first_arm = Option.value_exn (List.hd arms) in
-                let arms_typ = first_arm.arm.body.typ in
+                let arms_typ =
+                  List.hd arms
+                  |> Option.map ~f:(fun arm -> arm.arm.body.typ)
+                  |> Option.value ~default:TBool
+                in
                 separate_map
                   (hardline ^^ string "else ")
                   (fun { arm; span } -> print#match_arm arms_typ scrutinee arm)

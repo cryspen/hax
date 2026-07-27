@@ -3,6 +3,7 @@ module Core_models.Ops.Try_trait
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::ops::FromResidual`]
 class t_FromResidual (v_Self: Type0) (v_R: Type0) = {
   f_from_residual_pre:v_R -> Type0;
   f_from_residual_post:v_R -> v_Self -> Type0;
@@ -10,6 +11,7 @@ class t_FromResidual (v_Self: Type0) (v_R: Type0) = {
     -> Prims.Pure v_Self (f_from_residual_pre x0) (fun result -> f_from_residual_post x0 result)
 }
 
+/// See [`std::ops::Try`]
 class t_Try (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Residual:Type0;

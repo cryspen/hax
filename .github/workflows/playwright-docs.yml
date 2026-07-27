@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   test:
+    if: github.repository == 'cryspen/hax'
     timeout-minutes: 45
     runs-on: ubuntu-latest
     steps:

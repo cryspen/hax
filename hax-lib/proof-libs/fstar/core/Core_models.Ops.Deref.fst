@@ -3,6 +3,7 @@ module Core_models.Ops.Deref
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::ops::Deref`]
 class t_Deref (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Target:Type0;
   f_deref_pre:v_Self -> Type0;

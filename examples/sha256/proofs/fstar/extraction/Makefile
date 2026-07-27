@@ -63,7 +63,7 @@ ${HACL_HOME}:
 
 # If no any F* file is detected, we run hax
 ifeq "$(wildcard *.fst *fsti)" ""
-$(shell $(SHELL) -c $(HAX_CLI))
+_ := $(shell $(SHELL) -c $(HAX_CLI))
 endif
 
 # By default, we process all the files in the current directory

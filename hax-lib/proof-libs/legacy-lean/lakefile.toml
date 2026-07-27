@@ -1,0 +1,17 @@
+name = "Hax"
+version = "0.1.0"
+defaultTargets = ["Hax"]
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+
+[[lean_lib]]
+name = "Hax"
+
+[[require]]
+name = "Qq"
+git = "https://github.com/leanprover-community/quote4"
+rev = "v4.29.0-rc1"

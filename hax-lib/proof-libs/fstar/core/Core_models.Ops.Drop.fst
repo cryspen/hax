@@ -3,6 +3,7 @@ module Core_models.Ops.Drop
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::ops::Drop`]
 class t_Drop (v_Self: Type0) = {
   f_drop_pre:v_Self -> Type0;
   f_drop_post:v_Self -> v_Self -> Type0;

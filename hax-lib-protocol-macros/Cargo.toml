@@ -12,7 +12,6 @@ readme.workspace = true
 proc-macro = true
 
 [dependencies]
-proc-macro-error2 = { version = "2.0" }
 proc-macro2.workspace = true
 quote.workspace = true
 syn = { version = "2.0", features = [

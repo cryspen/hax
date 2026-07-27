@@ -677,8 +677,26 @@ pub enum ItemKind<Body: IsBody> {
         })]
         ReprOptions,
     ),
-    Struct(Ident, Generics<Body>, VariantData),
-    Union(Ident, Generics<Body>, VariantData),
+    Struct(
+        Ident,
+        Generics<Body>,
+        VariantData,
+        #[value({
+            let tcx = s.base().tcx;
+            tcx.repr_options_of_def(s.owner_id().expect_local()).sinto(s)
+        })]
+        ReprOptions,
+    ),
+    Union(
+        Ident,
+        Generics<Body>,
+        VariantData,
+        #[value({
+            let tcx = s.base().tcx;
+            tcx.repr_options_of_def(s.owner_id().expect_local()).sinto(s)
+        })]
+        ReprOptions,
+    ),
     Trait(
         Constness,
         IsAuto,

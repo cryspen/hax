@@ -1,0 +1,29 @@
+module New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Impl_type
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl: New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Trait_definition.t_MyTrait
+New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Define_type.t_MyType =
+  {
+    f_my_method_pre
+    =
+    (fun
+        (self: New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Define_type.t_MyType)
+        ->
+        true);
+    f_my_method_post
+    =
+    (fun
+        (self: New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Define_type.t_MyType)
+        (out: Prims.unit)
+        ->
+        true);
+    f_my_method
+    =
+    fun
+      (self: New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Define_type.t_MyType)
+      ->
+      ()
+  }

@@ -48,9 +48,16 @@ fn apply_legacy_phases(phases: &[LegacyOCamlPhase], items: &mut Vec<Item>) {
         input: std::mem::take(items),
         phases: phases.iter().map(ToString::to_string).collect(),
     };
-    let Some(Response::ApplyPhases { output }) = query.execute(None) else {
+    let Some(Response::ApplyPhases {
+        output,
+        diagnostics,
+    }) = query.execute(None)
+    else {
         panic!()
     };
+    for diagnostic in diagnostics {
+        crate::hax_io::report_diagnostic(diagnostic);
+    }
     *items = output;
 }
 

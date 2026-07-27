@@ -1440,7 +1440,7 @@ pub enum ItemKind {
         ///
         /// # Example:
         /// `T<u8>`
-        of_trait: (GlobalId, Vec<GenericValue>),
+        of_trait: TraitGoal,
 
         /// Items in this impl
         ///
@@ -1663,17 +1663,6 @@ pub mod traits {
         }
         fn span_mut(&mut self) -> &mut Span {
             &mut self.span
-        }
-    }
-
-    impl ExprKind {
-        /// Convert to full `Expr` with type, span and attributes
-        pub fn into_expr(self, span: Span, ty: Ty, attributes: Vec<Attribute>) -> Expr {
-            Expr {
-                kind: Box::new(self),
-                ty,
-                meta: Metadata { span, attributes },
-            }
         }
     }
 

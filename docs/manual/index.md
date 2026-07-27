@@ -5,19 +5,19 @@ weight: -5
 # Introduction
 
 hax is a tool for high assurance translations of a large subset of
-Rust into formal languages such as [F\*](https://www.fstar-lang.org/), [Lean](https://lean-lang.org/) or [Rocq](https://rocq-prover.org/).
+Rust into formal languages such as [Lean](https://lean-lang.org/), [F\*](https://www.fstar-lang.org/) or [Rocq](https://rocq-prover.org/).
 
 ## Usage
 
-Hax is a cargo subcommand. 
+hax is a cargo subcommand. 
 The command `cargo hax` accepts the following subcommands:
 
-* **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `fstar`, `coq`, `lean`).
+* **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `lean`, `fstar`, `coq`).
 * **`json`** (`cargo hax json`): extract the typed AST of your crate as a JSON file.
  
 Note:
 
-* `BACKEND` can be `fstar`, `coq`, `lean`, `easycrypt` or `pro-verif`. `cargo hax into --help`
+* `BACKEND` can be `lean`, `legacy-lean`, `fstar`, `coq`, `pro-verif`, `ssprove` or `easycrypt`. `cargo hax into --help`
    gives the full list of supported backends.
 * The subcommands `cargo hax`, `cargo hax into` and `cargo hax into
    <BACKEND>` takes options. For instance, you can `cargo hax into
@@ -35,7 +35,7 @@ Note:
       - [`nodejs`](https://nodejs.org/)
       - [`jq`](https://jqlang.github.io/jq/)
 
-2. Clone this repo: `git clone git@github.com:hacspec/hax.git && cd hax`
+2. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
 3. Run the `setup.sh` script: `./setup.sh`.
 4. Run `cargo-hax --help`
 
@@ -52,16 +52,16 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
     ```
   - or following [those steps](https://github.com/mschwaig/howto-install-nix-with-flake-support).
 
-+ **Run hax on a crate directly** to get F\*/Coq/... (assuming you are in the crate's folder):
-   - `nix run github:hacspec/hax -- into fstar` extracts F\*.
++ **Run hax on a crate directly** to get Lean/F\*/Coq/... (assuming you are in the crate's folder):
+   - `nix run github:cryspen/hax -- into fstar` extracts F\*.
 
-+ **Install hax**:  `nix profile install github:hacspec/hax`, then run `cargo hax --help` anywhere
-+ **Note**: in any of the Nix commands above, replace `github:hacspec/hax` by `./dir` to compile a local checkout of hax that lives in `./some-dir`
++ **Install hax**:  `nix profile install github:cryspen/hax`, then run `cargo hax --help` anywhere
++ **Note**: in any of the Nix commands above, replace `github:cryspen/hax` by `./dir` to compile a local checkout of hax that lives in `./some-dir`
 + **Setup binary cache**: [using Cachix](https://app.cachix.org/cache/hax), just `cachix use hax`
 
 ### Docker
 
-1. Clone this repo: `git clone git@github.com:hacspec/hax.git && cd hax`
+1. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
 2. Build the docker image: `docker build -f .docker/Dockerfile . -t hax`
 3. Get a shell: `docker run -it --rm -v /some/dir/with/a/crate:/work hax bash`
 4. You can now run `cargo-hax --help` (notice here we use `cargo-hax` instead of `cargo hax`)

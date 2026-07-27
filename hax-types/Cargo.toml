@@ -26,5 +26,8 @@ serde-brief ={ version = "0.1", features = ["std", "alloc"]}
 zstd = "0.13.1"
 miette = "7.2.0"
 
+[build-dependencies]
+toml = "0.8"
+
 [features]
 rustc = ["hax-frontend-exporter/rustc"]

@@ -22,9 +22,16 @@ fn main() {
                 translation_options: value.backend.translation_options,
             };
 
-            let Some(Response::ImportThir { output }) = query.execute(Some(table)) else {
+            let Some(Response::ImportThir {
+                output,
+                diagnostics,
+            }) = query.execute(Some(table))
+            else {
                 panic!()
             };
+            for diagnostic in diagnostics {
+                hax_rust_engine::hax_io::report_diagnostic(diagnostic);
+            }
             output
         }
         hax_types::driver_api::Items::FullDef(items) => {
@@ -51,7 +58,11 @@ fn main() {
     };
 
     let files = match &value.backend.backend {
-        Backend::Coq | Backend::Ssprove | Backend::Easycrypt | Backend::ProVerif { .. } => panic!(
+        Backend::Coq
+        | Backend::Ssprove
+        | Backend::Easycrypt
+        | Backend::ProVerif { .. }
+        | Backend::Lean { .. } => panic!(
             "The Rust engine cannot be called with backend {}.",
             value.backend.backend
         ),
@@ -69,7 +80,7 @@ fn main() {
             };
             return;
         }
-        Backend::Lean => backends::apply_backend(backends::lean::LeanBackend, items),
+        Backend::LegacyLean => backends::apply_backend(backends::legacy_lean::LeanBackend, items),
         Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
         Backend::Debugger { interactive } => {
             use hax_rust_engine::debugger::*;

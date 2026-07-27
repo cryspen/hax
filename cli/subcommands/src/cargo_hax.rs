@@ -1,8 +1,8 @@
 #![feature(rustc_private)]
-use annotate_snippets::{Level, Renderer};
 use clap::Parser;
 use colored::Colorize;
 use hax_types::cli_options::*;
+use hax_types::diagnostics::message::HaxMessage;
 use hax_types::driver_api::*;
 use hax_types::engine_api::*;
 use is_terminal::IsTerminal;
@@ -14,6 +14,7 @@ use std::io::Write;
 use std::path::PathBuf;
 use std::process;
 
+mod aeneas;
 mod engine_debug_webapp;
 use hax_frontend_exporter::id_table;
 
@@ -78,8 +79,33 @@ fn rustflags() -> String {
     [rustflags, "--cfg hax".into()].join(" ")
 }
 
+/// Find an external binary: check the given env var, then `PATH`.
+pub(crate) fn find_binary(
+    name: &str,
+    env_var: &str,
+    message_format: MessageFormat,
+    hint: Option<&str>,
+) -> PathBuf {
+    std::env::var(env_var)
+        .map(PathBuf::from)
+        .or_else(|_| which::which(name))
+        .unwrap_or_else(|_| {
+            HaxMessage::BinaryNotFound {
+                binary_name: name.into(),
+                env_var: env_var.into(),
+                hint: hint.map(String::from),
+            }
+            .report(message_format, None);
+            std::process::exit(2);
+        })
+}
+
 const ENGINE_BINARY_NAME: &str = "hax-engine";
+const ENGINE_BINARY_ENV: &str = "HAX_ENGINE_BINARY";
 const ENGINE_BINARY_NOT_FOUND: &str = "The binary [hax-engine] was not found in your [PATH].";
+
+const RUST_ENGINE_BINARY_NAME: &str = "hax-rust-engine";
+const RUST_ENGINE_BINARY_ENV: &str = "HAX_RUST_ENGINE_BINARY";
 
 /// Dynamically looks for binary [ENGINE_BINARY_NAME].  First, we
 /// check whether [HAX_ENGINE_BINARY] is set, and use that if it
@@ -90,7 +116,7 @@ const ENGINE_BINARY_NOT_FOUND: &str = "The binary [hax-engine] was not found in 
 fn find_hax_engine(message_format: MessageFormat) -> process::Command {
     use which::which;
 
-    std::env::var("HAX_ENGINE_BINARY")
+    std::env::var(ENGINE_BINARY_ENV)
         .ok()
         .map(process::Command::new)
         .or_else(|| which(ENGINE_BINARY_NAME).ok().map(process::Command::new))
@@ -114,147 +140,34 @@ fn find_hax_engine(message_format: MessageFormat) -> process::Command {
             })
         })
         .unwrap_or_else(|| {
-            fn is_opam_setup_correctly() -> bool {
-                std::env::var("OPAM_SWITCH_PREFIX").is_ok()
-            }
-            HaxMessage::EngineNotFound {
-                is_opam_setup_correctly: is_opam_setup_correctly(),
+            let opam_ok = std::env::var("OPAM_SWITCH_PREFIX").is_ok();
+            let opam_diag = if opam_ok {
+                "opam seems okay ✓"
+            } else {
+                "opam seems not okay ❌"
+            };
+            HaxMessage::BinaryNotFound {
+                binary_name: ENGINE_BINARY_NAME.into(),
+                env_var: ENGINE_BINARY_ENV.into(),
+                hint: Some(format!(
+                    "With OPAM, `eval $(opam env)` is necessary for OPAM binaries to be in PATH: \
+                     make sure to run `eval $(opam env)` before running `cargo hax`. \
+                     (diagnostics: {})",
+                    opam_diag
+                )),
             }
             .report(message_format, None);
             std::process::exit(2);
         })
 }
 
-const RUST_ENGINE_BINARY_NAME: &str = "hax-rust-engine";
-const RUST_ENGINE_BINARY_NOT_FOUND: &str =
-    "The binary [hax-rust-engine] was not found in your [PATH].";
-
-#[allow(unused_variables, unreachable_code)]
 fn find_rust_hax_engine(message_format: MessageFormat) -> process::Command {
-    use which::which;
-
-    std::env::var("HAX_RUST_ENGINE_BINARY")
-        .ok()
-        .map(process::Command::new)
-        .or_else(|| {
-            which(RUST_ENGINE_BINARY_NAME)
-                .ok()
-                .map(process::Command::new)
-        })
-        .expect(RUST_ENGINE_BINARY_NOT_FOUND)
-}
-
-use hax_types::diagnostics::message::HaxMessage;
-use hax_types::diagnostics::report::ReportCtx;
-
-#[extension_traits::extension(trait ExtHaxMessage)]
-impl HaxMessage {
-    fn report(self, message_format: MessageFormat, mut rctx: Option<&mut ReportCtx>) {
-        if let (Some(r), HaxMessage::Diagnostic { diagnostic, .. }) = (rctx.as_mut(), &self)
-            && r.seen_already(diagnostic.clone())
-        {
-            return;
-        }
-        match message_format {
-            MessageFormat::Json => println!("{}", serde_json::to_string(&self).unwrap()),
-            MessageFormat::Human => self.report_styled(rctx),
-        }
-    }
-    fn report_styled(self, rctx: Option<&mut ReportCtx>) {
-        let renderer = Renderer::styled();
-        match self {
-            Self::Diagnostic {
-                diagnostic,
-                working_dir,
-            } => {
-                let mut _rctx = None;
-                let rctx = rctx.unwrap_or_else(|| _rctx.get_or_insert(ReportCtx::default()));
-                diagnostic.with_message(
-                    rctx,
-                    working_dir.as_ref().map(PathBuf::as_path),
-                    Level::Error,
-                    |msg| eprintln!("{}", renderer.render(msg)),
-                );
-            }
-            Self::EngineNotFound {
-                is_opam_setup_correctly,
-            } => {
-                use colored::Colorize;
-                let message = format!("hax: {}\n{}\n\n{} {}\n",
-                      &ENGINE_BINARY_NOT_FOUND,
-                      "Please make sure the engine is installed and is in PATH!",
-                      "Hint: With OPAM, `eval $(opam env)` is necessary for OPAM binaries to be in PATH: make sure to run `eval $(opam env)` before running `cargo hax`.".bright_black(),
-                      format!("(diagnostics: {})", if is_opam_setup_correctly { "opam seems okay ✓" } else {"opam seems not okay ❌"}).bright_black()
-            );
-                let message = Level::Error.title(&message);
-                eprintln!("{}", renderer.render(message))
-            }
-            Self::ProducedFile { mut path, wrote } => {
-                // Make path relative if possible
-                if let Ok(current_dir) = std::env::current_dir() {
-                    if let Ok(relative) = path.strip_prefix(current_dir) {
-                        path = PathBuf::from(".").join(relative).to_path_buf();
-                    }
-                }
-                let title = if wrote {
-                    format!("hax: wrote file {}", path.display())
-                } else {
-                    format!("hax: unchanged file {}", path.display())
-                };
-                eprintln!("{}", renderer.render(Level::Info.title(&title)))
-            }
-            Self::HaxEngineFailure { exit_code } => {
-                let title = format!(
-                    "hax: {} exited with non-zero code {}",
-                    ENGINE_BINARY_NAME, exit_code,
-                );
-                eprintln!("{}", renderer.render(Level::Error.title(&title)));
-            }
-            Self::ProfilingData(data) => {
-                fn format_with_dot(shift: u32, n: u64) -> String {
-                    let factor = 10u64.pow(shift);
-                    format!("{}.{}", n / factor, n % factor)
-                }
-                let title = format!(
-                    "hax[profiling]: {}: {}ms, memory={}, {} item{}{}",
-                    data.context,
-                    format_with_dot(6, data.time_ns),
-                    data.memory,
-                    data.quantity,
-                    if data.quantity > 1 { "s" } else { "" },
-                    if data.errored {
-                        " (note: this failed!)"
-                    } else {
-                        ""
-                    }
-                );
-                eprintln!("{}", renderer.render(Level::Info.title(&title)));
-            }
-            Self::Stats { errors_per_item } => {
-                let success_items = errors_per_item.iter().filter(|(_, n)| *n == 0).count();
-                let total = errors_per_item.len();
-                let title = format!(
-                    "hax: {}/{} items were successfully translated ({}% success rate)",
-                    success_items,
-                    total,
-                    (success_items * 100) / total
-                );
-                eprintln!("{}", renderer.render(Level::Info.title(&title)));
-            }
-            Self::CargoBuildFailure => {
-                let title =
-                    "hax: running `cargo build` was not successful, continuing anyway.".to_string();
-                eprintln!("{}", renderer.render(Level::Warning.title(&title)));
-            }
-            Self::WarnExperimentalBackend { backend } => {
-                let title = format!(
-                    "hax: Experimental backend \"{}\" is work in progress.",
-                    backend
-                );
-                eprintln!("{}", renderer.render(Level::Warning.title(&title)));
-            }
-        }
-    }
+    process::Command::new(find_binary(
+        RUST_ENGINE_BINARY_NAME,
+        RUST_ENGINE_BINARY_ENV,
+        message_format,
+        None,
+    ))
 }
 
 /// Runs `hax-engine`
@@ -556,17 +469,15 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
         let mut haxmeta_files = vec![];
         let stderr = child.stderr.take().unwrap();
         let stderr = std::io::BufReader::new(stderr);
-        for line in std::io::BufReader::new(stderr).lines() {
-            if let Ok(line) = line {
-                if let Some(msg) = line.strip_prefix(HAX_DRIVER_STDERR_PREFIX) {
-                    use HaxDriverMessage;
-                    let msg = serde_json::from_str(msg).unwrap();
-                    match msg {
-                        HaxDriverMessage::EmitHaxMeta(data) => haxmeta_files.push(data),
-                    }
-                } else {
-                    eprintln!("{}", line);
+        for line in std::io::BufReader::new(stderr).lines().flatten() {
+            if let Some(msg) = line.strip_prefix(HAX_DRIVER_STDERR_PREFIX) {
+                use HaxDriverMessage;
+                let msg = serde_json::from_str(msg).unwrap();
+                match msg {
+                    HaxDriverMessage::EmitHaxMeta(data) => haxmeta_files.push(data),
                 }
+            } else {
+                eprintln!("{}", line);
             }
         }
         haxmeta_files
@@ -615,17 +526,14 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
                         } else {
                             serde_json::to_writer(dest, &data)
                         }
+                    } else if use_ids {
+                        id_table::WithTable::run(id_table, haxmeta.items, |with_table| {
+                            serde_json::to_writer(dest, with_table)
+                        })
                     } else {
-                        if use_ids {
-                            id_table::WithTable::run(id_table, haxmeta.items, |with_table| {
-                                serde_json::to_writer(dest, with_table)
-                            })
-                        } else {
-                            serde_json::to_writer(dest, &haxmeta.items)
-                        }
-                    })
-                        .unwrap()
-
+                        serde_json::to_writer(dest, &haxmeta.items)
+                    }
+                  ).unwrap()
                 }
             });
             false
@@ -729,6 +637,40 @@ fn main() {
         _ => Options::parse_from(args.iter()),
     };
     options.normalize_paths();
+
+    // Lean bypasses the hax frontend entirely: run charon + aeneas directly
+    if let Command::Backend(ref backend) = options.command
+        && let Backend::Lean(ref aeneas_opts) = backend.backend
+    {
+        // Warn about options that are not supported by the lean backend
+        for (set, name) in [
+            (backend.dry_run, "--dry-run"),
+            (backend.stats, "--stats"),
+            (backend.profile, "--profile"),
+            (backend.debug_engine.is_some(), "--debug-engine"),
+            (backend.extract_type_aliases, "--extract-type-aliases"),
+            (
+                !backend.translation_options.include_namespaces.is_empty(),
+                "-i",
+            ),
+        ] {
+            if set {
+                HaxMessage::UnsupportedOption {
+                    option: name.into(),
+                    backend: BackendName::Lean,
+                }
+                .report(options.message_format, None);
+            }
+        }
+
+        let error = aeneas::run(
+            aeneas_opts,
+            backend.output_dir.clone(),
+            backend.verbose,
+            options.message_format,
+        );
+        std::process::exit(if error { 1 } else { 0 });
+    }
 
     let (haxmeta_files, exit_code) = options
         .haxmeta

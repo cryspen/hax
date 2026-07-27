@@ -10,6 +10,6 @@ readme.workspace = true
 description = "Newtypes for working with bounded integers with hax"
 
 [dependencies]
-duplicate = "1.0.0"
+duplicate = "2.0.1"
 hax-lib.workspace = true
 paste = "1.0.15"

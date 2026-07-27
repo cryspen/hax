@@ -1,0 +1,20 @@
+# Workspace-only manifest. The two test surfaces are independent crates:
+#
+# - `client_test/`: extracts the same items a downstream consumer of
+#   `core-models` would touch (Option, Result, mem, scalar arithmetic,
+#   Vec, ...). Its only purpose is to make sure Aeneas can extract the
+#   surface and the result elaborates against our hand-written shims.
+#
+# - `rust_lean_equiv_test/`: the rust↔lean equivalence framework. The
+#   `source` crate carries `#[rust_lean_test]`-annotated `() -> bool`
+#   functions; the `macro` crate provides the proc-macro that turns each
+#   into a `#[cfg(test)] #[test]` wrapper. The Lean side checks each
+#   function evaluates to `Result.ok true` (see
+#   `rust_lean_equiv_test/gen_lean_tests.py`).
+[workspace]
+resolver = "2"
+members = [
+    "client_test",
+    "rust_lean_equiv_test/source",
+    "rust_lean_equiv_test/macro",
+]

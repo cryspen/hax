@@ -36,27 +36,27 @@ identity_proc_macro_attribute!(
     refinement_type,
     fstar_replace,
     coq_replace,
-    lean_replace,
+    legacy_lean_replace,
     proverif_replace,
     fstar_replace_body,
     coq_replace_body,
-    lean_replace_body,
+    legacy_lean_replace_body,
     proverif_replace_body,
     fstar_before,
     coq_before,
-    lean_before,
+    legacy_lean_before,
     proverif_before,
     fstar_after,
     coq_after,
-    lean_after,
+    legacy_lean_after,
     proverif_after,
     fstar_smt_pat,
     fstar_postprocess_with,
-    lean_proof,
-    lean_pure_requires_proof,
-    lean_pure_ensures_proof,
-    lean_proof_method_grind,
-    lean_proof_method_bv_decide,
+    legacy_lean_proof,
+    legacy_lean_pure_requires_proof,
+    legacy_lean_pure_ensures_proof,
+    legacy_lean_proof_method_grind,
+    legacy_lean_proof_method_bv_decide,
 );
 
 #[proc_macro]
@@ -68,7 +68,7 @@ pub fn coq_expr(_payload: TokenStream) -> TokenStream {
     quote! { () }.into()
 }
 #[proc_macro]
-pub fn lean_expr(_payload: TokenStream) -> TokenStream {
+pub fn legacy_lean_expr(_payload: TokenStream) -> TokenStream {
     quote! { () }.into()
 }
 #[proc_macro]
@@ -97,7 +97,7 @@ pub fn coq_unsafe_expr(_payload: TokenStream) -> TokenStream {
     unsafe_expr()
 }
 #[proc_macro]
-pub fn lean_unsafe_expr(_payload: TokenStream) -> TokenStream {
+pub fn legacy_lean_unsafe_expr(_payload: TokenStream) -> TokenStream {
     unsafe_expr()
 }
 #[proc_macro]
@@ -114,7 +114,7 @@ pub fn coq_prop_expr(_payload: TokenStream) -> TokenStream {
     quote! {::hax_lib::Prop::from_bool(true)}.into()
 }
 #[proc_macro]
-pub fn lean_prop_expr(_payload: TokenStream) -> TokenStream {
+pub fn legacy_lean_prop_expr(_payload: TokenStream) -> TokenStream {
     quote! {::hax_lib::Prop::from_bool(true)}.into()
 }
 #[proc_macro]

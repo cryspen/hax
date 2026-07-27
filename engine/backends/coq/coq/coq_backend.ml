@@ -798,8 +798,11 @@ struct
 
       method literal_Bool x1 = string (if x1 then "true" else "false")
 
+      (* This is wrong for non-ASCII chars: https://github.com/cryspen/hax/issues/1953 *)
       method literal_Char x1 =
-        string "\"" ^^ string (Char.escaped x1) ^^ string "\"" ^^ string "%char"
+        string "\""
+        ^^ string (Char.escaped (String.get x1 0))
+        ^^ string "\"" ^^ string "%char"
 
       method literal_Float ~value ~negative ~kind:_ =
         (if negative then parens (!^"-" ^^ string value) else string value)

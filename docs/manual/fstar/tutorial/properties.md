@@ -125,7 +125,7 @@ property about both of them. Better, we want this property to be
 stated directly in Rust: just as with pre and post-conditions, the
 Rust sources should clearly state what is to be proven.
 
-To this end, Hax provides a macro `lemma`. Below, the Rust function
+To this end, hax provides a macro `lemma`. Below, the Rust function
 `encrypt_decrypt_identity` takes a key and a plaintext, and then
 states the inverse property. The body is empty: the details of the
 proof itself are not relevant, at this stage, we only care about the

@@ -1,11 +1,10 @@
 name = "barrett"
 version = "0.1.0"
-defaultTargets = ["barrett"]
+defaultTargets = ["Barrett"]
 
 [[lean_lib]]
-name = "barrett"
-roots = ["extraction.Barrett"]
+name = "Barrett"
 
 [[require]]
 name = "Hax"
-path = "../../../../proof-libs/lean"
+path = "../../../../hax-lib/proof-libs/lean"

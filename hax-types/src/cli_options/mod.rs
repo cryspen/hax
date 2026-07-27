@@ -8,7 +8,7 @@ pub mod extension;
 use extension::Extension;
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Clone, Eq, PartialEq)]
 pub enum DebugEngineMode {
     File(PathOrDash),
     Interactive,
@@ -45,7 +45,7 @@ impl std::convert::From<&str> for ForceCargoBuild {
 }
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Eq, PartialEq)]
 pub enum PathOrDash {
     Dash,
     Path(PathBuf),
@@ -111,7 +111,7 @@ impl NormalizePaths for PathOrDash {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Hash, Clone, Eq, PartialEq)]
 pub struct ProVerifOptions {
     /// Items for which hax should extract a default-valued process
     /// macro with a corresponding type signature. This flag expects a
@@ -131,8 +131,8 @@ pub struct ProVerifOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
-pub struct FStarOptions<E: Extension> {
+#[derive(JsonSchema, Parser, Debug, Hash, Clone, Eq, PartialEq)]
+pub struct FStarOptions {
     /// Set the Z3 per-query resource limit
     #[arg(long, default_value = "15")]
     pub z3rlimit: u32,
@@ -164,18 +164,66 @@ pub struct FStarOptions<E: Extension> {
 
     #[arg(long, default_value = "100", env = "HAX_FSTAR_LINE_WIDTH")]
     pub line_width: u16,
-
-    #[group(flatten)]
-    pub cli_extension: E::FStarOptions,
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Subcommand, Debug, Clone)]
-pub enum Backend<E: Extension> {
+#[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
+#[command(after_help = concat!("\
+TOOLS:
+  This backend runs `charon`, then `aeneas`, and scaffolds a Lean proof project.
+  Each tool is pinned; the pinned version is checked against the resolved binary
+  at runtime (a mismatch is a non-fatal warning).
+
+  charon   expected version   ", env!("HAX_CHARON_PIN_VERSION"), "
+           located at $HAX_CHARON_BINARY (absolute path) if set, else `charon` found in PATH
+  aeneas   expected commit     ", env!("HAX_AENEAS_PIN_VERSION"), "
+           located at $HAX_AENEAS_BINARY (absolute path) if set, else `aeneas` found in PATH
+  lean     expected toolchain  ", env!("HAX_LEAN_PIN_TOOLCHAIN"), "
+           used by the generated proof project (written to its `lean-toolchain`)
+
+  Install charon/aeneas with `install-aeneas.sh`.
+
+INVOCATION:
+  The tools are run with some fixed flags (to which any --charon-args/--aeneas-args
+  are appended). Pass `-v` (`cargo hax into -v lean`) to print the exact command
+  before each tool runs.
+
+  Overriding a flag that controls where output is written (aeneas's -backend,
+  -dest, -subdir, or -split-files, or charon's --dest-file) may break the extraction
+  or the generated proof project.
+
+ENVIRONMENT VARIABLES:
+  HAX_CHARON_BINARY  Path to the `charon` binary to use. Defaults to `charon` found in PATH.
+  HAX_AENEAS_BINARY  Path to the `aeneas` binary to use. Defaults to `aeneas` found in PATH."))]
+pub struct LeanOptions {
+    /// Generate a `lakefile.toml` and `lean-toolchain` in the
+    /// `proofs/lean/` directory, with a dependency on the Aeneas
+    /// Lean library. Existing files are not overwritten, so it is safe
+    /// to re-run with this flag after editing the lakefile.
+    #[arg(long)]
+    pub lakefile: bool,
+
+    /// Extra arguments forwarded to charon. Parsed with shell-style quoting,
+    /// so values containing spaces can be single- or double-quoted.
+    /// Example: --charon-args="--opaque '{impl Serialize for _}'"
+    #[arg(long)]
+    pub charon_args: Option<String>,
+
+    /// Extra arguments forwarded to aeneas. Parsed with shell-style quoting.
+    /// Example: --aeneas-args="-split-files"
+    #[arg(long)]
+    pub aeneas_args: Option<String>,
+}
+
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Hash, Eq, PartialEq)]
+pub enum Backend {
     /// Use the F* backend
-    Fstar(FStarOptions<E>),
-    /// Use the Lean backend (warning: experimental)
-    Lean,
+    Fstar(FStarOptions),
+    /// Use the legacy Lean backend (warning: experimental)
+    LegacyLean,
+    /// Use the Lean backend (charon + aeneas pipeline)
+    Lean(LeanOptions),
     /// Use the Coq backend
     Coq,
     /// Use the SSProve backend
@@ -183,6 +231,7 @@ pub enum Backend<E: Extension> {
     /// Use the EasyCrypt backend (warning: work in progress!)
     Easycrypt,
     /// Use the ProVerif backend (warning: work in progress!)
+    #[clap(alias("proverif"))]
     ProVerif(ProVerifOptions),
     /// Use the Rust backend (warning: work in progress!)
     #[clap(hide = true)]
@@ -198,14 +247,14 @@ pub enum Backend<E: Extension> {
     },
 }
 
-impl fmt::Display for Backend<()> {
+impl fmt::Display for Backend {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         BackendName::from(self).fmt(f)
     }
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Hash, Clone, Eq, PartialEq)]
 pub enum DepsKind {
     Transitive,
     Shallow,
@@ -213,7 +262,7 @@ pub enum DepsKind {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Hash, Clone, Eq, PartialEq)]
 pub enum InclusionKind {
     /// `+query` include the items selected by `query`
     Included(DepsKind),
@@ -222,7 +271,7 @@ pub enum InclusionKind {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Hash, Clone, Eq, PartialEq)]
 pub struct InclusionClause {
     pub kind: InclusionKind,
     pub namespace: Namespace,
@@ -278,7 +327,7 @@ pub fn parse_inclusion_clause(
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct TranslationOptions {
     /// Controls which Rust item should be extracted or not.
     ///
@@ -322,10 +371,10 @@ pub struct TranslationOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct BackendOptions<E: Extension> {
     #[command(subcommand)]
-    pub backend: Backend<E>,
+    pub backend: Backend,
 
     /// Don't write anything on disk. Output everything as JSON to stdout
     /// instead.
@@ -393,7 +442,7 @@ pub struct BackendOptions<E: Extension> {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Subcommand, Debug, Clone)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Eq, PartialEq)]
 pub enum Command<E: Extension> {
     /// Translate to a backend. The translated modules will be written
     /// under the directory `<PKG>/proofs/<BACKEND>/extraction`, where
@@ -598,17 +647,36 @@ pub struct ExporterOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, ValueEnum, Debug, Clone, Copy)]
+#[derive(JsonSchema, ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BackendName {
     Fstar,
     Coq,
     Ssprove,
     Easycrypt,
+    #[clap(alias("proverif"))]
     ProVerif,
+    LegacyLean,
     Lean,
     Rust,
     GenerateRustEngineNames,
     Debugger,
+}
+
+impl BackendName {
+    pub fn iter() -> impl Iterator<Item = Self> {
+        [
+            Self::Fstar,
+            Self::Coq,
+            Self::Ssprove,
+            Self::Easycrypt,
+            Self::ProVerif,
+            Self::LegacyLean,
+            Self::Lean,
+            Self::Rust,
+            Self::GenerateRustEngineNames,
+        ]
+        .into_iter()
+    }
 }
 
 impl fmt::Display for BackendName {
@@ -619,6 +687,7 @@ impl fmt::Display for BackendName {
             BackendName::Ssprove => "ssprove",
             BackendName::Easycrypt => "easycrypt",
             BackendName::ProVerif => "proverif",
+            BackendName::LegacyLean => "legacy-lean",
             BackendName::Lean => "lean",
             BackendName::Rust => "rust",
             BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
@@ -640,14 +709,15 @@ impl From<&Options> for ExporterOptions {
     }
 }
 
-impl<E: Extension> From<&Backend<E>> for BackendName {
-    fn from(backend: &Backend<E>) -> Self {
+impl From<&Backend> for BackendName {
+    fn from(backend: &Backend) -> Self {
         match backend {
             Backend::Fstar { .. } => BackendName::Fstar,
             Backend::Coq { .. } => BackendName::Coq,
             Backend::Ssprove { .. } => BackendName::Ssprove,
             Backend::Easycrypt { .. } => BackendName::Easycrypt,
             Backend::ProVerif { .. } => BackendName::ProVerif,
+            Backend::LegacyLean { .. } => BackendName::LegacyLean,
             Backend::Lean { .. } => BackendName::Lean,
             Backend::Rust { .. } => BackendName::Rust,
             Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,

@@ -26,8 +26,8 @@ jobs:
       - name: Use local hax-lib
         working-directory: libcrux
         run: |
-          cargo remove hax-lib -v -p libcrux-ml-dsa
-          cargo add hax-lib --path "../hax/hax-lib" -v -p libcrux-ml-dsa
+          printf '\n[patch.crates-io]\nhax-lib = { path = "../hax/hax-lib" }\n' >> Cargo.toml
+          cargo update -p hax-lib
 
       - uses: DeterminateSystems/nix-installer-action@main
       - name: Set up Cachix

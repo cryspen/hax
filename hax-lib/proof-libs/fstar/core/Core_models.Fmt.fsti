@@ -3,10 +3,18 @@ module Core_models.Fmt
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::fmt::Error`]
 type t_Error = | Error : t_Error
 
+/// See [`std::fmt::Formatter`]
 type t_Formatter = | Formatter : t_Formatter
 
+val impl_Formatter__write_str (self: t_Formatter) (data: string)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// See [`std::fmt::Display`]
 class t_Display (v_Self: Type0) = {
   f_fmt_pre:v_Self -> t_Formatter -> Type0;
   f_fmt_post:v_Self -> t_Formatter -> (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
@@ -17,6 +25,7 @@ class t_Display (v_Self: Type0) = {
         (fun result -> f_fmt_post x0 x1 result)
 }
 
+/// See [`std::fmt::Debug`]
 class t_Debug (v_Self: Type0) = {
   f_dbg_fmt_pre:v_Self -> t_Formatter -> Type0;
   f_dbg_fmt_post:
@@ -30,12 +39,13 @@ class t_Debug (v_Self: Type0) = {
         (fun result -> f_dbg_fmt_post x0 x1 result)
 }
 
+/// See [`std::fmt::Arguments`]
 type t_Arguments = | Arguments : Prims.unit -> t_Arguments
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-val impl (#v_T: Type0) : t_Debug v_T
+val impl_1 (#v_T: Type0) : t_Debug v_T
 
-val impl_11__write_fmt (f: t_Formatter) (args: t_Arguments)
+val impl_12__write_fmt (f: t_Formatter) (args: t_Arguments)
     : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
