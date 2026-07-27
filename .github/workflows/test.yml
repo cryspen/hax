@@ -16,10 +16,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Every platform hax supports, so that the platform-dependent parts
+        # of the workspace (notably tool version management: the cache, its
+        # atomic installs, and the manifest's per-platform keys) are covered
+        # on each.
         os:
-          - macos-latest
-          - ubuntu-latest
-          - windows-latest
+          - ubuntu-latest    # linux-x86_64
+          - ubuntu-24.04-arm # linux-aarch64
+          - macos-latest     # macos-aarch64
+          - macos-15-intel   # macos-x86_64
 
     runs-on: ${{ matrix.os }}
 

@@ -52,6 +52,7 @@ Miscellaneous:
  - Update flags for the charon/aeneas pipeline (#2051)
  - Fix missing tools in the Nix dev shells (#2131)
  - Check examples through `just check-examples` instead of a Nix flake check (#2131)
+ - Document the supported platforms: Linux and macOS, on both `x86_64` and `aarch64`. Windows is not supported and is no longer built in CI
 
 ## 0.3.7
 

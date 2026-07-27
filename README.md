@@ -126,6 +126,8 @@ Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimi
 
 ## Installation
 
+hax is supported on Linux and macOS, on both `x86_64` and `aarch64`. Windows is not supported; use [WSL](https://learn.microsoft.com/windows/wsl/) there.
+
 <details open>
   <summary><b>Manual installation</b></summary>
 
@@ -147,7 +149,7 @@ Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimi
 <details>
   <summary><b>Nix</b></summary>
 
- This should work on [Linux](https://nixos.org/download/#nix-install-linux), [MacOS](https://nixos.org/download/#nix-install-macos) and [Windows](https://nixos.org/download/#nix-install-windows).
+ This should work on [Linux](https://nixos.org/download/#nix-install-linux) and [MacOS](https://nixos.org/download/#nix-install-macos).
 
 <details>
   <summary><b>Prerequisites:</b> <a href="https://nixos.org/">Nix package

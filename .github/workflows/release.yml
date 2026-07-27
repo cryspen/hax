@@ -33,7 +33,6 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          # - windows-latest (See #4)
         ocaml-compiler: [4.14.x]
         
     runs-on: ${{ matrix.os }}
