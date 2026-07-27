@@ -384,12 +384,17 @@ fn progress_bar(total: Option<u64>) -> indicatif::ProgressBar {
     }
 }
 
-fn verify_sha256(file: &Path, expected: &str, url: &str) -> Result<(), String> {
+/// The SHA-256 of a file, as lowercase hex.
+fn sha256_of(file: &Path) -> Result<String, String> {
     let mut hasher = sha2::Sha256::new();
     let mut reader = std::fs::File::open(file)
         .map_err(|e| format!("could not read back {}: {e}", file.display()))?;
     std::io::copy(&mut reader, &mut hasher).map_err(|e| e.to_string())?;
-    let actual = hex::encode(hasher.finalize());
+    Ok(hex::encode(hasher.finalize()))
+}
+
+fn verify_sha256(file: &Path, expected: &str, url: &str) -> Result<(), String> {
+    let actual = sha256_of(file)?;
     if actual == expected.to_lowercase() {
         Ok(())
     } else {
@@ -400,17 +405,37 @@ fn verify_sha256(file: &Path, expected: &str, url: &str) -> Result<(), String> {
     }
 }
 
+/// A tar archive's compression, as told by a URL's extension.
+enum ArchiveFormat {
+    Gzip,
+    Zstd,
+}
+
+/// The format [`extract`] would unpack a URL as, or `None` when the
+/// extension names none it understands.
+fn archive_format(url: &str) -> Option<ArchiveFormat> {
+    if url.ends_with(".tar.gz") || url.ends_with(".tgz") {
+        Some(ArchiveFormat::Gzip)
+    } else if url.ends_with(".tar.zst") {
+        Some(ArchiveFormat::Zstd)
+    } else {
+        None
+    }
+}
+
 /// Extract a tar archive (gzip or zstd, by URL extension) into `dest`.
 fn extract(archive: &Path, url: &str, dest: &Path) -> Result<(), String> {
     let file = std::fs::File::open(archive).map_err(|e| e.to_string())?;
-    let reader: Box<dyn Read> = if url.ends_with(".tar.gz") || url.ends_with(".tgz") {
-        Box::new(flate2::read::GzDecoder::new(file))
-    } else if url.ends_with(".tar.zst") {
-        Box::new(zstd::stream::read::Decoder::new(file).map_err(|e| e.to_string())?)
-    } else {
-        return Err(format!(
-            "unsupported archive format for {url}: expected .tar.gz, .tgz or .tar.zst"
-        ));
+    let reader: Box<dyn Read> = match archive_format(url) {
+        Some(ArchiveFormat::Gzip) => Box::new(flate2::read::GzDecoder::new(file)),
+        Some(ArchiveFormat::Zstd) => {
+            Box::new(zstd::stream::read::Decoder::new(file).map_err(|e| e.to_string())?)
+        }
+        None => {
+            return Err(format!(
+                "unsupported archive format for {url}: expected .tar.gz, .tgz or .tar.zst"
+            ));
+        }
     };
     std::fs::create_dir_all(dest).map_err(|e| e.to_string())?;
     tar::Archive::new(reader)
@@ -418,6 +443,13 @@ fn extract(archive: &Path, url: &str, dest: &Path) -> Result<(), String> {
         .map_err(|e| format!("could not extract the archive from {url}: {e}"))?;
     Ok(())
 }
+
+#[cfg(test)]
+mod add_version;
+#[cfg(test)]
+mod fixtures;
+#[cfg(test)]
+mod manifest_artifacts;
 
 #[cfg(test)]
 mod tests {
