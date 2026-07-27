@@ -26,6 +26,8 @@ You do not have to install anything up front. The first time a `cargo hax into l
 
 The cache lives under `$XDG_CACHE_HOME/hax/tools/` (falling back to `~/.cache/hax/tools/` when `XDG_CACHE_HOME` is unset, empty, or not an absolute path), with one directory per tool and version. Downloads are verified before they are moved into place, so an interrupted download never leaves a half-installed version behind. They use the proxy and the certificate store the environment configures.
 
+Pre-built binaries are available for the platforms hax supports: Linux and macOS, on both `x86_64` and `aarch64`. On any other platform there is nothing to download, and hax reports so, naming the version it wanted; build `aeneas` and `charon` yourself and point hax at them as described under [Using a local build](#using-a-local-build).
+
 ## The `cargo hax tools` subcommands
 
 ### `tools show`
