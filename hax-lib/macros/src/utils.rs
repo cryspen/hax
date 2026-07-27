@@ -228,12 +228,16 @@ fn add_unit_to_sig_if_needed(signature: &mut Signature) {
 }
 
 /// Common logic when generating a function decoration
+///
+/// `self_type` substitutes `Self`, and `self_projection` says how to
+/// qualify `Self::Assoc` projections (see [`SelfProjection`]).
 pub fn make_fn_decoration(
     mut phi: Expr,
     mut signature: Signature,
     kind: FnDecorationKind,
     mut generics: Option<Generics>,
     self_type: Option<Type>,
+    self_projection: SelfProjection,
 ) -> (TokenStream, AttrPayload) {
     let self_ident: Ident = {
         let mut idents = IdentCollector::default();
@@ -242,11 +246,25 @@ pub fn make_fn_decoration(
         idents.fresh_ident("self_")
     };
     let error = {
-        let mut rewriter = RewriteSelf::new(self_ident, self_type);
+        let mut rewriter = RewriteSelf::new(self_ident, self_type.clone(), self_projection.clone());
         rewriter.visit_expr_mut(&mut phi);
         rewriter.visit_signature_mut(&mut signature);
         if let Some(generics) = generics.as_mut() {
             rewriter.visit_generics_mut(generics);
+        }
+        // `TYPE` being a fresh type parameter, the decoration needs an
+        // explicit `TYPE: TRAIT` bound for `<TYPE>::Assoc` to resolve.
+        if let (true, Some(self_type), SelfProjection::TypeParameter(trait_), Some(generics)) = (
+            rewriter.uses_self_projection(),
+            &self_type,
+            &self_projection,
+            generics.as_mut(),
+        ) {
+            generics
+                .where_clause
+                .get_or_insert_with(|| parse_quote! {where})
+                .predicates
+                .push(parse_quote! {#self_type: #trait_});
         }
         rewriter.get_error()
     };

@@ -22,6 +22,7 @@ mod prelude {
 
 use impl_fn_decoration::*;
 use prelude::*;
+use rewrite_self::SelfProjection;
 use utils::*;
 
 /// Reports a compile error at `$span` and returns from the enclosing
@@ -356,6 +357,7 @@ pub fn decreases(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStrea
         FnDecorationKind::Decreases,
         None,
         None,
+        SelfProjection::Unknown,
     );
     quote! {#requires #attr #item}.into()
 }
@@ -366,8 +368,14 @@ pub fn decreases(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStrea
 pub fn fstar_smt_pat(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let phi: syn::Expr = parse_macro_input!(attr);
     let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) =
-        make_fn_decoration(phi, item.sig.clone(), FnDecorationKind::SMTPat, None, None);
+    let (requires, attr) = make_fn_decoration(
+        phi,
+        item.sig.clone(),
+        FnDecorationKind::SMTPat,
+        None,
+        None,
+        SelfProjection::Unknown,
+    );
     quote! {#requires #attr #item}.into()
 }
 
@@ -405,6 +413,7 @@ pub fn requires(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream
         FnDecorationKind::Requires,
         None,
         None,
+        SelfProjection::Unknown,
     );
     let mut item_with_debug = item.clone();
     item_with_debug
@@ -447,7 +456,14 @@ pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     let kind = FnDecorationKind::Ensures {
         ret_binder: ret_binder.clone(),
     };
-    let (ensures, attr) = make_fn_decoration(phi.clone(), item.sig.clone(), kind, None, None);
+    let (ensures, attr) = make_fn_decoration(
+        phi.clone(),
+        item.sig.clone(),
+        kind,
+        None,
+        None,
+        SelfProjection::Unknown,
+    );
     let mut item_with_debug = item.clone();
     let body = item.block.clone();
     item_with_debug.block.stmts =
@@ -475,7 +491,8 @@ mod kw {
 /// `fn` items within an `impl` block. There is special handling since
 /// such functions might have a `self` argument: in such cases, we
 /// rewrite function decorations as `#[impl_fn_decoration(<KIND>,
-/// <GENERICS>, <WHERE CLAUSE>, <SELF TYPE>, <BODY>)]`.
+/// <GENERICS>, <WHERE CLAUSE>, <SELF TYPE> [as <TRAIT>], <BODY>)]`, where
+/// `<TRAIT>` is the trait implemented by the enclosing `impl` block.
 #[proc_macro_attribute]
 pub fn impl_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let ImplFnDecoration {
@@ -483,10 +500,21 @@ pub fn impl_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::T
         phi,
         generics,
         self_ty,
+        self_trait,
     } = parse_macro_input!(attr);
     let mut item: FnLike = parse_macro_input!(item);
-    let (decoration, attr) =
-        make_fn_decoration(phi, item.sig.clone(), kind, Some(generics), Some(self_ty));
+    let projection = match self_trait {
+        Some(trait_) => SelfProjection::Trait(trait_),
+        None => SelfProjection::Unknown,
+    };
+    let (decoration, attr) = make_fn_decoration(
+        phi,
+        item.sig.clone(),
+        kind,
+        Some(generics),
+        Some(self_ty),
+        projection,
+    );
     let decoration = Stmt::Item(Item::Verbatim(decoration));
     item.block.stmts.insert(0, decoration);
     quote! {#attr #item}.into()
@@ -499,10 +527,21 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
         phi,
         generics,
         self_ty,
+        self_trait,
     } = parse_macro_input!(attr);
     let mut item: syn::TraitItemFn = parse_macro_input!(item);
-    let (decoration, attr) =
-        make_fn_decoration(phi, item.sig.clone(), kind, Some(generics), Some(self_ty));
+    let projection = match self_trait {
+        Some(trait_) => SelfProjection::TypeParameter(trait_),
+        None => SelfProjection::Unknown,
+    };
+    let (decoration, attr) = make_fn_decoration(
+        phi,
+        item.sig.clone(),
+        kind,
+        Some(generics),
+        Some(self_ty),
+        projection,
+    );
     let decoration = Stmt::Item(Item::Verbatim(decoration));
     item.sig
         .generics
@@ -571,6 +610,14 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
     impl VisitMut for AttrVisitor {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             let span = item.span();
+            // The path of the trait being defined, e.g. `Trait<'a, T, N>`
+            // for `trait Trait<'a, T, const N: usize>`: it bounds the type
+            // parameter substituting `Self` in the decorations.
+            let trait_path: Path = {
+                let ident = &item.ident;
+                let (_, ty_generics, _) = item.generics.split_for_impl();
+                parse_quote! {#ident #ty_generics}
+            };
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
                     for attr in &mut fun.attrs {
@@ -607,6 +654,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             kind,
                             Some(generics),
                             Some(self_ty),
+                            SelfProjection::TypeParameter(trait_path.clone()),
                         );
                         *attr = parse_quote! {#relation_attr};
                         self.extra_items.push(decoration);
@@ -617,6 +665,12 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
         }
         fn visit_type_mut(&mut self, _type: &mut Type) {}
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
+            // The trait implemented by this block, if any: it qualifies the
+            // `Self::Assoc` projections of the decorated methods.
+            let as_trait = item
+                .trait_
+                .as_ref()
+                .and_then(|(not, path, _)| not.is_none().then(|| quote! {as #path}));
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
                     for attr in fun.attrs.iter_mut() {
@@ -628,8 +682,9 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             let tokens = ml.tokens.clone();
                             let (generics, self_ty) = (&item.generics, &item.self_ty);
                             let where_clause = &generics.where_clause;
-                            ml.tokens =
-                                quote! {#decoration, #generics, #where_clause, #self_ty, #tokens};
+                            ml.tokens = quote! {
+                                #decoration, #generics, #where_clause, #self_ty #as_trait, #tokens
+                            };
                             ml.path = parse_quote! {::hax_lib::impl_fn_decoration};
                         }
                     }
@@ -1193,7 +1248,8 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
         })
         .collect();
     let inner_ty = &field.ty;
-    let (refinement_item, refinement_attr) = make_fn_decoration(phi.clone(), sig, kind, None, None);
+    let (refinement_item, refinement_attr) =
+        make_fn_decoration(phi.clone(), sig, kind, None, None, SelfProjection::Unknown);
     let module_ident = syn::Ident::new(
         &format!("hax__autogenerated_refinement__{}", ident),
         ident.span(),

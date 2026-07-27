@@ -11,6 +11,9 @@ pub struct ImplFnDecoration {
     pub phi: Expr,
     pub generics: Generics,
     pub self_ty: Type,
+    /// The trait `self_ty` implements, used to qualify the `Self::Assoc`
+    /// projections of the decorated method.
+    pub self_trait: Option<Path>,
 }
 
 impl parse::Parse for ImplFnDecoration {
@@ -22,8 +25,15 @@ impl parse::Parse for ImplFnDecoration {
             generics.where_clause = input.parse::<Option<WhereClause>>()?;
             input.parse::<Token![,]>()?;
             let self_ty = input.parse::<Type>()?;
+            // The self type is optionally followed by `as <TRAIT>`.
+            let self_trait = if input.peek(Token![as]) {
+                input.parse::<Token![as]>()?;
+                Some(input.parse::<Path>()?)
+            } else {
+                None
+            };
             input.parse::<Token![,]>()?;
-            Ok((generics, self_ty))
+            Ok((generics, self_ty, self_trait))
         };
 
         let path = input.parse::<Path>()?;
@@ -33,7 +43,7 @@ impl parse::Parse for ImplFnDecoration {
                 "decreases" => FnDecorationKind::Decreases,
                 "requires" => FnDecorationKind::Requires,
                 "ensures" => {
-                    let (generics, self_ty) = parse_next()?;
+                    let (generics, self_ty, self_trait) = parse_next()?;
                     let ExprClosure1 { arg, body } = input.parse::<ExprClosure1>()?;
                     input.parse::<syn::parse::Nothing>()?;
                     return Ok(ImplFnDecoration {
@@ -41,6 +51,7 @@ impl parse::Parse for ImplFnDecoration {
                         phi: body,
                         generics,
                         self_ty,
+                        self_trait,
                     });
                 }
                 _ => unreachable!(),
@@ -48,7 +59,7 @@ impl parse::Parse for ImplFnDecoration {
             None => Err(Error::new(path_span, "Expected `::hax_lib::<KIND>`, `hax_lib::<KIND>` or `<KIND>` with `KIND` in {DECORATION_KINDS:?}"))?,
         };
 
-        let (generics, self_ty) = parse_next()?;
+        let (generics, self_ty, self_trait) = parse_next()?;
         let phi = input.parse::<Expr>()?;
         input.parse::<syn::parse::Nothing>()?;
         Ok(ImplFnDecoration {
@@ -56,6 +67,7 @@ impl parse::Parse for ImplFnDecoration {
             phi,
             generics,
             self_ty,
+            self_trait,
         })
     }
 }

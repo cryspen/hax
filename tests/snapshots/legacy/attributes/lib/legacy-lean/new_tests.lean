@@ -1075,6 +1075,96 @@ class T (Self : Type)
 end new_tests.legacy__attributes__lib.issue_1266
 
 
+namespace new_tests.legacy__attributes__lib.issue_2089
+
+class Super.AssociatedTypes (Self : Type) where
+  B : Type
+
+attribute [reducible] Super.AssociatedTypes.B
+
+abbrev Super.B :=
+  Super.AssociatedTypes.B
+
+class Super (Self : Type)
+  [associatedTypes : outParam (Super.AssociatedTypes (Self : Type))]
+  where
+
+structure S where
+  -- no fields
+
+@[reducible] instance Impl.AssociatedTypes : Super.AssociatedTypes S where
+  B := u8
+
+instance Impl : Super S where
+
+def Impl_1.C_hoisted : u8 := (1 : u8)
+
+def Impl_1.f_hoisted (x : u32) : RustM u8 := do (pure (0 : u8))
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def Impl_1.f_hoisted.spec (x : u32) :
+    Spec
+      (requires := do (pure true))
+      (ensures := fun _ => pure True)
+      (Impl_1.f_hoisted (x : u32)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl_1.f_hoisted] <;> bv_decide
+}
+
+def Impl_1.g_hoisted (self : S) (x : u32) : RustM u32 := do (pure x)
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def Impl_1.g_hoisted.spec (self : S) (x : u32) :
+    Spec
+      (requires := do pure True)
+      (ensures := fun result => do (pure true))
+      (Impl_1.g_hoisted (self : S) (x : u32)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl_1.g_hoisted] <;> bv_decide
+}
+
+def Impl_1.h_hoisted
+    (Y : Type)
+    [trait_constr_h_hoisted_associated_type_i0 :
+      core_models.convert.Into.AssociatedTypes
+      Y
+      u32]
+    [trait_constr_h_hoisted_i0 : core_models.convert.Into Y u32 ]
+    (x : u8)
+    (y : Y)
+    (z : u16) :
+    RustM u32 := do
+  (core_models.convert.Into.into Y u32 y)
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def
+      Impl_1.h_hoisted.spec
+      (Y : Type)
+      [trait_constr_h_hoisted_associated_type_i0 :
+        core_models.convert.Into.AssociatedTypes
+        Y
+        u32]
+      [trait_constr_h_hoisted_i0 : core_models.convert.Into Y u32 ]
+      (x : u8)
+      (y : Y)
+      (z : u16) :
+    Spec
+      (requires := do (pure true))
+      (ensures := fun result => do (pure true))
+      (Impl_1.h_hoisted (Y : Type) (x : u8) (y : Y) (z : u16)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl_1.h_hoisted] <;> bv_decide
+}
+
+end new_tests.legacy__attributes__lib.issue_2089
+
+
 namespace new_tests.legacy__attributes__lib.props
 
 @[spec]
@@ -1193,4 +1283,57 @@ def fib (x : usize) : RustM usize := do
 partial_fixpoint
 
 end new_tests.legacy__attributes__lib
+
+
+namespace new_tests.legacy__attributes__lib.issue_2089
+
+class T.AssociatedTypes (Self : Type) (X : Type) where
+  [trait_constr_T_i0 : Super.AssociatedTypes Self]
+  A : Type
+
+attribute [instance_reducible, instance] T.AssociatedTypes.trait_constr_T_i0
+
+attribute [reducible] T.AssociatedTypes.A
+
+abbrev T.A :=
+  T.AssociatedTypes.A
+
+class T (Self : Type) (X : Type)
+  [associatedTypes : outParam (T.AssociatedTypes (Self : Type) (X : Type))]
+  where
+  [trait_constr_T_i0 : Super Self]
+  C (Self) (X) : u8
+  f (Self) (X) : (associatedTypes.A -> RustM u8)
+  g (Self) (X) : (Self -> associatedTypes.A -> RustM associatedTypes.A)
+  h (Self) (X)
+    (Y : Type)
+    [trait_constr_h_associated_type_i1 :
+      core_models.convert.Into.AssociatedTypes
+      Y
+      associatedTypes.A]
+    [trait_constr_h_i1 : core_models.convert.Into Y associatedTypes.A ] :
+    ((Super.B Self) -> Y -> X -> RustM associatedTypes.A)
+
+attribute [instance_reducible, instance] T.trait_constr_T_i0
+
+@[reducible] instance Impl_1.AssociatedTypes : T.AssociatedTypes S u16 where
+  A := u32
+
+instance Impl_1 : T S u16 where
+  C := (Impl_1.C_hoisted)
+  f := (Impl_1.f_hoisted)
+  g := (Impl_1.g_hoisted)
+  h :=
+    fun
+      
+      (Y : Type)
+      [trait_constr__associated_type_i0 :
+        core_models.convert.Into.AssociatedTypes
+        Y
+        u32]
+      [trait_constr__i0 : core_models.convert.Into Y u32 ]
+      =>
+    (Impl_1.h_hoisted Y)
+
+end new_tests.legacy__attributes__lib.issue_2089
 

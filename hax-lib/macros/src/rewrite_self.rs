@@ -28,16 +28,44 @@ mod rewrite_self {
         }
     };
 
+    /// How to qualify `Self::Assoc` projections: `Self` is never in scope
+    /// in the items we generate.
+    #[derive(Clone, Default)]
+    pub enum SelfProjection {
+        /// `Self` is a fresh type parameter bounded by the given trait:
+        /// `Self::A` becomes `<TYPE>::A`, resolved through those bounds.
+        TypeParameter(Path),
+        /// `Self` is a concrete type: `Self::A` becomes `<TYPE as TRAIT>::A`,
+        /// as Rust requires such projections to be fully qualified.
+        Trait(Path),
+        /// Nothing is known about `Self`: leave projections alone.
+        #[default]
+        Unknown,
+    }
+
     /// A struct that carries informations for substituting `self` and
     /// `Self`. Note `typ` is an option:
     #[must_use]
     pub struct RewriteSelf {
         typ: Option<Type>,
+        projection: SelfProjection,
         ident: Ident,
         self_spans: HashSet<SpanWrapper>,
+        uses_self_projection: bool,
     }
 
     impl RewriteSelf {
+        /// Whether a `Self::Assoc` projection was substituted: the
+        /// generated item then needs an explicit `TYPE: TRAIT` bound.
+        pub fn uses_self_projection(&self) -> bool {
+            self.uses_self_projection
+        }
+
+        /// How `Self::Assoc` projections should be qualified.
+        pub fn projection(&self) -> &SelfProjection {
+            &self.projection
+        }
+
         /// Consumes `RewriteSelf`, optionally outputing errors.
         pub fn get_error(self) -> Option<proc_macro2::TokenStream> {
             if self.typ.is_some() || self.self_spans.is_empty() {
@@ -71,19 +99,73 @@ mod rewrite_self {
                 parse_quote! {Self}
             })
         }
+        /// Requests the type substituting the `Self` of a projection.
+        pub fn self_ty_of_projection(&mut self, span: Span) -> Type {
+            self.uses_self_projection = true;
+            self.self_ty(span)
+        }
         /// Construct a rewritter
-        pub fn new(ident: Ident, typ: Option<Type>) -> Self {
+        pub fn new(ident: Ident, typ: Option<Type>, projection: SelfProjection) -> Self {
             Self {
                 typ,
+                projection,
                 ident,
                 self_spans: HashSet::new(),
+                uses_self_projection: false,
             }
         }
     }
 }
 pub use rewrite_self::*;
 
+impl RewriteSelf {
+    /// Rewrites `Self::A::…` into a qualified path: `<TYPE>::A::…` or
+    /// `<TYPE as TRAIT>::A::…`, see [`SelfProjection`].
+    fn rewrite_self_projection(
+        &mut self,
+        expr_position: bool,
+        qself: &mut Option<QSelf>,
+        path: &mut Path,
+    ) {
+        let (None, Path { leading_colon: None, segments }) = (&*qself, &*path) else {
+            return;
+        };
+        let mut segments = segments.iter();
+        let Some(PathSegment { ident, arguments: PathArguments::None }) = segments.next() else {
+            return;
+        };
+        let suffix: Vec<_> = segments.collect();
+        if ident != "Self" || suffix.is_empty() {
+            return;
+        }
+        let as_trait = match self.projection().clone() {
+            SelfProjection::TypeParameter(_) => None,
+            // On a concrete type, `as TRAIT` could change which item
+            // `Self::X` resolves to: we qualify in type positions only,
+            // where only associated types are at stake. A type parameter
+            // has no inherent associated item, so it is always safe.
+            SelfProjection::Trait(_) if expr_position => return,
+            SelfProjection::Trait(trait_path) => Some(trait_path),
+            SelfProjection::Unknown => return,
+        };
+        let self_ty = self.self_ty_of_projection(path.span());
+        let rewritten: TypePath = match as_trait {
+            None => parse_quote! { <#self_ty>::#(#suffix)::* },
+            Some(trait_) => parse_quote! { <#self_ty as #trait_>::#(#suffix)::* },
+        };
+        (*qself, *path) = (rewritten.qself, rewritten.path);
+    }
+}
+
 impl visit_mut::VisitMut for RewriteSelf {
+    fn visit_type_path_mut(&mut self, tp: &mut TypePath) {
+        visit_mut::visit_type_path_mut(self, tp);
+        self.rewrite_self_projection(false, &mut tp.qself, &mut tp.path);
+    }
+    fn visit_expr_path_mut(&mut self, ep: &mut ExprPath) {
+        visit_mut::visit_expr_path_mut(self, ep);
+        self.rewrite_self_projection(true, &mut ep.qself, &mut ep.path);
+    }
     fn visit_expr_mut(&mut self, e: &mut Expr) {
         visit_mut::visit_expr_mut(self, e);
         if e.is_ident("self") {

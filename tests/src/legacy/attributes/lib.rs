@@ -490,6 +490,73 @@ mod issue_1266 {
     }
 }
 
+mod issue_2089 {
+    pub trait Super {
+        type B;
+    }
+
+    #[hax_lib::attributes]
+    pub trait T<X>: Super {
+        type A;
+        const C: u8;
+
+        // `Self::A` in an argument type, no default body
+        #[hax_lib::requires(true)]
+        fn f(x: &Self::A) -> u8;
+
+        // `Self` and `Self::A` in argument and return types
+        #[hax_lib::ensures(|result| true)]
+        fn g(&self, x: Self::A) -> Self::A;
+
+        // `Self::B` from a supertrait, `Self::A` in the method generics,
+        // `Self::C` in the specification itself
+        #[hax_lib::requires(Self::C > 0)]
+        #[hax_lib::ensures(|result| true)]
+        fn h<Y: Into<Self::A>>(x: Self::B, y: Y, z: X) -> Self::A;
+    }
+
+    // Same with default bodies: the engine rejects those, we only check
+    // that this compiles.
+    #[hax_lib::exclude]
+    #[hax_lib::attributes]
+    pub trait WithDefaults: Super {
+        type A;
+
+        #[hax_lib::requires(true)]
+        #[hax_lib::ensures(|result| true)]
+        fn g<Y: Into<Self::A>>(&self, x: Self::B, y: Y) -> Self::A {
+            y.into()
+        }
+    }
+
+    pub struct S;
+    impl Super for S {
+        type B = u8;
+    }
+
+    #[hax_lib::attributes]
+    impl T<u16> for S {
+        type A = u32;
+        const C: u8 = 1;
+
+        #[hax_lib::requires(true)]
+        fn f(x: &Self::A) -> u8 {
+            0
+        }
+
+        #[hax_lib::ensures(|result| true)]
+        fn g(&self, x: Self::A) -> Self::A {
+            x
+        }
+
+        #[hax_lib::requires(true)]
+        #[hax_lib::ensures(|result| true)]
+        fn h<Y: Into<Self::A>>(x: u8, y: Y, z: u16) -> Self::A {
+            y.into()
+        }
+    }
+}
+
 mod props {
     use hax_lib::*;
 
