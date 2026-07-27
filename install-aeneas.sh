@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # Downloads pre-built aeneas and charon binaries at the versions pinned
-# by this repository.  Installs them into ~/.cargo/bin/ (the same place
-# cargo-hax lives).
+# by this repository. Installs them into ~/.hax/ and symlink their binaries
+# onto PATH in ~/.cargo/bin/ (the same place cargo-hax lives).
 #
 # Requirements: curl, tar
 
@@ -135,6 +135,7 @@ info "  charon: https://github.com/AeneasVerif/charon@$CHARON_TAG"
 info "  platform: $PLATFORM"
 
 INSTALL_DIR="${CARGO_HOME:-$HOME/.cargo}/bin"
+HAX_DIR="$HOME/.hax"
 mkdir -p "$INSTALL_DIR"
 
 AENEAS_URL="${AENEAS_REPO}/releases/download/${AENEAS_TAG}/aeneas-${PLATFORM}.tar.gz"
@@ -143,30 +144,36 @@ CHARON_URL="https://github.com/AeneasVerif/charon/releases/download/${CHARON_TAG
 TMPDIR="$(mktemp -d)"
 trap 'chmod -R u+w "$TMPDIR" 2>/dev/null; rm -rf "$TMPDIR"' EXIT
 
+# Download <name> and extract it into ~/.hax/<name>, replacing any previous
+# extraction there.
 download_and_extract() {
     local name="$1" url="$2"
+    local dest="$HAX_DIR/$name"
     info "Downloading $name from $url ..."
     local archive="$TMPDIR/${name}.tar.gz"
     curl -fSL --retry 3 -o "$archive" "$url" \
         || die "Failed to download $name. Check that the release tag and platform exist."
-    mkdir -p "$TMPDIR/$name"
-    tar -xzf "$archive" -C "$TMPDIR/$name"
+    chmod -R u+w "$dest" 2>/dev/null || true   # make a prior extraction removable
+    rm -rf "$dest"
+    mkdir -p "$dest"
+    tar -xzf "$archive" -C "$dest"
 }
 
 download_and_extract "aeneas" "$AENEAS_URL"
 download_and_extract "charon" "$CHARON_URL"
 
-install_bin() {
-    local src="$1" dst="$INSTALL_DIR/$(basename "$1")"
-    cp -f "$src" "$dst"
-    chmod +x "$dst"
-    info "  installed $(basename "$dst")"
+# Symlink each binary onto PATH, pointing into its ~/.hax bundle
+symlink_bin() {
+    local target="$1" base
+    base="$(basename "$target")"
+    ln -sfn "$target" "$INSTALL_DIR/$base"
+    info "  linked $INSTALL_DIR/$base -> $target"
 }
 
-info "Installing to $INSTALL_DIR ..."
-install_bin "$TMPDIR/aeneas/aeneas"
-install_bin "$TMPDIR/charon/charon"
-install_bin "$TMPDIR/charon/charon-driver"
+info "Symlinking binaries into $INSTALL_DIR ..."
+symlink_bin "$HAX_DIR/aeneas/aeneas"
+symlink_bin "$HAX_DIR/charon/charon"
+symlink_bin "$HAX_DIR/charon/charon-driver"
 
 # ---------- smoke test -------------------------------------------------------
 
@@ -188,5 +195,5 @@ else
 fi
 
 info ""
-info "Done! aeneas and charon are installed in $INSTALL_DIR"
+info "Done! aeneas and charon are installed in $HAX_DIR and symlinked in $INSTALL_DIR."
 info "You can now run: cargo hax into lean"
