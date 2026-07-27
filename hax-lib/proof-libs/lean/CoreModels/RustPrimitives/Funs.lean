@@ -15,7 +15,9 @@ namespace CoreModels
     Source: 'rust_primitives/src/lib.rs', lines 4:4-4:44
     Name pattern: [rust_primitives::slice::slice_length]
     Visibility: public -/
-@[rust_fun "rust_primitives::slice::slice_length"]
+-- `spec` so `mvcgen` unfolds this to `ok (Slice.len s)`; without it, downstream
+-- proofs that use the extracted `Slice::len` (which routes through here) stall.
+@[spec, rust_fun "rust_primitives::slice::slice_length"]
 def rust_primitives.slice.slice_length
   {T : Type} : Slice T → Result Std.Usize := fun s => ok (Slice.len s)
 
@@ -66,6 +68,40 @@ def rust_primitives.slice.slice_clone_from_slice
   Slice T → Slice T → Result (Slice T) := fun dest src =>
   if dest.length = src.length then ok src
   else fail .panic
+
+/-- [rust_primitives::slice::slice_index_mut]: returns the element together with
+    the write-back function (Aeneas's pure encoding of `&mut s[i]`). -/
+@[rust_fun "rust_primitives::slice::slice_index_mut"]
+def rust_primitives.slice.slice_index_mut
+  {T : Type} : Slice T → Std.Usize → Result (T × (T → Slice T)) :=
+  fun s i => Slice.index_mut_usize s i
+
+/-- [rust_primitives::slice::slice_slice_mut]: the subslice `s[b..e]` plus its
+    write-back (pure encoding of `&mut s[b..e]`). In Rust the borrow's length is
+    fixed at `e - b`, so writing `ss` back overwrites exactly `[b, e)`. -/
+@[rust_fun "rust_primitives::slice::slice_slice_mut"]
+def rust_primitives.slice.slice_slice_mut
+  {T : Type} : Slice T → Std.Usize → Std.Usize → Result ((Slice T) × (Slice T → Slice T)) :=
+  fun s b e => do
+  let sub ← Slice.subslice s ⟨b, e⟩
+  ok (sub, fun ss => ⟨s.val.setSlice! b.val ss.val, by scalar_tac⟩)
+
+/-- [rust_primitives::slice::slice_reverse]: in-place reverse, threaded as
+    `Slice T → Slice T`. -/
+@[rust_fun "rust_primitives::slice::slice_reverse"]
+def rust_primitives.slice.slice_reverse
+  {T : Type} : Slice T → Result (Slice T) :=
+  fun s => ok ⟨ s.val.reverse, by simp [s.property] ⟩
+
+/-- [rust_primitives::slice::slice_swap]: swap elements `a` and `b`. -/
+@[rust_fun "rust_primitives::slice::slice_swap"]
+def rust_primitives.slice.slice_swap
+  {T : Type} : Slice T → Std.Usize → Std.Usize → Result (Slice T) :=
+  fun s a b => do
+  let va ← Slice.index_usize s a
+  let vb ← Slice.index_usize s b
+  let s1 ← Slice.update s a vb
+  Slice.update s1 b va
 
 private theorem foldlM_list_build_length {T F : Type}
     (step : List T × F → Nat → Result (List T × F))

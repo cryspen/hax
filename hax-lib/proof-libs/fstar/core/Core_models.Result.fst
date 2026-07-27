@@ -27,8 +27,6 @@ include Core_models.Bundle {impl__expect_err as impl__expect_err}
 
 include Core_models.Bundle {impl__unwrap_err as impl__unwrap_err}
 
-include Core_models.Bundle {impl__unwrap_or__from__result as impl__unwrap_or}
-
 include Core_models.Bundle {impl__unwrap_or_else__from__result as impl__unwrap_or_else}
 
 include Core_models.Bundle {impl__unwrap_or_default__from__result as impl__unwrap_or_default}
@@ -40,8 +38,6 @@ include Core_models.Bundle {impl__map_or__from__result as impl__map_or}
 include Core_models.Bundle {impl__map_or_else__from__result as impl__map_or_else}
 
 include Core_models.Bundle {impl__map_or_default__from__result as impl__map_or_default}
-
-include Core_models.Bundle {impl__map_err as impl__map_err}
 
 include Core_models.Bundle {impl__inspect__from__result as impl__inspect}
 
@@ -59,6 +55,10 @@ include Core_models.Bundle {impl__or__from__result as impl__or}
 
 include Core_models.Bundle {impl__or_else__from__result as impl__or_else}
 
+include Core_models.Bundle {impl__unwrap_or__from__result as impl__unwrap_or}
+
+include Core_models.Bundle {impl__map_err as impl__map_err}
+
 include Core_models.Bundle {impl_1__cloned as impl_1__cloned}
 
 include Core_models.Bundle {impl_2__transpose as impl_2__transpose}
@@ -68,3 +68,5 @@ include Core_models.Bundle {impl_3__flatten as impl_3__flatten}
 include Core_models.Bundle {impl_4__from__result as impl_4}
 
 include Core_models.Bundle {impl_5__from__result as impl_5}
+
+include Core_models.Bundle {impl_6__from__result as impl_6}

@@ -3,12 +3,9 @@ module Core_models.Slice.Index
 open FStar.Mul
 open Rust_primitives
 
-/// See [`std::slice::SliceIndex`]. We model the safe methods only;
-/// `get_unchecked`/`get_unchecked_mut` would require raw-pointer
-/// machinery and `*const`/`*mut` semantics we don\'t have. The
-/// `&mut`-flavored `get_mut`/`index_mut` are also omitted — they
-/// need a back-edge tuple shape and aren\'t required by anything
-/// downstream Aeneas extraction emits in our test crate yet.
+/// See [`std::slice::SliceIndex`]. `get_unchecked` is the same in-bounds
+/// projection as `index` (no raw pointers); the `*_mut` variants take
+/// `&mut T` and return `&mut Output`.
 class t_SliceIndex (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_get_pre:self_: v_Self -> slice: v_T -> pred: Type0{true ==> pred};
@@ -20,7 +17,13 @@ class t_SliceIndex (v_Self: Type0) (v_T: Type0) = {
   f_index_pre:v_Self -> v_T -> Type0;
   f_index_post:v_Self -> v_T -> f_Output -> Type0;
   f_index:x0: v_Self -> x1: v_T
-    -> Prims.Pure f_Output (f_index_pre x0 x1) (fun result -> f_index_post x0 x1 result)
+    -> Prims.Pure f_Output (f_index_pre x0 x1) (fun result -> f_index_post x0 x1 result);
+  f_get_unchecked_pre:v_Self -> v_T -> Type0;
+  f_get_unchecked_post:v_Self -> v_T -> f_Output -> Type0;
+  f_get_unchecked:x0: v_Self -> x1: v_T
+    -> Prims.Pure f_Output
+        (f_get_unchecked_pre x0 x1)
+        (fun result -> f_get_unchecked_post x0 x1 result)
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -47,6 +50,14 @@ let impl (#v_T: Type0) : t_SliceIndex usize (t_Slice v_T) =
     f_index_post = (fun (self: usize) (slice: t_Slice v_T) (out: v_T) -> true);
     f_index
     =
+    (fun (self: usize) (slice: t_Slice v_T) -> Rust_primitives.Slice.slice_index #v_T slice self);
+    f_get_unchecked_pre
+    =
+    (fun (self_: usize) (slice: t_Slice v_T) ->
+        self_ <. (Rust_primitives.Slice.slice_length #v_T slice <: usize));
+    f_get_unchecked_post = (fun (self: usize) (slice: t_Slice v_T) (out: v_T) -> true);
+    f_get_unchecked
+    =
     fun (self: usize) (slice: t_Slice v_T) -> Rust_primitives.Slice.slice_index #v_T slice self
   }
 
@@ -71,7 +82,14 @@ let impl_1 (#v_T: Type0) : t_SliceIndex Core_models.Ops.Range.t_RangeFull (t_Sli
     f_index_post
     =
     (fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) (out: t_Slice v_T) -> true);
-    f_index = fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) -> slice
+    f_index = (fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) -> slice);
+    f_get_unchecked_pre
+    =
+    (fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) -> true);
+    f_get_unchecked_post
+    =
+    (fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) (out: t_Slice v_T) -> true);
+    f_get_unchecked = fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) -> slice
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -112,6 +130,22 @@ let impl_2 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeFrom usize
     (fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) (out: t_Slice v_T) ->
         true);
     f_index
+    =
+    (fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) ->
+        Rust_primitives.Slice.slice_slice #v_T
+          slice
+          self.Core_models.Ops.Range.f_start
+          (Rust_primitives.Slice.slice_length #v_T slice <: usize));
+    f_get_unchecked_pre
+    =
+    (fun (self_: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) ->
+        self_.Core_models.Ops.Range.f_start <=.
+        (Rust_primitives.Slice.slice_length #v_T slice <: usize));
+    f_get_unchecked_post
+    =
+    (fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) (out: t_Slice v_T) ->
+        true);
+    f_get_unchecked
     =
     fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) ->
       Rust_primitives.Slice.slice_slice #v_T
@@ -159,6 +193,19 @@ let impl_3 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeTo usize) 
         true);
     f_index
     =
+    (fun (self: Core_models.Ops.Range.t_RangeTo usize) (slice: t_Slice v_T) ->
+        Rust_primitives.Slice.slice_slice #v_T slice (mk_usize 0) self.Core_models.Ops.Range.f_end);
+    f_get_unchecked_pre
+    =
+    (fun (self_: Core_models.Ops.Range.t_RangeTo usize) (slice: t_Slice v_T) ->
+        self_.Core_models.Ops.Range.f_end <=.
+        (Rust_primitives.Slice.slice_length #v_T slice <: usize));
+    f_get_unchecked_post
+    =
+    (fun (self: Core_models.Ops.Range.t_RangeTo usize) (slice: t_Slice v_T) (out: t_Slice v_T) ->
+        true);
+    f_get_unchecked
+    =
     fun (self: Core_models.Ops.Range.t_RangeTo usize) (slice: t_Slice v_T) ->
       Rust_primitives.Slice.slice_slice #v_T slice (mk_usize 0) self.Core_models.Ops.Range.f_end
   }
@@ -203,6 +250,23 @@ let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t
     (fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) (out: t_Slice v_T) -> true
     );
     f_index
+    =
+    (fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) ->
+        Rust_primitives.Slice.slice_slice #v_T
+          slice
+          self.Core_models.Ops.Range.f_start
+          self.Core_models.Ops.Range.f_end);
+    f_get_unchecked_pre
+    =
+    (fun (self_: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) ->
+        self_.Core_models.Ops.Range.f_start <=. self_.Core_models.Ops.Range.f_end &&
+        self_.Core_models.Ops.Range.f_end <=.
+        (Rust_primitives.Slice.slice_length #v_T slice <: usize));
+    f_get_unchecked_post
+    =
+    (fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) (out: t_Slice v_T) -> true
+    );
+    f_get_unchecked
     =
     fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) ->
       Rust_primitives.Slice.slice_slice #v_T

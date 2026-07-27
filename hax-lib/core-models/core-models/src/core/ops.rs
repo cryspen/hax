@@ -254,7 +254,7 @@ unfold instance fn_arrow_binder3 t1 t2 t3 u
 
 pub mod try_trait {
     /// See [`std::ops::FromResidual`]
-    trait FromResidual<R> {
+    pub trait FromResidual<R> {
         fn from_residual(x: R) -> Self;
     }
 

@@ -146,37 +146,25 @@ pub fn test_unwrap_err_err_mid() -> bool {
 
 // ----- unwrap_or -------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_ok_zero() -> bool {
     ok_u8_u8(0).unwrap_or(99) == 0
 }
-*/
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_ok_max() -> bool {
     ok_u8_u8(u8::MAX).unwrap_or(0) == u8::MAX
 }
-*/
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_err_default_zero() -> bool {
     err_u8_u8(99).unwrap_or(0) == 0
 }
-*/
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_err_default_max() -> bool {
     err_u8_u8(0).unwrap_or(u8::MAX) == u8::MAX
 }
-*/
 
 // ----- unwrap_or_else --------------------------------------------------------
 
@@ -230,9 +218,11 @@ pub fn test_unwrap_or_default_err() -> bool {
 // Lean (see map).)
 
 // ----- map_err ---------------------------------------------------------------
-
-// TODO(result-method-missing: `Result::map_err` missing from extracted Lean
-// (see map).)
+// `Result::map_err` is now modeled and extracted, but can't be exercised here:
+// the model takes CoreModels' `FnOnce` while the equiv call site supplies
+// Aeneas's `BuiltinFnOnce`, and the two don't unify.
+// TODO(closure-extraction): re-enable once core-models closures extract as
+// `core.ops.function.FnOnce` in the equiv pipeline.
 
 // ----- inspect / inspect_err -------------------------------------------------
 
@@ -434,3 +424,28 @@ pub fn test_transpose_err() -> bool {
 // `result_flattening` feature on stable std. The model defines `flatten`
 // directly so the Lean side works, but the Rust side cannot call
 // `r.flatten()` on stable. Revisit once `result_flattening` stabilises.
+
+// ----- `?` operator (Try::branch + FromResidual::from_residual) --------------
+// `?` is stable even though `Try`/`FromResidual` aren't, so it's the only way to
+// drive the whole desugaring against our model end-to-end.
+
+fn question_identity(a: Result<u8, u8>) -> Result<u8, u8> {
+    let x = a?;
+    Ok(x)
+}
+
+#[rust_lean_test]
+pub fn test_question_propagates_ok() -> bool {
+    match question_identity(ok_u8_u8(7)) {
+        Ok(v) => v == 7,
+        Err(_) => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_question_propagates_err() -> bool {
+    match question_identity(err_u8_u8(3)) {
+        Ok(_) => false,
+        Err(e) => e == 3,
+    }
+}

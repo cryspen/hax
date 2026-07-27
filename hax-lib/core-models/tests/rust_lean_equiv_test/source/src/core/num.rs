@@ -958,3 +958,69 @@ pub fn test_i32_checked_div_zero() -> bool {
 }
 */
 */
+
+// =============================================================================
+// div_ceil (unsigned)
+// =============================================================================
+// Unsigned only: std's signed `div_ceil` is unstable (can't be called here); the
+// signed model is covered by the `num` proptests.
+
+#[rust_lean_test]
+pub fn test_u8_div_ceil_exact() -> bool {
+    8u8.div_ceil(4u8) == 2u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_div_ceil_round_up() -> bool {
+    7u8.div_ceil(2u8) == 4u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_div_ceil_by_one() -> bool {
+    200u8.div_ceil(1u8) == 200u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_div_ceil_zero_dividend() -> bool {
+    0u8.div_ceil(7u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u32_div_ceil_round_up() -> bool {
+    1000u32.div_ceil(3u32) == 334u32
+}
+
+// =============================================================================
+// is_multiple_of (unsigned)
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_is_multiple_of_true() -> bool {
+    8u8.is_multiple_of(4u8) == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_multiple_of_false() -> bool {
+    7u8.is_multiple_of(4u8) == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_multiple_of_one() -> bool {
+    7u8.is_multiple_of(1u8) == true
+}
+
+// 0 divides only 0
+#[rust_lean_test]
+pub fn test_u8_is_multiple_of_zero_rhs_zero() -> bool {
+    0u8.is_multiple_of(0u8) == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_multiple_of_zero_rhs_nonzero() -> bool {
+    5u8.is_multiple_of(0u8) == false
+}
+
+#[rust_lean_test]
+pub fn test_u32_is_multiple_of_true() -> bool {
+    1000u32.is_multiple_of(8u32) == true
+}

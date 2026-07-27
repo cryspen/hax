@@ -38,7 +38,7 @@ def array.Array (T : Type) (N : Std.Usize) := Array T N
 def array.Array.each_ref.closure (T : Type) (N : Std.Usize) := Array T N
 
 /-- Trait declaration: [core_models::iter::traits::collect::IntoIterator]
-    Source: 'core-models/src/core/iter.rs', lines 386:8-395:9
+    Source: 'core-models/src/core/iter.rs', lines 374:8-383:9
     Visibility: public -/
 structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   (Self_IntoIter : Type) where
@@ -166,7 +166,8 @@ structure convert.Into (Self : Type) (T : Type) where
   into : Self → Result T
 
 /-- Trait declaration: [core_models::convert::From]
-    Source: 'core-models/src/core/convert.rs', lines 22:0-26:1 -/
+    Source: 'core-models/src/core/convert.rs', lines 22:0-26:1
+    Visibility: public -/
 structure convert.From (Self : Type) (T : Type) where
   «from» : T → Result Self
 
@@ -190,7 +191,8 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
   Slice T
 
 /-- Trait declaration: [core_models::convert::AsRef]
-    Source: 'core-models/src/core/convert.rs', lines 83:0-87:1 -/
+    Source: 'core-models/src/core/convert.rs', lines 83:0-87:1
+    Visibility: public -/
 structure convert.AsRef (Self : Type) (T : Type) where
   as_ref : Self → Result T
 
@@ -251,19 +253,19 @@ def f32.f32 := Unit
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 66:4-73:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 95:4-102:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 75:4-77:5
+    Source: 'core-models/src/core/fmt.rs', lines 104:4-106:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 115:4-119:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 144:4-148:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -271,7 +273,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 121:4-126:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 150:4-155:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -279,52 +281,54 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 128:4-128:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 157:4-157:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
 /-- Trait declaration: [core_models::hash::Hasher]
-    Source: 'core-models/src/core/hash.rs', lines 2:0-2:19
+    Source: 'core-models/src/core/hash.rs', lines 2:0-7:1
     Visibility: public -/
 structure hash.Hasher (Self : Type) where
+  finish : Self → Result Std.U64
+  write : Self → Slice Std.U8 → Result Self
 
 /-- Trait declaration: [core_models::hash::Hash]
-    Source: 'core-models/src/core/hash.rs', lines 6:0-10:1
+    Source: 'core-models/src/core/hash.rs', lines 11:0-16:1
     Visibility: public -/
 structure hash.Hash (Self : Type) where
   hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → Result
     H
 
 /-- [core_models::iter::adapters::skip::Skip]
-    Source: 'core-models/src/core/iter.rs', lines 697:8-700:9
+    Source: 'core-models/src/core/iter.rs', lines 682:8-685:9
     Visibility: public -/
 structure iter.adapters.skip.Skip (I : Type) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::chain::Chain]
-    Source: 'core-models/src/core/iter.rs', lines 666:8-669:9
+    Source: 'core-models/src/core/iter.rs', lines 651:8-654:9
     Visibility: public -/
 structure iter.adapters.chain.Chain (A : Type) (B : Type) where
   a : option.Option A
   b : B
 
 /-- [core_models::iter::adapters::filter::Filter]
-    Source: 'core-models/src/core/iter.rs', lines 633:8-636:9
+    Source: 'core-models/src/core/iter.rs', lines 619:8-622:9
     Visibility: public -/
 structure iter.adapters.filter.Filter (I : Type) (P : Type) where
   iter : I
   predicate : P
 
 /-- [core_models::iter::adapters::zip::Zip]
-    Source: 'core-models/src/core/iter.rs', lines 606:8-609:9
+    Source: 'core-models/src/core/iter.rs', lines 592:8-595:9
     Visibility: public -/
 structure iter.adapters.zip.Zip (I1 : Type) (I2 : Type) where
   it1 : I1
   it2 : I2
 
 /-- [core_models::iter::adapters::flatten::Flatten]
-    Source: 'core-models/src/core/iter.rs', lines 562:8-568:9
+    Source: 'core-models/src/core/iter.rs', lines 548:8-554:9
     Visibility: public -/
 structure iter.adapters.flatten.Flatten (I : Type) (Clause0_Item : Type)
   (Clause1_Item : Type) where
@@ -332,7 +336,7 @@ structure iter.adapters.flatten.Flatten (I : Type) (Clause0_Item : Type)
   current : option.Option Clause0_Item
 
 /-- [core_models::iter::adapters::flat_map::FlatMap]
-    Source: 'core-models/src/core/iter.rs', lines 524:8-528:9
+    Source: 'core-models/src/core/iter.rs', lines 510:8-514:9
     Visibility: public -/
 structure iter.adapters.flat_map.FlatMap (I : Type) (U : Type) (F : Type) where
   it : I
@@ -340,35 +344,35 @@ structure iter.adapters.flat_map.FlatMap (I : Type) (U : Type) (F : Type) where
   current : option.Option U
 
 /-- [core_models::iter::adapters::take::Take]
-    Source: 'core-models/src/core/iter.rs', lines 497:8-500:9
+    Source: 'core-models/src/core/iter.rs', lines 484:8-487:9
     Visibility: public -/
 structure iter.adapters.take.Take (I : Type) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::map::Map]
-    Source: 'core-models/src/core/iter.rs', lines 469:8-472:9
+    Source: 'core-models/src/core/iter.rs', lines 456:8-459:9
     Visibility: public -/
 structure iter.adapters.map.Map (I : Type) (F : Type) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::step_by::StepBy]
-    Source: 'core-models/src/core/iter.rs', lines 442:8-445:9
+    Source: 'core-models/src/core/iter.rs', lines 429:8-432:9
     Visibility: public -/
 structure iter.adapters.step_by.StepBy (I : Type) where
   iter : I
   step : Std.Usize
 
 /-- [core_models::iter::adapters::enumerate::Enumerate]
-    Source: 'core-models/src/core/iter.rs', lines 410:8-413:9
+    Source: 'core-models/src/core/iter.rs', lines 398:8-401:9
     Visibility: public -/
 structure iter.adapters.enumerate.Enumerate (I : Type) where
   iter : I
   count : Std.Usize
 
 /-- Trait declaration: [core_models::iter::traits::collect::FromIterator]
-    Source: 'core-models/src/core/iter.rs', lines 398:8-401:9
+    Source: 'core-models/src/core/iter.rs', lines 386:8-389:9
     Visibility: public -/
 structure iter.traits.collect.FromIterator (Self : Type) (A : Type) where
   from_iter : forall {T : Type} {Clause0_Item : Type} {Clause0_IntoIter : Type}
@@ -435,7 +439,7 @@ structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
     iter.traits.collect.FromIterator B Self_Clause0_Item), Self → Result B
 
 /-- Trait declaration: [core_models::iter::range::Step]
-    Source: 'core-models/src/core/iter.rs', lines 732:4-752:5
+    Source: 'core-models/src/core/iter.rs', lines 716:4-736:5
     Visibility: public -/
 structure iter.range.Step (Self : Type) where
   cloneCloneInst : clone.Clone Self
@@ -501,73 +505,73 @@ structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
 
 /-- [core_models::num::u8]
-    Source: 'core-models/src/core/num/mod.rs', lines 471:0-471:14
+    Source: 'core-models/src/core/num/mod.rs', lines 499:0-499:14
     Visibility: public -/
 @[reducible]
 def num.u8 := Unit
 
 /-- [core_models::num::u16]
-    Source: 'core-models/src/core/num/mod.rs', lines 474:0-474:15
+    Source: 'core-models/src/core/num/mod.rs', lines 502:0-502:15
     Visibility: public -/
 @[reducible]
 def num.u16 := Unit
 
 /-- [core_models::num::u32]
-    Source: 'core-models/src/core/num/mod.rs', lines 477:0-477:15
+    Source: 'core-models/src/core/num/mod.rs', lines 505:0-505:15
     Visibility: public -/
 @[reducible]
 def num.u32 := Unit
 
 /-- [core_models::num::u64]
-    Source: 'core-models/src/core/num/mod.rs', lines 480:0-480:15
+    Source: 'core-models/src/core/num/mod.rs', lines 508:0-508:15
     Visibility: public -/
 @[reducible]
 def num.u64 := Unit
 
 /-- [core_models::num::u128]
-    Source: 'core-models/src/core/num/mod.rs', lines 483:0-483:16
+    Source: 'core-models/src/core/num/mod.rs', lines 511:0-511:16
     Visibility: public -/
 @[reducible]
 def num.u128 := Unit
 
 /-- [core_models::num::usize]
-    Source: 'core-models/src/core/num/mod.rs', lines 486:0-486:17
+    Source: 'core-models/src/core/num/mod.rs', lines 514:0-514:17
     Visibility: public -/
 @[reducible]
 def num.usize := Unit
 
 /-- [core_models::num::i8]
-    Source: 'core-models/src/core/num/mod.rs', lines 489:0-489:14
+    Source: 'core-models/src/core/num/mod.rs', lines 517:0-517:14
     Visibility: public -/
 @[reducible]
 def num.i8 := Unit
 
 /-- [core_models::num::i16]
-    Source: 'core-models/src/core/num/mod.rs', lines 492:0-492:15
+    Source: 'core-models/src/core/num/mod.rs', lines 520:0-520:15
     Visibility: public -/
 @[reducible]
 def num.i16 := Unit
 
 /-- [core_models::num::i32]
-    Source: 'core-models/src/core/num/mod.rs', lines 495:0-495:15
+    Source: 'core-models/src/core/num/mod.rs', lines 523:0-523:15
     Visibility: public -/
 @[reducible]
 def num.i32 := Unit
 
 /-- [core_models::num::i64]
-    Source: 'core-models/src/core/num/mod.rs', lines 498:0-498:15
+    Source: 'core-models/src/core/num/mod.rs', lines 526:0-526:15
     Visibility: public -/
 @[reducible]
 def num.i64 := Unit
 
 /-- [core_models::num::i128]
-    Source: 'core-models/src/core/num/mod.rs', lines 501:0-501:16
+    Source: 'core-models/src/core/num/mod.rs', lines 529:0-529:16
     Visibility: public -/
 @[reducible]
 def num.i128 := Unit
 
 /-- [core_models::num::isize]
-    Source: 'core-models/src/core/num/mod.rs', lines 504:0-504:17
+    Source: 'core-models/src/core/num/mod.rs', lines 532:0-532:17
     Visibility: public -/
 @[reducible]
 def num.isize := Unit
@@ -742,7 +746,8 @@ structure ops.function.Fn (Self : Type) (Args : Type)
 -/
 
 /-- Trait declaration: [core_models::ops::try_trait::FromResidual]
-    Source: 'core-models/src/core/ops.rs', lines 257:4-259:5 -/
+    Source: 'core-models/src/core/ops.rs', lines 257:4-259:5
+    Visibility: public -/
 structure ops.try_trait.FromResidual (Self : Type) (R : Type) where
   from_residual : R → Result Self
 
@@ -833,12 +838,17 @@ structure slice.iter.Windows (T : Type) where
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 356:4-363:5
+    Source: 'core-models/src/core/slice.rs', lines 413:4-433:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
   get : Self → T → Result (option.Option Self_Output)
   index : Self → T → Result Self_Output
+  get_unchecked : Self → T → Result Self_Output
+  get_mut : Self → T → Result ((option.Option Self_Output) ×
+    (option.Option Self_Output → T))
+  get_unchecked_mut : Self → T → Result (Self_Output × (Self_Output →
+    T))
 
 /-- [core_models::str::error::Utf8Error]
     Source: 'core-models/src/core/str.rs', lines 10:4-10:25
