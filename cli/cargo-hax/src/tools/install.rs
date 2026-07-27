@@ -449,6 +449,8 @@ mod add_version;
 #[cfg(test)]
 mod fixtures;
 #[cfg(test)]
+mod host_install;
+#[cfg(test)]
 mod manifest_artifacts;
 
 #[cfg(test)]

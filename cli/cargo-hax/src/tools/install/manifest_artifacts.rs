@@ -7,8 +7,8 @@
 //! visible without fetching the artifact, so the tests that fetch one are
 //! `#[ignore]`d and left to CI. They cover all four supported platforms from
 //! whichever one runs them: downloading, hashing and reading an archive are
-//! platform-independent. Whether a binary *runs* is left to a per-platform
-//! end-to-end job.
+//! platform-independent. Whether a binary *runs* is left to the tests that
+//! install and run the real artifacts natively.
 
 use std::path::Path;
 use std::time::Duration;
