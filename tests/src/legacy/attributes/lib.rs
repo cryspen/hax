@@ -1,5 +1,5 @@
 //! @fail(tc): legacy-lean(1)
-//! @fail(extraction): ssprove(HAX0001), coq(HAX0002, HAX0002, HAX0002, HAX0002, HAX0002)
+//! @fail(extraction): ssprove(HAX0001)
 //! @fail(tc): fstar(47)
 use hax_lib as hax;
 

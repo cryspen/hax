@@ -11,6 +11,12 @@ Changes to the Rust Engine:
  - Fix diagnostic reporting (cryspen/hax-evit/159)
 
 Changes to the engine:
+ - Don't fail when an item carries a hax attribute pointing to an item that
+   another backend `cfg`-ed out. Backend-specific item quotes such as
+   `#[hax_lib::legacy_lean::before(..)]` used to abort extraction to any other
+   backend with `Could not find item with UID ...` (#2026)
+ - Drop rustc's internal `<cfg_trace>`/`<cfg_attr_trace>` marker attributes, which
+   made the engine print Rust code that could not be parsed back (#2026)
 
 Changes to the frontend:
  - Fix all observable issues in the new rust version of the THIR importer (cryspen/hax-evit/155)
