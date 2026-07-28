@@ -79,6 +79,7 @@ jobs:
 
     - name: Build the example
       run: |
+        unset CI # Allows us to use Aeneas's olean cache
         cd examples/${{ matrix.example }}
         PATH="$HOME/.cargo/bin:$PATH" nix develop ..#ci-examples --command make clean
         PATH="$HOME/.cargo/bin:$PATH" nix develop ..#ci-examples --command make
