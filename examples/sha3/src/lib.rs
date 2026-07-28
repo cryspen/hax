@@ -1,15 +1,21 @@
-// This example verifies parts of SHA-3. We prove two (partial) implementations to be equivalent:
-// - a realistic SHA-3 implementation taken from the `libcrux` library
-// - a reference implementation close to the official FIPS spec of the algorithm
+// This example contains two small parts of a real-world implementation of SHA-3.
+// It also contains a Rust specification of these two parts, closely following the
+// official FIPS standard of the algorithm.
 
-// We verify only a very small part of SHA-3 here. Most of the implementation is not here
-// and some parts are `unimplemented!()`.
+// The two parts that we consider are:
+// - **Part 1:** the `iota` function, and
+// - **Part 2:** a single round of `keccak_f`.
+
+// We prove that the implementation is equivalent to the specification.
+
+// Note that this is only a very small part of SHA-3. Some of the functions that are part of
+// a round of `keccak_f`, but that we ignore in this example are simply `unimplemented!()`.
 
 // ===========================================================================
-// Reference implementation: The five step mappings — FIPS 202, Algorithms 1–6
+// Specification: The five step mappings — FIPS 202, Algorithms 1–6
 // ===========================================================================
 
-mod reference {
+mod specification {
 
     /// Keccak-f[1600] state: 5×5 lanes of 64-bit words.
     /// Keccak state type, exposed for cross-crate verification.
@@ -190,13 +196,13 @@ mod implementation {
     // Pre- and Postconditions
     // =========================================================================
 
-    use crate::reference;
+    use crate::specification;
 
     // =========================================================================
     // Theta & Rho
     // =========================================================================
 
-    // Theta and rho don't perfectly match the reference implementation. So we call `rho` from the
+    // Theta and rho don't perfectly match the specification. So we call `rho` from the
     // postcondition of theta. In this way, we can state a specification for `theta` and `rho` together.
 
     fn _requires_theta(_st: &KeccakState<1, u64>) -> bool {
@@ -206,7 +212,7 @@ mod implementation {
     fn _ensures_theta(st: &KeccakState<1, u64>, res: &KeccakState<1, u64>, d: [u64; 5]) -> bool {
         let mut res = res.clone();
         res.rho(d);
-        res.st == reference::rho(reference::theta(st.st))
+        res.st == specification::rho(specification::theta(st.st))
     }
 
     // =========================================================================
@@ -218,7 +224,7 @@ mod implementation {
     }
 
     fn _ensures_pi(st: &KeccakState<1, u64>, res: &KeccakState<1, u64>) -> bool {
-        res.st == reference::pi(st.st)
+        res.st == specification::pi(st.st)
     }
 
     // =========================================================================
@@ -230,7 +236,7 @@ mod implementation {
     }
 
     fn _ensures_chi(st: &KeccakState<1, u64>, res: &KeccakState<1, u64>) -> bool {
-        res.st == reference::chi(st.st)
+        res.st == specification::chi(st.st)
     }
 
     // =========================================================================
@@ -242,7 +248,7 @@ mod implementation {
     }
 
     fn _ensures_iota(st: &KeccakState<1, u64>, i: usize, res: &KeccakState<1, u64>) -> bool {
-        res.st == reference::iota(st.st, i)
+        res.st == specification::iota(st.st, i)
     }
 
     // =========================================================================
@@ -255,8 +261,10 @@ mod implementation {
 
     fn _ensures_round(st: &KeccakState<1, u64>, i: usize, res: &KeccakState<1, u64>) -> bool {
         res.st
-            == reference::iota(
-                reference::chi(reference::pi(reference::rho(reference::theta(st.st)))),
+            == specification::iota(
+                specification::chi(specification::pi(specification::rho(specification::theta(
+                    st.st,
+                )))),
                 i,
             )
     }
