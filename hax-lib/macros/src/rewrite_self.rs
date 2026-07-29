@@ -32,12 +32,11 @@ mod rewrite_self {
     /// in the items we generate.
     #[derive(Clone, Default)]
     pub enum SelfProjection {
-        /// `Self` is a fresh type parameter bounded by the given trait:
-        /// `Self::A` becomes `<TYPE>::A`, resolved through those bounds.
-        TypeParameter(Path),
         /// `Self` is a concrete type: `Self::A` becomes `<TYPE as TRAIT>::A`,
         /// as Rust requires such projections to be fully qualified.
         Trait(Path),
+        /// Projections cannot be qualified here, reject them.
+        Unsupported,
         /// Nothing is known about `Self`: leave projections alone.
         #[default]
         Unknown,
@@ -51,34 +50,49 @@ mod rewrite_self {
         projection: SelfProjection,
         ident: Ident,
         self_spans: HashSet<SpanWrapper>,
-        uses_self_projection: bool,
+        errors: Vec<Error>,
     }
 
     impl RewriteSelf {
-        /// Whether a `Self::Assoc` projection was substituted: the
-        /// generated item then needs an explicit `TYPE: TRAIT` bound.
-        pub fn uses_self_projection(&self) -> bool {
-            self.uses_self_projection
-        }
-
         /// How `Self::Assoc` projections should be qualified.
         pub fn projection(&self) -> &SelfProjection {
             &self.projection
         }
 
+        /// Rejects a `Self::Assoc` projection we cannot qualify.
+        pub fn reject_projection(&mut self, span: Span) {
+            self.errors.push(Error::new(
+                span,
+                "hax: an associated type of `Self` cannot be used in the signature of a \
+                 trait method carrying a specification. Attach the specification to the \
+                 implementations instead. See \
+                 https://github.com/cryspen/hax/issues/2089.",
+            ));
+        }
+
         /// Consumes `RewriteSelf`, optionally outputing errors.
         pub fn get_error(self) -> Option<proc_macro2::TokenStream> {
-            if self.typ.is_some() || self.self_spans.is_empty() {
-                return None;
+            let Self {
+                typ,
+                self_spans,
+                mut errors,
+                ..
+            } = self;
+            if typ.is_none() && !self_spans.is_empty() {
+                let mut error = Error::new(Span::call_site(), "This macro doesn't work on trait or impl items: you need to add a `#[hax_lib::attributes]` on the enclosing impl block or trait.");
+                for SpanWrapper(span) in self_spans {
+                    let use_site = Error::new(
+                        span,
+                        "Here, the function you are trying to annotate has a `Self`.",
+                    );
+                    error.combine(use_site);
+                }
+                errors.push(error);
             }
-
-            let mut error = Error::new(Span::call_site(), "This macro doesn't work on trait or impl items: you need to add a `#[hax_lib::attributes]` on the enclosing impl block or trait.");
-            for SpanWrapper(span) in self.self_spans {
-                let use_site = Error::new(
-                    span,
-                    "Here, the function you are trying to annotate has a `Self`.",
-                );
-                error.combine(use_site);
+            let mut errors = errors.into_iter();
+            let mut error = errors.next()?;
+            for other in errors {
+                error.combine(other);
             }
             Some(error.to_compile_error())
         }
@@ -99,11 +113,6 @@ mod rewrite_self {
                 parse_quote! {Self}
             })
         }
-        /// Requests the type substituting the `Self` of a projection.
-        pub fn self_ty_of_projection(&mut self, span: Span) -> Type {
-            self.uses_self_projection = true;
-            self.self_ty(span)
-        }
         /// Construct a rewritter
         pub fn new(ident: Ident, typ: Option<Type>, projection: SelfProjection) -> Self {
             Self {
@@ -111,7 +120,7 @@ mod rewrite_self {
                 projection,
                 ident,
                 self_spans: HashSet::new(),
-                uses_self_projection: false,
+                errors: Vec::new(),
             }
         }
     }
@@ -139,20 +148,16 @@ impl RewriteSelf {
             return;
         }
         let as_trait = match self.projection().clone() {
-            SelfProjection::TypeParameter(_) => None,
             // On a concrete type, `as TRAIT` could change which item
             // `Self::X` resolves to: we qualify in type positions only,
-            // where only associated types are at stake. A type parameter
-            // has no inherent associated item, so it is always safe.
+            // where only associated types are at stake.
             SelfProjection::Trait(_) if expr_position => return,
-            SelfProjection::Trait(trait_path) => Some(trait_path),
+            SelfProjection::Trait(trait_path) => trait_path,
+            SelfProjection::Unsupported => return self.reject_projection(path.span()),
             SelfProjection::Unknown => return,
         };
-        let self_ty = self.self_ty_of_projection(path.span());
-        let rewritten: TypePath = match as_trait {
-            None => parse_quote! { <#self_ty>::#(#suffix)::* },
-            Some(trait_) => parse_quote! { <#self_ty as #trait_>::#(#suffix)::* },
-        };
+        let self_ty = self.self_ty(path.span());
+        let rewritten: TypePath = parse_quote! { <#self_ty as #as_trait>::#(#suffix)::* };
         (*qself, *path) = (rewritten.qself, rewritten.path);
     }
 }

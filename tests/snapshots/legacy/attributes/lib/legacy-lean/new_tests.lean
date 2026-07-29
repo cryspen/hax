@@ -1162,6 +1162,20 @@ def
   contract := by hax_mvcgen [Impl_1.h_hoisted] <;> bv_decide
 }
 
+def Impl_1.plain_hoisted (x : u8) : RustM u8 := do (pure x)
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def Impl_1.plain_hoisted.spec (x : u8) :
+    Spec
+      (requires := do (x >? (0 : u8)))
+      (ensures := fun _ => pure True)
+      (Impl_1.plain_hoisted (x : u8)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl_1.plain_hoisted] <;> bv_decide
+}
+
 end new_tests.legacy__attributes__lib.issue_2089
 
 
@@ -1313,6 +1327,7 @@ class T (Self : Type) (X : Type)
       associatedTypes.A]
     [trait_constr_h_i1 : core_models.convert.Into Y associatedTypes.A ] :
     ((Super.B Self) -> Y -> X -> RustM associatedTypes.A)
+  plain (Self) (X) : (u8 -> RustM u8)
 
 attribute [instance_reducible, instance] T.trait_constr_T_i0
 
@@ -1334,6 +1349,7 @@ instance Impl_1 : T S u16 where
       [trait_constr__i0 : core_models.convert.Into Y u32 ]
       =>
     (Impl_1.h_hoisted Y)
+  plain := (Impl_1.plain_hoisted)
 
 end new_tests.legacy__attributes__lib.issue_2089
 

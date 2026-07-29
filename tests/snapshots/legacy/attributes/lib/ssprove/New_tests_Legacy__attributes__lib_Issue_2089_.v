@@ -53,6 +53,7 @@ Class t_T (Self : choice_type) (v_Self : v_Self) {v_X : v_X} `{ t_Super v_Self} 
   f_f : (both f_A -> both int8) ;
   f_g : (both v_Self -> both f_A -> both f_A) ;
   f_h : (both f_B -> both v_Y -> both v_X -> both f_A) ;
+  f_plain : (both int8 -> both int8) ;
 }.
 
 #[global] Program Instance t_S_t_T : t_T t_S int16 :=
@@ -61,10 +62,12 @@ Class t_T (Self : choice_type) (v_Self : v_Self) {v_X : v_X} `{ t_Super v_Self} 
   let f_f := fun  (x : both int32) => ret_both (0 : int8) : both int8 in
   let f_g := fun  (self : both t_S) (x : both int32) => x : both int32 in
   let f_h := fun  (x : both int8) (y : both v_Y) (z : both int16) => f_into y : both int32 in
+  let f_plain := fun  (x : both int8) => x : both int8 in
   {| f_A := (@f_A);
   f_C := (@f_C);
   f_f := (@f_f);
   f_g := (@f_g);
-  f_h := (@f_h)|}.
+  f_h := (@f_h);
+  f_plain := (@f_plain)|}.
 Fail Next Obligation.
 Hint Unfold t_S_t_T.

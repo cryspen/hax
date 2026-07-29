@@ -531,7 +531,7 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
     } = parse_macro_input!(attr);
     let mut item: syn::TraitItemFn = parse_macro_input!(item);
     let projection = match self_trait {
-        Some(trait_) => SelfProjection::TypeParameter(trait_),
+        Some(_) => SelfProjection::Unsupported,
         None => SelfProjection::Unknown,
     };
     let (decoration, attr) = make_fn_decoration(
@@ -610,14 +610,6 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
     impl VisitMut for AttrVisitor {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             let span = item.span();
-            // The path of the trait being defined, e.g. `Trait<'a, T, N>`
-            // for `trait Trait<'a, T, const N: usize>`: it bounds the type
-            // parameter substituting `Self` in the decorations.
-            let trait_path: Path = {
-                let ident = &item.ident;
-                let (_, ty_generics, _) = item.generics.split_for_impl();
-                parse_quote! {#ident #ty_generics}
-            };
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
                     for attr in &mut fun.attrs {
@@ -654,7 +646,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             kind,
                             Some(generics),
                             Some(self_ty),
-                            SelfProjection::TypeParameter(trait_path.clone()),
+                            SelfProjection::Unsupported,
                         );
                         *attr = parse_quote! {#relation_attr};
                         self.extra_items.push(decoration);
@@ -671,8 +663,35 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 .trait_
                 .as_ref()
                 .and_then(|(not, path, _)| not.is_none().then(|| quote! {as #path}));
+            // Only the associated types this block defines can be qualified.
+            let assoc: Vec<String> = item
+                .items
+                .iter()
+                .filter_map(|item| match item {
+                    ImplItem::Type(ty) => Some(ty.ident.to_string()),
+                    _ => None,
+                })
+                .collect();
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
+                    let decorated = fun.attrs.iter().any(|attr| {
+                        matches!(&attr.meta, Meta::List(ml)
+                            if matches!(expects_path_decoration(&ml.path), Ok(Some(_))))
+                    });
+                    if decorated {
+                        if let Some(error) = foreign_self_projection_error(&fun.sig, &assoc) {
+                            // Drop the specifications: generating them would
+                            // pile rustc errors on top of ours.
+                            fun.attrs.retain(|attr| match &attr.meta {
+                                Meta::List(ml) => {
+                                    !matches!(expects_path_decoration(&ml.path), Ok(Some(_)))
+                                }
+                                _ => true,
+                            });
+                            self.extra_items.push(error);
+                            continue;
+                        }
+                    }
                     for attr in fun.attrs.iter_mut() {
                         if let Meta::List(ml) = &mut attr.meta {
                             let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {

@@ -227,6 +227,50 @@ fn add_unit_to_sig_if_needed(signature: &mut Signature) {
     }
 }
 
+/// Errors on the `Self::A` projections of `sig` whose associated type `A` is
+/// not defined by the enclosing `impl` block: hax qualifies them as
+/// `<Type as Trait>::A`, which is correct only for the block's own items.
+pub fn foreign_self_projection_error(sig: &Signature, assoc: &[String]) -> Option<TokenStream> {
+    struct Collector<'a> {
+        assoc: &'a [String],
+        errors: Vec<Error>,
+    }
+    impl<'ast> syn::visit::Visit<'ast> for Collector<'_> {
+        fn visit_type_path(&mut self, tp: &'ast TypePath) {
+            syn::visit::visit_type_path(self, tp);
+            let mut segments = tp.path.segments.iter();
+            let (Some(first), Some(assoc)) = (segments.next(), segments.next()) else {
+                return;
+            };
+            if tp.qself.is_some() || first.ident != "Self" {
+                return;
+            }
+            let name = assoc.ident.to_string();
+            if !self.assoc.contains(&name) {
+                self.errors.push(Error::new(
+                    tp.span(),
+                    format!(
+                        "hax: `Self::{name}` is not defined by this `impl` block, hax cannot \
+                         qualify it. Write `<Type as Trait>::{name}` explicitly. See \
+                         https://github.com/cryspen/hax/issues/2089."
+                    ),
+                ));
+            }
+        }
+    }
+    let mut collector = Collector {
+        assoc,
+        errors: Vec::new(),
+    };
+    syn::visit::Visit::visit_signature(&mut collector, sig);
+    let mut errors = collector.errors.into_iter();
+    let mut error = errors.next()?;
+    for other in errors {
+        error.combine(other);
+    }
+    Some(error.to_compile_error())
+}
+
 /// Common logic when generating a function decoration
 ///
 /// `self_type` substitutes `Self`, and `self_projection` says how to
@@ -246,25 +290,11 @@ pub fn make_fn_decoration(
         idents.fresh_ident("self_")
     };
     let error = {
-        let mut rewriter = RewriteSelf::new(self_ident, self_type.clone(), self_projection.clone());
+        let mut rewriter = RewriteSelf::new(self_ident, self_type, self_projection);
         rewriter.visit_expr_mut(&mut phi);
         rewriter.visit_signature_mut(&mut signature);
         if let Some(generics) = generics.as_mut() {
             rewriter.visit_generics_mut(generics);
-        }
-        // `TYPE` being a fresh type parameter, the decoration needs an
-        // explicit `TYPE: TRAIT` bound for `<TYPE>::Assoc` to resolve.
-        if let (true, Some(self_type), SelfProjection::TypeParameter(trait_), Some(generics)) = (
-            rewriter.uses_self_projection(),
-            &self_type,
-            &self_projection,
-            generics.as_mut(),
-        ) {
-            generics
-                .where_clause
-                .get_or_insert_with(|| parse_quote! {where})
-                .predicates
-                .push(parse_quote! {#self_type: #trait_});
         }
         rewriter.get_error()
     };
@@ -361,5 +391,11 @@ pub fn make_fn_decoration(
         role: kind.into(),
         item: uid,
     };
-    (quote! {#error #decoration}, assoc_attr)
+    // On error the decoration is dropped: emitting it anyway would pile
+    // rustc errors on top of ours.
+    let decoration = match error {
+        Some(error) => error,
+        None => decoration,
+    };
+    (decoration, assoc_attr)
 }

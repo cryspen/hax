@@ -26,7 +26,7 @@ Record S_record : Type :=
 #[export]
 Notation "'S_S_record'" := Build_S_record.
 
-Instance t_Super_414377144 : t_Super ((t_S)) :=
+Instance t_Super_370738065 : t_Super ((t_S)) :=
   {
     implaabbcc_t_Super_f_B := t_u8;
   }.
@@ -38,10 +38,11 @@ Class t_T (v_Self : Type) (v_X : Type) `{t_Super (v_Self)} : Type :=
     f_f : f_A -> t_u8;
     f_g : v_Self -> f_A -> f_A;
     f_h v_Y : Type `{t_Into (v_Y) (f_A)} : f_B -> v_Y -> v_X -> f_A;
+    f_plain : t_u8 -> t_u8;
   }.
 Arguments t_T (_) (_) {_}.
 
-Instance t_T_538662565 : t_T ((t_S)) ((t_u16)) :=
+Instance t_T_826751373 : t_T ((t_S)) ((t_u16)) :=
   {
     implaabbcc_t_T_f_A := t_u32;
     implaabbcc_t_T_f_C := (1 : t_u8);
@@ -51,4 +52,6 @@ Instance t_T_538662565 : t_T ((t_S)) ((t_u16)) :=
       x;
     implaabbcc_t_T_f_h := fun  (x : t_u8) (y : v_Y) (z : t_u16)=>
       f_into (y);
+    implaabbcc_t_T_f_plain := fun  (x : t_u8)=>
+      x;
   }.
