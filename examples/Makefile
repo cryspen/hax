@@ -8,7 +8,6 @@ default:
 	make -C kyber_compress
 	make -C loop_equivalence
 	make -C proverif-psk
-	make -C legacy_lean_chacha20
 
 clean:
 	make -C limited-order-book   clean
@@ -19,4 +18,3 @@ clean:
 	make -C kyber_compress       clean
 	make -C loop_equivalence     clean
 	make -C proverif-psk         clean
-	make -C legacy_lean_chacha20 clean

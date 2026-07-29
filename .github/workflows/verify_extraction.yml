@@ -54,7 +54,6 @@ jobs:
           - kyber_compress
           - loop_equivalence
           - proverif-psk
-          - legacy_lean_chacha20
           - adc
           - lean_tutorial
     steps:
