@@ -74,6 +74,62 @@ pub(crate) fn self_trait_path(item: &ItemTrait) -> Path {
     }
 }
 
+/// Builds the argument list of the internal `::hax_lib::impl_fn_decoration`
+/// attribute: `<KIND>, <GENERICS>, <WHERE CLAUSE>, <SELF TYPE> [as <TRAIT>], <BODY>`.
+pub(crate) fn impl_fn_decoration_args(
+    decoration: &Ident,
+    generics: &Generics,
+    self_ty: &Type,
+    as_trait: &Option<TokenStream>,
+    tokens: &TokenStream,
+) -> TokenStream {
+    let where_clause = &generics.where_clause;
+    quote! {#decoration, #generics, #where_clause, #self_ty #as_trait, #tokens}
+}
+
+/// Calls `f` on `meta`, descending into `cfg_attr(PRED, ..)` wrappers: `f` is
+/// then called on each nested meta, with the conjunction of the enclosing
+/// predicates. `f` may rewrite the metas in place; the `cfg_attr` wrappers are
+/// preserved.
+pub(crate) fn visit_meta_through_cfg_attr(
+    meta: &mut Meta,
+    cfg: Option<Meta>,
+    f: &mut impl FnMut(&mut Meta, Option<&Meta>),
+) {
+    let is_cfg_attr = matches!(&*meta, Meta::List(ml) if ml.path.is_ident("cfg_attr"));
+    if !is_cfg_attr {
+        return f(meta, cfg.as_ref());
+    }
+    let Meta::List(ml) = meta else { unreachable!() };
+    let Ok(args) = ml.parse_args_with(punctuated::Punctuated::<Meta, Token![,]>::parse_terminated)
+    else {
+        return;
+    };
+    let mut args: Vec<Meta> = args.into_iter().collect();
+    let Some((pred, nested)) = args.split_first_mut() else {
+        return;
+    };
+    let cfg = match cfg {
+        Some(outer) => parse_quote! {all(#outer, #pred)},
+        None => pred.clone(),
+    };
+    for meta in nested {
+        visit_meta_through_cfg_attr(meta, Some(cfg.clone()), f);
+    }
+    ml.tokens = quote! {#(#args),*};
+}
+
+/// Gates every item of `tokens` on `#[cfg(#pred)]`.
+pub(crate) fn cfg_gate(tokens: TokenStream, pred: &Meta) -> TokenStream {
+    let Ok(file) = syn::parse2::<File>(tokens.clone()) else {
+        return quote! {#[cfg(#pred)] const _: () = {#tokens};};
+    };
+    file.items
+        .iter()
+        .map(|item| quote! {#[cfg(#pred)] #item})
+        .collect()
+}
+
 /// Merge two `syn::Generics`, respecting lifetime orders
 pub(crate) fn merge_generics(x: Generics, y: Generics) -> Generics {
     Generics {

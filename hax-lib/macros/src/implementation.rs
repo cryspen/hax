@@ -574,6 +574,11 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
 /// `decreases`, `ensures`, `requires`: behave exactly as documented above on
 /// the proc attributes of the same name.
 ///
+/// Those may also be written behind a `cfg_attr`, e.g.
+/// `#[cfg_attr(hax, requires(..))]`: the predicate is preserved, so the
+/// specification appears exactly when the predicate holds. This makes
+/// `hax-lib` usable as a `cfg(hax)`-gated dependency.
+///
 /// # Example
 ///
 /// ```
@@ -611,58 +616,66 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             let span = item.span();
             let self_trait = self_trait_path(item);
-            let supertraits = item.supertraits.clone();
-            let item_generics = item.generics.clone();
+            let (trait_generics, supertraits) = (item.generics.clone(), item.supertraits.clone());
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
+                    let sig = fun.sig.clone();
+                    let extra_items = &mut self.extra_items;
                     for attr in &mut fun.attrs {
-                        let Meta::List(ml) = attr.meta.clone() else {
-                            continue;
-                        };
-                        let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
-                            continue;
-                        };
-                        let decoration = syn::Ident::new(&decoration, ml.path.span());
+                        visit_meta_through_cfg_attr(&mut attr.meta, None, &mut |meta, cfg| {
+                            let Meta::List(ml) = meta else { return };
+                            let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
+                                return;
+                            };
+                            let decoration = syn::Ident::new(&decoration, ml.path.span());
 
-                        let mut generics = item_generics.clone();
-                        // `Self_` needs the trait itself among its bounds, not
-                        // just the supertraits, else `Self::Assoc` has nothing
-                        // to resolve against (#2089).
-                        let mut bounds = supertraits.clone();
-                        bounds.push(TypeParamBound::Trait(TraitBound {
-                            paren_token: None,
-                            modifier: TraitBoundModifier::None,
-                            lifetimes: None,
-                            path: self_trait.clone(),
-                        }));
-                        let predicate = WherePredicate::Type(PredicateType {
-                            lifetimes: None,
-                            bounded_ty: parse_quote! {Self_},
-                            colon_token: Token![:](span),
-                            bounds,
+                            let mut generics = trait_generics.clone();
+                            // `Self_` needs the trait itself among its bounds, not
+                            // just the supertraits, else `Self::Assoc` has nothing
+                            // to resolve against (#2089).
+                            let mut bounds = supertraits.clone();
+                            bounds.push(TypeParamBound::Trait(TraitBound {
+                                paren_token: None,
+                                modifier: TraitBoundModifier::None,
+                                lifetimes: None,
+                                path: self_trait.clone(),
+                            }));
+                            let predicate = WherePredicate::Type(PredicateType {
+                                lifetimes: None,
+                                bounded_ty: parse_quote! {Self_},
+                                colon_token: Token![:](span),
+                                bounds,
+                            });
+                            let mut where_clause = generics
+                                .where_clause
+                                .clone()
+                                .unwrap_or(parse_quote! {where});
+                            where_clause.predicates.push(predicate);
+                            generics.where_clause = Some(where_clause);
+                            let self_ty: Type = parse_quote! {Self_};
+                            let tokens = ml.tokens.clone();
+                            let generics = merge_generics(parse_quote! {<Self_>}, generics);
+                            let ImplFnDecoration {
+                                kind, phi, self_ty, ..
+                            } = parse_quote! {#decoration, #generics, where, #self_ty, #tokens};
+                            let (decoration, relation_attr) = make_fn_decoration(
+                                phi,
+                                sig.clone(),
+                                kind,
+                                Some(generics),
+                                Some(self_ty),
+                                SelfProjection::TypeParam,
+                            );
+                            // Replacing the meta (and not the whole attribute) keeps any
+                            // enclosing `cfg_attr` wrapper: the relation attribute and the
+                            // sibling item below appear under the very same conditions.
+                            let relation_attr: Attribute = parse_quote! {#relation_attr};
+                            *meta = relation_attr.meta;
+                            extra_items.push(match cfg {
+                                Some(pred) => cfg_gate(decoration, pred),
+                                None => decoration,
+                            });
                         });
-                        let mut where_clause = generics
-                            .where_clause
-                            .clone()
-                            .unwrap_or(parse_quote! {where});
-                        where_clause.predicates.push(predicate.clone());
-                        generics.where_clause = Some(where_clause.clone());
-                        let self_ty: Type = parse_quote! {Self_};
-                        let tokens = ml.tokens.clone();
-                        let generics = merge_generics(parse_quote! {<Self_>}, generics);
-                        let ImplFnDecoration {
-                            kind, phi, self_ty, ..
-                        } = parse_quote! {#decoration, #generics, where, #self_ty, #tokens};
-                        let (decoration, relation_attr) = make_fn_decoration(
-                            phi,
-                            fun.sig.clone(),
-                            kind,
-                            Some(generics),
-                            Some(self_ty),
-                            SelfProjection::TypeParam,
-                        );
-                        *attr = parse_quote! {#relation_attr};
-                        self.extra_items.push(decoration);
                     }
                 }
             }
@@ -670,6 +683,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
         }
         fn visit_type_mut(&mut self, _type: &mut Type) {}
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
+            let (generics, self_ty) = (item.generics.clone(), item.self_ty.clone());
             // The trait implemented by this block, if any: it qualifies the
             // `Self::Assoc` projections of the decorated methods.
             let as_trait = item
@@ -706,19 +720,22 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         }
                     }
                     for attr in fun.attrs.iter_mut() {
-                        if let Meta::List(ml) = &mut attr.meta {
+                        visit_meta_through_cfg_attr(&mut attr.meta, None, &mut |meta, _cfg| {
+                            let Meta::List(ml) = meta else { return };
                             let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
-                                continue;
+                                return;
                             };
                             let decoration = syn::Ident::new(&decoration, ml.path.span());
                             let tokens = ml.tokens.clone();
-                            let (generics, self_ty) = (&item.generics, &item.self_ty);
-                            let where_clause = &generics.where_clause;
-                            ml.tokens = quote! {
-                                #decoration, #generics, #where_clause, #self_ty #as_trait, #tokens
-                            };
+                            ml.tokens = impl_fn_decoration_args(
+                                &decoration,
+                                &generics,
+                                &self_ty,
+                                &as_trait,
+                                &tokens,
+                            );
                             ml.path = parse_quote! {::hax_lib::impl_fn_decoration};
-                        }
+                        });
                     }
                 }
             }

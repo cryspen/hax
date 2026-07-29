@@ -43,6 +43,9 @@ Changes to hax-lib:
  - Specify the F* `overflowing_add`/`overflowing_sub` primitives, which were left uninterpreted. The `checked_*` integer models route through them, so they could not be used in a proof (#2127)
  - F* lib: specify `abs_i8/16/32/64/128/isize` (previously wholly uninterpreted) with the documented wrap-to-`MIN` result refinement, unblocking proofs about `i*::abs` and the AVX2 `_mm256_abs_epi32` models (#2107)
  - Fix the overflow condition of the F* `mul_overflow` primitive, which compared against `maxint` twice. `overflowing_mul`/`checked_mul` reported overflow for every product except exactly `maxint`
+ - Support `requires`, and `ensures` written behind a `cfg_attr` in
+   an `impl` block or a trait annotated with `#[hax_lib::attributes]`, keeping
+   the `cfg_attr` predicate (#1496)
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
