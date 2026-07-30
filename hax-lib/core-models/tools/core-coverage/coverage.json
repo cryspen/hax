@@ -19375,7 +19375,7 @@
    },
    {
     "module": "collections",
-    "covered": 13,
+    "covered": 15,
     "total": 315,
     "in_scope": true,
     "covered_items": [
@@ -19390,8 +19390,10 @@
      "IntoIter",
      "VecDeque",
      "VecDeque::len",
+     "VecDeque::new",
      "VecDeque::pop_front",
-     "VecDeque::push_back"
+     "VecDeque::push_back",
+     "VecDeque::with_capacity"
     ],
     "missing_items": [
      "BTreeMap",
@@ -19660,7 +19662,6 @@
      "VecDeque::iter",
      "VecDeque::iter_mut",
      "VecDeque::make_contiguous",
-     "VecDeque::new",
      "VecDeque::new_in",
      "VecDeque::partition_point",
      "VecDeque::pop_back",
@@ -19694,7 +19695,6 @@
      "VecDeque::try_reserve",
      "VecDeque::try_reserve_exact",
      "VecDeque::try_with_capacity",
-     "VecDeque::with_capacity",
      "VecDeque::with_capacity_in"
     ]
    },

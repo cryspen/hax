@@ -96,7 +96,7 @@ def array.Array.each_ref
     N) s
 
 /-- [core_models::array::from_fn]:
-    Source: 'core-models/src/core/array.rs', lines 62:0-64:1
+    Source: 'core-models/src/core/array.rs', lines 59:0-61:1
     Visibility: public -/
 def array.from_fn
   {T : Type} {F : Type} (N : Std.Usize) (coreopsfunctionFnMutFTupleUsizeTInst :
@@ -106,7 +106,7 @@ def array.from_fn
   rust_primitives.slice.array_from_fn N coreopsfunctionFnMutFTupleUsizeTInst f
 
 /-- [core_models::array::{impl core_models::iter::traits::collect::IntoIterator<T, core_models::array::iter::IntoIter<T, N>> for [T; N]}::into_iter]:
-    Source: 'core-models/src/core/array.rs', lines 70:4-72:5
+    Source: 'core-models/src/core/array.rs', lines 67:4-69:5
     Visibility: public -/
 def Array.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
   {T : Type} {N : Std.Usize} (self : Array T N) :
@@ -116,7 +116,7 @@ def Array.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
   ok s
 
 /-- Trait implementation: [core_models::array::{impl core_models::iter::traits::collect::IntoIterator<T, core_models::array::iter::IntoIter<T, N>> for [T; N]}]
-    Source: 'core-models/src/core/array.rs', lines 67:0-73:1 -/
+    Source: 'core-models/src/core/array.rs', lines 64:0-70:1 -/
 @[reducible]
 def Array.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) (N
   : Std.Usize) : iter.traits.collect.IntoIterator (Array T N) T
@@ -126,7 +126,7 @@ def Array.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) (N
 }
 
 /-- [core_models::array::{impl core_models::ops::index::Index<I, Clause0_Output> for [T; N]}::index]:
-    Source: 'core-models/src/core/array.rs', lines 88:4-90:5
+    Source: 'core-models/src/core/array.rs', lines 85:4-87:5
     Visibility: public -/
 def Array.Insts.CoreOpsIndexIndex.index
   {T : Type} {I : Type} {Clause0_Output : Type} {N : Std.Usize}
@@ -138,7 +138,7 @@ def Array.Insts.CoreOpsIndexIndex.index
   opsindexIndexSliceIClause0_OutputInst.index s i
 
 /-- Trait implementation: [core_models::array::{impl core_models::ops::index::Index<I, Clause0_Output> for [T; N]}]
-    Source: 'core-models/src/core/array.rs', lines 83:0-91:1 -/
+    Source: 'core-models/src/core/array.rs', lines 80:0-88:1 -/
 @[reducible]
 def Array.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output
   : Type} (N : Std.Usize) (opsindexIndexSliceIClause0_OutputInst :
@@ -149,7 +149,7 @@ def Array.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output
 }
 
 /-- [core_models::array::{impl core_models::clone::Clone for [T; N]}::clone]:
-    Source: 'core-models/src/core/array.rs', lines 145:4-147:5
+    Source: 'core-models/src/core/array.rs', lines 142:4-144:5
     Visibility: public -/
 def Array.Insts.CoreCloneClone.clone
   {T : Type} {N : Std.Usize} (cloneCloneInst : clone.Clone T)
@@ -159,7 +159,7 @@ def Array.Insts.CoreCloneClone.clone
   ok self
 
 /-- Trait implementation: [core_models::array::{impl core_models::clone::Clone for [T; N]}]
-    Source: 'core-models/src/core/array.rs', lines 144:0-148:1 -/
+    Source: 'core-models/src/core/array.rs', lines 141:0-145:1 -/
 @[reducible]
 def Array.Insts.CoreCloneClone {T : Type} (N : Std.Usize)
   (cloneCloneInst : clone.Clone T) : clone.Clone (Array T N) := {
@@ -167,7 +167,7 @@ def Array.Insts.CoreCloneClone {T : Type} (N : Std.Usize)
 }
 
 /-- [core_models::array::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T; N]}::eq]: loop body 0:
-    Source: 'core-models/src/core/array.rs', lines 157:12-164:9
+    Source: 'core-models/src/core/array.rs', lines 154:12-161:9
     Visibility: public -/
 @[rust_loop_body]
 def Array.Insts.CoreCmpPartialEqArray.eq_loop.body
@@ -187,7 +187,7 @@ def Array.Insts.CoreCmpPartialEqArray.eq_loop.body
   else ok (done true)
 
 /-- [core_models::array::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T; N]}::eq]: loop 0:
-    Source: 'core-models/src/core/array.rs', lines 157:12-164:9
+    Source: 'core-models/src/core/array.rs', lines 154:12-161:9
     Visibility: public -/
 @[rust_loop]
 def Array.Insts.CoreCmpPartialEqArray.eq_loop
@@ -201,7 +201,7 @@ def Array.Insts.CoreCmpPartialEqArray.eq_loop
     i
 
 /-- [core_models::array::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T; N]}::eq]:
-    Source: 'core-models/src/core/array.rs', lines 155:8-164:9
+    Source: 'core-models/src/core/array.rs', lines 152:8-161:9
     Visibility: public -/
 @[reducible]
 def Array.Insts.CoreCmpPartialEqArray.eq
@@ -213,7 +213,7 @@ def Array.Insts.CoreCmpPartialEqArray.eq
     0#usize
 
 /-- Trait implementation: [core_models::array::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T; N]}]
-    Source: 'core-models/src/core/array.rs', lines 154:4-165:5 -/
+    Source: 'core-models/src/core/array.rs', lines 151:4-162:5 -/
 @[reducible]
 def Array.Insts.CoreCmpPartialEqArray {T : Type} {U : Type} (N :
   Std.Usize) (cmpPartialEqInst : cmp.PartialEq T U) : cmp.PartialEq (Array T N)
@@ -222,7 +222,7 @@ def Array.Insts.CoreCmpPartialEqArray {T : Type} {U : Type} (N :
 }
 
 /-- [core_models::array::iter::{impl core_models::iter::traits::iterator::Iterator<T> for core_models::array::iter::IntoIter<T, N>}::next]:
-    Source: 'core-models/src/core/array.rs', lines 175:8-182:9
+    Source: 'core-models/src/core/array.rs', lines 172:8-179:9
     Visibility: public -/
 def array.iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} {N : Std.Usize} (self : array.iter.IntoIter T N) :
@@ -236,7 +236,7 @@ def array.iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
     ok (option.Option.Some res, s)
 
 /-- Trait implementation: [core_models::array::iter::{impl core_models::iter::traits::iterator::Iterator<T> for core_models::array::iter::IntoIter<T, N>}]
-    Source: 'core-models/src/core/array.rs', lines 173:4-183:5 -/
+    Source: 'core-models/src/core/array.rs', lines 170:4-180:5 -/
 @[reducible]
 def array.iter.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type)
   (N : Std.Usize) : iter.traits.iterator.Iterator (array.iter.IntoIter T N) T

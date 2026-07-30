@@ -55,9 +55,6 @@ impl<T, const N: usize> Array<T, N> {
     }
 }
 
-/// See [`std::array::from_fn`]. The trait bound is `FnMut` (matching std,
-/// which is what Aeneas's downstream extraction expects when it reaches
-/// into a `Fn` instance via `.FnMutInst`).
 #[hax_lib::fstar::replace("let from_fn = Rust_primitives.Slice.array_from_fn")]
 pub fn from_fn<T, const N: usize, F: FnMut(usize) -> T>(f: F) -> [T; N] {
     array_from_fn(f)

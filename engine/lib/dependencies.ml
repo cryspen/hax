@@ -520,6 +520,20 @@ module Make (F : Features.T) = struct
     let fresh_module =
       Concrete_ident.fresh_module ~label:"bundle" (List.map ~f:ident_of bundle)
     in
+    (* Items whose definition is supplied by a `Replace` quote living in this
+       same bundle (i.e. `#[hax_lib::<backend>::replace(..)]`). Such an item is
+       late-skipped — the quote's verbatim text is emitted in its stead — but the
+       name it declares *is* still defined, and other modules reference it. So
+       its re-export must survive even though the item it aliases does not; see
+       the `attrs` computation below. *)
+    let replaced_by_quote =
+      List.filter_map bundle ~f:(fun item ->
+          match item.v with
+          | Quote { origin = { position = `Replace; item_ident; _ }; _ } ->
+              Some item_ident
+          | _ -> None)
+      |> Set.of_list (module Concrete_ident)
+    in
     let renamings =
       bundle
       (* Exclude `Use` items: we exclude those from bundling since they are only
@@ -543,9 +557,15 @@ module Make (F : Features.T) = struct
       in
       List.filter_map renamings ~f:(fun (origin_item, (from_id, to_id)) ->
           let attrs =
-            List.filter
-              ~f:(fun att -> Attrs.late_skip [ att ])
-              origin_item.attrs
+            (* An alias inherits its origin's `late_skip` so that a skipped item
+               does not leave a dangling re-export behind. A quote-replaced item
+               is the exception: it is skipped precisely because the quote
+               defines the name in its place, so the re-export has to stay. *)
+            if Set.mem replaced_by_quote from_id then []
+            else
+              List.filter
+                ~f:(fun att -> Attrs.late_skip [ att ])
+                origin_item.attrs
           in
           let v = Alias { name = from_id; item = to_id } in
           match origin_item.v with
