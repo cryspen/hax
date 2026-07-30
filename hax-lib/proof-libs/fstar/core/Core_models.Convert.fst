@@ -61,7 +61,7 @@ include Core_models.Bundle {f_as_ref_post as f_as_ref_post}
 
 include Core_models.Bundle {f_as_ref as f_as_ref}
 
-include Core_models.Bundle {impl_5 as impl_5}
+include Core_models.Bundle {impl_5__from__convert as impl_5}
 
 include Core_models.Bundle {impl_6__from__convert as impl_6}
 
@@ -133,31 +133,31 @@ include Core_models.Bundle {impl_39 as impl_39}
 
 include Core_models.Bundle {impl_40__from__convert as impl_40}
 
-include Core_models.Bundle {impl_41__from__convert as impl_41}
+include Core_models.Bundle {impl_41 as impl_41}
 
 include Core_models.Bundle {impl_42__from__convert as impl_42}
 
-include Core_models.Bundle {impl_43__from__convert as impl_43}
+include Core_models.Bundle {impl_43 as impl_43}
 
 include Core_models.Bundle {impl_44__from__convert as impl_44}
 
-include Core_models.Bundle {impl_45__from__convert as impl_45}
+include Core_models.Bundle {impl_45 as impl_45}
 
 include Core_models.Bundle {impl_46__from__convert as impl_46}
 
-include Core_models.Bundle {impl_47__from__convert as impl_47}
+include Core_models.Bundle {impl_47 as impl_47}
 
 include Core_models.Bundle {impl_48__from__convert as impl_48}
 
-include Core_models.Bundle {impl_49__from__convert as impl_49}
+include Core_models.Bundle {impl_49 as impl_49}
 
 include Core_models.Bundle {impl_50__from__convert as impl_50}
 
-include Core_models.Bundle {impl_51__from__convert as impl_51}
+include Core_models.Bundle {impl_51 as impl_51}
 
 include Core_models.Bundle {impl_52__from__convert as impl_52}
 
-include Core_models.Bundle {impl_53__from__convert as impl_53}
+include Core_models.Bundle {impl_53 as impl_53}
 
 include Core_models.Bundle {impl_54 as impl_54}
 

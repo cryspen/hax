@@ -47,6 +47,33 @@ impl From<FnDecorationKind> for AssociationRole {
     }
 }
 
+/// A trait's own path, parameters turned back into arguments:
+/// `trait T<'a, X, const N: usize>` yields `T<'a, X, N>`.
+pub(crate) fn self_trait_path(item: &ItemTrait) -> Path {
+    let args: Vec<GenericArgument> = item
+        .generics
+        .params
+        .iter()
+        .map(|param| match param {
+            GenericParam::Lifetime(lt) => GenericArgument::Lifetime(lt.lifetime.clone()),
+            GenericParam::Type(ty) => {
+                let ident = &ty.ident;
+                GenericArgument::Type(parse_quote! {#ident})
+            }
+            GenericParam::Const(c) => {
+                let ident = &c.ident;
+                GenericArgument::Const(parse_quote! {#ident})
+            }
+        })
+        .collect();
+    let ident = &item.ident;
+    if args.is_empty() {
+        parse_quote! {#ident}
+    } else {
+        parse_quote! {#ident<#(#args),*>}
+    }
+}
+
 /// Merge two `syn::Generics`, respecting lifetime orders
 pub(crate) fn merge_generics(x: Generics, y: Generics) -> Generics {
     Generics {

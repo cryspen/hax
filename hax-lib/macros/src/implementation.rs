@@ -610,6 +610,9 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
     impl VisitMut for AttrVisitor {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             let span = item.span();
+            let self_trait = self_trait_path(item);
+            let supertraits = item.supertraits.clone();
+            let item_generics = item.generics.clone();
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
                     for attr in &mut fun.attrs {
@@ -621,12 +624,22 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         };
                         let decoration = syn::Ident::new(&decoration, ml.path.span());
 
-                        let mut generics = item.generics.clone();
+                        let mut generics = item_generics.clone();
+                        // `Self_` needs the trait itself among its bounds, not
+                        // just the supertraits, else `Self::Assoc` has nothing
+                        // to resolve against (#2089).
+                        let mut bounds = supertraits.clone();
+                        bounds.push(TypeParamBound::Trait(TraitBound {
+                            paren_token: None,
+                            modifier: TraitBoundModifier::None,
+                            lifetimes: None,
+                            path: self_trait.clone(),
+                        }));
                         let predicate = WherePredicate::Type(PredicateType {
                             lifetimes: None,
                             bounded_ty: parse_quote! {Self_},
                             colon_token: Token![:](span),
-                            bounds: item.supertraits.clone(),
+                            bounds,
                         });
                         let mut where_clause = generics
                             .where_clause
@@ -646,7 +659,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             kind,
                             Some(generics),
                             Some(self_ty),
-                            SelfProjection::Unsupported,
+                            SelfProjection::TypeParam,
                         );
                         *attr = parse_quote! {#relation_attr};
                         self.extra_items.push(decoration);
