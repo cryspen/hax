@@ -129,7 +129,16 @@ let overflowing_mul_i8 : i8 -> i8 -> i8 & bool = mul_overflow
 let rem_euclid_i8 (x: i8) (y: i8 {v y <> 0}): i8 = x %! y
 val pow_i8 : i8 -> u32 -> i8
 val count_ones_i8 : i8 -> r:u32{v r <= 8}
-val abs_i8 : i8 -> i8
+/// `i8::abs`.  Rust documents the overflow case explicitly: "The absolute
+/// value of `i8::MIN` cannot be represented as an `i8`, and attempting to
+/// calculate it will cause an overflow. This means that code in debug mode will
+/// trigger a panic on this case and optimized code will return `i8::MIN`
+/// without a panic."  This model is total, so it specifies the optimized
+/// (wrap-to-MIN) behaviour; callers that must exclude it should require
+/// `v x > minint I8`.
+val abs_i8 (x: i8)
+  : r: i8 { v r == (if v x = minint I8 then minint I8
+                 else if v x < 0 then - (v x) else v x) }
 
 let wrapping_add_i16 : i16 -> i16 -> i16 = add_mod
 let saturating_add_i16 : i16 -> i16 -> i16 = add_sat
@@ -143,7 +152,16 @@ let overflowing_mul_i16 : i16 -> i16 -> i16 & bool = mul_overflow
 let rem_euclid_i16 (x: i16) (y: i16 {v y <> 0}): i16 = x %! y
 val pow_i16 : x: i16 -> y:u32 -> result: i16 {v x == 2 /\ v y < 15 ==> (Math.Lemmas.pow2_lt_compat 15 (v y); result == mk_i16 (pow2 (v y)))}
 val count_ones_i16 : i16 -> r:u32{v r <= 16}
-val abs_i16 : i16 -> i16
+/// `i16::abs`.  Rust documents the overflow case explicitly: "The absolute
+/// value of `i16::MIN` cannot be represented as an `i16`, and attempting to
+/// calculate it will cause an overflow. This means that code in debug mode will
+/// trigger a panic on this case and optimized code will return `i16::MIN`
+/// without a panic."  This model is total, so it specifies the optimized
+/// (wrap-to-MIN) behaviour; callers that must exclude it should require
+/// `v x > minint I16`.
+val abs_i16 (x: i16)
+  : r: i16 { v r == (if v x = minint I16 then minint I16
+                 else if v x < 0 then - (v x) else v x) }
 
 let wrapping_add_i32 : i32 -> i32 -> i32 = add_mod
 let saturating_add_i32 : i32 -> i32 -> i32 = add_sat
@@ -157,7 +175,16 @@ let overflowing_mul_i32 : i32 -> i32 -> i32 & bool = mul_overflow
 let rem_euclid_i32 (x: i32) (y: i32 {v y <> 0}): i32 = x %! y
 val pow_i32 : x : i32 -> y:u32 -> result: i32 {v x == 2 /\ v y <= 16 ==> result == mk_i32 (pow2 (v y))}
 val count_ones_i32 : i32 -> r:u32{v r <= 32}
-val abs_i32 : i32 -> i32
+/// `i32::abs`.  Rust documents the overflow case explicitly: "The absolute
+/// value of `i32::MIN` cannot be represented as an `i32`, and attempting to
+/// calculate it will cause an overflow. This means that code in debug mode will
+/// trigger a panic on this case and optimized code will return `i32::MIN`
+/// without a panic."  This model is total, so it specifies the optimized
+/// (wrap-to-MIN) behaviour; callers that must exclude it should require
+/// `v x > minint I32`.
+val abs_i32 (x: i32)
+  : r: i32 { v r == (if v x = minint I32 then minint I32
+                 else if v x < 0 then - (v x) else v x) }
 
 let wrapping_add_i64 : i64 -> i64 -> i64 = add_mod
 let saturating_add_i64 : i64 -> i64 -> i64 = add_sat
@@ -171,7 +198,16 @@ let overflowing_mul_i64 : i64 -> i64 -> i64 & bool = mul_overflow
 let rem_euclid_i64 (x: i64) (y: i64 {v y <> 0}): i64 = x %! y
 val pow_i64 : i64 -> u32 -> i64
 val count_ones_i64 : i64 -> r:u32{v r <= 64}
-val abs_i64 : i64 -> i64
+/// `i64::abs`.  Rust documents the overflow case explicitly: "The absolute
+/// value of `i64::MIN` cannot be represented as an `i64`, and attempting to
+/// calculate it will cause an overflow. This means that code in debug mode will
+/// trigger a panic on this case and optimized code will return `i64::MIN`
+/// without a panic."  This model is total, so it specifies the optimized
+/// (wrap-to-MIN) behaviour; callers that must exclude it should require
+/// `v x > minint I64`.
+val abs_i64 (x: i64)
+  : r: i64 { v r == (if v x = minint I64 then minint I64
+                 else if v x < 0 then - (v x) else v x) }
 
 let wrapping_add_i128 : i128 -> i128 -> i128 = add_mod
 let saturating_add_i128 : i128 -> i128 -> i128 = add_sat
@@ -185,7 +221,16 @@ let overflowing_mul_i128 : i128 -> i128 -> i128 & bool = mul_overflow
 let rem_euclid_i128 (x: i128) (y: i128 {v y <> 0}): i128 = x %! y
 val pow_i128 : i128 -> u32 -> i128
 val count_ones_i128 : i128 -> r:u32{v r <= 128}
-val abs_i128 : i128 -> i128
+/// `i128::abs`.  Rust documents the overflow case explicitly: "The absolute
+/// value of `i128::MIN` cannot be represented as an `i128`, and attempting to
+/// calculate it will cause an overflow. This means that code in debug mode will
+/// trigger a panic on this case and optimized code will return `i128::MIN`
+/// without a panic."  This model is total, so it specifies the optimized
+/// (wrap-to-MIN) behaviour; callers that must exclude it should require
+/// `v x > minint I128`.
+val abs_i128 (x: i128)
+  : r: i128 { v r == (if v x = minint I128 then minint I128
+                 else if v x < 0 then - (v x) else v x) }
 
 let wrapping_add_isize : isize -> isize -> isize = add_mod
 let saturating_add_isize : isize -> isize -> isize = add_sat
@@ -199,7 +244,16 @@ let overflowing_mul_isize : isize -> isize -> isize & bool = mul_overflow
 let rem_euclid_isize (x: isize) (y: isize {v y <> 0}): isize = x %! y
 val pow_isize : isize -> u32 -> isize
 val count_ones_isize : isize -> r:u32{v r <= size_bits}
-val abs_isize : isize -> isize
+/// `isize::abs`.  Rust documents the overflow case explicitly: "The absolute
+/// value of `isize::MIN` cannot be represented as an `isize`, and attempting to
+/// calculate it will cause an overflow. This means that code in debug mode will
+/// trigger a panic on this case and optimized code will return `isize::MIN`
+/// without a panic."  This model is total, so it specifies the optimized
+/// (wrap-to-MIN) behaviour; callers that must exclude it should require
+/// `v x > minint ISIZE`.
+val abs_isize (x: isize)
+  : r: isize { v r == (if v x = minint ISIZE then minint ISIZE
+                 else if v x < 0 then - (v x) else v x) }
 
 let v_USIZE_MAX = mk_usize max_usize
 let v_ISIZE_MAX = mk_isize max_isize
