@@ -24,5 +24,11 @@ macros = ["dep:hax-lib-macros"]
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)'] }
 
-[package.metadata."docs.rs"]
+[package.metadata.docs.rs]
+# `--cfg hax` is passed to rustdoc so that docs.rs documents the `cfg(hax)`
+# implementation of the library (see `src/lib.rs`). It is also passed as a
+# `RUSTFLAGS` (via `rustc-args`), otherwise Cargo doesn't see the `hax` cfg
+# when resolving the target-specific `[target.'cfg(hax)'.dependencies]`, and
+# documenting fails with unresolved `num_bigint`/`num_traits` crates.
+rustc-args = ["--cfg", "hax"]
 rustdoc-args = ["--cfg", "doc_cfg", "--cfg", "hax"]
