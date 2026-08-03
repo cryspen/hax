@@ -2,7 +2,7 @@
 members = [
      "frontend/exporter",
      "frontend/exporter/options",
-     "cli/subcommands",
+     "cli/cargo-hax",
      "cli/driver",
      "cli/test-driver",
      "hax-lib",
@@ -21,7 +21,7 @@ exclude = ["tests", "rustc-coverage-tests", "rust-engine/tests", "hax-lib/core-m
 default-members = [
      "frontend/exporter",
      "frontend/exporter/options",
-     "cli/subcommands",
+     "cli/cargo-hax",
      "cli/driver",
      "cli/test-driver",
      "hax-lib",
