@@ -39,7 +39,16 @@ extra_css:
   - stylesheets/tags-colors.css
   - stylesheets/hax_playground.css
   - stylesheets/logo.css
+  - stylesheets/version-switcher.css
 extra:
+  # Drives the Manual version switcher (hooks/manual_versions.py +
+  # docs/overrides/main.html) and the version-scoped sidebar. main_dir/release_dir
+  # are the two Manual subsections; release_dir must match the folder that
+  # docs/default.nix populates from the latest release.
+  manual_versions:
+    main_dir: manual/main
+    release_dir: manual/v0.3.7
+    release_label: v0.3.7
   tags:
     Draft: draft
     Accepted: accepted
@@ -78,6 +87,8 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+hooks:
+  - hooks/manual_versions.py
 plugins:
   - glightbox
   - search

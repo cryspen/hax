@@ -1,0 +1,41 @@
+/* The Manual sidebar is scoped to the current version entirely in the nav
+   template (docs/overrides/partials/nav.html) — only the current version's
+   submenu is rendered — so no version-scoping CSS is needed here. */
+
+/* Manual version switcher, injected above the content of Manual pages by
+   docs/overrides/main.html. */
+.manual-version {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1.5rem 0;
+    padding: 0.4rem 0.75rem;
+    border: 0.05rem solid var(--md-default-fg-color--lightest);
+    border-radius: 0.3rem;
+    background-color: var(--md-code-bg-color);
+    font-size: 0.72rem;
+    line-height: 1.4;
+}
+
+.manual-version__label {
+    font-weight: 700;
+    color: var(--md-default-fg-color--light);
+}
+
+.manual-version__item {
+    color: var(--md-primary-fg-color);
+    text-decoration: none;
+    padding: 0.05rem 0.4rem;
+    border-radius: 0.2rem;
+}
+
+.manual-version__item--active {
+    font-weight: 700;
+    color: var(--md-default-fg-color);
+    background-color: var(--md-default-fg-color--lightest);
+    pointer-events: none;
+}
+
+.manual-version__sep {
+    color: var(--md-default-fg-color--lighter);
+}

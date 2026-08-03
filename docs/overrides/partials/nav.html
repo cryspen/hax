@@ -1,0 +1,44 @@
+{#-
+  Custom primary-nav partial: under the top-level "Manual" section, render only
+  the current version's submenu — the "Branch main" / "Version …" subsection that
+  contains the current page (detected via .active) — so the sidebar is scoped to
+  the version you are viewing, and the other version isn't rendered at all.
+  Switch versions with the switcher above the content (docs/overrides/main.html).
+  On the Manual landing (no active version) the full Manual is shown so both
+  versions can be picked. No version string appears here — the active subsection
+  is found dynamically.
+
+  Based on material 9.6's partials/nav.html.
+-#}
+{% import "partials/nav-item.html" as item with context %}
+{% set class = "md-nav md-nav--primary" %}
+{% if "navigation.tabs" in features %}
+  {% set class = class ~ " md-nav--lifted" %}
+{% endif %}
+{% if "toc.integrate" in features %}
+  {% set class = class ~ " md-nav--integrated" %}
+{% endif %}
+<nav class="{{ class }}" aria-label="{{ lang.t('nav') }}" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="md-nav__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
+      {% include "partials/logo.html" %}
+    </a>
+    {{ config.site_name }}
+  </label>
+  {% if config.repo_url %}
+    <div class="md-nav__source">
+      {% include "partials/source.html" %}
+    </div>
+  {% endif %}
+  <ul class="md-nav__list" data-md-scrollfix>
+    {% for nav_item in nav %}
+      {% set path = "__nav_" ~ loop.index %}
+      {% if nav_item.title == "Manual" %}
+        {% set _active_versions = nav_item.children | selectattr("active") | list %}
+        {{ item.render(_active_versions[0] if _active_versions else nav_item, path, 1) }}
+      {% else %}
+        {{ item.render(nav_item, path, 1) }}
+      {% endif %}
+    {% endfor %}
+  </ul>
+</nav>

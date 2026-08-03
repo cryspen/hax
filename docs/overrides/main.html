@@ -14,3 +14,24 @@
 </script>
 {{ super() }}
 {% endblock %}
+
+{#
+  Render a "Manual version" switcher above the content of every Manual page. The
+  sidebar only shows the current version's subsection (see version-switcher.css),
+  so this is how readers move between "Branch main" and "Version v0.3.7". The
+  per-page cross-version links are computed by hooks/manual_versions.py.
+#}
+{% block content %}
+  {% if manual_versions %}
+    {% set mv = manual_versions %}
+    <nav class="manual-version" aria-label="Manual version">
+      <span class="manual-version__label">Manual version:</span>
+      <a class="manual-version__item{% if mv.current == 'main' %} manual-version__item--active{% endif %}"
+         href="{{ mv.main_href }}">main</a>
+      <span class="manual-version__sep">|</span>
+      <a class="manual-version__item{% if mv.current == 'release' %} manual-version__item--active{% endif %}"
+         href="{{ mv.release_href }}">{{ mv.release_label }}</a>
+    </nav>
+  {% endif %}
+  {{ super() }}
+{% endblock %}
