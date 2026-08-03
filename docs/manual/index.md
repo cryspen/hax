@@ -26,6 +26,8 @@ Note:
 
 ## Installation
 
+hax is supported on Linux and macOS, on both `x86_64` and `aarch64`. Windows is not supported; use [WSL](https://learn.microsoft.com/windows/wsl/) there.
+
 ### Manual installation
 
 1. Make sure to have the following installed on your system:
@@ -41,7 +43,7 @@ Note:
 
 ### Nix
 
-This should work on [Linux](https://nixos.org/download.html#nix-install-linux), [MacOS](https://nixos.org/download.html#nix-install-macos) and [Windows](https://nixos.org/download.html#nix-install-windows).
+This should work on [Linux](https://nixos.org/download.html#nix-install-linux) and [MacOS](https://nixos.org/download.html#nix-install-macos).
 
 <b>Prerequisites:</b> <a href="https://nixos.org/">Nix package
 manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled)</i>

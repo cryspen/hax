@@ -1,0 +1,249 @@
+//! End-to-end tests for the lean backend's tool resolution: `hax.toml`
+//! path entries with the sibling rule, and on-demand installs from
+//! `hax.toml` pins, exercised through the real binary with stub
+//! charon/aeneas executables.
+
+mod common;
+
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+
+use common::{make_archive, platform, serve, sha256_hex, stub, write_executable};
+
+/// A minimal crate to run the backend on.
+fn write_crate(dir: &Path) {
+    common::write_crate(dir, "fixture");
+}
+
+/// Point a crate's `hax.toml` at the charon and aeneas binaries in `bin`.
+fn write_path_entries(crate_dir: &Path, bin: &Path) {
+    std::fs::write(
+        crate_dir.join("hax.toml"),
+        format!(
+            "[tools]\ncharon = {{ path = \"{}\" }}\naeneas = {{ path = \"{}\" }}\n",
+            bin.join("charon").display(),
+            bin.join("aeneas").display(),
+        ),
+    )
+    .unwrap();
+}
+
+fn run_backend(crate_dir: &Path, envs: &[(&str, &str)]) -> (String, bool) {
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
+    cmd.args(["into", "lean"]).current_dir(crate_dir);
+    cmd.env_remove("HAX_TOOLS_MANIFEST");
+    for (var, value) in envs {
+        cmd.env(var, value);
+    }
+    let output = cmd.output().unwrap();
+    (
+        format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        ),
+        output.status.success(),
+    )
+}
+
+#[test]
+fn path_entry_runs_the_supplied_binaries_with_a_notice() {
+    let dir = tempfile::tempdir().unwrap();
+    let crate_dir = dir.path().join("crate");
+    write_crate(&crate_dir);
+    let bin = dir.path().join("bin");
+    write_executable(&bin.join("charon"), &stub("charon-invoked"));
+    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
+    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    write_path_entries(&crate_dir, &bin);
+
+    let (output, success) = run_backend(&crate_dir, &[]);
+    assert!(success, "{output}");
+    // The stubs ran (charon records in the crate dir, aeneas too).
+    assert!(crate_dir.join("charon-invoked").is_file(), "{output}");
+    assert!(crate_dir.join("aeneas-invoked").is_file(), "{output}");
+    // The non-default notice names both paths.
+    assert!(output.contains("was tested with"), "{output}");
+    assert!(
+        output.contains(bin.join("charon").to_str().unwrap()),
+        "{output}"
+    );
+}
+
+#[test]
+fn missing_sibling_executable_is_a_clear_error() {
+    let dir = tempfile::tempdir().unwrap();
+    let crate_dir = dir.path().join("crate");
+    write_crate(&crate_dir);
+    let bin = dir.path().join("bin");
+    // charon without charon-driver next to it.
+    write_executable(&bin.join("charon"), &stub("charon-invoked"));
+    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    write_path_entries(&crate_dir, &bin);
+
+    let (output, success) = run_backend(&crate_dir, &[]);
+    assert!(!success);
+    assert!(output.contains("charon-driver"), "{output}");
+    assert!(output.contains("was not found next to"), "{output}");
+}
+
+#[test]
+fn hax_toml_pin_installs_on_demand_and_runs_from_the_cache() {
+    // Fixture archives holding executable stubs.
+    let charon = make_archive(&[
+        ("charon", &stub("charon-invoked")),
+        ("charon-driver", &stub("driver-invoked")),
+    ]);
+    let aeneas = make_archive(&[("aeneas", &stub("aeneas-invoked"))]);
+    let (charon_sha, aeneas_sha) = (sha256_hex(&charon), sha256_hex(&aeneas));
+    let server = serve(HashMap::from([
+        ("/charon.tar.gz".to_string(), charon),
+        ("/aeneas.tar.gz".to_string(), aeneas),
+    ]));
+
+    let dir = tempfile::tempdir().unwrap();
+    let manifest_path: PathBuf = dir.path().join("manifest.toml");
+    std::fs::write(
+        &manifest_path,
+        format!(
+            r#"[tools.charon."stub-v1".{platform}]
+url = "{base}/charon.tar.gz"
+sha256 = "{charon_sha}"
+entry_points = {{ charon = "charon", charon-driver = "charon-driver" }}
+
+[tools.aeneas."stub-v1".{platform}]
+url = "{base}/aeneas.tar.gz"
+sha256 = "{aeneas_sha}"
+entry_points = {{ aeneas = "aeneas" }}
+"#,
+            platform = platform(),
+            base = server.base_url,
+        ),
+    )
+    .unwrap();
+    let cache = dir.path().join("cache");
+    std::fs::create_dir(&cache).unwrap();
+
+    let crate_dir = dir.path().join("crate");
+    write_crate(&crate_dir);
+    std::fs::write(
+        crate_dir.join("hax.toml"),
+        "[tools]\ncharon = \"stub-v1\"\naeneas = \"stub-v1\"\n",
+    )
+    .unwrap();
+
+    let (output, success) = run_backend(
+        &crate_dir,
+        &[
+            ("HAX_TOOLS_MANIFEST", manifest_path.to_str().unwrap()),
+            ("XDG_CACHE_HOME", cache.to_str().unwrap()),
+        ],
+    );
+    assert!(success, "{output}");
+    // Downloaded on demand, with the note and the non-default notice.
+    assert!(output.contains("Downloading charon stub-v1"), "{output}");
+    assert!(output.contains("was tested with"), "{output}");
+    // The cached stubs actually ran.
+    assert!(crate_dir.join("charon-invoked").is_file(), "{output}");
+    assert!(crate_dir.join("aeneas-invoked").is_file(), "{output}");
+    // The cache holds both tools.
+    assert!(cache.join("hax/tools/charon/stub-v1/charon").is_file());
+    assert!(cache.join("hax/tools/aeneas/stub-v1/aeneas").is_file());
+
+    // A second run is a pure cache hit: no download note.
+    std::fs::remove_file(crate_dir.join("charon-invoked")).unwrap();
+    let (output, success) = run_backend(
+        &crate_dir,
+        &[
+            ("HAX_TOOLS_MANIFEST", manifest_path.to_str().unwrap()),
+            ("XDG_CACHE_HOME", cache.to_str().unwrap()),
+        ],
+    );
+    assert!(success, "{output}");
+    assert!(!output.contains("Downloading"), "{output}");
+    assert!(crate_dir.join("charon-invoked").is_file());
+}
+
+#[test]
+fn lakefile_pins_come_from_the_resolved_versions() {
+    let dir = tempfile::tempdir().unwrap();
+    let crate_dir = dir.path().join("crate");
+    write_crate(&crate_dir);
+    let bin = dir.path().join("bin");
+    write_executable(&bin.join("charon"), &stub("charon-invoked"));
+    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
+    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    std::fs::write(
+        crate_dir.join("hax.toml"),
+        format!(
+            r#"[tools]
+charon = {{ path = "{charon}" }}
+aeneas = {{ path = "{aeneas}" }}
+
+[versions]
+lean = "leanprover/lean4:v9.9.9-test"
+hax-lean-lib = "v9.9.9"
+"#,
+            charon = bin.join("charon").display(),
+            aeneas = bin.join("aeneas").display(),
+        ),
+    )
+    .unwrap();
+
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
+    cmd.args(["into", "lean", "--lakefile"])
+        .current_dir(&crate_dir)
+        .env_remove("HAX_TOOLS_MANIFEST");
+    let output = cmd.output().unwrap();
+    let all = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(output.status.success(), "{all}");
+
+    let lean_dir = crate_dir.join("proofs/lean");
+    let toolchain = std::fs::read_to_string(lean_dir.join("lean-toolchain")).unwrap();
+    assert_eq!(toolchain.trim(), "leanprover/lean4:v9.9.9-test");
+    let lakefile = std::fs::read_to_string(lean_dir.join("lakefile.toml")).unwrap();
+    assert!(lakefile.contains("rev = \"v9.9.9\""), "{lakefile}");
+    // aeneas resolves to a path: the lakefile pins the default rev, with
+    // a warning naming the substitution.
+    assert!(all.contains("pinning the aeneas Lean library"), "{all}");
+    // Both declared versions deviate from the built-in defaults, so each
+    // gets the non-default notice naming the tested version.
+    assert!(
+        all.contains("using lean leanprover/lean4:v9.9.9-test"),
+        "{all}"
+    );
+    assert!(all.contains("using hax-lean-lib v9.9.9"), "{all}");
+}
+
+#[test]
+fn default_declared_versions_are_not_noticed() {
+    let dir = tempfile::tempdir().unwrap();
+    let crate_dir = dir.path().join("crate");
+    write_crate(&crate_dir);
+    let bin = dir.path().join("bin");
+    write_executable(&bin.join("charon"), &stub("charon-invoked"));
+    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
+    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    // No `[versions]` table: both declared versions resolve to the defaults.
+    write_path_entries(&crate_dir, &bin);
+
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
+    cmd.args(["into", "lean", "--lakefile"])
+        .current_dir(&crate_dir)
+        .env_remove("HAX_TOOLS_MANIFEST");
+    let output = cmd.output().unwrap();
+    let all = format!(
+        "{}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(output.status.success(), "{all}");
+    // The path-overridden tools are noticed, the declared versions are not.
+    assert!(!all.contains("using lean "), "{all}");
+    assert!(!all.contains("using hax-lean-lib "), "{all}");
+}

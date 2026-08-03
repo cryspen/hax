@@ -16,6 +16,7 @@ use std::process;
 
 mod aeneas;
 mod engine_debug_webapp;
+mod tools;
 use hax_frontend_exporter::id_table;
 
 /// Return a toolchain argument to pass to `cargo`: when the correct nightly is
@@ -80,12 +81,7 @@ fn rustflags() -> String {
 }
 
 /// Find an external binary: check the given env var, then `PATH`.
-pub(crate) fn find_binary(
-    name: &str,
-    env_var: &str,
-    message_format: MessageFormat,
-    hint: Option<&str>,
-) -> PathBuf {
+fn find_binary(name: &str, env_var: &str, message_format: MessageFormat) -> PathBuf {
     std::env::var(env_var)
         .map(PathBuf::from)
         .or_else(|_| which::which(name))
@@ -93,7 +89,7 @@ pub(crate) fn find_binary(
             HaxMessage::BinaryNotFound {
                 binary_name: name.into(),
                 env_var: env_var.into(),
-                hint: hint.map(String::from),
+                hint: None,
             }
             .report(message_format, None);
             std::process::exit(2);
@@ -166,7 +162,6 @@ fn find_rust_hax_engine(message_format: MessageFormat) -> process::Command {
         RUST_ENGINE_BINARY_NAME,
         RUST_ENGINE_BINARY_ENV,
         message_format,
-        None,
     ))
 }
 
@@ -614,6 +609,8 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
             }
             false
         }
+        // Dispatched directly in `main`, before the frontend runs.
+        Command::Tools(_) => unreachable!("`tools` subcommands are handled in `main`"),
     }
 }
 
@@ -637,6 +634,41 @@ fn main() {
         _ => Options::parse_from(args.iter()),
     };
     options.normalize_paths();
+
+    // The `tools` subcommands never involve the hax frontend: handle them
+    // directly and exit.
+    if let Command::Tools(ref command) = options.command {
+        std::process::exit(tools::run(command, options.message_format));
+    }
+
+    // Every other command processes source: discover the project once
+    // (hax.toml configuration and dependency graph) and gate on `hax-lib`
+    // compatibility before any tool runs. Discovery is driven by the same
+    // Cargo arguments as the build it precedes, so that it finds the
+    // manifest, and gates the crates, that are actually processed.
+    //
+    // `--haxmeta` reuses an already-extracted crate and runs no Cargo
+    // command, so it needs no Cargo project around it; the lean backend
+    // ignores the option and needs the project either way.
+    let lean_backend = matches!(&options.command,
+        Command::Backend(backend) if matches!(backend.backend, Backend::Lean(_)));
+    let project = if options.haxmeta.is_some() && !lean_backend {
+        None
+    } else {
+        match tools::project::ProjectContext::load_for(&options.cargo_flags, options.message_format)
+        {
+            Ok(project) => Some(project),
+            Err(message) => {
+                HaxMessage::GenericError { message }.report(options.message_format, None);
+                std::process::exit(1);
+            }
+        }
+    };
+    if let Some(project) = &project
+        && tools::haxlib::enforce(project, options.message_format)
+    {
+        std::process::exit(1);
+    }
 
     // Lean bypasses the hax frontend entirely: run charon + aeneas directly
     if let Command::Backend(ref backend) = options.command
@@ -668,6 +700,9 @@ fn main() {
             backend.output_dir.clone(),
             backend.verbose,
             options.message_format,
+            project
+                .as_ref()
+                .expect("the lean backend always discovers the project"),
         );
         std::process::exit(if error { 1 } else { 0 });
     }

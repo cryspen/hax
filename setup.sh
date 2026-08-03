@@ -6,7 +6,6 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 opam_jobs=4
 CLEANUP_WORKSPACE=on
-SETUP_AENEAS=on
 
 # Parse command line arguments.
 all_args=("$@")
@@ -19,9 +18,6 @@ while [ $# -gt 0 ]; do
     --no-cleanup)
         CLEANUP_WORKSPACE=off
         ;;
-    --no-aeneas)
-        SETUP_AENEAS=off
-        ;;
     --help)
         echo "hax setup script"
         echo ""
@@ -30,7 +26,6 @@ while [ $# -gt 0 ]; do
         echo "Options:"
         echo ' -j <JOBS>        The number of opam jobs to run in parallel'
         echo ' --no-cleanup     Disables the default behavior that runs `cargo clean` and `opam clean`'
-        echo ' --no-aeneas      Skip installing aeneas and charon binaries'
         exit
         ;;
     *)
@@ -153,7 +148,3 @@ fi
 
 install_rust_binaries
 install_ocaml_engine
-
-if [ "$SETUP_AENEAS" = "on" ]; then
-    "$SCRIPTPATH/install-aeneas.sh"
-fi

@@ -73,9 +73,6 @@ jobs:
         nix profile install .#rustc
         nix profile install .
 
-    - name: Install aeneas and charon
-      run: ./install-aeneas.sh
-
     - name: Build the example
       run: |
         unset CI # Allows us to use Aeneas's olean cache
