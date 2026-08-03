@@ -35,6 +35,10 @@ mod rewrite_self {
         /// `Self` is a concrete type: `Self::A` becomes `<TYPE as TRAIT>::A`,
         /// as Rust requires such projections to be fully qualified.
         Trait(Path),
+        /// `Self` is a type parameter bounded by the trait: `Self::A` becomes
+        /// `PARAM::A`. Not `<PARAM as TRAIT>::A`: that form rejects associated
+        /// types inherited from supertraits.
+        TypeParam,
         /// Projections cannot be qualified here, reject them.
         Unsupported,
         /// Nothing is known about `Self`: leave projections alone.
@@ -153,6 +157,13 @@ impl RewriteSelf {
             // where only associated types are at stake.
             SelfProjection::Trait(_) if expr_position => return,
             SelfProjection::Trait(trait_path) => trait_path,
+            // Unlike `Trait`, also valid in expression position.
+            SelfProjection::TypeParam => {
+                let self_ty = self.self_ty(path.span());
+                let rewritten: TypePath = parse_quote! { #self_ty::#(#suffix)::* };
+                (*qself, *path) = (rewritten.qself, rewritten.path);
+                return;
+            }
             SelfProjection::Unsupported => return self.reject_projection(path.span()),
             SelfProjection::Unknown => return,
         };

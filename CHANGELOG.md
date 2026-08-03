@@ -36,6 +36,7 @@ Changes to hax-lib:
  - Allow specifications on the methods of an `impl` block whose signature mentions an associated type of `Self`. The cases that remain unsupported (trait declarations, and associated types the block does not define) now fail with an explicit error instead of invalid code (#2089)
  - New infrastructure for extraction of the F* proof-lib from the migrated core-models, unified with the lean core-lib infrastructure(#2077)
  - Support quote annotations (`before`, `after`, `options`) on inherent `impl` blocks and on their items (#1698)
+ - Fix some regressions in the F* proof lib (particularly the `vec_deque` models)
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
