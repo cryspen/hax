@@ -43,10 +43,8 @@ theorem IteratorRange_next_spec (i e : Usize) {Q}
       core.num.Usize.checked_add, core.num.Usize.overflowing_add,
       rust_primitives.arithmetic.overflowing_add_usize]
     mvcgen
-    generalize hov : UScalar.overflowing_add i (1#usize) = ov at *
-    obtain ⟨result, overflowed⟩ := ov
-    subst hovf
-    exact h_lt' _ (by simpa using hsv)
+    · simp_all
+    · exact h_lt' _ (by simpa using hsv)
   · -- i ≥ e: partial_cmp returns Equal or Greater (not Less).
     have hle := Nat.le_of_not_lt h
     have h_ge' := h_ge hle
