@@ -978,7 +978,7 @@ pub fn legacy_lean_proof_method_bv_decide(
 }
 
 macro_rules! make_quoting_item_proc_macro {
-    ($backend:ident, $macro_name:ident, $position:expr, $cfg_name:ident) => {
+    ($backend:ident, $macro_name:ident, $short_name:ident, $position:expr, $cfg_name:ident) => {
         #[doc = concat!("This macro inlines verbatim ", stringify!($backend)," code before a Rust item.")]
         ///
         /// This macro takes a string literal containing backend
@@ -991,6 +991,14 @@ macro_rules! make_quoting_item_proc_macro {
         /// `fst` or `fsti` files or both.
         #[proc_macro_attribute]
         pub fn $macro_name(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+            // On an inherent `impl` block, re-target the annotation onto one of its items.
+            {
+                let raw_payload: TokenStream = payload.clone().into();
+                let attr = quote! {#[::hax_lib::$backend::$short_name(#raw_payload)]};
+                if let Some(ts) = quote::retarget_on_inherent_impl(&item, $position, attr) {
+                    return ts.into();
+                }
+            }
             let mut fstar_options = None;
             let item: TokenStream = item.into();
             let payload = {
@@ -1104,12 +1112,20 @@ macro_rules! make_quoting_proc_macro {
             }}.into()
         }
 
-        make_quoting_item_proc_macro!($backend, ${concat($backend, _before)}, ItemQuotePosition::Before, ${concat(hax_backend_, $backend)});
-        make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, ItemQuotePosition::After, ${concat(hax_backend_, $backend)});
+        make_quoting_item_proc_macro!($backend, ${concat($backend, _before)}, before, ItemQuotePosition::Before, ${concat(hax_backend_, $backend)});
+        make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, after, ItemQuotePosition::After, ${concat(hax_backend_, $backend)});
 
         #[doc = concat!("Replaces a Rust item with some verbatim ", stringify!($backend)," code.")]
         #[proc_macro_attribute]
         pub fn ${concat($backend, _replace)}(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+            if let Ok(item_impl) = syn::parse::<ItemImpl>(item.clone()) {
+                if item_impl.trait_.is_none() {
+                    abort!(
+                        item_impl.impl_token.span(),
+                        "hax: `replace` is not supported on inherent `impl` blocks, please annotate the items of the block individually."
+                    );
+                }
+            }
             let item: TokenStream = item.into();
             let payload: TokenStream = payload.into();
             let attr = AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
