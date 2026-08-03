@@ -384,6 +384,7 @@ mod slice {
             }
             from_seq(out)
         }
+        // DEVIATION:
         // The F* variant cannot carry the `Borrow` bound: hax erases std's
         // `Concat` bound at call sites, so callers pass `T` and `Item` and no
         // dictionary. Without the bound nothing relates `T` to `[Item]`, so the
