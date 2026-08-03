@@ -12,10 +12,17 @@ let impl__to_vec
   let seq:Rust_primitives.Sequence.t_Seq v_T = Rust_primitives.Sequence.seq_extend #v_T seq s in
   Alloc.Vec.from_seq #v_T #Alloc.Alloc.t_Global seq
 
-let impl__into_vec (#v_T: Type0) (s: t_Slice v_T) : Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global =
+let impl__into_vec (#v_T #v_A: Type0) (s: t_Slice v_T) : Alloc.Vec.t_Vec v_T v_A =
   Alloc.Vec.from_seq #v_T
-    #Alloc.Alloc.t_Global
+    #v_A
     (Rust_primitives.Sequence.seq_from_boxed_slice #v_T s <: Rust_primitives.Sequence.t_Seq v_T)
+
+assume
+val impl__concat': #v_T: Type0 -> #v_Item: Type0 -> s: t_Slice v_T
+  -> Alloc.Vec.t_Vec v_Item Alloc.Alloc.t_Global
+
+unfold
+let impl__concat (#v_T #v_Item: Type0) = impl__concat' #v_T #v_Item
 
 assume
 val impl__sort_by':
