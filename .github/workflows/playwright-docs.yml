@@ -56,8 +56,7 @@ jobs:
         RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
       run: |
         set -euo pipefail
-        open=$(gh issue list --state open --limit 1000 --json number,title \
-                 --jq "map(select(.title == \"$TITLE\")) | .[0].number // empty")
+        open=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
         if [ -n "$open" ]; then
           echo "Issue #$open is already open, not opening another one."
           exit 0
