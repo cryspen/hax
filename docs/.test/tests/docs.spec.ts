@@ -61,8 +61,10 @@ let run_tests = () => {
                 });
                 let other_page = await page.context().newPage();
                 let { status, html } = await tryNavigateTo(other_page, link.toString());
-                let anti_bot_codes = [401, 403, 429, 451, 999].includes(status);
-                expect(anti_bot_codes || (status >= 200 && status < 300)).toBeTruthy()
+                let anti_bot_code = [401, 403, 429, 451, 999].includes(status);
+                if (anti_bot_code)
+                    console.warn('⚠️ Accepting status ' + status + ' as an anti-bot answer, the link might be broken: ', link);
+                expect(anti_bot_code || (status >= 200 && status < 300)).toBeTruthy()
 
                 let hash = (new URL(link)).hash?.replace(/^#/, '');
                 if (hash && !link.includes(""))
