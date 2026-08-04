@@ -1,6 +1,6 @@
 //! Fixtures shared by the tool-management integration tests: fixture
-//! archives, a local HTTP server to serve them, and the Cargo crates and
-//! stub executables a run needs.
+//! archives, a local HTTP server to serve them, the Cargo crates and stub
+//! executables a run needs, and how the binary is invoked.
 //!
 //! `cargo-hax` is a binary crate, so its own `#[cfg(test)]` modules cannot
 //! reach this and keep their own copies of what they need.
@@ -10,7 +10,8 @@
 
 use std::collections::HashMap;
 use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::sync::Arc;
 
 use sha2::Digest;
@@ -88,14 +89,45 @@ pub fn write_executable(path: &Path, contents: &str) {
 /// `HAX_TOOLS_MANIFEST` is scrubbed so the run sees the built-in manifest;
 /// `envs` are set on top.
 pub fn run_hax(args: &[&str], current_dir: &Path, envs: &[(&str, &str)]) -> (String, bool) {
-    let mut cmd = std::process::Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(args)
-        .current_dir(current_dir)
-        .env_remove("HAX_TOOLS_MANIFEST");
+    let mut cmd = command(&cargo_hax(), args, current_dir);
     for (var, value) in envs {
         cmd.env(var, value);
     }
-    let output = cmd.output().unwrap();
+    output_of(&mut cmd)
+}
+
+/// The `cargo-hax` these tests build.
+pub fn cargo_hax() -> PathBuf {
+    env!("CARGO_BIN_EXE_cargo-hax").into()
+}
+
+/// A `cargo-hax` invocation, deaf to a tool manifest the ambient environment
+/// may point at.
+pub fn command(binary: &Path, args: &[&str], current_dir: &Path) -> Command {
+    let mut cmd = Command::new(binary);
+    cmd.args(args)
+        .current_dir(current_dir)
+        .env_remove("HAX_TOOLS_MANIFEST");
+    cmd
+}
+
+/// Run `cmd` to completion, returning its interleaved output and whether it
+/// succeeded. Interleaved because which stream a message takes is not what
+/// these tests are about.
+///
+/// Retries on ETXTBSY: a concurrent test's fork may briefly hold the write
+/// descriptor of a freshly copied binary, making its exec fail.
+pub fn output_of(cmd: &mut Command) -> (String, bool) {
+    let mut retries = 100;
+    let output = loop {
+        match cmd.output() {
+            Err(e) if e.kind() == std::io::ErrorKind::ExecutableFileBusy && retries > 0 => {
+                retries -= 1;
+                std::thread::sleep(std::time::Duration::from_millis(10))
+            }
+            result => break result.unwrap(),
+        }
+    };
     (
         format!(
             "{}{}",

@@ -1,4 +1,3 @@
-#![feature(rustc_private)]
 use clap::Parser;
 use colored::Colorize;
 use hax_types::cli_options::*;
@@ -392,11 +391,28 @@ fn get_hax_version() -> String {
 /// This function retrieves the path of the current executable (i.e. `cargo-hax`), determines its
 /// parent directory, and then appends the driver executable name `"driver-hax-frontend-exporter"` to it.
 /// This path is used to locate the custom rustc driver that computes `haxmeta` files.
-fn get_hax_rustc_driver_path() -> PathBuf {
-    std::env::current_exe()
+///
+/// An installation that provides `cargo-hax` alone (e.g. `cargo install
+/// cargo-hax`) has no driver: those commands that need one are unavailable, and
+/// this reports so rather than letting `cargo` fail on a missing wrapper.
+fn get_hax_rustc_driver_path(message_format: MessageFormat) -> PathBuf {
+    let path = std::env::current_exe()
         .expect("Could not get the current executable path for `cargo-hax`.")
         .parent().expect("The executable `cargo-hax` is supposed to be a file, which is supposed to have a parent folder.")
-        .join("driver-hax-frontend-exporter")
+        .join("driver-hax-frontend-exporter");
+    if !path.exists() {
+        HaxMessage::GenericError {
+            message: "This command needs the hax frontend and engine, which a standalone \
+                      `cargo-hax` installation does not provide: only `cargo hax into lean` and \
+                      `cargo hax tools` are available. To use the other commands, install the \
+                      full toolchain as documented at \
+                      https://github.com/cryspen/hax#for-all-backends."
+                .into(),
+        }
+        .report(message_format, None);
+        std::process::exit(2);
+    }
+    path
 }
 
 /// Calls `cargo` with a custom driver which computes `haxmeta` files
@@ -404,6 +420,9 @@ fn get_hax_rustc_driver_path() -> PathBuf {
 /// `haxmeta` file contains the full AST of one crate.
 fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
     let frontend_options = ExporterOptions::from(options);
+    // Resolved before anything else, so that a missing driver is reported
+    // instead of installing a toolchain for a run that cannot happen.
+    let driver = get_hax_rustc_driver_path(options.message_format);
     let mut cmd = {
         let mut cmd = process::Command::new("cargo");
         if let Some(toolchain) = toolchain() {
@@ -424,7 +443,7 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
         if !options.no_custom_target_directory {
             cmd.env("CARGO_TARGET_DIR", target_dir("hax"));
         };
-        cmd.env("RUSTC_WORKSPACE_WRAPPER", get_hax_rustc_driver_path())
+        cmd.env("RUSTC_WORKSPACE_WRAPPER", driver)
             .env(RUST_LOG_STYLE, rust_log_style())
             .env(RUSTFLAGS, rustflags())
             .env("HAX_CARGO_CACHE_KEY", get_hax_version())

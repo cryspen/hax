@@ -84,15 +84,9 @@ ensure_node_is_recent_enough() {
     fi
 }
 
-# Installs the Rust CLI & frontend, providing `cargo-hax` and `driver-hax`
-install_rust_binaries() {
-    for i in driver cargo-hax ../engine/names/extract ../rust-engine; do
-        (
-            set -x
-            cargo install --locked --force --path "cli/$i"
-        )
-    done
-}
+# Provides `install_rust_binaries`, installing `cargo-hax`, the frontend
+# driver, and the other Rust binaries of the workspace
+source "$SCRIPTPATH/.utils/install-rust-binaries.sh"
 
 # Provides the `hax-engine` binary
 install_ocaml_engine() {
@@ -146,5 +140,5 @@ if [ "$CLEANUP_WORKSPACE" = "on" ]; then
     cleanup_workspace
 fi
 
-install_rust_binaries
+install_rust_binaries --force
 install_ocaml_engine

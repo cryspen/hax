@@ -19,6 +19,8 @@ let
         || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
     inherit buildInputs doCheck;
+    # The OCaml engine's build consumes `hax-export-json-schemas`.
+    cargoExtraArgs = "--locked --features cargo-hax/legacy-engine";
     doNotRemoveReferencesToRustToolchain = true;
   } // (if doCheck then {
     # [cargo test] builds independent workspaces. Each time another
@@ -104,6 +106,9 @@ in stdenv.mkDerivation {
     unwrapped = hax;
     hax-engine-names-extract = craneLib.buildPackage (commonArgs // {
       pname = "hax_engine_names_extract";
+      # This builds from `engine/names/extract`, where `cargo-hax` is not a
+      # selectable package.
+      cargoExtraArgs = "--locked";
       cargoLock = ../Cargo.lock;
       cargoToml = ../engine/names/extract/Cargo.toml;
       cargoArtifacts = hax_with_artifacts;

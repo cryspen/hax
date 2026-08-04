@@ -190,6 +190,31 @@ that is where `setup.sh` will install hax.
 </details>
 
 <details>
+  <summary><b>From crates.io, for the <code>lean</code> backend only</b></summary>
+
+The `lean` backend runs the charon + aeneas pipeline instead of the hax engine, so from hax 0.4.0 onwards it needs nothing but the `cargo-hax` binary:
+
+```bash
+cargo install --locked cargo-hax
+```
+
+`--locked` builds against the dependency versions the release was tested with, rather than the newest semver-compatible ones. Drop it to pick up a dependency's fixes without waiting for a hax release, at the cost of a build that can break on an upstream change.
+
+This does not install the hax engine, nor the frontend driver the other backends need: `cargo hax into lean` and `cargo hax tools` work, every other command reports what is missing. Building the crate needs a C compiler; running the `lean` backend needs [`rustup`](https://rustup.rs/), which charon uses to get the nightly toolchain it needs to compile your crate.
+
+Since this is a plain `cargo install`, [`cargo-run-bin`](https://github.com/dustinblackman/cargo-run-bin) can pin hax per project, next to the version of `hax-lib` the project depends on:
+
+```toml
+[package.metadata.bin]
+# The version of hax to use, matching the `hax-lib` the project depends on.
+cargo-hax = { version = "<version>", bins = ["cargo-hax"], locked = true }
+```
+
+Then `cargo bin cargo-hax into lean` extracts, installing the pinned version on first use.
+
+</details>
+
+<details>
   <summary><b>Aeneas and Charon (standalone)</b></summary>
 
 The `lean` backend (`cargo hax into lean`) uses the
