@@ -302,6 +302,21 @@ impl<T, E> Result<Result<T, E>, E> {
 impl<A, E, V: crate::iter::traits::collect::FromIterator<A>>
     crate::iter::traits::collect::FromIterator<Result<A, E>> for Result<V, E>
 {
+    // Still axiomatised either way: short-circuiting on the first `Err`
+    // needs a fold this model does not yet express.
+    #[cfg(not(hax_backend_fstar))]
+    fn from_iter<T: crate::iter::traits::collect::IntoIterator<Item = Result<A, E>>>(
+        iter: T,
+    ) -> Result<V, E>
+    where
+        T::IntoIter: crate::iter::traits::iterator::Iterator<Item = Result<A, E>>,
+    {
+        // The delegation kept in the F* arm below no longer typechecks now
+        // that `Item` is pinned (`V` collects `A`, not `Result<A, E>`).
+        crate::panicking::internal::panic()
+    }
+
+    #[cfg(hax_backend_fstar)]
     fn from_iter<T: crate::iter::traits::collect::IntoIterator>(iter: T) -> Result<V, E> {
         Ok(<V as crate::iter::traits::collect::FromIterator<A>>::from_iter(iter))
     }

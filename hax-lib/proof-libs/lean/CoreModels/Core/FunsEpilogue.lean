@@ -52,6 +52,95 @@ abbrev ops.range.Range.Insts.Core_modelsIterTraitsIteratorIterator.next :=
 abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
   @result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
 
+/-! ## Provided `Iterator` methods
+
+`map` / `all` / `collect` are *provided* (default) methods of real `core`'s
+`Iterator`, so a downstream crate that writes `it.map(f)` references
+`core.iter.traits.iterator.Iterator.map.default`, passing the `Self: Iterator`
+dictionary followed by the `FnMut` witness. `core_models` parks these methods
+on the extraction-excluded `IteratorMethods` trait, so nothing supplies those
+names.
+
+Declaring them as default methods on our own `Iterator` does *not* work: their
+bodies never call `next`, so Aeneas prunes the unused `Self: Iterator` clause
+and emits `map.default` without the leading dictionary that downstream always
+passes (it also pins `F: Fn`, where downstream passes `FnMut`). There is no
+flag to keep a pruned clause, so we write these by hand at the signature
+downstream actually uses.
+
+These are keyed only on the *trait*, not on the implementing type, so a single
+definition serves every iterator — unlike the per-impl `…Insts.<Impl>.map`
+shims, which would need one copy per iterator type. -/
+
+/-- `<I as Iterator>::map`. The default body just builds the adapter; iteration
+    happens through `Map`'s own `Iterator` instance, so neither witness is used
+    here. -/
+def iter.traits.iterator.Iterator.map.default
+  {Self Item O F : Type}
+  (_IteratorInst : iter.traits.iterator.Iterator Self Item)
+  (_FnMutInst : ops.function.FnMut F Item O)
+  (self : Self) (f : F) :
+  Aeneas.Std.Result (iter.adapters.map.Map Self F) :=
+  .ok { iter := self, f := f }
+
+/-- Short-circuiting `all` over a list: returns the verdict together with how
+    many elements were consumed. Structural on the list, so no `loop` is
+    needed. The closure state is threaded through `call_mut`, and a failing
+    element is consumed before stopping (Rust leaves the iterator positioned
+    *after* it). -/
+def iterAllCount {T F : Type} (FnMutInst : ops.function.FnMut F T Bool) :
+    F → List T → Aeneas.Std.Result (Bool × Nat)
+  | _, [] => .ok (true, 0)
+  | f, x :: xs => do
+    let (b, f') ← FnMutInst.call_mut f x
+    if b then
+      let (r, n) ← iterAllCount FnMutInst f' xs
+      .ok (r, n + 1)
+    else .ok (false, 1)
+
+/-- `<slice::Iter<'_, T> as Iterator>::all`. Takes `&mut self`, so Aeneas's
+    encoding returns the verdict paired with the advanced iterator. -/
+def slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.all
+  {T F : Type}
+  (FnMutInst : ops.function.FnMut F T Bool)
+  (self : slice.iter.Iter T) (f : F) :
+  Aeneas.Std.Result (Bool × slice.iter.Iter T) := do
+  let s : Aeneas.Std.Slice T := self
+  let (b, n) ← iterAllCount FnMutInst f s.val
+  .ok (b, (⟨s.val.drop n, by have := s.property; simp; omega⟩ : Aeneas.Std.Slice T))
+
+/-- The blanket `impl<I: Iterator> IntoIterator for I`: an iterator is its own
+    `IntoIter`. `collect` needs it to hand `self` to `from_iter`. -/
+def iter.traits.collect.IntoIterator.ofIterator {Self Item : Type} :
+    iter.traits.collect.IntoIterator Self Item Self :=
+  { into_iter := fun s => .ok s }
+
+/-- `<I as Iterator>::collect`. Both witnesses are forwarded to `from_iter`,
+    which is where the actual draining happens — the `Iterator` dictionary is
+    exactly the method-level bound added to `FromIterator` for this purpose. -/
+def iter.traits.iterator.Iterator.collect.default
+  {Self Item B : Type}
+  (IteratorInst : iter.traits.iterator.Iterator Self Item)
+  (FromIteratorInst : iter.traits.collect.FromIterator B Item)
+  (self : Self) : Aeneas.Std.Result B :=
+  FromIteratorInst.from_iter iter.traits.collect.IntoIterator.ofIterator
+    IteratorInst self
+
+/-- Drain an iterator into a list. A generic `Iterator` exposes no measure, so
+    this is Aeneas's `loop` (the same combinator its own extraction of
+    `iter_fold` uses) and lives in the divergence monad: an infinite iterator
+    yields `div` rather than a bogus finite answer. -/
+def iterDrain {I Item : Type} (IteratorInst : iter.traits.iterator.Iterator I Item)
+    (it : I) : Aeneas.Std.Result (List Item) := do
+  let acc ← Aeneas.Std.loop
+    (fun (it, acc) => do
+      let (o, it') ← IteratorInst.next it
+      match o with
+      | option.Option.Some x => .ok (.cont (it', x :: acc))
+      | option.Option.None   => .ok (.done acc))
+    (it, ([] : List Item))
+  .ok acc.reverse
+
 end core
 
 namespace alloc
@@ -74,24 +163,56 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.map
   Aeneas.Std.Result (core.iter.adapters.map.Map (vec.into_iter.IntoIter T) F) :=
   fun it f => .ok { iter := it, f := f }
 
+/-! ## `FromIterator<T>` for `Vec<T>`
+
+Charon-excluded (see `ALLOC_CHARON_EXCLUDES`): Aeneas fails on the impl's
+`for el in iter` body with `Could not find: type_var_id: 1`. Supplied here
+instead — and unlike the `VecDeque` stub below this is a *real* body, because
+`FromIterator::from_iter` now carries the `Iterator` witness needed to drain
+the source. -/
+
+/-- A `Vec` is a length-bounded list, so building one from a drained iterator
+    is fallible: an over-long result panics rather than silently truncating. -/
+def vec.ofList {T : Type} (l : List T) : Aeneas.Std.Result (vec.Vec T) :=
+  if h : l.length ≤ Aeneas.Std.Usize.max then .ok ⟨l, h⟩ else .fail .panic
+
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter (T : Type)
+  {U IntoIter : Type}
+  (IntoIteratorInst : core.iter.traits.collect.IntoIterator U T IntoIter)
+  (IteratorInst : core.iter.traits.iterator.Iterator IntoIter T)
+  (u : U) : Aeneas.Std.Result (vec.Vec T) := do
+  let it ← IntoIteratorInst.into_iter u
+  let l ← core.iterDrain IteratorInst it
+  vec.ofList l
+
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator (T : Type) :
+    core.iter.traits.collect.FromIterator (vec.Vec T) T :=
+  { from_iter := vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter T }
+
 /-! ## `FromIterator<T>` for `VecDeque<T, Global>`
 
-Like `Vec`'s `FromIterator`, this impl is `--exclude`d from charon: alloc
-implements *std*'s `FromIterator`, whose `from_iter<I: IntoIterator<Item = A>>`
-pins the iterator's `Item` to the element type, which cannot match
-core-models' deliberately bound-free `FromIterator::from_iter<T: IntoIterator>`
-(its `Clause0_Item` is a free implicit). So we supply the instance by hand,
-binding `Item` free to match the trait field.
+Like `Vec`'s `FromIterator`, this impl is `--exclude`d from charon, so the
+instance is supplied here.
 
-NOTE: this is a *stub* — `from_iter` returns an empty deque. We cannot model
-the real collect: core-models' `IntoIterator` carries no `Iterator`
-super-instance (the `iteratorIteratorInst` field was dropped), so there is no
-`next` to drive a fold here. Refine if downstream reasoning depends on the
-contents of a `VecDeque::from_iter` result. -/
-opaque collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter
-  (T : Type) : {T_1 Clause0_Item Clause0_IntoIter : Type} →
-  core.iter.traits.collect.IntoIterator T_1 Clause0_Item Clause0_IntoIter →
-  T_1 → Aeneas.Std.Result (VecDeque T alloc.Global)
+The exclusion originally existed because *std*'s `from_iter<I: IntoIterator<
+Item = A>>` pins the iterator's `Item`, which could not match core-models'
+then-bound-free `from_iter<T: IntoIterator>`. `Item` is pinned on our side too
+now, so that particular mismatch is gone; what keeps both impls excluded is
+that Aeneas fails on their `for el in iter` bodies.
+
+This used to be a stub returning an empty deque, because there was no `next`
+reachable from `from_iter`'s arguments. The method-level `Iterator` bound on
+`FromIterator` supplies one, so it is now a real body — the same drain the
+`Vec` instance above uses. -/
+def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter
+  (T : Type) {U IntoIter : Type}
+  (IntoIteratorInst : core.iter.traits.collect.IntoIterator U T IntoIter)
+  (IteratorInst : core.iter.traits.iterator.Iterator IntoIter T)
+  (u : U) : Aeneas.Std.Result (VecDeque T alloc.Global) := do
+  let it ← IntoIteratorInst.into_iter u
+  let l ← core.iterDrain IteratorInst it
+  let v ← vec.ofList l
+  .ok ((v : Aeneas.Std.Slice T), core.marker.PhantomData.mk)
 
 def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator
   (T : Type) :

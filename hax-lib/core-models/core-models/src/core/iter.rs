@@ -382,6 +382,31 @@ pub mod traits {
             fn into_iter(self) -> Self::IntoIter;
         }
         /// See [`std::iter::FromIterator`]
+        ///
+        /// `Item` is pinned to `A`, and the `IntoIter: Iterator` bound that
+        /// real `core` gets from `IntoIterator`'s super-trait is instead a
+        /// *method-level* where-clause. That distinction is what makes this
+        /// extractable: Aeneas rejects mutually-dependent trait declarations
+        /// (`IntoIterator: Iterator` + the blanket `IntoIterator for I:
+        /// Iterator` would close a cycle), but a where-clause on a method is
+        /// just an extra dictionary argument. Without it `from_iter` receives
+        /// a value it cannot iterate — no `next` is reachable — which is why
+        /// the impls of this trait used to be stubs.
+        ///
+        /// The F* backend cannot express the where-clause (it restructures the
+        /// bundle and drops impls), and does not need to: nothing on that side
+        /// drives `collect`. So it keeps the original bound-free signature.
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::attributes]
+        pub trait FromIterator<A>: Sized {
+            #[hax_lib::requires(true)]
+            fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self
+            where
+                T::IntoIter: super::iterator::Iterator<Item = A>;
+        }
+
+        /// See [`std::iter::FromIterator`]
+        #[cfg(hax_backend_fstar)]
         #[hax_lib::attributes]
         pub trait FromIterator<A>: Sized {
             #[hax_lib::requires(true)]
@@ -465,8 +490,12 @@ pub mod adapters {
         }
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        // `FnMut`, not `Fn`, to match real `core`'s `impl<I: Iterator, F:
+        // FnMut(I::Item) -> B> Iterator for Map<I, F>`: a downstream crate
+        // that writes `it.map(closure)` builds this instance and passes its
+        // closure's `FnMut` witness, which a `Fn`-bound impl would reject.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        impl<I: Iterator, O, F: Fn(I::Item) -> O> Iterator for Map<I, F> {
+        impl<I: Iterator, O, F: FnMut(I::Item) -> O> Iterator for Map<I, F> {
             type Item = O;
 
             fn next(&mut self) -> Option<O> {

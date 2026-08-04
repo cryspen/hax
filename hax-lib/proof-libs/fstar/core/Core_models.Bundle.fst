@@ -4296,14 +4296,14 @@ val impl_1__from__map':
     #v_O: Type0 ->
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
-    {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |}
+    {| i1: Core_models.Ops.Function.t_FnMut v_F i0.f_Item |}
   -> t_Iterator (t_Map v_I v_F)
 
 unfold
 let impl_1__from__map
       (#v_I #v_O #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_FnMut v_F i0.f_Item)
      = impl_1__from__map' #v_I #v_O #v_F #i0 #i1
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]

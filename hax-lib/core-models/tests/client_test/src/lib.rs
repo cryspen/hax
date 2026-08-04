@@ -318,3 +318,27 @@ pub fn box_new(x: u32) -> Box<u32> {
 pub fn box_deref(b: &Box<u8>) -> u8 {
     **b
 }
+
+// ----- Iterator adapters over slices and vectors -----------------------------
+//
+// `map` / `all` / `collect` are *provided* methods of `core::iter::Iterator`,
+// so charon monomorphises them per-impl and downstream code references e.g.
+// `core.slice.iter.Iter.Insts.…Iterator.map`. `core_models` parks them on a
+// separate `IteratorMethods` trait whose blanket impl is `aeneas::exclude`d,
+// so those per-impl names have to come from somewhere else.
+
+pub fn slice_iter_all(s: &[u8]) -> bool {
+    s.iter().all(|x| *x > 0u8)
+}
+
+pub fn slice_iter_map_collect(s: &[u8]) -> Vec<u8> {
+    s.iter().map(|x| *x).collect()
+}
+
+pub fn vec_into_iter_map_collect(v: Vec<u8>) -> Vec<u8> {
+    v.into_iter().map(|x| x).collect()
+}
+
+pub fn vec_iter_collect(v: Vec<u8>) -> Vec<u8> {
+    v.into_iter().collect()
+}
