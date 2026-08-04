@@ -30,11 +30,10 @@ cd_rootwise () {
 }
 
 rust () {
-    cd_rootwise "cli"
-    for i in driver cargo-hax ../engine/names/extract ../rust-engine; do
-        CURRENT="rust/$i"
-        cargo install --locked --quiet $OFFLINE_FLAG --debug --path $i
-    done
+    cd_rootwise ""
+    CURRENT="rust"
+    source .utils/install-rust-binaries.sh
+    install_rust_binaries --quiet $OFFLINE_FLAG --debug
 }
 
 ocaml () {

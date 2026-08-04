@@ -46,9 +46,11 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
-      - uses: dtolnay/rust-toolchain@1.70
-          
-      - run: cargo install --path cli/driver && cargo install --path cli/cargo-hax
+      # `rust-toolchain.toml` selects the toolchain; this only has to put rustup
+      # and cargo on PATH.
+      - uses: dtolnay/rust-toolchain@stable
+
+      - run: source .utils/install-rust-binaries.sh && install_rust_binaries
 
       - run: opam install . --deps-only
         working-directory: engine
