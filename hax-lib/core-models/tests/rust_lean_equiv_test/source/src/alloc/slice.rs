@@ -15,48 +15,34 @@ use rust_lean_test_macro::rust_lean_test;
 
 // ----- [T]::to_vec -----------------------------------------------------------
 
-// TODO(vec-extraction: `<[T]>::to_vec` extracts via `alloc.vec.Vec.pop` whose Lean signature mismatches what Aeneas applies.)
-/*
 #[rust_lean_test]
 pub fn test_slice_to_vec_empty_len() -> bool {
     let s: [u8; 0] = [];
     let v = s.to_vec();
     v.len() == 0 && v.is_empty()
 }
-*/
 
-// TODO(vec-extraction: `<[T]>::to_vec` extracts via `alloc.vec.Vec.pop` whose Lean signature mismatches what Aeneas applies.)
-/*
 #[rust_lean_test]
 pub fn test_slice_to_vec_one_len() -> bool {
     let s: [u8; 1] = [7];
     let v = s.to_vec();
     v.len() == 1
 }
-*/
 
-// TODO(vec-extraction: `<[T]>::to_vec` extracts via `alloc.vec.Vec.pop` whose Lean signature mismatches what Aeneas applies.)
-/*
 #[rust_lean_test]
 pub fn test_slice_to_vec_one_value() -> bool {
     let s: [u8; 1] = [7];
     let mut v = s.to_vec();
     v.pop().unwrap_or(0) == 7
 }
-*/
 
-// TODO(vec-extraction: `<[T]>::to_vec` extracts via `alloc.vec.Vec.pop` whose Lean signature mismatches what Aeneas applies.)
-/*
 #[rust_lean_test]
 pub fn test_slice_to_vec_three_len() -> bool {
     let s: [u8; 3] = [1, 2, 3];
     let v = s.to_vec();
     v.len() == 3
 }
-*/
 
-// TODO(vec-extraction: `<[T]>::to_vec` extracts via `alloc.vec.Vec.pop` whose Lean signature mismatches what Aeneas applies.)
-/*
 #[rust_lean_test]
 pub fn test_slice_to_vec_three_order() -> bool {
     let s: [u8; 3] = [1, 2, 3];
@@ -64,20 +50,14 @@ pub fn test_slice_to_vec_three_order() -> bool {
     // Last element popped first.
     v.pop().unwrap_or(0) == 3 && v.pop().unwrap_or(0) == 2 && v.pop().unwrap_or(0) == 1
 }
-*/
 
-// TODO(vec-extraction: `<[T]>::to_vec` extracts via `alloc.vec.Vec.pop` whose Lean signature mismatches what Aeneas applies.)
-/*
 #[rust_lean_test]
 pub fn test_slice_to_vec_max_value() -> bool {
     let s: [u8; 2] = [u8::MAX, 0];
     let mut v = s.to_vec();
     v.len() == 2 && v.pop().unwrap_or(1) == 0 && v.pop().unwrap_or(0) == u8::MAX
 }
-*/
 
-// TODO(vec-extraction: `<[T]>::to_vec` extracts via `alloc.vec.Vec.pop` whose Lean signature mismatches what Aeneas applies.)
-/*
 #[rust_lean_test]
 pub fn test_slice_to_vec_then_push() -> bool {
     // to_vec produces a fresh Vec we can mutate.
@@ -89,7 +69,6 @@ pub fn test_slice_to_vec_then_push() -> bool {
         && v.pop().unwrap_or(0) == 2
         && v.pop().unwrap_or(0) == 1
 }
-*/
 
 // ----- Box<[T]>::into_vec ---------------------------------------------------
 

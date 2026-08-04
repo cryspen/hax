@@ -68,7 +68,9 @@ pub fn test_is_err_err_max() -> bool {
 
 // ----- expect ----------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::expect` missing from extracted Lean.)
+// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
+// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
+// not extracted.
 /*
 #[rust_lean_test]
 pub fn test_expect_ok_zero() -> bool {
@@ -76,7 +78,6 @@ pub fn test_expect_ok_zero() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::expect` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_expect_ok_max() -> bool {
@@ -84,7 +85,6 @@ pub fn test_expect_ok_max() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::expect` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_expect_ok_mid() -> bool {
@@ -94,7 +94,9 @@ pub fn test_expect_ok_mid() -> bool {
 
 // ----- unwrap ----------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap` missing from extracted Lean.)
+// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
+// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
+// not extracted.
 /*
 #[rust_lean_test]
 pub fn test_unwrap_ok_zero() -> bool {
@@ -102,7 +104,6 @@ pub fn test_unwrap_ok_zero() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_unwrap_ok_max() -> bool {
@@ -110,7 +111,6 @@ pub fn test_unwrap_ok_max() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_unwrap_ok_mid() -> bool {
@@ -120,7 +120,9 @@ pub fn test_unwrap_ok_mid() -> bool {
 
 // ----- unwrap_err ------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap_err` missing from extracted Lean.)
+// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
+// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
+// not extracted.
 /*
 #[rust_lean_test]
 pub fn test_unwrap_err_err_zero() -> bool {
@@ -128,7 +130,6 @@ pub fn test_unwrap_err_err_zero() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_err` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_unwrap_err_err_max() -> bool {
@@ -136,7 +137,6 @@ pub fn test_unwrap_err_err_max() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_err` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_unwrap_err_err_mid() -> bool {
@@ -173,7 +173,9 @@ pub fn test_unwrap_or_err_default_max() -> bool {
 
 // ----- unwrap_or_default -----------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap_or_default` missing from extracted Lean.)
+// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
+// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
+// not extracted.
 /*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_ok_zero() -> bool {
@@ -181,7 +183,6 @@ pub fn test_unwrap_or_default_ok_zero() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_or_default` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_ok_max() -> bool {
@@ -189,7 +190,6 @@ pub fn test_unwrap_or_default_ok_max() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_or_default` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_err() -> bool {
@@ -232,21 +232,15 @@ pub fn test_unwrap_or_default_err() -> bool {
 
 // ----- ok --------------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
-/*
 #[rust_lean_test]
 pub fn test_ok_ok_zero() -> bool {
     ok_u8_u8(0).ok().unwrap_or(99) == 0
 }
-*/
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
-/*
 #[rust_lean_test]
 pub fn test_ok_ok_max() -> bool {
     ok_u8_u8(u8::MAX).ok().unwrap_or(0) == u8::MAX
 }
-*/
 
 #[rust_lean_test]
 pub fn test_ok_err() -> bool {
@@ -255,21 +249,15 @@ pub fn test_ok_err() -> bool {
 
 // ----- err -------------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
-/*
 #[rust_lean_test]
 pub fn test_err_err_zero() -> bool {
     err_u8_u8(0).err().unwrap_or(99) == 0
 }
-*/
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
-/*
 #[rust_lean_test]
 pub fn test_err_err_max() -> bool {
     err_u8_u8(u8::MAX).err().unwrap_or(0) == u8::MAX
 }
-*/
 
 #[rust_lean_test]
 pub fn test_err_ok() -> bool {
@@ -278,7 +266,9 @@ pub fn test_err_ok() -> bool {
 
 // ----- and -------------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
+// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
+// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
+// not extracted.
 /*
 #[rust_lean_test]
 pub fn test_and_ok_ok() -> bool {
@@ -286,7 +276,6 @@ pub fn test_and_ok_ok() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_err` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_and_ok_err() -> bool {
@@ -294,7 +283,6 @@ pub fn test_and_ok_err() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_err` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_and_err_ok() -> bool {
@@ -302,7 +290,6 @@ pub fn test_and_err_ok() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_err` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_and_err_err() -> bool {
@@ -317,7 +304,9 @@ pub fn test_and_err_err() -> bool {
 
 // ----- or --------------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
+// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
+// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
+// not extracted.
 /*
 #[rust_lean_test]
 pub fn test_or_ok_ok() -> bool {
@@ -325,7 +314,6 @@ pub fn test_or_ok_ok() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_or_ok_err() -> bool {
@@ -333,7 +321,6 @@ pub fn test_or_ok_err() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_or` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_or_err_ok() -> bool {
@@ -341,7 +328,6 @@ pub fn test_or_err_ok() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::unwrap_err` missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_or_err_err() -> bool {
@@ -377,7 +363,9 @@ fn err_outer_u8(e: u8) -> Result<Option<u8>, u8> {
     Err(e)
 }
 
-// TODO(result-method-missing: `Result::transpose` and `Option::transpose` are missing from extracted Lean.)
+// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
+// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
+// not extracted.
 /*
 #[rust_lean_test]
 pub fn test_transpose_ok_some_zero() -> bool {
@@ -388,7 +376,6 @@ pub fn test_transpose_ok_some_zero() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::transpose` and `Option::transpose` are missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_transpose_ok_some_max() -> bool {
@@ -399,7 +386,6 @@ pub fn test_transpose_ok_some_max() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::transpose` and `Option::transpose` are missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_transpose_ok_none() -> bool {
@@ -407,7 +393,6 @@ pub fn test_transpose_ok_none() -> bool {
 }
 */
 
-// TODO(result-method-missing: `Result::transpose` and `Option::transpose` are missing from extracted Lean.)
 /*
 #[rust_lean_test]
 pub fn test_transpose_err() -> bool {
