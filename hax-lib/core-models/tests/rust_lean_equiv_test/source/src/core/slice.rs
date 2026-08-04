@@ -229,16 +229,12 @@ pub fn test_starts_with_true() -> bool {
     a.as_slice().starts_with(needle.as_slice())
 }
 
-// TODO(aeneas#1238): an empty subslice panics in Aeneas's `Slice.subslice`
-// (`r.start < r.end` should be `≤`).
-/*
 #[rust_lean_test]
 pub fn test_starts_with_empty_needle() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 0] = [];
     a.as_slice().starts_with(needle.as_slice())
 }
-*/
 
 #[rust_lean_test]
 pub fn test_starts_with_false() -> bool {
@@ -254,16 +250,12 @@ pub fn test_ends_with_true() -> bool {
     a.as_slice().ends_with(needle.as_slice())
 }
 
-// TODO(aeneas#1238): an empty subslice panics in Aeneas's `Slice.subslice`
-// (`r.start < r.end` should be `≤`).
-/*
 #[rust_lean_test]
 pub fn test_ends_with_empty_needle() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 0] = [];
     a.as_slice().ends_with(needle.as_slice())
 }
-*/
 
 #[rust_lean_test]
 pub fn test_ends_with_false() -> bool {
