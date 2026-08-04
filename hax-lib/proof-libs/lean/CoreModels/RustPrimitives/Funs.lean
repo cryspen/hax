@@ -707,6 +707,141 @@ def rust_primitives.arithmetic.leading_zeros_i128 : Std.I128 → Result Std.U32 
 def rust_primitives.arithmetic.leading_zeros_isize : Std.Isize → Result Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.Isize.leading_zeros x)
 
+/-! ## Trailing zeros / ones
+
+Aeneas provides `BitVec.leadingZeros` but no trailing-bit counterpart, so we
+define one here. `trailingZeros` is the index of the lowest set bit — i.e. the
+first `i` for which `getLsbD i` holds — and the full width when there is none
+(`x = 0`), matching Rust. `trailingOnes x` is `trailingZeros (~~~x)`, which
+likewise yields the width when every bit is set.
+
+Both counts are bounded by the width, so the `U32` injection below never
+truncates for any type we model (`u128` caps at 128). Signed types are counted
+over the two's-complement bit pattern, exactly as `count_ones` does. -/
+
+def BitVec.trailingZeros {w : Nat} (x : BitVec w) : Nat :=
+  match (List.range w).find? (fun i => x.getLsbD i) with
+  | some i => i
+  | none   => w
+
+def BitVec.trailingOnes {w : Nat} (x : BitVec w) : Nat :=
+  BitVec.trailingZeros (~~~x)
+
+#assert BitVec.trailingZeros 0#16 = 16
+#assert BitVec.trailingZeros 1#16 = 0
+#assert BitVec.trailingZeros 12#16 = 2
+#assert BitVec.trailingOnes 0#16 = 0
+#assert BitVec.trailingOnes 0b1011#16 = 2
+#assert BitVec.trailingOnes 0xFFFF#16 = 16
+
+def utrailing_zeros {ty : UScalarTy} (x : UScalar ty) : Std.U32 :=
+  ⟨(BitVec.trailingZeros x.bv : Nat)⟩
+
+def itrailing_zeros {ty : IScalarTy} (x : IScalar ty) : Std.U32 :=
+  ⟨(BitVec.trailingZeros x.bv : Nat)⟩
+
+def utrailing_ones {ty : UScalarTy} (x : UScalar ty) : Std.U32 :=
+  ⟨(BitVec.trailingOnes x.bv : Nat)⟩
+
+def itrailing_ones {ty : IScalarTy} (x : IScalar ty) : Std.U32 :=
+  ⟨(BitVec.trailingOnes x.bv : Nat)⟩
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_u8"]
+def rust_primitives.arithmetic.trailing_zeros_u8 : Std.U8 → Result Std.U32 :=
+  fun x => ok (utrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_u16"]
+def rust_primitives.arithmetic.trailing_zeros_u16 : Std.U16 → Result Std.U32 :=
+  fun x => ok (utrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_u32"]
+def rust_primitives.arithmetic.trailing_zeros_u32 : Std.U32 → Result Std.U32 :=
+  fun x => ok (utrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_u64"]
+def rust_primitives.arithmetic.trailing_zeros_u64 : Std.U64 → Result Std.U32 :=
+  fun x => ok (utrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_u128"]
+def rust_primitives.arithmetic.trailing_zeros_u128 : Std.U128 → Result Std.U32 :=
+  fun x => ok (utrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_usize"]
+def rust_primitives.arithmetic.trailing_zeros_usize : Std.Usize → Result Std.U32 :=
+  fun x => ok (utrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_i8"]
+def rust_primitives.arithmetic.trailing_zeros_i8 : Std.I8 → Result Std.U32 :=
+  fun x => ok (itrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_i16"]
+def rust_primitives.arithmetic.trailing_zeros_i16 : Std.I16 → Result Std.U32 :=
+  fun x => ok (itrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_i32"]
+def rust_primitives.arithmetic.trailing_zeros_i32 : Std.I32 → Result Std.U32 :=
+  fun x => ok (itrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_i64"]
+def rust_primitives.arithmetic.trailing_zeros_i64 : Std.I64 → Result Std.U32 :=
+  fun x => ok (itrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_i128"]
+def rust_primitives.arithmetic.trailing_zeros_i128 : Std.I128 → Result Std.U32 :=
+  fun x => ok (itrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_zeros_isize"]
+def rust_primitives.arithmetic.trailing_zeros_isize : Std.Isize → Result Std.U32 :=
+  fun x => ok (itrailing_zeros x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_u8"]
+def rust_primitives.arithmetic.trailing_ones_u8 : Std.U8 → Result Std.U32 :=
+  fun x => ok (utrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_u16"]
+def rust_primitives.arithmetic.trailing_ones_u16 : Std.U16 → Result Std.U32 :=
+  fun x => ok (utrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_u32"]
+def rust_primitives.arithmetic.trailing_ones_u32 : Std.U32 → Result Std.U32 :=
+  fun x => ok (utrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_u64"]
+def rust_primitives.arithmetic.trailing_ones_u64 : Std.U64 → Result Std.U32 :=
+  fun x => ok (utrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_u128"]
+def rust_primitives.arithmetic.trailing_ones_u128 : Std.U128 → Result Std.U32 :=
+  fun x => ok (utrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_usize"]
+def rust_primitives.arithmetic.trailing_ones_usize : Std.Usize → Result Std.U32 :=
+  fun x => ok (utrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_i8"]
+def rust_primitives.arithmetic.trailing_ones_i8 : Std.I8 → Result Std.U32 :=
+  fun x => ok (itrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_i16"]
+def rust_primitives.arithmetic.trailing_ones_i16 : Std.I16 → Result Std.U32 :=
+  fun x => ok (itrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_i32"]
+def rust_primitives.arithmetic.trailing_ones_i32 : Std.I32 → Result Std.U32 :=
+  fun x => ok (itrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_i64"]
+def rust_primitives.arithmetic.trailing_ones_i64 : Std.I64 → Result Std.U32 :=
+  fun x => ok (itrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_i128"]
+def rust_primitives.arithmetic.trailing_ones_i128 : Std.I128 → Result Std.U32 :=
+  fun x => ok (itrailing_ones x)
+
+@[rust_fun "rust_primitives::arithmetic::trailing_ones_isize"]
+def rust_primitives.arithmetic.trailing_ones_isize : Std.Isize → Result Std.U32 :=
+  fun x => ok (itrailing_ones x)
+
 def uilog2 {ty : UScalarTy} (x : UScalar ty) : Result Std.U32 :=
   if x.val = 0 then fail .panic
   else ok ⟨BitVec.ofNat 32 (Nat.log2 x.val)⟩

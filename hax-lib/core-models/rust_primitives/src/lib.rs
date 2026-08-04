@@ -189,6 +189,12 @@ pub mod arithmetic {
                 pub fn [<leading_zeros_ $Self>](x: $Self) -> u32 {
                     x.leading_zeros()
                 }
+                pub fn [<trailing_zeros_ $Self>](x: $Self) -> u32 {
+                    x.trailing_zeros()
+                }
+                pub fn [<trailing_ones_ $Self>](x: $Self) -> u32 {
+                    x.trailing_ones()
+                }
                 pub fn [<ilog2_ $Self>](x: $Self) -> u32 {
                     x.ilog2()
                 }

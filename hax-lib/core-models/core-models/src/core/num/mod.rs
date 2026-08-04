@@ -214,12 +214,17 @@ macro_rules! uint_impl {
                     x % y == 0
                 }
             }
+            /// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+            #[hax_lib::opaque]
+            pub fn trailing_zeros(x: $Self) -> core::primitive::u32 {
+                paste! { [<trailing_zeros_ $Name>](x) }
+            }
+            /// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+            #[hax_lib::opaque]
+            pub fn trailing_ones(x: $Self) -> core::primitive::u32 {
+                paste! { [<trailing_ones_ $Name>](x) }
+            }
             // The following methods require additions to rust_primitives:
-            // /// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
-            // #[hax_lib::opaque]
-            // fn trailing_zeros(x: $Self) -> core::primitive::u32 {
-            //     paste! { [<trailing_zeros_ $Name>](x) }
-            // }
             // /// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
             // #[hax_lib::opaque]
             // fn swap_bytes(x: $Self) -> $Self {
@@ -473,12 +478,17 @@ macro_rules! iint_impl {
                     d
                 }
             }
+            /// See [`std::primitive::i8::trailing_zeros`] (and similar for other signed integer types)
+            #[hax_lib::opaque]
+            pub fn trailing_zeros(x: $Self) -> core::primitive::u32 {
+                paste! { [<trailing_zeros_ $Name>](x) }
+            }
+            /// See [`std::primitive::i8::trailing_ones`] (and similar for other signed integer types)
+            #[hax_lib::opaque]
+            pub fn trailing_ones(x: $Self) -> core::primitive::u32 {
+                paste! { [<trailing_ones_ $Name>](x) }
+            }
             // The following methods require additions to rust_primitives:
-            // /// See [`std::primitive::i8::trailing_zeros`] (and similar for other signed integer types)
-            // #[hax_lib::opaque]
-            // fn trailing_zeros(x: $Self) -> core::primitive::u32 {
-            //     paste! { [<trailing_zeros_ $Name>](x) }
-            // }
             // /// See [`std::primitive::i8::swap_bytes`] (and similar for other signed integer types)
             // #[hax_lib::opaque]
             // fn swap_bytes(x: $Self) -> $Self {
@@ -797,6 +807,16 @@ mod tests {
                         #[test]
                         fn [<test_ $t _leading_zeros>](x in any::<$t>()) {
                             prop_assert_eq!(super::$t::leading_zeros(x.inject()), x.leading_zeros());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _trailing_zeros>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::trailing_zeros(x.inject()), x.trailing_zeros());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _trailing_ones>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::trailing_ones(x.inject()), x.trailing_ones());
                         }
 
                         #[test]

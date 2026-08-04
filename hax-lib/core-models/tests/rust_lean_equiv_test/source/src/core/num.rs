@@ -7,6 +7,7 @@
 //!     `overflowing_{add,sub,mul}`,
 //!   - `rem_euclid`, `pow`, `count_ones`,
 //!   - `rotate_left`, `rotate_right`, `leading_zeros`,
+//!     `trailing_zeros`, `trailing_ones`,
 //!   - `from_{be,le}_bytes`, `to_{be,le}_bytes`,
 //!   - `checked_div`, `checked_rem`,
 //!   - `is_power_of_two` (unsigned), `abs` and `signum` (signed),
@@ -527,6 +528,129 @@ pub fn test_u8_count_ones_pattern() -> bool {
 #[rust_lean_test]
 pub fn test_u32_count_ones_max() -> bool {
     u32::MAX.count_ones() == 32u32
+}
+
+// =============================================================================
+// trailing_zeros / trailing_ones
+// =============================================================================
+//
+// Both count from the least-significant end and saturate at the type's width:
+// `trailing_zeros` returns `BITS` for zero, `trailing_ones` returns `BITS` for
+// an all-ones value. Signed types count over the two's-complement pattern, so
+// `-1` is all ones and `MIN` is a single high bit — the cases below pin both.
+
+#[rust_lean_test]
+pub fn test_u8_trailing_zeros_zero() -> bool {
+    0u8.trailing_zeros() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_zeros_one() -> bool {
+    1u8.trailing_zeros() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_zeros_pattern() -> bool {
+    // 0b00001100 -> 2
+    0b00001100u8.trailing_zeros() == 2u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_zeros_high_bit() -> bool {
+    0b10000000u8.trailing_zeros() == 7u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_zeros_max() -> bool {
+    u8::MAX.trailing_zeros() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_u32_trailing_zeros_zero() -> bool {
+    0u32.trailing_zeros() == 32u32
+}
+
+#[rust_lean_test]
+pub fn test_u32_trailing_zeros_pattern() -> bool {
+    // 1 << 20
+    1048576u32.trailing_zeros() == 20u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_ones_zero() -> bool {
+    0u8.trailing_ones() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_ones_one() -> bool {
+    1u8.trailing_ones() == 1u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_ones_pattern() -> bool {
+    // 0b00001011 -> 2
+    0b00001011u8.trailing_ones() == 2u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_ones_max() -> bool {
+    u8::MAX.trailing_ones() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_u32_trailing_ones_max() -> bool {
+    u32::MAX.trailing_ones() == 32u32
+}
+
+#[rust_lean_test]
+pub fn test_u32_trailing_ones_pattern() -> bool {
+    // 0b111 -> 3
+    7u32.trailing_ones() == 3u32
+}
+
+// Signed: two's-complement bit patterns.
+
+#[rust_lean_test]
+pub fn test_i8_trailing_zeros_zero() -> bool {
+    0i8.trailing_zeros() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_trailing_zeros_min() -> bool {
+    // i8::MIN is 0b10000000
+    i8::MIN.trailing_zeros() == 7u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_trailing_zeros_neg_one() -> bool {
+    // -1 is all ones
+    (-1i8).trailing_zeros() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_trailing_ones_neg_one() -> bool {
+    (-1i8).trailing_ones() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_trailing_ones_min() -> bool {
+    i8::MIN.trailing_ones() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_trailing_ones_neg_two() -> bool {
+    // -2 is 0b11111110
+    (-2i8).trailing_ones() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_i32_trailing_zeros_neg_min() -> bool {
+    i32::MIN.trailing_zeros() == 31u32
+}
+
+#[rust_lean_test]
+pub fn test_i32_trailing_ones_neg_one() -> bool {
+    (-1i32).trailing_ones() == 32u32
 }
 
 // =============================================================================

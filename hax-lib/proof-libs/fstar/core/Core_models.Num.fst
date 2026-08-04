@@ -112,6 +112,20 @@ let impl_u8__is_power_of_two (x: u8) : bool =
 let impl_u8__is_multiple_of (x y: u8) : bool =
   if y =. mk_u8 0 then x =. mk_u8 0 else (x %! y <: u8) =. mk_u8 0
 
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+assume
+val impl_u8__trailing_zeros': x: u8 -> u32
+
+unfold
+let impl_u8__trailing_zeros = impl_u8__trailing_zeros'
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+assume
+val impl_u8__trailing_ones': x: u8 -> u32
+
+unfold
+let impl_u8__trailing_ones = impl_u8__trailing_ones'
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u8__unchecked_add (x y: u8)
     : Prims.Pure u8
@@ -264,6 +278,20 @@ let impl_u16__is_power_of_two (x: u16) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_u16__is_multiple_of (x y: u16) : bool =
   if y =. mk_u16 0 then x =. mk_u16 0 else (x %! y <: u16) =. mk_u16 0
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+assume
+val impl_u16__trailing_zeros': x: u16 -> u32
+
+unfold
+let impl_u16__trailing_zeros = impl_u16__trailing_zeros'
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+assume
+val impl_u16__trailing_ones': x: u16 -> u32
+
+unfold
+let impl_u16__trailing_ones = impl_u16__trailing_ones'
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u16__unchecked_add (x y: u16)
@@ -419,6 +447,20 @@ let impl_u32__is_power_of_two (x: u32) : bool =
 let impl_u32__is_multiple_of (x y: u32) : bool =
   if y =. mk_u32 0 then x =. mk_u32 0 else (x %! y <: u32) =. mk_u32 0
 
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+assume
+val impl_u32__trailing_zeros': x: u32 -> u32
+
+unfold
+let impl_u32__trailing_zeros = impl_u32__trailing_zeros'
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+assume
+val impl_u32__trailing_ones': x: u32 -> u32
+
+unfold
+let impl_u32__trailing_ones = impl_u32__trailing_ones'
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u32__unchecked_add (x y: u32)
     : Prims.Pure u32
@@ -572,6 +614,20 @@ let impl_u64__is_power_of_two (x: u64) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_u64__is_multiple_of (x y: u64) : bool =
   if y =. mk_u64 0 then x =. mk_u64 0 else (x %! y <: u64) =. mk_u64 0
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+assume
+val impl_u64__trailing_zeros': x: u64 -> u32
+
+unfold
+let impl_u64__trailing_zeros = impl_u64__trailing_zeros'
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+assume
+val impl_u64__trailing_ones': x: u64 -> u32
+
+unfold
+let impl_u64__trailing_ones = impl_u64__trailing_ones'
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u64__unchecked_add (x y: u64)
@@ -729,6 +785,20 @@ let impl_u128__is_power_of_two (x: u128) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_u128__is_multiple_of (x y: u128) : bool =
   if y =. mk_u128 0 then x =. mk_u128 0 else (x %! y <: u128) =. mk_u128 0
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+assume
+val impl_u128__trailing_zeros': x: u128 -> u32
+
+unfold
+let impl_u128__trailing_zeros = impl_u128__trailing_zeros'
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+assume
+val impl_u128__trailing_ones': x: u128 -> u32
+
+unfold
+let impl_u128__trailing_ones = impl_u128__trailing_ones'
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_u128__unchecked_add (x y: u128)
@@ -891,6 +961,20 @@ let impl_usize__is_power_of_two (x: usize) : bool =
 let impl_usize__is_multiple_of (x y: usize) : bool =
   if y =. mk_usize 0 then x =. mk_usize 0 else (x %! y <: usize) =. mk_usize 0
 
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+assume
+val impl_usize__trailing_zeros': x: usize -> u32
+
+unfold
+let impl_usize__trailing_zeros = impl_usize__trailing_zeros'
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+assume
+val impl_usize__trailing_ones': x: usize -> u32
+
+unfold
+let impl_usize__trailing_ones = impl_usize__trailing_ones'
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_usize__unchecked_add (x y: usize)
     : Prims.Pure usize
@@ -1040,6 +1124,20 @@ let impl_i8__to_le_bytes = impl_i8__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_i8__signum (x: i8) : i8 =
   if x >. mk_i8 0 then mk_i8 1 else if x =. mk_i8 0 then mk_i8 0 else mk_i8 (-1)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other signed integer types)
+assume
+val impl_i8__trailing_zeros': x: i8 -> u32
+
+unfold
+let impl_i8__trailing_zeros = impl_i8__trailing_zeros'
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other signed integer types)
+assume
+val impl_i8__trailing_ones': x: i8 -> u32
+
+unfold
+let impl_i8__trailing_ones = impl_i8__trailing_ones'
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_i8__unchecked_add (x y: i8)
@@ -1221,6 +1319,20 @@ let impl_i16__to_le_bytes = impl_i16__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_i16__signum (x: i16) : i16 =
   if x >. mk_i16 0 then mk_i16 1 else if x =. mk_i16 0 then mk_i16 0 else mk_i16 (-1)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other signed integer types)
+assume
+val impl_i16__trailing_zeros': x: i16 -> u32
+
+unfold
+let impl_i16__trailing_zeros = impl_i16__trailing_zeros'
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other signed integer types)
+assume
+val impl_i16__trailing_ones': x: i16 -> u32
+
+unfold
+let impl_i16__trailing_ones = impl_i16__trailing_ones'
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_i16__unchecked_add (x y: i16)
@@ -1404,6 +1516,20 @@ let impl_i32__to_le_bytes = impl_i32__to_le_bytes'
 let impl_i32__signum (x: i32) : i32 =
   if x >. mk_i32 0 then mk_i32 1 else if x =. mk_i32 0 then mk_i32 0 else mk_i32 (-1)
 
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other signed integer types)
+assume
+val impl_i32__trailing_zeros': x: i32 -> u32
+
+unfold
+let impl_i32__trailing_zeros = impl_i32__trailing_zeros'
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other signed integer types)
+assume
+val impl_i32__trailing_ones': x: i32 -> u32
+
+unfold
+let impl_i32__trailing_ones = impl_i32__trailing_ones'
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_i32__unchecked_add (x y: i32)
     : Prims.Pure i32
@@ -1585,6 +1711,20 @@ let impl_i64__to_le_bytes = impl_i64__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_i64__signum (x: i64) : i64 =
   if x >. mk_i64 0 then mk_i64 1 else if x =. mk_i64 0 then mk_i64 0 else mk_i64 (-1)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other signed integer types)
+assume
+val impl_i64__trailing_zeros': x: i64 -> u32
+
+unfold
+let impl_i64__trailing_zeros = impl_i64__trailing_zeros'
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other signed integer types)
+assume
+val impl_i64__trailing_ones': x: i64 -> u32
+
+unfold
+let impl_i64__trailing_ones = impl_i64__trailing_ones'
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_i64__unchecked_add (x y: i64)
@@ -1770,6 +1910,20 @@ let impl_i128__to_le_bytes = impl_i128__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_i128__signum (x: i128) : i128 =
   if x >. mk_i128 0 then mk_i128 1 else if x =. mk_i128 0 then mk_i128 0 else mk_i128 (-1)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other signed integer types)
+assume
+val impl_i128__trailing_zeros': x: i128 -> u32
+
+unfold
+let impl_i128__trailing_zeros = impl_i128__trailing_zeros'
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other signed integer types)
+assume
+val impl_i128__trailing_ones': x: i128 -> u32
+
+unfold
+let impl_i128__trailing_ones = impl_i128__trailing_ones'
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_i128__unchecked_add (x y: i128)
@@ -1959,6 +2113,20 @@ let impl_isize__to_le_bytes = impl_isize__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_isize__signum (x: isize) : isize =
   if x >. mk_isize 0 then mk_isize 1 else if x =. mk_isize 0 then mk_isize 0 else mk_isize (-1)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other signed integer types)
+assume
+val impl_isize__trailing_zeros': x: isize -> u32
+
+unfold
+let impl_isize__trailing_zeros = impl_isize__trailing_zeros'
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other signed integer types)
+assume
+val impl_isize__trailing_ones': x: isize -> u32
+
+unfold
+let impl_isize__trailing_ones = impl_isize__trailing_ones'
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_isize__unchecked_add (x y: isize)
