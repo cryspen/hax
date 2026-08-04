@@ -968,7 +968,65 @@ mod tests {
         }
     }
 
+    // Their `requires` rules out overflow, so the domain is exactly where
+    // `checked_*` answers `Some` — including `i*::MIN / -1`.
+    macro_rules! unchecked_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_ $t _unchecked_add>](x in any::<$t>(), y in any::<$t>()) {
+                            if let Some(expected) = x.checked_add(y) {
+                                prop_assert_eq!(
+                                    unsafe { super::$t::unchecked_add(x.inject(), y.inject()) },
+                                    expected);
+                            }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_sub>](x in any::<$t>(), y in any::<$t>()) {
+                            if let Some(expected) = x.checked_sub(y) {
+                                prop_assert_eq!(
+                                    unsafe { super::$t::unchecked_sub(x.inject(), y.inject()) },
+                                    expected);
+                            }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_mul>](x in any::<$t>(), y in any::<$t>()) {
+                            if let Some(expected) = x.checked_mul(y) {
+                                prop_assert_eq!(
+                                    unsafe { super::$t::unchecked_mul(x.inject(), y.inject()) },
+                                    expected);
+                            }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_div>](x in any::<$t>(), y in any::<$t>()) {
+                            if let Some(expected) = x.checked_div(y) {
+                                prop_assert_eq!(
+                                    unsafe { super::$t::unchecked_div(x.inject(), y.inject()) },
+                                    expected);
+                            }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_rem>](x in any::<$t>(), y in any::<$t>()) {
+                            if let Some(expected) = x.checked_rem(y) {
+                                prop_assert_eq!(
+                                    unsafe { super::$t::unchecked_rem(x.inject(), y.inject()) },
+                                    expected);
+                            }
+                        }
+                    }
+                )*
+            }
+        }
+    }
+
     int_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+    unchecked_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
     uint_test! { u8 u16 u32 u64 u128 usize }
     iint_test! { i8 i16 i32 i64 i128 isize }
     iint_mixed_test! { (i8, u8) (i16, u16) (i32, u32) (i64, u64) (i128, u128) (isize, usize) }

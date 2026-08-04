@@ -9,6 +9,22 @@
 
 use rust_lean_test_macro::rust_lean_test;
 
+// ----- step_by ---------------------------------------------------------------
+
+// TODO(iterator-methods-excluded): `step_by` is provided by the excluded
+// `IteratorMethods`, so this extracts to a missing `Iterator.step_by.default`.
+// Not a `skip_lean` — it fails to elaborate. Covered by the proptest.
+/*
+#[rust_lean_test]
+pub fn test_step_by_starts_at_first() -> bool {
+    let a: [u8; 5] = [10, 11, 12, 13, 14];
+    match a.as_slice().iter().step_by(2).next() {
+        Some(v) => *v == 10,
+        None => false,
+    }
+}
+*/
+
 // ----- count over Range<usize> ----------------------------------------------
 
 #[rust_lean_test]
