@@ -30,6 +30,31 @@ def I32.Insts.CoreCmpPartialEqI32     : cmp.PartialEq I32   I32   := { eq := fun
 def I64.Insts.CoreCmpPartialEqI64     : cmp.PartialEq I64   I64   := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
 def I128.Insts.CoreCmpPartialEqI128   : cmp.PartialEq I128  I128  := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
 def Isize.Insts.CoreCmpPartialEqIsize : cmp.PartialEq Isize Isize := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def Bool.Insts.CoreCmpPartialEqBool    : cmp.PartialEq Bool  Bool  := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+
+/-! ## Tuple PartialEq
+
+`(A, B) == (C, D)` — reached by e.g. comparing the `(T, bool)` an
+`overflowing_*` returns. Short-circuits on the first component, as Rust does. -/
+
+def Pair.Insts.CoreCmpPartialEqPair.eq {A B C D : Type}
+    (PartialEqInst : cmp.PartialEq A C) (PartialEqInst1 : cmp.PartialEq B D) :
+    A × B → C × D → Result Bool := fun (a, b) (c, d) => do
+  let eqFst ← PartialEqInst.eq a c
+  if eqFst then PartialEqInst1.eq b d else ok false
+
+def Pair.Insts.CoreCmpPartialEqPair.ne {A B C D : Type}
+    (PartialEqInst : cmp.PartialEq A C) (PartialEqInst1 : cmp.PartialEq B D) :
+    A × B → C × D → Result Bool := fun p q => do
+  let eq ← Pair.Insts.CoreCmpPartialEqPair.eq PartialEqInst PartialEqInst1 p q
+  ok (!eq)
+
+def Pair.Insts.CoreCmpPartialEqPair {A B C D : Type}
+    (PartialEqInst : cmp.PartialEq A C) (PartialEqInst1 : cmp.PartialEq B D) :
+    cmp.PartialEq (A × B) (C × D) := {
+  eq := Pair.Insts.CoreCmpPartialEqPair.eq PartialEqInst PartialEqInst1
+  ne := Pair.Insts.CoreCmpPartialEqPair.ne PartialEqInst PartialEqInst1
+}
 
 def mkUPartialOrd {ty} : cmp.PartialOrd (UScalar ty) (UScalar ty) := {
   PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
@@ -133,6 +158,14 @@ def Isize.Insts.CoreCmpOrd : cmp.Ord Isize := mkIOrd
 
 abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next :=
   @IteratorRange.next
+
+/-- `Iterator::count` for `core::ops::range::Range<A>`. Driving `next` to
+    exhaustion advances `start` one step at a time until it reaches `end`, which
+    is what `Step::steps_between` reports (`0` when `start > end`). -/
+def ops.range.Range.Insts.CoreIterTraitsIteratorIterator.count {A : Type}
+    (StepInst : iter.range.Step A) (range : ops.range.Range A) : Result Usize := do
+  let (steps, _) ← StepInst.steps_between range.start range.«end»
+  ok steps
 
 /-- [core::cmp::impls::{core::cmp::PartialOrd<&0 (B)> for &1 (A)}::lt]:
     Source: '/rustc/library/core/src/cmp.rs', lines 2133:8-2133:40

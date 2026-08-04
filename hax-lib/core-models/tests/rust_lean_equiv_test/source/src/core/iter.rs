@@ -11,28 +11,20 @@ use rust_lean_test_macro::rust_lean_test;
 
 // ----- count over Range<usize> ----------------------------------------------
 
-// TODO(range-count): the `Range` `Iterator` instance in
-// `CoreModels/Core/FunsPrologue.lean` provides `next` but not `count`.
-/*
 #[rust_lean_test]
 pub fn test_range_count_zero() -> bool {
     (0..0usize).count() == 0
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_range_count_five() -> bool {
     (0..5usize).count() == 5
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_range_count_offset() -> bool {
     (3..10usize).count() == 7
 }
-*/
 
 // ----- skipped: closure-based iterator combinators --------------------------
 
