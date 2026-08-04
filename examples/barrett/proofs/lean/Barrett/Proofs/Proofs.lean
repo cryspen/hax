@@ -18,6 +18,7 @@ attribute [local grind =]
   Int32.toInt_toInt64 Int64.ofBitVec_int32ToBitVec
   Int64.toInt_inj Int32.toInt_inj
   Int64.le_iff_toInt_le Int32.lt_iff_toInt_lt
+  Int.shiftRight_eq_div_pow
 
 local grind_pattern Int32.toInt64_ofNat => (@OfNat.ofNat Int32 n _).toInt64
 
