@@ -2,6 +2,7 @@
 //!
 //! These mirror the proptest block in `core-models/src/core/slice.rs`.
 
+use crate::helpers::Bumped;
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- len -------------------------------------------------------------------
@@ -68,6 +69,14 @@ pub fn test_contains_absent() -> bool {
 pub fn test_contains_empty() -> bool {
     let a: [u8; 0] = [];
     a.as_slice().contains(&0) == false
+}
+
+// `contains` stops at the first match, so `Bumped::eq` never sees `u8::MAX`
+// — unless the model keeps comparing past it.
+#[rust_lean_test]
+pub fn test_contains_stops_at_first_match() -> bool {
+    let a = [Bumped(1), Bumped(u8::MAX)];
+    a.as_slice().contains(&Bumped(1))
 }
 
 // ----- split_at --------------------------------------------------------------
@@ -307,7 +316,17 @@ pub fn test_slice_reverse() -> bool {
     a == [4u8, 3, 2, 1]
 }
 
-// TODO(mut-slice-extraction): `copy_from_slice`, `clone_from_slice`, `fill` take
+// Overwrites `dst` with *clones* of `src`'s elements.
+#[rust_lean_test]
+pub fn test_clone_from_slice_applies_clone() -> bool {
+    let mut dst = [Bumped(0)];
+    let src = [Bumped(1)];
+    let d: &mut [Bumped] = &mut dst;
+    d.clone_from_slice(&src);
+    dst[0].0 == 2
+}
+
+// TODO(mut-slice-extraction): `copy_from_slice` and `fill` take
 // `&mut [T]` and remain opaque; revisit later.
 // pub fn test_fill() -> bool {
 //     let mut a: [u8; 4] = [0, 0, 0, 0];
