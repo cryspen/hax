@@ -8,6 +8,7 @@
 //!   so we verify per-element contents by sequential `pop()`s instead of
 //!   `v[i] == x`.
 
+use crate::helpers::Bumped;
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- new -------------------------------------------------------------------
@@ -159,12 +160,36 @@ pub fn test_vec_extend_from_slice_empty_to_empty() -> bool {
     v.len() == 0
 }
 
+// Clones each element, so the appended value is `Bumped(1).clone()`.
+#[rust_lean_test]
+pub fn test_vec_extend_from_slice_applies_clone() -> bool {
+    let mut v: Vec<Bumped> = Vec::new();
+    v.extend_from_slice(&[Bumped(1)]);
+    match v.pop() {
+        Some(b) => b.0 == 2,
+        None => false,
+    }
+}
+
 // ----- from_elem (`vec![x; n]`) ---------------------------------------------
 
 #[rust_lean_test]
 pub fn test_vec_from_elem_zero_len() -> bool {
     let v: Vec<u8> = vec![9u8; 0];
     v.len() == 0 && v.is_empty()
+}
+
+// std clones all but the last element, so this is `[Bumped(2), Bumped(1)]`.
+#[rust_lean_test]
+pub fn test_vec_from_elem_applies_clone() -> bool {
+    let mut v: Vec<Bumped> = vec![Bumped(1); 2];
+    match v.pop() {
+        Some(last) => match v.pop() {
+            Some(first) => last.0 == 1 && first.0 == 2,
+            None => false,
+        },
+        None => false,
+    }
 }
 
 // ----- index (excluded) ------------------------------------------------------

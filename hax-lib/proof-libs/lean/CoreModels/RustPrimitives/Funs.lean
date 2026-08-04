@@ -46,7 +46,13 @@ def rust_primitives.slice.slice_slice
 def rust_primitives.slice.slice_clone_from_slice
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
   Slice T → Slice T → Result (Slice T) := fun dest src =>
-  if dest.length = src.length then ok src
+  if dest.length = src.length then
+    -- Cloned, so `clone`'s effects are observable and cannot be skipped.
+    match h : src.val.mapM corecloneCloneInst.clone with
+    | ok cloned => ok ⟨cloned, by
+        have := List.mapM_Result_length h; have := src.property; omega⟩
+    | fail e => fail e
+    | div => div
   else fail .panic
 
 /-- [rust_primitives::slice::slice_index_mut]: returns the element together with
@@ -883,14 +889,19 @@ def rust_primitives.sequence.seq_concat
     if h : combined.length ≤ Usize.max then ok (⟨combined, h⟩, Slice.new T)
     else fail .maximumSizeExceeded
 
+-- Appends `src`'s elements *cloned*.
 @[spec]
 def rust_primitives.sequence.seq_extend
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
   rust_primitives.sequence.Seq T → Slice T → Result
     (rust_primitives.sequence.Seq T) := fun s src =>
-  let combined := s.val ++ src.val
-  if h : combined.length ≤ Usize.max then ok ⟨combined, h⟩
-  else fail .maximumSizeExceeded
+  match src.val.mapM corecloneCloneInst.clone with
+  | ok cloned =>
+    let combined := s.val ++ cloned
+    if h : combined.length ≤ Usize.max then ok ⟨combined, h⟩
+    else fail .maximumSizeExceeded
+  | fail e => fail e
+  | div => div
 
 @[spec]
 def rust_primitives.sequence.seq_push
@@ -901,11 +912,20 @@ def rust_primitives.sequence.seq_push
     if h : extended.length ≤ Usize.max then ok ⟨extended, h⟩
     else fail .maximumSizeExceeded
 
+-- std clones `x` for all but the last element, which is `x` itself moved in.
 @[spec]
 def rust_primitives.sequence.seq_create
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
   T → Std.Usize → Result (rust_primitives.sequence.Seq T) := fun x n =>
-  ok ⟨List.replicate n.val x, by grind⟩
+  if n.val = 0 then ok (Slice.new T)
+  else
+    match (List.replicate (n.val - 1) x).mapM corecloneCloneInst.clone with
+    | ok cloned =>
+      let combined := cloned ++ [x]
+      if h : combined.length ≤ Usize.max then ok ⟨combined, h⟩
+      else fail .maximumSizeExceeded
+    | fail e => fail e
+    | div => div
 
 @[spec]
 def rust_primitives.sequence.seq_drain
