@@ -723,10 +723,55 @@ pub mod equality {
 #[cfg(test)]
 mod tests {
     use super::Slice;
+    use crate::iter::traits::iterator::Iterator as ModelIterator;
+    use crate::option::Option as ModelOption;
     use crate::testing::Inject;
     use proptest::prelude::*;
 
+    /// The slice iterators are lazy; draining them is what observes them.
+    fn drain<I: ModelIterator>(mut it: I) -> Vec<I::Item> {
+        let mut out = Vec::new();
+        while let ModelOption::Some(x) = it.next() {
+            out.push(x);
+        }
+        out
+    }
+
     proptest! {
+        #[test]
+        fn test_iter(slice in prop::collection::vec(any::<u8>(), 0..=20)) {
+            prop_assert_eq!(
+                drain(Slice::iter(&slice[..])),
+                slice.iter().collect::<Vec<_>>()
+            );
+        }
+
+        // Sizes run one past the slice length: `chunks` keeps a short final
+        // chunk, `chunks_exact` drops it.
+        #[test]
+        fn test_chunks(slice in prop::collection::vec(any::<u8>(), 0..=20), cs in 1usize..=21) {
+            prop_assert_eq!(
+                drain(Slice::chunks(&slice[..], cs)),
+                slice.chunks(cs).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_chunks_exact(slice in prop::collection::vec(any::<u8>(), 0..=20), cs in 1usize..=21) {
+            prop_assert_eq!(
+                drain(Slice::chunks_exact(&slice[..], cs)),
+                slice.chunks_exact(cs).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_windows(slice in prop::collection::vec(any::<u8>(), 0..=20), size in 1usize..=21) {
+            prop_assert_eq!(
+                drain(Slice::windows(&slice[..], size)),
+                slice.windows(size).collect::<Vec<_>>()
+            );
+        }
+
         #[test]
         fn test_len(slice in prop::collection::vec(any::<u8>(), 0..=20)) {
             prop_assert_eq!(Slice::len(&slice[..]), slice.len());
@@ -1034,6 +1079,8 @@ mod tests {
 
         // ----- get_mut / get_unchecked_mut (mutate through the &mut) ---------
 
+        // `get_mut` / `get_unchecked_mut` have no F* model.
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_usize(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in any::<usize>(), v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1047,6 +1094,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_range(slice in prop::collection::vec(any::<u8>(), 1..=10), start in 0usize..10, end in 0usize..10, v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1060,6 +1108,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_range_from(slice in prop::collection::vec(any::<u8>(), 1..=10), start in 0usize..=10, v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1073,6 +1122,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_range_to(slice in prop::collection::vec(any::<u8>(), 1..=10), end in 0usize..=10, v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1086,6 +1136,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_range_full(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1099,6 +1150,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_unchecked_mut_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4, v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1108,6 +1160,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_unchecked_mut_range(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..8, len in 0usize..8, v in any::<u8>()) {
             let end = (start + len).min(8);

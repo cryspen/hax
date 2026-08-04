@@ -252,7 +252,9 @@ pub fn test_vec_swap_remove_back() -> bool {
 
 // ----- truncate / resize / clear (stubbed in Lean) ---------------------------
 
-#[rust_lean_test(skip_lean = "Vec::truncate is `#[hax_lib::opaque]`; the extracted Lean body is `ok self`, a no-op")]
+#[rust_lean_test(
+    skip_lean = "Vec::truncate is `#[hax_lib::opaque]`; the extracted Lean body is `ok self`, a no-op"
+)]
 pub fn test_vec_truncate_shortens() -> bool {
     let mut v: Vec<u8> = Vec::new();
     v.push(1);
@@ -262,7 +264,9 @@ pub fn test_vec_truncate_shortens() -> bool {
     v.len() == 1
 }
 
-#[rust_lean_test(skip_lean = "Vec::clear is `#[hax_lib::opaque]`; the extracted Lean body is `ok self`, a no-op")]
+#[rust_lean_test(
+    skip_lean = "Vec::clear is `#[hax_lib::opaque]`; the extracted Lean body is `ok self`, a no-op"
+)]
 pub fn test_vec_clear_empties() -> bool {
     let mut v: Vec<u8> = Vec::new();
     v.push(1);
@@ -271,8 +275,15 @@ pub fn test_vec_clear_empties() -> bool {
     v.is_empty()
 }
 
-// TODO(opaque-in-model): Vec::resize is `#[hax_lib::opaque]` in the model
-// and the extracted Lean body is `ok self`.
+#[rust_lean_test(
+    skip_lean = "Vec::resize is `#[hax_lib::opaque]`; the extracted Lean body is `ok self`, a no-op"
+)]
+pub fn test_vec_resize_grows() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.resize(3, 7);
+    v.len() == 3
+}
 
 // ----- drain (iterator) ------------------------------------------------------
 

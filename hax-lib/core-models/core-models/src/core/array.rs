@@ -137,7 +137,9 @@ impl<T, const N: usize> Index<RangeFull> for [T; N] {
     }
 }
 
-#[cfg(not(hax))]
+// Also `not(hax_backend_fstar)`: that model's blanket `impl<T> Clone for T`
+// already covers arrays, and both in scope fails coherence.
+#[cfg(all(not(hax), not(hax_backend_fstar)))]
 impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
     fn clone(self) -> Self {
         self
@@ -198,7 +200,28 @@ mod tests {
     use proptest::prelude::*;
 
     proptest! {
-        // `map` and `from_fn` cannot be tested with the current solution
+        // Under the F* cfg `map` takes a `fn`, which this closure can't coerce to.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_map(arr in any::<[u8; 4]>(), table in any::<[u8; 256]>()) {
+            let f = |x: u8| table[x as usize];
+            prop_assert_eq!(super::Array::<u8, 4>::map(arr.inject(), f), arr.map(f));
+        }
+
+        #[test]
+        fn test_from_fn(table in any::<[u8; 256]>()) {
+            let f = |i: usize| table[i];
+            let model: [u8; 4] = super::from_fn(f);
+            prop_assert_eq!(model, std::array::from_fn::<u8, 4, _>(f));
+        }
+
+        #[test]
+        fn test_clone(arr in any::<[u8; 4]>()) {
+            prop_assert_eq!(
+                crate::clone::Clone::clone(arr.inject()),
+                arr.clone().inject()
+            );
+        }
 
         #[test]
         fn test_as_slice(arr in any::<[u8; 4]>()) {
