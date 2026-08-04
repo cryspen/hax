@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+  release:
+    types: [published]
 
 jobs:
   # Build job
@@ -13,6 +15,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
+      - name: Resolve latest hax release
+        id: latest_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$(gh release view --repo '${{ github.repository }}' --json tagName --jq .tagName)"
+          echo "Latest release: $tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - name: Replace the Manual with the one from release ${{ steps.latest_release.outputs.tag }}
+        run: |
+          tag='${{ steps.latest_release.outputs.tag }}'
+          git clone --depth 1 --branch "$tag" \
+            'https://github.com/${{ github.repository }}' /tmp/hax-release
+          rm -rf docs/manual
+          cp -r /tmp/hax-release/docs/manual docs/manual
+          git add -A docs/manual # For nix to pick up the replacement
       - name: Build documentation
         run: nix build .#docs
       - name: Upload static files as artifact
