@@ -630,6 +630,8 @@ mod tests {
             prop_assert!(x.inject().flatten() == x.flatten().inject());
         }
 
+        // The model's `PartialEq for Result` is aeneas/lean-only.
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_eq(x in any::<Result<u8, u8>>(), y in any::<Result<u8, u8>>()) {
             prop_assert_eq!(

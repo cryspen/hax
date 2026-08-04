@@ -65,8 +65,12 @@ jobs:
         env:
           RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
 
-      # `alloc` has a second, cfg-exclusive `vec` model for the F* backend
+      # Both crates have cfg-exclusive models the default-cfg run can't reach.
       - run: cargo test -p alloc
+        env:
+          RUSTFLAGS: "--cfg hax_backend_fstar"
+
+      - run: cargo test -p core-models
         env:
           RUSTFLAGS: "--cfg hax_backend_fstar"
 

@@ -441,13 +441,16 @@ pub mod adapters {
         impl<I: Iterator> Iterator for StepBy<I> {
             type Item = <I as Iterator>::Item;
 
+            // Yields indices 0, step, 2*step, …, so the first call must not skip.
+            // std panics on `step == 0`; this yields every element instead.
             fn next(&mut self) -> Option<<I as Iterator>::Item> {
+                let current = self.iter.next();
+                // No early exit: Aeneas can't translate a `break` here, and
+                // `next` on an exhausted iterator is a no-op anyway.
                 for _ in 1..self.step {
-                    if let Option::None = self.iter.next() {
-                        return Option::None;
-                    }
+                    self.iter.next();
                 }
-                self.iter.next()
+                current
             }
         }
     }
@@ -1086,6 +1089,89 @@ mod tests {
             let std_result = v.iter().copied().max();
             let model_result = VecIter::new(v).max();
             prop_assert_eq!(model_result, std_result.inject());
+        }
+    }
+
+    /// The adapters are lazy; draining them is what observes them.
+    fn drain<I: Iterator>(mut it: I) -> Vec<I::Item> {
+        let mut out = Vec::new();
+        while let Option::Some(x) = it.next() {
+            out.push(x);
+        }
+        out
+    }
+
+    proptest! {
+        #[test]
+        fn test_map(v in prop::collection::vec(any::<u8>(), 0..=20), table in any::<[u8; 256]>()) {
+            let f = |x: u8| table[x as usize];
+            prop_assert_eq!(
+                drain(VecIter::new(v.clone()).map(f)),
+                v.iter().map(|&x| f(x)).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_filter(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+            prop_assert_eq!(
+                drain(VecIter::new(v.clone()).filter(|x: &u8| *x > bound)),
+                v.iter().copied().filter(|x| *x > bound).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_enumerate(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+            prop_assert_eq!(
+                drain(VecIter::new(v.clone()).enumerate()),
+                v.iter().copied().enumerate().collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_skip(v in prop::collection::vec(any::<u8>(), 0..=20), n in 0usize..=25) {
+            prop_assert_eq!(
+                drain(VecIter::new(v.clone()).skip(n)),
+                v.iter().copied().skip(n).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_take(v in prop::collection::vec(any::<u8>(), 0..=20), n in 0usize..=25) {
+            prop_assert_eq!(
+                drain(VecIter::new(v.clone()).take(n)),
+                v.iter().copied().take(n).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_chain(
+            a in prop::collection::vec(any::<u8>(), 0..=10),
+            b in prop::collection::vec(any::<u8>(), 0..=10),
+        ) {
+            prop_assert_eq!(
+                drain(VecIter::new(a.clone()).chain(VecIter::new(b.clone()))),
+                a.iter().copied().chain(b.iter().copied()).collect::<Vec<_>>()
+            );
+        }
+
+        // Unequal lengths: `zip` must stop at the shorter side.
+        #[test]
+        fn test_zip(
+            a in prop::collection::vec(any::<u8>(), 0..=10),
+            b in prop::collection::vec(any::<u8>(), 0..=15),
+        ) {
+            prop_assert_eq!(
+                drain(VecIter::new(a.clone()).zip(VecIter::new(b.clone()))),
+                a.iter().copied().zip(b.iter().copied()).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_step_by(v in prop::collection::vec(any::<u8>(), 0..=20), step in 1usize..=5) {
+            prop_assert_eq!(
+                drain(VecIter::new(v.clone()).step_by(step)),
+                v.iter().copied().step_by(step).collect::<Vec<_>>()
+            );
         }
     }
 
