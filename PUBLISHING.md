@@ -25,7 +25,7 @@ and `examples`):
 2. `hax-adt-into` (`frontend/exporter/adt-into`)
 3. `hax-frontend-exporter` (`frontend/exporter`)
 4. `hax-types` (`hax-types`)
-5. `hax-subcommands` (binaries) (`cli/subcommands`)
+5. `cargo-hax` (binaries) (`cli/cargo-hax`)
    - `cargo-hax`
    - `hax-export-json-schemas`
    - `hax-pretty-print-diagnostics`
@@ -65,4 +65,4 @@ opam install hax-engine
 `cargo release` reads the `Cargo.toml` of each crates of the workspace.
 Some creates are excluded from releasing: in their `Cargo.toml` manifest, they have `package.metadata.release.release` set to `false`.
 
-Also, `cli/subcommands/Cargo.toml` specifies pre-release replacements for the engine: the version of the engine is bumped automatically by `cargo release`.
+Also, `cli/cargo-hax/Cargo.toml` specifies pre-release replacements for the engine: the version of the engine is bumped automatically by `cargo release`.
