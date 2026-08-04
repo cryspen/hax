@@ -94,6 +94,40 @@ jobs:
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
           CARGO_HOME: ${{ runner.temp }}/cargo-unlocked
+          CARGO_TARGET_DIR: ${{ runner.temp }}/target-unlocked
         run: >
           cargo install
           --root "$RUNNER_TEMP/hax-unlocked" --path cli/cargo-hax
+
+  # The `rust-version` the manifest declares is a promise to those installations.
+  # `--locked`, so a dependency raising its own reaches this only via the lockfile.
+  install-msrv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Resolve and install the declared MSRV
+        id: msrv
+        run: |
+          msrv="$(cargo metadata --format-version 1 --no-deps \
+            | jq -r '.packages[] | select(.name == "cargo-hax") | .rust_version')"
+          test -n "$msrv" -a "$msrv" != null || {
+            echo "::error::cargo-hax declares no rust-version"
+            exit 1
+          }
+          rustup toolchain install --profile minimal "$msrv"
+          echo "version=$msrv" >> "$GITHUB_OUTPUT"
+
+      # Installed above so the cache can key on it; `rust-cache` itself only
+      # sees the default (stable) toolchain.
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: msrv-${{ steps.msrv.outputs.version }}
+
+      - name: Install `cargo-hax` alone, on the declared MSRV
+        run: >
+          cargo "+${{ steps.msrv.outputs.version }}" install --locked
+          --root "$RUNNER_TEMP/hax" --path cli/cargo-hax
