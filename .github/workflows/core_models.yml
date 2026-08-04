@@ -209,6 +209,13 @@ jobs:
           unset CI # Allows us to use Aeneas's olean cache
           make CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas lean tests
 
+      # Inverted: a `skip_lean` test that PASSES means its blocker is gone.
+      - name: Skipped equivalence tests must still be failing
+        run: |
+          make -C tests/rust_lean_equiv_test \
+            CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas \
+            check-skipped
+
       # ---- Enforce that committed extraction matches re-extraction ------
       # If this fails: someone changed Rust source / patcher without
       # re-running `make lean` and committing the resulting diff.
