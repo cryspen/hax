@@ -290,110 +290,78 @@ pub fn test_i8_saturating_mul_neg_overflow() -> bool {
 // overflowing_add
 // =============================================================================
 
-// TODO(tuple-eq): `overflowing_*` returns `(T, bool)`; the Lean library has no
-// `Pair` `PartialEq` instance (see `CoreModels/Core/FunsPrologue.lean`).
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_add_zero() -> bool {
     0u8.overflowing_add(0u8) == (0u8, false)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_add_no_overflow() -> bool {
     100u8.overflowing_add(50u8) == (150u8, false)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_add_at_max() -> bool {
     u8::MAX.overflowing_add(1u8) == (0u8, true)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_add_overflow() -> bool {
     200u8.overflowing_add(100u8) == (44u8, true)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_i8_overflowing_add_at_max() -> bool {
     i8::MAX.overflowing_add(1i8) == (i8::MIN, true)
 }
-*/
 
 // =============================================================================
 // overflowing_sub
 // =============================================================================
 
-// TODO(tuple-eq): `overflowing_*` returns `(T, bool)`; the Lean library has no
-// `Pair` `PartialEq` instance (see `CoreModels/Core/FunsPrologue.lean`).
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_sub_zero() -> bool {
     0u8.overflowing_sub(0u8) == (0u8, false)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_sub_no_underflow() -> bool {
     100u8.overflowing_sub(50u8) == (50u8, false)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_sub_underflow() -> bool {
     0u8.overflowing_sub(1u8) == (u8::MAX, true)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_i8_overflowing_sub_at_min() -> bool {
     i8::MIN.overflowing_sub(1i8) == (i8::MAX, true)
 }
-*/
 
 // =============================================================================
 // overflowing_mul
 // =============================================================================
 
-// TODO(tuple-eq): `overflowing_*` returns `(T, bool)`; the Lean library has no
-// `Pair` `PartialEq` instance (see `CoreModels/Core/FunsPrologue.lean`).
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_mul_zero() -> bool {
     0u8.overflowing_mul(42u8) == (0u8, false)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_mul_no_overflow() -> bool {
     10u8.overflowing_mul(10u8) == (100u8, false)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_mul_overflow() -> bool {
     16u8.overflowing_mul(16u8) == (0u8, true)
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_mul_max() -> bool {
     u8::MAX.overflowing_mul(u8::MAX) == (1u8, true)
 }
-*/
 
 // =============================================================================
 // rem_euclid

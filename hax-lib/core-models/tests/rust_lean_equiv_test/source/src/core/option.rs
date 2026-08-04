@@ -577,16 +577,12 @@ pub fn test_manual_take_none_u32() -> bool {
     old.is_none() && x.is_none()
 }
 
-// TODO(bool-eq): `CoreModels/Core/FunsPrologue.lean` has `PartialEq`
-// instances for the integer types but not for `bool`.
-/*
 #[rust_lean_test]
 pub fn test_manual_take_some_bool() -> bool {
     let mut x: Option<bool> = Some(true);
     let old = x.take();
     old == Some(true) && x.is_none()
 }
-*/
 
 // ----- PartialEq: `Option<T> == Option<T>` -----------------------------------
 
