@@ -217,15 +217,16 @@ jobs:
       # ---- Enforce that committed extraction matches re-extraction ------
       # If this fails: someone changed Rust source / patcher without
       # re-running `make lean` and committing the resulting diff.
+      # Whole tree, not a file list: `git diff` on a pathspec matching
+      # nothing exits 0, so a list goes stale silently.
       - name: Committed extraction must match a fresh re-extraction
         run: |
-          git diff --exit-code -- \
-            ../proof-libs/lean/CoreModels/Funs.lean \
-            ../proof-libs/lean/CoreModels/Types.lean \
-            ../proof-libs/lean/CoreModels/FunsExternal_Template.lean \
-            ../proof-libs/lean/CoreModels/TypesExternal_Template.lean \
-            ../proof-libs/lean/CoreModels/Alloc/Funs.lean \
-            ../proof-libs/lean/CoreModels/Alloc/Types.lean
+          if [ -n "$(git status --porcelain -- ../proof-libs/lean)" ]; then
+            echo "::error::Committed Lean extraction is stale — run 'make lean' in hax-lib/core-models and commit the result."
+            git status --porcelain -- ../proof-libs/lean
+            git diff -- ../proof-libs/lean
+            exit 1
+          fi
 
   fstar-build:
     name: hax F* extraction + typecheck
