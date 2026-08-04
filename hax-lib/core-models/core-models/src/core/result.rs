@@ -59,6 +59,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::expect`]
+    #[cfg(hax_backend_fstar)]
     #[hax_lib::requires(self.is_ok())]
     pub fn expect(self, _msg: &str) -> T {
         match self {
@@ -68,6 +69,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap`]
+    #[cfg(hax_backend_fstar)]
     #[hax_lib::requires(self.is_ok())]
     pub fn unwrap(self) -> T {
         match self {
@@ -86,6 +88,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap_err`]
+    #[cfg(hax_backend_fstar)]
     #[hax_lib::requires(self.is_err())]
     pub fn unwrap_err(self) -> E {
         match self {
@@ -103,6 +106,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap_or_default`]
+    #[cfg(hax_backend_fstar)]
     pub fn unwrap_or_default(self) -> T
     where
         T: Default,
@@ -192,6 +196,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::and`]
+    #[cfg(hax_backend_fstar)]
     pub fn and<U>(self, res: Result<U, E>) -> Result<U, E> {
         match self {
             Ok(_) => res,
@@ -211,6 +216,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::or`]
+    #[cfg(hax_backend_fstar)]
     pub fn or<F>(self, res: Result<T, F>) -> Result<T, F> {
         match self {
             Ok(t) => Ok(t),
@@ -263,6 +269,7 @@ impl<T: Clone, E> Result<T, E> {
     }
 }
 
+#[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
 #[cfg_attr(charon, aeneas::exclude)]
 impl<T, E> Result<Option<T>, E> {
@@ -326,9 +333,10 @@ impl<T, E> crate::ops::try_trait::Try for Result<T, E> {
     }
 }
 
-/// aeneas/lean copies of `unwrap_or`/`map_err`: not in Aeneas's builtin `Result`
-/// and the `impl` above is excluded, so they're extracted here. Also defined in
-/// the F* `impl__` block above (see the comment there) to keep the F* name.
+/// aeneas/lean copies of the non-closure `Result` methods: not in Aeneas's
+/// builtin `Result` and the `impl` above is excluded, so they're extracted here.
+/// Also defined in the F* `impl__` block above (see the comment there) to keep
+/// the F* name.
 #[cfg(not(hax_backend_fstar))]
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
@@ -348,6 +356,98 @@ impl<T, E> Result<T, E> {
         match self {
             Ok(t) => Ok(t),
             Err(e) => Err(op(e)),
+        }
+    }
+
+    /// See [`std::result::Result::expect`]
+    #[hax_lib::requires(self.is_ok())]
+    pub fn expect(self, _msg: &str) -> T
+    where
+        E: super::fmt::Debug,
+    {
+        match self {
+            Ok(t) => t,
+            Err(_) => super::panicking::internal::panic(),
+        }
+    }
+
+    /// See [`std::result::Result::unwrap`]
+    #[hax_lib::requires(self.is_ok())]
+    pub fn unwrap(self) -> T
+    where
+        E: super::fmt::Debug,
+    {
+        match self {
+            Ok(t) => t,
+            Err(_) => super::panicking::internal::panic(),
+        }
+    }
+
+    /// See [`std::result::Result::unwrap_err`]
+    #[hax_lib::requires(self.is_err())]
+    pub fn unwrap_err(self) -> E
+    where
+        T: super::fmt::Debug,
+    {
+        match self {
+            Ok(_) => super::panicking::internal::panic(),
+            Err(e) => e,
+        }
+    }
+
+    /// See [`std::result::Result::unwrap_or_default`]
+    pub fn unwrap_or_default(self) -> T
+    where
+        T: Default,
+    {
+        match self {
+            Ok(t) => t,
+            Err(_) => T::default(),
+        }
+    }
+
+    /// See [`std::result::Result::and`]
+    pub fn and<U>(self, res: Result<U, E>) -> Result<U, E> {
+        match self {
+            Ok(_) => res,
+            Err(e) => Err(e),
+        }
+    }
+
+    /// See [`std::result::Result::or`]
+    pub fn or<F>(self, res: Result<T, F>) -> Result<T, F> {
+        match self {
+            Ok(t) => Ok(t),
+            Err(_) => res,
+        }
+    }
+}
+
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T, E> Result<Option<T>, E> {
+    /// See [`std::result::Result::transpose`]
+    pub fn transpose(self) -> Option<Result<T, E>> {
+        match self {
+            Ok(Option::Some(t)) => Option::Some(Ok(t)),
+            Ok(Option::None) => Option::None,
+            Err(e) => Option::Some(Err(e)),
+        }
+    }
+}
+
+/// Mirrors the `Option` instance in `core/option.rs`. F* compares `Result`s with
+/// its own structural equality, so this is only extracted for aeneas/lean.
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T: super::cmp::PartialEq<T>, E: super::cmp::PartialEq<E>> super::cmp::PartialEq<Result<T, E>>
+    for Result<T, E>
+{
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Ok(a), Ok(b)) => a.eq(b),
+            (Err(a), Err(b)) => a.eq(b),
+            _ => false,
         }
     }
 }
@@ -528,6 +628,14 @@ mod tests {
         #[test]
         fn test_flatten(x in any::<Result<Result<u8, u8>, u8>>(), is_ok in any::<bool>()) {
             prop_assert!(x.inject().flatten() == x.flatten().inject());
+        }
+
+        #[test]
+        fn test_eq(x in any::<Result<u8, u8>>(), y in any::<Result<u8, u8>>()) {
+            prop_assert_eq!(
+                crate::cmp::PartialEq::eq(&x.clone().inject(), &y.clone().inject()),
+                x == y
+            );
         }
 
         // ----- Try (from_output / branch) -----------------------------------

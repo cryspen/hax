@@ -486,13 +486,13 @@ structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
 
 /-- [core_models::num::error::IntErrorKind]
-    Source: 'core-models/src/core/num/error.rs', lines 24:0-24:24
+    Source: 'core-models/src/core/num/error.rs', lines 34:0-34:24
     Visibility: public -/
 @[reducible]
 def num.error.IntErrorKind := Unit
 
 /-- [core_models::num::error::ParseIntError]
-    Source: 'core-models/src/core/num/error.rs', lines 9:0-11:1
+    Source: 'core-models/src/core/num/error.rs', lines 19:0-21:1
     Visibility: public -/
 structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
