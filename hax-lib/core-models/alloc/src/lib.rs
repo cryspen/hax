@@ -615,6 +615,11 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
+        /// `&mut` returns are unsupported by the F* backend, so this (and the
+        /// `DerefMut` / `IndexMut` impls below) live only in this module.
+        pub fn as_mut_slice(&mut self) -> &mut [T] {
+            seq_to_mut_slice(&mut self.0)
+        }
         #[hax_lib::opaque]
         pub fn truncate(&mut self, n: usize) {}
         #[hax_lib::opaque]
@@ -706,12 +711,33 @@ pub mod vec {
         }
     }
 
+    /// Mutable counterpart of the `Index<I>` impl above, mirroring std's
+    /// `impl<T, I: SliceIndex<[T]>, A: Allocator> IndexMut<I> for Vec<T, A>`.
+    /// Delegates through `DerefMut` to `<[T]>::index_mut`, as std does.
+    #[hax_lib::attributes]
+    impl<T, I> std::ops::IndexMut<I> for Vec<T>
+    where
+        I: std::slice::SliceIndex<[T]>,
+    {
+        #[hax_lib::requires(self.get(i).is_some())]
+        fn index_mut(&mut self, i: I) -> &mut I::Output {
+            std::ops::IndexMut::index_mut(&mut **self, i)
+        }
+    }
+
     #[hax_lib::attributes]
     impl<T> core::ops::Deref for Vec<T> {
         type Target = [T];
 
         fn deref(&self) -> &[T] {
             self.as_slice()
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<T> core::ops::DerefMut for Vec<T> {
+        fn deref_mut(&mut self) -> &mut [T] {
+            self.as_mut_slice()
         }
     }
 

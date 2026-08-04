@@ -1037,6 +1037,17 @@ def rust_primitives.sequence.seq_from_boxed_slice
 def rust_primitives.sequence.seq_to_slice
   {T : Type} : rust_primitives.sequence.Seq T → Result (Slice T) := fun s => ok s
 
+/-- [rust_primitives::sequence::seq_to_mut_slice]: the slice view of a `Seq`
+    plus its write-back (Aeneas's pure encoding of `&mut`). `Seq T` *is*
+    `Slice T`, and the borrow spans the whole sequence, so writing back is
+    the identity. -/
+@[rust_fun "rust_primitives::sequence::seq_to_mut_slice"]
+def rust_primitives.sequence.seq_to_mut_slice
+  {T : Type} :
+  rust_primitives.sequence.Seq T →
+  Result ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
+  fun s => ok (s, fun ss => ss)
+
 @[rust_fun "rust_primitives::sequence::seq_concat"]
 def rust_primitives.sequence.seq_concat
   {T : Type} :

@@ -612,6 +612,36 @@ pub mod index {
             }
         }
     }
+
+    /// `impl<T, I: SliceIndex<[T]>> IndexMut<I> for [T]`, the mutable
+    /// counterpart of the impl above.
+    ///
+    /// Unlike `index`, this cannot go through `get_mut` and panic on
+    /// `None`. Aeneas encodes a `&mut` return as a value/write-back pair,
+    /// but instantiates a generic callee at the bare element type, so it
+    /// emits `let (r, _) ← panicking.internal.panic Output` against
+    /// `panic : Result Output` — Lean rejects it with `expected a product
+    /// type`. That is AeneasVerif/aeneas#1215 ("generic types of a
+    /// function" category), an open, documented-but-unfixed limitation as
+    /// of the pinned toolchain; it is not specific to `panic`, any
+    /// `fn f<T>() -> T` in a `&mut` position hits it.
+    ///
+    /// Since the impl is specified in-bounds anyway — the same `requires`
+    /// `index` carries, under which the `None` branch is unreachable — we
+    /// delegate to `get_unchecked_mut`, whose own precondition this
+    /// discharges. Revisit once #1215 is fixed.
+    #[hax_lib::attributes]
+    #[cfg(not(hax_backend_fstar))]
+    #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+    impl<T, I> crate::ops::index::IndexMut<I> for [T]
+    where
+        I: SliceIndex<[T]>,
+    {
+        #[hax_lib::requires(i.get(self).is_some())]
+        fn index_mut(&mut self, i: I) -> &mut I::Output {
+            i.get_unchecked_mut(self)
+        }
+    }
 }
 
 pub use index::SliceIndex;
@@ -858,6 +888,33 @@ mod tests {
                 crate::ops::index::Index::index(&s, idx),
                 &slice[idx]
             );
+        }
+
+        // `IndexMut` exists only outside the F* backend (`&mut` returns).
+        // The model is specified in-bounds, so only in-bounds indices are
+        // generated here — matching `test_index_usize` above.
+        #[test]
+        #[cfg(not(hax_backend_fstar))]
+        fn test_index_mut_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4, v in any::<u8>()) {
+            let mut model = slice.clone();
+            *<[u8] as crate::ops::index::IndexMut<usize>>::index_mut(&mut model[..], idx) = v;
+            let mut std_slice = slice.clone();
+            std_slice[idx] = v;
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[test]
+        #[cfg(not(hax_backend_fstar))]
+        fn test_index_mut_range(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..8, len in 0usize..8, v in any::<u8>()) {
+            let end = (start + len).min(8);
+            let mut model = slice.clone();
+            <[u8] as crate::ops::index::IndexMut<crate::ops::range::Range<usize>>>::index_mut(
+                &mut model[..],
+                crate::ops::range::Range { start, end },
+            ).fill(v);
+            let mut std_slice = slice.clone();
+            std_slice[start..end].fill(v);
+            prop_assert_eq!(model, std_slice);
         }
 
         #[test]

@@ -47,6 +47,44 @@ proptest! {
         prop_assert_eq!(model.as_slice(), v.as_slice());
     }
 
+    // `as_mut_slice` / `DerefMut` / `IndexMut` exist only in the default
+    // variant: they return `&mut`, which the F* backend does not support.
+    #[test]
+    #[cfg(not(hax_backend_fstar))]
+    fn test_as_mut_slice(v in prop::collection::vec(any::<u8>(), 0..100)) {
+        let mut model = v.inject();
+        let mut std_v = v.clone();
+        prop_assert_eq!(model.as_mut_slice(), std_v.as_mut_slice());
+    }
+
+    // Writing through the mutable slice view must be visible in the vector.
+    #[test]
+    #[cfg(not(hax_backend_fstar))]
+    fn test_as_mut_slice_writes_back(
+        v in prop::collection::vec(any::<u8>(), 1..100),
+        x in any::<u8>(),
+    ) {
+        let mut model = v.inject();
+        model.as_mut_slice()[0] = x;
+        let mut std_v = v.clone();
+        std_v.as_mut_slice()[0] = x;
+        prop_assert_eq!(model, std_v.inject());
+    }
+
+    #[test]
+    #[cfg(not(hax_backend_fstar))]
+    fn test_index_mut(
+        v in prop::collection::vec(any::<u8>(), 1..100),
+        x in any::<u8>(),
+    ) {
+        let mut model = v.inject();
+        let mut std_v = v.clone();
+        let i = x as usize % std_v.len();
+        model[i] = x;
+        std_v[i] = x;
+        prop_assert_eq!(model, std_v.inject());
+    }
+
     #[test]
     fn test_push(v in prop::collection::vec(any::<u8>(), 0..50), x in any::<u8>()) {
         let mut model = v.inject();

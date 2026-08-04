@@ -855,3 +855,42 @@ pub fn test_slice_eq_array_false_len() -> bool {
     let s: &[u8] = &[1u8, 2];
     (*s == [1u8, 2, 3]) == false
 }
+
+// ----- IndexMut<I> for [T] ---------------------------------------------------
+//
+// The mutable counterpart of the `Index` tests above. Aeneas encodes the
+// `&mut` return as a value plus a write-back closure, so each test mutates
+// through the index and then observes the underlying array — that is what
+// pins the write-back, not merely the projection.
+
+#[rust_lean_test]
+pub fn test_slice_index_mut_usize() -> bool {
+    let mut a: [u8; 3] = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    s[0] = 9u8;
+    a == [9u8, 2, 3]
+}
+
+#[rust_lean_test]
+pub fn test_slice_index_mut_usize_last() -> bool {
+    let mut a: [u8; 3] = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    s[2] = 7u8;
+    a == [1u8, 2, 7]
+}
+
+#[rust_lean_test]
+pub fn test_slice_index_mut_range() -> bool {
+    let mut a: [u8; 4] = [1u8, 2, 3, 4];
+    let s: &mut [u8] = &mut a;
+    s[1..3].fill(0u8);
+    a == [1u8, 0, 0, 4]
+}
+
+#[rust_lean_test]
+pub fn test_slice_index_mut_range_full() -> bool {
+    let mut a: [u8; 3] = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    s[..].fill(5u8);
+    a == [5u8, 5, 5]
+}

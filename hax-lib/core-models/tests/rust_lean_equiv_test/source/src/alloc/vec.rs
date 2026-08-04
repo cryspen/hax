@@ -407,3 +407,89 @@ pub fn test_vec_split_off() -> bool {
     eb.push(3u8);
     (a == ea) && (b == eb)
 }
+
+// ----- DerefMut / as_mut_slice / IndexMut ------------------------------------
+//
+// These exercise Aeneas's mutable-borrow encoding: `deref_mut` extracts to
+// `Vec T → Result (Slice T × (Slice T → Vec T))`, so a write through the
+// slice view has to flow back into the vector via the returned closure.
+// Each test therefore mutates and then observes the *vector*, which is what
+// pins the write-back rather than just the projection.
+
+#[rust_lean_test]
+pub fn test_vec_index_mut_writes_back() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1u8);
+    v.push(2u8);
+    v[0] = 9u8;
+    let mut expected: Vec<u8> = Vec::new();
+    expected.push(9u8);
+    expected.push(2u8);
+    v == expected
+}
+
+#[rust_lean_test]
+pub fn test_vec_index_mut_last() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1u8);
+    v.push(2u8);
+    v.push(3u8);
+    v[2] = 7u8;
+    let mut expected: Vec<u8> = Vec::new();
+    expected.push(1u8);
+    expected.push(2u8);
+    expected.push(7u8);
+    v == expected
+}
+
+#[rust_lean_test]
+pub fn test_vec_index_mut_singleton() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(5u8);
+    v[0] = 6u8;
+    let mut expected: Vec<u8> = Vec::new();
+    expected.push(6u8);
+    v == expected
+}
+
+#[rust_lean_test]
+pub fn test_vec_as_mut_slice_writes_back() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1u8);
+    v.push(2u8);
+    v.as_mut_slice()[1] = 8u8;
+    let mut expected: Vec<u8> = Vec::new();
+    expected.push(1u8);
+    expected.push(8u8);
+    v == expected
+}
+
+// Goes through `DerefMut` rather than the inherent `as_mut_slice`: a `&mut
+// Vec<T>` coerced to `&mut [T]` is exactly `deref_mut`.
+#[rust_lean_test]
+pub fn test_vec_deref_mut_swap() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1u8);
+    v.push(2u8);
+    let s: &mut [u8] = &mut v;
+    s.swap(0usize, 1usize);
+    let mut expected: Vec<u8> = Vec::new();
+    expected.push(2u8);
+    expected.push(1u8);
+    v == expected
+}
+
+#[rust_lean_test]
+pub fn test_vec_deref_mut_reverse() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1u8);
+    v.push(2u8);
+    v.push(3u8);
+    let s: &mut [u8] = &mut v;
+    s.reverse();
+    let mut expected: Vec<u8> = Vec::new();
+    expected.push(3u8);
+    expected.push(2u8);
+    expected.push(1u8);
+    v == expected
+}

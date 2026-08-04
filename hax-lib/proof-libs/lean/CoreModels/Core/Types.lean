@@ -716,9 +716,18 @@ inductive ops.control_flow.ControlFlow (B : Type) (C : Type) where
 | Continue : C → ops.control_flow.ControlFlow B C
 | Break : B → ops.control_flow.ControlFlow B C
 
+/-- Trait declaration: [core_models::ops::index::IndexMut]
+    Source: 'core-models/src/core/ops.rs', lines 152:4-154:5
+    Visibility: public -/
+structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
+  Type) where
+  IndexInst : ops.index.Index Self Idx Self_Clause0_Output
+  index_mut : Self → Idx → Result (Self_Clause0_Output ×
+    (Self_Clause0_Output → Self))
+
 /-
 /-- Trait declaration: [core_models::ops::function::FnOnce]
-    Source: 'core-models/src/core/ops.rs', lines 153:4-157:5
+    Source: 'core-models/src/core/ops.rs', lines 160:4-164:5
     Visibility: public -/
 structure ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output : Type)
   where
@@ -727,7 +736,7 @@ structure ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output : Type)
 
 /-
 /-- Trait declaration: [core_models::ops::function::FnMut]
-    Source: 'core-models/src/core/ops.rs', lines 161:4-164:5
+    Source: 'core-models/src/core/ops.rs', lines 168:4-171:5
     Visibility: public -/
 structure ops.function.FnMut (Self : Type) (Args : Type) (Self_Clause0_Output :
   Type) where
@@ -737,7 +746,7 @@ structure ops.function.FnMut (Self : Type) (Args : Type) (Self_Clause0_Output :
 
 /-
 /-- Trait declaration: [core_models::ops::function::Fn]
-    Source: 'core-models/src/core/ops.rs', lines 249:4-252:5
+    Source: 'core-models/src/core/ops.rs', lines 256:4-259:5
     Visibility: public -/
 structure ops.function.Fn (Self : Type) (Args : Type)
   (Self_Clause0_Clause0_Output : Type) where
@@ -746,13 +755,13 @@ structure ops.function.Fn (Self : Type) (Args : Type)
 -/
 
 /-- Trait declaration: [core_models::ops::try_trait::FromResidual]
-    Source: 'core-models/src/core/ops.rs', lines 257:4-259:5
+    Source: 'core-models/src/core/ops.rs', lines 264:4-266:5
     Visibility: public -/
 structure ops.try_trait.FromResidual (Self : Type) (R : Type) where
   from_residual : R → Result Self
 
 /-- Trait declaration: [core_models::ops::try_trait::Try]
-    Source: 'core-models/src/core/ops.rs', lines 262:4-267:5
+    Source: 'core-models/src/core/ops.rs', lines 269:4-274:5
     Visibility: public -/
 structure ops.try_trait.Try (Self : Type) (Self_Output : Type) (Self_Residual :
   Type) where
@@ -761,43 +770,51 @@ structure ops.try_trait.Try (Self : Type) (Self_Output : Type) (Self_Residual :
     Self_Output)
 
 /-- Trait declaration: [core_models::ops::deref::Deref]
-    Source: 'core-models/src/core/ops.rs', lines 272:4-276:5
+    Source: 'core-models/src/core/ops.rs', lines 279:4-283:5
     Visibility: public -/
 structure ops.deref.Deref (Self : Type) (Self_Target : Type) where
   deref : Self → Result Self_Target
 
+/-- Trait declaration: [core_models::ops::deref::DerefMut]
+    Source: 'core-models/src/core/ops.rs', lines 300:4-302:5
+    Visibility: public -/
+structure ops.deref.DerefMut (Self : Type) (Self_Clause0_Target : Type) where
+  DerefInst : ops.deref.Deref Self Self_Clause0_Target
+  deref_mut : Self → Result (Self_Clause0_Target × (Self_Clause0_Target →
+    Self))
+
 /-- Trait declaration: [core_models::ops::drop::Drop]
-    Source: 'core-models/src/core/ops.rs', lines 288:4-290:5 -/
+    Source: 'core-models/src/core/ops.rs', lines 307:4-309:5 -/
 structure ops.drop.Drop (Self : Type) where
   drop : Self → Result Self
 
 /-- [core_models::ops::range::RangeTo]
-    Source: 'core-models/src/core/ops.rs', lines 295:4-297:5
+    Source: 'core-models/src/core/ops.rs', lines 314:4-316:5
     Visibility: public -/
 structure ops.range.RangeTo (T : Type) where
   «end» : T
 
 /-- [core_models::ops::range::RangeFrom]
-    Source: 'core-models/src/core/ops.rs', lines 299:4-301:5
+    Source: 'core-models/src/core/ops.rs', lines 318:4-320:5
     Visibility: public -/
 structure ops.range.RangeFrom (T : Type) where
   start : T
 
 /-- [core_models::ops::range::Range]
-    Source: 'core-models/src/core/ops.rs', lines 303:4-306:5
+    Source: 'core-models/src/core/ops.rs', lines 322:4-325:5
     Visibility: public -/
 structure ops.range.Range (T : Type) where
   start : T
   «end» : T
 
 /-- [core_models::ops::range::RangeFull]
-    Source: 'core-models/src/core/ops.rs', lines 308:4-308:25
+    Source: 'core-models/src/core/ops.rs', lines 327:4-327:25
     Visibility: public -/
 @[reducible]
 def ops.range.RangeFull := Unit
 
 /-- [core_models::ops::range::RangeInclusive]
-    Source: 'core-models/src/core/ops.rs', lines 310:4-313:5
+    Source: 'core-models/src/core/ops.rs', lines 329:4-332:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
   start : T

@@ -145,6 +145,13 @@ pub mod index {
         type Output: ?Sized;
         fn index(&self, i: Idx) -> &Self::Output;
     }
+
+    /// See [`std::ops::IndexMut`]. Gated out of the F\* backend for the same
+    /// reason as [`super::deref::DerefMut`]: `&mut` returns are unsupported.
+    #[cfg(not(hax_backend_fstar))]
+    pub trait IndexMut<Idx>: Index<Idx> {
+        fn index_mut(&mut self, i: Idx) -> &mut Self::Output;
+    }
 }
 
 pub mod function {
@@ -280,6 +287,18 @@ mod deref {
         fn deref(&self) -> &T {
             &self
         }
+    }
+
+    /// See [`std::ops::DerefMut`].
+    ///
+    /// Gated out of the F\* backend, which does not support `&mut` returns
+    /// (the same reason `SliceIndex::get_mut` is gated in `slice::index`).
+    /// Aeneas encodes the `&mut` return as a value paired with a write-back
+    /// closure, so downstream Lean sees
+    /// `deref_mut : Self → Result (Target × (Target → Self))`.
+    #[cfg(not(hax_backend_fstar))]
+    pub trait DerefMut: Deref {
+        fn deref_mut(&mut self) -> &mut Self::Target;
     }
 }
 
