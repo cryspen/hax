@@ -68,81 +68,54 @@ pub fn test_is_err_err_max() -> bool {
 
 // ----- expect ----------------------------------------------------------------
 
-// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
-// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
-// not extracted.
-/*
 #[rust_lean_test]
 pub fn test_expect_ok_zero() -> bool {
     ok_u8_u8(0).expect("msg") == 0
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_expect_ok_max() -> bool {
     ok_u8_u8(u8::MAX).expect("msg") == u8::MAX
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_expect_ok_mid() -> bool {
     ok_u8_u8(42).expect("msg") == 42
 }
-*/
 
 // ----- unwrap ----------------------------------------------------------------
 
-// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
-// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
-// not extracted.
-/*
 #[rust_lean_test]
 pub fn test_unwrap_ok_zero() -> bool {
     ok_u8_u8(0).unwrap() == 0
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_unwrap_ok_max() -> bool {
     ok_u8_u8(u8::MAX).unwrap() == u8::MAX
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_unwrap_ok_mid() -> bool {
     ok_u8_u8(7).unwrap() == 7
 }
-*/
 
 // ----- unwrap_err ------------------------------------------------------------
 
-// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
-// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
-// not extracted.
-/*
 #[rust_lean_test]
 pub fn test_unwrap_err_err_zero() -> bool {
     err_u8_u8(0).unwrap_err() == 0
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_unwrap_err_err_max() -> bool {
     err_u8_u8(u8::MAX).unwrap_err() == u8::MAX
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_unwrap_err_err_mid() -> bool {
     err_u8_u8(7).unwrap_err() == 7
 }
-*/
 
 // ----- unwrap_or -------------------------------------------------------------
 
@@ -173,29 +146,20 @@ pub fn test_unwrap_or_err_default_max() -> bool {
 
 // ----- unwrap_or_default -----------------------------------------------------
 
-// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
-// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
-// not extracted.
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_ok_zero() -> bool {
     ok_u8_u8(0).unwrap_or_default() == 0
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_ok_max() -> bool {
     ok_u8_u8(u8::MAX).unwrap_or_default() == u8::MAX
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_err() -> bool {
     err_u8_u8(u8::MAX).unwrap_or_default() == 0
 }
-*/
 
 // ----- map -------------------------------------------------------------------
 
@@ -266,36 +230,25 @@ pub fn test_err_ok() -> bool {
 
 // ----- and -------------------------------------------------------------------
 
-// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
-// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
-// not extracted.
-/*
 #[rust_lean_test]
 pub fn test_and_ok_ok() -> bool {
     ok_u8_u8(0).and(ok_u8_u8(7)).unwrap_or(99) == 7
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_and_ok_err() -> bool {
     ok_u8_u8(0).and(err_u8_u8(42)).unwrap_err() == 42
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_and_err_ok() -> bool {
     err_u8_u8(99).and(ok_u8_u8(0)).unwrap_err() == 99
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_and_err_err() -> bool {
     err_u8_u8(u8::MAX).and(err_u8_u8(0)).unwrap_err() == u8::MAX
 }
-*/
 
 // ----- and_then --------------------------------------------------------------
 
@@ -304,36 +257,25 @@ pub fn test_and_err_err() -> bool {
 
 // ----- or --------------------------------------------------------------------
 
-// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
-// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
-// not extracted.
-/*
 #[rust_lean_test]
 pub fn test_or_ok_ok() -> bool {
     ok_u8_u8(0).or(ok_u8_u8(99)).unwrap_or(7) == 0
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_or_ok_err() -> bool {
     ok_u8_u8(u8::MAX).or(err_u8_u8(42)).unwrap_or(0) == u8::MAX
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_or_err_ok() -> bool {
     err_u8_u8(99).or(ok_u8_u8(42)).unwrap_or(0) == 42
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_or_err_err() -> bool {
     err_u8_u8(99).or(err_u8_u8(7)).unwrap_err() == 7
 }
-*/
 
 // ----- or_else ---------------------------------------------------------------
 
@@ -363,10 +305,6 @@ fn err_outer_u8(e: u8) -> Result<Option<u8>, u8> {
     Err(e)
 }
 
-// TODO(result-excluded): the `impl<T, E> Result<T, E>` block in
-// `core-models/src/core/result.rs` is `aeneas::exclude`d, so this method is
-// not extracted.
-/*
 #[rust_lean_test]
 pub fn test_transpose_ok_some_zero() -> bool {
     match ok_some_u8(0).transpose() {
@@ -374,9 +312,7 @@ pub fn test_transpose_ok_some_zero() -> bool {
         _ => false,
     }
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_transpose_ok_some_max() -> bool {
     match ok_some_u8(u8::MAX).transpose() {
@@ -384,16 +320,12 @@ pub fn test_transpose_ok_some_max() -> bool {
         _ => false,
     }
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_transpose_ok_none() -> bool {
     ok_none_u8().transpose().is_none()
 }
-*/
 
-/*
 #[rust_lean_test]
 pub fn test_transpose_err() -> bool {
     match err_outer_u8(7).transpose() {
@@ -401,7 +333,6 @@ pub fn test_transpose_err() -> bool {
         _ => false,
     }
 }
-*/
 
 // ----- flatten ---------------------------------------------------------------
 
