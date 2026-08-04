@@ -16,31 +16,6 @@ namespace CoreModels.core
 
 open Aeneas.Std Result
 
-/-! ## Scalar PartialEq / PartialOrd instances -/
-
-def U8.Insts.CoreCmpPartialEqU8       : cmp.PartialEq U8    U8    := { eq := fun x y => ok (x == y) }
-def U16.Insts.CoreCmpPartialEqU16     : cmp.PartialEq U16   U16   := { eq := fun x y => ok (x == y) }
-def U32.Insts.CoreCmpPartialEqU32     : cmp.PartialEq U32   U32   := { eq := fun x y => ok (x == y) }
-def U64.Insts.CoreCmpPartialEqU64     : cmp.PartialEq U64   U64   := { eq := fun x y => ok (x == y) }
-def U128.Insts.CoreCmpPartialEqU128   : cmp.PartialEq U128  U128  := { eq := fun x y => ok (x == y) }
-def Usize.Insts.CoreCmpPartialEqUsize : cmp.PartialEq Usize Usize := { eq := fun x y => ok (x == y) }
-def I8.Insts.CoreCmpPartialEqI8       : cmp.PartialEq I8    I8    := { eq := fun x y => ok (x == y) }
-def I16.Insts.CoreCmpPartialEqI16     : cmp.PartialEq I16   I16   := { eq := fun x y => ok (x == y) }
-def I32.Insts.CoreCmpPartialEqI32     : cmp.PartialEq I32   I32   := { eq := fun x y => ok (x == y) }
-def I64.Insts.CoreCmpPartialEqI64     : cmp.PartialEq I64   I64   := { eq := fun x y => ok (x == y) }
-def I128.Insts.CoreCmpPartialEqI128   : cmp.PartialEq I128  I128  := { eq := fun x y => ok (x == y) }
-def Isize.Insts.CoreCmpPartialEqIsize : cmp.PartialEq Isize Isize := { eq := fun x y => ok (x == y) }
-
-def mkUPartialOrd {ty} : cmp.PartialOrd (UScalar ty) (UScalar ty) := {
-  PartialEqInst := { eq := fun x y => ok (x == y) }
-  partial_cmp := fun x y =>
-    ok (option.Option.Some
-      (match compare x.val y.val with
-       | .lt => cmp.Ordering.Less
-       | .eq => cmp.Ordering.Equal
-       | .gt => cmp.Ordering.Greater))
-}
-
 /-- The `Iterator::next` implementation for `core::ops::range::Range<A>`,
     parameterised over the `Step` dictionary. -/
 def IteratorRange.next {A : Type} (StepInst : iter.range.Step A) :
@@ -58,70 +33,6 @@ def IteratorRange.next {A : Type} (StepInst : iter.range.Step A) :
     | Option.none      => .fail .panic
     | Option.some next => .ok (Option.some cur, { range with start := next })
   else .ok (Option.none, range)
-
-def mkIPartialOrd {ty} : cmp.PartialOrd (IScalar ty) (IScalar ty) := {
-  PartialEqInst := { eq := fun x y => ok (x == y) }
-  partial_cmp := fun x y =>
-    ok (option.Option.Some
-      (match compare x.val y.val with
-       | .lt => cmp.Ordering.Less
-       | .eq => cmp.Ordering.Equal
-       | .gt => cmp.Ordering.Greater))
-}
-
-def U8.Insts.CoreCmpPartialOrdU8       : cmp.PartialOrd U8    U8    := mkUPartialOrd
-def U16.Insts.CoreCmpPartialOrdU16     : cmp.PartialOrd U16   U16   := mkUPartialOrd
-def U32.Insts.CoreCmpPartialOrdU32     : cmp.PartialOrd U32   U32   := mkUPartialOrd
-def U64.Insts.CoreCmpPartialOrdU64     : cmp.PartialOrd U64   U64   := mkUPartialOrd
-def U128.Insts.CoreCmpPartialOrdU128   : cmp.PartialOrd U128  U128  := mkUPartialOrd
-def Usize.Insts.CoreCmpPartialOrdUsize : cmp.PartialOrd Usize Usize := mkUPartialOrd
-def I8.Insts.CoreCmpPartialOrdI8       : cmp.PartialOrd I8    I8    := mkIPartialOrd
-def I16.Insts.CoreCmpPartialOrdI16     : cmp.PartialOrd I16   I16   := mkIPartialOrd
-def I32.Insts.CoreCmpPartialOrdI32     : cmp.PartialOrd I32   I32   := mkIPartialOrd
-def I64.Insts.CoreCmpPartialOrdI64     : cmp.PartialOrd I64   I64   := mkIPartialOrd
-def I128.Insts.CoreCmpPartialOrdI128   : cmp.PartialOrd I128  I128  := mkIPartialOrd
-def Isize.Insts.CoreCmpPartialOrdIsize : cmp.PartialOrd Isize Isize := mkIPartialOrd
-
-/-! ## Scalar `Ord` instances
-
-`core::cmp::Ord for <int>` is `aeneas::exclude`d in `cmp.rs` (like `PartialEq`
-/ `PartialOrd`), so — to match the excluded `PartialOrd` instances above — we
-re-provide it here. Without these, any model code requiring `T: Ord` on a
-scalar (e.g. `<[T]>::cmp`, sorting, `BinaryHeap`) references an undefined
-`<int>.Insts.CoreCmpOrd`. -/
-
-def mkUOrd {ty} : cmp.Ord (UScalar ty) := {
-  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y) } }
-  PartialOrdInst := mkUPartialOrd
-  cmp := fun x y =>
-    ok (match compare x.val y.val with
-        | .lt => cmp.Ordering.Less
-        | .eq => cmp.Ordering.Equal
-        | .gt => cmp.Ordering.Greater)
-}
-
-def mkIOrd {ty} : cmp.Ord (IScalar ty) := {
-  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y) } }
-  PartialOrdInst := mkIPartialOrd
-  cmp := fun x y =>
-    ok (match compare x.val y.val with
-        | .lt => cmp.Ordering.Less
-        | .eq => cmp.Ordering.Equal
-        | .gt => cmp.Ordering.Greater)
-}
-
-def U8.Insts.CoreCmpOrd    : cmp.Ord U8    := mkUOrd
-def U16.Insts.CoreCmpOrd   : cmp.Ord U16   := mkUOrd
-def U32.Insts.CoreCmpOrd   : cmp.Ord U32   := mkUOrd
-def U64.Insts.CoreCmpOrd   : cmp.Ord U64   := mkUOrd
-def U128.Insts.CoreCmpOrd  : cmp.Ord U128  := mkUOrd
-def Usize.Insts.CoreCmpOrd : cmp.Ord Usize := mkUOrd
-def I8.Insts.CoreCmpOrd    : cmp.Ord I8    := mkIOrd
-def I16.Insts.CoreCmpOrd   : cmp.Ord I16   := mkIOrd
-def I32.Insts.CoreCmpOrd   : cmp.Ord I32   := mkIOrd
-def I64.Insts.CoreCmpOrd   : cmp.Ord I64   := mkIOrd
-def I128.Insts.CoreCmpOrd  : cmp.Ord I128  := mkIOrd
-def Isize.Insts.CoreCmpOrd : cmp.Ord Isize := mkIOrd
 
 abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next :=
   @IteratorRange.next

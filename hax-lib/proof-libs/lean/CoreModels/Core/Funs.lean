@@ -609,8 +609,768 @@ def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
   cmp := cmp.Reverse.Insts.CoreCmpOrd.cmp OrdInst
 }
 
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<u8> for u8}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def U8.Insts.CoreCmpPartialEqU8.eq
+  (self : Std.U8) (other : Std.U8) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<u8> for u8}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def U8.Insts.CoreCmpPartialEqU8 : cmp.PartialEq Std.U8 Std.U8 := {
+  eq := U8.Insts.CoreCmpPartialEqU8.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<u8> for u8}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def U8.Insts.CoreCmpPartialOrdU8.partial_cmp
+  (self : Std.U8) (other : Std.U8) : Result (option.Option cmp.Ordering) := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<u8> for u8}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def U8.Insts.CoreCmpPartialOrdU8 : cmp.PartialOrd Std.U8 Std.U8 := {
+  PartialEqInst := U8.Insts.CoreCmpPartialEqU8
+  partial_cmp := U8.Insts.CoreCmpPartialOrdU8.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<i8> for i8}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def I8.Insts.CoreCmpPartialEqI8.eq
+  (self : Std.I8) (other : Std.I8) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<i8> for i8}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def I8.Insts.CoreCmpPartialEqI8 : cmp.PartialEq Std.I8 Std.I8 := {
+  eq := I8.Insts.CoreCmpPartialEqI8.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<i8> for i8}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def I8.Insts.CoreCmpPartialOrdI8.partial_cmp
+  (self : Std.I8) (other : Std.I8) : Result (option.Option cmp.Ordering) := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<i8> for i8}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def I8.Insts.CoreCmpPartialOrdI8 : cmp.PartialOrd Std.I8 Std.I8 := {
+  PartialEqInst := I8.Insts.CoreCmpPartialEqI8
+  partial_cmp := I8.Insts.CoreCmpPartialOrdI8.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<u16> for u16}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def U16.Insts.CoreCmpPartialEqU16.eq
+  (self : Std.U16) (other : Std.U16) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<u16> for u16}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def U16.Insts.CoreCmpPartialEqU16 : cmp.PartialEq Std.U16 Std.U16 := {
+  eq := U16.Insts.CoreCmpPartialEqU16.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<u16> for u16}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def U16.Insts.CoreCmpPartialOrdU16.partial_cmp
+  (self : Std.U16) (other : Std.U16) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<u16> for u16}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def U16.Insts.CoreCmpPartialOrdU16 : cmp.PartialOrd Std.U16 Std.U16 := {
+  PartialEqInst := U16.Insts.CoreCmpPartialEqU16
+  partial_cmp := U16.Insts.CoreCmpPartialOrdU16.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<i16> for i16}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def I16.Insts.CoreCmpPartialEqI16.eq
+  (self : Std.I16) (other : Std.I16) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<i16> for i16}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def I16.Insts.CoreCmpPartialEqI16 : cmp.PartialEq Std.I16 Std.I16 := {
+  eq := I16.Insts.CoreCmpPartialEqI16.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<i16> for i16}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def I16.Insts.CoreCmpPartialOrdI16.partial_cmp
+  (self : Std.I16) (other : Std.I16) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<i16> for i16}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def I16.Insts.CoreCmpPartialOrdI16 : cmp.PartialOrd Std.I16 Std.I16 := {
+  PartialEqInst := I16.Insts.CoreCmpPartialEqI16
+  partial_cmp := I16.Insts.CoreCmpPartialOrdI16.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<u32> for u32}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def U32.Insts.CoreCmpPartialEqU32.eq
+  (self : Std.U32) (other : Std.U32) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<u32> for u32}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def U32.Insts.CoreCmpPartialEqU32 : cmp.PartialEq Std.U32 Std.U32 := {
+  eq := U32.Insts.CoreCmpPartialEqU32.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<u32> for u32}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def U32.Insts.CoreCmpPartialOrdU32.partial_cmp
+  (self : Std.U32) (other : Std.U32) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<u32> for u32}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def U32.Insts.CoreCmpPartialOrdU32 : cmp.PartialOrd Std.U32 Std.U32 := {
+  PartialEqInst := U32.Insts.CoreCmpPartialEqU32
+  partial_cmp := U32.Insts.CoreCmpPartialOrdU32.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<i32> for i32}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def I32.Insts.CoreCmpPartialEqI32.eq
+  (self : Std.I32) (other : Std.I32) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<i32> for i32}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def I32.Insts.CoreCmpPartialEqI32 : cmp.PartialEq Std.I32 Std.I32 := {
+  eq := I32.Insts.CoreCmpPartialEqI32.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<i32> for i32}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def I32.Insts.CoreCmpPartialOrdI32.partial_cmp
+  (self : Std.I32) (other : Std.I32) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<i32> for i32}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def I32.Insts.CoreCmpPartialOrdI32 : cmp.PartialOrd Std.I32 Std.I32 := {
+  PartialEqInst := I32.Insts.CoreCmpPartialEqI32
+  partial_cmp := I32.Insts.CoreCmpPartialOrdI32.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<u64> for u64}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def U64.Insts.CoreCmpPartialEqU64.eq
+  (self : Std.U64) (other : Std.U64) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<u64> for u64}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def U64.Insts.CoreCmpPartialEqU64 : cmp.PartialEq Std.U64 Std.U64 := {
+  eq := U64.Insts.CoreCmpPartialEqU64.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<u64> for u64}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def U64.Insts.CoreCmpPartialOrdU64.partial_cmp
+  (self : Std.U64) (other : Std.U64) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<u64> for u64}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def U64.Insts.CoreCmpPartialOrdU64 : cmp.PartialOrd Std.U64 Std.U64 := {
+  PartialEqInst := U64.Insts.CoreCmpPartialEqU64
+  partial_cmp := U64.Insts.CoreCmpPartialOrdU64.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<i64> for i64}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def I64.Insts.CoreCmpPartialEqI64.eq
+  (self : Std.I64) (other : Std.I64) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<i64> for i64}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def I64.Insts.CoreCmpPartialEqI64 : cmp.PartialEq Std.I64 Std.I64 := {
+  eq := I64.Insts.CoreCmpPartialEqI64.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<i64> for i64}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def I64.Insts.CoreCmpPartialOrdI64.partial_cmp
+  (self : Std.I64) (other : Std.I64) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<i64> for i64}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def I64.Insts.CoreCmpPartialOrdI64 : cmp.PartialOrd Std.I64 Std.I64 := {
+  PartialEqInst := I64.Insts.CoreCmpPartialEqI64
+  partial_cmp := I64.Insts.CoreCmpPartialOrdI64.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<u128> for u128}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def U128.Insts.CoreCmpPartialEqU128.eq
+  (self : Std.U128) (other : Std.U128) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<u128> for u128}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def U128.Insts.CoreCmpPartialEqU128 : cmp.PartialEq Std.U128 Std.U128
+  := {
+  eq := U128.Insts.CoreCmpPartialEqU128.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<u128> for u128}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def U128.Insts.CoreCmpPartialOrdU128.partial_cmp
+  (self : Std.U128) (other : Std.U128) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<u128> for u128}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def U128.Insts.CoreCmpPartialOrdU128 : cmp.PartialOrd Std.U128 Std.U128
+  := {
+  PartialEqInst := U128.Insts.CoreCmpPartialEqU128
+  partial_cmp := U128.Insts.CoreCmpPartialOrdU128.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<i128> for i128}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def I128.Insts.CoreCmpPartialEqI128.eq
+  (self : Std.I128) (other : Std.I128) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<i128> for i128}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def I128.Insts.CoreCmpPartialEqI128 : cmp.PartialEq Std.I128 Std.I128
+  := {
+  eq := I128.Insts.CoreCmpPartialEqI128.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<i128> for i128}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def I128.Insts.CoreCmpPartialOrdI128.partial_cmp
+  (self : Std.I128) (other : Std.I128) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<i128> for i128}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def I128.Insts.CoreCmpPartialOrdI128 : cmp.PartialOrd Std.I128 Std.I128
+  := {
+  PartialEqInst := I128.Insts.CoreCmpPartialEqI128
+  partial_cmp := I128.Insts.CoreCmpPartialOrdI128.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<usize> for usize}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def Usize.Insts.CoreCmpPartialEqUsize.eq
+  (self : Std.Usize) (other : Std.Usize) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<usize> for usize}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def Usize.Insts.CoreCmpPartialEqUsize : cmp.PartialEq Std.Usize
+  Std.Usize := {
+  eq := Usize.Insts.CoreCmpPartialEqUsize.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<usize> for usize}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def Usize.Insts.CoreCmpPartialOrdUsize.partial_cmp
+  (self : Std.Usize) (other : Std.Usize) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<usize> for usize}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def Usize.Insts.CoreCmpPartialOrdUsize : cmp.PartialOrd Std.Usize
+  Std.Usize := {
+  PartialEqInst := Usize.Insts.CoreCmpPartialEqUsize
+  partial_cmp := Usize.Insts.CoreCmpPartialOrdUsize.partial_cmp
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<isize> for isize}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 191:12-193:13
+    Visibility: public -/
+def Isize.Insts.CoreCmpPartialEqIsize.eq
+  (self : Std.Isize) (other : Std.Isize) : Result Bool := do
+  ok (self = other)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<isize> for isize}]
+    Source: 'core-models/src/core/cmp.rs', lines 190:8-194:9 -/
+@[reducible]
+def Isize.Insts.CoreCmpPartialEqIsize : cmp.PartialEq Std.Isize
+  Std.Isize := {
+  eq := Isize.Insts.CoreCmpPartialEqIsize.eq
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialOrd<isize> for isize}::partial_cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 167:12-171:13
+    Visibility: public -/
+def Isize.Insts.CoreCmpPartialOrdIsize.partial_cmp
+  (self : Std.Isize) (other : Std.Isize) :
+  Result (option.Option cmp.Ordering)
+  := do
+  if self < other
+  then ok (option.Option.Some cmp.Ordering.Less)
+  else
+    if self > other
+    then ok (option.Option.Some cmp.Ordering.Greater)
+    else ok (option.Option.Some cmp.Ordering.Equal)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<isize> for isize}]
+    Source: 'core-models/src/core/cmp.rs', lines 158:8-172:9 -/
+@[reducible]
+def Isize.Insts.CoreCmpPartialOrdIsize : cmp.PartialOrd Std.Isize
+  Std.Isize := {
+  PartialEqInst := Isize.Insts.CoreCmpPartialEqIsize
+  partial_cmp := Isize.Insts.CoreCmpPartialOrdIsize.partial_cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for u8}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def U8.Insts.CoreCmpEq : cmp.Eq Std.U8 := {
+  PartialEqInst := U8.Insts.CoreCmpPartialEqU8
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for u8}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def U8.Insts.CoreCmpOrd.cmp
+  (self : Std.U8) (other : Std.U8) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for u8}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def U8.Insts.CoreCmpOrd : cmp.Ord Std.U8 := {
+  EqInst := U8.Insts.CoreCmpEq
+  PartialOrdInst := U8.Insts.CoreCmpPartialOrdU8
+  cmp := U8.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for i8}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def I8.Insts.CoreCmpEq : cmp.Eq Std.I8 := {
+  PartialEqInst := I8.Insts.CoreCmpPartialEqI8
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for i8}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def I8.Insts.CoreCmpOrd.cmp
+  (self : Std.I8) (other : Std.I8) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for i8}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def I8.Insts.CoreCmpOrd : cmp.Ord Std.I8 := {
+  EqInst := I8.Insts.CoreCmpEq
+  PartialOrdInst := I8.Insts.CoreCmpPartialOrdI8
+  cmp := I8.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for u16}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def U16.Insts.CoreCmpEq : cmp.Eq Std.U16 := {
+  PartialEqInst := U16.Insts.CoreCmpPartialEqU16
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for u16}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def U16.Insts.CoreCmpOrd.cmp
+  (self : Std.U16) (other : Std.U16) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for u16}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def U16.Insts.CoreCmpOrd : cmp.Ord Std.U16 := {
+  EqInst := U16.Insts.CoreCmpEq
+  PartialOrdInst := U16.Insts.CoreCmpPartialOrdU16
+  cmp := U16.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for i16}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def I16.Insts.CoreCmpEq : cmp.Eq Std.I16 := {
+  PartialEqInst := I16.Insts.CoreCmpPartialEqI16
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for i16}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def I16.Insts.CoreCmpOrd.cmp
+  (self : Std.I16) (other : Std.I16) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for i16}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def I16.Insts.CoreCmpOrd : cmp.Ord Std.I16 := {
+  EqInst := I16.Insts.CoreCmpEq
+  PartialOrdInst := I16.Insts.CoreCmpPartialOrdI16
+  cmp := I16.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for u32}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def U32.Insts.CoreCmpEq : cmp.Eq Std.U32 := {
+  PartialEqInst := U32.Insts.CoreCmpPartialEqU32
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for u32}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def U32.Insts.CoreCmpOrd.cmp
+  (self : Std.U32) (other : Std.U32) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for u32}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def U32.Insts.CoreCmpOrd : cmp.Ord Std.U32 := {
+  EqInst := U32.Insts.CoreCmpEq
+  PartialOrdInst := U32.Insts.CoreCmpPartialOrdU32
+  cmp := U32.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for i32}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def I32.Insts.CoreCmpEq : cmp.Eq Std.I32 := {
+  PartialEqInst := I32.Insts.CoreCmpPartialEqI32
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for i32}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def I32.Insts.CoreCmpOrd.cmp
+  (self : Std.I32) (other : Std.I32) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for i32}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def I32.Insts.CoreCmpOrd : cmp.Ord Std.I32 := {
+  EqInst := I32.Insts.CoreCmpEq
+  PartialOrdInst := I32.Insts.CoreCmpPartialOrdI32
+  cmp := I32.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for u64}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def U64.Insts.CoreCmpEq : cmp.Eq Std.U64 := {
+  PartialEqInst := U64.Insts.CoreCmpPartialEqU64
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for u64}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def U64.Insts.CoreCmpOrd.cmp
+  (self : Std.U64) (other : Std.U64) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for u64}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def U64.Insts.CoreCmpOrd : cmp.Ord Std.U64 := {
+  EqInst := U64.Insts.CoreCmpEq
+  PartialOrdInst := U64.Insts.CoreCmpPartialOrdU64
+  cmp := U64.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for i64}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def I64.Insts.CoreCmpEq : cmp.Eq Std.I64 := {
+  PartialEqInst := I64.Insts.CoreCmpPartialEqI64
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for i64}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def I64.Insts.CoreCmpOrd.cmp
+  (self : Std.I64) (other : Std.I64) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for i64}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def I64.Insts.CoreCmpOrd : cmp.Ord Std.I64 := {
+  EqInst := I64.Insts.CoreCmpEq
+  PartialOrdInst := I64.Insts.CoreCmpPartialOrdI64
+  cmp := I64.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for u128}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def U128.Insts.CoreCmpEq : cmp.Eq Std.U128 := {
+  PartialEqInst := U128.Insts.CoreCmpPartialEqU128
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for u128}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def U128.Insts.CoreCmpOrd.cmp
+  (self : Std.U128) (other : Std.U128) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for u128}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def U128.Insts.CoreCmpOrd : cmp.Ord Std.U128 := {
+  EqInst := U128.Insts.CoreCmpEq
+  PartialOrdInst := U128.Insts.CoreCmpPartialOrdU128
+  cmp := U128.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for i128}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def I128.Insts.CoreCmpEq : cmp.Eq Std.I128 := {
+  PartialEqInst := I128.Insts.CoreCmpPartialEqI128
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for i128}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def I128.Insts.CoreCmpOrd.cmp
+  (self : Std.I128) (other : Std.I128) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for i128}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def I128.Insts.CoreCmpOrd : cmp.Ord Std.I128 := {
+  EqInst := I128.Insts.CoreCmpEq
+  PartialOrdInst := I128.Insts.CoreCmpPartialOrdI128
+  cmp := I128.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for usize}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def Usize.Insts.CoreCmpEq : cmp.Eq Std.Usize := {
+  PartialEqInst := Usize.Insts.CoreCmpPartialEqUsize
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for usize}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def Usize.Insts.CoreCmpOrd.cmp
+  (self : Std.Usize) (other : Std.Usize) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for usize}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def Usize.Insts.CoreCmpOrd : cmp.Ord Std.Usize := {
+  EqInst := Usize.Insts.CoreCmpEq
+  PartialOrdInst := Usize.Insts.CoreCmpPartialOrdUsize
+  cmp := Usize.Insts.CoreCmpOrd.cmp
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for isize}]
+    Source: 'core-models/src/core/cmp.rs', lines 196:8-196:25 -/
+@[reducible]
+def Isize.Insts.CoreCmpEq : cmp.Eq Std.Isize := {
+  PartialEqInst := Isize.Insts.CoreCmpPartialEqIsize
+}
+
+/-- [core_models::cmp::{impl core_models::cmp::Ord for isize}::cmp]:
+    Source: 'core-models/src/core/cmp.rs', lines 183:12-187:13
+    Visibility: public -/
+def Isize.Insts.CoreCmpOrd.cmp
+  (self : Std.Isize) (other : Std.Isize) : Result cmp.Ordering := do
+  if self < other
+  then ok cmp.Ordering.Less
+  else if self > other
+       then ok cmp.Ordering.Greater
+       else ok cmp.Ordering.Equal
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for isize}]
+    Source: 'core-models/src/core/cmp.rs', lines 175:8-188:9 -/
+@[reducible]
+def Isize.Insts.CoreCmpOrd : cmp.Ord Std.Isize := {
+  EqInst := Isize.Insts.CoreCmpEq
+  PartialOrdInst := Isize.Insts.CoreCmpPartialOrdIsize
+  cmp := Isize.Insts.CoreCmpOrd.cmp
+}
+
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 209:4-211:5
+    Source: 'core-models/src/core/cmp.rs', lines 205:4-207:5
     Visibility: public -/
 def cmp.Ordering.is_eq (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -619,7 +1379,7 @@ def cmp.Ordering.is_eq (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 213:4-215:5
+    Source: 'core-models/src/core/cmp.rs', lines 209:4-211:5
     Visibility: public -/
 def cmp.Ordering.is_ne (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -628,7 +1388,7 @@ def cmp.Ordering.is_ne (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 217:4-219:5
+    Source: 'core-models/src/core/cmp.rs', lines 213:4-215:5
     Visibility: public -/
 def cmp.Ordering.is_lt (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -637,7 +1397,7 @@ def cmp.Ordering.is_lt (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 221:4-223:5
+    Source: 'core-models/src/core/cmp.rs', lines 217:4-219:5
     Visibility: public -/
 def cmp.Ordering.is_gt (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -646,7 +1406,7 @@ def cmp.Ordering.is_gt (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_le]:
-    Source: 'core-models/src/core/cmp.rs', lines 225:4-227:5
+    Source: 'core-models/src/core/cmp.rs', lines 221:4-223:5
     Visibility: public -/
 def cmp.Ordering.is_le (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -655,7 +1415,7 @@ def cmp.Ordering.is_le (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 229:4-231:5
+    Source: 'core-models/src/core/cmp.rs', lines 225:4-227:5
     Visibility: public -/
 def cmp.Ordering.is_ge (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -664,7 +1424,7 @@ def cmp.Ordering.is_ge (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::reverse]:
-    Source: 'core-models/src/core/cmp.rs', lines 233:4-239:5
+    Source: 'core-models/src/core/cmp.rs', lines 229:4-235:5
     Visibility: public -/
 def cmp.Ordering.reverse (self : cmp.Ordering) : Result cmp.Ordering := do
   match self with
@@ -673,7 +1433,7 @@ def cmp.Ordering.reverse (self : cmp.Ordering) : Result cmp.Ordering := do
   | cmp.Ordering.Greater => ok cmp.Ordering.Less
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then]:
-    Source: 'core-models/src/core/cmp.rs', lines 241:4-246:5
+    Source: 'core-models/src/core/cmp.rs', lines 237:4-242:5
     Visibility: public -/
 def cmp.Ordering.then
   (self : cmp.Ordering) (other : cmp.Ordering) : Result cmp.Ordering := do
@@ -683,7 +1443,7 @@ def cmp.Ordering.then
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then_with]:
-    Source: 'core-models/src/core/cmp.rs', lines 248:4-253:5
+    Source: 'core-models/src/core/cmp.rs', lines 244:4-249:5
     Visibility: public -/
 def cmp.Ordering.then_with
   {F : Type} (coreopsfunctionFnOnceFTupleOrderingInst :
@@ -704,7 +1464,7 @@ def panicking.internal.panic (T : Type) : Result T := do
   fail Error.panic
 
 /-- [core_models::cmp::clamp]:
-    Source: 'core-models/src/core/cmp.rs', lines 258:0-270:1
+    Source: 'core-models/src/core/cmp.rs', lines 254:0-266:1
     Visibility: public -/
 def cmp.clamp
   {T : Type} (OrdInst : cmp.Ord T) (value : T) (min : T) (max : T) :
