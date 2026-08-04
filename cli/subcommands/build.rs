@@ -13,6 +13,7 @@ fn rustc_version_env_var() {
     );
 }
 
+#[cfg(feature = "legacy-engine")]
 fn json_schema_static_asset() {
     let mut schema = schemars::schema_for!((
         hax_frontend_exporter::Item<hax_frontend_exporter::ThirBody>,
@@ -54,6 +55,7 @@ fn git_dirty_env_var() {
 
 fn main() {
     rustc_version_env_var();
+    #[cfg(feature = "legacy-engine")]
     json_schema_static_asset();
     git_dirty_env_var();
 }

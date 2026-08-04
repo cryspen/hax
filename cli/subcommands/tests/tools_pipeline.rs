@@ -7,44 +7,31 @@ mod common;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
-use common::{make_archive, platform, serve, sha256_hex, stub, write_executable};
+use common::{
+    cargo_hax, command, make_archive, output_of, platform, serve, sha256_hex, stub,
+    write_executable, write_path_entries, write_tool_stubs,
+};
 
 /// A minimal crate to run the backend on.
 fn write_crate(dir: &Path) {
     common::write_crate(dir, "fixture");
 }
 
-/// Point a crate's `hax.toml` at the charon and aeneas binaries in `bin`.
-fn write_path_entries(crate_dir: &Path, bin: &Path) {
-    std::fs::write(
-        crate_dir.join("hax.toml"),
-        format!(
-            "[tools]\ncharon = {{ path = \"{}\" }}\naeneas = {{ path = \"{}\" }}\n",
-            bin.join("charon").display(),
-            bin.join("aeneas").display(),
-        ),
-    )
-    .unwrap();
-}
-
 fn run_backend(crate_dir: &Path, envs: &[(&str, &str)]) -> (String, bool) {
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(["into", "lean"]).current_dir(crate_dir);
-    cmd.env_remove("HAX_TOOLS_MANIFEST");
+    let mut cmd = command(&cargo_hax(), &["into", "lean"], crate_dir);
     for (var, value) in envs {
         cmd.env(var, value);
     }
-    let output = cmd.output().unwrap();
-    (
-        format!(
-            "{}{}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        ),
-        output.status.success(),
-    )
+    output_of(&mut cmd)
+}
+
+fn run_backend_with_lakefile(crate_dir: &Path) -> (String, bool) {
+    output_of(&mut command(
+        &cargo_hax(),
+        &["into", "lean", "--lakefile"],
+        crate_dir,
+    ))
 }
 
 #[test]
@@ -53,9 +40,7 @@ fn path_entry_runs_the_supplied_binaries_with_a_notice() {
     let crate_dir = dir.path().join("crate");
     write_crate(&crate_dir);
     let bin = dir.path().join("bin");
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
-    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
-    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    write_tool_stubs(&bin);
     write_path_entries(&crate_dir, &bin);
 
     let (output, success) = run_backend(&crate_dir, &[]);
@@ -171,9 +156,7 @@ fn lakefile_pins_come_from_the_resolved_versions() {
     let crate_dir = dir.path().join("crate");
     write_crate(&crate_dir);
     let bin = dir.path().join("bin");
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
-    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
-    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    write_tool_stubs(&bin);
     std::fs::write(
         crate_dir.join("hax.toml"),
         format!(
@@ -191,17 +174,8 @@ hax-lean-lib = "v9.9.9"
     )
     .unwrap();
 
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(["into", "lean", "--lakefile"])
-        .current_dir(&crate_dir)
-        .env_remove("HAX_TOOLS_MANIFEST");
-    let output = cmd.output().unwrap();
-    let all = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(output.status.success(), "{all}");
+    let (all, success) = run_backend_with_lakefile(&crate_dir);
+    assert!(success, "{all}");
 
     let lean_dir = crate_dir.join("proofs/lean");
     let toolchain = std::fs::read_to_string(lean_dir.join("lean-toolchain")).unwrap();
@@ -226,23 +200,12 @@ fn default_declared_versions_are_not_noticed() {
     let crate_dir = dir.path().join("crate");
     write_crate(&crate_dir);
     let bin = dir.path().join("bin");
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
-    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
-    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    write_tool_stubs(&bin);
     // No `[versions]` table: both declared versions resolve to the defaults.
     write_path_entries(&crate_dir, &bin);
 
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(["into", "lean", "--lakefile"])
-        .current_dir(&crate_dir)
-        .env_remove("HAX_TOOLS_MANIFEST");
-    let output = cmd.output().unwrap();
-    let all = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(output.status.success(), "{all}");
+    let (all, success) = run_backend_with_lakefile(&crate_dir);
+    assert!(success, "{all}");
     // The path-overridden tools are noticed, the declared versions are not.
     assert!(!all.contains("using lean "), "{all}");
     assert!(!all.contains("using hax-lean-lib "), "{all}");

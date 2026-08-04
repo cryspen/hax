@@ -25,12 +25,17 @@ and `examples`):
 2. `hax-adt-into` (`frontend/exporter/adt-into`)
 3. `hax-frontend-exporter` (`frontend/exporter`)
 4. `hax-types` (`hax-types`)
-5. `hax-subcommands` (binaries) (`cli/subcommands`)
+5. `cargo-hax` (binaries) (`cli/subcommands`)
    - `cargo-hax`
-   - `hax-export-json-schemas`
-   - `hax-pretty-print-diagnostics`
+   - `hax-export-json-schemas` (only with `--features legacy-engine`)
 
 - `hax-driver`
+
+`cargo install cargo-hax` builds `cargo-hax` under whatever toolchain the user
+has active, which is how `cargo-run-bin` and friends install it for the `lean`
+backend. The default feature set of `cargo-hax` must therefore keep building
+outside the nightly pinned in `rust-toolchain.toml`; the `legacy-engine` feature,
+which pulls in `hax-rust-engine`, is nightly-only and off by default.
 
 ### hax-lib
 

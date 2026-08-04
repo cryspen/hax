@@ -1,0 +1,96 @@
+name: Standalone cargo-hax installation
+
+# `cargo install cargo-hax`, as `cargo-run-bin` and friends do, installs it alone
+# under whatever toolchain the serving project has active, which supports the
+# `lean` backend: charon and aeneas rather than the hax engine. Nothing else here
+# builds `cargo-hax` outside the pinned nightly, nor runs it without the driver
+# and engine beside it, so this workflow is what keeps that installation working.
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  push:
+    branches: [main, dev]
+  schedule:
+    # For the unlocked install below, whose result moves with dependency releases
+    # rather than with this repository.
+    - cron: "0 4 * * 1"
+
+concurrency:
+  # `github.event_name` is part of the key so that a push to `main` and the
+  # weekly schedule, which share a ref, do not cancel one another.
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+# Outranks `rust-toolchain.toml`, which would otherwise select the pinned
+# nightly that nothing here builds with, and keys the cache to it.
+env:
+  RUSTUP_TOOLCHAIN: stable
+
+jobs:
+  install-and-extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      # The documented command, and the one `cargo-run-bin` issues, save for
+      # the source and the `--version` only a crates.io release takes. No
+      # binary is selected, so `required-features` is what has to keep
+      # `hax-export-json-schemas` out. What must not creep back in is a
+      # dependency on the pinned nightly, whether a nightly feature or
+      # `legacy-engine`.
+      - name: Install `cargo-hax` alone, on stable
+        run: >
+          cargo install --locked
+          --root "$RUNNER_TEMP/hax" --path cli/subcommands
+
+      # An install from crates.io compiles the `cargo package` tarball, not the
+      # working tree, so what the files below are checked against is the tarball.
+      # `build.rs` and `src/tools/` reach for them by relative path,
+      # `rust-toolchain.toml` is a symlink to the workspace root, and `Cargo.lock`
+      # is what `--locked` reads: presence in the tarball is not a given.
+      #
+      # `--no-verify`, because the verification build resolves the sibling crates
+      # of this repository from crates.io at their published version rather than
+      # from the working tree: it would fail on any change that spans `hax-types`
+      # and `cargo-hax`, and between a version bump and the release that follows
+      # it. The step above builds the working tree.
+      - name: Check the published tarball
+        run: |
+          cargo package --locked --no-verify -p cargo-hax
+          tar --extract --directory "$RUNNER_TEMP" \
+            --file target/package/cargo-hax-*.crate
+          cd "$RUNNER_TEMP"/cargo-hax-*/
+          for file in Cargo.lock rust-toolchain.toml defaults.toml tools-manifest.toml \
+                      src/engine_debug_webapp/static/index.html \
+                      src/engine_debug_webapp/static/script.js; do
+            test -s "$file" || {
+              echo "::error::empty or absent in the published tarball: $file"
+              exit 1
+            }
+          done
+
+      - name: Extract to Lean, from that installation
+        # Downloads charon and aeneas, so this runs before a merge lands rather
+        # than on every push.
+        if: github.event_name != 'pull_request'
+        working-directory: examples/barrett
+        run: '"$RUNNER_TEMP/hax/bin/cargo-hax" into lean'
+
+      # Without a lockfile, `cargo install` resolves to the newest
+      # semver-compatible dependencies, a result that moves when a dependency
+      # publishes: hence off the pull-request path, and with a `CARGO_HOME` of
+      # its own, so a cached registry index cannot stand in for what a user gets
+      # today.
+      - name: Install `cargo-hax` alone, on stable, unlocked
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          CARGO_HOME: ${{ runner.temp }}/cargo-unlocked
+        run: >
+          cargo install
+          --root "$RUNNER_TEMP/hax-unlocked" --path cli/subcommands

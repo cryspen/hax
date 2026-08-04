@@ -6,9 +6,11 @@
 //! binary's own version (the upper bound of the accepted range) is
 //! available as `env!("CARGO_PKG_VERSION")`.
 
-use std::os::unix::fs::PermissionsExt;
+mod common;
+
 use std::path::Path;
-use std::process::Command;
+
+use common::{cargo_hax, command, output_of, write_path_entries, write_tool_stubs};
 
 const OWN_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -64,39 +66,16 @@ fn fixture(hax_lib_version: &str, direct: bool) -> tempfile::TempDir {
 }
 
 fn run(args: &[&str], current_dir: &Path) -> (String, bool) {
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(args).current_dir(current_dir);
-    cmd.env_remove("HAX_TOOLS_MANIFEST");
-    let output = cmd.output().unwrap();
-    (
-        format!(
-            "{}{}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        ),
-        output.status.success(),
-    )
+    output_of(&mut command(&cargo_hax(), args, current_dir))
 }
 
 /// Stub charon/aeneas binaries under `<root>/stubs`, pointed at by a
 /// workspace-root `hax.toml`, to let an `into lean` run finish without real
 /// tools.
 fn stub_tools(root: &Path) {
-    let dir = root.join("stubs");
-    for name in ["charon", "charon-driver", "aeneas"] {
-        let path = dir.join(name);
-        std::fs::create_dir_all(&dir).unwrap();
-        std::fs::write(&path, "#!/bin/sh\nexit 0\n").unwrap();
-        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o755)).unwrap();
-    }
-    write(
-        &root.join("hax.toml"),
-        &format!(
-            "[tools]\ncharon = {{ path = \"{}\" }}\naeneas = {{ path = \"{}\" }}\n",
-            dir.join("charon").display(),
-            dir.join("aeneas").display(),
-        ),
-    );
+    let stubs = root.join("stubs");
+    write_tool_stubs(&stubs);
+    write_path_entries(root, &stubs);
 }
 
 #[test]
