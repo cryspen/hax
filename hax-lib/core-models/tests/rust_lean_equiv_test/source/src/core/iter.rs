@@ -11,7 +11,8 @@ use rust_lean_test_macro::rust_lean_test;
 
 // ----- count over Range<usize> ----------------------------------------------
 
-// TODO(range-count-extraction: `Range::count` reaches the same missing `Step` instance.)
+// TODO(range-count): the `Range` `Iterator` instance in
+// `CoreModels/Core/FunsPrologue.lean` provides `next` but not `count`.
 /*
 #[rust_lean_test]
 pub fn test_range_count_zero() -> bool {
@@ -19,7 +20,6 @@ pub fn test_range_count_zero() -> bool {
 }
 */
 
-// TODO(range-count-extraction: `Range::count` reaches the same missing `Step` instance.)
 /*
 #[rust_lean_test]
 pub fn test_range_count_five() -> bool {
@@ -27,7 +27,6 @@ pub fn test_range_count_five() -> bool {
 }
 */
 
-// TODO(range-count-extraction: `Range::count` reaches the same missing `Step` instance.)
 /*
 #[rust_lean_test]
 pub fn test_range_count_offset() -> bool {

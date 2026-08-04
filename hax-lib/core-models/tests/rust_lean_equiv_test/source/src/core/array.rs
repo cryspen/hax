@@ -4,7 +4,8 @@ use rust_lean_test_macro::rust_lean_test;
 
 // ----- Index<RangeTo<usize>> -------------------------------------------------
 
-// TODO(array-eq-literal-extraction: comparing the extracted array to a literal array routes through `core_models.Slice.PartialEqArray.eq` (not in the Lean library).)
+// TODO(aeneas#1238): an empty subslice panics in Aeneas's `Slice.subslice`
+// (`r.start < r.end` should be `≤`).
 /*
 #[rust_lean_test]
 pub fn test_index_range_to_zero() -> bool {
@@ -13,23 +14,17 @@ pub fn test_index_range_to_zero() -> bool {
 }
 */
 
-// TODO(array-eq-literal-extraction: comparing the extracted array to a literal array routes through `core_models.Slice.PartialEqArray.eq` (not in the Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_index_range_to_three() -> bool {
     let a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
     a[..3] == [1, 2, 3]
 }
-*/
 
-// TODO(array-eq-literal-extraction: comparing the extracted array to a literal array routes through `core_models.Slice.PartialEqArray.eq` (not in the Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_index_range_to_full() -> bool {
     let a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
     a[..8] == [1, 2, 3, 4, 5, 6, 7, 8]
 }
-*/
 
 // ----- PartialEq -------------------------------------------------------------
 

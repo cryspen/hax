@@ -110,22 +110,16 @@ pub fn test_replace_option_some_with_none() -> bool {
     dst.is_none()
 }
 
-// TODO(option-eq-extraction: `Option<T> == Some(_)` extracts to the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_replace_option_none_with_some() -> bool {
     let mut dst: Option<u8> = crate::helpers::none_u8();
     let old = core::mem::replace(&mut dst, Some(42));
     old.is_none() && dst == Some(42)
 }
-*/
 
-// TODO(option-eq-extraction: `Option<T> == Some(_)` extracts to the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_replace_option_some_with_some() -> bool {
     let mut dst: Option<u8> = Some(1);
     let old = core::mem::replace(&mut dst, Some(2));
     old == Some(1) && dst == Some(2)
 }
-*/

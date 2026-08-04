@@ -6,279 +6,129 @@ use rust_lean_test_macro::rust_lean_test;
 
 // ----- len -------------------------------------------------------------------
 
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_len_empty() -> bool {
     let a: [u8; 0] = [];
     a.as_slice().len() == 0
 }
-*/
 
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_len_one() -> bool {
     let a: [u8; 1] = [42];
     a.as_slice().len() == 1
 }
-*/
 
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_len_eight() -> bool {
     let a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
     a.as_slice().len() == 8
 }
-*/
 
 // ----- is_empty --------------------------------------------------------------
 
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_is_empty_empty() -> bool {
     let a: [u8; 0] = [];
     a.as_slice().is_empty()
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_is_empty_one() -> bool {
     let a: [u8; 1] = [0];
     a.as_slice().is_empty() == false
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_is_empty_many() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     a.as_slice().is_empty() == false
 }
-*/
-*/
-*/
 
 // ----- contains --------------------------------------------------------------
 
-// TODO(slice-method-missing: `<[T]>::contains` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::contains` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_contains_present() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     a.as_slice().contains(&3)
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::contains` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::contains` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_contains_first() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     a.as_slice().contains(&1)
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::contains` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::contains` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_contains_absent() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     a.as_slice().contains(&99) == false
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::contains` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::contains` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_contains_empty() -> bool {
     let a: [u8; 0] = [];
     a.as_slice().contains(&0) == false
 }
-*/
-*/
-*/
 
 // ----- split_at --------------------------------------------------------------
 
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_split_at_zero() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let (l, r) = a.as_slice().split_at(0);
     l.is_empty() && r.len() == 4
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::is_empty` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_split_at_full() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let (l, r) = a.as_slice().split_at(4);
     l.len() == 4 && r.is_empty()
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::split_at` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::split_at` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_split_at_middle_lens() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let (l, r) = a.as_slice().split_at(2);
     l.len() == 2 && r.len() == 2
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::split_at` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::split_at` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_split_at_middle_left_first() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let (l, _r) = a.as_slice().split_at(2);
     l[0] == 1
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::split_at` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::split_at` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_split_at_middle_right_first() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let (_l, r) = a.as_slice().split_at(2);
     r[0] == 3
 }
-*/
-*/
-*/
 
 // ----- split_at_checked ------------------------------------------------------
 
-// TODO(slice-method-missing: `<[T]>::split_at_checked` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::split_at_checked` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_split_at_checked_in_range_some() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     a.as_slice().split_at_checked(2).is_some()
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::split_at_checked` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::split_at_checked` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_split_at_checked_at_end_some() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     a.as_slice().split_at_checked(4).is_some()
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::split_at_checked` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::split_at_checked` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_split_at_checked_out_of_range_none() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     a.as_slice().split_at_checked(5).is_none()
 }
-*/
-*/
-*/
 
 // ----- first -----------------------------------------------------------------
 
-// TODO(slice-method-missing: `<[T]>::first` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::first` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_first_present() -> bool {
     let a: [u8; 4] = [10, 20, 30, 40];
@@ -287,16 +137,7 @@ pub fn test_first_present() -> bool {
         None => false,
     }
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::first` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::first` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_first_some_one() -> bool {
     let a: [u8; 1] = [7];
@@ -305,33 +146,15 @@ pub fn test_first_some_one() -> bool {
         None => false,
     }
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::first` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::first` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_first_empty_none() -> bool {
     let a: [u8; 0] = [];
     a.as_slice().first().is_none()
 }
-*/
-*/
-*/
 
 // ----- last ------------------------------------------------------------------
 
-// TODO(slice-method-missing: `<[T]>::last` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::last` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_last_present() -> bool {
     let a: [u8; 4] = [10, 20, 30, 40];
@@ -340,16 +163,7 @@ pub fn test_last_present() -> bool {
         None => false,
     }
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::last` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::last` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_last_some_one() -> bool {
     let a: [u8; 1] = [7];
@@ -358,33 +172,15 @@ pub fn test_last_some_one() -> bool {
         None => false,
     }
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::last` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::last` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_last_empty_none() -> bool {
     let a: [u8; 0] = [];
     a.as_slice().last().is_none()
 }
-*/
-*/
-*/
 
 // ----- get (usize) -----------------------------------------------------------
 
-// TODO(slice-method-missing: `<[T]>::get` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::get` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_get_usize_in_range() -> bool {
     let a: [u8; 4] = [10, 20, 30, 40];
@@ -393,16 +189,7 @@ pub fn test_get_usize_in_range() -> bool {
         None => false,
     }
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::get` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::get` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_get_usize_first() -> bool {
     let a: [u8; 4] = [10, 20, 30, 40];
@@ -411,63 +198,30 @@ pub fn test_get_usize_first() -> bool {
         None => false,
     }
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::get` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::get` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_get_usize_out_of_range() -> bool {
     let a: [u8; 4] = [10, 20, 30, 40];
     a.as_slice().get(4).is_none()
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::get` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(slice-method-missing: `<[T]>::get` returns `Option<&T>` whose reference shape doesn't survive extraction.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_get_usize_empty() -> bool {
     let a: [u8; 0] = [];
     a.as_slice().get(0).is_none()
 }
-*/
-*/
-*/
 
 // ----- starts_with / ends_with ----------------------------------------------
 
-// TODO(slice-method-missing: `<[T]>::starts_with` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::starts_with` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_starts_with_true() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 2] = [1, 2];
     a.as_slice().starts_with(needle.as_slice())
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::starts_with` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::starts_with` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
+// TODO(aeneas#1238): an empty subslice panics in Aeneas's `Slice.subslice`
+// (`r.start < r.end` should be `≤`).
 /*
 #[rust_lean_test]
 pub fn test_starts_with_empty_needle() -> bool {
@@ -476,46 +230,23 @@ pub fn test_starts_with_empty_needle() -> bool {
     a.as_slice().starts_with(needle.as_slice())
 }
 */
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::starts_with` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::starts_with` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_starts_with_false() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 2] = [2, 3];
     a.as_slice().starts_with(needle.as_slice()) == false
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::ends_with` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::ends_with` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_ends_with_true() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 2] = [3, 4];
     a.as_slice().ends_with(needle.as_slice())
 }
-*/
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::ends_with` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::ends_with` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
+// TODO(aeneas#1238): an empty subslice panics in Aeneas's `Slice.subslice`
+// (`r.start < r.end` should be `≤`).
 /*
 #[rust_lean_test]
 pub fn test_ends_with_empty_needle() -> bool {
@@ -524,24 +255,13 @@ pub fn test_ends_with_empty_needle() -> bool {
     a.as_slice().ends_with(needle.as_slice())
 }
 */
-*/
-*/
 
-// TODO(slice-method-missing: `<[T]>::ends_with` not in extracted Lean.)
-/*
-// TODO(slice-method-missing: `<[T]>::ends_with` not in extracted Lean.)
-/*
-// TODO(array-as_slice-extraction: `<[T; N]>::as_slice` extracts to a `core_models.array.Array.as_slice` def the Lean library does not define.)
-/*
 #[rust_lean_test]
 pub fn test_ends_with_false() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 2] = [2, 3];
     a.as_slice().ends_with(needle.as_slice()) == false
 }
-*/
-*/
-*/
 
 // ----- skipped methods -------------------------------------------------------
 
@@ -641,47 +361,35 @@ pub fn test_slice_index_usize_middle() -> bool {
 
 // ----- &s[..end] : RangeTo (manually defined in Lean, not extracted) --------
 
-// TODO(slice-index-range-extraction: indexing a slice via `RangeTo`/`RangeFull` hits an excluded path; manual def doesn't yet cover the Range* variants.)
-/*
 #[rust_lean_test]
 pub fn test_slice_index_range_to_len() -> bool {
     let s: [u8; 8] = [10, 20, 30, 40, 50, 60, 70, 80];
     let t: &[u8] = &s[..3];
     t.len() == 3
 }
-*/
 
-// TODO(slice-index-range-extraction: indexing a slice via `RangeTo`/`RangeFull` hits an excluded path; manual def doesn't yet cover the Range* variants.)
-/*
 #[rust_lean_test]
 pub fn test_slice_index_range_to_first_elem() -> bool {
     let s: [u8; 8] = [10, 20, 30, 40, 50, 60, 70, 80];
     let t: &[u8] = &s[..3];
     t[0] == 10
 }
-*/
 
-// TODO(slice-index-range-extraction: indexing a slice via `RangeTo`/`RangeFull` hits an excluded path; manual def doesn't yet cover the Range* variants.)
-/*
 #[rust_lean_test]
 pub fn test_slice_index_range_to_last_elem() -> bool {
     let s: [u8; 8] = [10, 20, 30, 40, 50, 60, 70, 80];
     let t: &[u8] = &s[..3];
     t[2] == 30
 }
-*/
 
 // ----- &s[..] : RangeFull (manually defined in Lean, not extracted) ---------
 
-// TODO(slice-index-range-extraction: indexing a slice via `RangeTo`/`RangeFull` hits an excluded path; manual def doesn't yet cover the Range* variants.)
-/*
 #[rust_lean_test]
 pub fn test_slice_index_range_full_len() -> bool {
     let s: [u8; 8] = [10, 20, 30, 40, 50, 60, 70, 80];
     let t: &[u8] = &s[..];
     t.len() == 8
 }
-*/
 
 // ----- PartialEq / Ord on slices (branch additions) --------------------------
 
