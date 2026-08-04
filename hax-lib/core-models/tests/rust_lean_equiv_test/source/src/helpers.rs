@@ -34,3 +34,20 @@ none_helper!(none_i32, i32, 0);
 none_helper!(none_i64, i64, 0);
 none_helper!(none_isize, isize, 0);
 none_helper!(none_bool, bool, false);
+
+/// `u8`'s model `Clone`/`PartialEq` are total identities, so a model that drops
+/// a trait dictionary looks correct at that type. `Bumped` makes it observable:
+/// `clone` is not the identity, and `eq` panics on `u8::MAX`.
+pub struct Bumped(pub u8);
+
+impl Clone for Bumped {
+    fn clone(&self) -> Bumped {
+        Bumped(self.0 + 1)
+    }
+}
+
+impl PartialEq for Bumped {
+    fn eq(&self, other: &Bumped) -> bool {
+        self.0 + 1 == other.0 + 1
+    }
+}
