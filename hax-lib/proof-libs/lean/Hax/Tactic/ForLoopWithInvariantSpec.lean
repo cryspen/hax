@@ -70,7 +70,6 @@ theorem IteratorRange_next_spec (i e : I32) {Q}
     simp only [compare, compareOfLessAndEq,
       core.I32.Insts.CoreCmpPartialOrdI32, core.mkIPartialOrd]
     mvcgen
-    exfalso
     have hlt : ¬ (i.val < e.val) := by omega
     by_cases hie : i.val = e.val <;> simp_all
 
@@ -89,33 +88,19 @@ theorem IteratorRange_next_spec_usize (i e : Usize) {Q}
     ⦃ Q ⦄ := by
   unfold core.IteratorRange.next core.Usize.Insts.CoreIterRangeStep
   by_cases h : i.val < e.val
-  · have h_lt' := h_lt h
-    simp_all [compare, compareOfLessAndEq,
+  · simp_all [compare, compareOfLessAndEq,
       core.Usize.Insts.CoreCmpPartialOrdUsize, core.mkUPartialOrd,
-      core.Usize.Insts.CoreCloneClone.clone]
-    have hno_ovf := UScalar.overflowing_add_eq i (1#usize)
-    have hi1_le : ¬ (i.val + (1#usize).val > UScalar.max .Usize) := by scalar_tac
-    simp only [hi1_le, if_false] at hno_ovf
-    obtain ⟨hsv, hovf⟩ := hno_ovf
-    simp only [core.Usize.Insts.CoreIterRangeStep.forward_checked,
+      core.Usize.Insts.CoreCloneClone.clone,
+      core.Usize.Insts.CoreIterRangeStep.forward_checked,
       core.convert.TryFromUTInfallible.Blanket.try_from,
       core.convert.From.Blanket.from,
       core.num.Usize.checked_add, core.num.Usize.overflowing_add,
       rust_primitives.arithmetic.overflowing_add_usize]
-    mvcgen
-    generalize hov : UScalar.overflowing_add i (1#usize) = ov at *
-    obtain ⟨result, overflowed⟩ := ov
-    subst hovf
-    exact h_lt' _ (by simpa using hsv)
+    mvcgen [uncurry]
+      <;> grind [UScalar.overflowing_add_eq i (1#usize)]
   · have h_ge' := h_ge (Nat.le_of_not_lt h)
-    simp_all [compare, compareOfLessAndEq,
-      core.Usize.Insts.CoreCmpPartialOrdUsize, core.mkUPartialOrd]
-    mvcgen
-    all_goals first
-      | exact h_ge'
-      | (rename_i hlt
-         split at hlt <;> rename_i heq <;> split at heq <;>
-           (try simp_all); (rename_i heq2; split at heq2 <;> cases heq2))
+    simp_all [core.Usize.Insts.CoreCmpPartialOrdUsize, core.mkUPartialOrd]
+    mvcgen; grind
 
 /-! ## User-facing `@[spec]` lemma (signed, `I32`) -/
 
@@ -137,20 +122,9 @@ theorem forLoopWithInvariant_spec {β : Type}
   unfold Hax.forLoopWithInvariant
   apply loop_range_spec _ init s e inv h_le h_init
   intro acc i hsi hie hinv
-  simp only [core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next]
-  mvcgen [IteratorRange_next_spec]
-  case vc1.h_lt =>
-    rename_i hlt s' hs'
-    have hbody := h_step acc i hsi hlt hinv
-    obtain ⟨r, hbeq⟩ := triple_noThrow_exists_ok hbody
-    have hh := (triple_noThrow_elim hbody hbeq) s' hs'
-    simp [Triple, WP.wp, PredTrans.apply, hbeq, Result.holds] at hh ⊢
-    exact ⟨hlt, hs', hh⟩
-  case vc2.h_ge =>
-    rename_i hge
-    have hi_eq_e : i = e := IScalar.eq_imp _ _ (by omega)
-    subst hi_eq_e
-    simpa [Triple, WP.wp, PredTrans.apply, Result.holds] using hinv
+  unfold  Result.holds at hinv
+  mvcgen [hinv, uncurry, h_step]
+    <;> grind only [ScalarTac.IScalar.bounds, IScalar.eq_equiv]
 
 /-! ## User-facing `@[spec]` lemma (unsigned, `Usize`) -/
 
@@ -172,39 +146,10 @@ theorem forLoopWithInvariant_spec_usize {β : Type}
   unfold Hax.forLoopWithInvariant
   apply loop_range_spec_unsigned _ init s e inv h_le h_init
   intro acc i hsi hie hinv
-  unfold core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-    core.IteratorRange.next core.Usize.Insts.CoreIterRangeStep
-  by_cases hlt : i.val < e.val
-  · have hbody := h_step acc i hsi hlt hinv
-    obtain ⟨r, hbody_eq⟩ := triple_noThrow_exists_ok hbody
-    have hpost := triple_noThrow_elim hbody hbody_eq
-    simp at hpost
-    have hno_ovf := UScalar.overflowing_add_eq i (1#usize)
-    have hi1_le : ¬ (i.val + (1#usize).val > UScalar.max .Usize) := by scalar_tac
-    simp only [hi1_le, if_false] at hno_ovf
-    obtain ⟨hsv, hovf⟩ := hno_ovf
-    simp only [Triple, PredTrans.apply, wp, core.Usize.Insts.CoreCmpPartialOrdUsize,
-      core.mkUPartialOrd, compare, compareOfLessAndEq, hlt, ↓reduceIte,
-      core.Usize.Insts.CoreCloneClone.clone, core.Usize.Insts.CoreIterRangeStep.forward_checked,
-      core.convert.TryFromUTInfallible.Blanket.try_from, core.convert.From.Blanket.from, bind_tc_ok,
-      core.num.Usize.checked_add, core.num.Usize.overflowing_add,
-      rust_primitives.arithmetic.overflowing_add_usize, bind_assoc, holds, ExceptConds.fst_false,
-      ExceptConds.snd_false, SPred.entails_nil, SPred.down_pure, forall_const, true_and]
-    generalize hov : UScalar.overflowing_add i (1#usize) = ov at *
-    obtain ⟨i', overflowed⟩ := ov
-    simp at hsv hovf
-    subst hovf
-    have hi'val' : i'.val = i.val + 1 := by simpa using hsv
-    have hh : (inv i' r).holds := hpost i' hi'val'
-    simp [Triple, WP.wp, Result.holds, PredTrans.apply, hbody_eq] at hh ⊢
-    refine ⟨hi'val', ?_⟩
-    rcases hires : inv i' r with _ | _ | _ <;> simp [hires] at hh ⊢; exact hh
-  · have hieq : i.val = e.val := Nat.le_antisymm hie (Nat.le_of_not_lt hlt)
-    have hi_eq_e : i = e := UScalar.eq_imp _ _ hieq
-    have hh : (inv e acc).holds := hi_eq_e ▸ hinv
-    simp [compare, compareOfLessAndEq, hi_eq_e,
-          core.Usize.Insts.CoreCmpPartialOrdUsize, core.mkUPartialOrd,
-          Triple, WP.wp, Result.holds] at hh ⊢
-    exact hh
+  unfold  Result.holds at hinv
+  mvcgen [hinv, uncurry, h_step]
+  · grind
+  · have : i = e := by grind
+    grind
 
 end Hax
