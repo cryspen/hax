@@ -4,15 +4,11 @@ use rust_lean_test_macro::rust_lean_test;
 
 // ----- Index<RangeTo<usize>> -------------------------------------------------
 
-// TODO(aeneas#1238): an empty subslice panics in Aeneas's `Slice.subslice`
-// (`r.start < r.end` should be `≤`).
-/*
 #[rust_lean_test]
 pub fn test_index_range_to_zero() -> bool {
     let a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
     a[..0] == []
 }
-*/
 
 #[rust_lean_test]
 pub fn test_index_range_to_three() -> bool {

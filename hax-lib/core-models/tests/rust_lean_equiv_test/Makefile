@@ -4,7 +4,7 @@ HAX ?= cargo hax
 LEAN_DIR = source/proofs/lean
 EXTRACTION_DIR = $(LEAN_DIR)/RustLeanTests/Extraction
 
-.PHONY: all cargo-test extract gen-lean-tests build clean
+.PHONY: all cargo-test extract gen-lean-tests build check-skipped clean
 
 all: cargo-test build
 
@@ -29,10 +29,20 @@ gen-lean-tests: extract
 build: gen-lean-tests
 	cd $(LEAN_DIR) && lake exe cache get && lake build
 
+# 4. `SkippedTests.lean` is outside the import graph, so `build` ignores it.
+#    Here we elaborate it on purpose: every guard is expected to FAIL, and one
+#    that passes means its blocker is gone. Hence `-` — success is the failure
+#    case.
+check-skipped: gen-lean-tests
+	-cd $(LEAN_DIR) && lake env lean RustLeanTests/SkippedTests.lean > $(abspath skipped.log) 2>&1
+	python3 gen_lean_tests.py --report-skipped skipped.log
+
 # Remove the generated files, including the generated `LeanTests.lean`;
 # keep the hand-written project files.
 clean:
 	rm -rf $(EXTRACTION_DIR)
-	rm -f $(LEAN_DIR)/RustLeanTests/LeanTests.lean
+	rm -f $(LEAN_DIR)/RustLeanTests/LeanTests.lean \
+	      $(LEAN_DIR)/RustLeanTests/SkippedTests.lean \
+	      skipped.log
 	rm -rf $(LEAN_DIR)/llbc $(LEAN_DIR)/.lake
 	rm -f $(LEAN_DIR)/.gitignore
