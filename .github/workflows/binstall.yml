@@ -1,0 +1,104 @@
+name: Install a release with cargo-binstall
+
+# Installs a published `cargo-hax` release the way `cargo binstall` does, on
+# every supported platform, and extracts with it.
+#
+# `cargo binstall` builds from source when it cannot find the release asset the
+# published manifest points at, so a release whose archives are missing or
+# misnamed still installs, only slowly: nothing but fetching them tells the two
+# apart. `--strategies crate-meta-data` is what makes that a failure here.
+#
+# Called by the `release` workflow once every archive is published; a manual
+# dispatch re-checks a released version at any time.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The released `cargo-hax` version to install, e.g. `0.3.7`
+        required: true
+  workflow_call:
+    inputs:
+      version:
+        description: The released `cargo-hax` version to install, e.g. `0.3.7`
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.version }}
+  cancel-in-progress: true
+
+jobs:
+  # The platforms the release workflow builds archives for, read from the file
+  # both workflows share, so a release is tested on every platform it ships.
+  targets:
+    if: github.repository == 'cryspen/hax'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.targets.outputs.matrix }}
+    steps:
+      # `cargo release` pushes the tag right after publishing, and the sparse
+      # index can lag the publish: until the version is in the index, every
+      # `cargo binstall` below fails to resolve it.
+      - name: Wait for the version on the crates.io index
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          crate=cargo-hax
+          for _ in $(seq 40); do
+            if curl -fsSL \
+                "https://index.crates.io/${crate:0:2}/${crate:2:2}/$crate" \
+                | jq -se --arg v "$VERSION" 'any(.vers == $v)' > /dev/null; then
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::cargo-hax $VERSION is not on the crates.io index"
+          exit 1
+
+      - uses: actions/checkout@v4
+      - id: targets
+        run: |
+          echo "matrix=$(jq -c '{include: .}' .github/cargo-hax-targets.json)" \
+            >> "$GITHUB_OUTPUT"
+
+  binstall:
+    needs: targets
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.targets.outputs.matrix) }}
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    # Outranks the `rust-toolchain.toml` of the checked-out release, which the
+    # project discovery below would otherwise resolve, fetching a nightly
+    # toolchain that this binary does not need.
+    env:
+      RUSTUP_TOOLCHAIN: stable
+
+    steps:
+      # The example below comes from the released tree, matching the version
+      # installed from crates.io.
+      - uses: actions/checkout@v4
+        with:
+          ref: cargo-hax-v${{ inputs.version }}
+
+      - uses: cargo-bins/cargo-binstall@v1.21.1
+
+      - name: Install the release, from its archive alone
+        env:
+          VERSION: ${{ inputs.version }}
+        run: >
+          cargo binstall --no-confirm --strategies crate-meta-data
+          --targets ${{ matrix.target }} --root "$RUNNER_TEMP/hax"
+          "cargo-hax@$VERSION"
+
+      # Lean is the one backend that runs from the `cargo-hax` binary alone,
+      # so this checks the archive holds a binary this platform can run.
+      - name: Extract to Lean, from that installation
+        working-directory: examples/barrett
+        run: '"$RUNNER_TEMP/hax/bin/cargo-hax" into lean'
