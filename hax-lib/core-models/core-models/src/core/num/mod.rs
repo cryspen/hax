@@ -8,7 +8,7 @@ pub mod error;
 
 use rust_primitives::arithmetic::*;
 
-// Bounds must be spelled `<$Name>::MAX`/`MIN` (our marker types), not
+// Bounds must be spelled `<$Name>::MAX`/`MIN` (referring to core models), not
 // `$Self::MAX`/`MIN` (real `core`): both print the same, but only the former is a
 // dependency hax sees, and cycles it misses become recursive backend modules.
 macro_rules! uint_impl {
