@@ -193,7 +193,11 @@ type t_StepBy (v_I: Type0) = {
   f_step:usize
 }
 
-let impl__new__from__step_by (#v_I: Type0) (iter: v_I) (step: usize) : t_StepBy v_I =
+let impl__new__from__step_by (#v_I: Type0) (iter: v_I) (step: usize)
+    : Prims.Pure (t_StepBy v_I) (requires step >. mk_usize 0) (fun _ -> Prims.l_True) =
+  let _:Prims.unit =
+    if step =. mk_usize 0 then Core_models.Panicking.Internal.panic #Prims.unit ()
+  in
   { f_iter = iter; f_step = step } <: t_StepBy v_I
 
 /// See [`std::iter::Take`]
@@ -3363,8 +3367,8 @@ let impl__map_or__from__result
 /// See [`std::result::Result::map_or_else`]
 let impl__map_or_else__from__result
       (#v_T #v_E #v_U #v_D #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_FnOnce v_D v_E)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_D v_E)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
       (#_: unit{i1.Core_models.Ops.Function.f_Output == v_U})
       (self: t_Result v_T v_E)
@@ -7785,6 +7789,28 @@ let clamp
     | Ordering_Greater  -> max
     | _ -> value
 
+assume
+val iter_min': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I
+  -> t_Option i0.f_Item
+
+unfold
+let iter_min
+      (#v_I: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
+     = iter_min' #v_I #i0 #i1
+
+assume
+val iter_max': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I
+  -> t_Option i0.f_Item
+
+unfold
+let iter_max
+      (#v_I: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
+     = iter_max' #v_I #i0 #i1
+
 class t_IteratorMethods (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Iterator v_Self;
   f_fold_pre:
@@ -7820,7 +7846,7 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Enumerate v_Self)
         (f_enumerate_pre x0)
         (fun result -> f_enumerate_post x0 result);
-  f_step_by_pre:v_Self -> usize -> Type0;
+  f_step_by_pre:self_: v_Self -> step: usize -> pred: Type0{step >. mk_usize 0 ==> pred};
   f_step_by_post:v_Self -> usize -> t_StepBy v_Self -> Type0;
   f_step_by:x0: v_Self -> x1: usize
     -> Prims.Pure (t_StepBy v_Self)
@@ -8137,28 +8163,6 @@ class t_IteratorMethods (v_Self: Type0) = {
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let _ = fun (v_Self:Type0) {|i: t_IteratorMethods v_Self|} -> i._super_i0
 
-assume
-val iter_min': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I
-  -> t_Option i0.f_Item
-
-unfold
-let iter_min
-      (#v_I: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
-     = iter_min' #v_I #i0 #i1
-
-assume
-val iter_max': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I
-  -> t_Option i0.f_Item
-
-unfold
-let iter_max
-      (#v_I: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
-     = iter_max' #v_I #i0 #i1
-
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl__from__iterator
       (#v_I: Type0)
@@ -8209,7 +8213,7 @@ let impl__from__iterator
     f_enumerate_pre = (fun (self: v_I) -> true);
     f_enumerate_post = (fun (self: v_I) (out: t_Enumerate v_I) -> true);
     f_enumerate = (fun (self: v_I) -> impl__new #v_I self);
-    f_step_by_pre = (fun (self: v_I) (step: usize) -> true);
+    f_step_by_pre = (fun (self_: v_I) (step: usize) -> step >. mk_usize 0);
     f_step_by_post = (fun (self: v_I) (step: usize) (out: t_StepBy v_I) -> true);
     f_step_by = (fun (self: v_I) (step: usize) -> impl__new__from__step_by #v_I self step);
     f_map_pre

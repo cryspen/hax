@@ -6,19 +6,11 @@ open Rust_primitives
 /// See [`std::slice::len`]
 let impl__len (#v_T: Type0) (s: t_Slice v_T) : usize = Rust_primitives.Slice.slice_length #v_T s
 
-/// See [`std::slice::chunks`]
-let impl__chunks (#v_T: Type0) (s: t_Slice v_T) (cs: usize) : Core_models.Slice.Iter.t_Chunks v_T =
-  Core_models.Slice.Iter.impl__new #v_T cs s
-
 /// See [`std::slice::iter`]
 let impl__iter (#v_T: Type0) (s: t_Slice v_T) : Core_models.Slice.Iter.t_Iter v_T =
   Core_models.Slice.Iter.Iter (Rust_primitives.Sequence.seq_from_slice #v_T s)
   <:
   Core_models.Slice.Iter.t_Iter v_T
-
-/// See [`std::slice::chunks_exact`]
-let impl__chunks_exact (#v_T: Type0) (s: t_Slice v_T) (cs: usize)
-    : Core_models.Slice.Iter.t_ChunksExact v_T = Core_models.Slice.Iter.impl_1__new #v_T cs s
 
 /// See [`std::slice::is_empty`]
 let impl__is_empty (#v_T: Type0) (s: t_Slice v_T) : bool = (impl__len #v_T s <: usize) =. mk_usize 0
@@ -57,11 +49,18 @@ let impl__copy_within
 
 /// See [`std::slice::binary_search`]
 assume
-val impl__binary_search': #v_T: Type0 -> s: t_Slice v_T -> x: v_T
+val impl__binary_search':
+    #v_T: Type0 ->
+    {| i0: Core_models.Cmp.t_Ord v_T |} ->
+    s: t_Slice v_T ->
+    x: v_T
   -> Core_models.Result.t_Result usize usize
 
 unfold
-let impl__binary_search (#v_T: Type0) = impl__binary_search' #v_T
+let impl__binary_search
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+     = impl__binary_search' #v_T #i0
 
 /// See [`std::slice::get`]
 let impl__get
@@ -144,6 +143,22 @@ let impl__ends_with
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialEq v_T v_T)
      = impl__ends_with' #v_T #i0
+
+/// See [`std::slice::chunks`]
+let impl__chunks (#v_T: Type0) (s: t_Slice v_T) (cs: usize)
+    : Prims.Pure (Core_models.Slice.Iter.t_Chunks v_T)
+      (requires cs >. mk_usize 0)
+      (fun _ -> Prims.l_True) =
+  let _:Prims.unit = if cs =. mk_usize 0 then Core_models.Panicking.Internal.panic #Prims.unit () in
+  Core_models.Slice.Iter.impl__new #v_T cs s
+
+/// See [`std::slice::chunks_exact`]
+let impl__chunks_exact (#v_T: Type0) (s: t_Slice v_T) (cs: usize)
+    : Prims.Pure (Core_models.Slice.Iter.t_ChunksExact v_T)
+      (requires cs >. mk_usize 0)
+      (fun _ -> Prims.l_True) =
+  let _:Prims.unit = if cs =. mk_usize 0 then Core_models.Panicking.Internal.panic #Prims.unit () in
+  Core_models.Slice.Iter.impl_1__new #v_T cs s
 
 /// See [`std::slice::copy_from_slice`]
 let impl__copy_from_slice

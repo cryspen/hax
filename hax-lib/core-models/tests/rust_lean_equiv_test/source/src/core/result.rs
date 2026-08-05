@@ -52,14 +52,7 @@ pub fn test_is_err_err_max() -> bool {
 
 // ----- is_ok_and -------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::is_ok_and` missing from extracted Lean —
-// the core-models `Result` impl is marked `aeneas::exclude`, so closure-taking
-// methods have no model. Revisit once Result methods are exposed.)
-
 // ----- is_err_and ------------------------------------------------------------
-
-// TODO(result-method-missing: `Result::is_err_and` missing from extracted Lean
-// (see is_ok_and).)
 
 // ----- as_ref ----------------------------------------------------------------
 
@@ -141,9 +134,6 @@ pub fn test_unwrap_or_err_default_max() -> bool {
 
 // ----- unwrap_or_else --------------------------------------------------------
 
-// TODO(result-method-missing: `Result::unwrap_or_else` missing from extracted
-// Lean — the core-models `Result` impl is `aeneas::exclude`.)
-
 // ----- unwrap_or_default -----------------------------------------------------
 
 #[rust_lean_test]
@@ -163,18 +153,9 @@ pub fn test_unwrap_or_default_err() -> bool {
 
 // ----- map -------------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::map` missing from extracted Lean —
-// the core-models `Result` impl is `aeneas::exclude`.)
-
 // ----- map_or ----------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::map_or` missing from extracted Lean
-// (see map).)
-
 // ----- map_or_else -----------------------------------------------------------
-
-// TODO(result-method-missing: `Result::map_or_else` missing from extracted
-// Lean (see map).)
 
 // ----- map_or_default --------------------------------------------------------
 
@@ -189,10 +170,6 @@ pub fn test_unwrap_or_default_err() -> bool {
 // `core.ops.function.FnOnce` in the equiv pipeline.
 
 // ----- inspect / inspect_err -------------------------------------------------
-
-// TODO(result-method-missing: `Result::inspect` and `Result::inspect_err`
-// missing from extracted Lean (see map). They also take `&T`/`&E` closures,
-// which Aeneas would reject even if the methods were present.)
 
 // ----- ok --------------------------------------------------------------------
 
@@ -252,9 +229,6 @@ pub fn test_and_err_err() -> bool {
 
 // ----- and_then --------------------------------------------------------------
 
-// TODO(result-method-missing: `Result::and_then` missing from extracted Lean —
-// the core-models `Result` impl is `aeneas::exclude`.)
-
 // ----- or --------------------------------------------------------------------
 
 #[rust_lean_test]
@@ -278,9 +252,6 @@ pub fn test_or_err_err() -> bool {
 }
 
 // ----- or_else ---------------------------------------------------------------
-
-// TODO(result-method-missing: `Result::or_else` missing from extracted Lean —
-// the core-models `Result` impl is `aeneas::exclude`.)
 
 // ----- cloned ----------------------------------------------------------------
 
@@ -363,5 +334,103 @@ pub fn test_question_propagates_err() -> bool {
     match question_identity(err_u8_u8(3)) {
         Ok(_) => false,
         Err(e) => e == 3,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_expect_err() -> bool {
+    err_u8_u8(4).expect_err("expected an error") == 4
+}
+
+// ----- methods newly reachable from Lean -------------------------------------
+
+#[rust_lean_test]
+pub fn test_is_ok_and_true() -> bool {
+    ok_u8_u8(7).is_ok_and(|v| v == 7)
+}
+
+#[rust_lean_test]
+pub fn test_is_ok_and_false_on_err() -> bool {
+    !err_u8_u8(7).is_ok_and(|v| v == 7)
+}
+
+#[rust_lean_test]
+pub fn test_is_err_and_true() -> bool {
+    err_u8_u8(3).is_err_and(|e| e == 3)
+}
+
+#[rust_lean_test]
+pub fn test_map_ok() -> bool {
+    match ok_u8_u8(4).map(|v| v + 1) {
+        Ok(v) => v == 5,
+        Err(_) => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_map_leaves_err() -> bool {
+    match err_u8_u8(4).map(|v| v + 1) {
+        Ok(_) => false,
+        Err(e) => e == 4,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_map_or_ok() -> bool {
+    ok_u8_u8(4).map_or(0, |v| v + 1) == 5
+}
+
+#[rust_lean_test]
+pub fn test_map_or_err_uses_default() -> bool {
+    err_u8_u8(4).map_or(9, |v| v + 1) == 9
+}
+
+#[rust_lean_test]
+pub fn test_map_or_else_err_branch() -> bool {
+    err_u8_u8(4).map_or_else(|e| e + 1, |v| v) == 5
+}
+
+#[rust_lean_test]
+pub fn test_unwrap_or_else_uses_err() -> bool {
+    err_u8_u8(4).unwrap_or_else(|e| e + 1) == 5
+}
+
+#[rust_lean_test]
+pub fn test_and_then_chains() -> bool {
+    match ok_u8_u8(4).and_then(|v| ok_u8_u8(v + 1)) {
+        Ok(v) => v == 5,
+        Err(_) => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_and_then_short_circuits() -> bool {
+    match err_u8_u8(4).and_then(|v| ok_u8_u8(v + 1)) {
+        Ok(_) => false,
+        Err(e) => e == 4,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_or_else_recovers() -> bool {
+    match err_u8_u8(4).or_else(|e| ok_u8_u8(e + 1)) {
+        Ok(v) => v == 5,
+        Err(_) => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_inspect_returns_self() -> bool {
+    match ok_u8_u8(4).inspect(|_| ()) {
+        Ok(v) => v == 4,
+        Err(_) => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_inspect_err_returns_self() -> bool {
+    match err_u8_u8(4).inspect_err(|_| ()) {
+        Ok(_) => false,
+        Err(e) => e == 4,
     }
 }

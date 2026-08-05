@@ -33,19 +33,19 @@ def array.Array (T : Type) (N : Std.Usize) := Array T N
 -/
 
 /-- [core_models::array::{core_models::array::Array<T, N>}::each_ref::closure]
-    Source: 'core-models/src/core/array.rs', lines 54:22-54:43 -/
+    Source: 'core-models/src/core/array.rs', lines 55:22-55:43 -/
 @[reducible]
 def array.Array.each_ref.closure (T : Type) (N : Std.Usize) := Array T N
 
 /-- Trait declaration: [core_models::iter::traits::collect::IntoIterator]
-    Source: 'core-models/src/core/iter.rs', lines 374:8-383:9
+    Source: 'core-models/src/core/iter.rs', lines 379:8-388:9
     Visibility: public -/
 structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   (Self_IntoIter : Type) where
   into_iter : Self → Result Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 170:4-170:55
+    Source: 'core-models/src/core/array.rs', lines 171:4-171:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -300,35 +300,35 @@ structure hash.Hash (Self : Type) where
     H
 
 /-- [core_models::iter::adapters::skip::Skip]
-    Source: 'core-models/src/core/iter.rs', lines 685:8-688:9
+    Source: 'core-models/src/core/iter.rs', lines 712:8-715:9
     Visibility: public -/
 structure iter.adapters.skip.Skip (I : Type) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::chain::Chain]
-    Source: 'core-models/src/core/iter.rs', lines 654:8-657:9
+    Source: 'core-models/src/core/iter.rs', lines 679:8-682:9
     Visibility: public -/
 structure iter.adapters.chain.Chain (A : Type) (B : Type) where
   a : option.Option A
   b : B
 
 /-- [core_models::iter::adapters::filter::Filter]
-    Source: 'core-models/src/core/iter.rs', lines 622:8-625:9
+    Source: 'core-models/src/core/iter.rs', lines 645:8-648:9
     Visibility: public -/
 structure iter.adapters.filter.Filter (I : Type) (P : Type) where
   iter : I
   predicate : P
 
 /-- [core_models::iter::adapters::zip::Zip]
-    Source: 'core-models/src/core/iter.rs', lines 595:8-598:9
+    Source: 'core-models/src/core/iter.rs', lines 616:8-619:9
     Visibility: public -/
 structure iter.adapters.zip.Zip (I1 : Type) (I2 : Type) where
   it1 : I1
   it2 : I2
 
 /-- [core_models::iter::adapters::flatten::Flatten]
-    Source: 'core-models/src/core/iter.rs', lines 551:8-557:9
+    Source: 'core-models/src/core/iter.rs', lines 570:8-576:9
     Visibility: public -/
 structure iter.adapters.flatten.Flatten (I : Type) (Clause0_Item : Type)
   (Clause1_Item : Type) where
@@ -336,7 +336,7 @@ structure iter.adapters.flatten.Flatten (I : Type) (Clause0_Item : Type)
   current : option.Option Clause0_Item
 
 /-- [core_models::iter::adapters::flat_map::FlatMap]
-    Source: 'core-models/src/core/iter.rs', lines 513:8-517:9
+    Source: 'core-models/src/core/iter.rs', lines 530:8-534:9
     Visibility: public -/
 structure iter.adapters.flat_map.FlatMap (I : Type) (U : Type) (F : Type) where
   it : I
@@ -344,35 +344,35 @@ structure iter.adapters.flat_map.FlatMap (I : Type) (U : Type) (F : Type) where
   current : option.Option U
 
 /-- [core_models::iter::adapters::take::Take]
-    Source: 'core-models/src/core/iter.rs', lines 487:8-490:9
+    Source: 'core-models/src/core/iter.rs', lines 502:8-505:9
     Visibility: public -/
 structure iter.adapters.take.Take (I : Type) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::map::Map]
-    Source: 'core-models/src/core/iter.rs', lines 459:8-462:9
+    Source: 'core-models/src/core/iter.rs', lines 472:8-475:9
     Visibility: public -/
 structure iter.adapters.map.Map (I : Type) (F : Type) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::step_by::StepBy]
-    Source: 'core-models/src/core/iter.rs', lines 429:8-432:9
+    Source: 'core-models/src/core/iter.rs', lines 436:8-439:9
     Visibility: public -/
 structure iter.adapters.step_by.StepBy (I : Type) where
   iter : I
   step : Std.Usize
 
 /-- [core_models::iter::adapters::enumerate::Enumerate]
-    Source: 'core-models/src/core/iter.rs', lines 398:8-401:9
+    Source: 'core-models/src/core/iter.rs', lines 403:8-406:9
     Visibility: public -/
 structure iter.adapters.enumerate.Enumerate (I : Type) where
   iter : I
   count : Std.Usize
 
 /-- Trait declaration: [core_models::iter::traits::collect::FromIterator]
-    Source: 'core-models/src/core/iter.rs', lines 386:8-389:9
+    Source: 'core-models/src/core/iter.rs', lines 391:8-394:9
     Visibility: public -/
 structure iter.traits.collect.FromIterator (Self : Type) (A : Type) where
   from_iter : forall {T : Type} {Clause0_Item : Type} {Clause0_IntoIter : Type}
@@ -380,7 +380,7 @@ structure iter.traits.collect.FromIterator (Self : Type) (A : Type) where
     Clause0_IntoIter), T → Result Self
 
 /-- Trait declaration: [core_models::iter::traits::iterator::IteratorMethods]
-    Source: 'core-models/src/core/iter.rs', lines 22:8-77:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 23:8-79:9 -/
 structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
   : Type) where
   IteratorInst : iter.traits.iterator.Iterator Self Self_Clause0_Item
@@ -439,7 +439,7 @@ structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
     iter.traits.collect.FromIterator B Self_Clause0_Item), Self → Result B
 
 /-- Trait declaration: [core_models::iter::range::Step]
-    Source: 'core-models/src/core/iter.rs', lines 719:4-739:5
+    Source: 'core-models/src/core/iter.rs', lines 748:4-768:5
     Visibility: public -/
 structure iter.range.Step (Self : Type) where
   cloneCloneInst : clone.Clone Self
@@ -831,14 +831,14 @@ structure slice.iter.ChunksExact (T : Type) where
 def slice.iter.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::slice::iter::Windows]
-    Source: 'core-models/src/core/slice.rs', lines 77:4-80:5
+    Source: 'core-models/src/core/slice.rs', lines 80:4-83:5
     Visibility: public -/
 structure slice.iter.Windows (T : Type) where
   size : Std.Usize
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 413:4-433:5
+    Source: 'core-models/src/core/slice.rs', lines 427:4-447:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where

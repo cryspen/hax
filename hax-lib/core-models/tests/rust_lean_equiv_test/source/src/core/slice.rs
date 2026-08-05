@@ -229,7 +229,9 @@ pub fn test_starts_with_true() -> bool {
     a.as_slice().starts_with(needle.as_slice())
 }
 
-#[rust_lean_test]
+#[rust_lean_test(
+    skip_lean = "Aeneas's `Slice.subslice` requires `start < end`, so an empty subslice fails; needs AeneasVerif/aeneas#1238"
+)]
 pub fn test_starts_with_empty_needle() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 0] = [];
@@ -250,7 +252,9 @@ pub fn test_ends_with_true() -> bool {
     a.as_slice().ends_with(needle.as_slice())
 }
 
-#[rust_lean_test]
+#[rust_lean_test(
+    skip_lean = "Aeneas's `Slice.subslice` requires `start < end`, so an empty subslice fails; needs AeneasVerif/aeneas#1238"
+)]
 pub fn test_ends_with_empty_needle() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 0] = [];
@@ -264,31 +268,25 @@ pub fn test_ends_with_false() -> bool {
     a.as_slice().ends_with(needle.as_slice()) == false
 }
 
-// ----- skipped methods -------------------------------------------------------
+// ----- Range / RangeFrom indexing, get(range) --------------------------------
 
-// TODO(slice-index-excluded): SliceIndex impls are in CHARON_EXCLUDES; revisit
-// when SliceIndex modelling lands. The following tests would exercise
-// `slice[range]`, `slice.get(range)`, `slice[range_from]`, etc.
-// pub fn test_index_range() -> bool {
-//     let a: [u8; 4] = [1, 2, 3, 4];
-//     a.as_slice()[1..3] == [2, 3]
-// }
-// pub fn test_get_range_some() -> bool {
-//     let a: [u8; 4] = [1, 2, 3, 4];
-//     a.as_slice().get(1..3).is_some()
-// }
-// pub fn test_index_range_to() -> bool {
-//     let a: [u8; 4] = [1, 2, 3, 4];
-//     a.as_slice()[..2] == [1, 2]
-// }
-// pub fn test_index_range_from() -> bool {
-//     let a: [u8; 4] = [1, 2, 3, 4];
-//     a.as_slice()[2..] == [3, 4]
-// }
-// pub fn test_index_range_full() -> bool {
-//     let a: [u8; 4] = [1, 2, 3, 4];
-//     a.as_slice()[..] == [1, 2, 3, 4]
-// }
+#[rust_lean_test]
+pub fn test_index_range() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    a.as_slice()[1..3] == [2, 3]
+}
+
+#[rust_lean_test]
+pub fn test_get_range_some() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    a.as_slice().get(1..3).is_some()
+}
+
+#[rust_lean_test]
+pub fn test_index_range_from() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    a.as_slice()[2..] == [3, 4]
+}
 
 // ----- swap / reverse (mutate through &mut [T]) ------------------------------
 
@@ -318,29 +316,39 @@ pub fn test_clone_from_slice_applies_clone() -> bool {
     dst[0].0 == 2
 }
 
-// TODO(mut-slice-extraction): `copy_from_slice` and `fill` take
-// `&mut [T]` and remain opaque; revisit later.
-// pub fn test_fill() -> bool {
-//     let mut a: [u8; 4] = [0, 0, 0, 0];
-//     a.as_mut_slice().fill(7);
-//     a == [7, 7, 7, 7]
-// }
+#[rust_lean_test]
+pub fn test_fill() -> bool {
+    let mut a: [u8; 4] = [0, 0, 0, 0];
+    let s: &mut [u8] = &mut a;
+    s.fill(7);
+    a == [7, 7, 7, 7]
+}
 
-// TODO(slice-iter-extraction): `iter()`, `chunks()`, `chunks_exact()`,
-// `windows()` produce iterators whose `next` consumes `&mut Self`; this
-// pattern is awkward to drive from a pure `() -> bool` test without
-// `&mut` plumbing the Lean side may not handle yet. Revisit.
-// pub fn test_iter_count() -> bool {
-//     let a: [u8; 3] = [1, 2, 3];
-//     a.as_slice().iter().count() == 3
-// }
+// Rust-only: `slice::iter::Iter` does not translate (see `core::iter`).
+#[cfg(test)]
+#[test]
+fn test_iter_count() {
+    let a: [u8; 3] = [1, 2, 3];
+    assert_eq!(a.as_slice().iter().count(), 3);
+}
 
-// TODO(opaque-binary-search): `binary_search` is opaque (`#[hax_lib::opaque]`)
-// in the model; equivalence would only check signature, not value.
-// pub fn test_binary_search() -> bool { ... }
+#[rust_lean_test(
+    skip_lean = "`binary_search` is `#[hax_lib::opaque]` in the model; the Lean body is uninterpreted"
+)]
+pub fn test_binary_search() -> bool {
+    let a: [u8; 4] = [1, 3, 5, 7];
+    a.as_slice().binary_search(&5) == Ok(2)
+}
 
-// TODO(opaque-copy-within): `copy_within` is opaque in the model.
-// pub fn test_copy_within() -> bool { ... }
+// Rust-only: the model has no `RangeBounds` instance.
+#[cfg(test)]
+#[test]
+fn test_copy_within() {
+    let mut a: [u8; 4] = [1, 2, 3, 4];
+    let s: &mut [u8] = &mut a;
+    s.copy_within(0..2, 2);
+    assert_eq!(a, [1, 2, 1, 2]);
+}
 
 // ----------------------------------------------------------------------------
 // `core::slice::index::*` is on `CHARON_EXCLUDES`, so the `SliceIndex`
@@ -573,4 +581,82 @@ pub fn test_slice_eq_array_false_value() -> bool {
 pub fn test_slice_eq_array_false_len() -> bool {
     let s: &[u8] = &[1u8, 2];
     (*s == [1u8, 2, 3]) == false
+}
+
+// ----- chunks / chunks_exact / windows / copy_from_slice ---------------------
+
+#[rust_lean_test]
+pub fn test_chunks_first() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let mut it = a.as_slice().chunks(2);
+    match it.next() {
+        Some(c) => {
+            let e: &[u8] = &[1, 2];
+            c == e
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_chunks_last_is_partial() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let mut it = a.as_slice().chunks(2);
+    it.next();
+    it.next();
+    match it.next() {
+        Some(c) => {
+            let e: &[u8] = &[5];
+            c == e
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_chunks_exact_drops_remainder() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let mut it = a.as_slice().chunks_exact(2);
+    it.next();
+    it.next();
+    match it.next() {
+        Some(_) => false,
+        None => true,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_windows_first() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let mut it = a.as_slice().windows(2);
+    match it.next() {
+        Some(w) => {
+            let e: &[u8] = &[1, 2];
+            w == e
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_windows_second_overlaps() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let mut it = a.as_slice().windows(2);
+    it.next();
+    match it.next() {
+        Some(w) => {
+            let e: &[u8] = &[2, 3];
+            w == e
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_copy_from_slice() -> bool {
+    let src: [u8; 3] = [7, 8, 9];
+    let mut dst: [u8; 3] = [0, 0, 0];
+    let d: &mut [u8] = &mut dst;
+    d.copy_from_slice(&src);
+    dst == [7, 8, 9]
 }

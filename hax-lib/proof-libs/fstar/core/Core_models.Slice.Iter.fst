@@ -76,16 +76,12 @@ let impl_3 (#v_T: Type0) : Core_models.Iter.Traits.Iterator.t_Iterator (t_Chunks
           if (Rust_primitives.Slice.slice_length #v_T self.f_elements <: usize) <. self.f_cs
           then
             let res:t_Slice v_T = self.f_elements in
-            let self:t_Chunks v_T =
-              {
-                self with
-                f_elements
-                =
-                Rust_primitives.Slice.slice_slice #v_T self.f_elements (mk_usize 0) (mk_usize 0)
-              }
-              <:
-              t_Chunks v_T
+            let (_: t_Slice v_T), (empty: t_Slice v_T) =
+              Rust_primitives.Slice.slice_split_at #v_T
+                self.f_elements
+                (Rust_primitives.Slice.slice_length #v_T self.f_elements <: usize)
             in
+            let self:t_Chunks v_T = { self with f_elements = empty } <: t_Chunks v_T in
             self, (Core_models.Option.Option_Some res <: Core_models.Option.t_Option (t_Slice v_T))
             <:
             (t_Chunks v_T & Core_models.Option.t_Option (t_Slice v_T))

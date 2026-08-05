@@ -19,11 +19,13 @@ pub mod traits {
         }
 
         // This trait is an addition to deal with the default methods that the F* backend doesn't handle
+        #[hax_lib::attributes]
         pub(crate) trait IteratorMethods: Iterator {
             fn fold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
             fn enumerate(self) -> Enumerate<Self>
             where
                 Self: Sized;
+            #[hax_lib::requires(step > 0)]
             fn step_by(self, step: usize) -> StepBy<Self>
             where
                 Self: Sized;
@@ -248,6 +250,7 @@ pub mod traits {
             Option::Some(max)
         }
 
+        #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
         impl<I: Iterator> IteratorMethods for I {
             fn fold<B, F: Fn(B, I::Item) -> B>(self, init: B, f: F) -> B {
@@ -258,6 +261,7 @@ pub mod traits {
                 Enumerate::new(self)
             }
 
+            #[hax_lib::requires(step > 0)]
             fn step_by(self, step: usize) -> StepBy<I> {
                 StepBy::new(self, step)
             }
@@ -359,6 +363,7 @@ pub mod traits {
             }
         }
 
+        #[hax_lib::attributes]
         impl<I: Iterator> super::collect::IntoIterator for I {
             type Item = I::Item;
             type IntoIter = Self;
@@ -399,11 +404,13 @@ pub mod adapters {
             iter: I,
             count: usize,
         }
+        #[hax_lib::attributes]
         impl<I> Enumerate<I> {
             pub fn new(iter: I) -> Enumerate<I> {
                 Enumerate { iter, count: 0 }
             }
         }
+        #[hax_lib::attributes]
         impl<I: Iterator> Iterator for Enumerate<I> {
             type Item = (usize, <I as Iterator>::Item);
 
@@ -431,22 +438,28 @@ pub mod adapters {
             step: usize,
         }
 
+        #[hax_lib::attributes]
         impl<I> StepBy<I> {
+            // std panics in `Iterator::step_by`, which is this constructor's only caller.
+            #[hax_lib::requires(step > 0)]
             pub fn new(iter: I, step: usize) -> Self {
+                if step == 0 {
+                    crate::panicking::internal::panic()
+                }
                 StepBy { iter, step }
             }
         }
 
+        #[hax_lib::attributes]
         #[hax_lib::opaque]
         impl<I: Iterator> Iterator for StepBy<I> {
             type Item = <I as Iterator>::Item;
 
             // Yields indices 0, step, 2*step, …, so the first call must not skip.
-            // std panics on `step == 0`; this yields every element instead.
             fn next(&mut self) -> Option<<I as Iterator>::Item> {
                 let current = self.iter.next();
-                // No early exit: Aeneas can't translate a `break` here, and
-                // `next` on an exhausted iterator is a no-op anyway.
+                // No early exit: Aeneas can't translate `break`, and `next` on an
+                // exhausted iterator is a no-op.
                 for _ in 1..self.step {
                     self.iter.next();
                 }
@@ -461,6 +474,7 @@ pub mod adapters {
             f: F,
         }
 
+        #[hax_lib::attributes]
         impl<I, F> Map<I, F> {
             pub fn new(iter: I, f: F) -> Self {
                 Self { iter, f }
@@ -468,6 +482,7 @@ pub mod adapters {
         }
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        #[hax_lib::attributes]
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator, O, F: Fn(I::Item) -> O> Iterator for Map<I, F> {
             type Item = O;
@@ -488,11 +503,13 @@ pub mod adapters {
             iter: I,
             n: usize,
         }
+        #[hax_lib::attributes]
         impl<I> Take<I> {
             pub fn new(iter: I, n: usize) -> Take<I> {
                 Take { iter, n }
             }
         }
+        #[hax_lib::attributes]
         impl<I: Iterator> Iterator for Take<I> {
             type Item = <I as Iterator>::Item;
 
@@ -515,6 +532,7 @@ pub mod adapters {
             f: F,
             current: Option<U>,
         }
+        #[hax_lib::attributes]
         impl<I: Iterator, U: Iterator, F: Fn(I::Item) -> U> FlatMap<I, U, F> {
             pub fn new(it: I, f: F) -> Self {
                 Self {
@@ -524,6 +542,7 @@ pub mod adapters {
                 }
             }
         }
+        #[hax_lib::attributes]
         #[hax_lib::opaque]
         impl<I: Iterator, U: Iterator, F: Fn(I::Item) -> U> Iterator for FlatMap<I, U, F> {
             type Item = U::Item;
@@ -555,6 +574,7 @@ pub mod adapters {
             it: I,
             current: Option<I::Item>,
         }
+        #[hax_lib::attributes]
         impl<I: Iterator> Flatten<I>
         where
             I::Item: Iterator,
@@ -566,6 +586,7 @@ pub mod adapters {
                 }
             }
         }
+        #[hax_lib::attributes]
         #[hax_lib::opaque]
         impl<I: Iterator> Iterator for Flatten<I>
         where
@@ -596,11 +617,13 @@ pub mod adapters {
             it1: I1,
             it2: I2,
         }
+        #[hax_lib::attributes]
         impl<I1: Iterator, I2: Iterator> Zip<I1, I2> {
             pub fn new(it1: I1, it2: I2) -> Self {
                 Self { it1, it2 }
             }
         }
+        #[hax_lib::attributes]
         #[hax_lib::opaque]
         impl<I1: Iterator, I2: Iterator> Iterator for Zip<I1, I2> {
             type Item = (I1::Item, I2::Item);
@@ -623,11 +646,13 @@ pub mod adapters {
             iter: I,
             predicate: P,
         }
+        #[hax_lib::attributes]
         impl<I, P> Filter<I, P> {
             pub fn new(iter: I, predicate: P) -> Self {
                 Self { iter, predicate }
             }
         }
+        #[hax_lib::attributes]
         // opaque: loop + Fn output projection not provably bool in F*
         #[hax_lib::opaque]
         #[cfg_attr(charon, aeneas::exclude)]
@@ -655,6 +680,7 @@ pub mod adapters {
             a: Option<A>,
             b: B,
         }
+        #[hax_lib::attributes]
         impl<A: Iterator, B: Iterator<Item = A::Item>> Chain<A, B> {
             pub fn new(a: A, b: B) -> Self {
                 Self {
@@ -663,6 +689,7 @@ pub mod adapters {
                 }
             }
         }
+        #[hax_lib::attributes]
         // opaque: `ref mut` pattern in if-let is not supported by hax
         #[hax_lib::opaque]
         impl<A: Iterator, B: Iterator<Item = A::Item>> Iterator for Chain<A, B> {
@@ -686,11 +713,13 @@ pub mod adapters {
             iter: I,
             n: usize,
         }
+        #[hax_lib::attributes]
         impl<I> Skip<I> {
             pub fn new(iter: I, n: usize) -> Self {
                 Self { iter, n }
             }
         }
+        #[hax_lib::attributes]
         // opaque: while-loop generates Rust_primitives.Hax.while_loop, causing F* dependency cycle
         #[hax_lib::opaque]
         impl<I: Iterator> Iterator for Skip<I> {
@@ -782,6 +811,7 @@ pub mod range {
                 $( [ $UName_wide:ty, $u_wider:ty, $IName_wide:ty, $i_wider:ty ] ),+;
         } => {
             $(
+                #[hax_lib::attributes]
                 impl Step for $u_narrower {
                     step_identical_methods!($UName);
                     step_unsigned_methods!($UName);
@@ -811,6 +841,7 @@ pub mod range {
                     }
                 }
 
+                #[hax_lib::attributes]
                 impl Step for $i_narrower {
                     step_identical_methods!($IName);
                     step_signed_methods!($IName, $u_narrower);
@@ -871,6 +902,7 @@ pub mod range {
             )+
 
             $(
+                #[hax_lib::attributes]
                 impl Step for $u_wider {
                     step_identical_methods!($UName_wide);
                     step_unsigned_methods!($UName_wide);
@@ -895,6 +927,7 @@ pub mod range {
                     }
                 }
 
+                #[hax_lib::attributes]
                 impl Step for $i_wider {
                     step_identical_methods!($IName_wide);
                     step_signed_methods!($IName_wide, $u_wider);
@@ -1173,6 +1206,12 @@ mod tests {
                 v.iter().copied().step_by(step).collect::<Vec<_>>()
             );
         }
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_step_by_zero_panics() {
+        let _ = VecIter::new(vec![1u8, 2, 3]).step_by(0);
     }
 
     macro_rules! step_tests {

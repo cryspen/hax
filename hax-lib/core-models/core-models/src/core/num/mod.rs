@@ -977,47 +977,47 @@ mod tests {
                     proptest! {
                         #[test]
                         fn [<test_ $t _unchecked_add>](x in any::<$t>(), y in any::<$t>()) {
-                            if let Some(expected) = x.checked_add(y) {
-                                prop_assert_eq!(
-                                    unsafe { super::$t::unchecked_add(x.inject(), y.inject()) },
-                                    expected);
-                            }
+                            prop_assume!(x.checked_add(y).is_some());
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_add(x.inject(), y.inject()) },
+                                unsafe { x.unchecked_add(y) });
                         }
 
                         #[test]
                         fn [<test_ $t _unchecked_sub>](x in any::<$t>(), y in any::<$t>()) {
-                            if let Some(expected) = x.checked_sub(y) {
-                                prop_assert_eq!(
-                                    unsafe { super::$t::unchecked_sub(x.inject(), y.inject()) },
-                                    expected);
-                            }
+                            prop_assume!(x.checked_sub(y).is_some());
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_sub(x.inject(), y.inject()) },
+                                unsafe { x.unchecked_sub(y) });
                         }
 
+                        // Full-range pairs almost always overflow: halve `y` until it fits.
                         #[test]
                         fn [<test_ $t _unchecked_mul>](x in any::<$t>(), y in any::<$t>()) {
-                            if let Some(expected) = x.checked_mul(y) {
-                                prop_assert_eq!(
-                                    unsafe { super::$t::unchecked_mul(x.inject(), y.inject()) },
-                                    expected);
+                            let mut y = y;
+                            while x.checked_mul(y).is_none() {
+                                y /= 2;
                             }
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_mul(x.inject(), y.inject()) },
+                                unsafe { x.unchecked_mul(y) });
                         }
 
+                        // std has no `unchecked_div`/`unchecked_rem`; `/` and `%` stand in.
                         #[test]
                         fn [<test_ $t _unchecked_div>](x in any::<$t>(), y in any::<$t>()) {
-                            if let Some(expected) = x.checked_div(y) {
-                                prop_assert_eq!(
-                                    unsafe { super::$t::unchecked_div(x.inject(), y.inject()) },
-                                    expected);
-                            }
+                            prop_assume!(x.checked_div(y).is_some());
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_div(x.inject(), y.inject()) },
+                                x / y);
                         }
 
                         #[test]
                         fn [<test_ $t _unchecked_rem>](x in any::<$t>(), y in any::<$t>()) {
-                            if let Some(expected) = x.checked_rem(y) {
-                                prop_assert_eq!(
-                                    unsafe { super::$t::unchecked_rem(x.inject(), y.inject()) },
-                                    expected);
-                            }
+                            prop_assume!(x.checked_rem(y).is_some());
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_rem(x.inject(), y.inject()) },
+                                x % y);
                         }
                     }
                 )*

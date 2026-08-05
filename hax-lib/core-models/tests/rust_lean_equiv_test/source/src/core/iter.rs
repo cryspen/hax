@@ -1,29 +1,12 @@
 //! Equivalence tests for `core::iter::*`.
 //!
 //! These mirror the proptest block in `core-models/src/core/iter.rs`.
-//! Most `IteratorMethods` proptests use closures (`map`, `filter`, `fold`,
-//! `all`, `any`, `find`, `position`, …) and are skipped here pending
-//! closure-extraction support. We keep the closure-free observations
-//! (`count`, simple loops over a range) since those exercise the trait
-//! plumbing without crossing the `Fn`-as-type-universe boundary.
+//! Only `Range::count` is checked against Lean; every other `IteratorMethods`
+//! method is Rust-only, for the reason given above the `iterator_methods` module.
 
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- step_by ---------------------------------------------------------------
-
-// TODO(iterator-methods-excluded): `step_by` is provided by the excluded
-// `IteratorMethods`, so this extracts to a missing `Iterator.step_by.default`.
-// Not a `skip_lean` — it fails to elaborate. Covered by the proptest.
-/*
-#[rust_lean_test]
-pub fn test_step_by_starts_at_first() -> bool {
-    let a: [u8; 5] = [10, 11, 12, 13, 14];
-    match a.as_slice().iter().step_by(2).next() {
-        Some(v) => *v == 10,
-        None => false,
-    }
-}
-*/
 
 // ----- count over Range<usize> ----------------------------------------------
 
@@ -42,83 +25,119 @@ pub fn test_range_count_offset() -> bool {
     (3..10usize).count() == 7
 }
 
-// ----- skipped: closure-based iterator combinators --------------------------
+// ----- Rust-only: blocked on the `IteratorMethods` exclusion -----------------
 
-// TODO(slice-iter-extraction): closure-based iterator combinators like
-// `fold` extract through Aeneas, but they bottom out in `slice::Iter::fold`
-// (and friends) which are missing from the extracted Lean. Tried
-// `[1u32,2,3,4].iter().fold(0u32, |acc, &x| acc + x)` — Aeneas emits the
-// closure fine, then Lean fails with
-//   `Unknown constant CoreModels.core.slice.Slice.iter`
-//   `Unknown constant CoreModels.core.slice.iter.Iter.Insts...fold`.
-// Revisit once slice iterators are modelled.
-// pub fn test_fold_sum() -> bool {
-//     let v = [1u32, 2, 3, 4];
-//     v.iter().fold(0u32, |acc, &x| acc + x) == 10
-// }
+// These come from the blanket `impl IteratorMethods for I`, which is
+// `aeneas::exclude`d: each extracts to a missing `Iterator.<method>.default`
+// that breaks all of `Funs.lean`, so `skip_lean` cannot apply either.
+#[cfg(test)]
+mod iterator_methods {
+    #[test]
+    fn test_fold_sum() {
+        assert_eq!((1..5u32).fold(0u32, |acc, x| acc + x), 10);
+    }
 
-// TODO(slice-iter-extraction): `Iterator::map` / `Iterator::filter` /
-// `Iterator::any` / `Iterator::all` / `Iterator::find` /
-// `Iterator::find_map` / `Iterator::position` / `Iterator::for_each` /
-// `Iterator::reduce` all take closures. Aeneas handles the closure side
-// (see `core::array::test_from_fn_identity`), but on slice iterators they
-// bottom out in `slice::Iter::*` which is missing from the model — same
-// blocker as `fold` above.
-// pub fn test_map_collect_sum() -> bool {
-//     let v = [1u32, 2, 3];
-//     v.iter().map(|x| x + 1).fold(0u32, |a, b| a + b) == (2 + 3 + 4)
-// }
-// pub fn test_filter_count() -> bool {
-//     let v = [1u32, 2, 3, 4, 5];
-//     v.iter().filter(|x| **x > 2).count() == 3
-// }
-// pub fn test_all_true() -> bool { [1u32, 2, 3].iter().all(|x| *x > 0) }
-// pub fn test_any_true() -> bool { [1u32, 2, 3].iter().any(|x| *x == 2) }
-// pub fn test_find_some() -> bool {
-//     [1u32, 2, 3].iter().find(|x| **x == 2).copied() == Some(2)
-// }
-// pub fn test_position_some() -> bool {
-//     [10u32, 20, 30].iter().position(|x| *x == 20) == Some(1)
-// }
+    #[test]
+    fn test_map_sum() {
+        assert_eq!((1..4u32).map(|x| x + 1).fold(0u32, |a, b| a + b), 2 + 3 + 4);
+    }
 
-// `core::iter::from_fn` builds an iterator from a closure. Aeneas extracts
-// the closure, but the resulting `iter::FromFn` adapter is not modelled, so
-// any observation (`count`, `fold`, etc.) hits an unknown-constant error in
-// Lean. Revisit once `iter::FromFn` is added to the model.
-// pub fn test_from_fn() -> bool { ... }
+    #[test]
+    fn test_filter_count() {
+        assert_eq!((1..6u32).filter(|x| *x > 2).count(), 3);
+    }
 
-// TODO(slice-iter-extraction): `[T; N]::iter()` / `[T]::iter()` produce a
-// `slice::Iter` whose `next` takes `&mut self`; pure `count()` over them
-// goes through `IteratorMethods::count`, which uses a while-let loop that
-// the model marks `#[hax_lib::opaque]`. Revisit once opaque iterator
-// methods get a concrete Lean spec.
-// pub fn test_array_iter_count() -> bool {
-//     [1u8, 2, 3].iter().count() == 3
-// }
+    #[test]
+    fn test_all_true() {
+        assert!((1..4u32).all(|x| x > 0));
+    }
 
-// TODO(adapter-extraction): `enumerate`, `step_by`, `take`, `skip`, `zip`,
-// `chain`, `flatten`, `flat_map` build adapter structs whose iteration
-// machinery is opaque in the model.
-// pub fn test_take_count() -> bool { (0..100usize).take(5).count() == 5 }
-// pub fn test_skip_count() -> bool { (0..10usize).skip(3).count() == 7 }
-// pub fn test_enumerate_count() -> bool { (0..4usize).enumerate().count() == 4 }
-// pub fn test_zip_count() -> bool {
-//     (0..3usize).zip(0..5usize).count() == 3
-// }
-// pub fn test_chain_count() -> bool {
-//     (0..3usize).chain(0..2usize).count() == 5
-// }
+    #[test]
+    fn test_any_true() {
+        assert!((1..4u32).any(|x| x == 2));
+    }
 
-// TODO(closure-extraction + Ord): `min` / `max` walk the iterator with a
-// while-let loop using `Ord::cmp`; the loop body is opaque in the model.
-// pub fn test_min() -> bool { ... }
-// pub fn test_max() -> bool { ... }
+    #[test]
+    fn test_find_some() {
+        assert_eq!((1..4u32).find(|x| *x == 2), Some(2));
+    }
 
-// TODO(iter-last): `Iterator::last` uses a while-let loop; opaque in the
-// model.
-// pub fn test_last() -> bool { ... }
+    #[test]
+    fn test_position_some() {
+        assert_eq!((10..40u32).step_by(10).position(|x| x == 20), Some(1));
+    }
 
-// TODO(iter-nth): `Iterator::nth` uses a for-loop that generates
-// `Rust_primitives.Hax.Folds`, causing the dependency cycle the model
-// avoids by marking the helper opaque.
-// pub fn test_nth() -> bool { ... }
+    #[test]
+    fn test_step_by_starts_at_first() {
+        let a: [u8; 5] = [10, 11, 12, 13, 14];
+        assert_eq!(a.as_slice().iter().step_by(2).next(), Some(&10));
+    }
+
+    #[test]
+    fn test_take_count() {
+        assert_eq!((0..100usize).take(5).count(), 5);
+    }
+
+    #[test]
+    fn test_skip_count() {
+        assert_eq!((0..10usize).skip(3).count(), 7);
+    }
+
+    #[test]
+    fn test_enumerate_count() {
+        assert_eq!((0..4usize).enumerate().count(), 4);
+    }
+
+    #[test]
+    fn test_zip_count() {
+        assert_eq!((0..3usize).zip(0..5usize).count(), 3);
+    }
+
+    #[test]
+    fn test_chain_count() {
+        assert_eq!((0..3usize).chain(0..2usize).count(), 5);
+    }
+
+    #[test]
+    fn test_min() {
+        assert_eq!((1..4u32).min(), Some(1));
+    }
+
+    #[test]
+    fn test_max() {
+        assert_eq!((1..4u32).max(), Some(3));
+    }
+
+    #[test]
+    fn test_last() {
+        assert_eq!((1..4u32).last(), Some(3));
+    }
+
+    #[test]
+    fn test_nth() {
+        assert_eq!((1..4u32).nth(1), Some(2));
+    }
+
+    // `slice::iter::Iter` has a higher-ranked lifetime Aeneas cannot translate.
+    #[test]
+    fn test_fold_sum_over_slice() {
+        let v = [1u32, 2, 3, 4];
+        assert_eq!(v.iter().fold(0u32, |acc, &x| acc + x), 10);
+    }
+
+    #[test]
+    fn test_array_iter_count() {
+        assert_eq!([1u8, 2, 3].iter().count(), 3);
+    }
+
+    // `iter::FromFn` is not in the model.
+    #[test]
+    fn test_from_fn() {
+        let mut n = 0u32;
+        let it = core::iter::from_fn(move || {
+            n += 1;
+            if n <= 3 { Some(n) } else { None }
+        });
+        assert_eq!(it.fold(0u32, |a, b| a + b), 6);
+    }
+}
