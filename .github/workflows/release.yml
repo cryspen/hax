@@ -20,14 +20,16 @@ concurrency:
 
 jobs:
   # Computes the values every publish job keys on: the tag the release's
-  # artifacts are published under, empty for a ref that is not a release tag,
-  # and the assets published under it already.
+  # artifacts are published under, empty for a ref that is not a release tag;
+  # the assets published under it already; and the platform matrix for
+  # `cargo-hax`.
   tag:
     if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.resolve.outputs.tag }}
       assets: ${{ steps.assets.outputs.assets }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     env:
       RUSTUP_TOOLCHAIN: stable
     steps:
@@ -68,6 +70,13 @@ jobs:
             fi
           fi
           echo "assets=$assets" >> "$GITHUB_OUTPUT"
+
+      # The platforms `cargo-hax` binaries are built for, shared with the
+      # binstall workflow that installs from them.
+      - id: matrix
+        run: |
+          echo "matrix=$(jq -c '{include: .}' .github/cargo-hax-targets.json)" \
+            >> "$GITHUB_OUTPUT"
 
   release-js:
     needs: tag
@@ -149,3 +158,68 @@ jobs:
         with:
           tag_name: ${{ needs.tag.outputs.tag }}
           files: hacspec_${{ matrix.os }}.tar.gz
+
+  # The pre-built `cargo-hax` binaries `cargo binstall cargo-hax` installs.
+  #
+  # Default features, on stable, as `cargo install cargo-hax` builds it: this
+  # binary comes without the driver and the engine, so it serves the `lean`
+  # backend, and `legacy-engine` would tie it to the pinned nightly.
+  release-cargo-hax:
+    needs: tag
+    if: needs.tag.outputs.tag != ''
+    strategy:
+      fail-fast: false
+      # Which image is strictest differs by system: on Linux the oldest, glibc
+      # being backward compatible, so a binary built on 22.04 runs on the newer
+      # images too; on macOS the newest, since what refuses a binary there is the
+      # code-signing policy, which Apple only tightens. `macos-15-intel` is
+      # pinned for want of a floating Intel label, not for its version.
+      matrix: ${{ fromJSON(needs.tag.outputs.matrix) }}
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    permissions:
+      contents: write
+
+    env:
+      # Outranks `rust-toolchain.toml`, which would otherwise select the pinned
+      # nightly that this binary must not need.
+      RUSTUP_TOOLCHAIN: stable
+      # The oldest macOS the binaries run on, above rustc's own floor for the
+      # Intel target (10.12) so that both are the platform the README documents.
+      MACOSX_DEPLOYMENT_TARGET: '11.0'
+      # Kept in step with the binstall metadata `pkg-url` by a `cargo-hax` test.
+      ARCHIVE: cargo-hax-${{ matrix.target }}.tar.zst
+      # In the delete/re-upload window a `cargo binstall` finds nothing and
+      # silently builds from source. Checked per target, so a release that got
+      # only some of its archives is still completed by a later run.
+      PUBLISHED: ${{ contains(fromJSON(needs.tag.outputs.assets), format('cargo-hax-{0}.tar.zst', matrix.target)) }}
+
+    steps:
+      - uses: actions/checkout@v4
+        if: env.PUBLISHED != 'true'
+      - uses: dtolnay/rust-toolchain@stable
+        if: env.PUBLISHED != 'true'
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build `cargo-hax`
+        if: env.PUBLISHED != 'true'
+        run: cargo build --locked --release -p cargo-hax --target ${{ matrix.target }}
+
+      # Compressed by the `zstd` command, which every image here ships, rather
+      # than by `tar` itself: whether its `--zstd` is available depends on how
+      # the `tar` of the image was built.
+      - name: Package the binary at the archive root
+        if: env.PUBLISHED != 'true'
+        run: |
+          set -o pipefail
+          tar -cf - -C target/${{ matrix.target }}/release cargo-hax \
+            | zstd -9 -T0 -o "$ARCHIVE"
+
+      - name: Release
+        if: env.PUBLISHED != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.tag.outputs.tag }}
+          files: ${{ env.ARCHIVE }}
