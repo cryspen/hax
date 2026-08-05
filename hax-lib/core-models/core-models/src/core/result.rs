@@ -21,6 +21,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::is_ok_and`]
+    #[cfg(hax_backend_fstar)]
     pub fn is_ok_and<F: FnOnce(T) -> bool>(self, f: F) -> bool {
         match self {
             Ok(t) => f(t),
@@ -34,6 +35,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::is_err_and`]
+    #[cfg(hax_backend_fstar)]
     pub fn is_err_and<F: FnOnce(E) -> bool>(self, f: F) -> bool {
         match self {
             Ok(_) => false,
@@ -79,6 +81,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::expect_err`]
+    #[cfg(hax_backend_fstar)]
     #[hax_lib::requires(self.is_err())]
     pub fn expect_err(self, _msg: &str) -> E {
         match self {
@@ -98,6 +101,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap_or_else`]
+    #[cfg(hax_backend_fstar)]
     pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
         match self {
             Ok(t) => t,
@@ -118,6 +122,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map`]
+    #[cfg(hax_backend_fstar)]
     pub fn map<U, F>(self, op: F) -> Result<U, E>
     where
         F: FnOnce(T) -> U,
@@ -129,6 +134,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or`]
+    #[cfg(hax_backend_fstar)]
     pub fn map_or<U, F>(self, default: U, f: F) -> U
     where
         F: FnOnce(T) -> U,
@@ -140,10 +146,11 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or_else`]
+    #[cfg(hax_backend_fstar)]
     pub fn map_or_else<U, D, F>(self, default: D, f: F) -> U
     where
-        F: FnOnce(T) -> U,
         D: FnOnce(E) -> U,
+        F: FnOnce(T) -> U,
     {
         match self {
             Ok(t) => f(t),
@@ -164,6 +171,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::inspect`]
+    #[cfg(hax_backend_fstar)]
     pub fn inspect<F: FnOnce(&T)>(self, f: F) -> Result<T, E> {
         if let Ok(ref t) = self {
             f(t);
@@ -172,6 +180,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::inspect_err`]
+    #[cfg(hax_backend_fstar)]
     pub fn inspect_err<F: FnOnce(&E)>(self, f: F) -> Result<T, E> {
         if let Err(ref e) = self {
             f(e);
@@ -205,6 +214,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::and_then`]
+    #[cfg(hax_backend_fstar)]
     pub fn and_then<U, F>(self, op: F) -> Result<U, E>
     where
         F: FnOnce(T) -> Result<U, E>,
@@ -225,6 +235,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::or_else`]
+    #[cfg(hax_backend_fstar)]
     pub fn or_else<F, O: FnOnce(E) -> Result<T, F>>(self, op: O) -> Result<T, F> {
         match self {
             Ok(t) => Ok(t),
@@ -368,6 +379,112 @@ impl<T, E> Result<T, E> {
         match self {
             Ok(t) => t,
             Err(_) => super::panicking::internal::panic(),
+        }
+    }
+
+    /// See [`std::result::Result::expect_err`]
+    #[hax_lib::requires(self.is_err())]
+    pub fn expect_err(self, _msg: &str) -> E
+    where
+        T: super::fmt::Debug,
+    {
+        match self {
+            Ok(_) => super::panicking::internal::panic(),
+            Err(e) => e,
+        }
+    }
+
+    /// See [`std::result::Result::is_ok_and`]
+    pub fn is_ok_and<F: FnOnce(T) -> bool>(self, f: F) -> bool {
+        match self {
+            Ok(t) => f(t),
+            Err(_) => false,
+        }
+    }
+
+    /// See [`std::result::Result::is_err_and`]
+    pub fn is_err_and<F: FnOnce(E) -> bool>(self, f: F) -> bool {
+        match self {
+            Ok(_) => false,
+            Err(e) => f(e),
+        }
+    }
+
+    /// See [`std::result::Result::unwrap_or_else`]
+    pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
+        match self {
+            Ok(t) => t,
+            Err(e) => op(e),
+        }
+    }
+
+    /// See [`std::result::Result::map`]
+    pub fn map<U, F>(self, op: F) -> Result<U, E>
+    where
+        F: FnOnce(T) -> U,
+    {
+        match self {
+            Ok(t) => Ok(op(t)),
+            Err(e) => Err(e),
+        }
+    }
+
+    /// See [`std::result::Result::map_or`]
+    pub fn map_or<U, F>(self, default: U, f: F) -> U
+    where
+        F: FnOnce(T) -> U,
+    {
+        match self {
+            Ok(t) => f(t),
+            Err(_) => default,
+        }
+    }
+
+    /// See [`std::result::Result::map_or_else`]
+    // Bound order sets the closure dictionary order; swapping it swaps them.
+    pub fn map_or_else<U, D, F>(self, default: D, f: F) -> U
+    where
+        D: FnOnce(E) -> U,
+        F: FnOnce(T) -> U,
+    {
+        match self {
+            Ok(t) => f(t),
+            Err(e) => default(e),
+        }
+    }
+
+    /// See [`std::result::Result::inspect`]
+    pub fn inspect<F: FnOnce(&T)>(self, f: F) -> Result<T, E> {
+        if let Ok(ref t) = self {
+            f(t);
+        }
+        self
+    }
+
+    /// See [`std::result::Result::inspect_err`]
+    pub fn inspect_err<F: FnOnce(&E)>(self, f: F) -> Result<T, E> {
+        if let Err(ref e) = self {
+            f(e);
+        }
+        self
+    }
+
+    /// See [`std::result::Result::and_then`]
+    pub fn and_then<U, F>(self, op: F) -> Result<U, E>
+    where
+        F: FnOnce(T) -> Result<U, E>,
+    {
+        match self {
+            Ok(t) => op(t),
+            Err(e) => Err(e),
+        }
+    }
+
+    /// See [`std::result::Result::or_else`]
+    pub fn or_else<F, O: FnOnce(E) -> Result<T, F>>(self, op: O) -> Result<T, F> {
+        match self {
+            Ok(t) => Ok(t),
+            Err(e) => op(e),
         }
     }
 

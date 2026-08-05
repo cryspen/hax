@@ -361,20 +361,22 @@ mod tests {
                     proptest! {
                         #[test]
                         fn [<test_ $t _add_assign>](x in any::<$t>(), y in any::<$t>()) {
-                            if let Some(expected) = x.checked_add(y) {
-                                let mut model = x.inject();
-                                super::arith::AddAssign::add_assign(&mut model, y.inject());
-                                prop_assert_eq!(model, expected);
-                            }
+                            prop_assume!(x.checked_add(y).is_some());
+                            let mut model = x.inject();
+                            super::arith::AddAssign::add_assign(&mut model, y.inject());
+                            let mut std_value = x;
+                            std::ops::AddAssign::add_assign(&mut std_value, y);
+                            prop_assert_eq!(model, std_value);
                         }
 
                         #[test]
                         fn [<test_ $t _sub_assign>](x in any::<$t>(), y in any::<$t>()) {
-                            if let Some(expected) = x.checked_sub(y) {
-                                let mut model = x.inject();
-                                super::arith::SubAssign::sub_assign(&mut model, y.inject());
-                                prop_assert_eq!(model, expected);
-                            }
+                            prop_assume!(x.checked_sub(y).is_some());
+                            let mut model = x.inject();
+                            super::arith::SubAssign::sub_assign(&mut model, y.inject());
+                            let mut std_value = x;
+                            std::ops::SubAssign::sub_assign(&mut std_value, y);
+                            prop_assert_eq!(model, std_value);
                         }
 
                         #[test]
@@ -382,7 +384,9 @@ mod tests {
                             let y = <$t>::MAX - x;
                             let mut model = x.inject();
                             super::arith::AddAssign::add_assign(&mut model, y.inject());
-                            prop_assert_eq!(model, <$t>::MAX);
+                            let mut std_value = x;
+                            std::ops::AddAssign::add_assign(&mut std_value, y);
+                            prop_assert_eq!(model, std_value);
                         }
                     }
                 )*

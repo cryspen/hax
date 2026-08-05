@@ -72,30 +72,6 @@ pub fn test_slice_to_vec_then_push() -> bool {
 
 // ----- Box<[T]>::into_vec ---------------------------------------------------
 
-// TODO(no-into-boxed-slice-model): `Vec::into_boxed_slice` has no model
-// in `alloc/src/lib.rs`, so constructing a `Box<[T]>` inside an extracted
-// test body has no Lean translation. The `test_into_vec` proptest in
-// `alloc/src/lib.rs` lives behind `#[cfg(test)]` and only exercises the
-// Rust side, so it doesn't face this constraint. Re-enable these once
-// we have a model for slice/array → `Box<[T]>` that Aeneas extracts.
-
-// pub fn test_box_slice_into_vec_empty() -> bool {
-//     let s: [u8; 0] = [];
-//     let b: Box<[u8]> = s.to_vec().into_boxed_slice();
-//     let v: Vec<u8> = b.into_vec();
-//     v.len() == 0 && v.is_empty()
-// }
-
-// pub fn test_box_slice_into_vec_three() -> bool {
-//     let s: [u8; 3] = [1, 2, 3];
-//     let b: Box<[u8]> = s.to_vec().into_boxed_slice();
-//     let mut v: Vec<u8> = b.into_vec();
-//     v.len() == 3
-//         && v.pop().unwrap_or(0) == 3
-//         && v.pop().unwrap_or(0) == 2
-//         && v.pop().unwrap_or(0) == 1
-// }
-
 // ----- sort_by (excluded) ----------------------------------------------------
 
 // TODO(vec-index-excluded): alloc_models::slice::_::sort_by is in
@@ -108,3 +84,26 @@ pub fn test_slice_to_vec_then_push() -> bool {
 // (see core::array::from_fn) but these methods are not in the model:
 // `alloc_models::slice::_::sort_by` is in `ALLOC_CHARON_EXCLUDES` and the
 // generic slice impl is not provided either.
+
+// Rust-only: `Vec::into_boxed_slice` has no model.
+#[cfg(test)]
+mod boxed_slice {
+    #[test]
+    fn test_box_slice_into_vec_empty() {
+        let s: [u8; 0] = [];
+        let b: Box<[u8]> = s.to_vec().into_boxed_slice();
+        let v: Vec<u8> = b.into_vec();
+        assert!(v.is_empty());
+    }
+
+    #[test]
+    fn test_box_slice_into_vec_three() {
+        let s: [u8; 3] = [1, 2, 3];
+        let b: Box<[u8]> = s.to_vec().into_boxed_slice();
+        let mut v: Vec<u8> = b.into_vec();
+        assert_eq!(v.len(), 3);
+        assert_eq!(v.pop(), Some(3));
+        assert_eq!(v.pop(), Some(2));
+        assert_eq!(v.pop(), Some(1));
+    }
+}
