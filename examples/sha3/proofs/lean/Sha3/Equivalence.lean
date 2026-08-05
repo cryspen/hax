@@ -43,7 +43,7 @@ private theorem array_index_U64_eq {N : Usize} (a : Array U64 N) (i : Usize)
   have hSpec : (rust_primitives.slice.array_index a i) ⦃ x => x = a.val[i.val]! ⦄ := by
     show Aeneas.Std.WP.spec (Slice.index_usize (Array.to_slice a) i) _
     have h' : i.val < a.val.length := by rw [a.property]; exact h
-    apply Aeneas.Std.WP.spec_mono (Slice.index_usize_spec _ i (by simp; exact h))
+    apply Aeneas.Std.WP.spec_mono (Slice.index_usize_spec _ i (by simp; exact h'))
     intro x hx
     simp only [hx, Array.val_to_slice, getElem!_pos a.val i.val h']
   obtain ⟨y, hy, hyVal⟩ := Aeneas.Std.WP.spec_imp_exists hSpec
@@ -303,6 +303,7 @@ In essence, this states that `rho` does whatever `rho` does, and it prevents `mv
 stuck at `rho` while putting some useful information into the verification conditions.
 
 -/
+set_option linter.defProp false
 
 -- Some `Inhabited` instances are currently required for `core.Result.toPure_spec`
 instance : Inhabited (KeccakState Std.U64 1#usize) := ⟨{st := ⟨List.replicate 25 0#u64, by simp⟩}⟩
