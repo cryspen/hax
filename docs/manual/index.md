@@ -41,7 +41,7 @@ Note:
 
 ### Nix
 
-This should work on [Linux](https://nixos.org/download.html#nix-install-linux), [MacOS](https://nixos.org/download.html#nix-install-macos) and [Windows](https://nixos.org/download.html#nix-install-windows).
+This should work on [Linux](https://nixos.org/download/#nix-install-linux), [MacOS](https://nixos.org/download/#nix-install-macos) and [Windows](https://nixos.org/download/#nix-install-windows).
 
 <b>Prerequisites:</b> <a href="https://nixos.org/">Nix package
 manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled)</i>

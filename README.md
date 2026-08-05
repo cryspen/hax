@@ -148,11 +148,11 @@ Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimi
 <details>
   <summary><b>Nix</b></summary>
 
- This should work on [Linux](https://nixos.org/download.html#nix-install-linux), [MacOS](https://nixos.org/download.html#nix-install-macos) and [Windows](https://nixos.org/download.html#nix-install-windows).
+ This should work on [Linux](https://nixos.org/download/#nix-install-linux), [MacOS](https://nixos.org/download/#nix-install-macos) and [Windows](https://nixos.org/download/#nix-install-windows).
 
 <details>
   <summary><b>Prerequisites:</b> <a href="https://nixos.org/">Nix package
-manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled)</i></summary>
+manager</a> <i>(with <a href="https://wiki.nixos.org/wiki/Flakes">flakes</a> enabled)</i></summary>
 
   - Either using the [Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer), with the following bash one-liner:
     ```bash

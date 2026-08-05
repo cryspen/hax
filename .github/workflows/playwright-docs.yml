@@ -6,7 +6,7 @@ on:
 jobs:
   test:
     if: github.repository == 'cryspen/hax'
-    timeout-minutes: 45
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
@@ -41,7 +41,7 @@ jobs:
         exit ${exit_code1:-0} || exit ${exit_code2:-0}
     - name: Run Playwright tests
       working-directory: docs/.test
-      run: npx playwright test --reporter github,html --trace on 
+      run: npx playwright test --reporter github,html
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
