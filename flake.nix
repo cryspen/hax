@@ -207,14 +207,15 @@
           DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libz rustc ];
         in {
           examples = pkgs.mkShell {
-            inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            inherit LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            inputsFrom = [ devShells.fstar ];
             HACL_HOME = "${hacl-star}";
             shellHook = ''
               HAX_ROOT=$(git rev-parse --show-toplevel)
               export HAX_PROOF_LIBS_HOME="$HAX_ROOT/proof-libs/fstar"
               export HAX_LIBS_HOME="$HAX_ROOT/hax-lib"
             '';
-            packages = defaultPackages ++ [ fstar pkgs.proverif ];
+            packages = [ proverif pkgs.elan ];
           };
           ci-examples = pkgs.mkShell {
             shellHook = ''
@@ -229,6 +230,7 @@
             packages = [
               packages.hax
               packages.hax-env
+              packages.rustc
               packages.fstar
               packages.proverif
               pkgs.jq

@@ -47,6 +47,7 @@ Miscellaneous:
  - Four examples for the new Aeneas/Lean backend (cryspen/hax-evit/190, cryspen/hax-evit/191,
    cryspen/hax-evit/192, #2058, #2059, #2070, #2061)
  - Update flags for the charon/aeneas pipeline (#2051)
+ - Fix missing tools in the Nix dev shells (#2131)
 
 ## 0.3.7
 
