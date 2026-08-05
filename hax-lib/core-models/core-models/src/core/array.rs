@@ -34,8 +34,9 @@ impl<T> Array<T, 0> {}
 
 impl<T, const N: usize> Array<T, N> {
     /// See [`std::array::map`]
+    // `FnMut`, like std: a `Fn` bound rejects inferred closures.
     #[cfg(not(hax_backend_fstar))]
-    pub fn map<F: Fn(T) -> U, U>(s: [T; N], f: F) -> [U; N] {
+    pub fn map<F: FnMut(T) -> U, U>(s: [T; N], f: F) -> [U; N] {
         array_map(s, f)
     }
     #[cfg(hax_backend_fstar)]

@@ -194,17 +194,17 @@ pub fn test_vec_from_elem_applies_clone() -> bool {
 
 // ----- index (excluded) ------------------------------------------------------
 
-// TODO(vec-index-excluded): Vec<T>::index is in ALLOC_CHARON_EXCLUDES.
-// pub fn test_vec_index_first() -> bool {
-//     let v: Vec<u8> = vec![7u8; 1];
-//     v[0] == 7
-// }
+#[rust_lean_test]
+pub fn test_vec_index_first() -> bool {
+    let v: Vec<u8> = vec![7u8; 1];
+    v[0] == 7
+}
 
-// TODO(vec-index-excluded): Vec<T>::index is in ALLOC_CHARON_EXCLUDES.
-// pub fn test_vec_index_range() -> bool {
-//     let v: Vec<u8> = vec![7u8; 3];
-//     v[0..2].len() == 2
-// }
+#[rust_lean_test]
+pub fn test_vec_index_range() -> bool {
+    let v: Vec<u8> = vec![7u8; 3];
+    v[0..2].len() == 2
+}
 
 // ----- sort_by (excluded) ----------------------------------------------------
 
@@ -217,15 +217,13 @@ pub fn test_vec_from_elem_applies_clone() -> bool {
 
 // ----- remove ----------------------------------------------------------------
 
-// TODO(vec-extraction-arity-mismatch: the Lean model marks `Vec.is_empty`/`as_slice`/`pop`/... with implicit `{A}`, but Aeneas extracts the call applying the allocator explicitly. Until that mismatch is fixed in the model, `Vec::*` tests fail.)
-
-/* #[rust_lean_test]
+#[rust_lean_test]
 pub fn test_vec_remove_only_element() -> bool {
     let mut v: Vec<u8> = Vec::new();
     v.push(7);
     let x = v.remove(0);
     x == 7 && v.is_empty()
-} */
+}
 
 // ----- swap_remove -----------------------------------------------------------
 

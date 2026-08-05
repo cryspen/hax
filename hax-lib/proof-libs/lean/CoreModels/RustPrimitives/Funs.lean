@@ -99,6 +99,32 @@ def rust_primitives.slice.array_from_fn_go {T F : Type}
     let q ← inst.call_mut p.2 ⟨BitVec.ofNat _ n⟩
     ok (p.1 ++ [q.1], q.2)
 
+private theorem foldlM_list_build_length {A T F : Type}
+    (step : List T × F → A → Result (List T × F))
+    (hstep : ∀ l f i r, step (l, f) i = .ok r → r.1.length = l.length + 1) :
+    ∀ (l : List A) (acc : List T) (f : F) (result : List T × F),
+    l.foldlM step (acc, f) = .ok result → result.1.length = acc.length + l.length := by
+  intro l
+  induction l with
+  | nil =>
+    intro acc f result h
+    simp only [List.foldlM_nil] at h
+    have heq : result = (acc, f) := (Result.ok.inj h).symm
+    simp [heq]
+  | cons x xs ih =>
+    intro acc f result h
+    simp only [List.foldlM_cons] at h
+    cases hstep_x : step (acc, f) x with
+    | ok r =>
+      obtain ⟨r1, r2⟩ := r
+      simp only [hstep_x] at h
+      have hlen_r : r1.length = acc.length + 1 := by
+        have := hstep acc f x ⟨r1, r2⟩ hstep_x; simpa using this
+      have ih' := ih r1 r2 result h
+      simp only [List.length_cons]; omega
+    | fail e => simp [hstep_x] at h
+    | div => simp [hstep_x] at h
+
 def rust_primitives.slice.array_from_fn
   {T : Type} {F : Type} (N : Std.Usize) (coreopsfunctionFnMutFTupleUsizeTInst :
   core.ops.function.FnMut F Std.Usize T) :
@@ -119,11 +145,38 @@ def rust_primitives.slice.array_map_go {T U F : Type}
 
 def rust_primitives.slice.array_map
   {T : Type} {U : Type} {F : Type} {N : Std.Usize}
-  (coreopsfunctionFnFTupleTUInst : core.ops.function.Fn F T U) :
-  Array T N → F → Result (Array U N) := fun a f => do
-  let l ← array_map_go coreopsfunctionFnFTupleTUInst f a.val
-  (if h : l.length = N.val then ok ⟨l, h⟩ else fail .panic)
-  -- The `else` is unreachable, but it's easier to prove that in the spec than here.
+  (coreopsfunctionFnMutFTupleTUInst : core.ops.function.FnMut F T U) :
+  Array T N → F → Result (Array U N) := fun a f =>
+  match h : a.val.foldlM
+    (fun (s : List U × F) (x : T) => do
+      let (v, f') ← coreopsfunctionFnMutFTupleTUInst.call_mut s.2 x
+      ok (s.1 ++ [v], f'))
+    ([], f) with
+  | fail e => fail e
+  | div => div
+  | ok result => ok ⟨result.1, by
+      have hlen := foldlM_list_build_length
+        (fun (s : List U × F) (x : T) => do
+          let (v, f') ← coreopsfunctionFnMutFTupleTUInst.call_mut s.2 x
+          ok (s.1 ++ [v], f'))
+        (fun l f x r hr => by
+          simp only [] at hr
+          cases hcall : coreopsfunctionFnMutFTupleTUInst.call_mut f x with
+          | ok p =>
+            obtain ⟨v, fv⟩ := p
+            simp only [hcall, bind_tc_ok] at hr
+            have heq : r = (l ++ [v], fv) := (Result.ok.inj hr).symm
+            simp [heq, List.length_append]
+          | fail e =>
+            simp only [hcall, bind_tc_fail] at hr
+            exact nomatch hr
+          | div =>
+            simp only [hcall, bind_tc_div] at hr
+            exact nomatch hr)
+        _ [] f result h
+      have := a.property
+      simp only [List.length_nil, Nat.zero_add] at hlen
+      omega⟩
 
 @[spec]
 def rust_primitives.slice.array_as_slice

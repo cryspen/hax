@@ -50,7 +50,10 @@ pub mod iter {
                 Option::None
             } else if slice_length(self.elements) < self.cs {
                 let res = self.elements;
-                self.elements = slice_slice(self.elements, 0, 0);
+                // `split_at(len)`, not `slice_slice(_, 0, 0)`: Aeneas's
+                // `Slice.subslice` rejects empty subslices.
+                let (_, empty) = slice_split_at(self.elements, slice_length(self.elements));
+                self.elements = empty;
                 Option::Some(res)
             } else {
                 let (res, new_elements) = slice_split_at(self.elements, self.cs);
@@ -107,7 +110,11 @@ impl<T> Slice<T> {
         rust_primitives::slice::slice_length(s)
     }
     /// See [`std::slice::chunks`]
+    #[hax_lib::requires(cs > 0)]
     fn chunks<'a>(s: &'a [T], cs: usize) -> iter::Chunks<'a, T> {
+        if cs == 0 {
+            crate::panicking::internal::panic()
+        }
         iter::Chunks::new(cs, s)
     }
     /// See [`std::slice::iter`]
@@ -115,7 +122,11 @@ impl<T> Slice<T> {
         iter::Iter(rust_primitives::sequence::seq_from_slice(s))
     }
     /// See [`std::slice::chunks_exact`]
+    #[hax_lib::requires(cs > 0)]
     fn chunks_exact<'a>(s: &'a [T], cs: usize) -> iter::ChunksExact<'a, T> {
+        if cs == 0 {
+            crate::panicking::internal::panic()
+        }
         iter::ChunksExact::new(cs, s)
     }
     /// See [`std::slice::copy_from_slice`]
@@ -169,7 +180,10 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::binary_search`]
     #[hax_lib::opaque]
-    fn binary_search(s: &[T], x: &T) -> Result<usize, usize> /* where T: super::ops::Ord */ {
+    fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
+    where
+        T: crate::cmp::Ord,
+    {
         todo!()
     }
     /// See [`std::slice::get`]
@@ -803,16 +817,20 @@ mod tests {
 
         #[test]
         fn test_copy_from_slice(src in prop::collection::vec(any::<u8>(), 1..=10)) {
-            let mut dest = vec![0u8; src.len()];
-            Slice::copy_from_slice(&mut dest[..], &src[..]);
-            prop_assert_eq!(dest, src);
+            let mut model_dest = vec![0u8; src.len()];
+            let mut std_dest = model_dest.clone();
+            Slice::copy_from_slice(&mut model_dest[..], &src[..]);
+            std_dest.copy_from_slice(&src[..]);
+            prop_assert_eq!(model_dest, std_dest);
         }
 
         #[test]
         fn test_clone_from_slice(src in prop::collection::vec(any::<u8>(), 1..=10)) {
-            let mut dest = vec![0u8; src.len()];
-            Slice::clone_from_slice(&mut dest[..], &src[..]);
-            prop_assert_eq!(dest, src);
+            let mut model_dest = vec![0u8; src.len()];
+            let mut std_dest = model_dest.clone();
+            Slice::clone_from_slice(&mut model_dest[..], &src[..]);
+            std_dest.clone_from_slice(&src[..]);
+            prop_assert_eq!(model_dest, std_dest);
         }
 
         #[test]
@@ -1170,5 +1188,23 @@ mod tests {
             unsafe { std_slice.get_unchecked_mut(start..end).fill(v); }
             prop_assert_eq!(model, std_slice);
         }
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_chunks_zero_panics() {
+        let _ = Slice::chunks(&[1u8, 2, 3][..], 0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_chunks_exact_zero_panics() {
+        let _ = Slice::chunks_exact(&[1u8, 2, 3][..], 0);
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_windows_zero_panics() {
+        let _ = Slice::windows(&[1u8, 2, 3][..], 0);
     }
 }
