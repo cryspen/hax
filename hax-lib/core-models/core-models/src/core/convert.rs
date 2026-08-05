@@ -112,8 +112,8 @@ macro_rules! int_from {
 
 use super::num::error::TryFromIntError;
 
-// Bounds go through `crate::num::$To_t` rather than `$To_t` (real `core`); see the
-// note above `uint_impl!` in `num/mod.rs`.
+// Bounds go through `crate::num::$To_t` rather than `$To_t` (real `core`); this
+// avoids cyclic module dependencies in F*.
 macro_rules! int_try_from {
     (
         $($From_t: ident)*,
