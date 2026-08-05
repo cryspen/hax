@@ -1,0 +1,71 @@
+name: Release binaries
+
+# `cargo release --workspace` pushes every crate's tag in one push, and GitHub
+# raises push events for only some tags of a multi-tag push. When the
+# `cargo-hax-v*` event is among the dropped ones, dispatching this workflow on
+# the tag builds the release's assets.
+on:
+  push:
+    tags:
+      - 'cargo-hax-v*'
+  workflow_dispatch:
+
+# A push event and a manual dispatch of the same tag publish the same assets,
+# so runs are grouped by the ref. Runs are never cancelled: cancelling a
+# publish mid-upload can leave the release missing assets. A covered run
+# instead finds every asset published already and skips the work.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  # Computes the values every publish job keys on: the tag the release's
+  # artifacts are published under, empty for a ref that is not a release tag,
+  # and the assets published under it already.
+  tag:
+    if: github.repository == 'cryspen/hax'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      assets: ${{ steps.assets.outputs.assets }}
+    env:
+      RUSTUP_TOOLCHAIN: stable
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: resolve
+        run: |
+          set -o pipefail
+          version="$(cargo metadata --format-version 1 --no-deps \
+            | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
+          # `cargo release` tags this crate `cargo-hax-v<version>`; a ref that
+          # is not that tag, such as a dispatch on a branch, is not a release.
+          if [ "$GITHUB_REF_NAME" = "cargo-hax-v$version" ]; then
+            echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::$GITHUB_REF_NAME is not a release tag"
+          fi
+
+      # An interrupted upload can leave an asset record that is not
+      # `uploaded`; it does not count as published, so a later run replaces
+      # the remains.
+      - id: assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.resolve.outputs.tag }}
+        run: |
+          assets='[]'
+          if [ -n "$TAG" ]; then
+            if release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" 2>&1)"; then
+              assets="$(jq -c '[.assets[]
+                | select(.state == "uploaded" and .size > 0) | .name]' <<< "$release")"
+            # Only a missing release means nothing is published; any other
+            # failure must not pass for that and disable the published-assets
+            # guards.
+            elif ! grep -q 'HTTP 404' <<< "$release"; then
+              echo "$release" >&2
+              exit 1
+            fi
+          fi
+          echo "assets=$assets" >> "$GITHUB_OUTPUT"
+
