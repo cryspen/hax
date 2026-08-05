@@ -193,6 +193,7 @@
             pkgs.pkg-config
             pkgs.rust-analyzer
             pkgs.toml2json
+            pkgs.zstd
             rustfmt
             utils
 
