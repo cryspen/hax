@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.resolve.outputs.tag }}
+      version: ${{ steps.resolve.outputs.version }}
       assets: ${{ steps.assets.outputs.assets }}
       matrix: ${{ steps.matrix.outputs.matrix }}
     env:
@@ -44,6 +45,7 @@ jobs:
           # is not that tag, such as a dispatch on a branch, is not a release.
           if [ "$GITHUB_REF_NAME" = "cargo-hax-v$version" ]; then
             echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+            echo "version=$version" >> "$GITHUB_OUTPUT"
           else
             echo "::notice::$GITHUB_REF_NAME is not a release tag"
           fi
@@ -223,3 +225,13 @@ jobs:
         with:
           tag_name: ${{ needs.tag.outputs.tag }}
           files: ${{ env.ARCHIVE }}
+
+  # Installs the release the way every user's `cargo binstall` does, once the
+  # archives it fetches are all published.
+  binstall:
+    needs: [tag, release-cargo-hax]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/binstall.yml
+    with:
+      version: ${{ needs.tag.outputs.version }}
