@@ -112,6 +112,8 @@ macro_rules! int_from {
 
 use super::num::error::TryFromIntError;
 
+// Bounds go through `crate::num::$To_t` rather than `$To_t` (real `core`); see the
+// note above `uint_impl!` in `num/mod.rs`.
 macro_rules! int_try_from {
     (
         $($From_t: ident)*,
@@ -122,7 +124,7 @@ macro_rules! int_try_from {
             impl TryFrom<$From_t> for $To_t {
                 type Error = TryFromIntError;
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
-                    if x > ($To_t::MAX as $From_t) || x < ($To_t::MIN as $From_t) {
+                    if x > (crate::num::$To_t::MAX as $From_t) || x < (crate::num::$To_t::MIN as $From_t) {
                         Result::Err(TryFromIntError(()))
                     } else {
                         Result::Ok(x as $To_t)
@@ -191,7 +193,7 @@ macro_rules! int_try_from_u_to_i {
             impl TryFrom<$From_t> for $To_t {
                 type Error = TryFromIntError;
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
-                    if x > ($To_t::MAX as $From_t) {
+                    if x > (crate::num::$To_t::MAX as $From_t) {
                         Result::Err(TryFromIntError(()))
                     } else {
                         Result::Ok(x as $To_t)
@@ -213,7 +215,7 @@ macro_rules! int_try_from_i_to_u {
                 type Error = TryFromIntError;
                 #[allow(unused_comparisons)]
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
-                    if x < 0 || (x as u128) > ($To_t::MAX as u128) {
+                    if x < 0 || (x as u128) > (crate::num::$To_t::MAX as u128) {
                         Result::Err(TryFromIntError(()))
                     } else {
                         Result::Ok(x as $To_t)
