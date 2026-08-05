@@ -37,6 +37,7 @@ Changes to hax-lib:
  - New infrastructure for extraction of the F* proof-lib from the migrated core-models, unified with the lean core-lib infrastructure(#2077)
  - Support quote annotations (`before`, `after`, `options`) on inherent `impl` blocks and on their items (#1698)
  - Fix some regressions in the F* proof lib (particularly the `vec_deque` models)
+ - Fix the overflow condition of the F* `mul_overflow` primitive, which compared against `maxint` twice. `overflowing_mul`/`checked_mul` reported overflow for every product except exactly `maxint`
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
