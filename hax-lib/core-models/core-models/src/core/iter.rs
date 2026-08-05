@@ -413,7 +413,7 @@ pub mod adapters {
                         let i = self.count;
                         // TODO check what to do here. It would be bad to have an iterator with
                         // more than usize::MAX elements, this could be a requirement (but hard to formulate).
-                        hax_lib::assume!(self.count < usize::MAX);
+                        hax_lib::assume!(self.count < crate::num::usize::MAX);
                         self.count += 1;
                         Option::Some((i, a))
                     }
