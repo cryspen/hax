@@ -211,6 +211,2131 @@ type t_Zip (v_I1: Type0) (v_I2: Type0) = {
   f_it2:v_I2
 }
 
+/// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
+let impl_6__MIN: u8 = mk_u8 0
+
+/// See [`std::primitive::u8::MAX`] (and similar for other unsigned integer types)
+let impl_6__MAX: u8 = mk_u8 255
+
+/// See [`std::primitive::u8::BITS`] (and similar for other unsigned integer types)
+let impl_6__BITS: u32 = mk_u32 8
+
+/// See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+let impl_6__wrapping_add (x y: u8) : u8 = Rust_primitives.Arithmetic.wrapping_add_u8 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_6__saturating_add (x y: u8) : u8 = Rust_primitives.Arithmetic.saturating_add_u8 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_6__overflowing_add (x y: u8) : (u8 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_u8 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_6__wrapping_sub (x y: u8) : u8 = Rust_primitives.Arithmetic.wrapping_sub_u8 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_6__saturating_sub (x y: u8) : u8 = Rust_primitives.Arithmetic.saturating_sub_u8 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_6__overflowing_sub (x y: u8) : (u8 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_u8 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_6__wrapping_mul (x y: u8) : u8 = Rust_primitives.Arithmetic.wrapping_mul_u8 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_6__saturating_mul (x y: u8) : u8 = Rust_primitives.Arithmetic.saturating_mul_u8 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_6__overflowing_mul (x y: u8) : (u8 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_u8 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_6__pow (x: u8) (exp: u32) : u8 = Rust_primitives.Arithmetic.pow_u8 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_6__count_ones (x: u8) : u32 = Rust_primitives.Arithmetic.count_ones_u8 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_6__rotate_right': x: u8 -> n: u32 -> u8
+
+unfold
+let impl_6__rotate_right = impl_6__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_6__rotate_left': x: u8 -> n: u32 -> u8
+
+unfold
+let impl_6__rotate_left = impl_6__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_6__leading_zeros': x: u8 -> u32
+
+unfold
+let impl_6__leading_zeros = impl_6__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_6__ilog2': x: u8 -> u32
+
+unfold
+let impl_6__ilog2 = impl_6__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_6__from_be_bytes': bytes: t_Array u8 (mk_usize 1) -> u8
+
+unfold
+let impl_6__from_be_bytes = impl_6__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_6__from_le_bytes': bytes: t_Array u8 (mk_usize 1) -> u8
+
+unfold
+let impl_6__from_le_bytes = impl_6__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_6__to_be_bytes': bytes: u8 -> t_Array u8 (mk_usize 1)
+
+unfold
+let impl_6__to_be_bytes = impl_6__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_6__to_le_bytes': bytes: u8 -> t_Array u8 (mk_usize 1)
+
+unfold
+let impl_6__to_le_bytes = impl_6__to_le_bytes'
+
+/// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
+let impl_6__is_power_of_two (x: u8) : bool =
+  x <>. mk_u8 0 && (x &. (x -! mk_u8 1 <: u8) <: u8) =. mk_u8 0
+
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_6__is_multiple_of (x y: u8) : bool =
+  if y =. mk_u8 0 then x =. mk_u8 0 else (x %! y <: u8) =. mk_u8 0
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_6__unchecked_add (x y: u8)
+    : Prims.Pure u8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_6__unchecked_sub (x y: u8) : Prims.Pure u8 (requires x >=. y) (fun _ -> Prims.l_True) =
+  x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_6__unchecked_mul (x y: u8)
+    : Prims.Pure u8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_6__rem_euclid (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_u8 x y
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_6__unchecked_div (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_6__unchecked_rem (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_6__div_ceil (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  let d:u8 = x /! y in
+  let r:u8 = x %! y in
+  if r >. mk_u8 0 then d +! mk_u8 1 else d
+
+/// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
+let impl_7__MIN: u16 = mk_u16 0
+
+/// See [`std::primitive::u8::MAX`] (and similar for other unsigned integer types)
+let impl_7__MAX: u16 = mk_u16 65535
+
+/// See [`std::primitive::u8::BITS`] (and similar for other unsigned integer types)
+let impl_7__BITS: u32 = mk_u32 16
+
+/// See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+let impl_7__wrapping_add (x y: u16) : u16 = Rust_primitives.Arithmetic.wrapping_add_u16 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_7__saturating_add (x y: u16) : u16 = Rust_primitives.Arithmetic.saturating_add_u16 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_7__overflowing_add (x y: u16) : (u16 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_u16 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_7__wrapping_sub (x y: u16) : u16 = Rust_primitives.Arithmetic.wrapping_sub_u16 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_7__saturating_sub (x y: u16) : u16 = Rust_primitives.Arithmetic.saturating_sub_u16 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_7__overflowing_sub (x y: u16) : (u16 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_u16 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_7__wrapping_mul (x y: u16) : u16 = Rust_primitives.Arithmetic.wrapping_mul_u16 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_7__saturating_mul (x y: u16) : u16 = Rust_primitives.Arithmetic.saturating_mul_u16 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_7__overflowing_mul (x y: u16) : (u16 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_u16 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_7__pow (x: u16) (exp: u32) : u16 = Rust_primitives.Arithmetic.pow_u16 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_7__count_ones (x: u16) : u32 = Rust_primitives.Arithmetic.count_ones_u16 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_7__rotate_right': x: u16 -> n: u32 -> u16
+
+unfold
+let impl_7__rotate_right = impl_7__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_7__rotate_left': x: u16 -> n: u32 -> u16
+
+unfold
+let impl_7__rotate_left = impl_7__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_7__leading_zeros': x: u16 -> u32
+
+unfold
+let impl_7__leading_zeros = impl_7__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_7__ilog2': x: u16 -> u32
+
+unfold
+let impl_7__ilog2 = impl_7__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_7__from_be_bytes': bytes: t_Array u8 (mk_usize 2) -> u16
+
+unfold
+let impl_7__from_be_bytes = impl_7__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_7__from_le_bytes': bytes: t_Array u8 (mk_usize 2) -> u16
+
+unfold
+let impl_7__from_le_bytes = impl_7__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_7__to_be_bytes': bytes: u16 -> t_Array u8 (mk_usize 2)
+
+unfold
+let impl_7__to_be_bytes = impl_7__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_7__to_le_bytes': bytes: u16 -> t_Array u8 (mk_usize 2)
+
+unfold
+let impl_7__to_le_bytes = impl_7__to_le_bytes'
+
+/// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
+let impl_7__is_power_of_two (x: u16) : bool =
+  x <>. mk_u16 0 && (x &. (x -! mk_u16 1 <: u16) <: u16) =. mk_u16 0
+
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_7__is_multiple_of (x y: u16) : bool =
+  if y =. mk_u16 0 then x =. mk_u16 0 else (x %! y <: u16) =. mk_u16 0
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_7__unchecked_add (x y: u16)
+    : Prims.Pure u16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_7__unchecked_sub (x y: u16) : Prims.Pure u16 (requires x >=. y) (fun _ -> Prims.l_True) =
+  x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_7__unchecked_mul (x y: u16)
+    : Prims.Pure u16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_7__rem_euclid (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_u16 x y
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_7__unchecked_div (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_7__unchecked_rem (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_7__div_ceil (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  let d:u16 = x /! y in
+  let r:u16 = x %! y in
+  if r >. mk_u16 0 then d +! mk_u16 1 else d
+
+/// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
+let impl_8__MIN: u32 = mk_u32 0
+
+/// See [`std::primitive::u8::MAX`] (and similar for other unsigned integer types)
+let impl_8__MAX: u32 = mk_u32 4294967295
+
+/// See [`std::primitive::u8::BITS`] (and similar for other unsigned integer types)
+let impl_8__BITS: u32 = mk_u32 32
+
+/// See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+let impl_8__wrapping_add (x y: u32) : u32 = Rust_primitives.Arithmetic.wrapping_add_u32 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_8__saturating_add (x y: u32) : u32 = Rust_primitives.Arithmetic.saturating_add_u32 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_8__overflowing_add (x y: u32) : (u32 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_u32 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_8__wrapping_sub (x y: u32) : u32 = Rust_primitives.Arithmetic.wrapping_sub_u32 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_8__saturating_sub (x y: u32) : u32 = Rust_primitives.Arithmetic.saturating_sub_u32 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_8__overflowing_sub (x y: u32) : (u32 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_u32 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_8__wrapping_mul (x y: u32) : u32 = Rust_primitives.Arithmetic.wrapping_mul_u32 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_8__saturating_mul (x y: u32) : u32 = Rust_primitives.Arithmetic.saturating_mul_u32 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_8__overflowing_mul (x y: u32) : (u32 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_u32 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_8__pow (x exp: u32) : u32 = Rust_primitives.Arithmetic.pow_u32 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_8__count_ones (x: u32) : u32 = Rust_primitives.Arithmetic.count_ones_u32 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_8__rotate_right': x: u32 -> n: u32 -> u32
+
+unfold
+let impl_8__rotate_right = impl_8__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_8__rotate_left': x: u32 -> n: u32 -> u32
+
+unfold
+let impl_8__rotate_left = impl_8__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_8__leading_zeros': x: u32 -> u32
+
+unfold
+let impl_8__leading_zeros = impl_8__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_8__ilog2': x: u32 -> u32
+
+unfold
+let impl_8__ilog2 = impl_8__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_8__from_be_bytes': bytes: t_Array u8 (mk_usize 4) -> u32
+
+unfold
+let impl_8__from_be_bytes = impl_8__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_8__from_le_bytes': bytes: t_Array u8 (mk_usize 4) -> u32
+
+unfold
+let impl_8__from_le_bytes = impl_8__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_8__to_be_bytes': bytes: u32 -> t_Array u8 (mk_usize 4)
+
+unfold
+let impl_8__to_be_bytes = impl_8__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_8__to_le_bytes': bytes: u32 -> t_Array u8 (mk_usize 4)
+
+unfold
+let impl_8__to_le_bytes = impl_8__to_le_bytes'
+
+/// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
+let impl_8__is_power_of_two (x: u32) : bool =
+  x <>. mk_u32 0 && (x &. (x -! mk_u32 1 <: u32) <: u32) =. mk_u32 0
+
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_8__is_multiple_of (x y: u32) : bool =
+  if y =. mk_u32 0 then x =. mk_u32 0 else (x %! y <: u32) =. mk_u32 0
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_8__unchecked_add (x y: u32)
+    : Prims.Pure u32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_8__unchecked_sub (x y: u32) : Prims.Pure u32 (requires x >=. y) (fun _ -> Prims.l_True) =
+  x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_8__unchecked_mul (x y: u32)
+    : Prims.Pure u32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_8__rem_euclid (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_u32 x y
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_8__unchecked_div (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_8__unchecked_rem (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_8__div_ceil (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  let d:u32 = x /! y in
+  let r:u32 = x %! y in
+  if r >. mk_u32 0 then d +! mk_u32 1 else d
+
+/// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
+let impl_9__MIN: u64 = mk_u64 0
+
+/// See [`std::primitive::u8::MAX`] (and similar for other unsigned integer types)
+let impl_9__MAX: u64 = mk_u64 18446744073709551615
+
+/// See [`std::primitive::u8::BITS`] (and similar for other unsigned integer types)
+let impl_9__BITS: u32 = mk_u32 64
+
+/// See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+let impl_9__wrapping_add (x y: u64) : u64 = Rust_primitives.Arithmetic.wrapping_add_u64 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_9__saturating_add (x y: u64) : u64 = Rust_primitives.Arithmetic.saturating_add_u64 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_9__overflowing_add (x y: u64) : (u64 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_u64 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_9__wrapping_sub (x y: u64) : u64 = Rust_primitives.Arithmetic.wrapping_sub_u64 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_9__saturating_sub (x y: u64) : u64 = Rust_primitives.Arithmetic.saturating_sub_u64 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_9__overflowing_sub (x y: u64) : (u64 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_u64 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_9__wrapping_mul (x y: u64) : u64 = Rust_primitives.Arithmetic.wrapping_mul_u64 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_9__saturating_mul (x y: u64) : u64 = Rust_primitives.Arithmetic.saturating_mul_u64 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_9__overflowing_mul (x y: u64) : (u64 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_u64 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_9__pow (x: u64) (exp: u32) : u64 = Rust_primitives.Arithmetic.pow_u64 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_9__count_ones (x: u64) : u32 = Rust_primitives.Arithmetic.count_ones_u64 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_9__rotate_right': x: u64 -> n: u32 -> u64
+
+unfold
+let impl_9__rotate_right = impl_9__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_9__rotate_left': x: u64 -> n: u32 -> u64
+
+unfold
+let impl_9__rotate_left = impl_9__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_9__leading_zeros': x: u64 -> u32
+
+unfold
+let impl_9__leading_zeros = impl_9__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_9__ilog2': x: u64 -> u32
+
+unfold
+let impl_9__ilog2 = impl_9__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_9__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> u64
+
+unfold
+let impl_9__from_be_bytes = impl_9__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_9__from_le_bytes': bytes: t_Array u8 (mk_usize 8) -> u64
+
+unfold
+let impl_9__from_le_bytes = impl_9__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_9__to_be_bytes': bytes: u64 -> t_Array u8 (mk_usize 8)
+
+unfold
+let impl_9__to_be_bytes = impl_9__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_9__to_le_bytes': bytes: u64 -> t_Array u8 (mk_usize 8)
+
+unfold
+let impl_9__to_le_bytes = impl_9__to_le_bytes'
+
+/// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
+let impl_9__is_power_of_two (x: u64) : bool =
+  x <>. mk_u64 0 && (x &. (x -! mk_u64 1 <: u64) <: u64) =. mk_u64 0
+
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_9__is_multiple_of (x y: u64) : bool =
+  if y =. mk_u64 0 then x =. mk_u64 0 else (x %! y <: u64) =. mk_u64 0
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_9__unchecked_add (x y: u64)
+    : Prims.Pure u64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_9__unchecked_sub (x y: u64) : Prims.Pure u64 (requires x >=. y) (fun _ -> Prims.l_True) =
+  x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_9__unchecked_mul (x y: u64)
+    : Prims.Pure u64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_9__rem_euclid (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_u64 x y
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_9__unchecked_div (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_9__unchecked_rem (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_9__div_ceil (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  let d:u64 = x /! y in
+  let r:u64 = x %! y in
+  if r >. mk_u64 0 then d +! mk_u64 1 else d
+
+/// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
+let impl_10__MIN: u128 = mk_u128 0
+
+/// See [`std::primitive::u8::MAX`] (and similar for other unsigned integer types)
+let impl_10__MAX: u128 = mk_u128 340282366920938463463374607431768211455
+
+/// See [`std::primitive::u8::BITS`] (and similar for other unsigned integer types)
+let impl_10__BITS: u32 = mk_u32 128
+
+/// See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+let impl_10__wrapping_add (x y: u128) : u128 = Rust_primitives.Arithmetic.wrapping_add_u128 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_10__saturating_add (x y: u128) : u128 = Rust_primitives.Arithmetic.saturating_add_u128 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_10__overflowing_add (x y: u128) : (u128 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_u128 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_10__wrapping_sub (x y: u128) : u128 = Rust_primitives.Arithmetic.wrapping_sub_u128 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_10__saturating_sub (x y: u128) : u128 = Rust_primitives.Arithmetic.saturating_sub_u128 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_10__overflowing_sub (x y: u128) : (u128 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_u128 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_10__wrapping_mul (x y: u128) : u128 = Rust_primitives.Arithmetic.wrapping_mul_u128 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_10__saturating_mul (x y: u128) : u128 = Rust_primitives.Arithmetic.saturating_mul_u128 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_10__overflowing_mul (x y: u128) : (u128 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_u128 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_10__pow (x: u128) (exp: u32) : u128 = Rust_primitives.Arithmetic.pow_u128 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_10__count_ones (x: u128) : u32 = Rust_primitives.Arithmetic.count_ones_u128 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_10__rotate_right': x: u128 -> n: u32 -> u128
+
+unfold
+let impl_10__rotate_right = impl_10__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_10__rotate_left': x: u128 -> n: u32 -> u128
+
+unfold
+let impl_10__rotate_left = impl_10__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_10__leading_zeros': x: u128 -> u32
+
+unfold
+let impl_10__leading_zeros = impl_10__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_10__ilog2': x: u128 -> u32
+
+unfold
+let impl_10__ilog2 = impl_10__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_10__from_be_bytes': bytes: t_Array u8 (mk_usize 16) -> u128
+
+unfold
+let impl_10__from_be_bytes = impl_10__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_10__from_le_bytes': bytes: t_Array u8 (mk_usize 16) -> u128
+
+unfold
+let impl_10__from_le_bytes = impl_10__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_10__to_be_bytes': bytes: u128 -> t_Array u8 (mk_usize 16)
+
+unfold
+let impl_10__to_be_bytes = impl_10__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_10__to_le_bytes': bytes: u128 -> t_Array u8 (mk_usize 16)
+
+unfold
+let impl_10__to_le_bytes = impl_10__to_le_bytes'
+
+/// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
+let impl_10__is_power_of_two (x: u128) : bool =
+  x <>. mk_u128 0 && (x &. (x -! mk_u128 1 <: u128) <: u128) =. mk_u128 0
+
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_10__is_multiple_of (x y: u128) : bool =
+  if y =. mk_u128 0 then x =. mk_u128 0 else (x %! y <: u128) =. mk_u128 0
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_10__unchecked_add (x y: u128)
+    : Prims.Pure u128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_10__unchecked_sub (x y: u128) : Prims.Pure u128 (requires x >=. y) (fun _ -> Prims.l_True) =
+  x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_10__unchecked_mul (x y: u128)
+    : Prims.Pure u128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_10__rem_euclid (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_u128 x y
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_10__unchecked_div (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_10__unchecked_rem (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_10__div_ceil (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
+  let d:u128 = x /! y in
+  let r:u128 = x %! y in
+  if r >. mk_u128 0 then d +! mk_u128 1 else d
+
+/// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
+let impl_11__MIN: usize = mk_usize 0
+
+/// See [`std::primitive::u8::MAX`] (and similar for other unsigned integer types)
+let impl_11__MAX: usize = Rust_primitives.Arithmetic.v_USIZE_MAX
+
+/// See [`std::primitive::u8::BITS`] (and similar for other unsigned integer types)
+let impl_11__BITS: u32 = Rust_primitives.Arithmetic.v_SIZE_BITS
+
+/// See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+let impl_11__wrapping_add (x y: usize) : usize = Rust_primitives.Arithmetic.wrapping_add_usize x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_11__saturating_add (x y: usize) : usize =
+  Rust_primitives.Arithmetic.saturating_add_usize x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_11__overflowing_add (x y: usize) : (usize & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_usize x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_11__wrapping_sub (x y: usize) : usize = Rust_primitives.Arithmetic.wrapping_sub_usize x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_11__saturating_sub (x y: usize) : usize =
+  Rust_primitives.Arithmetic.saturating_sub_usize x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_11__overflowing_sub (x y: usize) : (usize & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_usize x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_11__wrapping_mul (x y: usize) : usize = Rust_primitives.Arithmetic.wrapping_mul_usize x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_11__saturating_mul (x y: usize) : usize =
+  Rust_primitives.Arithmetic.saturating_mul_usize x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_11__overflowing_mul (x y: usize) : (usize & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_usize x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_11__pow (x: usize) (exp: u32) : usize = Rust_primitives.Arithmetic.pow_usize x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_11__count_ones (x: usize) : u32 = Rust_primitives.Arithmetic.count_ones_usize x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_11__rotate_right': x: usize -> n: u32 -> usize
+
+unfold
+let impl_11__rotate_right = impl_11__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_11__rotate_left': x: usize -> n: u32 -> usize
+
+unfold
+let impl_11__rotate_left = impl_11__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_11__leading_zeros': x: usize -> u32
+
+unfold
+let impl_11__leading_zeros = impl_11__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_11__ilog2': x: usize -> u32
+
+unfold
+let impl_11__ilog2 = impl_11__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_11__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> usize
+
+unfold
+let impl_11__from_be_bytes = impl_11__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_11__from_le_bytes': bytes: t_Array u8 (mk_usize 8) -> usize
+
+unfold
+let impl_11__from_le_bytes = impl_11__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_11__to_be_bytes': bytes: usize -> t_Array u8 (mk_usize 8)
+
+unfold
+let impl_11__to_be_bytes = impl_11__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_11__to_le_bytes': bytes: usize -> t_Array u8 (mk_usize 8)
+
+unfold
+let impl_11__to_le_bytes = impl_11__to_le_bytes'
+
+/// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
+let impl_11__is_power_of_two (x: usize) : bool =
+  x <>. mk_usize 0 && (x &. (x -! mk_usize 1 <: usize) <: usize) =. mk_usize 0
+
+/// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+let impl_11__is_multiple_of (x y: usize) : bool =
+  if y =. mk_usize 0 then x =. mk_usize 0 else (x %! y <: usize) =. mk_usize 0
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_11__unchecked_add (x y: usize)
+    : Prims.Pure usize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_11__unchecked_sub (x y: usize)
+    : Prims.Pure usize (requires x >=. y) (fun _ -> Prims.l_True) = x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_11__unchecked_mul (x y: usize)
+    : Prims.Pure usize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_11__rem_euclid (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_usize x y
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_11__unchecked_div (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_11__unchecked_rem (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+let impl_11__div_ceil (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
+  let d:usize = x /! y in
+  let r:usize = x %! y in
+  if r >. mk_usize 0 then d +! mk_usize 1 else d
+
+/// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
+let impl_12__MIN: i8 = mk_i8 (-128)
+
+/// See [`std::primitive::i8::MAX`] (and similar for other signed integer types)
+let impl_12__MAX: i8 = mk_i8 127
+
+/// See [`std::primitive::i8::BITS`] (and similar for other signed integer types)
+let impl_12__BITS: u32 = mk_u32 8
+
+let impl_12__wrapping_add (x y: i8) : i8 = Rust_primitives.Arithmetic.wrapping_add_i8 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_12__saturating_add (x y: i8) : i8 = Rust_primitives.Arithmetic.saturating_add_i8 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_12__overflowing_add (x y: i8) : (i8 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_i8 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_12__wrapping_sub (x y: i8) : i8 = Rust_primitives.Arithmetic.wrapping_sub_i8 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_12__saturating_sub (x y: i8) : i8 = Rust_primitives.Arithmetic.saturating_sub_i8 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_12__overflowing_sub (x y: i8) : (i8 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_i8 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_12__wrapping_mul (x y: i8) : i8 = Rust_primitives.Arithmetic.wrapping_mul_i8 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_12__saturating_mul (x y: i8) : i8 = Rust_primitives.Arithmetic.saturating_mul_i8 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_12__overflowing_mul (x y: i8) : (i8 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_i8 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_12__pow (x: i8) (exp: u32) : i8 = Rust_primitives.Arithmetic.pow_i8 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_12__count_ones (x: i8) : u32 = Rust_primitives.Arithmetic.count_ones_i8 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_12__rotate_right': x: i8 -> n: u32 -> i8
+
+unfold
+let impl_12__rotate_right = impl_12__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_12__rotate_left': x: i8 -> n: u32 -> i8
+
+unfold
+let impl_12__rotate_left = impl_12__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_12__leading_zeros': x: i8 -> u32
+
+unfold
+let impl_12__leading_zeros = impl_12__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_12__ilog2': x: i8 -> u32
+
+unfold
+let impl_12__ilog2 = impl_12__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_12__from_be_bytes': bytes: t_Array u8 (mk_usize 1) -> i8
+
+unfold
+let impl_12__from_be_bytes = impl_12__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_12__from_le_bytes': bytes: t_Array u8 (mk_usize 1) -> i8
+
+unfold
+let impl_12__from_le_bytes = impl_12__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_12__to_be_bytes': bytes: i8 -> t_Array u8 (mk_usize 1)
+
+unfold
+let impl_12__to_be_bytes = impl_12__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_12__to_le_bytes': bytes: i8 -> t_Array u8 (mk_usize 1)
+
+unfold
+let impl_12__to_le_bytes = impl_12__to_le_bytes'
+
+/// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
+let impl_12__signum (x: i8) : i8 =
+  if x >. mk_i8 0 then mk_i8 1 else if x =. mk_i8 0 then mk_i8 0 else mk_i8 (-1)
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_12__unchecked_add (x y: i8)
+    : Prims.Pure i8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_12__unchecked_sub (x y: i8)
+    : Prims.Pure i8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_12__unchecked_mul (x y: i8)
+    : Prims.Pure i8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_12__rem_euclid (x y: i8) : Prims.Pure i8 (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_i8 x y
+
+/// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
+let impl_12__abs (x: i8) : Prims.Pure i8 (requires x >. impl_12__MIN) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.abs_i8 x
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_12__unchecked_div (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && (x <>. impl_12__MIN || y <>. mk_i8 (-1)))
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_12__unchecked_rem (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && (x <>. impl_12__MIN || y <>. mk_i8 (-1)))
+      (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_12__div_ceil (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i8 = x /! y in
+  let r:i8 = x %! y in
+  if r >. mk_i8 0 && y >. mk_i8 0 || r <. mk_i8 0 && y <. mk_i8 0 then d +! mk_i8 1 else d
+
+/// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
+let impl_13__MIN: i16 = mk_i16 (-32768)
+
+/// See [`std::primitive::i8::MAX`] (and similar for other signed integer types)
+let impl_13__MAX: i16 = mk_i16 32767
+
+/// See [`std::primitive::i8::BITS`] (and similar for other signed integer types)
+let impl_13__BITS: u32 = mk_u32 16
+
+let impl_13__wrapping_add (x y: i16) : i16 = Rust_primitives.Arithmetic.wrapping_add_i16 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_13__saturating_add (x y: i16) : i16 = Rust_primitives.Arithmetic.saturating_add_i16 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_13__overflowing_add (x y: i16) : (i16 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_i16 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_13__wrapping_sub (x y: i16) : i16 = Rust_primitives.Arithmetic.wrapping_sub_i16 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_13__saturating_sub (x y: i16) : i16 = Rust_primitives.Arithmetic.saturating_sub_i16 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_13__overflowing_sub (x y: i16) : (i16 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_i16 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_13__wrapping_mul (x y: i16) : i16 = Rust_primitives.Arithmetic.wrapping_mul_i16 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_13__saturating_mul (x y: i16) : i16 = Rust_primitives.Arithmetic.saturating_mul_i16 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_13__overflowing_mul (x y: i16) : (i16 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_i16 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_13__pow (x: i16) (exp: u32) : i16 = Rust_primitives.Arithmetic.pow_i16 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_13__count_ones (x: i16) : u32 = Rust_primitives.Arithmetic.count_ones_i16 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_13__rotate_right': x: i16 -> n: u32 -> i16
+
+unfold
+let impl_13__rotate_right = impl_13__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_13__rotate_left': x: i16 -> n: u32 -> i16
+
+unfold
+let impl_13__rotate_left = impl_13__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_13__leading_zeros': x: i16 -> u32
+
+unfold
+let impl_13__leading_zeros = impl_13__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_13__ilog2': x: i16 -> u32
+
+unfold
+let impl_13__ilog2 = impl_13__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_13__from_be_bytes': bytes: t_Array u8 (mk_usize 2) -> i16
+
+unfold
+let impl_13__from_be_bytes = impl_13__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_13__from_le_bytes': bytes: t_Array u8 (mk_usize 2) -> i16
+
+unfold
+let impl_13__from_le_bytes = impl_13__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_13__to_be_bytes': bytes: i16 -> t_Array u8 (mk_usize 2)
+
+unfold
+let impl_13__to_be_bytes = impl_13__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_13__to_le_bytes': bytes: i16 -> t_Array u8 (mk_usize 2)
+
+unfold
+let impl_13__to_le_bytes = impl_13__to_le_bytes'
+
+/// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
+let impl_13__signum (x: i16) : i16 =
+  if x >. mk_i16 0 then mk_i16 1 else if x =. mk_i16 0 then mk_i16 0 else mk_i16 (-1)
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_13__unchecked_add (x y: i16)
+    : Prims.Pure i16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_13__unchecked_sub (x y: i16)
+    : Prims.Pure i16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_13__unchecked_mul (x y: i16)
+    : Prims.Pure i16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_13__rem_euclid (x y: i16)
+    : Prims.Pure i16 (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_i16 x y
+
+/// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
+let impl_13__abs (x: i16) : Prims.Pure i16 (requires x >. impl_13__MIN) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.abs_i16 x
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_13__unchecked_div (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && (x <>. impl_13__MIN || y <>. mk_i16 (-1)))
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_13__unchecked_rem (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && (x <>. impl_13__MIN || y <>. mk_i16 (-1)))
+      (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_13__div_ceil (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i16 = x /! y in
+  let r:i16 = x %! y in
+  if r >. mk_i16 0 && y >. mk_i16 0 || r <. mk_i16 0 && y <. mk_i16 0 then d +! mk_i16 1 else d
+
+/// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
+let impl_14__MIN: i32 = mk_i32 (-2147483648)
+
+/// See [`std::primitive::i8::MAX`] (and similar for other signed integer types)
+let impl_14__MAX: i32 = mk_i32 2147483647
+
+/// See [`std::primitive::i8::BITS`] (and similar for other signed integer types)
+let impl_14__BITS: u32 = mk_u32 32
+
+let impl_14__wrapping_add (x y: i32) : i32 = Rust_primitives.Arithmetic.wrapping_add_i32 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_14__saturating_add (x y: i32) : i32 = Rust_primitives.Arithmetic.saturating_add_i32 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_14__overflowing_add (x y: i32) : (i32 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_i32 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_14__wrapping_sub (x y: i32) : i32 = Rust_primitives.Arithmetic.wrapping_sub_i32 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_14__saturating_sub (x y: i32) : i32 = Rust_primitives.Arithmetic.saturating_sub_i32 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_14__overflowing_sub (x y: i32) : (i32 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_i32 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_14__wrapping_mul (x y: i32) : i32 = Rust_primitives.Arithmetic.wrapping_mul_i32 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_14__saturating_mul (x y: i32) : i32 = Rust_primitives.Arithmetic.saturating_mul_i32 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_14__overflowing_mul (x y: i32) : (i32 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_i32 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_14__pow (x: i32) (exp: u32) : i32 = Rust_primitives.Arithmetic.pow_i32 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_14__count_ones (x: i32) : u32 = Rust_primitives.Arithmetic.count_ones_i32 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_14__rotate_right': x: i32 -> n: u32 -> i32
+
+unfold
+let impl_14__rotate_right = impl_14__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_14__rotate_left': x: i32 -> n: u32 -> i32
+
+unfold
+let impl_14__rotate_left = impl_14__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_14__leading_zeros': x: i32 -> u32
+
+unfold
+let impl_14__leading_zeros = impl_14__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_14__ilog2': x: i32 -> u32
+
+unfold
+let impl_14__ilog2 = impl_14__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_14__from_be_bytes': bytes: t_Array u8 (mk_usize 4) -> i32
+
+unfold
+let impl_14__from_be_bytes = impl_14__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_14__from_le_bytes': bytes: t_Array u8 (mk_usize 4) -> i32
+
+unfold
+let impl_14__from_le_bytes = impl_14__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_14__to_be_bytes': bytes: i32 -> t_Array u8 (mk_usize 4)
+
+unfold
+let impl_14__to_be_bytes = impl_14__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_14__to_le_bytes': bytes: i32 -> t_Array u8 (mk_usize 4)
+
+unfold
+let impl_14__to_le_bytes = impl_14__to_le_bytes'
+
+/// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
+let impl_14__signum (x: i32) : i32 =
+  if x >. mk_i32 0 then mk_i32 1 else if x =. mk_i32 0 then mk_i32 0 else mk_i32 (-1)
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_14__unchecked_add (x y: i32)
+    : Prims.Pure i32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_14__unchecked_sub (x y: i32)
+    : Prims.Pure i32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_14__unchecked_mul (x y: i32)
+    : Prims.Pure i32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_14__rem_euclid (x y: i32)
+    : Prims.Pure i32 (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_i32 x y
+
+/// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
+let impl_14__abs (x: i32) : Prims.Pure i32 (requires x >. impl_14__MIN) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.abs_i32 x
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_14__unchecked_div (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && (x <>. impl_14__MIN || y <>. mk_i32 (-1)))
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_14__unchecked_rem (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && (x <>. impl_14__MIN || y <>. mk_i32 (-1)))
+      (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_14__div_ceil (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i32 = x /! y in
+  let r:i32 = x %! y in
+  if r >. mk_i32 0 && y >. mk_i32 0 || r <. mk_i32 0 && y <. mk_i32 0 then d +! mk_i32 1 else d
+
+/// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
+let impl_15__MIN: i64 = mk_i64 (-9223372036854775808)
+
+/// See [`std::primitive::i8::MAX`] (and similar for other signed integer types)
+let impl_15__MAX: i64 = mk_i64 9223372036854775807
+
+/// See [`std::primitive::i8::BITS`] (and similar for other signed integer types)
+let impl_15__BITS: u32 = mk_u32 64
+
+let impl_15__wrapping_add (x y: i64) : i64 = Rust_primitives.Arithmetic.wrapping_add_i64 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_15__saturating_add (x y: i64) : i64 = Rust_primitives.Arithmetic.saturating_add_i64 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_15__overflowing_add (x y: i64) : (i64 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_i64 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_15__wrapping_sub (x y: i64) : i64 = Rust_primitives.Arithmetic.wrapping_sub_i64 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_15__saturating_sub (x y: i64) : i64 = Rust_primitives.Arithmetic.saturating_sub_i64 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_15__overflowing_sub (x y: i64) : (i64 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_i64 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_15__wrapping_mul (x y: i64) : i64 = Rust_primitives.Arithmetic.wrapping_mul_i64 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_15__saturating_mul (x y: i64) : i64 = Rust_primitives.Arithmetic.saturating_mul_i64 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_15__overflowing_mul (x y: i64) : (i64 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_i64 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_15__pow (x: i64) (exp: u32) : i64 = Rust_primitives.Arithmetic.pow_i64 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_15__count_ones (x: i64) : u32 = Rust_primitives.Arithmetic.count_ones_i64 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_15__rotate_right': x: i64 -> n: u32 -> i64
+
+unfold
+let impl_15__rotate_right = impl_15__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_15__rotate_left': x: i64 -> n: u32 -> i64
+
+unfold
+let impl_15__rotate_left = impl_15__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_15__leading_zeros': x: i64 -> u32
+
+unfold
+let impl_15__leading_zeros = impl_15__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_15__ilog2': x: i64 -> u32
+
+unfold
+let impl_15__ilog2 = impl_15__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_15__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> i64
+
+unfold
+let impl_15__from_be_bytes = impl_15__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_15__from_le_bytes': bytes: t_Array u8 (mk_usize 8) -> i64
+
+unfold
+let impl_15__from_le_bytes = impl_15__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_15__to_be_bytes': bytes: i64 -> t_Array u8 (mk_usize 8)
+
+unfold
+let impl_15__to_be_bytes = impl_15__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_15__to_le_bytes': bytes: i64 -> t_Array u8 (mk_usize 8)
+
+unfold
+let impl_15__to_le_bytes = impl_15__to_le_bytes'
+
+/// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
+let impl_15__signum (x: i64) : i64 =
+  if x >. mk_i64 0 then mk_i64 1 else if x =. mk_i64 0 then mk_i64 0 else mk_i64 (-1)
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_15__unchecked_add (x y: i64)
+    : Prims.Pure i64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_15__unchecked_sub (x y: i64)
+    : Prims.Pure i64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_15__unchecked_mul (x y: i64)
+    : Prims.Pure i64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_15__rem_euclid (x y: i64)
+    : Prims.Pure i64 (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_i64 x y
+
+/// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
+let impl_15__abs (x: i64) : Prims.Pure i64 (requires x >. impl_15__MIN) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.abs_i64 x
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_15__unchecked_div (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && (x <>. impl_15__MIN || y <>. mk_i64 (-1)))
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_15__unchecked_rem (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && (x <>. impl_15__MIN || y <>. mk_i64 (-1)))
+      (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_15__div_ceil (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i64 = x /! y in
+  let r:i64 = x %! y in
+  if r >. mk_i64 0 && y >. mk_i64 0 || r <. mk_i64 0 && y <. mk_i64 0 then d +! mk_i64 1 else d
+
+/// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
+let impl_16__MIN: i128 = mk_i128 (-170141183460469231731687303715884105728)
+
+/// See [`std::primitive::i8::MAX`] (and similar for other signed integer types)
+let impl_16__MAX: i128 = mk_i128 170141183460469231731687303715884105727
+
+/// See [`std::primitive::i8::BITS`] (and similar for other signed integer types)
+let impl_16__BITS: u32 = mk_u32 128
+
+let impl_16__wrapping_add (x y: i128) : i128 = Rust_primitives.Arithmetic.wrapping_add_i128 x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_16__saturating_add (x y: i128) : i128 = Rust_primitives.Arithmetic.saturating_add_i128 x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_16__overflowing_add (x y: i128) : (i128 & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_i128 x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_16__wrapping_sub (x y: i128) : i128 = Rust_primitives.Arithmetic.wrapping_sub_i128 x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_16__saturating_sub (x y: i128) : i128 = Rust_primitives.Arithmetic.saturating_sub_i128 x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_16__overflowing_sub (x y: i128) : (i128 & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_i128 x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_16__wrapping_mul (x y: i128) : i128 = Rust_primitives.Arithmetic.wrapping_mul_i128 x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_16__saturating_mul (x y: i128) : i128 = Rust_primitives.Arithmetic.saturating_mul_i128 x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_16__overflowing_mul (x y: i128) : (i128 & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_i128 x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_16__pow (x: i128) (exp: u32) : i128 = Rust_primitives.Arithmetic.pow_i128 x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_16__count_ones (x: i128) : u32 = Rust_primitives.Arithmetic.count_ones_i128 x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_16__rotate_right': x: i128 -> n: u32 -> i128
+
+unfold
+let impl_16__rotate_right = impl_16__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_16__rotate_left': x: i128 -> n: u32 -> i128
+
+unfold
+let impl_16__rotate_left = impl_16__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_16__leading_zeros': x: i128 -> u32
+
+unfold
+let impl_16__leading_zeros = impl_16__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_16__ilog2': x: i128 -> u32
+
+unfold
+let impl_16__ilog2 = impl_16__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_16__from_be_bytes': bytes: t_Array u8 (mk_usize 16) -> i128
+
+unfold
+let impl_16__from_be_bytes = impl_16__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_16__from_le_bytes': bytes: t_Array u8 (mk_usize 16) -> i128
+
+unfold
+let impl_16__from_le_bytes = impl_16__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_16__to_be_bytes': bytes: i128 -> t_Array u8 (mk_usize 16)
+
+unfold
+let impl_16__to_be_bytes = impl_16__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_16__to_le_bytes': bytes: i128 -> t_Array u8 (mk_usize 16)
+
+unfold
+let impl_16__to_le_bytes = impl_16__to_le_bytes'
+
+/// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
+let impl_16__signum (x: i128) : i128 =
+  if x >. mk_i128 0 then mk_i128 1 else if x =. mk_i128 0 then mk_i128 0 else mk_i128 (-1)
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_16__unchecked_add (x y: i128)
+    : Prims.Pure i128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_16__unchecked_sub (x y: i128)
+    : Prims.Pure i128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_16__unchecked_mul (x y: i128)
+    : Prims.Pure i128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_16__rem_euclid (x y: i128)
+    : Prims.Pure i128 (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_i128 x y
+
+/// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
+let impl_16__abs (x: i128) : Prims.Pure i128 (requires x >. impl_16__MIN) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.abs_i128 x
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_16__unchecked_div (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && (x <>. impl_16__MIN || y <>. mk_i128 (-1)))
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_16__unchecked_rem (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && (x <>. impl_16__MIN || y <>. mk_i128 (-1)))
+      (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_16__div_ceil (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i128 = x /! y in
+  let r:i128 = x %! y in
+  if r >. mk_i128 0 && y >. mk_i128 0 || r <. mk_i128 0 && y <. mk_i128 0 then d +! mk_i128 1 else d
+
+/// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
+let impl_17__MIN: isize = Rust_primitives.Arithmetic.v_ISIZE_MIN
+
+/// See [`std::primitive::i8::MAX`] (and similar for other signed integer types)
+let impl_17__MAX: isize = Rust_primitives.Arithmetic.v_ISIZE_MAX
+
+/// See [`std::primitive::i8::BITS`] (and similar for other signed integer types)
+let impl_17__BITS: u32 = Rust_primitives.Arithmetic.v_SIZE_BITS
+
+let impl_17__wrapping_add (x y: isize) : isize = Rust_primitives.Arithmetic.wrapping_add_isize x y
+
+/// See [`std::primitive::u8::saturating_add`] (and similar for other integer types)
+let impl_17__saturating_add (x y: isize) : isize =
+  Rust_primitives.Arithmetic.saturating_add_isize x y
+
+/// See [`std::primitive::u8::overflowing_add`] (and similar for other integer types)
+let impl_17__overflowing_add (x y: isize) : (isize & bool) =
+  Rust_primitives.Arithmetic.overflowing_add_isize x y
+
+/// See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+let impl_17__wrapping_sub (x y: isize) : isize = Rust_primitives.Arithmetic.wrapping_sub_isize x y
+
+/// See [`std::primitive::u8::saturating_sub`] (and similar for other integer types)
+let impl_17__saturating_sub (x y: isize) : isize =
+  Rust_primitives.Arithmetic.saturating_sub_isize x y
+
+/// See [`std::primitive::u8::overflowing_sub`] (and similar for other integer types)
+let impl_17__overflowing_sub (x y: isize) : (isize & bool) =
+  Rust_primitives.Arithmetic.overflowing_sub_isize x y
+
+/// See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+let impl_17__wrapping_mul (x y: isize) : isize = Rust_primitives.Arithmetic.wrapping_mul_isize x y
+
+/// See [`std::primitive::u8::saturating_mul`] (and similar for other integer types)
+let impl_17__saturating_mul (x y: isize) : isize =
+  Rust_primitives.Arithmetic.saturating_mul_isize x y
+
+/// See [`std::primitive::u8::overflowing_mul`] (and similar for other integer types)
+let impl_17__overflowing_mul (x y: isize) : (isize & bool) =
+  Rust_primitives.Arithmetic.overflowing_mul_isize x y
+
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_17__pow (x: isize) (exp: u32) : isize = Rust_primitives.Arithmetic.pow_isize x exp
+
+/// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
+let impl_17__count_ones (x: isize) : u32 = Rust_primitives.Arithmetic.count_ones_isize x
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+assume
+val impl_17__rotate_right': x: isize -> n: u32 -> isize
+
+unfold
+let impl_17__rotate_right = impl_17__rotate_right'
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+assume
+val impl_17__rotate_left': x: isize -> n: u32 -> isize
+
+unfold
+let impl_17__rotate_left = impl_17__rotate_left'
+
+/// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
+assume
+val impl_17__leading_zeros': x: isize -> u32
+
+unfold
+let impl_17__leading_zeros = impl_17__leading_zeros'
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_17__ilog2': x: isize -> u32
+
+unfold
+let impl_17__ilog2 = impl_17__ilog2'
+
+/// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
+assume
+val impl_17__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> isize
+
+unfold
+let impl_17__from_be_bytes = impl_17__from_be_bytes'
+
+/// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
+assume
+val impl_17__from_le_bytes': bytes: t_Array u8 (mk_usize 8) -> isize
+
+unfold
+let impl_17__from_le_bytes = impl_17__from_le_bytes'
+
+/// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
+assume
+val impl_17__to_be_bytes': bytes: isize -> t_Array u8 (mk_usize 8)
+
+unfold
+let impl_17__to_be_bytes = impl_17__to_be_bytes'
+
+/// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
+assume
+val impl_17__to_le_bytes': bytes: isize -> t_Array u8 (mk_usize 8)
+
+unfold
+let impl_17__to_le_bytes = impl_17__to_le_bytes'
+
+/// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
+let impl_17__signum (x: isize) : isize =
+  if x >. mk_isize 0 then mk_isize 1 else if x =. mk_isize 0 then mk_isize 0 else mk_isize (-1)
+
+/// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
+let impl_17__unchecked_add (x y: isize)
+    : Prims.Pure isize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! y
+
+/// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
+let impl_17__unchecked_sub (x y: isize)
+    : Prims.Pure isize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x -! y
+
+/// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
+let impl_17__unchecked_mul (x y: isize)
+    : Prims.Pure isize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x *! y
+
+/// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
+let impl_17__rem_euclid (x y: isize)
+    : Prims.Pure isize (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.rem_euclid_isize x y
+
+/// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
+let impl_17__abs (x: isize) : Prims.Pure isize (requires x >. impl_17__MIN) (fun _ -> Prims.l_True) =
+  Rust_primitives.Arithmetic.abs_isize x
+
+/// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
+let impl_17__unchecked_div (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && (x <>. impl_17__MIN || y <>. mk_isize (-1)))
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
+let impl_17__unchecked_rem (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && (x <>. impl_17__MIN || y <>. mk_isize (-1)))
+      (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+let impl_17__div_ceil (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:isize = x /! y in
+  let r:isize = x %! y in
+  if r >. mk_isize 0 && y >. mk_isize 0 || r <. mk_isize 0 && y <. mk_isize 0
+  then d +! mk_isize 1
+  else d
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_18__from__num: Core_models.Default.t_Default u8 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u8) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u8 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_19__from__num: Core_models.Default.t_Default u16 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u16) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u16 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_20__from__num: Core_models.Default.t_Default u32 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u32) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u32 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_21__from__num: Core_models.Default.t_Default u64 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u64) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u64 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_22__from__num: Core_models.Default.t_Default u128 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u128) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u128 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_23__from__num: Core_models.Default.t_Default usize =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: usize) -> true);
+    f_default = fun (_: Prims.unit) -> mk_usize 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_24__from__num: Core_models.Default.t_Default i8 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i8) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i8 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_25__from__num: Core_models.Default.t_Default i16 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i16) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i16 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_26__from__num: Core_models.Default.t_Default i32 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i32) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i32 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_27__from__num: Core_models.Default.t_Default i64 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i64) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i64 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_28__from__num: Core_models.Default.t_Default i128 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i128) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i128 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_29__from__num: Core_models.Default.t_Default isize =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: isize) -> true);
+    f_default = fun (_: Prims.unit) -> mk_isize 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_30__from__num: Core_models.Default.t_Default bool =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: bool) -> true);
+    f_default = fun (_: Prims.unit) -> false
+  }
+
 /// See [`std::ops::RangeTo`]
 type t_RangeTo (v_T: Type0) = { f_end:v_T }
 
@@ -302,6 +2427,394 @@ type t_FlatMap (v_I: Type0) (v_U: Type0) (v_F: Type0) = {
   f_f:v_F;
   f_current:t_Option v_U
 }
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_6__checked_add (x y: u8) : t_Option u8 =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_add x y in
+  if overflowed then Option_None <: t_Option u8 else Option_Some result <: t_Option u8
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_6__checked_sub (x y: u8) : t_Option u8 =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option u8 else Option_Some result <: t_Option u8
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_6__checked_mul (x y: u8) : t_Option u8 =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option u8 else Option_Some result <: t_Option u8
+
+/// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
+let impl_6__checked_div (x y: u8) : t_Option u8 =
+  if y =. mk_u8 0 then Option_None <: t_Option u8 else Option_Some (x /! y) <: t_Option u8
+
+/// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
+let impl_6__checked_rem (x y: u8) : t_Option u8 =
+  if y =. mk_u8 0 then Option_None <: t_Option u8 else Option_Some (x %! y) <: t_Option u8
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_7__checked_add (x y: u16) : t_Option u16 =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_add x y in
+  if overflowed then Option_None <: t_Option u16 else Option_Some result <: t_Option u16
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_7__checked_sub (x y: u16) : t_Option u16 =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option u16 else Option_Some result <: t_Option u16
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_7__checked_mul (x y: u16) : t_Option u16 =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option u16 else Option_Some result <: t_Option u16
+
+/// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
+let impl_7__checked_div (x y: u16) : t_Option u16 =
+  if y =. mk_u16 0 then Option_None <: t_Option u16 else Option_Some (x /! y) <: t_Option u16
+
+/// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
+let impl_7__checked_rem (x y: u16) : t_Option u16 =
+  if y =. mk_u16 0 then Option_None <: t_Option u16 else Option_Some (x %! y) <: t_Option u16
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_8__checked_add (x y: u32) : t_Option u32 =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_add x y in
+  if overflowed then Option_None <: t_Option u32 else Option_Some result <: t_Option u32
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_8__checked_sub (x y: u32) : t_Option u32 =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option u32 else Option_Some result <: t_Option u32
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_8__checked_mul (x y: u32) : t_Option u32 =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option u32 else Option_Some result <: t_Option u32
+
+/// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
+let impl_8__checked_div (x y: u32) : t_Option u32 =
+  if y =. mk_u32 0 then Option_None <: t_Option u32 else Option_Some (x /! y) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
+let impl_8__checked_rem (x y: u32) : t_Option u32 =
+  if y =. mk_u32 0 then Option_None <: t_Option u32 else Option_Some (x %! y) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_9__checked_add (x y: u64) : t_Option u64 =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_add x y in
+  if overflowed then Option_None <: t_Option u64 else Option_Some result <: t_Option u64
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_9__checked_sub (x y: u64) : t_Option u64 =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option u64 else Option_Some result <: t_Option u64
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_9__checked_mul (x y: u64) : t_Option u64 =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option u64 else Option_Some result <: t_Option u64
+
+/// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
+let impl_9__checked_div (x y: u64) : t_Option u64 =
+  if y =. mk_u64 0 then Option_None <: t_Option u64 else Option_Some (x /! y) <: t_Option u64
+
+/// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
+let impl_9__checked_rem (x y: u64) : t_Option u64 =
+  if y =. mk_u64 0 then Option_None <: t_Option u64 else Option_Some (x %! y) <: t_Option u64
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_10__checked_add (x y: u128) : t_Option u128 =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_add x y in
+  if overflowed then Option_None <: t_Option u128 else Option_Some result <: t_Option u128
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_10__checked_sub (x y: u128) : t_Option u128 =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option u128 else Option_Some result <: t_Option u128
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_10__checked_mul (x y: u128) : t_Option u128 =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option u128 else Option_Some result <: t_Option u128
+
+/// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
+let impl_10__checked_div (x y: u128) : t_Option u128 =
+  if y =. mk_u128 0 then Option_None <: t_Option u128 else Option_Some (x /! y) <: t_Option u128
+
+/// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
+let impl_10__checked_rem (x y: u128) : t_Option u128 =
+  if y =. mk_u128 0 then Option_None <: t_Option u128 else Option_Some (x %! y) <: t_Option u128
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_11__checked_add (x y: usize) : t_Option usize =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_add x y in
+  if overflowed then Option_None <: t_Option usize else Option_Some result <: t_Option usize
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_11__checked_sub (x y: usize) : t_Option usize =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option usize else Option_Some result <: t_Option usize
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_11__checked_mul (x y: usize) : t_Option usize =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option usize else Option_Some result <: t_Option usize
+
+/// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
+let impl_11__checked_div (x y: usize) : t_Option usize =
+  if y =. mk_usize 0 then Option_None <: t_Option usize else Option_Some (x /! y) <: t_Option usize
+
+/// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
+let impl_11__checked_rem (x y: usize) : t_Option usize =
+  if y =. mk_usize 0 then Option_None <: t_Option usize else Option_Some (x %! y) <: t_Option usize
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_12__checked_add (x y: i8) : t_Option i8 =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_add x y in
+  if overflowed then Option_None <: t_Option i8 else Option_Some result <: t_Option i8
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_12__checked_sub (x y: i8) : t_Option i8 =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option i8 else Option_Some result <: t_Option i8
+
+/// See [`std::primitive::i8::checked_add_unsigned`] (and similar for other signed integer types)
+let impl_12__checked_add_unsigned (x: i8) (y: u8) : t_Option i8 =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_add x (cast (y <: u8) <: i8) in
+  if overflowed =. (y >. (cast (impl_12__MAX <: i8) <: u8) <: bool)
+  then Option_Some result <: t_Option i8
+  else Option_None <: t_Option i8
+
+/// See [`std::primitive::i8::checked_sub_unsigned`] (and similar for other signed integer types)
+let impl_12__checked_sub_unsigned (x: i8) (y: u8) : t_Option i8 =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_sub x (cast (y <: u8) <: i8) in
+  if overflowed =. (y >. (cast (impl_12__MAX <: i8) <: u8) <: bool)
+  then Option_Some result <: t_Option i8
+  else Option_None <: t_Option i8
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_12__checked_mul (x y: i8) : t_Option i8 =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option i8 else Option_Some result <: t_Option i8
+
+/// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
+let impl_12__checked_div (x y: i8) : t_Option i8 =
+  if y =. mk_i8 0 || x =. impl_12__MIN && y =. mk_i8 (-1)
+  then Option_None <: t_Option i8
+  else Option_Some (x /! y) <: t_Option i8
+
+/// See [`std::primitive::i8::checked_rem`] (and similar for other signed integer types)
+let impl_12__checked_rem (x y: i8) : t_Option i8 =
+  if y =. mk_i8 0 || x =. impl_12__MIN && y =. mk_i8 (-1)
+  then Option_None <: t_Option i8
+  else Option_Some (x %! y) <: t_Option i8
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_13__checked_add (x y: i16) : t_Option i16 =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_add x y in
+  if overflowed then Option_None <: t_Option i16 else Option_Some result <: t_Option i16
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_13__checked_sub (x y: i16) : t_Option i16 =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option i16 else Option_Some result <: t_Option i16
+
+/// See [`std::primitive::i8::checked_add_unsigned`] (and similar for other signed integer types)
+let impl_13__checked_add_unsigned (x: i16) (y: u16) : t_Option i16 =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_add x (cast (y <: u16) <: i16) in
+  if overflowed =. (y >. (cast (impl_13__MAX <: i16) <: u16) <: bool)
+  then Option_Some result <: t_Option i16
+  else Option_None <: t_Option i16
+
+/// See [`std::primitive::i8::checked_sub_unsigned`] (and similar for other signed integer types)
+let impl_13__checked_sub_unsigned (x: i16) (y: u16) : t_Option i16 =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_sub x (cast (y <: u16) <: i16) in
+  if overflowed =. (y >. (cast (impl_13__MAX <: i16) <: u16) <: bool)
+  then Option_Some result <: t_Option i16
+  else Option_None <: t_Option i16
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_13__checked_mul (x y: i16) : t_Option i16 =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option i16 else Option_Some result <: t_Option i16
+
+/// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
+let impl_13__checked_div (x y: i16) : t_Option i16 =
+  if y =. mk_i16 0 || x =. impl_13__MIN && y =. mk_i16 (-1)
+  then Option_None <: t_Option i16
+  else Option_Some (x /! y) <: t_Option i16
+
+/// See [`std::primitive::i8::checked_rem`] (and similar for other signed integer types)
+let impl_13__checked_rem (x y: i16) : t_Option i16 =
+  if y =. mk_i16 0 || x =. impl_13__MIN && y =. mk_i16 (-1)
+  then Option_None <: t_Option i16
+  else Option_Some (x %! y) <: t_Option i16
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_14__checked_add (x y: i32) : t_Option i32 =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_add x y in
+  if overflowed then Option_None <: t_Option i32 else Option_Some result <: t_Option i32
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_14__checked_sub (x y: i32) : t_Option i32 =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option i32 else Option_Some result <: t_Option i32
+
+/// See [`std::primitive::i8::checked_add_unsigned`] (and similar for other signed integer types)
+let impl_14__checked_add_unsigned (x: i32) (y: u32) : t_Option i32 =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_add x (cast (y <: u32) <: i32) in
+  if overflowed =. (y >. (cast (impl_14__MAX <: i32) <: u32) <: bool)
+  then Option_Some result <: t_Option i32
+  else Option_None <: t_Option i32
+
+/// See [`std::primitive::i8::checked_sub_unsigned`] (and similar for other signed integer types)
+let impl_14__checked_sub_unsigned (x: i32) (y: u32) : t_Option i32 =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_sub x (cast (y <: u32) <: i32) in
+  if overflowed =. (y >. (cast (impl_14__MAX <: i32) <: u32) <: bool)
+  then Option_Some result <: t_Option i32
+  else Option_None <: t_Option i32
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_14__checked_mul (x y: i32) : t_Option i32 =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option i32 else Option_Some result <: t_Option i32
+
+/// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
+let impl_14__checked_div (x y: i32) : t_Option i32 =
+  if y =. mk_i32 0 || x =. impl_14__MIN && y =. mk_i32 (-1)
+  then Option_None <: t_Option i32
+  else Option_Some (x /! y) <: t_Option i32
+
+/// See [`std::primitive::i8::checked_rem`] (and similar for other signed integer types)
+let impl_14__checked_rem (x y: i32) : t_Option i32 =
+  if y =. mk_i32 0 || x =. impl_14__MIN && y =. mk_i32 (-1)
+  then Option_None <: t_Option i32
+  else Option_Some (x %! y) <: t_Option i32
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_15__checked_add (x y: i64) : t_Option i64 =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_add x y in
+  if overflowed then Option_None <: t_Option i64 else Option_Some result <: t_Option i64
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_15__checked_sub (x y: i64) : t_Option i64 =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option i64 else Option_Some result <: t_Option i64
+
+/// See [`std::primitive::i8::checked_add_unsigned`] (and similar for other signed integer types)
+let impl_15__checked_add_unsigned (x: i64) (y: u64) : t_Option i64 =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_add x (cast (y <: u64) <: i64) in
+  if overflowed =. (y >. (cast (impl_15__MAX <: i64) <: u64) <: bool)
+  then Option_Some result <: t_Option i64
+  else Option_None <: t_Option i64
+
+/// See [`std::primitive::i8::checked_sub_unsigned`] (and similar for other signed integer types)
+let impl_15__checked_sub_unsigned (x: i64) (y: u64) : t_Option i64 =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_sub x (cast (y <: u64) <: i64) in
+  if overflowed =. (y >. (cast (impl_15__MAX <: i64) <: u64) <: bool)
+  then Option_Some result <: t_Option i64
+  else Option_None <: t_Option i64
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_15__checked_mul (x y: i64) : t_Option i64 =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option i64 else Option_Some result <: t_Option i64
+
+/// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
+let impl_15__checked_div (x y: i64) : t_Option i64 =
+  if y =. mk_i64 0 || x =. impl_15__MIN && y =. mk_i64 (-1)
+  then Option_None <: t_Option i64
+  else Option_Some (x /! y) <: t_Option i64
+
+/// See [`std::primitive::i8::checked_rem`] (and similar for other signed integer types)
+let impl_15__checked_rem (x y: i64) : t_Option i64 =
+  if y =. mk_i64 0 || x =. impl_15__MIN && y =. mk_i64 (-1)
+  then Option_None <: t_Option i64
+  else Option_Some (x %! y) <: t_Option i64
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_16__checked_add (x y: i128) : t_Option i128 =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_add x y in
+  if overflowed then Option_None <: t_Option i128 else Option_Some result <: t_Option i128
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_16__checked_sub (x y: i128) : t_Option i128 =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option i128 else Option_Some result <: t_Option i128
+
+/// See [`std::primitive::i8::checked_add_unsigned`] (and similar for other signed integer types)
+let impl_16__checked_add_unsigned (x: i128) (y: u128) : t_Option i128 =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_add x (cast (y <: u128) <: i128) in
+  if overflowed =. (y >. (cast (impl_16__MAX <: i128) <: u128) <: bool)
+  then Option_Some result <: t_Option i128
+  else Option_None <: t_Option i128
+
+/// See [`std::primitive::i8::checked_sub_unsigned`] (and similar for other signed integer types)
+let impl_16__checked_sub_unsigned (x: i128) (y: u128) : t_Option i128 =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_sub x (cast (y <: u128) <: i128) in
+  if overflowed =. (y >. (cast (impl_16__MAX <: i128) <: u128) <: bool)
+  then Option_Some result <: t_Option i128
+  else Option_None <: t_Option i128
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_16__checked_mul (x y: i128) : t_Option i128 =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option i128 else Option_Some result <: t_Option i128
+
+/// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
+let impl_16__checked_div (x y: i128) : t_Option i128 =
+  if y =. mk_i128 0 || x =. impl_16__MIN && y =. mk_i128 (-1)
+  then Option_None <: t_Option i128
+  else Option_Some (x /! y) <: t_Option i128
+
+/// See [`std::primitive::i8::checked_rem`] (and similar for other signed integer types)
+let impl_16__checked_rem (x y: i128) : t_Option i128 =
+  if y =. mk_i128 0 || x =. impl_16__MIN && y =. mk_i128 (-1)
+  then Option_None <: t_Option i128
+  else Option_Some (x %! y) <: t_Option i128
+
+/// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
+let impl_17__checked_add (x y: isize) : t_Option isize =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_add x y in
+  if overflowed then Option_None <: t_Option isize else Option_Some result <: t_Option isize
+
+/// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
+let impl_17__checked_sub (x y: isize) : t_Option isize =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_sub x y in
+  if overflowed then Option_None <: t_Option isize else Option_Some result <: t_Option isize
+
+/// See [`std::primitive::i8::checked_add_unsigned`] (and similar for other signed integer types)
+let impl_17__checked_add_unsigned (x: isize) (y: usize) : t_Option isize =
+  let (result: isize), (overflowed: bool) =
+    impl_17__overflowing_add x (cast (y <: usize) <: isize)
+  in
+  if overflowed =. (y >. (cast (impl_17__MAX <: isize) <: usize) <: bool)
+  then Option_Some result <: t_Option isize
+  else Option_None <: t_Option isize
+
+/// See [`std::primitive::i8::checked_sub_unsigned`] (and similar for other signed integer types)
+let impl_17__checked_sub_unsigned (x: isize) (y: usize) : t_Option isize =
+  let (result: isize), (overflowed: bool) =
+    impl_17__overflowing_sub x (cast (y <: usize) <: isize)
+  in
+  if overflowed =. (y >. (cast (impl_17__MAX <: isize) <: usize) <: bool)
+  then Option_Some result <: t_Option isize
+  else Option_None <: t_Option isize
+
+/// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
+let impl_17__checked_mul (x y: isize) : t_Option isize =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_mul x y in
+  if overflowed then Option_None <: t_Option isize else Option_Some result <: t_Option isize
+
+/// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
+let impl_17__checked_div (x y: isize) : t_Option isize =
+  if y =. mk_isize 0 || x =. impl_17__MIN && y =. mk_isize (-1)
+  then Option_None <: t_Option isize
+  else Option_Some (x /! y) <: t_Option isize
+
+/// See [`std::primitive::i8::checked_rem`] (and similar for other signed integer types)
+let impl_17__checked_rem (x y: isize) : t_Option isize =
+  if y =. mk_isize 0 || x =. impl_17__MIN && y =. mk_isize (-1)
+  then Option_None <: t_Option isize
+  else Option_Some (x %! y) <: t_Option isize
 
 /// See [`std::option::Option::is_some_and`]
 let impl__is_some_and
@@ -579,6 +3092,102 @@ let impl_2__from__option (#v_T: Type0) : Core_models.Default.t_Default (t_Option
 type t_Result (v_T: Type0) (v_E: Type0) =
   | Result_Ok : v_T -> t_Result v_T v_E
   | Result_Err : v_E -> t_Result v_T v_E
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_6__from_str_radix': src: string -> radix: u32
+  -> t_Result u8 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_6__from_str_radix = impl_6__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_7__from_str_radix': src: string -> radix: u32
+  -> t_Result u16 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_7__from_str_radix = impl_7__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_8__from_str_radix': src: string -> radix: u32
+  -> t_Result u32 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_8__from_str_radix = impl_8__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_9__from_str_radix': src: string -> radix: u32
+  -> t_Result u64 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_9__from_str_radix = impl_9__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_10__from_str_radix': src: string -> radix: u32
+  -> t_Result u128 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_10__from_str_radix = impl_10__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_11__from_str_radix': src: string -> radix: u32
+  -> t_Result usize Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_11__from_str_radix = impl_11__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_12__from_str_radix': src: string -> radix: u32
+  -> t_Result i8 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_12__from_str_radix = impl_12__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_13__from_str_radix': src: string -> radix: u32
+  -> t_Result i16 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_13__from_str_radix = impl_13__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_14__from_str_radix': src: string -> radix: u32
+  -> t_Result i32 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_14__from_str_radix = impl_14__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_15__from_str_radix': src: string -> radix: u32
+  -> t_Result i64 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_15__from_str_radix = impl_15__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_16__from_str_radix': src: string -> radix: u32
+  -> t_Result i128 Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_16__from_str_radix = impl_16__from_str_radix'
+
+/// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
+assume
+val impl_17__from_str_radix': src: string -> radix: u32
+  -> t_Result isize Core_models.Num.Error.t_ParseIntError
+
+unfold
+let impl_17__from_str_radix = impl_17__from_str_radix'
 
 /// See [`std::option::Option::ok_or`]
 let impl__ok_or (#v_T #v_E: Type0) (self: t_Option v_T) (err: v_E) : t_Result v_T v_E =
@@ -1948,9 +4557,7 @@ let impl_41: t_TryFrom u8 u16 =
     f_try_from
     =
     fun (x: u16) ->
-      if
-        x >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u16) ||
-        x <. (cast (Core_models.Num.impl_u8__MIN <: u8) <: u16)
+      if x >. (cast (impl_6__MAX <: u8) <: u16) || x <. (cast (impl_6__MIN <: u8) <: u16)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -1972,9 +4579,7 @@ let impl_42__from__convert: t_TryFrom u8 u32 =
     f_try_from
     =
     fun (x: u32) ->
-      if
-        x >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u32) ||
-        x <. (cast (Core_models.Num.impl_u8__MIN <: u8) <: u32)
+      if x >. (cast (impl_6__MAX <: u8) <: u32) || x <. (cast (impl_6__MIN <: u8) <: u32)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -1996,9 +4601,7 @@ let impl_43: t_TryFrom u16 u32 =
     f_try_from
     =
     fun (x: u32) ->
-      if
-        x >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u32) ||
-        x <. (cast (Core_models.Num.impl_u16__MIN <: u16) <: u32)
+      if x >. (cast (impl_7__MAX <: u16) <: u32) || x <. (cast (impl_7__MIN <: u16) <: u32)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2021,9 +4624,7 @@ let impl_44__from__convert: t_TryFrom u8 u64 =
     f_try_from
     =
     fun (x: u64) ->
-      if
-        x >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u64) ||
-        x <. (cast (Core_models.Num.impl_u8__MIN <: u8) <: u64)
+      if x >. (cast (impl_6__MAX <: u8) <: u64) || x <. (cast (impl_6__MIN <: u8) <: u64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2045,9 +4646,7 @@ let impl_45: t_TryFrom u16 u64 =
     f_try_from
     =
     fun (x: u64) ->
-      if
-        x >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u64) ||
-        x <. (cast (Core_models.Num.impl_u16__MIN <: u16) <: u64)
+      if x >. (cast (impl_7__MAX <: u16) <: u64) || x <. (cast (impl_7__MIN <: u16) <: u64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2070,9 +4669,7 @@ let impl_46__from__convert: t_TryFrom u32 u64 =
     f_try_from
     =
     fun (x: u64) ->
-      if
-        x >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: u64) ||
-        x <. (cast (Core_models.Num.impl_u32__MIN <: u32) <: u64)
+      if x >. (cast (impl_8__MAX <: u32) <: u64) || x <. (cast (impl_8__MIN <: u32) <: u64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2095,9 +4692,7 @@ let impl_47: t_TryFrom usize u64 =
     f_try_from
     =
     fun (x: u64) ->
-      if
-        x >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u64) ||
-        x <. (cast (Core_models.Num.impl_usize__MIN <: usize) <: u64)
+      if x >. (cast (impl_11__MAX <: usize) <: u64) || x <. (cast (impl_11__MIN <: usize) <: u64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2122,9 +4717,7 @@ let impl_48__from__convert: t_TryFrom u8 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if
-        x >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u128) ||
-        x <. (cast (Core_models.Num.impl_u8__MIN <: u8) <: u128)
+      if x >. (cast (impl_6__MAX <: u8) <: u128) || x <. (cast (impl_6__MIN <: u8) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2146,9 +4739,7 @@ let impl_49: t_TryFrom u16 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if
-        x >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u128) ||
-        x <. (cast (Core_models.Num.impl_u16__MIN <: u16) <: u128)
+      if x >. (cast (impl_7__MAX <: u16) <: u128) || x <. (cast (impl_7__MIN <: u16) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2171,9 +4762,7 @@ let impl_50__from__convert: t_TryFrom u32 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if
-        x >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: u128) ||
-        x <. (cast (Core_models.Num.impl_u32__MIN <: u32) <: u128)
+      if x >. (cast (impl_8__MAX <: u32) <: u128) || x <. (cast (impl_8__MIN <: u32) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2196,9 +4785,7 @@ let impl_51: t_TryFrom u64 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if
-        x >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: u128) ||
-        x <. (cast (Core_models.Num.impl_u64__MIN <: u64) <: u128)
+      if x >. (cast (impl_9__MAX <: u64) <: u128) || x <. (cast (impl_9__MIN <: u64) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2221,9 +4808,7 @@ let impl_52__from__convert: t_TryFrom usize u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if
-        x >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u128) ||
-        x <. (cast (Core_models.Num.impl_usize__MIN <: usize) <: u128)
+      if x >. (cast (impl_11__MAX <: usize) <: u128) || x <. (cast (impl_11__MIN <: usize) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2248,9 +4833,7 @@ let impl_53: t_TryFrom u8 usize =
     f_try_from
     =
     fun (x: usize) ->
-      if
-        x >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: usize) ||
-        x <. (cast (Core_models.Num.impl_u8__MIN <: u8) <: usize)
+      if x >. (cast (impl_6__MAX <: u8) <: usize) || x <. (cast (impl_6__MIN <: u8) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2273,9 +4856,7 @@ let impl_54: t_TryFrom u16 usize =
     f_try_from
     =
     fun (x: usize) ->
-      if
-        x >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: usize) ||
-        x <. (cast (Core_models.Num.impl_u16__MIN <: u16) <: usize)
+      if x >. (cast (impl_7__MAX <: u16) <: usize) || x <. (cast (impl_7__MIN <: u16) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2298,9 +4879,7 @@ let impl_55: t_TryFrom u32 usize =
     f_try_from
     =
     fun (x: usize) ->
-      if
-        x >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: usize) ||
-        x <. (cast (Core_models.Num.impl_u32__MIN <: u32) <: usize)
+      if x >. (cast (impl_8__MAX <: u32) <: usize) || x <. (cast (impl_8__MIN <: u32) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2323,9 +4902,7 @@ let impl_56: t_TryFrom u64 usize =
     f_try_from
     =
     fun (x: usize) ->
-      if
-        x >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: usize) ||
-        x <. (cast (Core_models.Num.impl_u64__MIN <: u64) <: usize)
+      if x >. (cast (impl_9__MAX <: u64) <: usize) || x <. (cast (impl_9__MIN <: u64) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2348,9 +4925,7 @@ let impl_57: t_TryFrom i8 i16 =
     f_try_from
     =
     fun (x: i16) ->
-      if
-        x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: i16) ||
-        x <. (cast (Core_models.Num.impl_i8__MIN <: i8) <: i16)
+      if x >. (cast (impl_12__MAX <: i8) <: i16) || x <. (cast (impl_12__MIN <: i8) <: i16)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2372,9 +4947,7 @@ let impl_58: t_TryFrom i8 i32 =
     f_try_from
     =
     fun (x: i32) ->
-      if
-        x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: i32) ||
-        x <. (cast (Core_models.Num.impl_i8__MIN <: i8) <: i32)
+      if x >. (cast (impl_12__MAX <: i8) <: i32) || x <. (cast (impl_12__MIN <: i8) <: i32)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2396,9 +4969,7 @@ let impl_59: t_TryFrom i16 i32 =
     f_try_from
     =
     fun (x: i32) ->
-      if
-        x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: i32) ||
-        x <. (cast (Core_models.Num.impl_i16__MIN <: i16) <: i32)
+      if x >. (cast (impl_13__MAX <: i16) <: i32) || x <. (cast (impl_13__MIN <: i16) <: i32)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2421,9 +4992,7 @@ let impl_60: t_TryFrom i8 i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: i64) ||
-        x <. (cast (Core_models.Num.impl_i8__MIN <: i8) <: i64)
+      if x >. (cast (impl_12__MAX <: i8) <: i64) || x <. (cast (impl_12__MIN <: i8) <: i64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2445,9 +5014,7 @@ let impl_61: t_TryFrom i16 i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: i64) ||
-        x <. (cast (Core_models.Num.impl_i16__MIN <: i16) <: i64)
+      if x >. (cast (impl_13__MAX <: i16) <: i64) || x <. (cast (impl_13__MIN <: i16) <: i64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2470,9 +5037,7 @@ let impl_62: t_TryFrom i32 i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x >. (cast (Core_models.Num.impl_i32__MAX <: i32) <: i64) ||
-        x <. (cast (Core_models.Num.impl_i32__MIN <: i32) <: i64)
+      if x >. (cast (impl_14__MAX <: i32) <: i64) || x <. (cast (impl_14__MIN <: i32) <: i64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2495,9 +5060,7 @@ let impl_63: t_TryFrom isize i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x >. (cast (Core_models.Num.impl_isize__MAX <: isize) <: i64) ||
-        x <. (cast (Core_models.Num.impl_isize__MIN <: isize) <: i64)
+      if x >. (cast (impl_17__MAX <: isize) <: i64) || x <. (cast (impl_17__MIN <: isize) <: i64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2522,9 +5085,7 @@ let impl_64: t_TryFrom i8 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: i128) ||
-        x <. (cast (Core_models.Num.impl_i8__MIN <: i8) <: i128)
+      if x >. (cast (impl_12__MAX <: i8) <: i128) || x <. (cast (impl_12__MIN <: i8) <: i128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2546,9 +5107,7 @@ let impl_65: t_TryFrom i16 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: i128) ||
-        x <. (cast (Core_models.Num.impl_i16__MIN <: i16) <: i128)
+      if x >. (cast (impl_13__MAX <: i16) <: i128) || x <. (cast (impl_13__MIN <: i16) <: i128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2571,9 +5130,7 @@ let impl_66: t_TryFrom i32 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x >. (cast (Core_models.Num.impl_i32__MAX <: i32) <: i128) ||
-        x <. (cast (Core_models.Num.impl_i32__MIN <: i32) <: i128)
+      if x >. (cast (impl_14__MAX <: i32) <: i128) || x <. (cast (impl_14__MIN <: i32) <: i128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2596,9 +5153,7 @@ let impl_67: t_TryFrom i64 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x >. (cast (Core_models.Num.impl_i64__MAX <: i64) <: i128) ||
-        x <. (cast (Core_models.Num.impl_i64__MIN <: i64) <: i128)
+      if x >. (cast (impl_15__MAX <: i64) <: i128) || x <. (cast (impl_15__MIN <: i64) <: i128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2621,9 +5176,7 @@ let impl_68: t_TryFrom isize i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x >. (cast (Core_models.Num.impl_isize__MAX <: isize) <: i128) ||
-        x <. (cast (Core_models.Num.impl_isize__MIN <: isize) <: i128)
+      if x >. (cast (impl_17__MAX <: isize) <: i128) || x <. (cast (impl_17__MIN <: isize) <: i128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2648,9 +5201,7 @@ let impl_69: t_TryFrom i8 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: isize) ||
-        x <. (cast (Core_models.Num.impl_i8__MIN <: i8) <: isize)
+      if x >. (cast (impl_12__MAX <: i8) <: isize) || x <. (cast (impl_12__MIN <: i8) <: isize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2673,9 +5224,7 @@ let impl_70: t_TryFrom i16 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: isize) ||
-        x <. (cast (Core_models.Num.impl_i16__MIN <: i16) <: isize)
+      if x >. (cast (impl_13__MAX <: i16) <: isize) || x <. (cast (impl_13__MIN <: i16) <: isize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2698,9 +5247,7 @@ let impl_71: t_TryFrom i32 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x >. (cast (Core_models.Num.impl_i32__MAX <: i32) <: isize) ||
-        x <. (cast (Core_models.Num.impl_i32__MIN <: i32) <: isize)
+      if x >. (cast (impl_14__MAX <: i32) <: isize) || x <. (cast (impl_14__MIN <: i32) <: isize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2723,9 +5270,7 @@ let impl_72: t_TryFrom i64 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x >. (cast (Core_models.Num.impl_i64__MAX <: i64) <: isize) ||
-        x <. (cast (Core_models.Num.impl_i64__MIN <: i64) <: isize)
+      if x >. (cast (impl_15__MAX <: i64) <: isize) || x <. (cast (impl_15__MIN <: i64) <: isize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2804,7 +5349,7 @@ let impl_77: t_TryFrom i8 u8 =
     f_try_from
     =
     fun (x: u8) ->
-      if x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: u8)
+      if x >. (cast (impl_12__MAX <: i8) <: u8)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2826,7 +5371,7 @@ let impl_78: t_TryFrom i8 u16 =
     f_try_from
     =
     fun (x: u16) ->
-      if x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: u16)
+      if x >. (cast (impl_12__MAX <: i8) <: u16)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2848,7 +5393,7 @@ let impl_79: t_TryFrom i16 u16 =
     f_try_from
     =
     fun (x: u16) ->
-      if x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: u16)
+      if x >. (cast (impl_13__MAX <: i16) <: u16)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2871,7 +5416,7 @@ let impl_80: t_TryFrom i8 u32 =
     f_try_from
     =
     fun (x: u32) ->
-      if x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: u32)
+      if x >. (cast (impl_12__MAX <: i8) <: u32)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2893,7 +5438,7 @@ let impl_81: t_TryFrom i16 u32 =
     f_try_from
     =
     fun (x: u32) ->
-      if x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: u32)
+      if x >. (cast (impl_13__MAX <: i16) <: u32)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2916,7 +5461,7 @@ let impl_82: t_TryFrom i32 u32 =
     f_try_from
     =
     fun (x: u32) ->
-      if x >. (cast (Core_models.Num.impl_i32__MAX <: i32) <: u32)
+      if x >. (cast (impl_14__MAX <: i32) <: u32)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2939,7 +5484,7 @@ let impl_83: t_TryFrom i8 u64 =
     f_try_from
     =
     fun (x: u64) ->
-      if x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: u64)
+      if x >. (cast (impl_12__MAX <: i8) <: u64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2961,7 +5506,7 @@ let impl_84: t_TryFrom i16 u64 =
     f_try_from
     =
     fun (x: u64) ->
-      if x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: u64)
+      if x >. (cast (impl_13__MAX <: i16) <: u64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -2984,7 +5529,7 @@ let impl_85: t_TryFrom i32 u64 =
     f_try_from
     =
     fun (x: u64) ->
-      if x >. (cast (Core_models.Num.impl_i32__MAX <: i32) <: u64)
+      if x >. (cast (impl_14__MAX <: i32) <: u64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3007,7 +5552,7 @@ let impl_86: t_TryFrom i64 u64 =
     f_try_from
     =
     fun (x: u64) ->
-      if x >. (cast (Core_models.Num.impl_i64__MAX <: i64) <: u64)
+      if x >. (cast (impl_15__MAX <: i64) <: u64)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3030,7 +5575,7 @@ let impl_87: t_TryFrom i8 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: u128)
+      if x >. (cast (impl_12__MAX <: i8) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3052,7 +5597,7 @@ let impl_88: t_TryFrom i16 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: u128)
+      if x >. (cast (impl_13__MAX <: i16) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3075,7 +5620,7 @@ let impl_89: t_TryFrom i32 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if x >. (cast (Core_models.Num.impl_i32__MAX <: i32) <: u128)
+      if x >. (cast (impl_14__MAX <: i32) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3098,7 +5643,7 @@ let impl_90: t_TryFrom i64 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if x >. (cast (Core_models.Num.impl_i64__MAX <: i64) <: u128)
+      if x >. (cast (impl_15__MAX <: i64) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3121,7 +5666,7 @@ let impl_91: t_TryFrom i128 u128 =
     f_try_from
     =
     fun (x: u128) ->
-      if x >. (cast (Core_models.Num.impl_i128__MAX <: i128) <: u128)
+      if x >. (cast (impl_16__MAX <: i128) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3146,7 +5691,7 @@ let impl_92: t_TryFrom i8 usize =
     f_try_from
     =
     fun (x: usize) ->
-      if x >. (cast (Core_models.Num.impl_i8__MAX <: i8) <: usize)
+      if x >. (cast (impl_12__MAX <: i8) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3169,7 +5714,7 @@ let impl_93: t_TryFrom i16 usize =
     f_try_from
     =
     fun (x: usize) ->
-      if x >. (cast (Core_models.Num.impl_i16__MAX <: i16) <: usize)
+      if x >. (cast (impl_13__MAX <: i16) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3192,7 +5737,7 @@ let impl_94: t_TryFrom i32 usize =
     f_try_from
     =
     fun (x: usize) ->
-      if x >. (cast (Core_models.Num.impl_i32__MAX <: i32) <: usize)
+      if x >. (cast (impl_14__MAX <: i32) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3215,7 +5760,7 @@ let impl_95: t_TryFrom i64 usize =
     f_try_from
     =
     fun (x: usize) ->
-      if x >. (cast (Core_models.Num.impl_i64__MAX <: i64) <: usize)
+      if x >. (cast (impl_15__MAX <: i64) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3238,7 +5783,7 @@ let impl_96: t_TryFrom isize usize =
     f_try_from
     =
     fun (x: usize) ->
-      if x >. (cast (Core_models.Num.impl_isize__MAX <: isize) <: usize)
+      if x >. (cast (impl_17__MAX <: isize) <: usize)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3263,9 +5808,7 @@ let impl_97: t_TryFrom u8 i8 =
     f_try_from
     =
     fun (x: i8) ->
-      if
-        x <. mk_i8 0 ||
-        (cast (x <: i8) <: u128) >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u128)
+      if x <. mk_i8 0 || (cast (x <: i8) <: u128) >. (cast (impl_6__MAX <: u8) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3287,9 +5830,7 @@ let impl_98: t_TryFrom u16 i8 =
     f_try_from
     =
     fun (x: i8) ->
-      if
-        x <. mk_i8 0 ||
-        (cast (x <: i8) <: u128) >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u128)
+      if x <. mk_i8 0 || (cast (x <: i8) <: u128) >. (cast (impl_7__MAX <: u16) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3311,9 +5852,7 @@ let impl_99: t_TryFrom u32 i8 =
     f_try_from
     =
     fun (x: i8) ->
-      if
-        x <. mk_i8 0 ||
-        (cast (x <: i8) <: u128) >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: u128)
+      if x <. mk_i8 0 || (cast (x <: i8) <: u128) >. (cast (impl_8__MAX <: u32) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3335,9 +5874,7 @@ let impl_100: t_TryFrom u64 i8 =
     f_try_from
     =
     fun (x: i8) ->
-      if
-        x <. mk_i8 0 ||
-        (cast (x <: i8) <: u128) >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: u128)
+      if x <. mk_i8 0 || (cast (x <: i8) <: u128) >. (cast (impl_9__MAX <: u64) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3359,7 +5896,7 @@ let impl_101: t_TryFrom u128 i8 =
     f_try_from
     =
     fun (x: i8) ->
-      if x <. mk_i8 0 || (cast (x <: i8) <: u128) >. Core_models.Num.impl_u128__MAX
+      if x <. mk_i8 0 || (cast (x <: i8) <: u128) >. impl_10__MAX
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3382,9 +5919,7 @@ let impl_102: t_TryFrom usize i8 =
     f_try_from
     =
     fun (x: i8) ->
-      if
-        x <. mk_i8 0 ||
-        (cast (x <: i8) <: u128) >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u128)
+      if x <. mk_i8 0 || (cast (x <: i8) <: u128) >. (cast (impl_11__MAX <: usize) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3409,9 +5944,7 @@ let impl_103: t_TryFrom u8 i16 =
     f_try_from
     =
     fun (x: i16) ->
-      if
-        x <. mk_i16 0 ||
-        (cast (x <: i16) <: u128) >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u128)
+      if x <. mk_i16 0 || (cast (x <: i16) <: u128) >. (cast (impl_6__MAX <: u8) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3433,9 +5966,7 @@ let impl_104: t_TryFrom u16 i16 =
     f_try_from
     =
     fun (x: i16) ->
-      if
-        x <. mk_i16 0 ||
-        (cast (x <: i16) <: u128) >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u128)
+      if x <. mk_i16 0 || (cast (x <: i16) <: u128) >. (cast (impl_7__MAX <: u16) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3458,9 +5989,7 @@ let impl_105: t_TryFrom u32 i16 =
     f_try_from
     =
     fun (x: i16) ->
-      if
-        x <. mk_i16 0 ||
-        (cast (x <: i16) <: u128) >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: u128)
+      if x <. mk_i16 0 || (cast (x <: i16) <: u128) >. (cast (impl_8__MAX <: u32) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3483,9 +6012,7 @@ let impl_106: t_TryFrom u64 i16 =
     f_try_from
     =
     fun (x: i16) ->
-      if
-        x <. mk_i16 0 ||
-        (cast (x <: i16) <: u128) >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: u128)
+      if x <. mk_i16 0 || (cast (x <: i16) <: u128) >. (cast (impl_9__MAX <: u64) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3508,7 +6035,7 @@ let impl_107: t_TryFrom u128 i16 =
     f_try_from
     =
     fun (x: i16) ->
-      if x <. mk_i16 0 || (cast (x <: i16) <: u128) >. Core_models.Num.impl_u128__MAX
+      if x <. mk_i16 0 || (cast (x <: i16) <: u128) >. impl_10__MAX
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3531,9 +6058,7 @@ let impl_108: t_TryFrom usize i16 =
     f_try_from
     =
     fun (x: i16) ->
-      if
-        x <. mk_i16 0 ||
-        (cast (x <: i16) <: u128) >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u128)
+      if x <. mk_i16 0 || (cast (x <: i16) <: u128) >. (cast (impl_11__MAX <: usize) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3558,9 +6083,7 @@ let impl_109: t_TryFrom u8 i32 =
     f_try_from
     =
     fun (x: i32) ->
-      if
-        x <. mk_i32 0 ||
-        (cast (x <: i32) <: u128) >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u128)
+      if x <. mk_i32 0 || (cast (x <: i32) <: u128) >. (cast (impl_6__MAX <: u8) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3582,9 +6105,7 @@ let impl_110: t_TryFrom u16 i32 =
     f_try_from
     =
     fun (x: i32) ->
-      if
-        x <. mk_i32 0 ||
-        (cast (x <: i32) <: u128) >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u128)
+      if x <. mk_i32 0 || (cast (x <: i32) <: u128) >. (cast (impl_7__MAX <: u16) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3607,9 +6128,7 @@ let impl_111: t_TryFrom u32 i32 =
     f_try_from
     =
     fun (x: i32) ->
-      if
-        x <. mk_i32 0 ||
-        (cast (x <: i32) <: u128) >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: u128)
+      if x <. mk_i32 0 || (cast (x <: i32) <: u128) >. (cast (impl_8__MAX <: u32) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3632,9 +6151,7 @@ let impl_112: t_TryFrom u64 i32 =
     f_try_from
     =
     fun (x: i32) ->
-      if
-        x <. mk_i32 0 ||
-        (cast (x <: i32) <: u128) >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: u128)
+      if x <. mk_i32 0 || (cast (x <: i32) <: u128) >. (cast (impl_9__MAX <: u64) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3657,7 +6174,7 @@ let impl_113: t_TryFrom u128 i32 =
     f_try_from
     =
     fun (x: i32) ->
-      if x <. mk_i32 0 || (cast (x <: i32) <: u128) >. Core_models.Num.impl_u128__MAX
+      if x <. mk_i32 0 || (cast (x <: i32) <: u128) >. impl_10__MAX
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3680,9 +6197,7 @@ let impl_114: t_TryFrom usize i32 =
     f_try_from
     =
     fun (x: i32) ->
-      if
-        x <. mk_i32 0 ||
-        (cast (x <: i32) <: u128) >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u128)
+      if x <. mk_i32 0 || (cast (x <: i32) <: u128) >. (cast (impl_11__MAX <: usize) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3707,9 +6222,7 @@ let impl_115: t_TryFrom u8 i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x <. mk_i64 0 ||
-        (cast (x <: i64) <: u128) >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u128)
+      if x <. mk_i64 0 || (cast (x <: i64) <: u128) >. (cast (impl_6__MAX <: u8) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3731,9 +6244,7 @@ let impl_116: t_TryFrom u16 i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x <. mk_i64 0 ||
-        (cast (x <: i64) <: u128) >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u128)
+      if x <. mk_i64 0 || (cast (x <: i64) <: u128) >. (cast (impl_7__MAX <: u16) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3756,9 +6267,7 @@ let impl_117: t_TryFrom u32 i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x <. mk_i64 0 ||
-        (cast (x <: i64) <: u128) >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: u128)
+      if x <. mk_i64 0 || (cast (x <: i64) <: u128) >. (cast (impl_8__MAX <: u32) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3781,9 +6290,7 @@ let impl_118: t_TryFrom u64 i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x <. mk_i64 0 ||
-        (cast (x <: i64) <: u128) >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: u128)
+      if x <. mk_i64 0 || (cast (x <: i64) <: u128) >. (cast (impl_9__MAX <: u64) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3806,7 +6313,7 @@ let impl_119: t_TryFrom u128 i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if x <. mk_i64 0 || (cast (x <: i64) <: u128) >. Core_models.Num.impl_u128__MAX
+      if x <. mk_i64 0 || (cast (x <: i64) <: u128) >. impl_10__MAX
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3829,9 +6336,7 @@ let impl_120: t_TryFrom usize i64 =
     f_try_from
     =
     fun (x: i64) ->
-      if
-        x <. mk_i64 0 ||
-        (cast (x <: i64) <: u128) >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u128)
+      if x <. mk_i64 0 || (cast (x <: i64) <: u128) >. (cast (impl_11__MAX <: usize) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3856,9 +6361,7 @@ let impl_121: t_TryFrom u8 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x <. mk_i128 0 ||
-        (cast (x <: i128) <: u128) >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u128)
+      if x <. mk_i128 0 || (cast (x <: i128) <: u128) >. (cast (impl_6__MAX <: u8) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3880,9 +6383,7 @@ let impl_122: t_TryFrom u16 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x <. mk_i128 0 ||
-        (cast (x <: i128) <: u128) >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u128)
+      if x <. mk_i128 0 || (cast (x <: i128) <: u128) >. (cast (impl_7__MAX <: u16) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3905,9 +6406,7 @@ let impl_123: t_TryFrom u32 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x <. mk_i128 0 ||
-        (cast (x <: i128) <: u128) >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: u128)
+      if x <. mk_i128 0 || (cast (x <: i128) <: u128) >. (cast (impl_8__MAX <: u32) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3930,9 +6429,7 @@ let impl_124: t_TryFrom u64 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x <. mk_i128 0 ||
-        (cast (x <: i128) <: u128) >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: u128)
+      if x <. mk_i128 0 || (cast (x <: i128) <: u128) >. (cast (impl_9__MAX <: u64) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3955,7 +6452,7 @@ let impl_125: t_TryFrom u128 i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if x <. mk_i128 0 || (cast (x <: i128) <: u128) >. Core_models.Num.impl_u128__MAX
+      if x <. mk_i128 0 || (cast (x <: i128) <: u128) >. impl_10__MAX
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -3980,9 +6477,7 @@ let impl_126: t_TryFrom usize i128 =
     f_try_from
     =
     fun (x: i128) ->
-      if
-        x <. mk_i128 0 ||
-        (cast (x <: i128) <: u128) >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u128)
+      if x <. mk_i128 0 || (cast (x <: i128) <: u128) >. (cast (impl_11__MAX <: usize) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -4007,9 +6502,7 @@ let impl_127: t_TryFrom u8 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x <. mk_isize 0 ||
-        (cast (x <: isize) <: u128) >. (cast (Core_models.Num.impl_u8__MAX <: u8) <: u128)
+      if x <. mk_isize 0 || (cast (x <: isize) <: u128) >. (cast (impl_6__MAX <: u8) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -4032,9 +6525,7 @@ let impl_128: t_TryFrom u16 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x <. mk_isize 0 ||
-        (cast (x <: isize) <: u128) >. (cast (Core_models.Num.impl_u16__MAX <: u16) <: u128)
+      if x <. mk_isize 0 || (cast (x <: isize) <: u128) >. (cast (impl_7__MAX <: u16) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -4057,9 +6548,7 @@ let impl_129: t_TryFrom u32 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x <. mk_isize 0 ||
-        (cast (x <: isize) <: u128) >. (cast (Core_models.Num.impl_u32__MAX <: u32) <: u128)
+      if x <. mk_isize 0 || (cast (x <: isize) <: u128) >. (cast (impl_8__MAX <: u32) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -4082,9 +6571,7 @@ let impl_130: t_TryFrom u64 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x <. mk_isize 0 ||
-        (cast (x <: isize) <: u128) >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: u128)
+      if x <. mk_isize 0 || (cast (x <: isize) <: u128) >. (cast (impl_9__MAX <: u64) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -4107,7 +6594,7 @@ let impl_131: t_TryFrom u128 isize =
     f_try_from
     =
     fun (x: isize) ->
-      if x <. mk_isize 0 || (cast (x <: isize) <: u128) >. Core_models.Num.impl_u128__MAX
+      if x <. mk_isize 0 || (cast (x <: isize) <: u128) >. impl_10__MAX
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -4132,9 +6619,7 @@ let impl_132: t_TryFrom usize isize =
     f_try_from
     =
     fun (x: isize) ->
-      if
-        x <. mk_isize 0 ||
-        (cast (x <: isize) <: u128) >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u128)
+      if x <. mk_isize 0 || (cast (x <: isize) <: u128) >. (cast (impl_11__MAX <: usize) <: u128)
       then
         Result_Err
         (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
@@ -4197,9 +6682,7 @@ let impl_1__from__enumerate
         match out <: t_Option i0.f_Item with
         | Option_Some a ->
           let i:usize = self.f_count in
-          let _:Prims.unit =
-            Hax_lib.v_assume (b2t (self.f_count <. Core_models.Num.impl_usize__MAX <: bool))
-          in
+          let _:Prims.unit = Hax_lib.v_assume (b2t (self.f_count <. impl_11__MAX <: bool)) in
           let self:t_Enumerate v_I =
             { self with f_count = self.f_count +! mk_usize 1 } <: t_Enumerate v_I
           in

@@ -40,7 +40,6 @@ macro_rules! uint_impl {
                 paste! { [<overflowing_add_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_add(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_add(x, y);
                 if overflowed {
@@ -67,7 +66,6 @@ macro_rules! uint_impl {
                 paste! { [<overflowing_sub_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_sub(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_sub(x, y);
                 if overflowed {
@@ -94,7 +92,6 @@ macro_rules! uint_impl {
                 paste! { [<overflowing_mul_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_mul(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_mul(x, y);
                 if overflowed {
@@ -143,7 +140,6 @@ macro_rules! uint_impl {
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
             #[hax_lib::opaque]
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -171,7 +167,6 @@ macro_rules! uint_impl {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_div(x: $Self, y: $Self) -> Option<$Self> {
                 if y == 0 {
                     Option::None
@@ -185,7 +180,6 @@ macro_rules! uint_impl {
                 x / y
             }
             /// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_rem(x: $Self, y: $Self) -> Option<$Self> {
                 if y == 0 {
                     Option::None
@@ -268,7 +262,6 @@ macro_rules! iint_impl {
                 paste! { [<overflowing_add_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_add(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_add(x, y);
                 if overflowed {
@@ -295,7 +288,6 @@ macro_rules! iint_impl {
                 paste! { [<overflowing_sub_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_sub(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_sub(x, y);
                 if overflowed {
@@ -310,7 +302,6 @@ macro_rules! iint_impl {
                 x - y
             }
             /// See [`std::primitive::i8::checked_add_unsigned`] (and similar for other signed integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_add_unsigned(x: $Self, y: $USelf) -> Option<$Self> {
                 // Signed overflow from wrapping_add(x, y as $Self) represents unsigned overflow
                 // iff the signed overflow flag matches whether y exceeds the signed maximum.
@@ -322,7 +313,6 @@ macro_rules! iint_impl {
                 }
             }
             /// See [`std::primitive::i8::checked_sub_unsigned`] (and similar for other signed integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_sub_unsigned(x: $Self, y: $USelf) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_sub(x, y as $Self);
                 if overflowed == (y > <$Name>::MAX as $USelf) {
@@ -344,7 +334,6 @@ macro_rules! iint_impl {
                 paste! { [<overflowing_mul_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_mul(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_mul(x, y);
                 if overflowed {
@@ -398,7 +387,6 @@ macro_rules! iint_impl {
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
             #[hax_lib::opaque]
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -426,7 +414,6 @@ macro_rules! iint_impl {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_div(x: $Self, y: $Self) -> Option<$Self> {
                 if y == 0 || (x == <$Name>::MIN && y == -1) {
                     Option::None
@@ -440,7 +427,6 @@ macro_rules! iint_impl {
                 x / y
             }
             /// See [`std::primitive::i8::checked_rem`] (and similar for other signed integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_rem(x: $Self, y: $Self) -> Option<$Self> {
                 if y == 0 || (x == <$Name>::MIN && y == -1) {
                     Option::None
