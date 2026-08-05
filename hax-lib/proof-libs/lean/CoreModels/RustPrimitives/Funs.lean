@@ -559,43 +559,43 @@ def rust_primitives.arithmetic.from_le_bytes_usize : Array Std.U8 8#usize → Re
 
 @[rust_fun "rust_primitives::arithmetic::from_be_bytes_i8"]
 def rust_primitives.arithmetic.from_be_bytes_i8 : Array Std.U8 1#usize → Result Std.I8 :=
-  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_le_bytes_i8"]
 def rust_primitives.arithmetic.from_le_bytes_i8 : Array Std.U8 1#usize → Result Std.I8 :=
-  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_be_bytes_i16"]
 def rust_primitives.arithmetic.from_be_bytes_i16 : Array Std.U8 2#usize → Result Std.I16 :=
-  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_le_bytes_i16"]
 def rust_primitives.arithmetic.from_le_bytes_i16 : Array Std.U8 2#usize → Result Std.I16 :=
-  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_be_bytes_i32"]
 def rust_primitives.arithmetic.from_be_bytes_i32 : Array Std.U8 4#usize → Result Std.I32 :=
-  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_le_bytes_i32"]
 def rust_primitives.arithmetic.from_le_bytes_i32 : Array Std.U8 4#usize → Result Std.I32 :=
-  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_be_bytes_i64"]
 def rust_primitives.arithmetic.from_be_bytes_i64 : Array Std.U8 8#usize → Result Std.I64 :=
-  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_le_bytes_i64"]
 def rust_primitives.arithmetic.from_le_bytes_i64 : Array Std.U8 8#usize → Result Std.I64 :=
-  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_be_bytes_i128"]
 def rust_primitives.arithmetic.from_be_bytes_i128 : Array Std.U8 16#usize → Result Std.I128 :=
-  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_le_bytes_i128"]
 def rust_primitives.arithmetic.from_le_bytes_i128 : Array Std.U8 16#usize → Result Std.I128 :=
-  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
+  fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp [Array.length_eq]) ⟩
 
 @[rust_fun "rust_primitives::arithmetic::from_be_bytes_isize"]
 def rust_primitives.arithmetic.from_be_bytes_isize : Array Std.U8 8#usize → Result Std.Isize :=

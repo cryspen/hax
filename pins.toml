@@ -7,9 +7,9 @@
 
 [aeneas]
 # Release tag (the release must carry assets named aeneas-<platform>.tar.gz).
-tag = "nightly-2026.08.04-8125bcf"
+tag = "build-48f6fb4"
 # Short commit SHA that `aeneas -version` must report.
-commit = "8125bcf"
+commit = "48f6fb4"
 # Source repository URL. install-aeneas.sh rejects any value other than:
 #   - https://github.com/AeneasVerif/aeneas  (upstream)
 #   - https://github.com/cryspen/aeneas      (fork)
@@ -26,7 +26,7 @@ version = "0.1.225"
 
 [lean]
 # Lean toolchain written into the `lean-toolchain` of projects
-toolchain = "leanprover/lean4:v4.31.0"
+toolchain = "leanprover/lean4:v4.33.0-rc2"
 
 [hax-lean-lib]
 # Hax library emitted as the `require Hax` of generated lakefiles
