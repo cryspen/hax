@@ -194,7 +194,8 @@ pub struct LeanOptions {
     /// Generate a `lakefile.toml` and `lean-toolchain` in the
     /// `proofs/lean/` directory, with a dependency on the Aeneas
     /// Lean library. Existing files are not overwritten, so it is safe
-    /// to re-run with this flag after editing the lakefile.
+    /// to re-run with this flag after editing the lakefile; pins that
+    /// differ from the resolved versions are warned about instead.
     #[arg(long)]
     pub lakefile: bool,
 

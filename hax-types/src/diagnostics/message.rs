@@ -231,6 +231,16 @@ pub enum HaxMessage {
     ToolsInstalled {
         installed: Vec<InstalledTool>,
     } = 23,
+    /// An existing generated Lean project file pins a version that
+    /// differs from the current resolution.
+    LakefilePinDrift {
+        path: PathBuf,
+        /// What is pinned: a lakefile `[[require]]` name, or `lean` for
+        /// the toolchain file.
+        name: String,
+        found: String,
+        expected: String,
+    } = 24,
 }
 
 impl HaxMessage {
@@ -250,6 +260,15 @@ impl HaxMessage {
 const ENGINE_BINARY_NAME: &str = "hax-engine";
 
 use annotate_snippets::{Level, Renderer};
+
+/// Make a path relative to the current directory for display, if possible.
+fn relative_to_cwd(path: PathBuf) -> PathBuf {
+    std::env::current_dir()
+        .ok()
+        .and_then(|current_dir| path.strip_prefix(current_dir).ok())
+        .map(|relative| PathBuf::from(".").join(relative))
+        .unwrap_or(path)
+}
 
 impl HaxMessage {
     pub fn report(self, message_format: MessageFormat, rctx: Option<&mut ReportCtx>) {
@@ -313,13 +332,8 @@ impl HaxMessage {
                 }
                 format!("{}", renderer.render(Level::Error.title(&message)))
             }
-            Self::ProducedFile { mut path, wrote } => {
-                // Make path relative if possible
-                if let Ok(current_dir) = std::env::current_dir() {
-                    if let Ok(relative) = path.strip_prefix(current_dir) {
-                        path = PathBuf::from(".").join(relative).to_path_buf();
-                    }
-                }
+            Self::ProducedFile { path, wrote } => {
+                let path = relative_to_cwd(path);
                 let title = if wrote {
                     format!("hax: wrote file {}", path.display())
                 } else {
@@ -464,6 +478,27 @@ impl HaxMessage {
                 let title =
                     format!("hax: using {tool} {used}; this hax release was tested with {tested}");
                 format!("{}", renderer.render(Level::Info.title(&title)))
+            }
+            Self::LakefilePinDrift {
+                path,
+                name,
+                found,
+                expected,
+            } => {
+                let path = relative_to_cwd(path);
+                let title = format!(
+                    "hax: {} pins {name} {found}; the current configuration expects {expected}",
+                    path.display()
+                );
+                let remedy = "update the pin, or delete the file and re-run with --lakefile to regenerate it";
+                format!(
+                    "{}",
+                    renderer.render(
+                        Level::Warning
+                            .title(&title)
+                            .footer(Level::Help.title(remedy))
+                    )
+                )
             }
             Self::UnverifiedInstall { tool, version, url } => {
                 let title = format!(
