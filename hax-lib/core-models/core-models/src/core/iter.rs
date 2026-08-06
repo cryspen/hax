@@ -1209,9 +1209,11 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn test_step_by_zero_panics() {
-        let _ = VecIter::new(vec![1u8, 2, 3]).step_by(0);
+        crate::testing::panics_like_core(
+            || VecIter::new(vec![1u8, 2, 3]).step_by(0),
+            || [1u8, 2, 3].iter().step_by(0),
+        );
     }
 
     macro_rules! step_tests {

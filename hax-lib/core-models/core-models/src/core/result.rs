@@ -641,4 +641,36 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn test_unwrap_on_err_panics() {
+        crate::testing::panics_like_core(
+            || super::Result::<u8, u8>::Err(1).unwrap(),
+            || Err::<u8, u8>(1).unwrap(),
+        );
+    }
+
+    #[test]
+    fn test_expect_on_err_panics() {
+        crate::testing::panics_like_core(
+            || super::Result::<u8, u8>::Err(1).expect("boom"),
+            || Err::<u8, u8>(1).expect("boom"),
+        );
+    }
+
+    #[test]
+    fn test_unwrap_err_on_ok_panics() {
+        crate::testing::panics_like_core(
+            || super::Result::<u8, u8>::Ok(1).unwrap_err(),
+            || Ok::<u8, u8>(1).unwrap_err(),
+        );
+    }
+
+    #[test]
+    fn test_expect_err_on_ok_panics() {
+        crate::testing::panics_like_core(
+            || super::Result::<u8, u8>::Ok(1).expect_err("boom"),
+            || Ok::<u8, u8>(1).expect_err("boom"),
+        );
+    }
 }

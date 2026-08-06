@@ -84,3 +84,17 @@ impl<A: Inject, B: Inject> Inject for (A, B) {
         (self.0.inject(), self.1.inject())
     }
 }
+
+/// Asserts the model and real `core` both panic on the same input. `should_panic`
+/// alone only shows the model panics; the second arm checks that is what Rust does.
+#[track_caller]
+pub fn panics_like_core<A, B>(model: impl FnOnce() -> A, core: impl FnOnce() -> B) {
+    use std::panic::{AssertUnwindSafe, catch_unwind};
+    let m = catch_unwind(AssertUnwindSafe(model));
+    let c = catch_unwind(AssertUnwindSafe(core));
+    assert!(m.is_err(), "the model did not panic");
+    assert!(
+        c.is_err(),
+        "real `core` did not panic, so the model must not either"
+    );
+}

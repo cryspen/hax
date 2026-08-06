@@ -212,3 +212,38 @@ proptest! {
         prop_assert_eq!(collected.as_slice(), v.as_slice());
     }
 }
+
+// ----- panics ----------------------------------------------------------------
+
+fn vec_of(n: usize) -> (super::Vec<u8>, Vec<u8>) {
+    let real: Vec<u8> = (0..n as u8).collect();
+    (real.inject(), real)
+}
+
+#[test]
+fn test_insert_past_end_panics() {
+    let (mut model, mut real) = vec_of(3);
+    let i = std::hint::black_box(4usize);
+    crate::testing::panics_like_core(|| model.insert(i, 9), || real.insert(i, 9));
+}
+
+#[test]
+fn test_split_off_past_end_panics() {
+    let (mut model, mut real) = vec_of(3);
+    let at = std::hint::black_box(4usize);
+    crate::testing::panics_like_core(|| model.split_off(at), || real.split_off(at));
+}
+
+#[test]
+fn test_index_out_of_bounds_panics() {
+    let (model, real) = vec_of(3);
+    let i = std::hint::black_box(3usize);
+    crate::testing::panics_like_core(|| model[i], || real[i]);
+}
+
+#[test]
+fn test_remove_past_end_panics() {
+    let (mut model, mut real) = vec_of(3);
+    let i = std::hint::black_box(3usize);
+    crate::testing::panics_like_core(|| model.remove(i), || real.remove(i));
+}
