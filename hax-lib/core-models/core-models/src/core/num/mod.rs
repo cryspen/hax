@@ -799,11 +799,12 @@ mod tests {
                             prop_assert_eq!(super::$t::overflowing_mul(x.inject(), y.inject()), x.overflowing_mul(y));
                         }
 
+                        // `checked_rem_euclid`, not `y != 0`: signed `MIN % -1`
+                        // overflows too, and both sides panic on it.
                         #[test]
                         fn [<test_ $t _rem_euclid>](x in any::<$t>(), y in any::<$t>()) {
-                            if y != 0 {
-                                prop_assert_eq!(super::$t::rem_euclid(x.inject(), y.inject()), x.rem_euclid(y));
-                            }
+                            prop_assume!(x.checked_rem_euclid(y).is_some());
+                            prop_assert_eq!(super::$t::rem_euclid(x.inject(), y.inject()), x.rem_euclid(y));
                         }
 
                         #[test]
@@ -1024,6 +1025,42 @@ mod tests {
             }
         }
     }
+
+    macro_rules! rem_euclid_panic_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $t _rem_euclid_by_zero_panics>]() {
+                        let (x, y) = (std::hint::black_box(7 as $t), std::hint::black_box(0 as $t));
+                        crate::testing::panics_like_core(
+                            || super::$t::rem_euclid(x.inject(), y.inject()),
+                            || x.rem_euclid(y),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    rem_euclid_panic_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+
+    macro_rules! rem_euclid_overflow_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $t _rem_euclid_min_by_neg_one_panics>]() {
+                        let (x, y) = (std::hint::black_box(<$t>::MIN), std::hint::black_box(-1 as $t));
+                        crate::testing::panics_like_core(
+                            || super::$t::rem_euclid(x.inject(), y.inject()),
+                            || x.rem_euclid(y),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    rem_euclid_overflow_test! { i8 i16 i32 i64 i128 isize }
 
     int_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
     unchecked_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }

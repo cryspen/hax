@@ -1160,20 +1160,75 @@ mod tests {
     }
 
     #[test]
-    #[should_panic]
     fn test_chunks_zero_panics() {
-        let _ = Slice::chunks(&[1u8, 2, 3][..], 0);
+        crate::testing::panics_like_core(
+            || Slice::chunks(&[1u8, 2, 3][..], 0),
+            || [1u8, 2, 3].chunks(0),
+        );
     }
 
     #[test]
-    #[should_panic]
     fn test_chunks_exact_zero_panics() {
-        let _ = Slice::chunks_exact(&[1u8, 2, 3][..], 0);
+        crate::testing::panics_like_core(
+            || Slice::chunks_exact(&[1u8, 2, 3][..], 0),
+            || [1u8, 2, 3].chunks_exact(0),
+        );
     }
 
     #[test]
-    #[should_panic]
     fn test_windows_zero_panics() {
-        let _ = Slice::windows(&[1u8, 2, 3][..], 0);
+        crate::testing::panics_like_core(
+            || Slice::windows(&[1u8, 2, 3][..], 0),
+            || [1u8, 2, 3].windows(0),
+        );
+    }
+
+    #[test]
+    fn test_split_at_past_end_panics() {
+        crate::testing::panics_like_core(
+            || Slice::split_at(&[1u8, 2, 3][..], 4),
+            || [1u8, 2, 3].split_at(4),
+        );
+    }
+
+    #[test]
+    fn test_swap_out_of_bounds_panics() {
+        crate::testing::panics_like_core(
+            || Slice::swap(&mut [1u8, 2, 3][..], 0, 3),
+            || [1u8, 2, 3].swap(0, 3),
+        );
+    }
+
+    #[test]
+    fn test_copy_from_slice_length_mismatch_panics() {
+        crate::testing::panics_like_core(
+            || Slice::copy_from_slice(&mut [0u8; 3][..], &[1u8, 2][..]),
+            || [0u8; 3].copy_from_slice(&[1u8, 2][..]),
+        );
+    }
+
+    #[test]
+    fn test_clone_from_slice_length_mismatch_panics() {
+        crate::testing::panics_like_core(
+            || Slice::clone_from_slice(&mut [0u8; 3][..], &[1u8, 2][..]),
+            || [0u8; 3].clone_from_slice(&[1u8, 2][..]),
+        );
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_index_out_of_bounds_panics() {
+        // `black_box` the index: a literal one is a compile-time error, not a panic.
+        let (model, real): (&[u8], [u8; 3]) = (&[1u8, 2, 3], [1u8, 2, 3]);
+        let i = std::hint::black_box(3usize);
+        crate::testing::panics_like_core(|| model[i], || real[i]);
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_index_range_past_end_panics() {
+        let (model, real): (&[u8], [u8; 3]) = (&[1u8, 2, 3], [1u8, 2, 3]);
+        let end = std::hint::black_box(4usize);
+        crate::testing::panics_like_core(|| &model[1..end], || &real[1..end]);
     }
 }

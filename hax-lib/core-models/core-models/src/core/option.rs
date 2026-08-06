@@ -476,4 +476,20 @@ mod tests {
         let std_default: Option<u8> = Default::default();
         assert_eq!(model, std_default.inject());
     }
+
+    #[test]
+    fn test_unwrap_on_none_panics() {
+        crate::testing::panics_like_core(
+            || super::Option::<u8>::None.unwrap(),
+            || Option::<u8>::None.unwrap(),
+        );
+    }
+
+    #[test]
+    fn test_expect_on_none_panics() {
+        crate::testing::panics_like_core(
+            || super::Option::<u8>::None.expect("boom"),
+            || Option::<u8>::None.expect("boom"),
+        );
+    }
 }
