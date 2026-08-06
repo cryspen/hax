@@ -364,7 +364,8 @@ macro_rules! iint_impl {
                 x * y
             }
             /// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
-            #[hax_lib::requires(y != 0)]
+            // `MIN % -1` overflows, like `MIN / -1`.
+            #[hax_lib::requires(y != 0 && !(x == <$Name>::MIN && y == -1))]
             pub fn rem_euclid(x: $Self, y: $Self) -> $Self {
                 paste! { [<rem_euclid_ $Name>](x, y) }
             }
