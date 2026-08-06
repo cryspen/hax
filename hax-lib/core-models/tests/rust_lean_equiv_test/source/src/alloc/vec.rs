@@ -363,6 +363,19 @@ pub fn test_vec_push_pop() -> bool {
 // These exercise the extracted `eq_loop` / `clone_loop` / `IntoIter::next`.
 
 #[rust_lean_test]
+pub fn test_vec_eq_short_circuits() -> bool {
+    // `Bumped::eq` panics on `u8::MAX`. std stops at the first mismatch, so the
+    // second pair is never compared; a non-short-circuiting model would panic.
+    let mut a: Vec<Bumped> = Vec::new();
+    a.push(Bumped(1));
+    a.push(Bumped(255));
+    let mut b: Vec<Bumped> = Vec::new();
+    b.push(Bumped(2));
+    b.push(Bumped(255));
+    (a == b) == false
+}
+
+#[rust_lean_test]
 pub fn test_vec_eq_same() -> bool {
     let mut a: Vec<u8> = Vec::new();
     a.push(1u8);
