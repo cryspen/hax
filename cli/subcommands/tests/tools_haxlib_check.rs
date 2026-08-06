@@ -3,7 +3,7 @@
 //! chosen per test, and the real binary is run against them.
 //!
 //! The test binary shares `CARGO_PKG_VERSION` with `cargo-hax`, so the
-//! binary's own version (the upper bound of the accepted range) is
+//! binary's own version (the one `hax-lib` version it accepts) is
 //! available as `env!("CARGO_PKG_VERSION")`.
 
 use std::os::unix::fs::PermissionsExt;
@@ -110,6 +110,29 @@ fn too_old_hax_lib_aborts_before_processing() {
     );
     assert!(output.contains("found hax-lib 0.2.0"), "{output}");
     assert!(output.contains("crate `app`"), "{output}");
+    assert!(
+        output.contains("update the `hax-lib` dependency"),
+        "{output}"
+    );
+}
+
+#[test]
+fn older_same_series_hax_lib_is_rejected() {
+    let own = semver_parts(OWN_VERSION);
+    let older = if own.2 > 0 {
+        format!("{}.{}.{}", own.0, own.1, own.2 - 1)
+    } else if own.1 > 0 {
+        format!("{}.{}.0", own.0, own.1 - 1)
+    } else {
+        format!("{}.0.0", own.0 - 1)
+    };
+    let project = fixture(&older, true);
+    let (output, success) = run(&["json"], project.path());
+    assert!(!success);
+    assert!(
+        output.contains(&format!("found hax-lib {older}")),
+        "{output}"
+    );
     assert!(
         output.contains("update the `hax-lib` dependency"),
         "{output}"

@@ -1,14 +1,10 @@
 //! The `hax-lib` compatibility check.
 //!
 //! `cargo-hax` and `hax-lib` are released in lockstep with one version
-//! number. The range of `hax-lib` versions a binary accepts is derived
-//! from its own version, not maintained by hand: the binary's own minor
-//! series, capped at its own patch level (`>=0.3.0, <=0.3.7` for a 0.3.7
-//! binary); after 1.0, the same construction one level up (`>=1.0.0,
-//! <=1.2.3` for 1.2.3). This is exactly the set of versions the binary
-//! can be sure to understand: older same-series releases emit nothing the
-//! newer binary does not know, and anything newer than the binary is
-//! rejected in favor of updating `cargo-hax`.
+//! number, and that lockstep pair is the only combination that is tested.
+//! The check is therefore strict: a binary accepts exactly the `hax-lib`
+//! of its own version. This makes every `cargo-hax` release obligated to
+//! ship a matching `hax-lib`, even for binary-only fixes.
 //!
 //! Only *direct* dependencies are checked, per processed crate; with no
 //! direct dependency the check is skipped. The check gates only
@@ -30,46 +26,29 @@ fn release(version: &Version) -> Version {
     Version::new(version.major, version.minor, version.patch)
 }
 
-/// The inclusive range of `hax-lib` versions this binary accepts,
-/// derived from its own version.
-pub fn supported_range() -> (Version, Version) {
-    range_of(
+/// The one `hax-lib` version this binary accepts: its own release version.
+pub fn expected_version() -> Version {
+    release(
         &Version::parse(env!("CARGO_PKG_VERSION"))
             .expect("CARGO_PKG_VERSION is always valid semver"),
     )
 }
 
-/// [`supported_range`] over an explicit version, so the construction can be
-/// checked for versions this binary does not have.
-///
-/// The range is built from `own`'s release version. Taking `own` itself as
-/// the cap would make the range empty for a pre-release: `0.4.0-rc.1` ranks
-/// below `0.4.0`, so `>=0.4.0, <=0.4.0-rc.1` would admit nothing at all.
-fn range_of(own: &Version) -> (Version, Version) {
-    let own = release(own);
-    let min = if own.major == 0 {
-        Version::new(0, own.minor, 0)
-    } else {
-        Version::new(own.major, 0, 0)
-    };
-    (min, own)
-}
-
-/// How a resolved `hax-lib` version relates to the supported range. Shared
+/// How a resolved `hax-lib` version relates to the expected one. Shared
 /// with the messages reporting it.
 pub use hax_types::diagnostics::message::HaxLibCompatibility as Compatibility;
 
 pub fn classify(found: &Version) -> Compatibility {
-    classify_in(&supported_range(), found)
+    classify_against(&expected_version(), found)
 }
 
-/// [`classify`] against an explicit range, so a range this binary does not
-/// have can be checked.
-fn classify_in((min, max): &(Version, Version), found: &Version) -> Compatibility {
+/// [`classify`] against an explicit expected version, so versions this
+/// binary does not have can be checked.
+fn classify_against(expected: &Version, found: &Version) -> Compatibility {
     let found = release(found);
-    if found < *min {
+    if found < *expected {
         Compatibility::TooOld
-    } else if found > *max {
+    } else if found > *expected {
         Compatibility::TooNew
     } else {
         Compatibility::Compatible
@@ -131,7 +110,7 @@ pub fn enforce(project: &ProjectContext, message_format: MessageFormat) -> bool 
     } else {
         all
     };
-    let (min, max) = supported_range();
+    let expected = expected_version();
     let mut incompatible = false;
     for result in results {
         if result.compatibility == Compatibility::Compatible {
@@ -142,8 +121,7 @@ pub fn enforce(project: &ProjectContext, message_format: MessageFormat) -> bool 
             crate_name: result.crate_name,
             found: result.found,
             binary: env!("CARGO_PKG_VERSION").to_string(),
-            min: min.to_string(),
-            max: max.to_string(),
+            expected: expected.to_string(),
             newer: result.compatibility == Compatibility::TooNew,
         }
         .report(message_format, None);
@@ -156,25 +134,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn range_is_own_series_capped_at_own_version() {
-        // This binary is pre-1.0, so the range is its own minor series.
-        let own = Version::parse(env!("CARGO_PKG_VERSION")).unwrap();
-        let (min, max) = supported_range();
-        assert_eq!(min, Version::new(0, own.minor, 0));
-        assert_eq!(max, own);
-    }
-
-    #[test]
     fn classification_directions() {
         let own = Version::parse(env!("CARGO_PKG_VERSION")).unwrap();
-        // The binary's own version and the series floor are compatible.
+        // Only the binary's own version is compatible.
         assert_eq!(classify(&own), Compatibility::Compatible);
-        assert_eq!(
-            classify(&Version::new(0, own.minor, 0)),
-            Compatibility::Compatible
-        );
-        // A newer patch is rejected as TooNew: the cap moves with the
-        // binary, not the series.
         assert_eq!(
             classify(&Version::new(own.major, own.minor, own.patch + 1)),
             Compatibility::TooNew
@@ -183,38 +146,40 @@ mod tests {
             classify(&Version::new(own.major, own.minor + 1, 0)),
             Compatibility::TooNew
         );
-        // An older series is TooOld.
+        if own.patch > 0 {
+            assert_eq!(
+                classify(&Version::new(own.major, own.minor, own.patch - 1)),
+                Compatibility::TooOld
+            );
+        }
         assert_eq!(classify(&Version::new(0, 2, 0)), Compatibility::TooOld);
     }
 
-    /// A pre-release binary accepts the same range as its release, and the
-    /// `hax-lib` released alongside it.
+    /// A pre-release binary accepts the release it precedes and the
+    /// lockstep `hax-lib` carrying the same pre-release.
     #[test]
     fn a_pre_release_is_treated_as_its_release() {
         for own in ["0.4.0-rc.1", "1.2.3-rc.1+build.5"] {
             let own = Version::parse(own).unwrap();
-            let range = range_of(&own);
-            let (min, max) = &range;
-            assert_eq!(*max, release(&own), "{own}");
-            assert!(min <= max, "{own}: empty range {min}..={max}");
-            // The lockstep `hax-lib` carries the same pre-release.
+            let expected = release(&own);
             assert_eq!(
-                classify_in(&range, &own),
+                classify_against(&expected, &own),
                 Compatibility::Compatible,
                 "{own}"
             );
-            // And the release it precedes, being the cap, is accepted too.
-            assert_eq!(classify_in(&range, max), Compatibility::Compatible, "{own}");
+            assert_eq!(
+                classify_against(&expected, &expected),
+                Compatibility::Compatible,
+                "{own}"
+            );
         }
     }
 
-    /// The range this binary reports never carries a pre-release, whatever
-    /// its own version is, so the reported bounds read as versions to pin.
+    /// The version this binary reports never carries a pre-release,
+    /// whatever its own version is, so it reads as a version to pin.
     #[test]
-    fn the_reported_range_is_release_versions() {
-        let (min, max) = supported_range();
-        assert!(min.pre.is_empty() && min.build.is_empty());
-        assert!(max.pre.is_empty() && max.build.is_empty());
-        assert!(min <= max);
+    fn the_expected_version_is_a_release_version() {
+        let expected = expected_version();
+        assert!(expected.pre.is_empty() && expected.build.is_empty());
     }
 }

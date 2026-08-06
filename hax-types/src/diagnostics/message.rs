@@ -38,8 +38,8 @@ impl ToolResolution {
 #[derive(Debug, Clone, Copy, JsonSchema, Hash, Eq, PartialEq)]
 pub enum HaxLibCompatibility {
     Compatible,
-    /// Too old or on a different series: the project's dependency needs
-    /// updating (or an older cargo-hax is needed).
+    /// Older than the binary: the project's dependency needs updating
+    /// (or an older cargo-hax is needed).
     TooOld,
     /// Newer than the binary (typically after a `cargo update`): update
     /// cargo-hax, or pin `hax-lib` back to the binary's version.
@@ -200,8 +200,7 @@ pub enum HaxMessage {
         crate_name: String,
         found: String,
         binary: String,
-        min: String,
-        max: String,
+        expected: String,
         newer: bool,
     } = 19,
     CachedUnverifiedToolInUse {
@@ -451,24 +450,23 @@ impl HaxMessage {
                 crate_name,
                 found,
                 binary,
-                min,
-                max,
+                expected,
                 newer,
             } => {
                 let remedy = if newer {
                     format!(
                         "update cargo-hax to the release matching hax-lib {found}, or pin\n\
-                         the `hax-lib` dependency to {max} in Cargo.toml"
+                         the `hax-lib` dependency to {expected} in Cargo.toml"
                     )
                 } else {
                     format!(
-                        "update the `hax-lib` dependency in Cargo.toml, or install a\n\
-                         version of cargo-hax compatible with hax-lib {found}"
+                        "update the `hax-lib` dependency to {expected}, e.g. with\n\
+                         `cargo update -p hax-lib --precise {expected}`, or install cargo-hax {found}"
                     )
                 };
                 let title = format!(
                     "incompatible `hax-lib` version\n\n\
-                     this cargo-hax binary ({binary}) requires hax-lib >={min}, <={max}\n\
+                     this cargo-hax binary ({binary}) requires hax-lib {expected}\n\
                      found hax-lib {found} in Cargo.lock (crate `{crate_name}`)\n\n\
                      {remedy}"
                 );
