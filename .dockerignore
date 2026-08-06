@@ -1,5 +1,10 @@
 .git
-.gitignore
 **/target
 **/_build
 debug
+
+# The devcontainer's own files are not inputs to the hax build. Excluding them
+# keeps /hax-sources identical to upstream, so hax substitutes from the Cachix
+# cache instead of rebuilding from source.
+.devcontainer
+.github/workflows/publish-docker-ghcr.yml

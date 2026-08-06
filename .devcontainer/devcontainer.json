@@ -1,0 +1,33 @@
+{
+  "name": "hax",
+  // Batteries-included image published by
+  // `.github/workflows/publish-docker-ghcr.yml` (built from
+  // `.devcontainer/Dockerfile`). It contains hax plus every downstream prover:
+  // F*, ProVerif, aeneas/charon, and a Lean toolchain with a warmed mathlib
+  // cache — so all backends extract AND check on launch, no from-source build.
+  //
+  // To try against a local checkout instead of the published image, comment
+  // out `image` and uncomment the `build` block below (first launch is slow:
+  // it builds F*/mathlib etc.).
+  // Build the image from the Dockerfile. This needs no published image, so it
+  // works on a personal fork's Codespace (built on first launch, or ahead of
+  // time via Codespaces Prebuilds). Works with Docker (Codespaces) and Podman.
+  "build": { "dockerfile": "Dockerfile", "context": ".." },
+  // Faster alternative once CI publishes the image: pull instead of build:
+  // "image": "ghcr.io/cryspen/hax-codespaces:latest",
+  // Local Podman demo only: "image": "localhost/hax-codespaces:local" plus
+  //   "runArgs": ["--userns=keep-id"]  (Podman-rootless; NOT valid on Docker).
+  "remoteUser": "root",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "FStarLang.fstar-vscode-assistant",
+        "leanprover.lean4"
+      ]
+    }
+  },
+  // Confirm the toolchain is wired up on attach.
+  "postAttachCommand": "cargo-hax --version && fstar.exe --version && aeneas -version && charon version && lake --version",
+  "postCreateCommand": "echo 'hax is ready. Try: cd examples/chacha20 && cargo hax into fstar   (or: cd examples/lean_tutorial && cargo hax into lean)'"
+}

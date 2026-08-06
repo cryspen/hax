@@ -1,0 +1,133 @@
+name: Publish Docker images to GHCR
+
+# Builds and pushes two images to the GitHub Container Registry:
+#
+#   ghcr.io/cryspen/hax             - base image, from `.docker/Dockerfile`
+#                                     (hax tool only; also used by plain Docker)
+#   ghcr.io/cryspen/hax-codespaces  - batteries-included, from
+#                                     `.devcontainer/Dockerfile` (adds F*,
+#                                     ProVerif, aeneas/charon, Lean + mathlib).
+#
+# The codespaces image (referenced by `.devcontainer/devcontainer.json`) is
+# built FROM the freshly pushed base image, pinned by commit SHA.
+#
+# One-time org setup after the first successful run: mark both packages public
+# under https://github.com/orgs/cryspen/packages so anonymous users can pull.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".docker/Dockerfile"
+      - ".devcontainer/**"
+      - "flake.nix"
+      - "flake.lock"
+      - "pins.toml"
+      - "install-aeneas.sh"
+      - ".github/workflows/publish-docker-ghcr.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-docker-ghcr-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BASE_IMAGE: ghcr.io/${{ github.repository }}
+  CS_IMAGE: ghcr.io/${{ github.repository }}-codespaces
+
+jobs:
+  base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.BASE_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=long
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Independent of the base image: the devcontainer is Debian-based (glibc) so
+  # that prebuilt FHS binaries (charon, Lean/lake) run natively, with Nix on top
+  # providing hax/F*/ProVerif.
+  codespaces:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.CS_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,format=long
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .devcontainer/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  # End-to-end smoke test: every backend must extract (and, for Lean, build).
+  # This is the real validator for the Dockerfiles.
+  smoke-test:
+    needs: codespaces
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: All toolchains are present
+        run: |
+          docker run --rm "${CS_IMAGE}:sha-${{ github.sha }}" bash -lc '
+            set -euxo pipefail
+            cargo-hax --version
+            fstar.exe --version
+            aeneas -version
+            charon version
+            lean --version
+            lake --version'
+      - name: F* extraction works
+        run: |
+          docker run --rm "${CS_IMAGE}:sha-${{ github.sha }}" bash -lc '
+            set -euxo pipefail
+            cd /hax-sources/examples/chacha20 && cargo hax into fstar'
+      - name: Lean backend extracts and builds (mathlib cache warm)
+        run: |
+          docker run --rm "${CS_IMAGE}:sha-${{ github.sha }}" bash -lc '
+            set -euxo pipefail
+            cd /hax-sources/examples/lean_tutorial
+            cargo hax into lean
+            cd proofs/lean && lake build'
