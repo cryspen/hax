@@ -9,6 +9,8 @@
 
 #![allow(dead_code)]
 
+pub mod hax_lib;
+
 // ----- Option ---------------------------------------------------------------
 
 pub fn option_unwrap(x: Option<u8>) -> u8 {
