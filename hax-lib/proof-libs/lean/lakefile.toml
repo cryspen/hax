@@ -10,4 +10,4 @@ name = "CoreModels"
 [[require]]
 name = "aeneas"
 git = { url = "https://github.com/cryspen/aeneas", subDir = "backends/lean" }
-rev = "e0961db9913599d3cf287b80c2efa3c706ee08fc"
+rev = "48f6fb4b57e13b95bd45899501239a7167dd8b02"

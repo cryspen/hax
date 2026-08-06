@@ -22,11 +22,11 @@ theorem Result.deterministic (f : Result α) [Inhabited α]:
 noncomputable def Result.toPure (f : Result α) [Inhabited α] : α :=
   f.deterministic.choose
 
-noncomputable def Result.toPure_spec_mayThrow (f : Result α) [Inhabited α] :
+theorem Result.toPure_spec_mayThrow (f : Result α) [Inhabited α] :
     ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓?r =>  ⌜ r = f.toPure ⌝ ⦄ :=
   f.deterministic.choose_spec
 
-noncomputable def Result.toPure_spec (f : Result α) [Inhabited α]
+theorem Result.toPure_spec (f : Result α) [Inhabited α]
     (h : ⦃ P ⦄ f ⦃ Q ⦄) :
     ⦃ P ⦄ f ⦃ (fun r =>  ⌜ r = f.toPure ⌝, Q.2) ⦄ := by
   have := h.and f (toPure_spec_mayThrow f)
