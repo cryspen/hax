@@ -70,15 +70,9 @@ jobs:
         env:
           RUSTFLAGS: "--cfg hax_backend_fstar"
 
-      # `tests/` is its own workspace (members: client_test,
-      # rust_lean_equiv_test/{source,macro}) — the root `cargo test
-      # --workspace` doesn't reach it. The `cargo test --lib` here runs
-      # the Rust half of every `#[rust_lean_test]` (the Lean half runs
-      # in the lean-build job below).
-      - run: cargo test --workspace --lib
-        working-directory: hax-lib/core-models/tests
-        env:
-          RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
+      # NOTE: the `tests/` workspace (client_test + rust_lean_equiv_test)
+      # has already been refactored to use `cargo hax into lean`. That is
+      # why it is part of the `core-models-tests` job below.
 
   # ----------------------------------------------------------- lean extraction
   lean-build:
@@ -204,10 +198,13 @@ jobs:
       # repo cache cap can't evict the one cache that actually matters.
 
       # ---- The actual pipeline ------------------------------------------
-      - name: Extract Lean library, build Lean library, run regression tests
+      # Only the core-models library extraction + build. The `tests/`
+      # crates run in the `core-models-tests` job below (it has already
+      # been refactored to use `cargo hax into lean`).
+      - name: Extract Lean library, build Lean library
         run: |
           unset CI # Allows us to use Aeneas's olean cache
-          make CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas lean tests
+          make CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas lean
 
       # The `Tests` lean_lib is deliberately excluded from `defaultTargets`
       # (library consumers should not pay for it), so the `lake build` above
@@ -266,3 +263,26 @@ jobs:
 
       - name: F* library type-checks
         run: nix develop .#fstar --command make -C hax-lib/proof-libs/fstar/core
+
+  core-models-tests:
+    name: core-models-tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Free disk space by removing preinstalled packages
+      uses: jlumbroso/free-disk-space@main
+    - uses: DeterminateSystems/nix-installer-action@main
+    - uses: cachix/cachix-action@v15
+      with:
+        name: hax
+        skipPush: true
+        extraPullNames: fstar-nix-versions, z3-nix-versions
+
+    - name: Build & run the core-models tests
+      run: |
+        unset CI # Allows us to use Aeneas's olean cache
+        nix develop .#ci-examples --command make -C hax-lib/core-models/tests clean
+        nix develop .#ci-examples --command make -C hax-lib/core-models/tests

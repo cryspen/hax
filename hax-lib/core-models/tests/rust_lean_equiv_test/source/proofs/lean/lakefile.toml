@@ -13,5 +13,5 @@ leanOptions = [
 name = "RustLeanTests"
 
 [[require]]
-name = "CoreModels"
-path = "../../../../proof-libs/lean"
+name = "Hax"
+path = "../../../../../../proof-libs/lean"

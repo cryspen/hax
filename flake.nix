@@ -235,6 +235,8 @@
               pkgs.jq
               pkgs.just
               pkgs.elan
+              # `rust_lean_equiv_test`'s `gen_lean_tests.py` runs inside this shell.
+              pkgs.python3
             ];
           };
           default = pkgs.mkShell {
