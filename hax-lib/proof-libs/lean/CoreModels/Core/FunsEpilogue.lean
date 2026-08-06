@@ -23,23 +23,10 @@ type-checks. -/
 
 namespace iter.range
 
-/-- The `Iterator::next` implementation for `core::ops::range::Range<A>`,
-    parameterised over the `Step` dictionary. -/
-def IteratorRange.next {A : Type} (StepInst : Step A) :
-    ops.range.Range A → Aeneas.Std.Result ((Option A) × ops.range.Range A) := fun range => do
-  let cmp ← StepInst.corecmpPartialOrdInst.partial_cmp range.start range.«end»
-  let isLess : Bool := match cmp with
-    | Option.some o => match o with
-                       | core.cmp.Ordering.Less => true
-                       | _ => false
-    | _ => false
-  if isLess then
-    let cur ← StepInst.cloneCloneInst.clone range.start
-    let next? ← StepInst.forward_checked cur 1#usize
-    match next? with
-    | Option.none      => .fail .panic
-    | Option.some next => .ok (Option.some cur, { range with start := next })
-  else .ok (Option.none, range)
+/-- The `Iterator::next` implementation for `core::ops::range::Range<A>`.
+    Downstream extractions reference it under this name; the definition itself is
+    in `FunsPrologue.lean`, which `Funs.lean` already needs before it. -/
+abbrev IteratorRange.next := @_root_.CoreModels.core.IteratorRange.next
 
 end iter.range
 
