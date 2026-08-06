@@ -823,14 +823,14 @@ structure slice.iter.ChunksExact (T : Type) where
 def slice.iter.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::slice::iter::Windows]
-    Source: 'core-models/src/core/slice.rs', lines 80:4-83:5
+    Source: 'core-models/src/core/slice.rs', lines 77:4-80:5
     Visibility: public -/
 structure slice.iter.Windows (T : Type) where
   size : Std.Usize
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 427:4-447:5
+    Source: 'core-models/src/core/slice.rs', lines 424:4-444:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where

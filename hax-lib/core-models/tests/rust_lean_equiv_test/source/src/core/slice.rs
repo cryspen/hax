@@ -229,9 +229,7 @@ pub fn test_starts_with_true() -> bool {
     a.as_slice().starts_with(needle.as_slice())
 }
 
-#[rust_lean_test(
-    skip_lean = "Aeneas's `Slice.subslice` requires `start < end`, so an empty subslice fails; needs AeneasVerif/aeneas#1238"
-)]
+#[rust_lean_test]
 pub fn test_starts_with_empty_needle() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 0] = [];
@@ -252,9 +250,7 @@ pub fn test_ends_with_true() -> bool {
     a.as_slice().ends_with(needle.as_slice())
 }
 
-#[rust_lean_test(
-    skip_lean = "Aeneas's `Slice.subslice` requires `start < end`, so an empty subslice fails; needs AeneasVerif/aeneas#1238"
-)]
+#[rust_lean_test]
 pub fn test_ends_with_empty_needle() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let needle: [u8; 0] = [];
