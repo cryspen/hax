@@ -423,8 +423,80 @@ def Isize.Insts.CoreCloneClone : clone.Clone Std.Isize := {
   clone := Isize.Insts.CoreCloneClone.clone
 }
 
+/-- [core_models::cmp::PartialOrd::lt]:
+    Source: 'core-models/src/core/cmp.rs', lines 44:4-46:5
+    Visibility: public -/
+@[trait_default]
+def cmp.PartialOrd.lt.default
+  {Self : Type} {Rhs : Type} (PartialOrdInst : cmp.PartialOrd Self Rhs)
+  (self : Self) (other : Rhs) :
+  Result Bool
+  := do
+  let o ← PartialOrdInst.partial_cmp self other
+  match o with
+  | option.Option.Some o1 =>
+    match o1 with
+    | cmp.Ordering.Less => ok true
+    | cmp.Ordering.Equal => ok false
+    | cmp.Ordering.Greater => ok false
+  | option.Option.None => ok false
+
+/-- [core_models::cmp::PartialOrd::le]:
+    Source: 'core-models/src/core/cmp.rs', lines 49:4-54:5
+    Visibility: public -/
+@[trait_default]
+def cmp.PartialOrd.le.default
+  {Self : Type} {Rhs : Type} (PartialOrdInst : cmp.PartialOrd Self Rhs)
+  (self : Self) (other : Rhs) :
+  Result Bool
+  := do
+  let o ← PartialOrdInst.partial_cmp self other
+  match o with
+  | option.Option.Some o1 =>
+    match o1 with
+    | cmp.Ordering.Less => ok true
+    | cmp.Ordering.Equal => ok true
+    | cmp.Ordering.Greater => ok false
+  | option.Option.None => ok false
+
+/-- [core_models::cmp::PartialOrd::gt]:
+    Source: 'core-models/src/core/cmp.rs', lines 57:4-59:5
+    Visibility: public -/
+@[trait_default]
+def cmp.PartialOrd.gt.default
+  {Self : Type} {Rhs : Type} (PartialOrdInst : cmp.PartialOrd Self Rhs)
+  (self : Self) (other : Rhs) :
+  Result Bool
+  := do
+  let o ← PartialOrdInst.partial_cmp self other
+  match o with
+  | option.Option.Some o1 =>
+    match o1 with
+    | cmp.Ordering.Less => ok false
+    | cmp.Ordering.Equal => ok false
+    | cmp.Ordering.Greater => ok true
+  | option.Option.None => ok false
+
+/-- [core_models::cmp::PartialOrd::ge]:
+    Source: 'core-models/src/core/cmp.rs', lines 62:4-67:5
+    Visibility: public -/
+@[trait_default]
+def cmp.PartialOrd.ge.default
+  {Self : Type} {Rhs : Type} (PartialOrdInst : cmp.PartialOrd Self Rhs)
+  (self : Self) (other : Rhs) :
+  Result Bool
+  := do
+  let o ← PartialOrdInst.partial_cmp self other
+  match o with
+  | option.Option.Some o1 =>
+    match o1 with
+    | cmp.Ordering.Less => ok false
+    | cmp.Ordering.Equal => ok true
+    | cmp.Ordering.Greater => ok true
+  | option.Option.None => ok false
+
 /-- [core_models::cmp::{impl core_models::cmp::Neq<T> for T}::neq]:
-    Source: 'core-models/src/core/cmp.rs', lines 48:4-51:5 -/
+    Source: 'core-models/src/core/cmp.rs', lines 78:4-81:5 -/
 def cmp.Neq.Blanket.neq
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : T) (y : T) :
   Result Bool
@@ -433,94 +505,15 @@ def cmp.Neq.Blanket.neq
   ok (b = false)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Neq<T> for T}]
-    Source: 'core-models/src/core/cmp.rs', lines 47:0-52:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 77:0-82:1 -/
 @[reducible]
 def cmp.Neq.Blanket {T : Type} (PartialEqInst : cmp.PartialEq T T) : cmp.Neq T
   T := {
   neq := cmp.Neq.Blanket.neq PartialEqInst
 }
 
-/-- [core_models::cmp::{impl core_models::cmp::PartialOrdDefaults<T> for T}::ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 96:4-104:5 -/
-def cmp.PartialOrdDefaults.Blanket.ge
-  {T : Type} (PartialOrdInst : cmp.PartialOrd T T) (PartialOrdInst1 :
-  cmp.PartialOrd T T) (self : T) (y : T) :
-  Result Bool
-  := do
-  let o ← PartialOrdInst.partial_cmp self y
-  match o with
-  | option.Option.Some o1 =>
-    match o1 with
-    | cmp.Ordering.Less => ok false
-    | cmp.Ordering.Equal => ok true
-    | cmp.Ordering.Greater => ok true
-  | option.Option.None => ok false
-
-/-- [core_models::cmp::{impl core_models::cmp::PartialOrdDefaults<T> for T}::gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 90:4-95:5 -/
-def cmp.PartialOrdDefaults.Blanket.gt
-  {T : Type} (PartialOrdInst : cmp.PartialOrd T T) (PartialOrdInst1 :
-  cmp.PartialOrd T T) (self : T) (y : T) :
-  Result Bool
-  := do
-  let o ← PartialOrdInst.partial_cmp self y
-  match o with
-  | option.Option.Some o1 =>
-    match o1 with
-    | cmp.Ordering.Less => ok false
-    | cmp.Ordering.Equal => ok false
-    | cmp.Ordering.Greater => ok true
-  | option.Option.None => ok false
-
-/-- [core_models::cmp::{impl core_models::cmp::PartialOrdDefaults<T> for T}::le]:
-    Source: 'core-models/src/core/cmp.rs', lines 81:4-89:5 -/
-def cmp.PartialOrdDefaults.Blanket.le
-  {T : Type} (PartialOrdInst : cmp.PartialOrd T T) (PartialOrdInst1 :
-  cmp.PartialOrd T T) (self : T) (y : T) :
-  Result Bool
-  := do
-  let o ← PartialOrdInst.partial_cmp self y
-  match o with
-  | option.Option.Some o1 =>
-    match o1 with
-    | cmp.Ordering.Less => ok true
-    | cmp.Ordering.Equal => ok true
-    | cmp.Ordering.Greater => ok false
-  | option.Option.None => ok false
-
-/-- [core_models::cmp::{impl core_models::cmp::PartialOrdDefaults<T> for T}::lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 75:4-80:5 -/
-def cmp.PartialOrdDefaults.Blanket.lt
-  {T : Type} (PartialOrdInst : cmp.PartialOrd T T) (PartialOrdInst1 :
-  cmp.PartialOrd T T) (self : T) (y : T) :
-  Result Bool
-  := do
-  let o ← PartialOrdInst.partial_cmp self y
-  match o with
-  | option.Option.Some o1 =>
-    match o1 with
-    | cmp.Ordering.Less => ok true
-    | cmp.Ordering.Equal => ok false
-    | cmp.Ordering.Greater => ok false
-  | option.Option.None => ok false
-
-/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrdDefaults<T> for T}]
-    Source: 'core-models/src/core/cmp.rs', lines 74:0-105:1 -/
-@[reducible]
-def cmp.PartialOrdDefaults.Blanket {T : Type} (PartialOrdInst : cmp.PartialOrd
-  T T) : cmp.PartialOrdDefaults T T := {
-  lt := fun (PartialOrdInst1 : cmp.PartialOrd T T) =>
-    cmp.PartialOrdDefaults.Blanket.lt PartialOrdInst PartialOrdInst
-  le := fun (PartialOrdInst1 : cmp.PartialOrd T T) =>
-    cmp.PartialOrdDefaults.Blanket.le PartialOrdInst PartialOrdInst
-  gt := fun (PartialOrdInst1 : cmp.PartialOrd T T) =>
-    cmp.PartialOrdDefaults.Blanket.gt PartialOrdInst PartialOrdInst
-  ge := fun (PartialOrdInst1 : cmp.PartialOrd T T) =>
-    cmp.PartialOrdDefaults.Blanket.ge PartialOrdInst PartialOrdInst
-}
-
 /-- [core_models::cmp::max]:
-    Source: 'core-models/src/core/cmp.rs', lines 116:0-121:1
+    Source: 'core-models/src/core/cmp.rs', lines 152:0-157:1
     Visibility: public -/
 def cmp.max {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : Result T := do
   let o ← OrdInst.cmp v1 v2
@@ -530,7 +523,7 @@ def cmp.max {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : Result T := do
   | cmp.Ordering.Greater => ok v1
 
 /-- [core_models::cmp::min]:
-    Source: 'core-models/src/core/cmp.rs', lines 124:0-129:1
+    Source: 'core-models/src/core/cmp.rs', lines 160:0-165:1
     Visibility: public -/
 def cmp.min {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : Result T := do
   let o ← OrdInst.cmp v1 v2
@@ -540,7 +533,7 @@ def cmp.min {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : Result T := do
   | cmp.Ordering.Greater => ok v2
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 141:4-143:5
+    Source: 'core-models/src/core/cmp.rs', lines 177:4-179:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : cmp.Reverse T)
@@ -550,7 +543,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   PartialEqInst.eq other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 140:0-144:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 176:0-180:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type} (PartialEqInst
   : cmp.PartialEq T T) : cmp.PartialEq (cmp.Reverse T) (cmp.Reverse T) := {
@@ -558,7 +551,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type} (PartialEqInst
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::partial_cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 135:4-137:5
+    Source: 'core-models/src/core/cmp.rs', lines 171:4-173:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   {T : Type} (PartialOrdInst : cmp.PartialOrd T T) (self : cmp.Reverse T)
@@ -568,19 +561,27 @@ def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   PartialOrdInst.partial_cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 134:0-138:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 170:0-174:1 -/
 @[reducible]
-def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type}
+impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type}
   (PartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (cmp.Reverse T)
   (cmp.Reverse T) := {
   PartialEqInst := cmp.Reverse.Insts.CoreCmpPartialEqReverse
     PartialOrdInst.PartialEqInst
   partial_cmp := cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
     PartialOrdInst
+  lt := cmp.PartialOrd.lt.default
+    (cmp.Reverse.Insts.CoreCmpPartialOrdReverse PartialOrdInst)
+  le := cmp.PartialOrd.le.default
+    (cmp.Reverse.Insts.CoreCmpPartialOrdReverse PartialOrdInst)
+  gt := cmp.PartialOrd.gt.default
+    (cmp.Reverse.Insts.CoreCmpPartialOrdReverse PartialOrdInst)
+  ge := cmp.PartialOrd.ge.default
+    (cmp.Reverse.Insts.CoreCmpPartialOrdReverse PartialOrdInst)
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 146:0-146:32 -/
+    Source: 'core-models/src/core/cmp.rs', lines 182:0-182:32 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpEq {T : Type} (EqInst : cmp.Eq T) : cmp.Eq
   (cmp.Reverse T) := {
@@ -589,7 +590,7 @@ def cmp.Reverse.Insts.CoreCmpEq {T : Type} (EqInst : cmp.Eq T) : cmp.Eq
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}::cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 149:4-151:5
+    Source: 'core-models/src/core/cmp.rs', lines 185:4-187:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpOrd.cmp
   {T : Type} (OrdInst : cmp.Ord T) (self : cmp.Reverse T)
@@ -599,7 +600,7 @@ def cmp.Reverse.Insts.CoreCmpOrd.cmp
   OrdInst.cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 148:0-152:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 184:0-188:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
   cmp.Ord (cmp.Reverse T) := {
@@ -610,7 +611,7 @@ def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
 }
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 209:4-211:5
+    Source: 'core-models/src/core/cmp.rs', lines 245:4-247:5
     Visibility: public -/
 def cmp.Ordering.is_eq (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -619,7 +620,7 @@ def cmp.Ordering.is_eq (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 213:4-215:5
+    Source: 'core-models/src/core/cmp.rs', lines 249:4-251:5
     Visibility: public -/
 def cmp.Ordering.is_ne (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -628,7 +629,7 @@ def cmp.Ordering.is_ne (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 217:4-219:5
+    Source: 'core-models/src/core/cmp.rs', lines 253:4-255:5
     Visibility: public -/
 def cmp.Ordering.is_lt (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -637,7 +638,7 @@ def cmp.Ordering.is_lt (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 221:4-223:5
+    Source: 'core-models/src/core/cmp.rs', lines 257:4-259:5
     Visibility: public -/
 def cmp.Ordering.is_gt (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -646,7 +647,7 @@ def cmp.Ordering.is_gt (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_le]:
-    Source: 'core-models/src/core/cmp.rs', lines 225:4-227:5
+    Source: 'core-models/src/core/cmp.rs', lines 261:4-263:5
     Visibility: public -/
 def cmp.Ordering.is_le (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -655,7 +656,7 @@ def cmp.Ordering.is_le (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 229:4-231:5
+    Source: 'core-models/src/core/cmp.rs', lines 265:4-267:5
     Visibility: public -/
 def cmp.Ordering.is_ge (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -664,7 +665,7 @@ def cmp.Ordering.is_ge (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::reverse]:
-    Source: 'core-models/src/core/cmp.rs', lines 233:4-239:5
+    Source: 'core-models/src/core/cmp.rs', lines 269:4-275:5
     Visibility: public -/
 def cmp.Ordering.reverse (self : cmp.Ordering) : Result cmp.Ordering := do
   match self with
@@ -673,7 +674,7 @@ def cmp.Ordering.reverse (self : cmp.Ordering) : Result cmp.Ordering := do
   | cmp.Ordering.Greater => ok cmp.Ordering.Less
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then]:
-    Source: 'core-models/src/core/cmp.rs', lines 241:4-246:5
+    Source: 'core-models/src/core/cmp.rs', lines 277:4-282:5
     Visibility: public -/
 def cmp.Ordering.then
   (self : cmp.Ordering) (other : cmp.Ordering) : Result cmp.Ordering := do
@@ -683,7 +684,7 @@ def cmp.Ordering.then
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then_with]:
-    Source: 'core-models/src/core/cmp.rs', lines 248:4-253:5
+    Source: 'core-models/src/core/cmp.rs', lines 284:4-289:5
     Visibility: public -/
 def cmp.Ordering.then_with
   {F : Type} (coreopsfunctionFnOnceFTupleOrderingInst :
@@ -704,7 +705,7 @@ def panicking.internal.panic (T : Type) : Result T := do
   fail Error.panic
 
 /-- [core_models::cmp::clamp]:
-    Source: 'core-models/src/core/cmp.rs', lines 258:0-270:1
+    Source: 'core-models/src/core/cmp.rs', lines 294:0-306:1
     Visibility: public -/
 def cmp.clamp
   {T : Type} (OrdInst : cmp.Ord T) (value : T) (min : T) (max : T) :
@@ -11669,12 +11670,21 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}]
     Source: 'core-models/src/core/slice.rs', lines 306:0-330:1 -/
 @[reducible]
-def Slice.Insts.CoreCmpPartialOrdSlice {T : Type} (cmpPartialOrdInst :
-  cmp.PartialOrd T T) : cmp.PartialOrd (Slice T) (Slice T) := {
+impl_def Slice.Insts.CoreCmpPartialOrdSlice {T : Type}
+  (cmpPartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (Slice T) (Slice T)
+  := {
   PartialEqInst := Slice.Insts.CoreCmpPartialEqSlice
     cmpPartialOrdInst.PartialEqInst
   partial_cmp := Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp
     cmpPartialOrdInst
+  lt := cmp.PartialOrd.lt.default (Slice.Insts.CoreCmpPartialOrdSlice
+    cmpPartialOrdInst)
+  le := cmp.PartialOrd.le.default (Slice.Insts.CoreCmpPartialOrdSlice
+    cmpPartialOrdInst)
+  gt := cmp.PartialOrd.gt.default (Slice.Insts.CoreCmpPartialOrdSlice
+    cmpPartialOrdInst)
+  ge := cmp.PartialOrd.ge.default (Slice.Insts.CoreCmpPartialOrdSlice
+    cmpPartialOrdInst)
 }
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]: loop body 0:

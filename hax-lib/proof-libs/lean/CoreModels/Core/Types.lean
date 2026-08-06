@@ -108,31 +108,23 @@ inductive cmp.Ordering where
 -/
 
 /-- Trait declaration: [core_models::cmp::PartialOrd]
-    Source: 'core-models/src/core/cmp.rs', lines 30:0-37:1
+    Source: 'core-models/src/core/cmp.rs', lines 30:0-68:1
     Visibility: public -/
 structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   PartialEqInst : cmp.PartialEq Self Rhs
   partial_cmp : Self → Rhs → Result (option.Option cmp.Ordering)
+  lt : Self → Rhs → Result Bool
+  le : Self → Rhs → Result Bool
+  gt : Self → Rhs → Result Bool
+  ge : Self → Rhs → Result Bool
 
 /-- Trait declaration: [core_models::cmp::Neq]
-    Source: 'core-models/src/core/cmp.rs', lines 42:0-45:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 72:0-75:1 -/
 structure cmp.Neq (Self : Type) (Rhs : Type) where
   neq : Self → Rhs → Result Bool
 
-/-- Trait declaration: [core_models::cmp::PartialOrdDefaults]
-    Source: 'core-models/src/core/cmp.rs', lines 55:0-72:1 -/
-structure cmp.PartialOrdDefaults (Self : Type) (Rhs : Type) where
-  lt : forall (PartialOrdInst : cmp.PartialOrd Self Rhs), Self → Rhs →
-    Result Bool
-  le : forall (PartialOrdInst : cmp.PartialOrd Self Rhs), Self → Rhs →
-    Result Bool
-  gt : forall (PartialOrdInst : cmp.PartialOrd Self Rhs), Self → Rhs →
-    Result Bool
-  ge : forall (PartialOrdInst : cmp.PartialOrd Self Rhs), Self → Rhs →
-    Result Bool
-
 /-- Trait declaration: [core_models::cmp::Ord]
-    Source: 'core-models/src/core/cmp.rs', lines 109:0-113:1
+    Source: 'core-models/src/core/cmp.rs', lines 145:0-149:1
     Visibility: public -/
 structure cmp.Ord (Self : Type) where
   EqInst : cmp.Eq Self
@@ -140,7 +132,7 @@ structure cmp.Ord (Self : Type) where
   cmp : Self → Self → Result cmp.Ordering
 
 /-- [core_models::cmp::Reverse]
-    Source: 'core-models/src/core/cmp.rs', lines 132:0-132:29
+    Source: 'core-models/src/core/cmp.rs', lines 168:0-168:29
     Visibility: public -/
 @[reducible]
 def cmp.Reverse (T : Type) := T
