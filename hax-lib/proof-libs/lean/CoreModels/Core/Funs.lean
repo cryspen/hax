@@ -11064,8 +11064,252 @@ def panicking.panic (_msg : Str) : Result Never := do
 def panicking.panic_fmt (_fmt : fmt.Arguments) : Result Never := do
   fail Error.panic
 
+/-- [core_models::result::{core_models::result::Result<T, E>}::is_ok_and]:
+    Source: 'core-models/src/core/result.rs', lines 24:4-29:5
+    Visibility: public -/
+def result.Result.is_ok_and
+  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleTBoolInst :
+  core.ops.function.FnOnce F T Bool) (self : result.Result T E) (f : F) :
+  Aeneas.Std.Result Bool
+  := do
+  match self with
+  | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTBoolInst.call_once f t
+  | core.result.Result.Err _ => Aeneas.Std.Result.ok false
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::is_err_and]:
+    Source: 'core-models/src/core/result.rs', lines 38:4-43:5
+    Visibility: public -/
+def result.Result.is_err_and
+  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleEBoolInst :
+  core.ops.function.FnOnce F E Bool) (self : result.Result T E) (f : F) :
+  Aeneas.Std.Result Bool
+  := do
+  match self with
+  | core.result.Result.Ok _ => Aeneas.Std.Result.ok false
+  | core.result.Result.Err e => coreopsfunctionFnOnceFTupleEBoolInst.call_once f e
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or_else]:
+    Source: 'core-models/src/core/result.rs', lines 105:4-110:5
+    Visibility: public -/
+def result.Result.unwrap_or_else
+  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleETInst :
+  core.ops.function.FnOnce F E T) (self : result.Result T E) (op : F) :
+  Aeneas.Std.Result T
+  := do
+  match self with
+  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
+  | core.result.Result.Err e => coreopsfunctionFnOnceFTupleETInst.call_once op e
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or_default]:
+    Source: 'core-models/src/core/result.rs', lines 113:4-121:5
+    Visibility: public -/
+def result.Result.unwrap_or_default
+  {T : Type} {E : Type} (defaultDefaultInst : default.Default T)
+  (self : result.Result T E) :
+  Aeneas.Std.Result T
+  := do
+  match self with
+  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
+  | core.result.Result.Err _ => defaultDefaultInst.default
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::map]:
+    Source: 'core-models/src/core/result.rs', lines 124:4-132:5
+    Visibility: public -/
+def result.Result.map
+  {T : Type} {E : Type} {U : Type} {F : Type}
+  (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
+  (self : result.Result T E) (op : F) :
+  Aeneas.Std.Result (result.Result U E)
+  := do
+  match self with
+  | core.result.Result.Ok t =>
+    let t1 ← coreopsfunctionFnOnceFTupleTUInst.call_once op t
+    Aeneas.Std.Result.ok (result.Result.Ok t1)
+  | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::map_or]:
+    Source: 'core-models/src/core/result.rs', lines 135:4-143:5
+    Visibility: public -/
+def result.Result.map_or
+  {T : Type} {E : Type} {U : Type} {F : Type}
+  (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
+  (self : result.Result T E) (default : U) (f : F) :
+  Aeneas.Std.Result U
+  := do
+  match self with
+  | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTUInst.call_once f t
+  | core.result.Result.Err _ => Aeneas.Std.Result.ok default
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::map_or_else]:
+    Source: 'core-models/src/core/result.rs', lines 146:4-155:5
+    Visibility: public -/
+def result.Result.map_or_else
+  {T : Type} {E : Type} {U : Type} {D : Type} {F : Type}
+  (coreopsfunctionFnOnceDTupleEUInst : core.ops.function.FnOnce D E U)
+  (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
+  (self : result.Result T E) (default : D) (f : F) :
+  Aeneas.Std.Result U
+  := do
+  match self with
+  | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTUInst.call_once f t
+  | core.result.Result.Err e =>
+    coreopsfunctionFnOnceDTupleEUInst.call_once default e
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::inspect]:
+    Source: 'core-models/src/core/result.rs', lines 171:4-176:5
+    Visibility: public -/
+def result.Result.inspect
+  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedTTupleInst
+  : core.ops.function.FnOnce F T Unit) (self : result.Result T E) (f : F) :
+  Aeneas.Std.Result (result.Result T E)
+  := do
+  match self with
+  | core.result.Result.Ok t =>
+    coreopsfunctionFnOnceFTupleSharedTTupleInst.call_once f t
+    Aeneas.Std.Result.ok self
+  | core.result.Result.Err _ => Aeneas.Std.Result.ok self
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::inspect_err]:
+    Source: 'core-models/src/core/result.rs', lines 179:4-184:5
+    Visibility: public -/
+def result.Result.inspect_err
+  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedETupleInst
+  : core.ops.function.FnOnce F E Unit) (self : result.Result T E) (f : F) :
+  Aeneas.Std.Result (result.Result T E)
+  := do
+  match self with
+  | core.result.Result.Ok _ => Aeneas.Std.Result.ok self
+  | core.result.Result.Err e =>
+    coreopsfunctionFnOnceFTupleSharedETupleInst.call_once f e
+    Aeneas.Std.Result.ok self
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::and]:
+    Source: 'core-models/src/core/result.rs', lines 205:4-210:5
+    Visibility: public -/
+def result.Result.and
+  {T : Type} {E : Type} {U : Type} (self : result.Result T E)
+  (res : result.Result U E) :
+  Aeneas.Std.Result (result.Result U E)
+  := do
+  match self with
+  | core.result.Result.Ok _ => Aeneas.Std.Result.ok res
+  | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::and_then]:
+    Source: 'core-models/src/core/result.rs', lines 213:4-221:5
+    Visibility: public -/
+def result.Result.and_then
+  {T : Type} {E : Type} {U : Type} {F : Type}
+  (coreopsfunctionFnOnceFTupleTResultInst : core.ops.function.FnOnce F T
+  (result.Result U E)) (self : result.Result T E) (op : F) :
+  Aeneas.Std.Result (result.Result U E)
+  := do
+  match self with
+  | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTResultInst.call_once op t
+  | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::or]:
+    Source: 'core-models/src/core/result.rs', lines 224:4-229:5
+    Visibility: public -/
+def result.Result.or
+  {T : Type} {E : Type} {F : Type} (self : result.Result T E)
+  (res : result.Result T F) :
+  Aeneas.Std.Result (result.Result T F)
+  := do
+  match self with
+  | core.result.Result.Ok t => Aeneas.Std.Result.ok (result.Result.Ok t)
+  | core.result.Result.Err _ => Aeneas.Std.Result.ok res
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::or_else]:
+    Source: 'core-models/src/core/result.rs', lines 232:4-237:5
+    Visibility: public -/
+def result.Result.or_else
+  {T : Type} {E : Type} {F : Type} {O : Type}
+  (coreopsfunctionFnOnceOTupleEResultInst : core.ops.function.FnOnce O E
+  (result.Result T F)) (self : result.Result T E) (op : O) :
+  Aeneas.Std.Result (result.Result T F)
+  := do
+  match self with
+  | core.result.Result.Ok t => Aeneas.Std.Result.ok (result.Result.Ok t)
+  | core.result.Result.Err e =>
+    coreopsfunctionFnOnceOTupleEResultInst.call_once op e
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or]:
+    Source: 'core-models/src/core/result.rs', lines 240:4-245:5
+    Visibility: public -/
+def result.Result.unwrap_or
+  {T : Type} {E : Type} (self : result.Result T E) (default : T) :
+  Aeneas.Std.Result T
+  := do
+  match self with
+  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
+  | core.result.Result.Err _ => Aeneas.Std.Result.ok default
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::map_err]:
+    Source: 'core-models/src/core/result.rs', lines 247:4-255:5
+    Visibility: public -/
+def result.Result.map_err
+  {T : Type} {E : Type} {F : Type} {O : Type}
+  (coreopsfunctionFnOnceOTupleEFInst : core.ops.function.FnOnce O E F)
+  (self : result.Result T E) (op : O) :
+  Aeneas.Std.Result (result.Result T F)
+  := do
+  match self with
+  | core.result.Result.Ok t => Aeneas.Std.Result.ok (result.Result.Ok t)
+  | core.result.Result.Err e =>
+    let t ← coreopsfunctionFnOnceOTupleEFInst.call_once op e
+    Aeneas.Std.Result.ok (result.Result.Err t)
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::expect]:
+    Source: 'core-models/src/core/result.rs', lines 266:4-274:5
+    Visibility: public -/
+def result.Result.expect
+  {T : Type} {E : Type} (fmtDebugInst : fmt.Debug E) (self : result.Result T E)
+  (_msg : Str) :
+  Aeneas.Std.Result T
+  := do
+  match self with
+  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
+  | core.result.Result.Err _ => panicking.internal.panic T
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap]:
+    Source: 'core-models/src/core/result.rs', lines 278:4-286:5
+    Visibility: public -/
+def result.Result.unwrap
+  {T : Type} {E : Type} (fmtDebugInst : fmt.Debug E) (self : result.Result T E)
+  :
+  Aeneas.Std.Result T
+  := do
+  match self with
+  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
+  | core.result.Result.Err _ => panicking.internal.panic T
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::expect_err]:
+    Source: 'core-models/src/core/result.rs', lines 290:4-298:5
+    Visibility: public -/
+def result.Result.expect_err
+  {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (self : result.Result T E)
+  (_msg : Str) :
+  Aeneas.Std.Result E
+  := do
+  match self with
+  | core.result.Result.Ok _ => panicking.internal.panic E
+  | core.result.Result.Err e => Aeneas.Std.Result.ok e
+
+/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_err]:
+    Source: 'core-models/src/core/result.rs', lines 302:4-310:5
+    Visibility: public -/
+def result.Result.unwrap_err
+  {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (self : result.Result T E)
+  :
+  Aeneas.Std.Result E
+  := do
+  match self with
+  | core.result.Result.Ok _ => panicking.internal.panic E
+  | core.result.Result.Err e => Aeneas.Std.Result.ok e
+
 /-- [core_models::result::{impl core_models::iter::traits::collect::FromIterator<core_models::result::Result<A, E>> for core_models::result::Result<V, E>}::from_iter]:
-    Source: 'core-models/src/core/result.rs', lines 323:4-325:5
+    Source: 'core-models/src/core/result.rs', lines 365:4-367:5
     Visibility: public -/
 def
   result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
@@ -11082,7 +11326,7 @@ def
   Aeneas.Std.Result.ok (result.Result.Ok t)
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::collect::FromIterator<core_models::result::Result<A, E>> for core_models::result::Result<V, E>}]
-    Source: 'core-models/src/core/result.rs', lines 320:0-326:1 -/
+    Source: 'core-models/src/core/result.rs', lines 362:0-368:1 -/
 @[reducible]
 def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult {A :
   Type} (E : Type) {V : Type} (itertraitscollectFromIteratorInst :
@@ -11096,7 +11340,7 @@ def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult {A :
 }
 
 /-- [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}::branch]:
-    Source: 'core-models/src/core/result.rs', lines 339:4-344:5
+    Source: 'core-models/src/core/result.rs', lines 381:4-386:5
     Visibility: public -/
 def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
   {T : Type} {E : Type} (self : result.Result T E) :
@@ -11108,7 +11352,7 @@ def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
     Aeneas.Std.Result.ok (ops.control_flow.ControlFlow.Break (result.Result.Err e))
 
 /-- [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}::from_output]:
-    Source: 'core-models/src/core/result.rs', lines 334:4-336:5
+    Source: 'core-models/src/core/result.rs', lines 376:4-378:5
     Visibility: public -/
 def
   result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.from_output
@@ -11116,7 +11360,7 @@ def
   Aeneas.Std.Result.ok (result.Result.Ok output)
 
 /-- Trait implementation: [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 329:0-345:1 -/
+    Source: 'core-models/src/core/result.rs', lines 371:0-387:1 -/
 @[reducible]
 def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE (T : Type)
   (E : Type) : ops.try_trait.Try (result.Result T E) T (result.Result
@@ -11128,252 +11372,8 @@ def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE (T : Type)
     result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
 }
 
-/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or]:
-    Source: 'core-models/src/core/result.rs', lines 355:4-360:5
-    Visibility: public -/
-def result.Result.unwrap_or
-  {T : Type} {E : Type} (self : result.Result T E) (default : T) :
-  Aeneas.Std.Result T
-  := do
-  match self with
-  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
-  | core.result.Result.Err _ => Aeneas.Std.Result.ok default
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::map_err]:
-    Source: 'core-models/src/core/result.rs', lines 363:4-371:5
-    Visibility: public -/
-def result.Result.map_err
-  {T : Type} {E : Type} {F : Type} {O : Type}
-  (coreopsfunctionFnOnceOTupleEFInst : core.ops.function.FnOnce O E F)
-  (self : result.Result T E) (op : O) :
-  Aeneas.Std.Result (result.Result T F)
-  := do
-  match self with
-  | core.result.Result.Ok t => Aeneas.Std.Result.ok (result.Result.Ok t)
-  | core.result.Result.Err e =>
-    let t ← coreopsfunctionFnOnceOTupleEFInst.call_once op e
-    Aeneas.Std.Result.ok (result.Result.Err t)
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::expect]:
-    Source: 'core-models/src/core/result.rs', lines 375:4-383:5
-    Visibility: public -/
-def result.Result.expect
-  {T : Type} {E : Type} (fmtDebugInst : fmt.Debug E) (self : result.Result T E)
-  (_msg : Str) :
-  Aeneas.Std.Result T
-  := do
-  match self with
-  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
-  | core.result.Result.Err _ => panicking.internal.panic T
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::expect_err]:
-    Source: 'core-models/src/core/result.rs', lines 387:4-395:5
-    Visibility: public -/
-def result.Result.expect_err
-  {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (self : result.Result T E)
-  (_msg : Str) :
-  Aeneas.Std.Result E
-  := do
-  match self with
-  | core.result.Result.Ok _ => panicking.internal.panic E
-  | core.result.Result.Err e => Aeneas.Std.Result.ok e
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::is_ok_and]:
-    Source: 'core-models/src/core/result.rs', lines 398:4-403:5
-    Visibility: public -/
-def result.Result.is_ok_and
-  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleTBoolInst :
-  core.ops.function.FnOnce F T Bool) (self : result.Result T E) (f : F) :
-  Aeneas.Std.Result Bool
-  := do
-  match self with
-  | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTBoolInst.call_once f t
-  | core.result.Result.Err _ => Aeneas.Std.Result.ok false
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::is_err_and]:
-    Source: 'core-models/src/core/result.rs', lines 406:4-411:5
-    Visibility: public -/
-def result.Result.is_err_and
-  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleEBoolInst :
-  core.ops.function.FnOnce F E Bool) (self : result.Result T E) (f : F) :
-  Aeneas.Std.Result Bool
-  := do
-  match self with
-  | core.result.Result.Ok _ => Aeneas.Std.Result.ok false
-  | core.result.Result.Err e => coreopsfunctionFnOnceFTupleEBoolInst.call_once f e
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or_else]:
-    Source: 'core-models/src/core/result.rs', lines 414:4-419:5
-    Visibility: public -/
-def result.Result.unwrap_or_else
-  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleETInst :
-  core.ops.function.FnOnce F E T) (self : result.Result T E) (op : F) :
-  Aeneas.Std.Result T
-  := do
-  match self with
-  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
-  | core.result.Result.Err e => coreopsfunctionFnOnceFTupleETInst.call_once op e
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::map]:
-    Source: 'core-models/src/core/result.rs', lines 422:4-430:5
-    Visibility: public -/
-def result.Result.map
-  {T : Type} {E : Type} {U : Type} {F : Type}
-  (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
-  (self : result.Result T E) (op : F) :
-  Aeneas.Std.Result (result.Result U E)
-  := do
-  match self with
-  | core.result.Result.Ok t =>
-    let t1 ← coreopsfunctionFnOnceFTupleTUInst.call_once op t
-    Aeneas.Std.Result.ok (result.Result.Ok t1)
-  | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::map_or]:
-    Source: 'core-models/src/core/result.rs', lines 433:4-441:5
-    Visibility: public -/
-def result.Result.map_or
-  {T : Type} {E : Type} {U : Type} {F : Type}
-  (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
-  (self : result.Result T E) (default : U) (f : F) :
-  Aeneas.Std.Result U
-  := do
-  match self with
-  | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTUInst.call_once f t
-  | core.result.Result.Err _ => Aeneas.Std.Result.ok default
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::map_or_else]:
-    Source: 'core-models/src/core/result.rs', lines 445:4-454:5
-    Visibility: public -/
-def result.Result.map_or_else
-  {T : Type} {E : Type} {U : Type} {D : Type} {F : Type}
-  (coreopsfunctionFnOnceDTupleEUInst : core.ops.function.FnOnce D E U)
-  (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
-  (self : result.Result T E) (default : D) (f : F) :
-  Aeneas.Std.Result U
-  := do
-  match self with
-  | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTUInst.call_once f t
-  | core.result.Result.Err e =>
-    coreopsfunctionFnOnceDTupleEUInst.call_once default e
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::inspect]:
-    Source: 'core-models/src/core/result.rs', lines 457:4-462:5
-    Visibility: public -/
-def result.Result.inspect
-  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedTTupleInst
-  : core.ops.function.FnOnce F T Unit) (self : result.Result T E) (f : F) :
-  Aeneas.Std.Result (result.Result T E)
-  := do
-  match self with
-  | core.result.Result.Ok t =>
-    coreopsfunctionFnOnceFTupleSharedTTupleInst.call_once f t
-    Aeneas.Std.Result.ok self
-  | core.result.Result.Err _ => Aeneas.Std.Result.ok self
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::inspect_err]:
-    Source: 'core-models/src/core/result.rs', lines 465:4-470:5
-    Visibility: public -/
-def result.Result.inspect_err
-  {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedETupleInst
-  : core.ops.function.FnOnce F E Unit) (self : result.Result T E) (f : F) :
-  Aeneas.Std.Result (result.Result T E)
-  := do
-  match self with
-  | core.result.Result.Ok _ => Aeneas.Std.Result.ok self
-  | core.result.Result.Err e =>
-    coreopsfunctionFnOnceFTupleSharedETupleInst.call_once f e
-    Aeneas.Std.Result.ok self
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::and_then]:
-    Source: 'core-models/src/core/result.rs', lines 473:4-481:5
-    Visibility: public -/
-def result.Result.and_then
-  {T : Type} {E : Type} {U : Type} {F : Type}
-  (coreopsfunctionFnOnceFTupleTResultInst : core.ops.function.FnOnce F T
-  (result.Result U E)) (self : result.Result T E) (op : F) :
-  Aeneas.Std.Result (result.Result U E)
-  := do
-  match self with
-  | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTResultInst.call_once op t
-  | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::or_else]:
-    Source: 'core-models/src/core/result.rs', lines 484:4-489:5
-    Visibility: public -/
-def result.Result.or_else
-  {T : Type} {E : Type} {F : Type} {O : Type}
-  (coreopsfunctionFnOnceOTupleEResultInst : core.ops.function.FnOnce O E
-  (result.Result T F)) (self : result.Result T E) (op : O) :
-  Aeneas.Std.Result (result.Result T F)
-  := do
-  match self with
-  | core.result.Result.Ok t => Aeneas.Std.Result.ok (result.Result.Ok t)
-  | core.result.Result.Err e =>
-    coreopsfunctionFnOnceOTupleEResultInst.call_once op e
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap]:
-    Source: 'core-models/src/core/result.rs', lines 493:4-501:5
-    Visibility: public -/
-def result.Result.unwrap
-  {T : Type} {E : Type} (fmtDebugInst : fmt.Debug E) (self : result.Result T E)
-  :
-  Aeneas.Std.Result T
-  := do
-  match self with
-  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
-  | core.result.Result.Err _ => panicking.internal.panic T
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_err]:
-    Source: 'core-models/src/core/result.rs', lines 505:4-513:5
-    Visibility: public -/
-def result.Result.unwrap_err
-  {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (self : result.Result T E)
-  :
-  Aeneas.Std.Result E
-  := do
-  match self with
-  | core.result.Result.Ok _ => panicking.internal.panic E
-  | core.result.Result.Err e => Aeneas.Std.Result.ok e
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or_default]:
-    Source: 'core-models/src/core/result.rs', lines 516:4-524:5
-    Visibility: public -/
-def result.Result.unwrap_or_default
-  {T : Type} {E : Type} (defaultDefaultInst : default.Default T)
-  (self : result.Result T E) :
-  Aeneas.Std.Result T
-  := do
-  match self with
-  | core.result.Result.Ok t => Aeneas.Std.Result.ok t
-  | core.result.Result.Err _ => defaultDefaultInst.default
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::and]:
-    Source: 'core-models/src/core/result.rs', lines 527:4-532:5
-    Visibility: public -/
-def result.Result.and
-  {T : Type} {E : Type} {U : Type} (self : result.Result T E)
-  (res : result.Result U E) :
-  Aeneas.Std.Result (result.Result U E)
-  := do
-  match self with
-  | core.result.Result.Ok _ => Aeneas.Std.Result.ok res
-  | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
-
-/-- [core_models::result::{core_models::result::Result<T, E>}::or]:
-    Source: 'core-models/src/core/result.rs', lines 535:4-540:5
-    Visibility: public -/
-def result.Result.or
-  {T : Type} {E : Type} {F : Type} (self : result.Result T E)
-  (res : result.Result T F) :
-  Aeneas.Std.Result (result.Result T F)
-  := do
-  match self with
-  | core.result.Result.Ok t => Aeneas.Std.Result.ok (result.Result.Ok t)
-  | core.result.Result.Err _ => Aeneas.Std.Result.ok res
-
 /-- [core_models::result::{core_models::result::Result<core_models::option::Option<T>, E>}::transpose]:
-    Source: 'core-models/src/core/result.rs', lines 547:4-553:5
+    Source: 'core-models/src/core/result.rs', lines 393:4-399:5
     Visibility: public -/
 def result.ResultOptionE.transpose
   {T : Type} {E : Type} (self : result.Result (option.Option T) E) :
@@ -11387,7 +11387,7 @@ def result.ResultOptionE.transpose
   | core.result.Result.Err e => Aeneas.Std.Result.ok (option.Option.Some (result.Result.Err e))
 
 /-- [core_models::result::{impl core_models::cmp::PartialEq<core_models::result::Result<T, E>> for core_models::result::Result<T, E>}::eq]:
-    Source: 'core-models/src/core/result.rs', lines 563:4-569:5
+    Source: 'core-models/src/core/result.rs', lines 409:4-415:5
     Visibility: public -/
 def result.Result.Insts.CoreCmpPartialEqResult.eq
   {T : Type} {E : Type} (cmpPartialEqInst : cmp.PartialEq T T)
@@ -11406,7 +11406,7 @@ def result.Result.Insts.CoreCmpPartialEqResult.eq
     | core.result.Result.Err b => cmpPartialEqInst1.eq a b
 
 /-- Trait implementation: [core_models::result::{impl core_models::cmp::PartialEq<core_models::result::Result<T, E>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 560:0-570:1 -/
+    Source: 'core-models/src/core/result.rs', lines 406:0-416:1 -/
 @[reducible]
 def result.Result.Insts.CoreCmpPartialEqResult {T : Type} {E : Type}
   (cmpPartialEqInst : cmp.PartialEq T T) (cmpPartialEqInst1 : cmp.PartialEq E
@@ -11416,7 +11416,7 @@ def result.Result.Insts.CoreCmpPartialEqResult {T : Type} {E : Type}
 }
 
 /-- [core_models::result::{impl core_models::ops::try_trait::FromResidual<core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, F>}::from_residual]:
-    Source: 'core-models/src/core/result.rs', lines 580:4-585:5
+    Source: 'core-models/src/core/result.rs', lines 426:4-431:5
     Visibility: public -/
 def
   result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE.from_residual
@@ -11431,7 +11431,7 @@ def
     Aeneas.Std.Result.ok (result.Result.Err t)
 
 /-- Trait implementation: [core_models::result::{impl core_models::ops::try_trait::FromResidual<core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, F>}]
-    Source: 'core-models/src/core/result.rs', lines 577:0-586:1 -/
+    Source: 'core-models/src/core/result.rs', lines 423:0-432:1 -/
 @[reducible]
 def result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE (T
   : Type) {E : Type} {F : Type} (convertFromInst : convert.From F E) :

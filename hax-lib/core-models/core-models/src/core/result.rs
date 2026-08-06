@@ -13,15 +13,14 @@ use super::default::Default;
 use super::option::Option;
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::is_ok`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn is_ok(&self) -> bool {
         matches!(*self, Ok(_))
     }
 
     /// See [`std::result::Result::is_ok_and`]
-    #[cfg(hax_backend_fstar)]
     pub fn is_ok_and<F: FnOnce(T) -> bool>(self, f: F) -> bool {
         match self {
             Ok(t) => f(t),
@@ -30,12 +29,12 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::is_err`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn is_err(&self) -> bool {
         !self.is_ok()
     }
 
     /// See [`std::result::Result::is_err_and`]
-    #[cfg(hax_backend_fstar)]
     pub fn is_err_and<F: FnOnce(E) -> bool>(self, f: F) -> bool {
         match self {
             Ok(_) => false,
@@ -44,6 +43,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_ref`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub const fn as_ref(&self) -> Result<&T, &E> {
         match *self {
             Ok(ref t) => Ok(t),
@@ -52,6 +52,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_mut`]
+    #[cfg_attr(charon, aeneas::exclude)]
     #[hax_lib::exclude]
     pub fn as_mut(&mut self) -> Result<&mut T, &mut E> {
         match *self {
@@ -101,7 +102,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap_or_else`]
-    #[cfg(hax_backend_fstar)]
     pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
         match self {
             Ok(t) => t,
@@ -110,7 +110,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap_or_default`]
-    #[cfg(hax_backend_fstar)]
     pub fn unwrap_or_default(self) -> T
     where
         T: Default,
@@ -122,7 +121,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map`]
-    #[cfg(hax_backend_fstar)]
     pub fn map<U, F>(self, op: F) -> Result<U, E>
     where
         F: FnOnce(T) -> U,
@@ -134,7 +132,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or`]
-    #[cfg(hax_backend_fstar)]
     pub fn map_or<U, F>(self, default: U, f: F) -> U
     where
         F: FnOnce(T) -> U,
@@ -146,7 +143,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or_else`]
-    #[cfg(hax_backend_fstar)]
     pub fn map_or_else<U, D, F>(self, default: D, f: F) -> U
     where
         D: FnOnce(E) -> U,
@@ -159,6 +155,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or_default`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn map_or_default<U, F>(self, f: F) -> U
     where
         F: FnOnce(T) -> U,
@@ -171,7 +168,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::inspect`]
-    #[cfg(hax_backend_fstar)]
     pub fn inspect<F: FnOnce(&T)>(self, f: F) -> Result<T, E> {
         if let Ok(ref t) = self {
             f(t);
@@ -180,7 +176,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::inspect_err`]
-    #[cfg(hax_backend_fstar)]
     pub fn inspect_err<F: FnOnce(&E)>(self, f: F) -> Result<T, E> {
         if let Err(ref e) = self {
             f(e);
@@ -189,6 +184,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::ok`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn ok(self) -> Option<T> {
         match self {
             Ok(x) => Option::Some(x),
@@ -197,6 +193,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::err`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn err(self) -> Option<E> {
         match self {
             Ok(_) => Option::None,
@@ -205,7 +202,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::and`]
-    #[cfg(hax_backend_fstar)]
     pub fn and<U>(self, res: Result<U, E>) -> Result<U, E> {
         match self {
             Ok(_) => res,
@@ -214,7 +210,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::and_then`]
-    #[cfg(hax_backend_fstar)]
     pub fn and_then<U, F>(self, op: F) -> Result<U, E>
     where
         F: FnOnce(T) -> Result<U, E>,
@@ -226,7 +221,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::or`]
-    #[cfg(hax_backend_fstar)]
     pub fn or<F>(self, res: Result<T, F>) -> Result<T, F> {
         match self {
             Ok(t) => Ok(t),
@@ -235,7 +229,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::or_else`]
-    #[cfg(hax_backend_fstar)]
     pub fn or_else<F, O: FnOnce(E) -> Result<T, F>>(self, op: O) -> Result<T, F> {
         match self {
             Ok(t) => Ok(t),
@@ -243,12 +236,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    // F* names inherent methods by impl-block order, so `unwrap_or`/`map_err`
-    // live in this first block for F* to keep their `impl__` name. The
-    // aeneas/lean copies (which, unlike this excluded block, must be extracted)
-    // are in the `cfg(not(hax_backend_fstar))` block below.
     /// See [`std::result::Result::unwrap_or`]
-    #[cfg(hax_backend_fstar)]
     pub fn unwrap_or(self, default: T) -> T {
         match self {
             Ok(t) => t,
@@ -256,7 +244,6 @@ impl<T, E> Result<T, E> {
         }
     }
     /// See [`std::result::Result::map_err`]
-    #[cfg(hax_backend_fstar)]
     pub fn map_err<F, O>(self, op: O) -> Result<T, F>
     where
         O: FnOnce(E) -> F,
@@ -264,6 +251,61 @@ impl<T, E> Result<T, E> {
         match self {
             Ok(t) => Ok(t),
             Err(e) => Err(op(e)),
+        }
+    }
+}
+
+/// aeneas/lean copies of the four methods whose std signature carries a `Debug`
+/// bound: charon emits the dictionary, so the model must take it, but the F*
+/// versions above must stay bound-free to keep their `impl__` names.
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T, E> Result<T, E> {
+    /// See [`std::result::Result::expect`]
+    #[hax_lib::requires(self.is_ok())]
+    pub fn expect(self, _msg: &str) -> T
+    where
+        E: super::fmt::Debug,
+    {
+        match self {
+            Ok(t) => t,
+            Err(_) => super::panicking::internal::panic(),
+        }
+    }
+
+    /// See [`std::result::Result::unwrap`]
+    #[hax_lib::requires(self.is_ok())]
+    pub fn unwrap(self) -> T
+    where
+        E: super::fmt::Debug,
+    {
+        match self {
+            Ok(t) => t,
+            Err(_) => super::panicking::internal::panic(),
+        }
+    }
+
+    /// See [`std::result::Result::expect_err`]
+    #[hax_lib::requires(self.is_err())]
+    pub fn expect_err(self, _msg: &str) -> E
+    where
+        T: super::fmt::Debug,
+    {
+        match self {
+            Ok(_) => super::panicking::internal::panic(),
+            Err(e) => e,
+        }
+    }
+
+    /// See [`std::result::Result::unwrap_err`]
+    #[hax_lib::requires(self.is_err())]
+    pub fn unwrap_err(self) -> E
+    where
+        T: super::fmt::Debug,
+    {
+        match self {
+            Ok(_) => super::panicking::internal::panic(),
+            Err(e) => e,
         }
     }
 }
@@ -340,202 +382,6 @@ impl<T, E> crate::ops::try_trait::Try for Result<T, E> {
         match self {
             Ok(v) => crate::ops::control_flow::ControlFlow::Continue(v),
             Err(e) => crate::ops::control_flow::ControlFlow::Break(Err(e)),
-        }
-    }
-}
-
-/// aeneas/lean copies of the non-closure `Result` methods: not in Aeneas's
-/// builtin `Result` and the `impl` above is excluded, so they're extracted here.
-/// Also defined in the F* `impl__` block above (see the comment there) to keep
-/// the F* name.
-#[cfg(not(hax_backend_fstar))]
-#[hax_lib::attributes]
-impl<T, E> Result<T, E> {
-    /// See [`std::result::Result::unwrap_or`]
-    pub fn unwrap_or(self, default: T) -> T {
-        match self {
-            Ok(t) => t,
-            Err(_) => default,
-        }
-    }
-
-    /// See [`std::result::Result::map_err`]
-    pub fn map_err<F, O>(self, op: O) -> Result<T, F>
-    where
-        O: FnOnce(E) -> F,
-    {
-        match self {
-            Ok(t) => Ok(t),
-            Err(e) => Err(op(e)),
-        }
-    }
-
-    /// See [`std::result::Result::expect`]
-    #[hax_lib::requires(self.is_ok())]
-    pub fn expect(self, _msg: &str) -> T
-    where
-        E: super::fmt::Debug,
-    {
-        match self {
-            Ok(t) => t,
-            Err(_) => super::panicking::internal::panic(),
-        }
-    }
-
-    /// See [`std::result::Result::expect_err`]
-    #[hax_lib::requires(self.is_err())]
-    pub fn expect_err(self, _msg: &str) -> E
-    where
-        T: super::fmt::Debug,
-    {
-        match self {
-            Ok(_) => super::panicking::internal::panic(),
-            Err(e) => e,
-        }
-    }
-
-    /// See [`std::result::Result::is_ok_and`]
-    pub fn is_ok_and<F: FnOnce(T) -> bool>(self, f: F) -> bool {
-        match self {
-            Ok(t) => f(t),
-            Err(_) => false,
-        }
-    }
-
-    /// See [`std::result::Result::is_err_and`]
-    pub fn is_err_and<F: FnOnce(E) -> bool>(self, f: F) -> bool {
-        match self {
-            Ok(_) => false,
-            Err(e) => f(e),
-        }
-    }
-
-    /// See [`std::result::Result::unwrap_or_else`]
-    pub fn unwrap_or_else<F: FnOnce(E) -> T>(self, op: F) -> T {
-        match self {
-            Ok(t) => t,
-            Err(e) => op(e),
-        }
-    }
-
-    /// See [`std::result::Result::map`]
-    pub fn map<U, F>(self, op: F) -> Result<U, E>
-    where
-        F: FnOnce(T) -> U,
-    {
-        match self {
-            Ok(t) => Ok(op(t)),
-            Err(e) => Err(e),
-        }
-    }
-
-    /// See [`std::result::Result::map_or`]
-    pub fn map_or<U, F>(self, default: U, f: F) -> U
-    where
-        F: FnOnce(T) -> U,
-    {
-        match self {
-            Ok(t) => f(t),
-            Err(_) => default,
-        }
-    }
-
-    /// See [`std::result::Result::map_or_else`]
-    // Bound order sets the closure dictionary order; swapping it swaps them.
-    pub fn map_or_else<U, D, F>(self, default: D, f: F) -> U
-    where
-        D: FnOnce(E) -> U,
-        F: FnOnce(T) -> U,
-    {
-        match self {
-            Ok(t) => f(t),
-            Err(e) => default(e),
-        }
-    }
-
-    /// See [`std::result::Result::inspect`]
-    pub fn inspect<F: FnOnce(&T)>(self, f: F) -> Result<T, E> {
-        if let Ok(ref t) = self {
-            f(t);
-        }
-        self
-    }
-
-    /// See [`std::result::Result::inspect_err`]
-    pub fn inspect_err<F: FnOnce(&E)>(self, f: F) -> Result<T, E> {
-        if let Err(ref e) = self {
-            f(e);
-        }
-        self
-    }
-
-    /// See [`std::result::Result::and_then`]
-    pub fn and_then<U, F>(self, op: F) -> Result<U, E>
-    where
-        F: FnOnce(T) -> Result<U, E>,
-    {
-        match self {
-            Ok(t) => op(t),
-            Err(e) => Err(e),
-        }
-    }
-
-    /// See [`std::result::Result::or_else`]
-    pub fn or_else<F, O: FnOnce(E) -> Result<T, F>>(self, op: O) -> Result<T, F> {
-        match self {
-            Ok(t) => Ok(t),
-            Err(e) => op(e),
-        }
-    }
-
-    /// See [`std::result::Result::unwrap`]
-    #[hax_lib::requires(self.is_ok())]
-    pub fn unwrap(self) -> T
-    where
-        E: super::fmt::Debug,
-    {
-        match self {
-            Ok(t) => t,
-            Err(_) => super::panicking::internal::panic(),
-        }
-    }
-
-    /// See [`std::result::Result::unwrap_err`]
-    #[hax_lib::requires(self.is_err())]
-    pub fn unwrap_err(self) -> E
-    where
-        T: super::fmt::Debug,
-    {
-        match self {
-            Ok(_) => super::panicking::internal::panic(),
-            Err(e) => e,
-        }
-    }
-
-    /// See [`std::result::Result::unwrap_or_default`]
-    pub fn unwrap_or_default(self) -> T
-    where
-        T: Default,
-    {
-        match self {
-            Ok(t) => t,
-            Err(_) => T::default(),
-        }
-    }
-
-    /// See [`std::result::Result::and`]
-    pub fn and<U>(self, res: Result<U, E>) -> Result<U, E> {
-        match self {
-            Ok(_) => res,
-            Err(e) => Err(e),
-        }
-    }
-
-    /// See [`std::result::Result::or`]
-    pub fn or<F>(self, res: Result<T, F>) -> Result<T, F> {
-        match self {
-            Ok(t) => Ok(t),
-            Err(_) => res,
         }
     }
 }
