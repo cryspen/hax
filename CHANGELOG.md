@@ -52,6 +52,7 @@ Changes to hax-lib:
    `wrapping_neg`, and `PartialEq::ne`. Moved `Vec::resize` into the
    `impl<T: Clone>` block and relaxed `Vec::remove`'s postcondition to
    `len' <= len` (#2157)
+ - Strengthen testing of core-models, especially rust/lean equivalence. Fix core-models bugs in `chunks`, `result::map_or_else`, `step_by`, and signature mismatches (#2119)
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
