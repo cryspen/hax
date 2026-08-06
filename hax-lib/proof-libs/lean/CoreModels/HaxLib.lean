@@ -1,1 +1,2 @@
-import CoreModels.HaxLib.Funs
+import CoreModels.HaxLib.Prop
+import CoreModels.HaxLib.Int
