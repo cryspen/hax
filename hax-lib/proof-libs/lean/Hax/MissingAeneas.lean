@@ -1,5 +1,5 @@
 import Aeneas
-import CoreModels
+import CoreModels.Core
 import Hax.MissingLean
 
 namespace Aeneas.Std
