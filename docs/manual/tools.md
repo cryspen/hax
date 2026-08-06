@@ -151,3 +151,7 @@ If the check fails, hax aborts before running any tool and prints the mismatch w
 - when it is older, update the `hax-lib` dependency (for example `cargo update -p hax-lib --precise <version>`), or install the `cargo-hax` matching that `hax-lib`.
 
 The `tools` subcommands never abort on this check: `cargo hax tools show` reports the compatibility instead of failing, and `cargo hax tools install` ignores it.
+
+## The Lean project pin check
+
+The files `--lakefile` generates (`lakefile.toml`, `lean-toolchain`) are never overwritten, so their pinned versions can fall behind after a hax upgrade or a `hax.toml` change. On every Lean extraction, hax compares an existing lakefile's `aeneas` and `Hax` revisions and the `lean-toolchain` contents against the currently resolved versions, and warns about each pin that differs: update the pin, or delete the file and re-run with `--lakefile` to regenerate it. Requires hax does not manage are left alone, as is the `aeneas` pin when the binary comes from a `path` entry, which names no version to compare against.

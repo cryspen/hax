@@ -220,6 +220,92 @@ hax-lean-lib = "v9.9.9"
     assert!(all.contains("using hax-lean-lib v9.9.9"), "{all}");
 }
 
+/// A crate with stub tools, overridden declared versions, and an existing
+/// Lean project whose lakefile pins `Hax` at `hax_rev` and whose
+/// `lean-toolchain` holds `toolchain`.
+fn write_crate_with_lean_project(dir: &Path, hax_rev: &str, toolchain: &str) -> PathBuf {
+    let crate_dir = dir.join("crate");
+    write_crate(&crate_dir);
+    let bin = dir.join("bin");
+    write_executable(&bin.join("charon"), &stub("charon-invoked"));
+    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
+    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    std::fs::write(
+        crate_dir.join("hax.toml"),
+        format!(
+            r#"[tools]
+charon = {{ path = "{charon}" }}
+aeneas = {{ path = "{aeneas}" }}
+
+[versions]
+lean = "leanprover/lean4:v9.9.9-test"
+hax-lean-lib = "v9.9.9"
+"#,
+            charon = bin.join("charon").display(),
+            aeneas = bin.join("aeneas").display(),
+        ),
+    )
+    .unwrap();
+    let lean_dir = crate_dir.join("proofs/lean");
+    std::fs::create_dir_all(&lean_dir).unwrap();
+    std::fs::write(
+        lean_dir.join("lakefile.toml"),
+        format!(
+            r#"[[require]]
+name = "aeneas"
+git = "https://github.com/cryspen/aeneas"
+rev = "nightly-old"
+subDir = "backends/lean"
+
+[[require]]
+name = "Hax"
+git = {{ url = "https://github.com/cryspen/hax-lean" }}
+rev = "{hax_rev}"
+"#
+        ),
+    )
+    .unwrap();
+    std::fs::write(lean_dir.join("lean-toolchain"), format!("{toolchain}\n")).unwrap();
+    crate_dir
+}
+
+#[test]
+fn stale_pins_in_an_existing_lean_project_are_warned_about() {
+    let dir = tempfile::tempdir().unwrap();
+    let crate_dir = write_crate_with_lean_project(dir.path(), "v0.1.0", "leanprover/lean4:v4.30.0");
+
+    // No `--lakefile`: the check runs on every extraction.
+    let (output, success) = run_backend(&crate_dir, &[]);
+    assert!(success, "{output}");
+    assert!(
+        output.contains("pins Hax v0.1.0; the current configuration expects v9.9.9"),
+        "{output}"
+    );
+    assert!(
+        output.contains(
+            "pins lean leanprover/lean4:v4.30.0; \
+             the current configuration expects leanprover/lean4:v9.9.9-test"
+        ),
+        "{output}"
+    );
+    // aeneas resolves to a path, so its pin has nothing to be checked against.
+    assert!(!output.contains("pins aeneas"), "{output}");
+}
+
+#[test]
+fn matching_pins_in_an_existing_lean_project_pass_silently() {
+    let dir = tempfile::tempdir().unwrap();
+    let crate_dir =
+        write_crate_with_lean_project(dir.path(), "v9.9.9", "leanprover/lean4:v9.9.9-test");
+
+    let (output, success) = run_backend(&crate_dir, &[]);
+    assert!(success, "{output}");
+    assert!(
+        !output.contains("the current configuration expects"),
+        "{output}"
+    );
+}
+
 #[test]
 fn default_declared_versions_are_not_noticed() {
     let dir = tempfile::tempdir().unwrap();

@@ -427,40 +427,54 @@ pub fn run(
         }
     }
 
-    // Generate lakefile if requested
-    if options.lakefile {
+    // Check an existing Lean project's pins on every run, and generate the
+    // project files if requested.
+    let has_project_files =
+        lean_dir.join("lakefile.toml").exists() || lean_dir.join("lean-toolchain").exists();
+    if options.lakefile || has_project_files {
         use tools::resolve::Resolved;
-        let defaults = tools::defaults::defaults();
-        // The aeneas Lean proof library must match the aeneas binary; its
+        let lean_toolchain = tools::provide_version("lean", member, workspace, message_format);
+        let hax_lean_lib_rev =
+            tools::provide_version("hax-lean-lib", member, workspace, message_format);
+        // The aeneas Lean proof library must match the aeneas binary, so its
         // rev is the resolved aeneas version, reused from the resolution
         // that selected the binary above. A path-resolved aeneas has no
-        // version hax can name, so the default is pinned instead.
-        let aeneas_rev = match aeneas_resolution.kind {
-            Resolved::Version(version) => version,
-            Resolved::Path(path) => {
-                let default = defaults.tools["aeneas"].clone();
-                HaxMessage::GenericWarning {
-                    message: format!(
-                        "aeneas resolves to the local binary {}; pinning the aeneas Lean \
-                         library to the default {default} in the generated lakefile",
-                        path.display()
-                    ),
+        // version hax can name: existing pins are not checked against it.
+        let aeneas_rev = match &aeneas_resolution.kind {
+            Resolved::Version(version) => Some(version.clone()),
+            Resolved::Path(_) => None,
+        };
+        lakefile::check_existing(
+            &lean_dir,
+            aeneas_rev.as_deref(),
+            &lean_toolchain,
+            &hax_lean_lib_rev,
+            message_format,
+        );
+        if options.lakefile {
+            // With no aeneas version to pin, the default is pinned instead.
+            let aeneas_rev = match &aeneas_resolution.kind {
+                Resolved::Version(version) => version.clone(),
+                Resolved::Path(path) => {
+                    let default = tools::defaults::defaults().tools["aeneas"].clone();
+                    HaxMessage::GenericWarning {
+                        message: format!(
+                            "aeneas resolves to the local binary {}; pinning the aeneas Lean \
+                             library to the default {default} in the generated lakefile",
+                            path.display()
+                        ),
+                    }
+                    .report(message_format, None);
+                    default
                 }
-                .report(message_format, None);
-                default
-            }
-        };
-        let pins = lakefile::LakefilePins {
-            aeneas_rev,
-            lean_toolchain: tools::provide_version("lean", member, workspace, message_format),
-            hax_lean_lib_rev: tools::provide_version(
-                "hax-lean-lib",
-                member,
-                workspace,
-                message_format,
-            ),
-        };
-        lakefile::generate(&lean_dir, &crate_name, &pins, message_format);
+            };
+            let pins = lakefile::LakefilePins {
+                aeneas_rev,
+                lean_toolchain,
+                hax_lean_lib_rev,
+            };
+            lakefile::generate(&lean_dir, &crate_name, &pins, message_format);
+        }
     }
 
     if !output.status.success() {
