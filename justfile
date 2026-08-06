@@ -77,6 +77,31 @@ test *FLAGS:
 docs: (_ensure_command_in_path "mkdocs" "mkdocs (https://www.mkdocs.org/)")
   mkdocs serve
 
+# List the names of every example
+list-examples:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  shopt -s nullglob
+  makefiles=(examples/*/Makefile)
+  [ ${#makefiles[@]} -gt 0 ] || { >&2 echo "no examples found"; exit 1; }
+  for makefile in "${makefiles[@]}"; do
+    basename "$(dirname "$makefile")"
+  done
+
+# Extract and verify one example, from scratch (e.g. `just check-example barrett`)
+check-example NAME:
+  make -C "examples/{{NAME}}" clean
+  make -C "examples/{{NAME}}"
+
+# Extract and verify every example, from scratch
+check-examples:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  examples=$({{just_executable()}} list-examples)
+  while IFS= read -r example; do
+    {{just_executable()}} check-example "$example"
+  done <<< "$examples"
+
 # Check the coherency between issues labeled `marked-unimplemented` on GitHub and issues mentionned in the engine in the `Unimplemented {issue_id: ...}` errors.
 @check-issues:
   just _ensure_command_in_path jq "jq (https://jqlang.github.io/jq/)"

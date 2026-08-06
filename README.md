@@ -236,6 +236,17 @@ and [here for the frontend](https://hax.cryspen.com/frontend/index.html).
 Just clone & `cd` into the repo, then run `nix develop .`.
 You can also just use [direnv](https://github.com/nix-community/nix-direnv), with [editor integration](https://github.com/direnv/direnv/wiki#editor-integration).
 
+The flake provides several dev shells:
+
+| Shell | Purpose |
+|-------|---------|
+| `nix develop .` | Hacking on hax itself: the toolchain to build the Rust CLI, the frontend and the OCaml engine. Provides no backend verifier. |
+| `nix develop .#fstar` | The above plus F\*, for the F\* backend and the F\* proof libraries. Used by CI to check the proof libraries. |
+| `nix develop .#examples` | The above plus ProVerif and Lean (through `elan`), for running `examples/` against a hax you build yourself. |
+| `nix develop .#ci-examples` | Running `examples/` against a hax built by the flake, rather than one you build from source. Used by CI. |
+
+The first three shells give you the toolchain to build hax, not a `cargo-hax` binary: run `just build` first (see [below](#compiling-formatting-and-more)).
+
 ### Structure of this repository
 
 - `frontend/`: Rust library that hooks into the Rust compiler and
