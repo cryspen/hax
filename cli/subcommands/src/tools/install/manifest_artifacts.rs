@@ -168,9 +168,21 @@ fn check_artifact(
 ) -> Result<(), String> {
     let staging = tempfile::tempdir().map_err(|e| format!("could not stage: {e}"))?;
     let archive = download(&entry.url, staging.path(), MessageFormat::Json)?;
-    verify_sha256(&archive, &entry.sha256, &entry.url)?;
-    let contents = staging.path().join("contents");
-    extract(&archive, &entry.url, &contents)?;
+    check_staged(tool, entry, platform, &archive, staging.path())
+}
+
+/// The checks of [`check_artifact`] on an artifact already downloaded to
+/// `archive`, extracting into `staging`.
+pub(super) fn check_staged(
+    tool: &str,
+    entry: &manifest::ArtifactEntry,
+    platform: &str,
+    archive: &Path,
+    staging: &Path,
+) -> Result<(), String> {
+    verify_sha256(archive, &entry.sha256, &entry.url)?;
+    let contents = staging.join("contents");
+    extract(archive, &entry.url, &contents)?;
 
     // Resolve the executables the way a real install does, through the entry
     // point metadata, so a moved layout fails here as it would fail a user.
@@ -234,55 +246,8 @@ fn binary_platform(path: &Path) -> Result<Option<String>, String> {
 
 #[cfg(test)]
 mod tests {
+    use super::super::fixtures::{binary_for, elf, make_archive, serve, sha256_hex};
     use super::*;
-
-    /// A gzipped tar of `(path, contents)` files, mode 0755.
-    fn make_archive(files: &[(&str, &[u8])]) -> Vec<u8> {
-        let mut builder = tar::Builder::new(flate2::write::GzEncoder::new(
-            Vec::new(),
-            flate2::Compression::fast(),
-        ));
-        for (path, contents) in files {
-            let mut header = tar::Header::new_gnu();
-            header.set_size(contents.len() as u64);
-            header.set_mode(0o755);
-            header.set_cksum();
-            builder.append_data(&mut header, path, *contents).unwrap();
-        }
-        builder.into_inner().unwrap().finish().unwrap()
-    }
-
-    /// A little-endian ELF header for one of the supported Linux
-    /// architectures, padded to a plausible file.
-    fn elf(machine: u16) -> Vec<u8> {
-        let mut bytes = vec![0u8; 64];
-        bytes[..4].copy_from_slice(b"\x7FELF");
-        bytes[4] = 2; // 64-bit
-        bytes[5] = 1; // little-endian
-        bytes[18..20].copy_from_slice(&machine.to_le_bytes());
-        bytes
-    }
-
-    /// Serve a fixed set of paths on localhost, and return the base URL.
-    fn serve(files: std::collections::HashMap<String, Vec<u8>>) -> String {
-        let server = tiny_http::Server::http("127.0.0.1:0").unwrap();
-        let port = server.server_addr().to_ip().unwrap().port();
-        std::thread::spawn(move || {
-            for request in server.incoming_requests() {
-                match files.get(request.url()) {
-                    Some(data) => request
-                        .respond(tiny_http::Response::from_data(data.clone()))
-                        .unwrap(),
-                    None => request.respond(tiny_http::Response::empty(404)).unwrap(),
-                }
-            }
-        });
-        format!("http://127.0.0.1:{port}")
-    }
-
-    fn sha256_hex(data: &[u8]) -> String {
-        hex::encode(<sha2::Sha256 as sha2::Digest>::digest(data))
-    }
 
     fn entry(url: String, sha256: String) -> manifest::ArtifactEntry {
         manifest::ArtifactEntry {
@@ -381,45 +346,21 @@ mod tests {
             std::fs::write(&path, bytes).unwrap();
             path
         };
-        let mut elf = [0u8; 20];
-        elf[..4].copy_from_slice(b"\x7FELF");
-        elf[5] = 1;
 
-        elf[18] = 0x3E;
-        assert_eq!(
-            binary_platform(&write("elf-x86_64", &elf))
-                .unwrap()
-                .unwrap(),
-            "linux-x86_64"
-        );
-        elf[18] = 0xB7;
-        assert_eq!(
-            binary_platform(&write("elf-aarch64", &elf))
-                .unwrap()
-                .unwrap(),
-            "linux-aarch64"
-        );
+        for platform in manifest::SUPPORTED_PLATFORMS.iter().copied() {
+            assert_eq!(
+                binary_platform(&write(platform, &binary_for(platform)))
+                    .unwrap()
+                    .as_deref(),
+                Some(platform)
+            );
+        }
+
         // An ELF machine we do not map is unknown, not a mismatch.
-        elf[18] = 0x28;
-        assert!(binary_platform(&write("elf-arm", &elf)).unwrap().is_none());
-
-        let macho = |cputype: u32| {
-            let mut bytes = [0u8; 20];
-            bytes[..4].copy_from_slice(&0xFEED_FACFu32.to_le_bytes());
-            bytes[4..8].copy_from_slice(&cputype.to_le_bytes());
-            bytes
-        };
-        assert_eq!(
-            binary_platform(&write("macho-x86_64", &macho(0x0100_0007)))
+        assert!(
+            binary_platform(&write("elf-arm", &elf(0x28)))
                 .unwrap()
-                .unwrap(),
-            "macos-x86_64"
-        );
-        assert_eq!(
-            binary_platform(&write("macho-arm64", &macho(0x0100_000C)))
-                .unwrap()
-                .unwrap(),
-            "macos-aarch64"
+                .is_none()
         );
 
         // A script, and a file too short to hold either header.

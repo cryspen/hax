@@ -82,54 +82,24 @@ test-tools-manifest:
 test-tools-manifest-all:
   cargo test -p cargo-hax --bin cargo-hax -- --ignored every_listed_artifact_verifies
 
-# Print the `tools-manifest.toml` entries for one version of a managed tool, e.g. `just add-tool-version aeneas nightly-2026.07.21-52fd438`. Each artifact is downloaded from the tool's `[fallback]` URL template and hashed, so a recorded checksum is never one copied from the wrong asset.
+# Print the `tools-manifest.toml` entries for one version of a managed tool, e.g. `just add-tool-version aeneas nightly-2026.07.21-52fd438`. Each artifact is downloaded, hashed, and put through the checks a listed entry has to pass. Reaches the network.
 add-tool-version tool version:
   #!/usr/bin/env bash
   set -euo pipefail
-  manifest="cli/subcommands/tools-manifest.toml"
-  # The output goes into the tool's section of the manifest; making the version
-  # a default is a separate edit to `defaults.toml`.
-  #
-  # The fallback templates name the same artifacts, per platform, that an
-  # unlisted version installs unverified: recording a checksum for them is
-  # exactly what promotes one to a verified entry.
-  templates=$(awk -v tool="{{tool}}" '
-    function flush() {
-      if (platform != "") { print platform "\t" url "\t" entry_points }
-      platform = ""; url = ""; entry_points = ""
-    }
-    /^\[/ {
-      flush()
-      if ($0 ~ "^\\[fallback\\." tool "\\.") {
-        platform = $0
-        sub(/^\[fallback\.[^.]+\./, "", platform)
-        sub(/\]$/, "", platform)
-      }
-      next
-    }
-    platform != "" && /^url = / { url = $0; sub(/^url = "/, "", url); sub(/"$/, "", url) }
-    platform != "" && /^entry_points = / { entry_points = $0 }
-    END { flush() }
-  ' "$manifest")
-  if [ -z "$templates" ]; then
-    echo "no [fallback] templates for {{tool}} in $manifest: is it a managed tool?" >&2
+  # Only the entries reach stdout, so the output can be appended to the tool's
+  # section of the manifest as it is. Making the version a default is a
+  # separate edit to `defaults.toml`.
+  entries=$(mktemp)
+  trap 'rm -f "$entries"' EXIT
+  HAX_ADD_TOOL_VERSION="{{tool}}@{{version}}" HAX_ADD_TOOL_VERSION_OUT="$entries" \
+    cargo test -q -p cargo-hax --bin cargo-hax -- \
+      --ignored --exact --nocapture tools::install::add_version::add_version >&2
+  # A filter matching no test is not a test failure, so an empty result is.
+  if [ ! -s "$entries" ]; then
+    echo "no entries were generated" >&2
     exit 1
   fi
-  # Hashed from the stream, so nothing lands on disk to be stale or confused
-  # with another platform's asset.
-  digest() {
-    if command -v sha256sum > /dev/null; then sha256sum; else shasum -a 256; fi | cut -d' ' -f1
-  }
-  while IFS=$'\t' read -r platform template entry_points; do
-    url="${template//\{version\}/{{version}}}"
-    echo "fetching $url" >&2
-    sha256=$(curl -fsSL --proto '=https' --tlsv1.2 "$url" | digest)
-    echo "[tools.{{tool}}.\"{{version}}\".$platform]"
-    echo "url = \"$url\""
-    echo "sha256 = \"$sha256\""
-    if [ -n "$entry_points" ]; then echo "$entry_points"; fi
-    echo
-  done <<< "$templates"
+  cat "$entries"
 
 # Install the managed tools from their real artifacts and run them. Reaches the network, and installs into the tool cache.
 test-tools-install:

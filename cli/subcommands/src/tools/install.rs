@@ -384,12 +384,17 @@ fn progress_bar(total: Option<u64>) -> indicatif::ProgressBar {
     }
 }
 
-fn verify_sha256(file: &Path, expected: &str, url: &str) -> Result<(), String> {
+/// The SHA-256 of a file, as lowercase hex.
+fn sha256_of(file: &Path) -> Result<String, String> {
     let mut hasher = sha2::Sha256::new();
     let mut reader = std::fs::File::open(file)
         .map_err(|e| format!("could not read back {}: {e}", file.display()))?;
     std::io::copy(&mut reader, &mut hasher).map_err(|e| e.to_string())?;
-    let actual = hex::encode(hasher.finalize());
+    Ok(hex::encode(hasher.finalize()))
+}
+
+fn verify_sha256(file: &Path, expected: &str, url: &str) -> Result<(), String> {
+    let actual = sha256_of(file)?;
     if actual == expected.to_lowercase() {
         Ok(())
     } else {
@@ -439,6 +444,10 @@ fn extract(archive: &Path, url: &str, dest: &Path) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(test)]
+mod add_version;
+#[cfg(test)]
+mod fixtures;
 #[cfg(test)]
 mod host_install;
 #[cfg(test)]
