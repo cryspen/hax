@@ -10,11 +10,8 @@
 //! `Vec<T>` in the default variant and to `Vec<T, Global>` in the F\* one —
 //! identical surface, so nothing here needs to know which is in play.
 //!
-//! Not covered here: `truncate`, `clear`, `resize` and `swap_remove` are
-//! `#[hax_lib::opaque]` stubs whose Rust bodies deliberately do not implement
-//! std's behaviour, and `drain` ignores its range argument (only the full
-//! range is exercised below). Comparing those against std would fail by
-//! construction.
+//! Not covered here: `drain` ignores its range argument (only the full range is
+//! exercised below), so it is kept opaque for aeneas too — see the Makefile.
 
 use crate::testing::Inject;
 use proptest::prelude::*;
@@ -99,6 +96,43 @@ proptest! {
             prop_assert_eq!(model.remove(idx), std_v.remove(idx));
             prop_assert_eq!(model, std_v.inject());
         }
+    }
+
+    #[test]
+    fn test_swap_remove(v in prop::collection::vec(any::<u8>(), 1..50), idx in 0usize..50) {
+        if idx < v.len() {
+            let mut model = v.inject();
+            let mut std_v = v.clone();
+            prop_assert_eq!(model.swap_remove(idx), std_v.swap_remove(idx));
+            prop_assert_eq!(model, std_v.inject());
+        }
+    }
+
+    #[test]
+    fn test_truncate(v in prop::collection::vec(any::<u8>(), 0..50), n in 0usize..60) {
+        let mut model = v.inject();
+        let mut std_v = v.clone();
+        model.truncate(n);
+        std_v.truncate(n);
+        prop_assert_eq!(model, std_v.inject());
+    }
+
+    #[test]
+    fn test_clear(v in prop::collection::vec(any::<u8>(), 0..50)) {
+        let mut model = v.inject();
+        let mut std_v = v.clone();
+        model.clear();
+        std_v.clear();
+        prop_assert_eq!(model, std_v.inject());
+    }
+
+    #[test]
+    fn test_resize(v in prop::collection::vec(any::<u8>(), 0..50), n in 0usize..60, x in any::<u8>()) {
+        let mut model = v.inject();
+        let mut std_v = v.clone();
+        model.resize(n, x);
+        std_v.resize(n, x);
+        prop_assert_eq!(model, std_v.inject());
     }
 
     #[test]
