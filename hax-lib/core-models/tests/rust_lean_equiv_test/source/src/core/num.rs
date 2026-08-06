@@ -425,47 +425,32 @@ pub fn test_i8_pow_neg_base() -> bool {
 // overflowing_pow
 // =============================================================================
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_pow_no_overflow() -> bool {
     2u8.overflowing_pow(3u32) == (8u8, false)
 }
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_pow_overflow() -> bool {
     // 4^4 = 256 wraps to 0.
     4u8.overflowing_pow(4u32) == (0u8, true)
 }
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_pow_zero_exp() -> bool {
     u8::MAX.overflowing_pow(0u32) == (1u8, false)
 }
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_overflowing_pow_neg_base() -> bool {
     (-2i8).overflowing_pow(2u32) == (4i8, false)
 }
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_overflowing_pow_overflow() -> bool {
     // (-2)^7 = -128 fits; (-2)^8 = 256 wraps to 0 with overflow.
     (-2i8).overflowing_pow(8u32) == (0i8, true)
 }
-*/
 
 // =============================================================================
 // checked_pow
