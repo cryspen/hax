@@ -50,10 +50,7 @@ pub mod iter {
                 Option::None
             } else if slice_length(self.elements) < self.cs {
                 let res = self.elements;
-                // `split_at(len)`, not `slice_slice(_, 0, 0)`: Aeneas's
-                // `Slice.subslice` rejects empty subslices.
-                let (_, empty) = slice_split_at(self.elements, slice_length(self.elements));
-                self.elements = empty;
+                self.elements = slice_slice(self.elements, 0, 0);
                 Option::Some(res)
             } else {
                 let (res, new_elements) = slice_split_at(self.elements, self.cs);

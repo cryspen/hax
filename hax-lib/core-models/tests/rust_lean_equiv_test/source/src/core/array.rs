@@ -4,9 +4,7 @@ use rust_lean_test_macro::rust_lean_test;
 
 // ----- Index<RangeTo<usize>> -------------------------------------------------
 
-#[rust_lean_test(
-    skip_lean = "Aeneas's `Slice.subslice` requires `start < end`, so an empty subslice fails; needs AeneasVerif/aeneas#1238"
-)]
+#[rust_lean_test]
 pub fn test_index_range_to_zero() -> bool {
     let a: [u8; 8] = [1, 2, 3, 4, 5, 6, 7, 8];
     a[..0] == []
