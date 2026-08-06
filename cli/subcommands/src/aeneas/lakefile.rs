@@ -24,28 +24,14 @@ pub struct LakefilePins {
     pub hax_lean_lib_rev: String,
 }
 
-/// Render a value as a TOML basic string, escaping what would otherwise
+/// Render a value as a TOML string, escaping what would otherwise
 /// end it. The pinned revisions are validated before they reach here (a
 /// `[versions]` entry when parsed, a tool version before it is installed);
 /// this makes the generated file well-formed regardless, so a value that
 /// ever slips through cannot restructure it into, say, a `[[require]]` on
 /// a repository of its choosing.
 fn toml_string(value: &str) -> String {
-    let mut escaped = String::with_capacity(value.len() + 2);
-    escaped.push('"');
-    for c in value.chars() {
-        match c {
-            '"' => escaped.push_str("\\\""),
-            '\\' => escaped.push_str("\\\\"),
-            '\n' => escaped.push_str("\\n"),
-            '\r' => escaped.push_str("\\r"),
-            '\t' => escaped.push_str("\\t"),
-            c if c.is_control() => escaped.push_str(&format!("\\u{:04X}", c as u32)),
-            c => escaped.push(c),
-        }
-    }
-    escaped.push('"');
-    escaped
+    toml::Value::String(value.to_string()).to_string()
 }
 
 /// Generate the contents of a `lakefile.toml` for a lean project.
