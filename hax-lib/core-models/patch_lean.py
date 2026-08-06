@@ -39,6 +39,43 @@ ALLOC_DIR = LEAN_DIR / "CoreModels" / "Alloc"
 # Helpers
 # ---------------------------------------------------------------------------
 
+# Every rewrite below is a *textual* workaround for a specific shape of Aeneas
+# output. When Aeneas changes, a pattern can silently stop matching and the
+# workaround becomes a no-op. We therefore count what each pass matches and
+# report the ones that never fired: either the output moved, or the workaround
+# is obsolete and can be deleted. Warnings only — a stale pattern is usually
+# caught by the Lean build, and failing here would block re-extraction.
+# The counts are only meaningful on *fresh* Aeneas output: re-running the
+# patcher over already-patched files reports most passes as unmatched.
+_MATCHES: dict[str, int] = {}
+
+
+def _record(label: str, n: int) -> None:
+    _MATCHES[label] = _MATCHES.get(label, 0) + n
+
+
+def sub(label: str, pattern: str, repl: str, text: str, flags: int = 0) -> str:
+    """`re.sub` that records how many times it fired."""
+    new, n = re.subn(pattern, repl, text, flags=flags)
+    _record(label, n)
+    return new
+
+
+def replace(label: str, text: str, old: str, new: str) -> str:
+    """`str.replace` that records how many times it fired."""
+    _record(label, text.count(old))
+    return text.replace(old, new)
+
+
+def report_unmatched() -> None:
+    for label in sorted(l for l, n in _MATCHES.items() if n == 0):
+        print(
+            f"patch_lean.py: warning: `{label}` matched nothing; the Aeneas "
+            f"output may have changed, or this workaround is obsolete.",
+            file=sys.stderr,
+        )
+
+
 def read(path: Path) -> str:
     return path.read_text()
 
@@ -50,29 +87,22 @@ def write(path: Path, contents: str) -> None:
 def rewrite_imports_and_opens(text: str) -> str:
     """Rewrite `imports` and `open` to match our package layout."""
     # import
-    text = re.sub(
+    text = sub(
+        "core/import CoreModels",
         r"^import CoreModels$",
         "import CoreModels.Command\nimport CoreModels.Core.TypesPrologue",
         text, flags=re.MULTILINE,
     )
-    
-    text = re.sub(
+    text = sub(
+        "core/import FunsExternal",
         r"^import CoreModels.Core.FunsExternal$",
         "import CoreModels.RustPrimitives.Funs",
         text, flags=re.MULTILINE,
     )
-    
-    text = re.sub(
+    text = sub(
+        "core/import TypesExternal",
         r"^import CoreModels.Core.TypesExternal$",
         "import CoreModels.RustPrimitives.Types",
-        text, flags=re.MULTILINE,
-    )
-    
-    # Fix the `open`s: We want to open the Aeneas library definitions, except for
-    # `core` and `alloc`.
-    text = re.sub(
-        r"^open Aeneas Aeneas\.Std Result ControlFlow Error$",
-        "open Aeneas\nopen Aeneas.Std hiding namespace core alloc\nopen Result ControlFlow Error",
         text, flags=re.MULTILINE,
     )
     return text
@@ -81,16 +111,18 @@ def rewrite_imports_and_opens(text: str) -> str:
 def fix_fail_panic(text: str) -> str:
     """In the definition of a Lean `item` called `panic`, the name `panic`
     does not resolve to `Error.panic` as it should."""
-    return text.replace("  fail panic\n", "  fail Error.panic\n")
+    return replace("fix_fail_panic", text, "  fail panic\n", "  fail Error.panic\n")
 
 def rename_namespace(text: str) -> str:
     """
     The extracted Rust-crate is called `core-models`, extracted as `core_models` by Aeneas.
     We rename the namespace to `CoreModels.core`.
     """
-    text = text.replace("namespace core_models", "namespace CoreModels.core")
-    text = text.replace("end core_models", "end CoreModels.core")
-    text = text.replace("Core_models", "Core")
+    text = replace("rename/namespace core_models", text,
+                   "namespace core_models", "namespace CoreModels.core")
+    text = replace("rename/end core_models", text,
+                   "end core_models", "end CoreModels.core")
+    text = replace("rename/Core_models", text, "Core_models", "Core")
     return text
 
 def rename_alloc_models(text: str) -> str:
@@ -105,13 +137,15 @@ def rename_alloc_models(text: str) -> str:
     the `alloc_models` namespace; the helpers below put the namespace back to
     `alloc` (where downstream Aeneas-extracted code expects to find it).
     """
-    text = text.replace("namespace alloc_models", "namespace CoreModels.alloc")
-    text = text.replace("end alloc_models", "end CoreModels.alloc")
-    text = text.replace("alloc_models", "alloc")
+    text = replace("rename/namespace alloc_models", text,
+                   "namespace alloc_models", "namespace CoreModels.alloc")
+    text = replace("rename/end alloc_models", text,
+                   "end alloc_models", "end CoreModels.alloc")
+    text = replace("rename/alloc_models", text, "alloc_models", "alloc")
     # Aeneas also PascalCases the staged crate name when it synthesises
     # trait-impl identifiers (e.g. `Alloc_modelsAllocAllocator`), which the
     # lowercase replace above misses.
-    text = text.replace("Alloc_models", "Alloc")
+    text = replace("rename/Alloc_models", text, "Alloc_models", "Alloc")
     return text
 
 
@@ -121,7 +155,8 @@ def rewrite_alloc_imports(text: str) -> str:
     runs, so the import paths still look like `import CoreModels.Alloc.<X>`.
     """
     # Replace `import Aeneas` with the explicit pieces it needs.
-    text = re.sub(
+    text = sub(
+        "alloc/import CoreModels",
         r"^import CoreModels$",
         "import CoreModels.Core.TypesPrologue\nimport CoreModels.Core.Types\n"
         "import CoreModels.RustPrimitives.Types",
@@ -129,7 +164,8 @@ def rewrite_alloc_imports(text: str) -> str:
         flags=re.MULTILINE,
     )
     # Additional imports just for `Funs.lean`
-    text = re.sub(
+    text = sub(
+        "alloc/import Alloc.Types",
         r"^import CoreModels.Alloc.Types$",
         "import CoreModels.Alloc.Types\nimport CoreModels.RustPrimitives.Funs\n"
         "import CoreModels.Core.Funs",
@@ -139,17 +175,10 @@ def rewrite_alloc_imports(text: str) -> str:
     # Drop imports of the alloc-side external files: their dependencies now live
     # in the parent's `lean/RustPrimitives/Funs.lean`, so the modules
     # `Aeneas.Alloc.{Funs,Types}External` don't exist anymore.
-    text = re.sub(
+    text = sub(
+        "alloc/drop External imports",
         r"^import CoreModels\.Alloc\.(?:Funs|Types)External$",
         "-- (alloc-side externals live in parent CoreModels.RustPrimitives)",
-        text, flags=re.MULTILINE,
-    )
-    
-    # Fix the `open`s: We want to open the Aeneas library definitions, except for
-    # `core` and `alloc`.
-    text = re.sub(
-        r"^open Aeneas Aeneas\.Std Result ControlFlow Error$",
-        "open Aeneas\nopen Aeneas.Std hiding namespace core alloc\nopen Result ControlFlow Error",
         text, flags=re.MULTILINE,
     )
     return text
@@ -158,13 +187,8 @@ def fix_result_match(text: str) -> str:
     """ A match on `result.Result` cannot be parsed properly by Lean in
     `I128.Insts.Core_modelsIterStepStep.steps_between`.
     """
-    text = re.sub(
-        r'\| result\.Result\.',
-        r'| core.result.Result.',
-        text
-    )
-
-    return text
+    return sub("fix_result_match", r"\| result\.Result\.",
+               r"| core.result.Result.", text)
 
 def rewrite_phantom_data(text: str) -> str:
     """Redefine `PhantomData`.
@@ -197,8 +221,11 @@ def rewrite_phantom_data(text: str) -> str:
       2. Comment out Aeneas's own `core_models::marker::PhantomData`
          definition block in `Core/Types.lean`.
     """
-    text = re.sub(r",\s*\(\)\)", ", core.marker.PhantomData.mk)", text)
-    text = re.sub(r"fmt\.rt\.ArgumentType\.Placeholder \(\)", "fmt.rt.ArgumentType.Placeholder core.marker.PhantomData.mk", text)
+    text = sub("phantom/tuple ()", r",\s*\(\)\)",
+               ", core.marker.PhantomData.mk)", text)
+    text = sub("phantom/ArgumentType.Placeholder",
+               r"fmt\.rt\.ArgumentType\.Placeholder \(\)",
+               "fmt.rt.ArgumentType.Placeholder core.marker.PhantomData.mk", text)
     
     return comment_out_blocks(
         text, ["core_models::marker::PhantomData"],
@@ -243,8 +270,10 @@ def rename_iter_param(text: str) -> str:
         # survives (the inserted `iter := iter_` is then left alone: `iter` is
         # guarded by the `:=` lookahead, `iter_` by the trailing-`_` lookahead).
         block = shorthand.sub(r"\1iter := iter_", block)
+        _record("rename_iter_param", 1)
         return token.sub("iter_", block)
 
+    _MATCHES.setdefault("rename_iter_param", 0)
     return transform_blocks(text, fn)
 
 
@@ -284,8 +313,11 @@ def drop_intoiterator_iterator_inst(text: str) -> str:
                 continue
             out.append(block_lines[i])
             i += 1
+        if dropped:
+            _record("drop_intoiterator_iterator_inst", 1)
         return "\n".join(out) if dropped else None
 
+    _MATCHES.setdefault("drop_intoiterator_iterator_inst", 0)
     return transform_blocks(text, fn)
 
 
@@ -334,8 +366,10 @@ def qualify_result_monad_impls(text: str) -> str:
         body = "\n".join(block_lines[doc_end:])
         body = _BARE_RESULT_RE.sub("Aeneas.Std.Result", body)
         body = _BARE_OK_RE.sub("Aeneas.Std.Result.ok", body)
+        _record("qualify_result_monad_impls", 1)
         return "\n".join(head) + ("\n" + body if body else "")
 
+    _MATCHES.setdefault("qualify_result_monad_impls", 0)
     return transform_blocks(text, fn)
 
 
@@ -355,7 +389,9 @@ def desugar_pure_num_bound_binds(text: str) -> str:
     pat = re.compile(
         rf"(let\s+\w+)\s+←\s+(num\.{int_alt}\.(?:MIN|MAX))\b"
     )
-    return pat.sub(r"\1 := \2", text)
+    new, n = pat.subn(r"\1 := \2", text)
+    _record("desugar_pure_num_bound_binds", n)
+    return new
 
 
 def comment_out_num_bounds(text: str) -> str:
@@ -401,10 +437,10 @@ def comment_out_types(text: str) -> str:
 
 def add_funs_prologue_import(text: str) -> str:
     """Funs.lean needs CoreModels.Core.FunsPrologue."""
-    return text.replace(
+    return replace(
+        "add_funs_prologue_import", text,
         "import Aeneas\n",
-        "import Aeneas\n"
-        "import CoreModels.Core.FunsPrologue\n",
+        "import Aeneas\nimport CoreModels.Core.FunsPrologue\n",
     )
 
 # Identifies the start of a top-level "block" (a doc comment, an attribute,
@@ -557,10 +593,14 @@ def comment_out_blocks(
     suffix = "-/" if trailer is None else f"-/  -- {trailer}"
 
     def fn(ident: str, block_lines: list[str]) -> str | None:
-        if any(_ident_matches(ident, s) for s in name_substrings):
-            return "/-\n" + "\n".join(block_lines) + "\n" + suffix
-        return None
+        hit = next((s for s in name_substrings if _ident_matches(ident, s)), None)
+        if hit is None:
+            return None
+        _record(f"comment_out {hit}", 1)
+        return "/-\n" + "\n".join(block_lines) + "\n" + suffix
 
+    for s in name_substrings:
+        _MATCHES.setdefault(f"comment_out {s}", 0)
     return transform_blocks(text, fn)
 
 
@@ -588,11 +628,15 @@ def relocate_blocks_to_end(
     captured: list[str] = []
 
     def fn(ident: str, block_lines: list[str]) -> str | None:
-        if any(_ident_matches(ident, s) for s in name_substrings):
-            captured.append("\n".join(block_lines))
-            return ""
-        return None
+        hit = next((s for s in name_substrings if _ident_matches(ident, s)), None)
+        if hit is None:
+            return None
+        _record(f"relocate {hit}", 1)
+        captured.append("\n".join(block_lines))
+        return ""
 
+    for s in name_substrings:
+        _MATCHES.setdefault(f"relocate {s}", 0)
     body = transform_blocks(text, fn)
     if not captured:
         return body
@@ -652,6 +696,7 @@ def main() -> int:
     # ----- alloc/ patches ---------------------------------------------------
     patch_alloc()
 
+    report_unmatched()
     print("done.")
     return 0
 
