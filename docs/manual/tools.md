@@ -143,12 +143,12 @@ A relative path is resolved against the directory of the `hax.toml` declaring it
 
 ## The `hax-lib` compatibility check
 
-`cargo-hax` and `hax-lib` are released together under one version number. Before processing a crate, hax checks that the crate's direct `hax-lib` dependency is one this `cargo-hax` binary understands: the accepted range is the binary's own version series, capped at its own version (for example a 0.3.7 binary accepts `hax-lib >=0.3.0, <=0.3.7`). A crate with no direct `hax-lib` dependency is not checked, and neither are workspace members this run does not process. When the run selects packages itself (`-C -p <PKG> ;`, `-C --workspace ;`), hax leaves that selection to Cargo and aborts only on an incompatibility no selection can avoid, that is one shared by every member of the workspace; a workspace mixing compatible and incompatible `hax-lib` versions fails at compile time instead.
+`cargo-hax` and `hax-lib` are released together under one version number, and that pair is the only combination that is tested. Before processing a crate, hax checks that the crate's direct `hax-lib` dependency matches the binary's own version exactly (a 0.3.7 binary accepts only `hax-lib` 0.3.7). A crate with no direct `hax-lib` dependency is not checked, and neither are workspace members this run does not process. When the run selects packages itself (`-C -p <PKG> ;`, `-C --workspace ;`), hax leaves that selection to Cargo and aborts only on an incompatibility no selection can avoid, that is one shared by every member of the workspace; a workspace mixing compatible and incompatible `hax-lib` versions fails at compile time instead.
 
 If the check fails, hax aborts before running any tool and prints the mismatch with a remedy:
 
 - when the found `hax-lib` is newer than the binary (typically after a `cargo update`), update `cargo-hax` to the matching release, or pin the `hax-lib` dependency back to the binary's version in `Cargo.toml`;
-- when it is older or on a different series, update the `hax-lib` dependency in `Cargo.toml`, or install a `cargo-hax` compatible with that `hax-lib`.
+- when it is older, update the `hax-lib` dependency (for example `cargo update -p hax-lib --precise <version>`), or install the `cargo-hax` matching that `hax-lib`.
 
 The `tools` subcommands never abort on this check: `cargo hax tools show` reports the compatibility instead of failing, and `cargo hax tools install` ignores it.
 

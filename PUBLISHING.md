@@ -41,6 +41,8 @@ for hax code:
 2. `hax-lib-macros`
 3. `hax-lib`
 
+`cargo-hax` accepts only the `hax-lib` of its own version, so every `cargo-hax` release must publish a matching `hax-lib`, even for changes that only touch the binary.
+
 ### Supporting crates for the engine
 The crate listed below are used only by the OCaml build of the
 engine. Those should not be published on `crate.io`.

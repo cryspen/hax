@@ -29,7 +29,7 @@ Changes to cargo-hax:
  - Make Aeneas option `-core-models-lib` the default for the new lean backend (#2075)
  - Manage aeneas and charon versions with `cargo hax tools` (`install`, `list`, `show`), pinned via a committed `hax.toml` and installed from pre-built binaries verified against a shipped manifest and cached under `$XDG_CACHE_HOME/hax/tools/`
  - Resolve aeneas and charon from the version manifest instead of `PATH`; use a `path` entry in `hax.toml` to point at a local build
- - Check the compatibility of the `hax-lib` version in scope before processing
+ - Check that the `hax-lib` version in scope matches the `cargo-hax` version before processing
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
