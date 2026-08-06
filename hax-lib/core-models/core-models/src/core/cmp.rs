@@ -517,4 +517,12 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn test_clamp_min_above_max_panics() {
+        crate::testing::panics_like_core(
+            || super::clamp(5u8, 7u8, 3u8),
+            || std::cmp::Ord::clamp(5u8, 7u8, 3u8),
+        );
+    }
 }
