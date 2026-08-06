@@ -39,6 +39,10 @@ def mkUPartialOrd {ty} : cmp.PartialOrd (UScalar ty) (UScalar ty) := {
        | .lt => cmp.Ordering.Less
        | .eq => cmp.Ordering.Equal
        | .gt => cmp.Ordering.Greater))
+  lt := fun x y => ok (match compare x.val y.val with | .lt => true | _ => false)
+  le := fun x y => ok (match compare x.val y.val with | .gt => false | _ => true)
+  gt := fun x y => ok (match compare x.val y.val with | .gt => true | _ => false)
+  ge := fun x y => ok (match compare x.val y.val with | .lt => false | _ => true)
 }
 
 /-- The `Iterator::next` implementation for `core::ops::range::Range<A>`,
@@ -67,6 +71,10 @@ def mkIPartialOrd {ty} : cmp.PartialOrd (IScalar ty) (IScalar ty) := {
        | .lt => cmp.Ordering.Less
        | .eq => cmp.Ordering.Equal
        | .gt => cmp.Ordering.Greater))
+  lt := fun x y => ok (match compare x.val y.val with | .lt => true | _ => false)
+  le := fun x y => ok (match compare x.val y.val with | .gt => false | _ => true)
+  gt := fun x y => ok (match compare x.val y.val with | .gt => true | _ => false)
+  ge := fun x y => ok (match compare x.val y.val with | .lt => false | _ => true)
 }
 
 def U8.Insts.CoreCmpPartialOrdU8       : cmp.PartialOrd U8    U8    := mkUPartialOrd
