@@ -230,9 +230,15 @@ def urem_euclid {ty : UScalarTy} (x y : UScalar ty) : Result (UScalar ty) :=
   if y.val = 0 then fail .divisionByZero
   else ok ⟨BitVec.ofNat _ (x.val % y.val)⟩
 
-@[spec]
+-- Lean's `%` on `Int` is already euclidean (non-negative for `y ≠ 0`), like Rust's.
 def irem_euclid {ty : IScalarTy} (x y : IScalar ty) : Result (IScalar ty) :=
   if y.val = 0 then fail .divisionByZero
+  -- Rust evaluates `x % y` first, which overflows exactly at `MIN % -1` — the
+  -- same overflow as negating `x`. `IScalar.min` is `irreducible`, so phrase the
+  -- check as a negation to keep this evaluable by `#guard`.
+  else if y.val = -1 then do
+    let _ ← IScalar.tryMk ty (-x.val)
+    ok ⟨BitVec.ofInt _ (x.val % y.val)⟩
   else ok ⟨BitVec.ofInt _ (x.val % y.val)⟩
 
 @[spec]
@@ -870,29 +876,33 @@ def rust_primitives.arithmetic.to_le_bytes_i128 : Std.I128 → Result (Array Std
 def rust_primitives.arithmetic.to_le_bytes_isize : Std.Isize → Result (Array Std.U8 8#usize) :=
   fun x => ok ⟨ (x.bv.setWidth 64).toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
+-- Rust's `abs` panics on `MIN` (negation overflow); `tryMk` reproduces that.
+def iabs {ty : IScalarTy} (x : IScalar ty) : Result (IScalar ty) :=
+  if x.val < 0 then IScalar.tryMk ty (-x.val) else ok x
+
 @[spec]
 def rust_primitives.arithmetic.abs_i8 : Std.I8 → Result Std.I8 :=
-  fun x => ok ⟨BitVec.ofNat _ x.val.natAbs⟩
+  iabs
 
 @[spec]
 def rust_primitives.arithmetic.abs_i16 : Std.I16 → Result Std.I16 :=
-  fun x => ok ⟨BitVec.ofNat _ x.val.natAbs⟩
+  iabs
 
 @[spec]
 def rust_primitives.arithmetic.abs_i32 : Std.I32 → Result Std.I32 :=
-  fun x => ok ⟨BitVec.ofNat _ x.val.natAbs⟩
+  iabs
 
 @[spec]
 def rust_primitives.arithmetic.abs_i64 : Std.I64 → Result Std.I64 :=
-  fun x => ok ⟨BitVec.ofNat _ x.val.natAbs⟩
+  iabs
 
 @[spec]
 def rust_primitives.arithmetic.abs_i128 : Std.I128 → Result Std.I128 :=
-  fun x => ok ⟨BitVec.ofNat _ x.val.natAbs⟩
+  iabs
 
 @[spec]
 def rust_primitives.arithmetic.abs_isize : Std.Isize → Result Std.Isize :=
-  fun x => ok ⟨BitVec.ofNat _ x.val.natAbs⟩
+  iabs
 
 @[spec]
 def rust_primitives.arithmetic.SIZE_BITS : Result Std.U32 :=
