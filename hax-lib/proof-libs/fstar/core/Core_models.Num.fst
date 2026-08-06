@@ -43,6 +43,8 @@ include Core_models.Bundle {impl_6__rem_euclid as impl_u8__rem_euclid}
 
 include Core_models.Bundle {impl_6__pow as impl_u8__pow}
 
+include Core_models.Bundle {impl_6__overflowing_pow as impl_u8__overflowing_pow}
+
 include Core_models.Bundle {impl_6__count_ones as impl_u8__count_ones}
 
 include Core_models.Bundle {impl_6__rotate_right as impl_u8__rotate_right}
@@ -116,6 +118,8 @@ include Core_models.Bundle {impl_7__unchecked_mul as impl_u16__unchecked_mul}
 include Core_models.Bundle {impl_7__rem_euclid as impl_u16__rem_euclid}
 
 include Core_models.Bundle {impl_7__pow as impl_u16__pow}
+
+include Core_models.Bundle {impl_7__overflowing_pow as impl_u16__overflowing_pow}
 
 include Core_models.Bundle {impl_7__count_ones as impl_u16__count_ones}
 
@@ -191,6 +195,8 @@ include Core_models.Bundle {impl_8__rem_euclid as impl_u32__rem_euclid}
 
 include Core_models.Bundle {impl_8__pow as impl_u32__pow}
 
+include Core_models.Bundle {impl_8__overflowing_pow as impl_u32__overflowing_pow}
+
 include Core_models.Bundle {impl_8__count_ones as impl_u32__count_ones}
 
 include Core_models.Bundle {impl_8__rotate_right as impl_u32__rotate_right}
@@ -264,6 +270,8 @@ include Core_models.Bundle {impl_9__unchecked_mul as impl_u64__unchecked_mul}
 include Core_models.Bundle {impl_9__rem_euclid as impl_u64__rem_euclid}
 
 include Core_models.Bundle {impl_9__pow as impl_u64__pow}
+
+include Core_models.Bundle {impl_9__overflowing_pow as impl_u64__overflowing_pow}
 
 include Core_models.Bundle {impl_9__count_ones as impl_u64__count_ones}
 
@@ -339,6 +347,8 @@ include Core_models.Bundle {impl_10__rem_euclid as impl_u128__rem_euclid}
 
 include Core_models.Bundle {impl_10__pow as impl_u128__pow}
 
+include Core_models.Bundle {impl_10__overflowing_pow as impl_u128__overflowing_pow}
+
 include Core_models.Bundle {impl_10__count_ones as impl_u128__count_ones}
 
 include Core_models.Bundle {impl_10__rotate_right as impl_u128__rotate_right}
@@ -412,6 +422,8 @@ include Core_models.Bundle {impl_11__unchecked_mul as impl_usize__unchecked_mul}
 include Core_models.Bundle {impl_11__rem_euclid as impl_usize__rem_euclid}
 
 include Core_models.Bundle {impl_11__pow as impl_usize__pow}
+
+include Core_models.Bundle {impl_11__overflowing_pow as impl_usize__overflowing_pow}
 
 include Core_models.Bundle {impl_11__count_ones as impl_usize__count_ones}
 
@@ -491,6 +503,8 @@ include Core_models.Bundle {impl_12__rem_euclid as impl_i8__rem_euclid}
 
 include Core_models.Bundle {impl_12__pow as impl_i8__pow}
 
+include Core_models.Bundle {impl_12__overflowing_pow as impl_i8__overflowing_pow}
+
 include Core_models.Bundle {impl_12__count_ones as impl_i8__count_ones}
 
 include Core_models.Bundle {impl_12__abs as impl_i8__abs}
@@ -568,6 +582,8 @@ include Core_models.Bundle {impl_13__unchecked_mul as impl_i16__unchecked_mul}
 include Core_models.Bundle {impl_13__rem_euclid as impl_i16__rem_euclid}
 
 include Core_models.Bundle {impl_13__pow as impl_i16__pow}
+
+include Core_models.Bundle {impl_13__overflowing_pow as impl_i16__overflowing_pow}
 
 include Core_models.Bundle {impl_13__count_ones as impl_i16__count_ones}
 
@@ -647,6 +663,8 @@ include Core_models.Bundle {impl_14__rem_euclid as impl_i32__rem_euclid}
 
 include Core_models.Bundle {impl_14__pow as impl_i32__pow}
 
+include Core_models.Bundle {impl_14__overflowing_pow as impl_i32__overflowing_pow}
+
 include Core_models.Bundle {impl_14__count_ones as impl_i32__count_ones}
 
 include Core_models.Bundle {impl_14__abs as impl_i32__abs}
@@ -724,6 +742,8 @@ include Core_models.Bundle {impl_15__unchecked_mul as impl_i64__unchecked_mul}
 include Core_models.Bundle {impl_15__rem_euclid as impl_i64__rem_euclid}
 
 include Core_models.Bundle {impl_15__pow as impl_i64__pow}
+
+include Core_models.Bundle {impl_15__overflowing_pow as impl_i64__overflowing_pow}
 
 include Core_models.Bundle {impl_15__count_ones as impl_i64__count_ones}
 
@@ -803,6 +823,8 @@ include Core_models.Bundle {impl_16__rem_euclid as impl_i128__rem_euclid}
 
 include Core_models.Bundle {impl_16__pow as impl_i128__pow}
 
+include Core_models.Bundle {impl_16__overflowing_pow as impl_i128__overflowing_pow}
+
 include Core_models.Bundle {impl_16__count_ones as impl_i128__count_ones}
 
 include Core_models.Bundle {impl_16__abs as impl_i128__abs}
@@ -880,6 +902,8 @@ include Core_models.Bundle {impl_17__unchecked_mul as impl_isize__unchecked_mul}
 include Core_models.Bundle {impl_17__rem_euclid as impl_isize__rem_euclid}
 
 include Core_models.Bundle {impl_17__pow as impl_isize__pow}
+
+include Core_models.Bundle {impl_17__overflowing_pow as impl_isize__overflowing_pow}
 
 include Core_models.Bundle {impl_17__count_ones as impl_isize__count_ones}
 
