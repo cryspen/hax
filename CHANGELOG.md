@@ -37,6 +37,7 @@ Changes to hax-lib:
  - New infrastructure for extraction of the F* proof-lib from the migrated core-models, unified with the lean core-lib infrastructure(#2077)
  - Support quote annotations (`before`, `after`, `options`) on inherent `impl` blocks and on their items (#1698)
  - Fix some regressions in the F* proof lib (particularly the `vec_deque` models)
+ - Strengthen testing of core-models, especially rust/lean equivalence. Fix core-models bugs in `chunks`, `result::map_or_else`, `step_by`, and signature mismatches (#2119)
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)

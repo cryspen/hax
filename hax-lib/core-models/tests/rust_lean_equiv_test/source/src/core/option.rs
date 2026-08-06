@@ -5,53 +5,35 @@ use rust_lean_test_macro::rust_lean_test;
 
 // ----- is_some / is_none -----------------------------------------------------
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_is_some_none_u8() -> bool {
     none_u8().is_some() == false
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_is_some_some_zero() -> bool {
     Some(0u8).is_some() == true
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_is_some_some_max() -> bool {
     Some(u8::MAX).is_some() == true
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_is_none_none_u8() -> bool {
     none_u8().is_none() == true
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_is_none_some_zero() -> bool {
     Some(0u8).is_none() == false
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_is_none_some_max() -> bool {
     Some(u8::MAX).is_none() == false
 }
-*/
 
 // ----- is_some_and -----------------------------------------------------------
 
@@ -94,89 +76,59 @@ pub fn test_is_none_or_none() -> bool {
 
 // ----- expect ----------------------------------------------------------------
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_expect_some_zero() -> bool {
     Some(0u8).expect("msg") == 0
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_expect_some_max() -> bool {
     Some(u8::MAX).expect("msg") == u8::MAX
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_expect_some_mid() -> bool {
     Some(42u8).expect("msg") == 42
 }
-*/
 
 // ----- unwrap ----------------------------------------------------------------
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_some_zero() -> bool {
     Some(0u8).unwrap() == 0
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_some_max() -> bool {
     Some(u8::MAX).unwrap() == u8::MAX
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_some_mid() -> bool {
     Some(7u8).unwrap() == 7
 }
-*/
 
 // ----- unwrap_or -------------------------------------------------------------
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_some_zero() -> bool {
     Some(0u8).unwrap_or(42) == 0
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_some_max() -> bool {
     Some(u8::MAX).unwrap_or(0) == u8::MAX
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_none_default_zero() -> bool {
     none_u8().unwrap_or(0) == 0
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_none_default_max() -> bool {
     none_u8().unwrap_or(u8::MAX) == u8::MAX
 }
-*/
 
 // ----- unwrap_or_else --------------------------------------------------------
 
@@ -197,29 +149,20 @@ pub fn test_unwrap_or_else_none() -> bool {
 
 // ----- unwrap_or_default -----------------------------------------------------
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_some_zero() -> bool {
     Some(0u8).unwrap_or_default() == 0
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_some_max() -> bool {
     Some(u8::MAX).unwrap_or_default() == u8::MAX
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_unwrap_or_default_none() -> bool {
     none_u8().unwrap_or_default() == 0
 }
-*/
 
 // ----- map -------------------------------------------------------------------
 
@@ -337,29 +280,20 @@ pub fn test_and_then_none() -> bool {
 
 // ----- or --------------------------------------------------------------------
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_or_some_some() -> bool {
     Some(0u8).or(Some(99u8)).unwrap_or(7) == 0
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_or_some_none() -> bool {
     Some(u8::MAX).or(none_u8()).unwrap_or(0) == u8::MAX
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_or_none_some() -> bool {
     none_u8().or(Some(42u8)).unwrap_or(0) == 42
 }
-*/
 
 #[rust_lean_test]
 pub fn test_or_none_none() -> bool {
@@ -390,21 +324,15 @@ pub fn test_or_else_none_to_none() -> bool {
 
 // ----- xor -------------------------------------------------------------------
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_xor_some_none() -> bool {
     Some(7u8).xor(none_u8()).unwrap_or(0) == 7
 }
-*/
 
-// TODO(option-eq-extraction: as above — Option `==` Option.)
-/*
 #[rust_lean_test]
 pub fn test_xor_none_some() -> bool {
     none_u8().xor(Some(u8::MAX)).unwrap_or(0) == u8::MAX
 }
-*/
 
 #[rust_lean_test]
 pub fn test_xor_some_some() -> bool {
@@ -418,8 +346,6 @@ pub fn test_xor_none_none() -> bool {
 
 // ----- zip -------------------------------------------------------------------
 
-// TODO(tuple-eq-extraction: `zip` returns `Option<(T, U)>` and our tests destructure the pair, hitting the missing `Pair.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_zip_some_some_zero() -> bool {
     match Some(0u8).zip(Some(0u8)) {
@@ -427,10 +353,7 @@ pub fn test_zip_some_some_zero() -> bool {
         None => false,
     }
 }
-*/
 
-// TODO(tuple-eq-extraction: `zip` returns `Option<(T, U)>` and our tests destructure the pair, hitting the missing `Pair.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_zip_some_some_max() -> bool {
     match Some(u8::MAX).zip(Some(0u8)) {
@@ -438,31 +361,21 @@ pub fn test_zip_some_some_max() -> bool {
         None => false,
     }
 }
-*/
 
-// TODO(tuple-eq-extraction: `zip` returns `Option<(T, U)>` and our tests destructure the pair, hitting the missing `Pair.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_zip_some_none() -> bool {
     Some(7u8).zip(none_u8()).is_none()
 }
-*/
 
-// TODO(tuple-eq-extraction: `zip` returns `Option<(T, U)>` and our tests destructure the pair, hitting the missing `Pair.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_zip_none_some() -> bool {
     none_u8().zip(Some(7u8)).is_none()
 }
-*/
 
-// TODO(tuple-eq-extraction: `zip` returns `Option<(T, U)>` and our tests destructure the pair, hitting the missing `Pair.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_zip_none_none() -> bool {
     none_u8().zip(none_u8()).is_none()
 }
-*/
 
 // ----- inspect ---------------------------------------------------------------
 
@@ -472,29 +385,20 @@ pub fn test_zip_none_none() -> bool {
 
 // ----- flatten ---------------------------------------------------------------
 
-// TODO(option-flatten-tuple-extraction: comparing `Option<Option<T>>` flattens through the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_flatten_some_some_zero() -> bool {
     Some(Some(0u8)).flatten().unwrap_or(99) == 0
 }
-*/
 
-// TODO(option-flatten-tuple-extraction: comparing `Option<Option<T>>` flattens through the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_flatten_some_some_max() -> bool {
     Some(Some(u8::MAX)).flatten().unwrap_or(0) == u8::MAX
 }
-*/
 
-// TODO(option-flatten-tuple-extraction: comparing `Option<Option<T>>` flattens through the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_flatten_some_none() -> bool {
     Some(none_u8()).flatten().is_none()
 }
-*/
 
 // ----- Default ---------------------------------------------------------------
 
@@ -631,15 +535,12 @@ pub fn test_manual_unwrap_or_none_bool() -> bool {
 
 // ----- take (manually defined in Lean, not extracted) -----------------------
 
-// TODO(option-eq-extraction: comparing the `take` return `Option<T> == Some(_)` extracts to the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_manual_take_some_u8_returns_old() -> bool {
     let mut x: Option<u8> = Some(9);
     let old = x.take();
     old == Some(9)
 }
-*/
 
 #[rust_lean_test]
 pub fn test_manual_take_some_u8_replaces_with_none() -> bool {
@@ -648,15 +549,12 @@ pub fn test_manual_take_some_u8_replaces_with_none() -> bool {
     x.is_some() == false
 }
 
-// TODO(option-eq-extraction: comparing the `take` return `Option<T> == Some(_)` extracts to the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_manual_take_some_u8_max_returns_old() -> bool {
     let mut x: Option<u8> = Some(u8::MAX);
     let old = x.take();
     old == Some(u8::MAX) && x.is_none()
 }
-*/
 
 #[rust_lean_test]
 pub fn test_manual_take_none_u8_returns_none() -> bool {
@@ -665,15 +563,12 @@ pub fn test_manual_take_none_u8_returns_none() -> bool {
     old.is_none() && x.is_none()
 }
 
-// TODO(option-eq-extraction: comparing the `take` return `Option<T> == Some(_)` extracts to the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_manual_take_some_u32() -> bool {
     let mut x: Option<u32> = Some(123);
     let old = x.take();
     old == Some(123) && x.is_none()
 }
-*/
 
 #[rust_lean_test]
 pub fn test_manual_take_none_u32() -> bool {
@@ -682,15 +577,12 @@ pub fn test_manual_take_none_u32() -> bool {
     old.is_none() && x.is_none()
 }
 
-// TODO(option-eq-extraction: comparing the `take` return `Option<T> == Some(_)` extracts to the missing `Option.PartialEq` def.)
-/*
 #[rust_lean_test]
 pub fn test_manual_take_some_bool() -> bool {
     let mut x: Option<bool> = Some(true);
     let old = x.take();
     old == Some(true) && x.is_none()
 }
-*/
 
 // ----- PartialEq: `Option<T> == Option<T>` -----------------------------------
 

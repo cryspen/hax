@@ -339,23 +339,50 @@ pub mod range {
 #[cfg(test)]
 mod tests {
     use crate::testing::Inject;
+    use pastey::paste;
     use proptest::prelude::*;
 
-    proptest! {
-        #[test]
-        fn test_add_assign(x in 0u8..128, y in 0u8..128) {
-            let mut model = x.inject();
-            super::arith::AddAssign::add_assign(&mut model, y.inject());
-            prop_assert_eq!(model, x + y);
-        }
+    // `int_trait_impls!` covers u8..u64. The `requires` rules out wrapping, so
+    // the domain is every non-overflowing pair, edges included.
+    macro_rules! assign_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_ $t _add_assign>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assume!(x.checked_add(y).is_some());
+                            let mut model = x.inject();
+                            super::arith::AddAssign::add_assign(&mut model, y.inject());
+                            let mut std_value = x;
+                            std::ops::AddAssign::add_assign(&mut std_value, y);
+                            prop_assert_eq!(model, std_value);
+                        }
 
-        #[test]
-        fn test_sub_assign(x in any::<u8>(), y in any::<u8>()) {
-            if x >= y {
-                let mut model = x.inject();
-                super::arith::SubAssign::sub_assign(&mut model, y.inject());
-                prop_assert_eq!(model, x - y);
+                        #[test]
+                        fn [<test_ $t _sub_assign>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assume!(x.checked_sub(y).is_some());
+                            let mut model = x.inject();
+                            super::arith::SubAssign::sub_assign(&mut model, y.inject());
+                            let mut std_value = x;
+                            std::ops::SubAssign::sub_assign(&mut std_value, y);
+                            prop_assert_eq!(model, std_value);
+                        }
+
+                        #[test]
+                        fn [<test_ $t _add_assign_at_max>](x in any::<$t>()) {
+                            let y = <$t>::MAX - x;
+                            let mut model = x.inject();
+                            super::arith::AddAssign::add_assign(&mut model, y.inject());
+                            let mut std_value = x;
+                            std::ops::AddAssign::add_assign(&mut std_value, y);
+                            prop_assert_eq!(model, std_value);
+                        }
+                    }
+                )*
             }
         }
     }
+
+    assign_test! { u8 u16 u32 u64 }
 }

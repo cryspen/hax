@@ -14,6 +14,12 @@ agnostic to that mapping.
 The Lean build then fails for any test whose Aeneas translation does
 not evaluate to `Result.ok true`.
 
+Tests marked `#[rust_lean_test(skip_lean = "why")]` get their guard
+written to `SkippedTests.lean` instead. Nothing imports that file, so a
+normal build ignores it; `--report-skipped` (driven by `make
+check-skipped`) builds it on purpose and fails if a skipped test has
+started passing, so a fixed blocker cannot go unnoticed.
+
 Invoked from the Makefile after `make extract`. Idempotent.
 """
 
@@ -25,86 +31,104 @@ HERE = pathlib.Path(__file__).resolve().parent
 SRC_ROOT = HERE / "source" / "src"
 FUNS = HERE / "lean" / "RustLeanTests" / "Funs.lean"
 OUT = HERE / "lean" / "RustLeanTests" / "LeanTests.lean"
+OUT_SKIPPED = HERE / "lean" / "RustLeanTests" / "SkippedTests.lean"
 
 # Crate namespace that Aeneas wraps every def in (must match `name` in
 # `source/Cargo.toml`).
 CRATE_NAMESPACE = "rust_lean_tests"
 
-# Marker attribute + `pub fn NAME() -> bool`. Body is ignored.
+# Marker attribute (with optional `(skip_lean = "...")`) + `pub fn NAME()
+# -> bool`. Body is ignored. The argument list steps over string literals
+# rather than stopping at the first `)`, because a reason routinely contains
+# parenthesised prose.
 ATTR_FN_RE = re.compile(
-    r"#\[\s*rust_lean_test\s*\]"
+    r"#\[\s*rust_lean_test\s*(?:\((?P<args>(?:\"[^\"]*\"|[^()])*)\))?\s*\]"
     r"(?:\s*#\[[^\]]*\])*"
     r"\s*pub\s+fn\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)"
     r"\s*->\s*bool",
     re.MULTILINE,
 )
 
-# Strip Rust comments. We don't care about precision (no string-literal
-# awareness, etc.) — we just need commented-out test attributes to stop
-# matching ATTR_FN_RE so contributors can disable a test with `/* ... */`
-# or `//` lines and have gen-lean-tests respect it.
-BLOCK_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
-LINE_COMMENT_RE = re.compile(r"//[^\n]*")
+SKIP_RE = re.compile(r'skip_lean\s*=\s*"(?P<reason>[^"]*)"')
 
 
 def strip_comments(src: str) -> str:
-    src = BLOCK_COMMENT_RE.sub("", src)
-    src = LINE_COMMENT_RE.sub("", src)
-    return src
+    """Strip Rust comments so a commented-out test stops matching ATTR_FN_RE.
+    Depth-tracked: Rust block comments nest, and disabled tests here have been
+    wrapped more than once."""
+    out: list[str] = []
+    i, n, depth = 0, len(src), 0
+    while i < n:
+        if src.startswith("/*", i):
+            depth += 1
+            i += 2
+        elif depth and src.startswith("*/", i):
+            depth -= 1
+            i += 2
+        elif depth:
+            if src[i] == "\n":
+                out.append("\n")
+            i += 1
+        elif src.startswith("//", i):
+            j = src.find("\n", i)
+            i = n if j < 0 else j
+        else:
+            out.append(src[i])
+            i += 1
+    return "".join(out)
+
 
 # Matches `def <dotted.path>.<name> ...` in the extracted Funs.lean.
 # Captures the dotted path prefix (without the trailing name).
 DEF_RE_TEMPLATE = r"^def\s+(?P<path>(?:[A-Za-z_][A-Za-z0-9_]*\.)*){name}\s"
 
 
-def collect_source_tests() -> list[str]:
-    """Return ordered list of `#[rust_lean_test]` function names found
-    in the source tree."""
-    names: list[str] = []
+def collect_source_tests() -> list[tuple[str, str | None]]:
+    """Return ordered `(name, skip_reason)` for every `#[rust_lean_test]`
+    function in the source tree; `skip_reason` is None when the Lean half
+    is expected to pass."""
+    tests: list[tuple[str, str | None]] = []
     seen: set[str] = set()
     for rs in sorted(SRC_ROOT.rglob("*.rs")):
         for m in ATTR_FN_RE.finditer(strip_comments(rs.read_text())):
-            n = m.group("name")
-            if n in seen:
-                sys.exit(f"gen_lean_tests.py: duplicate test name: {n} (in {rs})")
-            seen.add(n)
-            names.append(n)
-    return names
+            name = m.group("name")
+            if name in seen:
+                sys.exit(f"gen_lean_tests.py: duplicate test name: {name} (in {rs})")
+            seen.add(name)
+            skip = SKIP_RE.search(m.group("args") or "")
+            tests.append((name, skip.group("reason") if skip else None))
+    return tests
 
 
-def qualify(name: str, funs_text: str) -> str:
-    """Find `def <path>.<name>` in Funs.lean and return the fully
-    qualified Lean name `<crate>.<path>.<name>`."""
+def qualify(name: str, funs_text: str) -> str | None:
+    """Find `def <path>.<name>` in Funs.lean and return the fully qualified
+    Lean name `<crate>.<path>.<name>`, or None if Aeneas emitted no def."""
     m = re.search(DEF_RE_TEMPLATE.format(name=re.escape(name)), funs_text, re.MULTILINE)
-    if m is None:
-        sys.exit(
-            f"gen_lean_tests.py: `{name}` is annotated `#[rust_lean_test]` in the "
-            f"Rust source but no matching `def` was found in {FUNS.name}. "
-            f"Either Aeneas didn't extract it, or its body relies on something "
-            f"the extraction pipeline silently dropped."
-        )
-    return f"{CRATE_NAMESPACE}.{m.group('path')}{name}"
+    return f"{CRATE_NAMESPACE}.{m.group('path')}{name}" if m else None
 
 
-def render(qualified: list[str]) -> str:
+def render(guards: list[tuple[str, str | None]], preamble: list[str]) -> str:
+    """`guards` is `(qualified-name, reason)`; the reason becomes the
+    `-- skip_lean: …` line that `--report-skipped` reads back."""
     lines = [
-        "-- AUTO-GENERATED by rust_lean_equiv_test/gen_lean_tests.py.",
-        "-- DO NOT EDIT. One `#guard` per `#[rust_lean_test]` function in",
-        "-- `source/src/**/*.rs`. Each guard fails the Lean build if",
-        "-- Aeneas's translation does not evaluate to `Result.ok true`.",
+        "-- AUTO-GENERATED by rust_lean_equiv_test/gen_lean_tests.py. DO NOT EDIT.",
+        *preamble,
         "import RustLeanTests.Funs",
         "",
-        # Default cap is 100 errors per file; with hundreds of guards a",
-        # single broken extraction would otherwise hide all the others.",
+        # Default cap is 100 errors per file; with hundreds of guards a
+        # single broken extraction would otherwise hide all the others.
         "set_option maxErrors 10000",
         "",
     ]
-    lines.extend(f"#guard {fq} == .ok true" for fq in qualified)
+    for fq, reason in guards:
+        if reason is not None:
+            lines.append(f"-- skip_lean: {reason}")
+        lines.append(f"#guard {fq} == .ok true")
     lines.append("")
     return "\n".join(lines)
 
 
-def main() -> None:
+def generate() -> None:
     if not SRC_ROOT.exists():
         sys.exit(f"gen_lean_tests.py: source dir not found: {SRC_ROOT}")
     if not FUNS.exists():
@@ -113,12 +137,77 @@ def main() -> None:
             f"Run `make extract` first (the Makefile sequences this)."
         )
     funs_text = FUNS.read_text()
-    names = collect_source_tests()
-    qualified = [qualify(n, funs_text) for n in names]
+    active: list[tuple[str, None]] = []
+    skipped: list[tuple[str, str]] = []
+    missing: list[str] = []
+    skipped_unextracted: list[str] = []
+    for name, reason in collect_source_tests():
+        fq = qualify(name, funs_text)
+        if reason is None:
+            (active.append((fq, None)) if fq else missing.append(name))
+        elif fq:
+            skipped.append((fq, reason))
+        else:
+            skipped_unextracted.append(name)
+
+    # All of them, not just the first: each round-trip costs minutes.
+    if missing:
+        listing = "\n".join(f"  - {n}" for n in missing)
+        sys.exit(
+            f"gen_lean_tests.py: {len(missing)} test(s) annotated "
+            f"`#[rust_lean_test]` have no matching `def` in {FUNS.name}:\n"
+            f"{listing}\n"
+            f"Either Aeneas didn't extract them, or their bodies rely on "
+            f"something the extraction pipeline silently dropped."
+        )
+
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(render(qualified))
-    print(f"gen_lean_tests.py: wrote {OUT.relative_to(HERE)} ({len(qualified)} tests)")
+    OUT.write_text(render(active, []))
+    OUT_SKIPPED.write_text(
+        render(
+            skipped,
+            [
+                "-- `skip_lean` tests: each is expected to still FAIL. Nothing imports",
+                "-- this file; `make check-skipped` builds it and reports any that pass.",
+            ],
+        )
+    )
+    print(
+        f"gen_lean_tests.py: wrote {OUT.relative_to(HERE)} ({len(active)} tests), "
+        f"{OUT_SKIPPED.relative_to(HERE)} ({len(skipped)} skipped)"
+    )
+    for name in skipped_unextracted:
+        print(f"gen_lean_tests.py: note: skipped test `{name}` was not extracted")
+
+
+def report_skipped(log_path: pathlib.Path) -> None:
+    """Fail if any guard in SkippedTests.lean is absent from Lean's error
+    output — i.e. a skipped test now agrees and should be re-enabled."""
+    if not OUT_SKIPPED.exists():
+        sys.exit(f"gen_lean_tests.py: {OUT_SKIPPED} not found; run the generator first.")
+    guards = re.findall(
+        r"^-- skip_lean: (?P<reason>.*)\n#guard (?P<fq>\S+) ==",
+        OUT_SKIPPED.read_text(),
+        re.MULTILINE,
+    )
+    if not guards:
+        print("gen_lean_tests.py: no skipped tests.")
+        return
+    log = log_path.read_text()
+    # With the reason: that's what says whether to re-enable.
+    passing = [(fq, reason) for reason, fq in guards if fq not in log]
+    if passing:
+        listing = "\n".join(f"  - {fq}\n      skipped for: {r}" for fq, r in passing)
+        sys.exit(
+            f"gen_lean_tests.py: {len(passing)} of {len(guards)} skipped test(s) now "
+            f"agree with Rust:\n{listing}\n"
+            f"Drop their `skip_lean` so the suite covers them again."
+        )
+    print(f"gen_lean_tests.py: all {len(guards)} skipped test(s) still fail, as expected.")
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "--report-skipped":
+        report_skipped(pathlib.Path(sys.argv[2]))
+    else:
+        generate()

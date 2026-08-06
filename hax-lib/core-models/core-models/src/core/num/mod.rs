@@ -799,11 +799,12 @@ mod tests {
                             prop_assert_eq!(super::$t::overflowing_mul(x.inject(), y.inject()), x.overflowing_mul(y));
                         }
 
+                        // `checked_rem_euclid`, not `y != 0`: signed `MIN % -1`
+                        // overflows too, and both sides panic on it.
                         #[test]
                         fn [<test_ $t _rem_euclid>](x in any::<$t>(), y in any::<$t>()) {
-                            if y != 0 {
-                                prop_assert_eq!(super::$t::rem_euclid(x.inject(), y.inject()), x.rem_euclid(y));
-                            }
+                            prop_assume!(x.checked_rem_euclid(y).is_some());
+                            prop_assert_eq!(super::$t::rem_euclid(x.inject(), y.inject()), x.rem_euclid(y));
                         }
 
                         #[test]
@@ -968,7 +969,101 @@ mod tests {
         }
     }
 
+    // Their `requires` rules out overflow, so the domain is exactly where
+    // `checked_*` answers `Some` — including `i*::MIN / -1`.
+    macro_rules! unchecked_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_ $t _unchecked_add>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assume!(x.checked_add(y).is_some());
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_add(x.inject(), y.inject()) },
+                                unsafe { x.unchecked_add(y) });
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_sub>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assume!(x.checked_sub(y).is_some());
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_sub(x.inject(), y.inject()) },
+                                unsafe { x.unchecked_sub(y) });
+                        }
+
+                        // Full-range pairs almost always overflow: halve `y` until it fits.
+                        #[test]
+                        fn [<test_ $t _unchecked_mul>](x in any::<$t>(), y in any::<$t>()) {
+                            let mut y = y;
+                            while x.checked_mul(y).is_none() {
+                                y /= 2;
+                            }
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_mul(x.inject(), y.inject()) },
+                                unsafe { x.unchecked_mul(y) });
+                        }
+
+                        // std has no `unchecked_div`/`unchecked_rem`; `/` and `%` stand in.
+                        #[test]
+                        fn [<test_ $t _unchecked_div>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assume!(x.checked_div(y).is_some());
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_div(x.inject(), y.inject()) },
+                                x / y);
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_rem>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assume!(x.checked_rem(y).is_some());
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_rem(x.inject(), y.inject()) },
+                                x % y);
+                        }
+                    }
+                )*
+            }
+        }
+    }
+
+    macro_rules! rem_euclid_panic_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $t _rem_euclid_by_zero_panics>]() {
+                        let (x, y) = (std::hint::black_box(7 as $t), std::hint::black_box(0 as $t));
+                        crate::testing::panics_like_core(
+                            || super::$t::rem_euclid(x.inject(), y.inject()),
+                            || x.rem_euclid(y),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    rem_euclid_panic_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+
+    macro_rules! rem_euclid_overflow_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $t _rem_euclid_min_by_neg_one_panics>]() {
+                        let (x, y) = (std::hint::black_box(<$t>::MIN), std::hint::black_box(-1 as $t));
+                        crate::testing::panics_like_core(
+                            || super::$t::rem_euclid(x.inject(), y.inject()),
+                            || x.rem_euclid(y),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    rem_euclid_overflow_test! { i8 i16 i32 i64 i128 isize }
+
     int_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+    unchecked_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
     uint_test! { u8 u16 u32 u64 u128 usize }
     iint_test! { i8 i16 i32 i64 i128 isize }
     iint_mixed_test! { (i8, u8) (i16, u16) (i32, u32) (i64, u64) (i128, u128) (isize, usize) }

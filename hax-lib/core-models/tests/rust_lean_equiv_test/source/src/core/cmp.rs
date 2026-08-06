@@ -134,3 +134,50 @@ pub fn test_u8_cmp_equal() -> bool {
         _ => false,
     }
 }
+
+// ----- clamp / Ordering::then / Ordering::then_with ---------------------------
+
+#[rust_lean_test]
+pub fn test_ordering_then_keeps_first() -> bool {
+    match std::cmp::Ordering::Less.then(std::cmp::Ordering::Greater) {
+        std::cmp::Ordering::Less => true,
+        _ => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_ordering_then_falls_through_on_equal() -> bool {
+    match std::cmp::Ordering::Equal.then(std::cmp::Ordering::Greater) {
+        std::cmp::Ordering::Greater => true,
+        _ => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_ordering_is_le() -> bool {
+    std::cmp::Ordering::Less.is_le() && std::cmp::Ordering::Equal.is_le()
+}
+
+#[rust_lean_test]
+pub fn test_ordering_is_gt() -> bool {
+    std::cmp::Ordering::Greater.is_gt() && !std::cmp::Ordering::Equal.is_gt()
+}
+
+// Rust-only: the model's `Ord` has only `cmp`, no `clamp`.
+#[cfg(test)]
+mod ord_clamp {
+    #[test]
+    fn test_clamp_below() {
+        assert_eq!(1u8.clamp(3, 7), 3);
+    }
+
+    #[test]
+    fn test_clamp_inside() {
+        assert_eq!(5u8.clamp(3, 7), 5);
+    }
+
+    #[test]
+    fn test_clamp_above() {
+        assert_eq!(9u8.clamp(3, 7), 7);
+    }
+}

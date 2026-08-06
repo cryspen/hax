@@ -9,7 +9,7 @@ LEAN_DIR = lean
 # than the auto-derived module prefix.
 SUBDIR = RustLeanTests
 
-.PHONY: all llbc extract gen-lean-tests cargo-test build clean
+.PHONY: all llbc extract gen-lean-tests cargo-test build check-skipped clean
 
 all: cargo-test build
 
@@ -51,6 +51,14 @@ gen-lean-tests: extract
 build: gen-lean-tests
 	cd $(LEAN_DIR) && lake exe cache get && lake build
 
+# 5. `SkippedTests.lean` is outside the import graph, so `build` ignores it.
+#    Here we elaborate it on purpose: every guard is expected to FAIL, and one
+#    that passes means its blocker is gone. Hence `-` — success is the failure
+#    case.
+check-skipped: gen-lean-tests
+	-cd $(LEAN_DIR) && lake env lean RustLeanTests/SkippedTests.lean > $(abspath skipped.log) 2>&1
+	python3 gen_lean_tests.py --report-skipped skipped.log
+
 # Only remove files Aeneas re-generates; keep the hand-written
 # `FunsExternal.lean` / `TypesExternal.lean` stubs in $(SUBDIR).
 clean:
@@ -60,4 +68,6 @@ clean:
 	rm -f $(LEAN_DIR)/$(SUBDIR)/FunsExternal_Template.lean
 	rm -f $(LEAN_DIR)/$(SUBDIR)/TypesExternal_Template.lean
 	rm -f $(LEAN_DIR)/$(SUBDIR)/LeanTests.lean
+	rm -f $(LEAN_DIR)/$(SUBDIR)/SkippedTests.lean
+	rm -f skipped.log
 	rm -rf $(LEAN_DIR)/.lake

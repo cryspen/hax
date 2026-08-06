@@ -35,11 +35,11 @@ def rust_primitives.slice.slice_split_at
     Name pattern: [rust_primitives::slice::slice_contains]
     Visibility: public -/
 @[rust_fun "rust_primitives::slice::slice_contains"]
+-- `anyM`, not `mapM`+`any`: std stops at the first match.
 def rust_primitives.slice.slice_contains
   {T : Type} (CoreCmpPartialEqInst : core.cmp.PartialEq T T) :
-  Slice T → T → Result Bool := fun s x => do
-  let rs ← s.val.mapM (fun y => CoreCmpPartialEqInst.eq y x)
-  ok (rs.any id)
+  Slice T → T → Result Bool := fun s x =>
+  s.val.anyM (fun y => CoreCmpPartialEqInst.eq y x)
 
 /-- [rust_primitives::slice::slice_index]:
     Source: 'rust_primitives/src/lib.rs', lines 15:4-15:50
@@ -66,7 +66,13 @@ def rust_primitives.slice.slice_slice
 def rust_primitives.slice.slice_clone_from_slice
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
   Slice T → Slice T → Result (Slice T) := fun dest src =>
-  if dest.length = src.length then ok src
+  if dest.length = src.length then
+    -- Cloned, so `clone`'s effects are observable and cannot be skipped.
+    match h : src.val.mapM corecloneCloneInst.clone with
+    | ok cloned => ok ⟨cloned, by
+        have := List.mapM_Result_length h; have := src.property; omega⟩
+    | fail e => fail e
+    | div => div
   else fail .panic
 
 /-- [rust_primitives::slice::slice_index_mut]: returns the element together with
@@ -103,10 +109,10 @@ def rust_primitives.slice.slice_swap
   let s1 ← Slice.update s a vb
   Slice.update s1 b va
 
-private theorem foldlM_list_build_length {T F : Type}
-    (step : List T × F → Nat → Result (List T × F))
+private theorem foldlM_list_build_length {A T F : Type}
+    (step : List T × F → A → Result (List T × F))
     (hstep : ∀ l f i r, step (l, f) i = .ok r → r.1.length = l.length + 1) :
-    ∀ (l : List Nat) (acc : List T) (f : F) (result : List T × F),
+    ∀ (l : List A) (acc : List T) (f : F) (result : List T × F),
     l.foldlM step (acc, f) = .ok result → result.1.length = acc.length + l.length := by
   intro l
   induction l with
@@ -174,13 +180,38 @@ def rust_primitives.slice.array_from_fn
 @[rust_fun "rust_primitives::slice::array_map"]
 def rust_primitives.slice.array_map
   {T : Type} {U : Type} {F : Type} {N : Std.Usize}
-  (coreopsfunctionFnFTupleTUInst : core.ops.function.Fn F T U) :
+  (coreopsfunctionFnMutFTupleTUInst : core.ops.function.FnMut F T U) :
   Array T N → F → Result (Array U N) := fun a f =>
-  match h : a.val.mapM (fun x => coreopsfunctionFnFTupleTUInst.call f x) with
-  | ok mapped => ok ⟨mapped, by
-      have := List.mapM_Result_length h; have := a.property; omega⟩
+  match h : a.val.foldlM
+    (fun (s : List U × F) (x : T) => do
+      let (v, f') ← coreopsfunctionFnMutFTupleTUInst.call_mut s.2 x
+      ok (s.1 ++ [v], f'))
+    ([], f) with
   | fail e => fail e
   | div => div
+  | ok result => ok ⟨result.1, by
+      have hlen := foldlM_list_build_length
+        (fun (s : List U × F) (x : T) => do
+          let (v, f') ← coreopsfunctionFnMutFTupleTUInst.call_mut s.2 x
+          ok (s.1 ++ [v], f'))
+        (fun l f x r hr => by
+          simp only [] at hr
+          cases hcall : coreopsfunctionFnMutFTupleTUInst.call_mut f x with
+          | ok p =>
+            obtain ⟨v, fv⟩ := p
+            simp only [hcall, bind_tc_ok] at hr
+            have heq : r = (l ++ [v], fv) := (Result.ok.inj hr).symm
+            simp [heq, List.length_append]
+          | fail e =>
+            simp only [hcall, bind_tc_fail] at hr
+            exact nomatch hr
+          | div =>
+            simp only [hcall, bind_tc_div] at hr
+            exact nomatch hr)
+        _ [] f result h
+      have := a.property
+      simp only [List.length_nil, Nat.zero_add] at hlen
+      omega⟩
 
 /-- [rust_primitives::slice::array_as_slice]:
     Source: 'rust_primitives/src/lib.rs', lines 34:4-34:64
@@ -977,14 +1008,19 @@ def rust_primitives.sequence.seq_concat
     if h : combined.length ≤ Usize.max then ok (⟨combined, h⟩, Slice.new T)
     else fail .maximumSizeExceeded
 
+-- Appends `src`'s elements *cloned*.
 @[rust_fun "rust_primitives::sequence::seq_extend"]
 def rust_primitives.sequence.seq_extend
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
   rust_primitives.sequence.Seq T → Slice T → Result
     (rust_primitives.sequence.Seq T) := fun s src =>
-  let combined := s.val ++ src.val
-  if h : combined.length ≤ Usize.max then ok ⟨combined, h⟩
-  else fail .maximumSizeExceeded
+  match src.val.mapM corecloneCloneInst.clone with
+  | ok cloned =>
+    let combined := s.val ++ cloned
+    if h : combined.length ≤ Usize.max then ok ⟨combined, h⟩
+    else fail .maximumSizeExceeded
+  | fail e => fail e
+  | div => div
 
 @[rust_fun "rust_primitives::sequence::seq_push"]
 def rust_primitives.sequence.seq_push
@@ -995,11 +1031,20 @@ def rust_primitives.sequence.seq_push
     if h : extended.length ≤ Usize.max then ok ⟨extended, h⟩
     else fail .maximumSizeExceeded
 
+-- std clones `x` for all but the last element, which is `x` itself moved in.
 @[rust_fun "rust_primitives::sequence::seq_create"]
 def rust_primitives.sequence.seq_create
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
   T → Std.Usize → Result (rust_primitives.sequence.Seq T) := fun x n =>
-  ok ⟨List.replicate n.val x, by grind⟩
+  if n.val = 0 then ok (Slice.new T)
+  else
+    match (List.replicate (n.val - 1) x).mapM corecloneCloneInst.clone with
+    | ok cloned =>
+      let combined := cloned ++ [x]
+      if h : combined.length ≤ Usize.max then ok ⟨combined, h⟩
+      else fail .maximumSizeExceeded
+    | fail e => fail e
+    | div => div
 
 @[rust_fun "rust_primitives::sequence::seq_drain"]
 def rust_primitives.sequence.seq_drain

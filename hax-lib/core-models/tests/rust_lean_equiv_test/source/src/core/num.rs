@@ -290,156 +290,78 @@ pub fn test_i8_saturating_mul_neg_overflow() -> bool {
 // overflowing_add
 // =============================================================================
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_add_zero() -> bool {
     0u8.overflowing_add(0u8) == (0u8, false)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_add_no_overflow() -> bool {
     100u8.overflowing_add(50u8) == (150u8, false)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_add_at_max() -> bool {
     u8::MAX.overflowing_add(1u8) == (0u8, true)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_add_overflow() -> bool {
     200u8.overflowing_add(100u8) == (44u8, true)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_overflowing_add_at_max() -> bool {
     i8::MAX.overflowing_add(1i8) == (i8::MIN, true)
 }
-*/
-*/
 
 // =============================================================================
 // overflowing_sub
 // =============================================================================
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_sub_zero() -> bool {
     0u8.overflowing_sub(0u8) == (0u8, false)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_sub_no_underflow() -> bool {
     100u8.overflowing_sub(50u8) == (50u8, false)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_sub_underflow() -> bool {
     0u8.overflowing_sub(1u8) == (u8::MAX, true)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_overflowing_sub_at_min() -> bool {
     i8::MIN.overflowing_sub(1i8) == (i8::MAX, true)
 }
-*/
-*/
 
 // =============================================================================
 // overflowing_mul
 // =============================================================================
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_mul_zero() -> bool {
     0u8.overflowing_mul(42u8) == (0u8, false)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_mul_no_overflow() -> bool {
     10u8.overflowing_mul(10u8) == (100u8, false)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_mul_overflow() -> bool {
     16u8.overflowing_mul(16u8) == (0u8, true)
 }
-*/
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_mul_max() -> bool {
     u8::MAX.overflowing_mul(u8::MAX) == (1u8, true)
 }
-*/
-*/
 
 // =============================================================================
 // rem_euclid
@@ -503,47 +425,32 @@ pub fn test_i8_pow_neg_base() -> bool {
 // overflowing_pow
 // =============================================================================
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_pow_no_overflow() -> bool {
     2u8.overflowing_pow(3u32) == (8u8, false)
 }
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_pow_overflow() -> bool {
     // 4^4 = 256 wraps to 0.
     4u8.overflowing_pow(4u32) == (0u8, true)
 }
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_overflowing_pow_zero_exp() -> bool {
     u8::MAX.overflowing_pow(0u32) == (1u8, false)
 }
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_overflowing_pow_neg_base() -> bool {
     (-2i8).overflowing_pow(2u32) == (4i8, false)
 }
-*/
 
-// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_overflowing_pow_overflow() -> bool {
     // (-2)^7 = -128 fits; (-2)^8 = 256 wraps to 0 with overflow.
     (-2i8).overflowing_pow(8u32) == (0i8, true)
 }
-*/
 
 // =============================================================================
 // checked_pow
@@ -820,105 +727,51 @@ pub fn test_i8_signum_min() -> bool {
 // checked_div / checked_rem
 // =============================================================================
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_checked_div_basic() -> bool {
     10u8.checked_div(3u8) == Some(3u8)
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_checked_div_zero_divisor() -> bool {
     10u8.checked_div(0u8) == none_u8()
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_checked_div_zero_dividend() -> bool {
     0u8.checked_div(5u8) == Some(0u8)
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_checked_div_min_by_neg_one() -> bool {
     // i8::MIN / -1 would overflow -> None.
     i8::MIN.checked_div(-1i8) == none_i8()
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_checked_div_zero_divisor() -> bool {
     10i8.checked_div(0i8) == none_i8()
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_checked_rem_basic() -> bool {
     10u8.checked_rem(3u8) == Some(1u8)
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u8_checked_rem_zero_divisor() -> bool {
     10u8.checked_rem(0u8) == none_u8()
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_checked_rem_min_by_neg_one() -> bool {
     i8::MIN.checked_rem(-1i8) == none_i8()
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i8_checked_rem_zero_divisor() -> bool {
     10i8.checked_rem(0i8) == none_i8()
 }
-*/
-*/
 
 // =============================================================================
 // from_be_bytes / from_le_bytes / to_be_bytes / to_le_bytes
@@ -1028,49 +881,25 @@ pub fn test_bool_default() -> bool {
 // helpers aren't otherwise exercised in this file).
 // =============================================================================
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u16_checked_div_zero() -> bool {
     10u16.checked_div(0u16) == none_u16()
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_u32_checked_div_zero() -> bool {
     10u32.checked_div(0u32) == none_u32()
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i16_checked_div_zero() -> bool {
     10i16.checked_div(0i16) == none_i16()
 }
-*/
-*/
 
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
-// TODO(option-eq-extraction: `<T>::checked_*` returns `Option<T>` and our tests compare with `== Some(_)` / `== none_*()`; `core_models.option.Option.PartialEq.eq` is not in the Lean library.)
-/*
 #[rust_lean_test]
 pub fn test_i32_checked_div_zero() -> bool {
     10i32.checked_div(0i32) == none_i32()
 }
-*/
-*/
 
 // =============================================================================
 // div_ceil (unsigned)
