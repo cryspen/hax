@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Generate `lean/RustLeanTests/LeanTests.lean` from `#[rust_lean_test]`
-functions found anywhere under `source/src/`.
+"""Generate `source/proofs/lean/RustLeanTests/LeanTests.lean` from
+`#[rust_lean_test]` functions found anywhere under `source/src/`.
 
 For each `#[rust_lean_test] pub fn <name>() -> bool` we emit
 `#guard <fully-qualified-name> == .ok true`, where the fully qualified
-name is read out of `lean/RustLeanTests/Funs.lean` rather than guessed
-from the source path: Aeneas's builtin name map rewrites some module
+name is read out of the extracted `RustLeanTests/Extraction/Funs.lean`
+rather than guessed from the source path: Aeneas's builtin name map rewrites some module
 components (notably `core` → `core_models`, `alloc` → `alloc_models`),
 so the Lean def's location is not always derivable from the Rust file
 path. Reading the extracted def list directly keeps the gen script
@@ -23,8 +23,9 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 SRC_ROOT = HERE / "source" / "src"
-FUNS = HERE / "lean" / "RustLeanTests" / "Funs.lean"
-OUT = HERE / "lean" / "RustLeanTests" / "LeanTests.lean"
+LEAN_ROOT = HERE / "source" / "proofs" / "lean" / "RustLeanTests"
+FUNS = LEAN_ROOT / "Extraction" / "Funs.lean"
+OUT = LEAN_ROOT / "LeanTests.lean"
 
 # Crate namespace that Aeneas wraps every def in (must match `name` in
 # `source/Cargo.toml`).
@@ -92,7 +93,7 @@ def render(qualified: list[str]) -> str:
         "-- DO NOT EDIT. One `#guard` per `#[rust_lean_test]` function in",
         "-- `source/src/**/*.rs`. Each guard fails the Lean build if",
         "-- Aeneas's translation does not evaluate to `Result.ok true`.",
-        "import RustLeanTests.Funs",
+        "import RustLeanTests.Extraction.Funs",
         "",
         # Default cap is 100 errors per file; with hundreds of guards a",
         # single broken extraction would otherwise hide all the others.",

@@ -34,10 +34,37 @@ where
     /// See [`std::cmp::PartialOrd::partial_cmp`]
     #[hax_lib::requires(true)]
     fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
+
+    // hax/F* does not support default methods. We work around that using the `PartialOrdDefaults`
+    // trait below.
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(true)]
+    fn lt(&self, other: &Rhs) -> bool {
+        matches!(self.partial_cmp(other), Option::Some(Ordering::Less))
+    }
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(true)]
+    fn le(&self, other: &Rhs) -> bool {
+        matches!(
+            self.partial_cmp(other),
+            Option::Some(Ordering::Less | Ordering::Equal)
+        )
+    }
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(true)]
+    fn gt(&self, other: &Rhs) -> bool {
+        matches!(self.partial_cmp(other), Option::Some(Ordering::Greater))
+    }
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(true)]
+    fn ge(&self, other: &Rhs) -> bool {
+        matches!(
+            self.partial_cmp(other),
+            Option::Some(Ordering::Greater | Ordering::Equal)
+        )
+    }
 }
 
-// These methods in core are provided using trait defaults, but this is not supported by hax
-// so we have to define them in a different way.
 #[hax_lib::attributes]
 trait Neq<Rhs> {
     #[hax_lib::requires(true)]
@@ -51,6 +78,9 @@ impl<T: PartialEq<T>> Neq<T> for T {
     }
 }
 
+// These methods in core are provided using trait defaults, but this is not supported by hax/F*
+// so we have to define them in a different way.
+#[cfg(any(hax_backend_fstar, test))]
 #[hax_lib::attributes]
 trait PartialOrdDefaults<Rhs> {
     #[hax_lib::requires(true)]
@@ -71,6 +101,7 @@ trait PartialOrdDefaults<Rhs> {
         Self: PartialOrd<Rhs>;
 }
 
+#[cfg(any(hax_backend_fstar, test))]
 impl<T: PartialOrd<T>> PartialOrdDefaults<T> for T {
     fn lt(&self, y: &T) -> bool
     where
@@ -410,7 +441,7 @@ mod tests {
         #[test]
         fn test_int_lt(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(
-                super::PartialOrdDefaults::lt(&x.inject(), &y.inject()),
+                <u8 as PartialOrd<u8>>::lt(&x.inject(), &y.inject()),
                 x < y
             );
         }
@@ -418,7 +449,7 @@ mod tests {
         #[test]
         fn test_int_le(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(
-                super::PartialOrdDefaults::le(&x.inject(), &y.inject()),
+                <u8 as PartialOrd<u8>>::le(&x.inject(), &y.inject()),
                 x <= y
             );
         }
@@ -426,13 +457,45 @@ mod tests {
         #[test]
         fn test_int_gt(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(
-                super::PartialOrdDefaults::gt(&x.inject(), &y.inject()),
+                <u8 as PartialOrd<u8>>::gt(&x.inject(), &y.inject()),
                 x > y
             );
         }
 
         #[test]
         fn test_int_ge(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                <u8 as PartialOrd<u8>>::ge(&x.inject(), &y.inject()),
+                x >= y
+            );
+        }
+
+        #[test]
+        fn test_defaults_lt(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::PartialOrdDefaults::lt(&x.inject(), &y.inject()),
+                x < y
+            );
+        }
+
+        #[test]
+        fn test_defaults_le(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::PartialOrdDefaults::le(&x.inject(), &y.inject()),
+                x <= y
+            );
+        }
+
+        #[test]
+        fn test_defaults_gt(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::PartialOrdDefaults::gt(&x.inject(), &y.inject()),
+                x > y
+            );
+        }
+
+        #[test]
+        fn test_defaults_ge(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(
                 super::PartialOrdDefaults::ge(&x.inject(), &y.inject()),
                 x >= y

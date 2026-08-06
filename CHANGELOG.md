@@ -41,6 +41,7 @@ Changes to hax-lib:
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
 - Lean library for the new Lean/Aeneas backend (cryspen/hax-evit/188)
+- Support for hax_lib::int and hax_lib::prop (#2130)
 
 Miscellaneous:
  - New testing framework for the engine(s) (cryspen/hax-evit/135, cryspen/hax-evit/167)
