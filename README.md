@@ -245,10 +245,7 @@ The flake provides several dev shells:
 | `nix develop .#examples` | The above plus ProVerif and Lean (through `elan`), for running `examples/` against a hax you build yourself. |
 | `nix develop .#ci-examples` | Running `examples/` against a hax built by the flake, rather than one you build from source. Used by CI. |
 
-The first three shells give you the toolchain to build hax, not a `cargo-hax`
-binary. Run `just build` first to compile hax and install it into
-`~/.cargo/bin`, and make sure that directory is in your `PATH`, otherwise
-`cargo hax` will not be found.
+The first three shells give you the toolchain to build hax, not a `cargo-hax` binary: run `just build` first (see [below](#compiling-formatting-and-more)).
 
 ### Structure of this repository
 

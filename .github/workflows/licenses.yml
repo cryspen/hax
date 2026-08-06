@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: extractions/setup-just@v1
+    - uses: extractions/setup-just@v4
     - name: Set-up OCaml
       uses: ocaml/setup-ocaml@v3
       with:

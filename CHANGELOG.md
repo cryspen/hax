@@ -48,6 +48,7 @@ Miscellaneous:
    cryspen/hax-evit/192, #2058, #2059, #2070, #2061)
  - Update flags for the charon/aeneas pipeline (#2051)
  - Fix missing tools in the Nix dev shells (#2131)
+ - Check examples through `just check-examples` instead of a Nix flake check (#2131)
 
 ## 0.3.7
 

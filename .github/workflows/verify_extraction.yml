@@ -39,23 +39,28 @@ jobs:
       run: |
         nix build .#rust-by-example-hax-extraction -L
 
+  list-examples:
+    name: list-examples
+    runs-on: ubuntu-latest
+    outputs:
+      examples: ${{ steps.list.outputs.examples }}
+    steps:
+    - uses: actions/checkout@v4
+    - uses: extractions/setup-just@v4
+    - name: List the examples
+      id: list
+      run: |
+        examples=$(just list-examples | jq -Rsc 'split("\n") | map(select(length > 0)) | if length == 0 then error("no examples found") else . end')
+        echo "examples=$examples" >> "$GITHUB_OUTPUT"
+
   examples:
     name: example-${{ matrix.example }}
+    needs: list-examples
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        example:
-          - limited-order-book
-          - chacha20
-          - sha3
-          - sha256
-          - barrett
-          - kyber_compress
-          - loop_equivalence
-          - proverif-psk
-          - adc
-          - lean_tutorial
+        example: ${{ fromJSON(needs.list-examples.outputs.examples) }}
     steps:
     - uses: actions/checkout@v4
     - name: Free disk space by removing preinstalled packages
@@ -67,18 +72,28 @@ jobs:
         skipPush: true
         extraPullNames: fstar-nix-versions, z3-nix-versions
 
-    - name: Install the toolchain
-      run: |
-        nix profile install nixpkgs#yq
-        nix profile install .#rustc
-        nix profile install .
-
     - name: Install aeneas and charon
       run: ./install-aeneas.sh
 
     - name: Build the example
+      env:
+        EXAMPLE: ${{ matrix.example }}
       run: |
         unset CI # Allows us to use Aeneas's olean cache
-        cd examples/${{ matrix.example }}
-        PATH="$HOME/.cargo/bin:$PATH" nix develop ..#ci-examples --command make clean
-        PATH="$HOME/.cargo/bin:$PATH" nix develop ..#ci-examples --command make
+        PATH="$HOME/.cargo/bin:$PATH" nix develop .#ci-examples \
+          --command just check-example "$EXAMPLE"
+
+  # Stable check for all examples: a skipped matrix (e.g. because listing the
+  # examples failed) must be reported as a failure, not as a success.
+  examples-result:
+    name: examples-result
+    needs: [list-examples, examples]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check the results
+      env:
+        RESULTS: ${{ needs.list-examples.result }} ${{ needs.examples.result }}
+      run: |
+        echo "$RESULTS"
+        [ "$RESULTS" = "success success" ]
