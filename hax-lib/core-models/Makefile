@@ -48,6 +48,15 @@ ALLOC_CHARON_EXCLUDES = \
     --exclude '{impl core::iter::traits::collect::FromIterator<_> for alloc_models::collections::vec_deque::VecDeque<_, _>}::*' \
     --exclude 'alloc_models::slice::_::sort_by'
 
+# Items whose Rust body cannot model std, but whose *signature* we still want
+# downstream (unlike `--exclude`, `--opaque` keeps the declaration and drops the
+# body, so aeneas emits an uninterpreted function instead of a wrong one).
+#   - `Vec::drain` ignores its range argument: `RangeBounds` is not modelled.
+#   - `fmt::format` returns the empty string: `fmt::Arguments` is not modelled.
+ALLOC_CHARON_OPAQUE = \
+    --opaque 'alloc_models::vec::_::drain' \
+    --opaque 'alloc_models::fmt::format'
+
 .PHONY: all extract patch lean build clean clean-generated tests \
         tests-clean alloc-stage alloc-extract alloc-clean \
         coverage fstar fstar-clean fstar-core-models fstar-std fstar-alloc \
@@ -115,7 +124,7 @@ alloc-stage: $(ALLOC_STAGE_DIR)/Cargo.toml
 alloc-extract: $(ALLOC_STAGE_DIR)/Cargo.toml
 	cd $(ALLOC_STAGE_DIR) && RUSTFLAGS=$(RUSTFLAGS) $(HAX) into \
 	    --output-dir $(abspath $(EXTRACT_DIR)) lean \
-	    --charon-args="$(ALLOC_CHARON_EXCLUDES)" \
+	    --charon-args="$(ALLOC_CHARON_EXCLUDES) $(ALLOC_CHARON_OPAQUE)" \
 	    --aeneas-args="-subdir CoreModels/Alloc $(AENEAS_ARGS)"
 
 # 2. Move generated files into $(LEAN_DIR)/CoreModels/ and apply our patches

@@ -188,11 +188,6 @@ def
     collections.vec_deque.VecDeque.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
 }
 
-/-- [alloc::fmt::format]:
-    Source: 'src/lib.rs', lines 357:4-359:5 -/
-def fmt.format (args : core.fmt.Arguments) : Result alloc.string.String := do
-  alloc.string.String.new
-
 /-- [alloc::vec::from_seq]:
     Source: 'src/lib.rs', lines 520:4-522:5 -/
 def vec.from_seq
@@ -624,17 +619,6 @@ def vec.Vec.split_off
   let l ← rust_primitives.sequence.seq_len self
   let (s, s1) ← rust_primitives.sequence.seq_drain self at1 l
   ok (s, s1)
-
-/-- [alloc::vec::{alloc::vec::Vec<T>}::drain]:
-    Source: 'src/lib.rs', lines 690:8-699:9
-    Visibility: public -/
-def vec.Vec.drain
-  {T : Type} {R : Type} (self : vec.Vec T) (_range : R) :
-  Result ((vec.drain.Drain T alloc.Global) × (vec.Vec T))
-  := do
-  let l ← rust_primitives.sequence.seq_len self
-  let (s, s1) ← rust_primitives.sequence.seq_drain self 0#usize l
-  ok ((s, core.marker.PhantomData.mk), s1)
 
 /-- [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}::next]:
     Source: 'src/lib.rs', lines 706:12-713:13
