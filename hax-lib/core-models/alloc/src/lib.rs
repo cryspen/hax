@@ -546,7 +546,10 @@ pub mod vec {
             } else {
                 let mut res = true;
                 for i in 0..self.len() {
-                    if !(self[i] == other[i]) {
+                    // `res &&` keeps this short-circuiting like std's early
+                    // return: once unequal, `T::eq` is not called again (it may
+                    // panic). Aeneas has no early return, hence the flag.
+                    if res && !(self[i] == other[i]) {
                         res = false
                     }
                 }
