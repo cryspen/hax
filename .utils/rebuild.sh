@@ -32,8 +32,14 @@ cd_rootwise () {
 rust () {
     cd_rootwise "cli"
     for i in driver subcommands ../engine/names/extract ../rust-engine; do
+        # The OCaml engine's build consumes `hax-export-json-schemas`.
+        if [ "$i" = subcommands ]; then
+            FEATURES="--features legacy-engine"
+        else
+            FEATURES=""
+        fi
         CURRENT="rust/$i"
-        cargo install --locked --quiet $OFFLINE_FLAG --debug --path $i
+        cargo install --locked --quiet $OFFLINE_FLAG --debug --path "$i" $FEATURES
     done
 }
 

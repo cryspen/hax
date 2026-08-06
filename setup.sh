@@ -87,9 +87,15 @@ ensure_node_is_recent_enough() {
 # Installs the Rust CLI & frontend, providing `cargo-hax` and `driver-hax`
 install_rust_binaries() {
     for i in driver subcommands ../engine/names/extract ../rust-engine; do
+        # The OCaml engine's build consumes `hax-export-json-schemas`.
+        if [ "$i" = subcommands ]; then
+            features="--features legacy-engine"
+        else
+            features=""
+        fi
         (
             set -x
-            cargo install --locked --force --path "cli/$i"
+            cargo install --locked --force --path "cli/$i" $features
         )
     done
 }

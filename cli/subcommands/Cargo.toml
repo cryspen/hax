@@ -5,6 +5,7 @@ authors.workspace = true
 license.workspace = true
 homepage.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 repository.workspace = true
 readme.workspace = true
 build = "build.rs"
@@ -17,12 +18,30 @@ name = "cargo-hax"
 [[bin]]
 path = "src/json_schema.rs"
 name = "hax-export-json-schemas"
+required-features = ["legacy-engine"]
 
 # Fixtures the integration tests share, not a test target of its own.
 [[test]]
 path = "tests/common.rs"
 name = "common"
 test = false
+
+[features]
+# Builds `hax-export-json-schemas`, which the OCaml engine's build consumes. The
+# schemas it exports cover the protocol that engine speaks, whose types, and the
+# Rust engine AST they carry, come from `hax-rust-engine`: hence that
+# build-dependency. `hax-rust-engine` only compiles on the nightly toolchain hax
+# pins, so this feature is off by default, leaving `cargo install cargo-hax` to
+# build on any recent toolchain.
+legacy-engine = [
+    "dep:hax-rust-engine",
+    "dep:hax-lib-macros-types",
+    "dep:hax-frontend-exporter",
+    "dep:hax-types",
+    "dep:schemars",
+    "dep:serde",
+    "dep:serde_json",
+]
 
 [dependencies]
 serde.workspace = true
@@ -65,14 +84,16 @@ zstd = "0.13.1"
 hex = "0.4"
 indicatif = "0.18.0"
 
+# Everything the JSON schema needs is optional, leaving the build script of a
+# default build with `version_check` and `toml` alone.
 [build-dependencies]
-serde.workspace = true
-serde_json.workspace = true
-hax-types.workspace = true
-hax-rust-engine.workspace = true
-schemars.workspace = true
-hax-frontend-exporter.workspace = true
-hax-lib-macros-types = { workspace = true, features = ["schemars"] }
+serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+hax-types = { workspace = true, optional = true }
+hax-rust-engine = { workspace = true, optional = true }
+schemars = { workspace = true, optional = true }
+hax-frontend-exporter = { workspace = true, optional = true }
+hax-lib-macros-types = { workspace = true, features = ["schemars"], optional = true }
 version_check = "0.9"
 toml = "0.8"
 

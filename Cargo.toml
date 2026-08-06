@@ -39,6 +39,7 @@ authors = ["hax Authors"]
 license = "Apache-2.0"
 homepage = "https://github.com/hacspec/hax"
 edition = "2024"
+rust-version = "1.88"
 repository = "https://github.com/hacspec/hax"
 readme = "README.md"
 

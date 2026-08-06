@@ -1,6 +1,6 @@
 //! Fixtures shared by the tool-management integration tests: fixture
-//! archives, a local HTTP server to serve them, and the Cargo crates and
-//! stub executables a run needs.
+//! archives, a local HTTP server to serve them, the Cargo crates and stub
+//! executables a run needs, and how the binary is invoked.
 //!
 //! `cargo-hax` is a binary crate, so its own `#[cfg(test)]` modules cannot
 //! reach this and keep their own copies of what they need.
@@ -10,7 +10,8 @@
 
 use std::collections::HashMap;
 use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::sync::Arc;
 
 use sha2::Digest;
@@ -92,4 +93,59 @@ pub fn write_crate(dir: &Path, name: &str) {
     )
     .unwrap();
     std::fs::write(dir.join("src/lib.rs"), "").unwrap();
+}
+
+/// Stub charon, the sibling driver it needs, and aeneas in `bin`, each
+/// recording its invocation in the working directory.
+pub fn write_tool_stubs(bin: &Path) {
+    for (name, marker) in [
+        ("charon", "charon-invoked"),
+        ("charon-driver", "driver-invoked"),
+        ("aeneas", "aeneas-invoked"),
+    ] {
+        write_executable(&bin.join(name), &stub(marker));
+    }
+}
+
+/// Point a crate's `hax.toml` at the charon and aeneas binaries in `bin`.
+pub fn write_path_entries(crate_dir: &Path, bin: &Path) {
+    std::fs::write(
+        crate_dir.join("hax.toml"),
+        format!(
+            "[tools]\ncharon = {{ path = \"{}\" }}\naeneas = {{ path = \"{}\" }}\n",
+            bin.join("charon").display(),
+            bin.join("aeneas").display(),
+        ),
+    )
+    .unwrap();
+}
+
+/// The `cargo-hax` these tests build.
+pub fn cargo_hax() -> PathBuf {
+    env!("CARGO_BIN_EXE_cargo-hax").into()
+}
+
+/// A `cargo-hax` invocation, deaf to a tool manifest the ambient environment
+/// may point at.
+pub fn command(binary: &Path, args: &[&str], current_dir: &Path) -> Command {
+    let mut cmd = Command::new(binary);
+    cmd.args(args)
+        .current_dir(current_dir)
+        .env_remove("HAX_TOOLS_MANIFEST");
+    cmd
+}
+
+/// Run `cmd` to completion, returning its interleaved output and whether it
+/// succeeded. Interleaved because which stream a message takes is not what
+/// these tests are about.
+pub fn output_of(cmd: &mut Command) -> (String, bool) {
+    let output = cmd.output().unwrap();
+    (
+        format!(
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        ),
+        output.status.success(),
+    )
 }
