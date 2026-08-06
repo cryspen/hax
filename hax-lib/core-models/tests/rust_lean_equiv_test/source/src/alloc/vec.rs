@@ -335,8 +335,8 @@ pub fn test_vec_resize_same_len_is_noop() -> bool {
 
 // ----- drain (iterator) ------------------------------------------------------
 
-// TODO(vec-iter-extraction): Vec::drain returns an iterator we don't have
-// a stable way to drive in extracted Lean yet.
+// Vec::drain ignores its `RangeBounds` argument, so it is `--opaque` for charon
+// (see the Makefile) and has no Lean body to test against.
 
 // ----- closure-using methods (excluded) --------------------------------------
 
