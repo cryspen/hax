@@ -134,6 +134,9 @@ pub(super) fn item(
     let expr = TokenStream::from(expression(InlineExprType::Unit, payload));
     let item = TokenStream::from(item);
     let uid = ItemUid::fresh();
+    // A named constant is legal everywhere an item is (module, `impl` block,
+    // trait body, function body), while `const _` is not (see issue #1698).
+    let const_name = format_ident!("_HAX_QUOTE_{}", uid.uid.to_uppercase());
     let uid_attr = AttrPayload::Uid(uid.clone());
     let assoc_attr = AttrPayload::AssociatedItem {
         role: AssociationRole::ItemQuote,
@@ -147,7 +150,7 @@ pub(super) fn item(
         #item
         #attribute_to_inject
         #status_attr
-        const _: () = {
+        const #const_name: () = {
             #NeverErased
             #uid_attr
             #kind_attr
@@ -157,6 +160,53 @@ pub(super) fn item(
         };
     }
     .into()
+}
+
+/// An inherent `impl` block is dropped by the engine in favor of its items, so a
+/// quote attached to it would have no carrier. Instead, we move the attribute
+/// `attr` onto the first (`Before`) or last (`After`) item of the block. Returns
+/// `None` when `item` is not an inherent `impl` block.
+pub(super) fn retarget_on_inherent_impl(
+    item: &pm::TokenStream,
+    position: ItemQuotePosition,
+    attr: TokenStream,
+) -> Option<TokenStream> {
+    let mut item_impl: ItemImpl = syn::parse(item.clone()).ok()?;
+    if item_impl.trait_.is_some() {
+        return None;
+    }
+    let span = item_impl.impl_token.span();
+    let target = match position {
+        ItemQuotePosition::Before => item_impl.items.first_mut(),
+        ItemQuotePosition::After => item_impl.items.last_mut(),
+    };
+    let attrs = match target {
+        Some(ImplItem::Const(item)) => &mut item.attrs,
+        Some(ImplItem::Fn(item)) => &mut item.attrs,
+        Some(ImplItem::Type(item)) => &mut item.attrs,
+        Some(ImplItem::Macro(item)) => &mut item.attrs,
+        Some(item) => {
+            let span = item.span();
+            return Some(
+                syn::Error::new(
+                    span,
+                    "hax: cannot attach an annotation of the enclosing `impl` block to this item.",
+                )
+                .to_compile_error(),
+            );
+        }
+        None => {
+            return Some(
+                syn::Error::new(
+                    span,
+                    "hax: this `impl` block is empty, there is no item to attach this annotation to.",
+                )
+                .to_compile_error(),
+            )
+        }
+    };
+    attrs.push(parse_quote! {#attr});
+    Some(quote! {#item_impl})
 }
 
 pub(super) fn detect_future_node_in_expression(e: &syn::Expr) -> bool {

@@ -13,11 +13,9 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-(Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "7d56100bd16e4021875b0cdd5e403b29")
+Definition a_function_which_only_laxes '(_ : unit) : unit :=
+  assert ((false : bool)).
 
-Note: the error was labeled with context `Coq backend`.
-(* ERROR_ITEM *))
 Definition a_panicfree_function '(_ : unit) : t_u8 :=
   let a := (3 : t_u8) in
   let b := (6 : t_u8) in

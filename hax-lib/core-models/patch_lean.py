@@ -320,7 +320,13 @@ def qualify_result_monad_impls(text: str) -> str:
     `namespace`/`end` lines and `Core_models`).
     """
     def fn(ident: str, block_lines: list[str]) -> str | None:
-        if "for core_models::result::Result" not in ident:
+        # Match both trait impls whose `Self` is `Result` (`... for
+        # core_models::result::Result<...>`) and *inherent* methods on
+        # `Result` (`{core_models::result::Result<...>}::method`, e.g.
+        # `unwrap_or` / `map_err`) — both land in the `result.Result.*`
+        # namespace and hit the same bare-`Result` monad clash.
+        if "for core_models::result::Result" not in ident \
+                and "{core_models::result::Result<" not in ident:
             return None
         # Preserve the `/-- ... -/` doc comment; only rewrite the code below it.
         doc_end = 0

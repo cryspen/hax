@@ -13,15 +13,10 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-(Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "67fe4a41ab194cf2b3af036223b1578b")
-
-Note: the error was labeled with context `Coq backend`.
-(* ERROR_ITEM *))
+Definition f '(_ : unit) : unit :=
+  tt.
 
 
-(Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "c03bd3f6acd14e2bb1b48548c89b034e")
 
-Note: the error was labeled with context `Coq backend`.
-(* ERROR_ITEM *))
+Definition g '(_ : unit) : unit :=
+  tt.

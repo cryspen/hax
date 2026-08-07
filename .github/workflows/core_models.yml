@@ -205,7 +205,9 @@ jobs:
 
       # ---- The actual pipeline ------------------------------------------
       - name: Extract Lean library, build Lean library, run regression tests
-        run: make CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas lean tests
+        run: |
+          unset CI # Allows us to use Aeneas's olean cache
+          make CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas lean tests
 
       # The `Tests` lean_lib is deliberately excluded from `defaultTargets`
       # (library consumers should not pay for it), so the `lake build` above

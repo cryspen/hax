@@ -15,7 +15,9 @@ namespace CoreModels
     Source: 'rust_primitives/src/lib.rs', lines 4:4-4:44
     Name pattern: [rust_primitives::slice::slice_length]
     Visibility: public -/
-@[rust_fun "rust_primitives::slice::slice_length"]
+-- `spec` so `mvcgen` unfolds this to `ok (Slice.len s)`; without it, downstream
+-- proofs that use the extracted `Slice::len` (which routes through here) stall.
+@[spec, rust_fun "rust_primitives::slice::slice_length"]
 def rust_primitives.slice.slice_length
   {T : Type} : Slice T → Result Std.Usize := fun s => ok (Slice.len s)
 
@@ -66,6 +68,40 @@ def rust_primitives.slice.slice_clone_from_slice
   Slice T → Slice T → Result (Slice T) := fun dest src =>
   if dest.length = src.length then ok src
   else fail .panic
+
+/-- [rust_primitives::slice::slice_index_mut]: returns the element together with
+    the write-back function (Aeneas's pure encoding of `&mut s[i]`). -/
+@[rust_fun "rust_primitives::slice::slice_index_mut"]
+def rust_primitives.slice.slice_index_mut
+  {T : Type} : Slice T → Std.Usize → Result (T × (T → Slice T)) :=
+  fun s i => Slice.index_mut_usize s i
+
+/-- [rust_primitives::slice::slice_slice_mut]: the subslice `s[b..e]` plus its
+    write-back (pure encoding of `&mut s[b..e]`). In Rust the borrow's length is
+    fixed at `e - b`, so writing `ss` back overwrites exactly `[b, e)`. -/
+@[rust_fun "rust_primitives::slice::slice_slice_mut"]
+def rust_primitives.slice.slice_slice_mut
+  {T : Type} : Slice T → Std.Usize → Std.Usize → Result ((Slice T) × (Slice T → Slice T)) :=
+  fun s b e => do
+  let sub ← Slice.subslice s ⟨b, e⟩
+  ok (sub, fun ss => ⟨s.val.setSlice! b.val ss.val, by scalar_tac⟩)
+
+/-- [rust_primitives::slice::slice_reverse]: in-place reverse, threaded as
+    `Slice T → Slice T`. -/
+@[rust_fun "rust_primitives::slice::slice_reverse"]
+def rust_primitives.slice.slice_reverse
+  {T : Type} : Slice T → Result (Slice T) :=
+  fun s => ok ⟨ s.val.reverse, by simp [s.property] ⟩
+
+/-- [rust_primitives::slice::slice_swap]: swap elements `a` and `b`. -/
+@[rust_fun "rust_primitives::slice::slice_swap"]
+def rust_primitives.slice.slice_swap
+  {T : Type} : Slice T → Std.Usize → Std.Usize → Result (Slice T) :=
+  fun s a b => do
+  let va ← Slice.index_usize s a
+  let vb ← Slice.index_usize s b
+  let s1 ← Slice.update s a vb
+  Slice.update s1 b va
 
 private theorem foldlM_list_build_length {T F : Type}
     (step : List T × F → Nat → Result (List T × F))
@@ -329,6 +365,23 @@ def ioverflowing_mul {ty : IScalarTy} (x y : IScalar ty) : IScalar ty × Bool :=
   (⟨BitVec.ofInt _ z⟩,
    decide (¬ (-2 ^ (ty.numBits - 1) ≤ z ∧ z < 2 ^ (ty.numBits - 1))))
 
+/- `overflowing_pow` follows `overflowing_mul`: the wrapped power together with
+an overflow flag. Rust computes it by exponentiation-by-squaring over
+`overflowing_mul`, OR-ing the per-step flags. The closed forms below agree:
+wrapping multiplication is multiplication modulo `2^bits` and congruence is
+preserved under products, so the wrapped result is `x^n mod 2^bits`; and the
+flag is set iff some step overflows, which happens iff the exact `x^n` is out
+of range (if no step overflows every intermediate is exact, and the final
+step's non-overflow is exactly in-rangeness of `x^n`). -/
+
+def uoverflowing_pow {ty : UScalarTy} (x : UScalar ty) (n : Std.U32) : UScalar ty × Bool :=
+  (⟨BitVec.ofNat _ (x.val ^ n.val)⟩, decide (2 ^ ty.numBits ≤ x.val ^ n.val))
+
+def ioverflowing_pow {ty : IScalarTy} (x : IScalar ty) (n : Std.U32) : IScalar ty × Bool :=
+  let z := x.val ^ n.val
+  (⟨BitVec.ofInt _ z⟩,
+   decide (¬ (-2 ^ (ty.numBits - 1) ≤ z ∧ z < 2 ^ (ty.numBits - 1))))
+
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_u8"]
 def rust_primitives.arithmetic.overflowing_sub_u8 : Std.U8 → Std.U8 → Result (Std.U8 × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
@@ -336,6 +389,10 @@ def rust_primitives.arithmetic.overflowing_sub_u8 : Std.U8 → Std.U8 → Result
 @[rust_fun "rust_primitives::arithmetic::overflowing_mul_u8"]
 def rust_primitives.arithmetic.overflowing_mul_u8 : Std.U8 → Std.U8 → Result (Std.U8 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
+
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_u8"]
+def rust_primitives.arithmetic.overflowing_pow_u8 : Std.U8 → Std.U32 → Result (Std.U8 × Bool) :=
+  fun x n => ok (uoverflowing_pow x n)
 
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_u16"]
 def rust_primitives.arithmetic.overflowing_sub_u16 : Std.U16 → Std.U16 → Result (Std.U16 × Bool) :=
@@ -345,6 +402,10 @@ def rust_primitives.arithmetic.overflowing_sub_u16 : Std.U16 → Std.U16 → Res
 def rust_primitives.arithmetic.overflowing_mul_u16 : Std.U16 → Std.U16 → Result (Std.U16 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_u16"]
+def rust_primitives.arithmetic.overflowing_pow_u16 : Std.U16 → Std.U32 → Result (Std.U16 × Bool) :=
+  fun x n => ok (uoverflowing_pow x n)
+
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_u32"]
 def rust_primitives.arithmetic.overflowing_sub_u32 : Std.U32 → Std.U32 → Result (Std.U32 × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
@@ -352,6 +413,10 @@ def rust_primitives.arithmetic.overflowing_sub_u32 : Std.U32 → Std.U32 → Res
 @[rust_fun "rust_primitives::arithmetic::overflowing_mul_u32"]
 def rust_primitives.arithmetic.overflowing_mul_u32 : Std.U32 → Std.U32 → Result (Std.U32 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
+
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_u32"]
+def rust_primitives.arithmetic.overflowing_pow_u32 : Std.U32 → Std.U32 → Result (Std.U32 × Bool) :=
+  fun x n => ok (uoverflowing_pow x n)
 
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_u64"]
 def rust_primitives.arithmetic.overflowing_sub_u64 : Std.U64 → Std.U64 → Result (Std.U64 × Bool) :=
@@ -361,6 +426,10 @@ def rust_primitives.arithmetic.overflowing_sub_u64 : Std.U64 → Std.U64 → Res
 def rust_primitives.arithmetic.overflowing_mul_u64 : Std.U64 → Std.U64 → Result (Std.U64 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_u64"]
+def rust_primitives.arithmetic.overflowing_pow_u64 : Std.U64 → Std.U32 → Result (Std.U64 × Bool) :=
+  fun x n => ok (uoverflowing_pow x n)
+
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_u128"]
 def rust_primitives.arithmetic.overflowing_sub_u128 : Std.U128 → Std.U128 → Result (Std.U128 × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
@@ -368,6 +437,10 @@ def rust_primitives.arithmetic.overflowing_sub_u128 : Std.U128 → Std.U128 → 
 @[rust_fun "rust_primitives::arithmetic::overflowing_mul_u128"]
 def rust_primitives.arithmetic.overflowing_mul_u128 : Std.U128 → Std.U128 → Result (Std.U128 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
+
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_u128"]
+def rust_primitives.arithmetic.overflowing_pow_u128 : Std.U128 → Std.U32 → Result (Std.U128 × Bool) :=
+  fun x n => ok (uoverflowing_pow x n)
 
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_usize"]
 def rust_primitives.arithmetic.overflowing_sub_usize : Std.Usize → Std.Usize → Result (Std.Usize × Bool) :=
@@ -377,6 +450,10 @@ def rust_primitives.arithmetic.overflowing_sub_usize : Std.Usize → Std.Usize �
 def rust_primitives.arithmetic.overflowing_mul_usize : Std.Usize → Std.Usize → Result (Std.Usize × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_usize"]
+def rust_primitives.arithmetic.overflowing_pow_usize : Std.Usize → Std.U32 → Result (Std.Usize × Bool) :=
+  fun x n => ok (uoverflowing_pow x n)
+
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_i8"]
 def rust_primitives.arithmetic.overflowing_sub_i8 : Std.I8 → Std.I8 → Result (Std.I8 × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
@@ -384,6 +461,10 @@ def rust_primitives.arithmetic.overflowing_sub_i8 : Std.I8 → Std.I8 → Result
 @[rust_fun "rust_primitives::arithmetic::overflowing_mul_i8"]
 def rust_primitives.arithmetic.overflowing_mul_i8 : Std.I8 → Std.I8 → Result (Std.I8 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
+
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_i8"]
+def rust_primitives.arithmetic.overflowing_pow_i8 : Std.I8 → Std.U32 → Result (Std.I8 × Bool) :=
+  fun x n => ok (ioverflowing_pow x n)
 
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_i16"]
 def rust_primitives.arithmetic.overflowing_sub_i16 : Std.I16 → Std.I16 → Result (Std.I16 × Bool) :=
@@ -393,6 +474,10 @@ def rust_primitives.arithmetic.overflowing_sub_i16 : Std.I16 → Std.I16 → Res
 def rust_primitives.arithmetic.overflowing_mul_i16 : Std.I16 → Std.I16 → Result (Std.I16 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_i16"]
+def rust_primitives.arithmetic.overflowing_pow_i16 : Std.I16 → Std.U32 → Result (Std.I16 × Bool) :=
+  fun x n => ok (ioverflowing_pow x n)
+
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_i32"]
 def rust_primitives.arithmetic.overflowing_sub_i32 : Std.I32 → Std.I32 → Result (Std.I32 × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
@@ -400,6 +485,10 @@ def rust_primitives.arithmetic.overflowing_sub_i32 : Std.I32 → Std.I32 → Res
 @[rust_fun "rust_primitives::arithmetic::overflowing_mul_i32"]
 def rust_primitives.arithmetic.overflowing_mul_i32 : Std.I32 → Std.I32 → Result (Std.I32 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
+
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_i32"]
+def rust_primitives.arithmetic.overflowing_pow_i32 : Std.I32 → Std.U32 → Result (Std.I32 × Bool) :=
+  fun x n => ok (ioverflowing_pow x n)
 
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_i64"]
 def rust_primitives.arithmetic.overflowing_sub_i64 : Std.I64 → Std.I64 → Result (Std.I64 × Bool) :=
@@ -409,6 +498,10 @@ def rust_primitives.arithmetic.overflowing_sub_i64 : Std.I64 → Std.I64 → Res
 def rust_primitives.arithmetic.overflowing_mul_i64 : Std.I64 → Std.I64 → Result (Std.I64 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_i64"]
+def rust_primitives.arithmetic.overflowing_pow_i64 : Std.I64 → Std.U32 → Result (Std.I64 × Bool) :=
+  fun x n => ok (ioverflowing_pow x n)
+
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_i128"]
 def rust_primitives.arithmetic.overflowing_sub_i128 : Std.I128 → Std.I128 → Result (Std.I128 × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
@@ -417,6 +510,10 @@ def rust_primitives.arithmetic.overflowing_sub_i128 : Std.I128 → Std.I128 → 
 def rust_primitives.arithmetic.overflowing_mul_i128 : Std.I128 → Std.I128 → Result (Std.I128 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_i128"]
+def rust_primitives.arithmetic.overflowing_pow_i128 : Std.I128 → Std.U32 → Result (Std.I128 × Bool) :=
+  fun x n => ok (ioverflowing_pow x n)
+
 @[rust_fun "rust_primitives::arithmetic::overflowing_sub_isize"]
 def rust_primitives.arithmetic.overflowing_sub_isize : Std.Isize → Std.Isize → Result (Std.Isize × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
@@ -424,6 +521,10 @@ def rust_primitives.arithmetic.overflowing_sub_isize : Std.Isize → Std.Isize �
 @[rust_fun "rust_primitives::arithmetic::overflowing_mul_isize"]
 def rust_primitives.arithmetic.overflowing_mul_isize : Std.Isize → Std.Isize → Result (Std.Isize × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
+
+@[rust_fun "rust_primitives::arithmetic::overflowing_pow_isize"]
+def rust_primitives.arithmetic.overflowing_pow_isize : Std.Isize → Std.U32 → Result (Std.Isize × Bool) :=
+  fun x n => ok (ioverflowing_pow x n)
 
 @[rust_fun "rust_primitives::arithmetic::pow_u8"]
 def rust_primitives.arithmetic.pow_u8 : Std.U8 → Std.U32 → Result Std.U8 :=

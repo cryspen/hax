@@ -47,75 +47,87 @@ let run_tests = () => {
     }
 
 
-    for (let link of links) {
-        if (link.includes("hax-playground.cryspen.com/") || link.includes("#__codelineno"))
-            continue;
-        test('Check if link is live: ' + link, (async ({ page, baseURL }, testInfo) => {
-            await testInfo.attach('Parent pages', {
-                body: [...(links_origins.get(link) || new Set())].join('\n'),
-                contentType: 'text/plain',
-            });
-            let other_page = await page.context().newPage();
-            let { status, html } = await tryNavigateTo(other_page, link.toString());
-            let anti_bot_codes = [401, 403, 429, 451, 999].includes(status);
-            expect(anti_bot_codes || (status >= 200 && status < 300)).toBeTruthy()
-
-            let hash = (new URL(link)).hash?.replace(/^#/, '');
-            if (hash && !link.includes(""))
-                await test.step("Try detection of fragment `" + hash + '`', async () => {
-                    let el = other_page.locator('[id="' + cssEscape(hash) + '"]');
-                    if (await el.count() === 0)
-                        console.warn('⚠️ Could not find anchor in a page ', link);
+    test.describe('Link checks', () => {
+        // Link checks are independent from each other and spend all their time
+        // waiting on the network: run them across workers.
+        test.describe.configure({ mode: 'parallel' });
+        for (let link of links) {
+            if (link.includes("hax-playground.cryspen.com/") || link.includes("#__codelineno"))
+                continue;
+            test('Check if link is live: ' + link, (async ({ page, baseURL }, testInfo) => {
+                await testInfo.attach('Parent pages', {
+                    body: [...(links_origins.get(link) || new Set())].join('\n'),
+                    contentType: 'text/plain',
                 });
-        }));
-    }
+                let other_page = await page.context().newPage();
+                let { status, html } = await tryNavigateTo(other_page, link.toString());
+                let anti_bot_code = [401, 403, 429, 451, 999].includes(status);
+                if (anti_bot_code)
+                    console.warn('⚠️ Accepting status ' + status + ' as an anti-bot answer, the link might be broken: ', link);
+                expect(anti_bot_code || (status >= 200 && status < 300)).toBeTruthy()
 
-    for (let p of PAGES) {
-        if (!p.has_playground)
-            continue;
-        test('Test playgrounds in `' + p.url + '`', async ({ page, baseURL }, testInfo) => {
-            await page.goto(p.url, { waitUntil: 'domcontentloaded' });
-            const playableLocators = page.locator('.playable:has(.md-hax-playground .fa-check)');
-            const count = await playableLocators.count();
-
-            for (let i = 0; i < count; i++) {
-                await test.step(`Try playground #${i}`, async () => {
-                    const playable = playableLocators.nth(i);
-                    const contents = await playable.locator(".cm-content").first().innerText();
-                    await testInfo.attach('Code snippet contents', {
-                        body: contents,
-                        contentType: 'text/plain',
+                let hash = (new URL(link)).hash?.replace(/^#/, '');
+                if (hash && !link.includes(""))
+                    await test.step("Try detection of fragment `" + hash + '`', async () => {
+                        let el = other_page.locator('[id="' + cssEscape(hash) + '"]');
+                        if (await el.count() === 0)
+                            console.warn('⚠️ Could not find anchor in a page ', link);
                     });
+            }));
+        }
+    });
 
-                    const checkBtn = playable.locator('.md-hax-playground .fa-check');
-                    await checkBtn.first().click();
+    test.describe('Playgrounds', () => {
+        // Every snippet is compiled and typechecked by the hax playground service:
+        // keep those tests on a single worker so that we don't overload it.
+        test.describe.configure({ mode: 'default' });
+        for (let p of PAGES) {
+            if (!p.has_playground)
+                continue;
+            test('Test playgrounds in `' + p.url + '`', async ({ page, baseURL }, testInfo) => {
+                await page.goto(p.url, { waitUntil: 'domcontentloaded' });
+                const playableLocators = page.locator('.playable:has(.md-hax-playground .fa-check)');
+                const count = await playableLocators.count();
 
-                    let classes = '';
-                    let hasSuccess = false;
-                    let hasFailure = false;
+                for (let i = 0; i < count; i++) {
+                    await test.step(`Try playground #${i}`, async () => {
+                        const playable = playableLocators.nth(i);
+                        const contents = await playable.locator(".cm-content").first().innerText();
+                        await testInfo.attach('Code snippet contents', {
+                            body: contents,
+                            contentType: 'text/plain',
+                        });
 
-                    for (let i = 0; i < 60; i++) {
-                        classes = (await playable.getAttribute('class')) || '';
-                        hasSuccess = classes.includes('state-success');
-                        hasFailure = classes.includes('state-failure');
-                        if (hasSuccess || hasFailure)
-                            break;
-                        await new Promise(r => setTimeout(r, 1000));
-                    }
+                        const checkBtn = playable.locator('.md-hax-playground .fa-check');
+                        await checkBtn.first().click();
 
-                    expect(hasSuccess || hasFailure, "At least class `state-success` or `state-failure` should have been attached; none detected.").toBeTruthy();
+                        let classes = '';
+                        let hasSuccess = false;
+                        let hasFailure = false;
 
-                    const expectFailure = classes.includes('expect-failure');
+                        for (let i = 0; i < 60; i++) {
+                            classes = (await playable.getAttribute('class')) || '';
+                            hasSuccess = classes.includes('state-success');
+                            hasFailure = classes.includes('state-failure');
+                            if (hasSuccess || hasFailure)
+                                break;
+                            await new Promise(r => setTimeout(r, 1000));
+                        }
 
-                    if (expectFailure) {
-                        expect(hasFailure, '`.state-failure` should be set (the snippet is tagged with a class `expect-failure`), but `.state-success` was detected').toBeTruthy();
-                    } else {
-                        expect(hasSuccess, '`.state-success` should be set, but `.state-failure` was detected').toBeTruthy();
-                    }
-                });
-            }
-        });
-    }
+                        expect(hasSuccess || hasFailure, "At least class `state-success` or `state-failure` should have been attached; none detected.").toBeTruthy();
+
+                        const expectFailure = classes.includes('expect-failure');
+
+                        if (expectFailure) {
+                            expect(hasFailure, '`.state-failure` should be set (the snippet is tagged with a class `expect-failure`), but `.state-success` was detected').toBeTruthy();
+                        } else {
+                            expect(hasSuccess, '`.state-success` should be set, but `.state-failure` was detected').toBeTruthy();
+                        }
+                    });
+                }
+            });
+        }
+    });
 };
 
 run_tests();

@@ -199,11 +199,22 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
         impl VecDeque<(), ()> {}
         impl VecDeque<(), ()> {}
         impl VecDeque<(), ()> {}
-        impl VecDeque<(), ()> {}
 
+        impl<T> VecDeque<T, crate::alloc::Global> {
+            fn new() -> VecDeque<T, crate::alloc::Global> {
+                VecDeque(seq_empty(), std::marker::PhantomData)
+            }
+            fn with_capacity(_capacity: usize) -> VecDeque<T, crate::alloc::Global> {
+                VecDeque::new()
+            }
+        }
+
+        #[hax_lib::attributes]
         impl<T, A> VecDeque<T, A> {
-            #[hax_lib::opaque]
-            fn push_back(&mut self, x: T) {}
+            #[hax_lib::requires(seq_len(&self.0) < core::primitive::usize::MAX)]
+            fn push_back(&mut self, x: T) {
+                seq_push(&mut self.0, x)
+            }
             fn len(&self) -> usize {
                 seq_len(&self.0)
             }
@@ -260,15 +271,69 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             where
                 I: IntoIterator<Item = T>,
             {
-                // The impl is `#[opaque]`, so this body is axiomatised and need
-                // not actually consume `iter`. We deliberately avoid a `for`
-                // loop: hax hoists the loop into a separate function that is
-                // *not* covered by `#[opaque]`, and Aeneas then fails to
-                // extract it (`type_var_id: 1` — the iterator type `I`). A
-                // straight-line construction extracts cleanly. (`Vec`'s
-                // analogous impl sidesteps this by being `--exclude`d in the
-                // Makefile, but we need this symbol to exist.)
+                // Dummy (opaque)
                 VecDeque(seq_empty(), std::marker::PhantomData)
+            }
+        }
+
+        #[cfg(hax_backend_fstar)]
+        #[hax_lib::fstar::after(
+            "
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let update_at_usize (#v_T #v_A: Type0)
+    : Rust_primitives.Hax.update_at_tc (t_VecDeque v_T v_A) usize =
+  {
+    super_index = impl_6 #v_T #v_A;
+    // `i` is deliberately left unannotated: the class gives it the refinement
+    // `f_index_pre self i` (here `i < len self`), and annotating it `usize`
+    // would drop exactly the bound `Seq.upd` needs.
+    update_at = (fun self i x -> VecDeque (FStar.Seq.upd self._0 (v i) x) self._1)
+  }
+        "
+        )]
+        use core::*;
+
+        #[cfg(test)]
+        mod tests {
+            use proptest::prelude::*;
+
+            type Model<T> = super::VecDeque<T, crate::alloc::Global>;
+
+            proptest! {
+                #[test]
+                fn test_push_back_len_index(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let mut model = Model::new();
+                    let mut std_deque = std::collections::VecDeque::new();
+                    for &e in &elements {
+                        model.push_back(e);
+                        std_deque.push_back(e);
+                    }
+                    prop_assert_eq!(model.len(), std_deque.len());
+                    for i in 0..std_deque.len() {
+                        prop_assert_eq!(model[i], std_deque[i]);
+                    }
+                }
+
+                #[test]
+                fn test_pop_front(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let mut model = Model::with_capacity(elements.len());
+                    let mut std_deque = std::collections::VecDeque::with_capacity(elements.len());
+                    for &e in &elements {
+                        model.push_back(e);
+                        std_deque.push_back(e);
+                    }
+                    for _ in 0..=elements.len() {
+                        prop_assert_eq!(model.pop_front(), std_deque.pop_front());
+                    }
+                }
+            }
+
+            #[test]
+            fn test_new() {
+                let mut model = Model::<u8>::new();
+                let mut std_deque = std::collections::VecDeque::<u8>::new();
+                assert_eq!(model.len(), std_deque.len());
+                assert_eq!(model.pop_front(), std_deque.pop_front());
             }
         }
     }
@@ -297,8 +362,37 @@ mod slice {
             seq_extend(&mut seq, s);
             from_seq(seq)
         }
+        #[cfg(not(hax_backend_fstar))]
         fn into_vec(s: Box<[T]>) -> Vec<T> {
             from_seq(seq_from_boxed_slice(s))
+        }
+        #[cfg(hax_backend_fstar)]
+        fn into_vec<A>(s: Box<[T]>) -> Vec<T, A> {
+            from_seq(seq_from_boxed_slice(s))
+        }
+        // Mirrors std's `impl<S: Borrow<[T]>, T: Clone> Concat<T> for [S]`.
+        #[cfg(not(hax_backend_fstar))]
+        fn concat<Item: Clone>(s: &[T]) -> Vec<Item>
+        where
+            T: core::borrow::Borrow<[Item]>,
+        {
+            let mut out = seq_empty();
+            let mut i = 0;
+            while i < rust_primitives::slice::slice_length(s) {
+                seq_extend(&mut out, rust_primitives::slice::slice_index(s, i).borrow());
+                i += 1;
+            }
+            from_seq(out)
+        }
+        // DEVIATION:
+        // The F* variant cannot carry the `Borrow` bound: hax erases std's
+        // `Concat` bound at call sites, so callers pass `T` and `Item` and no
+        // dictionary. Without the bound nothing relates `T` to `[Item]`, so the
+        // flattening is not statable and the body is only a placeholder.
+        #[cfg(hax_backend_fstar)]
+        #[hax_lib::opaque]
+        fn concat<Item>(s: &[T]) -> Vec<Item> {
+            from_seq(seq_empty())
         }
         #[hax_lib::opaque]
         fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
@@ -320,6 +414,20 @@ mod slice {
                 let boxed: Box<[u8]> = v.clone().into_boxed_slice();
                 let model: crate::vec::Vec<u8> = super::Dummy::<u8>::into_vec(boxed);
                 prop_assert_eq!(model.as_slice(), v.as_slice());
+            }
+        }
+
+        // Only the non-F* `concat` is a real model; the F* one is a deliberate
+        // placeholder (see its definition), so there is nothing to check there.
+        #[cfg(not(hax_backend_fstar))]
+        proptest! {
+            #[test]
+            fn test_concat(vs in prop::collection::vec(
+                prop::collection::vec(any::<u8>(), 0..10), 0..10)) {
+                let slices: std::vec::Vec<&[u8]> = vs.iter().map(|v| v.as_slice()).collect();
+                let model = super::Dummy::<&[u8]>::concat(&slices);
+                let expected = slices.concat();
+                prop_assert_eq!(model.as_slice(), expected.as_slice());
             }
         }
     }
@@ -469,6 +577,13 @@ pub mod vec {
         }
     }
 
+    /// See [`std::vec::Vec::default`]: an empty `Vec`.
+    impl<T> Default for Vec<T> {
+        fn default() -> Vec<T> {
+            Vec::new()
+        }
+    }
+
     #[hax_lib::attributes]
     impl<T> Vec<T> {
         pub fn len(&self) -> usize {
@@ -523,6 +638,13 @@ pub mod vec {
         pub fn append(&mut self, other: &mut Vec<T>) {
             seq_concat(&mut self.0, &mut other.0);
             other.0 = seq_empty()
+        }
+        /// See [`std::vec::Vec::split_off`]: truncate `self` to `[0, at)` and
+        /// return the tail `[at, len)` as a new `Vec`.
+        #[hax_lib::requires(at <= self.len())]
+        pub fn split_off(&mut self, at: usize) -> Vec<T> {
+            let l = seq_len(&self.0);
+            Vec(seq_drain(&mut self.0, at, l))
         }
         #[hax_lib::opaque]
         pub fn drain<R /* : RangeBounds<usize> */>(
@@ -701,6 +823,13 @@ pub mod vec {
         pub fn append(&mut self, other: &mut Vec<T, A>) {
             seq_concat(&mut self.0, &mut other.0);
             other.0 = seq_empty()
+        }
+        /// See [`std::vec::Vec::split_off`]: truncate `self` to `[0, at)` and
+        /// return the tail `[at, len)` as a new `Vec`.
+        #[hax_lib::requires(at <= self.len())]
+        pub fn split_off(&mut self, at: usize) -> Vec<T, A> {
+            let l = seq_len(&self.0);
+            Vec(seq_drain(&mut self.0, at, l), PhantomData)
         }
         #[hax_lib::opaque]
         pub fn drain<R /* : RangeBounds<usize> */>(&mut self, _range: R) -> drain::Drain<T, A> {

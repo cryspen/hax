@@ -47,6 +47,33 @@ impl From<FnDecorationKind> for AssociationRole {
     }
 }
 
+/// A trait's own path, parameters turned back into arguments:
+/// `trait T<'a, X, const N: usize>` yields `T<'a, X, N>`.
+pub(crate) fn self_trait_path(item: &ItemTrait) -> Path {
+    let args: Vec<GenericArgument> = item
+        .generics
+        .params
+        .iter()
+        .map(|param| match param {
+            GenericParam::Lifetime(lt) => GenericArgument::Lifetime(lt.lifetime.clone()),
+            GenericParam::Type(ty) => {
+                let ident = &ty.ident;
+                GenericArgument::Type(parse_quote! {#ident})
+            }
+            GenericParam::Const(c) => {
+                let ident = &c.ident;
+                GenericArgument::Const(parse_quote! {#ident})
+            }
+        })
+        .collect();
+    let ident = &item.ident;
+    if args.is_empty() {
+        parse_quote! {#ident}
+    } else {
+        parse_quote! {#ident<#(#args),*>}
+    }
+}
+
 /// Merge two `syn::Generics`, respecting lifetime orders
 pub(crate) fn merge_generics(x: Generics, y: Generics) -> Generics {
     Generics {
@@ -227,13 +254,61 @@ fn add_unit_to_sig_if_needed(signature: &mut Signature) {
     }
 }
 
+/// Errors on the `Self::A` projections of `sig` whose associated type `A` is
+/// not defined by the enclosing `impl` block: hax qualifies them as
+/// `<Type as Trait>::A`, which is correct only for the block's own items.
+pub fn foreign_self_projection_error(sig: &Signature, assoc: &[String]) -> Option<TokenStream> {
+    struct Collector<'a> {
+        assoc: &'a [String],
+        errors: Vec<Error>,
+    }
+    impl<'ast> syn::visit::Visit<'ast> for Collector<'_> {
+        fn visit_type_path(&mut self, tp: &'ast TypePath) {
+            syn::visit::visit_type_path(self, tp);
+            let mut segments = tp.path.segments.iter();
+            let (Some(first), Some(assoc)) = (segments.next(), segments.next()) else {
+                return;
+            };
+            if tp.qself.is_some() || first.ident != "Self" {
+                return;
+            }
+            let name = assoc.ident.to_string();
+            if !self.assoc.contains(&name) {
+                self.errors.push(Error::new(
+                    tp.span(),
+                    format!(
+                        "hax: `Self::{name}` is not defined by this `impl` block, hax cannot \
+                         qualify it. Write `<Type as Trait>::{name}` explicitly. See \
+                         https://github.com/cryspen/hax/issues/2089."
+                    ),
+                ));
+            }
+        }
+    }
+    let mut collector = Collector {
+        assoc,
+        errors: Vec::new(),
+    };
+    syn::visit::Visit::visit_signature(&mut collector, sig);
+    let mut errors = collector.errors.into_iter();
+    let mut error = errors.next()?;
+    for other in errors {
+        error.combine(other);
+    }
+    Some(error.to_compile_error())
+}
+
 /// Common logic when generating a function decoration
+///
+/// `self_type` substitutes `Self`, and `self_projection` says how to
+/// qualify `Self::Assoc` projections (see [`SelfProjection`]).
 pub fn make_fn_decoration(
     mut phi: Expr,
     mut signature: Signature,
     kind: FnDecorationKind,
     mut generics: Option<Generics>,
     self_type: Option<Type>,
+    self_projection: SelfProjection,
 ) -> (TokenStream, AttrPayload) {
     let self_ident: Ident = {
         let mut idents = IdentCollector::default();
@@ -242,7 +317,7 @@ pub fn make_fn_decoration(
         idents.fresh_ident("self_")
     };
     let error = {
-        let mut rewriter = RewriteSelf::new(self_ident, self_type);
+        let mut rewriter = RewriteSelf::new(self_ident, self_type, self_projection);
         rewriter.visit_expr_mut(&mut phi);
         rewriter.visit_signature_mut(&mut signature);
         if let Some(generics) = generics.as_mut() {
@@ -343,5 +418,11 @@ pub fn make_fn_decoration(
         role: kind.into(),
         item: uid,
     };
-    (quote! {#error #decoration}, assoc_attr)
+    // On error the decoration is dropped: emitting it anyway would pile
+    // rustc errors on top of ours.
+    let decoration = match error {
+        Some(error) => error,
+        None => decoration,
+    };
+    (decoration, assoc_attr)
 }

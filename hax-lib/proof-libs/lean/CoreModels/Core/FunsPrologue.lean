@@ -153,12 +153,6 @@ def Shared1A.Insts.CoreCmpPartialOrdShared0B.gt
   | _ => ok false
 
 
-/-! ## Slice -/
-
-def slice.Slice.len {T : Type u} (v : Aeneas.Std.Slice T) : Aeneas.Std.Result Usize :=
-  pure (@Aeneas.Std.Slice.len T v)
-
-
 /-! ## Option -/
 
 def option.Option.unwrap_or :=

@@ -18,6 +18,7 @@ val saturating_mul_u8 : u8 -> u8 -> u8
 let overflowing_mul_u8 : u8 -> u8 -> u8 & bool = mul_overflow
 let rem_euclid_u8 (x: u8) (y: u8 {v y <> 0}): u8 = x %! y
 val pow_u8 : u8 -> u32 -> u8
+val overflowing_pow_u8 : u8 -> u32 -> u8 & bool
 val count_ones_u8 : u8 -> r:u32{v r <= 8}
 unfold 
 let rotate_left_u8 = rotate_left_u #U8
@@ -37,6 +38,7 @@ val saturating_mul_u16 : u16 -> u16 -> u16
 let overflowing_mul_u16 : u16 -> u16 -> u16 & bool = mul_overflow
 let rem_euclid_u16 (x: u16) (y: u16 {v y <> 0}): u16 = x %! y
 val pow_u16 : x:u16 -> y:u32 -> result : u16 {v x == 2 /\ v y < 16 ==> result == mk_u16 (pow2 (v y))}
+val overflowing_pow_u16 : u16 -> u32 -> u16 & bool
 val count_ones_u16 : u16 -> r:u32{v r <= 16}
 unfold 
 let rotate_left_u16 = rotate_left_u #U16
@@ -56,6 +58,7 @@ val saturating_mul_u32 : u32 -> u32 -> u32
 let overflowing_mul_u32 : u32 -> u32 -> u32 & bool = mul_overflow
 let rem_euclid_u32 (x: u32) (y: u32 {v y <> 0}): u32 = x %! y
 val pow_u32 : x:u32 -> y:u32 -> result : u32 {v x == 2 /\ v y <= 16 ==> result == mk_u32 (pow2 (v y))}
+val overflowing_pow_u32 : u32 -> u32 -> u32 & bool
 val count_ones_u32 : u32 -> r:u32{v r <= 32}
 unfold 
 let rotate_left_u32 = rotate_left_u #U32
@@ -75,6 +78,7 @@ val saturating_mul_u64 : u64 -> u64 -> u64
 let overflowing_mul_u64 : u64 -> u64 -> u64 & bool = mul_overflow
 let rem_euclid_u64 (x: u64) (y: u64 {v y <> 0}): u64 = x %! y
 val pow_u64 : u64 -> u32 -> u64
+val overflowing_pow_u64 : u64 -> u32 -> u64 & bool
 val count_ones_u64 : u64 -> r:u32{v r <= 64}
 unfold 
 let rotate_left_u64 = rotate_left_u #U64
@@ -94,6 +98,7 @@ val saturating_mul_u128 : u128 -> u128 -> u128
 let overflowing_mul_u128 : u128 -> u128 -> u128 & bool = mul_overflow
 let rem_euclid_u128 (x: u128) (y: u128 {v y <> 0}): u128 = x %! y
 val pow_u128 : u128 -> u32 -> u128
+val overflowing_pow_u128 : u128 -> u32 -> u128 & bool
 val count_ones_u128 : u128 -> r:u32{v r <= 128}
 unfold 
 let rotate_left_u128 = rotate_left_u #U128
@@ -113,6 +118,7 @@ val saturating_mul_usize : usize -> usize -> usize
 let overflowing_mul_usize : usize -> usize -> usize & bool = mul_overflow
 let rem_euclid_usize (x: usize) (y: usize {v y <> 0}): usize = x %! y
 val pow_usize : usize -> u32 -> usize
+val overflowing_pow_usize : usize -> u32 -> usize & bool
 val count_ones_usize : usize -> r:u32{v r <= size_bits}
 unfold 
 let rotate_left_usize = rotate_left_u #USIZE
@@ -128,6 +134,7 @@ val saturating_mul_i8 : i8 -> i8 -> i8
 let overflowing_mul_i8 : i8 -> i8 -> i8 & bool = mul_overflow
 let rem_euclid_i8 (x: i8) (y: i8 {v y <> 0}): i8 = x %! y
 val pow_i8 : i8 -> u32 -> i8
+val overflowing_pow_i8 : i8 -> u32 -> i8 & bool
 val count_ones_i8 : i8 -> r:u32{v r <= 8}
 val abs_i8 : i8 -> i8
 
@@ -142,6 +149,7 @@ val saturating_mul_i16 : i16 -> i16 -> i16
 let overflowing_mul_i16 : i16 -> i16 -> i16 & bool = mul_overflow
 let rem_euclid_i16 (x: i16) (y: i16 {v y <> 0}): i16 = x %! y
 val pow_i16 : x: i16 -> y:u32 -> result: i16 {v x == 2 /\ v y < 15 ==> (Math.Lemmas.pow2_lt_compat 15 (v y); result == mk_i16 (pow2 (v y)))}
+val overflowing_pow_i16 : i16 -> u32 -> i16 & bool
 val count_ones_i16 : i16 -> r:u32{v r <= 16}
 val abs_i16 : i16 -> i16
 
@@ -156,6 +164,7 @@ val saturating_mul_i32 : i32 -> i32 -> i32
 let overflowing_mul_i32 : i32 -> i32 -> i32 & bool = mul_overflow
 let rem_euclid_i32 (x: i32) (y: i32 {v y <> 0}): i32 = x %! y
 val pow_i32 : x : i32 -> y:u32 -> result: i32 {v x == 2 /\ v y <= 16 ==> result == mk_i32 (pow2 (v y))}
+val overflowing_pow_i32 : i32 -> u32 -> i32 & bool
 val count_ones_i32 : i32 -> r:u32{v r <= 32}
 val abs_i32 : i32 -> i32
 
@@ -170,6 +179,7 @@ val saturating_mul_i64 : i64 -> i64 -> i64
 let overflowing_mul_i64 : i64 -> i64 -> i64 & bool = mul_overflow
 let rem_euclid_i64 (x: i64) (y: i64 {v y <> 0}): i64 = x %! y
 val pow_i64 : i64 -> u32 -> i64
+val overflowing_pow_i64 : i64 -> u32 -> i64 & bool
 val count_ones_i64 : i64 -> r:u32{v r <= 64}
 val abs_i64 : i64 -> i64
 
@@ -184,6 +194,7 @@ val saturating_mul_i128 : i128 -> i128 -> i128
 let overflowing_mul_i128 : i128 -> i128 -> i128 & bool = mul_overflow
 let rem_euclid_i128 (x: i128) (y: i128 {v y <> 0}): i128 = x %! y
 val pow_i128 : i128 -> u32 -> i128
+val overflowing_pow_i128 : i128 -> u32 -> i128 & bool
 val count_ones_i128 : i128 -> r:u32{v r <= 128}
 val abs_i128 : i128 -> i128
 
@@ -198,6 +209,7 @@ val saturating_mul_isize : isize -> isize -> isize
 let overflowing_mul_isize : isize -> isize -> isize & bool = mul_overflow
 let rem_euclid_isize (x: isize) (y: isize {v y <> 0}): isize = x %! y
 val pow_isize : isize -> u32 -> isize
+val overflowing_pow_isize : isize -> u32 -> isize & bool
 val count_ones_isize : isize -> r:u32{v r <= size_bits}
 val abs_isize : isize -> isize
 

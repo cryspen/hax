@@ -24,6 +24,8 @@ When starting to work on an issue, create a branch and an according pull request
 The changeset in a pull request must not be larger than 1000 lines (with some exceptions for test snapshots or generated code).
 If an issue needs more work than that, split it into multiple pull requests.
 
+By submitting a contribution, you agree it may be distributed under the project's license, and you warrant you have the right to contribute it.
+
 After submitting the pull request, verify that all [status checks](https://help.github.com/articles/about-status-checks/) are passing before asking for review.
 
 While the prerequisites above must be satisfied prior to having your pull request reviewed, the reviewer(s) may ask you to complete additional design work, tests, or other changes before your pull request can be ultimately accepted.
@@ -143,7 +145,19 @@ As a reviewer always keep in mind the following principles
 
 ## AI guidelines
 
-Using AI tools to generate code for Hax is accepted under the following conditions:
-- The PR should clearly state that AI has been used and say for which parts of the code, tests, or documentation.
-- The author should also explain the methodology: how AI has been used and how the result has been tested.
-- Any AI generated content should be carefully reviewed by the author of the PR (before the reviewer).
+AI tools may be used to generate any contribution to hax (code, tests, documentation, commit messages, or issue text) under the conditions below.
+
+### Disclosure
+
+- The PR must clearly state that AI was used and for which parts of the contribution.
+- The author must explain the methodology: how AI was used and how the result was tested.
+
+### Responsibility
+
+- A human must take ownership of the PR: review every AI-generated part carefully before requesting review, and be able to explain and debug it. Autonomous agents may draft or open changes, but a person takes responsibility for them, and reviewers may ask you to walk through any part of your patch.
+- You remain fully responsible for AI-generated content as if you had written it yourself, including ensuring it does not infringe third-party rights and that the AI tool's terms permit contributing the output under the project's license.
+
+### Commit trailers
+
+- `Co-authored-by:` must not be used for AI tools. That trailer implies a human collaborator who can hold copyright and be held accountable. AI tools cannot.
+- `Assisted-by:` is optional but encouraged. Use it to note which AI tool was used, e.g. `Assisted-by: Claude Fable 5` (include the tool name and version). This is a project-specific convention that Git and most tooling will not recognize, and it does not replace the disclosure required above.

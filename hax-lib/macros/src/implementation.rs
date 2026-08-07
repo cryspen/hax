@@ -22,6 +22,7 @@ mod prelude {
 
 use impl_fn_decoration::*;
 use prelude::*;
+use rewrite_self::SelfProjection;
 use utils::*;
 
 /// Reports a compile error at `$span` and returns from the enclosing
@@ -356,6 +357,7 @@ pub fn decreases(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStrea
         FnDecorationKind::Decreases,
         None,
         None,
+        SelfProjection::Unknown,
     );
     quote! {#requires #attr #item}.into()
 }
@@ -366,8 +368,14 @@ pub fn decreases(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStrea
 pub fn fstar_smt_pat(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let phi: syn::Expr = parse_macro_input!(attr);
     let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) =
-        make_fn_decoration(phi, item.sig.clone(), FnDecorationKind::SMTPat, None, None);
+    let (requires, attr) = make_fn_decoration(
+        phi,
+        item.sig.clone(),
+        FnDecorationKind::SMTPat,
+        None,
+        None,
+        SelfProjection::Unknown,
+    );
     quote! {#requires #attr #item}.into()
 }
 
@@ -405,6 +413,7 @@ pub fn requires(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream
         FnDecorationKind::Requires,
         None,
         None,
+        SelfProjection::Unknown,
     );
     let mut item_with_debug = item.clone();
     item_with_debug
@@ -447,7 +456,14 @@ pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     let kind = FnDecorationKind::Ensures {
         ret_binder: ret_binder.clone(),
     };
-    let (ensures, attr) = make_fn_decoration(phi.clone(), item.sig.clone(), kind, None, None);
+    let (ensures, attr) = make_fn_decoration(
+        phi.clone(),
+        item.sig.clone(),
+        kind,
+        None,
+        None,
+        SelfProjection::Unknown,
+    );
     let mut item_with_debug = item.clone();
     let body = item.block.clone();
     item_with_debug.block.stmts =
@@ -475,7 +491,8 @@ mod kw {
 /// `fn` items within an `impl` block. There is special handling since
 /// such functions might have a `self` argument: in such cases, we
 /// rewrite function decorations as `#[impl_fn_decoration(<KIND>,
-/// <GENERICS>, <WHERE CLAUSE>, <SELF TYPE>, <BODY>)]`.
+/// <GENERICS>, <WHERE CLAUSE>, <SELF TYPE> [as <TRAIT>], <BODY>)]`, where
+/// `<TRAIT>` is the trait implemented by the enclosing `impl` block.
 #[proc_macro_attribute]
 pub fn impl_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let ImplFnDecoration {
@@ -483,10 +500,21 @@ pub fn impl_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::T
         phi,
         generics,
         self_ty,
+        self_trait,
     } = parse_macro_input!(attr);
     let mut item: FnLike = parse_macro_input!(item);
-    let (decoration, attr) =
-        make_fn_decoration(phi, item.sig.clone(), kind, Some(generics), Some(self_ty));
+    let projection = match self_trait {
+        Some(trait_) => SelfProjection::Trait(trait_),
+        None => SelfProjection::Unknown,
+    };
+    let (decoration, attr) = make_fn_decoration(
+        phi,
+        item.sig.clone(),
+        kind,
+        Some(generics),
+        Some(self_ty),
+        projection,
+    );
     let decoration = Stmt::Item(Item::Verbatim(decoration));
     item.block.stmts.insert(0, decoration);
     quote! {#attr #item}.into()
@@ -499,10 +527,21 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
         phi,
         generics,
         self_ty,
+        self_trait,
     } = parse_macro_input!(attr);
     let mut item: syn::TraitItemFn = parse_macro_input!(item);
-    let (decoration, attr) =
-        make_fn_decoration(phi, item.sig.clone(), kind, Some(generics), Some(self_ty));
+    let projection = match self_trait {
+        Some(_) => SelfProjection::Unsupported,
+        None => SelfProjection::Unknown,
+    };
+    let (decoration, attr) = make_fn_decoration(
+        phi,
+        item.sig.clone(),
+        kind,
+        Some(generics),
+        Some(self_ty),
+        projection,
+    );
     let decoration = Stmt::Item(Item::Verbatim(decoration));
     item.sig
         .generics
@@ -571,6 +610,9 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
     impl VisitMut for AttrVisitor {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             let span = item.span();
+            let self_trait = self_trait_path(item);
+            let supertraits = item.supertraits.clone();
+            let item_generics = item.generics.clone();
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
                     for attr in &mut fun.attrs {
@@ -582,12 +624,22 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         };
                         let decoration = syn::Ident::new(&decoration, ml.path.span());
 
-                        let mut generics = item.generics.clone();
+                        let mut generics = item_generics.clone();
+                        // `Self_` needs the trait itself among its bounds, not
+                        // just the supertraits, else `Self::Assoc` has nothing
+                        // to resolve against (#2089).
+                        let mut bounds = supertraits.clone();
+                        bounds.push(TypeParamBound::Trait(TraitBound {
+                            paren_token: None,
+                            modifier: TraitBoundModifier::None,
+                            lifetimes: None,
+                            path: self_trait.clone(),
+                        }));
                         let predicate = WherePredicate::Type(PredicateType {
                             lifetimes: None,
                             bounded_ty: parse_quote! {Self_},
                             colon_token: Token![:](span),
-                            bounds: item.supertraits.clone(),
+                            bounds,
                         });
                         let mut where_clause = generics
                             .where_clause
@@ -607,6 +659,7 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             kind,
                             Some(generics),
                             Some(self_ty),
+                            SelfProjection::TypeParam,
                         );
                         *attr = parse_quote! {#relation_attr};
                         self.extra_items.push(decoration);
@@ -617,8 +670,41 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
         }
         fn visit_type_mut(&mut self, _type: &mut Type) {}
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
+            // The trait implemented by this block, if any: it qualifies the
+            // `Self::Assoc` projections of the decorated methods.
+            let as_trait = item
+                .trait_
+                .as_ref()
+                .and_then(|(not, path, _)| not.is_none().then(|| quote! {as #path}));
+            // Only the associated types this block defines can be qualified.
+            let assoc: Vec<String> = item
+                .items
+                .iter()
+                .filter_map(|item| match item {
+                    ImplItem::Type(ty) => Some(ty.ident.to_string()),
+                    _ => None,
+                })
+                .collect();
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
+                    let decorated = fun.attrs.iter().any(|attr| {
+                        matches!(&attr.meta, Meta::List(ml)
+                            if matches!(expects_path_decoration(&ml.path), Ok(Some(_))))
+                    });
+                    if decorated {
+                        if let Some(error) = foreign_self_projection_error(&fun.sig, &assoc) {
+                            // Drop the specifications: generating them would
+                            // pile rustc errors on top of ours.
+                            fun.attrs.retain(|attr| match &attr.meta {
+                                Meta::List(ml) => {
+                                    !matches!(expects_path_decoration(&ml.path), Ok(Some(_)))
+                                }
+                                _ => true,
+                            });
+                            self.extra_items.push(error);
+                            continue;
+                        }
+                    }
                     for attr in fun.attrs.iter_mut() {
                         if let Meta::List(ml) = &mut attr.meta {
                             let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
@@ -628,8 +714,9 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                             let tokens = ml.tokens.clone();
                             let (generics, self_ty) = (&item.generics, &item.self_ty);
                             let where_clause = &generics.where_clause;
-                            ml.tokens =
-                                quote! {#decoration, #generics, #where_clause, #self_ty, #tokens};
+                            ml.tokens = quote! {
+                                #decoration, #generics, #where_clause, #self_ty #as_trait, #tokens
+                            };
                             ml.path = parse_quote! {::hax_lib::impl_fn_decoration};
                         }
                     }
@@ -904,7 +991,7 @@ pub fn legacy_lean_proof_method_bv_decide(
 }
 
 macro_rules! make_quoting_item_proc_macro {
-    ($backend:ident, $macro_name:ident, $position:expr, $cfg_name:ident) => {
+    ($backend:ident, $macro_name:ident, $short_name:ident, $position:expr, $cfg_name:ident) => {
         #[doc = concat!("This macro inlines verbatim ", stringify!($backend)," code before a Rust item.")]
         ///
         /// This macro takes a string literal containing backend
@@ -917,6 +1004,14 @@ macro_rules! make_quoting_item_proc_macro {
         /// `fst` or `fsti` files or both.
         #[proc_macro_attribute]
         pub fn $macro_name(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+            // On an inherent `impl` block, re-target the annotation onto one of its items.
+            {
+                let raw_payload: TokenStream = payload.clone().into();
+                let attr = quote! {#[::hax_lib::$backend::$short_name(#raw_payload)]};
+                if let Some(ts) = quote::retarget_on_inherent_impl(&item, $position, attr) {
+                    return ts.into();
+                }
+            }
             let mut fstar_options = None;
             let item: TokenStream = item.into();
             let payload = {
@@ -1030,12 +1125,20 @@ macro_rules! make_quoting_proc_macro {
             }}.into()
         }
 
-        make_quoting_item_proc_macro!($backend, ${concat($backend, _before)}, ItemQuotePosition::Before, ${concat(hax_backend_, $backend)});
-        make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, ItemQuotePosition::After, ${concat(hax_backend_, $backend)});
+        make_quoting_item_proc_macro!($backend, ${concat($backend, _before)}, before, ItemQuotePosition::Before, ${concat(hax_backend_, $backend)});
+        make_quoting_item_proc_macro!($backend, ${concat($backend, _after)}, after, ItemQuotePosition::After, ${concat(hax_backend_, $backend)});
 
         #[doc = concat!("Replaces a Rust item with some verbatim ", stringify!($backend)," code.")]
         #[proc_macro_attribute]
         pub fn ${concat($backend, _replace)}(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+            if let Ok(item_impl) = syn::parse::<ItemImpl>(item.clone()) {
+                if item_impl.trait_.is_none() {
+                    abort!(
+                        item_impl.impl_token.span(),
+                        "hax: `replace` is not supported on inherent `impl` blocks, please annotate the items of the block individually."
+                    );
+                }
+            }
             let item: TokenStream = item.into();
             let payload: TokenStream = payload.into();
             let attr = AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
@@ -1193,7 +1296,8 @@ pub fn refinement_type(mut attr: pm::TokenStream, item: pm::TokenStream) -> pm::
         })
         .collect();
     let inner_ty = &field.ty;
-    let (refinement_item, refinement_attr) = make_fn_decoration(phi.clone(), sig, kind, None, None);
+    let (refinement_item, refinement_attr) =
+        make_fn_decoration(phi.clone(), sig, kind, None, None, SelfProjection::Unknown);
     let module_ident = syn::Ident::new(
         &format!("hax__autogenerated_refinement__{}", ident),
         ident.span(),

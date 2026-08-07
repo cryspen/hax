@@ -174,9 +174,22 @@ fn has_automatically_derived(attrs: &ast::Attributes) -> bool {
     })
 }
 
+/// The markers rustc leaves behind when it expands `#[cfg(..)]` and
+/// `#[cfg_attr(..)]` attributes. They exist only so that rustc can report better
+/// spans in its own diagnostics: they carry no information for us. Note their
+/// paths are purposefully invalid Rust identifiers, so that users cannot write
+/// them: keeping them around makes the Rust printer produce code that cannot be
+/// parsed back.
+const CFG_TRACE_ATTRIBUTES: &[&str] = &["<cfg_trace>", "<cfg_attr_trace>"];
+
 impl Import<Option<ast::Attribute>> for frontend::Attribute {
     fn import(&self, context: &Context) -> Option<ast::Attribute> {
         match self {
+            frontend::Attribute::Unparsed(frontend::AttrItem { path, .. })
+                if CFG_TRACE_ATTRIBUTES.contains(&path.as_str()) =>
+            {
+                None
+            }
             frontend::Attribute::Parsed(frontend::AttributeKind::DocComment {
                 kind,
                 span,

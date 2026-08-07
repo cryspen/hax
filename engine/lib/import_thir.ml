@@ -114,8 +114,19 @@ let c_logical_op : Thir.logical_op -> logical_op = function
   | And -> And
   | Or -> Or
 
+(** The markers rustc leaves behind when it expands [#[cfg(..)]] and
+    [#[cfg_attr(..)]] attributes. They exist only so that rustc can report
+    better spans in its own diagnostics: they carry no information for us. Note
+    their paths are purposefully invalid Rust identifiers, so that users cannot
+    write them: keeping them around makes [Print_rust] produce Rust code that
+    cannot be parsed back. *)
+let cfg_trace_attributes = [ "<cfg_trace>"; "<cfg_attr_trace>" ]
+
 let c_attr (attr : Thir.attribute) : attr option =
   match attr with
+  | Unparsed { path; _ }
+    when List.mem cfg_trace_attributes path ~equal:[%eq: string] ->
+      None
   | Parsed (DocComment { kind; comment; span; _ }) ->
       let kind =
         match kind with Thir.Line -> DCKLine | Thir.Block -> DCKBlock

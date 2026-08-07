@@ -88,19 +88,17 @@ Definition props '(_ : unit) : unit :=
   let _ := tt in
   tt.
 
-(Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "1e61e9169082451f863721e491e17abe")
+Definition inlined_code (foo : t_Foo) : unit :=
+  let vv_a := (13 : t_i32) in
+  let _ := tt in
+  tt.
 
-Note: the error was labeled with context `Coq backend`.
-(* ERROR_ITEM *))
 Definition inlined_code__v_V : t_u8 :=
   (12 : t_u8).
 
-(Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "738e326ccf104622b4dffb4a7537f7ef")
+Definition mutliple_before_after '(_ : unit) : unit :=
+  tt.
 
-Note: the error was labeled with context `Coq backend`.
-(* ERROR_ITEM *))
 Definition some_function '(_ : unit) : t_String :=
   f_from (("hello from Rust"%string : string)).
 

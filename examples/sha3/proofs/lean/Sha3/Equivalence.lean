@@ -180,12 +180,12 @@ theorem array.equality.PartialEqArray.eq_spec {N : Usize} (a0 : Array U64 N) (a1
 attribute [local spec] uncurry
 
 /-
-We prove two examples of equivalences between implementaiton and reference:
+We prove two examples of equivalences between implementation and specification:
 
 ## Part 1: Equivalence of `iota`
 
-Both implementations of iota yield the same state array, provided that the argument `i` is small
-enough. (Otherwise both implementations would access the round constants array out of bounds.)
+Implementation and specification of iota yield the same state array, provided that the argument
+`i` is small enough. (Otherwise both would access the round constants array out of bounds.)
 -/
 
 @[spec]
@@ -199,11 +199,11 @@ theorem iota_spec
   unfold KeccakState.iota KeccakState.Insts.CoreOpsIndexIndexPairUsizeUsizeT.index get_ij
     _requires_iota core.slice.Slice.len at *
   dsimp only [U64.Insts.Sha3ImplementationKeccakItem1.xor_constant, _veorq_n_u64, KeccakState.set, set_ij, _ensures_iota,
-    reference.iota]
+    specification.iota]
   -- Call `hax_mvcgen`. This tactic will run `mvcgen` on triples in both hypotheses and in goals
   hax_mvcgen
-  · have hr : ROUNDCONSTANTS = reference.ROUND_CONSTANTS := by
-      unfold ROUNDCONSTANTS reference.ROUND_CONSTANTS; rfl
+  · have hr : ROUNDCONSTANTS = specification.ROUND_CONSTANTS := by
+      unfold ROUNDCONSTANTS specification.ROUND_CONSTANTS; rfl
     expose_names
     have hx : r_9 = r_8 ^^^ r_7 := by grind
     grind
@@ -253,49 +253,49 @@ theorem rho_spec
     ⦃ ⇓ r => ⌜ True ⌝ ⦄ := by
   sorry
 
-/- ### Panic-freedom of the reference implementations
+/- ### Panic-freedom of the specification
 
-We will also ignore the concrete implementations of the reference functions `theta`, `rho`, `pi`,
-`chi`, and `iota`, but we need to know that they do not panic:
+We will also ignore the proofs that the specifications of `theta`, `rho`, `pi`,
+`chi`, and `iota` do not panic:
 -/
 
-theorem reference_theta_spec (st) :
+theorem specification_theta_spec (st) :
     ⦃ ⌜ True ⌝ ⦄
-    reference.theta st
+    specification.theta st
     ⦃ ⇓ r => ⌜ True ⌝ ⦄ := by
   sorry
 
-theorem reference_rho_spec (st) :
+theorem specification_rho_spec (st) :
     ⦃ ⌜ True ⌝ ⦄
-    reference.rho st
+    specification.rho st
     ⦃ ⇓ r => ⌜ True ⌝ ⦄ := by
   sorry
 
-theorem reference_pi_spec (st) :
+theorem specification_pi_spec (st) :
     ⦃ ⌜ True ⌝ ⦄
-    reference.pi st
+    specification.pi st
     ⦃ ⇓ r => ⌜ True ⌝ ⦄ := by
   sorry
 
-theorem reference_chi_spec (st) :
+theorem specification_chi_spec (st) :
     ⦃ ⌜ True ⌝ ⦄
-    reference.chi st
+    specification.chi st
     ⦃ ⇓ r => ⌜ True ⌝ ⦄ := by
   sorry
 
-theorem reference_iota_spec (st i) :
+theorem specification_iota_spec (st i) :
     ⦃ ⌜ True ⌝ ⦄
-    reference.iota st i
+    specification.iota st i
     ⦃ ⇓ r => ⌜ True ⌝ ⦄ := by
   sorry
 
 /- ### Encapsulation specifications
 
-When running `mvcgen` on a program, we need specifications for all contained functions. For the
-reference functions and for the implementation `rho`, we do not have a specification. We want
-to abstract over whatever these functions are doing. For that purpose, we can use
-`core.Result.toPure_spec` to encapsulate their implementations and keep them opaque to mvcgen.
-It produces specifications such as:
+When running `mvcgen` on a program, we need spec lemmas for all contained functions. For the
+specification functions and for the implementation `rho`, we do not want to provide actual
+pre- and postconditions. We want to abstract over whatever these functions are doing. For that
+purpose, we can use `core.Result.toPure_spec` to encapsulate their definitions and keep them
+opaque to mvcgen. It produces spec lemmas such as:
 ```
 ⦃⌜True⌝⦄ rho st t ⦃ ⇓r => ⌜r = (rho st t).toPure⌝ ⦄
 ```
@@ -312,19 +312,19 @@ instance [Inhabited α] : Inhabited (Std.Array α n) := ⟨⟨List.replicate n.v
 def rho_spec' {st} {t} := Std.Result.toPure_spec (KeccakState.rho inst st t) (rho_spec st)
 
 @[spec]
-def reference_theta_spec' {st} := Std.Result.toPure_spec (reference.theta st) (reference_theta_spec st)
+def specification_theta_spec' {st} := Std.Result.toPure_spec (specification.theta st) (specification_theta_spec st)
 
 @[spec]
-def reference_rho_spec' {st} := Std.Result.toPure_spec (reference.rho st) (reference_rho_spec st)
+def specification_rho_spec' {st} := Std.Result.toPure_spec (specification.rho st) (specification_rho_spec st)
 
 @[spec]
-def reference_pi_spec' {st} := Std.Result.toPure_spec (reference.pi st) (reference_pi_spec st)
+def specification_pi_spec' {st} := Std.Result.toPure_spec (specification.pi st) (specification_pi_spec st)
 
 @[spec]
-def reference_chi_spec' {st} := Std.Result.toPure_spec (reference.chi st) (reference_chi_spec st)
+def specification_chi_spec' {st} := Std.Result.toPure_spec (specification.chi st) (specification_chi_spec st)
 
 @[spec]
-def reference_iota_spec' {st i} := Std.Result.toPure_spec (reference.iota st i) (reference_iota_spec st i)
+def specification_iota_spec' {st i} := Std.Result.toPure_spec (specification.iota st i) (specification_iota_spec st i)
 
 
 /- ### Equivalence proof

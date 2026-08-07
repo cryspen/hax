@@ -141,7 +141,7 @@ include Core_models.Bundle {impl_15 as impl_Eq_for_u32}
 
 include Core_models.Bundle {impl_40 as impl_40}
 
-include Core_models.Bundle {impl_41 as impl_Ord_for_i32}
+include Core_models.Bundle {impl_41__from__cmp as impl_Ord_for_i32}
 
 include Core_models.Bundle {impl_16 as impl_16}
 
@@ -149,7 +149,7 @@ include Core_models.Bundle {impl_17 as impl_Eq_for_i32}
 
 include Core_models.Bundle {impl_42 as impl_42}
 
-include Core_models.Bundle {impl_43 as impl_Ord_for_u64}
+include Core_models.Bundle {impl_43__from__cmp as impl_Ord_for_u64}
 
 include Core_models.Bundle {impl_18 as impl_18}
 
@@ -157,7 +157,7 @@ include Core_models.Bundle {impl_19 as impl_Eq_for_u64}
 
 include Core_models.Bundle {impl_44 as impl_44}
 
-include Core_models.Bundle {impl_45 as impl_Ord_for_i64}
+include Core_models.Bundle {impl_45__from__cmp as impl_Ord_for_i64}
 
 include Core_models.Bundle {impl_20 as impl_20}
 
@@ -165,7 +165,7 @@ include Core_models.Bundle {impl_21 as impl_Eq_for_i64}
 
 include Core_models.Bundle {impl_46 as impl_46}
 
-include Core_models.Bundle {impl_47 as impl_Ord_for_u128}
+include Core_models.Bundle {impl_47__from__cmp as impl_Ord_for_u128}
 
 include Core_models.Bundle {impl_22 as impl_22}
 
@@ -173,7 +173,7 @@ include Core_models.Bundle {impl_23 as impl_Eq_for_u128}
 
 include Core_models.Bundle {impl_48 as impl_48}
 
-include Core_models.Bundle {impl_49 as impl_Ord_for_i128}
+include Core_models.Bundle {impl_49__from__cmp as impl_Ord_for_i128}
 
 include Core_models.Bundle {impl_24__from__cmp as impl_24}
 
@@ -181,7 +181,7 @@ include Core_models.Bundle {impl_25__from__cmp as impl_Eq_for_i128}
 
 include Core_models.Bundle {impl_50 as impl_50}
 
-include Core_models.Bundle {impl_51 as impl_Ord_for_usize}
+include Core_models.Bundle {impl_51__from__cmp as impl_Ord_for_usize}
 
 include Core_models.Bundle {impl_26__from__cmp as impl_26}
 
@@ -189,7 +189,7 @@ include Core_models.Bundle {impl_27__from__cmp as impl_Eq_for_usize}
 
 include Core_models.Bundle {impl_52 as impl_52}
 
-include Core_models.Bundle {impl_53 as impl_Ord_for_isize}
+include Core_models.Bundle {impl_53__from__cmp as impl_Ord_for_isize}
 
 include Core_models.Bundle {impl_28__from__cmp as impl_28}
 

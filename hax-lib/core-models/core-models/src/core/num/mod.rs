@@ -8,6 +8,9 @@ pub mod error;
 
 use rust_primitives::arithmetic::*;
 
+// Bounds must be spelled `<$Name>::MAX`/`MIN` (referring to core models), not
+// `$Self::MAX`/`MIN` (real `core`): both print the same, but only the former is a
+// dependency hax sees, and cycles it misses become recursive backend modules.
 macro_rules! uint_impl {
     (
         $Self: ty,
@@ -37,7 +40,6 @@ macro_rules! uint_impl {
                 paste! { [<overflowing_add_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_add(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_add(x, y);
                 if overflowed {
@@ -47,7 +49,7 @@ macro_rules! uint_impl {
                 }
             }
             /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
-            #[hax_lib::requires(x.to_int() + y.to_int() <= $Self::MAX.to_int())]
+            #[hax_lib::requires(x.to_int() + y.to_int() <= <$Name>::MAX.to_int())]
             pub unsafe fn unchecked_add(x: $Self, y: $Self) -> $Self {
                 x + y
             }
@@ -64,7 +66,6 @@ macro_rules! uint_impl {
                 paste! { [<overflowing_sub_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_sub(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_sub(x, y);
                 if overflowed {
@@ -91,7 +92,6 @@ macro_rules! uint_impl {
                 paste! { [<overflowing_mul_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_mul(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_mul(x, y);
                 if overflowed {
@@ -101,7 +101,7 @@ macro_rules! uint_impl {
                 }
             }
             /// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
-            #[hax_lib::requires(x.to_int() * y.to_int() <= $Self::MAX.to_int())]
+            #[hax_lib::requires(x.to_int() * y.to_int() <= <$Name>::MAX.to_int())]
             pub unsafe fn unchecked_mul(x: $Self, y: $Self) -> $Self {
                 x * y
             }
@@ -113,6 +113,20 @@ macro_rules! uint_impl {
             /// See [`std::primitive::u8::pow`] (and similar for other integer types)
             pub fn pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 paste! { [<pow_ $Name>](x, exp) }
+            }
+            /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+            pub fn overflowing_pow(x: $Self, exp: core::primitive::u32) -> ($Self, bool) {
+                paste! { [<overflowing_pow_ $Name>](x, exp) }
+            }
+            /// See [`std::primitive::u8::checked_pow`] (and similar for other integer types)
+            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
+            pub fn checked_pow(x: $Self, exp: core::primitive::u32) -> Option<$Self> {
+                let (result, overflowed) = Self::overflowing_pow(x, exp);
+                if overflowed {
+                    Option::None
+                } else {
+                    Option::Some(result)
+                }
             }
             /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
             pub fn count_ones(x: $Self) -> core::primitive::u32 {
@@ -140,7 +154,6 @@ macro_rules! uint_impl {
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
             #[hax_lib::opaque]
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -168,7 +181,6 @@ macro_rules! uint_impl {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_div(x: $Self, y: $Self) -> Option<$Self> {
                 if y == 0 {
                     Option::None
@@ -182,7 +194,6 @@ macro_rules! uint_impl {
                 x / y
             }
             /// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_rem(x: $Self, y: $Self) -> Option<$Self> {
                 if y == 0 {
                     Option::None
@@ -198,6 +209,21 @@ macro_rules! uint_impl {
             /// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
             pub fn is_power_of_two(x: $Self) -> bool {
                 x != 0 && (x & (x - 1)) == 0
+            }
+            /// See [`std::primitive::u8::div_ceil`] (and similar for other unsigned integer types)
+            #[hax_lib::requires(y != 0)]
+            pub fn div_ceil(x: $Self, y: $Self) -> $Self {
+                let d = x / y;
+                let r = x % y;
+                if r > 0 { d + 1 } else { d }
+            }
+            /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
+            pub fn is_multiple_of(x: $Self, y: $Self) -> bool {
+                if y == 0 {
+                    x == 0 // 0 divides only 0
+                } else {
+                    x % y == 0
+                }
             }
             // The following methods require additions to rust_primitives:
             // /// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
@@ -250,7 +276,6 @@ macro_rules! iint_impl {
                 paste! { [<overflowing_add_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_add(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_add(x, y);
                 if overflowed {
@@ -260,7 +285,7 @@ macro_rules! iint_impl {
                 }
             }
             /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
-            #[hax_lib::requires(x.to_int() + y.to_int() <= $Self::MAX.to_int() && x.to_int() + y.to_int() >= $Self::MIN.to_int())]
+            #[hax_lib::requires(x.to_int() + y.to_int() <= <$Name>::MAX.to_int() && x.to_int() + y.to_int() >= <$Name>::MIN.to_int())]
             pub unsafe fn unchecked_add(x: $Self, y: $Self) -> $Self {
                 x + y
             }
@@ -277,7 +302,6 @@ macro_rules! iint_impl {
                 paste! { [<overflowing_sub_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_sub`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_sub(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_sub(x, y);
                 if overflowed {
@@ -287,27 +311,25 @@ macro_rules! iint_impl {
                 }
             }
             /// See [`std::primitive::u8::unchecked_sub`] (and similar for other integer types)
-            #[hax_lib::requires(x.to_int() - y.to_int() <= $Self::MAX.to_int() && x.to_int() - y.to_int() >= $Self::MIN.to_int())]
+            #[hax_lib::requires(x.to_int() - y.to_int() <= <$Name>::MAX.to_int() && x.to_int() - y.to_int() >= <$Name>::MIN.to_int())]
             pub unsafe fn unchecked_sub(x: $Self, y: $Self) -> $Self {
                 x - y
             }
             /// See [`std::primitive::i8::checked_add_unsigned`] (and similar for other signed integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_add_unsigned(x: $Self, y: $USelf) -> Option<$Self> {
                 // Signed overflow from wrapping_add(x, y as $Self) represents unsigned overflow
                 // iff the signed overflow flag matches whether y exceeds the signed maximum.
                 let (result, overflowed) = Self::overflowing_add(x, y as $Self);
-                if overflowed == (y > Self::MAX as $USelf) {
+                if overflowed == (y > <$Name>::MAX as $USelf) {
                     Option::Some(result)
                 } else {
                     Option::None
                 }
             }
             /// See [`std::primitive::i8::checked_sub_unsigned`] (and similar for other signed integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_sub_unsigned(x: $Self, y: $USelf) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_sub(x, y as $Self);
-                if overflowed == (y > Self::MAX as $USelf) {
+                if overflowed == (y > <$Name>::MAX as $USelf) {
                     Option::Some(result)
                 } else {
                     Option::None
@@ -326,7 +348,6 @@ macro_rules! iint_impl {
                 paste! { [<overflowing_mul_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::checked_mul`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_mul(x: $Self, y: $Self) -> Option<$Self> {
                 let (result, overflowed) = Self::overflowing_mul(x, y);
                 if overflowed {
@@ -336,7 +357,7 @@ macro_rules! iint_impl {
                 }
             }
             /// See [`std::primitive::u8::unchecked_mul`] (and similar for other integer types)
-            #[hax_lib::requires(x.to_int() * y.to_int() <= $Self::MAX.to_int() && x.to_int() * y.to_int() >= $Self::MIN.to_int())]
+            #[hax_lib::requires(x.to_int() * y.to_int() <= <$Name>::MAX.to_int() && x.to_int() * y.to_int() >= <$Name>::MIN.to_int())]
             pub unsafe fn unchecked_mul(x: $Self, y: $Self) -> $Self {
                 x * y
             }
@@ -349,12 +370,26 @@ macro_rules! iint_impl {
             pub fn pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 paste! { [<pow_ $Name>](x, exp) }
             }
+            /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
+            pub fn overflowing_pow(x: $Self, exp: core::primitive::u32) -> ($Self, bool) {
+                paste! { [<overflowing_pow_ $Name>](x, exp) }
+            }
+            /// See [`std::primitive::u8::checked_pow`] (and similar for other integer types)
+            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
+            pub fn checked_pow(x: $Self, exp: core::primitive::u32) -> Option<$Self> {
+                let (result, overflowed) = Self::overflowing_pow(x, exp);
+                if overflowed {
+                    Option::None
+                } else {
+                    Option::Some(result)
+                }
+            }
             /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
             pub fn count_ones(x: $Self) -> core::primitive::u32 {
                 paste! { [<count_ones_ $Name>](x) }
             }
             /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
-            #[hax_lib::requires(x > $Self::MIN)]
+            #[hax_lib::requires(x > <$Name>::MIN)]
             pub fn abs(x: $Self) -> $Self {
                 paste! { [<abs_ $Name>](x) }
             }
@@ -380,7 +415,6 @@ macro_rules! iint_impl {
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
             #[hax_lib::opaque]
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -408,30 +442,28 @@ macro_rules! iint_impl {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_div(x: $Self, y: $Self) -> Option<$Self> {
-                if y == 0 || (x == Self::MIN && y == -1) {
+                if y == 0 || (x == <$Name>::MIN && y == -1) {
                     Option::None
                 } else {
                     Option::Some(x / y)
                 }
             }
             /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
-            #[hax_lib::requires(y != 0 && (x != $Self::MIN || y != -1))]
+            #[hax_lib::requires(y != 0 && (x != <$Name>::MIN || y != -1))]
             pub unsafe fn unchecked_div(x: $Self, y: $Self) -> $Self {
                 x / y
             }
             /// See [`std::primitive::i8::checked_rem`] (and similar for other signed integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::exclude)] //avoid cyclic dependency
             pub fn checked_rem(x: $Self, y: $Self) -> Option<$Self> {
-                if y == 0 || (x == Self::MIN && y == -1) {
+                if y == 0 || (x == <$Name>::MIN && y == -1) {
                     Option::None
                 } else {
                     Option::Some(x % y)
                 }
             }
             /// See [`std::primitive::u8::unchecked_rem`] (and similar for other integer types)
-            #[hax_lib::requires(y != 0 && (x != $Self::MIN || y != -1))]
+            #[hax_lib::requires(y != 0 && (x != <$Name>::MIN || y != -1))]
             pub unsafe fn unchecked_rem(x: $Self, y: $Self) -> $Self {
                 x % y
             }
@@ -443,6 +475,19 @@ macro_rules! iint_impl {
                     0
                 } else {
                     -1
+                }
+            }
+            /// See [`std::primitive::i8::div_ceil`] (and similar for other signed integer types)
+            // `requires` rules out the div-by-zero and `MIN / -1` panics.
+            #[hax_lib::requires(y != 0 && !(x == <$Name>::MIN && y == -1))]
+            pub fn div_ceil(x: $Self, y: $Self) -> $Self {
+                let d = x / y;
+                let r = x % y;
+                // round up only when the remainder shares the divisor's sign
+                if (r > 0 && y > 0) || (r < 0 && y < 0) {
+                    d + 1
+                } else {
+                    d
                 }
             }
             // The following methods require additions to rust_primitives:
@@ -715,6 +760,16 @@ mod tests {
                         }
 
                         #[test]
+                        fn [<test_ $t _overflowing_pow>](x in any::<$t>(), exp in 0u32..=140) {
+                            prop_assert_eq!(super::$t::overflowing_pow(x.inject(), exp), x.overflowing_pow(exp));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _checked_pow>](x in any::<$t>(), exp in 0u32..=140) {
+                            prop_assert_eq!(super::$t::checked_pow(x.inject(), exp), x.checked_pow(exp).inject());
+                        }
+
+                        #[test]
                         fn [<test_ $t _wrapping_sub>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assert_eq!(super::$t::wrapping_sub(x.inject(), y.inject()), x.wrapping_sub(y));
                         }
@@ -800,6 +855,14 @@ mod tests {
                         fn [<test_ $t _checked_rem>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assert_eq!(super::$t::checked_rem(x.inject(), y.inject()), x.checked_rem(y).inject());
                         }
+
+                        #[test]
+                        fn [<test_ $t _div_ceil>](x in any::<$t>(), y in any::<$t>()) {
+                            // skip inputs where div_ceil panics (same cases as checked_div == None)
+                            if x.checked_div(y).is_some() {
+                                prop_assert_eq!(super::$t::div_ceil(x.inject(), y.inject()), x.div_ceil(y));
+                            }
+                        }
                     }
                 )*
             }
@@ -829,6 +892,11 @@ mod tests {
                         #[test]
                         fn [<test_ $t _is_power_of_two>](x in any::<$t>()) {
                             prop_assert_eq!(super::$t::is_power_of_two(x.inject()), x.is_power_of_two());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _is_multiple_of>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assert_eq!(super::$t::is_multiple_of(x.inject(), y.inject()), x.is_multiple_of(y));
                         }
                     }
                 )*

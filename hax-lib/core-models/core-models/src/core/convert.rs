@@ -19,7 +19,7 @@ trait Into<T> {
 
 /// See [`std::convert::From`]
 #[hax_lib::attributes]
-trait From<T> {
+pub trait From<T> {
     /// See [`std::convert::From::from`]
     #[hax_lib::requires(true)]
     fn from(x: T) -> Self;
@@ -80,14 +80,16 @@ impl<T> From<T> for T {
 
 /// See [`std::convert::AsRef`]
 #[hax_lib::attributes]
-trait AsRef<T> {
+pub trait AsRef<T: ?Sized> {
     /// See [`std::convert::AsRef::as_ref`]
     #[hax_lib::requires(true)]
-    fn as_ref(self) -> T;
+    fn as_ref(&self) -> &T;
 }
 
-impl<T> AsRef<T> for T {
-    fn as_ref(self) -> T {
+// The blanket `AsRef<T> for T` can't cover the unsized `[T]`, so we provide the
+// concrete slice impl.
+impl<T> AsRef<[T]> for [T] {
+    fn as_ref(&self) -> &[T] {
         self
     }
 }
@@ -110,6 +112,8 @@ macro_rules! int_from {
 
 use super::num::error::TryFromIntError;
 
+// Bounds go through `crate::num::$To_t` rather than `$To_t` (real `core`); this
+// avoids cyclic module dependencies in F*.
 macro_rules! int_try_from {
     (
         $($From_t: ident)*,
@@ -120,7 +124,7 @@ macro_rules! int_try_from {
             impl TryFrom<$From_t> for $To_t {
                 type Error = TryFromIntError;
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
-                    if x > ($To_t::MAX as $From_t) || x < ($To_t::MIN as $From_t) {
+                    if x > (crate::num::$To_t::MAX as $From_t) || x < (crate::num::$To_t::MIN as $From_t) {
                         Result::Err(TryFromIntError(()))
                     } else {
                         Result::Ok(x as $To_t)
@@ -189,7 +193,7 @@ macro_rules! int_try_from_u_to_i {
             impl TryFrom<$From_t> for $To_t {
                 type Error = TryFromIntError;
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
-                    if x > ($To_t::MAX as $From_t) {
+                    if x > (crate::num::$To_t::MAX as $From_t) {
                         Result::Err(TryFromIntError(()))
                     } else {
                         Result::Ok(x as $To_t)
@@ -211,7 +215,7 @@ macro_rules! int_try_from_i_to_u {
                 type Error = TryFromIntError;
                 #[allow(unused_comparisons)]
                 fn try_from(x: $From_t) -> Result<$To_t, TryFromIntError> {
-                    if x < 0 || (x as u128) > ($To_t::MAX as u128) {
+                    if x < 0 || (x as u128) > (crate::num::$To_t::MAX as u128) {
                         Result::Err(TryFromIntError(()))
                     } else {
                         Result::Ok(x as $To_t)
@@ -249,9 +253,14 @@ mod tests {
             prop_assert_eq!(super::Into::<u8>::into(x.inject()), x);
         }
 
+        // Model's `AsRef<[u8]>` vs std's, both projecting a slice to itself.
         #[test]
-        fn test_as_ref_identity(x in any::<u8>()) {
-            prop_assert_eq!(super::AsRef::as_ref(x.inject()), x);
+        fn test_as_ref_slice_identity(v in prop::collection::vec(any::<u8>(), 0..=8)) {
+            let s: &[u8] = &v[..];
+            prop_assert_eq!(
+                super::AsRef::<[u8]>::as_ref(s),
+                core::convert::AsRef::<[u8]>::as_ref(s)
+            );
         }
     }
 

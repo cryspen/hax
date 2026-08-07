@@ -103,19 +103,3 @@ Note the generated modules live in the
 | sha256             | Lax-typechecks               |
 | barrett            | Typechecks                   |
 | kyber_compress     | Typechecks                   |
-
-## Lean (legacy backend)
-
-Only one example is still running on the legacy lean backend: `legacy_lean_chacha20`.
-
-### Chacha20
-
-The Chacha20 example showcases array, vector and slices accesses, as well as loops
-(with loop invariants). For the Lean extracted code, we prove panic freedom,
-which involves arithmetic on size of arrays.
-
-The extraction and proofs can be run as follows:
-```sh
-cd legacy_lean_chacha20/
-make
-```

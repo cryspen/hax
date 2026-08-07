@@ -1,5 +1,5 @@
 //! @fail(tc): legacy-lean(1)
-//! @fail(extraction): ssprove(HAX0001), coq(HAX0002, HAX0002, HAX0002, HAX0002, HAX0002)
+//! @fail(extraction): ssprove(HAX0001)
 //! @fail(tc): fstar(47)
 use hax_lib as hax;
 
@@ -487,6 +487,64 @@ mod issue_1266 {
     trait T {
         #[hax_lib::ensures(|_|true)]
         fn v(x: &mut Self);
+    }
+}
+
+// Specifications on methods whose signature mentions an associated type of
+// `Self`. Only `impl` blocks are supported: on a trait declaration, and for
+// associated types the block does not define, the macro errors out.
+mod issue_2089 {
+    pub trait Super {
+        type B;
+    }
+
+    #[hax_lib::attributes]
+    pub trait T<X>: Super {
+        type A;
+        const C: u8;
+
+        // No specification here: the signatures mention `Self::A`.
+        fn f(x: &Self::A) -> u8;
+        fn g(&self, x: Self::A) -> Self::A;
+        fn h<Y: Into<Self::A>>(x: Self::B, y: Y, z: X) -> Self::A;
+
+        #[hax_lib::requires(x > 0)]
+        fn plain(x: u8) -> u8;
+    }
+
+    pub struct S;
+    impl Super for S {
+        type B = u8;
+    }
+
+    #[hax_lib::attributes]
+    impl T<u16> for S {
+        type A = u32;
+        const C: u8 = 1;
+
+        // `Self::A` in an argument type
+        #[hax_lib::requires(true)]
+        fn f(x: &Self::A) -> u8 {
+            0
+        }
+
+        // `Self` and `Self::A` in argument and return types
+        #[hax_lib::ensures(|result| true)]
+        fn g(&self, x: Self::A) -> Self::A {
+            x
+        }
+
+        // `Self::A` in the bounds of the generics of the method
+        #[hax_lib::requires(true)]
+        #[hax_lib::ensures(|result| true)]
+        fn h<Y: Into<Self::A>>(x: u8, y: Y, z: u16) -> Self::A {
+            y.into()
+        }
+
+        #[hax_lib::requires(x > 0)]
+        fn plain(x: u8) -> u8 {
+            x
+        }
     }
 }
 

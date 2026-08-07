@@ -100,6 +100,21 @@ val impl__reverse': #v_T: Type0 -> s: t_Slice v_T -> t_Slice v_T
 unfold
 let impl__reverse (#v_T: Type0) = impl__reverse' #v_T
 
+/// See [`std::slice::fill`]
+assume
+val impl__fill':
+    #v_T: Type0 ->
+    {| i0: Core_models.Clone.t_Clone v_T |} ->
+    s: t_Slice v_T ->
+    value: v_T
+  -> t_Slice v_T
+
+unfold
+let impl__fill
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+     = impl__fill' #v_T #i0
+
 /// See [`std::slice::starts_with`]
 assume
 val impl__starts_with':
@@ -129,21 +144,6 @@ let impl__ends_with
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialEq v_T v_T)
      = impl__ends_with' #v_T #i0
-
-/// See [`std::slice::fill`]
-assume
-val impl__fill':
-    #v_T: Type0 ->
-    {| i0: Core_models.Clone.t_Clone v_T |} ->
-    s: t_Slice v_T ->
-    value: v_T
-  -> t_Slice v_T
-
-unfold
-let impl__fill
-      (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
-     = impl__fill' #v_T #i0
 
 /// See [`std::slice::copy_from_slice`]
 let impl__copy_from_slice
@@ -182,6 +182,34 @@ let impl__split_at_checked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
     <:
     Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
   else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
+
+/// See [`std::slice::get_unchecked`]
+assume
+val impl__get_unchecked':
+    #v_T: Type0 ->
+    #v_I: Type0 ->
+    {| i0: Core_models.Slice.Index.t_SliceIndex v_I (t_Slice v_T) |} ->
+    s: t_Slice v_T ->
+    index: v_I
+  -> Prims.Pure i0.f_Output
+      (requires
+        Core_models.Option.impl__is_some #i0.f_Output
+          (Core_models.Slice.Index.f_get #v_I
+              #(t_Slice v_T)
+              #FStar.Tactics.Typeclasses.solve
+              index
+              s
+            <:
+            Core_models.Option.t_Option i0.f_Output))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl__get_unchecked
+      (#v_T #v_I: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Slice.Index.t_SliceIndex v_I (t_Slice v_T))
+     = impl__get_unchecked' #v_T #v_I #i0
 
 /// See [`std::slice::swap`]
 assume
