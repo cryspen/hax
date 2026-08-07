@@ -98,6 +98,16 @@ private def extractStepBody (jFvar : Expr) (loopBodyInner : Expr) :
         if e' == i then some jFvar else none
       return some (result, stepDict)
 
+/-- Recover the index type `ι` from the iterator's type, which must be
+`core.ops.range.Range ι`. Throws otherwise: we only support for-loops over
+ranges. -/
+private def indexTypeOfIter (iter : Expr) : MetaM Expr := do
+  let iterTy ← whnfR (← inferType iter)
+  unless iterTy.isAppOfArity ``core.ops.range.Range 1 do
+    throwError "for_loop_with_invariant: expected the iterator to have type \
+      `Range _`, got{indentExpr iterTy}"
+  return iterTy.getArg! 0
+
 /-- Given a `loop B (Prod.mk _ _ iter init)` expression and an already-elaborated
 invariant `inv`, build `Hax.forLoopWithInvariant inv body iter init` by extracting
 `body`. Returns the new expression. Throws if the loop body doesn't have the
@@ -114,7 +124,7 @@ private def buildForLoopWithInvariant
   let init := initialPair.getArg! 3
   let elemTy ← inferType init
   let loopBody := loopExpr.getArg! 2
-  let ι := (← inferType iter).getArg! 0
+  let ι ← indexTypeOfIter iter
   let (stepLambda, stepDict) ← withLocalDeclD `j ι fun j =>
     withLocalDeclD `a elemTy fun a => do
       let loopBody ← whnfR loopBody
@@ -138,7 +148,7 @@ private def buildForLoopWithInvariant
 type `ι` is recovered from the iterator's type `core.ops.range.Range ι`. -/
 private def elabInvariant (iter init : Expr) (invStx : Term) : TacticM Expr := do
   let elemTy ← inferType init
-  let ι := (← inferType iter).getArg! 0
+  let ι ← indexTypeOfIter iter
   let resultProp ← mkAppM ``Aeneas.Std.Result #[mkSort .zero]
   let invType :=
     Expr.forallE `i ι (Expr.forallE `r elemTy resultProp .default) .default
