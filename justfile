@@ -73,6 +73,50 @@ fmt:
 test *FLAGS:
   cargo run --release --bin test-driver -- ./tests {{FLAGS}}
 
+# Check the tool version manifest against the artifacts it names, downloading the *default* versions only. Reaches the network.
+test-tools-manifest:
+  cargo test -p cargo-hax --bin cargo-hax -- --ignored manifest_artifacts \
+    --skip every_listed_artifact_verifies
+
+# Check the tool version manifest against the artifacts it names, downloading *every* listed version. Reaches the network.
+test-tools-manifest-all:
+  cargo test -p cargo-hax --bin cargo-hax -- --ignored every_listed_artifact_verifies
+
+# Print the `tools-manifest.toml` entries for one version of a managed tool, e.g. `just add-tool-version aeneas nightly-2026.07.21-52fd438`. Each artifact is downloaded, hashed, and put through the checks a listed entry has to pass. Reaches the network.
+add-tool-version tool version:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  # Only the entries reach stdout, so the output can be appended to the tool's
+  # section of the manifest as it is. Making the version a default is a
+  # separate edit to `defaults.toml`.
+  entries=$(mktemp)
+  trap 'rm -f "$entries"' EXIT
+  HAX_ADD_TOOL_VERSION="{{tool}}@{{version}}" HAX_ADD_TOOL_VERSION_OUT="$entries" \
+    cargo test -q -p cargo-hax --bin cargo-hax -- \
+      --ignored --exact --nocapture tools::install::add_version::add_version >&2
+  # A filter matching no test is not a test failure, so an empty result is.
+  if [ ! -s "$entries" ]; then
+    echo "no entries were generated" >&2
+    exit 1
+  fi
+  cat "$entries"
+
+# Install the managed tools from their real artifacts and run them. Reaches the network, and installs into the tool cache.
+test-tools-install:
+  cargo test -p cargo-hax --bin cargo-hax -- --ignored host_install
+
+# Walk the documented tool setup flow from inside an example project, the way a user would: resolution, the `hax-lib` check, and the install of what the project resolves to. Reaches the network.
+test-tools-cli:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cargo build -q -p cargo-hax --bin cargo-hax
+  # `examples/` is its own workspace, so the binary is invoked by path.
+  HAX="$PWD/target/debug/cargo-hax"
+  cd examples/chacha20
+  "$HAX" tools show
+  "$HAX" tools install
+  "$HAX" tools list --installed
+
 # Serve documentation
 docs: (_ensure_command_in_path "mkdocs" "mkdocs (https://www.mkdocs.org/)")
   mkdocs serve

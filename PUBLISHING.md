@@ -40,6 +40,8 @@ for hax code:
 3. `hax-lib` (`hax-lib`)
 4. `hax-bounded-integers` (`hax-bounded-integers`)
 
+`cargo-hax` accepts only the `hax-lib` of its own version, so every `cargo-hax` release must publish a matching `hax-lib`, even for changes that only touch the binary.
+
 ### The Rust engine
 
 1. `hax-rust-engine-macros` (`rust-engine/macros`)
@@ -56,7 +58,7 @@ for hax code:
 ## Procedure
  1. Move the contents of `CHANGELOG.md` under the `[Unreleased]` section to a new section named following the target version. Commit this change.
  2. Bump the version number with `cargo release LEVEL --workspace --no-publish --no-tag --execute` (`cargo release --help` for more details on `LEVEL`, `cargo install cargo-release` if you don't already have this package). This will bump the version of every Rust crate, but also the version in `engine/dune-project`. This will also regenerate `engine/hax-engine.opam`. Note this will *not* publish the crate.
- 3. Check that the pins in `pins.toml` are correct
+ 3. Check that the default tool versions in `cli/cargo-hax/defaults.toml` are correct and that `cli/cargo-hax/tools-manifest.toml` lists them with checksums for every supported platform
  4. PR the change
  5. when the PR is merged in main, checkout `main` and run `cargo release --workspace --execute`
 
