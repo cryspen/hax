@@ -19,6 +19,7 @@ on:
     paths:
       - cli/cargo-hax/tools-manifest.toml
       - cli/cargo-hax/defaults.toml
+      - cli/cargo-hax/src/tools.rs
       - cli/cargo-hax/src/tools/**
       - .github/workflows/tools_manifest.yml
   schedule:
