@@ -38,7 +38,6 @@ fn json_schema_static_asset() {
 }
 
 fn git_dirty_env_var() {
-    println!("cargo:rurun-if-env-changed=HAX_GIT_IS_DIRTY");
     let dirty = {
         use std::process::Command;
         let _ = Command::new("git")
