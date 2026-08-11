@@ -1,6 +1,8 @@
 name: Release binaries
 
-# `cargo release --workspace` pushes every crate's tag in one push, and GitHub
+# The `publish` workflow starts this by dispatch after pushing the release's
+# tags, which its repository token raises no push events for. The push trigger
+# covers a `cargo release --workspace` run outside CI, with a caveat: GitHub
 # raises push events for only some tags of a multi-tag push. When the
 # `cargo-hax-v*` event is among the dropped ones, dispatching this workflow on
 # the tag builds the release's assets.
