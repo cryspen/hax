@@ -142,6 +142,14 @@ cargo install --locked cargo-hax
 
 `--locked` uses the dependency versions the release was tested with.
 
+To skip that build, use [`cargo-binstall`](https://github.com/cargo-bins/cargo-binstall) to download the binary the release published:
+
+```bash
+cargo binstall cargo-hax
+```
+
+The binary is the one `cargo install --locked` would produce, built on stable. It needs glibc 2.35 or newer on Linux, and macOS 11 or newer. `cargo binstall` checks neither: it picks the archive from the platform alone, so an older system installs a binary that fails to start; `cargo install --locked cargo-hax` covers those systems. Releases from before 0.4.0 carry no binary at all, and `cargo binstall` falls back to building from source there: pass `--strategies crate-meta-data` to have it fail instead of compiling.
+
 Aeneas and Charon themselves need no install step: hax downloads pre-built binaries on demand. See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in the manual for how they are managed, pinning versions per project, and using your own binaries.
 
 #### From the repository
