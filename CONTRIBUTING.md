@@ -54,7 +54,8 @@ window of 2 days, otherwise the PR will be reverted.
 
 ### Changelog
 Our changelog format is based on https://keepachangelog.com/.
-Please add an entry in a subsection (`Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` -- see https://keepachangelog.com/en/1.0.0/#how) for each notable change.
+Please add an entry under the `## [Unreleased]` section, in a subsection (`Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` -- see https://keepachangelog.com/en/1.0.0/#how) for each notable change.
+A release turns the `## [Unreleased]` heading into the version heading, so the section is absent right after a release; recreate it at the top of the file in that case.
 
 Please prefix with `engine:`, `frontend:` or similar.
 

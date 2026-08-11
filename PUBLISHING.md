@@ -40,9 +40,8 @@ Pushing the release's `cargo-hax-v*` tag runs the `release` workflow, which atta
 
 ## Procedure
 
-1. Move the contents of `CHANGELOG.md` under the `[Unreleased]` section to a new section named after the target version. Commit this change.
-2. Bump the version number with `cargo release LEVEL --workspace --no-publish --no-tag --execute` (`cargo install cargo-release` if needed). This bumps the version of every Rust crate and the version in `engine/dune-project`, and regenerates `engine/hax-engine.opam`. It does not publish anything.
-3. Check that the default tool versions in `cli/cargo-hax/defaults.toml` are correct and that `cli/cargo-hax/tools-manifest.toml` lists them with checksums for every supported platform.
-4. PR the change.
-5. When the PR is merged, checkout `main` and run `cargo release --workspace --execute`.
-6. Check that the `release` workflow went through. It attaches a `cargo-hax` archive per platform to the GitHub release at the `cargo-hax-v*` tag, then installs the released version with `cargo binstall` on every platform. GitHub raises push events for only some tags of a multi-tag push: when no run started, dispatch the workflow with `gh workflow run release.yml --ref cargo-hax-vX.Y.Z` (or the "Run workflow" button under Actions, picking the tag as the ref). The tag must be the ref: a dispatch on any other ref is recognized as not being a release and skipped.
+1. Bump the version number with `cargo release LEVEL --workspace --no-publish --no-tag --execute` (`cargo install cargo-release` if needed). This bumps the version of every Rust crate and the version in `engine/dune-project`, regenerates `engine/hax-engine.opam`, and renames the `[Unreleased]` section of `CHANGELOG.md` to the target version. It does not publish anything.
+2. Work through the pre-merge checklist in the PR's description.
+3. PR the change.
+4. When the PR is merged, checkout `main` and run the `cargo release` steps `publish`, `tag` and `push`, each with `--workspace --execute`. The one-shot `cargo release --workspace --execute` does not work here: it re-applies the pre-release replacements, which fail once the changelog is rotated.
+5. Check that the `release` workflow went through. It attaches a `cargo-hax` archive per platform to the GitHub release at the `cargo-hax-v*` tag, then installs the released version with `cargo binstall` on every platform. GitHub raises push events for only some tags of a multi-tag push: when no run started, dispatch the workflow with `gh workflow run release.yml --ref cargo-hax-vX.Y.Z` (or the "Run workflow" button under Actions, picking the tag as the ref). The tag must be the ref: a dispatch on any other ref is recognized as not being a release and skipped.
