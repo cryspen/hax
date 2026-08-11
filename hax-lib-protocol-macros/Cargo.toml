@@ -1,5 +1,6 @@
 [package]
 name = "hax-lib-protocol-macros"
+publish = false
 version.workspace = true
 authors.workspace = true
 license.workspace = true
