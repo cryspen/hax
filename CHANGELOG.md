@@ -30,6 +30,7 @@ Changes to cargo-hax:
  - Manage aeneas and charon versions with `cargo hax tools` (`install`, `list`, `show`), pinned via a committed `hax.toml` and installed from pre-built binaries verified against a shipped manifest and cached under `$XDG_CACHE_HOME/hax/tools/`
  - Resolve aeneas and charon from the version manifest instead of `PATH`; use a `path` entry in `hax.toml` to point at a local build
  - Check that the `hax-lib` version in scope matches the `cargo-hax` version before processing
+ - Publish a pre-built `cargo-hax` binary per supported platform with every release, so that `cargo binstall cargo-hax` installs it without building
  - Make `cargo install cargo-hax` build on any recent toolchain, so that the `lean` backend can be installed on its own and pinned per project with `cargo-run-bin`; the JSON schema exporter the OCaml engine's build consumes moved behind the new `legacy-engine` feature
 
 Changes to hax-lib:
