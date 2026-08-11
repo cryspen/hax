@@ -237,3 +237,33 @@ jobs:
     uses: ./.github/workflows/binstall.yml
     with:
       version: ${{ needs.tag.outputs.version }}
+
+  # Files an issue when any part of the release failed, so a failed run
+  # surfaces without anyone checking back on it. A repeated
+  # failure for the same tag lands as a comment on the open issue instead of
+  # a duplicate. A dispatch on a ref that is not a release tag skips every
+  # job and files nothing.
+  notify-failure:
+    needs: [tag, release-js, release, release-cargo-hax, binstall]
+    if: failure()
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: Release run for ${{ github.ref_name }} failed
+          BODY: |
+            The `release` workflow failed, so the release may be missing assets: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            Once the cause is fixed, restart it with `gh workflow run release.yml --ref ${{ github.ref_name }}`; it publishes only the assets that are still missing.
+        run: |
+          number="$(gh issue list -R "$GITHUB_REPOSITORY" --state open \
+            --search "\"$TITLE\" in:title" --json number,title \
+            --jq '.[] | select(.title == env.TITLE) | .number' | head -n 1)"
+          if [ -n "$number" ]; then
+            gh issue comment "$number" -R "$GITHUB_REPOSITORY" --body "$BODY"
+          else
+            gh issue create -R "$GITHUB_REPOSITORY" \
+              --title "$TITLE" --body "$BODY"
+          fi
