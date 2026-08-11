@@ -124,3 +124,14 @@ file = "../../engine/dune-project"
 search = "version [a-z0-9\\.-]+"
 replace = "version {{version}}"
 prerelease = true
+
+# Turns the `[Unreleased]` changelog section into the release's section. A
+# bump without that section fails here: recreate the header, with the entries
+# the release should carry, and bump again. Unlike the version replacements
+# above, this one stays at the `prerelease = false` default: a pre-release
+# bump keeps `[Unreleased]` in place for the eventual stable release.
+[[package.metadata.release.pre-release-replacements]]
+file = "../../CHANGELOG.md"
+search = "## \\[Unreleased\\]"
+replace = "## [{{version}}] - {{date}}"
+exactly = 1
