@@ -52,6 +52,28 @@ abbrev ops.range.Range.Insts.Core_modelsIterTraitsIteratorIterator.next :=
 abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
   @result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
 
+/-! ## core::cmp::PartialOrd default methods (lt/le/gt/ge)
+
+The cd5b4ea0 aeneas backend emits calls to the `core::cmp::PartialOrd`
+*default* trait methods as `core.cmp.PartialOrd.<m>.default <inst> a b`
+(one instance argument). core-models models the same bodies only under the
+`PartialOrdDefaults` blanket workaround (`Blanket.<m> <inst> <inst> a b`, two
+instance args — from when hax could not extract trait defaults). Provide the
+`.default` names the backend now emits, delegating to the blanket bodies, so
+comparisons on abstract types (e.g. `hax_lib::int::Int`) elaborate. -/
+open Aeneas.Std (Result) in
+def cmp.PartialOrd.lt.default {T : Type} (inst : cmp.PartialOrd T T) (a b : T) : Result Bool :=
+  cmp.PartialOrdDefaults.Blanket.lt inst inst a b
+open Aeneas.Std (Result) in
+def cmp.PartialOrd.le.default {T : Type} (inst : cmp.PartialOrd T T) (a b : T) : Result Bool :=
+  cmp.PartialOrdDefaults.Blanket.le inst inst a b
+open Aeneas.Std (Result) in
+def cmp.PartialOrd.gt.default {T : Type} (inst : cmp.PartialOrd T T) (a b : T) : Result Bool :=
+  cmp.PartialOrdDefaults.Blanket.gt inst inst a b
+open Aeneas.Std (Result) in
+def cmp.PartialOrd.ge.default {T : Type} (inst : cmp.PartialOrd T T) (a b : T) : Result Bool :=
+  cmp.PartialOrdDefaults.Blanket.ge inst inst a b
+
 end core
 
 namespace alloc
