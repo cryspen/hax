@@ -500,6 +500,119 @@ pub fn test_i8_pow_neg_base() -> bool {
 }
 
 // =============================================================================
+// overflowing_pow
+// =============================================================================
+
+// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
+/*
+#[rust_lean_test]
+pub fn test_u8_overflowing_pow_no_overflow() -> bool {
+    2u8.overflowing_pow(3u32) == (8u8, false)
+}
+*/
+
+// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
+/*
+#[rust_lean_test]
+pub fn test_u8_overflowing_pow_overflow() -> bool {
+    // 4^4 = 256 wraps to 0.
+    4u8.overflowing_pow(4u32) == (0u8, true)
+}
+*/
+
+// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
+/*
+#[rust_lean_test]
+pub fn test_u8_overflowing_pow_zero_exp() -> bool {
+    u8::MAX.overflowing_pow(0u32) == (1u8, false)
+}
+*/
+
+// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
+/*
+#[rust_lean_test]
+pub fn test_i8_overflowing_pow_neg_base() -> bool {
+    (-2i8).overflowing_pow(2u32) == (4i8, false)
+}
+*/
+
+// TODO(tuple-eq-extraction: `<T>::overflowing_*` returns `(T, bool)` and our tests compare with `== (_, _)`; `core_models.Pair.PartialEq.eq` is not in the Lean library.)
+/*
+#[rust_lean_test]
+pub fn test_i8_overflowing_pow_overflow() -> bool {
+    // (-2)^7 = -128 fits; (-2)^8 = 256 wraps to 0 with overflow.
+    (-2i8).overflowing_pow(8u32) == (0i8, true)
+}
+*/
+
+// =============================================================================
+// checked_pow
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_checked_pow_basic() -> bool {
+    2u8.checked_pow(3u32).unwrap_or(0) == 8u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_pow_zero_exp() -> bool {
+    u8::MAX.checked_pow(0u32).unwrap_or(0) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_pow_zero_base() -> bool {
+    0u8.checked_pow(3u32).unwrap_or(1) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_pow_at_max() -> bool {
+    // 2^7 = 128 fits, 2^8 = 256 does not.
+    2u8.checked_pow(7u32).unwrap_or(0) == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_pow_overflow() -> bool {
+    2u8.checked_pow(8u32).is_none()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_pow_max_base_overflow() -> bool {
+    u8::MAX.checked_pow(2u32).is_none()
+}
+
+#[rust_lean_test]
+pub fn test_u32_checked_pow_basic() -> bool {
+    10u32.checked_pow(9u32).unwrap_or(0) == 1_000_000_000u32
+}
+
+#[rust_lean_test]
+pub fn test_u32_checked_pow_overflow() -> bool {
+    10u32.checked_pow(10u32).is_none()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_pow_neg_base() -> bool {
+    (-2i8).checked_pow(2u32).unwrap_or(0) == 4i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_pow_neg_base_odd_exp() -> bool {
+    (-2i8).checked_pow(3u32).unwrap_or(0) == -8i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_pow_at_min() -> bool {
+    // (-2)^7 = -128 = i8::MIN fits exactly.
+    (-2i8).checked_pow(7u32).unwrap_or(0) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_pow_overflow() -> bool {
+    // (-2)^8 = 256 > i8::MAX.
+    (-2i8).checked_pow(8u32).is_none()
+}
+
+// =============================================================================
 // count_ones
 // =============================================================================
 

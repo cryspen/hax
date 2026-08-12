@@ -1,0 +1,50 @@
+name: Tool management end-to-end
+
+# Installs the managed tools from their real artifacts and runs them, natively
+# on every supported platform.
+#
+# One runner per platform, each downloading real artifacts, so it runs before
+# a merge lands rather than on every push, plus nightly: the artifacts live
+# upstream and can change under an entry that was correct when written.
+
+on:
+  merge_group:
+  schedule:
+    - cron: '41 5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install-and-run:
+    strategy:
+      fail-fast: false
+      # One runner per platform key, since the platform key selects the
+      # artifact. Which image is strictest differs by system: on Linux the
+      # oldest, glibc being backward compatible, so the 22.04 images cover the
+      # newer ones and both architectures are held to that floor; on macOS the
+      # newest, since what refuses a binary there is the code-signing policy,
+      # which Apple only tightens. `macos-15-intel` is pinned for want of a
+      # floating Intel label, not for its version.
+      matrix:
+        os:
+          - ubuntu-22.04     # linux-x86_64
+          - ubuntu-22.04-arm # linux-aarch64
+          - macos-latest     # macos-aarch64
+          - macos-15-intel   # macos-x86_64
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - uses: extractions/setup-just@v4
+
+      - name: Install the managed tools and run them
+        run: just test-tools-install
+
+      - name: Walk the documented setup flow in a project
+        run: just test-tools-cli

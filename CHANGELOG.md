@@ -27,6 +27,9 @@ Changes to cargo-hax:
  - Unify pining mechanism for aeneas, charon, lean and hax-lib (#2050)
  - rename `lean` backend to `legacy-lean` and `aeneas-lean` to `lean` (#2064)
  - Make Aeneas option `-core-models-lib` the default for the new lean backend (#2075)
+ - Manage aeneas and charon versions with `cargo hax tools` (`install`, `list`, `show`), pinned via a committed `hax.toml` and installed from pre-built binaries verified against a shipped manifest and cached under `$XDG_CACHE_HOME/hax/tools/`
+ - Resolve aeneas and charon from the version manifest instead of `PATH`; use a `path` entry in `hax.toml` to point at a local build
+ - Check that the `hax-lib` version in scope matches the `cargo-hax` version before processing
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
@@ -37,6 +40,7 @@ Changes to hax-lib:
  - New infrastructure for extraction of the F* proof-lib from the migrated core-models, unified with the lean core-lib infrastructure(#2077)
  - Support quote annotations (`before`, `after`, `options`) on inherent `impl` blocks and on their items (#1698)
  - Fix some regressions in the F* proof lib (particularly the `vec_deque` models)
+ - Specify the F* `overflowing_add`/`overflowing_sub` primitives, which were left uninterpreted. The `checked_*` integer models route through them, so they could not be used in a proof (#2127)
  - Fix the overflow condition of the F* `mul_overflow` primitive, which compared against `maxint` twice. `overflowing_mul`/`checked_mul` reported overflow for every product except exactly `maxint`
 
 Changes to the Lean backend:
@@ -48,6 +52,9 @@ Miscellaneous:
  - Four examples for the new Aeneas/Lean backend (cryspen/hax-evit/190, cryspen/hax-evit/191,
    cryspen/hax-evit/192, #2058, #2059, #2070, #2061)
  - Update flags for the charon/aeneas pipeline (#2051)
+ - Fix missing tools in the Nix dev shells (#2131)
+ - Check examples through `just check-examples` instead of a Nix flake check (#2131)
+ - Document the supported platforms: Linux and macOS, on both `x86_64` and `aarch64`. Windows is not supported and is no longer built in CI
 
 ## 0.3.7
 

@@ -1,0 +1,45 @@
+name: Tool manifest artifacts
+
+# Checks the tool version manifest against the artifacts it names: that every
+# URL still resolves, and that each archive matches its recorded checksum and
+# holds the executables its entry points promise.
+#
+# These tests reach the network. They run when the manifest or the code around
+# it changes, and nightly, since an upstream release asset can be retagged or
+# deleted long after the commit that recorded it.
+#
+# Downloading every listed version would grow without bound, as entries are
+# only ever added: the nightly run downloads the default versions and checks
+# that the other entries still resolve, while a change to the manifest (or a
+# manual run) verifies every listed version. That way a version's checksum is
+# verified in the pull request that records it, before anyone can pin it.
+#
+on:
+  pull_request:
+    paths:
+      - cli/cargo-hax/tools-manifest.toml
+      - cli/cargo-hax/defaults.toml
+      - cli/cargo-hax/src/tools/**
+      - .github/workflows/tools_manifest.yml
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+      - uses: extractions/setup-just@v4
+
+      - name: Check the manifest against its artifacts
+        run: just test-tools-manifest
+
+      - name: Verify every listed version, not just the defaults
+        if: github.event_name != 'schedule'
+        run: just test-tools-manifest-all

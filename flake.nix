@@ -89,7 +89,6 @@
           default = packages.hax;
 
           check-toolchain = checks.toolchain;
-          check-examples = checks.examples;
           check-readme-coherency = checks.readme-coherency;
 
           rust-by-example-hax-extraction = pkgs.stdenv.mkDerivation {
@@ -115,10 +114,6 @@
         };
         checks = {
           toolchain = packages.hax.tests;
-          examples = pkgs.callPackage ./examples {
-            inherit (packages) hax;
-            inherit craneLib fstar hacl-star hax-env;
-          };
           readme-coherency =
             let src = pkgs.lib.sourceFilesBySuffices ./. [ ".md" ];
             in pkgs.stdenv.mkDerivation {
@@ -207,14 +202,19 @@
           DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libz rustc ];
         in {
           examples = pkgs.mkShell {
-            inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            inherit LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            inputsFrom = [ devShells.fstar ];
             HACL_HOME = "${hacl-star}";
             shellHook = ''
               HAX_ROOT=$(git rev-parse --show-toplevel)
               export HAX_PROOF_LIBS_HOME="$HAX_ROOT/proof-libs/fstar"
               export HAX_LIBS_HOME="$HAX_ROOT/hax-lib"
             '';
-            packages = defaultPackages ++ [ fstar pkgs.proverif ];
+            packages = [
+              proverif
+              pkgs.elan
+              pkgs.jq
+            ];
           };
           ci-examples = pkgs.mkShell {
             shellHook = ''
@@ -229,6 +229,7 @@
             packages = [
               packages.hax
               packages.hax-env
+              packages.rustc
               packages.fstar
               packages.proverif
               pkgs.jq

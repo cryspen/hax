@@ -1,5 +1,7 @@
 # Examples
 
+The sections below describe what each example shows and how to run its backend.
+
 ## Lean
 
 For the Lean backend, we have three examples: `barrett`, `sha3`, and `loop_equivalence`.
@@ -103,3 +105,13 @@ Note the generated modules live in the
 | sha256             | Lax-typechecks               |
 | barrett            | Typechecks                   |
 | kyber_compress     | Typechecks                   |
+
+## Checking examples
+
+From the repository root, `just check-example <name>` extracts and verifies a
+single example, and `just check-examples` does so for all of them. This is what
+CI runs.
+
+Both commands start from a clean state: they first delete the generated files,
+including the extractions tracked in git. Restore the tracked files with
+`git checkout examples/*/proofs`.

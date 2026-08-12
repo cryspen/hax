@@ -9,6 +9,7 @@ weight: 1
  - <input type="checkbox" class="user-checkable"/> [Install the hax toolchain](https://github.com/cryspen/hax?tab=readme-ov-file#installation).  
    <span style="margin-right:30px;"></span>🪄 Running `cargo hax --version` should print some version info.
  - <input type="checkbox" class="user-checkable"/> [Install Lean](https://lean-lang.org/install/)
+ - <input type="checkbox" class="user-checkable"/> *(Optional, for `lean` backend only)* Aeneas and charon are downloaded automatically on first use; to pre-install them, run `cargo hax tools install` inside your crate.
  - <input type="checkbox" class="user-checkable"/> Add `hax-lib` as a dependency to your crate.  
    <span style="margin-right:30px;"></span>🪄 `cargo add --git https://github.com/cryspen/hax hax-lib`  
    <span style="margin-right:30px;"></span><span style="opacity: 0;">🪄</span> *(`hax-lib` is not mandatory, but this guide assumes it is present)*
@@ -45,6 +46,10 @@ hax doesn't support all Rust constructs, e.g,
 for extracting only a part of your crate.
 
 ## Start Lean verification
-After extracting your Rust code to Lean, the result is in the `proofs/lean` folder. The
-`lakefile.toml` allows you to run Lean in this folder by running `lake build` (or directly in the IDE 
-using the LSP). Contrarily to F\*, successfully building the code doesn't prove panic freedom by default.
+After extracting your Rust code to Lean, the result is in the `proofs/lean` folder. To turn it into a buildable Lean project, run
+
+```bash
+cargo hax into lean --lakefile
+```
+
+This generates a `lakefile.toml` and `lean-toolchain` in `proofs/lean`, pinned to the versions matching the extraction. Existing files are not overwritten, so it is safe to re-run after editing them. You can then type-check the extraction with `lake build` in `proofs/lean`, or directly in the IDE using the LSP. Contrarily to F\*, successfully building the code doesn't prove panic freedom by default.

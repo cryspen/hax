@@ -8,8 +8,7 @@ fstar:
 
 rust:
 	cargo hax into rust
-	cd proofs/rust/extraction
-	cargo build
+	cd proofs/rust/extraction && cargo build
 
 lean:
 	cargo hax into lean
