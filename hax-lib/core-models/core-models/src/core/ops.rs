@@ -145,6 +145,16 @@ pub mod index {
         type Output: ?Sized;
         fn index(&self, i: Idx) -> &Self::Output;
     }
+    /// See [`std::ops::IndexMut`]
+    //
+    // Lean-only. The impls delegate to the mutable slice accessors
+    // (`SliceIndex::get_mut`), which model `&mut` returns; the F* backend does
+    // not use those (it lowers indexed assignment to `Slice.update` /
+    // `Array.update`), so `IndexMut` is excluded there.
+    #[cfg(not(hax_backend_fstar))]
+    pub trait IndexMut<Idx>: Index<Idx> {
+        fn index_mut(&mut self, i: Idx) -> &mut Self::Output;
+    }
 }
 
 pub mod function {

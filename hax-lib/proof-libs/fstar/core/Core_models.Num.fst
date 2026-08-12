@@ -79,6 +79,8 @@ include Core_models.Bundle {impl_6__div_ceil as impl_u8__div_ceil}
 
 include Core_models.Bundle {impl_6__is_multiple_of as impl_u8__is_multiple_of}
 
+include Core_models.Bundle {impl_6__wrapping_neg as impl_u8__wrapping_neg}
+
 include Core_models.Bundle {impl_7__MIN as impl_u16__MIN}
 
 include Core_models.Bundle {impl_7__MAX as impl_u16__MAX}
@@ -154,6 +156,8 @@ include Core_models.Bundle {impl_7__is_power_of_two as impl_u16__is_power_of_two
 include Core_models.Bundle {impl_7__div_ceil as impl_u16__div_ceil}
 
 include Core_models.Bundle {impl_7__is_multiple_of as impl_u16__is_multiple_of}
+
+include Core_models.Bundle {impl_7__wrapping_neg as impl_u16__wrapping_neg}
 
 include Core_models.Bundle {impl_8__MIN as impl_u32__MIN}
 
@@ -231,6 +235,8 @@ include Core_models.Bundle {impl_8__div_ceil as impl_u32__div_ceil}
 
 include Core_models.Bundle {impl_8__is_multiple_of as impl_u32__is_multiple_of}
 
+include Core_models.Bundle {impl_8__wrapping_neg as impl_u32__wrapping_neg}
+
 include Core_models.Bundle {impl_9__MIN as impl_u64__MIN}
 
 include Core_models.Bundle {impl_9__MAX as impl_u64__MAX}
@@ -306,6 +312,8 @@ include Core_models.Bundle {impl_9__is_power_of_two as impl_u64__is_power_of_two
 include Core_models.Bundle {impl_9__div_ceil as impl_u64__div_ceil}
 
 include Core_models.Bundle {impl_9__is_multiple_of as impl_u64__is_multiple_of}
+
+include Core_models.Bundle {impl_9__wrapping_neg as impl_u64__wrapping_neg}
 
 include Core_models.Bundle {impl_10__MIN as impl_u128__MIN}
 
@@ -383,6 +391,8 @@ include Core_models.Bundle {impl_10__div_ceil as impl_u128__div_ceil}
 
 include Core_models.Bundle {impl_10__is_multiple_of as impl_u128__is_multiple_of}
 
+include Core_models.Bundle {impl_10__wrapping_neg as impl_u128__wrapping_neg}
+
 include Core_models.Bundle {impl_11__MIN as impl_usize__MIN}
 
 include Core_models.Bundle {impl_11__MAX as impl_usize__MAX}
@@ -458,6 +468,8 @@ include Core_models.Bundle {impl_11__is_power_of_two as impl_usize__is_power_of_
 include Core_models.Bundle {impl_11__div_ceil as impl_usize__div_ceil}
 
 include Core_models.Bundle {impl_11__is_multiple_of as impl_usize__is_multiple_of}
+
+include Core_models.Bundle {impl_11__wrapping_neg as impl_usize__wrapping_neg}
 
 include Core_models.Bundle {impl_12__MIN as impl_i8__MIN}
 
@@ -539,6 +551,8 @@ include Core_models.Bundle {impl_12__signum as impl_i8__signum}
 
 include Core_models.Bundle {impl_12__div_ceil as impl_i8__div_ceil}
 
+include Core_models.Bundle {impl_12__wrapping_neg as impl_i8__wrapping_neg}
+
 include Core_models.Bundle {impl_13__MIN as impl_i16__MIN}
 
 include Core_models.Bundle {impl_13__MAX as impl_i16__MAX}
@@ -618,6 +632,8 @@ include Core_models.Bundle {impl_13__unchecked_rem as impl_i16__unchecked_rem}
 include Core_models.Bundle {impl_13__signum as impl_i16__signum}
 
 include Core_models.Bundle {impl_13__div_ceil as impl_i16__div_ceil}
+
+include Core_models.Bundle {impl_13__wrapping_neg as impl_i16__wrapping_neg}
 
 include Core_models.Bundle {impl_14__MIN as impl_i32__MIN}
 
@@ -699,6 +715,8 @@ include Core_models.Bundle {impl_14__signum as impl_i32__signum}
 
 include Core_models.Bundle {impl_14__div_ceil as impl_i32__div_ceil}
 
+include Core_models.Bundle {impl_14__wrapping_neg as impl_i32__wrapping_neg}
+
 include Core_models.Bundle {impl_15__MIN as impl_i64__MIN}
 
 include Core_models.Bundle {impl_15__MAX as impl_i64__MAX}
@@ -778,6 +796,8 @@ include Core_models.Bundle {impl_15__unchecked_rem as impl_i64__unchecked_rem}
 include Core_models.Bundle {impl_15__signum as impl_i64__signum}
 
 include Core_models.Bundle {impl_15__div_ceil as impl_i64__div_ceil}
+
+include Core_models.Bundle {impl_15__wrapping_neg as impl_i64__wrapping_neg}
 
 include Core_models.Bundle {impl_16__MIN as impl_i128__MIN}
 
@@ -859,6 +879,8 @@ include Core_models.Bundle {impl_16__signum as impl_i128__signum}
 
 include Core_models.Bundle {impl_16__div_ceil as impl_i128__div_ceil}
 
+include Core_models.Bundle {impl_16__wrapping_neg as impl_i128__wrapping_neg}
+
 include Core_models.Bundle {impl_17__MIN as impl_isize__MIN}
 
 include Core_models.Bundle {impl_17__MAX as impl_isize__MAX}
@@ -938,6 +960,8 @@ include Core_models.Bundle {impl_17__unchecked_rem as impl_isize__unchecked_rem}
 include Core_models.Bundle {impl_17__signum as impl_isize__signum}
 
 include Core_models.Bundle {impl_17__div_ceil as impl_isize__div_ceil}
+
+include Core_models.Bundle {impl_17__wrapping_neg as impl_isize__wrapping_neg}
 
 include Core_models.Bundle {impl_18__from__num as impl_18}
 

@@ -110,8 +110,8 @@ $(ALLOC_STAGE_DIR)/Cargo.toml: alloc/Cargo.toml Makefile
 	# Rename the package and inline the workspace-inherited `hax-lib` dep so
 	# the staged crate can be built standalone (the `[workspace]` block
 	# appended at the end opts the staged crate out of our root workspace).
-	sed -i 's|^name = "alloc"$$|name = "alloc_models"|' $(ALLOC_STAGE_DIR)/Cargo.toml
-	sed -i 's|^hax-lib\.workspace = true$$|hax-lib = { path = "$(HAX_LIB_DIR)" }|' $(ALLOC_STAGE_DIR)/Cargo.toml
+	perl -i -pe 's|^name = "alloc"$$|name = "alloc_models"|' $(ALLOC_STAGE_DIR)/Cargo.toml
+	perl -i -pe 's|^hax-lib\.workspace = true$$|hax-lib = { path = "$(HAX_LIB_DIR)" }|' $(ALLOC_STAGE_DIR)/Cargo.toml
 	printf '\n[workspace]\n' >> $(ALLOC_STAGE_DIR)/Cargo.toml
 
 alloc-stage: $(ALLOC_STAGE_DIR)/Cargo.toml

@@ -324,6 +324,9 @@ let impl_6__is_power_of_two (x: u8) : bool =
 let impl_6__is_multiple_of (x y: u8) : bool =
   if y =. mk_u8 0 then x =. mk_u8 0 else (x %! y <: u8) =. mk_u8 0
 
+/// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
+let impl_6__wrapping_neg (x: u8) : u8 = Rust_primitives.Arithmetic.wrapping_sub_u8 (mk_u8 0) x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_6__unchecked_add (x y: u8)
     : Prims.Pure u8
@@ -480,6 +483,9 @@ let impl_7__is_power_of_two (x: u16) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_7__is_multiple_of (x y: u16) : bool =
   if y =. mk_u16 0 then x =. mk_u16 0 else (x %! y <: u16) =. mk_u16 0
+
+/// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
+let impl_7__wrapping_neg (x: u16) : u16 = Rust_primitives.Arithmetic.wrapping_sub_u16 (mk_u16 0) x
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_7__unchecked_add (x y: u16)
@@ -638,6 +644,9 @@ let impl_8__is_power_of_two (x: u32) : bool =
 let impl_8__is_multiple_of (x y: u32) : bool =
   if y =. mk_u32 0 then x =. mk_u32 0 else (x %! y <: u32) =. mk_u32 0
 
+/// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
+let impl_8__wrapping_neg (x: u32) : u32 = Rust_primitives.Arithmetic.wrapping_sub_u32 (mk_u32 0) x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_8__unchecked_add (x y: u32)
     : Prims.Pure u32
@@ -795,6 +804,9 @@ let impl_9__is_power_of_two (x: u64) : bool =
 let impl_9__is_multiple_of (x y: u64) : bool =
   if y =. mk_u64 0 then x =. mk_u64 0 else (x %! y <: u64) =. mk_u64 0
 
+/// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
+let impl_9__wrapping_neg (x: u64) : u64 = Rust_primitives.Arithmetic.wrapping_sub_u64 (mk_u64 0) x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_9__unchecked_add (x y: u64)
     : Prims.Pure u64
@@ -951,6 +963,10 @@ let impl_10__is_power_of_two (x: u128) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_10__is_multiple_of (x y: u128) : bool =
   if y =. mk_u128 0 then x =. mk_u128 0 else (x %! y <: u128) =. mk_u128 0
+
+/// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
+let impl_10__wrapping_neg (x: u128) : u128 =
+  Rust_primitives.Arithmetic.wrapping_sub_u128 (mk_u128 0) x
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_10__unchecked_add (x y: u128)
@@ -1114,6 +1130,10 @@ let impl_11__is_power_of_two (x: usize) : bool =
 let impl_11__is_multiple_of (x y: usize) : bool =
   if y =. mk_usize 0 then x =. mk_usize 0 else (x %! y <: usize) =. mk_usize 0
 
+/// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
+let impl_11__wrapping_neg (x: usize) : usize =
+  Rust_primitives.Arithmetic.wrapping_sub_usize (mk_usize 0) x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_11__unchecked_add (x y: usize)
     : Prims.Pure usize
@@ -1267,6 +1287,9 @@ let impl_12__to_le_bytes = impl_12__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_12__signum (x: i8) : i8 =
   if x >. mk_i8 0 then mk_i8 1 else if x =. mk_i8 0 then mk_i8 0 else mk_i8 (-1)
+
+/// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
+let impl_12__wrapping_neg (x: i8) : i8 = Rust_primitives.Arithmetic.wrapping_sub_i8 (mk_i8 0) x
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_12__unchecked_add (x y: i8)
@@ -1452,6 +1475,9 @@ let impl_13__to_le_bytes = impl_13__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_13__signum (x: i16) : i16 =
   if x >. mk_i16 0 then mk_i16 1 else if x =. mk_i16 0 then mk_i16 0 else mk_i16 (-1)
+
+/// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
+let impl_13__wrapping_neg (x: i16) : i16 = Rust_primitives.Arithmetic.wrapping_sub_i16 (mk_i16 0) x
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_13__unchecked_add (x y: i16)
@@ -1639,6 +1665,9 @@ let impl_14__to_le_bytes = impl_14__to_le_bytes'
 let impl_14__signum (x: i32) : i32 =
   if x >. mk_i32 0 then mk_i32 1 else if x =. mk_i32 0 then mk_i32 0 else mk_i32 (-1)
 
+/// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
+let impl_14__wrapping_neg (x: i32) : i32 = Rust_primitives.Arithmetic.wrapping_sub_i32 (mk_i32 0) x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_14__unchecked_add (x y: i32)
     : Prims.Pure i32
@@ -1825,6 +1854,9 @@ let impl_15__to_le_bytes = impl_15__to_le_bytes'
 let impl_15__signum (x: i64) : i64 =
   if x >. mk_i64 0 then mk_i64 1 else if x =. mk_i64 0 then mk_i64 0 else mk_i64 (-1)
 
+/// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
+let impl_15__wrapping_neg (x: i64) : i64 = Rust_primitives.Arithmetic.wrapping_sub_i64 (mk_i64 0) x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_15__unchecked_add (x y: i64)
     : Prims.Pure i64
@@ -2010,6 +2042,10 @@ let impl_16__to_le_bytes = impl_16__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_16__signum (x: i128) : i128 =
   if x >. mk_i128 0 then mk_i128 1 else if x =. mk_i128 0 then mk_i128 0 else mk_i128 (-1)
+
+/// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
+let impl_16__wrapping_neg (x: i128) : i128 =
+  Rust_primitives.Arithmetic.wrapping_sub_i128 (mk_i128 0) x
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_16__unchecked_add (x y: i128)
@@ -2199,6 +2235,10 @@ let impl_17__to_le_bytes = impl_17__to_le_bytes'
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_17__signum (x: isize) : isize =
   if x >. mk_isize 0 then mk_isize 1 else if x =. mk_isize 0 then mk_isize 0 else mk_isize (-1)
+
+/// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
+let impl_17__wrapping_neg (x: isize) : isize =
+  Rust_primitives.Arithmetic.wrapping_sub_isize (mk_isize 0) x
 
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_17__unchecked_add (x y: isize)
@@ -3136,6 +3176,46 @@ let impl_2__from__option (#v_T: Type0) : Core_models.Default.t_Default (t_Option
     f_default = fun (_: Prims.unit) -> Option_None <: t_Option v_T
   }
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_4__from__option (#v_T: Type0) : Core_models.Ops.Try_trait.t_Try (t_Option v_T) =
+  {
+    f_Output = v_T;
+    f_Residual = t_Option t_Infallible;
+    f_from_output_pre = (fun (output: v_T) -> true);
+    f_from_output_post = (fun (output: v_T) (out: t_Option v_T) -> true);
+    f_from_output = (fun (output: v_T) -> Option_Some output <: t_Option v_T);
+    f_branch_pre = (fun (self: t_Option v_T) -> true);
+    f_branch_post
+    =
+    (fun
+        (self: t_Option v_T)
+        (out: Core_models.Ops.Control_flow.t_ControlFlow (t_Option t_Infallible) v_T)
+        ->
+        true);
+    f_branch
+    =
+    fun (self: t_Option v_T) ->
+      match self <: t_Option v_T with
+      | Option_Some v ->
+        Core_models.Ops.Control_flow.ControlFlow_Continue v
+        <:
+        Core_models.Ops.Control_flow.t_ControlFlow (t_Option t_Infallible) v_T
+      | Option_None  ->
+        Core_models.Ops.Control_flow.ControlFlow_Break (Option_None <: t_Option t_Infallible)
+        <:
+        Core_models.Ops.Control_flow.t_ControlFlow (t_Option t_Infallible) v_T
+  }
+
+/// The `None` half of `?` on `Option`: rebuild `None` at the target type. The
+/// residual carries `Infallible`, so the `Some` arm is unreachable.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_5': #v_T: Type0
+  -> Core_models.Ops.Try_trait.t_FromResidual (t_Option v_T) (t_Option t_Infallible)
+
+unfold
+let impl_5 (#v_T: Type0) = impl_5' #v_T
+
 /// See [`std::result::Result`]
 type t_Result (v_T: Type0) (v_E: Type0) =
   | Result_Ok : v_T -> t_Result v_T v_E
@@ -3589,7 +3669,7 @@ let impl_4__from__result
      = impl_4__from__result' #v_A #v_E #v_V #i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5 (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t_Result v_T v_E) =
+let impl_5__from__result (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t_Result v_T v_E) =
   {
     f_Output = v_T;
     f_Residual = t_Result t_Infallible v_E;

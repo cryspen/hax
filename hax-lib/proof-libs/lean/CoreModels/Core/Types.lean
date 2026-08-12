@@ -497,73 +497,73 @@ structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
 
 /-- [core_models::num::u8]
-    Source: 'core-models/src/core/num/mod.rs', lines 516:0-516:14
+    Source: 'core-models/src/core/num/mod.rs', lines 520:0-520:14
     Visibility: public -/
 @[reducible]
 def num.u8 := Unit
 
 /-- [core_models::num::u16]
-    Source: 'core-models/src/core/num/mod.rs', lines 519:0-519:15
+    Source: 'core-models/src/core/num/mod.rs', lines 523:0-523:15
     Visibility: public -/
 @[reducible]
 def num.u16 := Unit
 
 /-- [core_models::num::u32]
-    Source: 'core-models/src/core/num/mod.rs', lines 522:0-522:15
+    Source: 'core-models/src/core/num/mod.rs', lines 526:0-526:15
     Visibility: public -/
 @[reducible]
 def num.u32 := Unit
 
 /-- [core_models::num::u64]
-    Source: 'core-models/src/core/num/mod.rs', lines 525:0-525:15
+    Source: 'core-models/src/core/num/mod.rs', lines 529:0-529:15
     Visibility: public -/
 @[reducible]
 def num.u64 := Unit
 
 /-- [core_models::num::u128]
-    Source: 'core-models/src/core/num/mod.rs', lines 528:0-528:16
+    Source: 'core-models/src/core/num/mod.rs', lines 532:0-532:16
     Visibility: public -/
 @[reducible]
 def num.u128 := Unit
 
 /-- [core_models::num::usize]
-    Source: 'core-models/src/core/num/mod.rs', lines 531:0-531:17
+    Source: 'core-models/src/core/num/mod.rs', lines 535:0-535:17
     Visibility: public -/
 @[reducible]
 def num.usize := Unit
 
 /-- [core_models::num::i8]
-    Source: 'core-models/src/core/num/mod.rs', lines 534:0-534:14
+    Source: 'core-models/src/core/num/mod.rs', lines 538:0-538:14
     Visibility: public -/
 @[reducible]
 def num.i8 := Unit
 
 /-- [core_models::num::i16]
-    Source: 'core-models/src/core/num/mod.rs', lines 537:0-537:15
+    Source: 'core-models/src/core/num/mod.rs', lines 541:0-541:15
     Visibility: public -/
 @[reducible]
 def num.i16 := Unit
 
 /-- [core_models::num::i32]
-    Source: 'core-models/src/core/num/mod.rs', lines 540:0-540:15
+    Source: 'core-models/src/core/num/mod.rs', lines 544:0-544:15
     Visibility: public -/
 @[reducible]
 def num.i32 := Unit
 
 /-- [core_models::num::i64]
-    Source: 'core-models/src/core/num/mod.rs', lines 543:0-543:15
+    Source: 'core-models/src/core/num/mod.rs', lines 547:0-547:15
     Visibility: public -/
 @[reducible]
 def num.i64 := Unit
 
 /-- [core_models::num::i128]
-    Source: 'core-models/src/core/num/mod.rs', lines 546:0-546:16
+    Source: 'core-models/src/core/num/mod.rs', lines 550:0-550:16
     Visibility: public -/
 @[reducible]
 def num.i128 := Unit
 
 /-- [core_models::num::isize]
-    Source: 'core-models/src/core/num/mod.rs', lines 549:0-549:17
+    Source: 'core-models/src/core/num/mod.rs', lines 553:0-553:17
     Visibility: public -/
 @[reducible]
 def num.isize := Unit
@@ -708,9 +708,18 @@ inductive ops.control_flow.ControlFlow (B : Type) (C : Type) where
 | Continue : C → ops.control_flow.ControlFlow B C
 | Break : B → ops.control_flow.ControlFlow B C
 
+/-- Trait declaration: [core_models::ops::index::IndexMut]
+    Source: 'core-models/src/core/ops.rs', lines 155:4-157:5
+    Visibility: public -/
+structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
+  Type) where
+  IndexInst : ops.index.Index Self Idx Self_Clause0_Output
+  index_mut : Self → Idx → Result (Self_Clause0_Output ×
+    (Self_Clause0_Output → Self))
+
 /-
 /-- Trait declaration: [core_models::ops::function::FnOnce]
-    Source: 'core-models/src/core/ops.rs', lines 153:4-157:5
+    Source: 'core-models/src/core/ops.rs', lines 163:4-167:5
     Visibility: public -/
 structure ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output : Type)
   where
@@ -719,7 +728,7 @@ structure ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output : Type)
 
 /-
 /-- Trait declaration: [core_models::ops::function::FnMut]
-    Source: 'core-models/src/core/ops.rs', lines 161:4-164:5
+    Source: 'core-models/src/core/ops.rs', lines 171:4-174:5
     Visibility: public -/
 structure ops.function.FnMut (Self : Type) (Args : Type) (Self_Clause0_Output :
   Type) where
@@ -729,7 +738,7 @@ structure ops.function.FnMut (Self : Type) (Args : Type) (Self_Clause0_Output :
 
 /-
 /-- Trait declaration: [core_models::ops::function::Fn]
-    Source: 'core-models/src/core/ops.rs', lines 249:4-252:5
+    Source: 'core-models/src/core/ops.rs', lines 259:4-262:5
     Visibility: public -/
 structure ops.function.Fn (Self : Type) (Args : Type)
   (Self_Clause0_Clause0_Output : Type) where
@@ -738,13 +747,13 @@ structure ops.function.Fn (Self : Type) (Args : Type)
 -/
 
 /-- Trait declaration: [core_models::ops::try_trait::FromResidual]
-    Source: 'core-models/src/core/ops.rs', lines 257:4-259:5
+    Source: 'core-models/src/core/ops.rs', lines 267:4-269:5
     Visibility: public -/
 structure ops.try_trait.FromResidual (Self : Type) (R : Type) where
   from_residual : R → Result Self
 
 /-- Trait declaration: [core_models::ops::try_trait::Try]
-    Source: 'core-models/src/core/ops.rs', lines 262:4-267:5
+    Source: 'core-models/src/core/ops.rs', lines 272:4-277:5
     Visibility: public -/
 structure ops.try_trait.Try (Self : Type) (Self_Output : Type) (Self_Residual :
   Type) where
@@ -753,43 +762,43 @@ structure ops.try_trait.Try (Self : Type) (Self_Output : Type) (Self_Residual :
     Self_Output)
 
 /-- Trait declaration: [core_models::ops::deref::Deref]
-    Source: 'core-models/src/core/ops.rs', lines 272:4-276:5
+    Source: 'core-models/src/core/ops.rs', lines 282:4-286:5
     Visibility: public -/
 structure ops.deref.Deref (Self : Type) (Self_Target : Type) where
   deref : Self → Result Self_Target
 
 /-- Trait declaration: [core_models::ops::drop::Drop]
-    Source: 'core-models/src/core/ops.rs', lines 288:4-290:5 -/
+    Source: 'core-models/src/core/ops.rs', lines 298:4-300:5 -/
 structure ops.drop.Drop (Self : Type) where
   drop : Self → Result Self
 
 /-- [core_models::ops::range::RangeTo]
-    Source: 'core-models/src/core/ops.rs', lines 295:4-297:5
+    Source: 'core-models/src/core/ops.rs', lines 305:4-307:5
     Visibility: public -/
 structure ops.range.RangeTo (T : Type) where
   «end» : T
 
 /-- [core_models::ops::range::RangeFrom]
-    Source: 'core-models/src/core/ops.rs', lines 299:4-301:5
+    Source: 'core-models/src/core/ops.rs', lines 309:4-311:5
     Visibility: public -/
 structure ops.range.RangeFrom (T : Type) where
   start : T
 
 /-- [core_models::ops::range::Range]
-    Source: 'core-models/src/core/ops.rs', lines 303:4-306:5
+    Source: 'core-models/src/core/ops.rs', lines 313:4-316:5
     Visibility: public -/
 structure ops.range.Range (T : Type) where
   start : T
   «end» : T
 
 /-- [core_models::ops::range::RangeFull]
-    Source: 'core-models/src/core/ops.rs', lines 308:4-308:25
+    Source: 'core-models/src/core/ops.rs', lines 318:4-318:25
     Visibility: public -/
 @[reducible]
 def ops.range.RangeFull := Unit
 
 /-- [core_models::ops::range::RangeInclusive]
-    Source: 'core-models/src/core/ops.rs', lines 310:4-313:5
+    Source: 'core-models/src/core/ops.rs', lines 320:4-323:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
   start : T
