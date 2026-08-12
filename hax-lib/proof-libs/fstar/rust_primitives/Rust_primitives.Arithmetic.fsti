@@ -5,7 +5,7 @@ open Rust_primitives.Integers
 
 let wrapping_add_u8 : u8 -> u8 -> u8 = add_mod
 let saturating_add_u8 : u8 -> u8 -> u8 = add_sat
-val overflowing_add_u8 : u8 -> u8 -> u8 & bool
+let overflowing_add_u8 : u8 -> u8 -> u8 & bool = add_overflow
 let wrapping_sub_u8 : u8 -> u8 -> u8 = sub_mod
 let saturating_sub_u8 : u8 -> u8 -> u8 = sub_sat
 let overflowing_sub_u8 (x y: u8): u8 & bool
@@ -25,7 +25,7 @@ let rotate_left_u8 = rotate_left_u #U8
 
 let wrapping_add_u16 : u16 -> u16 -> u16 = add_mod
 let saturating_add_u16 : u16 -> u16 -> u16 = add_sat
-val overflowing_add_u16 : u16 -> u16 -> u16 & bool
+let overflowing_add_u16 : u16 -> u16 -> u16 & bool = add_overflow
 let wrapping_sub_u16 : u16 -> u16 -> u16 = sub_mod
 let saturating_sub_u16 : u16 -> u16 -> u16 = sub_sat
 let overflowing_sub_u16 (x y: u16): u16 & bool
@@ -45,7 +45,7 @@ let rotate_left_u16 = rotate_left_u #U16
 
 let wrapping_add_u32 : u32 -> u32 -> u32 = add_mod
 let saturating_add_u32 : u32 -> u32 -> u32 = add_sat
-val overflowing_add_u32 : u32 -> u32 -> u32 & bool
+let overflowing_add_u32 : u32 -> u32 -> u32 & bool = add_overflow
 let wrapping_sub_u32 : u32 -> u32 -> u32 = sub_mod
 let saturating_sub_u32 : u32 -> u32 -> u32 = sub_sat
 let overflowing_sub_u32 (x y: u32): u32 & bool
@@ -65,7 +65,7 @@ let rotate_left_u32 = rotate_left_u #U32
 
 let wrapping_add_u64 : u64 -> u64 -> u64 = add_mod
 let saturating_add_u64 : u64 -> u64 -> u64 = add_sat
-val overflowing_add_u64 : u64 -> u64 -> u64 & bool
+let overflowing_add_u64 : u64 -> u64 -> u64 & bool = add_overflow
 let wrapping_sub_u64 : u64 -> u64 -> u64 = sub_mod
 let saturating_sub_u64 : u64 -> u64 -> u64 = sub_sat
 let overflowing_sub_u64 (x y: u64): u64 & bool
@@ -85,7 +85,7 @@ let rotate_left_u64 = rotate_left_u #U64
 
 let wrapping_add_u128 : u128 -> u128 -> u128 = add_mod
 let saturating_add_u128 : u128 -> u128 -> u128 = add_sat
-val overflowing_add_u128 : u128 -> u128 -> u128 & bool
+let overflowing_add_u128 : u128 -> u128 -> u128 & bool = add_overflow
 let wrapping_sub_u128 : u128 -> u128 -> u128 = sub_mod
 let saturating_sub_u128 : u128 -> u128 -> u128 = sub_sat
 let overflowing_sub_u128 (x y: u128): u128 & bool
@@ -105,7 +105,7 @@ let rotate_left_u128 = rotate_left_u #U128
 
 let wrapping_add_usize : usize -> usize -> usize = add_mod
 let saturating_add_usize : usize -> usize -> usize = add_sat
-val overflowing_add_usize : usize -> usize -> usize & bool
+let overflowing_add_usize : usize -> usize -> usize & bool = add_overflow
 let wrapping_sub_usize : usize -> usize -> usize = sub_mod
 let saturating_sub_usize : usize -> usize -> usize = sub_sat
 let overflowing_sub_usize (x y: usize): usize & bool
@@ -125,10 +125,10 @@ let rotate_left_usize = rotate_left_u #USIZE
 
 let wrapping_add_i8 : i8 -> i8 -> i8 = add_mod
 let saturating_add_i8 : i8 -> i8 -> i8 = add_sat
-val overflowing_add_i8 : i8 -> i8 -> i8 & bool
+let overflowing_add_i8 : i8 -> i8 -> i8 & bool = add_overflow
 let wrapping_sub_i8 : i8 -> i8 -> i8 = sub_mod
 let saturating_sub_i8 : i8 -> i8 -> i8 = sub_sat
-val overflowing_sub_i8 (x y: i8): i8 & bool
+let overflowing_sub_i8 : i8 -> i8 -> i8 & bool = sub_overflow
 let wrapping_mul_i8 : i8 -> i8 -> i8 = mul_mod
 val saturating_mul_i8 : i8 -> i8 -> i8
 let overflowing_mul_i8 : i8 -> i8 -> i8 & bool = mul_overflow
@@ -140,10 +140,10 @@ val abs_i8 : i8 -> i8
 
 let wrapping_add_i16 : i16 -> i16 -> i16 = add_mod
 let saturating_add_i16 : i16 -> i16 -> i16 = add_sat
-val overflowing_add_i16 : i16 -> i16 -> i16 & bool
+let overflowing_add_i16 : i16 -> i16 -> i16 & bool = add_overflow
 let wrapping_sub_i16 : i16 -> i16 -> i16 = sub_mod
 let saturating_sub_i16 : i16 -> i16 -> i16 = sub_sat
-val overflowing_sub_i16 (x y: i16): i16 & bool
+let overflowing_sub_i16 : i16 -> i16 -> i16 & bool = sub_overflow
 let wrapping_mul_i16 : i16 -> i16 -> i16 = mul_mod
 val saturating_mul_i16 : i16 -> i16 -> i16
 let overflowing_mul_i16 : i16 -> i16 -> i16 & bool = mul_overflow
@@ -155,10 +155,10 @@ val abs_i16 : i16 -> i16
 
 let wrapping_add_i32 : i32 -> i32 -> i32 = add_mod
 let saturating_add_i32 : i32 -> i32 -> i32 = add_sat
-val overflowing_add_i32 : i32 -> i32 -> i32 & bool
+let overflowing_add_i32 : i32 -> i32 -> i32 & bool = add_overflow
 let wrapping_sub_i32 : i32 -> i32 -> i32 = sub_mod
 let saturating_sub_i32 : i32 -> i32 -> i32 = sub_sat
-val overflowing_sub_i32 (x y: i32): i32 & bool
+let overflowing_sub_i32 : i32 -> i32 -> i32 & bool = sub_overflow
 let wrapping_mul_i32 : i32 -> i32 -> i32 = mul_mod
 val saturating_mul_i32 : i32 -> i32 -> i32
 let overflowing_mul_i32 : i32 -> i32 -> i32 & bool = mul_overflow
@@ -170,10 +170,10 @@ val abs_i32 : i32 -> i32
 
 let wrapping_add_i64 : i64 -> i64 -> i64 = add_mod
 let saturating_add_i64 : i64 -> i64 -> i64 = add_sat
-val overflowing_add_i64 : i64 -> i64 -> i64 & bool
+let overflowing_add_i64 : i64 -> i64 -> i64 & bool = add_overflow
 let wrapping_sub_i64 : i64 -> i64 -> i64 = sub_mod
 let saturating_sub_i64 : i64 -> i64 -> i64 = sub_sat
-val overflowing_sub_i64 (x y: i64): i64 & bool
+let overflowing_sub_i64 : i64 -> i64 -> i64 & bool = sub_overflow
 let wrapping_mul_i64 : i64 -> i64 -> i64 = mul_mod
 val saturating_mul_i64 : i64 -> i64 -> i64
 let overflowing_mul_i64 : i64 -> i64 -> i64 & bool = mul_overflow
@@ -185,10 +185,10 @@ val abs_i64 : i64 -> i64
 
 let wrapping_add_i128 : i128 -> i128 -> i128 = add_mod
 let saturating_add_i128 : i128 -> i128 -> i128 = add_sat
-val overflowing_add_i128 : i128 -> i128 -> i128 & bool
+let overflowing_add_i128 : i128 -> i128 -> i128 & bool = add_overflow
 let wrapping_sub_i128 : i128 -> i128 -> i128 = sub_mod
 let saturating_sub_i128 : i128 -> i128 -> i128 = sub_sat
-val overflowing_sub_i128 (x y: i128): i128 & bool
+let overflowing_sub_i128 : i128 -> i128 -> i128 & bool = sub_overflow
 let wrapping_mul_i128 : i128 -> i128 -> i128 = mul_mod
 val saturating_mul_i128 : i128 -> i128 -> i128
 let overflowing_mul_i128 : i128 -> i128 -> i128 & bool = mul_overflow
@@ -200,10 +200,10 @@ val abs_i128 : i128 -> i128
 
 let wrapping_add_isize : isize -> isize -> isize = add_mod
 let saturating_add_isize : isize -> isize -> isize = add_sat
-val overflowing_add_isize : isize -> isize -> isize & bool
+let overflowing_add_isize : isize -> isize -> isize & bool = add_overflow
 let wrapping_sub_isize : isize -> isize -> isize = sub_mod
 let saturating_sub_isize : isize -> isize -> isize = sub_sat
-val overflowing_sub_isize (x y: isize): isize & bool
+let overflowing_sub_isize : isize -> isize -> isize & bool = sub_overflow
 let wrapping_mul_isize : isize -> isize -> isize = mul_mod
 val saturating_mul_isize : isize -> isize -> isize
 let overflowing_mul_isize : isize -> isize -> isize & bool = mul_overflow
