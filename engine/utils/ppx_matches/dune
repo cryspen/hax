@@ -1,0 +1,7 @@
+(library
+ (name ppx_matches)
+ (package hax-engine)
+ (kind ppx_rewriter)
+ (libraries ppxlib)
+ (preprocess
+  (pps ppxlib.metaquot)))
