@@ -28,7 +28,7 @@ function error() {
     echo "Error: could not find [$1] in PATH." >&2
     echo "Please make sure that:" >&2
     echo '  - you ran Hax''s `setup.sh` script;' >&2
-    echo "  - you have `~/.cargo/bin` in your PATH ($DIAG)." >&2
+    echo '  - you have `~/.cargo/bin` in your PATH ('"$DIAG"').' >&2
     exit 1
 }
 

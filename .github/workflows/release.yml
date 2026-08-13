@@ -48,7 +48,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@1.70
           
-      - run: cargo install --path cli/driver && cargo install --path cli/cargo-hax
+      - run: cargo install --path cli/driver && cargo install --path cli/cargo-hax && cargo install --path engine/names/extract
 
       - run: opam install . --deps-only
         working-directory: engine
