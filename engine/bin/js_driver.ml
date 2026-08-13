@@ -95,4 +95,4 @@ let _ =
         output_char stdout '\n';
         flush stdout
     end);
-  Lib.main ()
+  Lib.engine ()
