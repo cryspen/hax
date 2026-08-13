@@ -96,7 +96,7 @@ let locate_module (name : string) : string =
     | path when Stdlib.Sys.is_directory path ->
         Stdlib.Sys.readdir path
         |> Array.find_map ~f:(fun name ->
-               find @@ Stdlib.Filename.concat path name)
+            find @@ Stdlib.Filename.concat path name)
     | path when String.(Stdlib.Filename.basename path = name) -> Some path
     | _ -> None
   in
@@ -150,9 +150,9 @@ let display_inline_error = function
            ~f:(fun { path = i; head; preselected; postselected } ->
              let kind =
                (match head with
-               | MatchCase -> "case"
-               | Binding -> "let "
-               | StrItem -> "str ")
+                 | MatchCase -> "case"
+                 | Binding -> "let "
+                 | StrItem -> "str ")
                ^ " "
              in
              "\n• "
@@ -234,9 +234,9 @@ let string_attributes_of_structure_item ~loc (str : structure_item) :
     (string * string) list =
   attributes_of_structure_item str
   |> List.filter_map ~f:(fun attr ->
-         match string_of_payload ~loc attr.attr_payload with
-         | Result.Ok payload -> Some (attr.attr_name.txt, payload)
-         | _ -> None)
+      match string_of_payload ~loc attr.attr_payload with
+      | Result.Ok payload -> Some (attr.attr_name.txt, payload)
+      | _ -> None)
 
 (* TODO: ppx_inline reports badly locations (I actually don't use `_loc`...) *)
 let map_inline_nodes opens _loc =
@@ -341,7 +341,7 @@ let map_inline_nodes opens _loc =
                 let attr =
                   b.pvb_attributes
                   |> List.find ~f:(fun attr ->
-                         String.equal attr.attr_name.txt "inline_ands")
+                      String.equal attr.attr_name.txt "inline_ands")
                 in
                 match attr with
                 | Some { attr_payload; _ } -> (
@@ -367,8 +367,8 @@ let map_inline_nodes opens _loc =
                                    | _ -> true)
                                  bindings)
                               |> List.dedup_and_sort ~compare:(fun a b ->
-                                     [%compare: string option]
-                                       (name_of_binding a) (name_of_binding b))
+                                  [%compare: string option] (name_of_binding a)
+                                    (name_of_binding b))
                             with InlineError err ->
                               let err =
                                 display_inline_error err
@@ -409,7 +409,7 @@ let map_inline_nodes opens _loc =
                             | MatchCase case -> Some case
                             | _ -> None)
                           |> List.map ~f:(fun case ->
-                                 { case with pc_rhs = pc_rhs_map case.pc_rhs })
+                              { case with pc_rhs = pc_rhs_map case.pc_rhs })
                         with InlineError err ->
                           let err =
                             display_inline_error err

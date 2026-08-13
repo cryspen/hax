@@ -19,16 +19,16 @@ module Make (F : Features.T) =
             let items =
               List.map
                 ~f:
-                  ((object
-                      inherit [_] U.Visitors.map as super
+                  (object
+                     inherit [_] U.Visitors.map as super
 
-                      method! visit_impl_expr () ie =
-                        match super#visit_impl_expr () ie with
-                        | { kind = LocalBound { id }; _ }
-                          when [%eq: string] id "i0" ->
-                            { ie with kind = Self }
-                        | ie -> ie
-                   end)
+                     method! visit_impl_expr () ie =
+                       match super#visit_impl_expr () ie with
+                       | { kind = LocalBound { id }; _ }
+                         when [%eq: string] id "i0" ->
+                           { ie with kind = Self }
+                       | ie -> ie
+                   end
                      #visit_trait_item
                      ())
                 items

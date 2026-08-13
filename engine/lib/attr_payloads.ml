@@ -102,7 +102,7 @@ module MakeBase (Error : Phase_utils.ERROR) = struct
     match
       payloads attrs
       |> List.filter_map ~f:(fun (x, span) ->
-             Option.map ~f:(fun x -> (x, span)) (f x))
+          Option.map ~f:(fun x -> (x, span)) (f x))
     with
     | [ (attr, _) ] -> Some attr
     | [] -> None
@@ -145,9 +145,9 @@ module MakeBase (Error : Phase_utils.ERROR) = struct
   let raw_associated_item : attrs -> (AssocRole.t * UId.t) list =
     payloads >> List.map ~f:fst
     >> List.filter_map ~f:(function
-         | Types.AssociatedItem { role; item } ->
-             Some (AssocRole.of_raw role, UId.of_raw item)
-         | _ -> None)
+      | Types.AssociatedItem { role; item } ->
+          Some (AssocRole.of_raw role, UId.of_raw item)
+      | _ -> None)
 end
 
 module Make (F : Features.T) (Error : Phase_utils.ERROR) = struct
@@ -234,9 +234,9 @@ module Make (F : Features.T) (Error : Phase_utils.ERROR) = struct
     let item_of_uid (uid : UId.t) : item =
       try_item_of_uid uid
       |> Option.value_or_thunk ~default:(fun () ->
-             Error.assertion_failure (Span.dummy ())
-             @@ "Could not find item with UID "
-             ^ [%show: UId.t] uid)
+          Error.assertion_failure (Span.dummy ())
+          @@ "Could not find item with UID "
+          ^ [%show: UId.t] uid)
 
     (* Note: this map contains UIDs, not items: resolving UIDs into items is
        done lazily by [associated_items] below. This laziness is important:
@@ -267,11 +267,11 @@ module Make (F : Features.T) (Error : Phase_utils.ERROR) = struct
     let associated_item (role : AssocRole.t) (attrs : attrs) : item option =
       associated_items role attrs
       |> expect_singleton (fun _ ->
-             let span = span_of_attrs attrs in
-             Error.assertion_failure span
-             @@ "Found more than one "
-             ^ [%show: AssocRole.t] role
-             ^ " for this item. Only one is allowed.")
+          let span = span_of_attrs attrs in
+          Error.assertion_failure span
+          @@ "Found more than one "
+          ^ [%show: AssocRole.t] role
+          ^ " for this item. Only one is allowed.")
 
     let expect_fn = function
       | { v = Fn { generics; params; body; _ }; _ } -> (generics, params, body)
@@ -311,29 +311,27 @@ module Make (F : Features.T) (Error : Phase_utils.ERROR) = struct
         attrs -> expr option =
       associated_fn Refine
       >> Option.map ~f:(fun (_, params, body) ->
-             let substs =
-               let x =
-                 List.concat_map ~f:U.Reducers.variables_of_param params
-               in
-               let y = List.map ~f:Local_ident.make_final free_variables in
-               List.zip_opt x y
-               |> Option.value_or_thunk ~default:(fun _ ->
-                      let details =
-                        "associated_refinement_in_type: zip two lists of \
-                         different lenghts\n" ^ "\n - params: "
-                        ^ [%show: param list] params
-                        ^ "\n - free_variables: "
-                        ^ [%show: string list] free_variables
-                      in
-                      Error.assertion_failure span details)
-             in
-             let v =
-               U.Mappers.rename_local_idents (fun i ->
-                   match List.find ~f:(fst >> [%eq: local_ident] i) substs with
-                   | None -> i
-                   | Some (_, i) -> i)
-             in
-             v#visit_expr () body)
+          let substs =
+            let x = List.concat_map ~f:U.Reducers.variables_of_param params in
+            let y = List.map ~f:Local_ident.make_final free_variables in
+            List.zip_opt x y
+            |> Option.value_or_thunk ~default:(fun _ ->
+                let details =
+                  "associated_refinement_in_type: zip two lists of different \
+                   lenghts\n" ^ "\n - params: "
+                  ^ [%show: param list] params
+                  ^ "\n - free_variables: "
+                  ^ [%show: string list] free_variables
+                in
+                Error.assertion_failure span details)
+          in
+          let v =
+            U.Mappers.rename_local_idents (fun i ->
+                match List.find ~f:(fst >> [%eq: local_ident] i) substs with
+                | None -> i
+                | Some (_, i) -> i)
+          in
+          v#visit_expr () body)
   end
 
   let with_items (items : item list) : (module WITH_ITEMS) =

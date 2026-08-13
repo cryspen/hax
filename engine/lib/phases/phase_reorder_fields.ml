@@ -34,7 +34,7 @@ module Make (F : Features.T) =
                           order_of_argument >> Option.value ~default:i &&& Fn.id)
                         v.arguments
                       |> List.stable_sort ~compare:(fun (i, _) (j, _) ->
-                             Int.compare i j)
+                          Int.compare i j)
                       |> List.map ~f:snd
                     in
                     { v with arguments }

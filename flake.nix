@@ -56,9 +56,7 @@
           fi
         '';
         ocamlPackages = pkgs.ocamlPackages;
-        # ocamlformat 0.27.0 is marked broken for OCaml 5.4, so build it
-        # from the OCaml 5.3 package set.
-        ocamlformat = pkgs.ocaml-ng.ocamlPackages_5_3.ocamlformat_0_27_0;
+        ocamlformat = ocamlPackages.ocamlformat;
         proverif = pkgs.proverif.overrideDerivation
           (_: { patches = [ examples/proverif-psk/pv_div_by_zero_fix.diff ]; });
       in rec {

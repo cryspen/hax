@@ -17,7 +17,7 @@ module Assert = struct
   let parent did =
     Explicit_def_id.parent did
     |> Option.value_or_thunk ~default:(fun _ ->
-           broken_invariant "the Explicit_def_id to have a parent" did)
+        broken_invariant "the Explicit_def_id to have a parent" did)
 
   let type_ns (did : Explicit_def_id.t) =
     match List.last (Explicit_def_id.to_def_id did).path with
@@ -173,16 +173,16 @@ let of_def_id (did : Explicit_def_id.t) : t =
        let*? _parents_all_mods = List.for_all ~f:is_mod parents in
        Some (List.rev parents, name_chunks))
       |> Option.value_or_thunk ~default:(fun _ ->
-             let view = view_name_did did in
-             let did =
-               view |> RelPath.Chunk.map_poly fst fst |> RelPath.Chunk.root
-             in
-             let name_chunks =
-               RelPath.Chunk.map_poly snd snd view :: name_chunks
-             in
-             match Explicit_def_id.parent did with
-             | None -> ([], name_chunks)
-             | Some did -> find name_chunks did)
+          let view = view_name_did did in
+          let did =
+            view |> RelPath.Chunk.map_poly fst fst |> RelPath.Chunk.root
+          in
+          let name_chunks =
+            RelPath.Chunk.map_poly snd snd view :: name_chunks
+          in
+          match Explicit_def_id.parent did with
+          | None -> ([], name_chunks)
+          | Some did -> find name_chunks did)
     in
     find [] did
   in

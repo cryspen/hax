@@ -459,63 +459,62 @@ module SSPExtraDefinitions (* : ANALYSIS *) = struct
                    cases))
            (* (SSP.AST.NameTy ("chFin (mkpos " ^ number_of_cases ^ ")")) *),
            SSP.AST.TypeTy )
-      :: (* Index names and constructors *)
-         List.concat_mapi cases ~f:(fun i c ->
-             let v_name, curr_typ =
-               match c with
-               | BaseCase v_name -> (v_name, [])
-               | InductiveCase (v_name, typ) -> (v_name, [ typ ])
-             in
-             let injections inner_val =
-               List.fold_left ~init:inner_val
-                 ~f:(fun y x -> SSP.AST.App (SSP.AST.Var x, [ y ]))
-                 ((if Stdlib.(i != 0) then [ "inr" ] else [])
-                 @ List.init (List.length cases - 1 - i) ~f:(fun _ -> "inl"))
-             in
-             let definition_body =
-               let inject_argument inner_val =
-                 (* SSP.AST.App *)
-                 (*   ( SSP.AST.Var "solve_lift", *)
-                 (* [ *)
-                 SSP.AST.App
-                   ( SSP.AST.Var "ret_both",
-                     [
-                       SSP.AST.TypedTerm
-                         (injections inner_val, SSP.AST.NameTy name);
-                     ] )
-                 (* ] ) *)
-               in
+       (* Index names and constructors *)
+      :: List.concat_mapi cases ~f:(fun i c ->
+          let v_name, curr_typ =
+            match c with
+            | BaseCase v_name -> (v_name, [])
+            | InductiveCase (v_name, typ) -> (v_name, [ typ ])
+          in
+          let injections inner_val =
+            List.fold_left ~init:inner_val
+              ~f:(fun y x -> SSP.AST.App (SSP.AST.Var x, [ y ]))
+              ((if Stdlib.(i != 0) then [ "inr" ] else [])
+              @ List.init (List.length cases - 1 - i) ~f:(fun _ -> "inl"))
+          in
+          let definition_body =
+            let inject_argument inner_val =
+              (* SSP.AST.App *)
+              (*   ( SSP.AST.Var "solve_lift", *)
+              (* [ *)
+              SSP.AST.App
+                ( SSP.AST.Var "ret_both",
+                  [
+                    SSP.AST.TypedTerm (injections inner_val, SSP.AST.NameTy name);
+                  ] )
+              (* ] ) *)
+            in
+            match curr_typ with
+            | [] -> inject_argument unit_term
+            | _ ->
+                SSP.AST.App
+                  ( SSP.AST.Var "bind_both",
+                    [
+                      SSP.AST.Var "x";
+                      SSP.AST.Lambda
+                        ( [ SSP.AST.Ident "x" ],
+                          inject_argument (SSP.AST.Var "x") );
+                    ] )
+          in
+          [
+            (let arg, body =
                match curr_typ with
-               | [] -> inject_argument unit_term
-               | _ ->
-                   SSP.AST.App
-                     ( SSP.AST.Var "bind_both",
-                       [
-                         SSP.AST.Var "x";
-                         SSP.AST.Lambda
-                           ( [ SSP.AST.Ident "x" ],
-                             inject_argument (SSP.AST.Var "x") );
-                       ] )
+               | [] ->
+                   ("", injections SSP.AST.UnitTerm)
+                   (* TODO: Fix unit translation *)
+               | _ -> (" " ^ "x", injections (SSP.AST.Var "x"))
              in
-             [
-               (let arg, body =
-                  match curr_typ with
-                  | [] ->
-                      ("", injections SSP.AST.UnitTerm)
-                      (* TODO: Fix unit translation *)
-                  | _ -> (" " ^ "x", injections (SSP.AST.Var "x"))
-                in
-                SSP.AST.Notation
-                  ("'" ^ v_name ^ "_case" ^ "'" ^ arg, body, Some "at level 100"));
-               SSP.AST.Equations
-                 ( v_name,
-                   List.map
-                     ~f:(fun x ->
-                       SSP.AST.Explicit (SSP.AST.Ident "x", wrap_type_in_both x))
-                     curr_typ,
-                   definition_body,
-                   wrap_type_in_both (SSP.AST.NameTy name) );
-             ]))
+             SSP.AST.Notation
+               ("'" ^ v_name ^ "_case" ^ "'" ^ arg, body, Some "at level 100"));
+            SSP.AST.Equations
+              ( v_name,
+                List.map
+                  ~f:(fun x ->
+                    SSP.AST.Explicit (SSP.AST.Ident "x", wrap_type_in_both x))
+                  curr_typ,
+                definition_body,
+                wrap_type_in_both (SSP.AST.NameTy name) );
+          ]))
 end
 
 module StaticAnalysis (* : ANALYSIS *) = struct
@@ -1311,8 +1310,7 @@ struct
     | POr _ ->
         (* List.fold ~init:false ~f:( || ) *)
         (*   (List.map ~f:(fun p -> is_mutable_pat p) subpats) *)
-        false
-        (* TODO? *)
+        false (* TODO? *)
     | _ -> .
 
   let pgeneric_param_as_argument span : AST.generic_param -> SSP.AST.argument =
@@ -2243,20 +2241,20 @@ let translate m (_bo : BackendOptions.t) ~(bundles : AST.item list list)
   U.group_items_by_namespace items
   |> Map.to_alist
   |> List.filter_map ~f:(fun (_, items) ->
-         let* first_item = List.hd items in
-         Some ((RenderId.render first_item.ident).path, items))
+      let* first_item = List.hd items in
+      Some ((RenderId.render first_item.ident).path, items))
   |> List.map ~f:(fun (ns, items) ->
-         let mod_name =
-           String.concat ~sep:"_"
-             (List.map ~f:(map_first_letter String.uppercase) ns)
-         in
-         let file_content =
-           hardcoded_coq_headers ^ "\n"
-           ^ string_of_items m (items, analysis_data)
-           ^ "\n"
-         in
-         Types.
-           { path = mod_name ^ ".v"; contents = file_content; sourcemap = None })
+      let mod_name =
+        String.concat ~sep:"_"
+          (List.map ~f:(map_first_letter String.uppercase) ns)
+      in
+      let file_content =
+        hardcoded_coq_headers ^ "\n"
+        ^ string_of_items m (items, analysis_data)
+        ^ "\n"
+      in
+      Types.
+        { path = mod_name ^ ".v"; contents = file_content; sourcemap = None })
 
 let apply_phases (_bo : BackendOptions.t) (i : Ast.Rust.item list) :
     AST.item list =

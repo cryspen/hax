@@ -246,7 +246,7 @@ let mk (l : Datatype.t list) : string =
   let opaques =
     Visitors.collect_undefined_types l
     |> List.map ~f:(fun name ->
-           Datatype.{ name; type_vars = []; kind = Opaque })
+        Datatype.{ name; type_vars = []; kind = Opaque })
   in
   (match
      Visitors.collect_undefined_types l

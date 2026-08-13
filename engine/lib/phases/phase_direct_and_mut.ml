@@ -118,7 +118,7 @@ struct
       let arg_types, _otype =
         UA.Expect.arrow f.typ
         |> Option.value_or_thunk ~default:(fun _ ->
-               Error.assertion_failure span "expected an arrow type here")
+            Error.assertion_failure span "expected an arrow type here")
       in
       (* each input of `f` is either:
          - of type `&mut _` and then the value fed to f should either be a place or a "pure" expression;
@@ -126,18 +126,18 @@ struct
       *)
       let args : ((Place.t, A.expr) Either.t * bool) list =
         (match List.zip arg_types raw_args with
-        | Ok inputs -> inputs
-        | _ -> Error.assertion_failure span "application: bad arity")
+          | Ok inputs -> inputs
+          | _ -> Error.assertion_failure span "application: bad arity")
         |> List.map ~f:(fun (typ, (arg : A.expr)) ->
-               if UA.Expect.mut_ref typ |> Option.is_some then
-                 (* the argument of the function is mutable *)
-                 let v =
-                   expect_mut_borrow_of_place_or_pure_expr arg
-                   |> Option.value_or_thunk ~default:(fun _ ->
-                          Error.raise { kind = ExpectedMutRef; span = arg.span })
-                 in
-                 (v, true)
-               else (Either.second arg, false))
+            if UA.Expect.mut_ref typ |> Option.is_some then
+              (* the argument of the function is mutable *)
+              let v =
+                expect_mut_borrow_of_place_or_pure_expr arg
+                |> Option.value_or_thunk ~default:(fun _ ->
+                    Error.raise { kind = ExpectedMutRef; span = arg.span })
+              in
+              (v, true)
+            else (Either.second arg, false))
       in
       (* `mutargs`: all mutable borrows fed to `f` *)
       let mutargs : (Place.t, A.expr) Either.t list =
@@ -240,9 +240,9 @@ struct
             let flatten (o, meta) = Option.map o ~f:Fn.(id &&& const meta) in
             List.filter_map ~f:flatten mutargs
             |> List.map ~f:(fun ((var, lhs), (typ, span)) ->
-                   let e = B.{ e = LocalVar var; span; typ } in
-                   let witness = Features.On.mutable_variable in
-                   B.{ e = Assign { lhs; e; witness }; span; typ = UB.unit_typ })
+                let e = B.{ e = LocalVar var; span; typ } in
+                let witness = Features.On.mutable_variable in
+                B.{ e = Assign { lhs; e; witness }; span; typ = UB.unit_typ })
           in
           (* TODO: this should be greatly simplified when `lhs` type will accept tuples (issue #222) *)
           match assigns with

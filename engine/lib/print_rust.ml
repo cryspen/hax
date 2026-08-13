@@ -32,9 +32,9 @@ module AnnotatedString = struct
       let open Re.Pcre in
       full_split ~rex:split_re
       >> List.concat_map ~f:(function
-           | (Text s | Delim s | Group (_, s)) when not (String.is_empty s) ->
-               [ s ]
-           | _ -> [])
+        | (Text s | Delim s | Group (_, s)) when not (String.is_empty s) ->
+            [ s ]
+        | _ -> [])
 
     let tokenize : t -> t =
       List.concat_map ~f:(fun (span, s) -> split s |> List.map ~f:(tup2 span))

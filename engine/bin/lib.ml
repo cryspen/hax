@@ -220,7 +220,7 @@ Please reinstall hax.
        Stdlib.exit 1));
   table
   |> List.iter ~f:(fun (id, json) ->
-         Hashtbl.add_exn Types.cache_map ~key:id ~data:(`JSON json));
+      Hashtbl.add_exn Types.cache_map ~key:id ~data:(`JSON json));
   json
 
 let parse_options () =
