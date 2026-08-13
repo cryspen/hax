@@ -122,7 +122,7 @@ install_ocaml_engine() {
 
 warn_if_dirty
 
-REQUIRED_OCAML_VERSION="5.1.1"
+REQUIRED_OCAML_VERSION="5.4.1"
 ensure_ocaml_version() {
     CURRENT_VERSION=$(opam exec -- ocamlc --version 2>/dev/null || echo "none")
     if [ "$CURRENT_VERSION" != "$REQUIRED_OCAML_VERSION" ]; then

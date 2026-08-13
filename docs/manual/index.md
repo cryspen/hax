@@ -32,7 +32,7 @@ hax is supported on Linux and macOS, on both `x86_64` and `aarch64`. Windows is 
 
 1. Make sure to have the following installed on your system:
 
-      - [`opam`](https://opam.ocaml.org/) (`opam switch create 5.1.1`)
+      - [`opam`](https://opam.ocaml.org/) (`opam switch create 5.4.1`)
       - [`rustup`](https://rustup.rs/)
       - [`nodejs`](https://nodejs.org/)
       - [`jq`](https://jqlang.github.io/jq/)

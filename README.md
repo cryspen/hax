@@ -139,7 +139,7 @@ hax is supported on Linux and macOS, on both `x86_64` and `aarch64`. Windows is 
   - [`jq`](https://jqlang.github.io/jq/)
 
 2. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
-3. Create (or use an existing) opam *switch* by running `opam switch create hax 5.1.1`
+3. Create (or use an existing) opam *switch* by running `opam switch create hax 5.4.1`
 3. Run the [setup.sh](./setup.sh) script: `./setup.sh`.
    This installs hax; aeneas and charon are downloaded on demand when first needed.
 4. Run `cargo-hax --help`

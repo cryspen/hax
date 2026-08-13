@@ -49,6 +49,7 @@ Changes to the Lean backend:
 - Lean library for the new Lean/Aeneas backend (cryspen/hax-evit/188, #2080)
 
 Miscellaneous:
+ - Update the required OCaml version to 5.4.1 (#2137)
  - New testing framework for the engine(s) (cryspen/hax-evit/135, cryspen/hax-evit/167)
  - Four examples for the new Aeneas/Lean backend (cryspen/hax-evit/190, cryspen/hax-evit/191,
    cryspen/hax-evit/192, #2058, #2059, #2070, #2061)
