@@ -31,9 +31,6 @@ depends: [
   "ppx_string"
   "logs"
   "ocamlgraph" {>= "2.2.0"}
-  "js_of_ocaml-compiler"
-  "js_of_ocaml"
-  "js_of_ocaml-ppx"
   "batteries"
   "stdint"
   "ppxlib"

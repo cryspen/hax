@@ -1,6 +1,5 @@
 { ocamlPackages, fetchzip, hax-rust-frontend, hax-engine-names-extract, rustc
-, nodejs, jq, closurecompiler, gnused, lib, removeReferencesTo, fetchFromGitHub
-}:
+, nodejs, jq, lib, removeReferencesTo }:
 let
   non_empty_list = ocamlPackages.buildDunePackage rec {
     pname = "non_empty_list";
@@ -24,7 +23,6 @@ let
       ".mli"
       ".js"
       "dune"
-      "dune-js"
       "dune-project"
       "sh"
       "rs"
@@ -49,7 +47,6 @@ let
         core
         stdio
         re
-        js_of_ocaml
         ocamlgraph
       ] ++
       # F* dependencies
@@ -59,7 +56,6 @@ let
       hax-rust-frontend
       hax-engine-names-extract
       nodejs
-      ocamlPackages.js_of_ocaml-compiler
       jq
       removeReferencesTo
     ];
@@ -77,24 +73,6 @@ let
         buildPhase = "dune build @doc";
         installPhase = "cp -rf _build/default/_doc/_html $out";
         outputs = [ "out" ];
-      });
-      js = hax-engine.overrideAttrs (old: {
-        name = "hax-engine.js";
-        nativeBuildInputs = old.nativeBuildInputs ++ [ closurecompiler gnused ];
-        outputs = [ "out" ];
-        buildPhase = ''
-          # Enable JS build
-          sed -i "s/; (include dune-js)/(include dune-js)/g" bin/dune
-          # Compile JS target
-          dune build bin/js_driver.bc.js
-          # Optimize the size of the JS file
-          closure-compiler --js _build/default/bin/js_driver.bc.js --js_output_file hax-engine.js
-          # Add a shebang & make executable
-          sed -i '1 i #!/usr/bin/env node' hax-engine.js
-          chmod +x hax-engine.js
-        '';
-        checkPhase = "true";
-        installPhase = "cp hax-engine.js $out";
       });
     };
   };
