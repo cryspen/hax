@@ -189,7 +189,7 @@
             pkgs.cargo-expand
             pkgs.cargo-release
             pkgs.openssl.dev
-            pkgs.libz.dev
+            pkgs.zlib.dev
             pkgs.pkg-config
             pkgs.rust-analyzer
             pkgs.toml2json
@@ -199,7 +199,7 @@
             pkgs.go-grip
           ];
           LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
-          DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libz rustc ];
+          DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.zlib rustc ];
         in {
           examples = pkgs.mkShell {
             inherit LIBCLANG_PATH DYLD_LIBRARY_PATH;

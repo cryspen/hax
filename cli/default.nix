@@ -1,10 +1,10 @@
 { craneLib, stdenv, makeWrapper, lib, rustc, rustc-docs, gcc, hax-engine
-, doCheck ? true, libz, just, libiconv }:
+, doCheck ? true, zlib, just, libiconv }:
 let
   pname = "hax";
   is-webapp-static-asset = path:
     builtins.match ".*(script[.]js|index[.]html)" path != null;
-  buildInputs = lib.optionals stdenv.isDarwin [ libiconv libz.dev ];
+  buildInputs = lib.optionals stdenv.isDarwin [ libiconv zlib.dev ];
   binaries = [ hax hax-engine.bin rustc gcc hax_rust_engine ] ++ buildInputs;
   commonArgs = {
     version = "0.0.1";
@@ -90,12 +90,12 @@ in stdenv.mkDerivation {
       ${
         lib.optionalString stdenv.isDarwin ''
           --prefix RUSTFLAGS : "-C link-arg=-L${libiconv}/lib" \
-          --suffix DYLD_LIBRARY_PATH : ${lib.makeLibraryPath [ libz rustc ]}
+          --suffix DYLD_LIBRARY_PATH : ${lib.makeLibraryPath [ zlib rustc ]}
         ''
       } \
       ${
         lib.optionalString stdenv.isLinux ''
-          --suffix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ libz rustc ]}
+          --suffix LD_LIBRARY_PATH : ${lib.makeLibraryPath [ zlib rustc ]}
         ''
       }
   '';
