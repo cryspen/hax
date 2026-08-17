@@ -25,6 +25,68 @@ pub fn test_range_count_offset() -> bool {
     (3..10usize).count() == 7
 }
 
+// ----- Rust-only: the iterator sources ---------------------------------------
+
+// `core::iter::{empty, once, repeat, …}` build an iterator, but *observing* one
+// needs either `Iterator::next` or an `IteratorMethods` method. The Lean side has
+// neither for these types: the blanket `impl IteratorMethods for I` is
+// `aeneas::exclude`d (see the note further down), and the only hand-written Lean
+// iterator definitions in `CoreModels/Core/FunsPrologue.lean` are for
+// `ops::range::Range`. So these observations are pinned on the Rust side only.
+#[cfg(test)]
+mod sources {
+    #[test]
+    fn test_empty_next() {
+        assert_eq!(core::iter::empty::<u8>().next(), None);
+    }
+
+    #[test]
+    fn test_once_next_then_none() {
+        let mut it = core::iter::once(7u8);
+        assert_eq!(it.next(), Some(7u8));
+        assert_eq!(it.next(), None);
+    }
+
+    #[test]
+    fn test_repeat_n_zero_is_empty() {
+        assert_eq!(core::iter::repeat_n(7u8, 0).next(), None);
+    }
+
+    #[test]
+    fn test_repeat_n_count() {
+        assert_eq!(core::iter::repeat_n(7u8, 3).count(), 3);
+    }
+
+    #[test]
+    fn test_repeat_takes_first() {
+        assert_eq!(core::iter::repeat(u8::MAX).next(), Some(u8::MAX));
+    }
+
+    #[test]
+    fn test_successors_none_is_empty() {
+        assert_eq!(
+            core::iter::successors(None, |x: &u8| Some(*x)).next(),
+            crate::helpers::none_u8()
+        );
+    }
+
+    #[test]
+    fn test_successors_doubling() {
+        let v: Vec<u8> = core::iter::successors(Some(1u8), |x| x.checked_mul(2)).collect();
+        assert_eq!(v, vec![1, 2, 4, 8, 16, 32, 64, 128]);
+    }
+
+    #[test]
+    fn test_chain_fn_lengths() {
+        assert_eq!(core::iter::chain(0..3usize, 0..2usize).count(), 5);
+    }
+
+    #[test]
+    fn test_zip_fn_stops_at_shorter() {
+        assert_eq!(core::iter::zip(0..3usize, 0..5usize).count(), 3);
+    }
+}
+
 // ----- Rust-only: blocked on the `IteratorMethods` exclusion -----------------
 
 // These come from the blanket `impl IteratorMethods for I`, which is
