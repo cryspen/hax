@@ -13,7 +13,7 @@
 //!   below — see the TODOs.
 
 use rust_lean_test_macro::rust_lean_test;
-use std::collections::{BTreeSet, LinkedList, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, LinkedList, VecDeque};
 
 // ----- new / with_capacity ---------------------------------------------------
 
@@ -980,4 +980,161 @@ pub fn test_set_empty_sets_are_disjoint() -> bool {
     let a: BTreeSet<u8> = BTreeSet::new();
     let b: BTreeSet<u8> = BTreeSet::new();
     a.is_disjoint(&b) && a.is_subset(&b) && a.is_superset(&b)
+}
+
+// =============================================================================
+// BTreeMap
+// =============================================================================
+//
+// TODO(borrow-blanket-impl): `BTreeMap::{get, get_key_value, contains_key,
+// remove, remove_entry, split_off}` are generic over a borrowed key, and the
+// model of `core::borrow::Borrow` has no blanket `impl<T> Borrow<T> for T` — see
+// the same note on `BTreeSet` above. Covered by the proptests instead.
+//
+// `BTreeMap::{iter, keys, values, into_keys, into_values}` return iterators —
+// see the `VecDeque::iter` note. `new_in` is unstable in std.
+
+// ----- new -------------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_map_new_is_empty() -> bool {
+    let m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.is_empty() && m.len() == 0
+}
+
+// ----- insert / len ----------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_map_insert_new_returns_none() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.insert(1, 10).is_none() && m.len() == 1
+}
+
+#[rust_lean_test]
+pub fn test_map_insert_existing_returns_old() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.insert(1, 10);
+    m.insert(1, 20).unwrap_or(0) == 10 && m.len() == 1
+}
+
+#[rust_lean_test]
+pub fn test_map_insert_sorts_by_key() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.insert(3, 30);
+    m.insert(1, 10);
+    m.insert(2, 20);
+    match m.pop_first() {
+        Some(e) => e.0 == 1 && e.1 == 10 && m.len() == 2,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_map_insert_key_boundaries() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.insert(u8::MAX, 1);
+    m.insert(0, 2);
+    match m.pop_last() {
+        Some(e) => e.0 == u8::MAX && e.1 == 1,
+        None => false,
+    }
+}
+
+// ----- first_key_value / last_key_value --------------------------------------
+
+#[rust_lean_test]
+pub fn test_map_first_last_empty_are_none() -> bool {
+    let m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.first_key_value().is_none() && m.last_key_value().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_map_first_last_single_coincide() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.insert(4, 40);
+    match m.first_key_value() {
+        Some(f) => match m.last_key_value() {
+            Some(l) => *f.0 == 4 && *f.1 == 40 && *l.0 == 4 && *l.1 == 40,
+            None => false,
+        },
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_map_first_last_three() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.insert(2, 20);
+    m.insert(1, 10);
+    m.insert(3, 30);
+    match m.first_key_value() {
+        Some(f) => match m.last_key_value() {
+            Some(l) => *f.0 == 1 && *l.0 == 3,
+            None => false,
+        },
+        None => false,
+    }
+}
+
+// ----- pop_first / pop_last --------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_map_pop_first_empty_is_none() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.pop_first().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_map_pop_last_empty_is_none() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.pop_last().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_map_pop_last_takes_greatest_key() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.insert(1, 10);
+    m.insert(7, 70);
+    match m.pop_last() {
+        Some(e) => e.0 == 7 && e.1 == 70 && m.len() == 1,
+        None => false,
+    }
+}
+
+// ----- clear -----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_map_clear_empties() -> bool {
+    let mut m: BTreeMap<u8, u8> = BTreeMap::new();
+    m.insert(1, 10);
+    m.insert(2, 20);
+    m.clear();
+    m.is_empty() && m.len() == 0
+}
+
+// ----- append ----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_map_append_both_empty() -> bool {
+    let mut a: BTreeMap<u8, u8> = BTreeMap::new();
+    let mut b: BTreeMap<u8, u8> = BTreeMap::new();
+    a.append(&mut b);
+    a.is_empty() && b.is_empty()
+}
+
+// On a shared key the value from `other` wins.
+#[rust_lean_test]
+pub fn test_map_append_other_value_wins() -> bool {
+    let mut a: BTreeMap<u8, u8> = BTreeMap::new();
+    a.insert(1, 10);
+    let mut b: BTreeMap<u8, u8> = BTreeMap::new();
+    b.insert(1, 99);
+    b.insert(2, 20);
+    a.append(&mut b);
+    a.len() == 2
+        && b.is_empty()
+        && match a.pop_first() {
+            Some(e) => e.0 == 1 && e.1 == 99,
+            None => false,
+        }
 }
