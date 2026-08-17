@@ -314,3 +314,57 @@ pub fn test_try_from_i32_to_i16_above_max_is_err() -> bool {
 pub fn test_try_from_i32_to_i16_below_min_is_err() -> bool {
     i16::try_from(-32769i32).is_err()
 }
+
+// ----- identity ---------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_identity_u8_zero() -> bool {
+    core::convert::identity(0u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_identity_u8_max() -> bool {
+    core::convert::identity(u8::MAX) == u8::MAX
+}
+
+#[rust_lean_test]
+pub fn test_identity_i32_min() -> bool {
+    core::convert::identity(i32::MIN) == i32::MIN
+}
+
+#[rust_lean_test]
+pub fn test_identity_bool_false() -> bool {
+    core::convert::identity(false) == false
+}
+
+#[rust_lean_test]
+pub fn test_identity_option_none() -> bool {
+    core::convert::identity(crate::helpers::none_u8()) == crate::helpers::none_u8()
+}
+
+// ----- AsMut<[T]> for [T] -----------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_as_mut_slice_read_first() -> bool {
+    let mut arr = [7u8, 8, 9];
+    core::convert::AsMut::<[u8]>::as_mut(&mut arr[..])[0] == 7u8
+}
+
+#[rust_lean_test]
+pub fn test_as_mut_slice_read_last() -> bool {
+    let mut arr = [7u8, 8, 9];
+    core::convert::AsMut::<[u8]>::as_mut(&mut arr[..])[2] == 9u8
+}
+
+#[rust_lean_test]
+pub fn test_as_mut_slice_write_through() -> bool {
+    let mut arr = [7u8, 8, 9];
+    core::convert::AsMut::<[u8]>::as_mut(&mut arr[..])[1] = u8::MAX;
+    arr[1] == u8::MAX
+}
+
+#[rust_lean_test]
+pub fn test_as_mut_slice_len() -> bool {
+    let mut arr = [0u8; 1];
+    core::convert::AsMut::<[u8]>::as_mut(&mut arr[..]).len() == 1usize
+}

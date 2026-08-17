@@ -151,6 +151,9 @@ let impl_54__then_with
 /// See [`std::convert::Infallible`]
 type t_Infallible = | Infallible : t_Infallible
 
+/// See [`std::convert::identity`]
+let identity (#v_T: Type0) (x: v_T) : v_T = x
+
 /// See [`std::iter::Enumerate`]
 type t_Enumerate (v_I: Type0) = {
   f_iter:v_I;

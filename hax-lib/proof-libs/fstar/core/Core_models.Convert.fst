@@ -316,3 +316,5 @@ include Core_models.Bundle {impl_130 as impl_130}
 include Core_models.Bundle {impl_131 as impl_131}
 
 include Core_models.Bundle {impl_132 as impl_132}
+
+include Core_models.Bundle {identity as identity}
