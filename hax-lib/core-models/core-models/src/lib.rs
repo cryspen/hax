@@ -75,6 +75,12 @@
         wrapping_int_impl,
         wrapping_next_power_of_two
     )
+// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
+// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
+// proptests compare against them.
+#![cfg_attr(
+    test,
+    feature(step_trait, int_roundings, formatting_options, int_format_into)
 )]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
 // from `cargo hax`.
