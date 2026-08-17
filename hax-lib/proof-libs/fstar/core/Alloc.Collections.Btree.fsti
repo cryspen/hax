@@ -28,6 +28,25 @@ val seq_lower_bound_borrowed
       (key: v_Q)
     : Prims.Pure (usize & bool) Prims.l_True (fun _ -> Prims.l_True)
 
+/// `seq_lower_bound` over a `Seq` of key/value pairs, comparing keys.
+val seq_lower_bound_key
+      (#v_K #v_V: Type0)
+      {| i0: Core_models.Cmp.t_Ord v_K |}
+      (s: Rust_primitives.Sequence.t_Seq (v_K & v_V))
+      (key: v_K)
+    : Prims.Pure (usize & bool) Prims.l_True (fun _ -> Prims.l_True)
+
+/// `seq_lower_bound_key` against a borrowed key (see
+/// `seq_lower_bound_borrowed` for why this is a separate function).
+val seq_lower_bound_key_borrowed
+      (#v_K #v_V #v_Q: Type0)
+      {| i0: Core_models.Borrow.t_Borrow v_K v_Q |}
+      {| i1: Core_models.Cmp.t_Ord v_K |}
+      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      (s: Rust_primitives.Sequence.t_Seq (v_K & v_V))
+      (key: v_Q)
+    : Prims.Pure (usize & bool) Prims.l_True (fun _ -> Prims.l_True)
+
 /// Insert `value` at `index`, shifting the tail right (see the same
 /// helper in `vec_deque`).
 val seq_insert (#v_T: Type0) (s: Rust_primitives.Sequence.t_Seq v_T) (index: usize) (value: v_T)

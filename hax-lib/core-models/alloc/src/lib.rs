@@ -518,6 +518,49 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             (pos, eq)
         }
 
+        /// `seq_lower_bound` over a `Seq` of key/value pairs, comparing keys.
+        fn seq_lower_bound_key<K: Ord, V>(s: &Seq<(K, V)>, key: &K) -> (usize, bool) {
+            let l = seq_len(s);
+            let mut pos = l;
+            let mut eq = false;
+            let mut done = false;
+            for i in 0..l {
+                if !done {
+                    let o = seq_index(s, i).0.cmp(key);
+                    if !o.is_lt() {
+                        pos = i;
+                        eq = o.is_eq();
+                        done = true
+                    }
+                }
+            }
+            (pos, eq)
+        }
+
+        /// `seq_lower_bound_key` against a borrowed key (see
+        /// `seq_lower_bound_borrowed` for why this is a separate function).
+        fn seq_lower_bound_key_borrowed<K, V, Q>(s: &Seq<(K, V)>, key: &Q) -> (usize, bool)
+        where
+            K: core::borrow::Borrow<Q> + Ord,
+            Q: Ord + ?Sized,
+        {
+            let l = seq_len(s);
+            let mut pos = l;
+            let mut eq = false;
+            let mut done = false;
+            for i in 0..l {
+                if !done {
+                    let o = seq_index(s, i).0.borrow().cmp(key);
+                    if !o.is_lt() {
+                        pos = i;
+                        eq = o.is_eq();
+                        done = true
+                    }
+                }
+            }
+            (pos, eq)
+        }
+
         /// Insert `value` at `index`, shifting the tail right (see the same
         /// helper in `vec_deque`).
         #[hax_lib::requires(index <= seq_len(s) && seq_len(s) < core::primitive::usize::MAX)]
@@ -528,12 +571,598 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             seq_concat(s, &mut right)
         }
 
+        /// Model of `alloc::collections::btree::map`.
+        ///
+        /// DEVIATION(std): a `Seq` of key/value pairs sorted by key, not a
+        /// B-tree. Like the `set` model this is a *specification* of the
+        /// ordered-map semantics — every lookup is a linear scan — and it
+        /// reproduces std's observable behaviour, including that `insert` keeps
+        /// the *old* key and replaces only the value.
         mod map {
+            use super::{seq_insert, seq_lower_bound_key, seq_lower_bound_key_borrowed};
+            use rust_primitives::sequence::*;
+            use std::marker::PhantomData;
+
+            #[cfg_attr(test, derive(PartialEq, Debug))]
+            pub struct BTreeMap<K, V, A>(pub Seq<(K, V)>, PhantomData<A>);
+
             /// See [`std::collections::btree_map::UnorderedKeyError`]: the error
             /// `CursorMut::insert_before`/`insert_after` return. The cursor API
             /// itself is not modeled, so nothing here produces one.
             #[cfg_attr(test, derive(PartialEq, Debug))]
             pub struct UnorderedKeyError;
+
+            /// See [`std::collections::btree_map::Iter`]
+            pub struct Iter<'a, K, V>(pub Seq<&'a (K, V)>);
+            /// See [`std::collections::btree_map::Keys`]
+            pub struct Keys<'a, K, V>(pub Seq<&'a K>, PhantomData<&'a V>);
+            /// See [`std::collections::btree_map::Values`]
+            pub struct Values<'a, K, V>(pub Seq<&'a V>, PhantomData<&'a K>);
+            /// See [`std::collections::btree_map::IntoKeys`]
+            pub struct IntoKeys<K, V, A>(pub Seq<(K, V)>, PhantomData<A>);
+            /// See [`std::collections::btree_map::IntoValues`]
+            pub struct IntoValues<K, V, A>(pub Seq<(K, V)>, PhantomData<A>);
+
+            impl<'a, K, V> Iterator for Iter<'a, K, V> {
+                type Item = (&'a K, &'a V);
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        let p = seq_remove(&mut self.0, 0);
+                        Some((&p.0, &p.1))
+                    }
+                }
+            }
+            impl<'a, K, V> Iterator for Keys<'a, K, V> {
+                type Item = &'a K;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+            }
+            impl<'a, K, V> Iterator for Values<'a, K, V> {
+                type Item = &'a V;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+            }
+            impl<K, V, A> Iterator for IntoKeys<K, V, A> {
+                type Item = K;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0).0)
+                    }
+                }
+            }
+            impl<K, V, A> Iterator for IntoValues<K, V, A> {
+                type Item = V;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0).1)
+                    }
+                }
+            }
+
+            // Padding impls, as in `set`: real `alloc` puts eighteen impls (the
+            // `Drop`/`Clone`/`Debug`/`Default` boilerplate of `BTreeMap` and of
+            // its seven iterator types) before `impl<K, V> BTreeMap<K, V>`, so
+            // hax derives `impl_18__new`, `impl_19__clear`/`new_in` and
+            // `impl_20__insert` from those positions. Thirteen here, because
+            // hax counts the five `Iterator` impls above too. As in `set`, the
+            // count is calibrated against what hax emits.
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+
+            impl<K, V> BTreeMap<K, V, crate::alloc::Global> {
+                /// See [`std::collections::BTreeMap::new`]
+                fn new() -> BTreeMap<K, V, crate::alloc::Global> {
+                    BTreeMap(seq_empty(), PhantomData)
+                }
+            }
+
+            impl<K, V, A> BTreeMap<K, V, A> {
+                /// See [`std::collections::BTreeMap::clear`]
+                fn clear(&mut self) {
+                    self.0 = seq_empty()
+                }
+                /// See [`std::collections::BTreeMap::new_in`]
+                fn new_in(_alloc: A) -> BTreeMap<K, V, A> {
+                    BTreeMap(seq_empty(), PhantomData)
+                }
+            }
+
+            impl<K, V, A> BTreeMap<K, V, A> {
+                /// See [`std::collections::BTreeMap::get`]
+                fn get<Q>(&self, key: &Q) -> Option<&V>
+                where
+                    K: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    let probe = seq_lower_bound_key_borrowed(&self.0, key);
+                    if probe.1 {
+                        Some(&seq_index(&self.0, probe.0).1)
+                    } else {
+                        None
+                    }
+                }
+                /// See [`std::collections::BTreeMap::get_key_value`]
+                fn get_key_value<Q>(&self, k: &Q) -> Option<(&K, &V)>
+                where
+                    K: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    let probe = seq_lower_bound_key_borrowed(&self.0, k);
+                    if probe.1 {
+                        let entry = seq_index(&self.0, probe.0);
+                        Some((&entry.0, &entry.1))
+                    } else {
+                        None
+                    }
+                }
+                /// See [`std::collections::BTreeMap::contains_key`]
+                fn contains_key<Q>(&self, key: &Q) -> bool
+                where
+                    K: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    seq_lower_bound_key_borrowed(&self.0, key).1
+                }
+                /// See [`std::collections::BTreeMap::first_key_value`]
+                fn first_key_value(&self) -> Option<(&K, &V)>
+                where
+                    K: Ord,
+                {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        let entry = seq_index(&self.0, 0);
+                        Some((&entry.0, &entry.1))
+                    }
+                }
+                /// See [`std::collections::BTreeMap::last_key_value`]
+                fn last_key_value(&self) -> Option<(&K, &V)>
+                where
+                    K: Ord,
+                {
+                    let l = seq_len(&self.0);
+                    if l == 0 {
+                        None
+                    } else {
+                        let entry = seq_index(&self.0, l - 1);
+                        Some((&entry.0, &entry.1))
+                    }
+                }
+                /// See [`std::collections::BTreeMap::pop_first`]
+                fn pop_first(&mut self) -> Option<(K, V)>
+                where
+                    K: Ord,
+                {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+                /// See [`std::collections::BTreeMap::pop_last`]
+                fn pop_last(&mut self) -> Option<(K, V)>
+                where
+                    K: Ord,
+                {
+                    let l = seq_len(&self.0);
+                    if l == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, l - 1))
+                    }
+                }
+                /// See [`std::collections::BTreeMap::insert`]: on a key that is
+                /// already present the *value* is replaced and the old one
+                /// returned; the stored key is left alone, as in std.
+                ///
+                /// No `#[hax_lib::requires]` on the length here: that would need
+                /// `#[hax_lib::attributes]` on the block, which moves it to the
+                /// end of hax's impl numbering and so off index 20. `seq_insert`
+                /// carries the bound instead.
+                fn insert(&mut self, key: K, value: V) -> Option<V>
+                where
+                    K: Ord,
+                {
+                    let probe = seq_lower_bound_key(&self.0, &key);
+                    if probe.1 {
+                        let old = seq_remove(&mut self.0, probe.0);
+                        seq_insert(&mut self.0, probe.0, (old.0, value));
+                        Some(old.1)
+                    } else {
+                        seq_insert(&mut self.0, probe.0, (key, value));
+                        None
+                    }
+                }
+                /// See [`std::collections::BTreeMap::remove`]
+                fn remove<Q>(&mut self, key: &Q) -> Option<V>
+                where
+                    K: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    let probe = seq_lower_bound_key_borrowed(&self.0, key);
+                    if probe.1 {
+                        Some(seq_remove(&mut self.0, probe.0).1)
+                    } else {
+                        None
+                    }
+                }
+                /// See [`std::collections::BTreeMap::remove_entry`]
+                fn remove_entry<Q>(&mut self, key: &Q) -> Option<(K, V)>
+                where
+                    K: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    let probe = seq_lower_bound_key_borrowed(&self.0, key);
+                    if probe.1 {
+                        Some(seq_remove(&mut self.0, probe.0))
+                    } else {
+                        None
+                    }
+                }
+                /// See [`std::collections::BTreeMap::append`]: on a shared key
+                /// the value from `other` wins.
+                fn append(&mut self, other: &mut BTreeMap<K, V, A>)
+                where
+                    K: Ord,
+                {
+                    let l = seq_len(&other.0);
+                    for _k in 0..l {
+                        if seq_len(&other.0) > 0 {
+                            let entry = seq_remove(&mut other.0, 0);
+                            let _old = self.insert(entry.0, entry.1);
+                        }
+                    }
+                }
+                /// See [`std::collections::BTreeMap::split_off`]: keeps the
+                /// entries with keys `< key`, returns those `>= key`.
+                fn split_off<Q>(&mut self, key: &Q) -> BTreeMap<K, V, A>
+                where
+                    K: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                    A: Clone,
+                {
+                    let l = seq_len(&self.0);
+                    let probe = seq_lower_bound_key_borrowed(&self.0, key);
+                    BTreeMap(seq_drain(&mut self.0, probe.0, l), PhantomData::<A>)
+                }
+                /// See [`std::collections::BTreeMap::into_keys`]
+                fn into_keys(self) -> IntoKeys<K, V, A> {
+                    IntoKeys(self.0, PhantomData::<A>)
+                }
+                /// See [`std::collections::BTreeMap::into_values`]
+                fn into_values(self) -> IntoValues<K, V, A> {
+                    IntoValues(self.0, PhantomData::<A>)
+                }
+            }
+
+            // Real `alloc` has a second batch of iterator/comparison impls
+            // between the block above and the one below, which is why `len`,
+            // `is_empty`, `iter`, `keys` and `values` sit at impl index 92
+            // rather than 21. Padding again, same calibration.
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+            impl BTreeMap<(), (), ()> {}
+
+            impl<K, V, A> BTreeMap<K, V, A> {
+                /// See [`std::collections::BTreeMap::len`]
+                fn len(&self) -> usize {
+                    seq_len(&self.0)
+                }
+                /// See [`std::collections::BTreeMap::is_empty`]
+                fn is_empty(&self) -> bool {
+                    seq_len(&self.0) == 0
+                }
+                /// See [`std::collections::BTreeMap::iter`]
+                fn iter(&self) -> Iter<'_, K, V> {
+                    Iter(seq_from_slice(seq_to_slice(&self.0)))
+                }
+                /// See [`std::collections::BTreeMap::keys`]
+                fn keys(&self) -> Keys<'_, K, V> {
+                    let mut out = seq_empty();
+                    for i in 0..seq_len(&self.0) {
+                        seq_push(&mut out, &seq_index(&self.0, i).0)
+                    }
+                    Keys(out, PhantomData)
+                }
+                /// See [`std::collections::BTreeMap::values`]
+                fn values(&self) -> Values<'_, K, V> {
+                    let mut out = seq_empty();
+                    for i in 0..seq_len(&self.0) {
+                        seq_push(&mut out, &seq_index(&self.0, i).1)
+                    }
+                    Values(out, PhantomData)
+                }
+            }
+
+            #[cfg(test)]
+            mod tests {
+                use crate::testing::Inject;
+                use proptest::prelude::*;
+
+                type Model<K, V> = super::BTreeMap<K, V, crate::alloc::Global>;
+                type Std<K, V> = std::collections::BTreeMap<K, V>;
+
+                impl<K: Clone + Ord, V: Clone> Inject for Std<K, V> {
+                    type Model = Model<K, V>;
+                    fn inject(&self) -> Model<K, V> {
+                        let flat: std::vec::Vec<(K, V)> =
+                            self.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+                        super::BTreeMap(
+                            rust_primitives::sequence::seq_from_boxed_slice(
+                                flat.into_boxed_slice(),
+                            ),
+                            std::marker::PhantomData,
+                        )
+                    }
+                }
+
+                fn build(entries: &[(u8, u8)]) -> (Model<u8, u8>, Std<u8, u8>) {
+                    let mut model = Model::new();
+                    let mut std_map = Std::new();
+                    for &(k, v) in entries {
+                        model.insert(k, v);
+                        std_map.insert(k, v);
+                    }
+                    (model, std_map)
+                }
+
+                fn entries() -> impl Strategy<Value = std::vec::Vec<(u8, u8)>> {
+                    prop::collection::vec((0u8..8, any::<u8>()), 0..20)
+                }
+
+                proptest! {
+                    #[test]
+                    fn test_insert_returns_old_value(es in entries()) {
+                        let mut model = Model::new();
+                        let mut std_map = Std::new();
+                        for &(k, v) in &es {
+                            prop_assert_eq!(model.insert(k, v), std_map.insert(k, v));
+                        }
+                        prop_assert_eq!(model, std_map.inject());
+                    }
+
+                    #[test]
+                    fn test_len_is_empty(es in entries()) {
+                        let (model, std_map) = build(&es);
+                        prop_assert_eq!(model.len(), std_map.len());
+                        prop_assert_eq!(model.is_empty(), std_map.is_empty());
+                    }
+
+                    #[test]
+                    fn test_get(es in entries(), k in 0u8..10) {
+                        let (model, std_map) = build(&es);
+                        prop_assert_eq!(model.get(&k), std_map.get(&k));
+                    }
+
+                    #[test]
+                    fn test_get_key_value(es in entries(), k in 0u8..10) {
+                        let (model, std_map) = build(&es);
+                        prop_assert_eq!(model.get_key_value(&k), std_map.get_key_value(&k));
+                    }
+
+                    #[test]
+                    fn test_contains_key(es in entries(), k in 0u8..10) {
+                        let (model, std_map) = build(&es);
+                        prop_assert_eq!(model.contains_key(&k), std_map.contains_key(&k));
+                    }
+
+                    #[test]
+                    fn test_first_last_key_value(es in entries()) {
+                        let (model, std_map) = build(&es);
+                        prop_assert_eq!(model.first_key_value(), std_map.first_key_value());
+                        prop_assert_eq!(model.last_key_value(), std_map.last_key_value());
+                    }
+
+                    #[test]
+                    fn test_pop_first(es in entries()) {
+                        let (mut model, mut std_map) = build(&es);
+                        for _ in 0..=es.len() {
+                            prop_assert_eq!(model.pop_first(), std_map.pop_first());
+                            prop_assert_eq!(&model, &std_map.inject());
+                        }
+                    }
+
+                    #[test]
+                    fn test_pop_last(es in entries()) {
+                        let (mut model, mut std_map) = build(&es);
+                        for _ in 0..=es.len() {
+                            prop_assert_eq!(model.pop_last(), std_map.pop_last());
+                            prop_assert_eq!(&model, &std_map.inject());
+                        }
+                    }
+
+                    #[test]
+                    fn test_remove(es in entries(), k in 0u8..10) {
+                        let (mut model, mut std_map) = build(&es);
+                        prop_assert_eq!(model.remove(&k), std_map.remove(&k));
+                        prop_assert_eq!(model, std_map.inject());
+                    }
+
+                    #[test]
+                    fn test_remove_entry(es in entries(), k in 0u8..10) {
+                        let (mut model, mut std_map) = build(&es);
+                        prop_assert_eq!(model.remove_entry(&k), std_map.remove_entry(&k));
+                        prop_assert_eq!(model, std_map.inject());
+                    }
+
+                    #[test]
+                    fn test_clear(es in entries()) {
+                        let (mut model, mut std_map) = build(&es);
+                        model.clear();
+                        std_map.clear();
+                        prop_assert_eq!(model, std_map.inject());
+                    }
+
+                    #[test]
+                    fn test_append(a in entries(), b in entries()) {
+                        let (mut model_a, mut std_a) = build(&a);
+                        let (mut model_b, mut std_b) = build(&b);
+                        model_a.append(&mut model_b);
+                        std_a.append(&mut std_b);
+                        prop_assert_eq!(model_a, std_a.inject());
+                        prop_assert_eq!(model_b, std_b.inject());
+                    }
+
+                    #[test]
+                    fn test_split_off(es in entries(), k in 0u8..10) {
+                        let (mut model, mut std_map) = build(&es);
+                        let model_tail = model.split_off(&k);
+                        let std_tail = std_map.split_off(&k);
+                        prop_assert_eq!(model, std_map.inject());
+                        prop_assert_eq!(model_tail, std_tail.inject());
+                    }
+
+                    #[test]
+                    fn test_iter(es in entries()) {
+                        let (model, std_map) = build(&es);
+                        let m: std::vec::Vec<(u8, u8)> =
+                            model.iter().map(|(k, v)| (*k, *v)).collect();
+                        let s: std::vec::Vec<(u8, u8)> =
+                            std_map.iter().map(|(k, v)| (*k, *v)).collect();
+                        prop_assert_eq!(m, s);
+                    }
+
+                    #[test]
+                    fn test_keys_values(es in entries()) {
+                        let (model, std_map) = build(&es);
+                        let mk: std::vec::Vec<u8> = model.keys().copied().collect();
+                        let sk: std::vec::Vec<u8> = std_map.keys().copied().collect();
+                        prop_assert_eq!(mk, sk);
+                        let mv: std::vec::Vec<u8> = model.values().copied().collect();
+                        let sv: std::vec::Vec<u8> = std_map.values().copied().collect();
+                        prop_assert_eq!(mv, sv);
+                    }
+
+                    #[test]
+                    fn test_into_keys_values(es in entries()) {
+                        let (model, std_map) = build(&es);
+                        let mk: std::vec::Vec<u8> = model.into_keys().collect();
+                        let sk: std::vec::Vec<u8> = std_map.clone().into_keys().collect();
+                        prop_assert_eq!(mk, sk);
+                        let (model, std_map) = build(&es);
+                        let mv: std::vec::Vec<u8> = model.into_values().collect();
+                        let sv: std::vec::Vec<u8> = std_map.into_values().collect();
+                        prop_assert_eq!(mv, sv);
+                    }
+                }
+
+                #[test]
+                fn test_new() {
+                    let model = Model::<u8, u8>::new();
+                    assert!(model.is_empty());
+                    assert_eq!(model.len(), 0);
+                }
+
+                // `new_in` is unstable in std (`btreemap_alloc`), so the
+                // expectation — an empty map — is pinned here.
+                #[test]
+                fn test_new_in() {
+                    let model = Model::<u8, u8>::new_in(crate::alloc::Global);
+                    assert!(model.is_empty());
+                }
+
+                #[test]
+                fn test_unordered_key_error_is_a_unit_struct() {
+                    // Nothing in the model produces one; this only pins that the
+                    // type exists and is inhabited.
+                    let _e = super::UnorderedKeyError;
+                }
+            }
         }
 
         /// Model of `alloc::collections::btree::set`.
@@ -1576,6 +2205,12 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
         // names `impl_N__method` from that position, so client call sites
         // resolve to `impl_4__new` / `impl_5__push_back` only if the model puts
         // those blocks at index 4 and 5 too.
+        //
+        // Two things make the count hard to read off std's source, so it is
+        // calibrated against what hax actually emits (here and in the other
+        // `collections` submodules): hax skips some impl kinds, and it numbers
+        // impls carrying a `hax_lib` attribute macro (`attributes`, `opaque`)
+        // *after* all the plain ones, keeping their relative order.
         impl VecDeque<(), ()> {}
         impl VecDeque<(), ()> {}
         impl VecDeque<(), ()> {}
