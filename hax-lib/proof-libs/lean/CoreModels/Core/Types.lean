@@ -292,6 +292,15 @@ structure hash.Hasher (Self : Type) where
 structure hash.Hash (Self : Type) where
   hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → RustM H
 
+/-- [core_models::hint::Locality]
+    Source: 'core-models/src/core/hint.rs', lines 57:0-64:1
+    Visibility: public -/
+@[discriminant isize]
+inductive hint.Locality where
+| L3 : hint.Locality
+| L2 : hint.Locality
+| L1 : hint.Locality
+
 /-- [core_models::iter::adapters::skip::Skip]
     Source: 'core-models/src/core/iter.rs', lines 714:8-717:9
     Visibility: public -/

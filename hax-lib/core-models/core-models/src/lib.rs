@@ -30,9 +30,19 @@
 // `cargo llvm-cov`, so normal builds and extraction never see this.
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 // int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
-#![cfg_attr(test, feature(step_trait, int_roundings))]
+#![cfg_attr(
+    test,
+    feature(
+        cold_path,
+        int_roundings,
+        likely_unlikely,
+        step_trait
+    )
+)]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
 // from `cargo hax`.
+// likely_unlikely/cold_path: same, for the `hint` proptests.
+#![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]

@@ -14713,18 +14713,16 @@
    },
    {
     "module": "hint",
-    "covered": 2,
+    "covered": 15,
     "total": 15,
     "in_scope": true,
     "covered_items": [
-     "black_box",
-     "must_use"
-    ],
-    "missing_items": [
      "Locality",
      "assert_unchecked",
+     "black_box",
      "cold_path",
      "likely",
+     "must_use",
      "prefetch_read",
      "prefetch_read_instruction",
      "prefetch_read_non_temporal",
@@ -14734,7 +14732,8 @@
      "spin_loop",
      "unlikely",
      "unreachable_unchecked"
-    ]
+    ],
+    "missing_items": []
    },
    {
     "module": "index",
