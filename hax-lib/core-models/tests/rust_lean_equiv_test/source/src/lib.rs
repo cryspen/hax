@@ -78,6 +78,12 @@
     box_into_inner,
     smart_pointer_try_map
 )]
+// A few of the `alloc::vec` items the model provides are still unstable in the
+// real `alloc`; the equivalence tests must call the real ones to be meaningful.
+// `charon` bundles a newer rustc than `rust-toolchain.toml`, where some of these
+// have since been stabilised — hence the `allow`.
+#![allow(stable_features)]
+#![feature(allocator_api, push_mut, try_with_capacity, vec_try_remove)]
 
 pub mod helpers;
 

@@ -13,6 +13,11 @@
         box_into_inner,
         smart_pointer_try_map
     )
+// Only the test build needs these: the property tests compare the model against
+// `alloc`'s own unstable surface (`try_remove`, `push_mut`, `allocator`, …).
+#![cfg_attr(
+    test,
+    feature(vec_try_remove, push_mut, allocator_api, try_with_capacity)
 )]
 
 #[cfg(test)]
@@ -303,6 +308,10 @@ mod collections {
     /// allocate, so no value of this type is ever built; it exists so the
     /// `try_reserve`-family signatures can be spelled faithfully.
     #[cfg_attr(test, derive(Debug))]
+    /// See [`std::collections::TryReserveError`]: the error returned by the
+    /// `try_reserve*` family. The model's collections never fail to reserve, so
+    /// it carries no information.
+    #[cfg_attr(test, derive(PartialEq, Debug))]
     pub struct TryReserveError;
 
     mod binary_heap {
@@ -1455,6 +1464,21 @@ pub mod vec {
                 }
             }
         }
+        impl<T> IntoIter<T> {
+            /// See [`std::vec::IntoIter::as_slice`]: the elements not yet
+            /// yielded.
+            pub fn as_slice(&self) -> &[T] {
+                seq_to_slice(&self.0)
+            }
+            /// See [`std::vec::IntoIter::as_mut_slice`]
+            pub fn as_mut_slice(&mut self) -> &mut [T] {
+                seq_to_slice_mut(&mut self.0)
+            }
+            /// See [`std::vec::IntoIter::allocator`]: see `Drain::allocator`.
+            pub fn allocator(&self) -> crate::alloc::Global {
+                crate::alloc::Global
+            }
+        }
     }
 
     impl<T> IntoIterator for Vec<T> {
@@ -1575,6 +1599,181 @@ pub mod vec {
                 std::marker::PhantomData::<crate::alloc::Global>,
             ) // TODO use range bounds
         }
+        /// See [`std::vec::Vec::capacity`].
+        //
+        // DEVIATION(std): the model's `Vec` is a `Seq`, which has no capacity
+        // distinct from its length — `with_capacity` already forgets its
+        // argument — so the model's capacity is *exact*. std's weaker guarantee
+        // `capacity() >= len()` still holds, but
+        // `Vec::with_capacity(n).capacity() >= n` does not.
+        pub fn capacity(&self) -> usize {
+            seq_len(&self.0)
+        }
+        /// See [`std::vec::Vec::reserve`]: a no-op, the model's `Vec` never
+        /// reallocates. (The same goes for the four methods below.)
+        pub fn reserve(&mut self, _additional: usize) {}
+        /// See [`std::vec::Vec::reserve_exact`]
+        pub fn reserve_exact(&mut self, _additional: usize) {}
+        /// See [`std::vec::Vec::shrink_to_fit`]
+        pub fn shrink_to_fit(&mut self) {}
+        /// See [`std::vec::Vec::shrink_to`]
+        pub fn shrink_to(&mut self, _min_capacity: usize) {}
+        /// See [`std::vec::Vec::try_reserve`]: always succeeds, see `reserve`.
+        pub fn try_reserve(
+            &mut self,
+            _additional: usize,
+        ) -> Result<(), crate::collections::TryReserveError> {
+            Ok(())
+        }
+        /// See [`std::vec::Vec::try_reserve_exact`]
+        pub fn try_reserve_exact(
+            &mut self,
+            _additional: usize,
+        ) -> Result<(), crate::collections::TryReserveError> {
+            Ok(())
+        }
+        /// See [`std::vec::Vec::try_with_capacity`]
+        pub fn try_with_capacity(
+            _capacity: usize,
+        ) -> Result<Vec<T>, crate::collections::TryReserveError> {
+            Ok(Vec::new())
+        }
+        /// See [`std::vec::Vec::new_in`].
+        //
+        // DEVIATION(std): this `Vec` carries no allocator parameter, so the
+        // allocator argument is dropped. Same for the two methods below. `A` is
+        // deliberately unbounded: Aeneas's name map for `Vec` drops the
+        // allocator, so a client's call site passes no `Allocator` dictionary
+        // and an `A: Allocator` bound here would be an arity mismatch.
+        pub fn new_in<A>(_alloc: A) -> Vec<T> {
+            Vec::new()
+        }
+        /// See [`std::vec::Vec::with_capacity_in`]
+        pub fn with_capacity_in<A>(_c: usize, _alloc: A) -> Vec<T> {
+            Vec::new()
+        }
+        /// See [`std::vec::Vec::try_with_capacity_in`]
+        pub fn try_with_capacity_in<A>(
+            _c: usize,
+            _alloc: A,
+        ) -> Result<Vec<T>, crate::collections::TryReserveError> {
+            Ok(Vec::new())
+        }
+        /// See [`std::vec::Vec::allocator`]: this `Vec` has no allocator
+        /// parameter, it is always global-allocated.
+        //
+        // DEVIATION(std): returns the allocator by value rather than by
+        // reference. `&Global` is a promoted constant, which Aeneas cannot
+        // translate; extraction erases shared borrows anyway, so the two agree
+        // in the backends.
+        pub fn allocator(&self) -> crate::alloc::Global {
+            crate::alloc::Global
+        }
+        /// See [`std::vec::Vec::as_mut_slice`]
+        pub fn as_mut_slice(&mut self) -> &mut [T] {
+            seq_to_slice_mut(&mut self.0)
+        }
+        /// See [`std::vec::Vec::into_boxed_slice`]
+        pub fn into_boxed_slice(self) -> Box<[T]> {
+            seq_into_boxed_slice(self.0)
+        }
+        /// See [`std::vec::Vec::try_remove`]
+        pub fn try_remove(&mut self, index: usize) -> Option<T> {
+            if index < seq_len(&self.0) {
+                Option::Some(seq_remove(&mut self.0, index))
+            } else {
+                Option::None
+            }
+        }
+        /// See [`std::vec::Vec::insert_mut`]
+        #[hax_lib::requires(index <= seq_len(&self.0) && seq_len(&self.0) < usize::MAX)]
+        pub fn insert_mut(&mut self, index: usize, element: T) -> &mut T {
+            self.insert(index, element);
+            seq_index_mut(&mut self.0, index)
+        }
+        /// See [`std::vec::Vec::push_mut`]
+        #[hax_lib::requires(seq_len(&self.0) < usize::MAX)]
+        pub fn push_mut(&mut self, value: T) -> &mut T {
+            seq_push(&mut self.0, value);
+            let l = seq_len(&self.0);
+            seq_index_mut(&mut self.0, l - 1)
+        }
+        /// See [`std::vec::Vec::pop_if`]
+        pub fn pop_if<F: Fn(&T) -> bool>(&mut self, predicate: F) -> Option<T> {
+            let l = seq_len(&self.0);
+            if l == 0 {
+                Option::None
+            } else if predicate(seq_index(&self.0, l - 1)) {
+                Option::Some(seq_remove(&mut self.0, l - 1))
+            } else {
+                Option::None
+            }
+        }
+        /// See [`std::vec::Vec::resize_with`]
+        pub fn resize_with<F: Fn() -> T>(&mut self, new_len: usize, f: F) {
+            let l = seq_len(&self.0);
+            if new_len > l {
+                for _ in 0..(new_len - l) {
+                    seq_push(&mut self.0, f());
+                }
+            } else {
+                let _dropped = seq_drain(&mut self.0, new_len, l);
+            }
+        }
+        /// See [`std::vec::Vec::retain`]
+        pub fn retain<F: Fn(&T) -> bool>(&mut self, f: F) {
+            let l = seq_len(&self.0);
+            let mut rest = seq_drain(&mut self.0, 0, l);
+            for _ in 0..l {
+                let x = seq_remove(&mut rest, 0);
+                if f(&x) {
+                    seq_push(&mut self.0, x);
+                }
+            }
+        }
+        /// See [`std::vec::Vec::retain_mut`].
+        //
+        // DEVIATION(std): std's predicate takes `&mut T`, so it may rewrite the
+        // elements it keeps. The model's `Fn*` traits are pure (`call_*` takes
+        // `&self`, there is no write-back), so no closure in the model can
+        // observe that difference and `retain_mut` coincides with `retain`.
+        pub fn retain_mut<F: Fn(&T) -> bool>(&mut self, f: F) {
+            self.retain(f)
+        }
+        /// See [`std::vec::Vec::from_fn`].
+        //
+        // Signature mirrors [`std::array::from_fn`] with an explicit length.
+        pub fn from_fn<F: Fn(usize) -> T>(n: usize, f: F) -> Vec<T> {
+            let mut out = seq_empty();
+            for i in 0..n {
+                seq_push(&mut out, f(i));
+            }
+            Vec(out)
+        }
+        /// See [`std::vec::Vec::extract_if`].
+        //
+        // DEVIATION(std): like `drain`, the range argument is ignored and the
+        // whole vector is considered. Also, std's `ExtractIf` removes elements
+        // lazily as it is iterated; the model removes them all up front, which
+        // is indistinguishable once the iterator is dropped.
+        pub fn extract_if<F: Fn(&T) -> bool, R /* : RangeBounds<usize> */>(
+            &mut self,
+            _range: R,
+            filter: F,
+        ) -> extract_if::ExtractIf<T> {
+            let l = seq_len(&self.0);
+            let mut rest = seq_drain(&mut self.0, 0, l);
+            let mut extracted = seq_empty();
+            for _ in 0..l {
+                let x = seq_remove(&mut rest, 0);
+                if filter(&x) {
+                    seq_push(&mut extracted, x);
+                } else {
+                    seq_push(&mut self.0, x);
+                }
+            }
+            extract_if::ExtractIf(extracted)
+        }
     }
     pub mod drain {
         use rust_primitives::sequence::*;
@@ -1589,6 +1788,123 @@ pub mod vec {
                     Option::Some(res)
                 }
             }
+        }
+        impl<T, A> Drain<T, A> {
+            /// See [`std::vec::Drain::as_slice`]
+            pub fn as_slice(&self) -> &[T] {
+                seq_to_slice(&self.0)
+            }
+        }
+        impl<T> Drain<T, crate::alloc::Global> {
+            /// See [`std::vec::Drain::allocator`]: `Vec::drain` only ever builds
+            /// a globally-allocated `Drain` in the model. Returned by value,
+            /// see `Vec::allocator`.
+            pub fn allocator(&self) -> crate::alloc::Global {
+                crate::alloc::Global
+            }
+        }
+    }
+    /// Model of `std::vec::ExtractIf`. Built eagerly by
+    /// [`Vec::extract_if`]: it holds the elements the filter selected, already
+    /// removed from the source `Vec`.
+    pub mod extract_if {
+        use rust_primitives::sequence::*;
+        pub struct ExtractIf<T>(pub Seq<T>);
+        impl<T> Iterator for ExtractIf<T> {
+            type Item = T;
+            fn next(&mut self) -> Option<Self::Item> {
+                if seq_len(&self.0) == 0 {
+                    Option::None
+                } else {
+                    Option::Some(seq_remove(&mut self.0, 0))
+                }
+            }
+        }
+        impl<T> ExtractIf<T> {
+            /// See [`std::vec::ExtractIf::allocator`]: see `Drain::allocator`.
+            pub fn allocator(&self) -> crate::alloc::Global {
+                crate::alloc::Global
+            }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<T: PartialEq> Vec<T> {
+        /// See [`std::vec::Vec::dedup`]
+        pub fn dedup(&mut self) {
+            let l = seq_len(&self.0);
+            let mut rest = seq_drain(&mut self.0, 0, l);
+            for _ in 0..l {
+                let x = seq_remove(&mut rest, 0);
+                let n = seq_len(&self.0);
+                let keep = if n == 0 {
+                    true
+                } else {
+                    !PartialEq::eq(seq_index(&self.0, n - 1), &x)
+                };
+                if keep {
+                    seq_push(&mut self.0, x);
+                }
+            }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<T> Vec<T> {
+        /// See [`std::vec::Vec::dedup_by`]: `same_bucket(a, b)` is called with
+        /// the candidate `a` and the last retained element `b`, and `a` is
+        /// dropped when it returns `true`.
+        //
+        // DEVIATION(std): the predicate takes `&T` rather than `&mut T` — see
+        // `retain_mut` for why the model cannot express the latter.
+        pub fn dedup_by<F: Fn(&T, &T) -> bool>(&mut self, same_bucket: F) {
+            let l = seq_len(&self.0);
+            let mut rest = seq_drain(&mut self.0, 0, l);
+            for _ in 0..l {
+                let x = seq_remove(&mut rest, 0);
+                let n = seq_len(&self.0);
+                let keep = if n == 0 {
+                    true
+                } else {
+                    !same_bucket(&x, seq_index(&self.0, n - 1))
+                };
+                if keep {
+                    seq_push(&mut self.0, x);
+                }
+            }
+        }
+        /// See [`std::vec::Vec::dedup_by_key`]
+        //
+        // DEVIATION(std): `&T` rather than `&mut T`, see `dedup_by`.
+        pub fn dedup_by_key<K: PartialEq, F: Fn(&T) -> K>(&mut self, key: F) {
+            let l = seq_len(&self.0);
+            let mut rest = seq_drain(&mut self.0, 0, l);
+            for _ in 0..l {
+                let x = seq_remove(&mut rest, 0);
+                let n = seq_len(&self.0);
+                let keep = if n == 0 {
+                    true
+                } else {
+                    !PartialEq::eq(&key(&x), &key(seq_index(&self.0, n - 1)))
+                };
+                if keep {
+                    seq_push(&mut self.0, x);
+                }
+            }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<T, const N: usize> Vec<[T; N]> {
+        /// See [`std::vec::Vec::into_flattened`]
+        pub fn into_flattened(mut self) -> Vec<T> {
+            let n = seq_len(&self.0);
+            let mut out = seq_empty();
+            for _ in 0..n {
+                let mut chunk = seq_from_array(seq_remove(&mut self.0, 0));
+                seq_concat(&mut out, &mut chunk);
+            }
+            Vec(out)
         }
     }
 
@@ -1614,6 +1930,18 @@ pub mod vec {
             } else {
                 seq_drain(&mut self.0, new_size, l);
             }
+        /// See [`std::vec::Vec::extend_from_within`].
+        //
+        // DEVIATION(std): like `drain`, the range argument is ignored and the
+        // whole vector is appended to itself, so only `..` agrees with std.
+        #[hax_lib::requires(seq_len(&self.0).to_int() + seq_len(&self.0).to_int() <= usize::MAX.to_int())]
+        pub fn extend_from_within<R /* : RangeBounds<usize> */>(&mut self, _src: R) {
+            let l = seq_len(&self.0);
+            let mut copy = seq_empty();
+            for i in 0..l {
+                seq_push(&mut copy, seq_index(&self.0, i).clone());
+            }
+            seq_concat(&mut self.0, &mut copy) // TODO use range bounds
         }
     }
 
