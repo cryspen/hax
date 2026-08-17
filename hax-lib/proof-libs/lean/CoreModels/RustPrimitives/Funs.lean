@@ -1044,6 +1044,26 @@ def rust_primitives.arithmetic.ISIZE_MIN : Result Std.Isize :=
 @[rust_fun "alloc::string::{alloc::string::String}::new"]
 def alloc.string.String.new : Result String := ok ""
 
+/-- [rust_primitives::string::str_as_bytes]:
+    Name pattern: [rust_primitives::string::str_as_bytes]
+    Visibility: public -/
+-- Aeneas represents `str` as `Slice U8` (`Aeneas.Std.Str`), i.e. already as its
+-- UTF-8 bytes, so taking those bytes is the identity.
+@[rust_fun "rust_primitives::string::str_as_bytes"]
+def rust_primitives.string.str_as_bytes : Str → Result (Slice Std.U8) :=
+  fun s => ok s
+
+/-- [rust_primitives::string::str_sub_bytes]:
+    Name pattern: [rust_primitives::string::str_sub_bytes]
+    Visibility: public -/
+-- Byte-indexed substring; same projection as `slice_slice`, since `Str` is a
+-- byte slice here. Slicing off a UTF-8 char boundary is ruled out by the
+-- callers in `core_models::str` (the `Str` representation carries no validity
+-- invariant of its own).
+@[rust_fun "rust_primitives::string::str_sub_bytes"]
+def rust_primitives.string.str_sub_bytes : Str → Std.Usize → Std.Usize → Result Str :=
+  fun s i j => Slice.subslice s ⟨i, j⟩
+
 @[rust_fun "rust_primitives::sequence::seq_empty"]
 def rust_primitives.sequence.seq_empty
   (T : Type) : Result (rust_primitives.sequence.Seq T) := ok (Slice.new T)

@@ -18,3 +18,4 @@ pub mod option;
 pub mod panicking;
 pub mod result;
 pub mod slice;
+pub mod str;
