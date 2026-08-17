@@ -7,4 +7,6 @@ include Core_models.Bundle {t_Chain as t_Chain}
 
 include Core_models.Bundle {impl__new__from__chain as impl__new}
 
+include Core_models.Bundle {chain as chain}
+
 include Core_models.Bundle {impl_1__from__chain as impl_1}

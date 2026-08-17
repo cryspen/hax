@@ -374,6 +374,21 @@ pub mod traits {
 
         // TODO rev: DoubleEndedIterator?
     }
+    pub mod marker {
+        /// See [`std::iter::FusedIterator`]
+        // std marks this `unsafe trait`; the model drops the `unsafe` because it
+        // has no unsafety obligation to express and hax does not model one.
+        pub trait FusedIterator: super::iterator::Iterator {}
+        /// See [`std::iter::TrustedLen`]
+        // `unsafe` dropped, as for `FusedIterator`.
+        pub trait TrustedLen: super::iterator::Iterator {}
+        /// See [`std::iter::TrustedStep`]
+        // `unsafe` dropped, as above. Excluded from the F* extraction because
+        // its supertrait `Step` is (`CORE_MODELS_FSTAR_EXCLUDES` drops all of
+        // `core_models::iter::range`), which would leave a dangling reference.
+        #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+        pub trait TrustedStep: super::super::range::Step {}
+    }
     pub mod collect {
         /// See [`std::iter::IntoIterator`]
         pub trait IntoIterator {
@@ -625,6 +640,13 @@ pub mod adapters {
                 Self { it1, it2 }
             }
         }
+        /// See [`std::iter::zip`]
+        // Takes `Iterator`s rather than std's `IntoIterator`s, matching
+        // `IteratorMethods::zip`: the model's `IntoIterator` deliberately does
+        // not bound `IntoIter: Iterator` (no coinduction).
+        pub fn zip<A: Iterator, B: Iterator>(a: A, b: B) -> Zip<A, B> {
+            Zip::new(a, b)
+        }
         #[hax_lib::attributes]
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I1: Iterator, I2: Iterator> Iterator for Zip<I1, I2> {
@@ -691,6 +713,12 @@ pub mod adapters {
                 }
             }
         }
+        /// See [`std::iter::chain`]
+        // Takes `Iterator`s rather than std's `IntoIterator`s, for the reason
+        // given on `zip`.
+        pub fn chain<A: Iterator, B: Iterator<Item = A::Item>>(a: A, b: B) -> Chain<A, B> {
+            Chain::new(a, b)
+        }
         #[hax_lib::attributes]
         // opaque: `ref mut` pattern in if-let is not supported by hax
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -736,6 +764,245 @@ pub mod adapters {
                 self.iter.next()
             }
         }
+    }
+}
+
+// The iterator sources (`core::iter::{empty, once, repeat, …}`).
+//
+// Sources that have to hand a *stored* element out by value use
+// `rust_primitives::sequence::Seq` as their backing store, the way
+// `core::array::IntoIter` and `core::slice::Iter` already do in this model:
+// moving out of a `&mut self` field otherwise needs `mem::replace` /
+// `Option::take`, both of which are `--exclude`d from the charon run.
+pub mod sources {
+    pub mod empty {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        use rust_primitives::sequence::{Seq, seq_empty};
+
+        /// See [`std::iter::Empty`]
+        // std uses `PhantomData<T>`; the model's `PhantomData` stores a `T`, so
+        // it cannot be built from nothing. An always-empty `Seq<T>` carries the
+        // type parameter instead.
+        pub struct Empty<T>(Seq<T>);
+
+        /// See [`std::iter::empty`]
+        pub fn empty<T>() -> Empty<T> {
+            Empty(seq_empty())
+        }
+
+        impl<T> Iterator for Empty<T> {
+            type Item = T;
+            fn next(&mut self) -> Option<T> {
+                Option::None
+            }
+        }
+    }
+
+    pub mod once {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        use rust_primitives::sequence::{Seq, seq_empty, seq_len, seq_one, seq_remove};
+
+        /// See [`std::iter::Once`]
+        pub struct Once<T>(Seq<T>);
+
+        /// See [`std::iter::once`]
+        pub fn once<T>(value: T) -> Once<T> {
+            Once(seq_one(value))
+        }
+
+        impl<T> Iterator for Once<T> {
+            type Item = T;
+            fn next(&mut self) -> Option<T> {
+                if seq_len(&self.0) == 0 {
+                    Option::None
+                } else {
+                    Option::Some(seq_remove(&mut self.0, 0))
+                }
+            }
+        }
+    }
+
+    pub mod once_with {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        use rust_primitives::sequence::{Seq, seq_len, seq_one, seq_remove};
+
+        /// See [`std::iter::OnceWith`]
+        pub struct OnceWith<F>(Seq<F>);
+
+        /// See [`std::iter::once_with`]
+        pub fn once_with<A, F: FnOnce() -> A>(make: F) -> OnceWith<F> {
+            OnceWith(seq_one(make))
+        }
+
+        impl<A, F: FnOnce() -> A> Iterator for OnceWith<F> {
+            type Item = A;
+            fn next(&mut self) -> Option<A> {
+                if seq_len(&self.0) == 0 {
+                    Option::None
+                } else {
+                    Option::Some(seq_remove(&mut self.0, 0)())
+                }
+            }
+        }
+    }
+
+    pub mod repeat {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+
+        /// See [`std::iter::Repeat`]
+        // The `Clone` bound is Rust's own (`&self -> Self`), not the model's
+        // consuming `crate::clone::Clone`: `next` has to copy the element
+        // without giving it up. `core::slice::fill` does the same here.
+        pub struct Repeat<A> {
+            element: A,
+        }
+
+        /// See [`std::iter::repeat`]
+        pub fn repeat<A: Clone>(elt: A) -> Repeat<A> {
+            Repeat { element: elt }
+        }
+
+        impl<A: Clone> Iterator for Repeat<A> {
+            type Item = A;
+            fn next(&mut self) -> Option<A> {
+                Option::Some(self.element.clone())
+            }
+        }
+    }
+
+    pub mod repeat_n {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+
+        /// See [`std::iter::RepeatN`]
+        pub struct RepeatN<A> {
+            count: usize,
+            element: A,
+        }
+
+        /// See [`std::iter::repeat_n`]
+        pub fn repeat_n<A: Clone>(element: A, count: usize) -> RepeatN<A> {
+            RepeatN { count, element }
+        }
+
+        impl<A: Clone> Iterator for RepeatN<A> {
+            type Item = A;
+            fn next(&mut self) -> Option<A> {
+                if self.count == 0 {
+                    Option::None
+                } else {
+                    self.count -= 1;
+                    // std hands the *stored* element out on the last step
+                    // instead of cloning it; the sequence of yielded values is
+                    // the same either way.
+                    Option::Some(self.element.clone())
+                }
+            }
+        }
+    }
+
+    pub mod repeat_with {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+
+        /// See [`std::iter::RepeatWith`]
+        pub struct RepeatWith<F> {
+            repeater: F,
+        }
+
+        /// See [`std::iter::repeat_with`]
+        // `FnMut`, like std: a repeater that cannot keep state is useless.
+        pub fn repeat_with<A, F: FnMut() -> A>(repeater: F) -> RepeatWith<F> {
+            RepeatWith { repeater }
+        }
+
+        impl<A, F: FnMut() -> A> Iterator for RepeatWith<F> {
+            type Item = A;
+            fn next(&mut self) -> Option<A> {
+                Option::Some((self.repeater)())
+            }
+        }
+    }
+
+    pub mod from_fn {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+
+        /// See [`std::iter::FromFn`]
+        pub struct FromFn<F>(F);
+
+        /// See [`std::iter::from_fn`]
+        // `FnMut`, like std: a generator that cannot keep state is useless.
+        pub fn from_fn<T, F: FnMut() -> Option<T>>(f: F) -> FromFn<F> {
+            FromFn(f)
+        }
+
+        impl<T, F: FnMut() -> Option<T>> Iterator for FromFn<F> {
+            type Item = T;
+            fn next(&mut self) -> Option<T> {
+                (self.0)()
+            }
+        }
+    }
+
+    pub mod successors {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        use rust_primitives::sequence::{Seq, seq_empty, seq_len, seq_one, seq_push, seq_remove};
+
+        /// See [`std::iter::Successors`]
+        // The pending element is held in a `Seq` of length at most one rather
+        // than in an `Option`, so that `next` can move it out (see the note on
+        // this module).
+        pub struct Successors<T, F> {
+            next: Seq<T>,
+            succ: F,
+        }
+
+        /// See [`std::iter::successors`]
+        pub fn successors<T, F: Fn(&T) -> Option<T>>(
+            first: Option<T>,
+            succ: F,
+        ) -> Successors<T, F> {
+            let next = match first {
+                Option::Some(v) => seq_one(v),
+                Option::None => seq_empty(),
+            };
+            Successors { next, succ }
+        }
+
+        impl<T, F: Fn(&T) -> Option<T>> Iterator for Successors<T, F> {
+            type Item = T;
+            fn next(&mut self) -> Option<T> {
+                if seq_len(&self.next) == 0 {
+                    Option::None
+                } else {
+                    let item = seq_remove(&mut self.next, 0);
+                    match (self.succ)(&item) {
+                        Option::Some(n) => seq_push(&mut self.next, n),
+                        Option::None => (),
+                    }
+                    Option::Some(item)
+                }
+            }
+        }
+    }
+
+    // The sources that keep answering `None` once exhausted.
+    mod fused {
+        use super::super::traits::marker::FusedIterator;
+        use crate::option::Option;
+
+        impl<T> FusedIterator for super::empty::Empty<T> {}
+        impl<T> FusedIterator for super::once::Once<T> {}
+        impl<A, F: FnOnce() -> A> FusedIterator for super::once_with::OnceWith<F> {}
+        impl<A: Clone> FusedIterator for super::repeat::Repeat<A> {}
+        impl<A: Clone> FusedIterator for super::repeat_n::RepeatN<A> {}
+        impl<T, F: Fn(&T) -> Option<T>> FusedIterator for super::successors::Successors<T, F> {}
     }
 }
 
@@ -1260,6 +1527,148 @@ mod tests {
                 drain(VecIter::new(v.clone()).step_by(step)),
                 v.iter().copied().step_by(step).collect::<Vec<_>>()
             );
+        }
+    }
+
+    mod sources {
+        use super::super::adapters::{chain::chain, zip::zip};
+        use super::super::sources::{
+            empty::empty, from_fn::from_fn, once::once, once_with::once_with, repeat::repeat,
+            repeat_n::repeat_n, repeat_with::repeat_with, successors::successors,
+        };
+        use super::super::traits::iterator::IteratorMethods;
+        use super::{VecIter, drain};
+        use crate::option::Option;
+        use proptest::prelude::*;
+        use std::cell::Cell;
+
+        #[test]
+        fn test_empty() {
+            assert_eq!(
+                drain(empty::<u8>()),
+                std::iter::empty::<u8>().collect::<Vec<u8>>()
+            );
+        }
+
+        #[test]
+        fn test_successors_none() {
+            let model: Vec<u8> = drain(successors(Option::None, |x: &u8| Option::Some(*x)));
+            assert_eq!(
+                model,
+                std::iter::successors(None, |x: &u8| Some(*x)).collect::<Vec<u8>>()
+            );
+        }
+
+        #[test]
+        fn test_repeat_n_zero() {
+            assert_eq!(
+                drain(repeat_n(7u8, 0)),
+                std::iter::repeat_n(7u8, 0).collect::<Vec<u8>>()
+            );
+        }
+
+        proptest! {
+            #[test]
+            fn test_once(x in any::<i32>()) {
+                prop_assert_eq!(drain(once(x)), std::iter::once(x).collect::<Vec<_>>());
+            }
+
+            #[test]
+            fn test_once_with(x in any::<i32>()) {
+                prop_assert_eq!(
+                    drain(once_with(|| x)),
+                    std::iter::once_with(|| x).collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_repeat(x in any::<u8>(), n in 0usize..=10) {
+                prop_assert_eq!(
+                    drain(repeat(x).take(n)),
+                    std::iter::repeat(x).take(n).collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_repeat_n(x in any::<u8>(), n in 0usize..=10) {
+                prop_assert_eq!(
+                    drain(repeat_n(x, n)),
+                    std::iter::repeat_n(x, n).collect::<Vec<_>>()
+                );
+            }
+
+            // A repeater with state: yields `v`'s elements, then `0`s. Checks the
+            // model keeps calling the closure rather than caching its first answer.
+            #[test]
+            fn test_repeat_with(v in prop::collection::vec(any::<u8>(), 0..=10)) {
+                let n = v.len() + 2;
+                let i = Cell::new(0usize);
+                let model = drain(repeat_with(|| {
+                    let k = i.get();
+                    i.set(k + 1);
+                    v.get(k).copied().unwrap_or(0)
+                }).take(n));
+                let j = Cell::new(0usize);
+                let expected: Vec<u8> = std::iter::repeat_with(|| {
+                    let k = j.get();
+                    j.set(k + 1);
+                    v.get(k).copied().unwrap_or(0)
+                }).take(n).collect();
+                prop_assert_eq!(model, expected);
+            }
+
+            #[test]
+            fn test_from_fn(v in prop::collection::vec(any::<u8>(), 0..=10)) {
+                let i = Cell::new(0usize);
+                let model = drain(from_fn(|| {
+                    let k = i.get();
+                    i.set(k + 1);
+                    match v.get(k) {
+                        Some(x) => Option::Some(*x),
+                        None => Option::None,
+                    }
+                }));
+                let j = Cell::new(0usize);
+                let expected: Vec<u8> = std::iter::from_fn(|| {
+                    let k = j.get();
+                    j.set(k + 1);
+                    v.get(k).copied()
+                }).collect();
+                prop_assert_eq!(model, expected);
+            }
+
+            #[test]
+            fn test_successors(x in any::<u32>()) {
+                let model = drain(successors(Option::Some(x), |v: &u32| match v.checked_mul(3) {
+                    Some(n) => Option::Some(n),
+                    None => Option::None,
+                }));
+                let expected: Vec<u32> =
+                    std::iter::successors(Some(x), |v: &u32| v.checked_mul(3)).collect();
+                prop_assert_eq!(model, expected);
+            }
+
+            #[test]
+            fn test_zip_fn(
+                a in prop::collection::vec(any::<u8>(), 0..=10),
+                b in prop::collection::vec(any::<u8>(), 0..=15),
+            ) {
+                prop_assert_eq!(
+                    drain(zip(VecIter::new(a.clone()), VecIter::new(b.clone()))),
+                    std::iter::zip(a, b).collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_chain_fn(
+                a in prop::collection::vec(any::<u8>(), 0..=10),
+                b in prop::collection::vec(any::<u8>(), 0..=10),
+            ) {
+                prop_assert_eq!(
+                    drain(chain(VecIter::new(a.clone()), VecIter::new(b.clone()))),
+                    std::iter::chain(a, b).collect::<Vec<_>>()
+                );
+            }
         }
     }
 

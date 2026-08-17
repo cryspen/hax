@@ -14426,6 +14426,16 @@ let impl__new__from__chain
       (b: v_B)
     : t_Chain v_A v_B = { f_a = Option_Some a <: t_Option v_A; f_b = b } <: t_Chain v_A v_B
 
+/// See [`std::iter::chain`]
+let chain
+      (#v_A #v_B: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_A)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Iterator v_B)
+      (#_: unit{i1.f_Item == i0.f_Item})
+      (a: v_A)
+      (b: v_B)
+    : t_Chain v_A v_B = impl__new__from__chain #v_A #v_B a b
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl_1__from__chain':
@@ -14622,6 +14632,15 @@ let impl__new__from__zip
       (it1: v_I1)
       (it2: v_I2)
     : t_Zip v_I1 v_I2 = { f_it1 = it1; f_it2 = it2 } <: t_Zip v_I1 v_I2
+
+/// See [`std::iter::zip`]
+let zip
+      (#v_A #v_B: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_A)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Iterator v_B)
+      (a: v_A)
+      (b: v_B)
+    : t_Zip v_A v_B = impl__new__from__zip #v_A #v_B a b
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
