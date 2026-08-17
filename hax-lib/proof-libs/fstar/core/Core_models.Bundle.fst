@@ -3629,6 +3629,23 @@ let impl__unwrap_err (#v_T #v_E: Type0) (self: t_Result v_T v_E)
   | Result_Ok _ -> Core_models.Panicking.Internal.panic #v_E ()
   | Result_Err e -> e
 
+/// See [`std::result::Result::unwrap_unchecked`]
+/// Calling std\'s version on an `Err` is undefined behaviour; the `requires`
+/// rules that input out, and the model panics rather than inventing a value.
+let impl__unwrap_unchecked (#v_T #v_E: Type0) (self: t_Result v_T v_E)
+    : Prims.Pure v_T (requires impl__is_ok #v_T #v_E self) (fun _ -> Prims.l_True) =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> t
+  | Result_Err _ -> Core_models.Panicking.Internal.panic #v_T ()
+
+/// See [`std::result::Result::unwrap_err_unchecked`]
+/// See `unwrap_unchecked` for why the `Ok` arm panics.
+let impl__unwrap_err_unchecked (#v_T #v_E: Type0) (self: t_Result v_T v_E)
+    : Prims.Pure v_E (requires impl__is_err #v_T #v_E self) (fun _ -> Prims.l_True) =
+  match self <: t_Result v_T v_E with
+  | Result_Ok _ -> Core_models.Panicking.Internal.panic #v_E ()
+  | Result_Err e -> e
+
 /// See [`std::result::Result::cloned`]
 let impl_1__cloned
       (#v_T #v_E: Type0)
@@ -3711,6 +3728,73 @@ let impl_5__from__result (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t
         <:
         Core_models.Ops.Control_flow.t_ControlFlow (t_Result t_Infallible v_E) v_T
   }
+
+/// See [`std::result::Iter`]
+/// A `Result`'s iterators yield at most one element; the payload is a `Seq` so
+/// `next` can be written the same way as the slice/array iterators.
+type t_Iter (v_T: Type0) = | Iter : Rust_primitives.Sequence.t_Seq v_T -> t_Iter v_T
+
+/// See [`std::result::Result::iter`]
+let impl__iter (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Iter v_T =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> Iter (Rust_primitives.Sequence.seq_one #v_T t) <: t_Iter v_T
+  | Result_Err _ -> Iter (Rust_primitives.Sequence.seq_empty #v_T ()) <: t_Iter v_T
+
+/// See [`std::result::IntoIter`]
+type t_IntoIter__from__result (v_T: Type0) =
+  | IntoIter__from__result : Rust_primitives.Sequence.t_Seq v_T -> t_IntoIter__from__result v_T
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_10__from__result (#v_T #v_E: Type0)
+    : Core_models.Iter.Traits.Collect.t_IntoIterator (t_Result v_T v_E) =
+  {
+    f_Item = v_T;
+    f_IntoIter = t_IntoIter__from__result v_T;
+    f_into_iter_pre = (fun (self: t_Result v_T v_E) -> true);
+    f_into_iter_post = (fun (self: t_Result v_T v_E) (out: t_IntoIter__from__result v_T) -> true);
+    f_into_iter
+    =
+    fun (self: t_Result v_T v_E) ->
+      match self <: t_Result v_T v_E with
+      | Result_Ok t ->
+        IntoIter__from__result (Rust_primitives.Sequence.seq_one #v_T t)
+        <:
+        t_IntoIter__from__result v_T
+      | Result_Err _ ->
+        IntoIter__from__result (Rust_primitives.Sequence.seq_empty #v_T ())
+        <:
+        t_IntoIter__from__result v_T
+  }
+
+/// See [`std::result::Result::as_deref`]
+let impl_11__as_deref (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Result v_T v_E =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> Result_Ok t <: t_Result v_T v_E
+  | Result_Err e -> Result_Err e <: t_Result v_T v_E
+
+/// See [`std::result::Result::copied`]
+let impl_13__copied
+      (#v_T #v_E: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
+      (self: t_Result v_T v_E)
+    : t_Result v_T v_E =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> Result_Ok t <: t_Result v_T v_E
+  | Result_Err e -> Result_Err e <: t_Result v_T v_E
+
+/// See [`std::result::Result::into_ok`]
+let impl_14__into_ok (#v_T: Type0) (self: t_Result v_T t_Infallible)
+    : Prims.Pure v_T (requires impl__is_ok #v_T #t_Infallible self) (fun _ -> Prims.l_True) =
+  match self <: t_Result v_T t_Infallible with
+  | Result_Ok t -> t
+  | Result_Err _ -> Core_models.Panicking.Internal.panic #v_T ()
+
+/// See [`std::result::Result::into_err`]
+let impl_15__into_err (#v_E: Type0) (self: t_Result t_Infallible v_E)
+    : Prims.Pure v_E (requires impl__is_err #t_Infallible #v_E self) (fun _ -> Prims.l_True) =
+  match self <: t_Result t_Infallible v_E with
+  | Result_Ok _ -> Core_models.Panicking.Internal.panic #v_E ()
+  | Result_Err e -> e
 
 /// See [`std::cmp::PartialEq`]
 class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
@@ -7419,6 +7503,58 @@ let impl_11__from__range: t_Iterator (t_Range isize) =
           self, (Option_Some res <: t_Option isize) <: (t_Range isize & t_Option isize)
       in
       self, hax_temp_output <: (t_Range isize & t_Option isize)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_7__from__result (#v_T: Type0) : t_Iterator (t_Iter v_T) =
+  {
+    f_Item = v_T;
+    f_next_pre = (fun (self: t_Iter v_T) -> true);
+    f_next_post = (fun (self: t_Iter v_T) (out1: (t_Iter v_T & t_Option v_T)) -> true);
+    f_next
+    =
+    fun (self: t_Iter v_T) ->
+      let (self: t_Iter v_T), (hax_temp_output: t_Option v_T) =
+        if (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) =. mk_usize 0
+        then self, (Option_None <: t_Option v_T) <: (t_Iter v_T & t_Option v_T)
+        else
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+            Rust_primitives.Sequence.seq_remove #v_T self._0 (mk_usize 0)
+          in
+          let self:t_Iter v_T = { self with _0 = tmp0 } <: t_Iter v_T in
+          self, (Option_Some out <: t_Option v_T) <: (t_Iter v_T & t_Option v_T)
+      in
+      self, hax_temp_output <: (t_Iter v_T & t_Option v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_9__from__result (#v_T: Type0) : t_Iterator (t_IntoIter__from__result v_T) =
+  {
+    f_Item = v_T;
+    f_next_pre = (fun (self: t_IntoIter__from__result v_T) -> true);
+    f_next_post
+    =
+    (fun
+        (self: t_IntoIter__from__result v_T)
+        (out1: (t_IntoIter__from__result v_T & t_Option v_T))
+        ->
+        true);
+    f_next
+    =
+    fun (self: t_IntoIter__from__result v_T) ->
+      let (self: t_IntoIter__from__result v_T), (hax_temp_output: t_Option v_T) =
+        if (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) =. mk_usize 0
+        then self, (Option_None <: t_Option v_T) <: (t_IntoIter__from__result v_T & t_Option v_T)
+        else
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+            Rust_primitives.Sequence.seq_remove #v_T self._0 (mk_usize 0)
+          in
+          let self:t_IntoIter__from__result v_T =
+            { self with _0 = tmp0 } <: t_IntoIter__from__result v_T
+          in
+          self, (Option_Some out <: t_Option v_T) <: (t_IntoIter__from__result v_T & t_Option v_T)
+      in
+      self, hax_temp_output <: (t_IntoIter__from__result v_T & t_Option v_T)
   }
 
 /// See [`std::cmp::Ord`]
