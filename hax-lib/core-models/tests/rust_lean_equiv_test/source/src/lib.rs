@@ -66,6 +66,9 @@
     trim_prefix_suffix,
     slice_swap_unchecked
 )]
+// `Iterator::advance_by` is still unstable; the `core::iter` tests compare
+// against it.
+#![feature(iter_advance_by)]
 
 pub mod helpers;
 

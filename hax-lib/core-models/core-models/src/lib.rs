@@ -121,7 +121,14 @@
         iter_array_chunks,
         iter_map_windows,
         next_index,
-        peekable_next_if_map
+        peekable_next_if_map,
+        iter_next_chunk,
+        iter_collect_into,
+        iter_is_partitioned,
+        iter_order_by,
+        iterator_try_collect,
+        iterator_try_reduce,
+        try_find
     )
 )]
 // likely_unlikely/cold_path: same, for the `hint` proptests.
