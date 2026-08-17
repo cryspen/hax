@@ -15316,26 +15316,16 @@
    },
    {
     "module": "marker",
-    "covered": 6,
+    "covered": 32,
     "total": 35,
     "in_scope": true,
     "covered_items": [
-     "Copy",
-     "PhantomData",
-     "Send",
-     "Sized",
-     "StructuralPartialEq",
-     "Sync"
-    ],
-    "missing_items": [
-     "CoercePointee",
-     "ConstParamTy",
      "ConstParamTy_",
+     "Copy",
      "Destruct",
      "DiscriminantKind",
      "DiscriminantKind::Discriminant",
      "FnPtr",
-     "FnPtr::addr",
      "Freeze",
      "MetaSized",
      "PhantomContravariant",
@@ -15346,17 +15336,27 @@
      "PhantomCovariant::new",
      "PhantomCovariantLifetime",
      "PhantomCovariantLifetime::new",
+     "PhantomData",
      "PhantomInvariant",
      "PhantomInvariant::new",
      "PhantomInvariantLifetime",
      "PhantomInvariantLifetime::new",
      "PhantomPinned",
      "PointeeSized",
+     "Send",
+     "Sized",
+     "StructuralPartialEq",
+     "Sync",
      "Tuple",
      "Unpin",
      "Unsize",
      "Variance",
      "variance"
+    ],
+    "missing_items": [
+     "CoercePointee",
+     "ConstParamTy",
+     "FnPtr::addr"
     ]
    },
    {
