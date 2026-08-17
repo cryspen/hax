@@ -36,6 +36,28 @@ ALLOC_STAGE_DIR = .alloc-extract
 # rather than a specification (`sort_by`): hax drops those bodies, but Aeneas
 # would extract them verbatim and hand Lean a wrong definition.
 # They are independent of the patcher's Lean-text comment-out logic.
+#
+# The two `string` entries are of the first kind, and the reason is the model's
+# *representation*, not a naming clash: `string::String` wraps a `&'static str`
+# (see `rust_primitives::string`, an arena that leaks `&'static str`s). Aeneas
+# erases the newtype and maps the type onto its builtin `str` — the generated
+# `Types.lean` reads `def string.String := Str` — but it has no value-level
+# model of a `&'static str`, so every body fails. Dropping the two entries and
+# running `make extract` gives, on *all* the `String` methods:
+#     [Error] There should be no bottoms in the value   -- `String("")`
+#     [Error] Unreachable                               -- `self.0`
+#     [Error] Assertion failed: new value doesn't have the same type as its
+#             destination                               -- `str_concat`, ...
+# Aeneas then emits `sorry` bodies for them, and on the current model dies
+# outright with `Uncaught exception: (Invalid_argument "option is None")` in
+# `SymbolicToPureValues.tvalue_to_texpr`. So the whole Lean side of
+# `alloc::string` has to be hand-written in
+# `../proof-libs/lean/CoreModels/RustPrimitives/{Types,Funs}.lean` (today just
+# `alloc.string.String := _root_.String` and `alloc.string.String.new`), and the
+# equivalence tests in `tests/rust_lean_equiv_test/source/src/alloc/string.rs`
+# stay commented out until they are. Lifting this needs either an Aeneas-side
+# model of `&str` values or a `String` model built on `Seq<u8>`/`Seq<char>`
+# rather than on the arena.
 ALLOC_CHARON_EXCLUDES = \
     --exclude 'alloc_models::collections::binary_heap::*' \
     --exclude '{impl alloc_models::collections::binary_heap::BinaryHeap<_, _>}' \
