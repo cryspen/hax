@@ -258,6 +258,19 @@ def array.iter.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type)
   next := array.iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
 }
 
+/-- [core_models::borrow::{impl core_models::borrow::BorrowMut<T> for T}::borrow_mut]:
+    Source: 'core-models/src/core/borrow.rs', lines 18:4-20:5 -/
+def borrow.BorrowMut.Blanket.borrow_mut
+  {T : Type} (self : T) : Result (T × (T → T)) := do
+  ok (self, fun self1 => self1)
+
+/-- Trait implementation: [core_models::borrow::{impl core_models::borrow::BorrowMut<T> for T}]
+    Source: 'core-models/src/core/borrow.rs', lines 17:0-21:1 -/
+@[reducible]
+def borrow.BorrowMut.Blanket (T : Type) : borrow.BorrowMut T T := {
+  borrow_mut := borrow.BorrowMut.Blanket.borrow_mut
+}
+
 /-- [core_models::clone::{impl core_models::clone::Clone for bool}::clone]:
     Source: 'core-models/src/core/clone.rs', lines 30:16-32:17
     Visibility: public -/
