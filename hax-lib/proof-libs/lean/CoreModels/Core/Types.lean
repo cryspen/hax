@@ -768,6 +768,18 @@ def num.i128 := Unit
 @[reducible]
 def num.isize := Unit
 
+/-- [core_models::num::Wrapping]
+    Source: 'core-models/src/core/num/mod.rs', lines 2042:0-2042:30
+    Visibility: public -/
+@[reducible]
+def num.Wrapping (T : Type) := T
+
+/-- [core_models::num::Saturating]
+    Source: 'core-models/src/core/num/mod.rs', lines 2046:0-2046:32
+    Visibility: public -/
+@[reducible]
+def num.Saturating (T : Type) := T
+
 /-- Trait declaration: [core_models::ops::arith::Add]
     Source: 'core-models/src/core/ops.rs', lines 3:4-6:5
     Visibility: public -/

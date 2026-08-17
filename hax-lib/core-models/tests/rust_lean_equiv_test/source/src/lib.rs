@@ -49,7 +49,8 @@
     disjoint_bitor,
     wrapping_next_power_of_two,
     bigint_helper_methods,
-    is_ascii_octdigit
+    is_ascii_octdigit,
+    wrapping_int_impl
 )]
 
 pub mod helpers;

@@ -19,6 +19,7 @@
 //! there about `to_int()` stub returning 0); we do the same.
 
 use crate::helpers::{none_i8, none_i16, none_i32, none_u8, none_u16, none_u32};
+use core::num::{Saturating, Wrapping};
 use rust_lean_test_macro::rust_lean_test;
 
 // =============================================================================
@@ -2738,4 +2739,177 @@ pub fn test_u8_make_ascii_lowercase() -> bool {
     let mut x = b'Z';
     x.make_ascii_lowercase();
     x == b'z'
+}
+
+// =============================================================================
+// Wrapping<T> / Saturating<T>
+// =============================================================================
+// The model's `PartialEq` for these wrappers is test-only, so each test reads
+// the public field back out rather than comparing wrappers.
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_min() -> bool {
+    <Wrapping<u8>>::MIN.0 == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_max() -> bool {
+    <Wrapping<u8>>::MAX.0 == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_i8_min() -> bool {
+    <Wrapping<i8>>::MIN.0 == -128i8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_bits() -> bool {
+    <Wrapping<u8>>::BITS == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_count_ones() -> bool {
+    Wrapping(0b1010_1010u8).count_ones() == 4u32
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_count_zeros() -> bool {
+    Wrapping(0u8).count_zeros() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_trailing_zeros() -> bool {
+    Wrapping(0u8).trailing_zeros() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_leading_zeros() -> bool {
+    Wrapping(1u8).leading_zeros() == 7u32
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_rotate_left() -> bool {
+    Wrapping(0b1000_0001u8).rotate_left(1u32).0 == 0b0000_0011u8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_rotate_right() -> bool {
+    Wrapping(1u8).rotate_right(1u32).0 == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u16_swap_bytes() -> bool {
+    Wrapping(0x1234u16).swap_bytes().0 == 0x3412u16
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u16_to_be() -> bool {
+    Wrapping(0x1234u16).to_be().0 == 0x3412u16
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u16_to_le() -> bool {
+    Wrapping(0x1234u16).to_le().0 == 0x1234u16
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u16_from_be() -> bool {
+    <Wrapping<u16>>::from_be(Wrapping(0x1234u16)).0 == 0x3412u16
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u16_from_le() -> bool {
+    <Wrapping<u16>>::from_le(Wrapping(0x1234u16)).0 == 0x1234u16
+}
+
+// `Wrapping::pow` wraps on overflow: 255^2 = 65025 = 1 mod 256.
+#[rust_lean_test]
+pub fn test_wrapping_u8_pow_wraps() -> bool {
+    Wrapping(255u8).pow(2u32).0 == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_pow_zero_exp() -> bool {
+    Wrapping(200u8).pow(0u32).0 == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_is_power_of_two() -> bool {
+    Wrapping(16u8).is_power_of_two() == true
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_next_power_of_two_wraps() -> bool {
+    Wrapping(200u8).next_power_of_two().0 == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_i8_abs_min() -> bool {
+    Wrapping(i8::MIN).abs().0 == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_i8_signum() -> bool {
+    Wrapping(-10i8).signum().0 == -1i8
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_i8_is_positive() -> bool {
+    Wrapping(0i8).is_positive() == false
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_i8_is_negative() -> bool {
+    Wrapping(i8::MIN).is_negative() == true
+}
+
+#[rust_lean_test]
+pub fn test_saturating_u8_max() -> bool {
+    <Saturating<u8>>::MAX.0 == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_saturating_u8_bits() -> bool {
+    <Saturating<u8>>::BITS == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_saturating_u8_count_ones() -> bool {
+    Saturating(255u8).count_ones() == 8u32
+}
+
+// `Saturating::pow` clamps on overflow, where `Wrapping::pow` wraps.
+#[rust_lean_test]
+pub fn test_saturating_u8_pow_saturates() -> bool {
+    Saturating(255u8).pow(2u32).0 == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_saturating_i8_pow_negative_odd() -> bool {
+    Saturating(-3i8).pow(5u32).0 == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_saturating_i8_abs_min() -> bool {
+    Saturating(i8::MIN).abs().0 == 127i8
+}
+
+#[rust_lean_test]
+pub fn test_saturating_i8_signum() -> bool {
+    Saturating(10i8).signum().0 == 1i8
+}
+
+#[rust_lean_test]
+pub fn test_saturating_u8_is_power_of_two() -> bool {
+    Saturating(10u8).is_power_of_two() == false
+}
+
+#[rust_lean_test]
+pub fn test_saturating_u16_swap_bytes() -> bool {
+    Saturating(0x1234u16).swap_bytes().0 == 0x3412u16
+}
+
+#[rust_lean_test]
+pub fn test_saturating_i8_is_negative() -> bool {
+    Saturating(-1i8).is_negative() == true
 }

@@ -2088,6 +2088,202 @@ impl crate::default::Default for bool {
     }
 }
 
+/// See [`std::num::Wrapping`]
+#[cfg_attr(test, derive(PartialEq, Eq, Debug, Clone, Copy))]
+pub struct Wrapping<T>(pub T);
+
+/// See [`std::num::Saturating`]
+#[cfg_attr(test, derive(PartialEq, Eq, Debug, Clone, Copy))]
+pub struct Saturating<T>(pub T);
+
+// `Wrapping`/`Saturating` only differ in which of the modelled integer
+// operations they delegate to, so both are generated from the same three
+// macros: the width-independent part, plus the unsigned-only and signed-only
+// extras `core` adds in separate `impl` blocks.
+macro_rules! wrapper_impl {
+    (
+        $Wrap: ident,
+        $Self: ty,
+        $Name: ty,
+        $pow: ident,
+        $($extra: tt)*
+    ) => {
+        impl $Wrap<$Self> {
+            /// See [`std::num::Wrapping::MIN`] (and similar for `Saturating` and other integer types)
+            pub const MIN: Self = $Wrap(<$Name>::MIN);
+            /// See [`std::num::Wrapping::MAX`] (and similar for `Saturating` and other integer types)
+            pub const MAX: Self = $Wrap(<$Name>::MAX);
+            /// See [`std::num::Wrapping::BITS`] (and similar for `Saturating` and other integer types)
+            pub const BITS: core::primitive::u32 = <$Name>::BITS;
+            /// See [`std::num::Wrapping::count_ones`] (and similar for `Saturating` and other integer types)
+            pub fn count_ones(self) -> core::primitive::u32 {
+                <$Name>::count_ones(self.0)
+            }
+            /// See [`std::num::Wrapping::count_zeros`] (and similar for `Saturating` and other integer types)
+            pub fn count_zeros(self) -> core::primitive::u32 {
+                <$Name>::count_zeros(self.0)
+            }
+            /// See [`std::num::Wrapping::trailing_zeros`] (and similar for `Saturating` and other integer types)
+            pub fn trailing_zeros(self) -> core::primitive::u32 {
+                <$Name>::trailing_zeros(self.0)
+            }
+            /// See [`std::num::Wrapping::leading_zeros`] (and similar for `Saturating` and other integer types)
+            pub fn leading_zeros(self) -> core::primitive::u32 {
+                <$Name>::leading_zeros(self.0)
+            }
+            /// See [`std::num::Wrapping::rotate_left`] (and similar for `Saturating` and other integer types)
+            pub fn rotate_left(self, n: core::primitive::u32) -> Self {
+                $Wrap(<$Name>::rotate_left(self.0, n))
+            }
+            /// See [`std::num::Wrapping::rotate_right`] (and similar for `Saturating` and other integer types)
+            pub fn rotate_right(self, n: core::primitive::u32) -> Self {
+                $Wrap(<$Name>::rotate_right(self.0, n))
+            }
+            /// See [`std::num::Wrapping::swap_bytes`] (and similar for `Saturating` and other integer types)
+            pub fn swap_bytes(self) -> Self {
+                $Wrap(<$Name>::swap_bytes(self.0))
+            }
+            /// See [`std::num::Wrapping::to_be`] (and similar for `Saturating` and other integer types)
+            pub fn to_be(self) -> Self {
+                $Wrap(<$Name>::to_be(self.0))
+            }
+            /// See [`std::num::Wrapping::to_le`] (and similar for `Saturating` and other integer types)
+            pub fn to_le(self) -> Self {
+                $Wrap(<$Name>::to_le(self.0))
+            }
+            /// See [`std::num::Wrapping::from_be`] (and similar for `Saturating` and other integer types)
+            pub fn from_be(x: Self) -> Self {
+                $Wrap(<$Name>::from_be(x.0))
+            }
+            /// See [`std::num::Wrapping::from_le`] (and similar for `Saturating` and other integer types)
+            pub fn from_le(x: Self) -> Self {
+                $Wrap(<$Name>::from_le(x.0))
+            }
+            /// See [`std::num::Wrapping::pow`] (and similar for `Saturating` and other integer types)
+            pub fn pow(self, exp: core::primitive::u32) -> Self {
+                $Wrap(<$Name>::$pow(self.0, exp))
+            }
+            $($extra)*
+        }
+    };
+}
+
+macro_rules! wrapping_uint_impls {
+    ($($Self: ty | $Name: ty)*) => {
+        $(
+            wrapper_impl! { Wrapping, $Self, $Name, wrapping_pow,
+                /// See [`std::num::Wrapping::is_power_of_two`] (and similar for other unsigned integer types)
+                pub fn is_power_of_two(self) -> bool {
+                    <$Name>::is_power_of_two(self.0)
+                }
+                /// See [`std::num::Wrapping::next_power_of_two`] (and similar for other unsigned integer types)
+                pub fn next_power_of_two(self) -> Self {
+                    Wrapping(<$Name>::wrapping_next_power_of_two(self.0))
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! wrapping_iint_impls {
+    ($($Self: ty | $Name: ty)*) => {
+        $(
+            wrapper_impl! { Wrapping, $Self, $Name, wrapping_pow,
+                /// See [`std::num::Wrapping::abs`] (and similar for other signed integer types)
+                pub fn abs(self) -> Wrapping<$Self> {
+                    Wrapping(<$Name>::wrapping_abs(self.0))
+                }
+                /// See [`std::num::Wrapping::signum`] (and similar for other signed integer types)
+                pub fn signum(self) -> Wrapping<$Self> {
+                    Wrapping(<$Name>::signum(self.0))
+                }
+                /// See [`std::num::Wrapping::is_positive`] (and similar for other signed integer types)
+                pub fn is_positive(self) -> bool {
+                    <$Name>::is_positive(self.0)
+                }
+                /// See [`std::num::Wrapping::is_negative`] (and similar for other signed integer types)
+                pub fn is_negative(self) -> bool {
+                    <$Name>::is_negative(self.0)
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! saturating_uint_impls {
+    ($($Self: ty | $Name: ty)*) => {
+        $(
+            wrapper_impl! { Saturating, $Self, $Name, saturating_pow,
+                /// See [`std::num::Saturating::is_power_of_two`] (and similar for other unsigned integer types)
+                pub fn is_power_of_two(self) -> bool {
+                    <$Name>::is_power_of_two(self.0)
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! saturating_iint_impls {
+    ($($Self: ty | $Name: ty)*) => {
+        $(
+            wrapper_impl! { Saturating, $Self, $Name, saturating_pow,
+                /// See [`std::num::Saturating::abs`] (and similar for other signed integer types)
+                pub fn abs(self) -> Saturating<$Self> {
+                    Saturating(<$Name>::saturating_abs(self.0))
+                }
+                /// See [`std::num::Saturating::signum`] (and similar for other signed integer types)
+                pub fn signum(self) -> Saturating<$Self> {
+                    Saturating(<$Name>::signum(self.0))
+                }
+                /// See [`std::num::Saturating::is_positive`] (and similar for other signed integer types)
+                pub fn is_positive(self) -> bool {
+                    <$Name>::is_positive(self.0)
+                }
+                /// See [`std::num::Saturating::is_negative`] (and similar for other signed integer types)
+                pub fn is_negative(self) -> bool {
+                    <$Name>::is_negative(self.0)
+                }
+            }
+        )*
+    };
+}
+
+wrapping_uint_impls! {
+    core::primitive::u8 | u8
+    core::primitive::u16 | u16
+    core::primitive::u32 | u32
+    core::primitive::u64 | u64
+    core::primitive::u128 | u128
+    core::primitive::usize | usize
+}
+
+wrapping_iint_impls! {
+    core::primitive::i8 | i8
+    core::primitive::i16 | i16
+    core::primitive::i32 | i32
+    core::primitive::i64 | i64
+    core::primitive::i128 | i128
+    core::primitive::isize | isize
+}
+
+saturating_uint_impls! {
+    core::primitive::u8 | u8
+    core::primitive::u16 | u16
+    core::primitive::u32 | u32
+    core::primitive::u64 | u64
+    core::primitive::u128 | u128
+    core::primitive::usize | usize
+}
+
+saturating_iint_impls! {
+    core::primitive::i8 | i8
+    core::primitive::i16 | i16
+    core::primitive::i32 | i32
+    core::primitive::i64 | i64
+    core::primitive::i128 | i128
+    core::primitive::isize | isize
+}
+
 #[cfg(test)]
 mod tests {
     use crate::testing::Inject;
@@ -3273,6 +3469,109 @@ mod tests {
             prop_assert_eq!(model, std);
         }
     }
+
+    // `Wrapping<T>`/`Saturating<T>`: the width-independent methods, then the
+    // unsigned-only and signed-only extras.
+    macro_rules! wrapper_common_test {
+        ($wrap: ident, $($t: ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $wrap:lower _ $t _consts>]() {
+                        assert_eq!(super::$wrap::<$t>::MIN, std::num::$wrap(<$t>::MIN).inject());
+                        assert_eq!(super::$wrap::<$t>::MAX, std::num::$wrap(<$t>::MAX).inject());
+                        assert_eq!(super::$wrap::<$t>::BITS, <std::num::$wrap<$t>>::BITS);
+                    }
+
+                    proptest! {
+                        #[test]
+                        fn [<test_ $wrap:lower _ $t _common>](
+                            x in any::<$t>(),
+                            n in 0u32..$t::BITS,
+                            exp in 0u32..=8,
+                        ) {
+                            let (m, s) = (super::$wrap(x), std::num::$wrap(x));
+                            prop_assert_eq!(m.count_ones(), s.count_ones());
+                            prop_assert_eq!(m.count_zeros(), s.count_zeros());
+                            prop_assert_eq!(m.trailing_zeros(), s.trailing_zeros());
+                            prop_assert_eq!(m.leading_zeros(), s.leading_zeros());
+                            prop_assert_eq!(m.rotate_left(n), s.rotate_left(n).inject());
+                            prop_assert_eq!(m.rotate_right(n), s.rotate_right(n).inject());
+                            prop_assert_eq!(m.swap_bytes(), s.swap_bytes().inject());
+                            prop_assert_eq!(m.to_be(), s.to_be().inject());
+                            prop_assert_eq!(m.to_le(), s.to_le().inject());
+                            prop_assert_eq!(
+                                <super::$wrap<$t>>::from_be(m),
+                                <std::num::$wrap<$t>>::from_be(s).inject(),
+                            );
+                            prop_assert_eq!(
+                                <super::$wrap<$t>>::from_le(m),
+                                <std::num::$wrap<$t>>::from_le(s).inject(),
+                            );
+                            prop_assert_eq!(m.pow(exp), s.pow(exp).inject());
+                        }
+                    }
+                )*
+            }
+        }
+    }
+    wrapper_common_test! { Wrapping, u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+    wrapper_common_test! { Saturating, u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+
+    macro_rules! wrapper_uint_test {
+        ($($t: ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_wrapping_ $t _unsigned>](x in any::<$t>()) {
+                            let (m, s) = (super::Wrapping(x), std::num::Wrapping(x));
+                            prop_assert_eq!(m.is_power_of_two(), s.is_power_of_two());
+                            prop_assert_eq!(m.next_power_of_two(), s.next_power_of_two().inject());
+                        }
+
+                        #[test]
+                        fn [<test_saturating_ $t _unsigned>](x in any::<$t>()) {
+                            prop_assert_eq!(
+                                super::Saturating(x).is_power_of_two(),
+                                std::num::Saturating(x).is_power_of_two(),
+                            );
+                        }
+                    }
+                )*
+            }
+        }
+    }
+    wrapper_uint_test! { u8 u16 u32 u64 u128 usize }
+
+    macro_rules! wrapper_iint_test {
+        ($($t: ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_wrapping_ $t _signed>](x in any::<$t>()) {
+                            let (m, s) = (super::Wrapping(x), std::num::Wrapping(x));
+                            prop_assert_eq!(m.abs(), s.abs().inject());
+                            prop_assert_eq!(m.signum(), s.signum().inject());
+                            prop_assert_eq!(m.is_positive(), s.is_positive());
+                            prop_assert_eq!(m.is_negative(), s.is_negative());
+                        }
+
+                        #[test]
+                        fn [<test_saturating_ $t _signed>](x in any::<$t>()) {
+                            let (m, s) = (super::Saturating(x), std::num::Saturating(x));
+                            prop_assert_eq!(m.abs(), s.abs().inject());
+                            prop_assert_eq!(m.signum(), s.signum().inject());
+                            prop_assert_eq!(m.is_positive(), s.is_positive());
+                            prop_assert_eq!(m.is_negative(), s.is_negative());
+                        }
+                    }
+                )*
+            }
+        }
+    }
+    wrapper_iint_test! { i8 i16 i32 i64 i128 isize }
 
     macro_rules! default_test {
         ($($t:ty)*) => {

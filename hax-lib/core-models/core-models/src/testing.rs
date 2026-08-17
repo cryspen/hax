@@ -86,6 +86,17 @@ impl<T: Inject> Inject for std::ops::Bound<T> {
             std::ops::Bound::Excluded(x) => crate::ops::range::Bound::Excluded(x.inject()),
             std::ops::Bound::Unbounded => crate::ops::range::Bound::Unbounded,
         }
+impl<T: Inject> Inject for std::num::Wrapping<T> {
+    type Model = crate::num::Wrapping<T::Model>;
+    fn inject(&self) -> Self::Model {
+        crate::num::Wrapping(self.0.inject())
+    }
+}
+
+impl<T: Inject> Inject for std::num::Saturating<T> {
+    type Model = crate::num::Saturating<T::Model>;
+    fn inject(&self) -> Self::Model {
+        crate::num::Saturating(self.0.inject())
     }
 }
 

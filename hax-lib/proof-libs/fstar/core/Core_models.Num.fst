@@ -988,3 +988,863 @@ include Core_models.Bundle {impl_28__from__num as impl_28}
 include Core_models.Bundle {impl_29__from__num as impl_29}
 
 include Core_models.Bundle {impl_30__from__num as impl_30}
+
+include Core_models.Bundle {t_Wrapping as t_Wrapping}
+
+include Core_models.Bundle {Wrapping as Wrapping}
+
+include Core_models.Bundle {t_Saturating as t_Saturating}
+
+include Core_models.Bundle {Saturating as Saturating}
+
+include Core_models.Bundle {impl_31__MIN as impl_Wrapping_of_u8__MIN}
+
+include Core_models.Bundle {impl_31__MAX as impl_Wrapping_of_u8__MAX}
+
+include Core_models.Bundle {impl_31__BITS as impl_Wrapping_of_u8__BITS}
+
+include Core_models.Bundle {impl_31__count_ones as impl_Wrapping_of_u8__count_ones}
+
+include Core_models.Bundle {impl_31__count_zeros as impl_Wrapping_of_u8__count_zeros}
+
+include Core_models.Bundle {impl_31__trailing_zeros as impl_Wrapping_of_u8__trailing_zeros}
+
+include Core_models.Bundle {impl_31__leading_zeros as impl_Wrapping_of_u8__leading_zeros}
+
+include Core_models.Bundle {impl_31__rotate_left as impl_Wrapping_of_u8__rotate_left}
+
+include Core_models.Bundle {impl_31__rotate_right as impl_Wrapping_of_u8__rotate_right}
+
+include Core_models.Bundle {impl_31__swap_bytes as impl_Wrapping_of_u8__swap_bytes}
+
+include Core_models.Bundle {impl_31__to_be as impl_Wrapping_of_u8__to_be}
+
+include Core_models.Bundle {impl_31__to_le as impl_Wrapping_of_u8__to_le}
+
+include Core_models.Bundle {impl_31__from_be as impl_Wrapping_of_u8__from_be}
+
+include Core_models.Bundle {impl_31__from_le as impl_Wrapping_of_u8__from_le}
+
+include Core_models.Bundle {impl_31__pow as impl_Wrapping_of_u8__pow}
+
+include Core_models.Bundle {impl_31__is_power_of_two as impl_Wrapping_of_u8__is_power_of_two}
+
+include Core_models.Bundle {impl_31__next_power_of_two as impl_Wrapping_of_u8__next_power_of_two}
+
+include Core_models.Bundle {impl_32__MIN as impl_Wrapping_of_u16__MIN}
+
+include Core_models.Bundle {impl_32__MAX as impl_Wrapping_of_u16__MAX}
+
+include Core_models.Bundle {impl_32__BITS as impl_Wrapping_of_u16__BITS}
+
+include Core_models.Bundle {impl_32__count_ones as impl_Wrapping_of_u16__count_ones}
+
+include Core_models.Bundle {impl_32__count_zeros as impl_Wrapping_of_u16__count_zeros}
+
+include Core_models.Bundle {impl_32__trailing_zeros as impl_Wrapping_of_u16__trailing_zeros}
+
+include Core_models.Bundle {impl_32__leading_zeros as impl_Wrapping_of_u16__leading_zeros}
+
+include Core_models.Bundle {impl_32__rotate_left as impl_Wrapping_of_u16__rotate_left}
+
+include Core_models.Bundle {impl_32__rotate_right as impl_Wrapping_of_u16__rotate_right}
+
+include Core_models.Bundle {impl_32__swap_bytes as impl_Wrapping_of_u16__swap_bytes}
+
+include Core_models.Bundle {impl_32__to_be as impl_Wrapping_of_u16__to_be}
+
+include Core_models.Bundle {impl_32__to_le as impl_Wrapping_of_u16__to_le}
+
+include Core_models.Bundle {impl_32__from_be as impl_Wrapping_of_u16__from_be}
+
+include Core_models.Bundle {impl_32__from_le as impl_Wrapping_of_u16__from_le}
+
+include Core_models.Bundle {impl_32__pow as impl_Wrapping_of_u16__pow}
+
+include Core_models.Bundle {impl_32__is_power_of_two as impl_Wrapping_of_u16__is_power_of_two}
+
+include Core_models.Bundle {impl_32__next_power_of_two as impl_Wrapping_of_u16__next_power_of_two}
+
+include Core_models.Bundle {impl_33__MIN as impl_Wrapping_of_u32__MIN}
+
+include Core_models.Bundle {impl_33__MAX as impl_Wrapping_of_u32__MAX}
+
+include Core_models.Bundle {impl_33__BITS as impl_Wrapping_of_u32__BITS}
+
+include Core_models.Bundle {impl_33__count_ones as impl_Wrapping_of_u32__count_ones}
+
+include Core_models.Bundle {impl_33__count_zeros as impl_Wrapping_of_u32__count_zeros}
+
+include Core_models.Bundle {impl_33__trailing_zeros as impl_Wrapping_of_u32__trailing_zeros}
+
+include Core_models.Bundle {impl_33__leading_zeros as impl_Wrapping_of_u32__leading_zeros}
+
+include Core_models.Bundle {impl_33__rotate_left as impl_Wrapping_of_u32__rotate_left}
+
+include Core_models.Bundle {impl_33__rotate_right as impl_Wrapping_of_u32__rotate_right}
+
+include Core_models.Bundle {impl_33__swap_bytes as impl_Wrapping_of_u32__swap_bytes}
+
+include Core_models.Bundle {impl_33__to_be as impl_Wrapping_of_u32__to_be}
+
+include Core_models.Bundle {impl_33__to_le as impl_Wrapping_of_u32__to_le}
+
+include Core_models.Bundle {impl_33__from_be as impl_Wrapping_of_u32__from_be}
+
+include Core_models.Bundle {impl_33__from_le as impl_Wrapping_of_u32__from_le}
+
+include Core_models.Bundle {impl_33__pow as impl_Wrapping_of_u32__pow}
+
+include Core_models.Bundle {impl_33__is_power_of_two as impl_Wrapping_of_u32__is_power_of_two}
+
+include Core_models.Bundle {impl_33__next_power_of_two as impl_Wrapping_of_u32__next_power_of_two}
+
+include Core_models.Bundle {impl_34__MIN as impl_Wrapping_of_u64__MIN}
+
+include Core_models.Bundle {impl_34__MAX as impl_Wrapping_of_u64__MAX}
+
+include Core_models.Bundle {impl_34__BITS as impl_Wrapping_of_u64__BITS}
+
+include Core_models.Bundle {impl_34__count_ones as impl_Wrapping_of_u64__count_ones}
+
+include Core_models.Bundle {impl_34__count_zeros as impl_Wrapping_of_u64__count_zeros}
+
+include Core_models.Bundle {impl_34__trailing_zeros as impl_Wrapping_of_u64__trailing_zeros}
+
+include Core_models.Bundle {impl_34__leading_zeros as impl_Wrapping_of_u64__leading_zeros}
+
+include Core_models.Bundle {impl_34__rotate_left as impl_Wrapping_of_u64__rotate_left}
+
+include Core_models.Bundle {impl_34__rotate_right as impl_Wrapping_of_u64__rotate_right}
+
+include Core_models.Bundle {impl_34__swap_bytes as impl_Wrapping_of_u64__swap_bytes}
+
+include Core_models.Bundle {impl_34__to_be as impl_Wrapping_of_u64__to_be}
+
+include Core_models.Bundle {impl_34__to_le as impl_Wrapping_of_u64__to_le}
+
+include Core_models.Bundle {impl_34__from_be as impl_Wrapping_of_u64__from_be}
+
+include Core_models.Bundle {impl_34__from_le as impl_Wrapping_of_u64__from_le}
+
+include Core_models.Bundle {impl_34__pow as impl_Wrapping_of_u64__pow}
+
+include Core_models.Bundle {impl_34__is_power_of_two as impl_Wrapping_of_u64__is_power_of_two}
+
+include Core_models.Bundle {impl_34__next_power_of_two as impl_Wrapping_of_u64__next_power_of_two}
+
+include Core_models.Bundle {impl_35__MIN as impl_Wrapping_of_u128__MIN}
+
+include Core_models.Bundle {impl_35__MAX as impl_Wrapping_of_u128__MAX}
+
+include Core_models.Bundle {impl_35__BITS as impl_Wrapping_of_u128__BITS}
+
+include Core_models.Bundle {impl_35__count_ones as impl_Wrapping_of_u128__count_ones}
+
+include Core_models.Bundle {impl_35__count_zeros as impl_Wrapping_of_u128__count_zeros}
+
+include Core_models.Bundle {impl_35__trailing_zeros as impl_Wrapping_of_u128__trailing_zeros}
+
+include Core_models.Bundle {impl_35__leading_zeros as impl_Wrapping_of_u128__leading_zeros}
+
+include Core_models.Bundle {impl_35__rotate_left as impl_Wrapping_of_u128__rotate_left}
+
+include Core_models.Bundle {impl_35__rotate_right as impl_Wrapping_of_u128__rotate_right}
+
+include Core_models.Bundle {impl_35__swap_bytes as impl_Wrapping_of_u128__swap_bytes}
+
+include Core_models.Bundle {impl_35__to_be as impl_Wrapping_of_u128__to_be}
+
+include Core_models.Bundle {impl_35__to_le as impl_Wrapping_of_u128__to_le}
+
+include Core_models.Bundle {impl_35__from_be as impl_Wrapping_of_u128__from_be}
+
+include Core_models.Bundle {impl_35__from_le as impl_Wrapping_of_u128__from_le}
+
+include Core_models.Bundle {impl_35__pow as impl_Wrapping_of_u128__pow}
+
+include Core_models.Bundle {impl_35__is_power_of_two as impl_Wrapping_of_u128__is_power_of_two}
+
+include Core_models.Bundle {impl_35__next_power_of_two as impl_Wrapping_of_u128__next_power_of_two}
+
+include Core_models.Bundle {impl_36__MIN as impl_Wrapping_of_usize__MIN}
+
+include Core_models.Bundle {impl_36__MAX as impl_Wrapping_of_usize__MAX}
+
+include Core_models.Bundle {impl_36__BITS as impl_Wrapping_of_usize__BITS}
+
+include Core_models.Bundle {impl_36__count_ones as impl_Wrapping_of_usize__count_ones}
+
+include Core_models.Bundle {impl_36__count_zeros as impl_Wrapping_of_usize__count_zeros}
+
+include Core_models.Bundle {impl_36__trailing_zeros as impl_Wrapping_of_usize__trailing_zeros}
+
+include Core_models.Bundle {impl_36__leading_zeros as impl_Wrapping_of_usize__leading_zeros}
+
+include Core_models.Bundle {impl_36__rotate_left as impl_Wrapping_of_usize__rotate_left}
+
+include Core_models.Bundle {impl_36__rotate_right as impl_Wrapping_of_usize__rotate_right}
+
+include Core_models.Bundle {impl_36__swap_bytes as impl_Wrapping_of_usize__swap_bytes}
+
+include Core_models.Bundle {impl_36__to_be as impl_Wrapping_of_usize__to_be}
+
+include Core_models.Bundle {impl_36__to_le as impl_Wrapping_of_usize__to_le}
+
+include Core_models.Bundle {impl_36__from_be as impl_Wrapping_of_usize__from_be}
+
+include Core_models.Bundle {impl_36__from_le as impl_Wrapping_of_usize__from_le}
+
+include Core_models.Bundle {impl_36__pow as impl_Wrapping_of_usize__pow}
+
+include Core_models.Bundle {impl_36__is_power_of_two as impl_Wrapping_of_usize__is_power_of_two}
+
+include Core_models.Bundle {impl_36__next_power_of_two as impl_Wrapping_of_usize__next_power_of_two}
+
+include Core_models.Bundle {impl_37__MIN as impl_Wrapping_of_i8__MIN}
+
+include Core_models.Bundle {impl_37__MAX as impl_Wrapping_of_i8__MAX}
+
+include Core_models.Bundle {impl_37__BITS as impl_Wrapping_of_i8__BITS}
+
+include Core_models.Bundle {impl_37__count_ones as impl_Wrapping_of_i8__count_ones}
+
+include Core_models.Bundle {impl_37__count_zeros as impl_Wrapping_of_i8__count_zeros}
+
+include Core_models.Bundle {impl_37__trailing_zeros as impl_Wrapping_of_i8__trailing_zeros}
+
+include Core_models.Bundle {impl_37__leading_zeros as impl_Wrapping_of_i8__leading_zeros}
+
+include Core_models.Bundle {impl_37__rotate_left as impl_Wrapping_of_i8__rotate_left}
+
+include Core_models.Bundle {impl_37__rotate_right as impl_Wrapping_of_i8__rotate_right}
+
+include Core_models.Bundle {impl_37__swap_bytes as impl_Wrapping_of_i8__swap_bytes}
+
+include Core_models.Bundle {impl_37__to_be as impl_Wrapping_of_i8__to_be}
+
+include Core_models.Bundle {impl_37__to_le as impl_Wrapping_of_i8__to_le}
+
+include Core_models.Bundle {impl_37__from_be as impl_Wrapping_of_i8__from_be}
+
+include Core_models.Bundle {impl_37__from_le as impl_Wrapping_of_i8__from_le}
+
+include Core_models.Bundle {impl_37__pow as impl_Wrapping_of_i8__pow}
+
+include Core_models.Bundle {impl_37__abs as impl_Wrapping_of_i8__abs}
+
+include Core_models.Bundle {impl_37__signum as impl_Wrapping_of_i8__signum}
+
+include Core_models.Bundle {impl_37__is_positive as impl_Wrapping_of_i8__is_positive}
+
+include Core_models.Bundle {impl_37__is_negative as impl_Wrapping_of_i8__is_negative}
+
+include Core_models.Bundle {impl_38__MIN as impl_Wrapping_of_i16__MIN}
+
+include Core_models.Bundle {impl_38__MAX as impl_Wrapping_of_i16__MAX}
+
+include Core_models.Bundle {impl_38__BITS as impl_Wrapping_of_i16__BITS}
+
+include Core_models.Bundle {impl_38__count_ones as impl_Wrapping_of_i16__count_ones}
+
+include Core_models.Bundle {impl_38__count_zeros as impl_Wrapping_of_i16__count_zeros}
+
+include Core_models.Bundle {impl_38__trailing_zeros as impl_Wrapping_of_i16__trailing_zeros}
+
+include Core_models.Bundle {impl_38__leading_zeros as impl_Wrapping_of_i16__leading_zeros}
+
+include Core_models.Bundle {impl_38__rotate_left as impl_Wrapping_of_i16__rotate_left}
+
+include Core_models.Bundle {impl_38__rotate_right as impl_Wrapping_of_i16__rotate_right}
+
+include Core_models.Bundle {impl_38__swap_bytes as impl_Wrapping_of_i16__swap_bytes}
+
+include Core_models.Bundle {impl_38__to_be as impl_Wrapping_of_i16__to_be}
+
+include Core_models.Bundle {impl_38__to_le as impl_Wrapping_of_i16__to_le}
+
+include Core_models.Bundle {impl_38__from_be as impl_Wrapping_of_i16__from_be}
+
+include Core_models.Bundle {impl_38__from_le as impl_Wrapping_of_i16__from_le}
+
+include Core_models.Bundle {impl_38__pow as impl_Wrapping_of_i16__pow}
+
+include Core_models.Bundle {impl_38__abs as impl_Wrapping_of_i16__abs}
+
+include Core_models.Bundle {impl_38__signum as impl_Wrapping_of_i16__signum}
+
+include Core_models.Bundle {impl_38__is_positive as impl_Wrapping_of_i16__is_positive}
+
+include Core_models.Bundle {impl_38__is_negative as impl_Wrapping_of_i16__is_negative}
+
+include Core_models.Bundle {impl_39__MIN as impl_Wrapping_of_i32__MIN}
+
+include Core_models.Bundle {impl_39__MAX as impl_Wrapping_of_i32__MAX}
+
+include Core_models.Bundle {impl_39__BITS as impl_Wrapping_of_i32__BITS}
+
+include Core_models.Bundle {impl_39__count_ones as impl_Wrapping_of_i32__count_ones}
+
+include Core_models.Bundle {impl_39__count_zeros as impl_Wrapping_of_i32__count_zeros}
+
+include Core_models.Bundle {impl_39__trailing_zeros as impl_Wrapping_of_i32__trailing_zeros}
+
+include Core_models.Bundle {impl_39__leading_zeros as impl_Wrapping_of_i32__leading_zeros}
+
+include Core_models.Bundle {impl_39__rotate_left as impl_Wrapping_of_i32__rotate_left}
+
+include Core_models.Bundle {impl_39__rotate_right as impl_Wrapping_of_i32__rotate_right}
+
+include Core_models.Bundle {impl_39__swap_bytes as impl_Wrapping_of_i32__swap_bytes}
+
+include Core_models.Bundle {impl_39__to_be as impl_Wrapping_of_i32__to_be}
+
+include Core_models.Bundle {impl_39__to_le as impl_Wrapping_of_i32__to_le}
+
+include Core_models.Bundle {impl_39__from_be as impl_Wrapping_of_i32__from_be}
+
+include Core_models.Bundle {impl_39__from_le as impl_Wrapping_of_i32__from_le}
+
+include Core_models.Bundle {impl_39__pow as impl_Wrapping_of_i32__pow}
+
+include Core_models.Bundle {impl_39__abs as impl_Wrapping_of_i32__abs}
+
+include Core_models.Bundle {impl_39__signum as impl_Wrapping_of_i32__signum}
+
+include Core_models.Bundle {impl_39__is_positive as impl_Wrapping_of_i32__is_positive}
+
+include Core_models.Bundle {impl_39__is_negative as impl_Wrapping_of_i32__is_negative}
+
+include Core_models.Bundle {impl_40__MIN as impl_Wrapping_of_i64__MIN}
+
+include Core_models.Bundle {impl_40__MAX as impl_Wrapping_of_i64__MAX}
+
+include Core_models.Bundle {impl_40__BITS as impl_Wrapping_of_i64__BITS}
+
+include Core_models.Bundle {impl_40__count_ones as impl_Wrapping_of_i64__count_ones}
+
+include Core_models.Bundle {impl_40__count_zeros as impl_Wrapping_of_i64__count_zeros}
+
+include Core_models.Bundle {impl_40__trailing_zeros as impl_Wrapping_of_i64__trailing_zeros}
+
+include Core_models.Bundle {impl_40__leading_zeros as impl_Wrapping_of_i64__leading_zeros}
+
+include Core_models.Bundle {impl_40__rotate_left as impl_Wrapping_of_i64__rotate_left}
+
+include Core_models.Bundle {impl_40__rotate_right as impl_Wrapping_of_i64__rotate_right}
+
+include Core_models.Bundle {impl_40__swap_bytes as impl_Wrapping_of_i64__swap_bytes}
+
+include Core_models.Bundle {impl_40__to_be as impl_Wrapping_of_i64__to_be}
+
+include Core_models.Bundle {impl_40__to_le as impl_Wrapping_of_i64__to_le}
+
+include Core_models.Bundle {impl_40__from_be as impl_Wrapping_of_i64__from_be}
+
+include Core_models.Bundle {impl_40__from_le as impl_Wrapping_of_i64__from_le}
+
+include Core_models.Bundle {impl_40__pow as impl_Wrapping_of_i64__pow}
+
+include Core_models.Bundle {impl_40__abs as impl_Wrapping_of_i64__abs}
+
+include Core_models.Bundle {impl_40__signum as impl_Wrapping_of_i64__signum}
+
+include Core_models.Bundle {impl_40__is_positive as impl_Wrapping_of_i64__is_positive}
+
+include Core_models.Bundle {impl_40__is_negative as impl_Wrapping_of_i64__is_negative}
+
+include Core_models.Bundle {impl_41__MIN as impl_Wrapping_of_i128__MIN}
+
+include Core_models.Bundle {impl_41__MAX as impl_Wrapping_of_i128__MAX}
+
+include Core_models.Bundle {impl_41__BITS as impl_Wrapping_of_i128__BITS}
+
+include Core_models.Bundle {impl_41__count_ones as impl_Wrapping_of_i128__count_ones}
+
+include Core_models.Bundle {impl_41__count_zeros as impl_Wrapping_of_i128__count_zeros}
+
+include Core_models.Bundle {impl_41__trailing_zeros as impl_Wrapping_of_i128__trailing_zeros}
+
+include Core_models.Bundle {impl_41__leading_zeros as impl_Wrapping_of_i128__leading_zeros}
+
+include Core_models.Bundle {impl_41__rotate_left as impl_Wrapping_of_i128__rotate_left}
+
+include Core_models.Bundle {impl_41__rotate_right as impl_Wrapping_of_i128__rotate_right}
+
+include Core_models.Bundle {impl_41__swap_bytes as impl_Wrapping_of_i128__swap_bytes}
+
+include Core_models.Bundle {impl_41__to_be as impl_Wrapping_of_i128__to_be}
+
+include Core_models.Bundle {impl_41__to_le as impl_Wrapping_of_i128__to_le}
+
+include Core_models.Bundle {impl_41__from_be as impl_Wrapping_of_i128__from_be}
+
+include Core_models.Bundle {impl_41__from_le as impl_Wrapping_of_i128__from_le}
+
+include Core_models.Bundle {impl_41__pow as impl_Wrapping_of_i128__pow}
+
+include Core_models.Bundle {impl_41__abs as impl_Wrapping_of_i128__abs}
+
+include Core_models.Bundle {impl_41__signum as impl_Wrapping_of_i128__signum}
+
+include Core_models.Bundle {impl_41__is_positive as impl_Wrapping_of_i128__is_positive}
+
+include Core_models.Bundle {impl_41__is_negative as impl_Wrapping_of_i128__is_negative}
+
+include Core_models.Bundle {impl_42__MIN as impl_Wrapping_of_isize__MIN}
+
+include Core_models.Bundle {impl_42__MAX as impl_Wrapping_of_isize__MAX}
+
+include Core_models.Bundle {impl_42__BITS as impl_Wrapping_of_isize__BITS}
+
+include Core_models.Bundle {impl_42__count_ones as impl_Wrapping_of_isize__count_ones}
+
+include Core_models.Bundle {impl_42__count_zeros as impl_Wrapping_of_isize__count_zeros}
+
+include Core_models.Bundle {impl_42__trailing_zeros as impl_Wrapping_of_isize__trailing_zeros}
+
+include Core_models.Bundle {impl_42__leading_zeros as impl_Wrapping_of_isize__leading_zeros}
+
+include Core_models.Bundle {impl_42__rotate_left as impl_Wrapping_of_isize__rotate_left}
+
+include Core_models.Bundle {impl_42__rotate_right as impl_Wrapping_of_isize__rotate_right}
+
+include Core_models.Bundle {impl_42__swap_bytes as impl_Wrapping_of_isize__swap_bytes}
+
+include Core_models.Bundle {impl_42__to_be as impl_Wrapping_of_isize__to_be}
+
+include Core_models.Bundle {impl_42__to_le as impl_Wrapping_of_isize__to_le}
+
+include Core_models.Bundle {impl_42__from_be as impl_Wrapping_of_isize__from_be}
+
+include Core_models.Bundle {impl_42__from_le as impl_Wrapping_of_isize__from_le}
+
+include Core_models.Bundle {impl_42__pow as impl_Wrapping_of_isize__pow}
+
+include Core_models.Bundle {impl_42__abs as impl_Wrapping_of_isize__abs}
+
+include Core_models.Bundle {impl_42__signum as impl_Wrapping_of_isize__signum}
+
+include Core_models.Bundle {impl_42__is_positive as impl_Wrapping_of_isize__is_positive}
+
+include Core_models.Bundle {impl_42__is_negative as impl_Wrapping_of_isize__is_negative}
+
+include Core_models.Bundle {impl_43__MIN as impl_Saturating_of_u8__MIN}
+
+include Core_models.Bundle {impl_43__MAX as impl_Saturating_of_u8__MAX}
+
+include Core_models.Bundle {impl_43__BITS as impl_Saturating_of_u8__BITS}
+
+include Core_models.Bundle {impl_43__count_ones as impl_Saturating_of_u8__count_ones}
+
+include Core_models.Bundle {impl_43__count_zeros as impl_Saturating_of_u8__count_zeros}
+
+include Core_models.Bundle {impl_43__trailing_zeros as impl_Saturating_of_u8__trailing_zeros}
+
+include Core_models.Bundle {impl_43__leading_zeros as impl_Saturating_of_u8__leading_zeros}
+
+include Core_models.Bundle {impl_43__rotate_left as impl_Saturating_of_u8__rotate_left}
+
+include Core_models.Bundle {impl_43__rotate_right as impl_Saturating_of_u8__rotate_right}
+
+include Core_models.Bundle {impl_43__swap_bytes as impl_Saturating_of_u8__swap_bytes}
+
+include Core_models.Bundle {impl_43__to_be as impl_Saturating_of_u8__to_be}
+
+include Core_models.Bundle {impl_43__to_le as impl_Saturating_of_u8__to_le}
+
+include Core_models.Bundle {impl_43__from_be as impl_Saturating_of_u8__from_be}
+
+include Core_models.Bundle {impl_43__from_le as impl_Saturating_of_u8__from_le}
+
+include Core_models.Bundle {impl_43__pow as impl_Saturating_of_u8__pow}
+
+include Core_models.Bundle {impl_43__is_power_of_two as impl_Saturating_of_u8__is_power_of_two}
+
+include Core_models.Bundle {impl_44__MIN as impl_Saturating_of_u16__MIN}
+
+include Core_models.Bundle {impl_44__MAX as impl_Saturating_of_u16__MAX}
+
+include Core_models.Bundle {impl_44__BITS as impl_Saturating_of_u16__BITS}
+
+include Core_models.Bundle {impl_44__count_ones as impl_Saturating_of_u16__count_ones}
+
+include Core_models.Bundle {impl_44__count_zeros as impl_Saturating_of_u16__count_zeros}
+
+include Core_models.Bundle {impl_44__trailing_zeros as impl_Saturating_of_u16__trailing_zeros}
+
+include Core_models.Bundle {impl_44__leading_zeros as impl_Saturating_of_u16__leading_zeros}
+
+include Core_models.Bundle {impl_44__rotate_left as impl_Saturating_of_u16__rotate_left}
+
+include Core_models.Bundle {impl_44__rotate_right as impl_Saturating_of_u16__rotate_right}
+
+include Core_models.Bundle {impl_44__swap_bytes as impl_Saturating_of_u16__swap_bytes}
+
+include Core_models.Bundle {impl_44__to_be as impl_Saturating_of_u16__to_be}
+
+include Core_models.Bundle {impl_44__to_le as impl_Saturating_of_u16__to_le}
+
+include Core_models.Bundle {impl_44__from_be as impl_Saturating_of_u16__from_be}
+
+include Core_models.Bundle {impl_44__from_le as impl_Saturating_of_u16__from_le}
+
+include Core_models.Bundle {impl_44__pow as impl_Saturating_of_u16__pow}
+
+include Core_models.Bundle {impl_44__is_power_of_two as impl_Saturating_of_u16__is_power_of_two}
+
+include Core_models.Bundle {impl_45__MIN as impl_Saturating_of_u32__MIN}
+
+include Core_models.Bundle {impl_45__MAX as impl_Saturating_of_u32__MAX}
+
+include Core_models.Bundle {impl_45__BITS as impl_Saturating_of_u32__BITS}
+
+include Core_models.Bundle {impl_45__count_ones as impl_Saturating_of_u32__count_ones}
+
+include Core_models.Bundle {impl_45__count_zeros as impl_Saturating_of_u32__count_zeros}
+
+include Core_models.Bundle {impl_45__trailing_zeros as impl_Saturating_of_u32__trailing_zeros}
+
+include Core_models.Bundle {impl_45__leading_zeros as impl_Saturating_of_u32__leading_zeros}
+
+include Core_models.Bundle {impl_45__rotate_left as impl_Saturating_of_u32__rotate_left}
+
+include Core_models.Bundle {impl_45__rotate_right as impl_Saturating_of_u32__rotate_right}
+
+include Core_models.Bundle {impl_45__swap_bytes as impl_Saturating_of_u32__swap_bytes}
+
+include Core_models.Bundle {impl_45__to_be as impl_Saturating_of_u32__to_be}
+
+include Core_models.Bundle {impl_45__to_le as impl_Saturating_of_u32__to_le}
+
+include Core_models.Bundle {impl_45__from_be as impl_Saturating_of_u32__from_be}
+
+include Core_models.Bundle {impl_45__from_le as impl_Saturating_of_u32__from_le}
+
+include Core_models.Bundle {impl_45__pow as impl_Saturating_of_u32__pow}
+
+include Core_models.Bundle {impl_45__is_power_of_two as impl_Saturating_of_u32__is_power_of_two}
+
+include Core_models.Bundle {impl_46__MIN as impl_Saturating_of_u64__MIN}
+
+include Core_models.Bundle {impl_46__MAX as impl_Saturating_of_u64__MAX}
+
+include Core_models.Bundle {impl_46__BITS as impl_Saturating_of_u64__BITS}
+
+include Core_models.Bundle {impl_46__count_ones as impl_Saturating_of_u64__count_ones}
+
+include Core_models.Bundle {impl_46__count_zeros as impl_Saturating_of_u64__count_zeros}
+
+include Core_models.Bundle {impl_46__trailing_zeros as impl_Saturating_of_u64__trailing_zeros}
+
+include Core_models.Bundle {impl_46__leading_zeros as impl_Saturating_of_u64__leading_zeros}
+
+include Core_models.Bundle {impl_46__rotate_left as impl_Saturating_of_u64__rotate_left}
+
+include Core_models.Bundle {impl_46__rotate_right as impl_Saturating_of_u64__rotate_right}
+
+include Core_models.Bundle {impl_46__swap_bytes as impl_Saturating_of_u64__swap_bytes}
+
+include Core_models.Bundle {impl_46__to_be as impl_Saturating_of_u64__to_be}
+
+include Core_models.Bundle {impl_46__to_le as impl_Saturating_of_u64__to_le}
+
+include Core_models.Bundle {impl_46__from_be as impl_Saturating_of_u64__from_be}
+
+include Core_models.Bundle {impl_46__from_le as impl_Saturating_of_u64__from_le}
+
+include Core_models.Bundle {impl_46__pow as impl_Saturating_of_u64__pow}
+
+include Core_models.Bundle {impl_46__is_power_of_two as impl_Saturating_of_u64__is_power_of_two}
+
+include Core_models.Bundle {impl_47__MIN as impl_Saturating_of_u128__MIN}
+
+include Core_models.Bundle {impl_47__MAX as impl_Saturating_of_u128__MAX}
+
+include Core_models.Bundle {impl_47__BITS as impl_Saturating_of_u128__BITS}
+
+include Core_models.Bundle {impl_47__count_ones as impl_Saturating_of_u128__count_ones}
+
+include Core_models.Bundle {impl_47__count_zeros as impl_Saturating_of_u128__count_zeros}
+
+include Core_models.Bundle {impl_47__trailing_zeros as impl_Saturating_of_u128__trailing_zeros}
+
+include Core_models.Bundle {impl_47__leading_zeros as impl_Saturating_of_u128__leading_zeros}
+
+include Core_models.Bundle {impl_47__rotate_left as impl_Saturating_of_u128__rotate_left}
+
+include Core_models.Bundle {impl_47__rotate_right as impl_Saturating_of_u128__rotate_right}
+
+include Core_models.Bundle {impl_47__swap_bytes as impl_Saturating_of_u128__swap_bytes}
+
+include Core_models.Bundle {impl_47__to_be as impl_Saturating_of_u128__to_be}
+
+include Core_models.Bundle {impl_47__to_le as impl_Saturating_of_u128__to_le}
+
+include Core_models.Bundle {impl_47__from_be as impl_Saturating_of_u128__from_be}
+
+include Core_models.Bundle {impl_47__from_le as impl_Saturating_of_u128__from_le}
+
+include Core_models.Bundle {impl_47__pow as impl_Saturating_of_u128__pow}
+
+include Core_models.Bundle {impl_47__is_power_of_two as impl_Saturating_of_u128__is_power_of_two}
+
+include Core_models.Bundle {impl_48__MIN as impl_Saturating_of_usize__MIN}
+
+include Core_models.Bundle {impl_48__MAX as impl_Saturating_of_usize__MAX}
+
+include Core_models.Bundle {impl_48__BITS as impl_Saturating_of_usize__BITS}
+
+include Core_models.Bundle {impl_48__count_ones as impl_Saturating_of_usize__count_ones}
+
+include Core_models.Bundle {impl_48__count_zeros as impl_Saturating_of_usize__count_zeros}
+
+include Core_models.Bundle {impl_48__trailing_zeros as impl_Saturating_of_usize__trailing_zeros}
+
+include Core_models.Bundle {impl_48__leading_zeros as impl_Saturating_of_usize__leading_zeros}
+
+include Core_models.Bundle {impl_48__rotate_left as impl_Saturating_of_usize__rotate_left}
+
+include Core_models.Bundle {impl_48__rotate_right as impl_Saturating_of_usize__rotate_right}
+
+include Core_models.Bundle {impl_48__swap_bytes as impl_Saturating_of_usize__swap_bytes}
+
+include Core_models.Bundle {impl_48__to_be as impl_Saturating_of_usize__to_be}
+
+include Core_models.Bundle {impl_48__to_le as impl_Saturating_of_usize__to_le}
+
+include Core_models.Bundle {impl_48__from_be as impl_Saturating_of_usize__from_be}
+
+include Core_models.Bundle {impl_48__from_le as impl_Saturating_of_usize__from_le}
+
+include Core_models.Bundle {impl_48__pow as impl_Saturating_of_usize__pow}
+
+include Core_models.Bundle {impl_48__is_power_of_two as impl_Saturating_of_usize__is_power_of_two}
+
+include Core_models.Bundle {impl_49__MIN as impl_Saturating_of_i8__MIN}
+
+include Core_models.Bundle {impl_49__MAX as impl_Saturating_of_i8__MAX}
+
+include Core_models.Bundle {impl_49__BITS as impl_Saturating_of_i8__BITS}
+
+include Core_models.Bundle {impl_49__count_ones as impl_Saturating_of_i8__count_ones}
+
+include Core_models.Bundle {impl_49__count_zeros as impl_Saturating_of_i8__count_zeros}
+
+include Core_models.Bundle {impl_49__trailing_zeros as impl_Saturating_of_i8__trailing_zeros}
+
+include Core_models.Bundle {impl_49__leading_zeros as impl_Saturating_of_i8__leading_zeros}
+
+include Core_models.Bundle {impl_49__rotate_left as impl_Saturating_of_i8__rotate_left}
+
+include Core_models.Bundle {impl_49__rotate_right as impl_Saturating_of_i8__rotate_right}
+
+include Core_models.Bundle {impl_49__swap_bytes as impl_Saturating_of_i8__swap_bytes}
+
+include Core_models.Bundle {impl_49__to_be as impl_Saturating_of_i8__to_be}
+
+include Core_models.Bundle {impl_49__to_le as impl_Saturating_of_i8__to_le}
+
+include Core_models.Bundle {impl_49__from_be as impl_Saturating_of_i8__from_be}
+
+include Core_models.Bundle {impl_49__from_le as impl_Saturating_of_i8__from_le}
+
+include Core_models.Bundle {impl_49__pow as impl_Saturating_of_i8__pow}
+
+include Core_models.Bundle {impl_49__abs as impl_Saturating_of_i8__abs}
+
+include Core_models.Bundle {impl_49__signum as impl_Saturating_of_i8__signum}
+
+include Core_models.Bundle {impl_49__is_positive as impl_Saturating_of_i8__is_positive}
+
+include Core_models.Bundle {impl_49__is_negative as impl_Saturating_of_i8__is_negative}
+
+include Core_models.Bundle {impl_50__MIN as impl_Saturating_of_i16__MIN}
+
+include Core_models.Bundle {impl_50__MAX as impl_Saturating_of_i16__MAX}
+
+include Core_models.Bundle {impl_50__BITS as impl_Saturating_of_i16__BITS}
+
+include Core_models.Bundle {impl_50__count_ones as impl_Saturating_of_i16__count_ones}
+
+include Core_models.Bundle {impl_50__count_zeros as impl_Saturating_of_i16__count_zeros}
+
+include Core_models.Bundle {impl_50__trailing_zeros as impl_Saturating_of_i16__trailing_zeros}
+
+include Core_models.Bundle {impl_50__leading_zeros as impl_Saturating_of_i16__leading_zeros}
+
+include Core_models.Bundle {impl_50__rotate_left as impl_Saturating_of_i16__rotate_left}
+
+include Core_models.Bundle {impl_50__rotate_right as impl_Saturating_of_i16__rotate_right}
+
+include Core_models.Bundle {impl_50__swap_bytes as impl_Saturating_of_i16__swap_bytes}
+
+include Core_models.Bundle {impl_50__to_be as impl_Saturating_of_i16__to_be}
+
+include Core_models.Bundle {impl_50__to_le as impl_Saturating_of_i16__to_le}
+
+include Core_models.Bundle {impl_50__from_be as impl_Saturating_of_i16__from_be}
+
+include Core_models.Bundle {impl_50__from_le as impl_Saturating_of_i16__from_le}
+
+include Core_models.Bundle {impl_50__pow as impl_Saturating_of_i16__pow}
+
+include Core_models.Bundle {impl_50__abs as impl_Saturating_of_i16__abs}
+
+include Core_models.Bundle {impl_50__signum as impl_Saturating_of_i16__signum}
+
+include Core_models.Bundle {impl_50__is_positive as impl_Saturating_of_i16__is_positive}
+
+include Core_models.Bundle {impl_50__is_negative as impl_Saturating_of_i16__is_negative}
+
+include Core_models.Bundle {impl_51__MIN as impl_Saturating_of_i32__MIN}
+
+include Core_models.Bundle {impl_51__MAX as impl_Saturating_of_i32__MAX}
+
+include Core_models.Bundle {impl_51__BITS as impl_Saturating_of_i32__BITS}
+
+include Core_models.Bundle {impl_51__count_ones as impl_Saturating_of_i32__count_ones}
+
+include Core_models.Bundle {impl_51__count_zeros as impl_Saturating_of_i32__count_zeros}
+
+include Core_models.Bundle {impl_51__trailing_zeros as impl_Saturating_of_i32__trailing_zeros}
+
+include Core_models.Bundle {impl_51__leading_zeros as impl_Saturating_of_i32__leading_zeros}
+
+include Core_models.Bundle {impl_51__rotate_left as impl_Saturating_of_i32__rotate_left}
+
+include Core_models.Bundle {impl_51__rotate_right as impl_Saturating_of_i32__rotate_right}
+
+include Core_models.Bundle {impl_51__swap_bytes as impl_Saturating_of_i32__swap_bytes}
+
+include Core_models.Bundle {impl_51__to_be as impl_Saturating_of_i32__to_be}
+
+include Core_models.Bundle {impl_51__to_le as impl_Saturating_of_i32__to_le}
+
+include Core_models.Bundle {impl_51__from_be as impl_Saturating_of_i32__from_be}
+
+include Core_models.Bundle {impl_51__from_le as impl_Saturating_of_i32__from_le}
+
+include Core_models.Bundle {impl_51__pow as impl_Saturating_of_i32__pow}
+
+include Core_models.Bundle {impl_51__abs as impl_Saturating_of_i32__abs}
+
+include Core_models.Bundle {impl_51__signum as impl_Saturating_of_i32__signum}
+
+include Core_models.Bundle {impl_51__is_positive as impl_Saturating_of_i32__is_positive}
+
+include Core_models.Bundle {impl_51__is_negative as impl_Saturating_of_i32__is_negative}
+
+include Core_models.Bundle {impl_52__MIN as impl_Saturating_of_i64__MIN}
+
+include Core_models.Bundle {impl_52__MAX as impl_Saturating_of_i64__MAX}
+
+include Core_models.Bundle {impl_52__BITS as impl_Saturating_of_i64__BITS}
+
+include Core_models.Bundle {impl_52__count_ones as impl_Saturating_of_i64__count_ones}
+
+include Core_models.Bundle {impl_52__count_zeros as impl_Saturating_of_i64__count_zeros}
+
+include Core_models.Bundle {impl_52__trailing_zeros as impl_Saturating_of_i64__trailing_zeros}
+
+include Core_models.Bundle {impl_52__leading_zeros as impl_Saturating_of_i64__leading_zeros}
+
+include Core_models.Bundle {impl_52__rotate_left as impl_Saturating_of_i64__rotate_left}
+
+include Core_models.Bundle {impl_52__rotate_right as impl_Saturating_of_i64__rotate_right}
+
+include Core_models.Bundle {impl_52__swap_bytes as impl_Saturating_of_i64__swap_bytes}
+
+include Core_models.Bundle {impl_52__to_be as impl_Saturating_of_i64__to_be}
+
+include Core_models.Bundle {impl_52__to_le as impl_Saturating_of_i64__to_le}
+
+include Core_models.Bundle {impl_52__from_be as impl_Saturating_of_i64__from_be}
+
+include Core_models.Bundle {impl_52__from_le as impl_Saturating_of_i64__from_le}
+
+include Core_models.Bundle {impl_52__pow as impl_Saturating_of_i64__pow}
+
+include Core_models.Bundle {impl_52__abs as impl_Saturating_of_i64__abs}
+
+include Core_models.Bundle {impl_52__signum as impl_Saturating_of_i64__signum}
+
+include Core_models.Bundle {impl_52__is_positive as impl_Saturating_of_i64__is_positive}
+
+include Core_models.Bundle {impl_52__is_negative as impl_Saturating_of_i64__is_negative}
+
+include Core_models.Bundle {impl_53__MIN as impl_Saturating_of_i128__MIN}
+
+include Core_models.Bundle {impl_53__MAX as impl_Saturating_of_i128__MAX}
+
+include Core_models.Bundle {impl_53__BITS as impl_Saturating_of_i128__BITS}
+
+include Core_models.Bundle {impl_53__count_ones as impl_Saturating_of_i128__count_ones}
+
+include Core_models.Bundle {impl_53__count_zeros as impl_Saturating_of_i128__count_zeros}
+
+include Core_models.Bundle {impl_53__trailing_zeros as impl_Saturating_of_i128__trailing_zeros}
+
+include Core_models.Bundle {impl_53__leading_zeros as impl_Saturating_of_i128__leading_zeros}
+
+include Core_models.Bundle {impl_53__rotate_left as impl_Saturating_of_i128__rotate_left}
+
+include Core_models.Bundle {impl_53__rotate_right as impl_Saturating_of_i128__rotate_right}
+
+include Core_models.Bundle {impl_53__swap_bytes as impl_Saturating_of_i128__swap_bytes}
+
+include Core_models.Bundle {impl_53__to_be as impl_Saturating_of_i128__to_be}
+
+include Core_models.Bundle {impl_53__to_le as impl_Saturating_of_i128__to_le}
+
+include Core_models.Bundle {impl_53__from_be as impl_Saturating_of_i128__from_be}
+
+include Core_models.Bundle {impl_53__from_le as impl_Saturating_of_i128__from_le}
+
+include Core_models.Bundle {impl_53__pow as impl_Saturating_of_i128__pow}
+
+include Core_models.Bundle {impl_53__abs as impl_Saturating_of_i128__abs}
+
+include Core_models.Bundle {impl_53__signum as impl_Saturating_of_i128__signum}
+
+include Core_models.Bundle {impl_53__is_positive as impl_Saturating_of_i128__is_positive}
+
+include Core_models.Bundle {impl_53__is_negative as impl_Saturating_of_i128__is_negative}
+
+include Core_models.Bundle {impl_54__MIN as impl_Saturating_of_isize__MIN}
+
+include Core_models.Bundle {impl_54__MAX as impl_Saturating_of_isize__MAX}
+
+include Core_models.Bundle {impl_54__BITS as impl_Saturating_of_isize__BITS}
+
+include Core_models.Bundle {impl_54__count_ones as impl_Saturating_of_isize__count_ones}
+
+include Core_models.Bundle {impl_54__count_zeros as impl_Saturating_of_isize__count_zeros}
+
+include Core_models.Bundle {impl_54__trailing_zeros as impl_Saturating_of_isize__trailing_zeros}
+
+include Core_models.Bundle {impl_54__leading_zeros as impl_Saturating_of_isize__leading_zeros}
+
+include Core_models.Bundle {impl_54__rotate_left as impl_Saturating_of_isize__rotate_left}
+
+include Core_models.Bundle {impl_54__rotate_right as impl_Saturating_of_isize__rotate_right}
+
+include Core_models.Bundle {impl_54__swap_bytes as impl_Saturating_of_isize__swap_bytes}
+
+include Core_models.Bundle {impl_54__to_be as impl_Saturating_of_isize__to_be}
+
+include Core_models.Bundle {impl_54__to_le as impl_Saturating_of_isize__to_le}
+
+include Core_models.Bundle {impl_54__from_be as impl_Saturating_of_isize__from_be}
+
+include Core_models.Bundle {impl_54__from_le as impl_Saturating_of_isize__from_le}
+
+include Core_models.Bundle {impl_54__pow as impl_Saturating_of_isize__pow}
+
+include Core_models.Bundle {impl_54__abs as impl_Saturating_of_isize__abs}
+
+include Core_models.Bundle {impl_54__signum as impl_Saturating_of_isize__signum}
+
+include Core_models.Bundle {impl_54__is_positive as impl_Saturating_of_isize__is_positive}
+
+include Core_models.Bundle {impl_54__is_negative as impl_Saturating_of_isize__is_negative}
