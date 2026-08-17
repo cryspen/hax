@@ -37,6 +37,9 @@
 // those are tautologically false, but that *is* the observation we want
 // to verify.
 #![allow(unused_comparisons)]
+// `cmp::minmax` is still unstable in std; the equivalence tests call real std,
+// so the gate has to be opened here.
+#![feature(cmp_minmax)]
 
 pub mod helpers;
 

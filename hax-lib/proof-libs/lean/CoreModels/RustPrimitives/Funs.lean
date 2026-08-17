@@ -241,6 +241,12 @@ def rust_primitives.slice.array_index
   {T : Type} {N : Std.Usize} : Array T N → Std.Usize → Result T :=
   fun a i => Slice.index_usize (Array.to_slice a) i
 
+/-- [rust_primitives::slice::array_pair]: the two-element array `[a, b]`. -/
+@[rust_fun "rust_primitives::slice::array_pair"]
+def rust_primitives.slice.array_pair
+  {T : Type} : T → T → Result (Array T 2#usize) :=
+  fun a b => ok (Array.make 2#usize [a, b])
+
 /-- [rust_primitives::sequence::seq_from_slice]:
     Source: 'rust_primitives/src/lib.rs', lines 51:4-51:48
     Name pattern: [rust_primitives::sequence::seq_from_slice]
