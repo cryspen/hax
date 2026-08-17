@@ -13,7 +13,7 @@
 //!   below — see the TODOs.
 
 use rust_lean_test_macro::rust_lean_test;
-use std::collections::{LinkedList, VecDeque};
+use std::collections::{BTreeSet, LinkedList, VecDeque};
 
 // ----- new / with_capacity ---------------------------------------------------
 
@@ -776,3 +776,208 @@ pub fn test_list_split_off_middle() -> bool {
 // ----- iter ------------------------------------------------------------------
 
 // TODO(iterator-extraction): see the note on `VecDeque::iter` above.
+
+// =============================================================================
+// BTreeSet
+// =============================================================================
+//
+// TODO(borrow-blanket-impl): `BTreeSet::{contains, get, remove, take,
+// split_off}` are generic over a borrowed key (`T: Borrow<Q>`), and the model of
+// `core::borrow::Borrow` has no blanket `impl<T> Borrow<T> for T`, so a client
+// calling them at `Q = T` has no dictionary to pass. They are covered by the
+// proptests in `alloc/src/lib.rs` instead.
+//
+// `BTreeSet::{iter, difference, intersection, union, symmetric_difference}`
+// return iterators — see the `VecDeque::iter` note. `retain` takes a closure.
+// `new_in` is unstable in std.
+
+// ----- new -------------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_set_new_is_empty() -> bool {
+    let s: BTreeSet<u8> = BTreeSet::new();
+    s.is_empty() && s.len() == 0
+}
+
+// ----- insert / len ----------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_set_insert_new_is_true() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(3) && s.len() == 1
+}
+
+#[rust_lean_test]
+pub fn test_set_insert_duplicate_is_false() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(3);
+    s.insert(3) == false && s.len() == 1
+}
+
+#[rust_lean_test]
+pub fn test_set_insert_sorts() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(3);
+    s.insert(1);
+    s.insert(2);
+    s.len() == 3 && s.pop_first().unwrap_or(0) == 1 && s.pop_first().unwrap_or(0) == 2
+}
+
+#[rust_lean_test]
+pub fn test_set_insert_boundaries() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(u8::MAX);
+    s.insert(0);
+    s.len() == 2 && s.pop_first().unwrap_or(1) == 0 && s.pop_last().unwrap_or(0) == u8::MAX
+}
+
+// ----- first / last ----------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_set_first_last_empty_are_none() -> bool {
+    let s: BTreeSet<u8> = BTreeSet::new();
+    s.first().is_none() && s.last().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_set_first_last_single_coincide() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(9);
+    match s.first() {
+        Some(f) => match s.last() {
+            Some(l) => *f == 9 && *l == 9,
+            None => false,
+        },
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_set_first_last_three() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(2);
+    s.insert(1);
+    s.insert(3);
+    match s.first() {
+        Some(f) => match s.last() {
+            Some(l) => *f == 1 && *l == 3,
+            None => false,
+        },
+        None => false,
+    }
+}
+
+// ----- pop_first / pop_last --------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_set_pop_first_empty_is_none() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.pop_first().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_set_pop_last_empty_is_none() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.pop_last().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_set_pop_last_takes_greatest() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(1);
+    s.insert(7);
+    s.pop_last().unwrap_or(0) == 7 && s.len() == 1
+}
+
+// ----- replace ---------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_set_replace_absent_is_none() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.replace(4).is_none() && s.len() == 1
+}
+
+#[rust_lean_test]
+pub fn test_set_replace_present_returns_old() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(4);
+    s.replace(4).unwrap_or(0) == 4 && s.len() == 1
+}
+
+// ----- clear -----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_set_clear_empties() -> bool {
+    let mut s: BTreeSet<u8> = BTreeSet::new();
+    s.insert(1);
+    s.insert(2);
+    s.clear();
+    s.is_empty() && s.len() == 0
+}
+
+// ----- append ----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_set_append_both_empty() -> bool {
+    let mut a: BTreeSet<u8> = BTreeSet::new();
+    let mut b: BTreeSet<u8> = BTreeSet::new();
+    a.append(&mut b);
+    a.is_empty() && b.is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_set_append_merges_and_dedups() -> bool {
+    let mut a: BTreeSet<u8> = BTreeSet::new();
+    a.insert(1);
+    a.insert(2);
+    let mut b: BTreeSet<u8> = BTreeSet::new();
+    b.insert(2);
+    b.insert(3);
+    a.append(&mut b);
+    a.len() == 3 && b.is_empty() && a.pop_last().unwrap_or(0) == 3
+}
+
+// ----- is_subset / is_superset / is_disjoint ---------------------------------
+
+#[rust_lean_test]
+pub fn test_set_empty_is_subset_of_everything() -> bool {
+    let a: BTreeSet<u8> = BTreeSet::new();
+    let mut b: BTreeSet<u8> = BTreeSet::new();
+    b.insert(1);
+    a.is_subset(&b) && b.is_superset(&a)
+}
+
+#[rust_lean_test]
+pub fn test_set_is_subset_false() -> bool {
+    let mut a: BTreeSet<u8> = BTreeSet::new();
+    a.insert(1);
+    a.insert(9);
+    let mut b: BTreeSet<u8> = BTreeSet::new();
+    b.insert(1);
+    a.is_subset(&b) == false
+}
+
+#[rust_lean_test]
+pub fn test_set_is_disjoint_true() -> bool {
+    let mut a: BTreeSet<u8> = BTreeSet::new();
+    a.insert(1);
+    let mut b: BTreeSet<u8> = BTreeSet::new();
+    b.insert(2);
+    a.is_disjoint(&b)
+}
+
+#[rust_lean_test]
+pub fn test_set_is_disjoint_false() -> bool {
+    let mut a: BTreeSet<u8> = BTreeSet::new();
+    a.insert(1);
+    let mut b: BTreeSet<u8> = BTreeSet::new();
+    b.insert(1);
+    a.is_disjoint(&b) == false
+}
+
+#[rust_lean_test]
+pub fn test_set_empty_sets_are_disjoint() -> bool {
+    let a: BTreeSet<u8> = BTreeSet::new();
+    let b: BTreeSet<u8> = BTreeSet::new();
+    a.is_disjoint(&b) && a.is_subset(&b) && a.is_superset(&b)
+}
