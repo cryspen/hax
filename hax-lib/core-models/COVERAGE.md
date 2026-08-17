@@ -56,13 +56,13 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 
 ## `alloc`
 
-**Targeted coverage: 47/608 items (8%) across 11 modules — 7 have at least a partial model.**
+**Targeted coverage: 52/608 items (9%) across 11 modules — 7 have at least a partial model.**
 
 | module | covered | total | coverage |
 |---|--:|--:|---|
 | `(root)` | 0 | 2 | 0% |
 | `alloc` | 1 | 6 | 17% |
-| `borrow` | 3 | 9 | 33% |
+| `borrow` | 8 | 9 | 89% |
 | `boxed` | 2 | 54 | 4% |
 | `collections` | 15 | 315 | 5% |
 | `fmt` | 1 | 1 | 100% |
@@ -71,7 +71,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `str` | 0 | 1 | 0% |
 | `string` | 5 | 63 | 8% |
 | `vec` | 20 | 80 | 25% |
-| **subtotal** | **47** | **608** | **8%** |
+| **subtotal** | **52** | **608** | **9%** |
 
 <details><summary>Non-targeted modules: 4 modules, 0/106 items</summary>
 

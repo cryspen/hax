@@ -66,6 +66,8 @@
 // to pin trait-dispatch behaviour at the extremes; rustc warns those are
 // tautologically false, but that *is* the observation under test.
 #![allow(unused_comparisons)]
+// `Cow::is_borrowed` / `Cow::is_owned` are still unstable in the real `alloc`.
+#![feature(cow_is_borrowed)]
 
 pub mod helpers;
 

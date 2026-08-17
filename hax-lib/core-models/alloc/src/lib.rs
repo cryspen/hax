@@ -1,4 +1,7 @@
 #![allow(unused)]
+// `Cow::is_borrowed` / `Cow::is_owned` are still unstable in the real `alloc`,
+// and the property tests compare the model against them.
+#![cfg_attr(test, feature(cow_is_borrowed))]
 
 #[cfg(test)]
 mod testing {
@@ -32,14 +35,135 @@ mod alloc {
 }
 
 mod borrow {
-    struct Cow<T>(T);
-
+    // `ToOwned` comes first so that its blanket impl stays the module's first
+    // impl block: F* names instances by position, and moving it would rename
+    // `Alloc.Borrow.impl` out from under downstream proofs.
+    /// See [`std::borrow::ToOwned`]
     pub trait ToOwned {
-        fn to_owned(self) -> Self;
+        /// See [`std::borrow::ToOwned::Owned`]
+        type Owned;
+        /// See [`std::borrow::ToOwned::to_owned`]
+        fn to_owned(self) -> Self::Owned;
     }
-    impl<T> ToOwned for T {
-        fn to_owned(self) -> Self {
-            self
+    // Mirrors real `alloc`'s `impl<T: Clone> ToOwned for T`. The `Clone` bound
+    // matters for more than fidelity: a client's call site passes the `Clone`
+    // dictionary, so a blanket impl without it is an arity mismatch.
+    impl<T: Clone> ToOwned for T {
+        type Owned = T;
+        fn to_owned(self) -> T {
+            self.clone()
+        }
+    }
+
+    /// See [`std::borrow::Cow`]: std's two variants, with the `&'a B` of
+    /// `Borrowed` erased to a plain `B` as hax erases shared borrows.
+    pub enum Cow<B: ToOwned> {
+        Borrowed(B),
+        Owned(B::Owned),
+    }
+
+    impl<B: ToOwned> Cow<B> {
+        /// See [`std::borrow::Cow::is_borrowed`]. Like std's, an associated
+        /// function rather than a method, so it cannot clash with a method of
+        /// the inner type.
+        pub fn is_borrowed(c: &Cow<B>) -> bool {
+            match c {
+                Cow::Borrowed(_) => true,
+                Cow::Owned(_) => false,
+            }
+        }
+        /// See [`std::borrow::Cow::is_owned`]
+        pub fn is_owned(c: &Cow<B>) -> bool {
+            match c {
+                Cow::Borrowed(_) => false,
+                Cow::Owned(_) => true,
+            }
+        }
+        /// See [`std::borrow::Cow::into_owned`]
+        pub fn into_owned(self) -> B::Owned {
+            match self {
+                Cow::Borrowed(b) => b.to_owned(),
+                Cow::Owned(o) => o,
+            }
+        }
+        /// See [`std::borrow::Cow::to_mut`].
+        //
+        // DEVIATION(std): std promotes a `Borrowed` in place and hands out a
+        // `&mut B::Owned` into `self`. The model cannot return a borrow into
+        // `self`, so — as `Option::take` does for `&mut` signatures — it
+        // consumes the `Cow` and returns the owned value the caller would have
+        // mutated through. That makes it coincide with `into_owned`.
+        pub fn to_mut(self) -> B::Owned {
+            self.into_owned()
+        }
+    }
+
+    /// `clone_into` is a trait *default* method in real `alloc`, which hax does
+    /// not support. Like `core::cmp`'s `Neq` / `PartialOrdDefaults`, the model
+    /// provides it through a blanket-implemented companion trait.
+    pub trait ToOwnedDefaults: ToOwned {
+        /// See [`std::borrow::ToOwned::clone_into`]
+        fn clone_into(self, target: &mut Self::Owned);
+    }
+    impl<T: ToOwned> ToOwnedDefaults for T {
+        fn clone_into(self, target: &mut T::Owned) {
+            *target = self.to_owned()
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::{Cow, ToOwned, ToOwnedDefaults};
+        use proptest::prelude::*;
+
+        /// The model's blanket `ToOwned` has `Owned = Self`, which for `u8`
+        /// agrees with real `alloc` (`<u8 as ToOwned>::Owned == u8`).
+        proptest! {
+            #[test]
+            fn test_to_owned(x in any::<u8>()) {
+                prop_assert_eq!(ToOwned::to_owned(x), std::borrow::ToOwned::to_owned(&x));
+            }
+
+            #[test]
+            fn test_clone_into(x in any::<u8>(), y in any::<u8>()) {
+                let mut model_target = y;
+                ToOwnedDefaults::clone_into(x, &mut model_target);
+                let mut std_target = y;
+                std::borrow::ToOwned::clone_into(&x, &mut std_target);
+                prop_assert_eq!(model_target, std_target);
+            }
+
+            #[test]
+            fn test_is_borrowed_is_owned(x in any::<u8>()) {
+                let model_b: Cow<u8> = Cow::Borrowed(x);
+                let std_b: std::borrow::Cow<u8> = std::borrow::Cow::Borrowed(&x);
+                prop_assert_eq!(Cow::is_borrowed(&model_b), std::borrow::Cow::is_borrowed(&std_b));
+                prop_assert_eq!(Cow::is_owned(&model_b), std::borrow::Cow::is_owned(&std_b));
+
+                let model_o: Cow<u8> = Cow::Owned(x);
+                let std_o: std::borrow::Cow<u8> = std::borrow::Cow::Owned(x);
+                prop_assert_eq!(Cow::is_borrowed(&model_o), std::borrow::Cow::is_borrowed(&std_o));
+                prop_assert_eq!(Cow::is_owned(&model_o), std::borrow::Cow::is_owned(&std_o));
+            }
+
+            #[test]
+            fn test_into_owned(x in any::<u8>()) {
+                let std_b: std::borrow::Cow<u8> = std::borrow::Cow::Borrowed(&x);
+                prop_assert_eq!(Cow::Borrowed(x).into_owned(), std_b.into_owned());
+                let std_o: std::borrow::Cow<u8> = std::borrow::Cow::Owned(x);
+                prop_assert_eq!(Cow::<u8>::Owned(x).into_owned(), std_o.into_owned());
+            }
+
+            /// The model's `to_mut` returns the owned value instead of a
+            /// borrow into `self` (see its `DEVIATION` note), so it is compared
+            /// against what std's `&mut` points at.
+            #[test]
+            fn test_to_mut(x in any::<u8>()) {
+                let mut std_b: std::borrow::Cow<u8> = std::borrow::Cow::Borrowed(&x);
+                prop_assert_eq!(Cow::Borrowed(x).to_mut(), *std_b.to_mut());
+                let mut std_o: std::borrow::Cow<u8> = std::borrow::Cow::Owned(x);
+                prop_assert_eq!(Cow::<u8>::Owned(x).to_mut(), *std_o.to_mut());
+            }
         }
     }
 
