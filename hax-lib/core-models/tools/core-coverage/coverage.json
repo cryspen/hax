@@ -13972,10 +13972,12 @@
    },
    {
     "module": "convert",
-    "covered": 13,
+    "covered": 16,
     "total": 17,
     "in_scope": true,
     "covered_items": [
+     "AsMut",
+     "AsMut::as_mut",
      "AsRef",
      "AsRef::as_ref",
      "From",
@@ -13988,13 +13990,11 @@
      "TryFrom::try_from",
      "TryInto",
      "TryInto::Error",
-     "TryInto::try_into"
+     "TryInto::try_into",
+     "identity"
     ],
     "missing_items": [
-     "AsMut",
-     "AsMut::as_mut",
-     "FloatToInt",
-     "identity"
+     "FloatToInt"
     ]
    },
    {

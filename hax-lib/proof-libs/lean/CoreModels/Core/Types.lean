@@ -195,6 +195,12 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
 structure convert.AsRef (Self : Type) (T : Type) where
   as_ref : Self → RustM T
 
+/-- Trait declaration: [core_models::convert::AsMut]
+    Source: 'core-models/src/core/convert.rs', lines 101:0-104:1
+    Visibility: public -/
+structure convert.AsMut (Self : Type) (T : Type) where
+  as_mut : Self → Result (T × (T → Self))
+
 /-- [core_models::num::error::TryFromIntError]
     Source: 'core-models/src/core/num/error.rs', lines 6:0-6:42
     Visibility: public -/
