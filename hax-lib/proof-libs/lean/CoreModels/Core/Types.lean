@@ -92,6 +92,11 @@ structure iter.traits.iterator.Iterator (Self : Type) (Self_Item : Type) where
 structure borrow.Borrow (Self : Type) (Borrowed : Type) where
   borrow : Self → RustM Borrowed
 
+/-- Trait declaration: [core_models::borrow::BorrowMut]
+    Source: 'core-models/src/core/borrow.rs', lines 12:0-15:1 -/
+structure borrow.BorrowMut (Self : Type) (Borrowed : Type) where
+  borrow_mut : Self → Result (Borrowed × (Borrowed → Self))
+
 /-- Trait declaration: [core_models::cmp::Eq]
     Source: 'core-models/src/core/cmp.rs', lines 26:0-26:32
     Visibility: public -/

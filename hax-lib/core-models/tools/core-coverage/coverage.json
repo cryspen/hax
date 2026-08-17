@@ -13706,17 +13706,16 @@
    },
    {
     "module": "borrow",
-    "covered": 2,
+    "covered": 4,
     "total": 4,
     "in_scope": true,
     "covered_items": [
      "Borrow",
-     "Borrow::borrow"
-    ],
-    "missing_items": [
+     "Borrow::borrow",
      "BorrowMut",
      "BorrowMut::borrow_mut"
-    ]
+    ],
+    "missing_items": []
    },
    {
     "module": "bstr",
