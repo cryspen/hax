@@ -63,15 +63,11 @@ class t_Tuple (v_Self: Type0) = { __marker_trait_t_Tuple:Prims.unit }
 
 /// See [`std::marker::ConstParamTy_`]
 class t_ConstParamTy_ (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_StructuralPartialEq v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:Core_models.Cmp.t_Eq v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_StructuralPartialEq v_Self
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let _ = fun (v_Self:Type0) {|i: t_ConstParamTy_ v_Self|} -> i._super_i0
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_ConstParamTy_ v_Self|} -> i._super_i1
 
 /// See [`std::marker::FnPtr`]
 class t_FnPtr (v_Self: Type0) = { [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Copy v_Self }

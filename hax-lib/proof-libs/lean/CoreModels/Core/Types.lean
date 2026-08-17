@@ -536,68 +536,67 @@ structure marker.Destruct (Self : Type) where
 structure marker.Tuple (Self : Type) where
 
 /-- Trait declaration: [core_models::marker::ConstParamTy_]
-    Source: 'core-models/src/core/marker.rs', lines 78:0-78:64
+    Source: 'core-models/src/core/marker.rs', lines 84:0-84:47
     Visibility: public -/
 structure marker.ConstParamTy_ (Self : Type) where
   StructuralPartialEqInst : marker.StructuralPartialEq Self
-  cmpEqInst : cmp.Eq Self
 
 /-- Trait declaration: [core_models::marker::FnPtr]
-    Source: 'core-models/src/core/marker.rs', lines 84:0-84:24
+    Source: 'core-models/src/core/marker.rs', lines 90:0-90:24
     Visibility: public -/
 structure marker.FnPtr (Self : Type) where
   CopyInst : marker.Copy Self
 
 /-- Trait declaration: [core_models::marker::DiscriminantKind]
-    Source: 'core-models/src/core/marker.rs', lines 87:0-92:1
+    Source: 'core-models/src/core/marker.rs', lines 93:0-98:1
     Visibility: public -/
 structure marker.DiscriminantKind (Self : Type) (Self_Discriminant : Type)
   where
 
 /-- [core_models::marker::PhantomPinned]
-    Source: 'core-models/src/core/marker.rs', lines 95:0-95:25
+    Source: 'core-models/src/core/marker.rs', lines 101:0-101:25
     Visibility: public -/
 @[reducible]
 def marker.PhantomPinned := Unit
 
 /-- Trait declaration: [core_models::marker::Variance]
-    Source: 'core-models/src/core/marker.rs', lines 100:0-100:46
+    Source: 'core-models/src/core/marker.rs', lines 106:0-106:46
     Visibility: public -/
 structure marker.Variance (Self : Type) where
   defaultDefaultInst : default.Default Self
 
 /-- [core_models::marker::PhantomCovariant]
-    Source: 'core-models/src/core/marker.rs', lines 118:12-118:61
+    Source: 'core-models/src/core/marker.rs', lines 124:12-124:61
     Visibility: public -/
 @[reducible]
 def marker.PhantomCovariant (T : Type) := core.marker.PhantomData T
 
 /-- [core_models::marker::PhantomContravariant]
-    Source: 'core-models/src/core/marker.rs', lines 118:12-118:61
+    Source: 'core-models/src/core/marker.rs', lines 124:12-124:61
     Visibility: public -/
 @[reducible]
 def marker.PhantomContravariant (T : Type) := core.marker.PhantomData T
 
 /-- [core_models::marker::PhantomInvariant]
-    Source: 'core-models/src/core/marker.rs', lines 118:12-118:61
+    Source: 'core-models/src/core/marker.rs', lines 124:12-124:61
     Visibility: public -/
 @[reducible]
 def marker.PhantomInvariant (T : Type) := core.marker.PhantomData T
 
 /-- [core_models::marker::PhantomCovariantLifetime]
-    Source: 'core-models/src/core/marker.rs', lines 147:12-147:49
+    Source: 'core-models/src/core/marker.rs', lines 153:12-153:49
     Visibility: public -/
 @[reducible]
 def marker.PhantomCovariantLifetime := marker.PhantomCovariant Unit
 
 /-- [core_models::marker::PhantomContravariantLifetime]
-    Source: 'core-models/src/core/marker.rs', lines 147:12-147:49
+    Source: 'core-models/src/core/marker.rs', lines 153:12-153:49
     Visibility: public -/
 @[reducible]
 def marker.PhantomContravariantLifetime := marker.PhantomContravariant Unit
 
 /-- [core_models::marker::PhantomInvariantLifetime]
-    Source: 'core-models/src/core/marker.rs', lines 147:12-147:49
+    Source: 'core-models/src/core/marker.rs', lines 153:12-153:49
     Visibility: public -/
 @[reducible]
 def marker.PhantomInvariantLifetime := marker.PhantomInvariant Unit
