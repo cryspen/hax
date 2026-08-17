@@ -1138,3 +1138,16 @@ pub fn test_map_append_other_value_wins() -> bool {
             None => false,
         }
 }
+
+// =============================================================================
+// BinaryHeap (excluded from extraction, and *not* hand-written in Lean)
+// =============================================================================
+//
+// TODO(binary-heap-no-lean): the whole `binary_heap` module is in
+// `ALLOC_CHARON_EXCLUDES` (charon crashes on it), and unlike the other excluded
+// items it has no hand-written counterpart under
+// `hax-lib/proof-libs/lean/CoreModels/**`. A `#[rust_lean_test]` touching
+// `BinaryHeap` would therefore reference an unknown constant and break the Lean
+// build, so its behaviour is only covered by the proptests in
+// `alloc/src/lib.rs`. The F* side does have a real extraction
+// (`Alloc.Collections.Binary_heap.fst`).
