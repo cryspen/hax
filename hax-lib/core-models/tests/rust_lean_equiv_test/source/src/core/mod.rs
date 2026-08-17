@@ -11,5 +11,6 @@ pub mod num;
 pub mod num_exhaustive;
 pub mod ops;
 pub mod option;
+pub mod panicking;
 pub mod result;
 pub mod slice;
