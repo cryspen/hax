@@ -37,9 +37,18 @@
 )]
 #![allow(incomplete_features)]
 #![allow(unused_comparisons)]
-// `div_floor`, `next_multiple_of` and `checked_next_multiple_of` are still
-// unstable in std, so exercising them here needs the gate.
-#![feature(int_roundings)]
+// Several of the `core::num` items the equivalence tests exercise are still
+// unstable in std, so calling them here needs the gates.
+#![feature(
+    int_roundings,
+    uint_bit_width,
+    int_lowest_highest_one,
+    isolate_most_least_significant_one,
+    unchecked_shifts,
+    funnel_shifts,
+    disjoint_bitor,
+    wrapping_next_power_of_two
+)]
 
 pub mod helpers;
 

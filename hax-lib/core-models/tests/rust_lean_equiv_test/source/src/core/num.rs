@@ -1972,3 +1972,529 @@ pub fn test_isize_unsigned_abs_min() -> bool {
 pub fn test_usize_count_zeros_zero() -> bool {
     0usize.count_zeros() == 64u32
 }
+
+// =============================================================================
+// trailing_zeros / trailing_ones / leading_ones
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_trailing_zeros_zero() -> bool {
+    0u8.trailing_zeros() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_zeros_one() -> bool {
+    1u8.trailing_zeros() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_zeros_top_bit() -> bool {
+    128u8.trailing_zeros() == 7u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_trailing_zeros_min() -> bool {
+    i8::MIN.trailing_zeros() == 7u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_trailing_zeros_neg_one() -> bool {
+    (-1i8).trailing_zeros() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_ones_max() -> bool {
+    255u8.trailing_ones() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_trailing_ones_zero() -> bool {
+    0u8.trailing_ones() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_trailing_ones_neg_one() -> bool {
+    (-1i8).trailing_ones() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_leading_ones_max() -> bool {
+    255u8.leading_ones() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_leading_ones_zero() -> bool {
+    0u8.leading_ones() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_leading_ones_min() -> bool {
+    i8::MIN.leading_ones() == 1u32
+}
+
+#[rust_lean_test]
+pub fn test_u32_trailing_zeros_power_of_two() -> bool {
+    65536u32.trailing_zeros() == 16u32
+}
+
+// =============================================================================
+// lowest_one / highest_one / isolate_lowest_one / isolate_highest_one
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_lowest_one_zero() -> bool {
+    0u8.lowest_one() == none_u32()
+}
+
+#[rust_lean_test]
+pub fn test_u8_lowest_one_twelve() -> bool {
+    12u8.lowest_one() == Some(2u32)
+}
+
+#[rust_lean_test]
+pub fn test_u8_highest_one_zero() -> bool {
+    0u8.highest_one() == none_u32()
+}
+
+#[rust_lean_test]
+pub fn test_u8_highest_one_max() -> bool {
+    255u8.highest_one() == Some(7u32)
+}
+
+#[rust_lean_test]
+pub fn test_i8_highest_one_neg_one() -> bool {
+    (-1i8).highest_one() == Some(7u32)
+}
+
+#[rust_lean_test]
+pub fn test_i8_lowest_one_min() -> bool {
+    i8::MIN.lowest_one() == Some(7u32)
+}
+
+#[rust_lean_test]
+pub fn test_u8_isolate_lowest_one_twelve() -> bool {
+    12u8.isolate_lowest_one() == 4u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_isolate_lowest_one_zero() -> bool {
+    0u8.isolate_lowest_one() == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_isolate_highest_one_mixed() -> bool {
+    0x60u8.isolate_highest_one() == 0x40u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_isolate_highest_one_zero() -> bool {
+    0u8.isolate_highest_one() == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_isolate_highest_one_neg_one() -> bool {
+    (-1i8).isolate_highest_one() == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_i8_isolate_lowest_one_min() -> bool {
+    i8::MIN.isolate_lowest_one() == i8::MIN
+}
+
+// =============================================================================
+// bit_width (unsigned)
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_bit_width_zero() -> bool {
+    0u8.bit_width() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_bit_width_one() -> bool {
+    1u8.bit_width() == 1u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_bit_width_max() -> bool {
+    255u8.bit_width() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_u32_bit_width_power_of_two() -> bool {
+    256u32.bit_width() == 9u32
+}
+
+// =============================================================================
+// swap_bytes / to_be / to_le / from_be / from_le / to_ne_bytes / from_ne_bytes
+// =============================================================================
+// The model fixes a little-endian target, so `to_le`/`from_le` are the identity
+// and `to_be`/`from_be`/`swap_bytes` all reverse the bytes.
+
+#[rust_lean_test]
+pub fn test_u8_swap_bytes_identity() -> bool {
+    200u8.swap_bytes() == 200u8
+}
+
+#[rust_lean_test]
+pub fn test_u16_swap_bytes() -> bool {
+    0x1234u16.swap_bytes() == 0x3412u16
+}
+
+#[rust_lean_test]
+pub fn test_u32_swap_bytes() -> bool {
+    0x12345678u32.swap_bytes() == 0x78563412u32
+}
+
+#[rust_lean_test]
+pub fn test_u16_swap_bytes_max() -> bool {
+    u16::MAX.swap_bytes() == u16::MAX
+}
+
+#[rust_lean_test]
+pub fn test_i16_swap_bytes_neg_one() -> bool {
+    (-1i16).swap_bytes() == -1i16
+}
+
+#[rust_lean_test]
+pub fn test_i16_swap_bytes_min() -> bool {
+    i16::MIN.swap_bytes() == 128i16
+}
+
+#[rust_lean_test]
+pub fn test_u16_to_be() -> bool {
+    0x1234u16.to_be() == 0x3412u16
+}
+
+#[rust_lean_test]
+pub fn test_u16_to_le() -> bool {
+    0x1234u16.to_le() == 0x1234u16
+}
+
+#[rust_lean_test]
+pub fn test_u16_from_be() -> bool {
+    u16::from_be(0x1234u16) == 0x3412u16
+}
+
+#[rust_lean_test]
+pub fn test_u16_from_le() -> bool {
+    u16::from_le(0x1234u16) == 0x1234u16
+}
+
+#[rust_lean_test]
+pub fn test_i32_to_be_zero() -> bool {
+    0i32.to_be() == 0i32
+}
+
+#[rust_lean_test]
+pub fn test_u16_to_ne_bytes() -> bool {
+    0x1234u16.to_ne_bytes() == [0x34u8, 0x12u8]
+}
+
+#[rust_lean_test]
+pub fn test_u16_from_ne_bytes() -> bool {
+    u16::from_ne_bytes([0x34u8, 0x12u8]) == 0x1234u16
+}
+
+#[rust_lean_test]
+pub fn test_u8_to_ne_bytes() -> bool {
+    255u8.to_ne_bytes() == [255u8]
+}
+
+#[rust_lean_test]
+pub fn test_i16_from_ne_bytes_neg_one() -> bool {
+    i16::from_ne_bytes([0xffu8, 0xffu8]) == -1i16
+}
+
+// =============================================================================
+// wrapping_shl / wrapping_shr / overflowing_shl / overflowing_shr
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_shl_zero() -> bool {
+    1u8.wrapping_shl(0u32) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_shl_last_bit() -> bool {
+    1u8.wrapping_shl(7u32) == 128u8
+}
+
+// The shift count is taken modulo `BITS`, so `BITS` behaves like `0`.
+#[rust_lean_test]
+pub fn test_u8_wrapping_shl_bits() -> bool {
+    1u8.wrapping_shl(8u32) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_shr_bits() -> bool {
+    128u8.wrapping_shr(8u32) == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_shr_sign_extends() -> bool {
+    (-8i8).wrapping_shr(1u32) == -4i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_shl_min() -> bool {
+    1i8.wrapping_shl(7u32) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_shl_in_range() -> bool {
+    1u8.overflowing_shl(7u32) == (128u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_shl_out_of_range() -> bool {
+    1u8.overflowing_shl(8u32) == (1u8, true)
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_shr_out_of_range() -> bool {
+    128u8.overflowing_shr(8u32) == (128u8, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_shr_in_range() -> bool {
+    (-8i8).overflowing_shr(1u32) == (-4i8, false)
+}
+
+// =============================================================================
+// checked_shl / checked_shr / strict_shl / strict_shr
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_checked_shl_in_range() -> bool {
+    1u8.checked_shl(7u32) == Some(128u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_shl_out_of_range() -> bool {
+    1u8.checked_shl(8u32) == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_shr_out_of_range() -> bool {
+    128u8.checked_shr(8u32) == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_shr_in_range() -> bool {
+    (-8i8).checked_shr(1u32) == Some(-4i8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_shl_zero() -> bool {
+    1u8.strict_shl(0u32) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_shl_last_bit() -> bool {
+    1u8.strict_shl(7u32) == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_shr_last_bit() -> bool {
+    i8::MIN.strict_shr(7u32) == -1i8
+}
+
+// =============================================================================
+// unbounded_shl / unbounded_shr
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_unbounded_shl_in_range() -> bool {
+    1u8.unbounded_shl(7u32) == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_unbounded_shl_out_of_range() -> bool {
+    255u8.unbounded_shl(8u32) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_unbounded_shr_out_of_range() -> bool {
+    255u8.unbounded_shr(100u32) == 0u8
+}
+
+// A signed right shift fills with the sign bit, so shifting all the way out
+// leaves -1 for a negative value and 0 for a non-negative one.
+#[rust_lean_test]
+pub fn test_i8_unbounded_shr_negative_out_of_range() -> bool {
+    (-8i8).unbounded_shr(100u32) == -1i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_unbounded_shr_positive_out_of_range() -> bool {
+    8i8.unbounded_shr(100u32) == 0i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_unbounded_shl_out_of_range() -> bool {
+    (-1i8).unbounded_shl(8u32) == 0i8
+}
+
+// =============================================================================
+// unchecked_shl / unchecked_shr
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_unchecked_shl() -> bool {
+    unsafe { 1u8.unchecked_shl(7u32) == 128u8 }
+}
+
+#[rust_lean_test]
+pub fn test_u8_unchecked_shr() -> bool {
+    unsafe { 128u8.unchecked_shr(7u32) == 1u8 }
+}
+
+#[rust_lean_test]
+pub fn test_i8_unchecked_shr_sign_extends() -> bool {
+    unsafe { i8::MIN.unchecked_shr(7u32) == -1i8 }
+}
+
+// =============================================================================
+// funnel_shl / funnel_shr (unsigned)
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_funnel_shl_zero_shift() -> bool {
+    0xF0u8.funnel_shl(0x0Fu8, 0u32) == 0xF0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_funnel_shl_four() -> bool {
+    0xF0u8.funnel_shl(0x0Fu8, 4u32) == 0x00u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_funnel_shl_mixes_halves() -> bool {
+    0x0Fu8.funnel_shl(0xF0u8, 4u32) == 0xFFu8
+}
+
+#[rust_lean_test]
+pub fn test_u8_funnel_shr_zero_shift() -> bool {
+    0xF0u8.funnel_shr(0x0Fu8, 0u32) == 0x0Fu8
+}
+
+#[rust_lean_test]
+pub fn test_u8_funnel_shr_four() -> bool {
+    0x0Fu8.funnel_shr(0xF0u8, 4u32) == 0xFFu8
+}
+
+#[rust_lean_test]
+pub fn test_u8_funnel_shl_last() -> bool {
+    0x01u8.funnel_shl(0x80u8, 7u32) == 0xC0u8
+}
+
+// =============================================================================
+// unchecked_disjoint_bitor (unsigned)
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_unchecked_disjoint_bitor_halves() -> bool {
+    unsafe { 0xF0u8.unchecked_disjoint_bitor(0x0Fu8) == 0xFFu8 }
+}
+
+#[rust_lean_test]
+pub fn test_u8_unchecked_disjoint_bitor_zero() -> bool {
+    unsafe { 0u8.unchecked_disjoint_bitor(0u8) == 0u8 }
+}
+
+#[rust_lean_test]
+pub fn test_u8_unchecked_disjoint_bitor_max() -> bool {
+    unsafe { 255u8.unchecked_disjoint_bitor(0u8) == 255u8 }
+}
+
+// =============================================================================
+// next_power_of_two / checked_next_power_of_two / wrapping_next_power_of_two
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_next_power_of_two_zero() -> bool {
+    0u8.next_power_of_two() == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_next_power_of_two_one() -> bool {
+    1u8.next_power_of_two() == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_next_power_of_two_three() -> bool {
+    3u8.next_power_of_two() == 4u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_next_power_of_two_largest() -> bool {
+    128u8.next_power_of_two() == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_next_power_of_two_overflow() -> bool {
+    129u8.checked_next_power_of_two() == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_next_power_of_two_max() -> bool {
+    255u8.checked_next_power_of_two() == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_next_power_of_two_ok() -> bool {
+    5u8.checked_next_power_of_two() == Some(8u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_next_power_of_two_overflow() -> bool {
+    200u8.wrapping_next_power_of_two() == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_next_power_of_two_zero() -> bool {
+    0u8.wrapping_next_power_of_two() == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u32_next_power_of_two() -> bool {
+    1000u32.next_power_of_two() == 1024u32
+}
+
+// =============================================================================
+// shl_exact / shr_exact / unchecked_shl_exact / unchecked_shr_exact
+// =============================================================================
+// TODO(toolchain): the pinned toolchain (nightly-2025-11-08) has no
+// `sh{l,r}_exact`/`unchecked_sh{l,r}_exact` on the integer primitives, so there
+// is nothing to call here. The model's behaviour is pinned by the proptests in
+// `core-models/src/core/num/mod.rs` instead.
+
+// =============================================================================
+// usize / isize bit-level spot checks
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_usize_trailing_zeros_zero() -> bool {
+    0usize.trailing_zeros() == 64u32
+}
+
+#[rust_lean_test]
+pub fn test_usize_bit_width_max() -> bool {
+    usize::MAX.bit_width() == 64u32
+}
+
+#[rust_lean_test]
+pub fn test_usize_wrapping_shl_bits() -> bool {
+    1usize.wrapping_shl(64u32) == 1usize
+}
+
+#[rust_lean_test]
+pub fn test_isize_unbounded_shr_negative() -> bool {
+    (-8isize).unbounded_shr(100u32) == -1isize
+}
+
+#[rust_lean_test]
+pub fn test_usize_swap_bytes_one() -> bool {
+    1usize.swap_bytes() == 72057594037927936usize
+}

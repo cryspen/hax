@@ -583,6 +583,246 @@ macro_rules! uint_impl {
                     result
                 }
             }
+            /// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+            pub fn trailing_zeros(x: $Self) -> core::primitive::u32 {
+                // `x & -x` keeps only the lowest set bit; one less than it is a mask of
+                // exactly the trailing zeros, so counting its ones counts them.
+                if x == 0 {
+                    <$Name>::BITS
+                } else {
+                    Self::count_ones(Self::wrapping_sub(x & Self::wrapping_neg(x), 1))
+                }
+            }
+            /// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+            pub fn trailing_ones(x: $Self) -> core::primitive::u32 {
+                // `MAX - x` is `!x` for an unsigned type.
+                Self::trailing_zeros(Self::wrapping_sub(<$Name>::MAX, x))
+            }
+            /// See [`std::primitive::u8::leading_ones`] (and similar for other integer types)
+            pub fn leading_ones(x: $Self) -> core::primitive::u32 {
+                Self::leading_zeros(Self::wrapping_sub(<$Name>::MAX, x))
+            }
+            /// See [`std::primitive::u8::bit_width`] (and similar for other unsigned integer types)
+            // Opaque: the natural body is `BITS - leading_zeros(x)`, and `leading_zeros`
+            // is itself opaque, so no backend can see that the subtraction is in range.
+            #[hax_lib::opaque]
+            pub fn bit_width(x: $Self) -> core::primitive::u32 {
+                <$Name>::BITS - Self::leading_zeros(x)
+            }
+            /// See [`std::primitive::u8::highest_one`] (and similar for other unsigned integer types)
+            pub fn highest_one(x: $Self) -> Option<core::primitive::u32> {
+                // The index of the highest set bit is `floor(log2(x))`.
+                Self::checked_ilog2(x)
+            }
+            /// See [`std::primitive::u8::lowest_one`] (and similar for other integer types)
+            pub fn lowest_one(x: $Self) -> Option<core::primitive::u32> {
+                if x == 0 {
+                    Option::None
+                } else {
+                    Option::Some(Self::trailing_zeros(x))
+                }
+            }
+            /// See [`std::primitive::u8::isolate_lowest_one`] (and similar for other integer types)
+            pub fn isolate_lowest_one(x: $Self) -> $Self {
+                x & Self::wrapping_neg(x)
+            }
+            /// See [`std::primitive::u8::isolate_highest_one`] (and similar for other integer types)
+            pub fn isolate_highest_one(x: $Self) -> $Self {
+                // `MAX / 2 + 1` is the top bit; shifting it down by the leading-zero
+                // count lands it on the highest set bit (and on nothing, for `x == 0`).
+                x & Self::wrapping_shr(<$Name>::MAX / 2 + 1, Self::leading_zeros(x))
+            }
+            // The remaining operations in this block are endianness-dependent. The model
+            // fixes a little-endian target, consistent with the fixed 64-bit `usize` it
+            // already assumes (`rust_primitives::arithmetic::SIZE_BYTES`).
+            /// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
+            pub fn swap_bytes(x: $Self) -> $Self {
+                // Reading the big-endian bytes of `x` back as little-endian reverses them.
+                Self::from_le_bytes(Self::to_be_bytes(x))
+            }
+            /// See [`std::primitive::u8::to_be`] (and similar for other integer types)
+            pub fn to_be(x: $Self) -> $Self {
+                Self::swap_bytes(x)
+            }
+            /// See [`std::primitive::u8::to_le`] (and similar for other integer types)
+            pub fn to_le(x: $Self) -> $Self {
+                x
+            }
+            /// See [`std::primitive::u8::from_be`] (and similar for other integer types)
+            pub fn from_be(x: $Self) -> $Self {
+                Self::swap_bytes(x)
+            }
+            /// See [`std::primitive::u8::from_le`] (and similar for other integer types)
+            pub fn from_le(x: $Self) -> $Self {
+                x
+            }
+            /// See [`std::primitive::u8::to_ne_bytes`] (and similar for other integer types)
+            pub fn to_ne_bytes(x: $Self) -> [core::primitive::u8; $Bytes] {
+                Self::to_le_bytes(x)
+            }
+            /// See [`std::primitive::u8::from_ne_bytes`] (and similar for other integer types)
+            pub fn from_ne_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
+                Self::from_le_bytes(bytes)
+            }
+            /// See [`std::primitive::u8::wrapping_shl`] (and similar for other integer types)
+            pub fn wrapping_shl(x: $Self, n: core::primitive::u32) -> $Self {
+                // `n % BITS` is `core`'s `n & (BITS - 1)`; spelled as a remainder it is
+                // the form the backends can see stays below `BITS`.
+                x << (n % <$Name>::BITS)
+            }
+            /// See [`std::primitive::u8::wrapping_shr`] (and similar for other integer types)
+            pub fn wrapping_shr(x: $Self, n: core::primitive::u32) -> $Self {
+                x >> (n % <$Name>::BITS)
+            }
+            /// See [`std::primitive::u8::overflowing_shl`] (and similar for other integer types)
+            pub fn overflowing_shl(x: $Self, n: core::primitive::u32) -> ($Self, bool) {
+                (Self::wrapping_shl(x, n), n >= <$Name>::BITS)
+            }
+            /// See [`std::primitive::u8::overflowing_shr`] (and similar for other integer types)
+            pub fn overflowing_shr(x: $Self, n: core::primitive::u32) -> ($Self, bool) {
+                (Self::wrapping_shr(x, n), n >= <$Name>::BITS)
+            }
+            /// See [`std::primitive::u8::checked_shl`] (and similar for other integer types)
+            pub fn checked_shl(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if n < <$Name>::BITS {
+                    Option::Some(x << n)
+                } else {
+                    Option::None
+                }
+            }
+            /// See [`std::primitive::u8::checked_shr`] (and similar for other integer types)
+            pub fn checked_shr(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if n < <$Name>::BITS {
+                    Option::Some(x >> n)
+                } else {
+                    Option::None
+                }
+            }
+            /// See [`std::primitive::u8::strict_shl`] (and similar for other integer types)
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub fn strict_shl(x: $Self, n: core::primitive::u32) -> $Self {
+                if n < <$Name>::BITS {
+                    x << n
+                } else {
+                    crate::panicking::internal::panic()
+                }
+            }
+            /// See [`std::primitive::u8::strict_shr`] (and similar for other integer types)
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub fn strict_shr(x: $Self, n: core::primitive::u32) -> $Self {
+                if n < <$Name>::BITS {
+                    x >> n
+                } else {
+                    crate::panicking::internal::panic()
+                }
+            }
+            /// See [`std::primitive::u8::unbounded_shl`] (and similar for other integer types)
+            pub fn unbounded_shl(x: $Self, n: core::primitive::u32) -> $Self {
+                if n < <$Name>::BITS {
+                    x << n
+                } else {
+                    0
+                }
+            }
+            /// See [`std::primitive::u8::unbounded_shr`] (and similar for other unsigned integer types)
+            pub fn unbounded_shr(x: $Self, n: core::primitive::u32) -> $Self {
+                if n < <$Name>::BITS {
+                    x >> n
+                } else {
+                    0
+                }
+            }
+            /// See [`std::primitive::u8::unchecked_shl`] (and similar for other integer types)
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub unsafe fn unchecked_shl(x: $Self, n: core::primitive::u32) -> $Self {
+                x << n
+            }
+            /// See [`std::primitive::u8::unchecked_shr`] (and similar for other integer types)
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub unsafe fn unchecked_shr(x: $Self, n: core::primitive::u32) -> $Self {
+                x >> n
+            }
+            /// See [`std::primitive::u8::shl_exact`] (and similar for other unsigned integer types)
+            pub fn shl_exact(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if n <= Self::leading_zeros(x) && n < <$Name>::BITS {
+                    Option::Some(x << n)
+                } else {
+                    Option::None
+                }
+            }
+            /// See [`std::primitive::u8::shr_exact`] (and similar for other integer types)
+            pub fn shr_exact(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if n <= Self::trailing_zeros(x) && n < <$Name>::BITS {
+                    Option::Some(x >> n)
+                } else {
+                    Option::None
+                }
+            }
+            /// See [`std::primitive::u8::unchecked_shl_exact`] (and similar for other unsigned integer types)
+            #[hax_lib::requires(n <= <$Name>::leading_zeros(x) && n < <$Name>::BITS)]
+            pub unsafe fn unchecked_shl_exact(x: $Self, n: core::primitive::u32) -> $Self {
+                x << n
+            }
+            /// See [`std::primitive::u8::unchecked_shr_exact`] (and similar for other integer types)
+            #[hax_lib::requires(n <= <$Name>::trailing_zeros(x) && n < <$Name>::BITS)]
+            pub unsafe fn unchecked_shr_exact(x: $Self, n: core::primitive::u32) -> $Self {
+                x >> n
+            }
+            /// See [`std::primitive::u8::funnel_shl`] (and similar for other unsigned integer types)
+            // `x:y` shifted left by `n`, keeping the more significant half.
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub fn funnel_shl(x: $Self, y: $Self, n: core::primitive::u32) -> $Self {
+                if n == 0 {
+                    x
+                } else {
+                    Self::wrapping_shl(x, n) | Self::wrapping_shr(y, <$Name>::BITS - n)
+                }
+            }
+            /// See [`std::primitive::u8::funnel_shr`] (and similar for other unsigned integer types)
+            // `x:y` shifted right by `n`, keeping the less significant half.
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub fn funnel_shr(x: $Self, y: $Self, n: core::primitive::u32) -> $Self {
+                if n == 0 {
+                    y
+                } else {
+                    Self::wrapping_shr(y, n) | Self::wrapping_shl(x, <$Name>::BITS - n)
+                }
+            }
+            /// See [`std::primitive::u8::unchecked_disjoint_bitor`] (and similar for other unsigned integer types)
+            #[hax_lib::requires(x & y == 0)]
+            pub unsafe fn unchecked_disjoint_bitor(x: $Self, y: $Self) -> $Self {
+                x | y
+            }
+            /// See [`std::primitive::u8::checked_next_power_of_two`] (and similar for other unsigned integer types)
+            pub fn checked_next_power_of_two(x: $Self) -> Option<$Self> {
+                if x <= 1 {
+                    Option::Some(1)
+                } else {
+                    // `MAX >> leading_zeros(x - 1)` is `core`'s "one less than the next
+                    // power of two". `x >= 2` makes the shift in range; the remainder makes
+                    // that visible to the backends without changing the value.
+                    Self::checked_add(<$Name>::MAX >> (Self::leading_zeros(x - 1) % <$Name>::BITS), 1)
+                }
+            }
+            /// See [`std::primitive::u8::wrapping_next_power_of_two`] (and similar for other unsigned integer types)
+            pub fn wrapping_next_power_of_two(x: $Self) -> $Self {
+                if x <= 1 {
+                    1
+                } else {
+                    Self::wrapping_add(<$Name>::MAX >> (Self::leading_zeros(x - 1) % <$Name>::BITS), 1)
+                }
+            }
+            /// See [`std::primitive::u8::next_power_of_two`] (and similar for other unsigned integer types)
+            // Opaque: the `+ 1` is in range exactly when a next power of two exists, and
+            // tying that to the (opaque) `leading_zeros` needs bit-level reasoning.
+            #[hax_lib::opaque]
+            #[hax_lib::requires(x.to_int() * 2.to_int() <= <$Name>::MAX.to_int() + 1.to_int())]
+            pub fn next_power_of_two(x: $Self) -> $Self {
+                match Self::checked_next_power_of_two(x) {
+                    Option::Some(result) => result,
+                    Option::None => crate::panicking::internal::panic(),
+                }
+            }
         }
     };
 }
@@ -1315,6 +1555,194 @@ macro_rules! iint_impl {
                     result
                 }
             }
+            /// See [`std::primitive::i8::trailing_zeros`] (and similar for other integer types)
+            pub fn trailing_zeros(x: $Self) -> core::primitive::u32 {
+                // `x & -x` keeps only the lowest set bit; one less than it is a mask of
+                // exactly the trailing zeros, so counting its ones counts them.
+                if x == 0 {
+                    <$Name>::BITS
+                } else {
+                    Self::count_ones(Self::wrapping_sub(x & Self::wrapping_neg(x), 1))
+                }
+            }
+            /// See [`std::primitive::i8::trailing_ones`] (and similar for other integer types)
+            pub fn trailing_ones(x: $Self) -> core::primitive::u32 {
+                // `-1 - x` is `!x`, and it never overflows.
+                Self::trailing_zeros(Self::wrapping_sub(-1, x))
+            }
+            /// See [`std::primitive::i8::leading_ones`] (and similar for other integer types)
+            pub fn leading_ones(x: $Self) -> core::primitive::u32 {
+                Self::leading_zeros(Self::wrapping_sub(-1, x))
+            }
+            /// See [`std::primitive::i8::highest_one`] (and similar for other signed integer types)
+            // Opaque: `leading_zeros` is opaque, so no backend can see that subtracting it
+            // from `BITS - 1` stays in range.
+            #[hax_lib::opaque]
+            pub fn highest_one(x: $Self) -> Option<core::primitive::u32> {
+                if x == 0 {
+                    Option::None
+                } else {
+                    Option::Some(<$Name>::BITS - 1 - Self::leading_zeros(x))
+                }
+            }
+            /// See [`std::primitive::i8::lowest_one`] (and similar for other integer types)
+            pub fn lowest_one(x: $Self) -> Option<core::primitive::u32> {
+                if x == 0 {
+                    Option::None
+                } else {
+                    Option::Some(Self::trailing_zeros(x))
+                }
+            }
+            /// See [`std::primitive::i8::isolate_lowest_one`] (and similar for other integer types)
+            pub fn isolate_lowest_one(x: $Self) -> $Self {
+                x & Self::wrapping_neg(x)
+            }
+            /// See [`std::primitive::i8::isolate_highest_one`] (and similar for other integer types)
+            pub fn isolate_highest_one(x: $Self) -> $Self {
+                // `MIN` is the top bit; an arithmetic shift down by the leading-zero count
+                // lands its lowest one on the highest set bit of `x`.
+                x & Self::wrapping_shr(<$Name>::MIN, Self::leading_zeros(x))
+            }
+            // The remaining operations in this block are endianness-dependent. The model
+            // fixes a little-endian target, consistent with the fixed 64-bit `isize` it
+            // already assumes (`rust_primitives::arithmetic::SIZE_BYTES`).
+            /// See [`std::primitive::i8::swap_bytes`] (and similar for other integer types)
+            pub fn swap_bytes(x: $Self) -> $Self {
+                // Reading the big-endian bytes of `x` back as little-endian reverses them.
+                Self::from_le_bytes(Self::to_be_bytes(x))
+            }
+            /// See [`std::primitive::i8::to_be`] (and similar for other integer types)
+            pub fn to_be(x: $Self) -> $Self {
+                Self::swap_bytes(x)
+            }
+            /// See [`std::primitive::i8::to_le`] (and similar for other integer types)
+            pub fn to_le(x: $Self) -> $Self {
+                x
+            }
+            /// See [`std::primitive::i8::from_be`] (and similar for other integer types)
+            pub fn from_be(x: $Self) -> $Self {
+                Self::swap_bytes(x)
+            }
+            /// See [`std::primitive::i8::from_le`] (and similar for other integer types)
+            pub fn from_le(x: $Self) -> $Self {
+                x
+            }
+            /// See [`std::primitive::i8::to_ne_bytes`] (and similar for other integer types)
+            pub fn to_ne_bytes(x: $Self) -> [core::primitive::u8; $Bytes] {
+                Self::to_le_bytes(x)
+            }
+            /// See [`std::primitive::i8::from_ne_bytes`] (and similar for other integer types)
+            pub fn from_ne_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
+                Self::from_le_bytes(bytes)
+            }
+            /// See [`std::primitive::i8::wrapping_shl`] (and similar for other integer types)
+            pub fn wrapping_shl(x: $Self, n: core::primitive::u32) -> $Self {
+                // `n % BITS` is `core`'s `n & (BITS - 1)`; spelled as a remainder it is
+                // the form the backends can see stays below `BITS`.
+                x << (n % <$Name>::BITS)
+            }
+            /// See [`std::primitive::i8::wrapping_shr`] (and similar for other integer types)
+            pub fn wrapping_shr(x: $Self, n: core::primitive::u32) -> $Self {
+                x >> (n % <$Name>::BITS)
+            }
+            /// See [`std::primitive::i8::overflowing_shl`] (and similar for other integer types)
+            pub fn overflowing_shl(x: $Self, n: core::primitive::u32) -> ($Self, bool) {
+                (Self::wrapping_shl(x, n), n >= <$Name>::BITS)
+            }
+            /// See [`std::primitive::i8::overflowing_shr`] (and similar for other integer types)
+            pub fn overflowing_shr(x: $Self, n: core::primitive::u32) -> ($Self, bool) {
+                (Self::wrapping_shr(x, n), n >= <$Name>::BITS)
+            }
+            /// See [`std::primitive::i8::checked_shl`] (and similar for other integer types)
+            pub fn checked_shl(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if n < <$Name>::BITS {
+                    Option::Some(x << n)
+                } else {
+                    Option::None
+                }
+            }
+            /// See [`std::primitive::i8::checked_shr`] (and similar for other integer types)
+            pub fn checked_shr(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if n < <$Name>::BITS {
+                    Option::Some(x >> n)
+                } else {
+                    Option::None
+                }
+            }
+            /// See [`std::primitive::i8::strict_shl`] (and similar for other integer types)
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub fn strict_shl(x: $Self, n: core::primitive::u32) -> $Self {
+                if n < <$Name>::BITS {
+                    x << n
+                } else {
+                    crate::panicking::internal::panic()
+                }
+            }
+            /// See [`std::primitive::i8::strict_shr`] (and similar for other integer types)
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub fn strict_shr(x: $Self, n: core::primitive::u32) -> $Self {
+                if n < <$Name>::BITS {
+                    x >> n
+                } else {
+                    crate::panicking::internal::panic()
+                }
+            }
+            /// See [`std::primitive::i8::unbounded_shl`] (and similar for other integer types)
+            pub fn unbounded_shl(x: $Self, n: core::primitive::u32) -> $Self {
+                if n < <$Name>::BITS {
+                    x << n
+                } else {
+                    0
+                }
+            }
+            /// See [`std::primitive::i8::unbounded_shr`] (and similar for other signed integer types)
+            pub fn unbounded_shr(x: $Self, n: core::primitive::u32) -> $Self {
+                if n < <$Name>::BITS {
+                    x >> n
+                } else {
+                    // An arithmetic shift by `BITS - 1` fills with the sign bit, which is
+                    // what shifting a signed value all the way out gives.
+                    x >> (<$Name>::BITS - 1)
+                }
+            }
+            /// See [`std::primitive::i8::unchecked_shl`] (and similar for other integer types)
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub unsafe fn unchecked_shl(x: $Self, n: core::primitive::u32) -> $Self {
+                x << n
+            }
+            /// See [`std::primitive::i8::unchecked_shr`] (and similar for other integer types)
+            #[hax_lib::requires(n < <$Name>::BITS)]
+            pub unsafe fn unchecked_shr(x: $Self, n: core::primitive::u32) -> $Self {
+                x >> n
+            }
+            /// See [`std::primitive::i8::shl_exact`] (and similar for other signed integer types)
+            // The `n < BITS` conjunct is implied by the other two (both counts are at most
+            // `BITS`), but spelling it out is what makes the shift in range for a backend.
+            pub fn shl_exact(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if (n < Self::leading_zeros(x) || n < Self::leading_ones(x)) && n < <$Name>::BITS {
+                    Option::Some(x << n)
+                } else {
+                    Option::None
+                }
+            }
+            /// See [`std::primitive::i8::shr_exact`] (and similar for other integer types)
+            pub fn shr_exact(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if n <= Self::trailing_zeros(x) && n < <$Name>::BITS {
+                    Option::Some(x >> n)
+                } else {
+                    Option::None
+                }
+            }
+            /// See [`std::primitive::i8::unchecked_shl_exact`] (and similar for other signed integer types)
+            #[hax_lib::requires((n < <$Name>::leading_zeros(x) || n < <$Name>::leading_ones(x)) && n < <$Name>::BITS)]
+            pub unsafe fn unchecked_shl_exact(x: $Self, n: core::primitive::u32) -> $Self {
+                x << n
+            }
+            /// See [`std::primitive::i8::unchecked_shr_exact`] (and similar for other integer types)
+            #[hax_lib::requires(n <= <$Name>::trailing_zeros(x) && n < <$Name>::BITS)]
+            pub unsafe fn unchecked_shr_exact(x: $Self, n: core::primitive::u32) -> $Self {
+                x >> n
+            }
             /// See [`std::primitive::i8::clamp_magnitude`] (and similar for other signed integer types)
             pub fn clamp_magnitude(x: $Self, limit: $USelf) -> $Self {
                 if limit > <$Name>::MAX as $USelf {
@@ -1858,6 +2286,67 @@ mod tests {
                         fn [<test_ $t _midpoint>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assert_eq!(super::$t::midpoint(x.inject(), y.inject()), x.midpoint(y));
                         }
+
+                        #[test]
+                        fn [<test_ $t _bit_counting_family>](x in any::<$t>()) {
+                            let mx = x.inject();
+                            prop_assert_eq!(super::$t::trailing_zeros(mx), x.trailing_zeros());
+                            prop_assert_eq!(super::$t::trailing_ones(mx), x.trailing_ones());
+                            prop_assert_eq!(super::$t::leading_ones(mx), x.leading_ones());
+                            prop_assert_eq!(super::$t::lowest_one(mx), x.lowest_one().inject());
+                            prop_assert_eq!(super::$t::highest_one(mx), x.highest_one().inject());
+                            prop_assert_eq!(super::$t::isolate_lowest_one(mx), x.isolate_lowest_one());
+                            prop_assert_eq!(super::$t::isolate_highest_one(mx), x.isolate_highest_one());
+                        }
+
+                        // The model fixes a little-endian target, which is also what std
+                        // does on the hosts this test suite runs on.
+                        #[test]
+                        fn [<test_ $t _endianness_family>](x in any::<$t>()) {
+                            let mx = x.inject();
+                            prop_assert_eq!(super::$t::swap_bytes(mx), x.swap_bytes());
+                            prop_assert_eq!(super::$t::to_be(mx), x.to_be());
+                            prop_assert_eq!(super::$t::to_le(mx), x.to_le());
+                            prop_assert_eq!(super::$t::from_be(mx), $t::from_be(x));
+                            prop_assert_eq!(super::$t::from_le(mx), $t::from_le(x));
+                            prop_assert_eq!(super::$t::to_ne_bytes(mx), x.to_ne_bytes().inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _from_ne_bytes>](bytes in any::<[u8; $t::BITS as usize / 8]>()) {
+                            prop_assert_eq!(super::$t::from_ne_bytes(bytes.inject()), $t::from_ne_bytes(bytes));
+                        }
+
+                        // `n` ranges past `BITS` on purpose: that is where the shift
+                        // variants stop agreeing with each other.
+                        #[test]
+                        fn [<test_ $t _shift_family>](x in any::<$t>(), n in 0u32..=(2 * $t::BITS)) {
+                            let mx = x.inject();
+                            prop_assert_eq!(super::$t::wrapping_shl(mx, n), x.wrapping_shl(n));
+                            prop_assert_eq!(super::$t::wrapping_shr(mx, n), x.wrapping_shr(n));
+                            prop_assert_eq!(super::$t::overflowing_shl(mx, n), x.overflowing_shl(n));
+                            prop_assert_eq!(super::$t::overflowing_shr(mx, n), x.overflowing_shr(n));
+                            prop_assert_eq!(super::$t::checked_shl(mx, n), x.checked_shl(n).inject());
+                            prop_assert_eq!(super::$t::checked_shr(mx, n), x.checked_shr(n).inject());
+                            prop_assert_eq!(super::$t::unbounded_shl(mx, n), x.unbounded_shl(n));
+                            prop_assert_eq!(super::$t::unbounded_shr(mx, n), x.unbounded_shr(n));
+                            if n < $t::BITS {
+                                prop_assert_eq!(super::$t::strict_shl(mx, n), x.strict_shl(n));
+                                prop_assert_eq!(super::$t::strict_shr(mx, n), x.strict_shr(n));
+                            }
+                        }
+
+                        // `shr_exact` has no counterpart on the pinned toolchain, so the
+                        // expected value is spelled out from its documented behaviour.
+                        #[test]
+                        fn [<test_ $t _shr_exact>](x in any::<$t>(), n in 0u32..=(2 * $t::BITS)) {
+                            let expected = if n <= x.trailing_zeros() && n < $t::BITS {
+                                Some(x >> n)
+                            } else {
+                                None
+                            };
+                            prop_assert_eq!(super::$t::shr_exact(x.inject(), n), expected.inject());
+                        }
                     }
 
                     #[test]
@@ -1916,6 +2405,65 @@ mod tests {
                         fn [<test_ $t _next_multiple_of>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assume!(x.checked_next_multiple_of(y).is_some());
                             prop_assert_eq!(super::$t::next_multiple_of(x.inject(), y.inject()), x.next_multiple_of(y));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _bit_width>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::bit_width(x.inject()), x.bit_width());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _next_power_of_two_family>](x in any::<$t>()) {
+                            let mx = x.inject();
+                            prop_assert_eq!(
+                                super::$t::checked_next_power_of_two(mx),
+                                x.checked_next_power_of_two().inject(),
+                            );
+                            prop_assert_eq!(
+                                super::$t::wrapping_next_power_of_two(mx),
+                                x.wrapping_next_power_of_two(),
+                            );
+                            if x.checked_next_power_of_two().is_some() {
+                                prop_assert_eq!(super::$t::next_power_of_two(mx), x.next_power_of_two());
+                            }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _funnel_shifts>](x in any::<$t>(), y in any::<$t>(), n in 0u32..$t::BITS) {
+                            prop_assert_eq!(super::$t::funnel_shl(x.inject(), y.inject(), n), x.funnel_shl(y, n));
+                            prop_assert_eq!(super::$t::funnel_shr(x.inject(), y.inject(), n), x.funnel_shr(y, n));
+                        }
+
+                        // Clear `y`'s bits wherever `x` has one, so the two are disjoint.
+                        #[test]
+                        fn [<test_ $t _unchecked_disjoint_bitor>](x in any::<$t>(), y in any::<$t>()) {
+                            let y = y & !x;
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_disjoint_bitor(x.inject(), y.inject()) },
+                                unsafe { x.unchecked_disjoint_bitor(y) },
+                            );
+                        }
+
+                        // `shl_exact` has no counterpart on the pinned toolchain, so the
+                        // expected value is spelled out from its documented behaviour.
+                        #[test]
+                        fn [<test_ $t _shl_exact>](x in any::<$t>(), n in 0u32..=(2 * $t::BITS)) {
+                            let expected = if n <= x.leading_zeros() && n < $t::BITS {
+                                Some(x << n)
+                            } else {
+                                None
+                            };
+                            prop_assert_eq!(super::$t::shl_exact(x.inject(), n), expected.inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_shl_exact>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                            // Clamp rather than reject: random values have few leading
+                            // zeros, so rejection sampling would starve.
+                            let n = n.min(x.leading_zeros()).min($t::BITS - 1);
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_shl_exact(x.inject(), n) },
+                                x << n);
                         }
                     }
 
@@ -2058,6 +2606,31 @@ mod tests {
                             prop_assume!(x != $t::MIN);
                             prop_assert_eq!(super::$t::strict_neg(x.inject()), x.strict_neg());
                         }
+
+                        // `shl_exact` has no counterpart on the pinned toolchain, so the
+                        // expected value is spelled out from its documented behaviour: a
+                        // signed left shift is exact while it keeps the sign bit's run.
+                        #[test]
+                        fn [<test_ $t _shl_exact>](x in any::<$t>(), n in 0u32..=(2 * $t::BITS)) {
+                            let expected = if (n < x.leading_zeros() || n < x.leading_ones()) && n < $t::BITS {
+                                Some(x << n)
+                            } else {
+                                None
+                            };
+                            prop_assert_eq!(super::$t::shl_exact(x.inject(), n), expected.inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_shl_exact>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                            // Clamp rather than reject: the run of sign bits is short for
+                            // most values, so rejection sampling would starve. One of the
+                            // two counts is always at least 1, so `bound - 1` is valid.
+                            let bound = x.leading_zeros().max(x.leading_ones());
+                            let n = if n >= bound { bound - 1 } else { n };
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_shl_exact(x.inject(), n) },
+                                x << n);
+                        }
                     }
                 )*
             }
@@ -2177,6 +2750,29 @@ mod tests {
                             prop_assert_eq!(
                                 unsafe { super::$t::unchecked_rem(x.inject(), y.inject()) },
                                 x % y);
+                        }
+
+                        #[test]
+                        fn [<test_ $t _unchecked_shifts>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_shl(x.inject(), n) },
+                                unsafe { x.unchecked_shl(n) });
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_shr(x.inject(), n) },
+                                unsafe { x.unchecked_shr(n) });
+                        }
+
+                        // No `unchecked_sh{l,r}_exact` in std on the pinned toolchain;
+                        // under their preconditions the plain shifts stand in. `n` is
+                        // taken from the shift counts the precondition allows.
+                        #[test]
+                        fn [<test_ $t _unchecked_shr_exact>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                            // Clamp rather than reject: random values have few trailing
+                            // zeros, so rejection sampling would starve.
+                            let n = n.min(x.trailing_zeros()).min($t::BITS - 1);
+                            prop_assert_eq!(
+                                unsafe { super::$t::unchecked_shr_exact(x.inject(), n) },
+                                x >> n);
                         }
 
                         // No `unchecked_div_exact` in std on the pinned toolchain; under
@@ -2464,6 +3060,52 @@ mod tests {
         }
     }
     strict_signed_arg_panic_test! { (u8, i8) (u16, i16) (u32, i32) (u64, i64) (u128, i128) (usize, isize) }
+
+    // A shift count of exactly `BITS` is the first one that overflows.
+    macro_rules! strict_shift_panic_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $t _strict_shl_overflow_panics>]() {
+                        let (x, n) = (std::hint::black_box(1 as $t), std::hint::black_box($t::BITS));
+                        crate::testing::panics_like_core(
+                            || super::$t::strict_shl(x.inject(), n),
+                            || x.strict_shl(n),
+                        );
+                    }
+                    #[test]
+                    fn [<test_ $t _strict_shr_overflow_panics>]() {
+                        let (x, n) = (std::hint::black_box(1 as $t), std::hint::black_box($t::BITS));
+                        crate::testing::panics_like_core(
+                            || super::$t::strict_shr(x.inject(), n),
+                            || x.strict_shr(n),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    strict_shift_panic_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+
+    // `next_power_of_two` panics when no next power of two is representable.
+    macro_rules! next_power_of_two_panic_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $t _next_power_of_two_overflow_panics>]() {
+                        let x = std::hint::black_box(<$t>::MAX);
+                        crate::testing::panics_like_core(
+                            || super::$t::next_power_of_two(x.inject()),
+                            || x.next_power_of_two(),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    next_power_of_two_panic_test! { u8 u16 u32 u64 u128 usize }
 
     int_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
     unchecked_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }

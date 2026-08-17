@@ -42,17 +42,24 @@
         cold_path,
         control_flow_into_value,
         control_flow_ok,
+        disjoint_bitor,
         drop_guard,
         exact_div,
+        funnel_shifts,
         hasher_prefixfree_extras,
+        int_lowest_highest_one,
         int_roundings,
+        isolate_most_least_significant_one,
         likely_unlikely,
         mem_copy_fn,
         one_sided_range,
         range_bounds_is_empty,
         range_into_bounds,
         step_trait,
-        unchecked_neg
+        uint_bit_width,
+        unchecked_neg,
+        unchecked_shifts,
+        wrapping_next_power_of_two
     )
 )]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
@@ -74,6 +81,7 @@
 // unstable: `div_ceil`/`div_floor`/`next_multiple_of` (int_roundings),
 // `exact_div` (exact_div, which is what the pinned toolchain calls the method
 // rustdoc now names `div_exact`), and `unchecked_neg`.
+
 #![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
