@@ -59,7 +59,13 @@
         range_bounds_is_empty,
         range_into_bounds,
         signed_bigint_helpers,
+        slice_pattern,
+        slice_split_once,
+        slice_swap_unchecked,
+        split_as_slice,
         step_trait,
+        strip_circumfix,
+        trim_prefix_suffix,
         uint_bit_width,
         unchecked_neg,
         unchecked_shifts,
@@ -89,6 +95,8 @@
 // unstable: `div_ceil`/`div_floor`/`next_multiple_of` (int_roundings),
 // `exact_div` (exact_div, which is what the pinned toolchain calls the method
 // rustdoc now names `div_exact`), and `unchecked_neg`.
+// The slice proptests compare against still-unstable `[T]` methods.
+#![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]

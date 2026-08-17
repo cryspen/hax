@@ -10,6 +10,42 @@ pub mod iter {
     use crate::option::Option;
     use rust_primitives::{sequence::*, slice::*};
 
+    /// Index of the first element of `s` satisfying `pred`, or `s.len()` if
+    /// there is none. A bounded loop with no early exit, which is the shape both
+    /// backends handle; `pred` is taken by reference so the split iterators can
+    /// call it out of `&mut self`.
+    // opaque: applying a `Fn` bound in F* leaves the result at the trait's
+    // abstract `Output` type rather than `bool`. The `ensures` is the only thing
+    // callers need out of the body, and it is what makes their subslices legal.
+    #[hax_lib::opaque]
+    #[hax_lib::ensures(|res| res <= slice_length(s))]
+    pub(super) fn position_of<T, P: Fn(&T) -> bool>(s: &[T], pred: &P) -> usize {
+        let len = slice_length(s);
+        let mut res = len;
+        for i in 0..len {
+            if res == len && (*pred)(slice_index(s, i)) {
+                res = i;
+            }
+        }
+        res
+    }
+
+    /// Index of the *last* element of `s` satisfying `pred`, or `s.len()` if
+    /// there is none.
+    // opaque: see `position_of`.
+    #[hax_lib::opaque]
+    #[hax_lib::ensures(|res| res <= slice_length(s))]
+    pub(super) fn rposition_of<T, P: Fn(&T) -> bool>(s: &[T], pred: &P) -> usize {
+        let len = slice_length(s);
+        let mut res = len;
+        for i in 0..len {
+            if (*pred)(slice_index(s, i)) {
+                res = i;
+            }
+        }
+        res
+    }
+
     /// See [`std::slice::Chunks`]
     pub struct Chunks<'a, T> {
         cs: usize,
@@ -24,10 +60,20 @@ pub mod iter {
     pub struct ChunksExact<'a, T> {
         cs: usize,
         elements: &'a [T],
+        rem: &'a [T],
     }
     impl<'a, T> ChunksExact<'a, T> {
         pub fn new(cs: usize, elements: &'a [T]) -> ChunksExact<'a, T> {
-            ChunksExact { cs, elements }
+            let len = slice_length(elements);
+            // `cs == 0` is unreachable (`Slice::chunks_exact` panics on it), but
+            // the guard is what lets the backends discharge the division.
+            let rem_len = if cs == 0 { 0 } else { len % cs };
+            let rem = slice_slice(elements, len - rem_len, len);
+            ChunksExact { cs, elements, rem }
+        }
+        /// See [`std::slice::ChunksExact::remainder`]
+        pub fn remainder(&self) -> &'a [T] {
+            self.rem
         }
     }
     /// See [`std::slice::Iter`]
@@ -96,6 +142,325 @@ pub mod iter {
             } else {
                 let res = slice_slice(self.elements, 0, self.size);
                 self.elements = slice_slice(self.elements, 1, slice_length(self.elements));
+                Option::Some(res)
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // Everything below is a later addition, and every `impl` here carries
+    // `#[hax_lib::attributes]` on purpose. hax numbers the `impl` blocks of a
+    // module by putting the plain ones first and the ones carrying a `hax_lib`
+    // attribute after them (hax#828), so an *attributed* block appended at the
+    // end of the module is the only kind that does not renumber — and rename —
+    // the `impl__*` definitions above in the F* output.
+    // ------------------------------------------------------------------------
+
+    /// See [`std::slice::RChunks`]
+    pub struct RChunks<'a, T> {
+        cs: usize,
+        elements: &'a [T],
+    }
+    #[hax_lib::attributes]
+    impl<'a, T> RChunks<'a, T> {
+        pub fn new(cs: usize, elements: &'a [T]) -> RChunks<'a, T> {
+            RChunks { cs, elements }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<'a, T> crate::iter::traits::iterator::Iterator for RChunks<'a, T> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            let len = slice_length(self.elements);
+            if len == 0 {
+                Option::None
+            } else if len < self.cs {
+                let res = self.elements;
+                self.elements = slice_slice(self.elements, 0, 0);
+                Option::Some(res)
+            } else {
+                let (rest, res) = slice_split_at(self.elements, len - self.cs);
+                self.elements = rest;
+                Option::Some(res)
+            }
+        }
+    }
+
+    /// See [`std::slice::RChunksExact`]
+    pub struct RChunksExact<'a, T> {
+        cs: usize,
+        elements: &'a [T],
+        rem: &'a [T],
+    }
+    #[hax_lib::attributes]
+    impl<'a, T> RChunksExact<'a, T> {
+        pub fn new(cs: usize, elements: &'a [T]) -> RChunksExact<'a, T> {
+            // Unlike `ChunksExact`, the elements the iterator never reaches sit
+            // at the *front*. `cs == 0` is guarded as in `ChunksExact::new`.
+            let rem_len = if cs == 0 {
+                0
+            } else {
+                slice_length(elements) % cs
+            };
+            let (rem, els) = slice_split_at(elements, rem_len);
+            RChunksExact {
+                cs,
+                elements: els,
+                rem,
+            }
+        }
+        /// See [`std::slice::RChunksExact::remainder`]
+        pub fn remainder(&self) -> &'a [T] {
+            self.rem
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<'a, T> crate::iter::traits::iterator::Iterator for RChunksExact<'a, T> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            let len = slice_length(self.elements);
+            if len < self.cs {
+                Option::None
+            } else {
+                let (rest, res) = slice_split_at(self.elements, len - self.cs);
+                self.elements = rest;
+                Option::Some(res)
+            }
+        }
+    }
+
+    /// See [`std::slice::Split`]
+    pub struct Split<'a, T, P> {
+        v: &'a [T],
+        pred: P,
+        finished: bool,
+    }
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> Split<'a, T, P> {
+        pub fn new(v: &'a [T], pred: P) -> Split<'a, T, P> {
+            Split {
+                v,
+                pred,
+                finished: false,
+            }
+        }
+        /// See [`std::slice::Split::as_slice`]
+        pub fn as_slice(&self) -> &'a [T] {
+            if self.finished {
+                slice_slice(self.v, 0, 0)
+            } else {
+                self.v
+            }
+        }
+        /// Yields the whole remaining slice and stops: what `splitn` does once
+        /// its split budget is used up.
+        pub(super) fn finish(&mut self) -> Option<&'a [T]> {
+            if self.finished {
+                Option::None
+            } else {
+                self.finished = true;
+                Option::Some(self.v)
+            }
+        }
+        /// The `DoubleEndedIterator` half of `Split`, which is all `RSplit` is.
+        pub(super) fn next_back(&mut self) -> Option<&'a [T]> {
+            if self.finished {
+                Option::None
+            } else {
+                let len = slice_length(self.v);
+                let idx = rposition_of(self.v, &self.pred);
+                if idx == len {
+                    self.finished = true;
+                    Option::Some(self.v)
+                } else {
+                    let res = slice_slice(self.v, idx + 1, len);
+                    self.v = slice_slice(self.v, 0, idx);
+                    Option::Some(res)
+                }
+            }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> crate::iter::traits::iterator::Iterator for Split<'a, T, P> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            if self.finished {
+                Option::None
+            } else {
+                let len = slice_length(self.v);
+                let idx = position_of(self.v, &self.pred);
+                if idx == len {
+                    self.finished = true;
+                    Option::Some(self.v)
+                } else {
+                    let res = slice_slice(self.v, 0, idx);
+                    self.v = slice_slice(self.v, idx + 1, len);
+                    Option::Some(res)
+                }
+            }
+        }
+    }
+
+    /// See [`std::slice::SplitInclusive`]
+    pub struct SplitInclusive<'a, T, P> {
+        v: &'a [T],
+        pred: P,
+        finished: bool,
+    }
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> SplitInclusive<'a, T, P> {
+        pub fn new(v: &'a [T], pred: P) -> SplitInclusive<'a, T, P> {
+            // The empty slice yields nothing at all, not one empty subslice.
+            let finished = slice_length(v) == 0;
+            SplitInclusive { v, pred, finished }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> crate::iter::traits::iterator::Iterator
+        for SplitInclusive<'a, T, P>
+    {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            if self.finished {
+                Option::None
+            } else {
+                let len = slice_length(self.v);
+                let p = position_of(self.v, &self.pred);
+                // The matched element terminates the subslice instead of being
+                // dropped, so the cut sits one past it.
+                let idx = if p == len { len } else { p + 1 };
+                if idx == len {
+                    self.finished = true;
+                }
+                let res = slice_slice(self.v, 0, idx);
+                self.v = slice_slice(self.v, idx, len);
+                Option::Some(res)
+            }
+        }
+    }
+
+    /// See [`std::slice::SplitN`]
+    pub struct SplitN<'a, T, P> {
+        inner: Split<'a, T, P>,
+        count: usize,
+    }
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> SplitN<'a, T, P> {
+        pub fn new(v: &'a [T], n: usize, pred: P) -> SplitN<'a, T, P> {
+            SplitN {
+                inner: Split::new(v, pred),
+                count: n,
+            }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> crate::iter::traits::iterator::Iterator for SplitN<'a, T, P> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            if self.count == 0 {
+                Option::None
+            } else if self.count == 1 {
+                self.count = 0;
+                self.inner.finish()
+            } else {
+                self.count = self.count - 1;
+                crate::iter::traits::iterator::Iterator::next(&mut self.inner)
+            }
+        }
+    }
+
+    /// See [`std::slice::RSplit`]
+    pub struct RSplit<'a, T, P> {
+        inner: Split<'a, T, P>,
+    }
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> RSplit<'a, T, P> {
+        pub fn new(v: &'a [T], pred: P) -> RSplit<'a, T, P> {
+            RSplit {
+                inner: Split::new(v, pred),
+            }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> crate::iter::traits::iterator::Iterator for RSplit<'a, T, P> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            self.inner.next_back()
+        }
+    }
+
+    /// See [`std::slice::RSplitN`]
+    pub struct RSplitN<'a, T, P> {
+        inner: Split<'a, T, P>,
+        count: usize,
+    }
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> RSplitN<'a, T, P> {
+        pub fn new(v: &'a [T], n: usize, pred: P) -> RSplitN<'a, T, P> {
+            RSplitN {
+                inner: Split::new(v, pred),
+                count: n,
+            }
+        }
+    }
+
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T) -> bool> crate::iter::traits::iterator::Iterator for RSplitN<'a, T, P> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            if self.count == 0 {
+                Option::None
+            } else if self.count == 1 {
+                self.count = 0;
+                self.inner.finish()
+            } else {
+                self.count = self.count - 1;
+                self.inner.next_back()
+            }
+        }
+    }
+
+    /// See [`std::slice::ChunkBy`]
+    pub struct ChunkBy<'a, T, P> {
+        v: &'a [T],
+        pred: P,
+    }
+    #[hax_lib::attributes]
+    impl<'a, T, P: Fn(&T, &T) -> bool> ChunkBy<'a, T, P> {
+        pub fn new(v: &'a [T], pred: P) -> ChunkBy<'a, T, P> {
+            ChunkBy { v, pred }
+        }
+    }
+
+    // opaque: F* gets no bound on the run length `n` out of the loop, so it
+    // cannot see that the split below is in range.
+    #[hax_lib::opaque]
+    impl<'a, T, P: Fn(&T, &T) -> bool> crate::iter::traits::iterator::Iterator for ChunkBy<'a, T, P> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            let len = slice_length(self.v);
+            if len == 0 {
+                Option::None
+            } else {
+                // `n == i` is the "the run is still unbroken" guard: once a pair
+                // fails the predicate, `n` stops tracking `i` and stays put.
+                let mut n = 1;
+                for i in 0..len {
+                    if i > 0
+                        && n == i
+                        && (self.pred)(slice_index(self.v, i - 1), slice_index(self.v, i))
+                    {
+                        n = i + 1;
+                    }
+                }
+                let (res, rest) = slice_split_at(self.v, n);
+                self.v = rest;
                 Option::Some(res)
             }
         }
@@ -279,6 +644,332 @@ impl<T> Slice<T> {
     {
         for i in 0..s.len() {
             s[i] = value.clone();
+        }
+    }
+    /// See [`std::slice::fill_with`]
+    // opaque: see `fill`.
+    #[hax_lib::opaque]
+    fn fill_with<F: Fn() -> T>(s: &mut [T], f: F) {
+        for i in 0..s.len() {
+            s[i] = f();
+        }
+    }
+    /// See [`std::slice::as_slice`]
+    fn as_slice(s: &[T]) -> &[T] {
+        s
+    }
+    /// See [`std::slice::split_first`]
+    fn split_first(s: &[T]) -> Option<(&T, &[T])> {
+        if Self::is_empty(s) {
+            Option::None
+        } else {
+            Option::Some((slice_index(s, 0), slice_slice(s, 1, Self::len(s))))
+        }
+    }
+    /// See [`std::slice::split_last`]
+    fn split_last(s: &[T]) -> Option<(&T, &[T])> {
+        if Self::is_empty(s) {
+            Option::None
+        } else {
+            let l = Self::len(s);
+            Option::Some((slice_index(s, l - 1), slice_slice(s, 0, l - 1)))
+        }
+    }
+    /// See [`std::slice::split_at_unchecked`]
+    #[hax_lib::requires(mid <= Slice::len(s))]
+    fn split_at_unchecked(s: &[T], mid: usize) -> (&[T], &[T]) {
+        rust_primitives::slice::slice_split_at(s, mid)
+    }
+    /// See [`std::slice::swap_unchecked`]
+    // opaque for F*: see `swap`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    #[hax_lib::requires(a < Slice::len(s) && b < Slice::len(s))]
+    fn swap_unchecked(s: &mut [T], a: usize, b: usize) {
+        rust_primitives::slice::slice_swap(s, a, b);
+    }
+    /// See [`std::slice::rotate_left`]
+    // opaque for F*: see `swap`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    #[hax_lib::requires(mid <= Slice::len(s))]
+    fn rotate_left(s: &mut [T], mid: usize) {
+        if mid > Self::len(s) {
+            crate::panicking::internal::panic()
+        }
+        // Rotation as three reversals: it needs no element copies, so it works
+        // for a bare `T` (`slice_reverse` is the only in-place primitive that
+        // moves elements without a `Clone`/`Copy` bound).
+        let len = Self::len(s);
+        slice_reverse(slice_slice_mut(s, 0, mid));
+        slice_reverse(slice_slice_mut(s, mid, len));
+        slice_reverse(s);
+    }
+    /// See [`std::slice::rotate_right`]
+    // opaque for F*: see `swap`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    #[hax_lib::requires(k <= Slice::len(s))]
+    fn rotate_right(s: &mut [T], k: usize) {
+        if k > Self::len(s) {
+            crate::panicking::internal::panic()
+        }
+        let len = Self::len(s);
+        Self::rotate_left(s, len - k);
+    }
+    /// See [`std::slice::rchunks`]
+    #[hax_lib::requires(cs > 0)]
+    fn rchunks<'a>(s: &'a [T], cs: usize) -> iter::RChunks<'a, T> {
+        if cs == 0 {
+            crate::panicking::internal::panic()
+        }
+        iter::RChunks::new(cs, s)
+    }
+    /// See [`std::slice::rchunks_exact`]
+    #[hax_lib::requires(cs > 0)]
+    fn rchunks_exact<'a>(s: &'a [T], cs: usize) -> iter::RChunksExact<'a, T> {
+        if cs == 0 {
+            crate::panicking::internal::panic()
+        }
+        iter::RChunksExact::new(cs, s)
+    }
+    /// See [`std::slice::split`]
+    fn split<'a, P: Fn(&T) -> bool>(s: &'a [T], pred: P) -> iter::Split<'a, T, P> {
+        iter::Split::new(s, pred)
+    }
+    /// See [`std::slice::split_inclusive`]
+    fn split_inclusive<'a, P: Fn(&T) -> bool>(
+        s: &'a [T],
+        pred: P,
+    ) -> iter::SplitInclusive<'a, T, P> {
+        iter::SplitInclusive::new(s, pred)
+    }
+    /// See [`std::slice::splitn`]
+    fn splitn<'a, P: Fn(&T) -> bool>(s: &'a [T], n: usize, pred: P) -> iter::SplitN<'a, T, P> {
+        iter::SplitN::new(s, n, pred)
+    }
+    /// See [`std::slice::rsplit`]
+    fn rsplit<'a, P: Fn(&T) -> bool>(s: &'a [T], pred: P) -> iter::RSplit<'a, T, P> {
+        iter::RSplit::new(s, pred)
+    }
+    /// See [`std::slice::rsplitn`]
+    fn rsplitn<'a, P: Fn(&T) -> bool>(s: &'a [T], n: usize, pred: P) -> iter::RSplitN<'a, T, P> {
+        iter::RSplitN::new(s, n, pred)
+    }
+    /// See [`std::slice::chunk_by`]
+    fn chunk_by<'a, P: Fn(&T, &T) -> bool>(s: &'a [T], pred: P) -> iter::ChunkBy<'a, T, P> {
+        iter::ChunkBy::new(s, pred)
+    }
+    /// See [`std::slice::split_once`]
+    fn split_once<P: Fn(&T) -> bool>(s: &[T], pred: P) -> Option<(&[T], &[T])> {
+        let len = Self::len(s);
+        let idx = iter::position_of(s, &pred);
+        if idx == len {
+            Option::None
+        } else {
+            Option::Some((slice_slice(s, 0, idx), slice_slice(s, idx + 1, len)))
+        }
+    }
+    /// See [`std::slice::rsplit_once`]
+    fn rsplit_once<P: Fn(&T) -> bool>(s: &[T], pred: P) -> Option<(&[T], &[T])> {
+        let len = Self::len(s);
+        let idx = iter::rposition_of(s, &pred);
+        if idx == len {
+            Option::None
+        } else {
+            Option::Some((slice_slice(s, 0, idx), slice_slice(s, idx + 1, len)))
+        }
+    }
+    /// See [`std::slice::binary_search_by`]
+    // opaque for F*: the loop below has no termination measure there.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    fn binary_search_by<F: Fn(&T) -> crate::cmp::Ordering>(s: &[T], f: F) -> Result<usize, usize> {
+        let len = Self::len(s);
+        if len == 0 {
+            Result::Err(0)
+        } else {
+            let mut base = 0;
+            let mut size = len;
+            // std narrows `size` with a `while size > 1` loop; `size` at least
+            // halves every step, so `len` iterations is a safe bound and keeps
+            // the loop the bounded shape the backends handle.
+            for _i in 0..len {
+                if size > 1 {
+                    let half = size / 2;
+                    let mid = base + half;
+                    match f(slice_index(s, mid)) {
+                        crate::cmp::Ordering::Greater => (),
+                        _ => base = mid,
+                    }
+                    size = size - half;
+                }
+            }
+            match f(slice_index(s, base)) {
+                crate::cmp::Ordering::Equal => Result::Ok(base),
+                crate::cmp::Ordering::Less => Result::Err(base + 1),
+                crate::cmp::Ordering::Greater => Result::Err(base),
+            }
+        }
+    }
+    /// See [`std::slice::binary_search_by_key`]
+    // opaque for F*: see `binary_search_by`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    fn binary_search_by_key<B: crate::cmp::Ord, F: Fn(&T) -> B>(
+        s: &[T],
+        b: &B,
+        f: F,
+    ) -> Result<usize, usize> {
+        // Spelled out rather than delegating to `binary_search_by` with a
+        // closure: building closures inside the model extracts poorly.
+        let len = Self::len(s);
+        if len == 0 {
+            Result::Err(0)
+        } else {
+            let mut base = 0;
+            let mut size = len;
+            for _i in 0..len {
+                if size > 1 {
+                    let half = size / 2;
+                    let mid = base + half;
+                    match f(slice_index(s, mid)).cmp(b) {
+                        crate::cmp::Ordering::Greater => (),
+                        _ => base = mid,
+                    }
+                    size = size - half;
+                }
+            }
+            match f(slice_index(s, base)).cmp(b) {
+                crate::cmp::Ordering::Equal => Result::Ok(base),
+                crate::cmp::Ordering::Less => Result::Err(base + 1),
+                crate::cmp::Ordering::Greater => Result::Err(base),
+            }
+        }
+    }
+    /// See [`std::slice::partition_point`]
+    // opaque for F*: see `binary_search_by`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    fn partition_point<P: Fn(&T) -> bool>(s: &[T], pred: P) -> usize {
+        // The same search as `binary_search_by` with `pred` mapped to
+        // `Less`/`Greater`, spelled out to avoid building a closure.
+        let len = Self::len(s);
+        if len == 0 {
+            0
+        } else {
+            let mut base = 0;
+            let mut size = len;
+            for _i in 0..len {
+                if size > 1 {
+                    let half = size / 2;
+                    let mid = base + half;
+                    if pred(slice_index(s, mid)) {
+                        base = mid;
+                    }
+                    size = size - half;
+                }
+            }
+            if pred(slice_index(s, base)) {
+                base + 1
+            } else {
+                base
+            }
+        }
+    }
+    /// See [`std::slice::is_sorted`]
+    // opaque for F*: bounded loop over the slice.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    fn is_sorted(s: &[T]) -> bool
+    where
+        T: crate::cmp::PartialOrd<T>,
+    {
+        let mut res = true;
+        for i in 0..Self::len(s) {
+            if i > 0 {
+                match slice_index(s, i - 1).partial_cmp(slice_index(s, i)) {
+                    Option::Some(crate::cmp::Ordering::Less) => (),
+                    Option::Some(crate::cmp::Ordering::Equal) => (),
+                    // Incomparable elements (`None`) are not sorted either.
+                    _ => res = false,
+                }
+            }
+        }
+        res
+    }
+    /// See [`std::slice::is_sorted_by`]
+    // opaque for F*: see `is_sorted`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    fn is_sorted_by<F: Fn(&T, &T) -> bool>(s: &[T], compare: F) -> bool {
+        let mut res = true;
+        for i in 0..Self::len(s) {
+            if i > 0 && !compare(slice_index(s, i - 1), slice_index(s, i)) {
+                res = false;
+            }
+        }
+        res
+    }
+    /// See [`std::slice::is_sorted_by_key`]
+    // opaque for F*: see `is_sorted`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    fn is_sorted_by_key<K: crate::cmp::PartialOrd<K>, F: Fn(&T) -> K>(s: &[T], f: F) -> bool {
+        let mut res = true;
+        for i in 0..Self::len(s) {
+            if i > 0 {
+                let a = f(slice_index(s, i - 1));
+                let b = f(slice_index(s, i));
+                match a.partial_cmp(&b) {
+                    Option::Some(crate::cmp::Ordering::Less) => (),
+                    Option::Some(crate::cmp::Ordering::Equal) => (),
+                    _ => res = false,
+                }
+            }
+        }
+        res
+    }
+    // `&mut` returns are unsupported in the F* backend.
+    /// See [`std::slice::as_mut_slice`]
+    #[cfg(not(hax_backend_fstar))]
+    fn as_mut_slice(s: &mut [T]) -> &mut [T] {
+        s
+    }
+    /// See [`std::slice::first_mut`]
+    #[cfg(not(hax_backend_fstar))]
+    fn first_mut(s: &mut [T]) -> Option<&mut T> {
+        if Self::is_empty(s) {
+            Option::None
+        } else {
+            Option::Some(slice_index_mut(s, 0))
+        }
+    }
+    /// See [`std::slice::last_mut`]
+    #[cfg(not(hax_backend_fstar))]
+    fn last_mut(s: &mut [T]) -> Option<&mut T> {
+        if Self::is_empty(s) {
+            Option::None
+        } else {
+            let l = Self::len(s);
+            Option::Some(slice_index_mut(s, l - 1))
+        }
+    }
+    // `split_off_first`/`split_off_last` retarget the *caller's* `&[T]`, so they
+    // take `&mut &[T]`; the F* backend has no model for that.
+    /// See [`std::slice::split_off_first`]
+    #[cfg(not(hax_backend_fstar))]
+    fn split_off_first<'a>(s: &mut &'a [T]) -> Option<&'a T> {
+        let len = slice_length(*s);
+        if len == 0 {
+            Option::None
+        } else {
+            let first = slice_index(*s, 0);
+            *s = slice_slice(*s, 1, len);
+            Option::Some(first)
+        }
+    }
+    /// See [`std::slice::split_off_last`]
+    #[cfg(not(hax_backend_fstar))]
+    fn split_off_last<'a>(s: &mut &'a [T]) -> Option<&'a T> {
+        let len = slice_length(*s);
+        if len == 0 {
+            Option::None
+        } else {
+            let last = slice_index(*s, len - 1);
+            *s = slice_slice(*s, 0, len - 1);
+            Option::Some(last)
         }
     }
 
@@ -748,6 +1439,214 @@ pub mod equality {
                     }
                 }
                 res
+            }
+        }
+    }
+}
+
+// `SlicePattern` and the `strip_*`/`trim_*` methods it serves. Two placement
+// constraints meet here:
+//   * they decide with `starts_with`/`ends_with`, so they must follow *both*
+//     definitions of those in source order — that is what the Lean extraction
+//     resolves against;
+//   * hax numbers a module's `impl` blocks with the plain ones first and the
+//     ones carrying a `hax_lib` attribute after them (hax#828), so only an
+//     *attributed* block appended at the end of the module avoids renumbering —
+//     and renaming — every `impl__*` above in the F* output. Hence the
+//     `#[hax_lib::attributes]` on blocks that declare no contract.
+/// See [`std::slice::SlicePattern`]
+pub trait SlicePattern {
+    /// See [`std::slice::SlicePattern::Item`]
+    type Item;
+    /// See [`std::slice::SlicePattern::as_slice`]
+    fn as_slice(&self) -> &[Self::Item];
+}
+
+#[hax_lib::attributes]
+impl<T> SlicePattern for [T] {
+    type Item = T;
+    fn as_slice(&self) -> &[T] {
+        self
+    }
+}
+
+#[hax_lib::attributes]
+impl<T, const N: usize> SlicePattern for [T; N] {
+    type Item = T;
+    fn as_slice(&self) -> &[T] {
+        array_as_slice(self)
+    }
+}
+
+#[hax_lib::attributes]
+impl<T> Slice<T> {
+    /// See [`std::slice::strip_prefix`]
+    // opaque for F*: the subslice bound follows from `starts_with`, which is
+    // itself opaque there and so carries no postcondition.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    fn strip_prefix<'a, P: SlicePattern<Item = T> + ?Sized>(
+        s: &'a [T],
+        prefix: &P,
+    ) -> Option<&'a [T]>
+    where
+        T: PartialEq,
+    {
+        let p = prefix.as_slice();
+        if Self::starts_with(s, p) {
+            Option::Some(slice_slice(s, Self::len(p), Self::len(s)))
+        } else {
+            Option::None
+        }
+    }
+    /// See [`std::slice::strip_suffix`]
+    // opaque for F*: see `strip_prefix`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    fn strip_suffix<'a, P: SlicePattern<Item = T> + ?Sized>(
+        s: &'a [T],
+        suffix: &P,
+    ) -> Option<&'a [T]>
+    where
+        T: PartialEq,
+    {
+        let p = suffix.as_slice();
+        if Self::ends_with(s, p) {
+            Option::Some(slice_slice(s, 0, Self::len(s) - Self::len(p)))
+        } else {
+            Option::None
+        }
+    }
+    /// See [`std::slice::trim_prefix`]
+    fn trim_prefix<'a, P: SlicePattern<Item = T> + ?Sized>(s: &'a [T], prefix: &P) -> &'a [T]
+    where
+        T: PartialEq,
+    {
+        match Self::strip_prefix(s, prefix) {
+            Option::Some(rest) => rest,
+            Option::None => s,
+        }
+    }
+    /// See [`std::slice::trim_suffix`]
+    fn trim_suffix<'a, P: SlicePattern<Item = T> + ?Sized>(s: &'a [T], suffix: &P) -> &'a [T]
+    where
+        T: PartialEq,
+    {
+        match Self::strip_suffix(s, suffix) {
+            Option::Some(rest) => rest,
+            Option::None => s,
+        }
+    }
+    /// See [`std::slice::strip_circumfix`]
+    fn strip_circumfix<'a, S, P>(s: &'a [T], prefix: &P, suffix: &S) -> Option<&'a [T]>
+    where
+        T: PartialEq,
+        S: SlicePattern<Item = T> + ?Sized,
+        P: SlicePattern<Item = T> + ?Sized,
+    {
+        match Self::strip_prefix(s, prefix) {
+            Option::Some(rest) => Self::strip_suffix(rest, suffix),
+            Option::None => Option::None,
+        }
+    }
+}
+
+/// `slice::ascii` mirrors `core`'s own `slice/ascii.rs`: the ASCII helpers are
+/// `[u8]`-specific, so they hang off `Slice<u8>` rather than the generic block.
+/// The module path has to match `core`'s, because that is what the Lean
+/// extraction of a `[u8]::is_ascii` call resolves against.
+/// See [`std::slice`].
+pub mod ascii {
+    use super::Slice;
+    use rust_primitives::slice::*;
+
+    // The model of `u8` carries no `is_ascii_whitespace`/`to_ascii_*` yet, and
+    // these are plain integer arithmetic.
+    fn is_ascii_whitespace_byte(b: u8) -> bool {
+        b == 32 || b == 9 || b == 10 || b == 12 || b == 13
+    }
+    fn to_ascii_lowercase_byte(b: u8) -> u8 {
+        if b >= 65 && b <= 90 { b + 32 } else { b }
+    }
+    fn to_ascii_uppercase_byte(b: u8) -> u8 {
+        if b >= 97 && b <= 122 { b - 32 } else { b }
+    }
+
+    impl Slice<u8> {
+        /// See [`std::slice::is_ascii`]
+        // opaque for F*: bounded loop over the slice.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        pub(super) fn is_ascii(s: &[u8]) -> bool {
+            let mut res = true;
+            for i in 0..slice_length(s) {
+                if *slice_index(s, i) > 127 {
+                    res = false;
+                }
+            }
+            res
+        }
+        /// See [`std::slice::eq_ignore_ascii_case`]
+        // opaque for F*: see `is_ascii`.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        pub(super) fn eq_ignore_ascii_case(s: &[u8], other: &[u8]) -> bool {
+            if slice_length(s) != slice_length(other) {
+                false
+            } else {
+                let mut res = true;
+                for i in 0..slice_length(s) {
+                    if to_ascii_lowercase_byte(*slice_index(s, i))
+                        != to_ascii_lowercase_byte(*slice_index(other, i))
+                    {
+                        res = false;
+                    }
+                }
+                res
+            }
+        }
+        /// See [`std::slice::trim_ascii_start`]
+        // opaque for F*: see `is_ascii`.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        pub(super) fn trim_ascii_start(s: &[u8]) -> &[u8] {
+            let len = slice_length(s);
+            // `len` doubles as "no non-whitespace byte found", i.e. trim it all.
+            let mut start = len;
+            for i in 0..len {
+                if start == len && !is_ascii_whitespace_byte(*slice_index(s, i)) {
+                    start = i;
+                }
+            }
+            slice_slice(s, start, len)
+        }
+        /// See [`std::slice::trim_ascii_end`]
+        // opaque for F*: see `is_ascii`.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        pub(super) fn trim_ascii_end(s: &[u8]) -> &[u8] {
+            let mut end = 0;
+            for i in 0..slice_length(s) {
+                if !is_ascii_whitespace_byte(*slice_index(s, i)) {
+                    end = i + 1;
+                }
+            }
+            slice_slice(s, 0, end)
+        }
+        /// See [`std::slice::trim_ascii`]
+        pub(super) fn trim_ascii(s: &[u8]) -> &[u8] {
+            Self::trim_ascii_end(Self::trim_ascii_start(s))
+        }
+        /// See [`std::slice::make_ascii_lowercase`]
+        // opaque: for-loop + indexed mutation, like `fill`.
+        #[hax_lib::opaque]
+        pub(super) fn make_ascii_lowercase(s: &mut [u8]) {
+            for i in 0..slice_length(s) {
+                let b = *slice_index(s, i);
+                *slice_index_mut(s, i) = to_ascii_lowercase_byte(b);
+            }
+        }
+        /// See [`std::slice::make_ascii_uppercase`]
+        // opaque: see `make_ascii_lowercase`.
+        #[hax_lib::opaque]
+        pub(super) fn make_ascii_uppercase(s: &mut [u8]) {
+            for i in 0..slice_length(s) {
+                let b = *slice_index(s, i);
+                *slice_index_mut(s, i) = to_ascii_uppercase_byte(b);
             }
         }
     }
@@ -1428,6 +2327,523 @@ mod tests {
             unsafe { std_slice.get_unchecked_mut(start..end).fill(v); }
             prop_assert_eq!(model, std_slice);
         }
+
+        // ----- rchunks / rchunks_exact / remainder ---------------------------
+
+        // Sizes run one past the slice length, so the "shorter than one chunk"
+        // and "nothing at all" branches are both exercised.
+        #[test]
+        fn test_rchunks(slice in prop::collection::vec(any::<u8>(), 0..=20), cs in 1usize..=21) {
+            prop_assert_eq!(
+                drain(Slice::rchunks(&slice[..], cs)),
+                slice.rchunks(cs).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_rchunks_exact(slice in prop::collection::vec(any::<u8>(), 0..=20), cs in 1usize..=21) {
+            prop_assert_eq!(
+                drain(Slice::rchunks_exact(&slice[..], cs)),
+                slice.rchunks_exact(cs).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_rchunks_exact_remainder(slice in prop::collection::vec(any::<u8>(), 0..=20), cs in 1usize..=21) {
+            prop_assert_eq!(
+                Slice::rchunks_exact(&slice[..], cs).remainder(),
+                slice.rchunks_exact(cs).remainder()
+            );
+        }
+
+        #[test]
+        fn test_chunks_exact_remainder(slice in prop::collection::vec(any::<u8>(), 0..=20), cs in 1usize..=21) {
+            prop_assert_eq!(
+                Slice::chunks_exact(&slice[..], cs).remainder(),
+                slice.chunks_exact(cs).remainder()
+            );
+        }
+
+        // ----- split iterators ------------------------------------------------
+        // The element range is kept small so the predicate actually fires.
+
+        #[test]
+        fn test_split(slice in prop::collection::vec(0u8..4, 0..=14)) {
+            let p = |x: &u8| *x == 0;
+            prop_assert_eq!(
+                drain(Slice::split(&slice[..], p)),
+                slice.split(p).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_split_as_slice(slice in prop::collection::vec(0u8..4, 0..=14), steps in 0usize..5) {
+            let p = |x: &u8| *x == 0;
+            let mut model = Slice::split(&slice[..], p);
+            let mut std_split = slice.split(p);
+            for _ in 0..steps {
+                ModelIterator::next(&mut model);
+                std_split.next();
+            }
+            prop_assert_eq!(model.as_slice(), std_split.as_slice());
+        }
+
+        #[test]
+        fn test_split_inclusive(slice in prop::collection::vec(0u8..4, 0..=14)) {
+            let p = |x: &u8| *x == 0;
+            prop_assert_eq!(
+                drain(Slice::split_inclusive(&slice[..], p)),
+                slice.split_inclusive(p).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_splitn(slice in prop::collection::vec(0u8..4, 0..=14), n in 0usize..5) {
+            let p = |x: &u8| *x == 0;
+            prop_assert_eq!(
+                drain(Slice::splitn(&slice[..], n, p)),
+                slice.splitn(n, p).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_rsplit(slice in prop::collection::vec(0u8..4, 0..=14)) {
+            let p = |x: &u8| *x == 0;
+            prop_assert_eq!(
+                drain(Slice::rsplit(&slice[..], p)),
+                slice.rsplit(p).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_rsplitn(slice in prop::collection::vec(0u8..4, 0..=14), n in 0usize..5) {
+            let p = |x: &u8| *x == 0;
+            prop_assert_eq!(
+                drain(Slice::rsplitn(&slice[..], n, p)),
+                slice.rsplitn(n, p).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_chunk_by(slice in prop::collection::vec(0u8..4, 0..=14)) {
+            let p = |a: &u8, b: &u8| a <= b;
+            prop_assert_eq!(
+                drain(Slice::chunk_by(&slice[..], p)),
+                slice.chunk_by(p).collect::<Vec<_>>()
+            );
+        }
+
+        // ----- split_once / rsplit_once --------------------------------------
+
+        #[test]
+        fn test_split_once(slice in prop::collection::vec(0u8..4, 0..=14)) {
+            let p = |x: &u8| *x == 0;
+            prop_assert_eq!(
+                Slice::split_once(&slice[..], p),
+                slice.split_once(p).inject()
+            );
+        }
+
+        #[test]
+        fn test_rsplit_once(slice in prop::collection::vec(0u8..4, 0..=14)) {
+            let p = |x: &u8| *x == 0;
+            prop_assert_eq!(
+                Slice::rsplit_once(&slice[..], p),
+                slice.rsplit_once(p).inject()
+            );
+        }
+
+        // ----- split_first / split_last / as_slice ---------------------------
+
+        #[test]
+        fn test_split_first(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            let model = match Slice::split_first(&slice[..]) {
+                ModelOption::Some((v, rest)) => Some((*v, rest)),
+                ModelOption::None => None,
+            };
+            prop_assert_eq!(model, slice.split_first().map(|(v, rest)| (*v, rest)));
+        }
+
+        #[test]
+        fn test_split_last(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            let model = match Slice::split_last(&slice[..]) {
+                ModelOption::Some((v, rest)) => Some((*v, rest)),
+                ModelOption::None => None,
+            };
+            prop_assert_eq!(model, slice.split_last().map(|(v, rest)| (*v, rest)));
+        }
+
+        // `<[T]>::as_slice` is unstable, so the expectation is pinned here: it is
+        // the identity.
+        #[test]
+        fn test_as_slice(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            prop_assert_eq!(Slice::as_slice(&slice[..]), &slice[..]);
+        }
+
+        // ----- split_at_unchecked / swap_unchecked (in-bounds only) ----------
+
+        #[test]
+        fn test_split_at_unchecked(slice in prop::collection::vec(any::<u8>(), 0..=10), mid in 0usize..=10) {
+            let mid = mid.min(slice.len());
+            prop_assert_eq!(
+                Slice::split_at_unchecked(&slice[..], mid),
+                unsafe { slice.split_at_unchecked(mid) }
+            );
+        }
+
+        #[test]
+        fn test_swap_unchecked(slice in prop::collection::vec(any::<u8>(), 1..=10), a in 0usize..10, b in 0usize..10) {
+            let a = a % slice.len();
+            let b = b % slice.len();
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            Slice::swap_unchecked(&mut model[..], a, b);
+            unsafe { std_slice.swap_unchecked(a, b) };
+            prop_assert_eq!(model, std_slice);
+        }
+
+        // ----- rotate_left / rotate_right ------------------------------------
+
+        #[test]
+        fn test_rotate_left(slice in prop::collection::vec(any::<u8>(), 0..=10), mid in 0usize..=10) {
+            let mid = mid.min(slice.len());
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            Slice::rotate_left(&mut model[..], mid);
+            std_slice.rotate_left(mid);
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[test]
+        fn test_rotate_right(slice in prop::collection::vec(any::<u8>(), 0..=10), k in 0usize..=10) {
+            let k = k.min(slice.len());
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            Slice::rotate_right(&mut model[..], k);
+            std_slice.rotate_right(k);
+            prop_assert_eq!(model, std_slice);
+        }
+
+        // ----- fill_with ------------------------------------------------------
+
+        #[test]
+        fn test_fill_with(value in any::<u8>(), len in 0usize..=10) {
+            let mut model = vec![0u8; len];
+            let mut std_slice = vec![0u8; len];
+            Slice::fill_with(&mut model[..], || value);
+            std_slice.fill_with(|| value);
+            prop_assert_eq!(model, std_slice);
+        }
+
+        // ----- binary_search_by / _by_key / partition_point -------------------
+        // Unsorted inputs are included on purpose: the model replicates std's
+        // probe sequence, so the two must agree there too.
+
+        #[test]
+        fn test_binary_search_by(slice in prop::collection::vec(any::<u8>(), 0..=12), x in any::<u8>()) {
+            prop_assert_eq!(
+                Slice::binary_search_by(&slice[..], |p: &u8| p.cmp(&x).inject()),
+                slice.binary_search_by(|p| p.cmp(&x)).inject()
+            );
+        }
+
+        #[test]
+        fn test_binary_search_by_sorted(mut slice in prop::collection::vec(any::<u8>(), 0..=12), x in any::<u8>()) {
+            slice.sort();
+            prop_assert_eq!(
+                Slice::binary_search_by(&slice[..], |p: &u8| p.cmp(&x).inject()),
+                slice.binary_search_by(|p| p.cmp(&x)).inject()
+            );
+        }
+
+        #[test]
+        fn test_binary_search_by_key(mut slice in prop::collection::vec(any::<u8>(), 0..=12), x in any::<u8>()) {
+            slice.sort();
+            prop_assert_eq!(
+                Slice::binary_search_by_key(&slice[..], &x, |p: &u8| *p),
+                slice.binary_search_by_key(&x, |p| *p).inject()
+            );
+        }
+
+        #[test]
+        fn test_partition_point(mut slice in prop::collection::vec(any::<u8>(), 0..=12), x in any::<u8>()) {
+            slice.sort();
+            prop_assert_eq!(
+                Slice::partition_point(&slice[..], |p: &u8| *p < x),
+                slice.partition_point(|p| *p < x)
+            );
+        }
+
+        #[test]
+        fn test_partition_point_unsorted(slice in prop::collection::vec(any::<u8>(), 0..=12), x in any::<u8>()) {
+            prop_assert_eq!(
+                Slice::partition_point(&slice[..], |p: &u8| *p < x),
+                slice.partition_point(|p| *p < x)
+            );
+        }
+
+        // ----- is_sorted / is_sorted_by / is_sorted_by_key --------------------
+
+        #[test]
+        fn test_is_sorted(slice in prop::collection::vec(0u8..4, 0..=8)) {
+            prop_assert_eq!(Slice::is_sorted(&slice[..]), slice.is_sorted());
+        }
+
+        #[test]
+        fn test_is_sorted_sorted(mut slice in prop::collection::vec(0u8..4, 0..=8)) {
+            slice.sort();
+            prop_assert_eq!(Slice::is_sorted(&slice[..]), slice.is_sorted());
+        }
+
+        #[test]
+        fn test_is_sorted_by(slice in prop::collection::vec(0u8..4, 0..=8)) {
+            let p = |a: &u8, b: &u8| a < b;
+            prop_assert_eq!(Slice::is_sorted_by(&slice[..], p), slice.is_sorted_by(p));
+        }
+
+        #[test]
+        fn test_is_sorted_by_key(slice in prop::collection::vec(0u8..4, 0..=8)) {
+            let f = |x: &u8| *x;
+            prop_assert_eq!(Slice::is_sorted_by_key(&slice[..], f), slice.is_sorted_by_key(f));
+        }
+
+        // ----- first_mut / last_mut / as_mut_slice ---------------------------
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_first_mut(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            if let ModelOption::Some(r) = Slice::first_mut(&mut model[..]) {
+                *r = v;
+            }
+            if let Some(r) = std_slice.first_mut() {
+                *r = v;
+            }
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_last_mut(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            if let ModelOption::Some(r) = Slice::last_mut(&mut model[..]) {
+                *r = v;
+            }
+            if let Some(r) = std_slice.last_mut() {
+                *r = v;
+            }
+            prop_assert_eq!(model, std_slice);
+        }
+
+        // `<[T]>::as_mut_slice` is unstable, so the expectation is pinned: it is
+        // the identity.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_as_mut_slice(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
+            let mut model = slice.clone();
+            let expected = vec![v; slice.len()];
+            Slice::as_mut_slice(&mut model[..]).fill(v);
+            prop_assert_eq!(model, expected);
+        }
+
+        // ----- split_off_first / split_off_last ------------------------------
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_split_off_first(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            let mut model: &[u8] = &slice[..];
+            let mut std_slice: &[u8] = &slice[..];
+            let m = Slice::split_off_first(&mut model).map(|v: &u8| *v);
+            let s = std_slice.split_off_first().copied();
+            prop_assert_eq!(m, s.inject());
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_split_off_last(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            let mut model: &[u8] = &slice[..];
+            let mut std_slice: &[u8] = &slice[..];
+            let m = Slice::split_off_last(&mut model).map(|v: &u8| *v);
+            let s = std_slice.split_off_last().copied();
+            prop_assert_eq!(m, s.inject());
+            prop_assert_eq!(model, std_slice);
+        }
+
+        // ----- SlicePattern + strip_* / trim_* -------------------------------
+
+        #[test]
+        fn test_slice_pattern_as_slice(slice in prop::collection::vec(any::<u8>(), 0..=10), arr in any::<[u8; 3]>()) {
+            prop_assert_eq!(
+                crate::slice::SlicePattern::as_slice(&slice[..]),
+                core::slice::SlicePattern::as_slice(&slice[..])
+            );
+            prop_assert_eq!(
+                crate::slice::SlicePattern::as_slice(&arr),
+                core::slice::SlicePattern::as_slice(&arr)
+            );
+        }
+
+        // `use_prefix` biases toward the matching case, which random slices
+        // essentially never hit.
+        #[test]
+        fn test_strip_prefix(slice in prop::collection::vec(0u8..4, 0..=10), other in prop::collection::vec(0u8..4, 0..=4), n in 0usize..=4, use_prefix in any::<bool>()) {
+            let n = n.min(slice.len());
+            let prefix: Vec<u8> = if use_prefix { slice[..n].to_vec() } else { other };
+            prop_assert_eq!(
+                Slice::strip_prefix(&slice[..], &prefix[..]),
+                slice.strip_prefix(&prefix[..]).inject()
+            );
+        }
+
+        #[test]
+        fn test_strip_suffix(slice in prop::collection::vec(0u8..4, 0..=10), other in prop::collection::vec(0u8..4, 0..=4), n in 0usize..=4, use_suffix in any::<bool>()) {
+            let n = n.min(slice.len());
+            let suffix: Vec<u8> = if use_suffix { slice[slice.len() - n..].to_vec() } else { other };
+            prop_assert_eq!(
+                Slice::strip_suffix(&slice[..], &suffix[..]),
+                slice.strip_suffix(&suffix[..]).inject()
+            );
+        }
+
+        // The array `SlicePattern` impl, which the slice one does not exercise.
+        #[test]
+        fn test_strip_prefix_array(slice in prop::collection::vec(0u8..4, 0..=10), prefix in any::<[u8; 2]>()) {
+            prop_assert_eq!(
+                Slice::strip_prefix(&slice[..], &prefix),
+                slice.strip_prefix(&prefix).inject()
+            );
+        }
+
+        #[test]
+        fn test_trim_prefix(slice in prop::collection::vec(0u8..4, 0..=10), other in prop::collection::vec(0u8..4, 0..=4), n in 0usize..=4, use_prefix in any::<bool>()) {
+            let n = n.min(slice.len());
+            let prefix: Vec<u8> = if use_prefix { slice[..n].to_vec() } else { other };
+            prop_assert_eq!(
+                Slice::trim_prefix(&slice[..], &prefix[..]),
+                slice.trim_prefix(&prefix[..])
+            );
+        }
+
+        #[test]
+        fn test_trim_suffix(slice in prop::collection::vec(0u8..4, 0..=10), other in prop::collection::vec(0u8..4, 0..=4), n in 0usize..=4, use_suffix in any::<bool>()) {
+            let n = n.min(slice.len());
+            let suffix: Vec<u8> = if use_suffix { slice[slice.len() - n..].to_vec() } else { other };
+            prop_assert_eq!(
+                Slice::trim_suffix(&slice[..], &suffix[..]),
+                slice.trim_suffix(&suffix[..])
+            );
+        }
+
+        #[test]
+        fn test_strip_circumfix(slice in prop::collection::vec(0u8..4, 0..=10), n in 0usize..=3, m in 0usize..=3, matching in any::<bool>()) {
+            let n = n.min(slice.len());
+            let m = m.min(slice.len() - n);
+            let (prefix, suffix): (Vec<u8>, Vec<u8>) = if matching {
+                (slice[..n].to_vec(), slice[slice.len() - m..].to_vec())
+            } else {
+                (vec![1, 1, 1], vec![2, 2, 2])
+            };
+            prop_assert_eq!(
+                Slice::strip_circumfix(&slice[..], &prefix[..], &suffix[..]),
+                slice.strip_circumfix(&prefix[..], &suffix[..]).inject()
+            );
+        }
+
+        // ----- [u8] ASCII helpers --------------------------------------------
+        // `0..=130` straddles the ASCII boundary; `9..=32` is mostly whitespace.
+
+        #[test]
+        fn test_is_ascii(slice in prop::collection::vec(0u8..=130, 0..=12)) {
+            prop_assert_eq!(Slice::is_ascii(&slice[..]), slice.is_ascii());
+        }
+
+        #[test]
+        fn test_eq_ignore_ascii_case(a in prop::collection::vec(60u8..=130, 0..=8), b in prop::collection::vec(60u8..=130, 0..=8)) {
+            prop_assert_eq!(
+                Slice::eq_ignore_ascii_case(&a[..], &b[..]),
+                a.eq_ignore_ascii_case(&b[..])
+            );
+        }
+
+        // Equal-length pairs make the per-byte comparison, not the length check,
+        // the deciding factor.
+        #[test]
+        fn test_eq_ignore_ascii_case_same_len(pairs in prop::collection::vec((60u8..=130, 60u8..=130), 0..=8)) {
+            let a: Vec<u8> = pairs.iter().map(|p| p.0).collect();
+            let b: Vec<u8> = pairs.iter().map(|p| p.1).collect();
+            prop_assert_eq!(
+                Slice::eq_ignore_ascii_case(&a[..], &b[..]),
+                a.eq_ignore_ascii_case(&b[..])
+            );
+        }
+
+        #[test]
+        fn test_trim_ascii_start(slice in prop::collection::vec(9u8..=32, 0..=12)) {
+            prop_assert_eq!(Slice::trim_ascii_start(&slice[..]), slice.trim_ascii_start());
+        }
+
+        #[test]
+        fn test_trim_ascii_end(slice in prop::collection::vec(9u8..=32, 0..=12)) {
+            prop_assert_eq!(Slice::trim_ascii_end(&slice[..]), slice.trim_ascii_end());
+        }
+
+        #[test]
+        fn test_trim_ascii(slice in prop::collection::vec(9u8..=32, 0..=12)) {
+            prop_assert_eq!(Slice::trim_ascii(&slice[..]), slice.trim_ascii());
+        }
+
+        #[test]
+        fn test_make_ascii_lowercase(slice in prop::collection::vec(0u8..=130, 0..=12)) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            Slice::make_ascii_lowercase(&mut model[..]);
+            std_slice.make_ascii_lowercase();
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[test]
+        fn test_make_ascii_uppercase(slice in prop::collection::vec(0u8..=130, 0..=12)) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            Slice::make_ascii_uppercase(&mut model[..]);
+            std_slice.make_ascii_uppercase();
+            prop_assert_eq!(model, std_slice);
+        }
+    }
+
+    #[test]
+    fn test_rchunks_zero_panics() {
+        crate::testing::panics_like_core(
+            || Slice::rchunks(&[1u8, 2, 3][..], 0),
+            || [1u8, 2, 3].rchunks(0),
+        );
+    }
+
+    #[test]
+    fn test_rchunks_exact_zero_panics() {
+        crate::testing::panics_like_core(
+            || Slice::rchunks_exact(&[1u8, 2, 3][..], 0),
+            || [1u8, 2, 3].rchunks_exact(0),
+        );
+    }
+
+    #[test]
+    fn test_rotate_left_past_end_panics() {
+        crate::testing::panics_like_core(
+            || Slice::rotate_left(&mut [1u8, 2, 3][..], 4),
+            || [1u8, 2, 3].rotate_left(4),
+        );
+    }
+
+    #[test]
+    fn test_rotate_right_past_end_panics() {
+        crate::testing::panics_like_core(
+            || Slice::rotate_right(&mut [1u8, 2, 3][..], 4),
+            || [1u8, 2, 3].rotate_right(4),
+        );
     }
 
     #[test]
