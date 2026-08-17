@@ -313,6 +313,33 @@ mod collections {
     /// it carries no information.
     #[cfg_attr(test, derive(PartialEq, Debug))]
     pub struct TryReserveError;
+    /// See [`std::collections::TryReserveErrorKind`].
+    ///
+    /// DEVIATION(std): std's `AllocError` variant carries the
+    /// `core::alloc::Layout` of the failed request (plus a `#[doc(hidden)]`
+    /// unit field). We do not model `Layout`, and the model's collections
+    /// never fail to allocate, so the payload would be unobservable.
+    #[cfg_attr(test, derive(PartialEq, Debug))]
+    #[derive(Clone)]
+    pub enum TryReserveErrorKind {
+        CapacityOverflow,
+        AllocError,
+    }
+
+    /// See [`std::collections::TryReserveError`]: the error returned by the
+    /// `try_reserve` family. The model never fails to allocate, so no model
+    /// operation ever produces one.
+    #[cfg_attr(test, derive(PartialEq, Debug))]
+    #[derive(Clone)]
+    pub struct TryReserveError(TryReserveErrorKind);
+
+    impl TryReserveError {
+        /// See [`std::collections::TryReserveError::kind`] (unstable in std:
+        /// `try_reserve_kind`), which returns a clone of the stored kind.
+        fn kind(&self) -> TryReserveErrorKind {
+            self.0.clone()
+        }
+    }
 
     mod binary_heap {
         #[hax_lib::fstar::before("open Rust_primitives.Notations")]
@@ -476,38 +503,452 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             }
         }
     }
+    /// Model of `alloc::collections::vec_deque`.
+    ///
+    /// DEVIATION(std): the deque is backed by one `Seq`, so it is *always
+    /// contiguous* — there is no ring buffer and no wrap-around. std leaves
+    /// the layout unspecified, so the only observable consequence is that
+    /// `as_slices` never splits (see there). Capacity is not modeled at all,
+    /// which is why `capacity`/`allocator` are absent.
+    ///
+    /// DEVIATION(std): the closure-taking methods here are bounded by `Fn`
+    /// where std says `FnMut`. The F* model of `FnMut::call_mut` takes `&self`,
+    /// so a body that calls an `FnMut` extracts to a call whose arity does not
+    /// match — `Fn` is the strongest bound the backends can carry, and it is
+    /// what hax passes at client call sites anyway (a bare arrow).
     mod vec_deque {
+        use hax_lib::ToInt;
         use rust_primitives::sequence::*;
+        #[cfg_attr(test, derive(PartialEq, Debug))]
         pub struct VecDeque<T, A>(pub Seq<T>, std::marker::PhantomData<A>);
 
+        // The empty impls keep this module's impl numbering aligned with real
+        // `alloc`'s, where `Clone`, `Drop`, `Default` and a private helper
+        // block precede the two public inherent blocks. hax derives the F*
+        // names `impl_N__method` from that position, so client call sites
+        // resolve to `impl_4__new` / `impl_5__push_back` only if the model puts
+        // those blocks at index 4 and 5 too.
         impl VecDeque<(), ()> {}
         impl VecDeque<(), ()> {}
         impl VecDeque<(), ()> {}
         impl VecDeque<(), ()> {}
 
+        /// Insert `value` at `index`, shifting the tail right. `Seq` has no
+        /// element-write primitive, so every positional update in this module
+        /// is spelled as this drain/push/concat surgery.
+        #[hax_lib::requires(index <= seq_len(s) && seq_len(s) < core::primitive::usize::MAX)]
+        fn seq_insert<T>(s: &mut Seq<T>, index: usize, value: T) {
+            let l = seq_len(s);
+            let mut right = seq_drain(s, index, l);
+            seq_push(s, value);
+            seq_concat(s, &mut right);
+        }
+
         impl<T> VecDeque<T, crate::alloc::Global> {
+            /// See [`std::collections::VecDeque::new`]
             fn new() -> VecDeque<T, crate::alloc::Global> {
                 VecDeque(seq_empty(), std::marker::PhantomData)
             }
+            /// See [`std::collections::VecDeque::with_capacity`]
             fn with_capacity(_capacity: usize) -> VecDeque<T, crate::alloc::Global> {
                 VecDeque::new()
+            }
+            /// See [`std::collections::VecDeque::try_with_capacity`] (unstable
+            /// in std: `try_with_capacity`): the model never fails to
+            /// allocate, so this is always `Ok`.
+            fn try_with_capacity(
+                _capacity: usize,
+            ) -> Result<VecDeque<T, crate::alloc::Global>, super::TryReserveError> {
+                Ok(VecDeque::new())
             }
         }
 
         #[hax_lib::attributes]
         impl<T, A> VecDeque<T, A> {
+            /// See [`std::collections::VecDeque::new_in`]
+            fn new_in(_alloc: A) -> VecDeque<T, A> {
+                VecDeque(seq_empty(), std::marker::PhantomData)
+            }
+            /// See [`std::collections::VecDeque::with_capacity_in`]
+            fn with_capacity_in(_capacity: usize, alloc: A) -> VecDeque<T, A> {
+                VecDeque::new_in(alloc)
+            }
+            /// See [`std::collections::VecDeque::len`]
+            fn len(&self) -> usize {
+                seq_len(&self.0)
+            }
+            /// See [`std::collections::VecDeque::is_empty`]
+            fn is_empty(&self) -> bool {
+                seq_len(&self.0) == 0
+            }
+            /// See [`std::collections::VecDeque::get`]
+            fn get(&self, index: usize) -> Option<&T> {
+                if index < self.len() {
+                    Some(seq_index(&self.0, index))
+                } else {
+                    None
+                }
+            }
+            /// See [`std::collections::VecDeque::front`]
+            fn front(&self) -> Option<&T> {
+                self.get(0)
+            }
+            /// See [`std::collections::VecDeque::back`]
+            fn back(&self) -> Option<&T> {
+                if self.len() == 0 {
+                    None
+                } else {
+                    self.get(self.len() - 1)
+                }
+            }
+            /// See [`std::collections::VecDeque::push_back`]
             #[hax_lib::requires(seq_len(&self.0) < core::primitive::usize::MAX)]
             fn push_back(&mut self, x: T) {
                 seq_push(&mut self.0, x)
             }
-            fn len(&self) -> usize {
-                seq_len(&self.0)
+            /// See [`std::collections::VecDeque::push_front`]
+            #[hax_lib::requires(seq_len(&self.0) < core::primitive::usize::MAX)]
+            fn push_front(&mut self, value: T) {
+                seq_insert(&mut self.0, 0, value)
             }
+            /// See [`std::collections::VecDeque::pop_front`]
             fn pop_front(&mut self) -> Option<T> {
                 if self.len() == 0 {
                     None
                 } else {
                     Some(seq_remove(&mut self.0, 0))
+                }
+            }
+            /// See [`std::collections::VecDeque::pop_back`]
+            fn pop_back(&mut self) -> Option<T> {
+                let l = self.len();
+                if l == 0 {
+                    None
+                } else {
+                    Some(seq_remove(&mut self.0, l - 1))
+                }
+            }
+            /// See [`std::collections::VecDeque::swap`]
+            #[hax_lib::requires(i < self.len() && j < self.len())]
+            fn swap(&mut self, i: usize, j: usize) {
+                if i != j {
+                    let lo = if i < j { i } else { j };
+                    let hi = if i < j { j } else { i };
+                    let high = seq_remove(&mut self.0, hi);
+                    let low = seq_remove(&mut self.0, lo);
+                    seq_insert(&mut self.0, lo, high);
+                    seq_insert(&mut self.0, hi, low)
+                }
+            }
+            /// See [`std::collections::VecDeque::insert`]
+            #[hax_lib::requires(index <= self.len() && self.len() < core::primitive::usize::MAX)]
+            fn insert(&mut self, index: usize, value: T) {
+                seq_insert(&mut self.0, index, value)
+            }
+            /// See [`std::collections::VecDeque::remove`]
+            fn remove(&mut self, index: usize) -> Option<T> {
+                if index < self.len() {
+                    Some(seq_remove(&mut self.0, index))
+                } else {
+                    None
+                }
+            }
+            /// See [`std::collections::VecDeque::swap_remove_front`]
+            fn swap_remove_front(&mut self, index: usize) -> Option<T> {
+                if index < self.len() {
+                    self.swap(index, 0);
+                    self.pop_front()
+                } else {
+                    None
+                }
+            }
+            /// See [`std::collections::VecDeque::swap_remove_back`]
+            fn swap_remove_back(&mut self, index: usize) -> Option<T> {
+                let l = self.len();
+                if index < l {
+                    self.swap(index, l - 1);
+                    self.pop_back()
+                } else {
+                    None
+                }
+            }
+            /// See [`std::collections::VecDeque::clear`]
+            fn clear(&mut self) {
+                self.0 = seq_empty()
+            }
+            /// See [`std::collections::VecDeque::truncate`]
+            fn truncate(&mut self, len: usize) {
+                let l = self.len();
+                if len < l {
+                    let _dropped = seq_drain(&mut self.0, len, l);
+                }
+            }
+            /// See [`std::collections::VecDeque::truncate_front`] (unstable in
+            /// std: `deque_truncate_front`): keeps the *last* `len` elements.
+            fn truncate_front(&mut self, len: usize) {
+                let l = self.len();
+                if len < l {
+                    let _dropped = seq_drain(&mut self.0, 0, l - len);
+                }
+            }
+            /// See [`std::collections::VecDeque::split_off`]
+            #[hax_lib::requires(at <= self.len())]
+            fn split_off(&mut self, at: usize) -> VecDeque<T, A> {
+                let l = self.len();
+                VecDeque(seq_drain(&mut self.0, at, l), std::marker::PhantomData::<A>)
+            }
+            /// See [`std::collections::VecDeque::append`]
+            #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= core::primitive::usize::MAX.to_int())]
+            fn append(&mut self, other: &mut VecDeque<T, A>) {
+                seq_concat(&mut self.0, &mut other.0);
+                other.0 = seq_empty()
+            }
+            /// See [`std::collections::VecDeque::rotate_left`]
+            #[hax_lib::requires(n <= self.len())]
+            fn rotate_left(&mut self, n: usize) {
+                let mut head = seq_drain(&mut self.0, 0, n);
+                seq_concat(&mut self.0, &mut head)
+            }
+            /// See [`std::collections::VecDeque::rotate_right`]
+            #[hax_lib::requires(n <= self.len())]
+            fn rotate_right(&mut self, n: usize) {
+                let l = self.len();
+                self.rotate_left(l - n)
+            }
+            /// See [`std::collections::VecDeque::contains`].
+            ///
+            /// Opaque for F* only: hax lowers a generic `PartialEq::eq` to F*'s
+            /// primitive `=.`, which demands an `eqtype`, so the body does not
+            /// typecheck at an arbitrary `T` — the same reason
+            /// `core_models::slice::Slice::contains` is opaque.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn contains(&self, x: &T) -> bool
+            where
+                T: PartialEq<T>,
+            {
+                let mut found = false;
+                for i in 0..self.len() {
+                    if seq_index(&self.0, i).eq(x) {
+                        found = true
+                    }
+                }
+                found
+            }
+            /// See [`std::collections::VecDeque::as_slices`].
+            ///
+            /// DEVIATION(std): the model's deque is always contiguous, so the
+            /// front slice is the whole deque and the back slice is always
+            /// empty. std only promises that the concatenation of the two is
+            /// the deque, which is what tests check.
+            fn as_slices(&self) -> (&[T], &[T]) {
+                let s = seq_to_slice(&self.0);
+                (
+                    s,
+                    rust_primitives::slice::slice_slice(s, self.len(), self.len()),
+                )
+            }
+            /// See [`std::collections::VecDeque::iter`]
+            fn iter(&self) -> iter::Iter<'_, T> {
+                iter::Iter(seq_from_slice(seq_to_slice(&self.0)))
+            }
+            /// See [`std::collections::VecDeque::reserve`]: capacity is not
+            /// modeled, so this leaves the contents untouched.
+            fn reserve(&mut self, _additional: usize) {}
+            /// See [`std::collections::VecDeque::reserve_exact`]
+            fn reserve_exact(&mut self, _additional: usize) {}
+            /// See [`std::collections::VecDeque::shrink_to_fit`]
+            fn shrink_to_fit(&mut self) {}
+            /// See [`std::collections::VecDeque::shrink_to`]
+            fn shrink_to(&mut self, _min_capacity: usize) {}
+            /// See [`std::collections::VecDeque::try_reserve`]: the model never
+            /// fails to allocate.
+            fn try_reserve(&mut self, _additional: usize) -> Result<(), super::TryReserveError> {
+                Ok(())
+            }
+            /// See [`std::collections::VecDeque::try_reserve_exact`]
+            fn try_reserve_exact(
+                &mut self,
+                _additional: usize,
+            ) -> Result<(), super::TryReserveError> {
+                Ok(())
+            }
+            /// See [`std::collections::VecDeque::retain`].
+            ///
+            /// The loop walks indices from the back so that a removal never
+            /// shifts an index still to be visited; the invariant is what lets
+            /// the backend discharge `seq_remove`'s bound.
+            // Opaque for F* only: hax does not emit the
+            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
+            // the F* body cannot see what the closure returns. Lean keeps the
+            // real body.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn retain<F: Fn(&T) -> bool>(&mut self, f: F) {
+                let l = self.len();
+                for k in 0..l {
+                    hax_lib::loop_invariant!(
+                        |k: usize| seq_len(&self.0).to_int() + k.to_int() >= l.to_int()
+                    );
+                    let i = l - 1 - k;
+                    if !f(seq_index(&self.0, i)) {
+                        let _removed = seq_remove(&mut self.0, i);
+                    }
+                }
+            }
+            /// See [`std::collections::VecDeque::resize_with`]
+            // Opaque for F* only: hax does not emit the
+            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
+            // the F* body cannot see what the closure returns. Lean keeps the
+            // real body.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn resize_with<F: Fn() -> T>(&mut self, new_len: usize, generator: F) {
+                let l = self.len();
+                if new_len > l {
+                    for _k in 0..(new_len - l) {
+                        seq_push(&mut self.0, generator())
+                    }
+                } else {
+                    self.truncate(new_len)
+                }
+            }
+            /// See [`std::collections::VecDeque::binary_search`].
+            ///
+            /// DEVIATION(std): a linear scan for the first element that is not
+            /// `Less` than `x`, not a bisection. Like std the result is only
+            /// meaningful on a sorted deque; std explicitly leaves *which* of
+            /// several equal elements is returned unspecified, so returning the
+            /// first one is a legal implementation, and it is far easier to
+            /// reason about than a bisection.
+            fn binary_search(&self, x: &T) -> Result<usize, usize>
+            where
+                T: Ord,
+            {
+                self.binary_search_by(|probe| probe.cmp(x))
+            }
+            /// See [`std::collections::VecDeque::binary_search_by`]. Linear,
+            /// for the reason given on `binary_search`.
+            // Opaque for F* only: hax does not emit the
+            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
+            // the F* body cannot see what the closure returns. Lean keeps the
+            // real body.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn binary_search_by<F: Fn(&T) -> std::cmp::Ordering>(
+                &self,
+                f: F,
+            ) -> Result<usize, usize> {
+                let mut pos = self.len();
+                let mut eq = false;
+                let mut done = false;
+                for i in 0..self.len() {
+                    if !done {
+                        match f(seq_index(&self.0, i)) {
+                            std::cmp::Ordering::Less => {}
+                            std::cmp::Ordering::Equal => {
+                                pos = i;
+                                eq = true;
+                                done = true
+                            }
+                            std::cmp::Ordering::Greater => {
+                                pos = i;
+                                eq = false;
+                                done = true
+                            }
+                        }
+                    }
+                }
+                if eq { Ok(pos) } else { Err(pos) }
+            }
+            /// See [`std::collections::VecDeque::binary_search_by_key`].
+            ///
+            /// The scan is spelled out rather than delegated to
+            /// `binary_search_by`: hax rejects a closure that calls a captured
+            /// `FnMut` (hax issue #1060).
+            // Opaque for F* only: hax does not emit the
+            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
+            // the F* body cannot see what the closure returns. Lean keeps the
+            // real body.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn binary_search_by_key<B: Ord, F: Fn(&T) -> B>(
+                &self,
+                b: &B,
+                f: F,
+            ) -> Result<usize, usize> {
+                let mut pos = self.len();
+                let mut eq = false;
+                let mut done = false;
+                for i in 0..self.len() {
+                    if !done {
+                        match f(seq_index(&self.0, i)).cmp(b) {
+                            std::cmp::Ordering::Less => {}
+                            std::cmp::Ordering::Equal => {
+                                pos = i;
+                                eq = true;
+                                done = true
+                            }
+                            std::cmp::Ordering::Greater => {
+                                pos = i;
+                                eq = false;
+                                done = true
+                            }
+                        }
+                    }
+                }
+                if eq { Ok(pos) } else { Err(pos) }
+            }
+            /// See [`std::collections::VecDeque::partition_point`]
+            // Opaque for F* only: hax does not emit the
+            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
+            // the F* body cannot see what the closure returns. Lean keeps the
+            // real body.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn partition_point<P: Fn(&T) -> bool>(&self, pred: P) -> usize {
+                let mut pos = self.len();
+                let mut done = false;
+                for i in 0..self.len() {
+                    if !done && !pred(seq_index(&self.0, i)) {
+                        pos = i;
+                        done = true
+                    }
+                }
+                pos
+            }
+        }
+
+        // Real `alloc` puts `resize`/`extend_from_within`/
+        // `prepend_from_within` in a `T: Clone` block right after the block
+        // above, so this one must stay at impl index 6.
+        #[hax_lib::attributes]
+        impl<T: Clone, A> VecDeque<T, A> {
+            /// See [`std::collections::VecDeque::resize`]
+            #[hax_lib::requires(new_len.to_int() < core::primitive::usize::MAX.to_int())]
+            fn resize(&mut self, new_len: usize, value: T) {
+                let l = self.len();
+                if new_len > l {
+                    for k in 0..(new_len - l) {
+                        hax_lib::loop_invariant!(
+                            |k: usize| seq_len(&self.0).to_int() == l.to_int() + k.to_int()
+                        );
+                        seq_push(&mut self.0, value.clone())
+                    }
+                } else {
+                    self.truncate(new_len)
+                }
+            }
+        }
+
+        /// Model of `alloc::collections::vec_deque::iter::Iter`, the
+        /// shared-borrow iterator returned by
+        /// [`std::collections::VecDeque::iter`].
+        pub mod iter {
+            use rust_primitives::sequence::*;
+            pub struct Iter<'a, T>(pub Seq<&'a T>);
+            impl<'a, T> Iterator for Iter<'a, T> {
+                type Item = &'a T;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
                 }
             }
         }
@@ -568,7 +1009,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
 let update_at_usize (#v_T #v_A: Type0)
     : Rust_primitives.Hax.update_at_tc (t_VecDeque v_T v_A) usize =
   {
-    super_index = impl_6 #v_T #v_A;
+    super_index = impl_7 #v_T #v_A;
     // `i` is deliberately left unannotated: the class gives it the refinement
     // `f_index_pre self i` (here `i < len self`), and annotating it `usize`
     // would drop exactly the bound `Seq.upd` needs.
@@ -580,15 +1021,56 @@ let update_at_usize (#v_T #v_A: Type0)
 
         #[cfg(test)]
         mod tests {
+            use crate::testing::{Inject, panics_like_core};
             use proptest::prelude::*;
 
             type Model<T> = super::VecDeque<T, crate::alloc::Global>;
+            type Std<T> = std::collections::VecDeque<T>;
+
+            impl<T: Clone> Inject for Std<T> {
+                type Model = Model<T>;
+                fn inject(&self) -> Model<T> {
+                    let flat: std::vec::Vec<T> = self.iter().cloned().collect();
+                    super::VecDeque(
+                        rust_primitives::sequence::seq_from_boxed_slice(flat.into_boxed_slice()),
+                        std::marker::PhantomData,
+                    )
+                }
+            }
+
+            /// The same `push_back` sequence applied to the model and to std,
+            /// so every test below starts from a pair of equal deques. std's
+            /// deque is *rotated* by `rot` pops-and-re-pushes first, which is
+            /// what makes its internal buffer wrap around; the model is always
+            /// contiguous, so this is what checks that the model agrees with a
+            /// wrapped std deque.
+            fn build(elements: &[u8], rot: usize) -> (Model<u8>, Std<u8>) {
+                let mut std_deque = Std::new();
+                for &e in elements {
+                    std_deque.push_back(e);
+                }
+                if !elements.is_empty() {
+                    for _ in 0..(rot % elements.len().max(1)) {
+                        let x = std_deque.pop_front().unwrap();
+                        std_deque.push_back(x);
+                    }
+                }
+                (std_deque.inject(), std_deque)
+            }
+
+            /// std's `as_slices` may split; the model's never does. Only the
+            /// concatenation is a shared observation.
+            fn flatten(pair: (&[u8], &[u8])) -> std::vec::Vec<u8> {
+                let mut v = pair.0.to_vec();
+                v.extend_from_slice(pair.1);
+                v
+            }
 
             proptest! {
                 #[test]
                 fn test_push_back_len_index(elements in prop::collection::vec(any::<u8>(), 0..20)) {
                     let mut model = Model::new();
-                    let mut std_deque = std::collections::VecDeque::new();
+                    let mut std_deque = Std::new();
                     for &e in &elements {
                         model.push_back(e);
                         std_deque.push_back(e);
@@ -625,7 +1107,7 @@ let update_at_usize (#v_T #v_A: Type0)
                 #[test]
                 fn test_pop_front(elements in prop::collection::vec(any::<u8>(), 0..20)) {
                     let mut model = Model::with_capacity(elements.len());
-                    let mut std_deque = std::collections::VecDeque::with_capacity(elements.len());
+                    let mut std_deque = Std::with_capacity(elements.len());
                     for &e in &elements {
                         model.push_back(e);
                         std_deque.push_back(e);
@@ -634,15 +1116,416 @@ let update_at_usize (#v_T #v_A: Type0)
                         prop_assert_eq!(model.pop_front(), std_deque.pop_front());
                     }
                 }
+
+                #[test]
+                fn test_pop_back(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                 rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    for _ in 0..=elements.len() {
+                        prop_assert_eq!(model.pop_back(), std_deque.pop_back());
+                        prop_assert_eq!(&model, &std_deque.inject());
+                    }
+                }
+
+                #[test]
+                fn test_push_front(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                   x in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    model.push_front(x);
+                    std_deque.push_front(x);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_len_is_empty(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                     rot in 0usize..20) {
+                    let (model, std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.len(), std_deque.len());
+                    prop_assert_eq!(model.is_empty(), std_deque.is_empty());
+                }
+
+                #[test]
+                fn test_get(elements in prop::collection::vec(any::<u8>(), 0..20),
+                            i in 0usize..25, rot in 0usize..20) {
+                    let (model, std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.get(i), std_deque.get(i));
+                }
+
+                #[test]
+                fn test_front_back(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                   rot in 0usize..20) {
+                    let (model, std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.front(), std_deque.front());
+                    prop_assert_eq!(model.back(), std_deque.back());
+                }
+
+                #[test]
+                fn test_swap(elements in prop::collection::vec(any::<u8>(), 1..20),
+                             i in 0usize..20, j in 0usize..20, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    let (i, j) = (i % std_deque.len(), j % std_deque.len());
+                    model.swap(i, j);
+                    std_deque.swap(i, j);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_insert(elements in prop::collection::vec(any::<u8>(), 0..20),
+                               i in 0usize..21, x in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    let i = i % (std_deque.len() + 1);
+                    model.insert(i, x);
+                    std_deque.insert(i, x);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_remove(elements in prop::collection::vec(any::<u8>(), 0..20),
+                               i in 0usize..25, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.remove(i), std_deque.remove(i));
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_swap_remove_front(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                          i in 0usize..25, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.swap_remove_front(i), std_deque.swap_remove_front(i));
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_swap_remove_back(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                         i in 0usize..25, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.swap_remove_back(i), std_deque.swap_remove_back(i));
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_clear(elements in prop::collection::vec(any::<u8>(), 0..20),
+                              rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    model.clear();
+                    std_deque.clear();
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_truncate(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                 n in 0usize..25, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    model.truncate(n);
+                    std_deque.truncate(n);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                // `VecDeque::truncate_front` is unstable in std
+                // (`deque_truncate_front`), so the expectation is pinned here:
+                // it keeps the last `n` elements.
+                #[test]
+                fn test_truncate_front(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                       n in 0usize..25, rot in 0usize..20) {
+                    let (mut model, std_deque) = build(&elements, rot);
+                    model.truncate_front(n);
+                    let flat: std::vec::Vec<u8> = std_deque.iter().copied().collect();
+                    let expected: std::vec::Vec<u8> =
+                        flat[flat.len() - n.min(flat.len())..].to_vec();
+                    prop_assert_eq!(rust_primitives::sequence::seq_to_slice(&model.0), &expected[..]);
+                }
+
+                #[test]
+                fn test_split_off(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                  at in 0usize..21, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    let at = at % (std_deque.len() + 1);
+                    let model_tail = model.split_off(at);
+                    let std_tail = std_deque.split_off(at);
+                    prop_assert_eq!(model, std_deque.inject());
+                    prop_assert_eq!(model_tail, std_tail.inject());
+                }
+
+                #[test]
+                fn test_append(a in prop::collection::vec(any::<u8>(), 0..20),
+                               b in prop::collection::vec(any::<u8>(), 0..20),
+                               rot in 0usize..20) {
+                    let (mut model_a, mut std_a) = build(&a, rot);
+                    let (mut model_b, mut std_b) = build(&b, rot);
+                    model_a.append(&mut model_b);
+                    std_a.append(&mut std_b);
+                    prop_assert_eq!(model_a, std_a.inject());
+                    prop_assert_eq!(model_b, std_b.inject());
+                }
+
+                #[test]
+                fn test_rotate_left(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                    n in 0usize..21, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    let n = n % (std_deque.len() + 1);
+                    model.rotate_left(n);
+                    std_deque.rotate_left(n);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_rotate_right(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                     n in 0usize..21, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    let n = n % (std_deque.len() + 1);
+                    model.rotate_right(n);
+                    std_deque.rotate_right(n);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_contains(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                 x in any::<u8>(), rot in 0usize..20) {
+                    let (model, std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.contains(&x), std_deque.contains(&x));
+                }
+
+                #[test]
+                fn test_as_slices(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                  rot in 0usize..20) {
+                    let (model, std_deque) = build(&elements, rot);
+                    prop_assert_eq!(flatten(model.as_slices()), flatten(std_deque.as_slices()));
+                    // The model is always contiguous, unlike std's.
+                    prop_assert!(model.as_slices().1.is_empty());
+                }
+
+                #[test]
+                fn test_iter(elements in prop::collection::vec(any::<u8>(), 0..20),
+                             rot in 0usize..20) {
+                    let (model, std_deque) = build(&elements, rot);
+                    let from_model: std::vec::Vec<u8> = model.iter().copied().collect();
+                    let from_std: std::vec::Vec<u8> = std_deque.iter().copied().collect();
+                    prop_assert_eq!(from_model, from_std);
+                }
+
+                #[test]
+                fn test_capacity_ops_preserve_contents(
+                    elements in prop::collection::vec(any::<u8>(), 0..20),
+                    n in 0usize..40, rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    model.reserve(n);
+                    std_deque.reserve(n);
+                    model.reserve_exact(n);
+                    std_deque.reserve_exact(n);
+                    model.shrink_to(n);
+                    std_deque.shrink_to(n);
+                    model.shrink_to_fit();
+                    std_deque.shrink_to_fit();
+                    prop_assert_eq!(model.try_reserve(n), std_deque.try_reserve(n).map_err(|_| unreachable!()));
+                    prop_assert_eq!(model.try_reserve_exact(n),
+                                    std_deque.try_reserve_exact(n).map_err(|_| unreachable!()));
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_retain(elements in prop::collection::vec(any::<u8>(), 0..20),
+                               t in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    model.retain(|x| *x < t);
+                    std_deque.retain(|x| *x < t);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_resize_with(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                    n in 0usize..30, x in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    model.resize_with(n, || x);
+                    std_deque.resize_with(n, || x);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[test]
+                fn test_resize(elements in prop::collection::vec(any::<u8>(), 0..20),
+                               n in 0usize..30, x in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    model.resize(n, x);
+                    std_deque.resize(n, x);
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                // `binary_search`'s contract is only about sorted input, and
+                // std leaves *which* of several equal elements it returns
+                // unspecified, so the shared observation is "found or not" plus
+                // "the returned index really holds the key".
+                #[test]
+                fn test_binary_search(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                      x in any::<u8>()) {
+                    let mut sorted = elements.clone();
+                    sorted.sort();
+                    let (model, std_deque) = build(&sorted, 0);
+                    let m = model.binary_search(&x);
+                    let s = std_deque.binary_search(&x);
+                    prop_assert_eq!(m.is_ok(), s.is_ok());
+                    match (m, s) {
+                        (Ok(i), Ok(_)) => prop_assert_eq!(sorted[i], x),
+                        (Err(i), Err(j)) => prop_assert_eq!(i, j),
+                        _ => unreachable!(),
+                    }
+                }
+
+                #[test]
+                fn test_binary_search_by(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                         x in any::<u8>()) {
+                    let mut sorted = elements.clone();
+                    sorted.sort();
+                    let (model, std_deque) = build(&sorted, 0);
+                    let m = model.binary_search_by(|p| p.cmp(&x));
+                    let s = std_deque.binary_search_by(|p| p.cmp(&x));
+                    prop_assert_eq!(m.is_ok(), s.is_ok());
+                    if let (Ok(i), Ok(_)) = (m, s) {
+                        prop_assert_eq!(sorted[i], x);
+                    }
+                }
+
+                #[test]
+                fn test_binary_search_by_key(pairs in prop::collection::vec((any::<u8>(), any::<u8>()), 0..20),
+                                             k in any::<u8>()) {
+                    // Keys must be sorted; the payload is the second component.
+                    let mut sorted = pairs.clone();
+                    sorted.sort_by_key(|p| p.0);
+                    let keys: std::vec::Vec<u8> = sorted.iter().map(|p| p.0).collect();
+                    let (model, std_deque) = build(&keys, 0);
+                    let m = model.binary_search_by_key(&k, |p| *p);
+                    let s = std_deque.binary_search_by_key(&k, |p| *p);
+                    prop_assert_eq!(m.is_ok(), s.is_ok());
+                    if let (Ok(i), Ok(_)) = (m, s) {
+                        prop_assert_eq!(keys[i], k);
+                    }
+                }
+
+                #[test]
+                fn test_partition_point(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                        x in any::<u8>()) {
+                    let mut sorted = elements.clone();
+                    sorted.sort();
+                    let (model, std_deque) = build(&sorted, 0);
+                    prop_assert_eq!(model.partition_point(|p| *p < x),
+                                    std_deque.partition_point(|p| *p < x));
+                }
             }
 
             #[test]
             fn test_new() {
                 let mut model = Model::<u8>::new();
-                let mut std_deque = std::collections::VecDeque::<u8>::new();
+                let mut std_deque = Std::<u8>::new();
                 assert_eq!(model.len(), std_deque.len());
                 assert_eq!(model.pop_front(), std_deque.pop_front());
             }
+
+            // `new_in`, `with_capacity_in` and `try_with_capacity` are unstable
+            // in std (`allocator_api` / `try_with_capacity`), so the
+            // expectation — an empty deque — is pinned here.
+            #[test]
+            fn test_new_in() {
+                let model = Model::<u8>::new_in(crate::alloc::Global);
+                assert!(model.is_empty());
+                assert_eq!(model.len(), 0);
+            }
+
+            #[test]
+            fn test_with_capacity_in() {
+                let model = Model::<u8>::with_capacity_in(10, crate::alloc::Global);
+                assert!(model.is_empty());
+            }
+
+            #[test]
+            fn test_try_with_capacity() {
+                let model = Model::<u8>::try_with_capacity(10);
+                assert!(model.is_ok());
+                assert!(model.unwrap().is_empty());
+            }
+
+            #[test]
+            fn test_insert_out_of_bounds_panics() {
+                panics_like_core(
+                    || {
+                        let mut model = Model::<u8>::new();
+                        model.insert(1, 0);
+                    },
+                    || {
+                        let mut std_deque = Std::<u8>::new();
+                        std_deque.insert(1, 0);
+                    },
+                );
+            }
+
+            #[test]
+            fn test_swap_out_of_bounds_panics() {
+                panics_like_core(
+                    || {
+                        let mut model = Model::<u8>::new();
+                        model.push_back(1);
+                        model.swap(0, 1);
+                    },
+                    || {
+                        let mut std_deque = Std::<u8>::new();
+                        std_deque.push_back(1);
+                        std_deque.swap(0, 1);
+                    },
+                );
+            }
+
+            #[test]
+            fn test_split_off_out_of_bounds_panics() {
+                panics_like_core(
+                    || {
+                        let mut model = Model::<u8>::new();
+                        model.split_off(1);
+                    },
+                    || {
+                        let mut std_deque = Std::<u8>::new();
+                        std_deque.split_off(1);
+                    },
+                );
+            }
+
+            #[test]
+            fn test_rotate_left_out_of_bounds_panics() {
+                panics_like_core(
+                    || {
+                        let mut model = Model::<u8>::new();
+                        model.rotate_left(1);
+                    },
+                    || {
+                        let mut std_deque = Std::<u8>::new();
+                        std_deque.rotate_left(1);
+                    },
+                );
+            }
+
+            #[test]
+            fn test_rotate_right_out_of_bounds_panics() {
+                panics_like_core(
+                    || {
+                        let mut model = Model::<u8>::new();
+                        model.rotate_right(1);
+                    },
+                    || {
+                        let mut std_deque = Std::<u8>::new();
+                        std_deque.rotate_right(1);
+                    },
+                );
+            }
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        // `TryReserveError`/`TryReserveErrorKind` are only ever constructed by
+        // std on allocation failure, and `kind` is unstable
+        // (`try_reserve_kind`), so the expectations are pinned here.
+        #[test]
+        fn test_try_reserve_error_kind() {
+            let e = super::TryReserveError(super::TryReserveErrorKind::CapacityOverflow);
+            assert_eq!(e.kind(), super::TryReserveErrorKind::CapacityOverflow);
+            let e = super::TryReserveError(super::TryReserveErrorKind::AllocError);
+            assert_eq!(e.kind(), super::TryReserveErrorKind::AllocError);
         }
     }
 }
