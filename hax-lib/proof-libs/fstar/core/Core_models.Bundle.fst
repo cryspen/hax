@@ -148,6 +148,69 @@ let impl_54__then_with
       (() <: Prims.unit)
   | _ -> self
 
+/// See [`std::cmp::max_by`]
+let max_by
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F (v_T & v_T))
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Ordering})
+      (v1 v2: v_T)
+      (compare: v_F)
+    : v_T =
+  if
+    impl_54__is_lt (Core_models.Ops.Function.f_call_once #v_F
+          #(v_T & v_T)
+          #FStar.Tactics.Typeclasses.solve
+          compare
+          (v2, v1 <: (v_T & v_T))
+        <:
+        t_Ordering)
+  then v1
+  else v2
+
+/// See [`std::cmp::min_by`]
+let min_by
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F (v_T & v_T))
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Ordering})
+      (v1 v2: v_T)
+      (compare: v_F)
+    : v_T =
+  if
+    impl_54__is_lt (Core_models.Ops.Function.f_call_once #v_F
+          #(v_T & v_T)
+          #FStar.Tactics.Typeclasses.solve
+          compare
+          (v2, v1 <: (v_T & v_T))
+        <:
+        t_Ordering)
+  then v2
+  else v1
+
+/// See [`std::cmp::minmax_by`]
+let minmax_by
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F (v_T & v_T))
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Ordering})
+      (v1 v2: v_T)
+      (compare: v_F)
+    : t_Array v_T (mk_usize 2) =
+  if
+    impl_54__is_lt (Core_models.Ops.Function.f_call_once #v_F
+          #(v_T & v_T)
+          #FStar.Tactics.Typeclasses.solve
+          compare
+          (v2, v1 <: (v_T & v_T))
+        <:
+        t_Ordering)
+  then Rust_primitives.Slice.array_pair #v_T v2 v1
+  else Rust_primitives.Slice.array_pair #v_T v1 v2
+
 /// See [`std::convert::Infallible`]
 type t_Infallible = | Infallible : t_Infallible
 
@@ -7993,6 +8056,49 @@ let impl_53__from__cmp: t_Ord isize =
       then Ordering_Less <: t_Ordering
       else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering
   }
+
+let max_by_key
+      (#v_T #v_F #v_K: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord v_K)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_K})
+      (v1 v2: v_T)
+      (f: (v_T -> v_K))
+    : v_T =
+  if impl_54__is_lt (f_cmp #v_K #FStar.Tactics.Typeclasses.solve (f v2) (f v1) <: t_Ordering)
+  then v1
+  else v2
+
+let min_by_key
+      (#v_T #v_F #v_K: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord v_K)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_K})
+      (v1 v2: v_T)
+      (f: (v_T -> v_K))
+    : v_T =
+  if impl_54__is_lt (f_cmp #v_K #FStar.Tactics.Typeclasses.solve (f v2) (f v1) <: t_Ordering)
+  then v2
+  else v1
+
+/// See [`std::cmp::minmax`]
+let minmax (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_T) (v1 v2: v_T)
+    : t_Array v_T (mk_usize 2) =
+  if impl_54__is_lt (f_cmp #v_T #FStar.Tactics.Typeclasses.solve v2 v1 <: t_Ordering)
+  then Rust_primitives.Slice.array_pair #v_T v2 v1
+  else Rust_primitives.Slice.array_pair #v_T v1 v2
+
+let minmax_by_key
+      (#v_T #v_F #v_K: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord v_K)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_K})
+      (v1 v2: v_T)
+      (f: (v_T -> v_K))
+    : t_Array v_T (mk_usize 2) =
+  if impl_54__is_lt (f_cmp #v_K #FStar.Tactics.Typeclasses.solve (f v2) (f v1) <: t_Ordering)
+  then Rust_primitives.Slice.array_pair #v_T v2 v1
+  else Rust_primitives.Slice.array_pair #v_T v1 v2
 
 /// See [`std::cmp::clamp`]
 let clamp

@@ -52,6 +52,14 @@ pub mod slice {
     pub fn array_as_slice<T, const N: usize>(s: &[T; N]) -> &[T] {
         &s[..]
     }
+    // A `[a, b]` literal written in the model extracts to
+    // `Rust_primitives.Hax.array_of_list`, and `Rust_primitives.Hax` depends on
+    // `Core_models.{Array, Slice, Ops.Range}`, which closes a module cycle
+    // through hax's bundle. Going through this helper keeps the construction in
+    // `Rust_primitives.Slice`, which `Core_models` does not depend on.
+    pub fn array_pair<T>(a: T, b: T) -> [T; 2] {
+        [a, b]
+    }
     pub fn array_slice<T, const N: usize>(a: &[T; N], b: usize, e: usize) -> &[T] {
         &a[b..e]
     }
