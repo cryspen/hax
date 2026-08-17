@@ -2,6 +2,18 @@
 // `Cow::is_borrowed` / `Cow::is_owned` are still unstable in the real `alloc`,
 // and the property tests compare the model against them.
 #![cfg_attr(test, feature(cow_is_borrowed))]
+// The `Box` items modelled in `boxed` are still unstable in real `alloc`;
+// the feature gates let the test module compare against them. They are
+// `test`-only so the extracted crate stays on stable surface syntax.
+#![cfg_attr(
+    test,
+    feature(
+        allocator_api,
+        box_into_boxed_slice,
+        box_into_inner,
+        smart_pointer_try_map
+    )
+)]
 
 #[cfg(test)]
 mod testing {
@@ -200,6 +212,74 @@ mod boxed {
         // Hax removes boxes, so this should be the identity
         fn new(v: T) -> T {
             v
+        }
+        /// See [`std::boxed::Box::new_in`]. The model has a single heap, so the
+        /// allocator argument is ignored. The `A: Allocator` bound is omitted
+        /// on purpose: extraction erases `Box`'s allocator clause at call
+        /// sites, so a model that kept the bound would expect a dictionary
+        /// nobody passes.
+        fn new_in<A>(x: T, _alloc: A) -> T {
+            x
+        }
+        /// See [`std::boxed::Box::into_inner`]. With boxes erased this is the
+        /// identity, exactly like `new` in the other direction.
+        fn into_inner(boxed: T) -> T {
+            boxed
+        }
+        /// See [`std::boxed::Box::map`]. Real `map` reuses the allocation when
+        /// the layouts match; with boxes erased only the value transformation
+        /// is observable.
+        fn map<U, F: FnOnce(T) -> U>(this: T, f: F) -> U {
+            f(this)
+        }
+        /// See [`std::boxed::Box::into_boxed_slice`]: the one-element slice
+        /// holding `boxed`.
+        // `Box` names the model's own wrapper inside this module, so the real
+        // boxed slice has to be spelled out (extraction erases it to `[T]`).
+        fn into_boxed_slice(boxed: T) -> std::boxed::Box<[T]> {
+            std::boxed::Box::new([boxed])
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use proptest::prelude::*;
+
+        proptest! {
+            #[test]
+            fn test_new_in(x in any::<u8>()) {
+                prop_assert_eq!(
+                    super::Box::<u8>::new_in(x, crate::alloc::Global),
+                    *std::boxed::Box::new_in(x, std::alloc::Global)
+                );
+            }
+
+            #[test]
+            fn test_into_inner(x in any::<u8>()) {
+                prop_assert_eq!(
+                    super::Box::<u8>::into_inner(x),
+                    std::boxed::Box::into_inner(std::boxed::Box::new(x))
+                );
+            }
+
+            // The closure changes the type, so a `map` that ignored `f` and
+            // returned its argument would not type-check, let alone pass.
+            #[test]
+            fn test_map(x in any::<u8>()) {
+                let f = |v: u8| v as u32 * 3 + 1;
+                prop_assert_eq!(
+                    super::Box::<u8>::map(x, f),
+                    *std::boxed::Box::map(std::boxed::Box::new(x), f)
+                );
+            }
+
+            #[test]
+            fn test_into_boxed_slice(x in any::<u8>()) {
+                prop_assert_eq!(
+                    super::Box::<u8>::into_boxed_slice(x),
+                    std::boxed::Box::into_boxed_slice(std::boxed::Box::new(x))
+                );
+            }
         }
     }
 

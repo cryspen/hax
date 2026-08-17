@@ -68,6 +68,16 @@
 #![allow(unused_comparisons)]
 // `Cow::is_borrowed` / `Cow::is_owned` are still unstable in the real `alloc`.
 #![feature(cow_is_borrowed)]
+// The `Box` items exercised below (`new_in`, `into_boxed_slice`,
+// `into_inner`, `map`) are still unstable in real `alloc`, but the model
+// provides them, so the equivalence tests have to be able to call the real
+// ones.
+#![feature(
+    allocator_api,
+    box_into_boxed_slice,
+    box_into_inner,
+    smart_pointer_try_map
+)]
 
 pub mod helpers;
 
