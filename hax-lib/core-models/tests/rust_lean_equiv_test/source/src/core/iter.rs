@@ -1,8 +1,11 @@
 //! Equivalence tests for `core::iter::*`.
 //!
-//! These mirror the proptest block in `core-models/src/core/iter.rs`.
+//! These mirror the proptest blocks in `core-models/src/core/iter.rs`.
 //! Only `Range::count` is checked against Lean; every other `IteratorMethods`
 //! method is Rust-only, for the reason given above the `iterator_methods` module.
+//! The `Iterator::next` of a source or adapter is in the same boat: the only
+//! hand-written Lean iterator definitions in `CoreModels/Core/FunsPrologue.lean`
+//! are for `ops::range::Range`, so nothing else can be observed on that side.
 
 use rust_lean_test_macro::rust_lean_test;
 
