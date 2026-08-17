@@ -36,6 +36,7 @@
     test,
     feature(
         array_into_iter_constructors,
+        bigint_helper_methods,
         bound_as_ref,
         bound_copied,
         cmp_minmax,
@@ -49,6 +50,7 @@
         hasher_prefixfree_extras,
         int_lowest_highest_one,
         int_roundings,
+        is_ascii_octdigit,
         isolate_most_least_significant_one,
         likely_unlikely,
         mem_copy_fn,
