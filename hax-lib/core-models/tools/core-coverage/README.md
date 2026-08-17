@@ -54,6 +54,25 @@ Two subtleties the walker handles:
   reaches it, and pure re-export aggregators (`prelude`) are skipped, so
   re-exports don't inflate or misattribute the denominator.
 
+## Model naming workarounds (`MODEL_OWNER_ALIASES`)
+
+Two things force the model to spell an item differently from real core, in both
+cases without changing what is modeled:
+
+- **primitives need a stand-in type**, since Rust forbids inherent impls on
+  them. `num` names its stand-ins after the primitive (`pub struct u8;`), but
+  `slice`/`array` use `Slice`/`Array`, so their methods would key as
+  `Slice::len` against the denominator's `slice::len`.
+- **trait default methods are unsupported by hax**, so the model moves them into
+  a companion trait it blanket-impls: `IteratorMethods` for `Iterator`, `Neq`
+  and `PartialOrdDefaults` for `PartialEq`/`PartialOrd`. `Iterator::map` would
+  key as `IteratorMethods::map`.
+
+`MODEL_OWNER_ALIASES` (plus `MODEL_METHOD_ALIASES` for `Neq::neq` → `ne`) maps
+these back on the numerator side. It is **additive** — the model's own key is
+kept — so an alias can only ever attribute coverage the model really provides,
+never remove any. Extend it when you add a companion trait or a stand-in type.
+
 ## Scoping (the tiered report)
 
 `OUT_OF_SCOPE` in `coverage.py` lists modules a pure-Rust verification model is
