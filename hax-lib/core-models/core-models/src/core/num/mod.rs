@@ -19,6 +19,10 @@ macro_rules! uint_impl {
         $Max: expr,
         $Bits: expr,
         $Bytes: expr,
+        // Methods `core` provides on one width only (the `u8` ASCII helpers) go
+        // here rather than in a separate `impl` block, which would renumber the
+        // impls the backends name items after.
+        extras: { $($extra: tt)* },
     ) => {
         #[hax_lib::attributes]
         impl $Name {
@@ -314,7 +318,9 @@ macro_rules! uint_impl {
                 }
             }
             /// See [`std::primitive::u8::strict_pow`] (and similar for other integer types)
-            #[hax_lib::requires(!<$Name>::overflowing_pow(x, exp).1)]
+            // Spelled `== false` rather than `!`: hax's F* printer mis-parenthesizes a
+            // negated tuple projection.
+            #[hax_lib::requires(<$Name>::overflowing_pow(x, exp).1 == false)]
             pub fn strict_pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 let (result, overflowed) = Self::overflowing_pow(x, exp);
                 if overflowed {
@@ -823,6 +829,21 @@ macro_rules! uint_impl {
                     Option::None => crate::panicking::internal::panic(),
                 }
             }
+            /// See [`std::primitive::u8::carrying_add`] (and similar for other integer types)
+            pub fn carrying_add(x: $Self, y: $Self, carry: bool) -> ($Self, bool) {
+                let (a, c1) = Self::overflowing_add(x, y);
+                let (b, c2) = Self::overflowing_add(a, if carry { 1 } else { 0 });
+                // At most one of the two additions can carry.
+                (b, c1 || c2)
+            }
+            /// See [`std::primitive::u8::borrowing_sub`] (and similar for other integer types)
+            pub fn borrowing_sub(x: $Self, y: $Self, borrow: bool) -> ($Self, bool) {
+                let (a, c1) = Self::overflowing_sub(x, y);
+                let (b, c2) = Self::overflowing_sub(a, if borrow { 1 } else { 0 });
+                // At most one of the two subtractions can borrow.
+                (b, c1 || c2)
+            }
+            $($extra)*
         }
     };
 }
@@ -1230,7 +1251,9 @@ macro_rules! iint_impl {
                 }
             }
             /// See [`std::primitive::i8::strict_pow`] (and similar for other integer types)
-            #[hax_lib::requires(!<$Name>::overflowing_pow(x, exp).1)]
+            // Spelled `== false` rather than `!`: hax's F* printer mis-parenthesizes a
+            // negated tuple projection.
+            #[hax_lib::requires(<$Name>::overflowing_pow(x, exp).1 == false)]
             pub fn strict_pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 let (result, overflowed) = Self::overflowing_pow(x, exp);
                 if overflowed {
@@ -1555,6 +1578,20 @@ macro_rules! iint_impl {
                     result
                 }
             }
+            /// See [`std::primitive::i8::carrying_add`] (and similar for other integer types)
+            pub fn carrying_add(x: $Self, y: $Self, carry: bool) -> ($Self, bool) {
+                let (a, b) = Self::overflowing_add(x, y);
+                let (c, d) = Self::overflowing_add(a, if carry { 1 } else { 0 });
+                // The two additions overflow in opposite directions, so a single
+                // overflow of either is a real one and two cancel out.
+                (c, b != d)
+            }
+            /// See [`std::primitive::i8::borrowing_sub`] (and similar for other integer types)
+            pub fn borrowing_sub(x: $Self, y: $Self, borrow: bool) -> ($Self, bool) {
+                let (a, b) = Self::overflowing_sub(x, y);
+                let (c, d) = Self::overflowing_sub(a, if borrow { 1 } else { 0 });
+                (c, b != d)
+            }
             /// See [`std::primitive::i8::trailing_zeros`] (and similar for other integer types)
             pub fn trailing_zeros(x: $Self) -> core::primitive::u32 {
                 // `x & -x` keeps only the lowest set bit; one less than it is a mask of
@@ -1826,6 +1863,83 @@ uint_impl! {
     255,
     8,
     1,
+    // `core` puts the ASCII helpers on `u8` only. They take `&self`/`&mut self`,
+    // so the model mirrors that rather than taking the byte by value.
+    extras: {
+        /// See [`std::primitive::u8::is_ascii`]
+        pub fn is_ascii(x: &core::primitive::u8) -> bool {
+            *x < 128
+        }
+        /// See [`std::primitive::u8::is_ascii_uppercase`]
+        pub fn is_ascii_uppercase(x: &core::primitive::u8) -> bool {
+            *x >= b'A' && *x <= b'Z'
+        }
+        /// See [`std::primitive::u8::is_ascii_lowercase`]
+        pub fn is_ascii_lowercase(x: &core::primitive::u8) -> bool {
+            *x >= b'a' && *x <= b'z'
+        }
+        /// See [`std::primitive::u8::is_ascii_alphabetic`]
+        pub fn is_ascii_alphabetic(x: &core::primitive::u8) -> bool {
+            Self::is_ascii_uppercase(x) || Self::is_ascii_lowercase(x)
+        }
+        /// See [`std::primitive::u8::is_ascii_digit`]
+        pub fn is_ascii_digit(x: &core::primitive::u8) -> bool {
+            *x >= b'0' && *x <= b'9'
+        }
+        /// See [`std::primitive::u8::is_ascii_octdigit`]
+        pub fn is_ascii_octdigit(x: &core::primitive::u8) -> bool {
+            *x >= b'0' && *x <= b'7'
+        }
+        /// See [`std::primitive::u8::is_ascii_hexdigit`]
+        pub fn is_ascii_hexdigit(x: &core::primitive::u8) -> bool {
+            Self::is_ascii_digit(x) || (*x >= b'A' && *x <= b'F') || (*x >= b'a' && *x <= b'f')
+        }
+        /// See [`std::primitive::u8::is_ascii_alphanumeric`]
+        pub fn is_ascii_alphanumeric(x: &core::primitive::u8) -> bool {
+            Self::is_ascii_alphabetic(x) || Self::is_ascii_digit(x)
+        }
+        /// See [`std::primitive::u8::is_ascii_punctuation`]
+        pub fn is_ascii_punctuation(x: &core::primitive::u8) -> bool {
+            (*x >= b'!' && *x <= b'/')
+                || (*x >= b':' && *x <= b'@')
+                || (*x >= b'[' && *x <= b'`')
+                || (*x >= b'{' && *x <= b'~')
+        }
+        /// See [`std::primitive::u8::is_ascii_graphic`]
+        pub fn is_ascii_graphic(x: &core::primitive::u8) -> bool {
+            *x >= b'!' && *x <= b'~'
+        }
+        /// See [`std::primitive::u8::is_ascii_whitespace`]
+        pub fn is_ascii_whitespace(x: &core::primitive::u8) -> bool {
+            *x == b' ' || *x == b'\t' || *x == b'\n' || *x == 12 || *x == b'\r'
+        }
+        /// See [`std::primitive::u8::is_ascii_control`]
+        pub fn is_ascii_control(x: &core::primitive::u8) -> bool {
+            *x <= 31 || *x == 127
+        }
+        /// See [`std::primitive::u8::to_ascii_uppercase`]
+        // The bounds are repeated rather than reusing `is_ascii_lowercase` so that a
+        // backend sees directly that the subtraction stays in range.
+        pub fn to_ascii_uppercase(x: &core::primitive::u8) -> core::primitive::u8 {
+            if *x >= b'a' && *x <= b'z' { *x - 32 } else { *x }
+        }
+        /// See [`std::primitive::u8::to_ascii_lowercase`]
+        pub fn to_ascii_lowercase(x: &core::primitive::u8) -> core::primitive::u8 {
+            if *x >= b'A' && *x <= b'Z' { *x + 32 } else { *x }
+        }
+        /// See [`std::primitive::u8::eq_ignore_ascii_case`]
+        pub fn eq_ignore_ascii_case(x: &core::primitive::u8, other: &core::primitive::u8) -> bool {
+            Self::to_ascii_lowercase(x) == Self::to_ascii_lowercase(other)
+        }
+        /// See [`std::primitive::u8::make_ascii_uppercase`]
+        pub fn make_ascii_uppercase(x: &mut core::primitive::u8) {
+            *x = Self::to_ascii_uppercase(x)
+        }
+        /// See [`std::primitive::u8::make_ascii_lowercase`]
+        pub fn make_ascii_lowercase(x: &mut core::primitive::u8) {
+            *x = Self::to_ascii_lowercase(x)
+        }
+    },
 }
 
 uint_impl! {
@@ -1835,6 +1949,7 @@ uint_impl! {
     65535,
     16,
     2,
+    extras: {},
 }
 
 uint_impl! {
@@ -1844,6 +1959,7 @@ uint_impl! {
     4294967295,
     32,
     4,
+    extras: {},
 }
 
 uint_impl! {
@@ -1853,6 +1969,7 @@ uint_impl! {
     18446744073709551615,
     64,
     8,
+    extras: {},
 }
 
 uint_impl! {
@@ -1862,6 +1979,7 @@ uint_impl! {
     340282366920938463463374607431768211455,
     128,
     16,
+    extras: {},
 }
 
 uint_impl! {
@@ -1871,6 +1989,7 @@ uint_impl! {
     USIZE_MAX,
     SIZE_BITS,
     SIZE_BYTES,
+    extras: {},
 }
 
 iint_impl! {
@@ -2334,6 +2453,12 @@ mod tests {
                                 prop_assert_eq!(super::$t::strict_shl(mx, n), x.strict_shl(n));
                                 prop_assert_eq!(super::$t::strict_shr(mx, n), x.strict_shr(n));
                             }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _carrying_ops>](x in any::<$t>(), y in any::<$t>(), c in any::<bool>()) {
+                            prop_assert_eq!(super::$t::carrying_add(x.inject(), y.inject(), c), x.carrying_add(y, c));
+                            prop_assert_eq!(super::$t::borrowing_sub(x.inject(), y.inject(), c), x.borrowing_sub(y, c));
                         }
 
                         // `shr_exact` has no counterpart on the pinned toolchain, so the
@@ -3113,6 +3238,42 @@ mod tests {
     iint_test! { i8 i16 i32 i64 i128 isize }
     iint_mixed_test! { (i8, u8) (i16, u16) (i32, u32) (i64, u64) (i128, u128) (isize, usize) }
     uint_mixed_test! { (u8, i8) (u16, i16) (u32, i32) (u64, i64) (u128, i128) (usize, isize) }
+
+    // `core` puts these on `u8` only.
+    proptest! {
+        #[test]
+        fn test_u8_ascii_predicates(x in any::<u8>()) {
+            prop_assert_eq!(super::u8::is_ascii(&x), x.is_ascii());
+            prop_assert_eq!(super::u8::is_ascii_uppercase(&x), x.is_ascii_uppercase());
+            prop_assert_eq!(super::u8::is_ascii_lowercase(&x), x.is_ascii_lowercase());
+            prop_assert_eq!(super::u8::is_ascii_alphabetic(&x), x.is_ascii_alphabetic());
+            prop_assert_eq!(super::u8::is_ascii_digit(&x), x.is_ascii_digit());
+            prop_assert_eq!(super::u8::is_ascii_octdigit(&x), x.is_ascii_octdigit());
+            prop_assert_eq!(super::u8::is_ascii_hexdigit(&x), x.is_ascii_hexdigit());
+            prop_assert_eq!(super::u8::is_ascii_alphanumeric(&x), x.is_ascii_alphanumeric());
+            prop_assert_eq!(super::u8::is_ascii_punctuation(&x), x.is_ascii_punctuation());
+            prop_assert_eq!(super::u8::is_ascii_graphic(&x), x.is_ascii_graphic());
+            prop_assert_eq!(super::u8::is_ascii_whitespace(&x), x.is_ascii_whitespace());
+            prop_assert_eq!(super::u8::is_ascii_control(&x), x.is_ascii_control());
+        }
+
+        #[test]
+        fn test_u8_ascii_case_conversion(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(super::u8::to_ascii_uppercase(&x), x.to_ascii_uppercase());
+            prop_assert_eq!(super::u8::to_ascii_lowercase(&x), x.to_ascii_lowercase());
+            prop_assert_eq!(super::u8::eq_ignore_ascii_case(&x, &y), x.eq_ignore_ascii_case(&y));
+
+            let (mut model, mut std) = (x, x);
+            super::u8::make_ascii_uppercase(&mut model);
+            std.make_ascii_uppercase();
+            prop_assert_eq!(model, std);
+
+            let (mut model, mut std) = (x, x);
+            super::u8::make_ascii_lowercase(&mut model);
+            std.make_ascii_lowercase();
+            prop_assert_eq!(model, std);
+        }
+    }
 
     macro_rules! default_test {
         ($($t:ty)*) => {

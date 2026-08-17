@@ -47,7 +47,9 @@
     unchecked_shifts,
     funnel_shifts,
     disjoint_bitor,
-    wrapping_next_power_of_two
+    wrapping_next_power_of_two,
+    bigint_helper_methods,
+    is_ascii_octdigit
 )]
 
 pub mod helpers;

@@ -2498,3 +2498,244 @@ pub fn test_isize_unbounded_shr_negative() -> bool {
 pub fn test_usize_swap_bytes_one() -> bool {
     1usize.swap_bytes() == 72057594037927936usize
 }
+
+// =============================================================================
+// carrying_add / borrowing_sub
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_carrying_add_no_carry() -> bool {
+    10u8.carrying_add(20u8, false) == (30u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_carrying_add_carry_in() -> bool {
+    10u8.carrying_add(20u8, true) == (31u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_carrying_add_carry_out() -> bool {
+    200u8.carrying_add(100u8, true) == (45u8, true)
+}
+
+// The carry-in alone is enough to push MAX over the top.
+#[rust_lean_test]
+pub fn test_u8_carrying_add_carry_only() -> bool {
+    255u8.carrying_add(0u8, true) == (0u8, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_carrying_add_overflow() -> bool {
+    127i8.carrying_add(0i8, true) == (i8::MIN, true)
+}
+
+// `MIN + MIN` overflows and the carry-in then lands on 1.
+#[rust_lean_test]
+pub fn test_i8_carrying_add_double_overflow() -> bool {
+    i8::MIN.carrying_add(i8::MIN, true) == (1i8, true)
+}
+
+#[rust_lean_test]
+pub fn test_u8_borrowing_sub_no_borrow() -> bool {
+    30u8.borrowing_sub(20u8, false) == (10u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_borrowing_sub_borrow_in() -> bool {
+    30u8.borrowing_sub(20u8, true) == (9u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_borrowing_sub_borrow_out() -> bool {
+    5u8.borrowing_sub(10u8, true) == (250u8, true)
+}
+
+#[rust_lean_test]
+pub fn test_u8_borrowing_sub_borrow_only() -> bool {
+    0u8.borrowing_sub(0u8, true) == (255u8, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_borrowing_sub_overflow() -> bool {
+    i8::MIN.borrowing_sub(0i8, true) == (127i8, true)
+}
+
+#[rust_lean_test]
+pub fn test_u32_carrying_add_max() -> bool {
+    u32::MAX.carrying_add(u32::MAX, true) == (u32::MAX, true)
+}
+
+// =============================================================================
+// u8 ASCII predicates
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_boundary() -> bool {
+    127u8.is_ascii() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_above_boundary() -> bool {
+    128u8.is_ascii() == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_uppercase() -> bool {
+    b'A'.is_ascii_uppercase() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_uppercase_lower() -> bool {
+    b'a'.is_ascii_uppercase() == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_lowercase_last() -> bool {
+    b'z'.is_ascii_lowercase() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_alphabetic_digit() -> bool {
+    b'5'.is_ascii_alphabetic() == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_digit_zero() -> bool {
+    b'0'.is_ascii_digit() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_octdigit_eight() -> bool {
+    b'8'.is_ascii_octdigit() == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_hexdigit_f() -> bool {
+    b'f'.is_ascii_hexdigit() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_hexdigit_g() -> bool {
+    b'g'.is_ascii_hexdigit() == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_alphanumeric() -> bool {
+    b'9'.is_ascii_alphanumeric() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_punctuation_tilde() -> bool {
+    b'~'.is_ascii_punctuation() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_punctuation_letter() -> bool {
+    b'a'.is_ascii_punctuation() == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_graphic_space() -> bool {
+    b' '.is_ascii_graphic() == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_graphic_bang() -> bool {
+    b'!'.is_ascii_graphic() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_whitespace_tab() -> bool {
+    b'\t'.is_ascii_whitespace() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_whitespace_form_feed() -> bool {
+    12u8.is_ascii_whitespace() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_whitespace_vertical_tab() -> bool {
+    11u8.is_ascii_whitespace() == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_control_nul() -> bool {
+    0u8.is_ascii_control() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_control_delete() -> bool {
+    127u8.is_ascii_control() == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_is_ascii_control_space() -> bool {
+    b' '.is_ascii_control() == false
+}
+
+// =============================================================================
+// u8 ASCII case conversion
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_to_ascii_uppercase_letter() -> bool {
+    b'a'.to_ascii_uppercase() == b'A'
+}
+
+#[rust_lean_test]
+pub fn test_u8_to_ascii_uppercase_non_letter() -> bool {
+    b'5'.to_ascii_uppercase() == b'5'
+}
+
+#[rust_lean_test]
+pub fn test_u8_to_ascii_uppercase_non_ascii() -> bool {
+    200u8.to_ascii_uppercase() == 200u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_to_ascii_lowercase_letter() -> bool {
+    b'Z'.to_ascii_lowercase() == b'z'
+}
+
+#[rust_lean_test]
+pub fn test_u8_to_ascii_lowercase_non_letter() -> bool {
+    b'{'.to_ascii_lowercase() == b'{'
+}
+
+#[rust_lean_test]
+pub fn test_u8_eq_ignore_ascii_case_true() -> bool {
+    b'a'.eq_ignore_ascii_case(&b'A') == true
+}
+
+#[rust_lean_test]
+pub fn test_u8_eq_ignore_ascii_case_false() -> bool {
+    b'a'.eq_ignore_ascii_case(&b'B') == false
+}
+
+// The 0x20 bit difference must not make non-letters compare equal.
+#[rust_lean_test]
+pub fn test_u8_eq_ignore_ascii_case_non_letters() -> bool {
+    b'{'.eq_ignore_ascii_case(&b'[') == false
+}
+
+#[rust_lean_test]
+pub fn test_u8_make_ascii_uppercase() -> bool {
+    let mut x = b'a';
+    x.make_ascii_uppercase();
+    x == b'A'
+}
+
+#[rust_lean_test]
+pub fn test_u8_make_ascii_uppercase_non_letter() -> bool {
+    let mut x = 200u8;
+    x.make_ascii_uppercase();
+    x == 200u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_make_ascii_lowercase() -> bool {
+    let mut x = b'Z';
+    x.make_ascii_lowercase();
+    x == b'z'
+}
