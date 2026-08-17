@@ -302,6 +302,12 @@ mod boxed {
 mod collections {
     // All implementations are dummy (for interfaces only)
 
+    /// See [`std::collections::TryReserveError`]. The model never fails to
+    /// allocate, so no value of this type is ever built; it exists so the
+    /// `try_reserve`-family signatures can be spelled faithfully.
+    #[cfg_attr(test, derive(Debug))]
+    pub struct TryReserveError;
+
     mod binary_heap {
         #[hax_lib::fstar::before("open Rust_primitives.Notations")]
         use crate::vec::*;
@@ -792,31 +798,262 @@ mod slice {
 }
 
 mod string {
+    use rust_primitives::sequence::{seq_empty, seq_extend};
     use rust_primitives::string::*;
 
+    /// See [`std::string::ParseError`]: std's deprecated alias for the error of
+    /// `String`'s infallible `FromStr` impl.
+    pub type ParseError = std::convert::Infallible;
+
+    /// See [`std::string::String`]. The model is a plain string value; there is
+    /// no separate buffer, so "capacity" is always exactly the length (see
+    /// [`String::capacity`]).
     #[cfg_attr(test, derive(PartialEq, Debug))]
-    struct String(&'static str);
+    pub struct String(&'static str);
+
+    /// See [`std::string::FromUtf8Error`]: carries back the bytes that failed
+    /// to decode.
+    ///
+    /// DEVIATION(std): no `utf8_error()`. It returns a `core::str::Utf8Error`,
+    /// and the model's `Utf8Error` is a contentless placeholder with no way to
+    /// build a value, so the accessor cannot be provided honestly.
+    #[cfg_attr(test, derive(PartialEq, Debug))]
+    pub struct FromUtf8Error(crate::vec::Vec<u8>);
+
+    // Excluded from F*: hax names *both* inherent impls of this module
+    // `impl_String__*`, so `as_bytes`/`into_bytes` here would collide with
+    // `String`'s. The type itself still extracts, so `from_utf8`'s signature is
+    // unaffected.
+    #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+    impl FromUtf8Error {
+        /// See [`std::string::FromUtf8Error::as_bytes`]
+        fn as_bytes(&self) -> &[u8] {
+            self.0.as_slice()
+        }
+        /// See [`std::string::FromUtf8Error::into_bytes`]
+        fn into_bytes(self) -> crate::vec::Vec<u8> {
+            self.0
+        }
+        /// See `std::string::FromUtf8Error::into_utf8_lossy` (unstable).
+        fn into_utf8_lossy(self) -> String {
+            String(str_from_utf8_lossy(self.0.as_slice()))
+        }
+    }
+
+    /// See [`std::string::ToString`].
+    ///
+    /// In real core `to_string` is a required method of `ToString` and the
+    /// trait is blanket-implemented over `Display`; the model mirrors both.
+    pub trait ToString {
+        /// See [`std::string::ToString::to_string`]
+        fn to_string(&self) -> String;
+    }
+
+    // Opaque: running a `Display` implementation is not expressible in the
+    // model, so the body below is a Rust-side oracle only.
+    #[hax_lib::opaque]
+    impl<T: std::fmt::Display> ToString for T {
+        fn to_string(&self) -> String {
+            String(str_of_display(self))
+        }
+    }
+
+    #[hax_lib::attributes]
     impl String {
+        /// See [`std::string::String::new`]
         fn new() -> Self {
             String("")
         }
+        /// See [`std::string::String::with_capacity`]: the requested capacity
+        /// is irrelevant to the model (see [`String::capacity`]).
+        fn with_capacity(_capacity: usize) -> Self {
+            String("")
+        }
+        /// See `std::string::String::try_with_capacity` (unstable). The model
+        /// never fails to allocate.
+        fn try_with_capacity(
+            _capacity: usize,
+        ) -> Result<Self, crate::collections::TryReserveError> {
+            Ok(String(""))
+        }
+        /// See [`std::string::String::from_utf8`]
+        fn from_utf8(vec: crate::vec::Vec<u8>) -> Result<Self, FromUtf8Error> {
+            if str_is_utf8(vec.as_slice()) {
+                Ok(String(str_from_utf8_lossy(vec.as_slice())))
+            } else {
+                Err(FromUtf8Error(vec))
+            }
+        }
+        /// See [`std::string::String::from_utf8_lossy`].
+        ///
+        /// DEVIATION(std): returns a `String` rather than a `Cow<'_, str>`. The
+        /// model's `Cow<T>` is sized-only, so `Cow<'_, str>` is not statable.
+        fn from_utf8_lossy(v: &[u8]) -> Self {
+            String(str_from_utf8_lossy(v))
+        }
+        /// See `std::string::String::from_utf8_lossy_owned` (unstable).
+        fn from_utf8_lossy_owned(v: crate::vec::Vec<u8>) -> Self {
+            String(str_from_utf8_lossy(v.as_slice()))
+        }
+        /// See [`std::string::String::push_str`]
         fn push_str(&mut self, other: &'static str) {
             *self = String(str_concat(self.0, other))
         }
+        /// See [`std::string::String::push`]
         fn push(&mut self, c: char) {
             *self = String(str_concat(self.0, str_of_char(c)))
         }
+        /// See [`std::string::String::pop`]
         fn pop(&mut self) -> Option<char> {
             // Char count, not `str::len`: the primitives below index by char.
             let l = str_len(self.0);
             if l > 0 {
                 let c = str_index(self.0, l - 1);
                 *self = String(str_sub(self.0, 0, l - 1));
+            let n = str_char_count(self.0);
+            if n > 0 {
+                let c = str_index(self.0, n - 1);
+                *self = String(str_sub(self.0, 0, n - 1));
                 Some(c)
             } else {
                 None
             }
         }
+        /// See [`std::string::String::len`]: the length in **bytes**.
+        fn len(&self) -> usize {
+            self.0.len()
+        }
+        /// See [`std::string::String::is_empty`]
+        fn is_empty(&self) -> bool {
+            self.0.len() == 0
+        }
+        /// See [`std::string::String::as_str`]
+        fn as_str(&self) -> &str {
+            self.0
+        }
+        /// See [`std::string::String::as_bytes`]
+        fn as_bytes(&self) -> &[u8] {
+            self.0.as_bytes()
+        }
+        /// See [`std::string::String::into_bytes`]
+        fn into_bytes(self) -> crate::vec::Vec<u8> {
+            let mut seq = seq_empty();
+            seq_extend(&mut seq, self.0.as_bytes());
+            crate::vec::from_seq(seq)
+        }
+        /// See [`std::string::String::into_boxed_str`]
+        fn into_boxed_str(self) -> Box<str> {
+            Box::from(self.0)
+        }
+        /// See [`std::string::String::clear`]
+        fn clear(&mut self) {
+            *self = String("")
+        }
+        /// See [`std::string::String::truncate`]: `new_len` is a **byte**
+        /// index, and a `new_len` past the end is a no-op rather than a panic.
+        #[hax_lib::requires(new_len > self.0.len() || str_is_char_boundary(self.0, new_len))]
+        fn truncate(&mut self, new_len: usize) {
+            if new_len <= self.0.len() {
+                *self = String(str_sub_bytes(self.0, 0, new_len))
+            }
+        }
+        /// See [`std::string::String::split_off`]: `at` is a **byte** index.
+        #[hax_lib::requires(str_is_char_boundary(self.0, at))]
+        fn split_off(&mut self, at: usize) -> String {
+            let l = self.0.len();
+            let tail = String(str_sub_bytes(self.0, at, l));
+            *self = String(str_sub_bytes(self.0, 0, at));
+            tail
+        }
+        /// See [`std::string::String::insert_str`]: `idx` is a **byte** index.
+        #[hax_lib::requires(str_is_char_boundary(self.0, idx))]
+        fn insert_str(&mut self, idx: usize, string: &'static str) {
+            let l = self.0.len();
+            *self = String(str_concat(
+                str_concat(str_sub_bytes(self.0, 0, idx), string),
+                str_sub_bytes(self.0, idx, l),
+            ))
+        }
+        /// See [`std::string::String::insert`]: `idx` is a **byte** index, `ch`
+        /// is inserted in its UTF-8 encoding.
+        #[hax_lib::requires(str_is_char_boundary(self.0, idx))]
+        fn insert(&mut self, idx: usize, ch: char) {
+            self.insert_str(idx, str_of_char(ch))
+        }
+        /// See [`std::string::String::remove`]: `idx` is the **byte** index of
+        /// the char to remove.
+        #[hax_lib::requires(idx < self.0.len() && str_is_char_boundary(self.0, idx))]
+        fn remove(&mut self, idx: usize) -> char {
+            let l = self.0.len();
+            // The tail is spelled as "drop the first char of `self[idx..]`"
+            // rather than "`self[idx + ch.len_utf8()..]`" so that no arithmetic
+            // on byte offsets appears in the extraction.
+            let tail = str_sub_bytes(self.0, idx, l);
+            let ch = str_index(tail, 0);
+            *self = String(str_concat(
+                str_sub_bytes(self.0, 0, idx),
+                str_sub(tail, 1, str_char_count(tail)),
+            ));
+            ch
+        }
+        /// See [`std::string::String::retain`].
+        ///
+        /// Opaque: the body below is the real filter, and `cargo test` checks it
+        /// against std, but it does not survive extraction — the model's `Fn*`
+        /// traits carry `Output` as a non-method field, so F* cannot see that
+        /// `f(c)` is a `bool` and rejects the `if`.
+        #[hax_lib::opaque]
+        fn retain<F>(&mut self, mut f: F)
+        where
+            F: FnMut(char) -> bool,
+        {
+            let n = str_char_count(self.0);
+            let mut kept = "";
+            for i in 0..n {
+                let c = str_index(self.0, i);
+                if f(c) {
+                    kept = str_concat(kept, str_of_char(c));
+                }
+            }
+            *self = String(kept)
+        }
+        /// See [`std::string::String::capacity`].
+        ///
+        /// DEVIATION(std): the model holds a string value, not a buffer, so the
+        /// capacity is always exactly the length. std only guarantees
+        /// `capacity() >= len()`, which this respects, but the concrete numbers
+        /// it reports differ.
+        fn capacity(&self) -> usize {
+            self.0.len()
+        }
+        /// See [`std::string::String::reserve`]: a no-op, as the model has no
+        /// buffer to grow.
+        fn reserve(&mut self, _additional: usize) {}
+        /// See [`std::string::String::reserve_exact`]: a no-op, as
+        /// [`String::reserve`].
+        fn reserve_exact(&mut self, _additional: usize) {}
+        /// See [`std::string::String::try_reserve`]: the model never fails to
+        /// allocate.
+        fn try_reserve(
+            &mut self,
+            _additional: usize,
+        ) -> Result<(), crate::collections::TryReserveError> {
+            Ok(())
+        }
+        /// See [`std::string::String::try_reserve_exact`]: as
+        /// [`String::try_reserve`].
+        fn try_reserve_exact(
+            &mut self,
+            _additional: usize,
+        ) -> Result<(), crate::collections::TryReserveError> {
+            Ok(())
+        }
+        /// See [`std::string::String::shrink_to_fit`]: a no-op, as
+        /// [`String::reserve`].
+        fn shrink_to_fit(&mut self) {}
+        /// See [`std::string::String::shrink_to`]: a no-op, as
+        /// [`String::reserve`].
+        fn shrink_to(&mut self, _min_capacity: usize) {}
     }
 
     #[cfg(test)]
@@ -824,29 +1061,308 @@ mod string {
         use crate::testing::Inject;
         use proptest::prelude::*;
 
-        proptest! {
-            #[test]
-            fn test_push(c in any::<char>()) {
+        /// Mixes 1-, 2- and 3-byte chars so that the byte/char index
+        /// distinction is actually exercised.
+        const STR: &str = "[a-cé☃]{0,10}";
+
+        impl Inject for std::string::String {
+            type Model = super::String;
+            fn inject(&self) -> super::String {
+                // Built with `push` (itself tested below) rather than by
+                // wrapping the `&str`, which would need a `'static` lifetime.
                 let mut model = super::String::new();
-                let mut std_s = std::string::String::new();
-                model.push(c);
-                std_s.push(c);
-                prop_assert_eq!(model.0, std_s);
+                for c in self.chars() {
+                    model.push(c);
+                }
+                model
             }
         }
-        #[test]
-        fn test_push_str() {
-            let mut model = super::String("hello");
-            let mut std_s = "hello".to_string();
-            model.push_str("world");
-            std_s.push_str("world");
-            assert_eq!(model.0, std_s);
+
+        /// Proptest hands out owned `String`s, but the model's `&str`-taking
+        /// methods want `&'static str`. Leaking is fine at test scale.
+        fn leak(s: &str) -> &'static str {
+            Box::leak(s.to_string().into_boxed_str())
+        }
+
+        /// A char boundary of `s` picked by `k`: the start of one of its chars,
+        /// or `s.len()`. Drawing byte indices uniformly instead rejects almost
+        /// everything, since most of `0..40` is out of range.
+        fn boundary(s: &str, k: usize) -> usize {
+            let mut offsets: std::vec::Vec<usize> = s.char_indices().map(|(i, _)| i).collect();
+            offsets.push(s.len());
+            offsets[k % offsets.len()]
+        }
+
+        /// As [`boundary`], but never `s.len()`: the start of a char of a
+        /// non-empty `s`.
+        fn char_start(s: &str, k: usize) -> usize {
+            let offsets: std::vec::Vec<usize> = s.char_indices().map(|(i, _)| i).collect();
+            offsets[k % offsets.len()]
+        }
+
+        proptest! {
+            #[test]
+            fn test_push(s in STR, c in any::<char>()) {
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                model.push(c);
+                std_s.push(c);
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            #[test]
+            fn test_push_str(s in STR, other in STR) {
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                model.push_str(leak(&other));
+                std_s.push_str(&other);
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            #[test]
+            fn test_pop(s in STR) {
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                prop_assert_eq!(model.pop(), std_s.pop());
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            #[test]
+            fn test_len(s in STR) {
+                prop_assert_eq!(s.inject().len(), s.len());
+            }
+
+            #[test]
+            fn test_is_empty(s in STR) {
+                prop_assert_eq!(s.inject().is_empty(), s.is_empty());
+            }
+
+            #[test]
+            fn test_as_str(s in STR) {
+                let model = s.inject();
+                prop_assert_eq!(model.as_str(), s.as_str());
+            }
+
+            #[test]
+            fn test_as_bytes(s in STR) {
+                let model = s.inject();
+                prop_assert_eq!(model.as_bytes(), s.as_bytes());
+            }
+
+            #[test]
+            fn test_into_bytes(s in STR) {
+                let model = s.inject().into_bytes();
+                let std_bytes = s.clone().into_bytes();
+                prop_assert_eq!(model.as_slice(), std_bytes.as_slice());
+            }
+
+            #[test]
+            fn test_into_boxed_str(s in STR) {
+                prop_assert_eq!(s.inject().into_boxed_str(), s.clone().into_boxed_str());
+            }
+
+            #[test]
+            fn test_clear(s in STR) {
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                model.clear();
+                std_s.clear();
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            #[test]
+            fn test_truncate(s in STR, new_len in 0usize..40) {
+                prop_assume!(new_len > s.len() || s.is_char_boundary(new_len));
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                model.truncate(new_len);
+                std_s.truncate(new_len);
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            #[test]
+            fn test_split_off(s in STR, k in 0usize..16) {
+                let at = boundary(&s, k);
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                let model_tail = model.split_off(at);
+                let std_tail = std_s.split_off(at);
+                prop_assert_eq!(model, std_s.inject());
+                prop_assert_eq!(model_tail, std_tail.inject());
+            }
+
+            #[test]
+            fn test_insert_str(s in STR, other in STR, k in 0usize..16) {
+                let idx = boundary(&s, k);
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                model.insert_str(idx, leak(&other));
+                std_s.insert_str(idx, &other);
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            #[test]
+            fn test_insert(s in STR, c in any::<char>(), k in 0usize..16) {
+                let idx = boundary(&s, k);
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                model.insert(idx, c);
+                std_s.insert(idx, c);
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            #[test]
+            fn test_remove(s in STR, k in 0usize..16) {
+                prop_assume!(!s.is_empty());
+                let idx = char_start(&s, k);
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                prop_assert_eq!(model.remove(idx), std_s.remove(idx));
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            #[test]
+            fn test_retain(s in STR) {
+                let mut model = s.inject();
+                let mut std_s = s.clone();
+                model.retain(|c| c != 'a');
+                std_s.retain(|c| c != 'a');
+                prop_assert_eq!(model, std_s.inject());
+            }
+
+            /// std only promises `capacity() >= len()`; the model reports
+            /// exactly `len()` (see `String::capacity`), so that inequality and
+            /// the preservation of the contents are all there is to check —
+            /// here across every capacity-shaped method.
+            #[test]
+            fn test_capacity_ops(s in STR, n in 0usize..40) {
+                let mut model = s.inject();
+                model.reserve(n);
+                prop_assert!(model.capacity() >= model.len());
+                model.reserve_exact(n);
+                prop_assert!(model.try_reserve(n).is_ok());
+                prop_assert!(model.try_reserve_exact(n).is_ok());
+                model.shrink_to(n);
+                model.shrink_to_fit();
+                prop_assert!(model.capacity() >= model.len());
+                prop_assert_eq!(model, s.inject());
+            }
+
+            #[test]
+            fn test_from_utf8_valid(s in STR) {
+                let model = super::String::from_utf8(s.clone().into_bytes().inject());
+                prop_assert_eq!(model, Ok(s.inject()));
+            }
+
+            #[test]
+            fn test_from_utf8_lossy(bytes in prop::collection::vec(any::<u8>(), 0..20)) {
+                let model = super::String::from_utf8_lossy(&bytes);
+                prop_assert_eq!(model, std::string::String::from_utf8_lossy(&bytes).into_owned().inject());
+            }
+
+            #[test]
+            fn test_from_utf8_lossy_owned(bytes in prop::collection::vec(any::<u8>(), 0..20)) {
+                let model = super::String::from_utf8_lossy_owned(bytes.inject());
+                prop_assert_eq!(model, std::string::String::from_utf8_lossy(&bytes).into_owned().inject());
+            }
+
+            #[test]
+            fn test_from_utf8_error(bytes in prop::collection::vec(any::<u8>(), 0..20)) {
+                let std_err = match std::string::String::from_utf8(bytes.clone()) {
+                    Ok(_) => return Ok(()),
+                    Err(e) => e,
+                };
+                let err = match super::String::from_utf8(bytes.inject()) {
+                    Ok(_) => panic!("the model accepted invalid UTF-8"),
+                    Err(e) => e,
+                };
+                prop_assert_eq!(err.as_bytes(), std_err.as_bytes());
+                prop_assert_eq!(
+                    err.into_utf8_lossy(),
+                    std::string::String::from_utf8_lossy(&bytes).into_owned().inject()
+                );
+                let err = super::String::from_utf8(bytes.inject()).unwrap_err();
+                let model_bytes = err.into_bytes();
+                let std_bytes = std_err.into_bytes();
+                prop_assert_eq!(model_bytes.as_slice(), std_bytes.as_slice());
+            }
+
+            #[test]
+            fn test_to_string(n in any::<u32>()) {
+                prop_assert_eq!(super::ToString::to_string(&n), n.to_string().inject());
+            }
         }
 
         #[test]
         fn test_new() {
             let model = super::String::new();
-            assert_eq!(model.0, std::string::String::new());
+            assert_eq!(model, std::string::String::new().inject());
+        }
+
+        #[test]
+        fn test_with_capacity() {
+            let model = super::String::with_capacity(10);
+            assert_eq!(model, std::string::String::with_capacity(10).inject());
+        }
+
+        #[test]
+        fn test_try_with_capacity() {
+            let model = super::String::try_with_capacity(10);
+            assert!(model.is_ok());
+            assert_eq!(model.unwrap(), std::string::String::new().inject());
+        }
+
+        // ----- panics ---------------------------------------------------------
+
+        #[test]
+        fn test_truncate_non_boundary_panics() {
+            let mut model = "aé".to_string().inject();
+            let mut real = "aé".to_string();
+            let i = std::hint::black_box(2usize);
+            crate::testing::panics_like_core(|| model.truncate(i), || real.truncate(i));
+        }
+
+        #[test]
+        fn test_split_off_past_end_panics() {
+            let mut model = "abc".to_string().inject();
+            let mut real = "abc".to_string();
+            let at = std::hint::black_box(4usize);
+            crate::testing::panics_like_core(|| model.split_off(at), || real.split_off(at));
+        }
+
+        #[test]
+        fn test_insert_past_end_panics() {
+            let mut model = "abc".to_string().inject();
+            let mut real = "abc".to_string();
+            let i = std::hint::black_box(4usize);
+            crate::testing::panics_like_core(|| model.insert(i, 'x'), || real.insert(i, 'x'));
+        }
+
+        #[test]
+        fn test_insert_str_non_boundary_panics() {
+            let mut model = "aé".to_string().inject();
+            let mut real = "aé".to_string();
+            let i = std::hint::black_box(2usize);
+            crate::testing::panics_like_core(
+                || model.insert_str(i, "x"),
+                || real.insert_str(i, "x"),
+            );
+        }
+
+        #[test]
+        fn test_remove_past_end_panics() {
+            let mut model = "abc".to_string().inject();
+            let mut real = "abc".to_string();
+            let i = std::hint::black_box(3usize);
+            crate::testing::panics_like_core(|| model.remove(i), || real.remove(i));
+        }
+
+        #[test]
+        fn test_remove_non_boundary_panics() {
+            let mut model = "aé".to_string().inject();
+            let mut real = "aé".to_string();
+            let i = std::hint::black_box(2usize);
+            crate::testing::panics_like_core(|| model.remove(i), || real.remove(i));
         }
 
         proptest! {
