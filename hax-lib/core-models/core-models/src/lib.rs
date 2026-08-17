@@ -33,6 +33,7 @@
 #![cfg_attr(
     test,
     feature(
+        array_into_iter_constructors,
         cmp_minmax,
         cold_path,
         hasher_prefixfree_extras,
@@ -48,6 +49,9 @@
 // hasher_prefixfree_extras: same, for `Hasher::{write_length_prefix, write_str}`.
 
 // cmp_minmax: same, for `cmp::minmax{,_by,_by_key}`.
+
+// array_into_iter_constructors: `core::array::IntoIter::empty` is still
+// unstable, and a proptest compares against it.
 #![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 

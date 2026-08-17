@@ -246,6 +246,47 @@ def rust_primitives.slice.array_index
 def rust_primitives.slice.array_pair
   {T : Type} : T → T → Result (Array T 2#usize) :=
   fun a b => ok (Array.make 2#usize [a, b])
+/-- [rust_primitives::slice::array_as_slice_mut]: the whole array viewed as a
+    slice, plus its write-back (pure encoding of `&mut a[..]`). -/
+@[rust_fun "rust_primitives::slice::array_as_slice_mut"]
+def rust_primitives.slice.array_as_slice_mut
+  {T : Type} {N : Std.Usize} :
+  Array T N → Result ((Slice T) × (Slice T → Array T N)) :=
+  fun a => ok (Array.to_slice_mut a)
+
+/-- [rust_primitives::slice::array_from_ref]: `&x` seen as a one-element
+    array. -/
+@[rust_fun "rust_primitives::slice::array_from_ref"]
+def rust_primitives.slice.array_from_ref
+  {T : Type} : T → Result (Array T 1#usize) :=
+  fun x => ok (Array.repeat 1#usize x)
+
+/-- [rust_primitives::slice::array_from_mut]: `&mut x` seen as a one-element
+    array, plus its write-back. The array always has length 1, so the fallback
+    of `headD` is unreachable. -/
+@[rust_fun "rust_primitives::slice::array_from_mut"]
+def rust_primitives.slice.array_from_mut
+  {T : Type} :
+  T → Result ((Array T 1#usize) × (Array T 1#usize → T)) :=
+  fun x => ok (Array.repeat 1#usize x, fun a => a.val.headD x)
+
+/-- [rust_primitives::slice::array_repeat]: like `core::array::repeat`, the last
+    element is `val` itself and the other `N - 1` are clones, so `clone`'s
+    effects are observable and cannot be skipped. -/
+@[rust_fun "rust_primitives::slice::array_repeat"]
+def rust_primitives.slice.array_repeat
+  {T : Type} (N : Std.Usize) (corecloneCloneInst : core.clone.Clone T) :
+  T → Result (Array T N) := fun x =>
+  if hz : N.val = 0 then ok ⟨[], by simp only [List.length_nil]; omega⟩
+  else
+    match h : (List.replicate (N.val - 1) x).mapM corecloneCloneInst.clone with
+    | ok cloned => ok ⟨cloned ++ [x], by
+        have hl := List.mapM_Result_length h
+        simp only [List.length_replicate] at hl
+        simp only [List.length_append, List.length_cons, List.length_nil]
+        omega⟩
+    | fail e => fail e
+    | div => div
 
 /-- [rust_primitives::sequence::seq_from_slice]:
     Source: 'rust_primitives/src/lib.rs', lines 51:4-51:48
@@ -1024,6 +1065,12 @@ def rust_primitives.sequence.seq_to_slice_mut
   {T : Type} :
   rust_primitives.sequence.Seq T →
     Result ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
+-- A `Seq T` *is* a `Slice T`, so the write-back is the identity.
+@[rust_fun "rust_primitives::sequence::seq_to_slice_mut"]
+def rust_primitives.sequence.seq_to_slice_mut
+  {T : Type} :
+  rust_primitives.sequence.Seq T → Result
+    ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
   fun s => ok (s, fun s' => s')
 
 @[rust_fun "rust_primitives::sequence::seq_concat"]

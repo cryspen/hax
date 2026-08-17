@@ -25,3 +25,7 @@ let array_index (#t: Type) (l: usize) (s: t_Array t l) (i: usize {i <. length s}
 // would make hax's bundle and `Rust_primitives.Hax` mutually dependent.
 let array_pair (#t: Type) (x y: t): t_Array t (mk_usize 2) =
   Rust_primitives.Arrays.createi (mk_usize 2) (fun i -> if i =. mk_usize 0 then x else y)
+let array_from_ref (#t: Type) (x: t): t_Array t (mk_usize 1) = Seq.create 1 x
+// `Clone` is the identity in this model (see `Core_models.Clone`), so all `n`
+// elements are `x` itself.
+let array_repeat (#t: Type) (n: usize) (x: t): t_Array t n = Seq.create (v n) x
