@@ -16,3 +16,25 @@ let impl (#v_T: Type0) : t_Clone v_T =
     f_clone_post = (fun (self: v_T) (out: v_T) -> true);
     f_clone = fun (self: v_T) -> self
   }
+
+/// See [`std::clone::TrivialClone`]
+class t_TrivialClone (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Clone v_Self
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) {|i: t_TrivialClone v_Self|} -> i._super_i0
+
+/// See [`std::clone::UseCloned`]
+class t_UseCloned (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Clone v_Self
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) {|i: t_UseCloned v_Self|} -> i._super_i0
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1 (#v_T: Type0) : t_TrivialClone v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_2 (#v_T: Type0) : t_UseCloned v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }

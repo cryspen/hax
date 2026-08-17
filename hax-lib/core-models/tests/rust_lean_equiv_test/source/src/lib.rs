@@ -28,6 +28,10 @@
 // `core::hint::{likely, unlikely}` and `core::hint::cold_path` (exercised in
 // `core::hint`) are still unstable.
 #![feature(likely_unlikely, cold_path)]
+// `core::clone::UseCloned` (exercised in `core::clone`) is only reachable
+// behind this gate, which rustc flags as an incomplete feature.
+#![feature(ergonomic_clones)]
+#![allow(incomplete_features)]
 // Some tests deliberately exercise edge comparisons like `u8::MAX < 0u8`
 // to pin the trait-dispatch behaviour at the extremes; rustc warns
 // those are tautologically false, but that *is* the observation we want

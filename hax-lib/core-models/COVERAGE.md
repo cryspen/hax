@@ -19,7 +19,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `borrow` | 4 | 4 | 100% |
 | `cell` | 0 | 81 | 0% |
 | `char` | 0 | 67 | 0% |
-| `clone` | 2 | 7 | 29% |
+| `clone` | 4 | 7 | 57% |
 | `cmp` | 20 | 35 | 57% |
 | `convert` | 13 | 17 | 76% |
 | `default` | 2 | 2 | 100% |

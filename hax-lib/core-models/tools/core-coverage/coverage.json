@@ -13898,19 +13898,19 @@
    },
    {
     "module": "clone",
-    "covered": 2,
+    "covered": 4,
     "total": 7,
     "in_scope": true,
     "covered_items": [
      "Clone",
-     "Clone::clone"
+     "Clone::clone",
+     "TrivialClone",
+     "UseCloned"
     ],
     "missing_items": [
      "Clone::clone_from",
      "CloneToUninit",
-     "CloneToUninit::clone_to_uninit",
-     "TrivialClone",
-     "UseCloned"
+     "CloneToUninit::clone_to_uninit"
     ]
    },
    {
