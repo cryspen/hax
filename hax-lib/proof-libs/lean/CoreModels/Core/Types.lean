@@ -315,18 +315,18 @@ structure hash.Hasher (Self : Type) where
     Source: 'core-models/src/core/hash.rs', lines 45:0-56:1
     Visibility: public -/
 structure hash.Hash (Self : Type) where
-  hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → Result
+  hash : forall {H : Type} (HasherInst : core.hash.Hasher H), Self → H → Result
     H
-  hash_slice : forall {H : Type} (HasherInst : hash.Hasher H), Slice Self → H
+  hash_slice : forall {H : Type} (HasherInst : core.hash.Hasher H), Slice Self → H
     → Result H
 
 /-- Trait declaration: [core_models::hash::BuildHasher]
     Source: 'core-models/src/core/hash.rs', lines 59:0-67:1
     Visibility: public -/
 structure hash.BuildHasher (Self : Type) (Self_Hasher : Type) where
-  HasherInst : hash.Hasher Self_Hasher
+  HasherInst : core.hash.Hasher Self_Hasher
   build_hasher : Self → Result Self_Hasher
-  hash_one : forall {T : Type} (HashInst : hash.Hash T), Self → T → Result
+  hash_one : forall {T : Type} (HashInst : core.hash.Hash T), Self → T → Result
     Std.U64
 
 /-- [core_models::hash::BuildHasherDefault]
