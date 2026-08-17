@@ -344,13 +344,42 @@ mod collections {
         }
     }
 
+    /// Model of `alloc::collections::binary_heap`.
+    ///
+    /// DEVIATION(std): backed by an *unordered* `Vec`, not a sift-up/sift-down
+    /// heap. `pop`/`peek` therefore scan for the maximum, which is why they
+    /// carry a `T: Ord` bound even where std does not need one (std reads
+    /// element 0 and relies on the heap invariant). Every documented
+    /// observation is still reproduced: `as_slice`/`into_vec`/`iter` are
+    /// explicitly "arbitrary order" in std, and `into_sorted_vec` sorts.
+    ///
+    /// This module is in `ALLOC_CHARON_EXCLUDES` (charon crashes on it), so it
+    /// has an F* extraction but **no** Lean one.
     mod binary_heap {
         #[hax_lib::fstar::before("open Rust_primitives.Notations")]
         use crate::vec::*;
+        #[cfg_attr(test, derive(PartialEq, Debug))]
         struct BinaryHeap<T, A>(Vec<T>, std::marker::PhantomData<A>);
 
-        impl BinaryHeap<(), ()> {}
-        impl BinaryHeap<(), ()> {}
+        /// See [`std::collections::binary_heap::Iter`]
+        pub struct Iter<'a, T>(pub rust_primitives::sequence::Seq<&'a T>);
+
+        impl<'a, T> Iterator for Iter<'a, T> {
+            type Item = &'a T;
+            fn next(&mut self) -> Option<Self::Item> {
+                if rust_primitives::sequence::seq_len(&self.0) == 0 {
+                    None
+                } else {
+                    Some(rust_primitives::sequence::seq_remove(&mut self.0, 0))
+                }
+            }
+        }
+
+        // Padding impls; see the comment on `vec_deque`'s. Eight, because the
+        // `Iterator for Iter` impl above is plain too and the three blocks
+        // below carry `#[hax_lib::attributes]`, which puts them last — landing
+        // them at 9, 10 and 11, which is where hax resolves real `alloc`'s
+        // `BinaryHeap::{new, push, peek}` to.
         impl BinaryHeap<(), ()> {}
         impl BinaryHeap<(), ()> {}
         impl BinaryHeap<(), ()> {}
@@ -361,19 +390,46 @@ mod collections {
         impl BinaryHeap<(), ()> {}
 
         #[hax_lib::attributes]
-        impl<T: Ord, A: crate::alloc::Allocator> BinaryHeap<T, A> {
-            fn new() -> BinaryHeap<T, A> {
+        impl<T> BinaryHeap<T, crate::alloc::Global> {
+            /// See [`std::collections::BinaryHeap::new`]
+            fn new() -> BinaryHeap<T, crate::alloc::Global> {
+                BinaryHeap(
+                    crate::vec::from_seq(rust_primitives::sequence::seq_empty()),
+                    std::marker::PhantomData,
+                )
+            }
+            /// See [`std::collections::BinaryHeap::with_capacity`]: capacity is
+            /// not modeled, so this is `new`.
+            fn with_capacity(_capacity: usize) -> BinaryHeap<T, crate::alloc::Global> {
+                BinaryHeap::new()
+            }
+        }
+
+        #[hax_lib::attributes]
+        impl<T, A: crate::alloc::Allocator> BinaryHeap<T, A> {
+            /// See [`std::collections::BinaryHeap::new_in`]
+            fn new_in(_alloc: A) -> BinaryHeap<T, A> {
                 BinaryHeap(
                     crate::vec::from_seq(rust_primitives::sequence::seq_empty()),
                     std::marker::PhantomData::<A>,
                 )
             }
+            /// See [`std::collections::BinaryHeap::with_capacity_in`]
+            fn with_capacity_in(_capacity: usize, alloc: A) -> BinaryHeap<T, A> {
+                BinaryHeap::new_in(alloc)
+            }
             #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
-            fn push(&mut self, v: T) {
+            fn push(&mut self, v: T)
+            where
+                T: Ord,
+            {
                 self.0.push(v)
             }
             #[hax_lib::ensures(|res| (self.len() > 0) == res.is_some())]
-            fn pop(&mut self) -> Option<T> {
+            fn pop(&mut self) -> Option<T>
+            where
+                T: Ord,
+            {
                 let mut max: Option<&T> = None;
                 let mut index = 0;
                 for i in 0..self.len() {
@@ -389,16 +445,117 @@ mod collections {
                     None
                 }
             }
+            /// See [`std::collections::BinaryHeap::append`]
+            #[hax_lib::requires(hax_lib::ToInt::to_int(self.len()) + hax_lib::ToInt::to_int(other.len()) <= hax_lib::ToInt::to_int(core::primitive::usize::MAX))]
+            fn append(&mut self, other: &mut BinaryHeap<T, A>)
+            where
+                T: Ord,
+            {
+                self.0.append(&mut other.0)
+            }
+            /// See [`std::collections::BinaryHeap::retain`].
+            ///
+            /// DEVIATION(std): bounded by `Fn`, not `FnMut` — see the note on
+            /// `vec_deque`. The loop walks from the back so a removal never
+            /// shifts an index still to be visited.
+            ///
+            /// Opaque for F* only, like `VecDeque::retain`: hax does not emit
+            /// the `f_Output == bool` constraint for a `Fn` bound.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn retain<F: Fn(&T) -> bool>(&mut self, f: F)
+            where
+                T: Ord,
+            {
+                let l = self.len();
+                for k in 0..l {
+                    let i = l - 1 - k;
+                    if i < self.len() && !f(&self.0[i]) {
+                        let _removed = self.0.remove(i);
+                    }
+                }
+            }
+            /// See [`std::collections::BinaryHeap::into_sorted_vec`]: ascending.
+            ///
+            /// Opaque: the Rust body below is the specification (repeatedly move
+            /// out the smallest remaining element), but proving the `Vec::push`
+            /// bound through the loop needs an invariant relating two locals,
+            /// which `hax_lib::loop_invariant!` cannot state here.
+            #[hax_lib::opaque]
+            fn into_sorted_vec(mut self) -> Vec<T>
+            where
+                T: Ord,
+            {
+                let mut out = crate::vec::Vec::new();
+                let n = self.len();
+                for _k in 0..n {
+                    let mut min: Option<&T> = None;
+                    let mut index = 0;
+                    for i in 0..self.len() {
+                        if min.is_none_or(|min| self.0[i] < *min) {
+                            min = Some(&self.0[i]);
+                            index = i;
+                        }
+                    }
+                    if min.is_some() {
+                        out.push(self.0.remove(index))
+                    }
+                }
+                out
+            }
         }
 
         #[hax_lib::attributes]
-        impl<T: Ord, A: crate::alloc::Allocator> BinaryHeap<T, A> {
+        impl<T, A: crate::alloc::Allocator> BinaryHeap<T, A> {
             fn len(&self) -> usize {
                 self.0.len()
             }
-
+            /// See [`std::collections::BinaryHeap::is_empty`]
+            fn is_empty(&self) -> bool {
+                self.0.len() == 0
+            }
+            /// See [`std::collections::BinaryHeap::clear`]
+            fn clear(&mut self) {
+                self.0 = crate::vec::from_seq(rust_primitives::sequence::seq_empty())
+            }
+            /// See [`std::collections::BinaryHeap::as_slice`]: arbitrary order,
+            /// which for this model is insertion order.
+            fn as_slice(&self) -> &[T] {
+                self.0.as_slice()
+            }
+            /// See [`std::collections::BinaryHeap::into_vec`]: arbitrary order.
+            fn into_vec(self) -> Vec<T> {
+                self.0
+            }
+            /// See [`std::collections::BinaryHeap::iter`]: arbitrary order.
+            fn iter(&self) -> Iter<'_, T> {
+                Iter(rust_primitives::sequence::seq_from_slice(self.0.as_slice()))
+            }
+            /// See [`std::collections::BinaryHeap::reserve`]: capacity is not
+            /// modeled, so this leaves the contents untouched.
+            fn reserve(&mut self, _additional: usize) {}
+            /// See [`std::collections::BinaryHeap::reserve_exact`]
+            fn reserve_exact(&mut self, _additional: usize) {}
+            /// See [`std::collections::BinaryHeap::shrink_to_fit`]
+            fn shrink_to_fit(&mut self) {}
+            /// See [`std::collections::BinaryHeap::shrink_to`]
+            fn shrink_to(&mut self, _min_capacity: usize) {}
+            /// See [`std::collections::BinaryHeap::try_reserve`]: the model never
+            /// fails to allocate.
+            fn try_reserve(&mut self, _additional: usize) -> Result<(), super::TryReserveError> {
+                Ok(())
+            }
+            /// See [`std::collections::BinaryHeap::try_reserve_exact`]
+            fn try_reserve_exact(
+                &mut self,
+                _additional: usize,
+            ) -> Result<(), super::TryReserveError> {
+                Ok(())
+            }
             #[hax_lib::ensures(|res| (self.len() > 0) == res.is_some())]
-            fn peek(&self) -> Option<&T> {
+            fn peek(&self) -> Option<&T>
+            where
+                T: Ord,
+            {
                 let mut max: Option<&T> = None;
                 for i in 0..self.len() {
                     hax_lib::loop_invariant!(|i: usize| (i > 0) == max.is_some());
@@ -424,7 +581,133 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
         mod tests {
             use proptest::prelude::*;
 
+            type Model<T> = super::BinaryHeap<T, crate::alloc::Global>;
+            type Std<T> = std::collections::BinaryHeap<T>;
+
+            fn build(elements: &[u8]) -> (Model<u8>, Std<u8>) {
+                let mut model = Model::new();
+                let mut std_heap = Std::new();
+                for &e in elements {
+                    model.push(e);
+                    std_heap.push(e);
+                }
+                (model, std_heap)
+            }
+
+            /// `as_slice`/`into_vec`/`iter` are documented as "arbitrary order",
+            /// so the only shared observation is the multiset of elements.
+            fn sorted(mut v: std::vec::Vec<u8>) -> std::vec::Vec<u8> {
+                v.sort();
+                v
+            }
+
+            /// Pop everything: descending order, so this *is* comparable.
+            fn drain_model(mut h: Model<u8>) -> std::vec::Vec<u8> {
+                let mut out = std::vec::Vec::new();
+                while let Some(x) = h.pop() {
+                    out.push(x)
+                }
+                out
+            }
+
+            fn drain_std(mut h: Std<u8>) -> std::vec::Vec<u8> {
+                let mut out = std::vec::Vec::new();
+                while let Some(x) = h.pop() {
+                    out.push(x)
+                }
+                out
+            }
+
             proptest! {
+                #[test]
+                fn test_len_is_empty(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (model, std_heap) = build(&elements);
+                    prop_assert_eq!(model.len(), std_heap.len());
+                    prop_assert_eq!(model.is_empty(), std_heap.is_empty());
+                }
+
+                #[test]
+                fn test_clear(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (mut model, mut std_heap) = build(&elements);
+                    model.clear();
+                    std_heap.clear();
+                    prop_assert_eq!(model.len(), std_heap.len());
+                    prop_assert!(model.is_empty());
+                }
+
+                #[test]
+                fn test_as_slice_and_iter(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (model, std_heap) = build(&elements);
+                    prop_assert_eq!(sorted(model.as_slice().to_vec()),
+                                    sorted(std_heap.as_slice().to_vec()));
+                    let from_iter: std::vec::Vec<u8> = model.iter().copied().collect();
+                    prop_assert_eq!(sorted(from_iter),
+                                    sorted(std_heap.iter().copied().collect()));
+                }
+
+                #[test]
+                fn test_into_vec(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (model, std_heap) = build(&elements);
+                    let m = model.into_vec();
+                    prop_assert_eq!(sorted(m.as_slice().to_vec()),
+                                    sorted(std_heap.into_vec()));
+                }
+
+                #[test]
+                fn test_into_sorted_vec(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (model, std_heap) = build(&elements);
+                    let m = model.into_sorted_vec();
+                    let expected = std_heap.into_sorted_vec();
+                    prop_assert_eq!(m.as_slice(), expected.as_slice());
+                }
+
+                #[test]
+                fn test_append(a in prop::collection::vec(any::<u8>(), 0..20),
+                               b in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (mut model_a, mut std_a) = build(&a);
+                    let (mut model_b, mut std_b) = build(&b);
+                    model_a.append(&mut model_b);
+                    std_a.append(&mut std_b);
+                    prop_assert_eq!(model_b.len(), std_b.len());
+                    prop_assert_eq!(drain_model(model_a), drain_std(std_a));
+                }
+
+                #[test]
+                fn test_retain(elements in prop::collection::vec(any::<u8>(), 0..20),
+                               t in any::<u8>()) {
+                    let (mut model, mut std_heap) = build(&elements);
+                    model.retain(|x| *x < t);
+                    std_heap.retain(|x| *x < t);
+                    prop_assert_eq!(drain_model(model), drain_std(std_heap));
+                }
+
+                #[test]
+                fn test_capacity_ops_preserve_contents(
+                    elements in prop::collection::vec(any::<u8>(), 0..20), n in 0usize..40) {
+                    let (mut model, mut std_heap) = build(&elements);
+                    model.reserve(n);
+                    std_heap.reserve(n);
+                    model.reserve_exact(n);
+                    std_heap.reserve_exact(n);
+                    model.shrink_to(n);
+                    std_heap.shrink_to(n);
+                    model.shrink_to_fit();
+                    std_heap.shrink_to_fit();
+                    prop_assert!(model.try_reserve(n).is_ok());
+                    prop_assert!(model.try_reserve_exact(n).is_ok());
+                    prop_assert!(std_heap.try_reserve(n).is_ok());
+                    prop_assert!(std_heap.try_reserve_exact(n).is_ok());
+                    prop_assert_eq!(drain_model(model), drain_std(std_heap));
+                }
+
+                #[test]
+                fn test_with_capacity_is_empty(n in 0usize..40) {
+                    let model = Model::<u8>::with_capacity(n);
+                    let std_heap = Std::<u8>::with_capacity(n);
+                    prop_assert_eq!(model.len(), std_heap.len());
+                    prop_assert!(model.is_empty());
+                }
+
                 #[test]
                 fn test_push_pop(elements in prop::collection::vec(any::<u8>(), 1..20)) {
                     let mut model = super::BinaryHeap::<u8, crate::alloc::Global>::new();
@@ -463,6 +746,21 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 let mut std_heap = std::collections::BinaryHeap::<u8>::new();
                 assert_eq!(model.len(), std_heap.len());
                 assert_eq!(model.pop(), std_heap.pop());
+            }
+
+            // `new_in`/`with_capacity_in` are unstable in std
+            // (`allocator_api`), so the expectation — an empty heap — is pinned
+            // here.
+            #[test]
+            fn test_new_in() {
+                let model = Model::<u8>::new_in(crate::alloc::Global);
+                assert!(model.is_empty());
+            }
+
+            #[test]
+            fn test_with_capacity_in() {
+                let model = Model::<u8>::with_capacity_in(10, crate::alloc::Global);
+                assert!(model.is_empty());
             }
         }
     }
