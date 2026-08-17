@@ -1,5 +1,4 @@
-import LoopEquivalence.Extraction.Funs
-import LoopEquivalence.Extraction.Specs
+import LoopEquivalence.Extraction
 import LoopEquivalence.Proofs.MissingSpecs
 import Hax
 open CoreModels Aeneas

@@ -46,10 +46,6 @@ hax doesn't support all Rust constructs, e.g,
 for extracting only a part of your crate.
 
 ## Start Lean verification
-After extracting your Rust code to Lean, the result is in the `proofs/lean` folder. To turn it into a buildable Lean project, run
+After extracting your Rust code to Lean, the result in the `proofs/lean` folder is a complete Lean package: besides the extracted modules under `<PkgName>/Extraction/` and the `<PkgName>/Extraction.lean` module importing them, the extraction generates a `lakefile.toml` and `lean-toolchain` pinned to the versions matching it, a root module importing the extraction and the proofs, and a `<PkgName>/Verification/` folder for handwritten proofs, which hax never touches. If the crate uses external definitions, their models live in `<PkgName>/Assumptions/`: hax seeds each file there once, from the template aeneas generates, and never modifies it afterwards. You can type-check the extraction with `lake build` in `proofs/lean`, or directly in the IDE using the LSP. Contrarily to F\*, successfully building the code doesn't prove panic freedom by default.
 
-```bash
-cargo hax into lean --lakefile
-```
-
-This generates a `lakefile.toml` and `lean-toolchain` in `proofs/lean`, pinned to the versions matching the extraction. Existing files are not overwritten, so it is safe to re-run after editing them. You can then type-check the extraction with `lake build` in `proofs/lean`, or directly in the IDE using the LSP. Contrarily to F\*, successfully building the code doesn't prove panic freedom by default.
+The `Extraction/` folder and the `Extraction.lean` module next to it are owned by hax: both are rewritten on every extraction, so edits there are lost. Everything you write belongs in `Verification/` (proofs) or `Assumptions/` (models of external definitions); the other files outside `Extraction/` are created only when missing, so it is safe to re-run after editing them. The root module is yours after its creation; since the extraction is reached through the single import of `<PkgName>.Extraction`, it never needs an update when the extracted files change, and hax only warns when one of its imports is missing or stale, see [the root module check](../tools.md#the-lean-root-module-check). A commented-out import (`-- import ...`) silences those warnings for a module, and for `Verification/ProofObligations.lean` it also stops hax from recreating the stub; extraction files are regenerated and `Assumptions/` files re-seeded regardless.

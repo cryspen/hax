@@ -1,2 +1,2 @@
-import LeanTutorial.Extraction.Funs
-import LeanTutorial.Proofs.Proofs
+import LeanTutorial.Extraction
+import LeanTutorial.Verification.ProofObligations

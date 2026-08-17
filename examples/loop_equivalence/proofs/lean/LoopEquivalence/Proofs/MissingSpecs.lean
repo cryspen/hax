@@ -1,5 +1,5 @@
 -- Missing core model specs, to upstream
-import LoopEquivalence.Extraction.Specs
+import LoopEquivalence.Extraction
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc

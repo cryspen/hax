@@ -29,12 +29,10 @@ gen-lean-tests: extract
 build: gen-lean-tests
 	cd $(LEAN_DIR) && lake exe cache get && lake build
 
-# Remove only the Aeneas-generated files and the generated `LeanTests.lean`;
+# Remove the generated files, including the generated `LeanTests.lean`;
 # keep the hand-written project files.
 clean:
-	rm -f $(EXTRACTION_DIR)/Funs.lean \
-	      $(EXTRACTION_DIR)/Types.lean \
-	      $(EXTRACTION_DIR)/FunsExternal_Template.lean \
-	      $(EXTRACTION_DIR)/TypesExternal_Template.lean \
-	      $(LEAN_DIR)/RustLeanTests/LeanTests.lean
+	rm -rf $(EXTRACTION_DIR)
+	rm -f $(LEAN_DIR)/RustLeanTests/LeanTests.lean
 	rm -rf $(LEAN_DIR)/llbc $(LEAN_DIR)/.lake
+	rm -f $(LEAN_DIR)/.gitignore

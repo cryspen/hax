@@ -7,5 +7,5 @@ lean:
    lake build)
 
 clean:
-	-find proofs/lean/LoopEquivalence/Extraction -type f ! -name FunsExternal.lean -delete
+	-rm -rf proofs/lean/LoopEquivalence/Extraction
 	-cd proofs/lean && lake clean
