@@ -60,6 +60,29 @@ pub mod slice {
     pub fn array_pair<T>(a: T, b: T) -> [T; 2] {
         [a, b]
     }
+    pub fn array_as_slice_mut<T, const N: usize>(s: &mut [T; N]) -> &mut [T] {
+        &mut s[..]
+    }
+    // Viewing a place as a one-element array is a pointer cast in real core, so
+    // it cannot be written in the model itself.
+    pub fn array_from_ref<T>(s: &T) -> &[T; 1] {
+        std::array::from_ref(s)
+    }
+    pub fn array_from_mut<T>(s: &mut T) -> &mut [T; 1] {
+        std::array::from_mut(s)
+    }
+    // `Clone` is Rust's here, not the model's: the model's `clone` consumes its
+    // receiver, so it cannot produce `N` copies of a single owned value. Like
+    // `core::array::repeat`, the last element is `val` itself and the other
+    // `N - 1` are clones.
+    pub fn array_repeat<T: Clone, const N: usize>(val: T) -> [T; N] {
+        let v: Vec<T> = std::iter::repeat_n(val, N).collect();
+        match <[T; N]>::try_from(v) {
+            Ok(a) => a,
+            // `repeat_n(_, N)` yields exactly `N` elements.
+            Err(_) => unreachable!(),
+        }
+    }
     pub fn array_slice<T, const N: usize>(a: &[T; N], b: usize, e: usize) -> &[T] {
         &a[b..e]
     }

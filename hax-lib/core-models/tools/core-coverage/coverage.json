@@ -13603,19 +13603,22 @@
    },
    {
     "module": "array",
-    "covered": 3,
+    "covered": 10,
     "total": 25,
     "in_scope": true,
     "covered_items": [
      "IntoIter",
-     "TryFromSliceError",
-     "from_fn"
-    ],
-    "missing_items": [
      "IntoIter::as_mut_slice",
      "IntoIter::as_slice",
      "IntoIter::empty",
      "IntoIter::new",
+     "TryFromSliceError",
+     "from_fn",
+     "from_mut",
+     "from_ref",
+     "repeat"
+    ],
+    "missing_items": [
      "IntoIter::new_unchecked",
      "array::as_ascii",
      "array::as_ascii_unchecked",
@@ -13630,9 +13633,6 @@
      "array::split_array_ref",
      "array::transpose",
      "array::try_map",
-     "from_mut",
-     "from_ref",
-     "repeat",
      "try_from_fn"
     ]
    },

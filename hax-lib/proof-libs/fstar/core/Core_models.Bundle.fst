@@ -31,6 +31,18 @@ let impl_23__each_ref (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Array 
 
 let from_fn = Rust_primitives.Slice.array_from_fn
 
+/// See [`std::array::from_ref`]
+let from_ref (#v_T: Type0) (s: v_T) : t_Array v_T (mk_usize 1) =
+  Rust_primitives.Slice.array_from_ref #v_T s
+
+/// See [`std::array::repeat`]
+let repeat
+      (#v_T: Type0)
+      (v_N: usize)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (v_val: v_T)
+    : t_Array v_T v_N = Rust_primitives.Slice.array_repeat #v_T v_N v_val
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) usize =
   {
@@ -42,6 +54,7 @@ let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
     fun (self: t_Array v_T v_N) (i: usize) -> Rust_primitives.Slice.array_index #v_T v_N self i
   }
 
+/// The elements not yet yielded, in order.
 type t_IntoIter (v_T: Type0) (v_N: usize) =
   | IntoIter : Rust_primitives.Sequence.t_Seq v_T -> t_IntoIter v_T v_N
 
@@ -58,6 +71,18 @@ let impl_24 (#v_T: Type0) (v_N: usize)
     fun (self: t_Array v_T v_N) ->
       IntoIter (Rust_primitives.Sequence.seq_from_array #v_T v_N self) <: t_IntoIter v_T v_N
   }
+
+/// See [`std::array::IntoIter::new`]
+let impl_1__new (#v_T: Type0) (v_N: usize) (arr: t_Array v_T v_N) : t_IntoIter v_T v_N =
+  IntoIter (Rust_primitives.Sequence.seq_from_array #v_T v_N arr) <: t_IntoIter v_T v_N
+
+/// See [`std::array::IntoIter::empty`]
+let impl_1__empty (#v_T: Type0) (v_N: usize) (_: Prims.unit) : t_IntoIter v_T v_N =
+  IntoIter (Rust_primitives.Sequence.seq_empty #v_T ()) <: t_IntoIter v_T v_N
+
+/// See [`std::array::IntoIter::as_slice`]
+let impl_1__as_slice (#v_T: Type0) (v_N: usize) (self: t_IntoIter v_T v_N) : t_Slice v_T =
+  Rust_primitives.Sequence.seq_to_slice #v_T self._0
 
 /// See [`std::cmp::Ordering`]
 type t_Ordering =

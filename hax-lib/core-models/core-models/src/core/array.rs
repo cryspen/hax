@@ -7,6 +7,12 @@ pub struct TryFromSliceError;
 // F*-only: `charon::exclude` would drop this dummy type while its `impl`
 // blocks still reference it (see f32.rs).
 #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+// Dummy type to allow impls. The name has to be `Array`, not `array`: aeneas
+// translates real core's `[T; N]` inherent impls to `core.array.Array.*`, and
+// that name is what makes those calls land on the definitions below. (So the
+// coverage tool, which keys these methods `array::*` after the primitive, needs
+// an alias rather than a rename here.)
+#[hax_lib::exclude]
 struct Array<T, const N: usize>([T; N]);
 
 // Array impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)
@@ -52,6 +58,12 @@ impl<T, const N: usize> Array<T, N> {
     pub fn as_slice(s: &[T; N]) -> &[T] {
         array_as_slice(s)
     }
+    /// See [`std::array::as_mut_slice`]
+    // `&mut` returns are unsupported in the F* backend.
+    #[cfg(not(hax_backend_fstar))]
+    pub fn as_mut_slice(s: &mut [T; N]) -> &mut [T] {
+        array_as_slice_mut(s)
+    }
     /// See [`std::array::each_ref`]
     pub fn each_ref(s: &[T; N]) -> [&T; N] {
         array_from_fn(|i| array_index(s, i))
@@ -61,6 +73,25 @@ impl<T, const N: usize> Array<T, N> {
 #[hax_lib::fstar::replace("let from_fn = Rust_primitives.Slice.array_from_fn")]
 pub fn from_fn<T, const N: usize, F: FnMut(usize) -> T>(f: F) -> [T; N] {
     array_from_fn(f)
+}
+
+/// See [`std::array::from_ref`]
+pub fn from_ref<T>(s: &T) -> &[T; 1] {
+    array_from_ref(s)
+}
+
+/// See [`std::array::from_mut`]
+// `&mut` returns are unsupported in the F* backend.
+#[cfg(not(hax_backend_fstar))]
+pub fn from_mut<T>(s: &mut T) -> &mut [T; 1] {
+    array_from_mut(s)
+}
+
+/// See [`std::array::repeat`]
+// The bound is Rust's `Clone`, not the model's: the model's `clone` consumes its
+// receiver, so `N` copies cannot be made from one owned value through it.
+pub fn repeat<T: Clone, const N: usize>(val: T) -> [T; N] {
+    array_repeat(val)
 }
 
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
@@ -174,6 +205,7 @@ pub mod equality {
 mod iter {
     use crate::option::Option;
     use rust_primitives::sequence::*;
+    /// The elements not yet yielded, in order.
     pub struct IntoIter<T, const N: usize>(pub Seq<T>);
     #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
     impl<T, const N: usize> crate::iter::traits::iterator::Iterator for IntoIter<T, N> {
@@ -185,6 +217,29 @@ mod iter {
                 let res = seq_remove(&mut self.0, 0);
                 Option::Some(res)
             }
+        }
+    }
+
+    // Kept after the `Iterator` impl: the F* backend names inherent methods by
+    // impl-block order, so a block inserted before it would renumber `impl`.
+    impl<T, const N: usize> IntoIter<T, N> {
+        /// See [`std::array::IntoIter::new`]
+        pub fn new(arr: [T; N]) -> IntoIter<T, N> {
+            IntoIter(seq_from_array(arr))
+        }
+        /// See [`std::array::IntoIter::empty`]
+        pub fn empty() -> IntoIter<T, N> {
+            IntoIter(seq_empty())
+        }
+        /// See [`std::array::IntoIter::as_slice`]
+        pub fn as_slice(&self) -> &[T] {
+            seq_to_slice(&self.0)
+        }
+        /// See [`std::array::IntoIter::as_mut_slice`]
+        // `&mut` returns are unsupported in the F* backend.
+        #[cfg(not(hax_backend_fstar))]
+        pub fn as_mut_slice(&mut self) -> &mut [T] {
+            seq_to_slice_mut(&mut self.0)
         }
     }
 }
@@ -200,6 +255,8 @@ mod tests {
         }
     }
 
+    use crate::iter::traits::iterator::Iterator as ModelIterator;
+    use crate::option::Option as ModelOption;
     use proptest::prelude::*;
 
     // Equal arrays are the case `ne` inverts, so reach that case explicitly.
@@ -253,6 +310,23 @@ mod tests {
                     triple(x)
                 );
             }
+    /// `IntoIter` is lazy; draining it is what observes it.
+    fn drain<I: ModelIterator>(mut it: I) -> Vec<I::Item> {
+        let mut out = Vec::new();
+        while let ModelOption::Some(x) = it.next() {
+            out.push(x);
+        }
+        out
+    }
+
+    /// `u8`'s `Clone` is the identity, which cannot tell "`N` clones" from
+    /// "`N - 1` clones plus the original value" — `repeat`'s actual contract.
+    #[derive(Debug, PartialEq)]
+    struct Bump(u8);
+
+    impl Clone for Bump {
+        fn clone(&self) -> Bump {
+            Bump(self.0 + 1)
         }
     }
 
@@ -367,6 +441,73 @@ mod tests {
                 <[u8; 4] as crate::ops::index::Index<usize>>::index(&m, idx),
                 &arr[idx]
             );
+        // `as_mut_slice` / `from_mut` have no F* model (`&mut` returns).
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_as_mut_slice(arr in any::<[u8; 4]>(), v in any::<u8>()) {
+            let mut model_arr = arr.inject();
+            let mut std_arr = arr;
+            super::Array::<u8, 4>::as_mut_slice(&mut model_arr).fill(v);
+            std_arr.as_mut_slice().fill(v);
+            prop_assert_eq!(model_arr, std_arr);
+        }
+
+        #[test]
+        fn test_from_ref(x in any::<u8>()) {
+            let model_x = x.inject();
+            prop_assert_eq!(super::from_ref(&model_x), std::array::from_ref(&x));
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_from_mut(x in any::<u8>(), v in any::<u8>()) {
+            let mut model_x = x.inject();
+            let mut std_x = x;
+            super::from_mut(&mut model_x)[0] = v;
+            std::array::from_mut(&mut std_x)[0] = v;
+            prop_assert_eq!(model_x, std_x);
+        }
+
+        #[test]
+        fn test_repeat(x in any::<u8>()) {
+            prop_assert_eq!(super::repeat::<u8, 5>(x.inject()), std::array::repeat::<u8, 5>(x));
+        }
+
+        // Pins `repeat`'s clone discipline: `N - 1` clones and then `val`.
+        #[test]
+        fn test_repeat_clones(x in 0u8..200) {
+            prop_assert_eq!(
+                super::repeat::<Bump, 3>(Bump(x)),
+                std::array::repeat::<Bump, 3>(Bump(x))
+            );
+        }
+
+        #[test]
+        fn test_repeat_zero(x in any::<u8>()) {
+            prop_assert_eq!(super::repeat::<u8, 0>(x.inject()), std::array::repeat::<u8, 0>(x));
+        }
+
+        // ----- IntoIter ------------------------------------------------------
+
+        // `IntoIter::new` is deprecated in std but still part of its API.
+        #[allow(deprecated)]
+        #[test]
+        fn test_into_iter_new(arr in any::<[u8; 4]>()) {
+            prop_assert_eq!(
+                drain(super::iter::IntoIter::new(arr.inject())),
+                std::array::IntoIter::new(arr).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_into_iter_as_slice(arr in any::<[u8; 4]>(), taken in 0usize..=4) {
+            let mut model = super::iter::IntoIter::new(arr.inject());
+            let mut std_it = arr.into_iter();
+            for _ in 0..taken {
+                model.next();
+                std_it.next();
+            }
+            prop_assert_eq!(model.as_slice(), std_it.as_slice());
         }
 
         #[cfg(not(hax_backend_fstar))]
@@ -414,5 +555,24 @@ mod tests {
             let m = arr.inject();
             prop_assert_eq!(crate::ops::index::Index::index(&m, idx), &arr[idx]);
         }
+        fn test_into_iter_as_mut_slice(arr in any::<[u8; 4]>(), taken in 0usize..=4, v in any::<u8>()) {
+            let mut model = super::iter::IntoIter::new(arr.inject());
+            let mut std_it = arr.into_iter();
+            for _ in 0..taken {
+                model.next();
+                std_it.next();
+            }
+            model.as_mut_slice().fill(v);
+            std_it.as_mut_slice().fill(v);
+            prop_assert_eq!(drain(model), std_it.collect::<Vec<_>>());
+        }
+    }
+
+    #[test]
+    fn test_into_iter_empty() {
+        assert_eq!(
+            drain(super::iter::IntoIter::<u8, 4>::empty()),
+            std::array::IntoIter::<u8, 4>::empty().collect::<Vec<_>>()
+        );
     }
 }

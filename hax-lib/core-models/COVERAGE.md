@@ -14,7 +14,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 |---|--:|--:|---|
 | `(root)` | 0 | 37 | 0% |
 | `any` | 0 | 9 | 0% |
-| `array` | 3 | 25 | 12% |
+| `array` | 10 | 25 | 40% |
 | `ascii` | 0 | 29 | 0% |
 | `borrow` | 2 | 4 | 50% |
 | `cell` | 0 | 81 | 0% |
