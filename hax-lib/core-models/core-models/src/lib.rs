@@ -86,7 +86,12 @@
     feature(step_trait, int_roundings, formatting_options, int_format_into)
         iter_advance_by,
         exact_size_is_empty,
-        rev_into_inner
+        rev_into_inner,
+        iter_intersperse,
+        iter_array_chunks,
+        iter_map_windows,
+        next_index,
+        peekable_next_if_map
     )
 )]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes

@@ -25,6 +25,128 @@ pub fn test_range_count_offset() -> bool {
     (3..10usize).count() == 7
 }
 
+// ----- Rust-only: the lazy adapters ------------------------------------------
+
+// As below, every one of these goes through an `IteratorMethods` call, which the
+// Lean side does not have.
+#[cfg(test)]
+mod adapters {
+    #[test]
+    fn test_copied_over_slice() {
+        let a: [u8; 3] = [1, 2, 3];
+        assert_eq!(a.as_slice().iter().copied().count(), 3);
+    }
+
+    #[test]
+    fn test_cloned_over_slice() {
+        let a: [u8; 3] = [1, 2, 3];
+        assert_eq!(
+            a.as_slice().iter().cloned().collect::<Vec<u8>>(),
+            vec![1, 2, 3]
+        );
+    }
+
+    #[test]
+    fn test_filter_map_drops_none() {
+        let v: Vec<u32> = (0..6u32)
+            .filter_map(|x| if x % 2 == 0 { Some(x) } else { None })
+            .collect();
+        assert_eq!(v, vec![0, 2, 4]);
+    }
+
+    #[test]
+    fn test_map_while_stops_at_first_none() {
+        let v: Vec<u32> = (0..6u32)
+            .map_while(|x| if x < 3 { Some(x) } else { None })
+            .collect();
+        assert_eq!(v, vec![0, 1, 2]);
+    }
+
+    #[test]
+    fn test_take_while_and_skip_while_partition() {
+        assert_eq!((0..6u32).take_while(|x| *x < 3).count(), 3);
+        assert_eq!((0..6u32).skip_while(|x| *x < 3).count(), 3);
+    }
+
+    // `skip_while` must not skip again once the predicate has failed.
+    #[test]
+    fn test_skip_while_only_skips_a_prefix() {
+        let v: Vec<u32> = [0u32, 5, 0, 5]
+            .into_iter()
+            .skip_while(|x| *x == 0)
+            .collect();
+        assert_eq!(v, vec![5, 0, 5]);
+    }
+
+    #[test]
+    fn test_scan_threads_state() {
+        let v: Vec<u32> = (1..5u32)
+            .scan(0u32, |acc, x| {
+                *acc += x;
+                Some(*acc)
+            })
+            .collect();
+        assert_eq!(v, vec![1, 3, 6, 10]);
+    }
+
+    #[test]
+    fn test_fuse_stays_exhausted() {
+        let mut it = (0..1u32).fuse();
+        assert_eq!(it.next(), Some(0));
+        assert_eq!(it.next(), None);
+        assert_eq!(it.next(), None);
+    }
+
+    #[test]
+    fn test_cycle_wraps() {
+        assert_eq!((0..3u32).cycle().take(7).count(), 7);
+        assert_eq!((0..3u32).cycle().nth(4), Some(1));
+    }
+
+    #[test]
+    fn test_cycle_of_empty_is_empty() {
+        assert_eq!((0..0u32).cycle().next(), None);
+    }
+
+    #[test]
+    fn test_peek_does_not_consume() {
+        let mut it = (0..3u32).peekable();
+        assert_eq!(it.peek(), Some(&0));
+        assert_eq!(it.peek(), Some(&0));
+        assert_eq!(it.next(), Some(0));
+        assert_eq!(it.count(), 2);
+    }
+
+    #[test]
+    fn test_next_if_declines() {
+        let mut it = (0..3u32).peekable();
+        assert_eq!(it.next_if(|x| *x > 0), None);
+        assert_eq!(it.next(), Some(0));
+    }
+
+    #[test]
+    fn test_next_if_eq() {
+        let mut it = (0..3u32).peekable();
+        assert_eq!(it.next_if_eq(&0), Some(0));
+        assert_eq!(it.next_if_eq(&0), None);
+    }
+
+    #[test]
+    fn test_inspect_yields_everything() {
+        let seen = std::cell::Cell::new(0u32);
+        let v: Vec<u32> = (0..4u32).inspect(|_| seen.set(seen.get() + 1)).collect();
+        assert_eq!(v, vec![0, 1, 2, 3]);
+        assert_eq!(seen.get(), 4);
+    }
+
+    #[test]
+    fn test_by_ref_leaves_the_rest() {
+        let mut it = 0..5u32;
+        assert_eq!(it.by_ref().take(2).count(), 2);
+        assert_eq!(it.collect::<Vec<u32>>(), vec![2, 3, 4]);
+    }
+}
+
 // ----- Rust-only: DoubleEndedIterator / ExactSizeIterator --------------------
 
 // Same story as the sources below: reaching `next_back` / `len` needs either an
