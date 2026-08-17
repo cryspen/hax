@@ -143,6 +143,10 @@ pub mod sequence {
     pub fn seq_to_slice_mut<T>(s: &mut Seq<T>) -> &mut [T] {
         s.0.as_mut_slice()
     }
+
+    pub fn seq_into_boxed_slice<T>(s: Seq<T>) -> Box<[T]> {
+        s.0.into_boxed_slice()
+    }
     pub fn seq_concat<T>(s1: &mut Seq<T>, s2: &mut Seq<T>) {
         s1.0.append(&mut s2.0)
     }
@@ -174,6 +178,10 @@ pub mod sequence {
     }
     pub fn seq_index<T>(s: &Seq<T>, i: usize) -> &T {
         &s.0[i]
+    }
+    #[hax_lib::requires(i < seq_len(s))]
+    pub fn seq_index_mut<T>(s: &mut Seq<T>, i: usize) -> &mut T {
+        &mut s.0[i]
     }
 }
 
