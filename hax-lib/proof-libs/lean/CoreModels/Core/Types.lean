@@ -6,7 +6,7 @@ import CoreModels.Core.TypesPrologue
 import CoreModels.RustPrimitives.Types
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open RustM ControlFlow Error
+open Result ControlFlow Error
 open Std.Do
 set_option linter.dupNamespace false
 set_option linter.hashCommand false
@@ -43,7 +43,7 @@ def array.Array.each_ref.closure (T : Type) (N : Std.Usize) := Array T N
     Visibility: public -/
 structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   (Self_IntoIter : Type) where
-  into_iter : Self → RustM Self_IntoIter
+  into_iter : Self → Result Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
     Source: 'core-models/src/core/array.rs', lines 177:4-177:55
@@ -56,20 +56,20 @@ def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
     Source: 'core-models/src/core/ops.rs', lines 144:4-147:5
     Visibility: public -/
 structure ops.index.Index (Self : Type) (Idx : Type) (Self_Output : Type) where
-  index : Self → Idx → RustM Self_Output
+  index : Self → Idx → Result Self_Output
 
 /-- Trait declaration: [core_models::clone::Clone]
     Source: 'core-models/src/core/clone.rs', lines 13:0-16:1
     Visibility: public -/
 structure clone.Clone (Self : Type) where
-  clone : Self → RustM Self
+  clone : Self → Result Self
 
 /-- Trait declaration: [core_models::cmp::PartialEq]
     Source: 'core-models/src/core/cmp.rs', lines 5:0-23:1
     Visibility: public -/
 structure cmp.PartialEq (Self : Type) (Rhs : Type) where
-  eq : Self → Rhs → RustM Bool
-  ne : Self → Rhs → RustM Bool
+  eq : Self → Rhs → Result Bool
+  ne : Self → Rhs → Result Bool
 
 /-
 /-- [core_models::option::Option]
@@ -85,12 +85,12 @@ inductive option.Option (T : Type) where
     Source: 'core-models/src/core/iter.rs', lines 15:8-19:9
     Visibility: public -/
 structure iter.traits.iterator.Iterator (Self : Type) (Self_Item : Type) where
-  next : Self → RustM ((option.Option Self_Item) × Self)
+  next : Self → Result ((option.Option Self_Item) × Self)
 
 /-- Trait declaration: [core_models::borrow::Borrow]
     Source: 'core-models/src/core/borrow.rs', lines 2:0-5:1 -/
 structure borrow.Borrow (Self : Type) (Borrowed : Type) where
-  borrow : Self → RustM Borrowed
+  borrow : Self → Result Borrowed
 
 /-- Trait declaration: [core_models::borrow::BorrowMut]
     Source: 'core-models/src/core/borrow.rs', lines 12:0-15:1 -/
@@ -119,16 +119,16 @@ inductive cmp.Ordering where
     Visibility: public -/
 structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   PartialEqInst : cmp.PartialEq Self Rhs
-  partial_cmp : Self → Rhs → RustM (option.Option cmp.Ordering)
-  lt : Self → Rhs → RustM Bool
-  le : Self → Rhs → RustM Bool
-  gt : Self → Rhs → RustM Bool
-  ge : Self → Rhs → RustM Bool
+  partial_cmp : Self → Rhs → Result (option.Option cmp.Ordering)
+  lt : Self → Rhs → Result Bool
+  le : Self → Rhs → Result Bool
+  gt : Self → Rhs → Result Bool
+  ge : Self → Rhs → Result Bool
 
 /-- Trait declaration: [core_models::cmp::Neq]
     Source: 'core-models/src/core/cmp.rs', lines 80:0-83:1 -/
 structure cmp.Neq (Self : Type) (Rhs : Type) where
-  neq : Self → Rhs → RustM Bool
+  neq : Self → Rhs → Result Bool
 
 /-- Trait declaration: [core_models::cmp::Ord]
     Source: 'core-models/src/core/cmp.rs', lines 151:0-155:1
@@ -136,7 +136,7 @@ structure cmp.Neq (Self : Type) (Rhs : Type) where
 structure cmp.Ord (Self : Type) where
   EqInst : cmp.Eq Self
   PartialOrdInst : cmp.PartialOrd Self Self
-  cmp : Self → Self → RustM cmp.Ordering
+  cmp : Self → Self → Result cmp.Ordering
 
 /-- [core_models::cmp::Reverse]
     Source: 'core-models/src/core/cmp.rs', lines 174:0-174:29
@@ -157,24 +157,24 @@ inductive result.Result (T : Type) (E : Type) where
 /-- Trait declaration: [core_models::convert::TryInto]
     Source: 'core-models/src/core/convert.rs', lines 5:0-10:1 -/
 structure convert.TryInto (Self : Type) (T : Type) (Self_Error : Type) where
-  try_into : Self → RustM (result.Result T Self_Error)
+  try_into : Self → Result (result.Result T Self_Error)
 
 /-- Trait declaration: [core_models::convert::Into]
     Source: 'core-models/src/core/convert.rs', lines 14:0-18:1 -/
 structure convert.Into (Self : Type) (T : Type) where
-  into : Self → RustM T
+  into : Self → Result T
 
 /-- Trait declaration: [core_models::convert::From]
     Source: 'core-models/src/core/convert.rs', lines 22:0-26:1
     Visibility: public -/
 structure convert.From (Self : Type) (T : Type) where
-  «from» : T → RustM Self
+  «from» : T → Result Self
 
 /-- Trait declaration: [core_models::convert::TryFrom]
     Source: 'core-models/src/core/convert.rs', lines 30:0-35:1
     Visibility: public -/
 structure convert.TryFrom (Self : Type) (T : Type) (Self_Error : Type) where
-  try_from : T → RustM (result.Result Self Self_Error)
+  try_from : T → Result (result.Result Self Self_Error)
 
 /-- [core_models::convert::Infallible]
     Source: 'core-models/src/core/convert.rs', lines 44:0-44:22
@@ -193,7 +193,7 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
     Source: 'core-models/src/core/convert.rs', lines 83:0-87:1
     Visibility: public -/
 structure convert.AsRef (Self : Type) (T : Type) where
-  as_ref : Self → RustM T
+  as_ref : Self → Result T
 
 /-- Trait declaration: [core_models::convert::AsMut]
     Source: 'core-models/src/core/convert.rs', lines 101:0-104:1
@@ -211,7 +211,7 @@ def num.error.TryFromIntError := Unit
     Source: 'core-models/src/core/default.rs', lines 3:0-7:1
     Visibility: public -/
 structure default.Default (Self : Type) where
-  default : RustM Self
+  default : Result Self
 
 /-- [core_models::fmt::Formatter]
     Source: 'core-models/src/core/fmt.rs', lines 10:0-10:21
@@ -229,14 +229,14 @@ def fmt.Error := Unit
     Source: 'core-models/src/core/fmt.rs', lines 25:0-31:1
     Visibility: public -/
 structure fmt.Debug (Self : Type) where
-  fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
+  fmt : Self → fmt.Formatter → Result ((result.Result Unit fmt.Error) ×
     fmt.Formatter)
 
 /-- Trait declaration: [core_models::fmt::Display]
     Source: 'core-models/src/core/fmt.rs', lines 19:0-22:1
     Visibility: public -/
 structure fmt.Display (Self : Type) where
-  fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
+  fmt : Self → fmt.Formatter → Result ((result.Result Unit fmt.Error) ×
     fmt.Formatter)
 
 /-- Trait declaration: [core_models::error::Error]
@@ -291,17 +291,49 @@ structure fmt.rt.Placeholder where
 def fmt.rt.UnsafeArg := Unit
 
 /-- Trait declaration: [core_models::hash::Hasher]
-    Source: 'core-models/src/core/hash.rs', lines 2:0-7:1
+    Source: 'core-models/src/core/hash.rs', lines 8:0-41:1
     Visibility: public -/
 structure hash.Hasher (Self : Type) where
-  finish : Self → RustM Std.U64
-  write : Self → Slice Std.U8 → RustM Self
+  finish : Self → Result Std.U64
+  write : Self → Slice Std.U8 → Result Self
+  write_u8 : Self → Std.U8 → Result Self
+  write_u16 : Self → Std.U16 → Result Self
+  write_u32 : Self → Std.U32 → Result Self
+  write_u64 : Self → Std.U64 → Result Self
+  write_u128 : Self → Std.U128 → Result Self
+  write_usize : Self → Std.Usize → Result Self
+  write_i8 : Self → Std.I8 → Result Self
+  write_i16 : Self → Std.I16 → Result Self
+  write_i32 : Self → Std.I32 → Result Self
+  write_i64 : Self → Std.I64 → Result Self
+  write_i128 : Self → Std.I128 → Result Self
+  write_isize : Self → Std.Isize → Result Self
+  write_length_prefix : Self → Std.Usize → Result Self
+  write_str : Self → Str → Result Self
 
 /-- Trait declaration: [core_models::hash::Hash]
-    Source: 'core-models/src/core/hash.rs', lines 11:0-16:1
+    Source: 'core-models/src/core/hash.rs', lines 45:0-56:1
     Visibility: public -/
 structure hash.Hash (Self : Type) where
-  hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → RustM H
+  hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → Result
+    H
+  hash_slice : forall {H : Type} (HasherInst : hash.Hasher H), Slice Self → H
+    → Result H
+
+/-- Trait declaration: [core_models::hash::BuildHasher]
+    Source: 'core-models/src/core/hash.rs', lines 59:0-67:1
+    Visibility: public -/
+structure hash.BuildHasher (Self : Type) (Self_Hasher : Type) where
+  HasherInst : hash.Hasher Self_Hasher
+  build_hasher : Self → Result Self_Hasher
+  hash_one : forall {T : Type} (HashInst : hash.Hash T), Self → T → Result
+    Std.U64
+
+/-- [core_models::hash::BuildHasherDefault]
+    Source: 'core-models/src/core/hash.rs', lines 74:0-74:62
+    Visibility: public -/
+@[reducible]
+def hash.BuildHasherDefault (H : Type) := core.marker.PhantomData H
 
 /-- [core_models::hint::Locality]
     Source: 'core-models/src/core/hint.rs', lines 57:0-64:1
@@ -390,7 +422,7 @@ structure iter.adapters.enumerate.Enumerate (I : Type) where
 structure iter.traits.collect.FromIterator (Self : Type) (A : Type) where
   from_iter : forall {T : Type} {Clause0_Item : Type} {Clause0_IntoIter : Type}
     (IntoIteratorInst : iter.traits.collect.IntoIterator T Clause0_Item
-    Clause0_IntoIter), T → RustM Self
+    Clause0_IntoIter), T → Result Self
 
 /-- Trait declaration: [core_models::iter::traits::iterator::IteratorMethods]
     Source: 'core-models/src/core/iter.rs', lines 23:8-79:9 -/
@@ -399,56 +431,57 @@ structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
   IteratorInst : iter.traits.iterator.Iterator Self Self_Clause0_Item
   fold : forall {B : Type} {F : Type} (coreopsfunctionFnPPairPInst :
     core.ops.function.Fn F (B × Self_Clause0_Item) B), Self → B → F →
-    RustM B
-  enumerate : Self → RustM (iter.adapters.enumerate.Enumerate Self)
-  step_by : Self → Std.Usize → RustM (iter.adapters.step_by.StepBy Self)
+    Result B
+  enumerate : Self → Result (iter.adapters.enumerate.Enumerate Self)
+  step_by : Self → Std.Usize → Result (iter.adapters.step_by.StepBy Self)
   map : forall {O : Type} {F : Type} (coreopsfunctionFnPTupleFPInst :
-    core.ops.function.Fn F Self_Clause0_Item O), Self → F → RustM
+    core.ops.function.Fn F Self_Clause0_Item O), Self → F → Result
     (iter.adapters.map.Map Self F)
   all : forall {F : Type} (coreopsfunctionFnPTuplePBoolInst :
-    core.ops.function.Fn F Self_Clause0_Item Bool), Self → F → RustM Bool
-  take : Self → Std.Usize → RustM (iter.adapters.take.Take Self)
+    core.ops.function.Fn F Self_Clause0_Item Bool), Self → F → Result Bool
+  take : Self → Std.Usize → Result (iter.adapters.take.Take Self)
   flat_map : forall {U : Type} {F : Type} {Clause0_Item : Type} (IteratorInst1
     : iter.traits.iterator.Iterator U Clause0_Item)
     (coreopsfunctionFnPTupleFPInst : core.ops.function.Fn F Self_Clause0_Item
-    U), Self → F → RustM (iter.adapters.flat_map.FlatMap Self U F)
+    U), Self → F → Result (iter.adapters.flat_map.FlatMap Self U F)
   flatten : forall {Clause0_Item : Type} (IteratorInst1 :
     iter.traits.iterator.Iterator Self_Clause0_Item Clause0_Item), Self →
-    RustM (iter.adapters.flatten.Flatten Self Self_Clause0_Item Clause0_Item)
+    Result (iter.adapters.flatten.Flatten Self Self_Clause0_Item Clause0_Item)
   zip : forall {I2 : Type} {Clause0_Item : Type} (IteratorInst1 :
-    iter.traits.iterator.Iterator I2 Clause0_Item), Self → I2 → RustM
+    iter.traits.iterator.Iterator I2 Clause0_Item), Self → I2 → Result
     (iter.adapters.zip.Zip Self I2)
   filter : forall {P : Type} (coreopsfunctionFnPTupleSharedPBoolInst :
-    core.ops.function.Fn P Self_Clause0_Item Bool), Self → P → RustM
+    core.ops.function.Fn P Self_Clause0_Item Bool), Self → P → Result
     (iter.adapters.filter.Filter Self P)
   chain : forall {U : Type} (IteratorInst1 : iter.traits.iterator.Iterator U
-    Self_Clause0_Item), Self → U → RustM (iter.adapters.chain.Chain Self U)
-  skip : Self → Std.Usize → RustM (iter.adapters.skip.Skip Self)
+    Self_Clause0_Item), Self → U → Result (iter.adapters.chain.Chain Self
+    U)
+  skip : Self → Std.Usize → Result (iter.adapters.skip.Skip Self)
   any : forall {F : Type} (coreopsfunctionFnPTuplePBoolInst :
-    core.ops.function.Fn F Self_Clause0_Item Bool), Self → F → RustM Bool
+    core.ops.function.Fn F Self_Clause0_Item Bool), Self → F → Result Bool
   find : forall {P : Type} (coreopsfunctionFnPTupleSharedPBoolInst :
-    core.ops.function.Fn P Self_Clause0_Item Bool), Self → P → RustM
+    core.ops.function.Fn P Self_Clause0_Item Bool), Self → P → Result
     (option.Option Self_Clause0_Item)
   find_map : forall {B : Type} {F : Type} (coreopsfunctionFnPTupleFOptionInst :
     core.ops.function.Fn F Self_Clause0_Item (option.Option B)), Self → F →
-    RustM (option.Option B)
+    Result (option.Option B)
   position : forall {P : Type} (coreopsfunctionFnPTuplePBoolInst :
-    core.ops.function.Fn P Self_Clause0_Item Bool), Self → P → RustM
+    core.ops.function.Fn P Self_Clause0_Item Bool), Self → P → Result
     (option.Option Std.Usize)
-  count : Self → RustM Std.Usize
-  nth : Self → Std.Usize → RustM (option.Option Self_Clause0_Item)
-  last : Self → RustM (option.Option Self_Clause0_Item)
+  count : Self → Result Std.Usize
+  nth : Self → Std.Usize → Result (option.Option Self_Clause0_Item)
+  last : Self → Result (option.Option Self_Clause0_Item)
   for_each : forall {F : Type} (coreopsfunctionFnPTuplePTupleInst :
-    core.ops.function.Fn F Self_Clause0_Item Unit), Self → F → RustM Unit
-  reduce : forall {F : Type} (coreopsfunctionFnPPairPInst :
+    core.ops.function.Fn F Self_Clause0_Item Unit), Self → F → Result Unit
+  «reduce» : forall {F : Type} (coreopsfunctionFnPPairPInst :
     core.ops.function.Fn F (Self_Clause0_Item × Self_Clause0_Item)
-    Self_Clause0_Item), Self → F → RustM (option.Option Self_Clause0_Item)
-  min : forall (cmpOrdInst : cmp.Ord Self_Clause0_Item), Self → RustM
+    Self_Clause0_Item), Self → F → Result (option.Option Self_Clause0_Item)
+  min : forall (cmpOrdInst : cmp.Ord Self_Clause0_Item), Self → Result
     (option.Option Self_Clause0_Item)
-  max : forall (cmpOrdInst : cmp.Ord Self_Clause0_Item), Self → RustM
+  max : forall (cmpOrdInst : cmp.Ord Self_Clause0_Item), Self → Result
     (option.Option Self_Clause0_Item)
   collect : forall {B : Type} (collectFromIteratorInst :
-    iter.traits.collect.FromIterator B Self_Clause0_Item), Self → RustM B
+    iter.traits.collect.FromIterator B Self_Clause0_Item), Self → Result B
 
 /-- Trait declaration: [core_models::iter::range::Step]
     Source: 'core-models/src/core/iter.rs', lines 750:4-770:5
@@ -456,14 +489,14 @@ structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
 structure iter.range.Step (Self : Type) where
   cloneCloneInst : clone.Clone Self
   corecmpPartialOrdInst : core.cmp.PartialOrd Self Self
-  steps_between : Self → Self → RustM (Std.Usize × (option.Option
+  steps_between : Self → Self → Result (Std.Usize × (option.Option
     Std.Usize))
-  forward_checked : Self → Std.Usize → RustM (option.Option Self)
-  backward_checked : Self → Std.Usize → RustM (option.Option Self)
-  forward : Self → Std.Usize → RustM Self
-  forward_unchecked : Self → Std.Usize → RustM Self
-  backward : Self → Std.Usize → RustM Self
-  backward_unchecked : Self → Std.Usize → RustM Self
+  forward_checked : Self → Std.Usize → Result (option.Option Self)
+  backward_checked : Self → Std.Usize → Result (option.Option Self)
+  forward : Self → Std.Usize → Result Self
+  forward_unchecked : Self → Std.Usize → Result Self
+  backward : Self → Std.Usize → Result Self
+  backward_unchecked : Self → Std.Usize → Result Self
 
 /-- Trait declaration: [core_models::marker::Copy]
     Source: 'core-models/src/core/marker.rs', lines 4:0-4:24
@@ -600,19 +633,19 @@ def marker.PhantomContravariantLifetime := marker.PhantomContravariant Unit
 def marker.PhantomInvariantLifetime := marker.PhantomInvariant Unit
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
-    Source: 'core-models/src/core/mem.rs', lines 136:4-138:5
+    Source: 'core-models/src/core/mem.rs', lines 135:4-137:5
     Visibility: public -/
 structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
 
 /-- [core_models::num::error::IntErrorKind]
-    Source: 'core-models/src/core/num/error.rs', lines 35:0-35:24
+    Source: 'core-models/src/core/num/error.rs', lines 33:0-33:24
     Visibility: public -/
 @[reducible]
 def num.error.IntErrorKind := Unit
 
 /-- [core_models::num::error::ParseIntError]
-    Source: 'core-models/src/core/num/error.rs', lines 19:0-21:1
+    Source: 'core-models/src/core/num/error.rs', lines 18:0-20:1
     Visibility: public -/
 structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
@@ -693,133 +726,133 @@ def num.isize := Unit
     Source: 'core-models/src/core/ops.rs', lines 3:4-6:5
     Visibility: public -/
 structure ops.arith.Add (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  add : Self → Rhs → RustM Self_Output
+  add : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Sub]
     Source: 'core-models/src/core/ops.rs', lines 8:4-11:5
     Visibility: public -/
 structure ops.arith.Sub (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  sub : Self → Rhs → RustM Self_Output
+  sub : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Mul]
     Source: 'core-models/src/core/ops.rs', lines 13:4-16:5
     Visibility: public -/
 structure ops.arith.Mul (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  mul : Self → Rhs → RustM Self_Output
+  mul : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Div]
     Source: 'core-models/src/core/ops.rs', lines 18:4-21:5
     Visibility: public -/
 structure ops.arith.Div (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  div : Self → Rhs → RustM Self_Output
+  div : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Neg]
     Source: 'core-models/src/core/ops.rs', lines 23:4-26:5
     Visibility: public -/
 structure ops.arith.Neg (Self : Type) (Self_Output : Type) where
-  neg : Self → RustM Self_Output
+  neg : Self → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Rem]
     Source: 'core-models/src/core/ops.rs', lines 28:4-31:5
     Visibility: public -/
 structure ops.arith.Rem (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  rem : Self → Rhs → RustM Self_Output
+  rem : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::AddAssign]
     Source: 'core-models/src/core/ops.rs', lines 33:4-35:5
     Visibility: public -/
 structure ops.arith.AddAssign (Self : Type) (Rhs : Type) where
-  add_assign : Self → Rhs → RustM Self
+  add_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::arith::SubAssign]
     Source: 'core-models/src/core/ops.rs', lines 37:4-39:5
     Visibility: public -/
 structure ops.arith.SubAssign (Self : Type) (Rhs : Type) where
-  sub_assign : Self → Rhs → RustM Self
+  sub_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::arith::MulAssign]
     Source: 'core-models/src/core/ops.rs', lines 41:4-43:5
     Visibility: public -/
 structure ops.arith.MulAssign (Self : Type) (Rhs : Type) where
-  mul_assign : Self → Rhs → RustM Self
+  mul_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::arith::DivAssign]
     Source: 'core-models/src/core/ops.rs', lines 45:4-47:5
     Visibility: public -/
 structure ops.arith.DivAssign (Self : Type) (Rhs : Type) where
-  div_assign : Self → Rhs → RustM Self
+  div_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::arith::RemAssign]
     Source: 'core-models/src/core/ops.rs', lines 49:4-51:5
     Visibility: public -/
 structure ops.arith.RemAssign (Self : Type) (Rhs : Type) where
-  rem_assign : Self → Rhs → RustM Self
+  rem_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::bit::Shr]
     Source: 'core-models/src/core/ops.rs', lines 81:4-84:5
     Visibility: public -/
 structure ops.bit.Shr (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  shr : Self → Rhs → RustM Self_Output
+  shr : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::Shl]
     Source: 'core-models/src/core/ops.rs', lines 86:4-89:5
     Visibility: public -/
 structure ops.bit.Shl (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  shl : Self → Rhs → RustM Self_Output
+  shl : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::BitXor]
     Source: 'core-models/src/core/ops.rs', lines 91:4-94:5
     Visibility: public -/
 structure ops.bit.BitXor (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  bitxor : Self → Rhs → RustM Self_Output
+  bitxor : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::BitAnd]
     Source: 'core-models/src/core/ops.rs', lines 96:4-99:5
     Visibility: public -/
 structure ops.bit.BitAnd (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  bitand : Self → Rhs → RustM Self_Output
+  bitand : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::BitOr]
     Source: 'core-models/src/core/ops.rs', lines 101:4-104:5
     Visibility: public -/
 structure ops.bit.BitOr (Self : Type) (Rhs : Type) (Self_Output : Type) where
-  bitor : Self → Rhs → RustM Self_Output
+  bitor : Self → Rhs → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::Not]
     Source: 'core-models/src/core/ops.rs', lines 106:4-109:5
     Visibility: public -/
 structure ops.bit.Not (Self : Type) (Self_Output : Type) where
-  not : Self → RustM Self_Output
+  not : Self → Result Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::ShrAssign]
     Source: 'core-models/src/core/ops.rs', lines 111:4-113:5
     Visibility: public -/
 structure ops.bit.ShrAssign (Self : Type) (Rhs : Type) where
-  shr_assign : Self → Rhs → RustM Self
+  shr_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::bit::ShlAssign]
     Source: 'core-models/src/core/ops.rs', lines 115:4-117:5
     Visibility: public -/
 structure ops.bit.ShlAssign (Self : Type) (Rhs : Type) where
-  shl_assign : Self → Rhs → RustM Self
+  shl_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::bit::BitXorAssign]
     Source: 'core-models/src/core/ops.rs', lines 119:4-121:5
     Visibility: public -/
 structure ops.bit.BitXorAssign (Self : Type) (Rhs : Type) where
-  bitxor_assign : Self → Rhs → RustM Self
+  bitxor_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::bit::BitAndAssign]
     Source: 'core-models/src/core/ops.rs', lines 123:4-125:5
     Visibility: public -/
 structure ops.bit.BitAndAssign (Self : Type) (Rhs : Type) where
-  bitand_assign : Self → Rhs → RustM Self
+  bitand_assign : Self → Rhs → Result Self
 
 /-- Trait declaration: [core_models::ops::bit::BitOrAssign]
     Source: 'core-models/src/core/ops.rs', lines 127:4-129:5
     Visibility: public -/
 structure ops.bit.BitOrAssign (Self : Type) (Rhs : Type) where
-  bitor_assign : Self → Rhs → RustM Self
+  bitor_assign : Self → Rhs → Result Self
 
 /-- [core_models::ops::control_flow::ControlFlow]
     Source: 'core-models/src/core/ops.rs', lines 134:4-139:5
@@ -835,7 +868,7 @@ inductive ops.control_flow.ControlFlow (B : Type) (C : Type) where
 structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
   Type) where
   IndexInst : ops.index.Index Self Idx Self_Clause0_Output
-  index_mut : Self → Idx → RustM (Self_Clause0_Output ×
+  index_mut : Self → Idx → Result (Self_Clause0_Output ×
     (Self_Clause0_Output → Self))
 
 /-
@@ -844,7 +877,7 @@ structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
     Visibility: public -/
 structure ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output : Type)
   where
-  call_once : Self → Args → RustM Self_Output
+  call_once : Self → Args → Result Self_Output
 -/
 
 /-
@@ -854,7 +887,7 @@ structure ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output : Type)
 structure ops.function.FnMut (Self : Type) (Args : Type) (Self_Clause0_Output :
   Type) where
   FnOnceInst : ops.function.FnOnce Self Args Self_Clause0_Output
-  call_mut : Self → Args → RustM Self_Clause0_Output
+  call_mut : Self → Args → Result Self_Clause0_Output
 -/
 
 /-
@@ -864,34 +897,34 @@ structure ops.function.FnMut (Self : Type) (Args : Type) (Self_Clause0_Output :
 structure ops.function.Fn (Self : Type) (Args : Type)
   (Self_Clause0_Clause0_Output : Type) where
   FnMutInst : ops.function.FnMut Self Args Self_Clause0_Clause0_Output
-  call : Self → Args → RustM Self_Clause0_Clause0_Output
+  call : Self → Args → Result Self_Clause0_Clause0_Output
 -/
 
 /-- Trait declaration: [core_models::ops::try_trait::FromResidual]
     Source: 'core-models/src/core/ops.rs', lines 267:4-269:5
     Visibility: public -/
 structure ops.try_trait.FromResidual (Self : Type) (R : Type) where
-  from_residual : R → RustM Self
+  from_residual : R → Result Self
 
 /-- Trait declaration: [core_models::ops::try_trait::Try]
     Source: 'core-models/src/core/ops.rs', lines 272:4-277:5
     Visibility: public -/
 structure ops.try_trait.Try (Self : Type) (Self_Output : Type) (Self_Residual :
   Type) where
-  from_output : Self_Output → RustM Self
-  branch : Self → RustM (ops.control_flow.ControlFlow Self_Residual
+  from_output : Self_Output → Result Self
+  branch : Self → Result (ops.control_flow.ControlFlow Self_Residual
     Self_Output)
 
 /-- Trait declaration: [core_models::ops::deref::Deref]
     Source: 'core-models/src/core/ops.rs', lines 282:4-286:5
     Visibility: public -/
 structure ops.deref.Deref (Self : Type) (Self_Target : Type) where
-  deref : Self → RustM Self_Target
+  deref : Self → Result Self_Target
 
 /-- Trait declaration: [core_models::ops::drop::Drop]
     Source: 'core-models/src/core/ops.rs', lines 298:4-300:5 -/
 structure ops.drop.Drop (Self : Type) where
-  drop : Self → RustM Self
+  drop : Self → Result Self
 
 /-- [core_models::ops::range::RangeTo]
     Source: 'core-models/src/core/ops.rs', lines 305:4-307:5
@@ -964,27 +997,28 @@ structure slice.iter.Windows (T : Type) where
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
-  get : Self → T → RustM (option.Option Self_Output)
-  index : Self → T → RustM Self_Output
-  get_unchecked : Self → T → RustM Self_Output
-  get_mut : Self → T → RustM ((option.Option Self_Output) × (option.Option
-    Self_Output → T))
-  get_unchecked_mut : Self → T → RustM (Self_Output × (Self_Output → T))
+  get : Self → T → Result (option.Option Self_Output)
+  index : Self → T → Result Self_Output
+  get_unchecked : Self → T → Result Self_Output
+  get_mut : Self → T → Result ((option.Option Self_Output) ×
+    (option.Option Self_Output → T))
+  get_unchecked_mut : Self → T → Result (Self_Output × (Self_Output →
+    T))
 
 /-- [core_models::str::error::Utf8Error]
-    Source: 'core-models/src/core/str.rs', lines 40:4-40:25
+    Source: 'core-models/src/core/str.rs', lines 43:4-43:25
     Visibility: public -/
 @[reducible]
 def str.error.Utf8Error := Unit
 
 /-- [core_models::str::iter::Split]
-    Source: 'core-models/src/core/str.rs', lines 53:4-53:23 -/
+    Source: 'core-models/src/core/str.rs', lines 47:4-47:23 -/
 @[reducible]
 def str.iter.Split (T : Type) := T
 
 /-- Trait declaration: [core_models::str::traits::FromStr]
-    Source: 'core-models/src/core/str.rs', lines 57:4-60:5 -/
+    Source: 'core-models/src/core/str.rs', lines 51:4-54:5 -/
 structure str.traits.FromStr (Self : Type) (Self_Err : Type) where
-  from_str : Str → RustM (result.Result Self Self_Err)
+  from_str : Str → Result (result.Result Self Self_Err)
 
 end CoreModels.core

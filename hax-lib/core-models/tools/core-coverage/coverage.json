@@ -14673,24 +14673,22 @@
    },
    {
     "module": "hash",
-    "covered": 5,
+    "covered": 26,
     "total": 29,
     "in_scope": true,
     "covered_items": [
-     "Hash",
-     "Hash::hash",
-     "Hasher",
-     "Hasher::finish",
-     "Hasher::write"
-    ],
-    "missing_items": [
      "BuildHasher",
      "BuildHasher::Hasher",
      "BuildHasher::build_hasher",
      "BuildHasher::hash_one",
      "BuildHasherDefault",
      "BuildHasherDefault::new",
+     "Hash",
+     "Hash::hash",
      "Hash::hash_slice",
+     "Hasher",
+     "Hasher::finish",
+     "Hasher::write",
      "Hasher::write_i128",
      "Hasher::write_i16",
      "Hasher::write_i32",
@@ -14704,7 +14702,9 @@
      "Hasher::write_u32",
      "Hasher::write_u64",
      "Hasher::write_u8",
-     "Hasher::write_usize",
+     "Hasher::write_usize"
+    ],
+    "missing_items": [
      "SipHasher",
      "SipHasher::new",
      "SipHasher::new_with_keys"
