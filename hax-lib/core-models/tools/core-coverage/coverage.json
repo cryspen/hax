@@ -19295,12 +19295,16 @@
    },
    {
     "module": "boxed",
-    "covered": 2,
+    "covered": 6,
     "total": 54,
     "in_scope": true,
     "covered_items": [
      "Box",
-     "Box::new"
+     "Box::into_boxed_slice",
+     "Box::into_inner",
+     "Box::map",
+     "Box::new",
+     "Box::new_in"
     ],
     "missing_items": [
      "Box::allocator",
@@ -19316,16 +19320,12 @@
      "Box::from_raw",
      "Box::from_raw_in",
      "Box::into_array",
-     "Box::into_boxed_slice",
-     "Box::into_inner",
      "Box::into_non_null",
      "Box::into_non_null_with_allocator",
      "Box::into_pin",
      "Box::into_raw",
      "Box::into_raw_with_allocator",
      "Box::leak",
-     "Box::map",
-     "Box::new_in",
      "Box::new_uninit",
      "Box::new_uninit_in",
      "Box::new_uninit_slice",
