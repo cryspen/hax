@@ -6,6 +6,7 @@ pub mod clone;
 pub mod cmp;
 pub mod convert;
 pub mod hash;
+pub mod error;
 pub mod hint;
 pub mod iter;
 pub mod marker;
