@@ -36,6 +36,14 @@
     mem_copy_fn
 )]
 #![allow(incomplete_features)]
+// `core::fmt::{FormattingOptions, Sign, DebugAsHex, NumBuffer, NumBufferTrait}`
+// are the only `core::fmt` items whose behaviour is observable without a
+// `Formatter`, and they are still unstable — see `core/fmt.rs`.
+#![feature(formatting_options, int_format_into)]
+// Some tests deliberately exercise edge comparisons like `u8::MAX < 0u8`
+// to pin the trait-dispatch behaviour at the extremes; rustc warns
+// those are tautologically false, but that *is* the observation we want
+// to verify.
 #![allow(unused_comparisons)]
 // Several of the `core::num` items the equivalence tests exercise are still
 // unstable in std, so calling them here needs the gates.
