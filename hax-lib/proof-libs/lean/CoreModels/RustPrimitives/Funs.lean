@@ -103,31 +103,15 @@ def rust_primitives.slice.slice_swap
   let s1 ← Slice.update s a vb
   Slice.update s1 b va
 
-private theorem foldlM_list_build_length {T F : Type}
-    (step : List T × F → Nat → Result (List T × F))
-    (hstep : ∀ l f i r, step (l, f) i = .ok r → r.1.length = l.length + 1) :
-    ∀ (l : List Nat) (acc : List T) (f : F) (result : List T × F),
-    l.foldlM step (acc, f) = .ok result → result.1.length = acc.length + l.length := by
-  intro l
-  induction l with
-  | nil =>
-    intro acc f result h
-    simp only [List.foldlM_nil] at h
-    have heq : result = (acc, f) := (Result.ok.inj h).symm
-    simp [heq]
-  | cons x xs ih =>
-    intro acc f result h
-    simp only [List.foldlM_cons] at h
-    cases hstep_x : step (acc, f) x with
-    | ok r =>
-      obtain ⟨r1, r2⟩ := r
-      simp only [hstep_x] at h
-      have hlen_r : r1.length = acc.length + 1 := by
-        have := hstep acc f x ⟨r1, r2⟩ hstep_x; simpa using this
-      have ih' := ih r1 r2 result h
-      simp only [List.length_cons]; omega
-    | fail e => simp [hstep_x] at h
-    | div => simp [hstep_x] at h
+/-- This helper function for `array_from_fn` takes a `FnMut` closure and produces a list. A list
+    is easier to produce than an array because we do not need to produce a length-proof. -/
+def rust_primitives.slice.array_from_fn_go {T F : Type}
+    (inst : core.ops.function.FnMut F Std.Usize T) : F → Nat → Result (List T × F)
+  | c, 0 => ok ([], c)
+  | c, n + 1 => do
+    let p ← array_from_fn_go inst c n
+    let q ← inst.call_mut p.2 ⟨BitVec.ofNat _ n⟩
+    ok (p.1 ++ [q.1], q.2)
 
 /-- [rust_primitives::slice::array_from_fn]:
     Source: 'rust_primitives/src/lib.rs', lines 28:4-28:81
@@ -137,35 +121,11 @@ private theorem foldlM_list_build_length {T F : Type}
 def rust_primitives.slice.array_from_fn
   {T : Type} {F : Type} (N : Std.Usize) (coreopsfunctionFnMutFTupleUsizeTInst :
   core.ops.function.FnMut F Std.Usize T) :
-  F → Result (Array T N) := fun f =>
-  match h : (List.range N.val).foldlM
-    (fun (s : List T × F) (i : Nat) => do
-      let (v, f') ← coreopsfunctionFnMutFTupleUsizeTInst.call_mut s.2 ⟨BitVec.ofNat _ i⟩
-      ok (s.1 ++ [v], f'))
-    ([], f) with
-  | fail e => fail e
-  | div => div
-  | ok result => ok ⟨result.1, by
-      have hlen := foldlM_list_build_length
-        (fun (s : List T × F) (i : Nat) => do
-          let (v, f') ← coreopsfunctionFnMutFTupleUsizeTInst.call_mut s.2 ⟨BitVec.ofNat _ i⟩
-          ok (s.1 ++ [v], f'))
-        (fun l f i r hr => by
-          simp only [] at hr
-          cases hcall : coreopsfunctionFnMutFTupleUsizeTInst.call_mut f ⟨BitVec.ofNat _ i⟩ with
-          | ok p =>
-            obtain ⟨v, fv⟩ := p
-            simp only [hcall, bind_tc_ok] at hr
-            have heq : r = (l ++ [v], fv) := (Result.ok.inj hr).symm
-            simp [heq, List.length_append]
-          | fail e =>
-            simp only [hcall, bind_tc_fail] at hr
-            exact nomatch hr
-          | div =>
-            simp only [hcall, bind_tc_div] at hr
-            exact nomatch hr)
-        _ [] f result h
-      simp [List.length_range] at hlen; exact hlen⟩
+  F → Result (Array T N) := fun f => do
+  let p ← array_from_fn_go coreopsfunctionFnMutFTupleUsizeTInst f N.val
+  -- The `else` is unreachable: `array_from_fn_go` always returns one element per
+  -- index, so `p.1.length = N.val`. It's easier to prove that in the spec than here.
+  (if h : p.1.length = N.val then ok ⟨p.1, h⟩ else fail .panic)
 
 /-- [rust_primitives::slice::array_map]:
     Source: 'rust_primitives/src/lib.rs', lines 31:4-31:84
