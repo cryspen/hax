@@ -220,6 +220,18 @@ pub mod string {
             Err(_) => (false, ""),
         }
     }
+    /// The UTF-8 encoding of `s`. This is the gateway primitive for the
+    /// byte-oriented part of the `str` model: everything else there is written
+    /// in plain Rust on top of it.
+    pub fn str_as_bytes(s: &str) -> &[u8] {
+        s.as_bytes()
+    }
+    /// `&s[b..e]`, indexed in **bytes** (unlike `str_sub`, which counts
+    /// `char`s). Slicing a `str` off a char boundary panics.
+    #[hax_lib::requires(b <= e && e <= crate::slice::slice_length(str_as_bytes(s)))]
+    pub fn str_sub_bytes(s: &str, b: usize, e: usize) -> &str {
+        &s[b..e]
+    }
 }
 
 pub mod float {

@@ -96,6 +96,20 @@ impl Inject for std::num::TryFromIntError {
     }
 }
 
+impl<'a> Inject for &'a str {
+    type Model = &'a str;
+    fn inject(&self) -> Self::Model {
+        self
+    }
+}
+
+impl Inject for std::str::ParseBoolError {
+    type Model = crate::str::error::ParseBoolError;
+    fn inject(&self) -> Self::Model {
+        crate::str::error::ParseBoolError
+    }
+}
+
 impl<'a, T> Inject for &'a [T] {
     type Model = &'a [T];
     fn inject(&self) -> Self::Model {
