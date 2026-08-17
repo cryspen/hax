@@ -42,17 +42,24 @@
         cold_path,
         control_flow_into_value,
         control_flow_ok,
+        disjoint_bitor,
         drop_guard,
         exact_div,
+        funnel_shifts,
         hasher_prefixfree_extras,
+        int_lowest_highest_one,
         int_roundings,
+        isolate_most_least_significant_one,
         likely_unlikely,
         mem_copy_fn,
         one_sided_range,
         range_bounds_is_empty,
         range_into_bounds,
         step_trait,
-        unchecked_neg
+        uint_bit_width,
+        unchecked_neg,
+        unchecked_shifts,
+        wrapping_next_power_of_two
     )
 )]
 // likely_unlikely/cold_path: same, for the `hint` proptests.
