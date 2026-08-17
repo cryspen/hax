@@ -34,6 +34,7 @@ none_helper!(none_i32, i32, 0);
 none_helper!(none_i64, i64, 0);
 none_helper!(none_isize, isize, 0);
 none_helper!(none_bool, bool, false);
+none_helper!(none_pair_u8, (u8, u8), (0, 0));
 
 /// `u8`'s model `Clone`/`PartialEq` are total identities, so a model that drops
 /// a trait dictionary looks correct at that type. `Bumped` makes it observable:

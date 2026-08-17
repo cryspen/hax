@@ -47,7 +47,7 @@ include Core_models.Bundle {impl__ok as impl__ok}
 
 include Core_models.Bundle {impl__err as impl__err}
 
-include Core_models.Bundle {impl__and as impl__and}
+include Core_models.Bundle {impl__and__from__result as impl__and}
 
 include Core_models.Bundle {impl__and_then__from__result as impl__and_then}
 
