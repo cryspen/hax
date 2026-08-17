@@ -1,0 +1,108 @@
+name: Check hax-lean version
+
+# The Lean library in `hax-lib/proof-libs/lean` is published as its own
+# repository: `deploy_hax_lean.yml` mirrors it to `cryspen/hax-lean` on
+# every commit that lands on `main`, and tags each snapshot with the
+# library's version.
+#
+# That version lives in two places, and they have to agree:
+#
+#   * `version` in `hax-lib/proof-libs/lean/lakefile.toml` — the library's own
+#     idea of what it is. Lake parses this as a semantic version, so it carries
+#     no `v` prefix.
+#   * `hax-lean-lib` in `cli/cargo-hax/defaults.toml` — the tag of
+#     `cryspen/hax-lean` that extracted code is pinned against. This is a git
+#     tag, spelled with the `v` prefix.
+#
+# This workflow enforces that correspondence, and that the version is bumped
+# whenever the library itself changes: without a bump, a second, different
+# snapshot would land under a tag that is already published.
+
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-version:
+    name: Check the Lean library version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # The bump check diffs against the base of this change, so the tip
+          # commit alone is not enough.
+          fetch-depth: 0
+
+      - name: Check the version fields against each other and against the base
+        env:
+          # What to compare against: the target branch for a pull request, the
+          # base the queue built on for a merge group.
+          BASE: >-
+            ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha
+            || github.event.merge_group.base_sha }}
+          LEAN_LIB: hax-lib/proof-libs/lean
+        run: |
+          set -euo pipefail
+
+          # The reader takes the file on stdin, so that it can be pointed
+          # either at the worktree or at a blob out of git history.
+          #
+          # `/^\[/q` stops at the first table header: only the package section
+          # of the lakefile declares the package version, and a dependency's
+          # own `version` key must never be picked up instead.
+          lakefile_version() {
+            sed -n '/^\[/q; s/^[[:space:]]*version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p'
+          }
+
+          LAKE=$(lakefile_version < "$LEAN_LIB/lakefile.toml")
+          DEFAULTS=$(sed -n 's/^[[:space:]]*hax-lean-lib[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
+            cli/cargo-hax/defaults.toml)
+
+          if [ -z "$LAKE" ]; then
+            echo "::error file=$LEAN_LIB/lakefile.toml::No version field in the Lean library lakefile."
+            exit 1
+          fi
+          if [ -z "$DEFAULTS" ]; then
+            echo "::error file=cli/cargo-hax/defaults.toml::No hax-lean-lib entry in defaults.toml."
+            exit 1
+          fi
+
+          # The lakefile spells the version bare, defaults.toml spells it as
+          # the git tag it resolves to; they differ by exactly the v prefix.
+          if [ "v$LAKE" != "$DEFAULTS" ]; then
+            echo "::error::Version mismatch: $LEAN_LIB/lakefile.toml says '$LAKE', so defaults.toml must say 'v$LAKE', but it says '$DEFAULTS'."
+            exit 1
+          fi
+          echo "Both files agree on $DEFAULTS."
+
+          # A run with no usable base has nothing to compare against; there is
+          # no bump to check.
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            echo "No base commit available; skipping the bump check."
+            exit 0
+          fi
+
+          if git diff --quiet "$BASE" HEAD -- "$LEAN_LIB"; then
+            echo "The in-tree Lean library is unchanged; no bump required."
+            exit 0
+          fi
+
+          # The base version, read the same way. A base predating the lakefile
+          # version field compares against 0.0.0, so any version passes.
+          BASE_LAKE=$(git show "$BASE:$LEAN_LIB/lakefile.toml" 2>/dev/null | lakefile_version || true)
+          BASE_LAKE="${BASE_LAKE:-0.0.0}"
+
+          # Strictly greater: `sort -V` puts the older version first, so if the
+          # base does not sort first, or the two are equal, the bump is missing.
+          LOWEST=$(printf '%s\n%s\n' "$BASE_LAKE" "$LAKE" | sort -V | head -n 1)
+          if [ "$BASE_LAKE" = "$LAKE" ] || [ "$LOWEST" != "$BASE_LAKE" ]; then
+            echo "::error file=$LEAN_LIB/lakefile.toml::$LEAN_LIB changed, so its version must increase, but it went from '$BASE_LAKE' to '$LAKE'. Bump it here and in cli/cargo-hax/defaults.toml."
+            exit 1
+          fi
+          echo "The Lean library changed and its version went $BASE_LAKE -> $LAKE."

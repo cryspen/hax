@@ -1,7 +1,10 @@
 name: Deploy cryspen/hax-lean
 
 # On every commit that lands on `main`, mirror the current state of
-# `hax-lib/proof-libs/lean` into the `cryspen/hax-lean` repository.
+# `hax-lib/proof-libs/lean` into the `cryspen/hax-lean` repository, and tag the
+# resulting snapshot with the library's version.
+#
+# The workflow `check_hax_lean_version.yml` checks that the version is valid and pinned.
 
 on:
   push:
@@ -51,9 +54,11 @@ jobs:
           # Overwrite whatever text sits between them with the note above.
           perl -i -pe 's/⚠️.*⚠️/⚠️ $ENV{NOTE} ⚠️/' README.md
 
-      - name: Commit and push if there are changes
+      - name: Commit, tag and push if there are changes
         working-directory: target
         run: |
+          set -euo pipefail
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
@@ -67,8 +72,39 @@ jobs:
           SHA=$(git -C ../source rev-parse HEAD)
           AUTHOR=$(git -C ../source log -1 --format='%an <%ae>')
 
+          # The snapshot is tagged with the version that extracted code pins,
+          # so that the hax-lean-lib entry of defaults.toml resolves to exactly
+          # the tree being mirrored.
+          VERSION=$(sed -n 's/^[[:space:]]*hax-lean-lib[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
+            ../source/cli/cargo-hax/defaults.toml)
+          if [ -z "$VERSION" ]; then
+            echo "::error::Could not read the hax-lean-lib version from defaults.toml."
+            exit 1
+          fi
+
+          # What the mirrored tree itself claims to be.
+          DECLARED=$(sed -n '/^\[/q; s/^[[:space:]]*version[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' \
+            lakefile.toml)
+          
+          # Check that the two correspond:
+          if [ "$VERSION" != "v$DECLARED" ]; then
+            echo "::error::Refusing to publish: defaults.toml pins '$VERSION', but the mirrored lakefile.toml declares '$DECLARED'."
+            exit 1
+          fi
+
+          # Every change to the library must come with a bump, so the tag
+          # should be free. If it is not, two different snapshots claim the
+          # same version: refuse rather than silently move a published tag.
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "::error::Tag $VERSION already exists in cryspen/hax-lean, but this commit changes the library. Bump the version instead of reusing it."
+            exit 1
+          fi
+
           git commit \
             --author="$AUTHOR" \
             -m "$MSG" \
             -m "Snapshot of cryspen/hax@${SHA}"
-          git push
+          git tag -a "$VERSION" -m "hax-lean $VERSION (cryspen/hax@${SHA})"
+
+          # Branch and tag land together, or neither does.
+          git push --atomic origin HEAD "refs/tags/$VERSION"
