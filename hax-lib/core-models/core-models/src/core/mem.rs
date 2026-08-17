@@ -131,9 +131,204 @@ pub unsafe fn transmute<Src, Dst>(src: Src) -> Dst {
     unsafe { rust_primitives::mem::transmute(src) }
 }
 
+/// See [`std::mem::copy`]
+// The bound is Rust's `core::marker::Copy`, not the model's `marker::Copy`: the
+// body dereferences a shared reference, which the model cannot express
+// (`clone::Clone::clone` consumes its argument). Extraction maps the bound back
+// onto the model's `marker::Copy`, as it already does for
+// `convert::TryFrom<&[T]> for [T; N]`.
+pub fn copy<T: core::marker::Copy>(x: &T) -> T {
+    *x
+}
+
+/// See [`std::mem::conjure_zst`]
+// Signature only: conjuring a `T` out of nothing is sound exactly when `T` is an
+// inhabited zero-sized type, a layout property the model cannot state (real core
+// panics otherwise).
+#[hax_lib::opaque]
+pub unsafe fn conjure_zst<T>() -> T {
+    panic!()
+}
+
+/// See [`std::mem::size_of_val_raw`]
+// Takes the value rather than real core's `*const T`, mirroring the deviation
+// `align_of_val_raw` above already makes: the model has no raw pointers.
+#[hax_lib::opaque]
+pub unsafe fn size_of_val_raw<T>(val: T) -> usize {
+    panic!()
+}
+
 mod manually_drop {
+    /// See [`std::mem::ManuallyDrop`]
     pub struct ManuallyDrop<T: ?Sized> {
         value: T,
+    }
+
+    impl<T> ManuallyDrop<T> {
+        /// See [`std::mem::ManuallyDrop::new`]
+        pub fn new(value: T) -> ManuallyDrop<T> {
+            ManuallyDrop { value }
+        }
+
+        /// See [`std::mem::ManuallyDrop::into_inner`]
+        pub fn into_inner(slot: ManuallyDrop<T>) -> T {
+            slot.value
+        }
+
+        /// See [`std::mem::ManuallyDrop::take`]
+        // Signature only: real core reads the value out through a raw pointer,
+        // leaving the slot logically moved out. The model has no raw pointers,
+        // and `clone::Clone::clone` consumes its argument, so there is no way to
+        // produce a `T` from `&mut ManuallyDrop<T>`.
+        #[hax_lib::opaque]
+        pub unsafe fn take(slot: &mut ManuallyDrop<T>) -> T {
+            panic!()
+        }
+    }
+
+    impl<T: ?Sized> ManuallyDrop<T> {
+        /// See [`std::mem::ManuallyDrop::drop`]
+        // A no-op: the model has no destructors, so there is no `T` destructor
+        // for this to run.
+        pub unsafe fn drop(slot: &mut ManuallyDrop<T>) {}
+    }
+}
+
+mod maybe_dangling {
+    /// See [`std::mem::MaybeDangling`]
+    // In real core this only relaxes what the compiler may assume about the
+    // wrapped value (it is allowed to dangle); at the value level it is the
+    // identity newtype, which is all the model observes.
+    pub struct MaybeDangling<P: ?Sized>(P);
+
+    impl<P: ?Sized> MaybeDangling<P> {
+        /// See [`std::mem::MaybeDangling::new`]
+        pub fn new(x: P) -> Self
+        where
+            P: Sized,
+        {
+            MaybeDangling(x)
+        }
+
+        /// See [`std::mem::MaybeDangling::as_ref`]
+        pub fn as_ref(&self) -> &P {
+            &self.0
+        }
+
+        /// See [`std::mem::MaybeDangling::as_mut`]
+        // Excluded from the F* extraction: hax rejects handing out a `&mut` into
+        // a field (HAX0003/HAX0010, hacspec/hax#420). Aeneas handles it, so the
+        // Lean model keeps it.
+        #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+        pub fn as_mut(&mut self) -> &mut P {
+            &mut self.0
+        }
+
+        /// See [`std::mem::MaybeDangling::into_inner`]
+        pub fn into_inner(self) -> P
+        where
+            P: Sized,
+        {
+            self.0
+        }
+    }
+}
+
+mod drop_guard {
+    /// See [`std::mem::DropGuard`]
+    // Real core wraps both fields in `ManuallyDrop` so that its `Drop` impl can
+    // run `f(inner)` exactly once. The model has no destructors, so the guard
+    // never fires and the wrappers carry no information: only the data and the
+    // two associated functions are modeled.
+    pub struct DropGuard<T, F>
+    where
+        F: FnOnce(T),
+    {
+        inner: T,
+        f: F,
+    }
+
+    impl<T, F: FnOnce(T)> DropGuard<T, F> {
+        /// See [`std::mem::DropGuard::new`]
+        pub fn new(inner: T, f: F) -> Self {
+            DropGuard { inner, f }
+        }
+
+        /// See [`std::mem::DropGuard::dismiss`]
+        pub fn dismiss(guard: Self) -> T {
+            guard.inner
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::drop_guard::DropGuard;
+    use super::manually_drop::ManuallyDrop;
+    use super::maybe_dangling::MaybeDangling;
+    use proptest::prelude::*;
+
+    // The `#[hax_lib::opaque]` items in this module (`size_of`, `transmute`,
+    // `conjure_zst`, `size_of_val_raw`, `ManuallyDrop::take`, …) model a
+    // signature and no value, so there is nothing to compare against std.
+
+    proptest! {
+        #[test]
+        fn test_copy(x in any::<u32>()) {
+            prop_assert_eq!(super::copy(&x), core::mem::copy(&x));
+        }
+
+        #[test]
+        fn test_manually_drop_round_trip(x in any::<u32>()) {
+            prop_assert_eq!(
+                ManuallyDrop::into_inner(ManuallyDrop::new(x)),
+                core::mem::ManuallyDrop::into_inner(core::mem::ManuallyDrop::new(x))
+            );
+        }
+
+        // `u32` has no destructor, so real core's `drop` is a no-op as well and
+        // the slot stays readable — that agreement is the observation here.
+        #[test]
+        fn test_manually_drop_drop_is_noop(x in any::<u32>()) {
+            let mut model = ManuallyDrop::new(x);
+            unsafe { ManuallyDrop::drop(&mut model) };
+            let mut std_slot = core::mem::ManuallyDrop::new(x);
+            unsafe { core::mem::ManuallyDrop::drop(&mut std_slot) };
+            prop_assert_eq!(
+                ManuallyDrop::into_inner(model),
+                core::mem::ManuallyDrop::into_inner(std_slot)
+            );
+        }
+
+        // `core::mem::MaybeDangling` does not exist on the toolchain this crate
+        // builds with, so the next three tests pin the identity-newtype
+        // behaviour directly instead of comparing against std.
+        #[test]
+        fn test_maybe_dangling_round_trip(x in any::<u32>()) {
+            prop_assert_eq!(MaybeDangling::new(x).into_inner(), x);
+        }
+
+        #[test]
+        fn test_maybe_dangling_as_ref(x in any::<u32>()) {
+            prop_assert_eq!(*MaybeDangling::new(x).as_ref(), x);
+        }
+
+        #[test]
+        fn test_maybe_dangling_as_mut(x in any::<u32>(), y in any::<u32>()) {
+            let mut m = MaybeDangling::new(x);
+            *m.as_mut() = y;
+            prop_assert_eq!(m.into_inner(), y);
+        }
+
+        // `dismiss` is still spelled `into_inner` on the toolchain this crate
+        // builds with. Both drop the closure without calling it.
+        #[test]
+        fn test_drop_guard_dismiss(x in any::<u32>()) {
+            prop_assert_eq!(
+                DropGuard::dismiss(DropGuard::new(x, |_: u32| ())),
+                core::mem::DropGuard::into_inner(core::mem::DropGuard::new(x, |_: u32| ()))
+            );
+        }
     }
 }
 
