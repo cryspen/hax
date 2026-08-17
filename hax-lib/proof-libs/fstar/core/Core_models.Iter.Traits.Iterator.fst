@@ -159,6 +159,24 @@ include Core_models.Bundle {f_collect_post as f_collect_post}
 
 include Core_models.Bundle {f_collect as f_collect}
 
+include Core_models.Bundle {f_rev_pre as f_rev_pre}
+
+include Core_models.Bundle {f_rev_post as f_rev_post}
+
+include Core_models.Bundle {f_rev as f_rev}
+
+include Core_models.Bundle {f_rposition_pre as f_rposition_pre}
+
+include Core_models.Bundle {f_rposition_post as f_rposition_post}
+
+include Core_models.Bundle {f_rposition as f_rposition}
+
+include Core_models.Bundle {f_advance_by_pre as f_advance_by_pre}
+
+include Core_models.Bundle {f_advance_by_post as f_advance_by_post}
+
+include Core_models.Bundle {f_advance_by as f_advance_by}
+
 include Core_models.Bundle {iter_fold as iter_fold}
 
 include Core_models.Bundle {iter_all as iter_all}
@@ -185,6 +203,10 @@ include Core_models.Bundle {iter_min as iter_min}
 
 include Core_models.Bundle {iter_max as iter_max}
 
+include Core_models.Bundle {iter_rposition as iter_rposition}
+
+include Core_models.Bundle {iter_advance_by as iter_advance_by}
+
 include Core_models.Bundle {impl__from__iterator as impl}
 
-include Core_models.Bundle {impl_1 as impl_1}
+include Core_models.Bundle {impl_1__from__iterator as impl_1}

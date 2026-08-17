@@ -7,8 +7,11 @@ pub mod traits {
     pub mod iterator {
         use super::super::adapters::{
             chain::Chain, enumerate::Enumerate, filter::Filter, flat_map::FlatMap,
-            flatten::Flatten, map::Map, skip::Skip, step_by::StepBy, take::Take, zip::Zip,
+            flatten::Flatten, map::Map, rev::Rev, skip::Skip, step_by::StepBy, take::Take,
+            zip::Zip,
         };
+        use super::double_ended::DoubleEndedIterator;
+        use super::exact_size::ExactSizeIterator;
         use crate::option::Option;
         /// See [`std::iter::Iterator`]
         #[hax_lib::attributes]
@@ -76,6 +79,15 @@ pub mod traits {
             fn collect<B: super::super::traits::collect::FromIterator<Self::Item>>(self) -> B
             where
                 Self: Sized;
+            fn rev(self) -> Rev<Self>
+            where
+                Self: Sized + DoubleEndedIterator;
+            fn rposition<P: Fn(Self::Item) -> bool>(&mut self, predicate: P) -> Option<usize>
+            where
+                Self: Sized + ExactSizeIterator + DoubleEndedIterator;
+            /// The residual count is a plain `usize` (always non-zero on `Err`)
+            /// because the model has no `core::num::NonZero`.
+            fn advance_by(&mut self, n: usize) -> crate::result::Result<(), usize>;
         }
 
         // Opaque helper functions for loop-based iterator methods.
@@ -250,6 +262,43 @@ pub mod traits {
             Option::Some(max)
         }
 
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        // aeneas: reborrowing `&mut I` as `&I` for `ExactSizeIterator::len` trips
+        // its type checker ("new value doesn't have the same type as its
+        // destination"). Nothing outside the (also excluded) `IteratorMethods`
+        // blanket impl refers to this helper.
+        #[cfg_attr(charon, aeneas::exclude)]
+        fn iter_rposition<I: ExactSizeIterator + DoubleEndedIterator, P: Fn(I::Item) -> bool>(
+            iter: &mut I,
+            predicate: P,
+        ) -> Option<usize> {
+            let mut i = ExactSizeIterator::len(iter);
+            while let Option::Some(x) = iter.next_back() {
+                i -= 1;
+                if predicate(x) {
+                    return Option::Some(i);
+                }
+            }
+            Option::None
+        }
+
+        // opaque: while-loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_advance_by<I: Iterator>(
+            iter: &mut I,
+            n: usize,
+        ) -> crate::result::Result<(), usize> {
+            let mut remaining = n;
+            while remaining > 0 {
+                match iter.next() {
+                    Option::None => return crate::result::Result::Err(remaining),
+                    Option::Some(_) => remaining -= 1,
+                }
+            }
+            crate::result::Result::Ok(())
+        }
+
         #[hax_lib::attributes]
         #[cfg_attr(charon, hax_lib::exclude)]
         impl<I: Iterator> IteratorMethods for I {
@@ -361,6 +410,24 @@ pub mod traits {
             fn collect<B: super::super::traits::collect::FromIterator<Self::Item>>(self) -> B {
                 super::super::traits::collect::FromIterator::from_iter(self)
             }
+
+            fn rev(self) -> Rev<Self>
+            where
+                Self: DoubleEndedIterator,
+            {
+                Rev::new(self)
+            }
+
+            fn rposition<P: Fn(Self::Item) -> bool>(&mut self, predicate: P) -> Option<usize>
+            where
+                Self: ExactSizeIterator + DoubleEndedIterator,
+            {
+                iter_rposition(self, predicate)
+            }
+
+            fn advance_by(&mut self, n: usize) -> crate::result::Result<(), usize> {
+                iter_advance_by(self, n)
+            }
         }
 
         #[hax_lib::attributes]
@@ -371,8 +438,139 @@ pub mod traits {
                 self
             }
         }
+    }
+    pub mod double_ended {
+        use super::iterator::Iterator;
+        use crate::option::Option;
+        use crate::result::Result;
 
-        // TODO rev: DoubleEndedIterator?
+        /// See [`std::iter::DoubleEndedIterator`]
+        #[hax_lib::attributes]
+        pub trait DoubleEndedIterator: Iterator {
+            /// See [`std::iter::DoubleEndedIterator::next_back`]
+            #[hax_lib::requires(true)]
+            fn next_back(&mut self) -> Option<Self::Item>;
+        }
+
+        // Companion trait for `DoubleEndedIterator`'s default methods, for the
+        // reason given at the top of this file (see also `IteratorMethods`).
+        #[hax_lib::attributes]
+        pub(crate) trait DoubleEndedIteratorMethods: DoubleEndedIterator {
+            /// The residual count is a plain `usize` (always non-zero on `Err`)
+            /// because the model has no `core::num::NonZero`.
+            fn advance_back_by(&mut self, n: usize) -> Result<(), usize>;
+            fn nth_back(&mut self, n: usize) -> Option<Self::Item>;
+            fn rfind<P: Fn(&Self::Item) -> bool>(&mut self, predicate: P) -> Option<Self::Item>;
+            fn rfold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
+        }
+
+        // opaque: while-loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_advance_back_by<I: DoubleEndedIterator>(
+            iter: &mut I,
+            n: usize,
+        ) -> Result<(), usize> {
+            let mut remaining = n;
+            while remaining > 0 {
+                match iter.next_back() {
+                    Option::None => return Result::Err(remaining),
+                    Option::Some(_) => remaining -= 1,
+                }
+            }
+            Result::Ok(())
+        }
+
+        // opaque: loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_nth_back<I: DoubleEndedIterator>(iter: &mut I, n: usize) -> Option<I::Item> {
+            let mut remaining = n;
+            loop {
+                match iter.next_back() {
+                    Option::None => return Option::None,
+                    Option::Some(v) => {
+                        if remaining == 0 {
+                            return Option::Some(v);
+                        }
+                        remaining -= 1;
+                    }
+                }
+            }
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_rfind<I: DoubleEndedIterator, P: Fn(&I::Item) -> bool>(
+            iter: &mut I,
+            predicate: P,
+        ) -> Option<I::Item> {
+            while let Option::Some(x) = iter.next_back() {
+                if predicate(&x) {
+                    return Option::Some(x);
+                }
+            }
+            Option::None
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_rfold<I: DoubleEndedIterator, B, F: Fn(B, I::Item) -> B>(
+            mut iter: I,
+            init: B,
+            f: F,
+        ) -> B {
+            let mut accum = init;
+            while let Option::Some(x) = iter.next_back() {
+                accum = f(accum, x);
+            }
+            accum
+        }
+
+        #[hax_lib::attributes]
+        #[cfg_attr(charon, aeneas::exclude)]
+        impl<I: DoubleEndedIterator> DoubleEndedIteratorMethods for I {
+            fn advance_back_by(&mut self, n: usize) -> Result<(), usize> {
+                iter_advance_back_by(self, n)
+            }
+
+            fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
+                iter_nth_back(self, n)
+            }
+
+            fn rfind<P: Fn(&Self::Item) -> bool>(&mut self, predicate: P) -> Option<Self::Item> {
+                iter_rfind(self, predicate)
+            }
+
+            fn rfold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B {
+                iter_rfold(self, init, f)
+            }
+        }
+    }
+    pub mod exact_size {
+        use super::iterator::Iterator;
+
+        /// See [`std::iter::ExactSizeIterator`]
+        #[hax_lib::attributes]
+        pub trait ExactSizeIterator: Iterator {
+            /// See [`std::iter::ExactSizeIterator::len`]
+            // `len` is a required method here: std derives it from `size_hint`,
+            // which the model's `Iterator` does not have.
+            #[hax_lib::requires(true)]
+            fn len(&self) -> usize;
+        }
+
+        // Companion trait for the one default method, as for `IteratorMethods`.
+        #[hax_lib::attributes]
+        pub(crate) trait ExactSizeIteratorMethods: ExactSizeIterator {
+            fn is_empty(&self) -> bool;
+        }
+
+        #[hax_lib::attributes]
+        #[cfg_attr(charon, aeneas::exclude)]
+        impl<I: ExactSizeIterator> ExactSizeIteratorMethods for I {
+            fn is_empty(&self) -> bool {
+                self.len() == 0
+            }
+        }
     }
     pub mod marker {
         /// See [`std::iter::FusedIterator`]
@@ -445,6 +643,14 @@ pub mod adapters {
                 }
             }
         }
+        #[hax_lib::attributes]
+        impl<I: super::super::traits::exact_size::ExactSizeIterator>
+            super::super::traits::exact_size::ExactSizeIterator for Enumerate<I>
+        {
+            fn len(&self) -> usize {
+                super::super::traits::exact_size::ExactSizeIterator::len(&self.iter)
+            }
+        }
     }
     pub mod step_by {
         use super::super::traits::iterator::Iterator;
@@ -497,6 +703,8 @@ pub mod adapters {
                 Self { iter, f }
             }
         }
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
         #[hax_lib::attributes]
@@ -509,6 +717,24 @@ pub mod adapters {
                     Option::Some(v) => Option::Some((self.f)(v)),
                     Option::None => Option::None,
                 }
+            }
+        }
+
+        #[hax_lib::attributes]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        impl<I: DoubleEndedIterator, O, F: Fn(I::Item) -> O> DoubleEndedIterator for Map<I, F> {
+            fn next_back(&mut self) -> Option<O> {
+                match self.iter.next_back() {
+                    Option::Some(v) => Option::Some((self.f)(v)),
+                    Option::None => Option::None,
+                }
+            }
+        }
+
+        #[hax_lib::attributes]
+        impl<I: ExactSizeIterator, O, F: Fn(I::Item) -> O> ExactSizeIterator for Map<I, F> {
+            fn len(&self) -> usize {
+                ExactSizeIterator::len(&self.iter)
             }
         }
     }
@@ -695,6 +921,26 @@ pub mod adapters {
                 }
             }
         }
+        #[hax_lib::attributes]
+        // opaque for the same reason as the `Iterator` impl above.
+        #[hax_lib::opaque]
+        #[cfg_attr(charon, aeneas::exclude)]
+        impl<I: super::super::traits::double_ended::DoubleEndedIterator, P: Fn(&I::Item) -> bool>
+            super::super::traits::double_ended::DoubleEndedIterator for Filter<I, P>
+        {
+            fn next_back(&mut self) -> Option<I::Item> {
+                loop {
+                    match self.iter.next_back() {
+                        Option::Some(v) => {
+                            if (self.predicate)(&v) {
+                                return Option::Some(v);
+                            }
+                        }
+                        Option::None => return Option::None,
+                    }
+                }
+            }
+        }
     }
     pub mod chain {
         use super::super::traits::iterator::Iterator;
@@ -734,6 +980,27 @@ pub mod adapters {
                 self.b.next()
             }
         }
+        #[hax_lib::attributes]
+        // opaque: `ref mut` pattern in if-let is not supported by hax
+        #[hax_lib::opaque]
+        impl<
+            A: super::super::traits::double_ended::DoubleEndedIterator,
+            B: super::super::traits::double_ended::DoubleEndedIterator<Item = A::Item>,
+        > super::super::traits::double_ended::DoubleEndedIterator for Chain<A, B>
+        {
+            fn next_back(&mut self) -> Option<A::Item> {
+                match self.b.next_back() {
+                    Option::Some(v) => Option::Some(v),
+                    Option::None => {
+                        if let Option::Some(ref mut a) = self.a {
+                            a.next_back()
+                        } else {
+                            Option::None
+                        }
+                    }
+                }
+            }
+        }
     }
     pub mod skip {
         use super::super::traits::iterator::Iterator;
@@ -765,6 +1032,45 @@ pub mod adapters {
             }
         }
     }
+    pub mod rev {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Rev`]
+        pub struct Rev<I> {
+            iter: I,
+        }
+        #[hax_lib::attributes]
+        impl<I> Rev<I> {
+            pub fn new(iter: I) -> Rev<I> {
+                Rev { iter }
+            }
+            /// See [`std::iter::Rev::into_inner`]
+            pub fn into_inner(self) -> I {
+                self.iter
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: DoubleEndedIterator> Iterator for Rev<I> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                self.iter.next_back()
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: DoubleEndedIterator> DoubleEndedIterator for Rev<I> {
+            fn next_back(&mut self) -> Option<I::Item> {
+                self.iter.next()
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: DoubleEndedIterator + ExactSizeIterator> ExactSizeIterator for Rev<I> {
+            fn len(&self) -> usize {
+                ExactSizeIterator::len(&self.iter)
+            }
+        }
+    }
 }
 
 // The iterator sources (`core::iter::{empty, once, repeat, …}`).
@@ -776,6 +1082,8 @@ pub mod adapters {
 // `Option::take`, both of which are `--exclude`d from the charon run.
 pub mod sources {
     pub mod empty {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
         use rust_primitives::sequence::{Seq, seq_empty};
@@ -797,12 +1105,26 @@ pub mod sources {
                 Option::None
             }
         }
+
+        impl<T> DoubleEndedIterator for Empty<T> {
+            fn next_back(&mut self) -> Option<T> {
+                Option::None
+            }
+        }
+
+        impl<T> ExactSizeIterator for Empty<T> {
+            fn len(&self) -> usize {
+                0
+            }
+        }
     }
 
     pub mod once {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
-        use rust_primitives::sequence::{Seq, seq_empty, seq_len, seq_one, seq_remove};
+        use rust_primitives::sequence::{Seq, seq_len, seq_one, seq_remove};
 
         /// See [`std::iter::Once`]
         pub struct Once<T>(Seq<T>);
@@ -820,6 +1142,24 @@ pub mod sources {
                 } else {
                     Option::Some(seq_remove(&mut self.0, 0))
                 }
+            }
+        }
+
+        #[hax_lib::attributes]
+        impl<T> DoubleEndedIterator for Once<T> {
+            fn next_back(&mut self) -> Option<T> {
+                let n = seq_len(&self.0);
+                if n == 0 {
+                    Option::None
+                } else {
+                    Option::Some(seq_remove(&mut self.0, n - 1))
+                }
+            }
+        }
+
+        impl<T> ExactSizeIterator for Once<T> {
+            fn len(&self) -> usize {
+                seq_len(&self.0)
             }
         }
     }
@@ -850,6 +1190,7 @@ pub mod sources {
     }
 
     pub mod repeat {
+        use super::super::traits::double_ended::DoubleEndedIterator;
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
 
@@ -872,9 +1213,18 @@ pub mod sources {
                 Option::Some(self.element.clone())
             }
         }
+
+        // A `Repeat` has no end, so both ends yield the same thing forever.
+        impl<A: Clone> DoubleEndedIterator for Repeat<A> {
+            fn next_back(&mut self) -> Option<A> {
+                Option::Some(self.element.clone())
+            }
+        }
     }
 
     pub mod repeat_n {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
 
@@ -901,6 +1251,19 @@ pub mod sources {
                     // the same either way.
                     Option::Some(self.element.clone())
                 }
+            }
+        }
+
+        // Every element is the same, so `next_back` behaves like `next`.
+        impl<A: Clone> DoubleEndedIterator for RepeatN<A> {
+            fn next_back(&mut self) -> Option<A> {
+                Iterator::next(self)
+            }
+        }
+
+        impl<A: Clone> ExactSizeIterator for RepeatN<A> {
+            fn len(&self) -> usize {
+                self.count
             }
         }
     }
@@ -1244,6 +1607,105 @@ pub mod range {
     }
 }
 
+// `DoubleEndedIterator` / `ExactSizeIterator` for the iterators the model
+// declares outside this file: `core::ops::range::Range` (its `Iterator` impl
+// lives in `core/ops.rs`) and `core::slice::Iter` (in `core/slice.rs`). They are
+// collected here so the whole double-ended surface stays in `core::iter`.
+mod ends {
+    use super::traits::double_ended::DoubleEndedIterator;
+    use super::traits::exact_size::ExactSizeIterator;
+    use super::traits::iterator::Iterator;
+    use crate::ops::range::Range;
+    use crate::option::Option;
+    use rust_primitives::sequence::{seq_len, seq_remove};
+
+    // `next_back` walks `end` down rather than going through `Step`: the whole
+    // `iter::range` module (which holds `Step`) is dropped from the F*
+    // extraction, so referring to it from here would dangle.
+    macro_rules! range_double_ended {
+        ($($int_type: ident)*) => {
+            $(
+                #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+                impl DoubleEndedIterator for Range<$int_type> {
+                    fn next_back(&mut self) -> Option<$int_type> {
+                        if self.start >= self.end {
+                            Option::None
+                        } else {
+                            self.end -= 1;
+                            Option::Some(self.end)
+                        }
+                    }
+                }
+            )*
+        }
+    }
+
+    range_double_ended!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
+
+    // `ExactSizeIterator` is only implemented for the widths where the step
+    // count is guaranteed to fit a `usize`, matching core's own list
+    // (`range_exact_iter_impl!`), which assumes a 64-bit `usize` for `u32`/`i32`.
+    macro_rules! range_exact_size_unsigned {
+        ($($int_type: ident)*) => {
+            $(
+                #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+                impl ExactSizeIterator for Range<$int_type> {
+                    fn len(&self) -> usize {
+                        if self.start >= self.end {
+                            0
+                        } else {
+                            (self.end - self.start) as usize
+                        }
+                    }
+                }
+            )*
+        }
+    }
+
+    // Signed widths subtract in `isize` and reinterpret as `usize`, the way
+    // `Step::steps_between` does, so that e.g. `(i32::MIN..i32::MAX).len()`
+    // does not overflow the element type.
+    macro_rules! range_exact_size_signed {
+        ($($int_type: ident)*) => {
+            $(
+                #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+                impl ExactSizeIterator for Range<$int_type> {
+                    fn len(&self) -> usize {
+                        if self.start >= self.end {
+                            0
+                        } else {
+                            crate::num::isize::wrapping_sub(
+                                self.end as isize,
+                                self.start as isize,
+                            ) as usize
+                        }
+                    }
+                }
+            )*
+        }
+    }
+
+    range_exact_size_unsigned!(u8 u16 u32 usize);
+    range_exact_size_signed!(i8 i16 i32 isize);
+
+    impl<'a, T> DoubleEndedIterator for crate::slice::iter::Iter<'a, T> {
+        fn next_back(&mut self) -> Option<&'a T> {
+            let n = seq_len(&self.0);
+            if n == 0 {
+                Option::None
+            } else {
+                Option::Some(seq_remove(&mut self.0, n - 1))
+            }
+        }
+    }
+
+    impl<'a, T> ExactSizeIterator for crate::slice::iter::Iter<'a, T> {
+        fn len(&self) -> usize {
+            seq_len(&self.0)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::traits::iterator::{Iterator, IteratorMethods};
@@ -1527,6 +1989,301 @@ mod tests {
                 drain(VecIter::new(v.clone()).step_by(step)),
                 v.iter().copied().step_by(step).collect::<Vec<_>>()
             );
+        }
+    }
+
+    impl<T: Clone> super::traits::double_ended::DoubleEndedIterator for VecIter<T> {
+        fn next_back(&mut self) -> Option<T> {
+            if self.pos < self.data.len() {
+                Option::Some(self.data.pop().unwrap())
+            } else {
+                Option::None
+            }
+        }
+    }
+
+    impl<T: Clone> super::traits::exact_size::ExactSizeIterator for VecIter<T> {
+        fn len(&self) -> usize {
+            self.data.len() - self.pos
+        }
+    }
+
+    mod double_ended {
+        use super::super::traits::double_ended::{DoubleEndedIterator, DoubleEndedIteratorMethods};
+        use super::super::traits::exact_size::{ExactSizeIterator, ExactSizeIteratorMethods};
+        use super::super::traits::iterator::{Iterator, IteratorMethods};
+        use super::{VecIter, drain};
+        use crate::option::Option;
+        use crate::result::Result;
+        use crate::testing::Inject;
+        use proptest::prelude::*;
+
+        proptest! {
+            #[test]
+            fn test_rev(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).rev()),
+                    v.iter().copied().rev().collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_rev_rev(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).rev().rev()),
+                    v.iter().copied().rev().rev().collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_rev_into_inner(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).rev().into_inner()),
+                    v.iter().copied().rev().into_inner().collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_rev_len(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                prop_assert_eq!(
+                    ExactSizeIterator::len(&VecIter::new(v.clone()).rev()),
+                    v.iter().rev().len()
+                );
+            }
+
+            // Alternating ends: the two cursors have to meet in the middle.
+            #[test]
+            fn test_next_and_next_back(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = VecIter::new(v.clone());
+                let mut std_iter = v.iter().copied();
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for i in 0..v.len() + 2 {
+                    if i % 2 == 0 {
+                        model_out.push(Iterator::next(&mut model));
+                        std_out.push(std_iter.next().inject());
+                    } else {
+                        model_out.push(model.next_back());
+                        std_out.push(std_iter.next_back().inject());
+                    }
+                }
+                prop_assert_eq!(model_out, std_out);
+            }
+
+            #[test]
+            fn test_nth_back(v in prop::collection::vec(any::<i32>(), 0..=20), n in 0usize..25) {
+                prop_assert_eq!(
+                    VecIter::new(v.clone()).nth_back(n),
+                    v.iter().copied().nth_back(n).inject()
+                );
+            }
+
+            #[test]
+            fn test_rfind(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+                prop_assert_eq!(
+                    VecIter::new(v.clone()).rfind(|x: &i32| *x > 10),
+                    v.iter().copied().rfind(|x| *x > 10).inject()
+                );
+            }
+
+            // `rfold` with a non-commutative operator, so the order matters.
+            #[test]
+            fn test_rfold(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let f = |mut acc: Vec<u8>, x: u8| { acc.push(x); acc };
+                prop_assert_eq!(
+                    VecIter::new(v.clone()).rfold(Vec::new(), f),
+                    v.iter().copied().rfold(Vec::new(), f)
+                );
+            }
+
+            #[test]
+            fn test_advance_by(v in prop::collection::vec(any::<u8>(), 0..=20), n in 0usize..25) {
+                let mut model = VecIter::new(v.clone());
+                let mut std_iter = v.iter().copied();
+                let model_res = model.advance_by(n);
+                let std_res = std_iter.advance_by(n);
+                prop_assert_eq!(
+                    match model_res {
+                        Result::Ok(()) => Ok(()),
+                        Result::Err(k) => Err(k),
+                    },
+                    std_res.map_err(|k| k.get())
+                );
+                // Both iterators must be left at the same place.
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<_>>());
+            }
+
+            #[test]
+            fn test_advance_back_by(
+                v in prop::collection::vec(any::<u8>(), 0..=20),
+                n in 0usize..25,
+            ) {
+                let mut model = VecIter::new(v.clone());
+                let mut std_iter = v.iter().copied();
+                let model_res = model.advance_back_by(n);
+                let std_res = std_iter.advance_back_by(n);
+                prop_assert_eq!(
+                    match model_res {
+                        Result::Ok(()) => Ok(()),
+                        Result::Err(k) => Err(k),
+                    },
+                    std_res.map_err(|k| k.get())
+                );
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<_>>());
+            }
+
+            #[test]
+            fn test_rposition(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+                prop_assert_eq!(
+                    VecIter::new(v.clone()).rposition(|x: i32| x > 10),
+                    v.iter().copied().rposition(|x| x > 10).inject()
+                );
+            }
+
+            #[test]
+            fn test_len_and_is_empty(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model = VecIter::new(v.clone());
+                prop_assert_eq!(ExactSizeIterator::len(&model), v.iter().len());
+                prop_assert_eq!(model.is_empty(), v.iter().is_empty());
+            }
+
+            // `Range` and `slice::Iter` are the model's own iterators; check the
+            // ends of both against std.
+            #[test]
+            fn test_range_next_back(a in any::<u8>(), b in any::<u8>()) {
+                let mut model = crate::ops::range::Range { start: a, end: b };
+                let mut std_iter = a..b;
+                prop_assert_eq!(model.next_back(), std_iter.next_back().inject());
+                prop_assert_eq!(model.next_back(), std_iter.next_back().inject());
+            }
+
+            #[test]
+            fn test_range_rev(a in any::<u8>(), b in any::<u8>()) {
+                prop_assert_eq!(
+                    drain(crate::ops::range::Range { start: a, end: b }.rev()),
+                    (a..b).rev().collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_range_len_unsigned(a in any::<u32>(), b in any::<u32>()) {
+                prop_assert_eq!(
+                    ExactSizeIterator::len(&crate::ops::range::Range { start: a, end: b }),
+                    (a..b).len()
+                );
+            }
+
+            #[test]
+            fn test_range_len_signed(a in any::<i32>(), b in any::<i32>()) {
+                prop_assert_eq!(
+                    ExactSizeIterator::len(&crate::ops::range::Range { start: a, end: b }),
+                    (a..b).len()
+                );
+            }
+
+            #[test]
+            fn test_slice_iter_rev(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model = crate::slice::iter::Iter(
+                    rust_primitives::sequence::seq_from_slice(v.as_slice()),
+                );
+                prop_assert_eq!(
+                    drain(model.rev()).into_iter().copied().collect::<Vec<_>>(),
+                    v.iter().rev().copied().collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_slice_iter_len(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model = crate::slice::iter::Iter(
+                    rust_primitives::sequence::seq_from_slice(v.as_slice()),
+                );
+                prop_assert_eq!(ExactSizeIterator::len(&model), v.iter().len());
+            }
+
+            // The adapters' and sources' double-ended halves.
+            #[test]
+            fn test_map_rev(
+                v in prop::collection::vec(any::<u8>(), 0..=20),
+                table in any::<[u8; 256]>(),
+            ) {
+                let f = |x: u8| table[x as usize];
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).map(f).rev()),
+                    v.iter().map(|&x| f(x)).rev().collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_map_len(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model = VecIter::new(v.clone()).map(|x: u8| x);
+                prop_assert_eq!(ExactSizeIterator::len(&model), v.iter().map(|x| x).len());
+            }
+
+            #[test]
+            fn test_filter_rev(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).filter(|x: &u8| *x > bound).rev()),
+                    v.iter().copied().filter(|x| *x > bound).rev().collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_chain_rev(
+                a in prop::collection::vec(any::<u8>(), 0..=10),
+                b in prop::collection::vec(any::<u8>(), 0..=10),
+            ) {
+                prop_assert_eq!(
+                    drain(VecIter::new(a.clone()).chain(VecIter::new(b.clone())).rev()),
+                    a.iter().copied().chain(b.iter().copied()).rev().collect::<Vec<_>>()
+                );
+            }
+
+            #[test]
+            fn test_enumerate_len(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model = VecIter::new(v.clone()).enumerate();
+                prop_assert_eq!(ExactSizeIterator::len(&model), v.iter().enumerate().len());
+            }
+
+            #[test]
+            fn test_once_rev(x in any::<u8>()) {
+                prop_assert_eq!(
+                    drain(super::super::sources::once::once(x).rev()),
+                    std::iter::once(x).rev().collect::<Vec<_>>()
+                );
+                prop_assert_eq!(
+                    ExactSizeIterator::len(&super::super::sources::once::once(x)),
+                    std::iter::once(x).len()
+                );
+            }
+
+            #[test]
+            fn test_repeat_n_rev(x in any::<u8>(), n in 0usize..=10) {
+                prop_assert_eq!(
+                    drain(super::super::sources::repeat_n::repeat_n(x, n).rev()),
+                    std::iter::repeat_n(x, n).rev().collect::<Vec<_>>()
+                );
+                prop_assert_eq!(
+                    ExactSizeIterator::len(&super::super::sources::repeat_n::repeat_n(x, n)),
+                    std::iter::repeat_n(x, n).len()
+                );
+            }
+
+            #[test]
+            fn test_repeat_next_back(x in any::<u8>()) {
+                let mut model = super::super::sources::repeat::repeat(x);
+                prop_assert_eq!(model.next_back(), std::iter::repeat(x).next_back().inject());
+            }
+        }
+
+        #[test]
+        fn test_empty_ends() {
+            let mut model = super::super::sources::empty::empty::<u8>();
+            assert_eq!(model.next_back(), Option::None);
+            assert_eq!(
+                ExactSizeIterator::len(&model),
+                std::iter::empty::<u8>().len()
+            );
+            assert!(model.is_empty());
         }
     }
 

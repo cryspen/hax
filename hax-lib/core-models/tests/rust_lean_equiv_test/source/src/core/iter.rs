@@ -25,6 +25,91 @@ pub fn test_range_count_offset() -> bool {
     (3..10usize).count() == 7
 }
 
+// ----- Rust-only: DoubleEndedIterator / ExactSizeIterator --------------------
+
+// Same story as the sources below: reaching `next_back` / `len` needs either an
+// `IteratorMethods` call or a hand-written Lean definition, and neither exists
+// for these types.
+#[cfg(test)]
+mod ends {
+    #[test]
+    fn test_range_next_back() {
+        assert_eq!((0..5usize).next_back(), Some(4));
+    }
+
+    #[test]
+    fn test_empty_range_next_back() {
+        assert_eq!((5..5usize).next_back(), None);
+    }
+
+    #[test]
+    fn test_range_rev_first() {
+        assert_eq!((0..5usize).rev().next(), Some(4));
+    }
+
+    #[test]
+    fn test_range_rev_collect() {
+        assert_eq!((0..4u8).rev().collect::<Vec<u8>>(), vec![3, 2, 1, 0]);
+    }
+
+    #[test]
+    fn test_range_len() {
+        assert_eq!((3..10usize).len(), 7);
+    }
+
+    #[test]
+    fn test_inverted_range_len_is_zero() {
+        assert_eq!((10..3usize).len(), 0);
+    }
+
+    #[test]
+    fn test_signed_range_len_at_edges() {
+        assert_eq!((i32::MIN..i32::MAX).len(), u32::MAX as usize);
+    }
+
+    #[test]
+    fn test_slice_iter_next_back() {
+        let a: [u8; 3] = [1, 2, 3];
+        assert_eq!(a.as_slice().iter().next_back(), Some(&3));
+    }
+
+    #[test]
+    fn test_slice_iter_rev_collect() {
+        let a: [u8; 3] = [1, 2, 3];
+        assert_eq!(
+            a.as_slice().iter().rev().copied().collect::<Vec<u8>>(),
+            vec![3, 2, 1]
+        );
+    }
+
+    #[test]
+    fn test_nth_back() {
+        assert_eq!((0..5usize).nth_back(1), Some(3));
+    }
+
+    #[test]
+    fn test_nth_back_out_of_range() {
+        assert_eq!((0..2usize).nth_back(5), None);
+    }
+
+    #[test]
+    fn test_rposition_last_match() {
+        assert_eq!((0..5usize).rposition(|x| x < 3), Some(2));
+    }
+
+    #[test]
+    fn test_rposition_no_match() {
+        assert_eq!((0..5usize).rposition(|x| x > 10), None);
+    }
+
+    #[test]
+    fn test_rfold_is_right_to_left() {
+        let mut order = Vec::new();
+        (0..3usize).rfold((), |(), x| order.push(x));
+        assert_eq!(order, vec![2, 1, 0]);
+    }
+}
+
 // ----- Rust-only: the iterator sources ---------------------------------------
 
 // `core::iter::{empty, once, repeat, …}` build an iterator, but *observing* one
