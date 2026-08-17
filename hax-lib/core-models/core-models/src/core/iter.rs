@@ -6,8 +6,12 @@
 pub mod traits {
     pub mod iterator {
         use super::super::adapters::{
-            chain::Chain, enumerate::Enumerate, filter::Filter, flat_map::FlatMap,
-            flatten::Flatten, map::Map, rev::Rev, skip::Skip, step_by::StepBy, take::Take,
+            array_chunks::ArrayChunks, by_ref_sized::ByRefSized, chain::Chain, cloned::Cloned,
+            copied::Copied, cycle::Cycle, enumerate::Enumerate, filter::Filter,
+            filter_map::FilterMap, flat_map::FlatMap, flatten::Flatten, fuse::Fuse,
+            inspect::Inspect, intersperse::Intersperse, intersperse::IntersperseWith, map::Map,
+            map_while::MapWhile, map_windows::MapWindows, peekable::Peekable, rev::Rev, scan::Scan,
+            skip::Skip, skip_while::SkipWhile, step_by::StepBy, take::Take, take_while::TakeWhile,
             zip::Zip,
         };
         use super::double_ended::DoubleEndedIterator;
@@ -88,6 +92,75 @@ pub mod traits {
             /// The residual count is a plain `usize` (always non-zero on `Err`)
             /// because the model has no `core::num::NonZero`.
             fn advance_by(&mut self, n: usize) -> crate::result::Result<(), usize>;
+            fn cloned<'a, T: Clone + 'a>(self) -> Cloned<Self>
+            where
+                Self: Sized + Iterator<Item = &'a T>;
+            fn copied<'a, T: Copy + 'a>(self) -> Copied<Self>
+            where
+                Self: Sized + Iterator<Item = &'a T>;
+            fn inspect<F: Fn(&Self::Item)>(self, f: F) -> Inspect<Self, F>
+            where
+                Self: Sized;
+            fn filter_map<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> FilterMap<Self, F>
+            where
+                Self: Sized;
+            fn map_while<B, P: Fn(Self::Item) -> Option<B>>(
+                self,
+                predicate: P,
+            ) -> MapWhile<Self, P>
+            where
+                Self: Sized;
+            fn skip_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> SkipWhile<Self, P>
+            where
+                Self: Sized;
+            fn take_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> TakeWhile<Self, P>
+            where
+                Self: Sized;
+            fn scan<St, B, F: Fn(&mut St, Self::Item) -> Option<B>>(
+                self,
+                initial_state: St,
+                f: F,
+            ) -> Scan<Self, St, F>
+            where
+                Self: Sized;
+            fn fuse(self) -> Fuse<Self>
+            where
+                Self: Sized;
+            fn cycle(self) -> Cycle<Self>
+            where
+                Self: Sized + Clone;
+            fn peekable(self) -> Peekable<Self>
+            where
+                Self: Sized;
+            fn intersperse(self, separator: Self::Item) -> Intersperse<Self>
+            where
+                Self: Sized,
+                Self::Item: Clone;
+            fn intersperse_with<G: Fn() -> Self::Item>(
+                self,
+                separator: G,
+            ) -> IntersperseWith<Self, G>
+            where
+                Self: Sized;
+            #[hax_lib::requires(N != 0)]
+            fn array_chunks<const N: usize>(self) -> ArrayChunks<Self, N>
+            where
+                Self: Sized;
+            #[hax_lib::requires(N != 0)]
+            fn map_windows<R, F: Fn(&[Self::Item; N]) -> R, const N: usize>(
+                self,
+                f: F,
+            ) -> MapWindows<Self, F, N>
+            where
+                Self: Sized;
+            fn by_ref(&mut self) -> &mut Self
+            where
+                Self: Sized;
+            /// The model's `Iterator` has no way to report a tighter bound, so
+            /// this is std's default answer, `(0, None)`. That is always a valid
+            /// size hint (the contract only asks for a correct lower bound and an
+            /// optional upper bound), just an uninformative one.
+            fn size_hint(&self) -> (usize, Option<usize>);
         }
 
         // Opaque helper functions for loop-based iterator methods.
@@ -301,6 +374,9 @@ pub mod traits {
 
         #[hax_lib::attributes]
         #[cfg_attr(charon, hax_lib::exclude)]
+        // `Item` reaches this impl through `IteratorMethods`' supertrait, which
+        // hax cannot qualify on its own, so it is spelled out as
+        // `<I as Iterator>::Item` throughout (cryspen/hax#2089).
         impl<I: Iterator> IteratorMethods for I {
             fn fold<B, F: Fn(B, I::Item) -> B>(self, init: B, f: F) -> B {
                 iter_fold(self, init, f)
@@ -342,11 +418,14 @@ pub mod traits {
                 Zip::new(self, it2)
             }
 
-            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P> {
+            fn filter<P: Fn(&<I as Iterator>::Item) -> bool>(
+                self,
+                predicate: P,
+            ) -> Filter<Self, P> {
                 Filter::new(self, predicate)
             }
 
-            fn chain<U: Iterator<Item = Self::Item>>(self, other: U) -> Chain<Self, U> {
+            fn chain<U: Iterator<Item = <I as Iterator>::Item>>(self, other: U) -> Chain<Self, U> {
                 Chain::new(self, other)
             }
 
@@ -354,19 +433,22 @@ pub mod traits {
                 Skip::new(self, n)
             }
 
-            fn any<F: Fn(Self::Item) -> bool>(self, f: F) -> bool {
+            fn any<F: Fn(<I as Iterator>::Item) -> bool>(self, f: F) -> bool {
                 iter_any(self, f)
             }
 
-            fn find<P: Fn(&Self::Item) -> bool>(mut self, predicate: P) -> Option<Self::Item> {
+            fn find<P: Fn(&<I as Iterator>::Item) -> bool>(
+                mut self,
+                predicate: P,
+            ) -> Option<<I as Iterator>::Item> {
                 iter_find(&mut self, predicate)
             }
 
-            fn find_map<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> Option<B> {
+            fn find_map<B, F: Fn(<I as Iterator>::Item) -> Option<B>>(self, f: F) -> Option<B> {
                 iter_find_map(self, f)
             }
 
-            fn position<P: Fn(Self::Item) -> bool>(self, predicate: P) -> Option<usize> {
+            fn position<P: Fn(<I as Iterator>::Item) -> bool>(self, predicate: P) -> Option<usize> {
                 iter_position(self, predicate)
             }
 
@@ -374,40 +456,44 @@ pub mod traits {
                 iter_count(self)
             }
 
-            fn nth(self, n: usize) -> Option<Self::Item> {
+            fn nth(self, n: usize) -> Option<<I as Iterator>::Item> {
                 iter_nth(self, n)
             }
 
-            fn last(self) -> Option<Self::Item> {
+            fn last(self) -> Option<<I as Iterator>::Item> {
                 iter_last(self)
             }
 
-            fn for_each<F: Fn(Self::Item)>(self, f: F) {
+            fn for_each<F: Fn(<I as Iterator>::Item)>(self, f: F) {
                 iter_for_each(self, f)
             }
 
-            fn reduce<F: Fn(Self::Item, Self::Item) -> Self::Item>(
+            fn reduce<
+                F: Fn(<I as Iterator>::Item, <I as Iterator>::Item) -> <I as Iterator>::Item,
+            >(
                 self,
                 f: F,
-            ) -> Option<Self::Item> {
+            ) -> Option<<I as Iterator>::Item> {
                 iter_reduce(self, f)
             }
 
-            fn min(self) -> Option<Self::Item>
+            fn min(self) -> Option<<I as Iterator>::Item>
             where
-                Self::Item: crate::cmp::Ord,
+                <I as Iterator>::Item: crate::cmp::Ord,
             {
                 iter_min(self)
             }
 
-            fn max(self) -> Option<Self::Item>
+            fn max(self) -> Option<<I as Iterator>::Item>
             where
-                Self::Item: crate::cmp::Ord,
+                <I as Iterator>::Item: crate::cmp::Ord,
             {
                 iter_max(self)
             }
 
-            fn collect<B: super::super::traits::collect::FromIterator<Self::Item>>(self) -> B {
+            fn collect<B: super::super::traits::collect::FromIterator<<I as Iterator>::Item>>(
+                self,
+            ) -> B {
                 super::super::traits::collect::FromIterator::from_iter(self)
             }
 
@@ -418,7 +504,10 @@ pub mod traits {
                 Rev::new(self)
             }
 
-            fn rposition<P: Fn(Self::Item) -> bool>(&mut self, predicate: P) -> Option<usize>
+            fn rposition<P: Fn(<I as Iterator>::Item) -> bool>(
+                &mut self,
+                predicate: P,
+            ) -> Option<usize>
             where
                 Self: ExactSizeIterator + DoubleEndedIterator,
             {
@@ -427,6 +516,110 @@ pub mod traits {
 
             fn advance_by(&mut self, n: usize) -> crate::result::Result<(), usize> {
                 iter_advance_by(self, n)
+            }
+
+            fn cloned<'a, T: Clone + 'a>(self) -> Cloned<Self>
+            where
+                Self: Iterator<Item = &'a T>,
+            {
+                Cloned::new(self)
+            }
+
+            fn copied<'a, T: Copy + 'a>(self) -> Copied<Self>
+            where
+                Self: Iterator<Item = &'a T>,
+            {
+                Copied::new(self)
+            }
+
+            fn inspect<F: Fn(&<I as Iterator>::Item)>(self, f: F) -> Inspect<Self, F> {
+                Inspect::new(self, f)
+            }
+
+            fn filter_map<B, F: Fn(<I as Iterator>::Item) -> Option<B>>(
+                self,
+                f: F,
+            ) -> FilterMap<Self, F> {
+                FilterMap::new(self, f)
+            }
+
+            fn map_while<B, P: Fn(<I as Iterator>::Item) -> Option<B>>(
+                self,
+                predicate: P,
+            ) -> MapWhile<Self, P> {
+                MapWhile::new(self, predicate)
+            }
+
+            fn skip_while<P: Fn(&<I as Iterator>::Item) -> bool>(
+                self,
+                predicate: P,
+            ) -> SkipWhile<Self, P> {
+                SkipWhile::new(self, predicate)
+            }
+
+            fn take_while<P: Fn(&<I as Iterator>::Item) -> bool>(
+                self,
+                predicate: P,
+            ) -> TakeWhile<Self, P> {
+                TakeWhile::new(self, predicate)
+            }
+
+            fn scan<St, B, F: Fn(&mut St, <I as Iterator>::Item) -> Option<B>>(
+                self,
+                initial_state: St,
+                f: F,
+            ) -> Scan<Self, St, F> {
+                Scan::new(self, initial_state, f)
+            }
+
+            fn fuse(self) -> Fuse<Self> {
+                Fuse::new(self)
+            }
+
+            fn cycle(self) -> Cycle<Self>
+            where
+                Self: Clone,
+            {
+                Cycle::new(self)
+            }
+
+            fn peekable(self) -> Peekable<Self> {
+                Peekable::new(self)
+            }
+
+            fn intersperse(self, separator: <I as Iterator>::Item) -> Intersperse<Self>
+            where
+                <I as Iterator>::Item: Clone,
+            {
+                Intersperse::new(self, separator)
+            }
+
+            fn intersperse_with<G: Fn() -> <I as Iterator>::Item>(
+                self,
+                separator: G,
+            ) -> IntersperseWith<Self, G> {
+                IntersperseWith::new(self, separator)
+            }
+
+            #[hax_lib::requires(N != 0)]
+            fn array_chunks<const N: usize>(self) -> ArrayChunks<Self, N> {
+                ArrayChunks::new(self)
+            }
+
+            #[hax_lib::requires(N != 0)]
+            fn map_windows<R, F: Fn(&[<I as Iterator>::Item; N]) -> R, const N: usize>(
+                self,
+                f: F,
+            ) -> MapWindows<Self, F, N> {
+                MapWindows::new(self, f)
+            }
+
+            fn by_ref(&mut self) -> &mut Self {
+                self
+            }
+
+            fn size_hint(&self) -> (usize, Option<usize>) {
+                (0, Option::None)
             }
         }
 
@@ -527,20 +720,26 @@ pub mod traits {
 
         #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
+        // `<I as Iterator>::Item` rather than `Self::Item`: `Item` reaches this
+        // impl through `DoubleEndedIterator`'s supertrait, which hax cannot
+        // qualify on its own (cryspen/hax#2089).
         impl<I: DoubleEndedIterator> DoubleEndedIteratorMethods for I {
             fn advance_back_by(&mut self, n: usize) -> Result<(), usize> {
                 iter_advance_back_by(self, n)
             }
 
-            fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
+            fn nth_back(&mut self, n: usize) -> Option<<I as Iterator>::Item> {
                 iter_nth_back(self, n)
             }
 
-            fn rfind<P: Fn(&Self::Item) -> bool>(&mut self, predicate: P) -> Option<Self::Item> {
+            fn rfind<P: Fn(&<I as Iterator>::Item) -> bool>(
+                &mut self,
+                predicate: P,
+            ) -> Option<<I as Iterator>::Item> {
                 iter_rfind(self, predicate)
             }
 
-            fn rfold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B {
+            fn rfold<B, F: Fn(B, <I as Iterator>::Item) -> B>(self, init: B, f: F) -> B {
                 iter_rfold(self, init, f)
             }
         }
@@ -621,6 +820,10 @@ pub mod adapters {
         impl<I> Enumerate<I> {
             pub fn new(iter: I) -> Enumerate<I> {
                 Enumerate { iter, count: 0 }
+            }
+            /// See [`std::iter::Enumerate::next_index`]
+            pub fn next_index(&self) -> usize {
+                self.count
             }
         }
         #[hax_lib::attributes]
@@ -1068,6 +1271,775 @@ pub mod adapters {
         impl<I: DoubleEndedIterator + ExactSizeIterator> ExactSizeIterator for Rev<I> {
             fn len(&self) -> usize {
                 ExactSizeIterator::len(&self.iter)
+            }
+        }
+    }
+    pub mod cloned {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Cloned`]
+        // The `Clone` bound is Rust's own (`&self -> Self`) rather than the
+        // model's consuming `crate::clone::Clone`, which cannot produce a `T`
+        // from a `&T`.
+        pub struct Cloned<I> {
+            it: I,
+        }
+        #[hax_lib::attributes]
+        impl<I> Cloned<I> {
+            pub fn new(it: I) -> Self {
+                Self { it }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<'a, T: Clone + 'a, I: Iterator<Item = &'a T>> Iterator for Cloned<I> {
+            type Item = T;
+            fn next(&mut self) -> Option<T> {
+                match self.it.next() {
+                    Option::Some(v) => Option::Some(v.clone()),
+                    Option::None => Option::None,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<'a, T: Clone + 'a, I: DoubleEndedIterator<Item = &'a T>> DoubleEndedIterator for Cloned<I> {
+            fn next_back(&mut self) -> Option<T> {
+                match self.it.next_back() {
+                    Option::Some(v) => Option::Some(v.clone()),
+                    Option::None => Option::None,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<'a, T: Clone + 'a, I: ExactSizeIterator<Item = &'a T>> ExactSizeIterator for Cloned<I> {
+            fn len(&self) -> usize {
+                ExactSizeIterator::len(&self.it)
+            }
+        }
+    }
+    pub mod copied {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Copied`]
+        // `Copy` is Rust's own, as std's is: the model's `marker::Copy` carries
+        // no dereference operation.
+        pub struct Copied<I> {
+            it: I,
+        }
+        #[hax_lib::attributes]
+        impl<I> Copied<I> {
+            pub fn new(it: I) -> Self {
+                Self { it }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<'a, T: Copy + 'a, I: Iterator<Item = &'a T>> Iterator for Copied<I> {
+            type Item = T;
+            fn next(&mut self) -> Option<T> {
+                match self.it.next() {
+                    Option::Some(v) => Option::Some(*v),
+                    Option::None => Option::None,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<'a, T: Copy + 'a, I: DoubleEndedIterator<Item = &'a T>> DoubleEndedIterator for Copied<I> {
+            fn next_back(&mut self) -> Option<T> {
+                match self.it.next_back() {
+                    Option::Some(v) => Option::Some(*v),
+                    Option::None => Option::None,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<'a, T: Copy + 'a, I: ExactSizeIterator<Item = &'a T>> ExactSizeIterator for Copied<I> {
+            fn len(&self) -> usize {
+                ExactSizeIterator::len(&self.it)
+            }
+        }
+    }
+    pub mod inspect {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Inspect`]
+        pub struct Inspect<I, F> {
+            it: I,
+            f: F,
+        }
+        #[hax_lib::attributes]
+        impl<I, F> Inspect<I, F> {
+            pub fn new(it: I, f: F) -> Self {
+                Self { it, f }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator, F: Fn(&I::Item)> Iterator for Inspect<I, F> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                match self.it.next() {
+                    Option::Some(v) => {
+                        (self.f)(&v);
+                        Option::Some(v)
+                    }
+                    Option::None => Option::None,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: DoubleEndedIterator, F: Fn(&I::Item)> DoubleEndedIterator for Inspect<I, F> {
+            fn next_back(&mut self) -> Option<I::Item> {
+                match self.it.next_back() {
+                    Option::Some(v) => {
+                        (self.f)(&v);
+                        Option::Some(v)
+                    }
+                    Option::None => Option::None,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: ExactSizeIterator, F: Fn(&I::Item)> ExactSizeIterator for Inspect<I, F> {
+            fn len(&self) -> usize {
+                ExactSizeIterator::len(&self.it)
+            }
+        }
+    }
+    pub mod filter_map {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::FilterMap`]
+        pub struct FilterMap<I, F> {
+            it: I,
+            f: F,
+        }
+        #[hax_lib::attributes]
+        impl<I, F> FilterMap<I, F> {
+            pub fn new(it: I, f: F) -> Self {
+                Self { it, f }
+            }
+        }
+        #[hax_lib::attributes]
+        // opaque: loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        impl<I: Iterator, B, F: Fn(I::Item) -> Option<B>> Iterator for FilterMap<I, F> {
+            type Item = B;
+            fn next(&mut self) -> Option<B> {
+                loop {
+                    match self.it.next() {
+                        Option::Some(v) => {
+                            if let Option::Some(b) = (self.f)(v) {
+                                return Option::Some(b);
+                            }
+                        }
+                        Option::None => return Option::None,
+                    }
+                }
+            }
+        }
+    }
+    pub mod map_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::MapWhile`]
+        pub struct MapWhile<I, P> {
+            it: I,
+            predicate: P,
+        }
+        #[hax_lib::attributes]
+        impl<I, P> MapWhile<I, P> {
+            pub fn new(it: I, predicate: P) -> Self {
+                Self { it, predicate }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator, B, P: Fn(I::Item) -> Option<B>> Iterator for MapWhile<I, P> {
+            type Item = B;
+            fn next(&mut self) -> Option<B> {
+                match self.it.next() {
+                    Option::Some(v) => (self.predicate)(v),
+                    Option::None => Option::None,
+                }
+            }
+        }
+    }
+    pub mod skip_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::SkipWhile`]
+        pub struct SkipWhile<I, P> {
+            it: I,
+            // `true` once the predicate has failed, after which nothing is skipped.
+            done_skipping: bool,
+            predicate: P,
+        }
+        #[hax_lib::attributes]
+        impl<I, P> SkipWhile<I, P> {
+            pub fn new(it: I, predicate: P) -> Self {
+                Self {
+                    it,
+                    done_skipping: false,
+                    predicate,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        // opaque: loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for SkipWhile<I, P> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                loop {
+                    match self.it.next() {
+                        Option::Some(v) => {
+                            if self.done_skipping {
+                                return Option::Some(v);
+                            }
+                            if (self.predicate)(&v) == false {
+                                self.done_skipping = true;
+                                return Option::Some(v);
+                            }
+                        }
+                        Option::None => return Option::None,
+                    }
+                }
+            }
+        }
+    }
+    pub mod take_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::TakeWhile`]
+        pub struct TakeWhile<I, P> {
+            it: I,
+            // `true` once the predicate has failed; the adapter then stays empty.
+            done: bool,
+            predicate: P,
+        }
+        #[hax_lib::attributes]
+        impl<I, P> TakeWhile<I, P> {
+            pub fn new(it: I, predicate: P) -> Self {
+                Self {
+                    it,
+                    done: false,
+                    predicate,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for TakeWhile<I, P> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if self.done {
+                    Option::None
+                } else {
+                    match self.it.next() {
+                        Option::Some(v) => {
+                            if (self.predicate)(&v) {
+                                Option::Some(v)
+                            } else {
+                                self.done = true;
+                                Option::None
+                            }
+                        }
+                        Option::None => {
+                            self.done = true;
+                            Option::None
+                        }
+                    }
+                }
+            }
+        }
+    }
+    pub mod scan {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Scan`]
+        pub struct Scan<I, St, F> {
+            iter: I,
+            state: St,
+            f: F,
+        }
+        #[hax_lib::attributes]
+        impl<I, St, F> Scan<I, St, F> {
+            pub fn new(iter: I, state: St, f: F) -> Self {
+                Self { iter, state, f }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator, St, B, F: Fn(&mut St, I::Item) -> Option<B>> Iterator for Scan<I, St, F> {
+            type Item = B;
+            fn next(&mut self) -> Option<B> {
+                match self.iter.next() {
+                    Option::Some(v) => (self.f)(&mut self.state, v),
+                    Option::None => Option::None,
+                }
+            }
+        }
+    }
+    pub mod fuse {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::iterator::Iterator;
+        use super::super::traits::marker::FusedIterator;
+        use crate::option::Option;
+        /// See [`std::iter::Fuse`]
+        // std stores `Option<I>` and drops the iterator once it is done; a `bool`
+        // is enough to give the same answers and avoids moving out of `&mut self`.
+        pub struct Fuse<I> {
+            iter: I,
+            done: bool,
+        }
+        #[hax_lib::attributes]
+        impl<I> Fuse<I> {
+            pub fn new(iter: I) -> Self {
+                Self { iter, done: false }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator> Iterator for Fuse<I> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if self.done {
+                    Option::None
+                } else {
+                    match self.iter.next() {
+                        Option::Some(v) => Option::Some(v),
+                        Option::None => {
+                            self.done = true;
+                            Option::None
+                        }
+                    }
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: DoubleEndedIterator> DoubleEndedIterator for Fuse<I> {
+            fn next_back(&mut self) -> Option<I::Item> {
+                if self.done {
+                    Option::None
+                } else {
+                    match self.iter.next_back() {
+                        Option::Some(v) => Option::Some(v),
+                        Option::None => {
+                            self.done = true;
+                            Option::None
+                        }
+                    }
+                }
+            }
+        }
+        impl<I: Iterator> FusedIterator for Fuse<I> {}
+    }
+    pub mod cycle {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Cycle`]
+        // `Clone` is Rust's own: restarting means copying the original iterator
+        // while keeping it, which the model's consuming `Clone` cannot do.
+        pub struct Cycle<I> {
+            orig: I,
+            iter: I,
+        }
+        #[hax_lib::attributes]
+        impl<I: Clone> Cycle<I> {
+            pub fn new(iter: I) -> Self {
+                Self {
+                    orig: iter.clone(),
+                    iter,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator + Clone> Iterator for Cycle<I> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                match self.iter.next() {
+                    Option::Some(v) => Option::Some(v),
+                    Option::None => {
+                        // An empty original stays empty, as in std.
+                        self.iter = self.orig.clone();
+                        self.iter.next()
+                    }
+                }
+            }
+        }
+    }
+    pub mod peekable {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        use crate::result::Result;
+        use rust_primitives::sequence::{Seq, seq_empty, seq_index, seq_len, seq_push, seq_remove};
+        /// See [`std::iter::Peekable`]
+        // The look-ahead lives in a `Seq` of length at most one rather than in an
+        // `Option<Option<I::Item>>`, so that `next` can move it out (the model has
+        // neither `mem::replace` nor `Option::take` available to it).
+        #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
+        pub struct Peekable<I: Iterator> {
+            iter: I,
+            peeked: Seq<Option<I::Item>>,
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator> Peekable<I> {
+            pub fn new(iter: I) -> Self {
+                Self {
+                    iter,
+                    peeked: seq_empty(),
+                }
+            }
+
+            /// See [`std::iter::Peekable::peek`]
+            pub fn peek(&mut self) -> Option<&I::Item> {
+                if seq_len(&self.peeked) == 0 {
+                    let v = self.iter.next();
+                    seq_push(&mut self.peeked, v);
+                }
+                match seq_index(&self.peeked, 0) {
+                    Option::Some(v) => Option::Some(v),
+                    Option::None => Option::None,
+                }
+            }
+
+            /// See [`std::iter::Peekable::next_if`]
+            pub fn next_if<F: FnOnce(&I::Item) -> bool>(&mut self, func: F) -> Option<I::Item> {
+                match Iterator::next(self) {
+                    Option::Some(v) => {
+                        if func(&v) {
+                            Option::Some(v)
+                        } else {
+                            seq_push(&mut self.peeked, Option::Some(v));
+                            Option::None
+                        }
+                    }
+                    Option::None => Option::None,
+                }
+            }
+
+            /// See [`std::iter::Peekable::next_if_eq`]
+            pub fn next_if_eq<T>(&mut self, expected: &T) -> Option<I::Item>
+            where
+                I::Item: crate::cmp::PartialEq<T>,
+            {
+                match Iterator::next(self) {
+                    Option::Some(v) => {
+                        if crate::cmp::PartialEq::eq(&v, expected) {
+                            Option::Some(v)
+                        } else {
+                            seq_push(&mut self.peeked, Option::Some(v));
+                            Option::None
+                        }
+                    }
+                    Option::None => Option::None,
+                }
+            }
+
+            /// See [`std::iter::Peekable::next_if_map`]
+            pub fn next_if_map<R, F: FnOnce(I::Item) -> Result<R, I::Item>>(
+                &mut self,
+                f: F,
+            ) -> Option<R> {
+                match Iterator::next(self) {
+                    Option::Some(v) => match f(v) {
+                        Result::Ok(r) => Option::Some(r),
+                        Result::Err(v) => {
+                            seq_push(&mut self.peeked, Option::Some(v));
+                            Option::None
+                        }
+                    },
+                    Option::None => Option::None,
+                }
+            }
+
+            /// See [`std::iter::Peekable::next_if_map_mut`]
+            // std mutates the peeked element in place through `peek_mut`; the
+            // model takes the element out, hands `f` a `&mut` to it, and puts it
+            // back when `f` declines it. Same observable behaviour.
+            pub fn next_if_map_mut<R, F: FnOnce(&mut I::Item) -> Option<R>>(
+                &mut self,
+                f: F,
+            ) -> Option<R> {
+                match Iterator::next(self) {
+                    Option::Some(mut v) => match f(&mut v) {
+                        Option::Some(r) => Option::Some(r),
+                        Option::None => {
+                            seq_push(&mut self.peeked, Option::Some(v));
+                            Option::None
+                        }
+                    },
+                    Option::None => Option::None,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator> Iterator for Peekable<I> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if seq_len(&self.peeked) == 0 {
+                    self.iter.next()
+                } else {
+                    seq_remove(&mut self.peeked, 0)
+                }
+            }
+        }
+    }
+    pub mod intersperse {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        use rust_primitives::sequence::{Seq, seq_empty, seq_len, seq_push, seq_remove};
+        /// See [`std::iter::Intersperse`]
+        // std layers this on `Peekable`; the model keeps its own one-element
+        // lookahead in a `Seq` instead, because aeneas hits an internal error on
+        // the reference-returning `Peekable::peek` behind a struct field.
+        // `Clone` is Rust's own, as for `Cloned`: the separator has to be copied
+        // once per gap while staying in the adapter.
+        #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
+        pub struct Intersperse<I: Iterator> {
+            separator: I::Item,
+            iter: I,
+            peeked: Seq<I::Item>,
+            exhausted: bool,
+            needs_sep: bool,
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator> Intersperse<I> {
+            pub fn new(iter: I, separator: I::Item) -> Self {
+                Self {
+                    separator,
+                    iter,
+                    peeked: seq_empty(),
+                    exhausted: false,
+                    needs_sep: false,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator> Iterator for Intersperse<I>
+        where
+            I::Item: Clone,
+        {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if seq_len(&self.peeked) == 0 && self.exhausted == false {
+                    match self.iter.next() {
+                        Option::Some(v) => seq_push(&mut self.peeked, v),
+                        Option::None => self.exhausted = true,
+                    }
+                }
+                if self.needs_sep && seq_len(&self.peeked) > 0 {
+                    self.needs_sep = false;
+                    Option::Some(self.separator.clone())
+                } else {
+                    self.needs_sep = true;
+                    if seq_len(&self.peeked) == 0 {
+                        Option::None
+                    } else {
+                        Option::Some(seq_remove(&mut self.peeked, 0))
+                    }
+                }
+            }
+        }
+        /// See [`std::iter::IntersperseWith`]
+        #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
+        pub struct IntersperseWith<I: Iterator, G> {
+            separator: G,
+            iter: I,
+            peeked: Seq<I::Item>,
+            exhausted: bool,
+            needs_sep: bool,
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator, G> IntersperseWith<I, G> {
+            pub fn new(iter: I, separator: G) -> Self {
+                Self {
+                    separator,
+                    iter,
+                    peeked: seq_empty(),
+                    exhausted: false,
+                    needs_sep: false,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator, G: Fn() -> I::Item> Iterator for IntersperseWith<I, G> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if seq_len(&self.peeked) == 0 && self.exhausted == false {
+                    match self.iter.next() {
+                        Option::Some(v) => seq_push(&mut self.peeked, v),
+                        Option::None => self.exhausted = true,
+                    }
+                }
+                if self.needs_sep && seq_len(&self.peeked) > 0 {
+                    self.needs_sep = false;
+                    Option::Some((self.separator)())
+                } else {
+                    self.needs_sep = true;
+                    if seq_len(&self.peeked) == 0 {
+                        Option::None
+                    } else {
+                        Option::Some(seq_remove(&mut self.peeked, 0))
+                    }
+                }
+            }
+        }
+    }
+    pub mod array_chunks {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        use rust_primitives::sequence::{Seq, seq_empty, seq_index, seq_len, seq_push};
+        use rust_primitives::slice::array_from_fn;
+        /// See [`std::iter::ArrayChunks`]
+        // std keeps the leftover in `Option<array::IntoIter<I::Item, N>>`; a `Seq`
+        // avoids having to move out of a `&mut self` field.
+        #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
+        pub struct ArrayChunks<I: Iterator, const N: usize> {
+            iter: I,
+            remainder: Seq<I::Item>,
+            // Set once the source has run dry, so that further `next` calls cannot
+            // overwrite `remainder` with a fresh empty buffer. std gets this for
+            // free by holding the leftover in an `Option`.
+            done: bool,
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator, const N: usize> ArrayChunks<I, N> {
+            // std panics in `Iterator::array_chunks`, this constructor's only caller.
+            #[hax_lib::requires(N != 0)]
+            pub fn new(iter: I) -> Self {
+                if N == 0 {
+                    crate::panicking::internal::panic()
+                }
+                Self {
+                    iter,
+                    remainder: seq_empty(),
+                    done: false,
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        // opaque: while-loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        impl<I: Iterator, const N: usize> ArrayChunks<I, N>
+        where
+            I::Item: Clone,
+        {
+            /// See [`std::iter::ArrayChunks::into_remainder`]
+            // Returns the remainder iterator directly, as current core does; the
+            // toolchain this crate is pinned to still wraps it in an `Option`.
+            pub fn into_remainder(mut self) -> crate::array::iter::IntoIter<I::Item, N> {
+                while let Option::Some(_) = Iterator::next(&mut self) {}
+                crate::array::iter::IntoIter(self.remainder)
+            }
+        }
+        #[hax_lib::attributes]
+        // opaque: while-loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        impl<I: Iterator, const N: usize> Iterator for ArrayChunks<I, N>
+        where
+            I::Item: Clone,
+        {
+            type Item = [I::Item; N];
+            // std moves the N elements into an array through `MaybeUninit`; the
+            // model has no way to move elements out of its `Seq`, hence the extra
+            // `I::Item: Clone` bound and the clone below.
+            fn next(&mut self) -> Option<[I::Item; N]> {
+                if self.done {
+                    return Option::None;
+                }
+                let mut buf = seq_empty();
+                while seq_len(&buf) < N {
+                    match self.iter.next() {
+                        Option::Some(v) => seq_push(&mut buf, v),
+                        Option::None => {
+                            self.done = true;
+                            self.remainder = buf;
+                            return Option::None;
+                        }
+                    }
+                }
+                Option::Some(array_from_fn(|i| seq_index(&buf, i).clone()))
+            }
+        }
+    }
+    pub mod map_windows {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        use rust_primitives::sequence::{Seq, seq_empty, seq_index, seq_len, seq_push, seq_remove};
+        use rust_primitives::slice::array_from_fn;
+        /// See [`std::iter::MapWindows`]
+        // std keeps the sliding window in a `MaybeUninit` ring buffer; the model
+        // uses a `Seq` and clones out of it, hence the extra `I::Item: Clone`
+        // bound on the `Iterator` impl.
+        #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
+        pub struct MapWindows<I: Iterator, F, const N: usize> {
+            iter: I,
+            f: F,
+            window: Seq<I::Item>,
+        }
+        #[hax_lib::attributes]
+        impl<I: Iterator, F, const N: usize> MapWindows<I, F, N> {
+            // std panics in `Iterator::map_windows`, this constructor's only caller.
+            #[hax_lib::requires(N != 0)]
+            pub fn new(iter: I, f: F) -> Self {
+                if N == 0 {
+                    crate::panicking::internal::panic()
+                }
+                Self {
+                    iter,
+                    f,
+                    window: seq_empty(),
+                }
+            }
+        }
+        #[hax_lib::attributes]
+        // opaque: while-loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        impl<I: Iterator, R, F: Fn(&[I::Item; N]) -> R, const N: usize> Iterator for MapWindows<I, F, N>
+        where
+            I::Item: Clone,
+        {
+            type Item = R;
+            fn next(&mut self) -> Option<R> {
+                if seq_len(&self.window) == N {
+                    seq_remove(&mut self.window, 0);
+                }
+                while seq_len(&self.window) < N {
+                    match self.iter.next() {
+                        Option::Some(v) => seq_push(&mut self.window, v),
+                        Option::None => return Option::None,
+                    }
+                }
+                let window = array_from_fn(|i| seq_index(&self.window, i).clone());
+                Option::Some((self.f)(&window))
+            }
+        }
+    }
+    pub mod by_ref_sized {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::ByRefSized`]
+        pub struct ByRefSized<'a, I>(pub &'a mut I);
+        #[hax_lib::attributes]
+        impl<'a, I: Iterator> Iterator for ByRefSized<'a, I> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                self.0.next()
+            }
+        }
+        #[hax_lib::attributes]
+        impl<'a, I: DoubleEndedIterator> DoubleEndedIterator for ByRefSized<'a, I> {
+            fn next_back(&mut self) -> Option<I::Item> {
+                self.0.next_back()
+            }
+        }
+        #[hax_lib::attributes]
+        impl<'a, I: ExactSizeIterator> ExactSizeIterator for ByRefSized<'a, I> {
+            fn len(&self) -> usize {
+                ExactSizeIterator::len(self.0)
             }
         }
     }
@@ -1715,6 +2687,7 @@ mod tests {
 
     /// A simple iterator over a Vec, used to test IteratorMethods.
     /// `Clone` so that a `VecIter<VecIter<_>>` can be built for `flatten`.
+    // `Clone` so that `cycle` (which needs to restart the iterator) is testable.
     #[derive(Clone)]
     struct VecIter<T> {
         data: Vec<T>,
@@ -2284,6 +3257,359 @@ mod tests {
                 std::iter::empty::<u8>().len()
             );
             assert!(model.is_empty());
+        }
+    }
+
+    mod new_adapters {
+        use super::super::adapters::by_ref_sized::ByRefSized;
+        use super::super::traits::iterator::{Iterator, IteratorMethods};
+        use super::{VecIter, drain};
+        use crate::option::Option;
+        use crate::result::Result;
+        use crate::testing::Inject;
+        use proptest::prelude::*;
+        use std::cell::Cell;
+
+        /// An iterator over `&u8`, for `cloned` / `copied`.
+        fn refs(v: &[u8]) -> VecIter<&u8> {
+            VecIter::new(v.iter().collect())
+        }
+
+        proptest! {
+            #[test]
+            fn test_cloned(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(refs(&v).cloned()),
+                    v.iter().cloned().collect::<Vec<u8>>()
+                );
+            }
+
+            #[test]
+            fn test_copied(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(refs(&v).copied()),
+                    v.iter().copied().collect::<Vec<u8>>()
+                );
+            }
+
+            // `inspect` must yield every element unchanged *and* run the closure
+            // once per element.
+            #[test]
+            fn test_inspect(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model_seen = Cell::new(0usize);
+                let model = drain(VecIter::new(v.clone()).inspect(|_: &u8| {
+                    model_seen.set(model_seen.get() + 1)
+                }));
+                let std_seen = Cell::new(0usize);
+                let expected: Vec<u8> = v
+                    .iter()
+                    .copied()
+                    .inspect(|_| std_seen.set(std_seen.get() + 1))
+                    .collect();
+                prop_assert_eq!(model, expected);
+                prop_assert_eq!(model_seen.get(), std_seen.get());
+            }
+
+            #[test]
+            fn test_filter_map(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).filter_map(|x: i32| if x > 0 {
+                        Option::Some(x as u32)
+                    } else {
+                        Option::None
+                    })),
+                    v.iter()
+                        .filter_map(|&x| if x > 0 { Some(x as u32) } else { None })
+                        .collect::<Vec<u32>>()
+                );
+            }
+
+            #[test]
+            fn test_map_while(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).map_while(|x: i32| if x > 0 {
+                        Option::Some(x as u32)
+                    } else {
+                        Option::None
+                    })),
+                    v.iter()
+                        .map_while(|&x| if x > 0 { Some(x as u32) } else { None })
+                        .collect::<Vec<u32>>()
+                );
+            }
+
+            #[test]
+            fn test_skip_while(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).skip_while(|x: &u8| *x < bound)),
+                    v.iter().copied().skip_while(|x| *x < bound).collect::<Vec<u8>>()
+                );
+            }
+
+            #[test]
+            fn test_take_while(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).take_while(|x: &u8| *x < bound)),
+                    v.iter().copied().take_while(|x| *x < bound).collect::<Vec<u8>>()
+                );
+            }
+
+            // A running sum that stops once it would overflow: exercises both the
+            // state threading and the early `None`.
+            #[test]
+            fn test_scan(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model = drain(VecIter::new(v.clone()).scan(0u8, |acc: &mut u8, x: u8| {
+                    match acc.checked_add(x) {
+                        Some(n) => {
+                            *acc = n;
+                            Option::Some(n)
+                        }
+                        None => Option::None,
+                    }
+                }));
+                let expected: Vec<u8> = v
+                    .iter()
+                    .scan(0u8, |acc, &x| {
+                        let n = acc.checked_add(x)?;
+                        *acc = n;
+                        Some(n)
+                    })
+                    .collect();
+                prop_assert_eq!(model, expected);
+            }
+
+            #[test]
+            fn test_fuse(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).fuse()),
+                    v.iter().copied().fuse().collect::<Vec<u8>>()
+                );
+            }
+
+            // `Fuse` must keep answering `None` after the first `None`.
+            #[test]
+            fn test_fuse_stays_none(v in prop::collection::vec(any::<u8>(), 0..=5)) {
+                let mut model = VecIter::new(v.clone()).fuse();
+                let mut std_iter = v.iter().copied().fuse();
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for _ in 0..v.len() + 3 {
+                    model_out.push(Iterator::next(&mut model));
+                    std_out.push(std_iter.next().inject());
+                }
+                prop_assert_eq!(model_out, std_out);
+            }
+
+            #[test]
+            fn test_cycle(v in prop::collection::vec(any::<u8>(), 0..=5), n in 0usize..=20) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).cycle().take(n)),
+                    v.iter().copied().cycle().take(n).collect::<Vec<u8>>()
+                );
+            }
+
+            // An empty `cycle` must stay empty rather than loop forever.
+            #[test]
+            fn test_cycle_empty(n in 0usize..=5) {
+                let model: Vec<u8> = drain(VecIter::new(Vec::<u8>::new()).cycle().take(n));
+                prop_assert_eq!(model, Vec::<u8>::new());
+            }
+
+            #[test]
+            fn test_peekable(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = VecIter::new(v.clone()).peekable();
+                let mut std_iter = v.iter().copied().peekable();
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for _ in 0..v.len() + 2 {
+                    // Peek twice: the second peek must not consume anything.
+                    let peeked = |p: Option<&u8>| match p {
+                        Option::Some(v) => Option::Some(*v),
+                        Option::None => Option::None,
+                    };
+                    model_out.push(peeked(model.peek()));
+                    model_out.push(peeked(model.peek()));
+                    model_out.push(Iterator::next(&mut model));
+                    std_out.push(std_iter.peek().copied().inject());
+                    std_out.push(std_iter.peek().copied().inject());
+                    std_out.push(std_iter.next().inject());
+                }
+                prop_assert_eq!(model_out, std_out);
+            }
+
+            #[test]
+            fn test_peekable_next_if(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                let mut model = VecIter::new(v.clone()).peekable();
+                let mut std_iter = v.iter().copied().peekable();
+                let model_taken = model.next_if(|x: &u8| *x < bound);
+                let std_taken = std_iter.next_if(|x| *x < bound);
+                prop_assert_eq!(model_taken, std_taken.inject());
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            #[test]
+            fn test_peekable_next_if_eq(v in prop::collection::vec(any::<u8>(), 0..=20), x in any::<u8>()) {
+                let mut model = VecIter::new(v.clone()).peekable();
+                let mut std_iter = v.iter().copied().peekable();
+                prop_assert_eq!(model.next_if_eq(&x), std_iter.next_if_eq(&x).inject());
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            #[test]
+            fn test_peekable_next_if_map(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = VecIter::new(v.clone()).peekable();
+                let mut std_iter = v.iter().copied().peekable();
+                let model_out = model.next_if_map(|x: u8| match x.checked_mul(2) {
+                    Some(n) => Result::Ok(n),
+                    None => Result::Err(x),
+                });
+                let std_out = std_iter.next_if_map(|x| x.checked_mul(2).ok_or(x));
+                prop_assert_eq!(model_out, std_out.inject());
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            // `Peekable::next_if_map_mut` landed in std after the toolchain this
+            // crate is pinned to, so its documented behaviour is pinned directly:
+            // `f` gets a `&mut` to the next element, `Some` consumes it, and
+            // `None` leaves the *mutated* element in the iterator.
+            #[test]
+            fn test_peekable_next_if_map_mut(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = VecIter::new(v.clone()).peekable();
+                let model_out = model.next_if_map_mut(|x: &mut u8| {
+                    *x = x.wrapping_add(1);
+                    if *x % 2 == 0 { Option::Some(*x) } else { Option::None }
+                });
+                let mut expected_rest = v.clone();
+                let expected_out = if v.is_empty() {
+                    Option::None
+                } else {
+                    let bumped = v[0].wrapping_add(1);
+                    if bumped % 2 == 0 {
+                        expected_rest.remove(0);
+                        Option::Some(bumped)
+                    } else {
+                        expected_rest[0] = bumped;
+                        Option::None
+                    }
+                };
+                prop_assert_eq!(model_out, expected_out);
+                prop_assert_eq!(drain(model), expected_rest);
+            }
+
+            #[test]
+            fn test_intersperse(v in prop::collection::vec(any::<u8>(), 0..=20), sep in any::<u8>()) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).intersperse(sep)),
+                    v.iter().copied().intersperse(sep).collect::<Vec<u8>>()
+                );
+            }
+
+            #[test]
+            fn test_intersperse_with(v in prop::collection::vec(any::<u8>(), 0..=20), sep in any::<u8>()) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).intersperse_with(|| sep)),
+                    v.iter().copied().intersperse_with(|| sep).collect::<Vec<u8>>()
+                );
+            }
+
+            #[test]
+            fn test_array_chunks(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).array_chunks::<3>()),
+                    v.iter().copied().array_chunks::<3>().collect::<Vec<[u8; 3]>>()
+                );
+            }
+
+            #[test]
+            fn test_array_chunks_into_remainder(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model = VecIter::new(v.clone()).array_chunks::<3>().into_remainder();
+                // The pinned toolchain's `into_remainder` still returns an
+                // `Option`; current core (and the model) returns the iterator.
+                let expected: Vec<u8> = v
+                    .iter()
+                    .copied()
+                    .array_chunks::<3>()
+                    .into_remainder()
+                    .map(|it| it.collect::<Vec<u8>>())
+                    .unwrap_or_default();
+                prop_assert_eq!(drain(model), expected);
+            }
+
+            // The leftover must survive `next` calls made after exhaustion.
+            #[test]
+            fn test_array_chunks_remainder_after_extra_next(
+                v in prop::collection::vec(any::<u8>(), 0..=20),
+            ) {
+                let mut model = VecIter::new(v.clone()).array_chunks::<3>();
+                while let Option::Some(_) = Iterator::next(&mut model) {}
+                Iterator::next(&mut model);
+                Iterator::next(&mut model);
+                prop_assert_eq!(
+                    drain(model.into_remainder()),
+                    v[v.len() - v.len() % 3..].to_vec()
+                );
+            }
+
+            #[test]
+            fn test_map_windows(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let f = |w: &[u8; 3]| w[0].wrapping_add(w[1]).wrapping_add(w[2]);
+                prop_assert_eq!(
+                    drain(VecIter::new(v.clone()).map_windows(f)),
+                    v.iter().copied().map_windows(f).collect::<Vec<u8>>()
+                );
+            }
+
+            // `by_ref` must leave the rest of the iterator behind.
+            #[test]
+            fn test_by_ref(v in prop::collection::vec(any::<u8>(), 0..=20), n in 0usize..=10) {
+                let mut model = VecIter::new(v.clone());
+                let taken = drain(ByRefSized(model.by_ref()).take(n));
+                let rest = drain(model);
+                let mut std_iter = v.iter().copied();
+                let std_taken: Vec<u8> = std_iter.by_ref().take(n).collect();
+                let std_rest: Vec<u8> = std_iter.collect();
+                prop_assert_eq!(taken, std_taken);
+                prop_assert_eq!(rest, std_rest);
+            }
+
+            #[test]
+            fn test_enumerate_next_index(v in prop::collection::vec(any::<u8>(), 0..=20), k in 0usize..=10) {
+                let mut model = VecIter::new(v.clone()).enumerate();
+                let mut std_iter = v.iter().copied().enumerate();
+                for _ in 0..k {
+                    Iterator::next(&mut model);
+                    std_iter.next();
+                }
+                prop_assert_eq!(model.next_index(), std_iter.next_index());
+            }
+        }
+
+        // `size_hint` is the trait default `(0, None)` for every model iterator:
+        // the model's `Iterator` carries no length information to report. That is
+        // a valid (if uninformative) hint for any iterator, so it is pinned here
+        // rather than compared against std's per-type answers.
+        #[test]
+        fn test_size_hint_is_the_default() {
+            let it = VecIter::new(vec![1u8, 2, 3]);
+            let (lower, upper) = it.size_hint();
+            assert_eq!(lower, 0);
+            assert!(matches!(upper, Option::None));
+        }
+
+        #[test]
+        fn test_array_chunks_zero_panics() {
+            crate::testing::panics_like_core(
+                || VecIter::new(vec![1u8, 2, 3]).array_chunks::<0>(),
+                || [1u8, 2, 3].iter().array_chunks::<0>(),
+            );
+        }
+
+        #[test]
+        fn test_map_windows_zero_panics() {
+            crate::testing::panics_like_core(
+                || VecIter::new(vec![1u8, 2, 3]).map_windows(|_: &[u8; 0]| 0u8),
+                || [1u8, 2, 3].iter().map_windows(|_: &[&u8; 0]| 0u8),
+            );
         }
     }
 

@@ -107,6 +107,22 @@
         wrapping_int_impl,
         wrapping_next_power_of_two
     )
+
+// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
+// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
+// proptests compare against them.
+#![cfg_attr(
+    test,
+    feature(step_trait, int_roundings, formatting_options, int_format_into)
+        iter_advance_by,
+        exact_size_is_empty,
+        rev_into_inner,
+        iter_intersperse,
+        iter_array_chunks,
+        iter_map_windows,
+        next_index,
+        peekable_next_if_map
+    )
 )]
 // likely_unlikely/cold_path: same, for the `hint` proptests.
 
