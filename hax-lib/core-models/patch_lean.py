@@ -190,6 +190,39 @@ def fix_result_match(text: str) -> str:
     return sub("fix_result_match", r"\| result\.Result\.",
                r"| core.result.Result.", text)
 
+
+# A `structure hash.Hash`/`structure hash.BuildHasher` header, plus its
+# (indented) field lines.
+_HASH_TRAIT_BLOCK = re.compile(
+    r"^(structure hash\.(?:Hash|BuildHasher) [^\n]*\n)((?:[ \t]+[^\n]*\n)*)",
+    re.MULTILINE,
+)
+
+
+def qualify_hash_trait_refs(text: str) -> str:
+    """Qualify the `hash.{Hash,Hasher}` references inside the `hash` traits.
+
+    `core_models::hash::Hash` has a method named `hash`, and a second method
+    (`hash_slice`) whose type mentions the `Hasher` trait. Aeneas emits both as
+    fields of `structure hash.Hash`, and Lean brings each field into scope for
+    the *following* fields' types — so by the time `hash_slice` is elaborated the
+    binder `hash` shadows the `hash` *namespace*. `hash.Hasher` then elaborates
+    as generalised field notation on a function-typed binder, i.e. as the
+    non-existent `Function.Hasher`, and the whole structure fails to elaborate;
+    every later reference to `hash.Hash` (in `structure hash.BuildHasher`) then
+    falls back to Lean's own root `hash` and fails as `Hashable.hash.Hash`.
+
+    Spelling these references `core.hash.…` routes them through the `CoreModels`
+    namespace, which no binder can shadow — the same trick as
+    `fix_result_match`. The `structure` header lines are left alone, since those
+    *declare* the names.
+    """
+    return _HASH_TRAIT_BLOCK.sub(
+        lambda m: m.group(1)
+        + re.sub(r"\bhash\.(Hasher|Hash)\b", r"core.hash.\1", m.group(2)),
+        text,
+    )
+
 def rewrite_phantom_data(text: str) -> str:
     """Redefine `PhantomData`.
 
@@ -683,6 +716,7 @@ def main() -> int:
                 end_marker="end CoreModels.core",
             )
         if path == types_path:
+            text = qualify_hash_trait_refs(text)
             text = comment_out_types(text)
         write(path, text)
         print(f"patched {CORE_DIR}.")
