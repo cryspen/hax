@@ -8,3 +8,5 @@ include Core_models.Bundle {t_Filter as t_Filter}
 include Core_models.Bundle {impl__new__from__filter as impl__new}
 
 include Core_models.Bundle {impl_1__from__filter as impl_1}
+
+include Core_models.Bundle {impl_2__from__filter as impl_2}

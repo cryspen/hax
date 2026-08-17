@@ -9,4 +9,6 @@ include Core_models.Bundle {impl__new__from__chain as impl__new}
 
 include Core_models.Bundle {chain as chain}
 
-include Core_models.Bundle {impl_1__from__chain as impl_1}
+include Core_models.Bundle {impl_1 as impl_1}
+
+include Core_models.Bundle {impl_2__from__chain as impl_2}

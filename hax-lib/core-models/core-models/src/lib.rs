@@ -32,6 +32,9 @@
 // int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
 
 // likely_unlikely/cold_path: same, for the `hint` proptests.
+// The slice proptests compare against still-unstable `[T]` methods.
+// iter_advance_by / exact_size_is_empty / rev_into_inner: same, for the
+// still-unstable `core::iter` methods the `iter` proptests compare against.
 #![cfg_attr(
     test,
     feature(
@@ -81,6 +84,10 @@
 #![cfg_attr(
     test,
     feature(step_trait, int_roundings, formatting_options, int_format_into)
+        iter_advance_by,
+        exact_size_is_empty,
+        rev_into_inner
+    )
 )]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
 // from `cargo hax`.
