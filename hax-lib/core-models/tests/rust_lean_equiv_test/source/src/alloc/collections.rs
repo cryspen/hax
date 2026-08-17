@@ -13,7 +13,7 @@
 //!   below — see the TODOs.
 
 use rust_lean_test_macro::rust_lean_test;
-use std::collections::VecDeque;
+use std::collections::{LinkedList, VecDeque};
 
 // ----- new / with_capacity ---------------------------------------------------
 
@@ -580,3 +580,199 @@ pub fn test_deque_binary_search_past_end() -> bool {
 // `TryReserveError` has no stable constructor and `kind` is unstable
 // (`try_reserve_kind`), so there is nothing a stable client can observe beyond
 // `try_reserve` returning `Ok` (above).
+
+// =============================================================================
+// LinkedList
+// =============================================================================
+//
+// `LinkedList::{new_in, remove, retain}` are unstable in std, so they are only
+// covered by the model crate's own tests. `LinkedList` has no `Index` impl, so
+// contents are observed by popping.
+
+// ----- new -------------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_new_is_empty() -> bool {
+    let l: LinkedList<u8> = LinkedList::new();
+    l.is_empty() && l.len() == 0
+}
+
+// ----- push_back / push_front / len ------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_push_back_len() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    l.len() == 2 && l.is_empty() == false
+}
+
+#[rust_lean_test]
+pub fn test_list_push_front_order() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(2);
+    l.push_front(1);
+    l.pop_front().unwrap_or(0) == 1 && l.pop_front().unwrap_or(0) == 2 && l.is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_list_push_front_into_empty() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_front(u8::MAX);
+    l.len() == 1 && l.pop_back().unwrap_or(0) == u8::MAX
+}
+
+// ----- pop_front / pop_back --------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_pop_front_empty_is_none() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.pop_front().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_list_pop_back_empty_is_none() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.pop_back().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_list_pop_back_takes_last() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    l.pop_back().unwrap_or(0) == 2 && l.len() == 1
+}
+
+// ----- front / back ----------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_front_back_empty_are_none() -> bool {
+    let l: LinkedList<u8> = LinkedList::new();
+    l.front().is_none() && l.back().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_list_front_back_single_coincide() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(4);
+    match l.front() {
+        Some(f) => match l.back() {
+            Some(b) => *f == 4 && *b == 4,
+            None => false,
+        },
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_list_front_back_three() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    l.push_back(3);
+    match l.front() {
+        Some(f) => match l.back() {
+            Some(b) => *f == 1 && *b == 3,
+            None => false,
+        },
+        None => false,
+    }
+}
+
+// ----- clear -----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_clear_empties() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    l.clear();
+    l.is_empty() && l.len() == 0
+}
+
+#[rust_lean_test]
+pub fn test_list_clear_on_empty() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.clear();
+    l.is_empty()
+}
+
+// ----- contains --------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_contains_empty_is_false() -> bool {
+    let l: LinkedList<u8> = LinkedList::new();
+    l.contains(&0) == false
+}
+
+#[rust_lean_test]
+pub fn test_list_contains_present() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    l.contains(&2)
+}
+
+#[rust_lean_test]
+pub fn test_list_contains_absent() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.contains(&u8::MAX) == false
+}
+
+// ----- append ----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_append_both_empty() -> bool {
+    let mut a: LinkedList<u8> = LinkedList::new();
+    let mut b: LinkedList<u8> = LinkedList::new();
+    a.append(&mut b);
+    a.is_empty() && b.is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_list_append_drains_other() -> bool {
+    let mut a: LinkedList<u8> = LinkedList::new();
+    a.push_back(1);
+    let mut b: LinkedList<u8> = LinkedList::new();
+    b.push_back(2);
+    a.append(&mut b);
+    a.len() == 2 && b.is_empty() && a.pop_back().unwrap_or(0) == 2
+}
+
+// ----- split_off -------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_split_off_at_zero() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    let mut t = l.split_off(0);
+    l.is_empty() && t.len() == 2 && t.pop_front().unwrap_or(0) == 1
+}
+
+#[rust_lean_test]
+pub fn test_list_split_off_at_len() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    let t = l.split_off(1);
+    l.len() == 1 && t.is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_list_split_off_middle() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    l.push_back(3);
+    let mut t = l.split_off(1);
+    l.len() == 1
+        && t.len() == 2
+        && t.pop_front().unwrap_or(0) == 2
+        && t.pop_front().unwrap_or(0) == 3
+}
+
+// ----- iter ------------------------------------------------------------------
+
+// TODO(iterator-extraction): see the note on `VecDeque::iter` above.
