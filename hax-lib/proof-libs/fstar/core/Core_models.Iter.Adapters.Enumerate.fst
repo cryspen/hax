@@ -5,7 +5,9 @@ open Rust_primitives
 
 include Core_models.Bundle {t_Enumerate as t_Enumerate}
 
-include Core_models.Bundle {impl__new as impl__new}
+include Core_models.Bundle {impl__new__from__enumerate as impl__new}
+
+include Core_models.Bundle {impl__next_index as impl__next_index}
 
 include Core_models.Bundle {impl_1__from__enumerate as impl_1}
 

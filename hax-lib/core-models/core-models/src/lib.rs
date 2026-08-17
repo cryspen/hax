@@ -91,7 +91,14 @@
         iter_array_chunks,
         iter_map_windows,
         next_index,
-        peekable_next_if_map
+        peekable_next_if_map,
+        iter_next_chunk,
+        iter_collect_into,
+        iter_is_partitioned,
+        iter_order_by,
+        iterator_try_collect,
+        iterator_try_reduce,
+        try_find
     )
 )]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes

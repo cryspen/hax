@@ -168,6 +168,11 @@ impl<'a, T> Inject for &'a [T] {
     }
 }
 
+impl Inject for () {
+    type Model = ();
+    fn inject(&self) -> () {}
+}
+
 impl<A: Inject, B: Inject> Inject for (A, B) {
     type Model = (A::Model, B::Model);
     fn inject(&self) -> Self::Model {

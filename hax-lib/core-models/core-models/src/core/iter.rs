@@ -6,17 +6,25 @@
 pub mod traits {
     pub mod iterator {
         use super::super::adapters::{
-            array_chunks::ArrayChunks, by_ref_sized::ByRefSized, chain::Chain, cloned::Cloned,
-            copied::Copied, cycle::Cycle, enumerate::Enumerate, filter::Filter,
-            filter_map::FilterMap, flat_map::FlatMap, flatten::Flatten, fuse::Fuse,
-            inspect::Inspect, intersperse::Intersperse, intersperse::IntersperseWith, map::Map,
-            map_while::MapWhile, map_windows::MapWindows, peekable::Peekable, rev::Rev, scan::Scan,
-            skip::Skip, skip_while::SkipWhile, step_by::StepBy, take::Take, take_while::TakeWhile,
-            zip::Zip,
+            array_chunks::ArrayChunks, chain::Chain, cloned::Cloned, copied::Copied, cycle::Cycle,
+            enumerate::Enumerate, filter::Filter, filter_map::FilterMap, flat_map::FlatMap,
+            flatten::Flatten, fuse::Fuse, inspect::Inspect, intersperse::Intersperse,
+            intersperse::IntersperseWith, map::Map, map_while::MapWhile, map_windows::MapWindows,
+            peekable::Peekable, rev::Rev, skip::Skip, skip_while::SkipWhile, step_by::StepBy,
+            take::Take, take_while::TakeWhile, zip::Zip,
         };
+        use super::accum::{Product, Sum};
+        use super::collect::Extend;
         use super::double_ended::DoubleEndedIterator;
         use super::exact_size::ExactSizeIterator;
+        use crate::cmp::Ordering;
+        use crate::default::Default;
+        use crate::ops::control_flow::ControlFlow;
+        use crate::ops::try_trait::{FromResidual, Residual, Try};
         use crate::option::Option;
+        use crate::result::Result;
+        use rust_primitives::sequence::{Seq, seq_empty, seq_index, seq_len, seq_push, seq_remove};
+        use rust_primitives::slice::array_from_fn;
         /// See [`std::iter::Iterator`]
         #[hax_lib::attributes]
         pub trait Iterator {
@@ -116,11 +124,14 @@ pub mod traits {
             fn take_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> TakeWhile<Self, P>
             where
                 Self: Sized;
+            // Not part of the F* model: hax rejects the `Fn(&mut _, _)` bound
+            // (HAX0003 `DirectAndMut`, hacspec/hax#420).
+            #[cfg(not(hax_backend_fstar))]
             fn scan<St, B, F: Fn(&mut St, Self::Item) -> Option<B>>(
                 self,
                 initial_state: St,
                 f: F,
-            ) -> Scan<Self, St, F>
+            ) -> super::super::adapters::scan::Scan<Self, St, F>
             where
                 Self: Sized;
             fn fuse(self) -> Fuse<Self>
@@ -153,6 +164,9 @@ pub mod traits {
             ) -> MapWindows<Self, F, N>
             where
                 Self: Sized;
+            // Not part of the F* model: hax rejects returning a `&mut` that was
+            // passed in (HAX0003 `DirectAndMut` / HAX0010, hacspec/hax#420).
+            #[cfg(not(hax_backend_fstar))]
             fn by_ref(&mut self) -> &mut Self
             where
                 Self: Sized;
@@ -161,6 +175,179 @@ pub mod traits {
             /// size hint (the contract only asks for a correct lower bound and an
             /// optional upper bound), just an uninformative one.
             fn size_hint(&self) -> (usize, Option<usize>);
+            fn sum<S: Sum<Self::Item>>(self) -> S
+            where
+                Self: Sized;
+            fn product<P: Product<Self::Item>>(self) -> P
+            where
+                Self: Sized;
+            fn min_by<F: Fn(&Self::Item, &Self::Item) -> Ordering>(
+                self,
+                compare: F,
+            ) -> Option<Self::Item>;
+            fn max_by<F: Fn(&Self::Item, &Self::Item) -> Ordering>(
+                self,
+                compare: F,
+            ) -> Option<Self::Item>;
+            fn min_by_key<B: crate::cmp::Ord, F: Fn(&Self::Item) -> B>(
+                self,
+                f: F,
+            ) -> Option<Self::Item>;
+            fn max_by_key<B: crate::cmp::Ord, F: Fn(&Self::Item) -> B>(
+                self,
+                f: F,
+            ) -> Option<Self::Item>;
+            // The `cmp`/`eq`/ordering family takes an `Iterator` rather than
+            // std's `IntoIterator`, matching `IteratorMethods::chain`: the model's
+            // `IntoIterator` deliberately does not bound `IntoIter: Iterator`.
+            fn cmp<I2: Iterator<Item = Self::Item>>(self, other: I2) -> Ordering
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::Ord;
+            fn cmp_by<I2: Iterator, F: Fn(Self::Item, I2::Item) -> Ordering>(
+                self,
+                other: I2,
+                cmp: F,
+            ) -> Ordering
+            where
+                Self: Sized;
+            fn partial_cmp<I2: Iterator>(self, other: I2) -> Option<Ordering>
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            fn partial_cmp_by<I2: Iterator, F: Fn(Self::Item, I2::Item) -> Option<Ordering>>(
+                self,
+                other: I2,
+                partial_cmp: F,
+            ) -> Option<Ordering>
+            where
+                Self: Sized;
+            fn eq<I2: Iterator>(self, other: I2) -> bool
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::PartialEq<I2::Item>;
+            fn eq_by<I2: Iterator, F: Fn(Self::Item, I2::Item) -> bool>(
+                self,
+                other: I2,
+                eq: F,
+            ) -> bool
+            where
+                Self: Sized;
+            fn ne<I2: Iterator>(self, other: I2) -> bool
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::PartialEq<I2::Item>;
+            fn lt<I2: Iterator>(self, other: I2) -> bool
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            fn le<I2: Iterator>(self, other: I2) -> bool
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            fn gt<I2: Iterator>(self, other: I2) -> bool
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            fn ge<I2: Iterator>(self, other: I2) -> bool
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            fn unzip<A, B, FromA: Default + Extend<A>, FromB: Default + Extend<B>>(
+                self,
+            ) -> (FromA, FromB)
+            where
+                Self: Sized + Iterator<Item = (A, B)>;
+            fn partition<B: Default + Extend<Self::Item>, F: Fn(&Self::Item) -> bool>(
+                self,
+                f: F,
+            ) -> (B, B)
+            where
+                Self: Sized;
+            fn is_partitioned<P: Fn(Self::Item) -> bool>(self, predicate: P) -> bool
+            where
+                Self: Sized;
+            fn is_sorted(self) -> bool
+            where
+                Self: Sized,
+                Self::Item: crate::cmp::PartialOrd<Self::Item>;
+            fn is_sorted_by<F: Fn(&Self::Item, &Self::Item) -> bool>(self, compare: F) -> bool
+            where
+                Self: Sized;
+            fn is_sorted_by_key<K: crate::cmp::PartialOrd<K>, F: Fn(Self::Item) -> K>(
+                self,
+                f: F,
+            ) -> bool
+            where
+                Self: Sized;
+            // Not part of the F* model: hax rejects returning a `&mut` that was
+            // passed in (HAX0003 `DirectAndMut` / HAX0010, hacspec/hax#420).
+            #[cfg(not(hax_backend_fstar))]
+            fn collect_into<E: Extend<Self::Item>>(self, collection: &mut E) -> &mut E
+            where
+                Self: Sized;
+            /// The `Item: Clone` bound is a deviation: std assembles the `[Item; N]`
+            /// through `MaybeUninit`, which the model has no counterpart for.
+            fn next_chunk<const N: usize>(
+                &mut self,
+            ) -> Result<[Self::Item; N], crate::array::iter::IntoIter<Self::Item, N>>
+            where
+                Self: Sized,
+                Self::Item: Clone;
+            /// `R: FromResidual<R::Residual>` is a deviation: std gets it from
+            /// `Try`'s supertrait, which the model's `ops::try_trait::Try` lacks.
+            fn try_fold<
+                B,
+                R: Try<Output = B> + FromResidual<<R as Try>::Residual>,
+                F: Fn(B, Self::Item) -> R,
+            >(
+                &mut self,
+                init: B,
+                f: F,
+            ) -> R
+            where
+                Self: Sized;
+            fn try_for_each<
+                R: Try<Output = ()> + FromResidual<<R as Try>::Residual>,
+                F: Fn(Self::Item) -> R,
+            >(
+                &mut self,
+                f: F,
+            ) -> R
+            where
+                Self: Sized;
+            /// std spells the return type `ChangeOutputType<R, Option<Self::Item>>`;
+            /// that alias expands to exactly the projection written out here. The
+            /// extra `TryType: FromResidual<..>` bound is the same deviation as on
+            /// `try_fold`.
+            fn try_find<R, F: Fn(&Self::Item) -> R>(
+                &mut self,
+                f: F,
+            ) -> <<R as Try>::Residual as Residual<Option<Self::Item>>>::TryType
+            where
+                Self: Sized,
+                R: Try<Output = bool>,
+                <R as Try>::Residual: Residual<Option<Self::Item>>,
+                <<R as Try>::Residual as Residual<Option<Self::Item>>>::TryType:
+                    FromResidual<<R as Try>::Residual>;
+            fn try_reduce<R, F: Fn(Self::Item, Self::Item) -> R>(
+                &mut self,
+                f: F,
+            ) -> <<R as Try>::Residual as Residual<Option<Self::Item>>>::TryType
+            where
+                Self: Sized,
+                R: Try<Output = Self::Item>,
+                <R as Try>::Residual: Residual<Option<Self::Item>>,
+                <<R as Try>::Residual as Residual<Option<Self::Item>>>::TryType:
+                    FromResidual<<R as Try>::Residual>;
+            fn try_collect<B>(&mut self) -> <<Self::Item as Try>::Residual as Residual<B>>::TryType
+            where
+                Self: Sized,
+                Self::Item: Try,
+                <Self::Item as Try>::Residual: Residual<B>,
+                B: super::collect::FromIterator<<Self::Item as Try>::Output>,
+                <<Self::Item as Try>::Residual as Residual<B>>::TryType:
+                    FromResidual<<Self::Item as Try>::Residual>;
         }
 
         // Opaque helper functions for loop-based iterator methods.
@@ -372,6 +559,394 @@ pub mod traits {
             crate::result::Result::Ok(())
         }
 
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_min_by<I: Iterator, F: Fn(&I::Item, &I::Item) -> Ordering>(
+            mut iter: I,
+            compare: F,
+        ) -> Option<I::Item> {
+            let mut best = match iter.next() {
+                Option::Some(x) => x,
+                Option::None => return Option::None,
+            };
+            // Ties keep the earlier element, as std's `cmp::min_by` does.
+            while let Option::Some(x) = iter.next() {
+                if let Ordering::Less = compare(&x, &best) {
+                    best = x;
+                }
+            }
+            Option::Some(best)
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_max_by<I: Iterator, F: Fn(&I::Item, &I::Item) -> Ordering>(
+            mut iter: I,
+            compare: F,
+        ) -> Option<I::Item> {
+            let mut best = match iter.next() {
+                Option::Some(x) => x,
+                Option::None => return Option::None,
+            };
+            // Ties keep the *later* element, as std's `cmp::max_by` does.
+            while let Option::Some(x) = iter.next() {
+                match compare(&x, &best) {
+                    Ordering::Less => (),
+                    _ => best = x,
+                }
+            }
+            Option::Some(best)
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_min_by_key<I: Iterator, B: crate::cmp::Ord, F: Fn(&I::Item) -> B>(
+            mut iter: I,
+            f: F,
+        ) -> Option<I::Item> {
+            let mut best = match iter.next() {
+                Option::Some(x) => x,
+                Option::None => return Option::None,
+            };
+            let mut best_key = f(&best);
+            while let Option::Some(x) = iter.next() {
+                let key = f(&x);
+                if let Ordering::Less = crate::cmp::Ord::cmp(&key, &best_key) {
+                    best = x;
+                    best_key = key;
+                }
+            }
+            Option::Some(best)
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_max_by_key<I: Iterator, B: crate::cmp::Ord, F: Fn(&I::Item) -> B>(
+            mut iter: I,
+            f: F,
+        ) -> Option<I::Item> {
+            let mut best = match iter.next() {
+                Option::Some(x) => x,
+                Option::None => return Option::None,
+            };
+            let mut best_key = f(&best);
+            while let Option::Some(x) = iter.next() {
+                let key = f(&x);
+                match crate::cmp::Ord::cmp(&key, &best_key) {
+                    Ordering::Less => (),
+                    _ => {
+                        best = x;
+                        best_key = key;
+                    }
+                }
+            }
+            Option::Some(best)
+        }
+
+        // opaque: loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_cmp_by<I1: Iterator, I2: Iterator, F: Fn(I1::Item, I2::Item) -> Ordering>(
+            mut a: I1,
+            mut b: I2,
+            cmp: F,
+        ) -> Ordering {
+            loop {
+                match a.next() {
+                    Option::None => {
+                        return match b.next() {
+                            Option::None => Ordering::Equal,
+                            Option::Some(_) => Ordering::Less,
+                        };
+                    }
+                    Option::Some(x) => match b.next() {
+                        Option::None => return Ordering::Greater,
+                        Option::Some(y) => match cmp(x, y) {
+                            Ordering::Equal => (),
+                            non_eq => return non_eq,
+                        },
+                    },
+                }
+            }
+        }
+
+        // opaque: loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_partial_cmp_by<
+            I1: Iterator,
+            I2: Iterator,
+            F: Fn(I1::Item, I2::Item) -> Option<Ordering>,
+        >(
+            mut a: I1,
+            mut b: I2,
+            partial_cmp: F,
+        ) -> Option<Ordering> {
+            loop {
+                match a.next() {
+                    Option::None => {
+                        return match b.next() {
+                            Option::None => Option::Some(Ordering::Equal),
+                            Option::Some(_) => Option::Some(Ordering::Less),
+                        };
+                    }
+                    Option::Some(x) => match b.next() {
+                        Option::None => return Option::Some(Ordering::Greater),
+                        Option::Some(y) => match partial_cmp(x, y) {
+                            Option::Some(Ordering::Equal) => (),
+                            non_eq => return non_eq,
+                        },
+                    },
+                }
+            }
+        }
+
+        // opaque: loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_eq_by<I1: Iterator, I2: Iterator, F: Fn(I1::Item, I2::Item) -> bool>(
+            mut a: I1,
+            mut b: I2,
+            eq: F,
+        ) -> bool {
+            loop {
+                match a.next() {
+                    Option::None => {
+                        return match b.next() {
+                            Option::None => true,
+                            Option::Some(_) => false,
+                        };
+                    }
+                    Option::Some(x) => match b.next() {
+                        Option::None => return false,
+                        Option::Some(y) => {
+                            if eq(x, y) == false {
+                                return false;
+                            }
+                        }
+                    },
+                }
+            }
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_unzip<
+            I: Iterator<Item = (A, B)>,
+            A,
+            B,
+            FromA: Default + Extend<A>,
+            FromB: Default + Extend<B>,
+        >(
+            mut iter: I,
+        ) -> (FromA, FromB) {
+            let mut left = FromA::default();
+            let mut right = FromB::default();
+            while let Option::Some((x, y)) = iter.next() {
+                left.extend(super::super::sources::once::once(x));
+                right.extend(super::super::sources::once::once(y));
+            }
+            (left, right)
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_partition<I: Iterator, B: Default + Extend<I::Item>, F: Fn(&I::Item) -> bool>(
+            mut iter: I,
+            f: F,
+        ) -> (B, B) {
+            let mut yes = B::default();
+            let mut no = B::default();
+            while let Option::Some(x) = iter.next() {
+                if f(&x) {
+                    yes.extend(super::super::sources::once::once(x));
+                } else {
+                    no.extend(super::super::sources::once::once(x));
+                }
+            }
+            (yes, no)
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_is_partitioned<I: Iterator, P: Fn(I::Item) -> bool>(
+            mut iter: I,
+            predicate: P,
+        ) -> bool {
+            let mut seen_false = false;
+            while let Option::Some(x) = iter.next() {
+                if predicate(x) {
+                    if seen_false {
+                        return false;
+                    }
+                } else {
+                    seen_false = true;
+                }
+            }
+            true
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_is_sorted_by<I: Iterator, F: Fn(&I::Item, &I::Item) -> bool>(
+            mut iter: I,
+            compare: F,
+        ) -> bool {
+            let mut prev = match iter.next() {
+                Option::Some(x) => x,
+                Option::None => return true,
+            };
+            while let Option::Some(x) = iter.next() {
+                if compare(&prev, &x) == false {
+                    return false;
+                }
+                prev = x;
+            }
+            true
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_next_chunk<I: Iterator, const N: usize>(
+            iter: &mut I,
+        ) -> Result<[I::Item; N], crate::array::iter::IntoIter<I::Item, N>>
+        where
+            I::Item: Clone,
+        {
+            let mut buf = seq_empty();
+            while seq_len(&buf) < N {
+                match iter.next() {
+                    Option::Some(v) => seq_push(&mut buf, v),
+                    Option::None => return Result::Err(crate::array::iter::IntoIter(buf)),
+                }
+            }
+            Result::Ok(array_from_fn(|i| seq_index(&buf, i).clone()))
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_try_fold<
+            I: Iterator,
+            B,
+            R: Try<Output = B> + FromResidual<<R as Try>::Residual>,
+            F: Fn(B, I::Item) -> R,
+        >(
+            iter: &mut I,
+            init: B,
+            f: F,
+        ) -> R {
+            let mut accum = init;
+            while let Option::Some(x) = iter.next() {
+                match Try::branch(f(accum, x)) {
+                    ControlFlow::Continue(v) => accum = v,
+                    ControlFlow::Break(residual) => return FromResidual::from_residual(residual),
+                }
+            }
+            Try::from_output(accum)
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_try_for_each<
+            I: Iterator,
+            R: Try<Output = ()> + FromResidual<<R as Try>::Residual>,
+            F: Fn(I::Item) -> R,
+        >(
+            iter: &mut I,
+            f: F,
+        ) -> R {
+            while let Option::Some(x) = iter.next() {
+                match Try::branch(f(x)) {
+                    ControlFlow::Continue(_) => (),
+                    ControlFlow::Break(residual) => return FromResidual::from_residual(residual),
+                }
+            }
+            Try::from_output(())
+        }
+
+        /// A `Seq`-backed iterator, used only to hand `try_collect`'s successful
+        /// outputs to `FromIterator`. Not a `core` item: the model has no public
+        /// iterator over a `rust_primitives` sequence.
+        struct SeqIter<T>(Seq<T>);
+
+        impl<T> Iterator for SeqIter<T> {
+            type Item = T;
+            fn next(&mut self) -> Option<T> {
+                if seq_len(&self.0) == 0 {
+                    Option::None
+                } else {
+                    Option::Some(seq_remove(&mut self.0, 0))
+                }
+            }
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_try_find<I: Iterator, R: Try<Output = bool>, F: Fn(&I::Item) -> R>(
+            iter: &mut I,
+            f: F,
+        ) -> <<R as Try>::Residual as Residual<Option<I::Item>>>::TryType
+        where
+            <R as Try>::Residual: Residual<Option<I::Item>>,
+            <<R as Try>::Residual as Residual<Option<I::Item>>>::TryType:
+                FromResidual<<R as Try>::Residual>,
+        {
+            while let Option::Some(x) = iter.next() {
+                match Try::branch(f(&x)) {
+                    ControlFlow::Continue(found) => {
+                        if found {
+                            return Try::from_output(Option::Some(x));
+                        }
+                    }
+                    ControlFlow::Break(residual) => return FromResidual::from_residual(residual),
+                }
+            }
+            Try::from_output(Option::None)
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_try_reduce<I: Iterator, R: Try<Output = I::Item>, F: Fn(I::Item, I::Item) -> R>(
+            iter: &mut I,
+            f: F,
+        ) -> <<R as Try>::Residual as Residual<Option<I::Item>>>::TryType
+        where
+            <R as Try>::Residual: Residual<Option<I::Item>>,
+            <<R as Try>::Residual as Residual<Option<I::Item>>>::TryType:
+                FromResidual<<R as Try>::Residual>,
+        {
+            let mut accum = match iter.next() {
+                Option::Some(x) => x,
+                Option::None => return Try::from_output(Option::None),
+            };
+            while let Option::Some(x) = iter.next() {
+                match Try::branch(f(accum, x)) {
+                    ControlFlow::Continue(v) => accum = v,
+                    ControlFlow::Break(residual) => return FromResidual::from_residual(residual),
+                }
+            }
+            Try::from_output(Option::Some(accum))
+        }
+
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_try_collect<I: Iterator, B>(
+            iter: &mut I,
+        ) -> <<I::Item as Try>::Residual as Residual<B>>::TryType
+        where
+            I::Item: Try,
+            <I::Item as Try>::Residual: Residual<B>,
+            B: super::collect::FromIterator<<I::Item as Try>::Output>,
+            <<I::Item as Try>::Residual as Residual<B>>::TryType:
+                FromResidual<<I::Item as Try>::Residual>,
+        {
+            let mut out = seq_empty();
+            while let Option::Some(x) = iter.next() {
+                match Try::branch(x) {
+                    ControlFlow::Continue(v) => seq_push(&mut out, v),
+                    ControlFlow::Break(residual) => return FromResidual::from_residual(residual),
+                }
+            }
+            Try::from_output(super::collect::FromIterator::from_iter(SeqIter(out)))
+        }
+
         #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
         // `Item` reaches this impl through `IteratorMethods`' supertrait, which
@@ -564,12 +1139,13 @@ pub mod traits {
                 TakeWhile::new(self, predicate)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn scan<St, B, F: Fn(&mut St, <I as Iterator>::Item) -> Option<B>>(
                 self,
                 initial_state: St,
                 f: F,
-            ) -> Scan<Self, St, F> {
-                Scan::new(self, initial_state, f)
+            ) -> super::super::adapters::scan::Scan<Self, St, F> {
+                super::super::adapters::scan::Scan::new(self, initial_state, f)
             }
 
             fn fuse(self) -> Fuse<Self> {
@@ -614,12 +1190,289 @@ pub mod traits {
                 MapWindows::new(self, f)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn by_ref(&mut self) -> &mut Self {
                 self
             }
 
             fn size_hint(&self) -> (usize, Option<usize>) {
                 (0, Option::None)
+            }
+
+            fn sum<S: Sum<<I as Iterator>::Item>>(self) -> S {
+                Sum::sum(self)
+            }
+
+            fn product<P: Product<<I as Iterator>::Item>>(self) -> P {
+                Product::product(self)
+            }
+
+            fn min_by<F: Fn(&<I as Iterator>::Item, &<I as Iterator>::Item) -> Ordering>(
+                self,
+                compare: F,
+            ) -> Option<<I as Iterator>::Item> {
+                iter_min_by(self, compare)
+            }
+
+            fn max_by<F: Fn(&<I as Iterator>::Item, &<I as Iterator>::Item) -> Ordering>(
+                self,
+                compare: F,
+            ) -> Option<<I as Iterator>::Item> {
+                iter_max_by(self, compare)
+            }
+
+            fn min_by_key<B: crate::cmp::Ord, F: Fn(&<I as Iterator>::Item) -> B>(
+                self,
+                f: F,
+            ) -> Option<<I as Iterator>::Item> {
+                iter_min_by_key(self, f)
+            }
+
+            fn max_by_key<B: crate::cmp::Ord, F: Fn(&<I as Iterator>::Item) -> B>(
+                self,
+                f: F,
+            ) -> Option<<I as Iterator>::Item> {
+                iter_max_by_key(self, f)
+            }
+
+            fn cmp<I2: Iterator<Item = <I as Iterator>::Item>>(self, other: I2) -> Ordering
+            where
+                <I as Iterator>::Item: crate::cmp::Ord,
+            {
+                iter_cmp_by(self, other, |x, y| crate::cmp::Ord::cmp(&x, &y))
+            }
+
+            fn cmp_by<I2: Iterator, F: Fn(<I as Iterator>::Item, I2::Item) -> Ordering>(
+                self,
+                other: I2,
+                cmp: F,
+            ) -> Ordering {
+                iter_cmp_by(self, other, cmp)
+            }
+
+            fn partial_cmp<I2: Iterator>(self, other: I2) -> Option<Ordering>
+            where
+                <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
+            {
+                iter_partial_cmp_by(self, other, |x, y| {
+                    crate::cmp::PartialOrd::partial_cmp(&x, &y)
+                })
+            }
+
+            fn partial_cmp_by<
+                I2: Iterator,
+                F: Fn(<I as Iterator>::Item, I2::Item) -> Option<Ordering>,
+            >(
+                self,
+                other: I2,
+                partial_cmp: F,
+            ) -> Option<Ordering> {
+                iter_partial_cmp_by(self, other, partial_cmp)
+            }
+
+            fn eq<I2: Iterator>(self, other: I2) -> bool
+            where
+                <I as Iterator>::Item: crate::cmp::PartialEq<I2::Item>,
+            {
+                iter_eq_by(self, other, |x, y| crate::cmp::PartialEq::eq(&x, &y))
+            }
+
+            fn eq_by<I2: Iterator, F: Fn(<I as Iterator>::Item, I2::Item) -> bool>(
+                self,
+                other: I2,
+                eq: F,
+            ) -> bool {
+                iter_eq_by(self, other, eq)
+            }
+
+            fn ne<I2: Iterator>(self, other: I2) -> bool
+            where
+                <I as Iterator>::Item: crate::cmp::PartialEq<I2::Item>,
+            {
+                iter_eq_by(self, other, |x, y| crate::cmp::PartialEq::eq(&x, &y)) == false
+            }
+
+            fn lt<I2: Iterator>(self, other: I2) -> bool
+            where
+                <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
+            {
+                matches!(
+                    iter_partial_cmp_by(self, other, |x, y| crate::cmp::PartialOrd::partial_cmp(
+                        &x, &y
+                    )),
+                    Option::Some(Ordering::Less)
+                )
+            }
+
+            fn le<I2: Iterator>(self, other: I2) -> bool
+            where
+                <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
+            {
+                matches!(
+                    iter_partial_cmp_by(self, other, |x, y| crate::cmp::PartialOrd::partial_cmp(
+                        &x, &y
+                    )),
+                    Option::Some(Ordering::Less | Ordering::Equal)
+                )
+            }
+
+            fn gt<I2: Iterator>(self, other: I2) -> bool
+            where
+                <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
+            {
+                matches!(
+                    iter_partial_cmp_by(self, other, |x, y| crate::cmp::PartialOrd::partial_cmp(
+                        &x, &y
+                    )),
+                    Option::Some(Ordering::Greater)
+                )
+            }
+
+            fn ge<I2: Iterator>(self, other: I2) -> bool
+            where
+                <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
+            {
+                matches!(
+                    iter_partial_cmp_by(self, other, |x, y| crate::cmp::PartialOrd::partial_cmp(
+                        &x, &y
+                    )),
+                    Option::Some(Ordering::Greater | Ordering::Equal)
+                )
+            }
+
+            fn unzip<A, B, FromA: Default + Extend<A>, FromB: Default + Extend<B>>(
+                self,
+            ) -> (FromA, FromB)
+            where
+                Self: Iterator<Item = (A, B)>,
+            {
+                iter_unzip(self)
+            }
+
+            fn partition<
+                B: Default + Extend<<I as Iterator>::Item>,
+                F: Fn(&<I as Iterator>::Item) -> bool,
+            >(
+                self,
+                f: F,
+            ) -> (B, B) {
+                iter_partition(self, f)
+            }
+
+            fn is_partitioned<P: Fn(<I as Iterator>::Item) -> bool>(self, predicate: P) -> bool {
+                iter_is_partitioned(self, predicate)
+            }
+
+            fn is_sorted(self) -> bool
+            where
+                <I as Iterator>::Item: crate::cmp::PartialOrd<<I as Iterator>::Item>,
+            {
+                // std defers to `is_sorted_by(|a, b| a <= b)`, so incomparable
+                // neighbours (a `None` from `partial_cmp`) make the answer `false`.
+                iter_is_sorted_by(self, |a, b| {
+                    matches!(
+                        crate::cmp::PartialOrd::partial_cmp(a, b),
+                        Option::Some(Ordering::Less | Ordering::Equal)
+                    )
+                })
+            }
+
+            fn is_sorted_by<F: Fn(&<I as Iterator>::Item, &<I as Iterator>::Item) -> bool>(
+                self,
+                compare: F,
+            ) -> bool {
+                iter_is_sorted_by(self, compare)
+            }
+
+            fn is_sorted_by_key<K: crate::cmp::PartialOrd<K>, F: Fn(<I as Iterator>::Item) -> K>(
+                self,
+                f: F,
+            ) -> bool {
+                iter_is_sorted_by(Map::new(self, f), |a, b| {
+                    matches!(
+                        crate::cmp::PartialOrd::partial_cmp(a, b),
+                        Option::Some(Ordering::Less | Ordering::Equal)
+                    )
+                })
+            }
+
+            #[cfg(not(hax_backend_fstar))]
+            fn collect_into<E: Extend<<I as Iterator>::Item>>(self, collection: &mut E) -> &mut E {
+                collection.extend(self);
+                collection
+            }
+
+            fn next_chunk<const N: usize>(
+                &mut self,
+            ) -> Result<
+                [<I as Iterator>::Item; N],
+                crate::array::iter::IntoIter<<I as Iterator>::Item, N>,
+            >
+            where
+                <I as Iterator>::Item: Clone,
+            {
+                iter_next_chunk(self)
+            }
+
+            fn try_fold<
+                B,
+                R: Try<Output = B> + FromResidual<<R as Try>::Residual>,
+                F: Fn(B, <I as Iterator>::Item) -> R,
+            >(
+                &mut self,
+                init: B,
+                f: F,
+            ) -> R {
+                iter_try_fold(self, init, f)
+            }
+
+            fn try_for_each<
+                R: Try<Output = ()> + FromResidual<<R as Try>::Residual>,
+                F: Fn(<I as Iterator>::Item) -> R,
+            >(
+                &mut self,
+                f: F,
+            ) -> R {
+                iter_try_for_each(self, f)
+            }
+
+            fn try_find<R, F: Fn(&<I as Iterator>::Item) -> R>(
+                &mut self,
+                f: F,
+            ) -> <<R as Try>::Residual as Residual<Option<<I as Iterator>::Item>>>::TryType
+            where
+                R: Try<Output = bool>,
+                <R as Try>::Residual: Residual<Option<<I as Iterator>::Item>>,
+                <<R as Try>::Residual as Residual<Option<<I as Iterator>::Item>>>::TryType:
+                    FromResidual<<R as Try>::Residual>,
+            {
+                iter_try_find(self, f)
+            }
+
+            fn try_reduce<R, F: Fn(<I as Iterator>::Item, <I as Iterator>::Item) -> R>(
+                &mut self,
+                f: F,
+            ) -> <<R as Try>::Residual as Residual<Option<<I as Iterator>::Item>>>::TryType
+            where
+                R: Try<Output = <I as Iterator>::Item>,
+                <R as Try>::Residual: Residual<Option<<I as Iterator>::Item>>,
+                <<R as Try>::Residual as Residual<Option<<I as Iterator>::Item>>>::TryType:
+                    FromResidual<<R as Try>::Residual>,
+            {
+                iter_try_reduce(self, f)
+            }
+
+            fn try_collect<B>(
+                &mut self,
+            ) -> <<<I as Iterator>::Item as Try>::Residual as Residual<B>>::TryType
+            where
+                <I as Iterator>::Item: Try,
+                <<I as Iterator>::Item as Try>::Residual: Residual<B>,
+                B: super::collect::FromIterator<<<I as Iterator>::Item as Try>::Output>,
+                <<<I as Iterator>::Item as Try>::Residual as Residual<B>>::TryType:
+                    FromResidual<<<I as Iterator>::Item as Try>::Residual>,
+            {
+                iter_try_collect(self)
             }
         }
 
@@ -631,6 +1484,56 @@ pub mod traits {
                 self
             }
         }
+    }
+    pub mod accum {
+        use super::iterator::Iterator;
+        use crate::option::Option;
+
+        // No `#[hax_lib::attributes]` on these two: the macro reorders the
+        // generics and rustc then rejects the defaulted `A = Self` as
+        // non-trailing.
+        /// See [`std::iter::Sum`]
+        pub trait Sum<A = Self>: Sized {
+            /// See [`std::iter::Sum::sum`]
+            fn sum<I: Iterator<Item = A>>(iter: I) -> Self;
+        }
+
+        /// See [`std::iter::Product`]
+        pub trait Product<A = Self>: Sized {
+            /// See [`std::iter::Product::product`]
+            fn product<I: Iterator<Item = A>>(iter: I) -> Self;
+        }
+
+        // `+` / `*` on the primitive, as std does, so that the overflow
+        // obligation is the same one the rest of this model raises.
+        macro_rules! sum_product_int {
+            ($($t:ty)*) => { $(
+                // opaque: while-let loop is not supported by hax FunctionalizeLoops
+                #[hax_lib::opaque]
+                impl Sum<$t> for $t {
+                    fn sum<I: Iterator<Item = $t>>(mut iter: I) -> $t {
+                        let mut acc: $t = 0;
+                        while let Option::Some(x) = iter.next() {
+                            acc = acc + x;
+                        }
+                        acc
+                    }
+                }
+                // opaque: while-let loop is not supported by hax FunctionalizeLoops
+                #[hax_lib::opaque]
+                impl Product<$t> for $t {
+                    fn product<I: Iterator<Item = $t>>(mut iter: I) -> $t {
+                        let mut acc: $t = 1;
+                        while let Option::Some(x) = iter.next() {
+                            acc = acc * x;
+                        }
+                        acc
+                    }
+                }
+            )* }
+        }
+
+        sum_product_int!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
     }
     pub mod double_ended {
         use super::iterator::Iterator;
@@ -655,6 +1558,18 @@ pub mod traits {
             fn nth_back(&mut self, n: usize) -> Option<Self::Item>;
             fn rfind<P: Fn(&Self::Item) -> bool>(&mut self, predicate: P) -> Option<Self::Item>;
             fn rfold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
+            /// `R: FromResidual<R::Residual>` is a deviation: std gets it from
+            /// `Try`'s supertrait, which the model's `ops::try_trait::Try` lacks.
+            fn try_rfold<
+                B,
+                R: crate::ops::try_trait::Try<Output = B>
+                    + crate::ops::try_trait::FromResidual<<R as crate::ops::try_trait::Try>::Residual>,
+                F: Fn(B, Self::Item) -> R,
+            >(
+                &mut self,
+                init: B,
+                f: F,
+            ) -> R;
         }
 
         // opaque: while-loop is not supported by hax FunctionalizeLoops
@@ -718,6 +1633,31 @@ pub mod traits {
             accum
         }
 
+        // opaque: while-let loop is not supported by hax FunctionalizeLoops
+        #[hax_lib::opaque]
+        fn iter_try_rfold<
+            I: DoubleEndedIterator,
+            B,
+            R: crate::ops::try_trait::Try<Output = B>
+                + crate::ops::try_trait::FromResidual<<R as crate::ops::try_trait::Try>::Residual>,
+            F: Fn(B, <I as Iterator>::Item) -> R,
+        >(
+            iter: &mut I,
+            init: B,
+            f: F,
+        ) -> R {
+            use crate::ops::control_flow::ControlFlow;
+            use crate::ops::try_trait::{FromResidual, Try};
+            let mut accum = init;
+            while let Option::Some(x) = iter.next_back() {
+                match Try::branch(f(accum, x)) {
+                    ControlFlow::Continue(v) => accum = v,
+                    ControlFlow::Break(residual) => return FromResidual::from_residual(residual),
+                }
+            }
+            Try::from_output(accum)
+        }
+
         #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
         // `<I as Iterator>::Item` rather than `Self::Item`: `Item` reaches this
@@ -741,6 +1681,19 @@ pub mod traits {
 
             fn rfold<B, F: Fn(B, <I as Iterator>::Item) -> B>(self, init: B, f: F) -> B {
                 iter_rfold(self, init, f)
+            }
+
+            fn try_rfold<
+                B,
+                R: crate::ops::try_trait::Try<Output = B>
+                    + crate::ops::try_trait::FromResidual<<R as crate::ops::try_trait::Try>::Residual>,
+                F: Fn(B, <I as Iterator>::Item) -> R,
+            >(
+                &mut self,
+                init: B,
+                f: F,
+            ) -> R {
+                iter_try_rfold(self, init, f)
             }
         }
     }
@@ -803,6 +1756,38 @@ pub mod traits {
         pub trait FromIterator<A>: Sized {
             #[hax_lib::requires(true)]
             fn from_iter<T: IntoIterator>(iter: T) -> Self;
+        }
+        /// See [`std::iter::Extend`]
+        #[hax_lib::attributes]
+        pub trait Extend<A> {
+            /// See [`std::iter::Extend::extend`]
+            // The `IntoIter: Iterator` bound that `IntoIterator` above
+            // deliberately omits is spelled out here, so that implementors can
+            // actually walk `iter`.
+            #[hax_lib::requires(true)]
+            fn extend<T: IntoIterator<Item = A>>(&mut self, iter: T)
+            where
+                T::IntoIter: super::iterator::Iterator<Item = A>;
+        }
+
+        // Companion trait for `Extend`'s default methods, for the reason given at
+        // the top of this file (see also `IteratorMethods`).
+        #[hax_lib::attributes]
+        pub(crate) trait ExtendMethods<A>: Extend<A> {
+            fn extend_one(&mut self, item: A);
+            fn extend_reserve(&mut self, additional: usize);
+        }
+
+        #[hax_lib::attributes]
+        #[cfg_attr(charon, aeneas::exclude)]
+        impl<A, E: Extend<A>> ExtendMethods<A> for E {
+            fn extend_one(&mut self, item: A) {
+                self.extend(super::super::sources::once::once(item))
+            }
+
+            // std's default is a no-op: reserving is an optimisation, and the
+            // model has no capacity to reserve.
+            fn extend_reserve(&mut self, additional: usize) {}
         }
     }
 }
@@ -1555,6 +2540,9 @@ pub mod adapters {
             }
         }
     }
+    // Not part of the F* model: the `Fn(&mut St, _)` bound its `Iterator` impl
+    // needs is rejected by hax (HAX0003 `DirectAndMut`, hacspec/hax#420).
+    #[cfg(not(hax_backend_fstar))]
     pub mod scan {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
@@ -1754,6 +2742,9 @@ pub mod adapters {
             }
 
             /// See [`std::iter::Peekable::next_if_map_mut`]
+            // Not part of the F* model: hax rejects handing a `&mut` to a closure
+            // (HAX0003 `DirectAndMut`, hacspec/hax#420).
+            #[cfg(not(hax_backend_fstar))]
             // std mutates the peeked element in place through `peek_mut`; the
             // model takes the element out, hands `f` a `&mut` to it, and puts it
             // back when `f` declines it. Same observable behaviour.
@@ -2016,6 +3007,9 @@ pub mod adapters {
             }
         }
     }
+    // Not part of the F* model: hax rejects a struct that holds a `&mut`
+    // (HAX0003 `DirectAndMut`, hacspec/hax#420).
+    #[cfg(not(hax_backend_fstar))]
     pub mod by_ref_sized {
         use super::super::traits::double_ended::DoubleEndedIterator;
         use super::super::traits::exact_size::ExactSizeIterator;
@@ -3260,7 +4254,460 @@ mod tests {
         }
     }
 
+    // `Default` and `Extend` for `std::Vec` exist only under `cfg(test)`: the
+    // model's collections live in the separate `alloc` crate, which is where the
+    // real impls belong. They are enough to exercise `unzip` / `partition` /
+    // `collect_into` / `Extend` here.
+    impl<T> crate::default::Default for Vec<T> {
+        fn default() -> Self {
+            Vec::new()
+        }
+    }
+
+    impl<T> super::traits::collect::Extend<T> for Vec<T> {
+        fn extend<It: super::traits::collect::IntoIterator<Item = T>>(&mut self, iter: It)
+        where
+            It::IntoIter: Iterator<Item = T>,
+        {
+            let mut it = iter.into_iter();
+            while let Option::Some(x) = it.next() {
+                self.push(x);
+            }
+        }
+    }
+
+    mod terminal {
+        use super::super::traits::collect::{Extend, ExtendMethods};
+        use super::super::traits::double_ended::DoubleEndedIteratorMethods;
+        use super::super::traits::iterator::IteratorMethods;
+        use super::{VecIter, drain};
+        use crate::option::Option;
+        use crate::result::Result;
+        use crate::testing::Inject;
+        use proptest::prelude::*;
+
+        /// Items whose comparison key (`.0`) can tie while the values differ, so
+        /// that the tie-breaking rules of `min_by`/`max_by` are observable.
+        fn keyed(v: &[u8]) -> Vec<(u8, usize)> {
+            v.iter().copied().enumerate().map(|(i, x)| (x, i)).collect()
+        }
+
+        proptest! {
+            // Bounded so neither the model nor std overflows.
+            #[test]
+            fn test_sum(v in prop::collection::vec(0..=1000u32, 0..=20)) {
+                prop_assert_eq!(
+                    IteratorMethods::sum::<u32>(VecIter::new(v.clone())),
+                    v.iter().sum::<u32>()
+                );
+            }
+
+            #[test]
+            fn test_product(v in prop::collection::vec(0..=3u64, 0..=20)) {
+                prop_assert_eq!(
+                    IteratorMethods::product::<u64>(VecIter::new(v.clone())),
+                    v.iter().product::<u64>()
+                );
+            }
+
+            #[test]
+            fn test_min_by(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let items = keyed(&v);
+                prop_assert_eq!(
+                    VecIter::new(items.clone())
+                        .min_by(|a: &(u8, usize), b: &(u8, usize)| a.0.cmp(&b.0).inject()),
+                    items.iter().copied().min_by(|a, b| a.0.cmp(&b.0)).inject()
+                );
+            }
+
+            #[test]
+            fn test_max_by(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let items = keyed(&v);
+                prop_assert_eq!(
+                    VecIter::new(items.clone())
+                        .max_by(|a: &(u8, usize), b: &(u8, usize)| a.0.cmp(&b.0).inject()),
+                    items.iter().copied().max_by(|a, b| a.0.cmp(&b.0)).inject()
+                );
+            }
+
+            #[test]
+            fn test_min_by_key(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let items = keyed(&v);
+                prop_assert_eq!(
+                    VecIter::new(items.clone()).min_by_key(|x: &(u8, usize)| x.0),
+                    items.iter().copied().min_by_key(|x| x.0).inject()
+                );
+            }
+
+            #[test]
+            fn test_max_by_key(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let items = keyed(&v);
+                prop_assert_eq!(
+                    VecIter::new(items.clone()).max_by_key(|x: &(u8, usize)| x.0),
+                    items.iter().copied().max_by_key(|x| x.0).inject()
+                );
+            }
+
+            #[test]
+            fn test_cmp(
+                a in prop::collection::vec(any::<u8>(), 0..=6),
+                b in prop::collection::vec(any::<u8>(), 0..=6),
+            ) {
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).cmp(VecIter::new(b.clone())),
+                    a.iter().cmp(b.iter()).inject()
+                );
+            }
+
+            #[test]
+            fn test_cmp_by(
+                a in prop::collection::vec(any::<u8>(), 0..=6),
+                b in prop::collection::vec(any::<u8>(), 0..=6),
+            ) {
+                prop_assert_eq!(
+                    VecIter::new(a.clone())
+                        .cmp_by(VecIter::new(b.clone()), |x: u8, y: u8| x.cmp(&y).inject()),
+                    a.iter().copied().cmp_by(b.iter().copied(), |x, y| x.cmp(&y)).inject()
+                );
+            }
+
+            #[test]
+            fn test_partial_cmp(
+                a in prop::collection::vec(any::<u8>(), 0..=6),
+                b in prop::collection::vec(any::<u8>(), 0..=6),
+            ) {
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).partial_cmp(VecIter::new(b.clone())),
+                    a.iter().partial_cmp(b.iter()).inject()
+                );
+            }
+
+            #[test]
+            fn test_partial_cmp_by(
+                a in prop::collection::vec(any::<u8>(), 0..=6),
+                b in prop::collection::vec(any::<u8>(), 0..=6),
+            ) {
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).partial_cmp_by(
+                        VecIter::new(b.clone()),
+                        |x: u8, y: u8| x.partial_cmp(&y).inject()
+                    ),
+                    a.iter()
+                        .copied()
+                        .partial_cmp_by(b.iter().copied(), |x, y| x.partial_cmp(&y))
+                        .inject()
+                );
+            }
+
+            #[test]
+            fn test_eq_ne_lt_le_gt_ge(
+                a in prop::collection::vec(any::<u8>(), 0..=6),
+                b in prop::collection::vec(any::<u8>(), 0..=6),
+            ) {
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).eq(VecIter::new(b.clone())),
+                    a.iter().eq(b.iter())
+                );
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).ne(VecIter::new(b.clone())),
+                    a.iter().ne(b.iter())
+                );
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).lt(VecIter::new(b.clone())),
+                    a.iter().lt(b.iter())
+                );
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).le(VecIter::new(b.clone())),
+                    a.iter().le(b.iter())
+                );
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).gt(VecIter::new(b.clone())),
+                    a.iter().gt(b.iter())
+                );
+                prop_assert_eq!(
+                    VecIter::new(a.clone()).ge(VecIter::new(b.clone())),
+                    a.iter().ge(b.iter())
+                );
+            }
+
+            #[test]
+            fn test_eq_by(
+                a in prop::collection::vec(any::<u8>(), 0..=6),
+                b in prop::collection::vec(any::<u8>(), 0..=6),
+            ) {
+                prop_assert_eq!(
+                    VecIter::new(a.clone())
+                        .eq_by(VecIter::new(b.clone()), |x: u8, y: u8| x == y),
+                    a.iter().copied().eq_by(b.iter().copied(), |x, y| x == y)
+                );
+            }
+
+            #[test]
+            fn test_unzip(v in prop::collection::vec((any::<u8>(), any::<i32>()), 0..=20)) {
+                let (ma, mb): (Vec<u8>, Vec<i32>) = VecIter::new(v.clone()).unzip();
+                let (sa, sb): (Vec<u8>, Vec<i32>) = v.iter().copied().unzip();
+                prop_assert_eq!(ma, sa);
+                prop_assert_eq!(mb, sb);
+            }
+
+            #[test]
+            fn test_partition(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                let (myes, mno): (Vec<u8>, Vec<u8>) =
+                    VecIter::new(v.clone()).partition(|x: &u8| *x > bound);
+                let (syes, sno): (Vec<u8>, Vec<u8>) =
+                    v.iter().copied().partition(|x| *x > bound);
+                prop_assert_eq!(myes, syes);
+                prop_assert_eq!(mno, sno);
+            }
+
+            #[test]
+            fn test_is_partitioned(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                prop_assert_eq!(
+                    VecIter::new(v.clone()).is_partitioned(|x: u8| x > bound),
+                    v.iter().copied().is_partitioned(|x| x > bound)
+                );
+            }
+
+            #[test]
+            fn test_is_sorted(v in prop::collection::vec(0..=3u8, 0..=8)) {
+                prop_assert_eq!(
+                    VecIter::new(v.clone()).is_sorted(),
+                    v.iter().is_sorted()
+                );
+            }
+
+            #[test]
+            fn test_is_sorted_by(v in prop::collection::vec(0..=3u8, 0..=8)) {
+                prop_assert_eq!(
+                    VecIter::new(v.clone()).is_sorted_by(|a: &u8, b: &u8| a < b),
+                    v.iter().copied().is_sorted_by(|a, b| a < b)
+                );
+            }
+
+            #[test]
+            fn test_is_sorted_by_key(v in prop::collection::vec(any::<i8>(), 0..=8)) {
+                prop_assert_eq!(
+                    VecIter::new(v.clone()).is_sorted_by_key(|x: i8| x.wrapping_abs()),
+                    v.iter().copied().is_sorted_by_key(|x| x.wrapping_abs())
+                );
+            }
+
+            // `collect_into` is not part of the F* model (see its declaration).
+            #[cfg(not(hax_backend_fstar))]
+            #[test]
+            fn test_collect_into(
+                v in prop::collection::vec(any::<u8>(), 0..=20),
+                seed in prop::collection::vec(any::<u8>(), 0..=3),
+            ) {
+                let mut model = seed.clone();
+                VecIter::new(v.clone()).collect_into(&mut model);
+                let mut expected = seed.clone();
+                v.iter().copied().collect_into(&mut expected);
+                prop_assert_eq!(model, expected);
+            }
+
+            #[test]
+            fn test_next_chunk(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = VecIter::new(v.clone());
+                let mut std_iter = v.iter().copied();
+                let m = IteratorMethods::next_chunk::<3>(&mut model);
+                let s = std_iter.next_chunk::<3>();
+                match (m, s) {
+                    (Result::Ok(ma), Ok(sa)) => prop_assert_eq!(ma, sa),
+                    (Result::Err(mr), Err(sr)) => {
+                        prop_assert_eq!(drain(mr), sr.collect::<Vec<u8>>())
+                    }
+                    _ => prop_assert!(false, "model and std disagreed on Ok/Err"),
+                }
+                // Whatever happened, both must be left at the same place.
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            #[test]
+            fn test_try_fold(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = VecIter::new(v.clone());
+                let m: Result<u8, ()> = model.try_fold(0u8, |acc: u8, x: u8| {
+                    match acc.checked_add(x) {
+                        Some(n) => Result::Ok(n),
+                        None => Result::Err(()),
+                    }
+                });
+                let mut std_iter = v.iter().copied();
+                let s: std::result::Result<u8, ()> =
+                    std_iter.try_fold(0u8, |acc, x| acc.checked_add(x).ok_or(()));
+                prop_assert_eq!(m, s.inject());
+                // A short-circuiting `try_fold` must leave the rest behind.
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            #[test]
+            fn test_try_for_each(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                let mut model = VecIter::new(v.clone());
+                let m: Result<(), u8> = model.try_for_each(|x: u8| {
+                    if x > bound { Result::Err(x) } else { Result::Ok(()) }
+                });
+                let mut std_iter = v.iter().copied();
+                let s: std::result::Result<(), u8> =
+                    std_iter.try_for_each(|x| if x > bound { Err(x) } else { Ok(()) });
+                prop_assert_eq!(m, s.inject());
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            #[test]
+            fn test_try_rfold(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = VecIter::new(v.clone());
+                let m: Result<u8, ()> = model.try_rfold(0u8, |acc: u8, x: u8| {
+                    match acc.checked_add(x) {
+                        Some(n) => Result::Ok(n),
+                        None => Result::Err(()),
+                    }
+                });
+                let mut std_iter = v.iter().copied();
+                let s: std::result::Result<u8, ()> =
+                    std_iter.try_rfold(0u8, |acc, x| acc.checked_add(x).ok_or(()));
+                prop_assert_eq!(m, s.inject());
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            #[test]
+            fn test_extend(
+                seed in prop::collection::vec(any::<u8>(), 0..=5),
+                v in prop::collection::vec(any::<u8>(), 0..=20),
+            ) {
+                let mut model = seed.clone();
+                Extend::extend(&mut model, VecIter::new(v.clone()));
+                let mut expected = seed.clone();
+                std::iter::Extend::extend(&mut expected, v.iter().copied());
+                prop_assert_eq!(model, expected);
+            }
+
+            // `Extend::extend_one` / `extend_reserve` are unstable in std, so their
+            // documented defaults are pinned directly: push one element, and do
+            // nothing at all respectively.
+            #[test]
+            fn test_extend_one(
+                seed in prop::collection::vec(any::<u8>(), 0..=5),
+                x in any::<u8>(),
+            ) {
+                let mut model = seed.clone();
+                ExtendMethods::extend_one(&mut model, x);
+                let mut expected = seed.clone();
+                expected.push(x);
+                prop_assert_eq!(model, expected);
+            }
+
+            #[test]
+            fn test_extend_reserve_is_a_no_op(
+                seed in prop::collection::vec(any::<u8>(), 0..=5),
+                n in 0usize..=10,
+            ) {
+                let mut model = seed.clone();
+                ExtendMethods::<u8>::extend_reserve(&mut model, n);
+                prop_assert_eq!(model, seed);
+            }
+        }
+
+        /// A `FromIterator` sink for `try_collect`. The model's
+        /// `FromIterator::from_iter` cannot walk its argument (its `T: IntoIterator`
+        /// bound does not require `T::IntoIter: Iterator`), so no model collection
+        /// can record what was collected. The test below therefore pins what
+        /// `try_collect` itself decides: whether the run short-circuits, with which
+        /// residual, and where it leaves the iterator.
+        struct Sink;
+
+        impl<A> super::super::traits::collect::FromIterator<A> for Sink {
+            fn from_iter<T: super::super::traits::collect::IntoIterator>(_iter: T) -> Sink {
+                Sink
+            }
+        }
+
+        proptest! {
+            #[test]
+            fn test_try_find(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                let mut model = VecIter::new(v.clone());
+                let m: Result<Option<u8>, u8> = model.try_find(|x: &u8| {
+                    if *x == 0 { Result::Err(*x) } else { Result::Ok(*x > bound) }
+                });
+                let mut std_iter = v.iter().copied();
+                let s: std::result::Result<std::option::Option<u8>, u8> =
+                    std_iter.try_find(|x| if *x == 0 { Err(*x) } else { Ok(*x > bound) });
+                prop_assert_eq!(m, s.inject());
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            #[test]
+            fn test_try_reduce(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = VecIter::new(v.clone());
+                let m: Result<Option<u8>, ()> = model.try_reduce(|a: u8, b: u8| {
+                    match a.checked_add(b) {
+                        Some(n) => Result::Ok(n),
+                        None => Result::Err(()),
+                    }
+                });
+                let mut std_iter = v.iter().copied();
+                let s: std::result::Result<std::option::Option<u8>, ()> =
+                    std_iter.try_reduce(|a, b| a.checked_add(b).ok_or(()));
+                prop_assert_eq!(m, s.inject());
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
+            #[test]
+            fn test_try_collect(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
+                let mut model = VecIter::new(v.clone())
+                    .map(|x: u8| if x > bound { Result::Err(x) } else { Result::Ok(x) });
+                let m: Result<Sink, u8> = model.try_collect();
+                let mut std_iter = v
+                    .iter()
+                    .copied()
+                    .map(|x| if x > bound { Err(x) } else { Ok(x) });
+                let s: std::result::Result<Vec<u8>, u8> = std_iter.try_collect();
+                match (&m, &s) {
+                    (Result::Ok(_), Ok(_)) => (),
+                    (Result::Err(a), Err(b)) => prop_assert_eq!(a, b),
+                    _ => prop_assert!(false, "model and std disagreed on Ok/Err"),
+                }
+                prop_assert_eq!(
+                    drain(model),
+                    std_iter.map(|r| r.inject()).collect::<Vec<_>>()
+                );
+            }
+        }
+
+        #[test]
+        fn test_sum_overflow_panics() {
+            crate::testing::panics_like_core(
+                || IteratorMethods::sum::<u8>(VecIter::new(vec![u8::MAX, 1u8])),
+                || [u8::MAX, 1u8].into_iter().sum::<u8>(),
+            );
+        }
+
+        #[test]
+        fn test_product_overflow_panics() {
+            crate::testing::panics_like_core(
+                || IteratorMethods::product::<u8>(VecIter::new(vec![16u8, 16u8])),
+                || [16u8, 16u8].into_iter().product::<u8>(),
+            );
+        }
+
+        #[test]
+        fn test_sum_of_empty_is_zero() {
+            assert_eq!(
+                IteratorMethods::sum::<u32>(VecIter::new(Vec::<u32>::new())),
+                std::iter::empty::<u32>().sum::<u32>()
+            );
+        }
+
+        #[test]
+        fn test_product_of_empty_is_one() {
+            assert_eq!(
+                IteratorMethods::product::<u32>(VecIter::new(Vec::<u32>::new())),
+                std::iter::empty::<u32>().product::<u32>()
+            );
+        }
+    }
+
     mod new_adapters {
+        #[cfg(not(hax_backend_fstar))]
         use super::super::adapters::by_ref_sized::ByRefSized;
         use super::super::traits::iterator::{Iterator, IteratorMethods};
         use super::{VecIter, drain};
@@ -3356,6 +4803,8 @@ mod tests {
 
             // A running sum that stops once it would overflow: exercises both the
             // state threading and the early `None`.
+            // `scan` is not part of the F* model (see its definition).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_scan(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let model = drain(VecIter::new(v.clone()).scan(0u8, |acc: &mut u8, x: u8| {
@@ -3472,6 +4921,8 @@ mod tests {
             // crate is pinned to, so its documented behaviour is pinned directly:
             // `f` gets a `&mut` to the next element, `Some` consumes it, and
             // `None` leaves the *mutated* element in the iterator.
+            // `next_if_map_mut` is not part of the F* model (see its definition).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_peekable_next_if_map_mut(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let mut model = VecIter::new(v.clone()).peekable();
@@ -3560,6 +5011,8 @@ mod tests {
             }
 
             // `by_ref` must leave the rest of the iterator behind.
+            // `ByRefSized` is not part of the F* model (see its definition).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_by_ref(v in prop::collection::vec(any::<u8>(), 0..=20), n in 0usize..=10) {
                 let mut model = VecIter::new(v.clone());

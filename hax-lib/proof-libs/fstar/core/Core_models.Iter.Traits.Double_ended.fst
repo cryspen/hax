@@ -37,6 +37,12 @@ include Core_models.Bundle {f_rfold_post as f_rfold_post}
 
 include Core_models.Bundle {f_rfold as f_rfold}
 
+include Core_models.Bundle {f_try_rfold_pre as f_try_rfold_pre}
+
+include Core_models.Bundle {f_try_rfold_post as f_try_rfold_post}
+
+include Core_models.Bundle {f_try_rfold as f_try_rfold}
+
 include Core_models.Bundle {iter_advance_back_by as iter_advance_back_by}
 
 include Core_models.Bundle {iter_nth_back as iter_nth_back}
@@ -44,5 +50,7 @@ include Core_models.Bundle {iter_nth_back as iter_nth_back}
 include Core_models.Bundle {iter_rfind as iter_rfind}
 
 include Core_models.Bundle {iter_rfold as iter_rfold}
+
+include Core_models.Bundle {iter_try_rfold as iter_try_rfold}
 
 include Core_models.Bundle {impl__from__double_ended as impl}

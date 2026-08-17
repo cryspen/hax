@@ -434,6 +434,12 @@ impl<T, E> crate::ops::try_trait::Try for Result<T, E> {
     }
 }
 
+/// The `Residual` half of `Try` for `Result`: given an output type `T`, the
+/// `Err(e)` residual reconstitutes as `Result<T, E>`.
+impl<T, E> crate::ops::try_trait::Residual<T> for Result<crate::convert::Infallible, E> {
+    type TryType = Result<T, E>;
+}
+
 #[cfg(not(hax_backend_fstar))]
 #[hax_lib::attributes]
 impl<T, E> Result<Option<T>, E> {

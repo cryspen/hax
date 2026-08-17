@@ -25,6 +25,148 @@ pub fn test_range_count_offset() -> bool {
     (3..10usize).count() == 7
 }
 
+// ----- Rust-only: the terminal operations ------------------------------------
+
+// As below, each of these goes through an `IteratorMethods` call, which the Lean
+// side does not have.
+#[cfg(test)]
+mod terminal {
+    #[test]
+    fn test_sum_of_range() {
+        assert_eq!((1..5u32).sum::<u32>(), 10);
+    }
+
+    #[test]
+    fn test_sum_of_empty_is_zero() {
+        assert_eq!((0..0u32).sum::<u32>(), 0);
+    }
+
+    #[test]
+    fn test_product_of_range() {
+        assert_eq!((1..5u32).product::<u32>(), 24);
+    }
+
+    #[test]
+    fn test_product_of_empty_is_one() {
+        assert_eq!((0..0u32).product::<u32>(), 1);
+    }
+
+    #[test]
+    fn test_product_with_zero() {
+        assert_eq!((0..5u32).product::<u32>(), 0);
+    }
+
+    // `min_by` keeps the first of two equal elements, `max_by` the last.
+    #[test]
+    fn test_min_by_and_max_by_tie_breaking() {
+        let v = [(1u8, 0usize), (0, 1), (0, 2), (1, 3)];
+        assert_eq!(v.into_iter().min_by(|a, b| a.0.cmp(&b.0)), Some((0, 1)));
+        assert_eq!(v.into_iter().max_by(|a, b| a.0.cmp(&b.0)), Some((1, 3)));
+    }
+
+    #[test]
+    fn test_min_by_key_and_max_by_key_tie_breaking() {
+        let v = [(1u8, 0usize), (0, 1), (0, 2), (1, 3)];
+        assert_eq!(v.into_iter().min_by_key(|x| x.0), Some((0, 1)));
+        assert_eq!(v.into_iter().max_by_key(|x| x.0), Some((1, 3)));
+    }
+
+    #[test]
+    fn test_min_by_of_empty() {
+        assert_eq!((0..0u8).min_by(|a, b| a.cmp(b)), crate::helpers::none_u8());
+    }
+
+    // A shorter prefix sorts before a longer sequence that extends it.
+    #[test]
+    fn test_cmp_prefix_is_less() {
+        assert_eq!((0..2u8).cmp(0..3u8), core::cmp::Ordering::Less);
+    }
+
+    #[test]
+    fn test_cmp_equal() {
+        assert_eq!((0..3u8).cmp(0..3u8), core::cmp::Ordering::Equal);
+    }
+
+    #[test]
+    fn test_partial_cmp_greater() {
+        assert_eq!(
+            (1..3u8).partial_cmp(0..3u8),
+            Some(core::cmp::Ordering::Greater)
+        );
+    }
+
+    #[test]
+    fn test_eq_and_ne() {
+        assert!((0..3u8).eq(0..3u8));
+        assert!((0..3u8).ne(0..4u8));
+    }
+
+    #[test]
+    fn test_lt_le_gt_ge() {
+        assert!((0..2u8).lt(0..3u8));
+        assert!((0..3u8).le(0..3u8));
+        assert!((0..4u8).gt(0..3u8));
+        assert!((0..3u8).ge(0..3u8));
+    }
+
+    #[test]
+    fn test_unzip() {
+        let (a, b): (Vec<u8>, Vec<u8>) = [(1u8, 2u8), (3, 4)].into_iter().unzip();
+        assert_eq!(a, vec![1, 3]);
+        assert_eq!(b, vec![2, 4]);
+    }
+
+    #[test]
+    fn test_partition() {
+        let (yes, no): (Vec<u32>, Vec<u32>) = (0..6u32).partition(|x| x % 2 == 0);
+        assert_eq!(yes, vec![0, 2, 4]);
+        assert_eq!(no, vec![1, 3, 5]);
+    }
+
+    #[test]
+    fn test_is_sorted() {
+        assert!((0..5u8).is_sorted());
+        assert!(!(0..5u8).rev().is_sorted());
+    }
+
+    #[test]
+    fn test_is_sorted_of_empty_and_singleton() {
+        assert!((0..0u8).is_sorted());
+        assert!((0..1u8).is_sorted());
+    }
+
+    #[test]
+    fn test_advance_by_past_the_end() {
+        let mut it = 0..2usize;
+        // `Err` carries how many steps were still missing.
+        assert_eq!(it.advance_by(5).map_err(|n| n.get()), Err(3));
+        assert_eq!(it.next(), None);
+    }
+
+    #[test]
+    fn test_advance_by_exact() {
+        let mut it = 0..3usize;
+        assert!(it.advance_by(2).is_ok());
+        assert_eq!(it.next(), Some(2));
+    }
+
+    #[test]
+    fn test_try_fold_short_circuits() {
+        let mut it = 0..5u8;
+        let r: Result<u8, u8> =
+            it.try_fold(0u8, |acc, x| if x == 3 { Err(x) } else { Ok(acc + x) });
+        assert_eq!(r, Err(3));
+        // The element that broke out is consumed; the rest is still there.
+        assert_eq!(it.collect::<Vec<u8>>(), vec![4]);
+    }
+
+    #[test]
+    fn test_try_for_each_all_ok() {
+        let r: Result<(), u8> = (0..5u8).try_for_each(|_| Ok(()));
+        assert_eq!(r, Ok(()));
+    }
+}
+
 // ----- Rust-only: the lazy adapters ------------------------------------------
 
 // As below, every one of these goes through an `IteratorMethods` call, which the
