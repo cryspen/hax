@@ -498,6 +498,108 @@ structure marker.StructuralPartialEq (Self : Type) where
 def marker.PhantomData (T : Type) := T
 -/  -- replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`
 
+/-- Trait declaration: [core_models::marker::MetaSized]
+    Source: 'core-models/src/core/marker.rs', lines 64:0-64:22
+    Visibility: public -/
+structure marker.MetaSized (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::PointeeSized]
+    Source: 'core-models/src/core/marker.rs', lines 66:0-66:25
+    Visibility: public -/
+structure marker.PointeeSized (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::Unsize]
+    Source: 'core-models/src/core/marker.rs', lines 68:0-68:22
+    Visibility: public -/
+structure marker.Unsize (Self : Type) (T : Type) where
+
+/-- Trait declaration: [core_models::marker::Freeze]
+    Source: 'core-models/src/core/marker.rs', lines 70:0-70:19
+    Visibility: public -/
+structure marker.Freeze (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::Unpin]
+    Source: 'core-models/src/core/marker.rs', lines 72:0-72:18
+    Visibility: public -/
+structure marker.Unpin (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::Destruct]
+    Source: 'core-models/src/core/marker.rs', lines 74:0-74:21
+    Visibility: public -/
+structure marker.Destruct (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::Tuple]
+    Source: 'core-models/src/core/marker.rs', lines 76:0-76:18
+    Visibility: public -/
+structure marker.Tuple (Self : Type) where
+
+/-- Trait declaration: [core_models::marker::ConstParamTy_]
+    Source: 'core-models/src/core/marker.rs', lines 78:0-78:64
+    Visibility: public -/
+structure marker.ConstParamTy_ (Self : Type) where
+  StructuralPartialEqInst : marker.StructuralPartialEq Self
+  cmpEqInst : cmp.Eq Self
+
+/-- Trait declaration: [core_models::marker::FnPtr]
+    Source: 'core-models/src/core/marker.rs', lines 84:0-84:24
+    Visibility: public -/
+structure marker.FnPtr (Self : Type) where
+  CopyInst : marker.Copy Self
+
+/-- Trait declaration: [core_models::marker::DiscriminantKind]
+    Source: 'core-models/src/core/marker.rs', lines 87:0-92:1
+    Visibility: public -/
+structure marker.DiscriminantKind (Self : Type) (Self_Discriminant : Type)
+  where
+
+/-- [core_models::marker::PhantomPinned]
+    Source: 'core-models/src/core/marker.rs', lines 95:0-95:25
+    Visibility: public -/
+@[reducible]
+def marker.PhantomPinned := Unit
+
+/-- Trait declaration: [core_models::marker::Variance]
+    Source: 'core-models/src/core/marker.rs', lines 100:0-100:46
+    Visibility: public -/
+structure marker.Variance (Self : Type) where
+  defaultDefaultInst : default.Default Self
+
+/-- [core_models::marker::PhantomCovariant]
+    Source: 'core-models/src/core/marker.rs', lines 118:12-118:61
+    Visibility: public -/
+@[reducible]
+def marker.PhantomCovariant (T : Type) := core.marker.PhantomData T
+
+/-- [core_models::marker::PhantomContravariant]
+    Source: 'core-models/src/core/marker.rs', lines 118:12-118:61
+    Visibility: public -/
+@[reducible]
+def marker.PhantomContravariant (T : Type) := core.marker.PhantomData T
+
+/-- [core_models::marker::PhantomInvariant]
+    Source: 'core-models/src/core/marker.rs', lines 118:12-118:61
+    Visibility: public -/
+@[reducible]
+def marker.PhantomInvariant (T : Type) := core.marker.PhantomData T
+
+/-- [core_models::marker::PhantomCovariantLifetime]
+    Source: 'core-models/src/core/marker.rs', lines 147:12-147:49
+    Visibility: public -/
+@[reducible]
+def marker.PhantomCovariantLifetime := marker.PhantomCovariant Unit
+
+/-- [core_models::marker::PhantomContravariantLifetime]
+    Source: 'core-models/src/core/marker.rs', lines 147:12-147:49
+    Visibility: public -/
+@[reducible]
+def marker.PhantomContravariantLifetime := marker.PhantomContravariant Unit
+
+/-- [core_models::marker::PhantomInvariantLifetime]
+    Source: 'core-models/src/core/marker.rs', lines 147:12-147:49
+    Visibility: public -/
+@[reducible]
+def marker.PhantomInvariantLifetime := marker.PhantomInvariant Unit
+
 /-- [core_models::mem::manually_drop::ManuallyDrop]
     Source: 'core-models/src/core/mem.rs', lines 136:4-138:5
     Visibility: public -/

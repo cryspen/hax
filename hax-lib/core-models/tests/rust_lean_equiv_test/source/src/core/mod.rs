@@ -7,6 +7,7 @@ pub mod cmp;
 pub mod convert;
 pub mod hint;
 pub mod iter;
+pub mod marker;
 pub mod mem;
 pub mod num;
 pub mod num_exhaustive;
