@@ -467,13 +467,161 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
         }
     }
     mod btree {
+        use rust_primitives::sequence::*;
+
+        /// Index of the first element of the *sorted* `s` that is not `Less`
+        /// than `key`, plus whether that element compares `Equal`. Every lookup
+        /// in the sorted-`Seq` model of `BTreeSet`/`BTreeMap` is built from
+        /// this, so the linear scan lives in one place.
+        fn seq_lower_bound<T: Ord>(s: &Seq<T>, key: &T) -> (usize, bool) {
+            let l = seq_len(s);
+            let mut pos = l;
+            let mut eq = false;
+            let mut done = false;
+            for i in 0..l {
+                if !done {
+                    let o = seq_index(s, i).cmp(key);
+                    if !o.is_lt() {
+                        pos = i;
+                        eq = o.is_eq();
+                        done = true
+                    }
+                }
+            }
+            (pos, eq)
+        }
+
+        /// `seq_lower_bound` against a *borrowed* key, as std's `BTreeSet`
+        /// lookups take. Spelled out separately rather than as the general case
+        /// so that the methods which do not need a `Borrow` bound (`insert`,
+        /// the set operations, …) do not have to carry one — the model has no
+        /// blanket `impl<T> Borrow<T> for T`.
+        fn seq_lower_bound_borrowed<T, Q>(s: &Seq<T>, key: &Q) -> (usize, bool)
+        where
+            T: core::borrow::Borrow<Q> + Ord,
+            Q: Ord + ?Sized,
+        {
+            let l = seq_len(s);
+            let mut pos = l;
+            let mut eq = false;
+            let mut done = false;
+            for i in 0..l {
+                if !done {
+                    let o = seq_index(s, i).borrow().cmp(key);
+                    if !o.is_lt() {
+                        pos = i;
+                        eq = o.is_eq();
+                        done = true
+                    }
+                }
+            }
+            (pos, eq)
+        }
+
+        /// Insert `value` at `index`, shifting the tail right (see the same
+        /// helper in `vec_deque`).
+        #[hax_lib::requires(index <= seq_len(s) && seq_len(s) < core::primitive::usize::MAX)]
+        fn seq_insert<T>(s: &mut Seq<T>, index: usize, value: T) {
+            let l = seq_len(s);
+            let mut right = seq_drain(s, index, l);
+            seq_push(s, value);
+            seq_concat(s, &mut right)
+        }
+
+        mod map {
+            /// See [`std::collections::btree_map::UnorderedKeyError`]: the error
+            /// `CursorMut::insert_before`/`insert_after` return. The cursor API
+            /// itself is not modeled, so nothing here produces one.
+            #[cfg_attr(test, derive(PartialEq, Debug))]
+            pub struct UnorderedKeyError;
+        }
+
+        /// Model of `alloc::collections::btree::set`.
+        ///
+        /// DEVIATION(std): a sorted, duplicate-free `Seq`, not a B-tree. This is
+        /// a *specification* of `BTreeSet`'s ordered-set semantics, not a
+        /// performant implementation — every lookup is a linear scan. All the
+        /// observable behaviour (element order, which of two equal elements is
+        /// kept, iteration order) matches std.
         mod set {
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-            struct BTreeSet<T, U>(Option<T>, Option<U>);
+            use super::{seq_insert, seq_lower_bound, seq_lower_bound_borrowed};
+            use hax_lib::ToInt;
+            use rust_primitives::sequence::*;
+            use std::marker::PhantomData;
 
-            impl BTreeSet<(), ()> {}
-            impl BTreeSet<(), ()> {}
-            impl BTreeSet<(), ()> {}
+            #[cfg_attr(test, derive(PartialEq, Debug))]
+            pub struct BTreeSet<T, A>(pub Seq<T>, PhantomData<A>);
+
+            /// See [`std::collections::btree_set::Iter`]
+            pub struct Iter<'a, T>(pub Seq<&'a T>);
+            /// See [`std::collections::btree_set::Difference`]
+            pub struct Difference<'a, T, A>(pub Seq<&'a T>, PhantomData<A>);
+            /// See [`std::collections::btree_set::Intersection`]
+            pub struct Intersection<'a, T, A>(pub Seq<&'a T>, PhantomData<A>);
+            /// See [`std::collections::btree_set::Union`]
+            pub struct Union<'a, T>(pub Seq<&'a T>);
+            /// See [`std::collections::btree_set::SymmetricDifference`]
+            pub struct SymmetricDifference<'a, T>(pub Seq<&'a T>);
+
+            impl<'a, T> Iterator for Iter<'a, T> {
+                type Item = &'a T;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+            }
+            impl<'a, T, A> Iterator for Difference<'a, T, A> {
+                type Item = &'a T;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+            }
+            impl<'a, T, A> Iterator for Intersection<'a, T, A> {
+                type Item = &'a T;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+            }
+            impl<'a, T> Iterator for Union<'a, T> {
+                type Item = &'a T;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+            }
+            impl<'a, T> Iterator for SymmetricDifference<'a, T> {
+                type Item = &'a T;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+            }
+
+            // Padding impls, as in `vec_deque`/`linked_list`: real `alloc` has
+            // thirteen impls (the comparison/`Clone`/`Hash` impls plus the
+            // iterator `Debug`s) before `impl<T> BTreeSet<T>`, and hax derives
+            // `impl_13__new` / `impl_14__insert` from that position. Eight
+            // here, because hax counts the five `Iterator` impls above too —
+            // which is also why those are written *before* this padding, so
+            // that the two `BTreeSet` blocks stay adjacent at 13 and 14. The
+            // count is calibrated against what hax emits.
             impl BTreeSet<(), ()> {}
             impl BTreeSet<(), ()> {}
             impl BTreeSet<(), ()> {}
@@ -483,14 +631,566 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             impl BTreeSet<(), ()> {}
             impl BTreeSet<(), ()> {}
 
-            impl<T, U> BTreeSet<T, U> {
-                // Excluded from coverage: the set is a dummy with nowhere to
-                // hold elements, so the only thing a test could pin is the
-                // dummy shape itself.
-                #[cfg_attr(coverage_nightly, coverage(off))]
-                #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-                fn new() -> BTreeSet<T, U> {
-                    BTreeSet(None, None)
+            impl<T> BTreeSet<T, crate::alloc::Global> {
+                /// See [`std::collections::BTreeSet::new`]
+                fn new() -> BTreeSet<T, crate::alloc::Global> {
+                    BTreeSet(seq_empty(), PhantomData)
+                }
+            }
+
+            #[hax_lib::attributes]
+            impl<T, A> BTreeSet<T, A> {
+                /// See [`std::collections::BTreeSet::new_in`]
+                fn new_in(_alloc: A) -> BTreeSet<T, A> {
+                    BTreeSet(seq_empty(), PhantomData)
+                }
+                /// See [`std::collections::BTreeSet::len`]
+                fn len(&self) -> usize {
+                    seq_len(&self.0)
+                }
+                /// See [`std::collections::BTreeSet::is_empty`]
+                fn is_empty(&self) -> bool {
+                    seq_len(&self.0) == 0
+                }
+                /// See [`std::collections::BTreeSet::clear`]
+                fn clear(&mut self) {
+                    self.0 = seq_empty()
+                }
+                /// See [`std::collections::BTreeSet::first`]
+                fn first(&self) -> Option<&T> {
+                    if self.len() == 0 {
+                        None
+                    } else {
+                        Some(seq_index(&self.0, 0))
+                    }
+                }
+                /// See [`std::collections::BTreeSet::last`]
+                fn last(&self) -> Option<&T> {
+                    let l = self.len();
+                    if l == 0 {
+                        None
+                    } else {
+                        Some(seq_index(&self.0, l - 1))
+                    }
+                }
+                /// See [`std::collections::BTreeSet::pop_first`]
+                fn pop_first(&mut self) -> Option<T> {
+                    if self.len() == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
+                /// See [`std::collections::BTreeSet::pop_last`]
+                fn pop_last(&mut self) -> Option<T> {
+                    let l = self.len();
+                    if l == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, l - 1))
+                    }
+                }
+                /// See [`std::collections::BTreeSet::insert`]: `false` when an
+                /// equal element was already present, which is then kept.
+                #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
+                fn insert(&mut self, value: T) -> bool
+                where
+                    T: Ord,
+                {
+                    let probe = seq_lower_bound(&self.0, &value);
+                    if probe.1 {
+                        false
+                    } else {
+                        seq_insert(&mut self.0, probe.0, value);
+                        true
+                    }
+                }
+                /// See [`std::collections::BTreeSet::replace`]: unlike `insert`,
+                /// the *new* element wins and the old one is returned.
+                #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
+                fn replace(&mut self, value: T) -> Option<T>
+                where
+                    T: Ord,
+                {
+                    let probe = seq_lower_bound(&self.0, &value);
+                    if probe.1 {
+                        let old = seq_remove(&mut self.0, probe.0);
+                        seq_insert(&mut self.0, probe.0, value);
+                        Some(old)
+                    } else {
+                        seq_insert(&mut self.0, probe.0, value);
+                        None
+                    }
+                }
+                /// See [`std::collections::BTreeSet::contains`]
+                fn contains<Q>(&self, value: &Q) -> bool
+                where
+                    T: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    seq_lower_bound_borrowed(&self.0, value).1
+                }
+                /// See [`std::collections::BTreeSet::get`]
+                fn get<Q>(&self, value: &Q) -> Option<&T>
+                where
+                    T: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    let probe = seq_lower_bound_borrowed(&self.0, value);
+                    if probe.1 {
+                        Some(seq_index(&self.0, probe.0))
+                    } else {
+                        None
+                    }
+                }
+                /// See [`std::collections::BTreeSet::remove`]
+                fn remove<Q>(&mut self, value: &Q) -> bool
+                where
+                    T: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    let probe = seq_lower_bound_borrowed(&self.0, value);
+                    if probe.1 {
+                        let _removed = seq_remove(&mut self.0, probe.0);
+                        true
+                    } else {
+                        false
+                    }
+                }
+                /// See [`std::collections::BTreeSet::take`]
+                fn take<Q>(&mut self, value: &Q) -> Option<T>
+                where
+                    T: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    let probe = seq_lower_bound_borrowed(&self.0, value);
+                    if probe.1 {
+                        Some(seq_remove(&mut self.0, probe.0))
+                    } else {
+                        None
+                    }
+                }
+                /// See [`std::collections::BTreeSet::split_off`]: keeps the
+                /// elements `< value`, returns those `>= value`.
+                fn split_off<Q>(&mut self, value: &Q) -> BTreeSet<T, A>
+                where
+                    T: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                    A: Clone,
+                {
+                    let l = self.len();
+                    let probe = seq_lower_bound_borrowed(&self.0, value);
+                    BTreeSet(seq_drain(&mut self.0, probe.0, l), PhantomData::<A>)
+                }
+                /// See [`std::collections::BTreeSet::append`]: elements from
+                /// `other` win over equal ones already in `self`.
+                fn append(&mut self, other: &mut BTreeSet<T, A>)
+                where
+                    T: Ord,
+                {
+                    let l = other.len();
+                    for _k in 0..l {
+                        if other.len() > 0 {
+                            let x = seq_remove(&mut other.0, 0);
+                            let _old = self.replace(x);
+                        }
+                    }
+                }
+                /// See [`std::collections::BTreeSet::retain`].
+                ///
+                /// DEVIATION(std): bounded by `Fn`, not `FnMut` — see the note
+                /// on `vec_deque`.
+                fn retain<F: Fn(&T) -> bool>(&mut self, f: F)
+                where
+                    T: Ord,
+                {
+                    let l = self.len();
+                    for k in 0..l {
+                        hax_lib::loop_invariant!(
+                            |k: usize| seq_len(&self.0).to_int() + k.to_int() >= l.to_int()
+                        );
+                        let i = l - 1 - k;
+                        if !f(seq_index(&self.0, i)) {
+                            let _removed = seq_remove(&mut self.0, i);
+                        }
+                    }
+                }
+                /// See [`std::collections::BTreeSet::iter`]
+                fn iter(&self) -> Iter<'_, T> {
+                    Iter(seq_from_slice(seq_to_slice(&self.0)))
+                }
+                /// See [`std::collections::BTreeSet::is_subset`]
+                fn is_subset(&self, other: &BTreeSet<T, A>) -> bool
+                where
+                    T: Ord,
+                {
+                    let mut res = true;
+                    for i in 0..self.len() {
+                        if !seq_lower_bound(&other.0, seq_index(&self.0, i)).1 {
+                            res = false
+                        }
+                    }
+                    res
+                }
+                /// See [`std::collections::BTreeSet::is_superset`]
+                fn is_superset(&self, other: &BTreeSet<T, A>) -> bool
+                where
+                    T: Ord,
+                {
+                    other.is_subset(self)
+                }
+                /// See [`std::collections::BTreeSet::is_disjoint`]
+                fn is_disjoint(&self, other: &BTreeSet<T, A>) -> bool
+                where
+                    T: Ord,
+                {
+                    let mut res = true;
+                    for i in 0..self.len() {
+                        if seq_lower_bound(&other.0, seq_index(&self.0, i)).1 {
+                            res = false
+                        }
+                    }
+                    res
+                }
+                /// See [`std::collections::BTreeSet::difference`]
+                fn difference<'a>(&'a self, other: &'a BTreeSet<T, A>) -> Difference<'a, T, A>
+                where
+                    T: Ord,
+                {
+                    let mut out = seq_empty();
+                    for i in 0..self.len() {
+                        let x = seq_index(&self.0, i);
+                        if !seq_lower_bound(&other.0, x).1 {
+                            seq_push(&mut out, x)
+                        }
+                    }
+                    Difference(out, PhantomData::<A>)
+                }
+                /// See [`std::collections::BTreeSet::intersection`]
+                fn intersection<'a>(&'a self, other: &'a BTreeSet<T, A>) -> Intersection<'a, T, A>
+                where
+                    T: Ord,
+                {
+                    let mut out = seq_empty();
+                    for i in 0..self.len() {
+                        let x = seq_index(&self.0, i);
+                        if seq_lower_bound(&other.0, x).1 {
+                            seq_push(&mut out, x)
+                        }
+                    }
+                    Intersection(out, PhantomData::<A>)
+                }
+                /// See [`std::collections::BTreeSet::union`]: ascending, each
+                /// element once, `self`'s copy on a tie (as std does).
+                fn union<'a>(&'a self, other: &'a BTreeSet<T, A>) -> Union<'a, T>
+                where
+                    T: Ord,
+                {
+                    let mut out = seq_empty();
+                    let mut i = 0;
+                    let mut j = 0;
+                    while i < self.len() || j < other.len() {
+                        if i >= self.len() {
+                            seq_push(&mut out, seq_index(&other.0, j));
+                            j += 1
+                        } else if j >= other.len() {
+                            seq_push(&mut out, seq_index(&self.0, i));
+                            i += 1
+                        } else {
+                            let a = seq_index(&self.0, i);
+                            let b = seq_index(&other.0, j);
+                            let o = a.cmp(b);
+                            if o.is_lt() {
+                                seq_push(&mut out, a);
+                                i += 1
+                            } else if o.is_gt() {
+                                seq_push(&mut out, b);
+                                j += 1
+                            } else {
+                                seq_push(&mut out, a);
+                                i += 1;
+                                j += 1
+                            }
+                        }
+                    }
+                    Union(out)
+                }
+                /// See [`std::collections::BTreeSet::symmetric_difference`]
+                fn symmetric_difference<'a>(
+                    &'a self,
+                    other: &'a BTreeSet<T, A>,
+                ) -> SymmetricDifference<'a, T>
+                where
+                    T: Ord,
+                {
+                    let mut out = seq_empty();
+                    let mut i = 0;
+                    let mut j = 0;
+                    while i < self.len() || j < other.len() {
+                        if i >= self.len() {
+                            seq_push(&mut out, seq_index(&other.0, j));
+                            j += 1
+                        } else if j >= other.len() {
+                            seq_push(&mut out, seq_index(&self.0, i));
+                            i += 1
+                        } else {
+                            let a = seq_index(&self.0, i);
+                            let b = seq_index(&other.0, j);
+                            let o = a.cmp(b);
+                            if o.is_lt() {
+                                seq_push(&mut out, a);
+                                i += 1
+                            } else if o.is_gt() {
+                                seq_push(&mut out, b);
+                                j += 1
+                            } else {
+                                i += 1;
+                                j += 1
+                            }
+                        }
+                    }
+                    SymmetricDifference(out)
+                }
+            }
+
+            #[cfg(test)]
+            mod tests {
+                use crate::testing::Inject;
+                use proptest::prelude::*;
+
+                type Model<T> = super::BTreeSet<T, crate::alloc::Global>;
+                type Std<T> = std::collections::BTreeSet<T>;
+
+                impl<T: Clone + Ord> Inject for Std<T> {
+                    type Model = Model<T>;
+                    fn inject(&self) -> Model<T> {
+                        let flat: std::vec::Vec<T> = self.iter().cloned().collect();
+                        super::BTreeSet(
+                            rust_primitives::sequence::seq_from_boxed_slice(
+                                flat.into_boxed_slice(),
+                            ),
+                            std::marker::PhantomData,
+                        )
+                    }
+                }
+
+                fn build(elements: &[u8]) -> (Model<u8>, Std<u8>) {
+                    let mut model = Model::new();
+                    let mut std_set = Std::new();
+                    for &e in elements {
+                        model.insert(e);
+                        std_set.insert(e);
+                    }
+                    (model, std_set)
+                }
+
+                proptest! {
+                    #[test]
+                    fn test_insert_dedups_and_sorts(
+                        elements in prop::collection::vec(0u8..8, 0..20)) {
+                        let mut model = Model::new();
+                        let mut std_set = Std::new();
+                        for &e in &elements {
+                            prop_assert_eq!(model.insert(e), std_set.insert(e));
+                        }
+                        prop_assert_eq!(model, std_set.inject());
+                    }
+
+                    #[test]
+                    fn test_len_is_empty(elements in prop::collection::vec(0u8..8, 0..20)) {
+                        let (model, std_set) = build(&elements);
+                        prop_assert_eq!(model.len(), std_set.len());
+                        prop_assert_eq!(model.is_empty(), std_set.is_empty());
+                    }
+
+                    #[test]
+                    fn test_contains(elements in prop::collection::vec(0u8..8, 0..20),
+                                     x in 0u8..10) {
+                        let (model, std_set) = build(&elements);
+                        prop_assert_eq!(model.contains(&x), std_set.contains(&x));
+                    }
+
+                    #[test]
+                    fn test_get(elements in prop::collection::vec(0u8..8, 0..20), x in 0u8..10) {
+                        let (model, std_set) = build(&elements);
+                        prop_assert_eq!(model.get(&x), std_set.get(&x));
+                    }
+
+                    #[test]
+                    fn test_remove(elements in prop::collection::vec(0u8..8, 0..20), x in 0u8..10) {
+                        let (mut model, mut std_set) = build(&elements);
+                        prop_assert_eq!(model.remove(&x), std_set.remove(&x));
+                        prop_assert_eq!(model, std_set.inject());
+                    }
+
+                    #[test]
+                    fn test_take(elements in prop::collection::vec(0u8..8, 0..20), x in 0u8..10) {
+                        let (mut model, mut std_set) = build(&elements);
+                        prop_assert_eq!(model.take(&x), std_set.take(&x));
+                        prop_assert_eq!(model, std_set.inject());
+                    }
+
+                    #[test]
+                    fn test_replace(elements in prop::collection::vec(0u8..8, 0..20),
+                                    x in 0u8..10) {
+                        let (mut model, mut std_set) = build(&elements);
+                        prop_assert_eq!(model.replace(x), std_set.replace(x));
+                        prop_assert_eq!(model, std_set.inject());
+                    }
+
+                    #[test]
+                    fn test_first_last(elements in prop::collection::vec(0u8..8, 0..20)) {
+                        let (model, std_set) = build(&elements);
+                        prop_assert_eq!(model.first(), std_set.first());
+                        prop_assert_eq!(model.last(), std_set.last());
+                    }
+
+                    #[test]
+                    fn test_pop_first(elements in prop::collection::vec(0u8..8, 0..20)) {
+                        let (mut model, mut std_set) = build(&elements);
+                        for _ in 0..=elements.len() {
+                            prop_assert_eq!(model.pop_first(), std_set.pop_first());
+                            prop_assert_eq!(&model, &std_set.inject());
+                        }
+                    }
+
+                    #[test]
+                    fn test_pop_last(elements in prop::collection::vec(0u8..8, 0..20)) {
+                        let (mut model, mut std_set) = build(&elements);
+                        for _ in 0..=elements.len() {
+                            prop_assert_eq!(model.pop_last(), std_set.pop_last());
+                            prop_assert_eq!(&model, &std_set.inject());
+                        }
+                    }
+
+                    #[test]
+                    fn test_clear(elements in prop::collection::vec(0u8..8, 0..20)) {
+                        let (mut model, mut std_set) = build(&elements);
+                        model.clear();
+                        std_set.clear();
+                        prop_assert_eq!(model, std_set.inject());
+                    }
+
+                    #[test]
+                    fn test_append(a in prop::collection::vec(0u8..8, 0..20),
+                                   b in prop::collection::vec(0u8..8, 0..20)) {
+                        let (mut model_a, mut std_a) = build(&a);
+                        let (mut model_b, mut std_b) = build(&b);
+                        model_a.append(&mut model_b);
+                        std_a.append(&mut std_b);
+                        prop_assert_eq!(model_a, std_a.inject());
+                        prop_assert_eq!(model_b, std_b.inject());
+                    }
+
+                    #[test]
+                    fn test_split_off(elements in prop::collection::vec(0u8..8, 0..20),
+                                      at in 0u8..10) {
+                        let (mut model, mut std_set) = build(&elements);
+                        let model_tail = model.split_off(&at);
+                        let std_tail = std_set.split_off(&at);
+                        prop_assert_eq!(model, std_set.inject());
+                        prop_assert_eq!(model_tail, std_tail.inject());
+                    }
+
+                    #[test]
+                    fn test_retain(elements in prop::collection::vec(0u8..8, 0..20), t in 0u8..10) {
+                        let (mut model, mut std_set) = build(&elements);
+                        model.retain(|x| *x < t);
+                        std_set.retain(|x| *x < t);
+                        prop_assert_eq!(model, std_set.inject());
+                    }
+
+                    #[test]
+                    fn test_iter(elements in prop::collection::vec(0u8..8, 0..20)) {
+                        let (model, std_set) = build(&elements);
+                        let from_model: std::vec::Vec<u8> = model.iter().copied().collect();
+                        let from_std: std::vec::Vec<u8> = std_set.iter().copied().collect();
+                        prop_assert_eq!(from_model, from_std);
+                    }
+
+                    #[test]
+                    fn test_subset_superset_disjoint(
+                        a in prop::collection::vec(0u8..8, 0..12),
+                        b in prop::collection::vec(0u8..8, 0..12)) {
+                        let (model_a, std_a) = build(&a);
+                        let (model_b, std_b) = build(&b);
+                        prop_assert_eq!(model_a.is_subset(&model_b), std_a.is_subset(&std_b));
+                        prop_assert_eq!(model_a.is_superset(&model_b), std_a.is_superset(&std_b));
+                        prop_assert_eq!(model_a.is_disjoint(&model_b), std_a.is_disjoint(&std_b));
+                    }
+
+                    #[test]
+                    fn test_set_operations(a in prop::collection::vec(0u8..8, 0..12),
+                                           b in prop::collection::vec(0u8..8, 0..12)) {
+                        let (model_a, std_a) = build(&a);
+                        let (model_b, std_b) = build(&b);
+                        let m: std::vec::Vec<u8> = model_a.difference(&model_b).copied().collect();
+                        let s: std::vec::Vec<u8> = std_a.difference(&std_b).copied().collect();
+                        prop_assert_eq!(m, s);
+                        let m: std::vec::Vec<u8> =
+                            model_a.intersection(&model_b).copied().collect();
+                        let s: std::vec::Vec<u8> = std_a.intersection(&std_b).copied().collect();
+                        prop_assert_eq!(m, s);
+                        let m: std::vec::Vec<u8> = model_a.union(&model_b).copied().collect();
+                        let s: std::vec::Vec<u8> = std_a.union(&std_b).copied().collect();
+                        prop_assert_eq!(m, s);
+                        let m: std::vec::Vec<u8> =
+                            model_a.symmetric_difference(&model_b).copied().collect();
+                        let s: std::vec::Vec<u8> =
+                            std_a.symmetric_difference(&std_b).copied().collect();
+                        prop_assert_eq!(m, s);
+                    }
+                }
+
+                #[test]
+                fn test_new() {
+                    let model = Model::<u8>::new();
+                    assert!(model.is_empty());
+                    assert_eq!(model.len(), std::collections::BTreeSet::<u8>::new().len());
+                }
+
+                // `new_in` is unstable in std (`btreemap_alloc`), so the
+                // expectation — an empty set — is pinned here.
+                #[test]
+                fn test_new_in() {
+                    let model = Model::<u8>::new_in(crate::alloc::Global);
+                    assert!(model.is_empty());
+                }
+            }
+        }
+
+        #[cfg(test)]
+        mod tests {
+            use proptest::prelude::*;
+
+            proptest! {
+                #[test]
+                fn test_seq_lower_bound(elements in prop::collection::vec(0u8..8, 0..20),
+                                        key in 0u8..10) {
+                    let mut sorted = elements.clone();
+                    sorted.sort();
+                    let seq = rust_primitives::sequence::seq_from_boxed_slice(
+                        sorted.clone().into_boxed_slice());
+                    let (pos, eq) = super::seq_lower_bound(&seq, &key);
+                    prop_assert_eq!(pos, sorted.partition_point(|x| *x < key));
+                    prop_assert_eq!(eq, sorted.binary_search(&key).is_ok());
+                    // The borrowed variant must agree at `Q = T`.
+                    prop_assert_eq!(super::seq_lower_bound_borrowed(&seq, &key), (pos, eq));
+                }
+
+                #[test]
+                fn test_seq_insert(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                   at in 0usize..21, x in any::<u8>()) {
+                    let at = at % (elements.len() + 1);
+                    let mut seq = rust_primitives::sequence::seq_from_boxed_slice(
+                        elements.clone().into_boxed_slice());
+                    super::seq_insert(&mut seq, at, x);
+                    let mut expected = elements.clone();
+                    expected.insert(at, x);
+                    prop_assert_eq!(
+                        rust_primitives::sequence::seq_to_slice(&seq),
+                        &expected[..]
+                    );
                 }
             }
         }
