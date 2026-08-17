@@ -17670,15 +17670,12 @@
    },
    {
     "module": "panicking",
-    "covered": 2,
+    "covered": 31,
     "total": 31,
     "in_scope": true,
     "covered_items": [
-     "panic",
-     "panic_fmt"
-    ],
-    "missing_items": [
      "const_panic_fmt",
+     "panic",
      "panic_const_add_overflow",
      "panic_const_async_fn_resumed",
      "panic_const_async_fn_resumed_drop",
@@ -17702,12 +17699,14 @@
      "panic_const_shr_overflow",
      "panic_const_sub_overflow",
      "panic_display",
+     "panic_fmt",
      "panic_nounwind",
      "panic_nounwind_fmt",
      "panic_nounwind_nobacktrace",
      "panic_str_2015",
      "unreachable_display"
-    ]
+    ],
+    "missing_items": []
    },
    {
     "module": "pat",
