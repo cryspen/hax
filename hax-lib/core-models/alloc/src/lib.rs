@@ -503,6 +503,362 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             }
         }
     }
+    /// Model of `alloc::collections::linked_list`.
+    ///
+    /// DEVIATION(std): a `Seq`, not a doubly-linked list. Every observation std
+    /// makes about a `LinkedList` is about its element sequence, so the two
+    /// agree on the whole non-cursor API; the `Cursor`/`CursorMut` half, which
+    /// is the only place the node structure is observable, is not modeled.
+    mod linked_list {
+        use hax_lib::ToInt;
+        use rust_primitives::sequence::*;
+
+        #[cfg_attr(test, derive(PartialEq, Debug))]
+        pub struct LinkedList<T, A>(pub Seq<T>, std::marker::PhantomData<A>);
+
+        /// The shared-borrow iterator returned by
+        /// [`std::collections::LinkedList::iter`].
+        pub struct Iter<'a, T>(pub Seq<&'a T>);
+
+        // Empty impls to line the model's impl numbering up with real
+        // `alloc`'s, where four iterator `Debug`/`Clone` impls, `Node`'s
+        // inherent block, a private `LinkedList` helper block and `Default`
+        // precede the two public inherent blocks (see the same comment in
+        // `vec_deque`). Six, not seven, because hax also counts the
+        // `Iterator for Iter` impl below ahead of these — the count is
+        // calibrated so that hax emits `impl_7__new` / `impl_8__len`, which is
+        // what it derives at real-`alloc` call sites.
+        impl LinkedList<(), ()> {}
+        impl LinkedList<(), ()> {}
+        impl LinkedList<(), ()> {}
+        impl LinkedList<(), ()> {}
+        impl LinkedList<(), ()> {}
+        impl LinkedList<(), ()> {}
+
+        #[hax_lib::attributes]
+        impl<T> LinkedList<T, crate::alloc::Global> {
+            /// See [`std::collections::LinkedList::new`]
+            fn new() -> LinkedList<T, crate::alloc::Global> {
+                LinkedList(seq_empty(), std::marker::PhantomData)
+            }
+            /// See [`std::collections::LinkedList::append`]
+            #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= core::primitive::usize::MAX.to_int())]
+            fn append(&mut self, other: &mut LinkedList<T, crate::alloc::Global>) {
+                seq_concat(&mut self.0, &mut other.0);
+                other.0 = seq_empty()
+            }
+        }
+
+        #[hax_lib::attributes]
+        impl<T, A> LinkedList<T, A> {
+            /// See [`std::collections::LinkedList::new_in`]
+            fn new_in(_alloc: A) -> LinkedList<T, A> {
+                LinkedList(seq_empty(), std::marker::PhantomData)
+            }
+            /// See [`std::collections::LinkedList::len`]
+            fn len(&self) -> usize {
+                seq_len(&self.0)
+            }
+            /// See [`std::collections::LinkedList::is_empty`]
+            fn is_empty(&self) -> bool {
+                seq_len(&self.0) == 0
+            }
+            /// See [`std::collections::LinkedList::clear`]
+            fn clear(&mut self) {
+                self.0 = seq_empty()
+            }
+            /// See [`std::collections::LinkedList::front`]
+            fn front(&self) -> Option<&T> {
+                if self.len() == 0 {
+                    None
+                } else {
+                    Some(seq_index(&self.0, 0))
+                }
+            }
+            /// See [`std::collections::LinkedList::back`]
+            fn back(&self) -> Option<&T> {
+                let l = self.len();
+                if l == 0 {
+                    None
+                } else {
+                    Some(seq_index(&self.0, l - 1))
+                }
+            }
+            /// See [`std::collections::LinkedList::push_front`]
+            #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
+            fn push_front(&mut self, elt: T) {
+                let l = seq_len(&self.0);
+                let mut right = seq_drain(&mut self.0, 0, l);
+                seq_push(&mut self.0, elt);
+                seq_concat(&mut self.0, &mut right)
+            }
+            /// See [`std::collections::LinkedList::push_back`]
+            #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
+            fn push_back(&mut self, elt: T) {
+                seq_push(&mut self.0, elt)
+            }
+            /// See [`std::collections::LinkedList::pop_front`]
+            fn pop_front(&mut self) -> Option<T> {
+                if self.len() == 0 {
+                    None
+                } else {
+                    Some(seq_remove(&mut self.0, 0))
+                }
+            }
+            /// See [`std::collections::LinkedList::pop_back`]
+            fn pop_back(&mut self) -> Option<T> {
+                let l = self.len();
+                if l == 0 {
+                    None
+                } else {
+                    Some(seq_remove(&mut self.0, l - 1))
+                }
+            }
+            /// See [`std::collections::LinkedList::split_off`]
+            #[hax_lib::requires(at <= self.len())]
+            fn split_off(&mut self, at: usize) -> LinkedList<T, A>
+            where
+                A: Clone,
+            {
+                let l = self.len();
+                LinkedList(seq_drain(&mut self.0, at, l), std::marker::PhantomData::<A>)
+            }
+            /// See [`std::collections::LinkedList::remove`] (unstable in std:
+            /// `linked_list_remove`): removes and returns the element at `at`,
+            /// panicking when `at` is out of bounds.
+            #[hax_lib::requires(at < self.len())]
+            fn remove(&mut self, at: usize) -> T {
+                seq_remove(&mut self.0, at)
+            }
+            /// See [`std::collections::LinkedList::contains`].
+            ///
+            /// Opaque for F* only, for the same reason as
+            /// `VecDeque::contains`: hax lowers a generic `PartialEq::eq` to
+            /// F*'s primitive `=.`, which demands an `eqtype`.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn contains(&self, x: &T) -> bool
+            where
+                T: PartialEq<T>,
+            {
+                let mut found = false;
+                for i in 0..self.len() {
+                    if seq_index(&self.0, i).eq(x) {
+                        found = true
+                    }
+                }
+                found
+            }
+            /// See [`std::collections::LinkedList::iter`]
+            fn iter(&self) -> Iter<'_, T> {
+                Iter(seq_from_slice(seq_to_slice(&self.0)))
+            }
+        }
+
+        impl<'a, T> Iterator for Iter<'a, T> {
+            type Item = &'a T;
+            fn next(&mut self) -> Option<Self::Item> {
+                if seq_len(&self.0) == 0 {
+                    None
+                } else {
+                    Some(seq_remove(&mut self.0, 0))
+                }
+            }
+        }
+
+        #[cfg(test)]
+        mod tests {
+            use crate::testing::{Inject, panics_like_core};
+            use proptest::prelude::*;
+
+            type Model<T> = super::LinkedList<T, crate::alloc::Global>;
+            type Std<T> = std::collections::LinkedList<T>;
+
+            impl<T: Clone> Inject for Std<T> {
+                type Model = Model<T>;
+                fn inject(&self) -> Model<T> {
+                    let flat: std::vec::Vec<T> = self.iter().cloned().collect();
+                    super::LinkedList(
+                        rust_primitives::sequence::seq_from_boxed_slice(flat.into_boxed_slice()),
+                        std::marker::PhantomData,
+                    )
+                }
+            }
+
+            fn build(elements: &[u8]) -> (Model<u8>, Std<u8>) {
+                let mut std_list = Std::new();
+                for &e in elements {
+                    std_list.push_back(e);
+                }
+                (std_list.inject(), std_list)
+            }
+
+            proptest! {
+                #[test]
+                fn test_push_back_len(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let mut model = Model::new();
+                    let mut std_list = Std::new();
+                    for &e in &elements {
+                        model.push_back(e);
+                        std_list.push_back(e);
+                    }
+                    prop_assert_eq!(model.len(), std_list.len());
+                    prop_assert_eq!(model, std_list.inject());
+                }
+
+                #[test]
+                fn test_push_front(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let mut model = Model::new();
+                    let mut std_list = Std::new();
+                    for &e in &elements {
+                        model.push_front(e);
+                        std_list.push_front(e);
+                    }
+                    prop_assert_eq!(model, std_list.inject());
+                }
+
+                #[test]
+                fn test_len_is_empty(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (model, std_list) = build(&elements);
+                    prop_assert_eq!(model.len(), std_list.len());
+                    prop_assert_eq!(model.is_empty(), std_list.is_empty());
+                }
+
+                #[test]
+                fn test_pop_front(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (mut model, mut std_list) = build(&elements);
+                    for _ in 0..=elements.len() {
+                        prop_assert_eq!(model.pop_front(), std_list.pop_front());
+                        prop_assert_eq!(&model, &std_list.inject());
+                    }
+                }
+
+                #[test]
+                fn test_pop_back(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (mut model, mut std_list) = build(&elements);
+                    for _ in 0..=elements.len() {
+                        prop_assert_eq!(model.pop_back(), std_list.pop_back());
+                        prop_assert_eq!(&model, &std_list.inject());
+                    }
+                }
+
+                #[test]
+                fn test_front_back(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (model, std_list) = build(&elements);
+                    prop_assert_eq!(model.front(), std_list.front());
+                    prop_assert_eq!(model.back(), std_list.back());
+                }
+
+                #[test]
+                fn test_clear(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (mut model, mut std_list) = build(&elements);
+                    model.clear();
+                    std_list.clear();
+                    prop_assert_eq!(model, std_list.inject());
+                }
+
+                #[test]
+                fn test_contains(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                 x in any::<u8>()) {
+                    let (model, std_list) = build(&elements);
+                    prop_assert_eq!(model.contains(&x), std_list.contains(&x));
+                }
+
+                #[test]
+                fn test_append(a in prop::collection::vec(any::<u8>(), 0..20),
+                               b in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (mut model_a, mut std_a) = build(&a);
+                    let (mut model_b, mut std_b) = build(&b);
+                    model_a.append(&mut model_b);
+                    std_a.append(&mut std_b);
+                    prop_assert_eq!(model_a, std_a.inject());
+                    prop_assert_eq!(model_b, std_b.inject());
+                }
+
+                #[test]
+                fn test_split_off(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                  at in 0usize..21) {
+                    let (mut model, mut std_list) = build(&elements);
+                    let at = at % (std_list.len() + 1);
+                    let model_tail = model.split_off(at);
+                    let std_tail = std_list.split_off(at);
+                    prop_assert_eq!(model, std_list.inject());
+                    prop_assert_eq!(model_tail, std_tail.inject());
+                }
+
+                // `LinkedList::remove` is unstable in std
+                // (`linked_list_remove`), so the expectation is pinned here:
+                // it removes and returns the element at `at`.
+                #[test]
+                fn test_remove(elements in prop::collection::vec(any::<u8>(), 1..20),
+                               at in 0usize..20) {
+                    let (mut model, std_list) = build(&elements);
+                    let at = at % std_list.len();
+                    let flat: std::vec::Vec<u8> = std_list.iter().copied().collect();
+                    prop_assert_eq!(model.remove(at), flat[at]);
+                    let mut expected = flat.clone();
+                    expected.remove(at);
+                    prop_assert_eq!(
+                        rust_primitives::sequence::seq_to_slice(&model.0),
+                        &expected[..]
+                    );
+                }
+
+                #[test]
+                fn test_iter(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let (model, std_list) = build(&elements);
+                    let from_model: std::vec::Vec<u8> = model.iter().copied().collect();
+                    let from_std: std::vec::Vec<u8> = std_list.iter().copied().collect();
+                    prop_assert_eq!(from_model, from_std);
+                }
+            }
+
+            #[test]
+            fn test_new() {
+                let model = Model::<u8>::new();
+                let std_list = Std::<u8>::new();
+                assert_eq!(model.len(), std_list.len());
+                assert!(model.is_empty());
+            }
+
+            // `new_in` is unstable in std (`allocator_api`), so the expectation
+            // — an empty list — is pinned here.
+            #[test]
+            fn test_new_in() {
+                let model = Model::<u8>::new_in(crate::alloc::Global);
+                assert!(model.is_empty());
+            }
+
+            #[test]
+            fn test_remove_out_of_bounds_panics() {
+                // std's `remove` is unstable, so the reference panic comes from
+                // `Vec::remove`, which panics on the same condition.
+                panics_like_core(
+                    || {
+                        let mut model = Model::<u8>::new();
+                        model.remove(0);
+                    },
+                    || {
+                        let mut v: std::vec::Vec<u8> = std::vec::Vec::new();
+                        v.remove(0);
+                    },
+                );
+            }
+
+            #[test]
+            fn test_split_off_out_of_bounds_panics() {
+                panics_like_core(
+                    || {
+                        let mut model = Model::<u8>::new();
+                        model.split_off(1);
+                    },
+                    || {
+                        let mut std_list = Std::<u8>::new();
+                        std_list.split_off(1);
+                    },
+                );
+            }
+        }
+    }
     /// Model of `alloc::collections::vec_deque`.
     ///
     /// DEVIATION(std): the deque is backed by one `Seq`, so it is *always
