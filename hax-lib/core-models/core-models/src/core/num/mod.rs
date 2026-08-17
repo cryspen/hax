@@ -2088,6 +2088,337 @@ impl crate::default::Default for bool {
     }
 }
 
+/// See [`std::num::NonZero`]
+// `core` bounds this on the sealed unstable `ZeroablePrimitive` and keeps the
+// field private; the model drops the bound (nothing here needs it) and makes the
+// field `pub(crate)` so the internal constructions below and the test-side
+// `Inject` can build values directly. Outside the crate, `new`/`new_unchecked`
+// are still the only way in, so the non-zero invariant holds by construction.
+// It is not a type-level refinement, though, which is why `div_ceil` has to
+// restate the divisor's non-zeroness as a precondition.
+#[cfg_attr(test, derive(PartialEq, Eq, Debug, Clone, Copy))]
+pub struct NonZero<T>(pub(crate) T);
+
+/// See [`std::num::NonZeroU8`]
+pub type NonZeroU8 = NonZero<core::primitive::u8>;
+/// See [`std::num::NonZeroU16`]
+pub type NonZeroU16 = NonZero<core::primitive::u16>;
+/// See [`std::num::NonZeroU32`]
+pub type NonZeroU32 = NonZero<core::primitive::u32>;
+/// See [`std::num::NonZeroU64`]
+pub type NonZeroU64 = NonZero<core::primitive::u64>;
+/// See [`std::num::NonZeroU128`]
+pub type NonZeroU128 = NonZero<core::primitive::u128>;
+/// See [`std::num::NonZeroUsize`]
+pub type NonZeroUsize = NonZero<core::primitive::usize>;
+/// See [`std::num::NonZeroI8`]
+pub type NonZeroI8 = NonZero<core::primitive::i8>;
+/// See [`std::num::NonZeroI16`]
+pub type NonZeroI16 = NonZero<core::primitive::i16>;
+/// See [`std::num::NonZeroI32`]
+pub type NonZeroI32 = NonZero<core::primitive::i32>;
+/// See [`std::num::NonZeroI64`]
+pub type NonZeroI64 = NonZero<core::primitive::i64>;
+/// See [`std::num::NonZeroI128`]
+pub type NonZeroI128 = NonZero<core::primitive::i128>;
+/// See [`std::num::NonZeroIsize`]
+pub type NonZeroIsize = NonZero<core::primitive::isize>;
+
+macro_rules! nonzero_impl {
+    (
+        $Self: ty,
+        $Name: ty,
+        $Min: expr,
+        $($extra: tt)*
+    ) => {
+        #[hax_lib::attributes]
+        impl NonZero<$Self> {
+            /// See [`std::num::NonZero::<u8>::BITS`] (and similar for other integer types)
+            pub const BITS: core::primitive::u32 = <$Name>::BITS;
+            /// See [`std::num::NonZero::<u8>::MIN`] (and similar for other integer types)
+            pub const MIN: Self = NonZero($Min);
+            /// See [`std::num::NonZero::<u8>::MAX`] (and similar for other integer types)
+            pub const MAX: Self = NonZero(<$Name>::MAX);
+            /// See [`std::num::NonZero::new`] (and similar for other integer types)
+            pub fn new(n: $Self) -> Option<NonZero<$Self>> {
+                if n == 0 {
+                    Option::None
+                } else {
+                    Option::Some(NonZero(n))
+                }
+            }
+            /// See [`std::num::NonZero::new_unchecked`] (and similar for other integer types)
+            #[hax_lib::requires(n != 0)]
+            pub unsafe fn new_unchecked(n: $Self) -> NonZero<$Self> {
+                NonZero(n)
+            }
+            /// See [`std::num::NonZero::get`] (and similar for other integer types)
+            pub fn get(self) -> $Self {
+                self.0
+            }
+            /// See [`std::num::NonZero::<u8>::from_str_radix`] (and similar for other integer types)
+            #[hax_lib::opaque]
+            pub fn from_str_radix(
+                src: &str,
+                radix: core::primitive::u32,
+            ) -> Result<NonZero<$Self>, error::ParseIntError> {
+                crate::panicking::internal::panic()
+            }
+            /// See [`std::num::NonZero::<u8>::leading_zeros`] (and similar for other integer types)
+            pub fn leading_zeros(self) -> core::primitive::u32 {
+                <$Name>::leading_zeros(self.0)
+            }
+            /// See [`std::num::NonZero::<u8>::trailing_zeros`] (and similar for other integer types)
+            pub fn trailing_zeros(self) -> core::primitive::u32 {
+                <$Name>::trailing_zeros(self.0)
+            }
+            /// See [`std::num::NonZero::<u8>::lowest_one`] (and similar for other integer types)
+            pub fn lowest_one(self) -> core::primitive::u32 {
+                <$Name>::trailing_zeros(self.0)
+            }
+            /// See [`std::num::NonZero::<u8>::count_ones`] (and similar for other integer types)
+            pub fn count_ones(self) -> NonZero<core::primitive::u32> {
+                NonZero(<$Name>::count_ones(self.0))
+            }
+            /// See [`std::num::NonZero::<u8>::isolate_highest_one`] (and similar for other integer types)
+            pub fn isolate_highest_one(self) -> Self {
+                NonZero(<$Name>::isolate_highest_one(self.0))
+            }
+            /// See [`std::num::NonZero::<u8>::isolate_lowest_one`] (and similar for other integer types)
+            pub fn isolate_lowest_one(self) -> Self {
+                NonZero(<$Name>::isolate_lowest_one(self.0))
+            }
+            /// See [`std::num::NonZero::<u8>::rotate_left`] (and similar for other integer types)
+            pub fn rotate_left(self, n: core::primitive::u32) -> Self {
+                NonZero(<$Name>::rotate_left(self.0, n))
+            }
+            /// See [`std::num::NonZero::<u8>::rotate_right`] (and similar for other integer types)
+            pub fn rotate_right(self, n: core::primitive::u32) -> Self {
+                NonZero(<$Name>::rotate_right(self.0, n))
+            }
+            /// See [`std::num::NonZero::<u8>::swap_bytes`] (and similar for other integer types)
+            pub fn swap_bytes(self) -> Self {
+                NonZero(<$Name>::swap_bytes(self.0))
+            }
+            /// See [`std::num::NonZero::<u8>::to_be`] (and similar for other integer types)
+            pub fn to_be(self) -> Self {
+                NonZero(<$Name>::to_be(self.0))
+            }
+            /// See [`std::num::NonZero::<u8>::to_le`] (and similar for other integer types)
+            pub fn to_le(self) -> Self {
+                NonZero(<$Name>::to_le(self.0))
+            }
+            /// See [`std::num::NonZero::<u8>::from_be`] (and similar for other integer types)
+            pub fn from_be(x: Self) -> Self {
+                NonZero(<$Name>::from_be(x.0))
+            }
+            /// See [`std::num::NonZero::<u8>::from_le`] (and similar for other integer types)
+            pub fn from_le(x: Self) -> Self {
+                NonZero(<$Name>::from_le(x.0))
+            }
+            /// See [`std::num::NonZero::<u8>::checked_mul`] (and similar for other integer types)
+            pub fn checked_mul(self, other: Self) -> Option<Self> {
+                let (result, overflowed) = <$Name>::overflowing_mul(self.0, other.0);
+                if overflowed {
+                    Option::None
+                } else {
+                    Option::Some(NonZero(result))
+                }
+            }
+            /// See [`std::num::NonZero::<u8>::saturating_mul`] (and similar for other integer types)
+            pub fn saturating_mul(self, other: Self) -> Self {
+                NonZero(<$Name>::saturating_mul(self.0, other.0))
+            }
+            /// See [`std::num::NonZero::<u8>::checked_pow`] (and similar for other integer types)
+            pub fn checked_pow(self, other: core::primitive::u32) -> Option<Self> {
+                let (result, overflowed) = <$Name>::overflowing_pow(self.0, other);
+                if overflowed {
+                    Option::None
+                } else {
+                    Option::Some(NonZero(result))
+                }
+            }
+            /// See [`std::num::NonZero::<u8>::saturating_pow`] (and similar for other integer types)
+            pub fn saturating_pow(self, other: core::primitive::u32) -> Self {
+                NonZero(<$Name>::saturating_pow(self.0, other))
+            }
+            $($extra)*
+        }
+    };
+}
+
+macro_rules! nonzero_uint_impls {
+    ($($Self: ty | $ISelf: ty | $Name: ty)*) => {
+        $(
+            nonzero_impl! { $Self, $Name, 1,
+                /// See [`std::num::NonZero::<u8>::highest_one`] (and similar for other unsigned integer types)
+                pub fn highest_one(self) -> core::primitive::u32 {
+                    // The index of the highest set bit of a non-zero value is `ilog2`.
+                    <$Name>::ilog2(self.0)
+                }
+                /// See [`std::num::NonZero::<u8>::ilog2`] (and similar for other unsigned integer types)
+                pub fn ilog2(self) -> core::primitive::u32 {
+                    <$Name>::ilog2(self.0)
+                }
+                /// See [`std::num::NonZero::<u8>::bit_width`] (and similar for other unsigned integer types)
+                pub fn bit_width(self) -> NonZero<core::primitive::u32> {
+                    NonZero(<$Name>::bit_width(self.0))
+                }
+                /// See [`std::num::NonZero::<u8>::checked_add`] (and similar for other unsigned integer types)
+                pub fn checked_add(self, other: $Self) -> Option<Self> {
+                    let (result, overflowed) = <$Name>::overflowing_add(self.0, other);
+                    if overflowed {
+                        Option::None
+                    } else {
+                        Option::Some(NonZero(result))
+                    }
+                }
+                /// See [`std::num::NonZero::<u8>::saturating_add`] (and similar for other unsigned integer types)
+                pub fn saturating_add(self, other: $Self) -> Self {
+                    NonZero(<$Name>::saturating_add(self.0, other))
+                }
+                /// See [`std::num::NonZero::<u8>::unchecked_add`] (and similar for other unsigned integer types)
+                #[hax_lib::requires(self.0.to_int() + other.to_int() <= <$Name>::MAX.to_int())]
+                pub unsafe fn unchecked_add(self, other: $Self) -> Self {
+                    NonZero(<$Name>::unchecked_add(self.0, other))
+                }
+                /// See [`std::num::NonZero::<u8>::unchecked_mul`] (and similar for other unsigned integer types)
+                #[hax_lib::requires(self.0.to_int() * other.0.to_int() <= <$Name>::MAX.to_int())]
+                pub unsafe fn unchecked_mul(self, other: Self) -> Self {
+                    NonZero(<$Name>::unchecked_mul(self.0, other.0))
+                }
+                /// See [`std::num::NonZero::<u8>::checked_next_power_of_two`] (and similar for other unsigned integer types)
+                pub fn checked_next_power_of_two(self) -> Option<Self> {
+                    match <$Name>::checked_next_power_of_two(self.0) {
+                        Option::Some(result) => Option::Some(NonZero(result)),
+                        Option::None => Option::None,
+                    }
+                }
+                /// See [`std::num::NonZero::<u8>::midpoint`] (and similar for other unsigned integer types)
+                pub fn midpoint(self, rhs: Self) -> Self {
+                    NonZero(<$Name>::midpoint(self.0, rhs.0))
+                }
+                /// See [`std::num::NonZero::<u8>::is_power_of_two`] (and similar for other unsigned integer types)
+                pub fn is_power_of_two(self) -> bool {
+                    // A non-zero value is a power of two exactly when it has one bit set.
+                    <$Name>::count_ones(self.0) < 2
+                }
+                /// See [`std::num::NonZero::<u8>::cast_signed`] (and similar for other unsigned integer types)
+                pub fn cast_signed(self) -> NonZero<$ISelf> {
+                    NonZero(<$Name>::cast_signed(self.0))
+                }
+                /// See [`std::num::NonZero::<u8>::div_ceil`] (and similar for other unsigned integer types)
+                // The model's `NonZero` carries no type-level invariant, so the divisor's
+                // non-zeroness has to be restated here for the backends.
+                #[hax_lib::requires(rhs.0 != 0)]
+                pub fn div_ceil(self, rhs: Self) -> Self {
+                    NonZero(<$Name>::div_ceil(self.0, rhs.0))
+                }
+            }
+        )*
+    };
+}
+
+macro_rules! nonzero_iint_impls {
+    ($($Self: ty | $USelf: ty | $Name: ty)*) => {
+        $(
+            nonzero_impl! { $Self, $Name, <$Name>::MIN,
+                /// See [`std::num::NonZero::<i8>::highest_one`] (and similar for other signed integer types)
+                // Opaque: `leading_zeros` is opaque, so no backend can see that subtracting
+                // it from `BITS - 1` stays in range.
+                #[hax_lib::opaque]
+                pub fn highest_one(self) -> core::primitive::u32 {
+                    <$Name>::BITS - 1 - <$Name>::leading_zeros(self.0)
+                }
+                /// See [`std::num::NonZero::<i8>::unchecked_mul`] (and similar for other signed integer types)
+                #[hax_lib::requires(self.0.to_int() * other.0.to_int() <= <$Name>::MAX.to_int() && self.0.to_int() * other.0.to_int() >= <$Name>::MIN.to_int())]
+                pub unsafe fn unchecked_mul(self, other: Self) -> Self {
+                    NonZero(<$Name>::unchecked_mul(self.0, other.0))
+                }
+                /// See [`std::num::NonZero::<i8>::abs`] (and similar for other signed integer types)
+                #[hax_lib::requires(self.0 > <$Name>::MIN)]
+                pub fn abs(self) -> Self {
+                    NonZero(<$Name>::abs(self.0))
+                }
+                /// See [`std::num::NonZero::<i8>::checked_abs`] (and similar for other signed integer types)
+                pub fn checked_abs(self) -> Option<Self> {
+                    match <$Name>::checked_abs(self.0) {
+                        Option::Some(result) => Option::Some(NonZero(result)),
+                        Option::None => Option::None,
+                    }
+                }
+                /// See [`std::num::NonZero::<i8>::overflowing_abs`] (and similar for other signed integer types)
+                pub fn overflowing_abs(self) -> (Self, bool) {
+                    let (result, overflowed) = <$Name>::overflowing_abs(self.0);
+                    (NonZero(result), overflowed)
+                }
+                /// See [`std::num::NonZero::<i8>::saturating_abs`] (and similar for other signed integer types)
+                pub fn saturating_abs(self) -> Self {
+                    NonZero(<$Name>::saturating_abs(self.0))
+                }
+                /// See [`std::num::NonZero::<i8>::wrapping_abs`] (and similar for other signed integer types)
+                pub fn wrapping_abs(self) -> Self {
+                    NonZero(<$Name>::wrapping_abs(self.0))
+                }
+                /// See [`std::num::NonZero::<i8>::unsigned_abs`] (and similar for other signed integer types)
+                pub fn unsigned_abs(self) -> NonZero<$USelf> {
+                    NonZero(<$Name>::unsigned_abs(self.0))
+                }
+                /// See [`std::num::NonZero::<i8>::is_positive`] (and similar for other signed integer types)
+                pub fn is_positive(self) -> bool {
+                    <$Name>::is_positive(self.0)
+                }
+                /// See [`std::num::NonZero::<i8>::is_negative`] (and similar for other signed integer types)
+                pub fn is_negative(self) -> bool {
+                    <$Name>::is_negative(self.0)
+                }
+                /// See [`std::num::NonZero::<i8>::checked_neg`] (and similar for other signed integer types)
+                pub fn checked_neg(self) -> Option<Self> {
+                    match <$Name>::checked_neg(self.0) {
+                        Option::Some(result) => Option::Some(NonZero(result)),
+                        Option::None => Option::None,
+                    }
+                }
+                /// See [`std::num::NonZero::<i8>::overflowing_neg`] (and similar for other signed integer types)
+                pub fn overflowing_neg(self) -> (Self, bool) {
+                    let (result, overflowed) = <$Name>::overflowing_neg(self.0);
+                    (NonZero(result), overflowed)
+                }
+                /// See [`std::num::NonZero::<i8>::saturating_neg`] (and similar for other signed integer types)
+                pub fn saturating_neg(self) -> Self {
+                    NonZero(<$Name>::saturating_neg(self.0))
+                }
+                /// See [`std::num::NonZero::<i8>::wrapping_neg`] (and similar for other signed integer types)
+                pub fn wrapping_neg(self) -> Self {
+                    NonZero(<$Name>::wrapping_neg(self.0))
+                }
+                /// See [`std::num::NonZero::<i8>::cast_unsigned`] (and similar for other signed integer types)
+                pub fn cast_unsigned(self) -> NonZero<$USelf> {
+                    NonZero(<$Name>::cast_unsigned(self.0))
+                }
+            }
+        )*
+    };
+}
+
+nonzero_uint_impls! {
+    core::primitive::u8 | core::primitive::i8 | u8
+    core::primitive::u16 | core::primitive::i16 | u16
+    core::primitive::u32 | core::primitive::i32 | u32
+    core::primitive::u64 | core::primitive::i64 | u64
+    core::primitive::u128 | core::primitive::i128 | u128
+    core::primitive::usize | core::primitive::isize | usize
+}
+
+nonzero_iint_impls! {
+    core::primitive::i8 | core::primitive::u8 | i8
+    core::primitive::i16 | core::primitive::u16 | i16
+    core::primitive::i32 | core::primitive::u32 | i32
+    core::primitive::i64 | core::primitive::u64 | i64
+    core::primitive::i128 | core::primitive::u128 | i128
+    core::primitive::isize | core::primitive::usize | isize
+}
+
 /// See [`std::num::Wrapping`]
 #[cfg_attr(test, derive(PartialEq, Eq, Debug, Clone, Copy))]
 pub struct Wrapping<T>(pub T);
@@ -3572,6 +3903,165 @@ mod tests {
         }
     }
     wrapper_iint_test! { i8 i16 i32 i64 i128 isize }
+
+    // `NonZero<T>`: the width-independent methods, then the unsigned-only and
+    // signed-only extras. Random values are nudged away from zero rather than
+    // rejected so the domain is not thinned out.
+    macro_rules! nonzero_common_test {
+        ($($t: ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_nonzero_ $t _consts>]() {
+                        assert_eq!(<super::NonZero<$t>>::BITS, <std::num::NonZero<$t>>::BITS);
+                        assert_eq!(<super::NonZero<$t>>::MIN, <std::num::NonZero<$t>>::MIN.inject());
+                        assert_eq!(<super::NonZero<$t>>::MAX, <std::num::NonZero<$t>>::MAX.inject());
+                    }
+
+                    proptest! {
+                        #[test]
+                        fn [<test_nonzero_ $t _new>](x in any::<$t>()) {
+                            prop_assert_eq!(
+                                <super::NonZero<$t>>::new(x),
+                                std::num::NonZero::new(x).inject(),
+                            );
+                        }
+
+                        #[test]
+                        fn [<test_nonzero_ $t _common>](
+                            x in any::<$t>(),
+                            y in any::<$t>(),
+                            n in 0u32..$t::BITS,
+                            exp in 0u32..=8,
+                        ) {
+                            let x = if x == 0 { 1 } else { x };
+                            let y = if y == 0 { 1 } else { y };
+                            let (m, s) = (super::NonZero(x), std::num::NonZero::new(x).unwrap());
+                            let (mo, so) = (super::NonZero(y), std::num::NonZero::new(y).unwrap());
+                            prop_assert_eq!(m.get(), s.get());
+                            prop_assert_eq!(
+                                unsafe { <super::NonZero<$t>>::new_unchecked(x) },
+                                unsafe { std::num::NonZero::new_unchecked(x) }.inject(),
+                            );
+                            prop_assert_eq!(m.leading_zeros(), s.leading_zeros());
+                            prop_assert_eq!(m.trailing_zeros(), s.trailing_zeros());
+                            prop_assert_eq!(m.lowest_one(), s.lowest_one());
+                            prop_assert_eq!(m.count_ones(), s.count_ones().inject());
+                            prop_assert_eq!(m.isolate_highest_one(), s.isolate_highest_one().inject());
+                            prop_assert_eq!(m.isolate_lowest_one(), s.isolate_lowest_one().inject());
+                            prop_assert_eq!(m.rotate_left(n), s.rotate_left(n).inject());
+                            prop_assert_eq!(m.rotate_right(n), s.rotate_right(n).inject());
+                            prop_assert_eq!(m.swap_bytes(), s.swap_bytes().inject());
+                            prop_assert_eq!(m.to_be(), s.to_be().inject());
+                            prop_assert_eq!(m.to_le(), s.to_le().inject());
+                            prop_assert_eq!(
+                                <super::NonZero<$t>>::from_be(m),
+                                <std::num::NonZero<$t>>::from_be(s).inject(),
+                            );
+                            prop_assert_eq!(
+                                <super::NonZero<$t>>::from_le(m),
+                                <std::num::NonZero<$t>>::from_le(s).inject(),
+                            );
+                            prop_assert_eq!(m.checked_mul(mo), s.checked_mul(so).inject());
+                            prop_assert_eq!(m.saturating_mul(mo), s.saturating_mul(so).inject());
+                            prop_assert_eq!(m.checked_pow(exp), s.checked_pow(exp).inject());
+                            prop_assert_eq!(m.saturating_pow(exp), s.saturating_pow(exp).inject());
+                            if s.checked_mul(so).is_some() {
+                                prop_assert_eq!(
+                                    unsafe { m.unchecked_mul(mo) },
+                                    unsafe { s.unchecked_mul(so) }.inject(),
+                                );
+                            }
+                        }
+                    }
+                )*
+            }
+        }
+    }
+    nonzero_common_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+
+    macro_rules! nonzero_uint_test {
+        ($($t: ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_nonzero_ $t _unsigned>](x in any::<$t>(), y in any::<$t>()) {
+                            let x = if x == 0 { 1 } else { x };
+                            let y = if y == 0 { 1 } else { y };
+                            let (m, s) = (super::NonZero(x), std::num::NonZero::new(x).unwrap());
+                            let (mo, so) = (super::NonZero(y), std::num::NonZero::new(y).unwrap());
+                            prop_assert_eq!(m.highest_one(), s.highest_one());
+                            prop_assert_eq!(m.ilog2(), s.ilog2());
+                            // `NonZero::bit_width` does not exist on the pinned toolchain;
+                            // the integer one does, and `NonZero`'s only wraps it.
+                            prop_assert_eq!(m.bit_width(), super::NonZero(x.bit_width()));
+                            prop_assert_eq!(m.checked_add(y), s.checked_add(y).inject());
+                            prop_assert_eq!(m.saturating_add(y), s.saturating_add(y).inject());
+                            prop_assert_eq!(
+                                m.checked_next_power_of_two(),
+                                s.checked_next_power_of_two().inject(),
+                            );
+                            prop_assert_eq!(m.midpoint(mo), s.midpoint(so).inject());
+                            prop_assert_eq!(m.is_power_of_two(), s.is_power_of_two());
+                            prop_assert_eq!(m.cast_signed(), s.cast_signed().inject());
+                            prop_assert_eq!(m.div_ceil(mo), s.div_ceil(so).inject());
+                            if s.checked_add(y).is_some() {
+                                prop_assert_eq!(
+                                    unsafe { m.unchecked_add(y) },
+                                    unsafe { s.unchecked_add(y) }.inject(),
+                                );
+                            }
+                        }
+                    }
+                )*
+            }
+        }
+    }
+    nonzero_uint_test! { u8 u16 u32 u64 u128 usize }
+
+    macro_rules! nonzero_iint_test {
+        ($($t: ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_nonzero_ $t _signed>](x in any::<$t>()) {
+                            let x = if x == 0 { 1 } else { x };
+                            let (m, s) = (super::NonZero(x), std::num::NonZero::new(x).unwrap());
+                            prop_assert_eq!(m.highest_one(), s.highest_one());
+                            prop_assert_eq!(m.checked_abs(), s.checked_abs().inject());
+                            prop_assert_eq!(m.overflowing_abs(), s.overflowing_abs().inject());
+                            prop_assert_eq!(m.saturating_abs(), s.saturating_abs().inject());
+                            prop_assert_eq!(m.wrapping_abs(), s.wrapping_abs().inject());
+                            prop_assert_eq!(m.unsigned_abs(), s.unsigned_abs().inject());
+                            prop_assert_eq!(m.is_positive(), s.is_positive());
+                            prop_assert_eq!(m.is_negative(), s.is_negative());
+                            prop_assert_eq!(m.checked_neg(), s.checked_neg().inject());
+                            prop_assert_eq!(m.overflowing_neg(), s.overflowing_neg().inject());
+                            prop_assert_eq!(m.saturating_neg(), s.saturating_neg().inject());
+                            prop_assert_eq!(m.wrapping_neg(), s.wrapping_neg().inject());
+                            prop_assert_eq!(m.cast_unsigned(), s.cast_unsigned().inject());
+                            if x != $t::MIN {
+                                prop_assert_eq!(m.abs(), s.abs().inject());
+                            }
+                        }
+                    }
+
+                    #[test]
+                    fn [<test_nonzero_ $t _abs_min_panics>]() {
+                        let x = std::hint::black_box(<$t>::MIN);
+                        let s = std::num::NonZero::new(x).unwrap();
+                        crate::testing::panics_like_core(
+                            || super::NonZero(x).abs(),
+                            || s.abs(),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    nonzero_iint_test! { i8 i16 i32 i64 i128 isize }
 
     macro_rules! default_test {
         ($($t:ty)*) => {

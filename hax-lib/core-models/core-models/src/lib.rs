@@ -54,6 +54,8 @@
         isolate_most_least_significant_one,
         likely_unlikely,
         mem_copy_fn,
+        nonzero_bitwise,
+        nonzero_ops,
         one_sided_range,
         range_bounds_is_empty,
         range_into_bounds,

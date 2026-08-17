@@ -100,6 +100,21 @@ impl<T: Inject> Inject for std::num::Saturating<T> {
     }
 }
 
+macro_rules! inject_nonzero {
+    ($($t: ty)*) => {
+        $(
+            impl Inject for std::num::NonZero<$t> {
+                type Model = crate::num::NonZero<$t>;
+                fn inject(&self) -> Self::Model {
+                    crate::num::NonZero(self.get())
+                }
+            }
+        )*
+    }
+}
+
+inject_nonzero! {u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize}
+
 impl Inject for std::num::TryFromIntError {
     type Model = crate::num::error::TryFromIntError;
     fn inject(&self) -> Self::Model {
