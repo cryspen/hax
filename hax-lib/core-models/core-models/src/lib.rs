@@ -43,6 +43,7 @@
         control_flow_into_value,
         control_flow_ok,
         drop_guard,
+        exact_div,
         hasher_prefixfree_extras,
         int_roundings,
         likely_unlikely,
@@ -50,7 +51,8 @@
         one_sided_range,
         range_bounds_is_empty,
         range_into_bounds,
-        step_trait
+        step_trait,
+        unchecked_neg
     )
 )]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
@@ -68,6 +70,11 @@
 // The `bound_*` / `control_flow_*` / `range_*` / `one_sided_range` features let
 // the `ops` proptests call the still-unstable std counterparts of the range and
 // `ControlFlow` items the model provides.
+// The proptests compare the model against std counterparts that are still
+// unstable: `div_ceil`/`div_floor`/`next_multiple_of` (int_roundings),
+// `exact_div` (exact_div, which is what the pinned toolchain calls the method
+// rustdoc now names `div_exact`), and `unchecked_neg`.
+#![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]

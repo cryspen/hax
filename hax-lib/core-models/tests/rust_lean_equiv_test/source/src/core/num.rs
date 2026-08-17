@@ -966,3 +966,1009 @@ pub fn test_u8_is_multiple_of_zero_rhs_nonzero() -> bool {
 pub fn test_u32_is_multiple_of_true() -> bool {
     1000u32.is_multiple_of(8u32) == true
 }
+
+// =============================================================================
+// min_value / max_value (deprecated aliases of MIN / MAX)
+// =============================================================================
+
+#[rust_lean_test]
+#[allow(deprecated)]
+pub fn test_u8_min_value() -> bool {
+    u8::min_value() == 0u8
+}
+
+#[rust_lean_test]
+#[allow(deprecated)]
+pub fn test_u8_max_value() -> bool {
+    u8::max_value() == 255u8
+}
+
+#[rust_lean_test]
+#[allow(deprecated)]
+pub fn test_i8_min_value() -> bool {
+    i8::min_value() == -128i8
+}
+
+#[rust_lean_test]
+#[allow(deprecated)]
+pub fn test_i8_max_value() -> bool {
+    i8::max_value() == 127i8
+}
+
+#[rust_lean_test]
+#[allow(deprecated)]
+pub fn test_u32_max_value() -> bool {
+    u32::max_value() == 4294967295u32
+}
+
+// =============================================================================
+// cast_signed / cast_unsigned
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_cast_signed_low() -> bool {
+    127u8.cast_signed() == 127i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_cast_signed_high() -> bool {
+    128u8.cast_signed() == -128i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_cast_signed_max() -> bool {
+    255u8.cast_signed() == -1i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_cast_unsigned_neg() -> bool {
+    (-1i8).cast_unsigned() == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_cast_unsigned_min() -> bool {
+    i8::MIN.cast_unsigned() == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_i32_cast_unsigned_zero() -> bool {
+    0i32.cast_unsigned() == 0u32
+}
+
+// =============================================================================
+// count_zeros
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_count_zeros_zero() -> bool {
+    0u8.count_zeros() == 8u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_count_zeros_max() -> bool {
+    255u8.count_zeros() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_u8_count_zeros_mixed() -> bool {
+    0b1010_1010u8.count_zeros() == 4u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_count_zeros_neg_one() -> bool {
+    (-1i8).count_zeros() == 0u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_count_zeros_min() -> bool {
+    i8::MIN.count_zeros() == 7u32
+}
+
+#[rust_lean_test]
+pub fn test_u32_count_zeros_one() -> bool {
+    1u32.count_zeros() == 31u32
+}
+
+// =============================================================================
+// checked_ilog2
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_checked_ilog2_zero() -> bool {
+    0u8.checked_ilog2() == none_u32()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_ilog2_one() -> bool {
+    1u8.checked_ilog2() == Some(0u32)
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_ilog2_max() -> bool {
+    255u8.checked_ilog2() == Some(7u32)
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_ilog2_negative() -> bool {
+    (-1i8).checked_ilog2() == none_u32()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_ilog2_max() -> bool {
+    127i8.checked_ilog2() == Some(6u32)
+}
+
+// =============================================================================
+// wrapping_neg / overflowing_neg / checked_neg / strict_neg
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_neg_zero() -> bool {
+    0u8.wrapping_neg() == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_neg_one() -> bool {
+    1u8.wrapping_neg() == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_neg_max() -> bool {
+    255u8.wrapping_neg() == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_neg_min() -> bool {
+    i8::MIN.wrapping_neg() == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_neg_max() -> bool {
+    127i8.wrapping_neg() == -127i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_neg_zero() -> bool {
+    0u8.overflowing_neg() == (0u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_neg_one() -> bool {
+    1u8.overflowing_neg() == (255u8, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_neg_min() -> bool {
+    i8::MIN.overflowing_neg() == (i8::MIN, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_neg_one() -> bool {
+    1i8.overflowing_neg() == (-1i8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_neg_zero() -> bool {
+    0u8.checked_neg() == Some(0u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_neg_nonzero() -> bool {
+    1u8.checked_neg() == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_neg_min() -> bool {
+    i8::MIN.checked_neg() == none_i8()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_neg_min_plus_one() -> bool {
+    (i8::MIN + 1).checked_neg() == Some(127i8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_neg_zero() -> bool {
+    0u8.strict_neg() == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_neg_max() -> bool {
+    127i8.strict_neg() == -127i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_neg_min_plus_one() -> bool {
+    (i8::MIN + 1).strict_neg() == 127i8
+}
+
+// =============================================================================
+// wrapping_pow / saturating_pow / strict_pow
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_pow_zero_exp() -> bool {
+    200u8.wrapping_pow(0u32) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_pow_no_overflow() -> bool {
+    3u8.wrapping_pow(4u32) == 81u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_pow_overflow() -> bool {
+    16u8.wrapping_pow(2u32) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_pow_negative_base() -> bool {
+    (-3i8).wrapping_pow(3u32) == -27i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_saturating_pow_overflow() -> bool {
+    16u8.saturating_pow(2u32) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_saturating_pow_exact() -> bool {
+    2u8.saturating_pow(7u32) == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_pow_negative_odd() -> bool {
+    (-3i8).saturating_pow(5u32) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_pow_negative_even() -> bool {
+    (-3i8).saturating_pow(6u32) == i8::MAX
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_pow_zero_exp() -> bool {
+    200u8.strict_pow(0u32) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_pow_max_fit() -> bool {
+    15u8.strict_pow(2u32) == 225u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_pow_negative() -> bool {
+    (-5i8).strict_pow(3u32) == -125i8
+}
+
+// =============================================================================
+// strict_add / strict_sub / strict_mul
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_strict_add_boundary() -> bool {
+    254u8.strict_add(1u8) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_add_zero() -> bool {
+    0u8.strict_add(0u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_add_to_min() -> bool {
+    (-127i8).strict_add(-1i8) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_sub_to_zero() -> bool {
+    5u8.strict_sub(5u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_sub_to_max() -> bool {
+    126i8.strict_sub(-1i8) == 127i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_mul_boundary() -> bool {
+    51u8.strict_mul(5u8) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_mul_negative() -> bool {
+    (-16i8).strict_mul(8i8) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_u32_strict_mul_zero() -> bool {
+    u32::MAX.strict_mul(0u32) == 0u32
+}
+
+// =============================================================================
+// wrapping_div / wrapping_rem / wrapping_div_euclid / wrapping_rem_euclid
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_div() -> bool {
+    255u8.wrapping_div(2u8) == 127u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_div_by_one() -> bool {
+    0u8.wrapping_div(1u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_div_min_by_neg_one() -> bool {
+    i8::MIN.wrapping_div(-1i8) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_div_truncates_towards_zero() -> bool {
+    (-7i8).wrapping_div(2i8) == -3i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_rem() -> bool {
+    255u8.wrapping_rem(2u8) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_rem_min_by_neg_one() -> bool {
+    i8::MIN.wrapping_rem(-1i8) == 0i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_rem_negative() -> bool {
+    (-7i8).wrapping_rem(2i8) == -1i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_div_euclid() -> bool {
+    7u8.wrapping_div_euclid(2u8) == 3u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_div_euclid_negative() -> bool {
+    (-7i8).wrapping_div_euclid(2i8) == -4i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_div_euclid_min_by_neg_one() -> bool {
+    i8::MIN.wrapping_div_euclid(-1i8) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_rem_euclid() -> bool {
+    7u8.wrapping_rem_euclid(2u8) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_rem_euclid_negative() -> bool {
+    (-7i8).wrapping_rem_euclid(2i8) == 1i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_rem_euclid_min_by_neg_one() -> bool {
+    i8::MIN.wrapping_rem_euclid(-1i8) == 0i8
+}
+
+// =============================================================================
+// saturating_div
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_saturating_div() -> bool {
+    255u8.saturating_div(3u8) == 85u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_div_min_by_neg_one() -> bool {
+    i8::MIN.saturating_div(-1i8) == i8::MAX
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_div_negative() -> bool {
+    (-8i8).saturating_div(2i8) == -4i8
+}
+
+// =============================================================================
+// overflowing_div / overflowing_rem / overflowing_div_euclid / overflowing_rem_euclid
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_div() -> bool {
+    255u8.overflowing_div(2u8) == (127u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_div_min_by_neg_one() -> bool {
+    i8::MIN.overflowing_div(-1i8) == (i8::MIN, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_div_ok() -> bool {
+    (-8i8).overflowing_div(2i8) == (-4i8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_rem() -> bool {
+    255u8.overflowing_rem(2u8) == (1u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_rem_min_by_neg_one() -> bool {
+    i8::MIN.overflowing_rem(-1i8) == (0i8, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_rem_by_neg_one() -> bool {
+    7i8.overflowing_rem(-1i8) == (0i8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_div_euclid() -> bool {
+    7u8.overflowing_div_euclid(2u8) == (3u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_div_euclid_min_by_neg_one() -> bool {
+    i8::MIN.overflowing_div_euclid(-1i8) == (i8::MIN, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_div_euclid_negative() -> bool {
+    (-7i8).overflowing_div_euclid(2i8) == (-4i8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_rem_euclid() -> bool {
+    7u8.overflowing_rem_euclid(2u8) == (1u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_rem_euclid_min_by_neg_one() -> bool {
+    i8::MIN.overflowing_rem_euclid(-1i8) == (0i8, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_rem_euclid_negative() -> bool {
+    (-7i8).overflowing_rem_euclid(2i8) == (1i8, false)
+}
+
+// =============================================================================
+// checked_div_euclid / checked_rem_euclid
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_checked_div_euclid_by_zero() -> bool {
+    7u8.checked_div_euclid(0u8) == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_div_euclid_ok() -> bool {
+    7u8.checked_div_euclid(2u8) == Some(3u8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_div_euclid_min_by_neg_one() -> bool {
+    i8::MIN.checked_div_euclid(-1i8) == none_i8()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_div_euclid_negative() -> bool {
+    (-7i8).checked_div_euclid(2i8) == Some(-4i8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_rem_euclid_by_zero() -> bool {
+    7u8.checked_rem_euclid(0u8) == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_rem_euclid_min_by_neg_one() -> bool {
+    i8::MIN.checked_rem_euclid(-1i8) == none_i8()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_rem_euclid_negative() -> bool {
+    (-7i8).checked_rem_euclid(2i8) == Some(1i8)
+}
+
+// =============================================================================
+// div_euclid / div_floor / strict_div / strict_rem / strict_div_euclid / strict_rem_euclid
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_div_euclid() -> bool {
+    255u8.div_euclid(4u8) == 63u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_div_euclid_negative_dividend() -> bool {
+    (-7i8).div_euclid(2i8) == -4i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_div_euclid_negative_divisor() -> bool {
+    (-7i8).div_euclid(-2i8) == 4i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_div_euclid_min_by_one() -> bool {
+    i8::MIN.div_euclid(1i8) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_u8_div_floor() -> bool {
+    7u8.div_floor(2u8) == 3u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_div_floor_negative_dividend() -> bool {
+    (-7i8).div_floor(2i8) == -4i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_div_floor_negative_divisor() -> bool {
+    7i8.div_floor(-2i8) == -4i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_div_floor_exact() -> bool {
+    (-8i8).div_floor(2i8) == -4i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_div() -> bool {
+    255u8.strict_div(5u8) == 51u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_div_min_by_one() -> bool {
+    i8::MIN.strict_div(1i8) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_rem() -> bool {
+    255u8.strict_rem(4u8) == 3u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_rem_by_neg_one() -> bool {
+    127i8.strict_rem(-1i8) == 0i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_div_euclid() -> bool {
+    7u8.strict_div_euclid(2u8) == 3u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_div_euclid_negative() -> bool {
+    (-7i8).strict_div_euclid(2i8) == -4i8
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_rem_euclid() -> bool {
+    7u8.strict_rem_euclid(2u8) == 1u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_rem_euclid_negative() -> bool {
+    (-7i8).strict_rem_euclid(2i8) == 1i8
+}
+
+// =============================================================================
+// abs_diff / midpoint
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_abs_diff_larger_first() -> bool {
+    255u8.abs_diff(1u8) == 254u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_abs_diff_smaller_first() -> bool {
+    1u8.abs_diff(255u8) == 254u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_abs_diff_equal() -> bool {
+    7u8.abs_diff(7u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_abs_diff_extremes() -> bool {
+    i8::MIN.abs_diff(i8::MAX) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_abs_diff_negatives() -> bool {
+    (-5i8).abs_diff(-2i8) == 3u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_midpoint_max() -> bool {
+    255u8.midpoint(255u8) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_midpoint_rounds_down() -> bool {
+    255u8.midpoint(254u8) == 254u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_midpoint_zero() -> bool {
+    0u8.midpoint(0u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_midpoint_extremes() -> bool {
+    i8::MIN.midpoint(i8::MAX) == 0i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_midpoint_negative_odd_sum() -> bool {
+    (-7i8).midpoint(2i8) == -2i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_midpoint_min_min() -> bool {
+    i8::MIN.midpoint(i8::MIN) == i8::MIN
+}
+
+// =============================================================================
+// next_multiple_of (unsigned) / checked_next_multiple_of
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_next_multiple_of_exact() -> bool {
+    8u8.next_multiple_of(4u8) == 8u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_next_multiple_of_rounds_up() -> bool {
+    7u8.next_multiple_of(4u8) == 8u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_next_multiple_of_zero() -> bool {
+    0u8.next_multiple_of(5u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_next_multiple_of_max_exact() -> bool {
+    255u8.next_multiple_of(5u8) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_next_multiple_of_overflow() -> bool {
+    255u8.checked_next_multiple_of(4u8) == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_next_multiple_of_by_zero() -> bool {
+    7u8.checked_next_multiple_of(0u8) == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_next_multiple_of_ok() -> bool {
+    7u8.checked_next_multiple_of(4u8) == Some(8u8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_next_multiple_of_neg_one() -> bool {
+    i8::MIN.checked_next_multiple_of(-1i8) == Some(i8::MIN)
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_next_multiple_of_negative_rhs() -> bool {
+    5i8.checked_next_multiple_of(-3i8) == Some(3i8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_next_multiple_of_overflow() -> bool {
+    127i8.checked_next_multiple_of(4i8) == none_i8()
+}
+
+// =============================================================================
+// checked_signed_diff (unsigned)
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_checked_signed_diff_positive() -> bool {
+    10u8.checked_signed_diff(3u8) == Some(7i8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_signed_diff_negative() -> bool {
+    3u8.checked_signed_diff(10u8) == Some(-7i8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_signed_diff_overflow() -> bool {
+    255u8.checked_signed_diff(0u8) == none_i8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_signed_diff_min_boundary() -> bool {
+    0u8.checked_signed_diff(128u8) == Some(i8::MIN)
+}
+
+// =============================================================================
+// unsigned + signed argument: {wrapping,overflowing,saturating,checked,strict}_{add,sub}_signed
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_add_signed_negative() -> bool {
+    0u8.wrapping_add_signed(-1i8) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_add_signed_positive() -> bool {
+    255u8.wrapping_add_signed(1i8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_wrapping_sub_signed_negative() -> bool {
+    255u8.wrapping_sub_signed(-1i8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_add_signed_no_overflow() -> bool {
+    10u8.overflowing_add_signed(-5i8) == (5u8, false)
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_add_signed_underflow() -> bool {
+    0u8.overflowing_add_signed(-1i8) == (255u8, true)
+}
+
+#[rust_lean_test]
+pub fn test_u8_overflowing_sub_signed_overflow() -> bool {
+    255u8.overflowing_sub_signed(-1i8) == (0u8, true)
+}
+
+#[rust_lean_test]
+pub fn test_u8_saturating_add_signed_saturates_low() -> bool {
+    0u8.saturating_add_signed(-1i8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_saturating_add_signed_saturates_high() -> bool {
+    255u8.saturating_add_signed(127i8) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_saturating_sub_signed_saturates_high() -> bool {
+    255u8.saturating_sub_signed(i8::MIN) == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_saturating_sub_signed_saturates_low() -> bool {
+    0u8.saturating_sub_signed(1i8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_add_signed_none() -> bool {
+    0u8.checked_add_signed(-1i8) == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_add_signed_some() -> bool {
+    10u8.checked_add_signed(-10i8) == Some(0u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_checked_sub_signed_none() -> bool {
+    255u8.checked_sub_signed(-1i8) == none_u8()
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_add_signed_ok() -> bool {
+    1u8.strict_add_signed(-1i8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_strict_sub_signed_ok() -> bool {
+    254u8.strict_sub_signed(-1i8) == 255u8
+}
+
+// =============================================================================
+// signed + unsigned argument: {wrapping,overflowing,saturating,strict}_{add,sub}_unsigned
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_add_unsigned_wraps() -> bool {
+    127i8.wrapping_add_unsigned(1u8) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_add_unsigned_large() -> bool {
+    0i8.wrapping_add_unsigned(255u8) == -1i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_sub_unsigned_wraps() -> bool {
+    i8::MIN.wrapping_sub_unsigned(1u8) == 127i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_add_unsigned_overflow() -> bool {
+    127i8.overflowing_add_unsigned(1u8) == (i8::MIN, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_add_unsigned_ok() -> bool {
+    (-1i8).overflowing_add_unsigned(1u8) == (0i8, false)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_sub_unsigned_overflow() -> bool {
+    i8::MIN.overflowing_sub_unsigned(1u8) == (127i8, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_add_unsigned_saturates() -> bool {
+    0i8.saturating_add_unsigned(255u8) == 127i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_sub_unsigned_saturates() -> bool {
+    0i8.saturating_sub_unsigned(255u8) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_add_unsigned_ok() -> bool {
+    126i8.strict_add_unsigned(1u8) == 127i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_sub_unsigned_ok() -> bool {
+    (-127i8).strict_sub_unsigned(1u8) == i8::MIN
+}
+
+// =============================================================================
+// abs family (signed): wrapping_abs / overflowing_abs / checked_abs /
+// saturating_abs / unsigned_abs / saturating_neg
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_abs_min() -> bool {
+    i8::MIN.wrapping_abs() == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_abs_negative() -> bool {
+    (-7i8).wrapping_abs() == 7i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_wrapping_abs_positive() -> bool {
+    7i8.wrapping_abs() == 7i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_abs_min() -> bool {
+    i8::MIN.overflowing_abs() == (i8::MIN, true)
+}
+
+#[rust_lean_test]
+pub fn test_i8_overflowing_abs_ok() -> bool {
+    (-7i8).overflowing_abs() == (7i8, false)
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_abs_min() -> bool {
+    i8::MIN.checked_abs() == none_i8()
+}
+
+#[rust_lean_test]
+pub fn test_i8_checked_abs_ok() -> bool {
+    (-7i8).checked_abs() == Some(7i8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_abs_min() -> bool {
+    i8::MIN.saturating_abs() == 127i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_abs_ok() -> bool {
+    (-7i8).saturating_abs() == 7i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_unsigned_abs_min() -> bool {
+    i8::MIN.unsigned_abs() == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_unsigned_abs_negative() -> bool {
+    (-7i8).unsigned_abs() == 7u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_unsigned_abs_zero() -> bool {
+    0i8.unsigned_abs() == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_neg_min() -> bool {
+    i8::MIN.saturating_neg() == 127i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_saturating_neg_ok() -> bool {
+    7i8.saturating_neg() == -7i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_strict_abs_ok() -> bool {
+    (-127i8).strict_abs() == 127i8
+}
+
+// =============================================================================
+// is_positive / is_negative (signed)
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_i8_is_positive_zero() -> bool {
+    0i8.is_positive() == false
+}
+
+#[rust_lean_test]
+pub fn test_i8_is_positive_max() -> bool {
+    127i8.is_positive() == true
+}
+
+#[rust_lean_test]
+pub fn test_i8_is_negative_min() -> bool {
+    i8::MIN.is_negative() == true
+}
+
+#[rust_lean_test]
+pub fn test_i8_is_negative_zero() -> bool {
+    0i8.is_negative() == false
+}
+
+#[rust_lean_test]
+pub fn test_i32_is_negative_neg_one() -> bool {
+    (-1i32).is_negative() == true
+}
+
+// =============================================================================
+// usize / isize spot checks
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_usize_wrapping_neg_one() -> bool {
+    1usize.wrapping_neg() == usize::MAX
+}
+
+#[rust_lean_test]
+pub fn test_usize_abs_diff() -> bool {
+    3usize.abs_diff(10usize) == 7usize
+}
+
+#[rust_lean_test]
+pub fn test_usize_midpoint() -> bool {
+    usize::MAX.midpoint(usize::MAX) == usize::MAX
+}
+
+#[rust_lean_test]
+pub fn test_isize_div_euclid_negative() -> bool {
+    (-7isize).div_euclid(2isize) == -4isize
+}
+
+#[rust_lean_test]
+pub fn test_isize_unsigned_abs_min() -> bool {
+    isize::MIN.unsigned_abs() == 9223372036854775808usize
+}
+
+#[rust_lean_test]
+pub fn test_usize_count_zeros_zero() -> bool {
+    0usize.count_zeros() == 64u32
+}

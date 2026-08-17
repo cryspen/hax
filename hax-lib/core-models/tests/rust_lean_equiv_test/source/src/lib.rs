@@ -37,6 +37,9 @@
 )]
 #![allow(incomplete_features)]
 #![allow(unused_comparisons)]
+// `div_floor`, `next_multiple_of` and `checked_next_multiple_of` are still
+// unstable in std, so exercising them here needs the gate.
+#![feature(int_roundings)]
 
 pub mod helpers;
 
