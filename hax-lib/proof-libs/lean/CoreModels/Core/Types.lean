@@ -246,6 +246,11 @@ structure error.Error (Self : Type) where
   fmtDisplayInst : fmt.Display Self
   fmtDebugInst : fmt.Debug Self
 
+/-- Trait declaration: [core_models::error::ErrorDefaults]
+    Source: 'core-models/src/core/error.rs', lines 9:0-12:1 -/
+structure error.ErrorDefaults (Self : Type) where
+  description : Self → Result Str
+
 /-- [core_models::f32::f32]
     Source: 'core-models/src/core/f32.rs', lines 6:0-6:11 -/
 @[reducible]
