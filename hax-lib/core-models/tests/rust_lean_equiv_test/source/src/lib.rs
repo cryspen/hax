@@ -40,6 +40,10 @@
 // `cmp::minmax` is still unstable in std; the equivalence tests call real std,
 // so the gate has to be opened here.
 #![feature(cmp_minmax)]
+// `core::mem::copy` and `core::mem::DropGuard` are still unstable; the latter is
+// only exercised by Rust-only tests, hence the `cfg(test)` gate.
+#![feature(mem_copy_fn)]
+#![cfg_attr(test, feature(drop_guard))]
 
 pub mod helpers;
 

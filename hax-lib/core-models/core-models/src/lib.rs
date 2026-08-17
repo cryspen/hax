@@ -36,9 +36,11 @@
         array_into_iter_constructors,
         cmp_minmax,
         cold_path,
+        drop_guard,
         hasher_prefixfree_extras,
         int_roundings,
         likely_unlikely,
+        mem_copy_fn,
         step_trait
     )
 )]
@@ -52,6 +54,8 @@
 
 // array_into_iter_constructors: `core::array::IntoIter::empty` is still
 // unstable, and a proptest compares against it.
+
+// mem_copy_fn / drop_guard: same, for `core::mem::{copy, DropGuard}`.
 #![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
