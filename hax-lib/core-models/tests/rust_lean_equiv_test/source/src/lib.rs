@@ -51,6 +51,12 @@
     is_ascii_octdigit,
     wrapping_int_impl,
     utf16_extra
+// Some `core::slice` items under test are still unstable in std.
+#![feature(
+    slice_split_once,
+    strip_circumfix,
+    trim_prefix_suffix,
+    slice_swap_unchecked
 )]
 
 pub mod helpers;
