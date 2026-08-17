@@ -76,7 +76,13 @@ pub trait Destruct {}
 /// See [`std::marker::Tuple`]
 pub trait Tuple {}
 /// See [`std::marker::ConstParamTy_`]
-pub trait ConstParamTy_: StructuralPartialEq + super::cmp::Eq {}
+//
+// DEVIATION(std): std's supertraits are `StructuralPartialEq + Eq`. Naming
+// `cmp::Eq` here would make `Core_models.Marker` depend on `Core_models.Cmp`,
+// and `Cmp` is part of hax's mutually-recursive `Core_models.Bundle`, so F*'s
+// dependency scan closes a cycle: `Bundle -> Marker -> Cmp -> Bundle`. Nothing
+// dispatches on this trait and it has no impls, so the bound is dropped.
+pub trait ConstParamTy_: StructuralPartialEq {}
 
 /// See [`std::marker::FnPtr`]
 //
