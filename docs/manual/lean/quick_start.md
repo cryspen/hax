@@ -46,10 +46,6 @@ hax doesn't support all Rust constructs, e.g,
 for extracting only a part of your crate.
 
 ## Start Lean verification
-After extracting your Rust code to Lean, the result is in the `proofs/lean` folder. To turn it into a buildable Lean project, run
+After extracting your Rust code to Lean, the result in the `proofs/lean` folder is a complete Lean package: besides the extracted modules under `<PkgName>/Extraction/`, the extraction generates a `lakefile.toml` and `lean-toolchain` pinned to the versions matching it, a root module importing the extracted files, and a `<PkgName>/Verification/` folder for handwritten proofs, which hax never touches. If the crate uses external definitions, their models live in `<PkgName>/Assumptions/`: hax seeds each file there once, from the template aeneas generates, and never modifies it afterwards. Files outside `Extraction/` are created only when missing, so it is safe to re-run after editing them. You can type-check the extraction with `lake build` in `proofs/lean`, or directly in the IDE using the LSP. Contrarily to F\*, successfully building the code doesn't prove panic freedom by default.
 
-```bash
-cargo hax into lean --lakefile
-```
-
-This generates a `lakefile.toml` and `lean-toolchain` in `proofs/lean`, pinned to the versions matching the extraction. Existing files are not overwritten, so it is safe to re-run after editing them. You can then type-check the extraction with `lake build` in `proofs/lean`, or directly in the IDE using the LSP. Contrarily to F\*, successfully building the code doesn't prove panic freedom by default.
+The `Extraction/` folder itself is owned by hax: it is cleared and regenerated on every extraction, so edits there are lost. Everything you write belongs in `Verification/` (proofs) or `Assumptions/` (models of external definitions). The root module is yours after its creation; hax checks it on every run and warns when it misses an extracted file or imports one the extraction no longer produces, and the fix is editing the import line by hand. A deleted generated file comes back on the next run, unless its import in the root module is commented out (`-- import ...`): the commented import is the opt-out that suppresses both the recreation of the file and the warnings about it.

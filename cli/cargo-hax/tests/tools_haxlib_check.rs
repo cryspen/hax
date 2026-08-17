@@ -6,9 +6,9 @@
 //! binary's own version (the one `hax-lib` version it accepts) is
 //! available as `env!("CARGO_PKG_VERSION")`.
 
-use std::os::unix::fs::PermissionsExt;
+mod common;
+
 use std::path::Path;
-use std::process::Command;
 
 const OWN_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -64,18 +64,7 @@ fn fixture(hax_lib_version: &str, direct: bool) -> tempfile::TempDir {
 }
 
 fn run(args: &[&str], current_dir: &Path) -> (String, bool) {
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(args).current_dir(current_dir);
-    cmd.env_remove("HAX_TOOLS_MANIFEST");
-    let output = cmd.output().unwrap();
-    (
-        format!(
-            "{}{}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        ),
-        output.status.success(),
-    )
+    common::run_hax(args, current_dir, &[])
 }
 
 /// Stub charon/aeneas binaries under `<root>/stubs`, pointed at by a
@@ -83,20 +72,8 @@ fn run(args: &[&str], current_dir: &Path) -> (String, bool) {
 /// tools.
 fn stub_tools(root: &Path) {
     let dir = root.join("stubs");
-    for name in ["charon", "charon-driver", "aeneas"] {
-        let path = dir.join(name);
-        std::fs::create_dir_all(&dir).unwrap();
-        std::fs::write(&path, "#!/bin/sh\nexit 0\n").unwrap();
-        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o755)).unwrap();
-    }
-    write(
-        &root.join("hax.toml"),
-        &format!(
-            "[tools]\ncharon = {{ path = \"{}\" }}\naeneas = {{ path = \"{}\" }}\n",
-            dir.join("charon").display(),
-            dir.join("aeneas").display(),
-        ),
-    );
+    common::stub_pipeline_tools(&dir, &common::stub("aeneas-invoked"));
+    write(&root.join("hax.toml"), &common::path_entries(&dir));
 }
 
 #[test]
@@ -283,16 +260,18 @@ fn a_package_selection_is_not_second_guessed() {
 
     // With a selection, hax does not guess which members Cargo compiles:
     // `app` is on a compatible `hax-lib`, so no selection is known to hit
-    // the incompatible one and the run proceeds.
+    // the incompatible one and the gate lets the run proceed. (It then
+    // stops at the Lean package-name derivation, which needs a root
+    // package the virtual workspace does not have.)
     for flags in [
         vec!["-C", "-p", "app", ";"],
         vec!["-C", "--package=legacy", ";"],
         vec!["-C", "--workspace", "--exclude", "legacy", ";"],
     ] {
         let args = [flags.as_slice(), &["into", "lean"]].concat();
-        let (output, success) = run(&args, &ws);
-        assert!(success, "{flags:?}: {output}");
+        let (output, _) = run(&args, &ws);
         assert!(!output.contains("incompatible"), "{flags:?}: {output}");
+        assert!(output.contains("no root package"), "{flags:?}: {output}");
     }
 }
 

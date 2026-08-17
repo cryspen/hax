@@ -30,6 +30,8 @@ Changes to cargo-hax:
  - Manage aeneas and charon versions with `cargo hax tools` (`install`, `list`, `show`), pinned via a committed `hax.toml` and installed from pre-built binaries verified against a shipped manifest and cached under `$XDG_CACHE_HOME/hax/tools/`
  - Resolve aeneas and charon from the version manifest instead of `PATH`; use a `path` entry in `hax.toml` to point at a local build
  - Check that the `hax-lib` version in scope matches the `cargo-hax` version before processing
+ - `cargo hax into lean` generates a complete, buildable Lean package by default: project files, a root module, and a `Verification/` folder for handwritten proofs, created only when missing; stale files in `Extraction/` are removed and the root module's imports are checked on every run. Disable with a top-level `project-files = false` in `hax.toml`. The `--lakefile` flag is removed, subsumed by the new default
+ - Models of external definitions move from `Extraction/` to a new `Assumptions/` folder, seeded from the aeneas templates and never modified by hax; existing `FunsExternal.lean`/`TypesExternal.lean` files are migrated there automatically
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)

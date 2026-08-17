@@ -7,9 +7,8 @@ mod common;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
-use common::{make_archive, platform, serve, sha256_hex, stub, write_executable};
+use common::{make_archive, platform, serve, sha256_hex, stub, stub_pipeline_tools};
 
 /// A minimal crate to run the backend on.
 fn write_crate(dir: &Path) {
@@ -18,33 +17,11 @@ fn write_crate(dir: &Path) {
 
 /// Point a crate's `hax.toml` at the charon and aeneas binaries in `bin`.
 fn write_path_entries(crate_dir: &Path, bin: &Path) {
-    std::fs::write(
-        crate_dir.join("hax.toml"),
-        format!(
-            "[tools]\ncharon = {{ path = \"{}\" }}\naeneas = {{ path = \"{}\" }}\n",
-            bin.join("charon").display(),
-            bin.join("aeneas").display(),
-        ),
-    )
-    .unwrap();
+    std::fs::write(crate_dir.join("hax.toml"), common::path_entries(bin)).unwrap();
 }
 
 fn run_backend(crate_dir: &Path, envs: &[(&str, &str)]) -> (String, bool) {
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(["into", "lean"]).current_dir(crate_dir);
-    cmd.env_remove("HAX_TOOLS_MANIFEST");
-    for (var, value) in envs {
-        cmd.env(var, value);
-    }
-    let output = cmd.output().unwrap();
-    (
-        format!(
-            "{}{}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        ),
-        output.status.success(),
-    )
+    common::run_hax(&["into", "lean"], crate_dir, envs)
 }
 
 #[test]
@@ -53,9 +30,7 @@ fn path_entry_runs_the_supplied_binaries_with_a_notice() {
     let crate_dir = dir.path().join("crate");
     write_crate(&crate_dir);
     let bin = dir.path().join("bin");
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
-    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
-    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    stub_pipeline_tools(&bin, &stub("aeneas-invoked"));
     write_path_entries(&crate_dir, &bin);
 
     let (output, success) = run_backend(&crate_dir, &[]);
@@ -78,8 +53,8 @@ fn missing_sibling_executable_is_a_clear_error() {
     write_crate(&crate_dir);
     let bin = dir.path().join("bin");
     // charon without charon-driver next to it.
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
-    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    common::write_executable(&bin.join("charon"), &stub("charon-invoked"));
+    common::write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
     write_path_entries(&crate_dir, &bin);
 
     let (output, success) = run_backend(&crate_dir, &[]);
@@ -171,9 +146,7 @@ fn lakefile_pins_come_from_the_resolved_versions() {
     let crate_dir = dir.path().join("crate");
     write_crate(&crate_dir);
     let bin = dir.path().join("bin");
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
-    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
-    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    stub_pipeline_tools(&bin, &stub("aeneas-invoked"));
     std::fs::write(
         crate_dir.join("hax.toml"),
         format!(
@@ -191,17 +164,8 @@ hax-lean-lib = "v9.9.9"
     )
     .unwrap();
 
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(["into", "lean", "--lakefile"])
-        .current_dir(&crate_dir)
-        .env_remove("HAX_TOOLS_MANIFEST");
-    let output = cmd.output().unwrap();
-    let all = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(output.status.success(), "{all}");
+    let (all, success) = run_backend(&crate_dir, &[]);
+    assert!(success, "{all}");
 
     let lean_dir = crate_dir.join("proofs/lean");
     let toolchain = std::fs::read_to_string(lean_dir.join("lean-toolchain")).unwrap();
@@ -227,9 +191,7 @@ fn write_crate_with_lean_project(dir: &Path, hax_rev: &str, toolchain: &str) -> 
     let crate_dir = dir.join("crate");
     write_crate(&crate_dir);
     let bin = dir.join("bin");
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
-    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
-    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    stub_pipeline_tools(&bin, &stub("aeneas-invoked"));
     std::fs::write(
         crate_dir.join("hax.toml"),
         format!(
@@ -274,7 +236,7 @@ fn stale_pins_in_an_existing_lean_project_are_warned_about() {
     let dir = tempfile::tempdir().unwrap();
     let crate_dir = write_crate_with_lean_project(dir.path(), "v0.1.0", "leanprover/lean4:v4.30.0");
 
-    // No `--lakefile`: the check runs on every extraction.
+    // The pin check runs on every extraction.
     let (output, success) = run_backend(&crate_dir, &[]);
     assert!(success, "{output}");
     assert!(
@@ -312,23 +274,12 @@ fn default_declared_versions_are_not_noticed() {
     let crate_dir = dir.path().join("crate");
     write_crate(&crate_dir);
     let bin = dir.path().join("bin");
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
-    write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
-    write_executable(&bin.join("aeneas"), &stub("aeneas-invoked"));
+    stub_pipeline_tools(&bin, &stub("aeneas-invoked"));
     // No `[versions]` table: both declared versions resolve to the defaults.
     write_path_entries(&crate_dir, &bin);
 
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(["into", "lean", "--lakefile"])
-        .current_dir(&crate_dir)
-        .env_remove("HAX_TOOLS_MANIFEST");
-    let output = cmd.output().unwrap();
-    let all = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(output.status.success(), "{all}");
+    let (all, success) = run_backend(&crate_dir, &[]);
+    assert!(success, "{all}");
     // The path-overridden tools are noticed, the declared versions are not.
     assert!(!all.contains("using lean "), "{all}");
     assert!(!all.contains("using hax-lean-lib "), "{all}");

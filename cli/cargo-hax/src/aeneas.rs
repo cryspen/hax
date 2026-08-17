@@ -5,18 +5,17 @@
 //!   1. Run charon on the crate to produce an LLBC file
 //!   2. Run aeneas (`-split-files -specs hax -subdir <PkgName>/Extraction`) on
 //!      the LLBC file to produce the Lean extraction under `<PkgName>/Extraction/`
-//!   3. Optionally generate a lakefile for the Lean project
+//!   3. Scaffold the Lean package around the extraction (see [`package`])
 
 use hax_types::cli_options::*;
 use hax_types::diagnostics::message::HaxMessage;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::time::SystemTime;
 use std::{fs, process};
 
 use super::tools;
 
-mod lakefile;
+mod package;
 
 const BACKEND_DIR: &str = "lean";
 
@@ -40,18 +39,10 @@ fn shell_split(s: Option<&str>, who: &str, message_format: MessageFormat) -> Vec
     }
 }
 
-/// Warn if the user's extra args re-specify a flag that the pipeline already
-/// sets and relies on (e.g. those controlling where output is written). Such
-/// flags are still forwarded — the tools keep the last occurrence — but
-/// overriding them can break the charon→aeneas handoff or the layout the
-/// generated proof project assumes. Matches both `-flag` and `-flag=value`.
-fn warn_on_reserved_flags(
-    user_args: &[String],
-    reserved: &[&str],
-    tool: &str,
-    message_format: MessageFormat,
-) {
-    let overridden: Vec<&str> = reserved
+/// The subset of `flags` that `user_args` re-specifies, matching both
+/// `-flag` and `-flag=value`.
+fn overridden_flags<'a>(user_args: &[String], flags: &[&'a str]) -> Vec<&'a str> {
+    flags
         .iter()
         .copied()
         .filter(|&flag| {
@@ -60,7 +51,21 @@ fn warn_on_reserved_flags(
                 .iter()
                 .any(|arg| arg == flag || arg.starts_with(&prefix))
         })
-        .collect();
+        .collect()
+}
+
+/// Warn if the user's extra args re-specify a flag that the pipeline already
+/// sets and relies on (e.g. those controlling where output is written). Such
+/// flags are still forwarded — the tools keep the last occurrence — but
+/// overriding them can break the charon→aeneas handoff or the layout the
+/// generated proof project assumes.
+fn warn_on_reserved_flags(
+    user_args: &[String],
+    reserved: &[&str],
+    tool: &str,
+    message_format: MessageFormat,
+) {
+    let overridden = overridden_flags(user_args, reserved);
     if !overridden.is_empty() {
         HaxMessage::GenericWarning {
             message: format!(
@@ -87,9 +92,12 @@ fn format_command(cmd: &process::Command) -> String {
     shlex::try_join(parts.iter().map(String::as_str)).unwrap_or_else(|_| parts.join(" "))
 }
 
-/// Convert a snake_case crate name to CamelCase for Lean.
+/// Convert a crate name to CamelCase for Lean: split on `-` and `_`,
+/// upper-case the first character of each segment, and concatenate. Not
+/// injective (`my-crate` and `my_crate` both yield `MyCrate`), which is
+/// harmless because a package directory holds exactly one package.
 pub fn to_camel_case(name: &str) -> String {
-    name.split('_')
+    name.split(['-', '_'])
         .map(|s| {
             let mut c = s.chars();
             match c.next() {
@@ -165,27 +173,55 @@ fn collect_output_lines(output: &process::Output) -> Vec<String> {
 
     lines
 }
+/// The directory of the crate being processed: the root package of the
+/// current invocation.
+fn crate_dir(project: &tools::project::ProjectContext) -> PathBuf {
+    project
+        .root_package
+        .as_ref()
+        .map(|package| package.dir.clone())
+        .unwrap_or_else(|| std::env::current_dir().expect("Could not get current directory"))
+}
+
+/// Resolve the `project-files` key for the crate being processed: the
+/// member-level value overrides the workspace-level one, consistent with
+/// the tool version resolution order; the default is enabled.
+pub fn project_files_enabled(project: &tools::project::ProjectContext) -> bool {
+    let crate_dir = crate_dir(project);
+    project
+        .member_config(&crate_dir)
+        .and_then(|config| config.project_files)
+        .or_else(|| {
+            project
+                .workspace_config
+                .as_ref()
+                .and_then(|config| config.project_files)
+        })
+        .unwrap_or(true)
+}
+
 /// Runs the charon + aeneas pipeline for the `lean` backend.
 /// Returns `true` if an error occurred.
+///
+/// `project_files` enables the scaffolding and checking of the Lean package
+/// around the extraction; `package_name` overrides the package name that is
+/// otherwise derived from the crate name.
 pub fn run(
     options: &LeanOptions,
     output_dir: Option<PathBuf>,
     verbose: u8,
     message_format: MessageFormat,
     project: &tools::project::ProjectContext,
+    project_files: bool,
+    package_name: Option<String>,
 ) -> bool {
     // Per-crate tool resolution: the crate being processed is the root
     // package of the current invocation.
-    let crate_dir = project
-        .root_package
-        .as_ref()
-        .map(|package| package.dir.clone())
-        .unwrap_or_else(|| std::env::current_dir().expect("Could not get current directory"));
+    let crate_dir = crate_dir(project);
     let crate_name = project
         .root_package
         .as_ref()
-        .map(|package| package.name.replace('-', "_"))
-        .unwrap_or_else(|| "output".to_string());
+        .map(|package| package.name.replace('-', "_"));
 
     let member = project.member_config(&crate_dir);
     let workspace = project.workspace_config.as_ref();
@@ -216,15 +252,67 @@ pub fn run(
     } = aeneas;
     let aeneas = aeneas_executables["aeneas"].clone();
 
-    // Convert crate name to PascalCase for the Lean package/directory name.
-    let pkg_name = to_camel_case(&crate_name);
+    // The Lean package/directory name: explicit, or derived from the crate
+    // name. An unusable name is a configuration error, caught before any
+    // tool runs.
+    let (pkg_name, origin) = match package_name {
+        Some(name) => (name, "the requested package name".to_string()),
+        None => match &crate_name {
+            Some(crate_name) => (
+                to_camel_case(crate_name),
+                format!("derived from the crate name `{crate_name}`"),
+            ),
+            None => {
+                HaxMessage::GenericError {
+                    message: "the Lean package name is derived from the crate name, and \
+                              this invocation has no root package (a virtual workspace has \
+                              none); run from the package's directory, select its manifest \
+                              with `-C --manifest-path <path> ;`, or extract through a \
+                              proof scenario, whose name determines the package name"
+                        .to_string(),
+                }
+                .report(message_format, None);
+                return true;
+            }
+        },
+    };
+    if let Err(message) = package::validate_package_name(&pkg_name, &origin) {
+        HaxMessage::GenericError { message }.report(message_format, None);
+        return true;
+    }
+
+    // Parse the user's aeneas flags up front: an overridden `-dest` or
+    // `-subdir` means hax does not know the package layout, so the
+    // extraction directory is not cleared and the package files are neither
+    // generated nor checked.
+    let user_aeneas_args = shell_split(options.aeneas_args.as_deref(), "aeneas", message_format);
+    let overridden_layout_flags = overridden_flags(&user_aeneas_args, &["-dest", "-subdir"]);
+    let layout_overridden = !overridden_layout_flags.is_empty();
+    let layout_warned = layout_overridden && project_files;
+    if layout_warned {
+        HaxMessage::GenericWarning {
+            message: format!(
+                "--aeneas-args overrides {}, so hax does not know the Lean \
+                 package layout: the package files are neither generated nor \
+                 checked, and stale extraction files are not removed",
+                overridden_layout_flags.join(" and ")
+            ),
+        }
+        .report(message_format, None);
+    }
+    let project_files = project_files && !layout_overridden;
 
     // Output directory layout:
     //   <lean_dir>/
+    //     <PkgName>.lean          <- root module (imports the others)
     //     <PkgName>/Extraction/   <- Lean files produced by aeneas
+    //     <PkgName>/Assumptions/  <- models of external definitions, seeded
+    //                                from the aeneas templates, then the user's
+    //     <PkgName>/Verification/ <- handwritten proofs, never touched by hax
     //     llbc/                   <- LLBC file produced by charon
-    //     lakefile.toml           <- (optional) Lean project file
+    //     lakefile.toml           <- Lean project file
     //     lean-toolchain
+    //     .gitignore
     let lean_dir = output_dir.unwrap_or_else(|| crate_dir.join("proofs").join(BACKEND_DIR));
     let out_dir = lean_dir.join(&pkg_name).join("Extraction");
     let llbc_dir = lean_dir.join("llbc");
@@ -242,7 +330,10 @@ pub fn run(
         }
         .report(message_format, None);
     });
-    let llbc_file = llbc_dir.join(format!("{}.llbc", crate_name));
+    let llbc_file = llbc_dir.join(format!(
+        "{}.llbc",
+        crate_name.as_deref().unwrap_or("output")
+    ));
 
     // Running charon
 
@@ -321,31 +412,86 @@ pub fn run(
 
     // Running Aeneas
 
-    // Parse once so we can both inspect and forward the user's aeneas flags. The
-    // output-layout flags are reserved: overriding them moves the output away
-    // from where the per-file report and `--lakefile` generation expect it.
-    let user_aeneas_args = shell_split(options.aeneas_args.as_deref(), "aeneas", message_format);
+    // The output-layout flags are reserved: overriding them moves the output
+    // away from where the per-file report and the package scaffolding expect
+    // it. `-dest` and `-subdir` are left out when the layout warning above
+    // already named them, which it does more precisely.
+    let aeneas_warn_flags: Vec<&str> = AENEAS_WARN_FLAGS
+        .iter()
+        .copied()
+        .filter(|flag| !(layout_warned && matches!(*flag, "-dest" | "-subdir")))
+        .collect();
     warn_on_reserved_flags(
         &user_aeneas_args,
-        AENEAS_WARN_FLAGS,
+        &aeneas_warn_flags,
         "aeneas",
         message_format,
     );
 
-    // Snapshot modification times of .lean files before aeneas runs
-    let mtimes_before: HashMap<PathBuf, SystemTime> = fs::read_dir(&out_dir)
+    // Models of external definitions used to live in `Extraction/` itself;
+    // move them to `Assumptions/` before the clearing below can reach them.
+    // Like the clearing, the `Assumptions/` wiring is extraction behavior,
+    // not scaffolding: it stays active under `project-files = false` and is
+    // disabled only by an overridden layout flag, which leaves hax without
+    // a location. A failed move must stop the run: the clearing would
+    // destroy the very files the rescue preserves.
+    if !layout_overridden && package::rescue_external_files(&lean_dir, &pkg_name, message_format) {
+        return true;
+    }
+
+    // Snapshot the contents of the .lean files before aeneas runs, to report
+    // each regenerated file as wrote or unchanged.
+    let contents_before: HashMap<PathBuf, Vec<u8>> = fs::read_dir(&out_dir)
         .into_iter()
         .flatten()
         .filter_map(|e| e.ok())
         .filter(|e| e.path().extension().is_some_and(|ext| ext == "lean"))
         .filter_map(|e| {
             let path = e.path();
-            fs::metadata(&path)
-                .and_then(|m| m.modified())
-                .ok()
-                .map(|mtime| (path, mtime))
+            fs::read(&path).ok().map(|contents| (path, contents))
         })
         .collect();
+
+    // `Extraction/` is fully hax-owned: clear it before aeneas regenerates
+    // it, so files the extraction no longer produces do not linger and
+    // silently feed stale definitions into the build. A failed aeneas run
+    // thus leaves the directory empty until the next successful one, losing
+    // only regenerated artifacts: user content lives outside `Extraction/`
+    // or was just rescued. Skipped when the user overrides `-dest` or
+    // `-subdir`, which leaves hax without a reliable location. A partial
+    // clearing would let stale definitions feed the build, the very thing
+    // the clearing prevents, so a failure is fatal.
+    if !layout_overridden {
+        let entries = match fs::read_dir(&out_dir) {
+            Ok(entries) => entries,
+            Err(e) => {
+                HaxMessage::GenericError {
+                    message: format!("failed to read {}: {}", out_dir.display(), e),
+                }
+                .report(message_format, None);
+                return true;
+            }
+        };
+        let mut clearing_failed = false;
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let removed = if path.is_dir() {
+                fs::remove_dir_all(&path)
+            } else {
+                fs::remove_file(&path)
+            };
+            if let Err(e) = removed {
+                HaxMessage::GenericError {
+                    message: format!("failed to remove {}: {}", path.display(), e),
+                }
+                .report(message_format, None);
+                clearing_failed = true;
+            }
+        }
+        if clearing_failed {
+            return true;
+        }
+    }
 
     HaxMessage::Step {
         verb: "Running".to_string(),
@@ -404,21 +550,31 @@ pub fn run(
         report_output(&all_lines, message_format);
     }
 
+    // Failures to write package or `Assumptions/` files are reported where
+    // they occur and collected here: the run must not exit successfully
+    // with an incomplete package.
+    let mut package_error = false;
+
+    // Wire the external definitions the extraction needs to the user's
+    // models in `Assumptions/`.
+    if !layout_overridden && output.status.success() {
+        package_error |= package::process_external_templates(&lean_dir, &pkg_name, message_format);
+    }
+
     // Report results
 
-    // Report .lean files: "wrote" if new or mtime changed, "unchanged" otherwise
+    // Report .lean files: "wrote" if new or its contents changed,
+    // "unchanged" otherwise
     if let Ok(entries) = fs::read_dir(&out_dir) {
         for entry in entries.flatten() {
             let path = entry.path();
             if path.extension().is_none_or(|ext| ext != "lean") {
                 continue;
             }
-            let new_mtime = fs::metadata(&path).and_then(|m| m.modified()).ok();
-            let wrote = match (mtimes_before.get(&path), new_mtime) {
-                (Some(old), Some(new)) => *old != new,
-                (None, Some(_)) => true,
-                _ => continue,
+            let Ok(contents) = fs::read(&path) else {
+                continue;
             };
+            let wrote = contents_before.get(&path) != Some(&contents);
             HaxMessage::ProducedFile {
                 path: path.clone(),
                 wrote,
@@ -427,11 +583,10 @@ pub fn run(
         }
     }
 
-    // Check an existing Lean project's pins on every run, and generate the
-    // project files if requested.
-    let has_project_files =
-        lean_dir.join("lakefile.toml").exists() || lean_dir.join("lean-toolchain").exists();
-    if options.lakefile || has_project_files {
+    // The Lean package around the extraction: check an existing package's
+    // pins on every run, create every missing package file, and check the
+    // root module against the files on disk.
+    if project_files {
         use tools::resolve::Resolved;
         let lean_toolchain = tools::provide_version("lean", member, workspace, message_format);
         let hax_lean_lib_rev =
@@ -440,40 +595,44 @@ pub fn run(
         // rev is the resolved aeneas version, reused from the resolution
         // that selected the binary above. A path-resolved aeneas has no
         // version hax can name: existing pins are not checked against it.
-        let aeneas_rev = match &aeneas_resolution.kind {
+        let check_aeneas_rev = match &aeneas_resolution.kind {
             Resolved::Version(version) => Some(version.clone()),
             Resolved::Path(_) => None,
         };
-        lakefile::check_existing(
+        package::check_existing(
             &lean_dir,
-            aeneas_rev.as_deref(),
+            check_aeneas_rev.as_deref(),
             &lean_toolchain,
             &hax_lean_lib_rev,
             message_format,
         );
-        if options.lakefile {
-            // With no aeneas version to pin, the default is pinned instead.
-            let aeneas_rev = match &aeneas_resolution.kind {
-                Resolved::Version(version) => version.clone(),
-                Resolved::Path(path) => {
-                    let default = tools::defaults::defaults().tools["aeneas"].clone();
-                    HaxMessage::GenericWarning {
-                        message: format!(
-                            "aeneas resolves to the local binary {}; pinning the aeneas Lean \
-                             library to the default {default} in the generated lakefile",
-                            path.display()
-                        ),
-                    }
-                    .report(message_format, None);
-                    default
-                }
-            };
-            let pins = lakefile::LakefilePins {
-                aeneas_rev,
-                lean_toolchain,
-                hax_lean_lib_rev,
-            };
-            lakefile::generate(&lean_dir, &crate_name, &pins, message_format);
+        // With no aeneas version to pin, the default is pinned instead;
+        // `generate` warns about the substitution when it actually writes
+        // a lakefile.
+        let (aeneas_rev, aeneas_local_path) = match &aeneas_resolution.kind {
+            Resolved::Version(version) => (version.clone(), None),
+            Resolved::Path(path) => (
+                tools::defaults::defaults().tools["aeneas"].clone(),
+                Some(path.as_path()),
+            ),
+        };
+        let pins = package::LakefilePins {
+            aeneas_rev,
+            lean_toolchain,
+            hax_lean_lib_rev,
+        };
+        package_error |= package::generate(
+            &lean_dir,
+            &pkg_name,
+            &pins,
+            output.status.success(),
+            aeneas_local_path,
+            message_format,
+        );
+        // A failed extraction leaves `Extraction/` in a partial state the
+        // root module cannot meaningfully be compared against.
+        if output.status.success() {
+            package::check_root_module(&lean_dir, &pkg_name, message_format);
         }
     }
 
@@ -488,5 +647,5 @@ pub fn run(
         return true;
     }
 
-    false
+    package_error
 }

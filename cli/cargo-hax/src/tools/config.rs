@@ -1,8 +1,9 @@
 //! Parsing of `hax.toml` files.
 //!
 //! A `hax.toml` carries a `[tools]` table (managed tools, pinned by version
-//! or pointed at a local binary by path) and a `[versions]` table
-//! (declared-only versions). Unknown top-level keys, unknown tools, and
+//! or pointed at a local binary by path), a `[versions]` table
+//! (declared-only versions), and a top-level `project-files` key
+//! (proof-project file generation). Unknown top-level keys, unknown tools, and
 //! unknown keys inside an entry are warned about and skipped, so files
 //! written for a newer hax remain readable by an older one. Malformed
 //! entries are hard errors.
@@ -29,6 +30,10 @@ pub struct HaxToml {
     pub path: PathBuf,
     pub tools: BTreeMap<String, ToolEntry>,
     pub versions: BTreeMap<String, String>,
+    /// The top-level `project-files` key: whether hax generates and checks
+    /// the proof-project files around an extraction. Backend-neutral; a
+    /// member-level value overrides a workspace-level one.
+    pub project_files: Option<bool>,
 }
 
 impl HaxToml {
@@ -96,6 +101,12 @@ pub fn parse(path: &Path, contents: &str) -> Result<(HaxToml, Vec<String>), Stri
                     validate_declared_version(name, version)?;
                     result.versions.insert(name.clone(), version.to_string());
                 }
+            }
+            "project-files" => {
+                let Some(enabled) = value.as_bool() else {
+                    return Err("`project-files` must be a boolean".into());
+                };
+                result.project_files = Some(enabled);
             }
             other => {
                 warnings.push(format!(
@@ -369,6 +380,23 @@ hax-lean-lib = "v1\"\ngit = \"https://evil.example/x\"\nrev = \"main""#,
         )
         .unwrap_err();
         assert!(err.contains("`hax-lean-lib`"), "{err}");
+    }
+
+    #[test]
+    fn project_files_parses_both_values_and_defaults_to_none() {
+        let (parsed, warnings) = parse_str("project-files = false").unwrap();
+        assert_eq!(parsed.project_files, Some(false));
+        assert!(warnings.is_empty());
+        let (parsed, _) = parse_str("project-files = true").unwrap();
+        assert_eq!(parsed.project_files, Some(true));
+        let (parsed, _) = parse_str("").unwrap();
+        assert_eq!(parsed.project_files, None);
+    }
+
+    #[test]
+    fn non_boolean_project_files_is_an_error() {
+        let err = parse_str(r#"project-files = "no""#).unwrap_err();
+        assert!(err.contains("`project-files`"), "{err}");
     }
 
     #[test]

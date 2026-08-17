@@ -114,6 +114,8 @@ A `[versions]` value is a version, tag, or toolchain name of ASCII alphanumerics
 
 Entries for tools or `[versions]` keys that a given hax release does not know are warned about and ignored, so a `hax.toml` written for a newer hax stays readable by an older one. A malformed entry (for example one declaring both `version` and `path`) is an error.
 
+Besides the two tables, a top-level `project-files` key (a boolean, default `true`) governs whether hax generates and checks the proof-project files around an extraction, for every backend that has them (currently the Lean package). Commit `project-files = false` to manage these files yourself; hax then also skips the pin and root-module checks described below. The extraction directory itself and the wiring of external definitions to `Assumptions/` are extraction behavior, not project files: hax keeps clearing the one and maintaining the other. With the key set, the lakefile, the toolchain file, and the root module are yours to create and to keep in sync with the resolved versions and the extracted files; hax no longer warns when they drift.
+
 ### Per-crate overrides
 
 In a workspace, a member crate may carry its own `hax.toml` that overrides the workspace-root one for that crate. hax reads `hax.toml` from the workspace root and from member-crate roots only. A `hax.toml` sitting elsewhere is reported as a stray file and has no effect.
@@ -154,4 +156,4 @@ The `tools` subcommands never abort on this check: `cargo hax tools show` report
 
 ## The Lean project pin check
 
-The files `--lakefile` generates (`lakefile.toml`, `lean-toolchain`) are never overwritten, so their pinned versions can fall behind after a hax upgrade or a `hax.toml` change. On every Lean extraction, hax compares an existing lakefile's `aeneas` and `Hax` revisions and the `lean-toolchain` contents against the currently resolved versions, and warns about each pin that differs: update the pin, or delete the file and re-run with `--lakefile` to regenerate it. Requires hax does not manage are left alone, as is the `aeneas` pin when the binary comes from a `path` entry, which names no version to compare against.
+The Lean package files hax generates (`lakefile.toml`, `lean-toolchain`) are never overwritten, so their pinned versions can fall behind after a hax upgrade or a `hax.toml` change. On every Lean extraction, hax compares an existing lakefile's `aeneas` and `Hax` revisions and the `lean-toolchain` contents against the currently resolved versions, and warns about each pin that differs: update the pin, or delete the file and re-run to regenerate it. Requires hax does not manage are left alone, as is the `aeneas` pin when the binary comes from a `path` entry, which names no version to compare against.

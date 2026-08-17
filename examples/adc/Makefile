@@ -7,5 +7,5 @@ lean:
 		lake build)
 
 clean:
-	-find proofs/lean/Adc/Extraction -type f ! -name FunsExternal.lean ! -name TypesExternal.lean -delete
+	-rm -rf proofs/lean/Adc/Extraction
 	-cd proofs/lean && lake clean
