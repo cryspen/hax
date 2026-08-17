@@ -34,6 +34,7 @@
     test,
     feature(
         cold_path,
+        hasher_prefixfree_extras,
         int_roundings,
         likely_unlikely,
         step_trait
@@ -42,6 +43,8 @@
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
 // from `cargo hax`.
 // likely_unlikely/cold_path: same, for the `hint` proptests.
+
+// hasher_prefixfree_extras: same, for `Hasher::{write_length_prefix, write_str}`.
 #![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 

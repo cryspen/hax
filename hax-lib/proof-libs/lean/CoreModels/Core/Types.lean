@@ -291,18 +291,49 @@ structure fmt.rt.Placeholder where
 def fmt.rt.UnsafeArg := Unit
 
 /-- Trait declaration: [core_models::hash::Hasher]
-    Source: 'core-models/src/core/hash.rs', lines 2:0-7:1
+    Source: 'core-models/src/core/hash.rs', lines 8:0-41:1
     Visibility: public -/
 structure hash.Hasher (Self : Type) where
   finish : Self → Result Std.U64
   write : Self → Slice Std.U8 → Result Self
+  write_u8 : Self → Std.U8 → Result Self
+  write_u16 : Self → Std.U16 → Result Self
+  write_u32 : Self → Std.U32 → Result Self
+  write_u64 : Self → Std.U64 → Result Self
+  write_u128 : Self → Std.U128 → Result Self
+  write_usize : Self → Std.Usize → Result Self
+  write_i8 : Self → Std.I8 → Result Self
+  write_i16 : Self → Std.I16 → Result Self
+  write_i32 : Self → Std.I32 → Result Self
+  write_i64 : Self → Std.I64 → Result Self
+  write_i128 : Self → Std.I128 → Result Self
+  write_isize : Self → Std.Isize → Result Self
+  write_length_prefix : Self → Std.Usize → Result Self
+  write_str : Self → Str → Result Self
 
 /-- Trait declaration: [core_models::hash::Hash]
-    Source: 'core-models/src/core/hash.rs', lines 11:0-16:1
+    Source: 'core-models/src/core/hash.rs', lines 45:0-56:1
     Visibility: public -/
 structure hash.Hash (Self : Type) where
   hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → Result
     H
+  hash_slice : forall {H : Type} (HasherInst : hash.Hasher H), Slice Self → H
+    → Result H
+
+/-- Trait declaration: [core_models::hash::BuildHasher]
+    Source: 'core-models/src/core/hash.rs', lines 59:0-67:1
+    Visibility: public -/
+structure hash.BuildHasher (Self : Type) (Self_Hasher : Type) where
+  HasherInst : hash.Hasher Self_Hasher
+  build_hasher : Self → Result Self_Hasher
+  hash_one : forall {T : Type} (HashInst : hash.Hash T), Self → T → Result
+    Std.U64
+
+/-- [core_models::hash::BuildHasherDefault]
+    Source: 'core-models/src/core/hash.rs', lines 74:0-74:62
+    Visibility: public -/
+@[reducible]
+def hash.BuildHasherDefault (H : Type) := core.marker.PhantomData H
 
 /-- [core_models::hint::Locality]
     Source: 'core-models/src/core/hint.rs', lines 57:0-64:1
