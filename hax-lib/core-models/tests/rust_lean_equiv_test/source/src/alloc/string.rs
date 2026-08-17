@@ -13,9 +13,18 @@
 //! `alloc.string.String.new`. A test that mentions any other method extracts to
 //! a reference to a Lean constant that does not exist, which breaks the Lake
 //! build outright; `skip_lean` cannot rescue that (it only suppresses the
-//! `#guard`, not the extraction of the test body). So the tests wait here until
-//! the Lean counterparts exist, at which point uncommenting them is the whole
-//! job.
+//! `#guard`, not the extraction of the test body).
+//!
+//! The exclusion was re-checked by dropping both entries and running
+//! `make extract`: charon succeeds, but Aeneas cannot translate a single
+//! `String` body — the model wraps a `&'static str` (an arena that leaks
+//! `&'static str`s, see `rust_primitives::string`), and Aeneas maps the type
+//! onto its builtin `str` without having any value-level model of a `&str`. The
+//! `Makefile` comment records the exact errors. This is not caused by the
+//! methods added recently: the four original ones (`new`, `push`, `push_str`,
+//! `pop`) fail the same way. Lifting it needs an Aeneas-side model of `&str`
+//! values, or a `String` model built on `Seq<u8>`/`Seq<char>` instead of the
+//! arena — at which point uncommenting the tests below is the whole job.
 //!
 //! Until then the Rust↔std agreement of these items is covered by the
 //! `proptest!` suite in the model crate.
