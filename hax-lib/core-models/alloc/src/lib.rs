@@ -42,10 +42,15 @@ mod borrow {
     // impl block: F* names instances by position, and moving it would rename
     // `Alloc.Borrow.impl` out from under downstream proofs.
     /// See [`std::borrow::ToOwned`]
+    // `requires(true)`, as on `core::cmp::PartialEq::eq`: without it F* gives
+    // `to_owned` an abstract precondition that a caller holding only a
+    // `t_ToOwned` dictionary (`Cow::into_owned`) cannot discharge.
+    #[hax_lib::attributes]
     pub trait ToOwned {
         /// See [`std::borrow::ToOwned::Owned`]
         type Owned;
         /// See [`std::borrow::ToOwned::to_owned`]
+        #[hax_lib::requires(true)]
         fn to_owned(self) -> Self::Owned;
     }
     // Mirrors real `alloc`'s `impl<T: Clone> ToOwned for T`. The `Clone` bound
@@ -60,6 +65,10 @@ mod borrow {
 
     /// See [`std::borrow::Cow`]: std's two variants, with the `&'a B` of
     /// `Borrowed` erased to a plain `B` as hax erases shared borrows.
+    // `noeq`: the `Owned` payload is the typeclass projection `i0.f_Owned`, which
+    // F* cannot show supports decidable equality, so it must not try to derive it
+    // for `t_Cow`. Same fix as `core::iter::Flatten`.
+    #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
     pub enum Cow<B: ToOwned> {
         Borrowed(B),
         Owned(B::Owned),
@@ -104,6 +113,11 @@ mod borrow {
     /// `clone_into` is a trait *default* method in real `alloc`, which hax does
     /// not support. Like `core::cmp`'s `Neq` / `PartialOrdDefaults`, the model
     /// provides it through a blanket-implemented companion trait.
+    // No `requires(true)` here, unlike on `ToOwned::to_owned`: for a parameter
+    // typed by a *supertrait* projection, hax renders the precondition's type as
+    // `i0.f_Owned`, a name that does not exist inside the generated F* class.
+    // Nothing in the model calls `clone_into` through the abstract trait, so the
+    // default (opaque) precondition costs nothing.
     pub trait ToOwnedDefaults: ToOwned {
         /// See [`std::borrow::ToOwned::clone_into`]
         fn clone_into(self, target: &mut Self::Owned);

@@ -6,7 +6,7 @@ open Rust_primitives
 /// See [`std::borrow::ToOwned`]
 class t_ToOwned (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Owned:Type0;
-  f_to_owned_pre:v_Self -> Type0;
+  f_to_owned_pre:self_: v_Self -> pred: Type0{true ==> pred};
   f_to_owned_post:v_Self -> f_Owned -> Type0;
   f_to_owned:x0: v_Self
     -> Prims.Pure f_Owned (f_to_owned_pre x0) (fun result -> f_to_owned_post x0 result)
@@ -23,6 +23,8 @@ let impl (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_model
     =
     fun (self: v_T) -> Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve self
   }
+
+noeq
 
 /// See [`std::borrow::Cow`]: std's two variants, with the `&'a B` of
 /// `Borrowed` erased to a plain `B` as hax erases shared borrows.
