@@ -28,24 +28,14 @@ let impl (#v_T: Type0) : Core_models.Iter.Traits.Iterator.t_Iterator (t_Empty v_
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1 (#v_T: Type0) : Core_models.Iter.Traits.Double_ended.t_DoubleEndedIterator (t_Empty v_T) =
-  {
-    _super_i0 = FStar.Tactics.Typeclasses.solve;
-    f_next_back_pre = (fun (self: t_Empty v_T) -> true);
-    f_next_back_post
-    =
-    (fun (self: t_Empty v_T) (out: (t_Empty v_T & Core_models.Option.t_Option v_T)) -> true);
-    f_next_back
-    =
-    fun (self: t_Empty v_T) ->
-      let hax_temp_output:Core_models.Option.t_Option v_T =
-        Core_models.Option.Option_None <: Core_models.Option.t_Option v_T
-      in
-      self, hax_temp_output <: (t_Empty v_T & Core_models.Option.t_Option v_T)
-  }
+assume
+val impl_2': #v_T: Type0 -> Core_models.Iter.Traits.Double_ended.t_DoubleEndedIterator (t_Empty v_T)
+
+unfold
+let impl_2 (#v_T: Type0) = impl_2' #v_T
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2 (#v_T: Type0) : Core_models.Iter.Traits.Exact_size.t_ExactSizeIterator (t_Empty v_T) =
+let impl_1 (#v_T: Type0) : Core_models.Iter.Traits.Exact_size.t_ExactSizeIterator (t_Empty v_T) =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_len_pre = (fun (self: t_Empty v_T) -> true);

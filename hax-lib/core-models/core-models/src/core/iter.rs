@@ -94,6 +94,13 @@ pub mod traits {
             fn rev(self) -> Rev<Self>
             where
                 Self: Sized + DoubleEndedIterator;
+            // The methods gated out of the F* model below delegate to a helper
+            // that needs extra instance arguments (`ExactSizeIterator`,
+            // `Default`/`Extend`, `Ord`, `Clone`, `Try`/`Residual`, …). hax emits
+            // the call without them and F*'s typeclass resolution cannot recover
+            // them, so the whole blanket impl stops typechecking. They stay in the
+            // Rust model and in the Lean extraction.
+            #[cfg(not(hax_backend_fstar))]
             fn rposition<P: Fn(Self::Item) -> bool>(&mut self, predicate: P) -> Option<usize>
             where
                 Self: Sized + ExactSizeIterator + DoubleEndedIterator;
@@ -175,9 +182,24 @@ pub mod traits {
             /// size hint (the contract only asks for a correct lower bound and an
             /// optional upper bound), just an uninformative one.
             fn size_hint(&self) -> (usize, Option<usize>);
+            // `sum`, `product` and the comparison family below
+            // (`cmp`/`partial_cmp`/`eq`/`lt`/`le`/`gt`/`ge`) are not part of the
+            // F* model. hax names a trait method's contract lemmas after the
+            // method alone (`f_sum_pre`, `f_cmp_pre`, …) and puts every trait in
+            // `core_models` into one `Core_models.Bundle` module, so a method
+            // whose name is also a method of another trait in the crate is a
+            // duplicate top-level name there. These nine clash with
+            // `iter::traits::accum::{Sum::sum, Product::product}` and
+            // `cmp::{Ord::cmp, PartialOrd::partial_cmp, PartialEq::eq,
+            // PartialOrdDefaults::{lt, le, gt, ge}}`, which the F* library needs
+            // far more than the iterator conveniences do. The `_by` variants and
+            // `ne` have no counterpart elsewhere and stay.
+            #[cfg(not(hax_backend_fstar))]
             fn sum<S: Sum<Self::Item>>(self) -> S
             where
                 Self: Sized;
+            // Not part of the F* model, see the note on `sum` above.
+            #[cfg(not(hax_backend_fstar))]
             fn product<P: Product<Self::Item>>(self) -> P
             where
                 Self: Sized;
@@ -189,10 +211,14 @@ pub mod traits {
                 self,
                 compare: F,
             ) -> Option<Self::Item>;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn min_by_key<B: crate::cmp::Ord, F: Fn(&Self::Item) -> B>(
                 self,
                 f: F,
             ) -> Option<Self::Item>;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn max_by_key<B: crate::cmp::Ord, F: Fn(&Self::Item) -> B>(
                 self,
                 f: F,
@@ -200,6 +226,8 @@ pub mod traits {
             // The `cmp`/`eq`/ordering family takes an `Iterator` rather than
             // std's `IntoIterator`, matching `IteratorMethods::chain`: the model's
             // `IntoIterator` deliberately does not bound `IntoIter: Iterator`.
+            // Not part of the F* model, see the note on `sum` above.
+            #[cfg(not(hax_backend_fstar))]
             fn cmp<I2: Iterator<Item = Self::Item>>(self, other: I2) -> Ordering
             where
                 Self: Sized,
@@ -211,6 +239,8 @@ pub mod traits {
             ) -> Ordering
             where
                 Self: Sized;
+            // Not part of the F* model, see the note on `sum` above.
+            #[cfg(not(hax_backend_fstar))]
             fn partial_cmp<I2: Iterator>(self, other: I2) -> Option<Ordering>
             where
                 Self: Sized,
@@ -222,6 +252,8 @@ pub mod traits {
             ) -> Option<Ordering>
             where
                 Self: Sized;
+            // Not part of the F* model, see the note on `sum` above.
+            #[cfg(not(hax_backend_fstar))]
             fn eq<I2: Iterator>(self, other: I2) -> bool
             where
                 Self: Sized,
@@ -233,31 +265,45 @@ pub mod traits {
             ) -> bool
             where
                 Self: Sized;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn ne<I2: Iterator>(self, other: I2) -> bool
             where
                 Self: Sized,
                 Self::Item: crate::cmp::PartialEq<I2::Item>;
+            // Not part of the F* model, see the note on `sum` above.
+            #[cfg(not(hax_backend_fstar))]
             fn lt<I2: Iterator>(self, other: I2) -> bool
             where
                 Self: Sized,
                 Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            // Not part of the F* model, see the note on `sum` above.
+            #[cfg(not(hax_backend_fstar))]
             fn le<I2: Iterator>(self, other: I2) -> bool
             where
                 Self: Sized,
                 Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            // Not part of the F* model, see the note on `sum` above.
+            #[cfg(not(hax_backend_fstar))]
             fn gt<I2: Iterator>(self, other: I2) -> bool
             where
                 Self: Sized,
                 Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            // Not part of the F* model, see the note on `sum` above.
+            #[cfg(not(hax_backend_fstar))]
             fn ge<I2: Iterator>(self, other: I2) -> bool
             where
                 Self: Sized,
                 Self::Item: crate::cmp::PartialOrd<I2::Item>;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn unzip<A, B, FromA: Default + Extend<A>, FromB: Default + Extend<B>>(
                 self,
             ) -> (FromA, FromB)
             where
                 Self: Sized + Iterator<Item = (A, B)>;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn partition<B: Default + Extend<Self::Item>, F: Fn(&Self::Item) -> bool>(
                 self,
                 f: F,
@@ -267,6 +313,8 @@ pub mod traits {
             fn is_partitioned<P: Fn(Self::Item) -> bool>(self, predicate: P) -> bool
             where
                 Self: Sized;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn is_sorted(self) -> bool
             where
                 Self: Sized,
@@ -274,6 +322,8 @@ pub mod traits {
             fn is_sorted_by<F: Fn(&Self::Item, &Self::Item) -> bool>(self, compare: F) -> bool
             where
                 Self: Sized;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn is_sorted_by_key<K: crate::cmp::PartialOrd<K>, F: Fn(Self::Item) -> K>(
                 self,
                 f: F,
@@ -288,6 +338,8 @@ pub mod traits {
                 Self: Sized;
             /// The `Item: Clone` bound is a deviation: std assembles the `[Item; N]`
             /// through `MaybeUninit`, which the model has no counterpart for.
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn next_chunk<const N: usize>(
                 &mut self,
             ) -> Result<[Self::Item; N], crate::array::iter::IntoIter<Self::Item, N>>
@@ -296,6 +348,8 @@ pub mod traits {
                 Self::Item: Clone;
             /// `R: FromResidual<R::Residual>` is a deviation: std gets it from
             /// `Try`'s supertrait, which the model's `ops::try_trait::Try` lacks.
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn try_fold<
                 B,
                 R: Try<Output = B> + FromResidual<<R as Try>::Residual>,
@@ -307,6 +361,8 @@ pub mod traits {
             ) -> R
             where
                 Self: Sized;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn try_for_each<
                 R: Try<Output = ()> + FromResidual<<R as Try>::Residual>,
                 F: Fn(Self::Item) -> R,
@@ -320,6 +376,8 @@ pub mod traits {
             /// that alias expands to exactly the projection written out here. The
             /// extra `TryType: FromResidual<..>` bound is the same deviation as on
             /// `try_fold`.
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn try_find<R, F: Fn(&Self::Item) -> R>(
                 &mut self,
                 f: F,
@@ -330,6 +388,8 @@ pub mod traits {
                 <R as Try>::Residual: Residual<Option<Self::Item>>,
                 <<R as Try>::Residual as Residual<Option<Self::Item>>>::TryType:
                     FromResidual<<R as Try>::Residual>;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn try_reduce<R, F: Fn(Self::Item, Self::Item) -> R>(
                 &mut self,
                 f: F,
@@ -340,6 +400,8 @@ pub mod traits {
                 <R as Try>::Residual: Residual<Option<Self::Item>>,
                 <<R as Try>::Residual as Residual<Option<Self::Item>>>::TryType:
                     FromResidual<<R as Try>::Residual>;
+            // Not in the F* model, see the note on `rposition` above.
+            #[cfg(not(hax_backend_fstar))]
             fn try_collect<B>(&mut self) -> <<Self::Item as Try>::Residual as Residual<B>>::TryType
             where
                 Self: Sized,
@@ -645,10 +707,13 @@ pub mod traits {
 
         // opaque: loop is not supported by hax FunctionalizeLoops
         #[hax_lib::opaque]
+        // The comparator is `compare`, not std's `cmp`: a binder named `cmp`
+        // shadows the `core.cmp` namespace in the Lean extraction, so the
+        // `Ordering` references in this body stop resolving.
         fn iter_cmp_by<I1: Iterator, I2: Iterator, F: Fn(I1::Item, I2::Item) -> Ordering>(
             mut a: I1,
             mut b: I2,
-            cmp: F,
+            compare: F,
         ) -> Ordering {
             loop {
                 match a.next() {
@@ -660,7 +725,7 @@ pub mod traits {
                     }
                     Option::Some(x) => match b.next() {
                         Option::None => return Ordering::Greater,
-                        Option::Some(y) => match cmp(x, y) {
+                        Option::Some(y) => match compare(x, y) {
                             Ordering::Equal => (),
                             non_eq => return non_eq,
                         },
@@ -1079,6 +1144,7 @@ pub mod traits {
                 Rev::new(self)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn rposition<P: Fn(<I as Iterator>::Item) -> bool>(
                 &mut self,
                 predicate: P,
@@ -1199,10 +1265,13 @@ pub mod traits {
                 (0, Option::None)
             }
 
+            // Not in the F* model, as on the trait declaration above.
+            #[cfg(not(hax_backend_fstar))]
             fn sum<S: Sum<<I as Iterator>::Item>>(self) -> S {
                 Sum::sum(self)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn product<P: Product<<I as Iterator>::Item>>(self) -> P {
                 Product::product(self)
             }
@@ -1221,6 +1290,7 @@ pub mod traits {
                 iter_max_by(self, compare)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn min_by_key<B: crate::cmp::Ord, F: Fn(&<I as Iterator>::Item) -> B>(
                 self,
                 f: F,
@@ -1228,6 +1298,7 @@ pub mod traits {
                 iter_min_by_key(self, f)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn max_by_key<B: crate::cmp::Ord, F: Fn(&<I as Iterator>::Item) -> B>(
                 self,
                 f: F,
@@ -1235,6 +1306,7 @@ pub mod traits {
                 iter_max_by_key(self, f)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn cmp<I2: Iterator<Item = <I as Iterator>::Item>>(self, other: I2) -> Ordering
             where
                 <I as Iterator>::Item: crate::cmp::Ord,
@@ -1250,6 +1322,7 @@ pub mod traits {
                 iter_cmp_by(self, other, cmp)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn partial_cmp<I2: Iterator>(self, other: I2) -> Option<Ordering>
             where
                 <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
@@ -1270,6 +1343,7 @@ pub mod traits {
                 iter_partial_cmp_by(self, other, partial_cmp)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn eq<I2: Iterator>(self, other: I2) -> bool
             where
                 <I as Iterator>::Item: crate::cmp::PartialEq<I2::Item>,
@@ -1285,6 +1359,7 @@ pub mod traits {
                 iter_eq_by(self, other, eq)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn ne<I2: Iterator>(self, other: I2) -> bool
             where
                 <I as Iterator>::Item: crate::cmp::PartialEq<I2::Item>,
@@ -1292,6 +1367,7 @@ pub mod traits {
                 iter_eq_by(self, other, |x, y| crate::cmp::PartialEq::eq(&x, &y)) == false
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn lt<I2: Iterator>(self, other: I2) -> bool
             where
                 <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
@@ -1304,6 +1380,7 @@ pub mod traits {
                 )
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn le<I2: Iterator>(self, other: I2) -> bool
             where
                 <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
@@ -1316,6 +1393,7 @@ pub mod traits {
                 )
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn gt<I2: Iterator>(self, other: I2) -> bool
             where
                 <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
@@ -1328,6 +1406,7 @@ pub mod traits {
                 )
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn ge<I2: Iterator>(self, other: I2) -> bool
             where
                 <I as Iterator>::Item: crate::cmp::PartialOrd<I2::Item>,
@@ -1340,6 +1419,7 @@ pub mod traits {
                 )
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn unzip<A, B, FromA: Default + Extend<A>, FromB: Default + Extend<B>>(
                 self,
             ) -> (FromA, FromB)
@@ -1349,6 +1429,7 @@ pub mod traits {
                 iter_unzip(self)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn partition<
                 B: Default + Extend<<I as Iterator>::Item>,
                 F: Fn(&<I as Iterator>::Item) -> bool,
@@ -1363,6 +1444,7 @@ pub mod traits {
                 iter_is_partitioned(self, predicate)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn is_sorted(self) -> bool
             where
                 <I as Iterator>::Item: crate::cmp::PartialOrd<<I as Iterator>::Item>,
@@ -1384,6 +1466,7 @@ pub mod traits {
                 iter_is_sorted_by(self, compare)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn is_sorted_by_key<K: crate::cmp::PartialOrd<K>, F: Fn(<I as Iterator>::Item) -> K>(
                 self,
                 f: F,
@@ -1402,6 +1485,7 @@ pub mod traits {
                 collection
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn next_chunk<const N: usize>(
                 &mut self,
             ) -> Result<
@@ -1414,6 +1498,7 @@ pub mod traits {
                 iter_next_chunk(self)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn try_fold<
                 B,
                 R: Try<Output = B> + FromResidual<<R as Try>::Residual>,
@@ -1426,6 +1511,7 @@ pub mod traits {
                 iter_try_fold(self, init, f)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn try_for_each<
                 R: Try<Output = ()> + FromResidual<<R as Try>::Residual>,
                 F: Fn(<I as Iterator>::Item) -> R,
@@ -1436,6 +1522,7 @@ pub mod traits {
                 iter_try_for_each(self, f)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn try_find<R, F: Fn(&<I as Iterator>::Item) -> R>(
                 &mut self,
                 f: F,
@@ -1449,6 +1536,7 @@ pub mod traits {
                 iter_try_find(self, f)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn try_reduce<R, F: Fn(<I as Iterator>::Item, <I as Iterator>::Item) -> R>(
                 &mut self,
                 f: F,
@@ -1462,6 +1550,7 @@ pub mod traits {
                 iter_try_reduce(self, f)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn try_collect<B>(
                 &mut self,
             ) -> <<<I as Iterator>::Item as Try>::Residual as Residual<B>>::TryType
@@ -1560,6 +1649,7 @@ pub mod traits {
             fn rfold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
             /// `R: FromResidual<R::Residual>` is a deviation: std gets it from
             /// `Try`'s supertrait, which the model's `ops::try_trait::Try` lacks.
+            #[cfg(not(hax_backend_fstar))]
             fn try_rfold<
                 B,
                 R: crate::ops::try_trait::Try<Output = B>
@@ -1683,6 +1773,7 @@ pub mod traits {
                 iter_rfold(self, init, f)
             }
 
+            #[cfg(not(hax_backend_fstar))]
             fn try_rfold<
                 B,
                 R: crate::ops::try_trait::Try<Output = B>
@@ -1780,6 +1871,10 @@ pub mod traits {
 
         #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
+        // opaque for F*: `extend_one` feeds `extend` a `Once<A>`, and F* cannot
+        // reduce that iterator's `Item` to `A` while its instance is still an
+        // unresolved `solve`.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<A, E: Extend<A>> ExtendMethods<A> for E {
             fn extend_one(&mut self, item: A) {
                 self.extend(super::super::sources::once::once(item))
@@ -1920,6 +2015,10 @@ pub mod adapters {
         }
 
         #[hax_lib::attributes]
+        // opaque for F*: building this record needs the `Iterator` instance for the
+        // adapter, which F* cannot rederive from an `ExactSizeIterator` bound plus
+        // the adapter's extra `Fn`/`Clone` argument.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: ExactSizeIterator, O, F: Fn(I::Item) -> O> ExactSizeIterator for Map<I, F> {
             fn len(&self) -> usize {
                 ExactSizeIterator::len(&self.iter)
@@ -2231,8 +2330,8 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         impl<I> Rev<I> {
-            pub fn new(iter: I) -> Rev<I> {
-                Rev { iter }
+            pub fn new(it: I) -> Rev<I> {
+                Rev { iter: it }
             }
             /// See [`std::iter::Rev::into_inner`]
             pub fn into_inner(self) -> I {
@@ -2278,6 +2377,11 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: the `Item = &'a T` equality from the impl's bound is not
+        // carried into the body, so F* sees the `Option<I::Item>` the inner
+        // iterator returns as unrelated to `Option<T>`. Same escape hatch as the
+        // `Map` adapter above.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<'a, T: Clone + 'a, I: Iterator<Item = &'a T>> Iterator for Cloned<I> {
             type Item = T;
             fn next(&mut self) -> Option<T> {
@@ -2288,6 +2392,11 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: the `Item = &'a T` equality from the impl's bound is not
+        // carried into the body, so F* sees the `Option<I::Item>` the inner
+        // iterator returns as unrelated to `Option<T>`. Same escape hatch as the
+        // `Map` adapter above.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<'a, T: Clone + 'a, I: DoubleEndedIterator<Item = &'a T>> DoubleEndedIterator for Cloned<I> {
             fn next_back(&mut self) -> Option<T> {
                 match self.it.next_back() {
@@ -2297,6 +2406,10 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: building this record needs the `Iterator` instance for
+        // `Cloned`/`Copied`, which F* cannot rederive from an `ExactSizeIterator`
+        // bound because of the `Item = &'a T` equality.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<'a, T: Clone + 'a, I: ExactSizeIterator<Item = &'a T>> ExactSizeIterator for Cloned<I> {
             fn len(&self) -> usize {
                 ExactSizeIterator::len(&self.it)
@@ -2321,6 +2434,11 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: the `Item = &'a T` equality from the impl's bound is not
+        // carried into the body, so F* sees the `Option<I::Item>` the inner
+        // iterator returns as unrelated to `Option<T>`. Same escape hatch as the
+        // `Map` adapter above.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<'a, T: Copy + 'a, I: Iterator<Item = &'a T>> Iterator for Copied<I> {
             type Item = T;
             fn next(&mut self) -> Option<T> {
@@ -2331,6 +2449,11 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: the `Item = &'a T` equality from the impl's bound is not
+        // carried into the body, so F* sees the `Option<I::Item>` the inner
+        // iterator returns as unrelated to `Option<T>`. Same escape hatch as the
+        // `Map` adapter above.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<'a, T: Copy + 'a, I: DoubleEndedIterator<Item = &'a T>> DoubleEndedIterator for Copied<I> {
             fn next_back(&mut self) -> Option<T> {
                 match self.it.next_back() {
@@ -2340,6 +2463,10 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: building this record needs the `Iterator` instance for
+        // `Cloned`/`Copied`, which F* cannot rederive from an `ExactSizeIterator`
+        // bound because of the `Item = &'a T` equality.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<'a, T: Copy + 'a, I: ExactSizeIterator<Item = &'a T>> ExactSizeIterator for Copied<I> {
             fn len(&self) -> usize {
                 ExactSizeIterator::len(&self.it)
@@ -2363,6 +2490,9 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: as for the `Map` and `Filter` adapters, F* cannot see
+        // that the closure's output type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator, F: Fn(&I::Item)> Iterator for Inspect<I, F> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
@@ -2376,6 +2506,9 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: as for the `Map` and `Filter` adapters, F* cannot see
+        // that the closure's output type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: DoubleEndedIterator, F: Fn(&I::Item)> DoubleEndedIterator for Inspect<I, F> {
             fn next_back(&mut self) -> Option<I::Item> {
                 match self.it.next_back() {
@@ -2388,6 +2521,10 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: building this record needs the `Iterator` instance for the
+        // adapter, which F* cannot rederive from an `ExactSizeIterator` bound plus
+        // the adapter's extra `Fn`/`Clone` argument.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: ExactSizeIterator, F: Fn(&I::Item)> ExactSizeIterator for Inspect<I, F> {
             fn len(&self) -> usize {
                 ExactSizeIterator::len(&self.it)
@@ -2442,6 +2579,9 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: as for the `Map` and `Filter` adapters, F* cannot see
+        // that the closure's output type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator, B, P: Fn(I::Item) -> Option<B>> Iterator for MapWhile<I, P> {
             type Item = B;
             fn next(&mut self) -> Option<B> {
@@ -2502,7 +2642,11 @@ pub mod adapters {
         pub struct TakeWhile<I, P> {
             it: I,
             // `true` once the predicate has failed; the adapter then stays empty.
-            done: bool,
+            // Named `exhausted`, not `done`: Lean opens the enclosing
+            // namespaces of a declaration, so a field `done` shadows the
+            // ControlFlow constructor that Aeneas's loop translation emits
+            // inside this struct's own namespace.
+            exhausted: bool,
             predicate: P,
         }
         #[hax_lib::attributes]
@@ -2510,16 +2654,19 @@ pub mod adapters {
             pub fn new(it: I, predicate: P) -> Self {
                 Self {
                     it,
-                    done: false,
+                    exhausted: false,
                     predicate,
                 }
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: as for the `Map` and `Filter` adapters, F* cannot see
+        // that the closure's output type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for TakeWhile<I, P> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
-                if self.done {
+                if self.exhausted {
                     Option::None
                 } else {
                     match self.it.next() {
@@ -2527,12 +2674,12 @@ pub mod adapters {
                             if (self.predicate)(&v) {
                                 Option::Some(v)
                             } else {
-                                self.done = true;
+                                self.exhausted = true;
                                 Option::None
                             }
                         }
                         Option::None => {
-                            self.done = true;
+                            self.exhausted = true;
                             Option::None
                         }
                     }
@@ -2554,11 +2701,15 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         impl<I, St, F> Scan<I, St, F> {
-            pub fn new(iter: I, state: St, f: F) -> Self {
-                Self { iter, state, f }
+            pub fn new(it: I, state: St, f: F) -> Self {
+                Self { iter: it, state, f }
             }
         }
         #[hax_lib::attributes]
+        // Out of the Lean extraction for the same reason it is out of the F* one:
+        // the model's `Fn` has no way to hand a mutated `&mut St` back, so
+        // Aeneas's translation of the call does not typecheck.
+        #[cfg_attr(charon, aeneas::exclude)]
         impl<I: Iterator, St, B, F: Fn(&mut St, I::Item) -> Option<B>> Iterator for Scan<I, St, F> {
             type Item = B;
             fn next(&mut self) -> Option<B> {
@@ -2579,25 +2730,32 @@ pub mod adapters {
         // is enough to give the same answers and avoids moving out of `&mut self`.
         pub struct Fuse<I> {
             iter: I,
-            done: bool,
+            // Named `exhausted`, not `done`: Lean opens the enclosing
+            // namespaces of a declaration, so a field `done` shadows the
+            // ControlFlow constructor that Aeneas's loop translation emits
+            // inside this struct's own namespace.
+            exhausted: bool,
         }
         #[hax_lib::attributes]
         impl<I> Fuse<I> {
-            pub fn new(iter: I) -> Self {
-                Self { iter, done: false }
+            pub fn new(it: I) -> Self {
+                Self {
+                    iter: it,
+                    exhausted: false,
+                }
             }
         }
         #[hax_lib::attributes]
         impl<I: Iterator> Iterator for Fuse<I> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
-                if self.done {
+                if self.exhausted {
                     Option::None
                 } else {
                     match self.iter.next() {
                         Option::Some(v) => Option::Some(v),
                         Option::None => {
-                            self.done = true;
+                            self.exhausted = true;
                             Option::None
                         }
                     }
@@ -2607,13 +2765,13 @@ pub mod adapters {
         #[hax_lib::attributes]
         impl<I: DoubleEndedIterator> DoubleEndedIterator for Fuse<I> {
             fn next_back(&mut self) -> Option<I::Item> {
-                if self.done {
+                if self.exhausted {
                     Option::None
                 } else {
                     match self.iter.next_back() {
                         Option::Some(v) => Option::Some(v),
                         Option::None => {
-                            self.done = true;
+                            self.exhausted = true;
                             Option::None
                         }
                     }
@@ -2634,10 +2792,10 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         impl<I: Clone> Cycle<I> {
-            pub fn new(iter: I) -> Self {
+            pub fn new(it: I) -> Self {
                 Self {
-                    orig: iter.clone(),
-                    iter,
+                    orig: it.clone(),
+                    iter: it,
                 }
             }
         }
@@ -2672,13 +2830,19 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         impl<I: Iterator> Peekable<I> {
-            pub fn new(iter: I) -> Self {
+            pub fn new(it: I) -> Self {
                 Self {
-                    iter,
+                    iter: it,
                     peeked: seq_empty(),
                 }
             }
-
+        }
+        // opaque for F*: these hand a value to a caller-supplied closure, and F*
+        // cannot see that the closure's output type is the one the body uses (the
+        // same reason the `Map` and `Filter` adapters are opaque).
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[hax_lib::attributes]
+        impl<I: Iterator> Peekable<I> {
             /// See [`std::iter::Peekable::peek`]
             pub fn peek(&mut self) -> Option<&I::Item> {
                 if seq_len(&self.peeked) == 0 {
@@ -2740,11 +2904,17 @@ pub mod adapters {
                     Option::None => Option::None,
                 }
             }
-
+        }
+        // `next_if_map_mut` sits in its own block so it can be dropped from both
+        // extractions: hax rejects handing a `&mut` to a closure (HAX0003
+        // `DirectAndMut`, hacspec/hax#420) and the model's `Fn`/`FnOnce` has no
+        // way to hand the mutated element back, so Aeneas's translation of the
+        // call does not typecheck either.
+        #[cfg(not(hax_backend_fstar))]
+        #[cfg_attr(charon, aeneas::exclude)]
+        #[hax_lib::attributes]
+        impl<I: Iterator> Peekable<I> {
             /// See [`std::iter::Peekable::next_if_map_mut`]
-            // Not part of the F* model: hax rejects handing a `&mut` to a closure
-            // (HAX0003 `DirectAndMut`, hacspec/hax#420).
-            #[cfg(not(hax_backend_fstar))]
             // std mutates the peeked element in place through `peek_mut`; the
             // model takes the element out, hands `f` a `&mut` to it, and puts it
             // back when `f` declines it. Same observable behaviour.
@@ -2796,10 +2966,10 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         impl<I: Iterator> Intersperse<I> {
-            pub fn new(iter: I, separator: I::Item) -> Self {
+            pub fn new(it: I, separator: I::Item) -> Self {
                 Self {
                     separator,
-                    iter,
+                    iter: it,
                     peeked: seq_empty(),
                     exhausted: false,
                     needs_sep: false,
@@ -2807,6 +2977,9 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*, as for `Map`: F* cannot see that the closure's output
+        // type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator> Iterator for Intersperse<I>
         where
             I::Item: Clone,
@@ -2843,10 +3016,10 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         impl<I: Iterator, G> IntersperseWith<I, G> {
-            pub fn new(iter: I, separator: G) -> Self {
+            pub fn new(it: I, separator: G) -> Self {
                 Self {
                     separator,
-                    iter,
+                    iter: it,
                     peeked: seq_empty(),
                     exhausted: false,
                     needs_sep: false,
@@ -2854,6 +3027,9 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        // opaque for F*: as for the `Map` and `Filter` adapters, F* cannot see
+        // that the closure's output type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator, G: Fn() -> I::Item> Iterator for IntersperseWith<I, G> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
@@ -2892,20 +3068,24 @@ pub mod adapters {
             // Set once the source has run dry, so that further `next` calls cannot
             // overwrite `remainder` with a fresh empty buffer. std gets this for
             // free by holding the leftover in an `Option`.
-            done: bool,
+            // Named `exhausted`, not `done`: Lean opens the enclosing
+            // namespaces of a declaration, so a field `done` shadows the
+            // ControlFlow constructor that Aeneas's loop translation emits
+            // inside this struct's own namespace.
+            exhausted: bool,
         }
         #[hax_lib::attributes]
         impl<I: Iterator, const N: usize> ArrayChunks<I, N> {
             // std panics in `Iterator::array_chunks`, this constructor's only caller.
             #[hax_lib::requires(N != 0)]
-            pub fn new(iter: I) -> Self {
+            pub fn new(it: I) -> Self {
                 if N == 0 {
                     crate::panicking::internal::panic()
                 }
                 Self {
-                    iter,
+                    iter: it,
                     remainder: seq_empty(),
-                    done: false,
+                    exhausted: false,
                 }
             }
         }
@@ -2936,7 +3116,7 @@ pub mod adapters {
             // model has no way to move elements out of its `Seq`, hence the extra
             // `I::Item: Clone` bound and the clone below.
             fn next(&mut self) -> Option<[I::Item; N]> {
-                if self.done {
+                if self.exhausted {
                     return Option::None;
                 }
                 let mut buf = seq_empty();
@@ -2944,7 +3124,7 @@ pub mod adapters {
                     match self.iter.next() {
                         Option::Some(v) => seq_push(&mut buf, v),
                         Option::None => {
-                            self.done = true;
+                            self.exhausted = true;
                             self.remainder = buf;
                             return Option::None;
                         }
@@ -2973,12 +3153,12 @@ pub mod adapters {
         impl<I: Iterator, F, const N: usize> MapWindows<I, F, N> {
             // std panics in `Iterator::map_windows`, this constructor's only caller.
             #[hax_lib::requires(N != 0)]
-            pub fn new(iter: I, f: F) -> Self {
+            pub fn new(it: I, f: F) -> Self {
                 if N == 0 {
                     crate::panicking::internal::panic()
                 }
                 Self {
-                    iter,
+                    iter: it,
                     f,
                     window: seq_empty(),
                 }
@@ -3007,8 +3187,9 @@ pub mod adapters {
             }
         }
     }
-    // Not part of the F* model: hax rejects a struct that holds a `&mut`
-    // (HAX0003 `DirectAndMut`, hacspec/hax#420).
+    // Out of both extractions: hax rejects a struct that holds a `&mut`
+    // (HAX0003 `DirectAndMut`, hacspec/hax#420), and Aeneas threads the borrow
+    // back out as an extra closure, which no longer fits the `Iterator` shape.
     #[cfg(not(hax_backend_fstar))]
     pub mod by_ref_sized {
         use super::super::traits::double_ended::DoubleEndedIterator;
@@ -3018,6 +3199,7 @@ pub mod adapters {
         /// See [`std::iter::ByRefSized`]
         pub struct ByRefSized<'a, I>(pub &'a mut I);
         #[hax_lib::attributes]
+        #[cfg_attr(charon, aeneas::exclude)]
         impl<'a, I: Iterator> Iterator for ByRefSized<'a, I> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
@@ -3025,12 +3207,14 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
+        #[cfg_attr(charon, aeneas::exclude)]
         impl<'a, I: DoubleEndedIterator> DoubleEndedIterator for ByRefSized<'a, I> {
             fn next_back(&mut self) -> Option<I::Item> {
                 self.0.next_back()
             }
         }
         #[hax_lib::attributes]
+        #[cfg_attr(charon, aeneas::exclude)]
         impl<'a, I: ExactSizeIterator> ExactSizeIterator for ByRefSized<'a, I> {
             fn len(&self) -> usize {
                 ExactSizeIterator::len(self.0)
@@ -3072,6 +3256,10 @@ pub mod sources {
             }
         }
 
+        // opaque for F*: the `Item` of a `DoubleEndedIterator` reaches the record
+        // through the (still unresolved) `Iterator` super-instance, so F* will not
+        // accept a `next_back` written at the concrete item type.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<T> DoubleEndedIterator for Empty<T> {
             fn next_back(&mut self) -> Option<T> {
                 Option::None
@@ -3112,6 +3300,10 @@ pub mod sources {
         }
 
         #[hax_lib::attributes]
+        // opaque for F*: the `Item` of a `DoubleEndedIterator` reaches the record
+        // through the (still unresolved) `Iterator` super-instance, so F* will not
+        // accept a `next_back` written at the concrete item type.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<T> DoubleEndedIterator for Once<T> {
             fn next_back(&mut self) -> Option<T> {
                 let n = seq_len(&self.0);
@@ -3143,6 +3335,8 @@ pub mod sources {
             OnceWith(seq_one(make))
         }
 
+        // opaque for F*, as for `Map`: the closure's output type is not visible.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<A, F: FnOnce() -> A> Iterator for OnceWith<F> {
             type Item = A;
             fn next(&mut self) -> Option<A> {
@@ -3181,6 +3375,10 @@ pub mod sources {
         }
 
         // A `Repeat` has no end, so both ends yield the same thing forever.
+        // opaque for F*: the `Item` of a `DoubleEndedIterator` reaches the record
+        // through the (still unresolved) `Iterator` super-instance, so F* will not
+        // accept a `next_back` written at the concrete item type.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<A: Clone> DoubleEndedIterator for Repeat<A> {
             fn next_back(&mut self) -> Option<A> {
                 Option::Some(self.element.clone())
@@ -3221,6 +3419,10 @@ pub mod sources {
         }
 
         // Every element is the same, so `next_back` behaves like `next`.
+        // opaque for F*: the `Item` of a `DoubleEndedIterator` reaches the record
+        // through the (still unresolved) `Iterator` super-instance, so F* will not
+        // accept a `next_back` written at the concrete item type.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<A: Clone> DoubleEndedIterator for RepeatN<A> {
             fn next_back(&mut self) -> Option<A> {
                 Iterator::next(self)
@@ -3249,6 +3451,9 @@ pub mod sources {
             RepeatWith { repeater }
         }
 
+        // opaque for F*, as for `Map`: F* cannot see that the closure's output
+        // type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<A, F: FnMut() -> A> Iterator for RepeatWith<F> {
             type Item = A;
             fn next(&mut self) -> Option<A> {
@@ -3270,6 +3475,9 @@ pub mod sources {
             FromFn(f)
         }
 
+        // opaque for F*, as for `Map`: F* cannot see that the closure's output
+        // type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<T, F: FnMut() -> Option<T>> Iterator for FromFn<F> {
             type Item = T;
             fn next(&mut self) -> Option<T> {
@@ -3304,6 +3512,9 @@ pub mod sources {
             Successors { next, succ }
         }
 
+        // opaque for F*, as for `Map`: F* cannot see that the closure's output
+        // type is the one the body uses.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<T, F: Fn(&T) -> Option<T>> Iterator for Successors<T, F> {
             type Item = T;
             fn next(&mut self) -> Option<T> {
@@ -3592,6 +3803,9 @@ mod ends {
         ($($int_type: ident)*) => {
             $(
                 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+                // opaque for F*, as for the sources above: `Item` reaches the
+                // record through the unresolved `Iterator` super-instance.
+                #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
                 impl DoubleEndedIterator for Range<$int_type> {
                     fn next_back(&mut self) -> Option<$int_type> {
                         if self.start >= self.end {
@@ -3654,6 +3868,8 @@ mod ends {
     range_exact_size_unsigned!(u8 u16 u32 usize);
     range_exact_size_signed!(i8 i16 i32 isize);
 
+    // opaque for F*, as for the sources above.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<'a, T> DoubleEndedIterator for crate::slice::iter::Iter<'a, T> {
         fn next_back(&mut self) -> Option<&'a T> {
             let n = seq_len(&self.0);
@@ -4099,6 +4315,9 @@ mod tests {
                 prop_assert_eq!(drain(model), std_iter.collect::<Vec<_>>());
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_rposition(v in prop::collection::vec(any::<i32>(), 0..=20)) {
                 prop_assert_eq!(
@@ -4294,6 +4513,9 @@ mod tests {
 
         proptest! {
             // Bounded so neither the model nor std overflows.
+            // `sum`/`product` and the comparison family are not part of the
+            // F* model (see the note on `IteratorMethods::sum`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_sum(v in prop::collection::vec(0..=1000u32, 0..=20)) {
                 prop_assert_eq!(
@@ -4302,6 +4524,9 @@ mod tests {
                 );
             }
 
+            // `sum`/`product` and the comparison family are not part of the
+            // F* model (see the note on `IteratorMethods::sum`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_product(v in prop::collection::vec(0..=3u64, 0..=20)) {
                 prop_assert_eq!(
@@ -4330,6 +4555,9 @@ mod tests {
                 );
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_min_by_key(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let items = keyed(&v);
@@ -4339,6 +4567,9 @@ mod tests {
                 );
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_max_by_key(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let items = keyed(&v);
@@ -4348,6 +4579,9 @@ mod tests {
                 );
             }
 
+            // `sum`/`product` and the comparison family are not part of the
+            // F* model (see the note on `IteratorMethods::sum`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_cmp(
                 a in prop::collection::vec(any::<u8>(), 0..=6),
@@ -4371,6 +4605,9 @@ mod tests {
                 );
             }
 
+            // `sum`/`product` and the comparison family are not part of the
+            // F* model (see the note on `IteratorMethods::sum`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_partial_cmp(
                 a in prop::collection::vec(any::<u8>(), 0..=6),
@@ -4399,6 +4636,9 @@ mod tests {
                 );
             }
 
+            // `sum`/`product` and the comparison family are not part of the
+            // F* model (see the note on `IteratorMethods::sum`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_eq_ne_lt_le_gt_ge(
                 a in prop::collection::vec(any::<u8>(), 0..=6),
@@ -4442,6 +4682,9 @@ mod tests {
                 );
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_unzip(v in prop::collection::vec((any::<u8>(), any::<i32>()), 0..=20)) {
                 let (ma, mb): (Vec<u8>, Vec<i32>) = VecIter::new(v.clone()).unzip();
@@ -4450,6 +4693,9 @@ mod tests {
                 prop_assert_eq!(mb, sb);
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_partition(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
                 let (myes, mno): (Vec<u8>, Vec<u8>) =
@@ -4468,6 +4714,9 @@ mod tests {
                 );
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_is_sorted(v in prop::collection::vec(0..=3u8, 0..=8)) {
                 prop_assert_eq!(
@@ -4484,6 +4733,9 @@ mod tests {
                 );
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_is_sorted_by_key(v in prop::collection::vec(any::<i8>(), 0..=8)) {
                 prop_assert_eq!(
@@ -4506,6 +4758,9 @@ mod tests {
                 prop_assert_eq!(model, expected);
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_next_chunk(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let mut model = VecIter::new(v.clone());
@@ -4523,6 +4778,9 @@ mod tests {
                 prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_try_fold(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let mut model = VecIter::new(v.clone());
@@ -4540,6 +4798,9 @@ mod tests {
                 prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_try_for_each(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
                 let mut model = VecIter::new(v.clone());
@@ -4553,6 +4814,9 @@ mod tests {
                 prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_try_rfold(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let mut model = VecIter::new(v.clone());
@@ -4622,6 +4886,9 @@ mod tests {
         }
 
         proptest! {
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_try_find(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
                 let mut model = VecIter::new(v.clone());
@@ -4635,6 +4902,9 @@ mod tests {
                 prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_try_reduce(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let mut model = VecIter::new(v.clone());
@@ -4651,6 +4921,9 @@ mod tests {
                 prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
             }
 
+            // Not part of the F* model (see the note on
+            // `IteratorMethods::rposition`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_try_collect(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
                 let mut model = VecIter::new(v.clone())
@@ -4673,6 +4946,8 @@ mod tests {
             }
         }
 
+        // Not part of the F* model (see the note on `IteratorMethods::sum`).
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_sum_overflow_panics() {
             crate::testing::panics_like_core(
@@ -4681,6 +4956,8 @@ mod tests {
             );
         }
 
+        // Not part of the F* model (see the note on `IteratorMethods::sum`).
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_product_overflow_panics() {
             crate::testing::panics_like_core(
@@ -4689,6 +4966,8 @@ mod tests {
             );
         }
 
+        // Not part of the F* model (see the note on `IteratorMethods::sum`).
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_sum_of_empty_is_zero() {
             assert_eq!(
@@ -4697,6 +4976,8 @@ mod tests {
             );
         }
 
+        // Not part of the F* model (see the note on `IteratorMethods::sum`).
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_product_of_empty_is_one() {
             assert_eq!(

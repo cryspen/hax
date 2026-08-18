@@ -7,12 +7,12 @@ include Core_models.Bundle {t_Peekable as t_Peekable}
 
 include Core_models.Bundle {impl__new__from__peekable as impl__new}
 
-include Core_models.Bundle {impl__peek as impl__peek}
+include Core_models.Bundle {impl_1__peek as impl_1__peek}
 
-include Core_models.Bundle {impl__next_if as impl__next_if}
+include Core_models.Bundle {impl_1__next_if as impl_1__next_if}
 
-include Core_models.Bundle {impl__next_if_eq as impl__next_if_eq}
+include Core_models.Bundle {impl_1__next_if_eq as impl_1__next_if_eq}
 
-include Core_models.Bundle {impl__next_if_map as impl__next_if_map}
+include Core_models.Bundle {impl_1__next_if_map as impl_1__next_if_map}
 
-include Core_models.Bundle {impl_1__from__peekable as impl_1}
+include Core_models.Bundle {impl_2__from__peekable as impl_2}

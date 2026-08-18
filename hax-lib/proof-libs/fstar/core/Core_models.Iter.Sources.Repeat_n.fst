@@ -51,31 +51,18 @@ let impl (#v_A: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_model
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1
+assume
+val impl_2': #v_A: Type0 -> {| i0: Core_models.Clone.t_Clone v_A |}
+  -> Core_models.Iter.Traits.Double_ended.t_DoubleEndedIterator (t_RepeatN v_A)
+
+unfold
+let impl_2
       (#v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_A)
-    : Core_models.Iter.Traits.Double_ended.t_DoubleEndedIterator (t_RepeatN v_A) =
-  {
-    _super_i0 = FStar.Tactics.Typeclasses.solve;
-    f_next_back_pre = (fun (self: t_RepeatN v_A) -> true);
-    f_next_back_post
-    =
-    (fun (self: t_RepeatN v_A) (out1: (t_RepeatN v_A & Core_models.Option.t_Option v_A)) -> true);
-    f_next_back
-    =
-    fun (self: t_RepeatN v_A) ->
-      let (tmp0: t_RepeatN v_A), (out: Core_models.Option.t_Option v_A) =
-        Core_models.Iter.Traits.Iterator.f_next #(t_RepeatN v_A)
-          #FStar.Tactics.Typeclasses.solve
-          self
-      in
-      let self:t_RepeatN v_A = tmp0 in
-      let hax_temp_output:Core_models.Option.t_Option v_A = out in
-      self, hax_temp_output <: (t_RepeatN v_A & Core_models.Option.t_Option v_A)
-  }
+     = impl_2' #v_A #i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2
+let impl_1
       (#v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_A)
     : Core_models.Iter.Traits.Exact_size.t_ExactSizeIterator (t_RepeatN v_A) =
