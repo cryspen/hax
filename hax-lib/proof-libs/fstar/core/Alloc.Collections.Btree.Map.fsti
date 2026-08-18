@@ -205,19 +205,23 @@ val impl_18__new: #v_K: Type0 -> #v_V: Type0 -> Prims.unit
   -> Prims.Pure (t_BTreeMap v_K v_V Alloc.Alloc.t_Global) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::clear`]
-val impl_19__clear (#v_K #v_V #v_A: Type0) (self: t_BTreeMap v_K v_V v_A)
+val impl_19__clear
+      (#v_K #v_V #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_BTreeMap v_K v_V v_A) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::new_in`]
-val impl_19__new_in (#v_K #v_V #v_A: Type0) (e_alloc: v_A)
+val impl_19__new_in (#v_K #v_V #v_A: Type0) {| i0: Core_models.Clone.t_Clone v_A |} (e_alloc: v_A)
     : Prims.Pure (t_BTreeMap v_K v_V v_A) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::get`]
 val impl_20__get
       (#v_K #v_V #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_K v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_K |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_K v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_K |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeMap v_K v_V v_A)
       (key: v_Q)
     : Prims.Pure (Core_models.Option.t_Option v_V) Prims.l_True (fun _ -> Prims.l_True)
@@ -225,9 +229,10 @@ val impl_20__get
 /// See [`std::collections::BTreeMap::get_key_value`]
 val impl_20__get_key_value
       (#v_K #v_V #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_K v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_K |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_K v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_K |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeMap v_K v_V v_A)
       (k: v_Q)
     : Prims.Pure (Core_models.Option.t_Option (v_K & v_V)) Prims.l_True (fun _ -> Prims.l_True)
@@ -235,9 +240,10 @@ val impl_20__get_key_value
 /// See [`std::collections::BTreeMap::contains_key`]
 val impl_20__contains_key
       (#v_K #v_V #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_K v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_K |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_K v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_K |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeMap v_K v_V v_A)
       (key: v_Q)
     : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
@@ -245,21 +251,24 @@ val impl_20__contains_key
 /// See [`std::collections::BTreeMap::first_key_value`]
 val impl_20__first_key_value
       (#v_K #v_V #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_K |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_K |}
       (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (Core_models.Option.t_Option (v_K & v_V)) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::last_key_value`]
 val impl_20__last_key_value
       (#v_K #v_V #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_K |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_K |}
       (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (Core_models.Option.t_Option (v_K & v_V)) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::pop_first`]
 val impl_20__pop_first
       (#v_K #v_V #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_K |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_K |}
       (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_BTreeMap v_K v_V v_A & Core_models.Option.t_Option (v_K & v_V))
       Prims.l_True
@@ -268,7 +277,8 @@ val impl_20__pop_first
 /// See [`std::collections::BTreeMap::pop_last`]
 val impl_20__pop_last
       (#v_K #v_V #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_K |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_K |}
       (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_BTreeMap v_K v_V v_A & Core_models.Option.t_Option (v_K & v_V))
       Prims.l_True
@@ -283,7 +293,8 @@ val impl_20__pop_last
 /// carries the bound instead.
 val impl_20__insert
       (#v_K #v_V #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_K |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_K |}
       (self: t_BTreeMap v_K v_V v_A)
       (key: v_K)
       (value: v_V)
@@ -294,9 +305,10 @@ val impl_20__insert
 /// See [`std::collections::BTreeMap::remove`]
 val impl_20__remove
       (#v_K #v_V #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_K v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_K |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_K v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_K |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeMap v_K v_V v_A)
       (key: v_Q)
     : Prims.Pure (t_BTreeMap v_K v_V v_A & Core_models.Option.t_Option v_V)
@@ -306,9 +318,10 @@ val impl_20__remove
 /// See [`std::collections::BTreeMap::remove_entry`]
 val impl_20__remove_entry
       (#v_K #v_V #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_K v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_K |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_K v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_K |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeMap v_K v_V v_A)
       (key: v_Q)
     : Prims.Pure (t_BTreeMap v_K v_V v_A & Core_models.Option.t_Option (v_K & v_V))
@@ -319,7 +332,9 @@ val impl_20__remove_entry
 /// the value from `other` wins.
 val impl_20__append
       (#v_K #v_V #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_K |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_K |}
+      {| i2: Core_models.Clone.t_Clone v_A |}
       (self other: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_BTreeMap v_K v_V v_A & t_BTreeMap v_K v_V v_A)
       Prims.l_True
@@ -329,10 +344,11 @@ val impl_20__append
 /// entries with keys `< key`, returns those `>= key`.
 val impl_20__split_off
       (#v_K #v_V #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_K v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_K |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
-      {| i3: Core_models.Clone.t_Clone v_A |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_Q |}
+      {| i2: Core_models.Borrow.t_Borrow v_K v_Q |}
+      {| i3: Core_models.Cmp.t_Ord v_K |}
+      {| i4: Core_models.Clone.t_Clone v_A |}
       (self: t_BTreeMap v_K v_V v_A)
       (key: v_Q)
     : Prims.Pure (t_BTreeMap v_K v_V v_A & t_BTreeMap v_K v_V v_A)
@@ -340,29 +356,50 @@ val impl_20__split_off
       (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::into_keys`]
-val impl_20__into_keys (#v_K #v_V #v_A: Type0) (self: t_BTreeMap v_K v_V v_A)
+val impl_20__into_keys
+      (#v_K #v_V #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_IntoKeys v_K v_V v_A) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::into_values`]
-val impl_20__into_values (#v_K #v_V #v_A: Type0) (self: t_BTreeMap v_K v_V v_A)
+val impl_20__into_values
+      (#v_K #v_V #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_IntoValues v_K v_V v_A) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::len`]
-val impl_92__len (#v_K #v_V #v_A: Type0) (self: t_BTreeMap v_K v_V v_A)
+val impl_92__len
+      (#v_K #v_V #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure usize Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::is_empty`]
-val impl_92__is_empty (#v_K #v_V #v_A: Type0) (self: t_BTreeMap v_K v_V v_A)
+val impl_92__is_empty
+      (#v_K #v_V #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::iter`]
-val impl_92__iter (#v_K #v_V #v_A: Type0) (self: t_BTreeMap v_K v_V v_A)
+val impl_92__iter
+      (#v_K #v_V #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_Iter v_K v_V) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::keys`]
-val impl_92__keys (#v_K #v_V #v_A: Type0) (self: t_BTreeMap v_K v_V v_A)
+val impl_92__keys
+      (#v_K #v_V #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_Keys v_K v_V) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeMap::values`]
-val impl_92__values (#v_K #v_V #v_A: Type0) (self: t_BTreeMap v_K v_V v_A)
+val impl_92__values
+      (#v_K #v_V #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeMap v_K v_V v_A)
     : Prims.Pure (t_Values v_K v_V) Prims.l_True (fun _ -> Prims.l_True)

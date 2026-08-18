@@ -290,7 +290,7 @@ val impl_5__retain':
     #v_T: Type0 ->
     #v_A: Type0 ->
     #v_F: Type0 ->
-    {| i0: Core_models.Ops.Function.t_Fn v_F v_T |} ->
+    {| i0: Core_models.Ops.Function.t_FnMut v_F v_T |} ->
     self: t_VecDeque v_T v_A ->
     f: v_F
   -> t_VecDeque v_T v_A
@@ -298,7 +298,7 @@ val impl_5__retain':
 unfold
 let impl_5__retain
       (#v_T #v_A #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnMut v_F v_T)
      = impl_5__retain' #v_T #v_A #v_F #i0
 
 /// See [`std::collections::VecDeque::resize_with`]
@@ -307,7 +307,7 @@ val impl_5__resize_with':
     #v_T: Type0 ->
     #v_A: Type0 ->
     #v_F: Type0 ->
-    {| i0: Core_models.Ops.Function.t_Fn v_F Prims.unit |} ->
+    {| i0: Core_models.Ops.Function.t_FnMut v_F Prims.unit |} ->
     self: t_VecDeque v_T v_A ->
     new_len: usize ->
     generator: v_F
@@ -316,7 +316,9 @@ val impl_5__resize_with':
 unfold
 let impl_5__resize_with
       (#v_T #v_A #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F Prims.unit)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnMut v_F Prims.unit)
      = impl_5__resize_with' #v_T #v_A #v_F #i0
 
 /// See [`std::collections::VecDeque::binary_search_by`]. Linear,
@@ -326,7 +328,7 @@ val impl_5__binary_search_by':
     #v_T: Type0 ->
     #v_A: Type0 ->
     #v_F: Type0 ->
-    {| i0: Core_models.Ops.Function.t_Fn v_F v_T |} ->
+    {| i0: Core_models.Ops.Function.t_FnMut v_F v_T |} ->
     self: t_VecDeque v_T v_A ->
     f: v_F
   -> Core_models.Result.t_Result usize usize
@@ -334,7 +336,7 @@ val impl_5__binary_search_by':
 unfold
 let impl_5__binary_search_by
       (#v_T #v_A #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnMut v_F v_T)
      = impl_5__binary_search_by' #v_T #v_A #v_F #i0
 
 /// See [`std::collections::VecDeque::binary_search`].
@@ -363,15 +365,16 @@ let impl_5__binary_search
 /// See [`std::collections::VecDeque::binary_search_by_key`].
 /// The scan is spelled out rather than delegated to
 /// `binary_search_by`: hax rejects a closure that calls a captured
-/// `FnMut` (hax issue #1060).
+/// `FnMut` (hax issue #1060). The `where` clauses are in std\'s order
+/// (`F` before `B`), which is the order the dictionaries arrive in.
 assume
 val impl_5__binary_search_by_key':
     #v_T: Type0 ->
     #v_A: Type0 ->
     #v_B: Type0 ->
     #v_F: Type0 ->
-    {| i0: Core_models.Cmp.t_Ord v_B |} ->
-    {| i1: Core_models.Ops.Function.t_Fn v_F v_T |} ->
+    {| i0: Core_models.Ops.Function.t_FnMut v_F v_T |} ->
+    {| i1: Core_models.Cmp.t_Ord v_B |} ->
     self: t_VecDeque v_T v_A ->
     b: v_B ->
     f: v_F
@@ -380,8 +383,8 @@ val impl_5__binary_search_by_key':
 unfold
 let impl_5__binary_search_by_key
       (#v_T #v_A #v_B #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_B)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnMut v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Cmp.t_Ord v_B)
      = impl_5__binary_search_by_key' #v_T #v_A #v_B #v_F #i0 #i1
 
 /// See [`std::collections::VecDeque::partition_point`]
@@ -390,7 +393,7 @@ val impl_5__partition_point':
     #v_T: Type0 ->
     #v_A: Type0 ->
     #v_P: Type0 ->
-    {| i0: Core_models.Ops.Function.t_Fn v_P v_T |} ->
+    {| i0: Core_models.Ops.Function.t_FnMut v_P v_T |} ->
     self: t_VecDeque v_T v_A ->
     pred: v_P
   -> usize
@@ -398,7 +401,7 @@ val impl_5__partition_point':
 unfold
 let impl_5__partition_point
       (#v_T #v_A #v_P: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnMut v_P v_T)
      = impl_5__partition_point' #v_T #v_A #v_P #i0
 
 /// See [`std::collections::VecDeque::push_back`]
@@ -503,8 +506,17 @@ let impl_5__insert (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A) (index: usize) 
   in
   self
 
-/// See [`std::collections::VecDeque::split_off`]
-let impl_5__split_off (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A) (at: usize)
+/// See [`std::collections::VecDeque::split_off`].
+/// The `A: Clone` bound is std\'s, and it has to be mirrored even
+/// though the model never clones the allocator: Aeneas passes a
+/// `Clone A` dictionary as this method\'s *first* argument, so
+/// dropping the bound makes extracted client code hand the
+/// dictionary in where the receiver belongs.
+let impl_5__split_off
+      (#v_T #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_A)
+      (self: t_VecDeque v_T v_A)
+      (at: usize)
     : Prims.Pure (t_VecDeque v_T v_A & t_VecDeque v_T v_A)
       (requires at <=. (impl_5__len #v_T #v_A self <: usize))
       (fun _ -> Prims.l_True) =

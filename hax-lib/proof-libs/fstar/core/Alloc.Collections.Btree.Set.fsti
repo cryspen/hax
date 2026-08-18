@@ -191,37 +191,65 @@ val impl_13__new: #v_T: Type0 -> Prims.unit
   -> Prims.Pure (t_BTreeSet v_T Alloc.Alloc.t_Global) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::new_in`]
-val impl_14__new_in (#v_T #v_A: Type0) (e_alloc: v_A)
+val impl_14__new_in (#v_T #v_A: Type0) {| i0: Core_models.Clone.t_Clone v_A |} (e_alloc: v_A)
     : Prims.Pure (t_BTreeSet v_T v_A) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::len`]
-val impl_14__len (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
+val impl_14__len
+      (#v_T #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeSet v_T v_A)
     : Prims.Pure usize Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::is_empty`]
-val impl_14__is_empty (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
+val impl_14__is_empty
+      (#v_T #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeSet v_T v_A)
     : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
 
-/// See [`std::collections::BTreeSet::clear`]
-val impl_14__clear (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
+/// See [`std::collections::BTreeSet::clear`].
+/// std repeats `A: Clone` here on top of the block\'s, and so
+/// must we: the two bounds are two dictionary arguments.
+val impl_14__clear
+      (#v_T #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeSet v_T v_A)
     : Prims.Pure (t_BTreeSet v_T v_A) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::first`]
-val impl_14__first (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
+val impl_14__first
+      (#v_T #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
+      (self: t_BTreeSet v_T v_A)
     : Prims.Pure (Core_models.Option.t_Option v_T) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::last`]
-val impl_14__last (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
+val impl_14__last
+      (#v_T #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
+      (self: t_BTreeSet v_T v_A)
     : Prims.Pure (Core_models.Option.t_Option v_T) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::pop_first`]
-val impl_14__pop_first (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
+val impl_14__pop_first
+      (#v_T #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
+      (self: t_BTreeSet v_T v_A)
     : Prims.Pure (t_BTreeSet v_T v_A & Core_models.Option.t_Option v_T)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::pop_last`]
-val impl_14__pop_last (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
+val impl_14__pop_last
+      (#v_T #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
+      (self: t_BTreeSet v_T v_A)
     : Prims.Pure (t_BTreeSet v_T v_A & Core_models.Option.t_Option v_T)
       Prims.l_True
       (fun _ -> Prims.l_True)
@@ -229,9 +257,10 @@ val impl_14__pop_last (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
 /// See [`std::collections::BTreeSet::contains`]
 val impl_14__contains
       (#v_T #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_T v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_T |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_T v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_T |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeSet v_T v_A)
       (value: v_Q)
     : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
@@ -239,9 +268,10 @@ val impl_14__contains
 /// See [`std::collections::BTreeSet::get`]
 val impl_14__get
       (#v_T #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_T v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_T |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_T v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_T |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeSet v_T v_A)
       (value: v_Q)
     : Prims.Pure (Core_models.Option.t_Option v_T) Prims.l_True (fun _ -> Prims.l_True)
@@ -249,9 +279,10 @@ val impl_14__get
 /// See [`std::collections::BTreeSet::remove`]
 val impl_14__remove
       (#v_T #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_T v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_T |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_T v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_T |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeSet v_T v_A)
       (value: v_Q)
     : Prims.Pure (t_BTreeSet v_T v_A & bool) Prims.l_True (fun _ -> Prims.l_True)
@@ -259,9 +290,10 @@ val impl_14__remove
 /// See [`std::collections::BTreeSet::take`]
 val impl_14__take
       (#v_T #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_T v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_T |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Borrow.t_Borrow v_T v_Q |}
+      {| i2: Core_models.Cmp.t_Ord v_T |}
+      {| i3: Core_models.Cmp.t_Ord v_Q |}
       (self: t_BTreeSet v_T v_A)
       (value: v_Q)
     : Prims.Pure (t_BTreeSet v_T v_A & Core_models.Option.t_Option v_T)
@@ -272,61 +304,71 @@ val impl_14__take
 /// elements `< value`, returns those `>= value`.
 val impl_14__split_off
       (#v_T #v_A #v_Q: Type0)
-      {| i0: Core_models.Borrow.t_Borrow v_T v_Q |}
-      {| i1: Core_models.Cmp.t_Ord v_T |}
-      {| i2: Core_models.Cmp.t_Ord v_Q |}
-      {| i3: Core_models.Clone.t_Clone v_A |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_Q |}
+      {| i2: Core_models.Borrow.t_Borrow v_T v_Q |}
+      {| i3: Core_models.Cmp.t_Ord v_T |}
+      {| i4: Core_models.Clone.t_Clone v_A |}
       (self: t_BTreeSet v_T v_A)
       (value: v_Q)
     : Prims.Pure (t_BTreeSet v_T v_A & t_BTreeSet v_T v_A) Prims.l_True (fun _ -> Prims.l_True)
 
-/// See [`std::collections::BTreeSet::retain`].
-/// DEVIATION(std): bounded by `Fn`, not `FnMut` — see the note
-/// on `vec_deque`.
+/// See [`std::collections::BTreeSet::retain`]. `FnMut` is
+/// std\'s bound and has to be matched — see the note on
+/// `VecDeque::retain`.
 val impl_14__retain
       (#v_T #v_A #v_F: Type0)
-      {| i0: Core_models.Ops.Function.t_Fn v_F v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
       {| i1: Core_models.Cmp.t_Ord v_T |}
+      {| i2: Core_models.Ops.Function.t_FnMut v_F v_T |}
       (self: t_BTreeSet v_T v_A)
       (f: v_F)
     : Prims.Pure (t_BTreeSet v_T v_A) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::iter`]
-val impl_14__iter (#v_T #v_A: Type0) (self: t_BTreeSet v_T v_A)
+val impl_14__iter
+      (#v_T #v_A: Type0)
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      (self: t_BTreeSet v_T v_A)
     : Prims.Pure (t_Iter v_T) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::is_subset`]
 val impl_14__is_subset
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self other: t_BTreeSet v_T v_A)
     : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::is_superset`]
 val impl_14__is_superset
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self other: t_BTreeSet v_T v_A)
     : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::is_disjoint`]
 val impl_14__is_disjoint
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self other: t_BTreeSet v_T v_A)
     : Prims.Pure bool Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::difference`]
 val impl_14__difference
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self other: t_BTreeSet v_T v_A)
     : Prims.Pure (t_Difference v_T v_A) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::intersection`]
 val impl_14__intersection
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self other: t_BTreeSet v_T v_A)
     : Prims.Pure (t_Intersection v_T v_A) Prims.l_True (fun _ -> Prims.l_True)
 
@@ -334,14 +376,16 @@ val impl_14__intersection
 /// element once, `self`\'s copy on a tie (as std does).
 val impl_14__union
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self other: t_BTreeSet v_T v_A)
     : Prims.Pure (t_Union v_T) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::collections::BTreeSet::symmetric_difference`]
 val impl_14__symmetric_difference
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self other: t_BTreeSet v_T v_A)
     : Prims.Pure (t_SymmetricDifference v_T) Prims.l_True (fun _ -> Prims.l_True)
 
@@ -349,7 +393,8 @@ val impl_14__symmetric_difference
 /// equal element was already present, which is then kept.
 val impl_14__insert
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self: t_BTreeSet v_T v_A)
       (value: v_T)
     : Prims.Pure (t_BTreeSet v_T v_A & bool)
@@ -360,7 +405,8 @@ val impl_14__insert
 /// the *new* element wins and the old one is returned.
 val impl_14__replace
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
       (self: t_BTreeSet v_T v_A)
       (value: v_T)
     : Prims.Pure (t_BTreeSet v_T v_A & Core_models.Option.t_Option v_T)
@@ -371,6 +417,8 @@ val impl_14__replace
 /// `other` win over equal ones already in `self`.
 val impl_14__append
       (#v_T #v_A: Type0)
-      {| i0: Core_models.Cmp.t_Ord v_T |}
+      {| i0: Core_models.Clone.t_Clone v_A |}
+      {| i1: Core_models.Cmp.t_Ord v_T |}
+      {| i2: Core_models.Clone.t_Clone v_A |}
       (self other: t_BTreeSet v_T v_A)
     : Prims.Pure (t_BTreeSet v_T v_A & t_BTreeSet v_T v_A) Prims.l_True (fun _ -> Prims.l_True)

@@ -455,16 +455,15 @@ mod collections {
             }
             /// See [`std::collections::BinaryHeap::retain`].
             ///
-            /// DEVIATION(std): bounded by `Fn`, not `FnMut` — see the note on
-            /// `vec_deque`. The loop walks from the back so a removal never
-            /// shifts an index still to be visited.
-            ///
-            /// Opaque for F* only, like `VecDeque::retain`: hax does not emit
-            /// the `f_Output == bool` constraint for a `Fn` bound.
+            /// The loop walks from the back so a removal never shifts an
+            /// index still to be visited. `FnMut` is std's bound, and the body
+            /// is opaque for F* in exchange — see the note on
+            /// `VecDeque::retain`.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-            fn retain<F: Fn(&T) -> bool>(&mut self, f: F)
+            fn retain<F>(&mut self, mut f: F)
             where
                 T: Ord,
+                F: FnMut(&T) -> bool,
             {
                 let l = self.len();
                 for k in 0..l {
@@ -981,7 +980,10 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 }
             }
 
-            impl<K, V, A> BTreeMap<K, V, A> {
+            // `A: Clone` mirrors std's `impl<K, V, A: Allocator + Clone>`; see
+            // the same comment on `set`'s block for why the `Allocator` half is
+            // left out and the `Clone` half cannot be.
+            impl<K, V, A: Clone> BTreeMap<K, V, A> {
                 /// See [`std::collections::BTreeMap::clear`]
                 fn clear(&mut self) {
                     self.0 = seq_empty()
@@ -992,7 +994,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 }
             }
 
-            impl<K, V, A> BTreeMap<K, V, A> {
+            impl<K, V, A: Clone> BTreeMap<K, V, A> {
                 /// See [`std::collections::BTreeMap::get`]
                 fn get<Q>(&self, key: &Q) -> Option<&V>
                 where
@@ -1129,6 +1131,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 fn append(&mut self, other: &mut BTreeMap<K, V, A>)
                 where
                     K: Ord,
+                    A: Clone,
                 {
                     let l = seq_len(&other.0);
                     for _k in 0..l {
@@ -1140,10 +1143,9 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 }
                 /// See [`std::collections::BTreeMap::split_off`]: keeps the
                 /// entries with keys `< key`, returns those `>= key`.
-                fn split_off<Q>(&mut self, key: &Q) -> BTreeMap<K, V, A>
+                fn split_off<Q: Ord + ?Sized>(&mut self, key: &Q) -> BTreeMap<K, V, A>
                 where
                     K: core::borrow::Borrow<Q> + Ord,
-                    Q: Ord + ?Sized,
                     A: Clone,
                 {
                     let l = seq_len(&self.0);
@@ -1236,7 +1238,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             impl BTreeMap<(), (), ()> {}
             impl BTreeMap<(), (), ()> {}
 
-            impl<K, V, A> BTreeMap<K, V, A> {
+            impl<K, V, A: Clone> BTreeMap<K, V, A> {
                 /// See [`std::collections::BTreeMap::len`]
                 fn len(&self) -> usize {
                     seq_len(&self.0)
@@ -1565,8 +1567,14 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 }
             }
 
+            // Real `alloc` bounds this block `impl<T, A: Allocator + Clone>`,
+            // and the `Clone` half must be mirrored: Aeneas passes a `Clone A`
+            // dictionary as the first argument of *every* method here. (The
+            // `Allocator` half is deliberately not mirrored — it is a
+            // method-less marker trait, which Aeneas erases, and F* resolves it
+            // implicitly; `vec_deque` and `linked_list` omit it likewise.)
             #[hax_lib::attributes]
-            impl<T, A> BTreeSet<T, A> {
+            impl<T, A: Clone> BTreeSet<T, A> {
                 /// See [`std::collections::BTreeSet::new_in`]
                 fn new_in(_alloc: A) -> BTreeSet<T, A> {
                     BTreeSet(seq_empty(), PhantomData)
@@ -1579,12 +1587,21 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 fn is_empty(&self) -> bool {
                     seq_len(&self.0) == 0
                 }
-                /// See [`std::collections::BTreeSet::clear`]
-                fn clear(&mut self) {
+                /// See [`std::collections::BTreeSet::clear`].
+                ///
+                /// std repeats `A: Clone` here on top of the block's, and so
+                /// must we: the two bounds are two dictionary arguments.
+                fn clear(&mut self)
+                where
+                    A: Clone,
+                {
                     self.0 = seq_empty()
                 }
                 /// See [`std::collections::BTreeSet::first`]
-                fn first(&self) -> Option<&T> {
+                fn first(&self) -> Option<&T>
+                where
+                    T: Ord,
+                {
                     if self.len() == 0 {
                         None
                     } else {
@@ -1592,7 +1609,10 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     }
                 }
                 /// See [`std::collections::BTreeSet::last`]
-                fn last(&self) -> Option<&T> {
+                fn last(&self) -> Option<&T>
+                where
+                    T: Ord,
+                {
                     let l = self.len();
                     if l == 0 {
                         None
@@ -1601,7 +1621,10 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     }
                 }
                 /// See [`std::collections::BTreeSet::pop_first`]
-                fn pop_first(&mut self) -> Option<T> {
+                fn pop_first(&mut self) -> Option<T>
+                where
+                    T: Ord,
+                {
                     if self.len() == 0 {
                         None
                     } else {
@@ -1609,7 +1632,10 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     }
                 }
                 /// See [`std::collections::BTreeSet::pop_last`]
-                fn pop_last(&mut self) -> Option<T> {
+                fn pop_last(&mut self) -> Option<T>
+                where
+                    T: Ord,
+                {
                     let l = self.len();
                     if l == 0 {
                         None
@@ -1699,10 +1725,9 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 }
                 /// See [`std::collections::BTreeSet::split_off`]: keeps the
                 /// elements `< value`, returns those `>= value`.
-                fn split_off<Q>(&mut self, value: &Q) -> BTreeSet<T, A>
+                fn split_off<Q: Ord + ?Sized>(&mut self, value: &Q) -> BTreeSet<T, A>
                 where
                     T: core::borrow::Borrow<Q> + Ord,
-                    Q: Ord + ?Sized,
                     A: Clone,
                 {
                     let l = self.len();
@@ -1714,6 +1739,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 fn append(&mut self, other: &mut BTreeSet<T, A>)
                 where
                     T: Ord,
+                    A: Clone,
                 {
                     let l = other.len();
                     for _k in 0..l {
@@ -1723,13 +1749,13 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                         }
                     }
                 }
-                /// See [`std::collections::BTreeSet::retain`].
-                ///
-                /// DEVIATION(std): bounded by `Fn`, not `FnMut` — see the note
-                /// on `vec_deque`.
-                fn retain<F: Fn(&T) -> bool>(&mut self, f: F)
+                /// See [`std::collections::BTreeSet::retain`]. `FnMut` is
+                /// std's bound and has to be matched — see the note on
+                /// `VecDeque::retain`.
+                fn retain<F>(&mut self, mut f: F)
                 where
                     T: Ord,
+                    F: FnMut(&T) -> bool,
                 {
                     let l = self.len();
                     for k in 0..l {
@@ -2486,11 +2512,11 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
     /// `as_slices` never splits (see there). Capacity is not modeled at all,
     /// which is why `capacity`/`allocator` are absent.
     ///
-    /// DEVIATION(std): the closure-taking methods here are bounded by `Fn`
-    /// where std says `FnMut`. The F* model of `FnMut::call_mut` takes `&self`,
-    /// so a body that calls an `FnMut` extracts to a call whose arity does not
-    /// match — `Fn` is the strongest bound the backends can carry, and it is
-    /// what hax passes at client call sites anyway (a bare arrow).
+    /// The closure-taking methods mirror std's `FnMut` bounds, because Aeneas
+    /// passes trait dictionaries positionally and a client call site is typed
+    /// from std's signature; their bodies are opaque for F* in exchange, since
+    /// hax lowers an `FnMut` call to an arity the F* model of
+    /// `FnMut::call_mut` (which takes `&self`) does not have.
     mod vec_deque {
         use hax_lib::ToInt;
         use rust_primitives::sequence::*;
@@ -2672,9 +2698,18 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     let _dropped = seq_drain(&mut self.0, 0, l - len);
                 }
             }
-            /// See [`std::collections::VecDeque::split_off`]
+            /// See [`std::collections::VecDeque::split_off`].
+            ///
+            /// The `A: Clone` bound is std's, and it has to be mirrored even
+            /// though the model never clones the allocator: Aeneas passes a
+            /// `Clone A` dictionary as this method's *first* argument, so
+            /// dropping the bound makes extracted client code hand the
+            /// dictionary in where the receiver belongs.
             #[hax_lib::requires(at <= self.len())]
-            fn split_off(&mut self, at: usize) -> VecDeque<T, A> {
+            fn split_off(&mut self, at: usize) -> VecDeque<T, A>
+            where
+                A: Clone,
+            {
                 let l = self.len();
                 VecDeque(seq_drain(&mut self.0, at, l), std::marker::PhantomData::<A>)
             }
@@ -2758,12 +2793,17 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             /// The loop walks indices from the back so that a removal never
             /// shifts an index still to be visited; the invariant is what lets
             /// the backend discharge `seq_remove`'s bound.
-            // Opaque for F* only: hax does not emit the
-            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
-            // the F* body cannot see what the closure returns. Lean keeps the
-            // real body.
+            // `FnMut` is std's bound and has to be matched: Aeneas passes
+            // trait dictionaries positionally, so changing or dropping it makes
+            // extracted client code call this with the dictionary where the
+            // receiver belongs. The body is opaque for F* in exchange — hax
+            // lowers an `FnMut` call to an arity the F* model of
+            // `FnMut::call_mut` (which takes `&self`) does not have.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-            fn retain<F: Fn(&T) -> bool>(&mut self, f: F) {
+            fn retain<F>(&mut self, mut f: F)
+            where
+                F: FnMut(&T) -> bool,
+            {
                 let l = self.len();
                 for k in 0..l {
                     hax_lib::loop_invariant!(
@@ -2776,12 +2816,17 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 }
             }
             /// See [`std::collections::VecDeque::resize_with`]
-            // Opaque for F* only: hax does not emit the
-            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
-            // the F* body cannot see what the closure returns. Lean keeps the
-            // real body.
+            // `FnMut` is std's bound and has to be matched: Aeneas passes
+            // trait dictionaries positionally, so changing or dropping it makes
+            // extracted client code call this with the dictionary where the
+            // receiver belongs. The body is opaque for F* in exchange — hax
+            // lowers an `FnMut` call to an arity the F* model of
+            // `FnMut::call_mut` (which takes `&self`) does not have.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-            fn resize_with<F: Fn() -> T>(&mut self, new_len: usize, generator: F) {
+            fn resize_with<F>(&mut self, new_len: usize, mut generator: F)
+            where
+                F: FnMut() -> T,
+            {
                 let l = self.len();
                 if new_len > l {
                     for _k in 0..(new_len - l) {
@@ -2807,15 +2852,17 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             }
             /// See [`std::collections::VecDeque::binary_search_by`]. Linear,
             /// for the reason given on `binary_search`.
-            // Opaque for F* only: hax does not emit the
-            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
-            // the F* body cannot see what the closure returns. Lean keeps the
-            // real body.
+            // `FnMut` is std's bound and has to be matched: Aeneas passes
+            // trait dictionaries positionally, so changing or dropping it makes
+            // extracted client code call this with the dictionary where the
+            // receiver belongs. The body is opaque for F* in exchange — hax
+            // lowers an `FnMut` call to an arity the F* model of
+            // `FnMut::call_mut` (which takes `&self`) does not have.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-            fn binary_search_by<F: Fn(&T) -> std::cmp::Ordering>(
-                &self,
-                f: F,
-            ) -> Result<usize, usize> {
+            fn binary_search_by<F>(&self, mut f: F) -> Result<usize, usize>
+            where
+                F: FnMut(&T) -> std::cmp::Ordering,
+            {
                 let mut pos = self.len();
                 let mut eq = false;
                 let mut done = false;
@@ -2842,17 +2889,20 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             ///
             /// The scan is spelled out rather than delegated to
             /// `binary_search_by`: hax rejects a closure that calls a captured
-            /// `FnMut` (hax issue #1060).
-            // Opaque for F* only: hax does not emit the
-            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
-            // the F* body cannot see what the closure returns. Lean keeps the
-            // real body.
+            /// `FnMut` (hax issue #1060). The `where` clauses are in std's order
+            /// (`F` before `B`), which is the order the dictionaries arrive in.
+            // `FnMut` is std's bound and has to be matched: Aeneas passes
+            // trait dictionaries positionally, so changing or dropping it makes
+            // extracted client code call this with the dictionary where the
+            // receiver belongs. The body is opaque for F* in exchange — hax
+            // lowers an `FnMut` call to an arity the F* model of
+            // `FnMut::call_mut` (which takes `&self`) does not have.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-            fn binary_search_by_key<B: Ord, F: Fn(&T) -> B>(
-                &self,
-                b: &B,
-                f: F,
-            ) -> Result<usize, usize> {
+            fn binary_search_by_key<B, F>(&self, b: &B, mut f: F) -> Result<usize, usize>
+            where
+                F: FnMut(&T) -> B,
+                B: Ord,
+            {
                 let mut pos = self.len();
                 let mut eq = false;
                 let mut done = false;
@@ -2876,12 +2926,17 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 if eq { Ok(pos) } else { Err(pos) }
             }
             /// See [`std::collections::VecDeque::partition_point`]
-            // Opaque for F* only: hax does not emit the
-            // `f_Output == bool`-style constraint for a `Fn`/`FnMut` bound, so
-            // the F* body cannot see what the closure returns. Lean keeps the
-            // real body.
+            // `FnMut` is std's bound and has to be matched: Aeneas passes
+            // trait dictionaries positionally, so changing or dropping it makes
+            // extracted client code call this with the dictionary where the
+            // receiver belongs. The body is opaque for F* in exchange — hax
+            // lowers an `FnMut` call to an arity the F* model of
+            // `FnMut::call_mut` (which takes `&self`) does not have.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-            fn partition_point<P: Fn(&T) -> bool>(&self, pred: P) -> usize {
+            fn partition_point<P>(&self, mut pred: P) -> usize
+            where
+                P: FnMut(&T) -> bool,
+            {
                 let mut pos = self.len();
                 let mut done = false;
                 for i in 0..self.len() {
