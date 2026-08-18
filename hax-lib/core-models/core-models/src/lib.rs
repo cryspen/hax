@@ -63,6 +63,7 @@
         uint_bit_width,
         unchecked_neg,
         unchecked_shifts,
+        utf16_extra,
         wrapping_int_impl,
         wrapping_next_power_of_two
     )
