@@ -28,7 +28,7 @@ pub type Result = super::result::Result<(), Error>;
 /// into. The model drops it — nothing is ever rendered (see the module docs) —
 /// and keeps only the options, which is what the query methods below observe.
 pub struct Formatter {
-    options: FormattingOptions,
+    formatting_options: FormattingOptions,
 }
 
 // Not a `core` item: [`Formatter::flags`] needs it because Aeneas fails to
@@ -45,12 +45,16 @@ impl Formatter {
     /// The writer is ignored. It is also generic rather than `dyn Write`: `dyn`
     /// has no counterpart in the F* proof libraries.
     pub fn new<W: Write>(write: &mut W, options: FormattingOptions) -> Formatter {
-        Formatter { options }
+        Formatter {
+            formatting_options: options,
+        }
     }
 
     /// See [`std::fmt::Formatter::with_options`]
     pub fn with_options(&mut self, options: FormattingOptions) -> Formatter {
-        Formatter { options }
+        Formatter {
+            formatting_options: options,
+        }
     }
 
     /// See [`std::fmt::Formatter::options`]
@@ -58,18 +62,18 @@ impl Formatter {
         // Spelled out field by field: the model cannot `derive(Copy)`, because
         // `marker::Copy` is blanket-implemented under `--cfg hax`.
         FormattingOptions {
-            sign_plus: self.options.sign_plus,
-            sign_minus: self.options.sign_minus,
-            alternate: self.options.alternate,
-            sign_aware_zero_pad: self.options.sign_aware_zero_pad,
-            debug_lower_hex: self.options.debug_lower_hex,
-            debug_upper_hex: self.options.debug_upper_hex,
-            fill: self.options.fill,
-            align: self.options.align,
-            width: self.options.width,
-            width_set: self.options.width_set,
-            precision: self.options.precision,
-            precision_set: self.options.precision_set,
+            sign_plus: self.formatting_options.sign_plus,
+            sign_minus: self.formatting_options.sign_minus,
+            alternate_flag: self.formatting_options.alternate_flag,
+            zero_pad_flag: self.formatting_options.zero_pad_flag,
+            debug_lower_hex: self.formatting_options.debug_lower_hex,
+            debug_upper_hex: self.formatting_options.debug_upper_hex,
+            fill_char: self.formatting_options.fill_char,
+            align_code: self.formatting_options.align_code,
+            width_value: self.formatting_options.width_value,
+            width_set: self.formatting_options.width_set,
+            precision_value: self.formatting_options.precision_value,
+            precision_set: self.formatting_options.precision_set,
         }
     }
 
@@ -110,27 +114,27 @@ impl Formatter {
     /// The six flag bits real `core` keeps at bits 21..27 of its packed `flags`
     /// field, shifted down to 0..6 — exactly what real `core` returns.
     pub fn flags(&self) -> core::primitive::u32 {
-        flag_bit(self.options.sign_plus, 1)
-            + flag_bit(self.options.sign_minus, 2)
-            + flag_bit(self.options.alternate, 4)
-            + flag_bit(self.options.sign_aware_zero_pad, 8)
-            + flag_bit(self.options.debug_lower_hex, 16)
-            + flag_bit(self.options.debug_upper_hex, 32)
+        flag_bit(self.formatting_options.sign_plus, 1)
+            + flag_bit(self.formatting_options.sign_minus, 2)
+            + flag_bit(self.formatting_options.alternate_flag, 4)
+            + flag_bit(self.formatting_options.zero_pad_flag, 8)
+            + flag_bit(self.formatting_options.debug_lower_hex, 16)
+            + flag_bit(self.formatting_options.debug_upper_hex, 32)
     }
 
     /// See [`std::fmt::Formatter::fill`]
     pub fn fill(&self) -> char {
-        self.options.fill
+        self.formatting_options.fill_char
     }
 
     /// See [`std::fmt::Formatter::align`]
     pub fn align(&self) -> Option<Alignment> {
-        self.options.get_align()
+        self.formatting_options.get_align()
     }
 
     /// See [`std::fmt::Formatter::width`]
     pub fn width(&self) -> Option<core::primitive::usize> {
-        match self.options.get_width() {
+        match self.formatting_options.get_width() {
             Option::Some(width) => Option::Some(width as core::primitive::usize),
             Option::None => Option::None,
         }
@@ -138,7 +142,7 @@ impl Formatter {
 
     /// See [`std::fmt::Formatter::precision`]
     pub fn precision(&self) -> Option<core::primitive::usize> {
-        match self.options.get_precision() {
+        match self.formatting_options.get_precision() {
             Option::Some(precision) => Option::Some(precision as core::primitive::usize),
             Option::None => Option::None,
         }
@@ -146,27 +150,27 @@ impl Formatter {
 
     /// See [`std::fmt::Formatter::sign_plus`]
     pub fn sign_plus(&self) -> bool {
-        self.options.sign_plus
+        self.formatting_options.sign_plus
     }
 
     /// See [`std::fmt::Formatter::sign_minus`]
     pub fn sign_minus(&self) -> bool {
-        self.options.sign_minus
+        self.formatting_options.sign_minus
     }
 
     /// See [`std::fmt::Formatter::alternate`]
     pub fn alternate(&self) -> bool {
-        self.options.alternate
+        self.formatting_options.alternate_flag
     }
 
     /// See [`std::fmt::Formatter::sign_aware_zero_pad`]
     pub fn sign_aware_zero_pad(&self) -> bool {
-        self.options.sign_aware_zero_pad
+        self.formatting_options.zero_pad_flag
     }
 
     /// See [`std::fmt::Formatter::sign`]
     pub fn sign(&self) -> Option<Sign> {
-        self.options.get_sign()
+        self.formatting_options.get_sign()
     }
 
     /// See [`std::fmt::Formatter::debug_struct`]
@@ -342,20 +346,28 @@ pub enum DebugAsHex {
 /// named fields of primitive type: the getters then transcribe real `core`'s
 /// bodies without bit twiddling, and the options can be copied by listing their
 /// fields (the model cannot `derive(Copy)`, see [`Formatter::options`]).
+///
+/// None of the field names may coincide with a method name of this type — the
+/// setters are `width`, `fill`, `align`, … — because Lean derives a projection
+/// `FormattingOptions.width` from the field and Aeneas resolves the clash by
+/// renaming the *method* to `FormattingOptions.impl.width`. An extracted client
+/// calling the setter asks for the unrenamed name and gets the projection. Hence
+/// `width_value`, `fill_char`, `align_code`, … here. Same for
+/// [`Formatter`]'s single field against [`Formatter::options`].
 pub struct FormattingOptions {
     sign_plus: bool,
     sign_minus: bool,
-    alternate: bool,
-    sign_aware_zero_pad: bool,
+    alternate_flag: bool,
+    zero_pad_flag: bool,
     debug_lower_hex: bool,
     debug_upper_hex: bool,
-    fill: char,
+    fill_char: char,
     /// The alignment, in real `core`'s encoding: `0` left, `1` right, `2`
     /// center, `3` unset.
-    align: core::primitive::u8,
-    width: core::primitive::u16,
+    align_code: core::primitive::u8,
+    width_value: core::primitive::u16,
     width_set: bool,
-    precision: core::primitive::u16,
+    precision_value: core::primitive::u16,
     precision_set: bool,
 }
 
@@ -370,15 +382,15 @@ impl FormattingOptions {
         FormattingOptions {
             sign_plus: false,
             sign_minus: false,
-            alternate: false,
-            sign_aware_zero_pad: false,
+            alternate_flag: false,
+            zero_pad_flag: false,
             debug_lower_hex: false,
             debug_upper_hex: false,
-            fill: ' ',
-            align: 3,
-            width: 0,
+            fill_char: ' ',
+            align_code: 3,
+            width_value: 0,
             width_set: false,
-            precision: 0,
+            precision_value: 0,
             precision_set: false,
         }
     }
@@ -399,28 +411,28 @@ impl FormattingOptions {
     /// See [`std::fmt::FormattingOptions::sign_aware_zero_pad`]
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     pub fn sign_aware_zero_pad(&mut self, sign_aware_zero_pad: bool) -> &mut Self {
-        self.sign_aware_zero_pad = sign_aware_zero_pad;
+        self.zero_pad_flag = sign_aware_zero_pad;
         self
     }
 
     /// See [`std::fmt::FormattingOptions::alternate`]
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     pub fn alternate(&mut self, alternate: bool) -> &mut Self {
-        self.alternate = alternate;
+        self.alternate_flag = alternate;
         self
     }
 
     /// See [`std::fmt::FormattingOptions::fill`]
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     pub fn fill(&mut self, fill: char) -> &mut Self {
-        self.fill = fill;
+        self.fill_char = fill;
         self
     }
 
     /// See [`std::fmt::FormattingOptions::align`]
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     pub fn align(&mut self, align: Option<Alignment>) -> &mut Self {
-        self.align = match align {
+        self.align_code = match align {
             Option::Some(Alignment::Left) => 0,
             Option::Some(Alignment::Right) => 1,
             Option::Some(Alignment::Center) => 2,
@@ -435,11 +447,11 @@ impl FormattingOptions {
         match width {
             Option::Some(width) => {
                 self.width_set = true;
-                self.width = width;
+                self.width_value = width;
             }
             Option::None => {
                 self.width_set = false;
-                self.width = 0;
+                self.width_value = 0;
             }
         }
         self
@@ -451,11 +463,11 @@ impl FormattingOptions {
         match precision {
             Option::Some(precision) => {
                 self.precision_set = true;
-                self.precision = precision;
+                self.precision_value = precision;
             }
             Option::None => {
                 self.precision_set = false;
-                self.precision = 0;
+                self.precision_value = 0;
             }
         }
         self
@@ -487,22 +499,22 @@ impl FormattingOptions {
 
     /// See [`std::fmt::FormattingOptions::get_sign_aware_zero_pad`]
     pub fn get_sign_aware_zero_pad(&self) -> bool {
-        self.sign_aware_zero_pad
+        self.zero_pad_flag
     }
 
     /// See [`std::fmt::FormattingOptions::get_alternate`]
     pub fn get_alternate(&self) -> bool {
-        self.alternate
+        self.alternate_flag
     }
 
     /// See [`std::fmt::FormattingOptions::get_fill`]
     pub fn get_fill(&self) -> char {
-        self.fill
+        self.fill_char
     }
 
     /// See [`std::fmt::FormattingOptions::get_align`]
     pub fn get_align(&self) -> Option<Alignment> {
-        match self.align {
+        match self.align_code {
             0 => Option::Some(Alignment::Left),
             1 => Option::Some(Alignment::Right),
             2 => Option::Some(Alignment::Center),
@@ -513,7 +525,7 @@ impl FormattingOptions {
     /// See [`std::fmt::FormattingOptions::get_width`]
     pub fn get_width(&self) -> Option<core::primitive::u16> {
         if self.width_set {
-            Option::Some(self.width)
+            Option::Some(self.width_value)
         } else {
             Option::None
         }
@@ -522,7 +534,7 @@ impl FormattingOptions {
     /// See [`std::fmt::FormattingOptions::get_precision`]
     pub fn get_precision(&self) -> Option<core::primitive::u16> {
         if self.precision_set {
-            Option::Some(self.precision)
+            Option::Some(self.precision_value)
         } else {
             Option::None
         }
@@ -543,7 +555,9 @@ impl FormattingOptions {
     ///
     /// The writer is ignored and generic, as in [`Formatter::new`].
     pub fn create_formatter<W: Write>(self, write: &mut W) -> Formatter {
-        Formatter { options: self }
+        Formatter {
+            formatting_options: self,
+        }
     }
 }
 
