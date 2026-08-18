@@ -11156,9 +11156,9 @@ def result.Result.iter
   := do
   match self with
   | core.result.Result.Ok t => let s ← rust_primitives.sequence.seq_one t
-                          Aeneas.Std.Result.ok s
+                               Aeneas.Std.Result.ok s
   | core.result.Result.Err _ => let s ← rust_primitives.sequence.seq_empty T
-                           Aeneas.Std.Result.ok s
+                                Aeneas.Std.Result.ok s
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::expect]:
     Source: 'core-models/src/core/result.rs', lines 309:4-317:5
@@ -11351,14 +11351,14 @@ def result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE (T
     Visibility: public -/
 def result.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} (self : result.Iter T) :
-  Result ((option.Option T) × (result.Iter T))
+  Aeneas.Std.Result ((option.Option T) × (result.Iter T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
-  then ok (option.Option.None, self)
+  then Aeneas.Std.Result.ok (option.Option.None, self)
   else
     let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
-    ok (option.Option.Some t, s)
+    Aeneas.Std.Result.ok (option.Option.Some t, s)
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::result::Iter<'a, T>}]
     Source: 'core-models/src/core/result.rs', lines 484:0-493:1 -/
@@ -11373,14 +11373,14 @@ def result.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T : Type)
     Visibility: public -/
 def result.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} (self : result.IntoIter T) :
-  Result ((option.Option T) × (result.IntoIter T))
+  Aeneas.Std.Result ((option.Option T) × (result.IntoIter T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
-  then ok (option.Option.None, self)
+  then Aeneas.Std.Result.ok (option.Option.None, self)
   else
     let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
-    ok (option.Option.Some t, s)
+    Aeneas.Std.Result.ok (option.Option.Some t, s)
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::iterator::Iterator<T> for core_models::result::IntoIter<T>}]
     Source: 'core-models/src/core/result.rs', lines 519:0-528:1 -/
@@ -11400,9 +11400,9 @@ def
   := do
   match self with
   | core.result.Result.Ok t => let s ← rust_primitives.sequence.seq_one t
-                          Aeneas.Std.Result.ok s
+                               Aeneas.Std.Result.ok s
   | core.result.Result.Err _ => let s ← rust_primitives.sequence.seq_empty T
-                           Aeneas.Std.Result.ok s
+                                Aeneas.Std.Result.ok s
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::collect::IntoIterator<T, core_models::result::IntoIter<T>> for core_models::result::Result<T, E>}]
     Source: 'core-models/src/core/result.rs', lines 531:0-540:1 -/
