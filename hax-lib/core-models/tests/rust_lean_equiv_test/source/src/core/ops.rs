@@ -18,7 +18,8 @@
 //! accept, so they are exercised only by the proptests in
 //! `core-models/src/core/ops.rs`.
 
-use core::ops::{Bound, ControlFlow, RangeBounds, RangeInclusive};
+use crate::helpers;
+use core::ops::{Bound, RangeBounds, RangeInclusive};
 use rust_lean_test_macro::rust_lean_test;
 
 // =============================================================================
@@ -108,26 +109,22 @@ pub fn test_sub_assign_u8_max_minus_one() -> bool {
 
 #[rust_lean_test]
 pub fn test_control_flow_is_break_on_break() -> bool {
-    let cf: ControlFlow<u8, u8> = ControlFlow::Break(7);
-    cf.is_break() == true
+    helpers::control_flow_break_u8(7).is_break() == true
 }
 
 #[rust_lean_test]
 pub fn test_control_flow_is_break_on_continue() -> bool {
-    let cf: ControlFlow<u8, u8> = ControlFlow::Continue(0);
-    cf.is_break() == false
+    helpers::control_flow_continue_u8(0).is_break() == false
 }
 
 #[rust_lean_test]
 pub fn test_control_flow_is_continue_on_continue() -> bool {
-    let cf: ControlFlow<u8, u8> = ControlFlow::Continue(u8::MAX);
-    cf.is_continue() == true
+    helpers::control_flow_continue_u8(u8::MAX).is_continue() == true
 }
 
 #[rust_lean_test]
 pub fn test_control_flow_is_continue_on_break() -> bool {
-    let cf: ControlFlow<u8, u8> = ControlFlow::Break(0);
-    cf.is_continue() == false
+    helpers::control_flow_break_u8(0).is_continue() == false
 }
 
 // =============================================================================
@@ -136,8 +133,7 @@ pub fn test_control_flow_is_continue_on_break() -> bool {
 
 #[rust_lean_test]
 pub fn test_control_flow_break_value_on_break() -> bool {
-    let cf: ControlFlow<u8, u8> = ControlFlow::Break(u8::MAX);
-    match cf.break_value() {
+    match helpers::control_flow_break_u8(u8::MAX).break_value() {
         Some(b) => b == u8::MAX,
         None => false,
     }
@@ -145,8 +141,7 @@ pub fn test_control_flow_break_value_on_break() -> bool {
 
 #[rust_lean_test]
 pub fn test_control_flow_break_value_on_continue() -> bool {
-    let cf: ControlFlow<u8, u8> = ControlFlow::Continue(3);
-    match cf.break_value() {
+    match helpers::control_flow_continue_u8(3).break_value() {
         Some(_) => false,
         None => true,
     }
@@ -154,8 +149,7 @@ pub fn test_control_flow_break_value_on_continue() -> bool {
 
 #[rust_lean_test]
 pub fn test_control_flow_continue_value_on_continue() -> bool {
-    let cf: ControlFlow<u8, u8> = ControlFlow::Continue(0);
-    match cf.continue_value() {
+    match helpers::control_flow_continue_u8(0).continue_value() {
         Some(c) => c == 0u8,
         None => false,
     }
@@ -163,8 +157,7 @@ pub fn test_control_flow_continue_value_on_continue() -> bool {
 
 #[rust_lean_test]
 pub fn test_control_flow_continue_value_on_break() -> bool {
-    let cf: ControlFlow<u8, u8> = ControlFlow::Break(3);
-    match cf.continue_value() {
+    match helpers::control_flow_break_u8(3).continue_value() {
         Some(_) => false,
         None => true,
     }
@@ -216,8 +209,7 @@ pub fn test_bound_as_ref_excluded_max() -> bool {
 
 #[rust_lean_test]
 pub fn test_bound_as_ref_unbounded() -> bool {
-    let b: Bound<u8> = Bound::Unbounded;
-    match b.as_ref() {
+    match helpers::bound_unbounded_u8().as_ref() {
         Bound::Unbounded => true,
         _ => false,
     }

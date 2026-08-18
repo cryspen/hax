@@ -544,24 +544,33 @@ pub mod range {
         }
     }
 
+    // The `requires(true)` on each method is what lets the blanket impls below
+    // call it on an abstract instance: without it hax leaves the F* class's
+    // `f_*_pre` field unconstrained, and the caller cannot discharge it.
     /// See [`std::ops::RangeBounds`]
+    #[hax_lib::attributes]
     pub trait RangeBounds<T: ?Sized> {
         /// See [`std::ops::RangeBounds::start_bound`]
+        #[hax_lib::requires(true)]
         fn start_bound(&self) -> Bound<&T>;
         /// See [`std::ops::RangeBounds::end_bound`]
+        #[hax_lib::requires(true)]
         fn end_bound(&self) -> Bound<&T>;
     }
 
     // `contains` and `is_empty` are trait *defaults* in real core, which hax
     // does not support; they live in a blanket-implemented companion trait, as
     // `cmp::PartialOrdDefaults` does for `PartialOrd`'s comparison operators.
+    #[hax_lib::attributes]
     pub(crate) trait RangeBoundsDefaults<T: ?Sized>: RangeBounds<T> {
         /// See [`std::ops::RangeBounds::contains`]
+        #[hax_lib::requires(true)]
         fn contains<U: ?Sized>(&self, item: &U) -> bool
         where
             T: PartialOrd<U>,
             U: PartialOrd<T>;
         /// See [`std::ops::RangeBounds::is_empty`]
+        #[hax_lib::requires(true)]
         fn is_empty(&self) -> bool
         where
             T: PartialOrd<T>;
@@ -585,15 +594,19 @@ pub mod range {
     }
 
     /// See [`std::ops::IntoBounds`]
+    #[hax_lib::attributes]
     pub trait IntoBounds<T>: RangeBounds<T> {
         /// See [`std::ops::IntoBounds::into_bounds`]
+        #[hax_lib::requires(true)]
         fn into_bounds(self) -> (Bound<T>, Bound<T>);
     }
 
     // `intersect` is a trait *default* in real core; same treatment as
     // `RangeBoundsDefaults` above.
+    #[hax_lib::attributes]
     pub(crate) trait IntoBoundsDefaults<T>: IntoBounds<T> {
         /// See [`std::ops::IntoBounds::intersect`]
+        #[hax_lib::requires(true)]
         fn intersect<R: IntoBounds<T>>(self, other: R) -> (Bound<T>, Bound<T>)
         where
             T: crate::cmp::Ord;
@@ -620,8 +633,10 @@ pub mod range {
     }
 
     /// See [`std::ops::OneSidedRange`]
+    #[hax_lib::attributes]
     pub trait OneSidedRange<T>: RangeBounds<T> {
         /// See [`std::ops::OneSidedRange::bound`]
+        #[hax_lib::requires(true)]
         fn bound(self) -> (OneSidedRangeBound, T);
     }
 
@@ -826,8 +841,14 @@ pub mod range {
             )
         }
 
+        // The `where` repeats the impl's bound because real core spells it that
+        // way too; dropping it would leave the extraction one trait dictionary
+        // short of what a call site passes.
         /// See [`std::ops::Range::is_empty`]
-        pub fn is_empty(&self) -> bool {
+        pub fn is_empty(&self) -> bool
+        where
+            Idx: PartialOrd<Idx>,
+        {
             is_lt(&self.start, &self.end) == false
         }
     }
@@ -920,7 +941,10 @@ pub mod range {
         }
 
         /// See [`std::ops::RangeInclusive::is_empty`]
-        pub fn is_empty(&self) -> bool {
+        pub fn is_empty(&self) -> bool
+        where
+            Idx: PartialOrd<Idx>,
+        {
             is_le(&self.start, &self.end) == false
         }
     }
