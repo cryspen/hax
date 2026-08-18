@@ -1834,12 +1834,17 @@ pub mod vec {
             for _ in 0..l {
                 let x = seq_remove(&mut rest, 0);
                 let n = seq_len(&self.0);
-                let keep = if n == 0 {
-                    true
+                // `is_dup`, not `keep`: a *materialized* `!b` is lowered to Lean's
+                // `¬ b`, which is `Prop`, so the `if` below would have no
+                // `Decidable` instance. Kept as an `if` condition instead, where
+                // charon folds the negation into a branch swap and it stays a
+                // `bool` (see also the `Neq` blanket impl in `core::cmp`).
+                let is_dup = if n == 0 {
+                    false
                 } else {
-                    !PartialEq::eq(seq_index(&self.0, n - 1), &x)
+                    PartialEq::eq(seq_index(&self.0, n - 1), &x)
                 };
-                if keep {
+                if !is_dup {
                     seq_push(&mut self.0, x);
                 }
             }
@@ -1860,12 +1865,13 @@ pub mod vec {
             for _ in 0..l {
                 let x = seq_remove(&mut rest, 0);
                 let n = seq_len(&self.0);
-                let keep = if n == 0 {
-                    true
+                // See `dedup` for why this is not a negated `keep`.
+                let is_dup = if n == 0 {
+                    false
                 } else {
-                    !same_bucket(&x, seq_index(&self.0, n - 1))
+                    same_bucket(&x, seq_index(&self.0, n - 1))
                 };
-                if keep {
+                if !is_dup {
                     seq_push(&mut self.0, x);
                 }
             }
@@ -1879,12 +1885,13 @@ pub mod vec {
             for _ in 0..l {
                 let x = seq_remove(&mut rest, 0);
                 let n = seq_len(&self.0);
-                let keep = if n == 0 {
-                    true
+                // See `dedup` for why this is not a negated `keep`.
+                let is_dup = if n == 0 {
+                    false
                 } else {
-                    !PartialEq::eq(&key(&x), &key(seq_index(&self.0, n - 1)))
+                    PartialEq::eq(&key(&x), &key(seq_index(&self.0, n - 1)))
                 };
-                if keep {
+                if !is_dup {
                     seq_push(&mut self.0, x);
                 }
             }
