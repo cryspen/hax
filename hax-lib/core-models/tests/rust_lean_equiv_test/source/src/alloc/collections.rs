@@ -432,6 +432,119 @@ pub fn test_deque_contains_absent() -> bool {
     d.contains(&u8::MAX) == false
 }
 
+// ----- get_mut / front_mut / back_mut / make_contiguous ----------------------
+//
+// These exercise Aeneas's write-back encoding of a `&mut` return: each writes
+// through the borrow and then observes the container. `VecDeque::{insert_mut,
+// push_front_mut, push_back_mut}` and `LinkedList::{push_front_mut,
+// push_back_mut}` are unstable in the std this crate builds against, so they
+// stay in the model crate's proptests.
+//
+// TODO(fnonce-mut-arg): `VecDeque::{pop_front_if, pop_back_if}`,
+// `VecDeque::retain_mut` and `BTreeMap::retain` are not modeled at all: their
+// closure takes `&mut T`, and the model of `core::ops::FnOnce`/`FnMut` has
+// `call_once(&self, args) -> Output`, so it cannot carry the argument's
+// write-back. Aeneas types such a call as returning `(Output × T)`, and Lean
+// rejects a body that binds a plain `bool`. Lifting this means changing
+// `core::ops`.
+
+#[rust_lean_test]
+pub fn test_deque_get_mut_empty_is_none() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.get_mut(0).is_none()
+}
+
+#[rust_lean_test]
+pub fn test_deque_get_mut_past_end_is_none() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.push_back(1);
+    d.get_mut(1).is_none()
+}
+
+#[rust_lean_test]
+pub fn test_deque_get_mut_writes_through() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.push_back(1);
+    d.push_back(2);
+    match d.get_mut(1) {
+        Some(x) => {
+            *x = 9;
+            d[0] == 1 && d[1] == 9
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_deque_front_mut_back_mut_empty_are_none() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.front_mut().is_none() && d.back_mut().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_deque_front_mut_writes_through() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.push_back(1);
+    d.push_back(2);
+    match d.front_mut() {
+        Some(x) => {
+            *x = u8::MAX;
+            d[0] == u8::MAX && d[1] == 2
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_deque_back_mut_writes_through() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.push_back(1);
+    d.push_back(2);
+    match d.back_mut() {
+        Some(x) => {
+            *x = 0;
+            d[0] == 1 && d[1] == 0
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_deque_back_mut_single() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.push_back(3);
+    match d.back_mut() {
+        Some(x) => {
+            *x = 4;
+            d.len() == 1 && d[0] == 4
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_deque_make_contiguous_len() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.push_back(1);
+    d.push_back(2);
+    d.make_contiguous().len() == 2
+}
+
+#[rust_lean_test]
+pub fn test_deque_make_contiguous_empty() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.make_contiguous().len() == 0
+}
+
+#[rust_lean_test]
+pub fn test_deque_make_contiguous_writes_through() -> bool {
+    let mut d: VecDeque<u8> = VecDeque::new();
+    d.push_back(1);
+    d.push_back(2);
+    d.make_contiguous()[0] = 7;
+    d[0] == 7 && d[1] == 2
+}
+
 // ----- as_slices -------------------------------------------------------------
 //
 // The model is always contiguous, so its back slice is always empty; std may
@@ -771,6 +884,42 @@ pub fn test_list_split_off_middle() -> bool {
         && t.len() == 2
         && t.pop_front().unwrap_or(0) == 2
         && t.pop_front().unwrap_or(0) == 3
+}
+
+// ----- front_mut / back_mut --------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_list_front_mut_back_mut_empty_are_none() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.front_mut().is_none() && l.back_mut().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_list_front_mut_writes_through() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    match l.front_mut() {
+        Some(x) => {
+            *x = 9;
+            l.pop_front().unwrap_or(0) == 9 && l.pop_front().unwrap_or(0) == 2
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_list_back_mut_writes_through() -> bool {
+    let mut l: LinkedList<u8> = LinkedList::new();
+    l.push_back(1);
+    l.push_back(2);
+    match l.back_mut() {
+        Some(x) => {
+            *x = u8::MAX;
+            l.pop_back().unwrap_or(0) == u8::MAX && l.pop_back().unwrap_or(0) == 1
+        }
+        None => false,
+    }
 }
 
 // ----- iter ------------------------------------------------------------------
