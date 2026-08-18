@@ -56,4 +56,34 @@ mod tests {
             assert!(super::super::DECLARED_VERSION_KEYS.contains(&key.as_str()));
         }
     }
+
+    /// The version of `hax-lean-lib` in `defaults.toml` must be the same as the version
+    /// declared in `hax-lib/proof-libs/lean/lakefile.toml`.
+    #[test]
+    fn hax_lean_lib_pin_matches_declared_version() {
+        let lean_lib =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../hax-lib/proof-libs/lean");
+        // Nix builds this crate from a filtered source tree that drops
+        // `proof-libs`. In such a situation, we need to skip this test:
+        if !lean_lib.is_dir() {
+            return;
+        }
+        let path = lean_lib.join("lakefile.toml");
+        let contents = std::fs::read_to_string(&path)
+            .unwrap_or_else(|e| panic!("cannot read {}: {e}", path.display()));
+        let lakefile: toml::Value = toml::from_str(&contents)
+            .unwrap_or_else(|e| panic!("{} is malformed: {e}", path.display()));
+        let declared = lakefile
+            .get("version")
+            .and_then(toml::Value::as_str)
+            .unwrap_or_else(|| panic!("{} declares no `version`", path.display()));
+
+        let pinned = &defaults().versions["hax-lean-lib"];
+        assert_eq!(
+            pinned,
+            &format!("v{declared}"),
+            "`hax-lean-lib` in defaults.toml must pin the version declared in {}",
+            path.display()
+        );
+    }
 }
