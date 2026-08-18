@@ -379,7 +379,10 @@ impl<T> Option<T> {
     /// Std is generic over any `Try` type through `ops::try_trait::Residual`,
     /// which the model does not have; this is the `Result` instance of that
     /// signature. Returns the updated option, as `insert` does.
-    // See `insert` for the exclusion.
+    // opaque: see `filter` — matching on the closure's result needs F* to see
+    // through the `FnOnce::Output` projection, which it will not do. See
+    // `insert` for the aeneas exclusion.
+    #[hax_lib::opaque]
     #[cfg_attr(charon, aeneas::exclude)]
     pub fn get_or_try_insert_with<E, F: FnOnce() -> Result<T, E>>(
         self,
