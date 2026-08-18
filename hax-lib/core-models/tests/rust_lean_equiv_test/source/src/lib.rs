@@ -48,11 +48,8 @@
     funnel_shifts,
     disjoint_bitor,
     wrapping_next_power_of_two,
-    bigint_helper_methods,
     is_ascii_octdigit,
     wrapping_int_impl,
-    nonzero_bitwise,
-    nonzero_ops,
     utf16_extra
 )]
 
