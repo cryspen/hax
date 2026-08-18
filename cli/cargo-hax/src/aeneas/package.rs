@@ -36,7 +36,7 @@ const HAX_LEAN_LIB_REPO: &str = "https://github.com/cryspen/hax-lean";
 /// `HAX_CORE_MODELS_EXTRACTION_MODE` unlocks.
 const CORE_MODELS_ROOT: &str = "CoreModels";
 
-const RESERVED_MODULE_ROOTS: &[&str] = &[
+pub(crate) const RESERVED_MODULE_ROOTS: &[&str] = &[
     "Lean",
     "Init",
     "Std",

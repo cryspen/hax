@@ -91,18 +91,41 @@ pub fn check(project: &ProjectContext) -> Vec<CrateCompatibility> {
 /// Other members' dependencies are not what this run compiles against
 /// (`tools show` still reports them all).
 ///
-/// When the invocation selects packages itself (`-C -p ... ;`), which
-/// members it compiles is Cargo's answer to give. The gate then applies to
-/// what no selection can dodge: an incompatibility every member shares. A
+/// When the invocation selects packages itself, plain `-p <member>`
+/// selections are gated exactly: they name the crates the build compiles
+/// against. Any other selection (`--workspace`, `--exclude`, path or
+/// version specs) is Cargo's answer to give; the gate then applies to what
+/// no selection can dodge: an incompatibility every member shares. The
+/// same shared check covers a named selection without any direct `hax-lib`
+/// dependency: its build still compiles the members it depends on. A
 /// project mixing compatible and incompatible `hax-lib` versions is left to
 /// fail at compile time instead of being guessed about.
 pub fn enforce(project: &ProjectContext, message_format: MessageFormat) -> bool {
     let all = check(project);
-    let results: Vec<_> = if project.selects_packages {
+    let shared = |all: Vec<CrateCompatibility>| {
         let any_compatible = all
             .iter()
             .any(|result| result.compatibility == Compatibility::Compatible);
         if any_compatible { Vec::new() } else { all }
+    };
+    let results: Vec<_> = if project.selects_packages {
+        let named_members = !project.package_specs.is_empty()
+            && project
+                .package_specs
+                .iter()
+                .all(|spec| project.members.iter().any(|member| &member.name == spec));
+        if named_members {
+            let (selected, rest): (Vec<_>, Vec<_>) = all
+                .into_iter()
+                .partition(|result| project.package_specs.contains(&result.crate_name));
+            if selected.is_empty() {
+                shared(rest)
+            } else {
+                selected
+            }
+        } else {
+            shared(all)
+        }
     } else if let Some(root) = &project.root_package {
         all.into_iter()
             .filter(|result| result.crate_name == root.name)
@@ -173,6 +196,63 @@ mod tests {
                 "{own}"
             );
         }
+    }
+
+    fn workspace(members: &[(&str, &str)], package_specs: &[&str]) -> ProjectContext {
+        ProjectContext {
+            workspace_root: std::path::PathBuf::from("/ws"),
+            workspace_config: None,
+            members: members
+                .iter()
+                .map(|(name, hax_lib)| super::super::project::MemberCrate {
+                    name: name.to_string(),
+                    root: std::path::PathBuf::from("/ws").join(name),
+                    config: None,
+                    hax_lib: Some(hax_lib.to_string()),
+                })
+                .collect(),
+            root_package: None,
+            selects_packages: true,
+            package_specs: package_specs.iter().map(|s| s.to_string()).collect(),
+        }
+    }
+
+    /// A plain `-p <member>` selection gates exactly the selected members;
+    /// any other selection falls back to the lenient any-member-compatible
+    /// mode.
+    #[test]
+    fn package_selections_gate_the_selected_members() {
+        let compatible = expected_version().to_string();
+        let members = [("good", compatible.as_str()), ("bad", "0.0.1")];
+        let format = MessageFormat::Human;
+        assert!(enforce(&workspace(&members, &["bad"]), format));
+        assert!(enforce(&workspace(&members, &["good", "bad"]), format));
+        assert!(!enforce(&workspace(&members, &["good"]), format));
+        // A spec that is not a member name and a broad selection (empty
+        // specs) both stay lenient: one member is compatible.
+        assert!(!enforce(&workspace(&members, &["bad@0.1.0"]), format));
+        assert!(!enforce(&workspace(&members, &[]), format));
+    }
+
+    /// A named member without a direct `hax-lib` dependency falls back to
+    /// the shared check: its build still compiles the members it depends
+    /// on.
+    #[test]
+    fn named_members_without_hax_lib_fall_back_to_the_shared_check() {
+        let format = MessageFormat::Human;
+        let bin = super::super::project::MemberCrate {
+            name: "bin".to_string(),
+            root: std::path::PathBuf::from("/ws/bin"),
+            config: None,
+            hax_lib: None,
+        };
+        let mut project = workspace(&[("bad", "0.0.1")], &["bin"]);
+        project.members.push(bin.clone());
+        assert!(enforce(&project, format));
+        let compatible = expected_version().to_string();
+        let mut project = workspace(&[("bad", "0.0.1"), ("good", compatible.as_str())], &["bin"]);
+        project.members.push(bin);
+        assert!(!enforce(&project, format));
     }
 
     /// The version this binary reports never carries a pre-release,

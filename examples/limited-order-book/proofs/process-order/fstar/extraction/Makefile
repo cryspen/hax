@@ -53,7 +53,9 @@ all:
 	rm -f .depend && $(MAKE) .depend
 	$(MAKE) verify
 
-HAX_CLI = "cargo hax into -i '-** +**::process_order' fstar"
+# The item selection lives in the `process-order` scenario in the crate's
+# `hax.toml`.
+HAX_CLI = "cargo hax extract process-order"
 
 # If $HACL_HOME doesn't exist, clone it
 ${HACL_HOME}:
@@ -69,7 +71,7 @@ endif
 ROOTS = $(wildcard *.fst *fsti)
 
 # Regenerate F* files via hax when Rust sources change
-$(ROOTS): $(shell find ../../../src -type f -name '*.rs')
+$(ROOTS): $(shell find ../../../../src -type f -name '*.rs')
 	$(shell $(SHELL) -c $(HAX_CLI))
 
 # The following is a bash script that discovers F* libraries

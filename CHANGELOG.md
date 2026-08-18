@@ -36,6 +36,7 @@ Changes to cargo-hax:
  - Compile with `cfg(hax)` in the `lean` backend, as the engine-based backends do. Without it `hax-lib` was its dummy implementation, and `loop_invariant!` expanded to code that did not type-check
  - Publish a pre-built `cargo-hax` binary per supported platform with every release, so that `cargo binstall cargo-hax` installs it without building
  - Make `cargo install cargo-hax` build on any recent toolchain, so that the `lean` backend can be installed on its own and pinned per project with `cargo-run-bin`; the JSON schema exporter the OCaml engine's build consumes moved behind the new `legacy-engine` feature
+ - Add proof scenarios: named extraction configurations committed as `[scenario.<name>]` tables in `hax.toml`, run with the new `cargo hax extract [NAME]...` subcommand into per-scenario `proofs/<scenario>/<backend>/` directories
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)

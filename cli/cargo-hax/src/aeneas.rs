@@ -15,7 +15,7 @@ use std::{fs, process};
 
 use super::tools;
 
-mod package;
+pub(crate) mod package;
 
 const BACKEND_DIR: &str = "lean";
 
@@ -54,24 +54,45 @@ fn overridden_flags<'a>(user_args: &[String], flags: &[&'a str]) -> Vec<&'a str>
         .collect()
 }
 
-/// Warn if the user's extra args re-specify a flag that the pipeline already
-/// sets and relies on (e.g. those controlling where output is written). Such
-/// flags are still forwarded — the tools keep the last occurrence — but
+/// Name the source(s) whose extra tool arguments carry the given flags:
+/// the scenario's `<tool>-args` key, the `--<tool>-args` flag, or both.
+fn args_source(
+    scenario_args: &[String],
+    cli_args: &[String],
+    flags: &[&str],
+    tool: &str,
+) -> String {
+    let in_scenario = !overridden_flags(scenario_args, flags).is_empty();
+    let in_cli = !overridden_flags(cli_args, flags).is_empty();
+    match (in_scenario, in_cli) {
+        (true, false) => format!("the scenario's `{tool}-args`"),
+        (false, true) => format!("--{tool}-args"),
+        _ => format!("--{tool}-args and the scenario's `{tool}-args`"),
+    }
+}
+
+/// Warn if the extra args (the scenario's `<tool>-args` key or the
+/// `--<tool>-args` flag) re-specify a flag that the pipeline already sets
+/// and relies on (e.g. those controlling where output is written). Such
+/// flags are still forwarded (the tools keep the last occurrence), but
 /// overriding them can break the charon→aeneas handoff or the layout the
 /// generated proof project assumes.
 fn warn_on_reserved_flags(
-    user_args: &[String],
+    scenario_args: &[String],
+    cli_args: &[String],
     reserved: &[&str],
     tool: &str,
     message_format: MessageFormat,
 ) {
-    let overridden = overridden_flags(user_args, reserved);
+    let combined: Vec<String> = scenario_args.iter().chain(cli_args).cloned().collect();
+    let overridden = overridden_flags(&combined, reserved);
     if !overridden.is_empty() {
         HaxMessage::GenericWarning {
             message: format!(
-                "--{tool}-args re-specifies {tool} flag(s) the pipeline sets and relies on: {}. \
+                "{} re-specifies {tool} flag(s) the pipeline sets and relies on: {}. \
                  They are still forwarded, but this may break \
                  the extraction or the generated proof project.",
+                args_source(scenario_args, cli_args, &overridden, tool),
                 overridden.join(", ")
             ),
         }
@@ -79,17 +100,30 @@ fn warn_on_reserved_flags(
     }
 }
 
+/// Shell-quote arguments for display. Args containing spaces or shell
+/// metacharacters (e.g. `{impl X for _}`, `register_tool(_hax)`,
+/// `host.rustflags=["--cfg","hax"]`) are quoted so the printed line can be
+/// pasted into a shell verbatim. Display-only: the real commands are
+/// executed without a shell, so quoting never affects execution.
+pub(crate) fn quoted(args: &[String]) -> String {
+    shlex::try_join(args.iter().map(String::as_str)).unwrap_or_else(|_| args.join(" "))
+}
+
+/// Shell-quote one value for display, leaving a value that needs no
+/// quoting untouched.
+pub(crate) fn quoted_value(value: &str) -> String {
+    shlex::try_quote(value)
+        .map(|quoted| quoted.into_owned())
+        .unwrap_or_else(|_| value.to_string())
+}
+
 /// Format a `Command` as a copy-pasteable, shell-quoted invocation for display.
-/// Args containing spaces or shell metacharacters (e.g. `{impl X for _}`,
-/// `register_tool(_hax)`, `host.rustflags=["--cfg","hax"]`) are quoted so the
-/// printed line can be pasted into a shell verbatim. Display-only: the real
-/// command is executed without a shell, so quoting never affects execution.
 fn format_command(cmd: &process::Command) -> String {
     let parts: Vec<String> = std::iter::once(cmd.get_program())
         .chain(cmd.get_args())
         .map(|p| p.to_string_lossy().into_owned())
         .collect();
-    shlex::try_join(parts.iter().map(String::as_str)).unwrap_or_else(|_| parts.join(" "))
+    quoted(&parts)
 }
 
 /// Convert a crate name to CamelCase for Lean: split on `-` and `_`,
@@ -203,16 +237,20 @@ pub fn project_files_enabled(project: &tools::project::ProjectContext) -> bool {
 /// Runs the charon + aeneas pipeline for the `lean` backend.
 /// Returns `true` if an error occurred.
 ///
-/// `project_files` enables the scaffolding and checking of the Lean package
-/// around the extraction.
+/// A scenario run carries the package name and the `project-files` override
+/// in `options`; both fall back to the flag-driven behavior.
 pub fn run(
     options: &LeanOptions,
     output_dir: Option<PathBuf>,
     verbose: u8,
     message_format: MessageFormat,
     project: &tools::project::ProjectContext,
-    project_files: bool,
 ) -> bool {
+    let package_name = options.scenario.package_name.clone();
+    let project_files = options
+        .scenario
+        .project_files
+        .unwrap_or_else(|| project_files_enabled(project));
     // Per-crate tool resolution: the crate being processed is the root
     // package of the current invocation.
     let crate_dir = crate_dir(project);
@@ -250,16 +288,22 @@ pub fn run(
     } = aeneas;
     let aeneas = aeneas_executables["aeneas"].clone();
 
-    // The Lean package is named after the crate, and its library, module
-    // root and directory carry the UpperCamelCase form of that name. An
+    // The Lean package is named after the scenario (a scenario run passes
+    // the name in `options`) or the crate, and its library, module root
+    // and directory carry the UpperCamelCase form of that name. An
     // unusable name is a configuration error, caught before any tool runs.
-    let (pkg_name, lib_name, origin) = match &crate_name {
-        Some(crate_name) => (
+    let (pkg_name, lib_name, origin) = match (&package_name, &crate_name) {
+        (Some(name), _) => (
+            name.clone(),
+            name.clone(),
+            "the requested package name".to_string(),
+        ),
+        (None, Some(crate_name)) => (
             crate_name.clone(),
             to_camel_case(crate_name),
             format!("derived from the crate name `{crate_name}`"),
         ),
-        None => {
+        (None, None) => {
             HaxMessage::GenericError {
                 message: "the Lean package is named after the crate, and this \
                           invocation has no root package (a virtual workspace has \
@@ -280,19 +324,31 @@ pub fn run(
     }
 
     // Parse the user's aeneas flags up front: an overridden `-dest` or
-    // `-subdir` means hax does not know the package layout, so the
-    // extraction directory is not cleared and the package files are neither
-    // generated nor checked.
-    let user_aeneas_args = shell_split(options.aeneas_args.as_deref(), "aeneas", message_format);
+    // `-subdir` means hax does not know the package layout, so everything
+    // keyed to that location is skipped, that is the clearing of the
+    // extraction directory, the `Assumptions/` wiring, the generation and
+    // the checks of the package files, and the reporting of the extracted
+    // files. For both tools, scenario-resolved arguments come first and are
+    // taken verbatim (no shell splitting).
+    let scenario_aeneas_args = &options.scenario.aeneas_args;
+    let cli_aeneas_args = shell_split(options.aeneas_args.as_deref(), "aeneas", message_format);
+    let mut user_aeneas_args = scenario_aeneas_args.clone();
+    user_aeneas_args.extend(cli_aeneas_args.iter().cloned());
     let overridden_layout_flags = overridden_flags(&user_aeneas_args, &["-dest", "-subdir"]);
     let layout_overridden = !overridden_layout_flags.is_empty();
     let layout_warned = layout_overridden && project_files;
     if layout_warned {
         HaxMessage::GenericWarning {
             message: format!(
-                "--aeneas-args overrides {}, so hax does not know the Lean \
+                "{} overrides {}, so hax does not know the Lean \
                  package layout: the package files are neither generated nor \
                  checked, and stale extraction files are not removed",
+                args_source(
+                    scenario_aeneas_args,
+                    &cli_aeneas_args,
+                    &overridden_layout_flags,
+                    "aeneas"
+                ),
                 overridden_layout_flags.join(" and ")
             ),
         }
@@ -347,13 +403,20 @@ pub fn run(
 
     // Parse once so we can both inspect and forward the user's charon flags.
     // `--dest-file` is reserved: its value is fed verbatim to aeneas below.
-    let user_charon_args = shell_split(options.charon_args.as_deref(), "charon", message_format);
+    let scenario_charon_args = &options.scenario.charon_args;
+    let cli_charon_args = shell_split(options.charon_args.as_deref(), "charon", message_format);
+    let mut user_charon_args = scenario_charon_args.clone();
+    user_charon_args.extend(cli_charon_args.iter().cloned());
     warn_on_reserved_flags(
-        &user_charon_args,
+        scenario_charon_args,
+        &cli_charon_args,
         CHARON_WARN_FLAGS,
         "charon",
         message_format,
     );
+    // The unified item-selection keys, compiled to charon's selection
+    // flags; the verbatim extra arguments follow them.
+    let selection_flags = options.scenario.selection_flags();
 
     let mut charon_cmd = process::Command::new(&charon);
     charon_cmd.args([
@@ -369,6 +432,7 @@ pub fn run(
         "--rustc-arg=--cfg=hax_backend_lean",
     ]);
     // User-supplied charon flags go before the `--` cargo separator.
+    charon_cmd.args(&selection_flags);
     charon_cmd.args(&user_charon_args);
     // Everything after `--` is forwarded to cargo: build the host (proc-macro)
     // crates with `--cfg hax` too, so hax-lib macros expand consistently. `--cfg
@@ -396,6 +460,8 @@ pub fn run(
             super::rustflags()
         ),
     );
+    // Scenario feature selection goes to the cargo invocation charon drives.
+    charon_cmd.args(&options.scenario.cargo_args);
     if verbose > 0 {
         HaxMessage::SubprocessOutput {
             prefix: "cmd".into(),
@@ -441,7 +507,8 @@ pub fn run(
         .filter(|flag| !(layout_warned && matches!(*flag, "-dest" | "-subdir")))
         .collect();
     warn_on_reserved_flags(
-        &user_aeneas_args,
+        scenario_aeneas_args,
+        &cli_aeneas_args,
         &aeneas_warn_flags,
         "aeneas",
         message_format,

@@ -14,6 +14,17 @@ const DEFAULTS_TOML: &str = include_str!("../../defaults.toml");
 pub struct Defaults {
     pub tools: BTreeMap<String, String>,
     pub versions: BTreeMap<String, String>,
+    /// The built-in default opaque set of each backend, applied to proof
+    /// scenarios (`[scenario-defaults.<backend>]`).
+    #[serde(default, rename = "scenario-defaults")]
+    pub scenario_defaults: BTreeMap<super::config::ScenarioBackend, ScenarioDefaults>,
+}
+
+/// One built-in `[scenario-defaults.<backend>]` table.
+#[derive(Debug, Clone, serde::Deserialize)]
+pub struct ScenarioDefaults {
+    #[serde(default)]
+    pub opaque: Vec<String>,
 }
 
 /// The parsed embedded defaults. Panics only if the embedded file is

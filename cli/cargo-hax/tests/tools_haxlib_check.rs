@@ -248,7 +248,7 @@ fn mixed_workspace() -> tempfile::TempDir {
 }
 
 #[test]
-fn a_package_selection_is_not_second_guessed() {
+fn a_package_selection_gates_the_named_members() {
     let project = mixed_workspace();
     let ws = project.path().join("ws");
 
@@ -258,21 +258,34 @@ fn a_package_selection_is_not_second_guessed() {
     assert!(!success, "{output}");
     assert!(output.contains("crate `legacy`"), "{output}");
 
-    // With a selection, hax does not guess which members Cargo compiles:
-    // `app` is on a compatible `hax-lib`, so no selection is known to hit
-    // the incompatible one and the gate lets the run proceed. (It then
-    // stops at the Lean package-name derivation, which needs a root
-    // package the virtual workspace does not have.)
-    for flags in [
-        vec!["-C", "-p", "app", ";"],
-        vec!["-C", "--package=legacy", ";"],
-        vec!["-C", "--workspace", "--exclude", "legacy", ";"],
-    ] {
-        let args = [flags.as_slice(), &["into", "lean"]].concat();
-        let (output, _) = run(&args, &ws);
-        assert!(!output.contains("incompatible"), "{flags:?}: {output}");
-        assert!(output.contains("no root package"), "{flags:?}: {output}");
-    }
+    // A plain `-p <member>` selection names the crates the build compiles
+    // against, so exactly those are gated. (A passing run then stops at
+    // the Lean package-name derivation, which needs a root package the
+    // virtual workspace does not have.)
+    let (output, _) = run(&["-C", "-p", "app", ";", "into", "lean"], &ws);
+    assert!(!output.contains("incompatible"), "{output}");
+    assert!(output.contains("no root package"), "{output}");
+    let (output, success) = run(&["-C", "--package=legacy", ";", "into", "lean"], &ws);
+    assert!(!success, "{output}");
+    assert!(output.contains("crate `legacy`"), "{output}");
+
+    // For any broader selection, hax does not guess which members Cargo
+    // compiles: `app` is on a compatible `hax-lib`, so the selection is not
+    // known to hit the incompatible one and the gate lets the run proceed.
+    let (output, _) = run(
+        &[
+            "-C",
+            "--workspace",
+            "--exclude",
+            "legacy",
+            ";",
+            "into",
+            "lean",
+        ],
+        &ws,
+    );
+    assert!(!output.contains("incompatible"), "{output}");
+    assert!(output.contains("no root package"), "{output}");
 }
 
 #[test]
