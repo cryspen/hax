@@ -183,12 +183,48 @@ def rewrite_alloc_imports(text: str) -> str:
     )
     return text
 
+_RESULT_ARM_RE = re.compile(r"^(\s*)\| result\.Result\.")
+_QUALIFY_ARM = "core."
+
+
 def fix_result_match(text: str) -> str:
     """ A match on `result.Result` cannot be parsed properly by Lean in
     `I128.Insts.Core_modelsIterStepStep.steps_between`.
     """
     return sub("fix_result_match", r"\| result\.Result\.",
                r"| core.result.Result.", text)
+
+    Qualifying the pattern makes the arm head `len("core.")` characters longer.
+    When Aeneas put the arm's body on the same line *and* continued it on the
+    next ones, it aligned those continuations to the body column of the
+    *un*-qualified head, so they end up under-indented — Lean then reads them as
+    extra arguments to the last expression of the previous line rather than as
+    the next statement of the arm. Shift them by the same amount.
+    """
+    lines = text.split("\n")
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        i += 1
+        m = _RESULT_ARM_RE.match(line)
+        if m is None:
+            out.append(line)
+            continue
+        out.append(line.replace("| result.Result.", "| " + _QUALIFY_ARM + "result.Result.", 1))
+        arrow = line.find(" => ")
+        if arrow < 0 or not line[arrow + 4:].strip():
+            continue  # body starts on the next line: its indent is head-independent
+        body_col = arrow + 4
+        bar_col = len(m.group(1))
+        while i < len(lines):
+            nxt = lines[i]
+            indent = len(nxt) - len(nxt.lstrip())
+            if not nxt.strip() or indent <= bar_col or indent < body_col:
+                break
+            out.append(" " * len(_QUALIFY_ARM) + nxt)
+            i += 1
+    return "\n".join(out)
 
 
 # A `structure hash.Hash`/`structure hash.BuildHasher` header, plus its
@@ -375,12 +411,15 @@ def qualify_result_monad_impls(text: str) -> str:
     `namespace`/`end` lines and `Core_models`).
     """
     def fn(ident: str, block_lines: list[str]) -> str | None:
-        # Match both trait impls whose `Self` is `Result` (`... for
-        # core_models::result::Result<...>`) and *inherent* methods on
-        # `Result` (`{core_models::result::Result<...>}::method`, e.g.
-        # `unwrap_or` / `map_err`) — both land in the `result.Result.*`
-        # namespace and hit the same bare-`Result` monad clash.
-        if "for core_models::result::Result" not in ident \
+        # Anything *defined in* `core_models::result` lands in the `result.*`
+        # namespace and hits the clash — the inherent methods on `Result`
+        # (`{core_models::result::Result<...>}::method`), the trait impls whose
+        # `Self` is `Result`, and also the impls on the module's other types
+        # (`Iter` / `IntoIter`), whose `next` signature mentions bare `Result`.
+        # The first two patterns are kept because a trait impl *for* `Result`
+        # need not be declared in that module.
+        if not ident.startswith("core_models::result::") \
+                and "for core_models::result::Result" not in ident \
                 and "{core_models::result::Result<" not in ident:
             return None
         # Preserve the `/-- ... -/` doc comment; only rewrite the code below it.
