@@ -336,6 +336,14 @@ pub mod traits {
         }
     }
 
+    // opaque for F*: the body compares against `"true"`/`"false"` through
+    // `PartialEq for str`, whose instance F* cannot resolve from this module
+    // (`Could not solve typeclass constraint Core_models.Bundle.t_PartialEq
+    // Prims.string Prims.string`) — and hax mangles the two literals into
+    // `"r#true"`/`"r#false"`, so the extracted body would be wrong anyway.
+    // Keeping it a `val` also keeps `str::traits` from depending on the parent
+    // `str` module, which F* would reject as a module cycle.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl FromStr for bool {
         type Err = super::error::ParseBoolError;
         fn from_str(s: &str) -> crate::result::Result<Self, Self::Err> {
