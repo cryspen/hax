@@ -209,6 +209,14 @@ jobs:
           unset CI # Allows us to use Aeneas's olean cache
           make CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas lean tests
 
+      # The `Tests` lean_lib is deliberately excluded from `defaultTargets`
+      # (library consumers should not pay for it), so the `lake build` above
+      # skips it. Build it explicitly here to keep the end-to-end tactic
+      # tests (e.g. the signed for_loop_with_invariant specs) green.
+      - name: Build Lean tactic tests
+        working-directory: hax-lib/proof-libs/lean
+        run: lake build Tests
+
       # ---- Enforce that committed extraction matches re-extraction ------
       # If this fails: someone changed Rust source / patcher without
       # re-running `make lean` and committing the resulting diff.
