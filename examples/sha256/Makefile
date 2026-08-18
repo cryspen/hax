@@ -1,8 +1,8 @@
 .PHONY: fstar
 
 fstar:
-	make -C proofs/fstar/extraction
+	make -C proofs/sha256/fstar/extraction
 
 clean:
-	rm -f proofs/fstar/extraction/.depend
-	rm -f proofs/fstar/extraction/*.fst
+	rm -f proofs/sha256/fstar/extraction/.depend
+	rm -f proofs/sha256/fstar/extraction/*.fst

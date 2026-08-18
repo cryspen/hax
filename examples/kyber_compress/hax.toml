@@ -1,0 +1,3 @@
+[scenario.kyber-compress]
+backend = "fstar"
+z3rlimit = 500

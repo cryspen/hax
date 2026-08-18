@@ -2,6 +2,10 @@
 
 The sections below describe what each example shows and how to run its backend.
 
+Each example declares its extraction as a proof scenario (a `[scenario.<name>]`
+table in its `hax.toml`, see the [tools manual](../docs/manual/tools.md)), so
+the generated files live in `<EXAMPLE>/proofs/<scenario>/<backend>/`.
+
 ## Lean
 
 For the Lean backend, we have three examples: `barrett`, `sha3`, and `loop_equivalence`.
@@ -21,8 +25,8 @@ make lean
 ```
 
 This extracts the Rust code from `barrett/src/lib.rs` into
-`examples/barrett/proofs/lean/Barrett/Extraction/`. The Lean proof can be found in
-`examples/barrett/proofs/lean/Barrett/Proofs/`.
+`examples/barrett/proofs/barrett/lean/Barrett/Extraction/`. The Lean proof can be found in
+`examples/barrett/proofs/barrett/lean/Barrett/Verification/ProofObligations.lean`.
 
 ### SHA-3
 
@@ -50,8 +54,8 @@ make lean
 ```
 
 This extracts the Rust code from `sha3/src/lib.rs` into
-`examples/sha3/proofs/lean/Sha3/Extraction/Funs.lean`. The Lean proof can be found in
-`examples/sha3/proofs/lean/Sha3/Equivalence.lean`.
+`examples/sha3/proofs/sha3/lean/Sha3/Extraction/Funs.lean`. The Lean proof can be found in
+`examples/sha3/proofs/sha3/lean/Sha3/Equivalence.lean`.
 
 ### Loop Equivalence
 
@@ -96,7 +100,7 @@ generate F\* modules using hax and then typecheck those
 modules using F\*.
 
 Note the generated modules live in the
-`<EXAMPLE>/proofs/fstar/extraction` folders.
+`<EXAMPLE>/proofs/<scenario>/fstar/extraction` folders.
 
 | Name               | Status of the F\* extraction |
 | ------------------ | ---------------------------- |
