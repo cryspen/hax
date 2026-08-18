@@ -52,7 +52,8 @@
     is_ascii_octdigit,
     wrapping_int_impl,
     nonzero_bitwise,
-    nonzero_ops
+    nonzero_ops,
+    utf16_extra
 )]
 
 pub mod helpers;

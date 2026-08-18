@@ -829,6 +829,64 @@ macro_rules! uint_impl {
                     Option::None => crate::panicking::internal::panic(),
                 }
             }
+            /// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+            pub fn reverse_bits(x: $Self) -> $Self {
+                // Swap adjacent bits, then adjacent pairs, then adjacent nibbles, and
+                // finally the bytes. `MAX / 3`, `MAX / 5` and `MAX / 17` are the
+                // `0x55..`, `0x33..` and `0x0f..` masks at this width.
+                let m1 = <$Name>::MAX / 3;
+                let m2 = <$Name>::MAX / 5;
+                let m4 = <$Name>::MAX / 17;
+                let x = Self::wrapping_shl(x & m1, 1) | (Self::wrapping_shr(x, 1) & m1);
+                let x = Self::wrapping_shl(x & m2, 2) | (Self::wrapping_shr(x, 2) & m2);
+                let x = Self::wrapping_shl(x & m4, 4) | (Self::wrapping_shr(x, 4) & m4);
+                Self::swap_bytes(x)
+            }
+            /// See [`std::primitive::u8::widening_mul`] (and similar for other unsigned integer types)
+            pub fn widening_mul(x: $Self, y: $Self) -> ($Self, $Self) {
+                // Schoolbook multiplication on half-width limbs, so no wider
+                // intermediate type is needed (`u128` has none). Every partial product
+                // and sum below stays in range, but showing that needs nonlinear
+                // reasoning, so the wrapping forms are used throughout.
+                let half = <$Name>::BITS / 2;
+                let lo_mask = Self::wrapping_shr(<$Name>::MAX, half);
+                let xl = x & lo_mask;
+                let xh = Self::wrapping_shr(x, half);
+                let yl = y & lo_mask;
+                let yh = Self::wrapping_shr(y, half);
+                let ll = Self::wrapping_mul(xl, yl);
+                let lh = Self::wrapping_mul(xl, yh);
+                let hl = Self::wrapping_mul(xh, yl);
+                let hh = Self::wrapping_mul(xh, yh);
+                let mid = Self::wrapping_add(
+                    Self::wrapping_add(Self::wrapping_shr(ll, half), lh & lo_mask),
+                    hl & lo_mask,
+                );
+                let low = (ll & lo_mask) | Self::wrapping_shl(mid & lo_mask, half);
+                let high = Self::wrapping_add(
+                    Self::wrapping_add(
+                        Self::wrapping_add(hh, Self::wrapping_shr(lh, half)),
+                        Self::wrapping_shr(hl, half),
+                    ),
+                    Self::wrapping_shr(mid, half),
+                );
+                (low, high)
+            }
+            /// See [`std::primitive::u8::carrying_mul_add`] (and similar for other unsigned integer types)
+            pub fn carrying_mul_add(x: $Self, y: $Self, carry: $Self, add: $Self) -> ($Self, $Self) {
+                let (low, high) = Self::widening_mul(x, y);
+                // `x * y + carry + add` is at most `(2^N - 1)^2 + 2 * (2^N - 1)`, which
+                // still fits in `2 * N` bits, so the high word cannot overflow.
+                let (low, c1) = Self::overflowing_add(low, carry);
+                let (low, c2) = Self::overflowing_add(low, add);
+                let high = Self::wrapping_add(high, if c1 { 1 } else { 0 });
+                let high = Self::wrapping_add(high, if c2 { 1 } else { 0 });
+                (low, high)
+            }
+            /// See [`std::primitive::u8::carrying_mul`] (and similar for other unsigned integer types)
+            pub fn carrying_mul(x: $Self, y: $Self, carry: $Self) -> ($Self, $Self) {
+                Self::carrying_mul_add(x, y, carry, 0)
+            }
             /// See [`std::primitive::u8::carrying_add`] (and similar for other integer types)
             pub fn carrying_add(x: $Self, y: $Self, carry: bool) -> ($Self, bool) {
                 let (a, c1) = Self::overflowing_add(x, y);
@@ -855,6 +913,7 @@ macro_rules! iint_impl {
         $Self: ty,
         $USelf: ty,
         $Name: ty,
+        $UName: ty,
         $Max: expr,
         $Min: expr,
         $Bits: expr,
@@ -1578,6 +1637,61 @@ macro_rules! iint_impl {
                     result
                 }
             }
+            /// See [`std::primitive::i8::reverse_bits`] (and similar for other signed integer types)
+            pub fn reverse_bits(x: $Self) -> $Self {
+                // Bit reversal only depends on the bit pattern, so go through the
+                // unsigned sibling rather than repeating the mask dance for signs.
+                <$UName>::reverse_bits(x as $USelf) as $Self
+            }
+            /// See [`std::primitive::i8::next_multiple_of`] (and similar for other signed integer types)
+            // The precondition is "the checked form succeeds": stating it arithmetically
+            // would mean repeating the whole sign analysis of the body.
+            #[hax_lib::requires(match <$Name>::checked_next_multiple_of(x, y) {
+                Option::Some(_) => true,
+                Option::None => false,
+            })]
+            pub fn next_multiple_of(x: $Self, y: $Self) -> $Self {
+                match Self::checked_next_multiple_of(x, y) {
+                    Option::Some(result) => result,
+                    Option::None => crate::panicking::internal::panic(),
+                }
+            }
+            /// See [`std::primitive::i8::widening_mul`] (and similar for other signed integer types)
+            pub fn widening_mul(x: $Self, y: $Self) -> ($USelf, $Self) {
+                // A signed value is its unsigned bit pattern minus `2^N` when negative,
+                // so the signed high word is the unsigned one minus the *other* operand's
+                // bit pattern for each negative operand.
+                let (low, high) = <$UName>::widening_mul(x as $USelf, y as $USelf);
+                let high = high as $Self;
+                let high = if x < 0 {
+                    Self::wrapping_sub(high, y)
+                } else {
+                    high
+                };
+                let high = if y < 0 {
+                    Self::wrapping_sub(high, x)
+                } else {
+                    high
+                };
+                (low, high)
+            }
+            /// See [`std::primitive::i8::carrying_mul_add`] (and similar for other signed integer types)
+            pub fn carrying_mul_add(x: $Self, y: $Self, carry: $Self, add: $Self) -> ($USelf, $Self) {
+                let (low, high) = Self::widening_mul(x, y);
+                // `carry` and `add` enter the `2 * N`-bit product sign-extended: each
+                // contributes its bit pattern to the low word and its sign to the high one.
+                let (low, c1) = <$UName>::overflowing_add(low, carry as $USelf);
+                let (low, c2) = <$UName>::overflowing_add(low, add as $USelf);
+                let high = Self::wrapping_add(high, if c1 { 1 } else { 0 });
+                let high = Self::wrapping_add(high, if c2 { 1 } else { 0 });
+                let high = Self::wrapping_add(high, if carry < 0 { -1 } else { 0 });
+                let high = Self::wrapping_add(high, if add < 0 { -1 } else { 0 });
+                (low, high)
+            }
+            /// See [`std::primitive::i8::carrying_mul`] (and similar for other signed integer types)
+            pub fn carrying_mul(x: $Self, y: $Self, carry: $Self) -> ($USelf, $Self) {
+                Self::carrying_mul_add(x, y, carry, 0)
+            }
             /// See [`std::primitive::i8::carrying_add`] (and similar for other integer types)
             pub fn carrying_add(x: $Self, y: $Self, carry: bool) -> ($Self, bool) {
                 let (a, b) = Self::overflowing_add(x, y);
@@ -1949,7 +2063,13 @@ uint_impl! {
     65535,
     16,
     2,
-    extras: {},
+    // `core` puts this on `u16` only.
+    extras: {
+        /// See [`std::primitive::u16::is_utf16_surrogate`]
+        pub fn is_utf16_surrogate(x: core::primitive::u16) -> bool {
+            x >= 0xD800 && x <= 0xDFFF
+        }
+    },
 }
 
 uint_impl! {
@@ -1996,6 +2116,7 @@ iint_impl! {
     core::primitive::i8,
     core::primitive::u8,
     i8,
+    u8,
     127,
     -128,
     8,
@@ -2006,6 +2127,7 @@ iint_impl! {
     core::primitive::i16,
     core::primitive::u16,
     i16,
+    u16,
     32767,
     -32768,
     16,
@@ -2016,6 +2138,7 @@ iint_impl! {
     core::primitive::i32,
     core::primitive::u32,
     i32,
+    u32,
     2147483647,
     -2147483648,
     32,
@@ -2026,6 +2149,7 @@ iint_impl! {
     core::primitive::i64,
     core::primitive::u64,
     i64,
+    u64,
     9223372036854775807,
     -9223372036854775808,
     64,
@@ -2036,6 +2160,7 @@ iint_impl! {
     core::primitive::i128,
     core::primitive::u128,
     i128,
+    u128,
     170141183460469231731687303715884105727,
     -170141183460469231731687303715884105728,
     128,
@@ -2046,6 +2171,7 @@ iint_impl! {
     core::primitive::isize,
     core::primitive::usize,
     isize,
+    usize,
     ISIZE_MAX,
     ISIZE_MIN,
     SIZE_BITS,
@@ -2195,6 +2321,10 @@ macro_rules! nonzero_impl {
             /// See [`std::num::NonZero::<u8>::rotate_right`] (and similar for other integer types)
             pub fn rotate_right(self, n: core::primitive::u32) -> Self {
                 NonZero(<$Name>::rotate_right(self.0, n))
+            }
+            /// See [`std::num::NonZero::<u8>::reverse_bits`] (and similar for other integer types)
+            pub fn reverse_bits(self) -> Self {
+                NonZero(<$Name>::reverse_bits(self.0))
             }
             /// See [`std::num::NonZero::<u8>::swap_bytes`] (and similar for other integer types)
             pub fn swap_bytes(self) -> Self {
@@ -2489,6 +2619,10 @@ macro_rules! wrapper_impl {
             /// See [`std::num::Wrapping::from_le`] (and similar for `Saturating` and other integer types)
             pub fn from_le(x: Self) -> Self {
                 $Wrap(<$Name>::from_le(x.0))
+            }
+            /// See [`std::num::Wrapping::reverse_bits`] (and similar for `Saturating` and other integer types)
+            pub fn reverse_bits(self) -> Self {
+                $Wrap(<$Name>::reverse_bits(self.0))
             }
             /// See [`std::num::Wrapping::pow`] (and similar for `Saturating` and other integer types)
             pub fn pow(self, exp: core::primitive::u32) -> Self {
@@ -2956,6 +3090,7 @@ mod tests {
                             prop_assert_eq!(super::$t::from_be(mx), $t::from_be(x));
                             prop_assert_eq!(super::$t::from_le(mx), $t::from_le(x));
                             prop_assert_eq!(super::$t::to_ne_bytes(mx), x.to_ne_bytes().inject());
+                            prop_assert_eq!(super::$t::reverse_bits(mx), x.reverse_bits());
                         }
 
                         #[test]
@@ -2980,6 +3115,25 @@ mod tests {
                                 prop_assert_eq!(super::$t::strict_shl(mx, n), x.strict_shl(n));
                                 prop_assert_eq!(super::$t::strict_shr(mx, n), x.strict_shr(n));
                             }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _widening_ops>](
+                            x in any::<$t>(),
+                            y in any::<$t>(),
+                            carry in any::<$t>(),
+                            add in any::<$t>(),
+                        ) {
+                            let (mx, my) = (x.inject(), y.inject());
+                            prop_assert_eq!(super::$t::widening_mul(mx, my), x.widening_mul(y));
+                            prop_assert_eq!(
+                                super::$t::carrying_mul(mx, my, carry.inject()),
+                                x.carrying_mul(y, carry),
+                            );
+                            prop_assert_eq!(
+                                super::$t::carrying_mul_add(mx, my, carry.inject(), add.inject()),
+                                x.carrying_mul_add(y, carry, add),
+                            );
                         }
 
                         #[test]
@@ -3257,6 +3411,12 @@ mod tests {
                         fn [<test_ $t _strict_neg>](x in any::<$t>()) {
                             prop_assume!(x != $t::MIN);
                             prop_assert_eq!(super::$t::strict_neg(x.inject()), x.strict_neg());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _next_multiple_of>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assume!(x.checked_next_multiple_of(y).is_some());
+                            prop_assert_eq!(super::$t::next_multiple_of(x.inject(), y.inject()), x.next_multiple_of(y));
                         }
 
                         // `shl_exact` has no counterpart on the pinned toolchain, so the
@@ -3671,6 +3831,34 @@ mod tests {
     }
     next_multiple_of_panic_test! { u8 u16 u32 u64 u128 usize }
 
+    // The signed `next_multiple_of` panics on a zero divisor and on overflow, and
+    // `MAX.next_multiple_of(2)` is the smallest overflowing case at every width.
+    macro_rules! iint_next_multiple_of_panic_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $t _next_multiple_of_by_zero_panics>]() {
+                        let (x, y) = (std::hint::black_box(7 as $t), std::hint::black_box(0 as $t));
+                        crate::testing::panics_like_core(
+                            || super::$t::next_multiple_of(x.inject(), y.inject()),
+                            || x.next_multiple_of(y),
+                        );
+                    }
+                    #[test]
+                    fn [<test_ $t _next_multiple_of_overflow_panics>]() {
+                        let (x, y) = (std::hint::black_box(<$t>::MAX), std::hint::black_box(2 as $t));
+                        crate::testing::panics_like_core(
+                            || super::$t::next_multiple_of(x.inject(), y.inject()),
+                            || x.next_multiple_of(y),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    iint_next_multiple_of_panic_test! { i8 i16 i32 i64 i128 isize }
+
     macro_rules! strict_signed_arg_panic_test {
         ($(($unsigned:ty, $signed:ty))*) => {
             paste! {
@@ -3766,6 +3954,14 @@ mod tests {
     iint_mixed_test! { (i8, u8) (i16, u16) (i32, u32) (i64, u64) (i128, u128) (isize, usize) }
     uint_mixed_test! { (u8, i8) (u16, i16) (u32, i32) (u64, i64) (u128, i128) (usize, isize) }
 
+    // `core` puts this on `u16` only.
+    proptest! {
+        #[test]
+        fn test_u16_is_utf16_surrogate(x in any::<u16>()) {
+            prop_assert_eq!(super::u16::is_utf16_surrogate(x), x.is_utf16_surrogate());
+        }
+    }
+
     // `core` puts these on `u8` only.
     proptest! {
         #[test]
@@ -3829,6 +4025,7 @@ mod tests {
                             prop_assert_eq!(m.leading_zeros(), s.leading_zeros());
                             prop_assert_eq!(m.rotate_left(n), s.rotate_left(n).inject());
                             prop_assert_eq!(m.rotate_right(n), s.rotate_right(n).inject());
+                            prop_assert_eq!(m.reverse_bits(), s.reverse_bits().inject());
                             prop_assert_eq!(m.swap_bytes(), s.swap_bytes().inject());
                             prop_assert_eq!(m.to_be(), s.to_be().inject());
                             prop_assert_eq!(m.to_le(), s.to_le().inject());
@@ -3840,6 +4037,7 @@ mod tests {
                                 <super::$wrap<$t>>::from_le(m),
                                 <std::num::$wrap<$t>>::from_le(s).inject(),
                             );
+                            prop_assert_eq!(m.reverse_bits(), s.reverse_bits().inject());
                             prop_assert_eq!(m.pow(exp), s.pow(exp).inject());
                         }
                     }

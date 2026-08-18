@@ -3221,3 +3221,200 @@ pub fn test_nonzero_usize_new() -> bool {
 pub fn test_nonzero_u32_alias() -> bool {
     core::num::NonZeroU32::new(7u32).unwrap().get() == 7u32
 }
+
+// =============================================================================
+// reverse_bits
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_reverse_bits_one() -> bool {
+    1u8.reverse_bits() == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_reverse_bits_zero() -> bool {
+    0u8.reverse_bits() == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_reverse_bits_max() -> bool {
+    255u8.reverse_bits() == 255u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_reverse_bits_pattern() -> bool {
+    0b1010_1010u8.reverse_bits() == 0b0101_0101u8
+}
+
+#[rust_lean_test]
+pub fn test_u16_reverse_bits() -> bool {
+    1u16.reverse_bits() == 0x8000u16
+}
+
+#[rust_lean_test]
+pub fn test_u32_reverse_bits() -> bool {
+    0x1234_5678u32.reverse_bits() == 0x1e6a_2c48u32
+}
+
+#[rust_lean_test]
+pub fn test_i8_reverse_bits_min() -> bool {
+    i8::MIN.reverse_bits() == 1i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_reverse_bits_neg_one() -> bool {
+    (-1i8).reverse_bits() == -1i8
+}
+
+#[rust_lean_test]
+pub fn test_usize_reverse_bits_one() -> bool {
+    1usize.reverse_bits() == 9223372036854775808usize
+}
+
+#[rust_lean_test]
+pub fn test_wrapping_u8_reverse_bits() -> bool {
+    Wrapping(1u8).reverse_bits().0 == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_saturating_u8_reverse_bits() -> bool {
+    Saturating(1u8).reverse_bits().0 == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_nonzero_u8_reverse_bits() -> bool {
+    NonZero::new(1u8).unwrap().reverse_bits().get() == 128u8
+}
+
+// =============================================================================
+// u16::is_utf16_surrogate
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u16_is_utf16_surrogate_low_boundary() -> bool {
+    0xD800u16.is_utf16_surrogate() == true
+}
+
+#[rust_lean_test]
+pub fn test_u16_is_utf16_surrogate_high_boundary() -> bool {
+    0xDFFFu16.is_utf16_surrogate() == true
+}
+
+#[rust_lean_test]
+pub fn test_u16_is_utf16_surrogate_below() -> bool {
+    0xD7FFu16.is_utf16_surrogate() == false
+}
+
+#[rust_lean_test]
+pub fn test_u16_is_utf16_surrogate_above() -> bool {
+    0xE000u16.is_utf16_surrogate() == false
+}
+
+#[rust_lean_test]
+pub fn test_u16_is_utf16_surrogate_zero() -> bool {
+    0u16.is_utf16_surrogate() == false
+}
+
+// =============================================================================
+// next_multiple_of (signed)
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_i8_next_multiple_of_exact() -> bool {
+    8i8.next_multiple_of(4i8) == 8i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_next_multiple_of_rounds_up() -> bool {
+    7i8.next_multiple_of(4i8) == 8i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_next_multiple_of_negative_dividend() -> bool {
+    (-5i8).next_multiple_of(3i8) == -3i8
+}
+
+#[rust_lean_test]
+pub fn test_i8_next_multiple_of_negative_divisor() -> bool {
+    5i8.next_multiple_of(-3i8) == 3i8
+}
+
+// Every integer is a multiple of -1, which is also how `MIN % -1` is avoided.
+#[rust_lean_test]
+pub fn test_i8_next_multiple_of_neg_one() -> bool {
+    i8::MIN.next_multiple_of(-1i8) == i8::MIN
+}
+
+// =============================================================================
+// widening_mul / carrying_mul / carrying_mul_add
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u8_widening_mul_max() -> bool {
+    255u8.widening_mul(255u8) == (1u8, 254u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_widening_mul_zero() -> bool {
+    0u8.widening_mul(255u8) == (0u8, 0u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_widening_mul_no_high() -> bool {
+    15u8.widening_mul(17u8) == (255u8, 0u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_widening_mul_one() -> bool {
+    1u8.widening_mul(200u8) == (200u8, 0u8)
+}
+
+#[rust_lean_test]
+pub fn test_u16_widening_mul_max() -> bool {
+    u16::MAX.widening_mul(u16::MAX) == (1u16, 65534u16)
+}
+
+#[rust_lean_test]
+pub fn test_u8_carrying_mul_with_carry() -> bool {
+    255u8.carrying_mul(255u8, 255u8) == (0u8, 255u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_carrying_mul_no_carry() -> bool {
+    15u8.carrying_mul(17u8, 0u8) == (255u8, 0u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_carrying_mul_add_max() -> bool {
+    255u8.carrying_mul_add(255u8, 255u8, 255u8) == (255u8, 255u8)
+}
+
+#[rust_lean_test]
+pub fn test_u8_carrying_mul_add_zero() -> bool {
+    0u8.carrying_mul_add(0u8, 0u8, 0u8) == (0u8, 0u8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_widening_mul_negative() -> bool {
+    (-1i8).widening_mul(1i8) == (255u8, -1i8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_widening_mul_min_squared() -> bool {
+    i8::MIN.widening_mul(i8::MIN) == (0u8, 64i8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_widening_mul_both_negative() -> bool {
+    (-16i8).widening_mul(-16i8) == (0u8, 1i8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_carrying_mul_add_negative_carry() -> bool {
+    1i8.carrying_mul_add(1i8, -1i8, 0i8) == (0u8, 0i8)
+}
+
+#[rust_lean_test]
+pub fn test_i8_carrying_mul_min() -> bool {
+    i8::MIN.carrying_mul(i8::MIN, 0i8) == (0u8, 64i8)
+}
