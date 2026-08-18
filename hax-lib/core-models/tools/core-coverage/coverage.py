@@ -60,11 +60,22 @@ PRIM_BUCKET = {
 # Both are naming workarounds, not gaps: without this the report would call
 # `slice::len` and `Iterator::map` unmodeled while the model provides them.
 MODEL_OWNER_ALIASES = {
+    # primitive stand-ins
     "Slice": "slice",
     "Array": "array",
+    # companion traits carrying the real trait's default methods
     "IteratorMethods": "Iterator",
+    "DoubleEndedIteratorMethods": "DoubleEndedIterator",
+    "ExactSizeIteratorMethods": "ExactSizeIterator",
+    "ExtendMethods": "Extend",
     "Neq": "PartialEq",
     "PartialOrdDefaults": "PartialOrd",
+    "OrdDefaults": "Ord",
+    "RangeBoundsDefaults": "RangeBounds",
+    "IntoBoundsDefaults": "IntoBounds",
+    "ToOwnedDefaults": "ToOwned",
+    "ErrorDefaults": "Error",
+    "WriteDefaults": "Write",
 }
 
 # Companion-trait methods the model also had to rename (`!=` is `ne` in core but

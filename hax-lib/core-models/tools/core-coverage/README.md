@@ -65,8 +65,10 @@ cases without changing what is modeled:
   `Slice::len` against the denominator's `slice::len`.
 - **trait default methods are unsupported by hax**, so the model moves them into
   a companion trait it blanket-impls: `IteratorMethods` for `Iterator`, `Neq`
-  and `PartialOrdDefaults` for `PartialEq`/`PartialOrd`. `Iterator::map` would
-  key as `IteratorMethods::map`.
+  and `PartialOrdDefaults` for `PartialEq`/`PartialOrd`, and similarly for
+  `Ord`, `DoubleEndedIterator`, `ExactSizeIterator`, `Extend`, `RangeBounds`,
+  `IntoBounds`, `ToOwned`, `Error` and `fmt::Write`. `Iterator::map` would key
+  as `IteratorMethods::map`.
 
 `MODEL_OWNER_ALIASES` (plus `MODEL_METHOD_ALIASES` for `Neq::neq` → `ne`) maps
 these back on the numerator side. It is **additive** — the model's own key is
