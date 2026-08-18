@@ -11,6 +11,11 @@
 //! that; multi-byte behaviour is covered by the proptests in
 //! `core-models/src/core/str.rs` instead.
 //!
+//! Nor may a literal `!=` appear: it is `PartialEq::ne`, a trait *default* in
+//! real core that the model cannot provide, and a single use makes aeneas emit
+//! a `ne := core.cmp.PartialEq.ne.default` field into *every* `PartialEq` impl
+//! record in the crate — breaking unrelated tests. Write `(a == b) == false`.
+//!
 //! Not covered here, and why:
 //!   - every `Pattern`-taking method (`starts_with`, `find`, `split`,
 //!     `trim_matches`, …) is absent from the model: charon puts real
@@ -324,14 +329,20 @@ pub fn test_str_partial_eq_same() -> bool {
     "abc" == "abc"
 }
 
+// `(a == b) == false` rather than `a != b`: `!=` is `PartialEq::ne`, a trait
+// *default* in real core, which the model cannot provide (it lives on the
+// companion `cmp::Neq` trait instead). One `!=` anywhere in the crate also
+// makes aeneas start emitting a `ne := core.cmp.PartialEq.ne.default` field
+// into *every* `PartialEq` impl record it generates, so it breaks unrelated
+// tests too.
 #[rust_lean_test]
 pub fn test_str_partial_eq_different_len() -> bool {
-    "abc" != "ab"
+    ("abc" == "ab") == false
 }
 
 #[rust_lean_test]
 pub fn test_str_partial_eq_same_len_different() -> bool {
-    "abc" != "abd"
+    ("abc" == "abd") == false
 }
 
 #[rust_lean_test]
