@@ -1022,6 +1022,21 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                         None
                     }
                 }
+                /// See [`std::collections::BTreeMap::get_mut`]. Lean-only,
+                /// like `VecDeque`'s `_mut` accessors — see the note there.
+                #[cfg(not(hax_backend_fstar))]
+                fn get_mut<Q>(&mut self, key: &Q) -> Option<&mut V>
+                where
+                    K: core::borrow::Borrow<Q> + Ord,
+                    Q: Ord + ?Sized,
+                {
+                    let probe = seq_lower_bound_key_borrowed(&self.0, key);
+                    if probe.1 {
+                        Some(&mut seq_index_mut(&mut self.0, probe.0).1)
+                    } else {
+                        None
+                    }
+                }
                 /// See [`std::collections::BTreeMap::contains_key`]
                 fn contains_key<Q>(&self, key: &Q) -> bool
                 where
@@ -1333,6 +1348,20 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     fn test_get_key_value(es in entries(), k in 0u8..10) {
                         let (model, std_map) = build(&es);
                         prop_assert_eq!(model.get_key_value(&k), std_map.get_key_value(&k));
+                    }
+
+                    #[cfg(not(hax_backend_fstar))]
+                    #[test]
+                    fn test_get_mut(es in entries(), k in 0u8..10, v in any::<u8>()) {
+                        let (mut model, mut std_map) = build(&es);
+                        prop_assert_eq!(model.get_mut(&k).copied(), std_map.get_mut(&k).copied());
+                        if let Some(m) = model.get_mut(&k) {
+                            *m = v
+                        }
+                        if let Some(sm) = std_map.get_mut(&k) {
+                            *sm = v
+                        }
+                        prop_assert_eq!(model, std_map.inject());
                     }
 
                     #[test]
@@ -2229,6 +2258,41 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     Some(seq_index(&self.0, l - 1))
                 }
             }
+            /// See [`std::collections::LinkedList::front_mut`]. Lean-only,
+            /// like `VecDeque`'s `_mut` accessors — see the note there.
+            #[cfg(not(hax_backend_fstar))]
+            fn front_mut(&mut self) -> Option<&mut T> {
+                if self.len() == 0 {
+                    None
+                } else {
+                    Some(seq_index_mut(&mut self.0, 0))
+                }
+            }
+            /// See [`std::collections::LinkedList::back_mut`]
+            #[cfg(not(hax_backend_fstar))]
+            fn back_mut(&mut self) -> Option<&mut T> {
+                let l = self.len();
+                if l == 0 {
+                    None
+                } else {
+                    Some(seq_index_mut(&mut self.0, l - 1))
+                }
+            }
+            /// See [`std::collections::LinkedList::push_front_mut`]
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
+            fn push_front_mut(&mut self, elt: T) -> &mut T {
+                self.push_front(elt);
+                seq_index_mut(&mut self.0, 0)
+            }
+            /// See [`std::collections::LinkedList::push_back_mut`]
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
+            fn push_back_mut(&mut self, elt: T) -> &mut T {
+                self.push_back(elt);
+                let l = self.len();
+                seq_index_mut(&mut self.0, l - 1)
+            }
             /// See [`std::collections::LinkedList::push_front`]
             #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
             fn push_front(&mut self, elt: T) {
@@ -2391,6 +2455,37 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     let (model, std_list) = build(&elements);
                     prop_assert_eq!(model.front(), std_list.front());
                     prop_assert_eq!(model.back(), std_list.back());
+                }
+
+                #[cfg(not(hax_backend_fstar))]
+                #[test]
+                fn test_front_back_mut(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                       x in any::<u8>()) {
+                    let (mut model, mut std_list) = build(&elements);
+                    prop_assert_eq!(model.front_mut().copied(), std_list.front_mut().copied());
+                    prop_assert_eq!(model.back_mut().copied(), std_list.back_mut().copied());
+                    if let Some(m) = model.front_mut() {
+                        *m = x
+                    }
+                    if let Some(sl) = std_list.front_mut() {
+                        *sl = x
+                    }
+                    prop_assert_eq!(model, std_list.inject());
+                }
+
+                // `push_front_mut`/`push_back_mut` are unstable in the std the
+                // model crate is built against, so the expectation is pinned: a
+                // borrow of the element just pushed.
+                #[cfg(not(hax_backend_fstar))]
+                #[test]
+                fn test_push_front_back_mut(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                            x in any::<u8>()) {
+                    let (mut model, mut std_list) = build(&elements);
+                    *model.push_front_mut(x) = x.wrapping_add(1);
+                    std_list.push_front(x.wrapping_add(1));
+                    *model.push_back_mut(x) = x.wrapping_add(2);
+                    std_list.push_back(x.wrapping_add(2));
+                    prop_assert_eq!(model, std_list.inject());
                 }
 
                 #[test]
@@ -2608,6 +2703,67 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     self.get(self.len() - 1)
                 }
             }
+            /// See [`std::collections::VecDeque::get_mut`].
+            ///
+            /// This and the other `_mut` accessors below are Lean-only: the F*
+            /// backend rejects a `&mut` return outright (hax reports "the
+            /// mutation of this &mut is not allowed here"), which is the same
+            /// reason `core_models::slice::Slice::get_mut` is cfg'd out there.
+            #[cfg(not(hax_backend_fstar))]
+            fn get_mut(&mut self, index: usize) -> Option<&mut T> {
+                if index < self.len() {
+                    Some(seq_index_mut(&mut self.0, index))
+                } else {
+                    None
+                }
+            }
+            /// See [`std::collections::VecDeque::front_mut`]
+            #[cfg(not(hax_backend_fstar))]
+            fn front_mut(&mut self) -> Option<&mut T> {
+                self.get_mut(0)
+            }
+            /// See [`std::collections::VecDeque::back_mut`]
+            #[cfg(not(hax_backend_fstar))]
+            fn back_mut(&mut self) -> Option<&mut T> {
+                let l = self.len();
+                if l == 0 { None } else { self.get_mut(l - 1) }
+            }
+            /// See [`std::collections::VecDeque::make_contiguous`]: the model's
+            /// deque is always contiguous, so this rearranges nothing and just
+            /// hands out the whole backing slice.
+            #[cfg(not(hax_backend_fstar))]
+            fn make_contiguous(&mut self) -> &mut [T] {
+                seq_to_slice_mut(&mut self.0)
+            }
+            /// See [`std::collections::VecDeque::insert_mut`]
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(index <= self.len() && self.len() < core::primitive::usize::MAX)]
+            fn insert_mut(&mut self, index: usize, value: T) -> &mut T {
+                seq_insert(&mut self.0, index, value);
+                seq_index_mut(&mut self.0, index)
+            }
+            /// See [`std::collections::VecDeque::push_front_mut`]
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(seq_len(&self.0) < core::primitive::usize::MAX)]
+            fn push_front_mut(&mut self, value: T) -> &mut T {
+                self.push_front(value);
+                seq_index_mut(&mut self.0, 0)
+            }
+            /// See [`std::collections::VecDeque::push_back_mut`]
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(seq_len(&self.0) < core::primitive::usize::MAX)]
+            fn push_back_mut(&mut self, value: T) -> &mut T {
+                self.push_back(value);
+                let l = self.len();
+                seq_index_mut(&mut self.0, l - 1)
+            }
+            // `pop_front_if`/`pop_back_if` are not modeled: their predicate is
+            // `FnOnce(&mut T) -> bool`, and the model of `core::ops::FnOnce` has
+            // `call_once(&self, args) -> Output`, with no write-back for a `&mut`
+            // argument. Aeneas types the call site as returning `(Output × T)`,
+            // so Lean rejects a body that binds a plain `bool` ("expected a
+            // product type, got Bool"). Same blocker as `retain_mut` and
+            // `BTreeMap::retain`; lifting it means changing `core::ops`.
             /// See [`std::collections::VecDeque::push_back`]
             #[hax_lib::requires(seq_len(&self.0) < core::primitive::usize::MAX)]
             fn push_back(&mut self, x: T) {
@@ -3201,6 +3357,89 @@ let update_at_usize (#v_T #v_A: Type0)
                     prop_assert_eq!(model.front(), std_deque.front());
                     prop_assert_eq!(model.back(), std_deque.back());
                 }
+
+                // The `_mut` accessors are only compiled for the non-F* model
+                // (the F* backend rejects `&mut` returns), so their tests are
+                // too.
+                #[cfg(not(hax_backend_fstar))]
+                #[test]
+                fn test_get_mut(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                i in 0usize..25, x in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    // Same reads, then the same write through the borrow.
+                    prop_assert_eq!(model.get_mut(i).copied(), std_deque.get_mut(i).copied());
+                    if let Some(m) = model.get_mut(i) {
+                        *m = x
+                    }
+                    if let Some(sd) = std_deque.get_mut(i) {
+                        *sd = x
+                    }
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[cfg(not(hax_backend_fstar))]
+                #[test]
+                fn test_front_back_mut(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                       x in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.front_mut().copied(), std_deque.front_mut().copied());
+                    prop_assert_eq!(model.back_mut().copied(), std_deque.back_mut().copied());
+                    if let Some(m) = model.front_mut() {
+                        *m = x
+                    }
+                    if let Some(sd) = std_deque.front_mut() {
+                        *sd = x
+                    }
+                    if let Some(m) = model.back_mut() {
+                        *m = x
+                    }
+                    if let Some(sd) = std_deque.back_mut() {
+                        *sd = x
+                    }
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[cfg(not(hax_backend_fstar))]
+                #[test]
+                fn test_make_contiguous(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                        rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    prop_assert_eq!(model.make_contiguous(), std_deque.make_contiguous());
+                    // Writing through the slice must be visible in the deque.
+                    if !model.is_empty() {
+                        model.make_contiguous()[0] = 42;
+                        std_deque.make_contiguous()[0] = 42;
+                    }
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                // `insert_mut`, `push_front_mut` and `push_back_mut` are
+                // unstable in the std the model crate is built against, so the
+                // expectations are pinned here rather than compared: each
+                // returns a borrow of the element it just placed.
+                #[cfg(not(hax_backend_fstar))]
+                #[test]
+                fn test_insert_mut(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                   i in 0usize..21, x in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    let i = i % (std_deque.len() + 1);
+                    *model.insert_mut(i, x) = x.wrapping_add(1);
+                    std_deque.insert(i, x.wrapping_add(1));
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
+                #[cfg(not(hax_backend_fstar))]
+                #[test]
+                fn test_push_front_back_mut(elements in prop::collection::vec(any::<u8>(), 0..20),
+                                            x in any::<u8>(), rot in 0usize..20) {
+                    let (mut model, mut std_deque) = build(&elements, rot);
+                    *model.push_front_mut(x) = x.wrapping_add(1);
+                    std_deque.push_front(x.wrapping_add(1));
+                    *model.push_back_mut(x) = x.wrapping_add(2);
+                    std_deque.push_back(x.wrapping_add(2));
+                    prop_assert_eq!(model, std_deque.inject());
+                }
+
 
                 #[test]
                 fn test_swap(elements in prop::collection::vec(any::<u8>(), 1..20),
