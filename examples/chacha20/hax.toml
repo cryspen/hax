@@ -1,0 +1,3 @@
+[scenario.chacha20]
+backend = "fstar"
+z3rlimit = 40

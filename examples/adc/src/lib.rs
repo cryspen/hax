@@ -27,7 +27,7 @@
 //! `#[hax_lib::requires(..)]` and `#[hax_lib::ensures(..)]`. The Lean
 //! backend turns them into a specification `adc_u32.spec`
 //! in the generated `Extraction/Specs.lean`, proved correct in
-//! `proofs/lean/Adc/Verification/ProofObligations.lean`.
+//! `proofs/adc/lean/Adc/Verification/ProofObligations.lean`.
 //!
 //! The proof uses `hax_mvcgen` to generate the verification conditions, which in turn are
 //! discharged using `simp`, `grind`, and `scalar_tac`.

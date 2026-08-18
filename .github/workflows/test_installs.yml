@@ -44,7 +44,7 @@ jobs:
       run: |
         cd examples/chacha20
         eval $(opam env)
-        cargo hax into fstar
+        cargo hax extract chacha20
   setup_sh_status:
     if: |
       always() &&

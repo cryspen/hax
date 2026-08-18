@@ -39,15 +39,16 @@ securely, one of hax' other backends can be used.
 
 
 ## Extracting into ProVerif
-To obtain a ProVerif model of the protocol logic functions, run
+To obtain a ProVerif model of the protocol logic functions, run the `psk`
+proof scenario declared in `hax.toml`:
 ```
-cargo hax into pro-verif
+cargo hax extract psk
 ```
-This will generate a file `./proofs/proverif/extraction/lib.pvl`.
+This will generate a file `./proofs/psk/proverif/extraction/lib.pvl`.
 
 ## Running a Basic Analysis on the Model
 We have provided a handwritten file
-`./proofs/proverif/extraction/analysis.pv`, which models the protocol
+`./proofs/psk/proverif/analysis.pv`, which models the protocol
 using the extracted functions in `lib.pvl` and uses ProVerif to verify
 
 - that initiator and receiver can both complete the protocol, as well as
@@ -56,7 +57,7 @@ using the extracted functions in `lib.pvl` and uses ProVerif to verify
 To let ProVerif perform the analysis, from the crate root, run:
 
 ```
-proverif -lib ./proofs/proverif/extraction/lib.pvl ./proofs/proverif/extraction/analysis.pv
+proverif -lib ./proofs/psk/proverif/extraction/lib.pvl ./proofs/psk/proverif/analysis.pv
 ```
 
 The expected final output is
