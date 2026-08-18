@@ -79,19 +79,18 @@ let impl_10__with_capacity_in
     : t_BinaryHeap v_T v_A = impl_10__new_in #v_T #v_A alloc
 
 /// See [`std::collections::BinaryHeap::retain`].
-/// DEVIATION(std): bounded by `Fn`, not `FnMut` — see the note on
-/// `vec_deque`. The loop walks from the back so a removal never
-/// shifts an index still to be visited.
-/// Opaque for F* only, like `VecDeque::retain`: hax does not emit
-/// the `f_Output == bool` constraint for a `Fn` bound.
+/// The loop walks from the back so a removal never shifts an
+/// index still to be visited. `FnMut` is std\'s bound, and the body
+/// is opaque for F* in exchange — see the note on
+/// `VecDeque::retain`.
 assume
 val impl_10__retain':
     #v_T: Type0 ->
     #v_A: Type0 ->
     #v_F: Type0 ->
     {| i0: Alloc.Alloc.t_Allocator v_A |} ->
-    {| i1: Core_models.Ops.Function.t_Fn v_F v_T |} ->
-    {| i2: Core_models.Cmp.t_Ord v_T |} ->
+    {| i1: Core_models.Cmp.t_Ord v_T |} ->
+    {| i2: Core_models.Ops.Function.t_FnMut v_F v_T |} ->
     self: t_BinaryHeap v_T v_A ->
     f: v_F
   -> t_BinaryHeap v_T v_A
@@ -100,8 +99,8 @@ unfold
 let impl_10__retain
       (#v_T #v_A #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Alloc.Alloc.t_Allocator v_A)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F v_T)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core_models.Ops.Function.t_FnMut v_F v_T)
      = impl_10__retain' #v_T #v_A #v_F #i0 #i1 #i2
 
 /// See [`std::collections::BinaryHeap::into_sorted_vec`]: ascending.
