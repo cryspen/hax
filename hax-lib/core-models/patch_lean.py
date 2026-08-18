@@ -285,6 +285,37 @@ def qualify_hash_trait_refs(text: str) -> str:
         text,
     )
 
+# `ControlFlow<T, T>::into_value` is the only model item that matches on a
+# scrutinee repeating a type variable, so its `def` is named here rather than
+# detected structurally.
+_DUPLICATE_BINDER_DEFS = ("def ops.control_flow.ControlFlow.into_value",)
+
+
+def drop_do_on_duplicate_binder_matches(text: str) -> str:
+    """Turn `:= do` into `:=` for the definitions in `_DUPLICATE_BINDER_DEFS`.
+
+    Aeneas's `do` elaborator collects each match arm's pattern binders by name
+    and rejects duplicates (`elabDoMatch: duplicate binder ...`, see
+    `backends/lean/Aeneas/Do/Elab.lean`). `ControlFlow<T, T>::into_value`
+    matches a scrutinee whose two type arguments are the *same* variable `T`,
+    so the pattern binds `T` twice and the generated `:= do match self with ...`
+    does not elaborate. `impl<T> ControlFlow<T, T>` is how real core spells it,
+    and any body has to destructure the value, so there is nothing to fix on
+    the Rust side. The body has no monadic binds, so dropping the `do` keeps
+    the same term while bypassing that elaborator.
+    """
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        if not any(line.startswith(d) for d in _DUPLICATE_BINDER_DEFS):
+            continue
+        # The signature spans a few lines; `:= do` closes it.
+        for j in range(i, min(i + 6, len(lines))):
+            if lines[j].endswith(":= do"):
+                lines[j] = lines[j][: -len(" do")]
+                break
+    return "\n".join(lines)
+
+
 def rewrite_phantom_data(text: str) -> str:
     """Redefine `PhantomData`.
 
@@ -766,6 +797,7 @@ def main() -> int:
             text = comment_out_num_bounds(text)
             text = desugar_pure_num_bound_binds(text)
             text = fix_result_match(text)
+            text = drop_do_on_duplicate_binder_matches(text)
             text = rename_iter_param(text)
             text = qualify_result_monad_impls(text)
             # The `StepBy` iterator monomorphises onto the concrete `Usize`

@@ -202,6 +202,9 @@ pub mod control_flow {
         }
     }
 
+    // Matching a `ControlFlow<T, T>` binds `T` twice, which Aeneas's `do`
+    // elaborator rejects; `patch_lean.py` drops the `do` from the extraction of
+    // `into_value` (its body has no monadic binds).
     impl<T> ControlFlow<T, T> {
         /// See [`std::ops::ControlFlow::into_value`]
         pub fn into_value(self) -> T {
