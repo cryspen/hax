@@ -82,7 +82,11 @@ impl Formatter {
     ///
     /// Unlike [`write`] on a caller-provided sink, there is nothing to forward
     /// to here: the model's `Formatter` has no sink.
-    pub fn write_fmt(&mut self, fmt: Arguments) -> Result {
+    ///
+    /// The parameter real `core` calls `fmt` is `args` here: a binder named after
+    /// a module shadows it in the extracted Lean, and `fmt.Error` in this
+    /// signature would then elaborate as a field projection on the binder.
+    pub fn write_fmt(&mut self, args: Arguments) -> Result {
         Result::Ok(())
     }
 
@@ -595,8 +599,8 @@ impl Write for Formatter {
 /// forward the literal case (see [`Arguments`]), and drops the rest. `W`
 /// replaces real `core`'s `dyn Write`, as in [`Formatter::new`].
 #[cfg_attr(charon, aeneas::exclude)]
-pub fn write<W: Write>(output: &mut W, fmt: Arguments) -> Result {
-    match fmt.as_str() {
+pub fn write<W: Write>(output: &mut W, args: Arguments) -> Result {
+    match args.as_str() {
         Option::Some(s) => output.write_str(s),
         Option::None => Result::Ok(()),
     }
@@ -848,12 +852,27 @@ impl DebugMap {
         self.key(key).value(value)
     }
 
+    // `key`/`value` spell the state change out instead of delegating to
+    // `key_with`/`value_with` with a `|f| ..` closure the way real `core` does:
+    // neither backend can give an `FnOnce` instance to a closure taking
+    // `&mut Formatter`, since their `Fn*` traits have no write-back for it.
+    //
+    // The panic is a statement rather than the tail of a branch for the same kind
+    // of reason: as the result of a `-> &mut Self` method, Aeneas gives the
+    // diverging call the shape of a value/write-back pair and then fails to
+    // destructure it.
+
     /// See [`std::fmt::DebugMap::key`]
     ///
     /// Panics if a previous key is still waiting for its value.
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     pub fn key<K: Debug>(&mut self, key: &K) -> &mut Self {
-        self.key_with(|f| Result::Ok(()))
+        if self.has_key {
+            // "attempted to begin a new map entry without completing the previous one"
+            crate::panicking::internal::panic()
+        }
+        self.has_key = true;
+        self
     }
 
     /// See [`std::fmt::DebugMap::key_with`]
@@ -864,10 +883,9 @@ impl DebugMap {
         if self.has_key {
             // "attempted to begin a new map entry without completing the previous one"
             crate::panicking::internal::panic()
-        } else {
-            self.has_key = true;
-            self
         }
+        self.has_key = true;
+        self
     }
 
     /// See [`std::fmt::DebugMap::value`]
@@ -875,7 +893,12 @@ impl DebugMap {
     /// Panics unless a key is waiting for its value.
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     pub fn value<V: Debug>(&mut self, value: &V) -> &mut Self {
-        self.value_with(|f| Result::Ok(()))
+        if self.has_key == false {
+            // "attempted to format a map value before its key"
+            crate::panicking::internal::panic()
+        }
+        self.has_key = false;
+        self
     }
 
     /// See [`std::fmt::DebugMap::value_with`]
@@ -883,13 +906,12 @@ impl DebugMap {
     /// Panics unless a key is waiting for its value.
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     pub fn value_with<F: FnOnce(&mut Formatter) -> Result>(&mut self, value_fmt: F) -> &mut Self {
-        if self.has_key {
-            self.has_key = false;
-            self
-        } else {
+        if self.has_key == false {
             // "attempted to format a map value before its key"
             crate::panicking::internal::panic()
         }
+        self.has_key = false;
+        self
     }
 
     /// See [`std::fmt::DebugMap::entries`]
@@ -940,10 +962,16 @@ pub fn from_fn<F: Fn(&mut Formatter) -> Result>(f: F) -> FromFn<F> {
 }
 
 // Only `Display`: `Debug` is blanket-implemented above, so a `Debug for FromFn`
-// impl would overlap with it. `from_fn` and this impl mention `&mut Formatter`
-// inside an `Fn` bound, which the F* backend rejects like the `&mut Self`
-// returns above, so both are dropped from the F* extraction.
+// impl would overlap with it.
+//
+// This impl is the one item of the module that has to *call* a closure taking
+// `&mut Formatter`, and no backend can express that: neither `ops::function::Fn`
+// nor its Lean counterpart carries a write-back for the `&mut` argument, so the
+// call's result type does not match the trait's output. Dropped from both
+// extractions; `from_fn` and `FromFn` itself stay, and `from_fn` is dropped from
+// F* only because its `Fn` bound mentions `&mut Formatter`.
 #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+#[cfg_attr(charon, aeneas::exclude)]
 impl<F: Fn(&mut Formatter) -> Result> Display for FromFn<F> {
     fn fmt(&self, f: &mut Formatter) -> Result {
         (self.0)(f)
