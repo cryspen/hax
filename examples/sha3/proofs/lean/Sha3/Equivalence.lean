@@ -40,14 +40,12 @@ private theorem allM_zip_beq :
 private theorem array_index_U64_eq {N : Usize} (a : Array U64 N) (i : Usize)
     (h : i.val < N.val) :
     rust_primitives.slice.array_index a i = .ok a.val[i.val]! := by
-  have hSpec : (rust_primitives.slice.array_index a i) ⦃ x => x = a.val[i.val]! ⦄ := by
-    show Aeneas.Std.WP.spec (Slice.index_usize (Array.to_slice a) i) _
-    have h' : i.val < a.val.length := by rw [a.property]; exact h
-    apply Aeneas.Std.WP.spec_mono (Slice.index_usize_spec _ i (by simp; exact h))
-    intro x hx
-    simp only [hx, Array.val_to_slice, getElem!_pos a.val i.val h']
-  obtain ⟨y, hy, hyVal⟩ := Aeneas.Std.WP.spec_imp_exists hSpec
-  rw [hy, hyVal]
+  have h' : i.val < a.val.length := by rw [a.property]; exact h
+  have hSpec := Aeneas.Std.WP.spec_of_partialSpec (Slice.index_usize_spec (Array.to_slice a) i)
+    (by rintro ⟨⟩ <;> simp_all) (by simp)
+  obtain ⟨y, hy, _, hyVal⟩ := Aeneas.Std.WP.spec_imp_exists hSpec
+  simp only [rust_primitives.slice.array_index, hy, hyVal, Array.val_to_slice,
+    getElem!_pos a.val i.val h']
 
 private theorem list_eq_of_pointwise {α} [Inhabited α] [DecidableEq α] (xs ys : List α)
     (hLen : xs.length = ys.length)
