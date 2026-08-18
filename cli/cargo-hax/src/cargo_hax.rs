@@ -16,6 +16,7 @@ use std::process;
 
 mod aeneas;
 mod engine_debug_webapp;
+mod scenario;
 mod tools;
 use hax_frontend_exporter::id_table;
 
@@ -208,13 +209,10 @@ fn run_engine(
         });
 
         let out_dir = backend.output_dir.clone().unwrap_or({
-            let relative_path: PathBuf = [
-                "proofs",
-                format!("{}", backend.backend).as_str(),
-                "extraction",
-            ]
-            .iter()
-            .collect();
+            let backend_name = BackendName::from(&backend.backend);
+            let mut relative_path = PathBuf::from("proofs");
+            relative_path.push(backend_name.to_string());
+            relative_path.extend(backend_name.output_subdir());
             manifest_dir
                 .map(|manifest_dir| manifest_dir.join(&relative_path))
                 .unwrap_or(relative_path)
@@ -588,6 +586,7 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
         }
         // Dispatched directly in `main`, before the frontend runs.
         Command::Tools(_) => unreachable!("`tools` subcommands are handled in `main`"),
+        Command::Extract { .. } => unreachable!("`extract` is handled in `main`"),
     }
 }
 
@@ -616,6 +615,28 @@ fn main() {
     // directly and exit.
     if let Command::Tools(ref command) = options.command {
         std::process::exit(tools::run(command, options.message_format));
+    }
+
+    // `extract` resolves the proof scenarios of the project and re-enters
+    // this binary once per scenario; each re-entered run does its own
+    // discovery and `hax-lib` gating in the extracted package's directory.
+    if let Command::Extract {
+        ref names,
+        ref packages,
+        dry_run,
+        verbose,
+        ref hermeticity,
+    } = options.command
+    {
+        std::process::exit(scenario::run(
+            names,
+            packages,
+            &options.cargo_flags,
+            hermeticity,
+            dry_run,
+            verbose,
+            options.message_format,
+        ));
     }
 
     // Every other command processes source: discover the project once
@@ -681,8 +702,6 @@ fn main() {
             backend.verbose,
             options.message_format,
             project,
-            aeneas::project_files_enabled(project),
-            None,
         );
         std::process::exit(if error { 1 } else { 0 });
     }

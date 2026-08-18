@@ -252,6 +252,19 @@ pub enum HaxMessage {
         path: PathBuf,
         import: String,
     } = 26,
+    /// The resolved invocation of one proof scenario, as
+    /// `extract --dry-run` prints it.
+    ScenarioDryRun {
+        name: String,
+        package: String,
+        /// The resolved invocation, one display line per entry.
+        lines: Vec<String>,
+    } = 27,
+    /// The summary of an `extract` run.
+    ScenarioSummary {
+        total: usize,
+        failed: Vec<String>,
+    } = 28,
 }
 
 impl HaxMessage {
@@ -604,6 +617,30 @@ impl HaxMessage {
                 installed_only,
             } => render_tools_list(&tools, installed_only),
             Self::ToolsInstalled { installed } => render_tools_installed(&installed),
+            Self::ScenarioDryRun {
+                name,
+                package,
+                lines,
+            } => {
+                let mut block = vec![format!("scenario `{name}` (package `{package}`):")];
+                block.extend(lines.iter().map(|line| format!("  {line}")));
+                block.join("\n")
+            }
+            Self::ScenarioSummary { total, failed } => {
+                let plural = |n: usize| if n == 1 { "" } else { "s" };
+                if failed.is_empty() {
+                    let title = format!("hax: {total} scenario{} extracted", plural(total));
+                    format!("{}", renderer.render(Level::Info.title(&title)))
+                } else {
+                    let title = format!(
+                        "hax: {} of {total} scenario{} failed: {}",
+                        failed.len(),
+                        plural(total),
+                        failed.join(", ")
+                    );
+                    format!("{}", renderer.render(Level::Error.title(&title)))
+                }
+            }
         }
     }
 }
