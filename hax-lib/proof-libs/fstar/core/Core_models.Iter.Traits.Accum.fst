@@ -3,66 +3,218 @@ module Core_models.Iter.Traits.Accum
 open FStar.Mul
 open Rust_primitives
 
-include Core_models.Bundle {t_Sum as t_Sum}
+/// See [`std::iter::Sum`]
+class t_Sum (v_Self: Type0) (v_A: Type0) = {
+  f_sum_pre:
+      #v_I: Type0 ->
+      {| i1: Core_models.Iter.Traits.Iterator.t_Iterator v_I |} ->
+      #_: unit{i1.Core_models.Iter.Traits.Iterator.f_Item == v_A} ->
+      v_I
+    -> Type0;
+  f_sum_post:
+      #v_I: Type0 ->
+      {| i1: Core_models.Iter.Traits.Iterator.t_Iterator v_I |} ->
+      #_: unit{i1.Core_models.Iter.Traits.Iterator.f_Item == v_A} ->
+      v_I ->
+      v_Self
+    -> Type0;
+  f_sum:
+      #v_I: Type0 ->
+      {| i1: Core_models.Iter.Traits.Iterator.t_Iterator v_I |} ->
+      #_: unit{i1.Core_models.Iter.Traits.Iterator.f_Item == v_A} ->
+      x0: v_I
+    -> Prims.Pure v_Self (f_sum_pre #v_I #i1 #_ x0) (fun result -> f_sum_post #v_I #i1 #_ x0 result)
+}
 
-include Core_models.Bundle {f_sum_pre as f_sum_pre}
+/// See [`std::iter::Product`]
+class t_Product (v_Self: Type0) (v_A: Type0) = {
+  f_product_pre:
+      #v_I: Type0 ->
+      {| i1: Core_models.Iter.Traits.Iterator.t_Iterator v_I |} ->
+      #_: unit{i1.Core_models.Iter.Traits.Iterator.f_Item == v_A} ->
+      v_I
+    -> Type0;
+  f_product_post:
+      #v_I: Type0 ->
+      {| i1: Core_models.Iter.Traits.Iterator.t_Iterator v_I |} ->
+      #_: unit{i1.Core_models.Iter.Traits.Iterator.f_Item == v_A} ->
+      v_I ->
+      v_Self
+    -> Type0;
+  f_product:
+      #v_I: Type0 ->
+      {| i1: Core_models.Iter.Traits.Iterator.t_Iterator v_I |} ->
+      #_: unit{i1.Core_models.Iter.Traits.Iterator.f_Item == v_A} ->
+      x0: v_I
+    -> Prims.Pure v_Self
+        (f_product_pre #v_I #i1 #_ x0)
+        (fun result -> f_product_post #v_I #i1 #_ x0 result)
+}
 
-include Core_models.Bundle {f_sum_post as f_sum_post}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl': t_Sum u8 u8
 
-include Core_models.Bundle {f_sum as f_sum}
+unfold
+let impl = impl'
 
-include Core_models.Bundle {t_Product as t_Product}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_1': t_Product u8 u8
 
-include Core_models.Bundle {f_product_pre as f_product_pre}
+unfold
+let impl_1 = impl_1'
 
-include Core_models.Bundle {f_product_post as f_product_post}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_2': t_Sum u16 u16
 
-include Core_models.Bundle {f_product as f_product}
+unfold
+let impl_2 = impl_2'
 
-include Core_models.Bundle {impl__from__accum as impl}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_3': t_Product u16 u16
 
-include Core_models.Bundle {impl_1__from__accum as impl_1}
+unfold
+let impl_3 = impl_3'
 
-include Core_models.Bundle {impl_2__from__accum as impl_2}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_4': t_Sum u32 u32
 
-include Core_models.Bundle {impl_3__from__accum as impl_3}
+unfold
+let impl_4 = impl_4'
 
-include Core_models.Bundle {impl_4__from__accum as impl_4}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_5': t_Product u32 u32
 
-include Core_models.Bundle {impl_5__from__accum as impl_5}
+unfold
+let impl_5 = impl_5'
 
-include Core_models.Bundle {impl_6__from__accum as impl_6}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_6': t_Sum u64 u64
 
-include Core_models.Bundle {impl_7__from__accum as impl_7}
+unfold
+let impl_6 = impl_6'
 
-include Core_models.Bundle {impl_8__from__accum as impl_8}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_7': t_Product u64 u64
 
-include Core_models.Bundle {impl_9__from__accum as impl_9}
+unfold
+let impl_7 = impl_7'
 
-include Core_models.Bundle {impl_10__from__accum as impl_10}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_8': t_Sum u128 u128
 
-include Core_models.Bundle {impl_11__from__accum as impl_11}
+unfold
+let impl_8 = impl_8'
 
-include Core_models.Bundle {impl_12__from__accum as impl_12}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_9': t_Product u128 u128
 
-include Core_models.Bundle {impl_13__from__accum as impl_13}
+unfold
+let impl_9 = impl_9'
 
-include Core_models.Bundle {impl_14__from__accum as impl_14}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_10': t_Sum usize usize
 
-include Core_models.Bundle {impl_15__from__accum as impl_15}
+unfold
+let impl_10 = impl_10'
 
-include Core_models.Bundle {impl_16__from__accum as impl_16}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_11': t_Product usize usize
 
-include Core_models.Bundle {impl_17__from__accum as impl_17}
+unfold
+let impl_11 = impl_11'
 
-include Core_models.Bundle {impl_18__from__accum as impl_18}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_12': t_Sum i8 i8
 
-include Core_models.Bundle {impl_19__from__accum as impl_19}
+unfold
+let impl_12 = impl_12'
 
-include Core_models.Bundle {impl_20__from__accum as impl_20}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_13': t_Product i8 i8
 
-include Core_models.Bundle {impl_21__from__accum as impl_21}
+unfold
+let impl_13 = impl_13'
 
-include Core_models.Bundle {impl_22__from__accum as impl_22}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_14': t_Sum i16 i16
 
-include Core_models.Bundle {impl_23__from__accum as impl_23}
+unfold
+let impl_14 = impl_14'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_15': t_Product i16 i16
+
+unfold
+let impl_15 = impl_15'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_16': t_Sum i32 i32
+
+unfold
+let impl_16 = impl_16'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_17': t_Product i32 i32
+
+unfold
+let impl_17 = impl_17'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_18': t_Sum i64 i64
+
+unfold
+let impl_18 = impl_18'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_19': t_Product i64 i64
+
+unfold
+let impl_19 = impl_19'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_20': t_Sum i128 i128
+
+unfold
+let impl_20 = impl_20'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_21': t_Product i128 i128
+
+unfold
+let impl_21 = impl_21'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_22': t_Sum isize isize
+
+unfold
+let impl_22 = impl_22'
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_23': t_Product isize isize
+
+unfold
+let impl_23 = impl_23'

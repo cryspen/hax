@@ -1020,6 +1020,14 @@ def rust_primitives.sequence.seq_push
 def rust_primitives.sequence.seq_one
   {T : Type} : T → RustM (rust_primitives.sequence.Seq T) :=
   fun x => rust_primitives.sequence.seq_push (Slice.new T) x
+/-- [rust_primitives::sequence::seq_one]: the one-element sequence. Defined
+    through `seq_empty`/`seq_push` so the length bound needs no proof. -/
+@[rust_fun "rust_primitives::sequence::seq_one"]
+def rust_primitives.sequence.seq_one
+  {T : Type} : T → Result (rust_primitives.sequence.Seq T) :=
+  fun x => do
+    let s ← rust_primitives.sequence.seq_empty T
+    rust_primitives.sequence.seq_push s x
 
 -- std clones `x` for all but the last element, which is `x` itself moved in.
 @[spec]

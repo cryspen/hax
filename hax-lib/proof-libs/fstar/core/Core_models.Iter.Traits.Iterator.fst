@@ -165,12 +165,6 @@ include Core_models.Bundle {f_rev_post as f_rev_post}
 
 include Core_models.Bundle {f_rev as f_rev}
 
-include Core_models.Bundle {f_rposition_pre as f_rposition_pre}
-
-include Core_models.Bundle {f_rposition_post as f_rposition_post}
-
-include Core_models.Bundle {f_rposition as f_rposition}
-
 include Core_models.Bundle {f_advance_by_pre as f_advance_by_pre}
 
 include Core_models.Bundle {f_advance_by_post as f_advance_by_post}
@@ -267,18 +261,6 @@ include Core_models.Bundle {f_size_hint_post as f_size_hint_post}
 
 include Core_models.Bundle {f_size_hint as f_size_hint}
 
-include Core_models.Bundle {f_sum_pre as f_sum_pre}
-
-include Core_models.Bundle {f_sum_post as f_sum_post}
-
-include Core_models.Bundle {f_sum as f_sum}
-
-include Core_models.Bundle {f_product_pre as f_product_pre}
-
-include Core_models.Bundle {f_product_post as f_product_post}
-
-include Core_models.Bundle {f_product as f_product}
-
 include Core_models.Bundle {f_min_by_pre as f_min_by_pre}
 
 include Core_models.Bundle {f_min_by_post as f_min_by_post}
@@ -291,35 +273,11 @@ include Core_models.Bundle {f_max_by_post as f_max_by_post}
 
 include Core_models.Bundle {f_max_by as f_max_by}
 
-include Core_models.Bundle {f_min_by_key_pre as f_min_by_key_pre}
-
-include Core_models.Bundle {f_min_by_key_post as f_min_by_key_post}
-
-include Core_models.Bundle {f_min_by_key as f_min_by_key}
-
-include Core_models.Bundle {f_max_by_key_pre as f_max_by_key_pre}
-
-include Core_models.Bundle {f_max_by_key_post as f_max_by_key_post}
-
-include Core_models.Bundle {f_max_by_key as f_max_by_key}
-
-include Core_models.Bundle {f_cmp_pre as f_cmp_pre}
-
-include Core_models.Bundle {f_cmp_post as f_cmp_post}
-
-include Core_models.Bundle {f_cmp as f_cmp}
-
 include Core_models.Bundle {f_cmp_by_pre as f_cmp_by_pre}
 
 include Core_models.Bundle {f_cmp_by_post as f_cmp_by_post}
 
 include Core_models.Bundle {f_cmp_by as f_cmp_by}
-
-include Core_models.Bundle {f_partial_cmp_pre as f_partial_cmp_pre}
-
-include Core_models.Bundle {f_partial_cmp_post as f_partial_cmp_post}
-
-include Core_models.Bundle {f_partial_cmp as f_partial_cmp}
 
 include Core_models.Bundle {f_partial_cmp_by_pre as f_partial_cmp_by_pre}
 
@@ -327,59 +285,11 @@ include Core_models.Bundle {f_partial_cmp_by_post as f_partial_cmp_by_post}
 
 include Core_models.Bundle {f_partial_cmp_by as f_partial_cmp_by}
 
-include Core_models.Bundle {f_eq_pre as f_eq_pre}
-
-include Core_models.Bundle {f_eq_post as f_eq_post}
-
-include Core_models.Bundle {f_eq as f_eq}
-
 include Core_models.Bundle {f_eq_by_pre as f_eq_by_pre}
 
 include Core_models.Bundle {f_eq_by_post as f_eq_by_post}
 
 include Core_models.Bundle {f_eq_by as f_eq_by}
-
-include Core_models.Bundle {f_ne_pre as f_ne_pre}
-
-include Core_models.Bundle {f_ne_post as f_ne_post}
-
-include Core_models.Bundle {f_ne as f_ne}
-
-include Core_models.Bundle {f_lt_pre as f_lt_pre}
-
-include Core_models.Bundle {f_lt_post as f_lt_post}
-
-include Core_models.Bundle {f_lt as f_lt}
-
-include Core_models.Bundle {f_le_pre as f_le_pre}
-
-include Core_models.Bundle {f_le_post as f_le_post}
-
-include Core_models.Bundle {f_le as f_le}
-
-include Core_models.Bundle {f_gt_pre as f_gt_pre}
-
-include Core_models.Bundle {f_gt_post as f_gt_post}
-
-include Core_models.Bundle {f_gt as f_gt}
-
-include Core_models.Bundle {f_ge_pre as f_ge_pre}
-
-include Core_models.Bundle {f_ge_post as f_ge_post}
-
-include Core_models.Bundle {f_ge as f_ge}
-
-include Core_models.Bundle {f_unzip_pre as f_unzip_pre}
-
-include Core_models.Bundle {f_unzip_post as f_unzip_post}
-
-include Core_models.Bundle {f_unzip as f_unzip}
-
-include Core_models.Bundle {f_partition_pre as f_partition_pre}
-
-include Core_models.Bundle {f_partition_post as f_partition_post}
-
-include Core_models.Bundle {f_partition as f_partition}
 
 include Core_models.Bundle {f_is_partitioned_pre as f_is_partitioned_pre}
 
@@ -387,59 +297,11 @@ include Core_models.Bundle {f_is_partitioned_post as f_is_partitioned_post}
 
 include Core_models.Bundle {f_is_partitioned as f_is_partitioned}
 
-include Core_models.Bundle {f_is_sorted_pre as f_is_sorted_pre}
-
-include Core_models.Bundle {f_is_sorted_post as f_is_sorted_post}
-
-include Core_models.Bundle {f_is_sorted as f_is_sorted}
-
 include Core_models.Bundle {f_is_sorted_by_pre as f_is_sorted_by_pre}
 
 include Core_models.Bundle {f_is_sorted_by_post as f_is_sorted_by_post}
 
 include Core_models.Bundle {f_is_sorted_by as f_is_sorted_by}
-
-include Core_models.Bundle {f_is_sorted_by_key_pre as f_is_sorted_by_key_pre}
-
-include Core_models.Bundle {f_is_sorted_by_key_post as f_is_sorted_by_key_post}
-
-include Core_models.Bundle {f_is_sorted_by_key as f_is_sorted_by_key}
-
-include Core_models.Bundle {f_next_chunk_pre as f_next_chunk_pre}
-
-include Core_models.Bundle {f_next_chunk_post as f_next_chunk_post}
-
-include Core_models.Bundle {f_next_chunk as f_next_chunk}
-
-include Core_models.Bundle {f_try_fold_pre as f_try_fold_pre}
-
-include Core_models.Bundle {f_try_fold_post as f_try_fold_post}
-
-include Core_models.Bundle {f_try_fold as f_try_fold}
-
-include Core_models.Bundle {f_try_for_each_pre as f_try_for_each_pre}
-
-include Core_models.Bundle {f_try_for_each_post as f_try_for_each_post}
-
-include Core_models.Bundle {f_try_for_each as f_try_for_each}
-
-include Core_models.Bundle {f_try_find_pre as f_try_find_pre}
-
-include Core_models.Bundle {f_try_find_post as f_try_find_post}
-
-include Core_models.Bundle {f_try_find as f_try_find}
-
-include Core_models.Bundle {f_try_reduce_pre as f_try_reduce_pre}
-
-include Core_models.Bundle {f_try_reduce_post as f_try_reduce_post}
-
-include Core_models.Bundle {f_try_reduce as f_try_reduce}
-
-include Core_models.Bundle {f_try_collect_pre as f_try_collect_pre}
-
-include Core_models.Bundle {f_try_collect_post as f_try_collect_post}
-
-include Core_models.Bundle {f_try_collect as f_try_collect}
 
 include Core_models.Bundle {iter_fold as iter_fold}
 

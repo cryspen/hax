@@ -24,54 +24,12 @@ let successors
   { f_next = next; f_succ = succ } <: t_Successors v_T v_F
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl': #v_T: Type0 -> #v_F: Type0 -> {| i0: Core_models.Ops.Function.t_Fn v_F v_T |}
+  -> Core_models.Iter.Traits.Iterator.t_Iterator (t_Successors v_T v_F)
+
+unfold
 let impl
       (#v_T #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F v_T)
-    : Core_models.Iter.Traits.Iterator.t_Iterator (t_Successors v_T v_F) =
-  {
-    f_Item = v_T;
-    f_next_pre = (fun (self: t_Successors v_T v_F) -> true);
-    f_next_post
-    =
-    (fun
-        (self: t_Successors v_T v_F)
-        (out1: (t_Successors v_T v_F & Core_models.Option.t_Option v_T))
-        ->
-        true);
-    f_next
-    =
-    fun (self: t_Successors v_T v_F) ->
-      let (self: t_Successors v_T v_F), (hax_temp_output: Core_models.Option.t_Option v_T) =
-        if (Rust_primitives.Sequence.seq_len #v_T self.f_next <: usize) =. mk_usize 0
-        then
-          self, (Core_models.Option.Option_None <: Core_models.Option.t_Option v_T)
-          <:
-          (t_Successors v_T v_F & Core_models.Option.t_Option v_T)
-        else
-          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
-            Rust_primitives.Sequence.seq_remove #v_T self.f_next (mk_usize 0)
-          in
-          let self:t_Successors v_T v_F = { self with f_next = tmp0 } <: t_Successors v_T v_F in
-          let item:v_T = out in
-          let self:t_Successors v_T v_F =
-            match
-              Core_models.Ops.Function.f_call #v_F
-                #v_T
-                #FStar.Tactics.Typeclasses.solve
-                self.f_succ
-                (item <: v_T)
-              <:
-              Core_models.Option.t_Option v_T
-            with
-            | Core_models.Option.Option_Some n ->
-              { self with f_next = Rust_primitives.Sequence.seq_push #v_T self.f_next n }
-              <:
-              t_Successors v_T v_F
-            | Core_models.Option.Option_None  -> self
-          in
-          self, (Core_models.Option.Option_Some item <: Core_models.Option.t_Option v_T)
-          <:
-          (t_Successors v_T v_F & Core_models.Option.t_Option v_T)
-      in
-      self, hax_temp_output <: (t_Successors v_T v_F & Core_models.Option.t_Option v_T)
-  }
+     = impl' #v_T #v_F #i0

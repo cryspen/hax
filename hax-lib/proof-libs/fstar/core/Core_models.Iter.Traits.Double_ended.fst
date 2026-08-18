@@ -37,12 +37,6 @@ include Core_models.Bundle {f_rfold_post as f_rfold_post}
 
 include Core_models.Bundle {f_rfold as f_rfold}
 
-include Core_models.Bundle {f_try_rfold_pre as f_try_rfold_pre}
-
-include Core_models.Bundle {f_try_rfold_post as f_try_rfold_post}
-
-include Core_models.Bundle {f_try_rfold as f_try_rfold}
-
 include Core_models.Bundle {iter_advance_back_by as iter_advance_back_by}
 
 include Core_models.Bundle {iter_nth_back as iter_nth_back}
