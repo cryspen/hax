@@ -15,6 +15,11 @@ Lean backend and library:
 F* backend and library:
  - Fix the model of `Rust_primitives.Hax.Int.div`
 
+### Added
+
+Changes to the Lean backend:
+ - Add a script for Lean documentation generation using doc-gen4 (cryspen/hax-evit/208)
+
 ## [0.4.0] - 2026-09-04
 
 Changes to the Rust engine:
