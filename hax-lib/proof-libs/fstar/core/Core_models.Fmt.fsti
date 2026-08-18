@@ -58,18 +58,25 @@ val t_DebugAsHex_cast_to_repr (x: t_DebugAsHex)
 /// named fields of primitive type: the getters then transcribe real `core`'s
 /// bodies without bit twiddling, and the options can be copied by listing their
 /// fields (the model cannot `derive(Copy)`, see [`Formatter::options`]).
+/// None of the field names may coincide with a method name of this type — the
+/// setters are `width`, `fill`, `align`, … — because Lean derives a projection
+/// `FormattingOptions.width` from the field and Aeneas resolves the clash by
+/// renaming the *method* to `FormattingOptions.impl.width`. An extracted client
+/// calling the setter asks for the unrenamed name and gets the projection. Hence
+/// `width_value`, `fill_char`, `align_code`, … here. Same for
+/// [`Formatter`]'s single field against [`Formatter::options`].
 type t_FormattingOptions = {
   f_sign_plus:bool;
   f_sign_minus:bool;
-  f_alternate:bool;
-  f_sign_aware_zero_pad:bool;
+  f_alternate_flag:bool;
+  f_zero_pad_flag:bool;
   f_debug_lower_hex:bool;
   f_debug_upper_hex:bool;
-  f_fill:FStar.Char.char;
-  f_align:u8;
-  f_width:u16;
+  f_fill_char:FStar.Char.char;
+  f_align_code:u8;
+  f_width_value:u16;
   f_width_set:bool;
-  f_precision:u16;
+  f_precision_value:u16;
   f_precision_set:bool
 }
 
@@ -77,7 +84,7 @@ type t_FormattingOptions = {
 /// Real `core`'s `Formatter<'a>` also holds the `&'a mut dyn Write` it renders
 /// into. The model drops it — nothing is ever rendered (see the module docs) —
 /// and keeps only the options, which is what the query methods below observe.
-type t_Formatter = { f_options:t_FormattingOptions }
+type t_Formatter = { f_formatting_options:t_FormattingOptions }
 
 /// See [`std::fmt::Formatter::with_options`]
 val impl_Formatter__with_options (self: t_Formatter) (options: t_FormattingOptions)
