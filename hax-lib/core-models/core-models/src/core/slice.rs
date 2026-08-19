@@ -1028,6 +1028,14 @@ mod tests {
             );
         }
 
+        // Two equal, non-empty slices: the element loop's accumulator is only
+        // exercised in its stays-true form here, which independent draws
+        // essentially never produce.
+        #[test]
+        fn test_slice_eq_reflexive(a in prop::collection::vec(any::<u8>(), 1..=8)) {
+            prop_assert!(<[u8] as crate::cmp::PartialEq<[u8]>>::eq(&a[..], &a[..]));
+        }
+
         #[test]
         fn test_slice_partial_cmp(
             a in prop::collection::vec(any::<u8>(), 0..=8),
