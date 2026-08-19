@@ -1026,31 +1026,27 @@ mod tests {
             prop_assert_eq!(model_result, std_result);
         }
 
+        // One test each, not one per outcome: `iter_all`/`iter_any` are generic in
+        // the predicate, so a second test would be a second instantiation that
+        // only ever takes one of the two exits. `bound` is biased toward the
+        // extreme that makes the predicate uniformly true (resp. false).
         #[test]
-        fn test_all_true(v in prop::collection::vec(0..=100i32, 0..=20)) {
-            let std_result = v.iter().all(|x| *x >= 0);
-            let model_result = VecIter::new(v).all(|x: i32| x >= 0);
+        fn test_all(
+            v in prop::collection::vec(any::<i32>(), 0..=20),
+            bound in prop_oneof![Just(i32::MIN), any::<i32>()],
+        ) {
+            let std_result = v.iter().all(|x| *x > bound);
+            let model_result = VecIter::new(v).all(|x: i32| x > bound);
             prop_assert_eq!(model_result, std_result);
         }
 
         #[test]
-        fn test_all_false(v in prop::collection::vec(any::<i32>(), 0..=20)) {
-            let std_result = v.iter().all(|x| *x > 0);
-            let model_result = VecIter::new(v).all(|x: i32| x > 0);
-            prop_assert_eq!(model_result, std_result);
-        }
-
-        #[test]
-        fn test_any_true(v in prop::collection::vec(any::<i32>(), 0..=20)) {
-            let std_result = v.iter().any(|x| *x > 0);
-            let model_result = VecIter::new(v).any(|x: i32| x > 0);
-            prop_assert_eq!(model_result, std_result);
-        }
-
-        #[test]
-        fn test_any_false(v in prop::collection::vec(0..=0i32, 0..=10)) {
-            let std_result = v.iter().any(|x| *x > 0);
-            let model_result = VecIter::new(v).any(|x: i32| x > 0);
+        fn test_any(
+            v in prop::collection::vec(any::<i32>(), 0..=20),
+            bound in prop_oneof![Just(i32::MAX), any::<i32>()],
+        ) {
+            let std_result = v.iter().any(|x| *x > bound);
+            let model_result = VecIter::new(v).any(|x: i32| x > bound);
             prop_assert_eq!(model_result, std_result);
         }
 
@@ -1332,6 +1328,36 @@ mod tests {
                         prop_assert_eq!(model_exact, std_exact.inject());
                     }
 
+                    // For `u128`/`i128` a random pair never fits in a `usize`, so
+                    // the tests above never run these bodies; a small step does.
+                    #[test]
+                    fn forward_close(x: $T, d in 0usize..=1000) {
+                        if <$T as StdStep>::forward_checked(x, d).is_some() {
+                            prop_assert_eq!(
+                                <$T as ModelStep>::forward(x, d),
+                                <$T as StdStep>::forward(x, d).inject(),
+                            );
+                            prop_assert_eq!(
+                                unsafe { <$T as ModelStep>::forward_unchecked(x, d) },
+                                unsafe { <$T as StdStep>::forward_unchecked(x, d) }.inject(),
+                            );
+                        }
+                    }
+
+                    #[test]
+                    fn backward_close(x: $T, d in 0usize..=1000) {
+                        if <$T as StdStep>::backward_checked(x, d).is_some() {
+                            prop_assert_eq!(
+                                <$T as ModelStep>::backward(x, d),
+                                <$T as StdStep>::backward(x, d).inject(),
+                            );
+                            prop_assert_eq!(
+                                unsafe { <$T as ModelStep>::backward_unchecked(x, d) },
+                                unsafe { <$T as StdStep>::backward_unchecked(x, d) }.inject(),
+                            );
+                        }
+                    }
+
                     // For `u128`/`i128` a random pair never fits in a `usize`;
                     // stepping forward by a small amount does.
                     #[test]
@@ -1349,6 +1375,25 @@ mod tests {
                         let model = <$T as ModelStep>::forward_checked(x, n);
                         let std_result = <$T as StdStep>::forward_checked(x, n);
                         prop_assert_eq!(model, std_result.inject());
+                    }
+
+                    // A full-range `n` never gets past the `TryFrom<usize>` guard
+                    // in the narrow-integer impls, leaving their wrapping-overflow
+                    // arm unreached; a narrow `n` reaches both.
+                    #[test]
+                    fn forward_checked_narrow(x: $T, n in 0usize..=255) {
+                        prop_assert_eq!(
+                            <$T as ModelStep>::forward_checked(x, n),
+                            <$T as StdStep>::forward_checked(x, n).inject(),
+                        );
+                    }
+
+                    #[test]
+                    fn backward_checked_narrow(x: $T, n in 0usize..=255) {
+                        prop_assert_eq!(
+                            <$T as ModelStep>::backward_checked(x, n),
+                            <$T as StdStep>::backward_checked(x, n).inject(),
+                        );
                     }
 
                     #[test]
