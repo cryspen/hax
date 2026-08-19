@@ -1010,8 +1010,10 @@ mod tests {
                                 <$t>::MIN.checked_rem(y).inject());
                         }
 
+                        // `0` is biased in: the zero arm is otherwise out of reach
+                        // for the wider types.
                         #[test]
-                        fn [<test_ $t _signum>](x in any::<$t>()) {
+                        fn [<test_ $t _signum>](x in prop_oneof![Just(0 as $t), any::<$t>()]) {
                             prop_assert_eq!(super::$t::signum(x.inject()), x.signum());
                         }
                     }
