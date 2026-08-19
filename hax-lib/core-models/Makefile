@@ -59,7 +59,8 @@ ALLOC_CHARON_OPAQUE = \
 
 .PHONY: all extract patch lean build clean clean-generated tests \
         tests-clean alloc-stage alloc-extract alloc-clean \
-        coverage fstar fstar-clean fstar-prune fstar-core-models fstar-std fstar-alloc \
+        coverage test-coverage test-coverage-check coverage-runs \
+        fstar fstar-clean fstar-prune fstar-core-models fstar-std fstar-alloc \
         fstar-rand-core
 
 all: lean fstar coverage
@@ -277,3 +278,45 @@ tests-clean:
 # Regenerate COVERAGE.md + tools/core-coverage/coverage.json.
 coverage:
 	./tools/core-coverage/gen.sh
+
+# -----------------------------------------------------------------------------
+# Test coverage: how much of the model crates our own Rust test suite runs.
+# (llvm-cov based; unrelated to the `coverage` target above, which measures how
+# much of real core/alloc we model at all.)
+#
+# The target is 100% on all three metrics. Items that cannot be exercised by a
+# test are marked `#[cfg_attr(coverage_nightly, coverage(off))]` at the item, so
+# there is no threshold to tune and no baseline file to keep in sync.
+# -----------------------------------------------------------------------------
+
+COV_TOOLCHAIN ?= nightly-2026-02-07
+LLVM_COV = cargo +$(COV_TOOLCHAIN) llvm-cov
+COV_PKGS = -p core-models -p alloc -p std -p rand_core@0.1.0 -p rust_primitives
+# `testing.rs` is the differential-test harness, not a model.
+COV_FILTER = --ignore-filename-regex 'core-models/src/testing\.rs'
+# Pinned so the number of proptest cases (hence which regions get reached) does
+# not drift between runs.
+COV_ENV = PROPTEST_CASES=256
+# RUSTFLAGS= overrides the repo-root `.cargo/config.toml`, which forces
+# `--cfg hax`.
+COV_RUN = $(COV_ENV) RUSTFLAGS= $(LLVM_COV) --no-report
+# Second configuration: `array.rs` and `alloc/src/lib.rs` carry
+# cfg(hax_backend_fstar)-exclusive model variants the default run never builds.
+COV_RUN_FSTAR = $(COV_ENV) RUSTFLAGS="--cfg hax_backend_fstar" $(LLVM_COV) --no-report
+
+# Both configurations, accumulated into one profile.
+coverage-runs:
+	$(LLVM_COV) clean --workspace
+	$(COV_RUN) $(COV_PKGS)
+	$(COV_RUN_FSTAR) -p core-models -p alloc
+
+# What is still untested, as a file:line list.
+test-coverage: coverage-runs
+	$(LLVM_COV) report --show-missing-lines $(COV_FILTER)
+
+# The CI gate. Prints the missing file:line list on failure, so the author sees
+# exactly what to test.
+test-coverage-check: coverage-runs
+	@$(LLVM_COV) report --show-missing-lines $(COV_FILTER) \
+	    --fail-under-lines 100 --fail-under-functions 100 --fail-under-regions 100 \
+	  || { echo "::error::model code above is not covered by the test suite: add a test, or mark the item #[cfg_attr(coverage_nightly, coverage(off))] if it cannot be exercised"; exit 1; }
