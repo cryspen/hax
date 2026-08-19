@@ -84,6 +84,31 @@ jobs:
       # has already been refactored to use `cargo hax into lean`. That is
       # why it is part of the `core-models-tests` job below.
 
+  # ------------------------------------------------------------- test coverage
+  # Every line of the model must be exercised by the test suite. An item that
+  # cannot be (a `panic!()`-bodied intrinsic, say) is marked
+  # `#[cfg_attr(coverage_nightly, coverage(off))]` at the item, so this gate is
+  # an absolute 100% and needs no threshold or baseline file.
+  test-coverage:
+    name: llvm-cov test coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          components: llvm-tools-preview
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov
+
+      # COV_TOOLCHAIN is passed explicitly so the Makefile default cannot drift
+      # from RUST_TOOLCHAIN.
+      - run: make COV_TOOLCHAIN=${{ env.RUST_TOOLCHAIN }} test-coverage-check
+
   # ----------------------------------------------------------- lean extraction
   lean-build:
     name: aeneas extraction + lake build
