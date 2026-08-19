@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     flake-utils.url = "github:numtide/flake-utils";
     crane = { url = "github:ipetkov/crane"; };
     rust-overlay = {
@@ -56,7 +56,9 @@
           fi
         '';
         ocamlPackages = pkgs.ocamlPackages;
-        ocamlformat = ocamlPackages.ocamlformat_0_27_0;
+        # ocamlformat 0.27.0 is marked broken for OCaml 5.4, so build it
+        # from the OCaml 5.3 package set.
+        ocamlformat = pkgs.ocaml-ng.ocamlPackages_5_3.ocamlformat_0_27_0;
         proverif = pkgs.proverif.overrideDerivation
           (_: { patches = [ examples/proverif-psk/pv_div_by_zero_fix.diff ]; });
       in rec {
@@ -189,7 +191,7 @@
             pkgs.cargo-expand
             pkgs.cargo-release
             pkgs.openssl.dev
-            pkgs.libz.dev
+            pkgs.zlib.dev
             pkgs.pkg-config
             pkgs.rust-analyzer
             pkgs.toml2json
@@ -199,7 +201,7 @@
             pkgs.go-grip
           ];
           LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
-          DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libz rustc ];
+          DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.zlib rustc ];
         in {
           examples = pkgs.mkShell {
             inherit LIBCLANG_PATH DYLD_LIBRARY_PATH;

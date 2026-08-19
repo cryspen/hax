@@ -4,10 +4,11 @@ on:
   push:
     tags:
       - '*'
+  workflow_dispatch:
 
 jobs:
   release-js:
-    if: startsWith(github.ref, 'refs/tags/') && github.repository == 'cryspen/hax'
+    if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -21,19 +22,20 @@ jobs:
         tar --dereference -czf hacspec_js.tar.gz hax-engine.js
 
     - name: Release
+      if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
       with:
         files: hacspec_js.tar.gz
 
   release:
-    if: startsWith(github.ref, 'refs/tags/') && github.repository == 'cryspen/hax'
+    if: github.repository == 'cryspen/hax'
     strategy:
       fail-fast: false
       matrix:
         os:
           - macos-latest
           - ubuntu-latest
-        ocaml-compiler: [4.14.x]
+        ocaml-compiler: [5.4.1]
         
     runs-on: ${{ matrix.os }}
     permissions:
@@ -42,13 +44,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - uses: ocaml/setup-ocaml@v2
+      - uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       - uses: dtolnay/rust-toolchain@1.70
           
-      - run: cargo install --path cli/driver && cargo install --path cli/cargo-hax
+      - run: cargo install --path cli/driver && cargo install --path cli/cargo-hax && cargo install --path engine/names/extract
 
       - run: opam install . --deps-only
         working-directory: engine
@@ -61,6 +63,7 @@ jobs:
           tar -czf hacspec_${{ matrix.os }}.tar.gz hax-engine
         
       - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: hacspec_${{ matrix.os }}.tar.gz

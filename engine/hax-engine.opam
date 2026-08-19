@@ -28,7 +28,6 @@ depends: [
   "cmdliner"
   "angstrom"
   "re"
-  "ppx_matches"
   "ppx_string"
   "logs"
   "ocamlgraph" {>= "2.2.0"}

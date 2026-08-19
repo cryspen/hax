@@ -15,21 +15,6 @@ let
     minimalOCamlVersion = "4.08";
     doCheck = false;
   };
-  ppx_matches = ocamlPackages.buildDunePackage rec {
-    pname = "ppx_matches";
-    version = "0.1";
-
-    src = fetchzip {
-      url =
-        "https://github.com/wrbs/ppx_matches/archive/refs/tags/${version}.zip";
-      sha256 = "sha256-nAmWF8MgW0odKkRiFcHGsvJyIxNHaZpnOlNPsef89Fo=";
-    };
-
-    buildInputs = [ ocamlPackages.ppxlib ];
-    duneVersion = "3";
-    minimalOCamlVersion = "4.04";
-    doCheck = false;
-  };
   hax-engine = ocamlPackages.buildDunePackage {
     pname = "hax-engine";
     version = "0.0.1";
@@ -55,7 +40,6 @@ let
         pprint
         non_empty_list
         ppx_deriving_yojson
-        ppx_matches
         ppx_let
         ppx_enumerate
         cmdliner
