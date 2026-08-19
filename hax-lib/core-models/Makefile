@@ -62,7 +62,7 @@ ALLOC_CHARON_OPAQUE = \
 
 .PHONY: all extract patch lean build clean clean-generated tests \
         tests-clean alloc-stage alloc-extract alloc-clean \
-        coverage test-coverage test-coverage-check coverage-runs \
+        coverage test-coverage test-coverage-check coverage-runs mutants \
         fstar fstar-clean fstar-prune fstar-core-models fstar-std fstar-alloc \
         fstar-rand-core
 
@@ -329,3 +329,21 @@ test-coverage-check: coverage-runs
 	@$(LLVM_COV) report --show-missing-lines $(COV_FILTER) \
 	    --fail-under-lines 100 --fail-under-functions 100 --fail-under-regions 100 \
 	  || { echo "::error::model code above is not covered by the test suite: add a test, or mark the item #[cfg_attr(coverage_nightly, coverage(off))] if it cannot be exercised"; exit 1; }
+
+# -----------------------------------------------------------------------------
+# Mutation testing: whether the tests *assert* anything, which coverage cannot
+# tell us. Complements the target above; blind to macro-generated code, since
+# cargo-mutants cannot see `fn`s inside a `macro_rules!` body.
+#
+# `--in-place` mutates this checkout instead of a temp copy: the copy cannot
+# resolve our `hax-lib = { path = ".." }` dependency, which escapes the copied
+# workspace root. It needs a clean working tree and rules out `-j`.
+#
+# Silence a mutant that cannot be killed with `#[cfg_attr(test, mutants::skip)]`
+# on the function (needs the `mutants` dev-dependency in that crate).
+# -----------------------------------------------------------------------------
+
+MUTANTS_FLAGS ?=
+
+mutants:
+	RUSTFLAGS= cargo mutants --in-place $(MUTANTS_FLAGS)
