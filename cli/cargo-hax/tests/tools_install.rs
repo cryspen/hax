@@ -186,6 +186,51 @@ entry_points = {{ charon = "charon", charon-driver = "charon-driver" }}
 }
 
 #[test]
+fn clean_deletes_the_whole_cache() {
+    let charon = make_archive(&[("charon", ""), ("charon-driver", "")]);
+    let aeneas = make_archive(&[("bin/aeneas", "")]);
+    let server = serve(HashMap::from([
+        ("/charon-v1.tar.gz".to_string(), charon.clone()),
+        ("/aeneas-v1.tar.gz".to_string(), aeneas.clone()),
+    ]));
+    let env = Env::new(&format!(
+        r#"[tools.charon."v1".{platform}]
+url = "{base}/charon-v1.tar.gz"
+sha256 = "{sha_c}"
+entry_points = {{ charon = "charon", charon-driver = "charon-driver" }}
+
+[tools.aeneas."v1".{platform}]
+url = "{base}/aeneas-v1.tar.gz"
+sha256 = "{sha_a}"
+"#,
+        platform = platform(),
+        base = server.base_url,
+        sha_c = sha256_hex(&charon),
+        sha_a = sha256_hex(&aeneas),
+    ));
+
+    let (output, success) = env.run(&["tools", "install", "charon@v1"]);
+    assert!(success, "{output}");
+    let (output, success) = env.run(&["tools", "install", "aeneas@v1"]);
+    assert!(success, "{output}");
+
+    let (output, success) = env.run(&["tools", "clean"]);
+    assert!(success, "{output}");
+    assert!(output.contains("Removed 2 tool versions"), "{output}");
+    assert!(!env.cache().join("hax/tools").exists());
+    // No temporary directories survive next to the removed cache.
+    let leftovers: Vec<_> = std::fs::read_dir(env.cache().join("hax"))
+        .map(|entries| entries.flatten().collect())
+        .unwrap_or_default();
+    assert!(leftovers.is_empty(), "{leftovers:?}");
+
+    // Cleaning an already empty cache is not an error.
+    let (output, success) = env.run(&["tools", "clean"]);
+    assert!(success, "{output}");
+    assert!(output.contains("Removed 0 tool versions"), "{output}");
+}
+
+#[test]
 fn checksum_mismatch_aborts_without_caching() {
     let archive = make_archive(&[("charon", ""), ("charon-driver", "")]);
     let server = serve(HashMap::from([("/charon-v1.tar.gz".to_string(), archive)]));

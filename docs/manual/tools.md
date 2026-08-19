@@ -24,7 +24,7 @@ Every release of hax ships with a built-in default for each of these, tested tog
 
 You do not have to install anything up front. The first time a `cargo hax into lean` run needs `aeneas` or `charon`, hax downloads the resolved version, verifies its SHA-256 checksum against the shipped manifest, and stores it in a cache. Subsequent runs reuse the cached binary.
 
-The cache lives under `$XDG_CACHE_HOME/hax/tools/` (falling back to `~/.cache/hax/tools/` when `XDG_CACHE_HOME` is unset, empty, or not an absolute path), with one directory per tool and version. Downloads are verified before they are moved into place, so an interrupted download never leaves a half-installed version behind. They use the proxy and the certificate store the environment configures. The cache only grows; drop versions you no longer need with [`tools remove`](#tools-remove).
+The cache lives under `$XDG_CACHE_HOME/hax/tools/` (falling back to `~/.cache/hax/tools/` when `XDG_CACHE_HOME` is unset, empty, or not an absolute path), with one directory per tool and version. Downloads are verified before they are moved into place, so an interrupted download never leaves a half-installed version behind. They use the proxy and the certificate store the environment configures. The cache only grows; drop versions you no longer need with [`tools remove`](#tools-remove), or all of them with [`tools clean`](#tools-clean).
 
 Pre-built binaries are available for the platforms hax supports: Linux and macOS, on both `x86_64` and `aarch64`. On any other platform there is nothing to download, and hax reports so, naming the version it wanted; build `aeneas` and `charon` yourself and point hax at them as described under [Using a local build](#using-a-local-build).
 
@@ -89,6 +89,14 @@ cargo hax tools remove charon@nightly-2026.07.01
 ```
 
 Removal is always safe: a later run that needs the version downloads it again. Deleting version directories, or the whole cache, by hand is equally safe.
+
+### `tools clean`
+
+`cargo hax tools clean` deletes the entire tool cache: every cached version of every tool. It works from any directory and reports how many versions it removed.
+
+```bash
+cargo hax tools clean
+```
 
 ## Pinning versions with `hax.toml`
 
