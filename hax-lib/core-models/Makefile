@@ -350,14 +350,15 @@ mutants:
 # never compiled and every one of them looks like a survivor (62 of alloc's 79).
 mutants-fstar:
 	$(MAKE) mutants MUTANTS_RUSTFLAGS="--cfg hax_backend_fstar" \
-	    MUTANTS_FLAGS="--output mutants-fstar.out $(MUTANTS_FLAGS)"
+	    MUTANTS_FLAGS="--output mutants-fstar $(MUTANTS_FLAGS)"
 
 # A mutant only counts if it survived in a cfg that builds it, so the genuine
 # survivors are the ones both sweeps missed.
 mutants-genuine:
 	@sort mutants.out/missed.txt > mutants.out/missed.sorted
-	@sort mutants-fstar.out/missed.txt > mutants-fstar.out/missed.sorted
-	@comm -12 mutants.out/missed.sorted mutants-fstar.out/missed.sorted \
+	@sort mutants-fstar/mutants.out/missed.txt \
+	    > mutants-fstar/mutants.out/missed.sorted
+	@comm -12 mutants.out/missed.sorted mutants-fstar/mutants.out/missed.sorted \
 	    > mutants-genuine.txt
 	@cat mutants-genuine.txt
 	@test ! -s mutants-genuine.txt || { \
