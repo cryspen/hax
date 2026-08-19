@@ -503,8 +503,11 @@ mod string {
         fn pop(&mut self) -> Option<char> {
             let l = self.0.len();
             if l > 0 {
+                // Read the last char before truncating: afterwards `l - 1` is
+                // out of bounds.
+                let c = str_index(self.0, l - 1);
                 *self = String(str_sub(self.0, 0, l - 1));
-                Some(str_index(self.0, l - 1))
+                Some(c)
             } else {
                 None
             }
@@ -539,6 +542,23 @@ mod string {
         fn test_new() {
             let model = super::String::new();
             assert_eq!(model.0, std::string::String::new());
+        }
+
+        proptest! {
+            // ASCII only: the model mixes `str::len` (bytes) with the
+            // char-indexed `str_sub`/`str_index` primitives, so the two agree
+            // only on single-byte chars.
+            #[test]
+            fn test_pop(cs in prop::collection::vec(prop::char::range('a', 'z'), 0..8)) {
+                let mut model = super::String::new();
+                let mut std_s = std::string::String::new();
+                for c in &cs {
+                    model.push(*c);
+                    std_s.push(*c);
+                }
+                prop_assert_eq!(model.pop(), std_s.pop());
+                prop_assert_eq!(model.0, std_s);
+            }
         }
     }
 }
