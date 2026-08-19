@@ -183,6 +183,20 @@ mod tests {
             );
         }
 
+        // A wider element type: with `u8` slices every alignment is 1, which
+        // any wrong answer of 1 also satisfies.
+        #[test]
+        fn test_align_of_val_wide(v in prop::collection::vec(any::<u64>(), 1..50)) {
+            prop_assert_eq!(
+                super::align_of_val(v.as_slice()),
+                std::mem::align_of_val(v.as_slice())
+            );
+            prop_assert_eq!(
+                super::min_align_of_val(v.as_slice()),
+                std::mem::align_of_val(v.as_slice())
+            );
+        }
+
         #[test]
         fn test_swap(x in any::<u32>(), y in any::<u32>()) {
             let (mut ma, mut mb) = (x, y);
