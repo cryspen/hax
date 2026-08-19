@@ -98,17 +98,13 @@ fn find_binary(name: &str, env_var: &str, message_format: MessageFormat) -> Path
 
 const ENGINE_BINARY_NAME: &str = "hax-engine";
 const ENGINE_BINARY_ENV: &str = "HAX_ENGINE_BINARY";
-const ENGINE_BINARY_NOT_FOUND: &str = "The binary [hax-engine] was not found in your [PATH].";
 
 const RUST_ENGINE_BINARY_NAME: &str = "hax-rust-engine";
 const RUST_ENGINE_BINARY_ENV: &str = "HAX_RUST_ENGINE_BINARY";
 
 /// Dynamically looks for binary [ENGINE_BINARY_NAME].  First, we
 /// check whether [HAX_ENGINE_BINARY] is set, and use that if it
-/// is. Then, we try to find [ENGINE_BINARY_NAME] in PATH. If not
-/// found, detect whether nodejs is available, download the JS-compiled
-/// engine and use it.
-#[allow(unused_variables, unreachable_code)]
+/// is. Then, we try to find [ENGINE_BINARY_NAME] in PATH.
 fn find_hax_engine(message_format: MessageFormat) -> process::Command {
     use which::which;
 
@@ -116,25 +112,6 @@ fn find_hax_engine(message_format: MessageFormat) -> process::Command {
         .ok()
         .map(process::Command::new)
         .or_else(|| which(ENGINE_BINARY_NAME).ok().map(process::Command::new))
-        .or_else(|| {
-            which("node").ok().and_then(|_| {
-                if let Ok(true) = inquire::Confirm::new(&format!(
-                    "{} Should I try to download it from GitHub?",
-                    ENGINE_BINARY_NOT_FOUND,
-                ))
-                .with_default(true)
-                .prompt()
-                {
-                    let cmd = process::Command::new("node");
-                    let engine_js_path: String =
-                        panic!("TODO: Downloading from GitHub is not supported yet.");
-                    cmd.arg(engine_js_path);
-                    Some(cmd)
-                } else {
-                    None
-                }
-            })
-        })
         .unwrap_or_else(|| {
             let opam_ok = std::env::var("OPAM_SWITCH_PREFIX").is_ok();
             let opam_diag = if opam_ok {
