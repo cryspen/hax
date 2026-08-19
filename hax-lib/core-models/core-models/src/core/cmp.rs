@@ -380,6 +380,51 @@ mod tests {
             prop_assert_eq!(model_ord1.then(model_ord2), std_ord1.then(std_ord2).inject());
         }
 
+        // The `Equal` arms of `reverse`/`then`/`then_with`/`clamp` need both sides
+        // of a comparison to agree, which a pair of independent draws never does.
+        #[test]
+        fn test_ordering_reverse_equal(x in any::<u8>()) {
+            let model_ord = <u8 as Ord>::cmp(&x.inject(), &x.inject());
+            let std_ord = std::cmp::Ord::cmp(&x, &x);
+            prop_assert_eq!(model_ord.reverse(), std_ord.reverse().inject());
+        }
+
+        #[test]
+        fn test_ordering_then_equal(x in any::<u8>(), a in any::<u8>(), b in any::<u8>()) {
+            let model_ord2 = <u8 as Ord>::cmp(&a.inject(), &b.inject());
+            let std_ord2 = std::cmp::Ord::cmp(&a, &b);
+            prop_assert_eq!(
+                <u8 as Ord>::cmp(&x.inject(), &x.inject()).then(model_ord2),
+                std::cmp::Ord::cmp(&x, &x).then(std_ord2).inject()
+            );
+        }
+
+        #[test]
+        fn test_ordering_then_with(x in any::<u8>(), y in any::<u8>(), a in any::<u8>(), b in any::<u8>()) {
+            let model_ord2 = <u8 as Ord>::cmp(&a.inject(), &b.inject());
+            let std_ord2 = std::cmp::Ord::cmp(&a, &b);
+            prop_assert_eq!(
+                <u8 as Ord>::cmp(&x.inject(), &y.inject()).then_with(|| model_ord2),
+                std::cmp::Ord::cmp(&x, &y).then_with(|| std_ord2).inject()
+            );
+        }
+
+        #[test]
+        fn test_ordering_then_with_equal(x in any::<u8>(), a in any::<u8>(), b in any::<u8>()) {
+            let model_ord2 = <u8 as Ord>::cmp(&a.inject(), &b.inject());
+            let std_ord2 = std::cmp::Ord::cmp(&a, &b);
+            prop_assert_eq!(
+                <u8 as Ord>::cmp(&x.inject(), &x.inject()).then_with(|| model_ord2),
+                std::cmp::Ord::cmp(&x, &x).then_with(|| std_ord2).inject()
+            );
+        }
+
+        #[test]
+        fn test_clamp_at_min(x in any::<u8>(), hi in any::<u8>()) {
+            let hi = std::cmp::max(x, hi);
+            prop_assert_eq!(super::clamp(x.inject(), x.inject(), hi.inject()), x.clamp(x, hi));
+        }
+
         #[test]
         fn test_clamp(x in any::<u8>(), a in any::<u8>(), b in any::<u8>()) {
             let lo = std::cmp::min(a, b);
