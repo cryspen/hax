@@ -135,6 +135,57 @@ entry_points = {{ charon = "charon", charon-driver = "charon-driver" }}
 }
 
 #[test]
+fn remove_deletes_a_cached_version() {
+    let archive = make_archive(&[("charon", ""), ("charon-driver", "")]);
+    let sha = sha256_hex(&archive);
+    let server = serve(HashMap::from([("/charon-v1.tar.gz".to_string(), archive)]));
+    let env = Env::new(&format!(
+        r#"[tools.charon."v1".{platform}]
+url = "{base}/charon-v1.tar.gz"
+sha256 = "{sha}"
+entry_points = {{ charon = "charon", charon-driver = "charon-driver" }}
+"#,
+        platform = platform(),
+        base = server.base_url,
+    ));
+
+    let (output, success) = env.run(&["tools", "install", "charon@v1"]);
+    assert!(success, "{output}");
+    assert!(env.version_dir("charon", "v1").is_dir());
+
+    let (output, success) = env.run(&["tools", "remove", "charon@v1"]);
+    assert!(success, "{output}");
+    assert!(output.contains("Removed charon v1"), "{output}");
+    assert!(!env.version_dir("charon", "v1").exists());
+    // No temporary directories survive, and `list` no longer marks the
+    // version as installed.
+    let leftovers: Vec<_> = std::fs::read_dir(env.cache().join("hax/tools/charon"))
+        .map(|entries| entries.flatten().collect())
+        .unwrap_or_default();
+    assert!(leftovers.is_empty(), "{leftovers:?}");
+    let (output, _) = env.run(&["tools", "list", "charon"]);
+    assert!(!output.contains("installed"), "{output}");
+
+    // Removing a version that is not cached is an error, as are the same
+    // malformed specifications `install` rejects.
+    let (output, success) = env.run(&["tools", "remove", "charon@v1"]);
+    assert!(!success);
+    assert!(output.contains("not in the cache"), "{output}");
+    let (output, success) = env.run(&["tools", "remove", "charon"]);
+    assert!(!success);
+    assert!(output.contains("<tool>@<version>"), "{output}");
+    let (output, success) = env.run(&["tools", "remove", "unknown@v1"]);
+    assert!(!success);
+    assert!(output.contains("not a managed tool"), "{output}");
+    let (output, success) = env.run(&["tools", "remove", "charon@../escape"]);
+    assert!(!success);
+    assert!(
+        output.contains("not a valid version identifier"),
+        "{output}"
+    );
+}
+
+#[test]
 fn checksum_mismatch_aborts_without_caching() {
     let archive = make_archive(&[("charon", ""), ("charon-driver", "")]);
     let server = serve(HashMap::from([("/charon-v1.tar.gz".to_string(), archive)]));

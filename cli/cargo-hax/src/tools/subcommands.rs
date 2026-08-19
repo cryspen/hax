@@ -38,27 +38,10 @@ fn reported(name: &str, resolution: &Resolution) -> ToolResolution {
 /// across all workspace crates: pins, member overrides, and defaults.
 pub fn install(spec: Option<&str>, force: bool, message_format: MessageFormat) -> i32 {
     let requests: Vec<(String, String)> = match spec {
-        Some(spec) => {
-            let Some((tool, version)) = spec.split_once('@') else {
-                return error(
-                    format!("`{spec}` is not a `<tool>@<version>` specification"),
-                    message_format,
-                );
-            };
-            if !MANAGED_TOOLS.contains(&tool) {
-                return error(
-                    format!(
-                        "`{tool}` is not a managed tool (managed tools: {})",
-                        MANAGED_TOOLS.join(", ")
-                    ),
-                    message_format,
-                );
-            }
-            if version.is_empty() {
-                return error(format!("`{spec}` lacks a version"), message_format);
-            }
-            vec![(tool.to_string(), version.to_string())]
-        }
+        Some(spec) => match parse_spec(spec) {
+            Ok(request) => vec![request],
+            Err(message) => return error(message, message_format),
+        },
         None => {
             let ctx = match ProjectContext::load(message_format) {
                 Ok(ctx) => ctx,
@@ -130,6 +113,55 @@ pub fn install(spec: Option<&str>, force: bool, message_format: MessageFormat) -
     }
     HaxMessage::ToolsInstalled { installed }.report(message_format, None);
     if failed { 1 } else { 0 }
+}
+
+/// Parse a `<tool>@<version>` specification naming a managed tool.
+fn parse_spec(spec: &str) -> Result<(String, String), String> {
+    let Some((tool, version)) = spec.split_once('@') else {
+        return Err(format!(
+            "`{spec}` is not a `<tool>@<version>` specification"
+        ));
+    };
+    if !MANAGED_TOOLS.contains(&tool) {
+        return Err(format!(
+            "`{tool}` is not a managed tool (managed tools: {})",
+            MANAGED_TOOLS.join(", ")
+        ));
+    }
+    if version.is_empty() {
+        return Err(format!("`{spec}` lacks a version"));
+    }
+    Ok((tool.to_string(), version.to_string()))
+}
+
+/// `cargo hax tools remove`: delete a version from the machine-wide
+/// cache. Removal is safe at any time: a later run that needs the version
+/// re-downloads it.
+pub fn remove(spec: &str, message_format: MessageFormat) -> i32 {
+    let (tool, version) = match parse_spec(spec) {
+        Ok(request) => request,
+        Err(message) => return error(message, message_format),
+    };
+    match cache::remove_version(&tool, &version) {
+        Ok(cache::Removal {
+            result: true,
+            leftover,
+        }) => {
+            if let Some(message) = leftover {
+                HaxMessage::GenericWarning { message }.report(message_format, None);
+            }
+            HaxMessage::ToolRemoved { tool, version }.report(message_format, None);
+            0
+        }
+        Ok(cache::Removal { result: false, .. }) => error(
+            format!("{tool} {version} is not in the cache; nothing to remove"),
+            message_format,
+        ),
+        Err(message) => error(
+            format!("could not remove {tool} {version}: {message}"),
+            message_format,
+        ),
+    }
 }
 
 /// How many versions per tool `list` shows without `--all`.

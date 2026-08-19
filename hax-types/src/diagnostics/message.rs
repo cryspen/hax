@@ -240,6 +240,12 @@ pub enum HaxMessage {
         found: String,
         expected: String,
     } = 24,
+    /// The result of `cargo hax tools remove`: the version deleted from
+    /// the cache.
+    ToolRemoved {
+        tool: String,
+        version: String,
+    } = 25,
 }
 
 impl HaxMessage {
@@ -555,6 +561,10 @@ impl HaxMessage {
                 installed_only,
             } => render_tools_list(&tools, installed_only),
             Self::ToolsInstalled { installed } => render_tools_installed(&installed),
+            Self::ToolRemoved { tool, version } => {
+                use colored::Colorize;
+                format!("{:>12} {tool} {version}", "Removed".bold().green())
+            }
         }
     }
 }

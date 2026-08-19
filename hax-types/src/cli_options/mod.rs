@@ -504,9 +504,7 @@ pub enum Command<E: Extension> {
         backend: Option<BackendName>,
     },
 
-    /// Manage the external tools hax depends on (e.g. charon and
-    /// aeneas): show the versions the current project resolves to,
-    /// list installable versions, and install them.
+    /// Manage the external tools hax depends on (e.g. charon and aeneas).
     #[command(subcommand)]
     Tools(ToolsCommand),
 
@@ -546,6 +544,12 @@ pub enum ToolsCommand {
     /// Show which tool versions are active in the current project,
     /// and where each one comes from.
     Show,
+    /// Remove a tool version from the machine-wide cache.
+    Remove {
+        /// The `<tool>@<version>` specification (e.g.
+        /// `charon@nightly-2026.07.01`) to remove from the cache.
+        spec: String,
+    },
 }
 
 impl<E: Extension> Command<E> {
