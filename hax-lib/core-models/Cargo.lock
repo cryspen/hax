@@ -507,6 +507,7 @@ dependencies = [
  "core-models",
  "hax-lib",
  "proptest",
+ "rust_primitives",
 ]
 
 [[package]]

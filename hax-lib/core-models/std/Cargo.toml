@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 hax-lib.workspace = true
 core-models = { path = "../core-models" }
+rust_primitives = { path = "../rust_primitives" }
 
 [dev-dependencies]
 proptest = "1.9.0"
