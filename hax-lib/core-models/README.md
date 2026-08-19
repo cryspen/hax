@@ -133,9 +133,30 @@ extract this body", and most opaque items have real, testable bodies.
 Coverage says a line ran, never that a test checked its result. `make mutants`
 answers the second question by mutating the model and expecting the suite to
 notice; it runs nightly (`core_models_mutants.yml`) rather than per-PR, because a
-full sweep is ~45 minutes. It is blind to macro-generated code — cargo-mutants
-cannot see `fn`s inside a `macro_rules!` body, which is most of `num/`. Silence
-an unkillable mutant with `#[cfg_attr(test, mutants::skip)]` on the function.
+sweep is ~45 minutes per cfg. It is blind to macro-generated code —
+cargo-mutants cannot see `fn`s inside a `macro_rules!` body, which is most of
+`num/`.
+
+Three things about reading its output:
+
+- **Both cfgs are needed.** A model variant gated on `cfg(hax_backend_fstar)` is
+  not built by the default sweep, so its mutants never compile and every one of
+  them looks like a survivor — 62 of `alloc`'s 79 at one point. `make
+  mutants-genuine` intersects the two sweeps; only a mutant that survived in a
+  cfg that builds it counts.
+- **`--test-workspace` is on** (in the `mutants` target) because a model's
+  mutants are usually killed by *another* crate's tests. With cargo-mutants'
+  default of own-package tests only, 43 of `rust_primitives`' mutants survived
+  spuriously.
+- **A survivor can be seed-dependent.** If only some proptest inputs kill a
+  mutant, it flips between runs. The fix is to make the rare case certain rather
+  than to suppress it — see `test_eq_reflexive` (comparing a value with itself,
+  because two independent draws almost never produce an equal `Err` pair). This
+  is why the nightly gate reports rather than blocks.
+
+Silence a genuinely unkillable mutant with `#[cfg_attr(test, mutants::skip)]` on
+the function, or — where that function's other mutants are worth keeping — with
+a per-mutant regex in `.cargo/mutants.toml`.
 
 ## Repository layout
 
