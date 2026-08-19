@@ -94,8 +94,11 @@ jobs:
           name: missed-fstar
           path: hax-lib/core-models/mutants-fstar/mutants.out
 
-      # Reporting only for now: the surviving set has to be triaged (a test each,
-      # or `#[cfg_attr(test, mutants::skip)]` where the mutant is unkillable)
-      # before this can block.
+      # Reporting only, and not merely until the set is triaged: a mutant that
+      # only some proptest inputs kill is missed or caught depending on the
+      # seed, so this set is not stable enough to block on. Two of the current
+      # survivors were caught by one sweep and missed by the next. Each one is
+      # worth fixing (make the rare case certain, the way `test_eq_reflexive`
+      # does), but a red nightly here is not necessarily a regression.
       - run: make mutants-genuine
         continue-on-error: true
