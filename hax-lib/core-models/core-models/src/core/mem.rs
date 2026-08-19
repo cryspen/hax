@@ -4,12 +4,16 @@ use super::marker::Copy;
 
 /// See [`std::mem::forget`]
 #[hax_lib::opaque]
+// mutants::skip: forgetting has no observable effect, so replacing the body with () is an equivalent mutant.
+#[cfg_attr(test, mutants::skip)]
 pub fn forget<T>(t: T) {
     rust_primitives::mem::forget(t)
 }
 
 /// See [`std::mem::forget_unsized`]
 #[hax_lib::opaque]
+// mutants::skip: as for `forget`, the empty body is an equivalent mutant.
+#[cfg_attr(test, mutants::skip)]
 pub fn forget_unsized<T>(t: T) {
     rust_primitives::mem::forget(t)
 }
@@ -109,6 +113,8 @@ pub unsafe fn transmute_copy<Src, Dst>(src: &Src) -> Dst {
 // intrinsic, and `rust_primitives` must keep building on stable.
 #[cfg_attr(coverage_nightly, coverage(off))]
 #[hax_lib::opaque]
+// mutants::skip: excluded from coverage above, so no test can kill a mutant here.
+#[cfg_attr(test, mutants::skip)]
 pub fn variant_count<T>() -> usize {
     panic!()
 }

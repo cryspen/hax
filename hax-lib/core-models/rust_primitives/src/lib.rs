@@ -63,6 +63,8 @@ pub mod slice {
 /// Layout and value-moving primitives backing `core_models::mem`. `core_models`
 /// must not call `core` itself, so every `mem` model delegates here.
 pub mod mem {
+    // mutants::skip: forgetting has no observable effect, so the empty body is an equivalent mutant.
+    #[cfg_attr(test, mutants::skip)]
     pub fn forget<T>(t: T) {
         core::mem::forget(t)
     }

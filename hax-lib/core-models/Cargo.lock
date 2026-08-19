@@ -61,6 +61,7 @@ name = "core-models"
 version = "0.1.0"
 dependencies = [
  "hax-lib",
+ "mutants",
  "pastey 0.2.2",
  "proptest",
  "rust_primitives",
@@ -241,6 +242,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8ca58f447f06ed17d5fc4043ce1b10dd205e060fb3ce5b979b8ed8e59ff3f79"
 
 [[package]]
+name = "mutants"
+version = "0.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc0287524726960e07b119cebd01678f852f147742ae0d925e6a520dca956126"
+
+[[package]]
 name = "num-bigint"
 version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -416,6 +423,7 @@ name = "rust_primitives"
 version = "0.1.0"
 dependencies = [
  "hax-lib",
+ "mutants",
  "pastey 0.1.1",
  "proptest",
 ]
