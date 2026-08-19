@@ -107,39 +107,77 @@ mod rt {
         ty: ArgumentType<'a>,
     }
 
+    // The formatting arguments carry no observable payload in this model, so
+    // every constructor below yields the single placeholder value.
+    fn placeholder<'a>() -> ArgumentType<'a> {
+        ArgumentType::Placeholder {
+            _lifetime: std::marker::PhantomData,
+        }
+    }
+
     impl Argument<'_> {
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_display<T>(x: &T) -> Self {
-            crate::panicking::internal::panic()
+            Argument { ty: placeholder() }
         }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_debug<T>(x: &T) -> Self {
-            crate::panicking::internal::panic()
+            Argument { ty: placeholder() }
         }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_lower_hex<T>(x: &T) -> Self {
-            crate::panicking::internal::panic()
+            Argument { ty: placeholder() }
         }
     }
     impl<'a> Argument<'a> {
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_binary<T>(x: &T) -> Self {
-            crate::panicking::internal::panic()
+            Argument { ty: placeholder() }
         }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_const<T, U>(x: &T, y: &U) -> super::Arguments<'a> {
-            crate::panicking::internal::panic()
+            super::Arguments(&())
         }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_v1<T, U, V, W>(x: &T, y: &U, z: &V, t: &W) -> super::Arguments<'a> {
-            crate::panicking::internal::panic()
+            super::Arguments(&())
         }
         fn none() -> [Self; 0] {
             []
         }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_v1_formatted<T, U, V>(x: &T, y: &U, z: &V) -> super::Arguments<'a> {
-            crate::panicking::internal::panic()
+            super::Arguments(&())
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::{Argument, ArgumentType};
+
+        /// The `rt` constructors are placeholders (core's real ones build
+        /// type-erased trait objects), so all a test can check is that each one
+        /// returns the placeholder rather than diverging.
+        fn is_placeholder(a: &Argument<'_>) -> bool {
+            matches!(a.ty, ArgumentType::Placeholder { .. })
+        }
+
+        #[test]
+        fn test_argument_constructors() {
+            assert!(is_placeholder(&Argument::new_display(&1u8)));
+            assert!(is_placeholder(&Argument::new_debug(&1u8)));
+            assert!(is_placeholder(&Argument::new_lower_hex(&1u8)));
+            assert!(is_placeholder(&Argument::new_binary(&1u8)));
+            assert!(Argument::none().is_empty());
+        }
+
+        #[test]
+        fn test_arguments_constructors() {
+            // `Arguments` has no observable content either; construction is all
+            // there is to check.
+            let _ = Argument::new_const(&1u8, &2u8);
+            let _ = Argument::new_v1(&1u8, &2u8, &3u8, &4u8);
+            let _ = Argument::new_v1_formatted(&1u8, &2u8, &3u8);
         }
     }
 
@@ -157,4 +195,63 @@ mod rt {
     }
 
     struct UnsafeArg;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{Arguments, Display, Formatter, Result};
+
+    // Everything in this module is a stub returning `Ok(())`: the model has no
+    // output buffer, so `Ok(())` is the whole observable behaviour.
+    // `fmt::Error` has no `PartialEq`, hence `matches!` rather than `assert_eq!`.
+    #[test]
+    fn test_write_str() {
+        let mut f = Formatter;
+        assert!(matches!(f.write_str("hello"), Result::Ok(())));
+    }
+
+    #[test]
+    fn test_debug_fmt() {
+        let mut f = Formatter;
+        #[cfg(not(hax_backend_fstar))]
+        assert!(matches!(super::Debug::fmt(&1u8, &mut f), Result::Ok(())));
+        #[cfg(hax_backend_fstar)]
+        assert!(matches!(
+            super::Debug::dbg_fmt(&1u8, &mut f),
+            Result::Ok(())
+        ));
+    }
+
+    macro_rules! display_tests {
+        ($($t:ident),*) => {
+            pastey::paste! { $(
+                #[test]
+                fn [<test_display_ $t>]() {
+                    let mut f = Formatter;
+                    assert!(matches!(Display::fmt(&(0 as $t), &mut f), Result::Ok(())));
+                }
+            )* }
+        };
+    }
+
+    display_tests!(
+        u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
+    );
+
+    #[test]
+    fn test_write_fmt() {
+        let mut f = Formatter;
+        assert!(matches!(
+            Arguments::write_fmt(&mut f, Arguments(&())),
+            Result::Ok(())
+        ));
+    }
+
+    // `Arguments` can only be built inside this module, so `panicking::panic_fmt`
+    // is exercised here rather than next to the other `panicking` tests.
+    #[test]
+    #[should_panic]
+    fn test_panic_fmt() {
+        crate::panicking::panic_fmt(Arguments(&()));
+    }
 }

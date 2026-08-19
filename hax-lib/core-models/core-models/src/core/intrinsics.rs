@@ -5,3 +5,14 @@
 pub fn unreachable() -> ! {
     panic!()
 }
+
+#[cfg(test)]
+mod tests {
+    // Calling `core::intrinsics::unreachable` is UB, so there is nothing to
+    // compare against: the model must simply diverge.
+    #[test]
+    #[should_panic]
+    fn test_unreachable() {
+        super::unreachable()
+    }
+}
