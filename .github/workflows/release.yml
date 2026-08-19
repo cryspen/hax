@@ -1,13 +1,91 @@
-name: Release binaries for hax-engine
+name: Release binaries
 
+# `cargo release --workspace` pushes every crate's tag in one push, and GitHub
+# raises push events for only some tags of a multi-tag push. When the
+# `cargo-hax-v*` event is among the dropped ones, dispatching this workflow on
+# the tag builds the release's assets.
 on:
   push:
     tags:
-      - '*'
+      - 'cargo-hax-v*'
+  workflow_dispatch:
+
+# A push event and a manual dispatch of the same tag publish the same assets,
+# so runs are grouped by the ref. Runs are never cancelled: cancelling a
+# publish mid-upload can leave the release missing assets. A covered run
+# instead finds every asset published already and skips the work.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
+  # Computes the values every publish job keys on: the tag the release's
+  # artifacts are published under, empty for a ref that is not a release tag;
+  # the assets published under it already; and the platform matrix for
+  # `cargo-hax`.
+  tag:
+    if: github.repository == 'cryspen/hax'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      version: ${{ steps.resolve.outputs.version }}
+      assets: ${{ steps.assets.outputs.assets }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    env:
+      RUSTUP_TOOLCHAIN: stable
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: resolve
+        run: |
+          set -o pipefail
+          version="$(cargo metadata --format-version 1 --no-deps \
+            | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
+          # `cargo release` tags this crate `cargo-hax-v<version>`; a ref that
+          # is not that tag, such as a dispatch on a branch, is not a release.
+          if [ "$GITHUB_REF_NAME" = "cargo-hax-v$version" ]; then
+            echo "tag=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"
+            echo "version=$version" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::$GITHUB_REF_NAME is not a release tag"
+          fi
+
+      # An interrupted upload can leave an asset record that is not
+      # `uploaded`; it does not count as published, so a later run replaces
+      # the remains.
+      - id: assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.resolve.outputs.tag }}
+        run: |
+          assets='[]'
+          if [ -n "$TAG" ]; then
+            if release="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" 2>&1)"; then
+              assets="$(jq -c '[.assets[]
+                | select(.state == "uploaded" and .size > 0) | .name]' <<< "$release")"
+            # Only a missing release means nothing is published; any other
+            # failure must not pass for that and disable the published-assets
+            # guards.
+            elif ! grep -q 'HTTP 404' <<< "$release"; then
+              echo "$release" >&2
+              exit 1
+            fi
+          fi
+          echo "assets=$assets" >> "$GITHUB_OUTPUT"
+
+      # The platforms `cargo-hax` binaries are built for, shared with the
+      # binstall workflow that installs from them.
+      - id: matrix
+        run: |
+          echo "matrix=$(jq -c '{include: .}' .github/cargo-hax-targets.json)" \
+            >> "$GITHUB_OUTPUT"
+
   release-js:
-    if: startsWith(github.ref, 'refs/tags/') && github.repository == 'cryspen/hax'
+    needs: tag
+    # Publishing an asset the release already carries would delete it before
+    # uploading it again, and a download in that window fails. A covered job
+    # is skipped, so a run only publishes what is missing.
+    if: needs.tag.outputs.tag != '' && !contains(fromJSON(needs.tag.outputs.assets), 'hacspec_js.tar.gz')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,10 +101,12 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
+        tag_name: ${{ needs.tag.outputs.tag }}
         files: hacspec_js.tar.gz
 
   release:
-    if: startsWith(github.ref, 'refs/tags/') && github.repository == 'cryspen/hax'
+    needs: tag
+    if: needs.tag.outputs.tag != ''
     strategy:
       fail-fast: false
       matrix:
@@ -34,37 +114,124 @@ jobs:
           - macos-latest
           - ubuntu-latest
         ocaml-compiler: [4.14.x]
-        
+
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write
+    env:
+      # Publishing an asset the release already carries would delete it before
+      # uploading it again, and a download in that window fails. Checked per
+      # matrix entry, so a run only publishes what is missing.
+      PUBLISHED: ${{ contains(fromJSON(needs.tag.outputs.assets), format('hacspec_{0}.tar.gz', matrix.os)) }}
     steps:
       - name: Checkout code
+        if: env.PUBLISHED != 'true'
         uses: actions/checkout@v4
 
       - uses: ocaml/setup-ocaml@v2
+        if: env.PUBLISHED != 'true'
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
       # `rust-toolchain.toml` selects the toolchain; this only has to put rustup
       # and cargo on PATH.
       - uses: dtolnay/rust-toolchain@stable
+        if: env.PUBLISHED != 'true'
 
-      - run: source .utils/install-rust-binaries.sh && install_rust_binaries
+      - if: env.PUBLISHED != 'true'
+        run: source .utils/install-rust-binaries.sh && install_rust_binaries
 
-      - run: opam install . --deps-only
+      - if: env.PUBLISHED != 'true'
+        run: opam install . --deps-only
         working-directory: engine
-        
-      - run: opam exec -- dune build
+
+      - if: env.PUBLISHED != 'true'
+        run: opam exec -- dune build
         working-directory: engine
 
-      - run: |
+      - if: env.PUBLISHED != 'true'
+        run: |
           cp engine/_build/default/bin/native_driver.exe  hax-engine
           tar -czf hacspec_${{ matrix.os }}.tar.gz hax-engine
-        
+
       - name: Release
+        if: env.PUBLISHED != 'true'
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ needs.tag.outputs.tag }}
           files: hacspec_${{ matrix.os }}.tar.gz
 
-          
+  # The pre-built `cargo-hax` binaries `cargo binstall cargo-hax` installs.
+  #
+  # Default features, on stable, as `cargo install cargo-hax` builds it: this
+  # binary comes without the driver and the engine, so it serves the `lean`
+  # backend, and `legacy-engine` would tie it to the pinned nightly.
+  release-cargo-hax:
+    needs: tag
+    if: needs.tag.outputs.tag != ''
+    strategy:
+      fail-fast: false
+      # Which image is strictest differs by system: on Linux the oldest, glibc
+      # being backward compatible, so a binary built on 22.04 runs on the newer
+      # images too; on macOS the newest, since what refuses a binary there is the
+      # code-signing policy, which Apple only tightens. `macos-15-intel` is
+      # pinned for want of a floating Intel label, not for its version.
+      matrix: ${{ fromJSON(needs.tag.outputs.matrix) }}
+
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    permissions:
+      contents: write
+
+    env:
+      # Outranks `rust-toolchain.toml`, which would otherwise select the pinned
+      # nightly that this binary must not need.
+      RUSTUP_TOOLCHAIN: stable
+      # The oldest macOS the binaries run on, above rustc's own floor for the
+      # Intel target (10.12) so that both are the platform the README documents.
+      MACOSX_DEPLOYMENT_TARGET: '11.0'
+      # Kept in step with the binstall metadata `pkg-url` by a `cargo-hax` test.
+      ARCHIVE: cargo-hax-${{ matrix.target }}.tar.zst
+      # In the delete/re-upload window a `cargo binstall` finds nothing and
+      # silently builds from source. Checked per target, so a release that got
+      # only some of its archives is still completed by a later run.
+      PUBLISHED: ${{ contains(fromJSON(needs.tag.outputs.assets), format('cargo-hax-{0}.tar.zst', matrix.target)) }}
+
+    steps:
+      - uses: actions/checkout@v4
+        if: env.PUBLISHED != 'true'
+      - uses: dtolnay/rust-toolchain@stable
+        if: env.PUBLISHED != 'true'
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Build `cargo-hax`
+        if: env.PUBLISHED != 'true'
+        run: cargo build --locked --release -p cargo-hax --target ${{ matrix.target }}
+
+      # Compressed by the `zstd` command, which every image here ships, rather
+      # than by `tar` itself: whether its `--zstd` is available depends on how
+      # the `tar` of the image was built.
+      - name: Package the binary at the archive root
+        if: env.PUBLISHED != 'true'
+        run: |
+          set -o pipefail
+          tar -cf - -C target/${{ matrix.target }}/release cargo-hax \
+            | zstd -9 -T0 -o "$ARCHIVE"
+
+      - name: Release
+        if: env.PUBLISHED != 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.tag.outputs.tag }}
+          files: ${{ env.ARCHIVE }}
+
+  # Installs the release the way every user's `cargo binstall` does, once the
+  # archives it fetches are all published.
+  binstall:
+    needs: [tag, release-cargo-hax]
+    permissions:
+      contents: read
+    uses: ./.github/workflows/binstall.yml
+    with:
+      version: ${{ needs.tag.outputs.version }}
