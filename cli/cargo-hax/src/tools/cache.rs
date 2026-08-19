@@ -170,6 +170,48 @@ pub fn remove_version(tool: &str, version: &str) -> Result<Removal<bool>, String
     })
 }
 
+/// Delete the entire tool cache. Returns how many tool versions it held,
+/// including versions of tools this binary does not manage. The `tools`
+/// directory is renamed into a temporary sibling before deletion, so a
+/// concurrent reader observes an empty cache rather than a shrinking one.
+pub fn clean() -> Result<Removal<usize>, String> {
+    let root = cache_root()?;
+    sweep_staging(&root, ".clean-");
+    let dir = root.join("tools");
+    if !dir.is_dir() {
+        return Ok(Removal::done(0));
+    }
+    let subdirectories = |dir: &Path| -> Vec<PathBuf> {
+        std::fs::read_dir(dir)
+            .into_iter()
+            .flatten()
+            .filter_map(|entry| {
+                let entry = entry.ok()?;
+                let name = entry.file_name().into_string().ok()?;
+                (entry.file_type().ok()?.is_dir() && !name.starts_with('.')).then(|| entry.path())
+            })
+            .collect()
+    };
+    let removed = subdirectories(&dir)
+        .iter()
+        .map(|tool| subdirectories(tool).len())
+        .sum();
+    let staging = tempfile::Builder::new()
+        .prefix(".clean-")
+        .tempdir_in(&root)
+        .map_err(|e| format!("could not create a temporary directory: {e}"))?;
+    match std::fs::rename(&dir, staging.path().join("contents")) {
+        Ok(()) => {}
+        // A concurrent clean won the race.
+        Err(_) if !dir.exists() => return Ok(Removal::done(0)),
+        Err(e) => return Err(format!("could not move aside {}: {e}", dir.display())),
+    }
+    Ok(Removal {
+        result: removed,
+        leftover: delete_staging(staging),
+    })
+}
+
 /// Read a version directory's metadata. A missing file is `None` (the
 /// `bin/` convention applies); an unreadable one is an error, since the
 /// executables' locations may depend on it.

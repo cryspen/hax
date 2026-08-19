@@ -550,6 +550,9 @@ pub enum ToolsCommand {
         /// `charon@nightly-2026.07.01`) to remove from the cache.
         spec: String,
     },
+    /// Delete the entire tool cache. Later runs download what they need
+    /// again.
+    Clean,
 }
 
 impl<E: Extension> Command<E> {

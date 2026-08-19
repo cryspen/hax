@@ -189,5 +189,6 @@ pub fn run(command: &ToolsCommand, message_format: MessageFormat) -> i32 {
             all,
         } => subcommands::list(tool.as_deref(), *installed, *all, message_format),
         ToolsCommand::Remove { spec } => subcommands::remove(spec, message_format),
+        ToolsCommand::Clean => subcommands::clean(message_format),
     }
 }

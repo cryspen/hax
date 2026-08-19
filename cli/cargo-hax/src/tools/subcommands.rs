@@ -164,6 +164,27 @@ pub fn remove(spec: &str, message_format: MessageFormat) -> i32 {
     }
 }
 
+/// `cargo hax tools clean`: delete the entire tool cache. Idempotent:
+/// cleaning an empty or absent cache succeeds and reports zero removals.
+pub fn clean(message_format: MessageFormat) -> i32 {
+    match cache::clean() {
+        Ok(cache::Removal {
+            result: removed,
+            leftover,
+        }) => {
+            if let Some(message) = leftover {
+                HaxMessage::GenericWarning { message }.report(message_format, None);
+            }
+            HaxMessage::ToolsCleaned { removed }.report(message_format, None);
+            0
+        }
+        Err(message) => error(
+            format!("could not clean the tool cache: {message}"),
+            message_format,
+        ),
+    }
+}
+
 /// How many versions per tool `list` shows without `--all`.
 const LIST_RECENT: usize = 10;
 
