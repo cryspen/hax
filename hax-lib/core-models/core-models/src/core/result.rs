@@ -603,6 +603,17 @@ mod tests {
             );
         }
 
+        // `x == x` exercises the equal-payload `(Ok, Ok)` / `(Err, Err)` arms;
+        // two independent draws hit an equal `Err` pair about once in 512.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_eq_reflexive(x in any::<Result<u8, u8>>()) {
+            prop_assert!(crate::cmp::PartialEq::eq(
+                &x.clone().inject(),
+                &x.clone().inject()
+            ));
+        }
+
         // ----- Try (from_output / branch) -----------------------------------
         // std's `Try` is unstable, so these pin the model's documented
         // semantics (which mirror `?`): `from_output` injects into `Ok`,
