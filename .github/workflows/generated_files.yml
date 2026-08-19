@@ -1,0 +1,35 @@
+name: Make sure generated files are up-to-date
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+  flake_lock_up_to_date:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: DeterminateSystems/nix-installer-action@main
+    - name: Lock flake
+      run: nix flake lock
+    - name: Diff `flake.lock`
+      run: git diff --exit-code flake.lock
+
+  opam_file_up_to_date:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: DeterminateSystems/nix-installer-action@main
+    # `--inputs-from`: the nixpkgs pinned by `flake.lock`, the same one the
+    # engine is built with, not the registry's nixpkgs-unstable.
+    - name: Regenerate the opam file
+      run: >-
+        nix shell --inputs-from .. nixpkgs#ocaml nixpkgs#dune_3
+        -c dune build hax-engine.opam
+      working-directory: engine
+    - name: Diff the opam file
+      run: |
+        git diff --exit-code engine/hax-engine.opam \
+          || { echo "hax-engine.opam is out of date;" \
+            "commit the regenerated file shown above"; exit 1; }
