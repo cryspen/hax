@@ -363,19 +363,21 @@ pub fn run(
     let out_dir = lean_dir.join(&pkg_name).join("Extraction");
     let llbc_dir = lean_dir.join("llbc");
 
-    fs::create_dir_all(&out_dir).unwrap_or_else(|e| {
+    if let Err(e) = fs::create_dir_all(&out_dir) {
         HaxMessage::GenericError {
             message: format!("failed to create output directory: {}", e),
         }
         .report(message_format, None);
-    });
+        return true;
+    }
 
-    fs::create_dir_all(&llbc_dir).unwrap_or_else(|e| {
+    if let Err(e) = fs::create_dir_all(&llbc_dir) {
         HaxMessage::GenericError {
             message: format!("failed to create llbc directory: {}", e),
         }
         .report(message_format, None);
-    });
+        return true;
+    }
     let llbc_file = llbc_dir.join(format!(
         "{}.llbc",
         crate_name.as_deref().unwrap_or("output")
