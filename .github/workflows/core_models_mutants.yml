@@ -39,7 +39,7 @@ jobs:
             out: mutants.out
           - name: fstar
             target: mutants-fstar
-            out: mutants-fstar.out
+            out: mutants-fstar/mutants.out
     steps:
       - uses: actions/checkout@v5
         with:
@@ -92,7 +92,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: missed-fstar
-          path: hax-lib/core-models/mutants-fstar.out
+          path: hax-lib/core-models/mutants-fstar/mutants.out
 
       # Reporting only for now: the surviving set has to be triaged (a test each,
       # or `#[cfg_attr(test, mutants::skip)]` where the mutant is unkillable)
