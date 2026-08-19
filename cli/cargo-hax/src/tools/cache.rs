@@ -97,6 +97,31 @@ pub fn installed_versions(tool: &str) -> Vec<String> {
     versions
 }
 
+/// Remove an installed tool version. Returns whether the version was
+/// present. The directory is renamed into a temporary sibling before
+/// deletion, so a concurrent reader never observes a partially deleted
+/// version directory.
+pub fn remove_version(tool: &str, version: &str) -> Result<bool, String> {
+    let dir = version_dir(tool, version)?;
+    if !dir.is_dir() {
+        return Ok(false);
+    }
+    let staging = tempfile::Builder::new()
+        .prefix(".remove-")
+        .tempdir_in(tool_dir(tool)?)
+        .map_err(|e| format!("could not create a temporary directory: {e}"))?;
+    match std::fs::rename(&dir, staging.path().join("contents")) {
+        Ok(()) => {}
+        // A concurrent removal won the race.
+        Err(_) if !dir.exists() => return Ok(false),
+        Err(e) => return Err(format!("could not move aside {}: {e}", dir.display())),
+    }
+    staging
+        .close()
+        .map_err(|e| format!("could not delete the removed version: {e}"))?;
+    Ok(true)
+}
+
 /// Read a version directory's metadata. A missing file is `None` (the
 /// `bin/` convention applies); an unreadable one is an error, since the
 /// executables' locations may depend on it.
