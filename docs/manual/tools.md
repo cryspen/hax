@@ -40,6 +40,22 @@ cargo hax tools show
 
 When a member crate of a workspace overrides a version, `show` lists the differing entries under that crate.
 
+### `tools pin`
+
+`cargo hax tools pin` writes version pins into the current project's `hax.toml`, creating the file if it does not exist.
+
+```bash
+cargo hax tools pin                                # pin this release's defaults
+cargo hax tools pin charon@nightly-2026.07.01      # set one managed tool
+cargo hax tools pin lean@leanprover/lean4:v4.31.0  # set one declared version
+```
+
+Without an argument, `pin` writes the built-in default version of every managed tool and declared version, freezing what this release resolves to. Run it again after upgrading hax to move the pins forward. With a `<name>@<version>` argument, it sets that one entry: managed tools go to `[tools]`, declared versions to `[versions]`. A version this release's manifest does not know is written anyway, with a warning that installing it will go through the unverified fallback.
+
+Editing preserves the rest of the file: formatting, comments, and entries `pin` does not know. A tool pinned to a `path` is reported and left alone, since `pin` writes version entries only. Pointing a tool at a [local build](#using-a-local-build), and unpinning one, are done by hand.
+
+Inside a member crate of a workspace, `pin` writes that crate's own `hax.toml`, creating a [per-crate override](#per-crate-overrides) and warning that it does. Anywhere else it writes the workspace root's.
+
 ### `tools install`
 
 `cargo hax tools install`, run inside a project, downloads and caches everything that project resolves to (the union across all workspace crates: workspace pins, per-member overrides, and defaults). This is what you want in CI, or before going offline, so the later extraction run does not have to download anything.
@@ -84,7 +100,7 @@ Cached versions are always listed, even ones absent from this release's manifest
 
 Pinning versions is an advanced option, only needed when the defaults do not work for your project. hax neither checks nor guarantees that a pinned combination of `aeneas`, `charon`, Lean toolchain, and Lean library versions works together; testing that is your responsibility, including after upgrading hax.
 
-To pin versions for a project, commit a `hax.toml` at the workspace root. It has two tables.
+To pin versions for a project, commit a `hax.toml` at the workspace root. It has two tables. [`tools pin`](#tools-pin) writes this file for you.
 
 ```toml
 [tools]

@@ -546,6 +546,15 @@ pub enum ToolsCommand {
     /// Show which tool versions are active in the current project,
     /// and where each one comes from.
     Show,
+    /// Write version pins into the project's `hax.toml`, creating the
+    /// file when missing.
+    Pin {
+        /// A `<name>@<version>` specification to write as one entry,
+        /// accepting managed tools (e.g. `charon@nightly-2026.07.01`)
+        /// and declared versions (e.g. `lean@leanprover/lean4:v4.31.0`).
+        /// When absent, pins the built-in defaults of this release.
+        spec: Option<String>,
+    },
 }
 
 impl<E: Extension> Command<E> {

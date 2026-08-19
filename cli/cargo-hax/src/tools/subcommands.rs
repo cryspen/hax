@@ -10,7 +10,7 @@ use hax_types::diagnostics::message::{
 
 use super::defaults::defaults;
 use super::install::{Installed, ensure_installed};
-use super::project::ProjectContext;
+use super::project::{ProjectContext, ProjectLayout};
 use super::resolve::{Resolution, Resolved, resolve_tool, resolve_version};
 use super::{DECLARED_VERSION_KEYS, MANAGED_TOOLS, cache, manifest};
 
@@ -130,6 +130,169 @@ pub fn install(spec: Option<&str>, force: bool, message_format: MessageFormat) -
     }
     HaxMessage::ToolsInstalled { installed }.report(message_format, None);
     if failed { 1 } else { 0 }
+}
+
+/// `cargo hax tools pin`: write pins into `hax.toml`, creating the file
+/// when missing. Without an argument, pins this release's defaults, which
+/// is also how a project moves its pins forward after updating hax; with
+/// one, sets a single entry. Nothing is installed.
+pub fn pin(spec: Option<&str>, message_format: MessageFormat) -> i32 {
+    use super::pin::{Pin, Table};
+
+    let defaults = defaults();
+    let pins: Vec<Pin> = match spec {
+        Some(spec) => {
+            let Some((name, version)) = spec.split_once('@') else {
+                return error(
+                    format!("`{spec}` is not a `<name>@<version>` specification"),
+                    message_format,
+                );
+            };
+            let table = if MANAGED_TOOLS.contains(&name) {
+                Table::Tools
+            } else if DECLARED_VERSION_KEYS.contains(&name) {
+                Table::Versions
+            } else {
+                return error(
+                    format!(
+                        "`{name}` is not a pinnable name (tools: {}; versions: {})",
+                        MANAGED_TOOLS.join(", "),
+                        DECLARED_VERSION_KEYS.join(", ")
+                    ),
+                    message_format,
+                );
+            };
+            let validation = match table {
+                Table::Tools => manifest::validate_version_id(version),
+                Table::Versions => super::config::validate_declared_version(name, version),
+            };
+            if let Err(message) = validation {
+                return error(message, message_format);
+            }
+            // A version the manifest does not list is written anyway: it
+            // may postdate this release. Installing it will go through the
+            // unverified fallback, so say so now, at pin time.
+            if table == Table::Tools && !manifest::manifest().knows_version(name, version) {
+                HaxMessage::GenericWarning {
+                    message: format!(
+                        "{name} {version} is not in this release's manifest; installing \
+                         it will go through the unverified fallback"
+                    ),
+                }
+                .report(message_format, None);
+            }
+            vec![Pin {
+                table,
+                name: name.to_string(),
+                version: version.to_string(),
+            }]
+        }
+        None => MANAGED_TOOLS
+            .iter()
+            .map(|tool| Pin {
+                table: Table::Tools,
+                name: tool.to_string(),
+                version: defaults.tools[*tool].clone(),
+            })
+            .chain(DECLARED_VERSION_KEYS.iter().map(|key| Pin {
+                table: Table::Versions,
+                name: key.to_string(),
+                version: defaults.versions[*key].clone(),
+            }))
+            .collect(),
+    };
+
+    // Only the project layout is needed, not its configuration: pinning
+    // must work on a `hax.toml` that configuration loading rejects, since
+    // rewriting an entry is how such a file is repaired.
+    let layout = match ProjectLayout::load(message_format) {
+        Ok(layout) => layout,
+        Err(message) => return error(message, message_format),
+    };
+    let target_dir = pin_target_dir(&layout);
+    let path = target_dir.join("hax.toml");
+    let contents = match std::fs::read_to_string(&path) {
+        Ok(contents) => contents,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => String::new(),
+        Err(e) => {
+            return error(
+                format!("could not read {}: {e}", path.display()),
+                message_format,
+            );
+        }
+    };
+    let outcome = match super::pin::apply(&contents, &pins) {
+        Ok(outcome) => outcome,
+        Err(message) => {
+            return error(
+                format!("could not edit {}: {message}", path.display()),
+                message_format,
+            );
+        }
+    };
+    // The named entry of a `<name>@<version>` invocation was not written,
+    // so the request was not satisfied. The bare form pins whatever it can:
+    // a path entry there is the committed configuration doing its job, and
+    // is reported as a skip.
+    if spec.is_some() && outcome.changes.is_empty() && !outcome.skipped_paths.is_empty() {
+        return error(
+            format!(
+                "tool `{}` is pinned to a path; nothing was written to {}",
+                outcome.skipped_paths.join(", "),
+                path.display()
+            ),
+            message_format,
+        );
+    }
+    // The override is announced only when one is actually written: a run
+    // that changes nothing writes no file to warn about.
+    if !outcome.changes.is_empty() {
+        if target_dir != layout.workspace_root {
+            HaxMessage::GenericWarning {
+                message: format!(
+                    "writing a per-crate override for the member crate at {}; \
+                     run `cargo hax tools pin` at {} to pin the whole project",
+                    target_dir.display(),
+                    layout.workspace_root.display(),
+                ),
+            }
+            .report(message_format, None);
+        }
+        if let Err(e) = std::fs::write(&path, &outcome.contents) {
+            return error(
+                format!("could not write {}: {e}", path.display()),
+                message_format,
+            );
+        }
+    }
+    HaxMessage::ToolsPinned {
+        path,
+        changes: outcome.changes,
+        skipped: outcome.skipped_paths,
+    }
+    .report(message_format, None);
+    0
+}
+
+/// The directory whose `hax.toml` `pin` edits: the member crate the
+/// invocation directory is inside, if any (authoring an override for that
+/// crate), the workspace root otherwise. This is the one place where the
+/// invocation directory matters: reading never depends on it, but an
+/// override is written standing in the crate that wants it.
+fn pin_target_dir(layout: &ProjectLayout) -> std::path::PathBuf {
+    // `cargo metadata` reports canonical paths; canonicalize the invocation
+    // directory too, as the stray-file check does.
+    let Ok(invocation_dir) = std::env::current_dir().and_then(std::fs::canonicalize) else {
+        return layout.workspace_root.clone();
+    };
+    layout
+        .member_roots
+        .iter()
+        .filter(|root| **root != layout.workspace_root)
+        .filter(|root| invocation_dir.starts_with(root))
+        .max_by_key(|root| root.components().count())
+        .cloned()
+        .unwrap_or_else(|| layout.workspace_root.clone())
 }
 
 /// How many versions per tool `list` shows without `--all`.
