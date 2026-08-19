@@ -333,6 +333,35 @@ mod tests {
             prop_assert_eq!(super::slice::array_slice(&a, b, e), &a[b..e]);
         }
 
+        // `slice_index_mut`/`slice_slice_mut` have no caller in the F* models, and
+        // `array_map` none in the others.
+        #[test]
+        fn test_slice_index_mut(v in proptest::collection::vec(any::<u8>(), 1..20), i in 0usize..20, x in any::<u8>()) {
+            let i = i % v.len();
+            let mut model = v.clone();
+            *super::slice::slice_index_mut(&mut model, i) = x;
+            let mut expected = v;
+            expected[i] = x;
+            prop_assert_eq!(model, expected);
+        }
+
+        #[test]
+        fn test_slice_slice_mut(v in proptest::collection::vec(any::<u8>(), 1..20), i in 0usize..20, len in 0usize..20, x in any::<u8>()) {
+            let b = i % v.len();
+            let e = (b + len).min(v.len());
+            let mut model = v.clone();
+            super::slice::slice_slice_mut(&mut model, b, e).fill(x);
+            let mut expected = v;
+            expected[b..e].fill(x);
+            prop_assert_eq!(model, expected);
+        }
+
+        #[test]
+        fn test_array_map(a in any::<[u8; 4]>(), table in any::<[u8; 256]>()) {
+            let f = |x: u8| table[x as usize];
+            prop_assert_eq!(super::slice::array_map(a, f), a.map(f));
+        }
+
         #[test]
         fn test_seq_one(x in any::<u8>()) {
             let s = super::sequence::seq_one(x);
