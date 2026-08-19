@@ -373,19 +373,25 @@ pub fn run(
     let out_dir = lean_dir.join(&lib_name).join("Extraction");
     let llbc_dir = lean_dir.join("llbc");
 
-    fs::create_dir_all(&out_dir).unwrap_or_else(|e| {
-        HaxMessage::GenericError {
-            message: format!("failed to create output directory: {}", e),
+    // An overridden layout moves the output away from `out_dir`: creating
+    // the default tree would leave an unused directory behind.
+    if !layout_overridden {
+        if let Err(e) = fs::create_dir_all(&out_dir) {
+            HaxMessage::GenericError {
+                message: format!("failed to create output directory: {}", e),
+            }
+            .report(message_format, None);
+            return true;
         }
-        .report(message_format, None);
-    });
+    }
 
-    fs::create_dir_all(&llbc_dir).unwrap_or_else(|e| {
+    if let Err(e) = fs::create_dir_all(&llbc_dir) {
         HaxMessage::GenericError {
             message: format!("failed to create llbc directory: {}", e),
         }
         .report(message_format, None);
-    });
+        return true;
+    }
     // Named like the rustc crate, whose name a dashed cargo name yields
     // with the dashes replaced.
     let llbc_file = llbc_dir.join(format!(
