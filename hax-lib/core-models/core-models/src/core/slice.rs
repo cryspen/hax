@@ -175,6 +175,8 @@ impl<T> Slice<T> {
     // limitation as `alloc`'s `Vec::drain`).
     #[cfg_attr(coverage_nightly, coverage(off))]
     #[hax_lib::opaque]
+    // mutants::skip: excluded from coverage above, so no test can kill a mutant here.
+    #[cfg_attr(test, mutants::skip)]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
     where
         T: Copy,
