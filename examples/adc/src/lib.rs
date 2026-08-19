@@ -39,7 +39,10 @@
 //!   a + b + carry_in == sum + carry_out * 2^32
 //! ```
 //!
-//! where the left-hand side is computed in `u64` to avoid overflow.
+//! where the equality is stated over mathematical (unbounded) integers via
+//! `hax_lib::int`, so the arithmetic cannot overflow.
+
+use hax_lib::int::*;
 
 /// 32-bit addition with carry.
 ///
@@ -60,8 +63,8 @@
 #[hax_lib::ensures(|result| {
     let (sum, carry_out) = result;
     carry_out <= 1
-        && (a as u64 + b as u64 + carry_in as u64)
-            == (sum as u64 + ((carry_out as u64) << 32u64))
+        && (a.to_int() + b.to_int() + carry_in.to_int())
+            == (sum.to_int() + carry_out.to_int() * int!(32).pow2())
 })]
 pub fn adc_u32(a: u32, b: u32, carry_in: u32) -> (u32, u32) {
     // Widen to u64 so the addition cannot overflow.

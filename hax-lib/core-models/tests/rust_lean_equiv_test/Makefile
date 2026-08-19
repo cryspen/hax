@@ -1,63 +1,40 @@
-CHARON ?= charon
-AENEAS ?= aeneas
+# Rust↔Lean equivalence test
 
-CRATE_NAME = rust_lean_tests
-LLBC_FILE = $(CRATE_NAME).llbc
-LEAN_DIR = lean
-# `-subdir RustLeanTests` makes Aeneas place its output at
-# $(LEAN_DIR)/RustLeanTests/ AND emit `import RustLeanTests.<X>` rather
-# than the auto-derived module prefix.
-SUBDIR = RustLeanTests
+HAX ?= cargo hax
+LEAN_DIR = source/proofs/lean
+EXTRACTION_DIR = $(LEAN_DIR)/RustLeanTests/Extraction
 
-.PHONY: all llbc extract gen-lean-tests cargo-test build clean
+.PHONY: all cargo-test extract gen-lean-tests build clean
 
 all: cargo-test build
 
-# Rust-side half of the rust↔lean equivalence check: every
-# `#[rust_lean_test]` function generates a `#[cfg(test)] #[test]` wrapper
-# that asserts it returns `true`. The Lean-side half is the `#guard`s
-# emitted by `gen_lean_tests.py` (see `gen-lean-tests` below).
+# Rust-side half: every `#[rust_lean_test]` generates a `#[cfg(test)]
+# #[test]` wrapper that asserts the function returns `true`. The Lean-side
+# half is the `#guard`s built below.
 cargo-test:
 	cd source && cargo test --lib
 
-# 1. Run charon to produce LLBC from the source crate.
-# `--dest-file` must be absolute: since the parent `tests/` is a cargo
-# workspace, charon resolves relative paths against the workspace root,
-# not the source subcrate.
-$(LLBC_FILE): $(shell find source/src -name '*.rs') source/Cargo.toml
-	cd source && $(CHARON) cargo --preset=aeneas --dest-file $(abspath $(LLBC_FILE))
+# 1. Extract Rust -> Lean with hax. Output
+#    lands in `source/proofs/lean/RustLeanTests/Extraction/`.
+extract:
+	cd source && $(HAX) into lean
 
-llbc: $(LLBC_FILE)
-
-# 2. Run Aeneas to extract Lean files into $(LEAN_DIR)/$(SUBDIR)/.
-extract: $(LLBC_FILE)
-	$(AENEAS) -core-models-lib -backend lean $(LLBC_FILE) -split-files \
-		-dest $(LEAN_DIR) -subdir $(SUBDIR)
-	# Aeneas writes `*External_Template.lean` files alongside its
-	# real output. Our hand-written `FunsExternal.lean` /
-	# `TypesExternal.lean` stubs satisfy the imports — drop the
-	# templates so Lake doesn't pick them up by mistake.
-	rm -f $(LEAN_DIR)/$(SUBDIR)/FunsExternal_Template.lean
-	rm -f $(LEAN_DIR)/$(SUBDIR)/TypesExternal_Template.lean
-
-# 3. Generate `lean/RustLeanTests/LeanTests.lean` — one
-#    `#guard <name> == .ok true` per `#[rust_lean_test]` function in
-#    `source/src/lib.rs`. Depends on `extract` so the gen script can
-#    look up each test's fully-qualified Lean name in `Funs.lean`.
+# 2. Generate `RustLeanTests/LeanTests.lean` — one `#guard <name> == .ok
+#    true` per `#[rust_lean_test]` function. Depends on `extract` so the gen
+#    script can look up each test's fully-qualified Lean name in `Funs.lean`.
 gen-lean-tests: extract
 	python3 gen_lean_tests.py
 
-# 4. Build the Lean library — this is where the `#guard`s fire.
+# 3. Build the Lean library — this is where the `#guard`s fire.
 build: gen-lean-tests
 	cd $(LEAN_DIR) && lake exe cache get && lake build
 
-# Only remove files Aeneas re-generates; keep the hand-written
-# `FunsExternal.lean` / `TypesExternal.lean` stubs in $(SUBDIR).
+# Remove only the Aeneas-generated files and the generated `LeanTests.lean`;
+# keep the hand-written project files.
 clean:
-	rm -f $(LLBC_FILE)
-	rm -f $(LEAN_DIR)/$(SUBDIR)/Funs.lean
-	rm -f $(LEAN_DIR)/$(SUBDIR)/Types.lean
-	rm -f $(LEAN_DIR)/$(SUBDIR)/FunsExternal_Template.lean
-	rm -f $(LEAN_DIR)/$(SUBDIR)/TypesExternal_Template.lean
-	rm -f $(LEAN_DIR)/$(SUBDIR)/LeanTests.lean
-	rm -rf $(LEAN_DIR)/.lake
+	rm -f $(EXTRACTION_DIR)/Funs.lean \
+	      $(EXTRACTION_DIR)/Types.lean \
+	      $(EXTRACTION_DIR)/FunsExternal_Template.lean \
+	      $(EXTRACTION_DIR)/TypesExternal_Template.lean \
+	      $(LEAN_DIR)/RustLeanTests/LeanTests.lean
+	rm -rf $(LEAN_DIR)/llbc $(LEAN_DIR)/.lake
