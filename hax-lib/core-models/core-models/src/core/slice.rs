@@ -1436,7 +1436,6 @@ mod tests {
     }
 
     // `Index<I> for [T]` panics through its `Option::None` arm.
-    #[cfg(not(hax_backend_fstar))]
     #[test]
     fn test_unsized_index_out_of_bounds_panics() {
         let (model, real): (&[u8], [u8; 3]) = (&[1u8, 2, 3], [1u8, 2, 3]);

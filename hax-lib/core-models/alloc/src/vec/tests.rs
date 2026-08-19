@@ -247,6 +247,23 @@ proptest! {
     }
 }
 
+// The F* variant models no `IntoIterator` for `Vec`, so its `IntoIter` has to be
+// built by hand.
+#[cfg(hax_backend_fstar)]
+proptest! {
+    #[test]
+    fn test_into_iter_direct(v in prop::collection::vec(any::<u8>(), 0..30)) {
+        let mut it = super::into_iter::IntoIter(
+            rust_primitives::sequence::seq_from_boxed_slice(v.clone().into_boxed_slice()),
+        );
+        let mut collected = std::vec::Vec::new();
+        while let Some(x) = it.next() {
+            collected.push(x);
+        }
+        prop_assert_eq!(collected.as_slice(), v.as_slice());
+    }
+}
+
 // ----- panics ----------------------------------------------------------------
 
 fn vec_of(n: usize) -> (super::Vec<u8>, Vec<u8>) {

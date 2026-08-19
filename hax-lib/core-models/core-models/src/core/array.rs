@@ -202,6 +202,46 @@ mod tests {
 
     use proptest::prelude::*;
 
+    // Under the F* cfg `map` takes a `fn` pointer plus a phantom `F: FnOnce<..>`
+    // parameter (the backend types the function through it). Nothing in the model
+    // implements that trait, so the test supplies a witness.
+    #[cfg(hax_backend_fstar)]
+    mod fstar_map {
+        use crate::testing::Inject;
+        use proptest::prelude::*;
+
+        fn triple(x: u8) -> u8 {
+            x.wrapping_mul(3)
+        }
+
+        struct Triple;
+
+        impl crate::ops::function::FnOnce<u8> for Triple {
+            type Output = u8;
+            fn call_once(&self, args: u8) -> u8 {
+                triple(args)
+            }
+        }
+
+        proptest! {
+            #[test]
+            fn test_map(arr in any::<[u8; 4]>()) {
+                prop_assert_eq!(
+                    super::super::Array::<u8, 4>::map::<Triple, u8>(arr.inject(), triple),
+                    arr.map(triple)
+                );
+            }
+
+            #[test]
+            fn test_witness_call_once(x in any::<u8>()) {
+                prop_assert_eq!(
+                    crate::ops::function::FnOnce::call_once(&Triple, x),
+                    triple(x)
+                );
+            }
+        }
+    }
+
     proptest! {
         // Under the F* cfg `map` takes a `fn`, which this closure can't coerce to.
         #[cfg(not(hax_backend_fstar))]
