@@ -114,7 +114,7 @@ The command `cargo hax` accepts the following subcommands:
 
 | Backend               | Command                      | Description                                                                                                                   |
 |-----------------------|------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| **Lean** (via Aeneas) | `cargo hax into lean`        | Recommended for Lean. Uses [charon](https://github.com/AeneasVerif/charon) + [aeneas](https://github.com/AeneasVerif/aeneas). |
+| **Lean** (via Aeneas) | `cargo hax into lean`        | Recommended for Lean. Uses [Charon](https://github.com/AeneasVerif/charon) + [Aeneas](https://github.com/AeneasVerif/aeneas). |
 | Lean (legacy)         | `cargo hax into legacy-lean` | Uses the hax engine directly. Prefer `lean`.                                                                                  |
 | F\*                   | `cargo hax into fstar`       | Stable.                                                                                                                       |
 | Rocq/Coq              | `cargo hax into coq`         | Experimental.                                                                                                                 |
@@ -128,95 +128,72 @@ Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimi
 
 hax is supported on Linux and macOS, on both `x86_64` and `aarch64`. Windows is not supported; use [WSL](https://learn.microsoft.com/windows/wsl/) there.
 
-<details open>
-  <summary><b>Manual installation</b></summary>
+All methods below install hax itself; the target provers (Lean, F\*, ...) must be installed separately (see the [manual](https://hax.cryspen.com/manual/)).
 
-1. Make sure to have the following installed on your system:
+### For the Lean backend
 
-  - [`opam`](https://opam.ocaml.org/)
-  - [`rustup`](https://rustup.rs/)
-  - [`nodejs`](https://nodejs.org/)
-  - [`jq`](https://jqlang.github.io/jq/)
+The Lean backend runs the [Charon](https://github.com/AeneasVerif/charon) + [Aeneas](https://github.com/AeneasVerif/aeneas) pipeline instead of the hax engine, so from hax 0.4.0 onwards it needs no other hax component than the `cargo-hax` binary.
 
-2. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
-3. Create (or use an existing) opam *switch* by running `opam switch create hax 5.1.1`
-3. Run the [setup.sh](./setup.sh) script: `./setup.sh`.
-   This installs hax; aeneas and charon are downloaded on demand when first needed.
-4. Run `cargo-hax --help`
-
-</details>
-
-<details>
-  <summary><b>Nix</b></summary>
-
- This should work on [Linux](https://nixos.org/download/#nix-install-linux) and [MacOS](https://nixos.org/download/#nix-install-macos).
-
-<details>
-  <summary><b>Prerequisites:</b> <a href="https://nixos.org/">Nix package
-manager</a> <i>(with <a href="https://wiki.nixos.org/wiki/Flakes">flakes</a> enabled)</i></summary>
-
-  - Either using the [Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer), with the following bash one-liner:
-    ```bash
-    curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-    ```
-  - or following [those steps](https://github.com/mschwaig/howto-install-nix-with-flake-support).
-
-</details>
-
-+ **Run hax on a crate directly** to get Lean/F\*/Coq/... (assuming you are in the crate's folder):
-   - `nix run github:cryspen/hax -- into fstar` extracts F*.
-
-+ **Install hax**:  `nix profile install github:cryspen/hax`, then run `cargo hax --help` anywhere
-+ **Note**: in any of the Nix commands above, replace `github:cryspen/hax` by `./dir` to compile a local checkout of hax that lives in `./some-dir`
-+ **Setup binary cache**: [using Cachix](https://app.cachix.org/cache/hax), just `cachix use hax`
-
-**Note:** the `lean` backend downloads its aeneas and charon binaries on demand (see *Aeneas and Charon* below); no extra install step is needed.
-
-</details>
-
-<details>
-  <summary><b>Using Docker</b></summary>
-
-1. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
-3. Build the docker image: `docker build -f .docker/Dockerfile . -t hax`
-4. Get a shell: `docker run -it --rm -v /some/dir/with/a/crate:/work hax bash`
-5. You can now run `cargo-hax --help` (notice here we use `cargo-hax` instead of `cargo hax`)
-
-Note: Please make sure that `$HOME/.cargo/bin` is in your `$PATH`, as
-that is where `setup.sh` will install hax.
-
-**Note:** the `lean` backend downloads its aeneas and charon binaries on demand (see *Aeneas and Charon* below); no extra install step is needed.
-
-</details>
-
-<details>
-  <summary><b>Aeneas and Charon (standalone)</b></summary>
-
-The `lean` backend (`cargo hax into lean`) uses the
-[charon](https://github.com/AeneasVerif/charon) +
-[aeneas](https://github.com/AeneasVerif/aeneas) pipeline instead of
-the hax engine.  It requires the `aeneas` and `charon` binaries.
-
-Their versions are managed by hax: pre-built binaries are downloaded on demand, verified against the version manifest shipped with the release, and cached under `$XDG_CACHE_HOME/hax/tools/`. To see the active versions or pre-populate the cache (e.g. in CI or before going offline), run, inside your project:
+Prerequisites: a C compiler and [`rustup`](https://rustup.rs/) (used by Charon at extraction time).
 
 ```bash
-cargo hax tools show
-cargo hax tools install
+cargo install --locked cargo-hax
 ```
 
-The default versions shipped with a hax release are tested together and are the recommended choice. Pinning versions yourself is an advanced option: combinations other than the defaults are untested, so establishing that one works is up to you. To pin versions for a project, declare them in a `hax.toml` at your project's root:
+`--locked` uses the dependency versions the release was tested with.
+
+Aeneas and Charon themselves need no install step: hax downloads pre-built binaries on demand. See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in the manual for how they are managed, pinning versions per project, and using your own binaries.
+
+#### From the repository
+
+To use an unreleased version of `cargo-hax`, install it from a checkout:
+
+```bash
+git clone https://github.com/cryspen/hax.git && cd hax
+cargo install --locked --path cli/cargo-hax
+```
+
+#### Pinning hax per project
+
+[`cargo-run-bin`](https://github.com/dustinblackman/cargo-run-bin) can pin hax per project, next to the version of `hax-lib` the project depends on:
 
 ```toml
-[tools]
-aeneas = "nightly-2026.07.01"
-charon = "nightly-2026.07.01"
+[package.metadata.bin]
+# The version of hax to use, matching the `hax-lib` the project depends on.
+cargo-hax = { version = "<version>", bins = ["cargo-hax"], locked = true }
 ```
 
-You can also build or install `aeneas` and `charon` yourself (e.g. from source) and point to them with a `path` entry in `hax.toml` (e.g. `charon = { path = "vendor/bin/charon" }`).
+hax is then invoked as `cargo bin cargo-hax` instead of `cargo hax`, and the pinned version is installed on first use. Running `cargo bin --sync-aliases` once adds an alias to the project's `.cargo/config.toml`, so that the usual `cargo hax` invocation uses the pinned version as well.
 
-See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in the manual for the full reference (`cargo hax tools`, the `hax.toml` schema, resolution order, and the `hax-lib` compatibility check).
+### For all backends
 
-</details>
+The F\*, Rocq/Coq, ProVerif, SSProve, EasyCrypt, and legacy Lean backends need the hax frontend driver and engine as well. Each method below installs everything, including `cargo-hax`:
+
+#### Manual installation
+
+Prerequisites: a C compiler, [`opam`](https://opam.ocaml.org/), [`rustup`](https://rustup.rs/), [`nodejs`](https://nodejs.org/), and [`jq`](https://jqlang.github.io/jq/).
+
+1. Clone this repo: `git clone https://github.com/cryspen/hax.git && cd hax`
+2. Create (or use an existing) opam *switch* by running `opam switch create hax 5.1.1`
+3. Run the [setup.sh](./setup.sh) script: `./setup.sh`
+
+#### Nix
+
+Prerequisites: the [Nix package manager](https://nixos.org/) with [flakes](https://wiki.nixos.org/wiki/Flakes) enabled, e.g. installed via the [Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer).
+
+Install hax with `nix profile install github:cryspen/hax`.
+
+Alternatively, run hax on a crate without installing it (from the crate's folder): `nix run github:cryspen/hax -- into <backend>`. To speed up builds with the [hax binary cache](https://app.cachix.org/cache/hax), run `cachix use hax`.
+
+#### Docker
+
+Prerequisites: [Docker](https://docs.docker.com/get-started/get-docker/).
+
+1. Clone this repo: `git clone https://github.com/cryspen/hax.git && cd hax`
+2. Build the docker image: `docker build -f .docker/Dockerfile . -t hax`
+3. Get a shell: `docker run -it --rm -v /some/dir/with/a/crate:/work hax bash`
+
+Inside the container, hax is invoked as `cargo-hax` instead of `cargo hax`.
 
 ## Supported Subset of the Rust Language
 
@@ -248,6 +225,8 @@ The flake provides several dev shells:
 | `nix develop .#ci-examples` | Running `examples/` against a hax built by the flake, rather than one you build from source. Used by CI. |
 
 The first three shells give you the toolchain to build hax, not a `cargo-hax` binary: run `just build` first (see [below](#compiling-formatting-and-more)).
+
+In any Nix command from the *Installation* section, replace `github:cryspen/hax` by `./some-dir` to compile a local checkout of hax that lives in `./some-dir`.
 
 ### Structure of this repository
 

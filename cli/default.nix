@@ -19,6 +19,7 @@ let
         || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
     inherit buildInputs doCheck;
+    cargoExtraArgs = "--locked";
     doNotRemoveReferencesToRustToolchain = true;
   } // (if doCheck then {
     # [cargo test] builds independent workspaces. Each time another
@@ -31,19 +32,65 @@ let
     { });
   # hax dependencies (without hax itself)
   cargoArtifacts = craneLib.buildDepsOnly (commonArgs // { pname = pname; });
-  # hax with cargo artifact for incremental compilation
-  hax_with_artifacts = craneLib.buildPackage (commonArgs // {
+  # `cargo-hax` alone, matching a plain `cargo install cargo-hax`: built in its
+  # own invocation, scoped to just that package. `hax-driver` (below) needs
+  # `hax-frontend-exporter/rustc` (`rustc_private`); building it in the same
+  # `cargo build` as `cargo-hax` unifies that feature onto the copy of
+  # `hax-frontend-exporter` `cargo-hax` also links, even though `cargo-hax`'s
+  # own code isn't written against the `rustc_private` sysroot crates it would
+  # pull in, which rustc reports as duplicated crates.
+  hax_bin = craneLib.buildPackage (commonArgs // {
+    inherit cargoArtifacts;
+    pname = "cargo-hax";
+    doInstallCargoArtifacts = true;
+    cargoExtraArgs = "--locked -p cargo-hax";
+  });
+  # The rest of the workspace: `hax-driver`, the custom rustc driver
+  # `cargo-hax` shells out to (needs `rustc_private`), plus the other
+  # default-member libraries and binaries. The selection is `default-members`
+  # of the workspace manifest minus `cargo-hax`; there is no cargo flag
+  # expressing that, so it is derived here. Package names are read from each
+  # member's own manifest, as they differ from the directory names.
+  driver-and-libs-packages = map (member:
+    (builtins.fromTOML
+      (builtins.readFile (../. + "/${member}/Cargo.toml"))).package.name)
+    (builtins.filter (member: member != "cli/cargo-hax")
+      (builtins.fromTOML
+        (builtins.readFile ../Cargo.toml)).workspace.default-members);
+  hax_driver_and_libs = craneLib.buildPackage (commonArgs // {
     inherit cargoArtifacts pname;
     doInstallCargoArtifacts = true;
+    cargoExtraArgs = "--locked "
+      + lib.concatMapStringsSep " " (p: "-p ${p}") driver-and-libs-packages;
+  });
+  # `hax-export-json-schemas`, which the OCaml engine's build consumes. Built
+  # apart from the rest, scoped to `cargo-hax` alone for the same reason as
+  # `hax_bin`, on whose artifacts it builds so that only what the feature
+  # changes is recompiled.
+  hax_export_json_schemas = craneLib.buildPackage (commonArgs // {
+    cargoArtifacts = hax_bin;
+    pname = "hax-export-json-schemas";
+    cargoExtraArgs =
+      "--locked -p cargo-hax --bin hax-export-json-schemas --features cargo-hax/legacy-engine";
   });
   # hax without cargo artifacts: only binaries
   hax = stdenv.mkDerivation {
-    name = hax_with_artifacts.name;
+    name = "hax-${commonArgs.version}";
     unpackPhase = "true";
     buildPhase = "true";
     installPhase = ''
-      mkdir -p $out
-      cp -r ${hax_with_artifacts}/bin $out/bin
+      mkdir -p $out/bin
+      cp ${hax_bin}/bin/cargo-hax $out/bin/
+      cp -r ${hax_driver_and_libs}/bin/. $out/bin/
+      cp ${hax_export_json_schemas}/bin/hax-export-json-schemas $out/bin/
+      # Copied as a whole above, so a package the selection no longer covers
+      # would otherwise go missing unnoticed.
+      for binary in driver-hax-frontend-exporter test-driver; do
+        test -x $out/bin/$binary || {
+          echo "not built by hax_driver_and_libs: $binary"
+          exit 1
+        }
+      done
     '';
   };
   hax_rust_engine = craneLib.buildPackage (commonArgs // {
@@ -104,10 +151,15 @@ in stdenv.mkDerivation {
     unwrapped = hax;
     hax-engine-names-extract = craneLib.buildPackage (commonArgs // {
       pname = "hax_engine_names_extract";
+      # This builds from `engine/names/extract`, where `cargo-hax` is not a
+      # selectable package.
+      cargoExtraArgs = "--locked";
       cargoLock = ../Cargo.lock;
       cargoToml = ../engine/names/extract/Cargo.toml;
-      cargoArtifacts = hax_with_artifacts;
-      nativeBuildInputs = [ hax_with_artifacts ];
+      cargoArtifacts = hax_driver_and_libs;
+      # `build.rs` here shells out to `cargo-hax`, which in turn needs
+      # `hax-driver` on `PATH`: both are needed, not just `hax_driver_and_libs`.
+      nativeBuildInputs = [ hax ];
       postUnpack = ''
         cd $sourceRoot/engine/names/extract
         sourceRoot="."

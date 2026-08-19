@@ -32,8 +32,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
 
+      # `cargo-hax` is tested apart from `hax-driver`: the driver enables
+      # `hax-frontend-exporter/rustc` (`rustc_private`), and a shared
+      # invocation would unify that feature onto the copy `cargo-hax` also
+      # links, which its own code is not written against.
       - name: Test
-        run: cargo test --workspace --exclude hax-engine-names-extract --exclude hax-rust-engine --verbose
+        run: >
+          cargo test --workspace --exclude hax-engine-names-extract
+          --exclude hax-rust-engine --exclude cargo-hax --verbose
+
+      - name: Test `cargo-hax`
+        run: cargo test -p cargo-hax --verbose
 
       - name: Test `hax-frontend-exporter` with feature `rustc` off
         run: cargo check -p hax-frontend-exporter --no-default-features --verbose
