@@ -33,7 +33,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        # 0-based: `--shard 4/4` is out of range and silently tests almost
+        # nothing rather than failing.
+        shard: [0, 1, 2, 3]
     steps:
       - uses: actions/checkout@v5
 
