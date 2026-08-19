@@ -348,6 +348,14 @@ mod tests {
         }
 
         #[test]
+        fn test_try_into(x in any::<u32>()) {
+            prop_assert_eq!(
+                super::TryInto::<u8>::try_into(x.inject()),
+                u8::try_from(x).inject()
+            );
+        }
+
+        #[test]
         fn test_try_from_slice_to_array_length_mismatch(arr in any::<[u8; 3]>()) {
             prop_assert_eq!(
                 <[u8; 4] as super::TryFrom<&[u8]>>::try_from(arr.as_slice()).ok(),

@@ -170,7 +170,11 @@ impl<T> Slice<T> {
         rust_primitives::slice::slice_contains(s, v)
     }
     /// See [`std::slice::copy_within`]
-    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    // Excluded from coverage: `R` carries no `RangeBounds` bound, so the source
+    // range cannot be read out of it and there is no body to run (same
+    // limitation as `alloc`'s `Vec::drain`).
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    #[hax_lib::opaque]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
     where
         T: Copy,
@@ -183,7 +187,17 @@ impl<T> Slice<T> {
     where
         T: crate::cmp::Ord,
     {
-        todo!()
+        let mut low = 0;
+        let mut high = Self::len(s);
+        while low < high {
+            let mid = low + (high - low) / 2;
+            match crate::cmp::Ord::cmp(rust_primitives::slice::slice_index(s, mid), x) {
+                crate::cmp::Ordering::Less => low = mid + 1,
+                crate::cmp::Ordering::Greater => high = mid,
+                crate::cmp::Ordering::Equal => return Result::Ok(mid),
+            }
+        }
+        Result::Err(low)
     }
     /// See [`std::slice::get`]
     fn get<I: SliceIndex<[T]>>(s: &[T], index: I) -> Option<&<I as SliceIndex<[T]>>::Output> {
@@ -1036,6 +1050,28 @@ mod tests {
             );
         }
 
+        // A shared prefix guarantees at least one `Equal` element comparison,
+        // which two independent slices only reach by chance.
+        #[test]
+        fn test_slice_cmp_shared_prefix(
+            prefix in prop::collection::vec(any::<u8>(), 1..=4),
+            a_tail in prop::collection::vec(any::<u8>(), 0..=4),
+            b_tail in prop::collection::vec(any::<u8>(), 0..=4),
+        ) {
+            let mut a = prefix.clone();
+            a.extend(a_tail);
+            let mut b = prefix;
+            b.extend(b_tail);
+            prop_assert_eq!(
+                <[u8] as crate::cmp::Ord>::cmp(&a[..], &b[..]),
+                a[..].cmp(&b[..]).inject()
+            );
+            prop_assert_eq!(
+                <[u8] as crate::cmp::PartialOrd<[u8]>>::partial_cmp(&a[..], &b[..]),
+                a[..].partial_cmp(&b[..]).inject()
+            );
+        }
+
         // `[T]: PartialEq<[U; N]>` — slice vs array (`s == [..]`). `use_equal`
         // biases toward the equal case, which random slices rarely hit.
         #[test]
@@ -1179,6 +1215,149 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        // ----- binary_search -------------------------------------------------
+
+        // Sorted and deduplicated, so std's "any matching index" is the only one
+        // and the two results can be compared exactly. `needle` is drawn from the
+        // same domain, hitting both the `Ok` and the `Err` side.
+        #[test]
+        fn test_binary_search(
+            values in prop::collection::vec(0u8..=30, 0..=12),
+            needle in 0u8..=30,
+        ) {
+            let mut sorted = values;
+            sorted.sort();
+            sorted.dedup();
+            prop_assert_eq!(
+                Slice::binary_search(&sorted[..], &needle),
+                sorted.binary_search(&needle).inject()
+            );
+        }
+
+        // ----- SliceIndex::index and Index for [T] ---------------------------
+
+        #[test]
+        fn test_slice_index_trait_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4) {
+            use crate::slice::index::SliceIndex;
+            prop_assert_eq!(SliceIndex::index(idx, &slice[..]), &slice[idx]);
+        }
+
+        #[test]
+        fn test_slice_index_trait_range(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..8, len in 0usize..8) {
+            use crate::slice::index::SliceIndex;
+            let end = (start + len).min(8);
+            prop_assert_eq!(
+                SliceIndex::index(crate::ops::range::Range { start, end }, &slice[..]),
+                &slice[start..end]
+            );
+        }
+
+        #[test]
+        fn test_slice_index_trait_range_to(slice in prop::collection::vec(any::<u8>(), 8..=8), end in 0usize..=8) {
+            use crate::slice::index::SliceIndex;
+            prop_assert_eq!(
+                SliceIndex::index(crate::ops::range::RangeTo { end }, &slice[..]),
+                &slice[..end]
+            );
+        }
+
+        #[test]
+        fn test_slice_index_trait_range_from(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..=8) {
+            use crate::slice::index::SliceIndex;
+            prop_assert_eq!(
+                SliceIndex::index(crate::ops::range::RangeFrom { start }, &slice[..]),
+                &slice[start..]
+            );
+        }
+
+        #[test]
+        fn test_slice_index_trait_range_full(slice in prop::collection::vec(any::<u8>(), 0..=8)) {
+            use crate::slice::index::SliceIndex;
+            prop_assert_eq!(
+                SliceIndex::index(crate::ops::range::RangeFull, &slice[..]),
+                &slice[..]
+            );
+        }
+
+        // `Index<I> for [T]`, as opposed to the `Index for &[T]` impls the
+        // `test_index_*` tests above reach.
+        #[test]
+        fn test_unsized_index_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4) {
+            prop_assert_eq!(
+                <[u8] as crate::ops::index::Index<usize>>::index(&slice[..], idx),
+                &slice[idx]
+            );
+        }
+
+        // ----- in-bounds `get` / `get_mut` on `usize` ------------------------
+        //
+        // The `test_get_usize` / `test_get_mut_usize` tests above draw the index
+        // from the whole `usize` range, so they only ever see `None`.
+
+        #[test]
+        fn test_get_usize_in_bounds(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in 0usize..10) {
+            let idx = idx % slice.len();
+            prop_assert_eq!(
+                Slice::get(&slice[..], idx).map(|v: &u8| *v),
+                slice.get(idx).copied().inject()
+            );
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_get_mut_usize_in_bounds(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in 0usize..10, v in any::<u8>()) {
+            let idx = idx % slice.len();
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            if let crate::option::Option::Some(r) = Slice::get_mut(&mut model[..], idx) {
+                *r = v;
+            }
+            if let Some(r) = std_slice.get_mut(idx) {
+                *r = v;
+            }
+            prop_assert_eq!(model, std_slice);
+        }
+
+        // ----- IntoIterator for &[T] -----------------------------------------
+
+        #[test]
+        fn test_slice_into_iter(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            let it = crate::iter::traits::collect::IntoIterator::into_iter(&slice[..]);
+            prop_assert_eq!(drain(it), slice.iter().collect::<Vec<_>>());
+        }
+
+        // ----- get_unchecked_mut for the remaining range kinds ---------------
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_get_unchecked_mut_range_from(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..=8, v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            Slice::get_unchecked_mut(&mut model[..], crate::ops::range::RangeFrom { start }).fill(v);
+            unsafe { std_slice.get_unchecked_mut(start..).fill(v); }
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_get_unchecked_mut_range_to(slice in prop::collection::vec(any::<u8>(), 8..=8), end in 0usize..=8, v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            Slice::get_unchecked_mut(&mut model[..], crate::ops::range::RangeTo { end }).fill(v);
+            unsafe { std_slice.get_unchecked_mut(..end).fill(v); }
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_get_unchecked_mut_range_full(slice in prop::collection::vec(any::<u8>(), 0..=8), v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            Slice::get_unchecked_mut(&mut model[..], crate::ops::range::RangeFull).fill(v);
+            unsafe { std_slice.get_unchecked_mut(..).fill(v); }
+            prop_assert_eq!(model, std_slice);
+        }
+
         #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_unchecked_mut_range(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..8, len in 0usize..8, v in any::<u8>()) {
@@ -1254,6 +1433,18 @@ mod tests {
         let (model, real): (&[u8], [u8; 3]) = (&[1u8, 2, 3], [1u8, 2, 3]);
         let i = std::hint::black_box(3usize);
         crate::testing::panics_like_core(|| model[i], || real[i]);
+    }
+
+    // `Index<I> for [T]` panics through its `Option::None` arm.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_unsized_index_out_of_bounds_panics() {
+        let (model, real): (&[u8], [u8; 3]) = (&[1u8, 2, 3], [1u8, 2, 3]);
+        let i = std::hint::black_box(3usize);
+        crate::testing::panics_like_core(
+            || <[u8] as crate::ops::index::Index<usize>>::index(model, i),
+            || real[i],
+        );
     }
 
     #[cfg(not(hax_backend_fstar))]

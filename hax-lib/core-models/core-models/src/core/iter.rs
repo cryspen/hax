@@ -985,6 +985,8 @@ mod tests {
     use proptest::prelude::*;
 
     /// A simple iterator over a Vec, used to test IteratorMethods.
+    /// `Clone` so that a `VecIter<VecIter<_>>` can be built for `flatten`.
+    #[derive(Clone)]
     struct VecIter<T> {
         data: Vec<T>,
         pos: usize,
@@ -1127,6 +1129,19 @@ mod tests {
         }
     }
 
+    /// The model's `FromIterator::from_iter` gets no bound relating the
+    /// iterator's items to `A`, so a collector can consume the iterator but not
+    /// read it; `Consumed` records that `collect` reached `from_iter`.
+    #[derive(PartialEq, Debug)]
+    struct Consumed;
+
+    impl super::traits::collect::FromIterator<u8> for Consumed {
+        fn from_iter<T: super::traits::collect::IntoIterator>(iter: T) -> Self {
+            let _ = super::traits::collect::IntoIterator::into_iter(iter);
+            Consumed
+        }
+    }
+
     /// The adapters are lazy; draining them is what observes them.
     fn drain<I: Iterator>(mut it: I) -> Vec<I::Item> {
         let mut out = Vec::new();
@@ -1199,6 +1214,48 @@ mod tests {
                 drain(VecIter::new(a.clone()).zip(VecIter::new(b.clone()))),
                 a.iter().copied().zip(b.iter().copied()).collect::<Vec<_>>()
             );
+        }
+
+        #[test]
+        fn test_flat_map(
+            vs in prop::collection::vec(prop::collection::vec(any::<u8>(), 0..=5), 0..=6),
+        ) {
+            prop_assert_eq!(
+                drain(VecIter::new(vs.clone()).flat_map(|v: Vec<u8>| VecIter::new(v))),
+                vs.iter().flat_map(|v| v.iter().copied()).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_flatten(
+            vs in prop::collection::vec(prop::collection::vec(any::<u8>(), 0..=5), 0..=6),
+        ) {
+            let inner: Vec<VecIter<u8>> = vs.iter().cloned().map(VecIter::new).collect();
+            prop_assert_eq!(
+                drain(VecIter::new(inner).flatten()),
+                vs.iter().flat_map(|v| v.iter().copied()).collect::<Vec<_>>()
+            );
+        }
+
+        // `IntoIterator for I: Iterator` is the identity.
+        #[test]
+        fn test_iterator_into_iter(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+            use super::traits::collect::IntoIterator;
+            prop_assert_eq!(drain(IntoIterator::into_iter(VecIter::new(v.clone()))), v);
+        }
+
+        #[test]
+        fn test_collect(v in prop::collection::vec(any::<u8>(), 0..=10)) {
+            prop_assert_eq!(VecIter::new(v).collect::<Consumed>(), Consumed);
+        }
+
+        // `Result<V, E>: FromIterator<Result<A, E>>` delegates to `V`'s own
+        // `from_iter`, which is all its (opaque) body claims to do.
+        #[test]
+        fn test_collect_into_result(v in prop::collection::vec(any::<u8>(), 0..=10)) {
+            let it = VecIter::new(v).map(crate::result::Result::<u8, u8>::Ok);
+            let collected: crate::result::Result<Consumed, u8> = it.collect();
+            prop_assert_eq!(collected, crate::result::Result::Ok(Consumed));
         }
 
         #[test]
@@ -1275,6 +1332,18 @@ mod tests {
                         prop_assert_eq!(model_exact, std_exact.inject());
                     }
 
+                    // For `u128`/`i128` a random pair never fits in a `usize`;
+                    // stepping forward by a small amount does.
+                    #[test]
+                    fn steps_between_close(a: $T, d in 0usize..=1000) {
+                        if let Some(b) = <$T as StdStep>::forward_checked(a, d) {
+                            let (model_lower, model_exact) = <$T as ModelStep>::steps_between(&a, &b);
+                            let (std_lower, std_exact) = <$T as StdStep>::steps_between(&a, &b);
+                            prop_assert_eq!(model_lower, std_lower);
+                            prop_assert_eq!(model_exact, std_exact.inject());
+                        }
+                    }
+
                     #[test]
                     fn forward_checked(x: $T, n: usize) {
                         let model = <$T as ModelStep>::forward_checked(x, n);
@@ -1291,6 +1360,100 @@ mod tests {
                 }
             }
         };
+    }
+
+    /// Every integer `Step` impl overrides `forward`/`backward` and their
+    /// `_unchecked` variants, so the trait's default bodies need a type that
+    /// implements only the three required methods.
+    mod step_defaults {
+        use super::super::range::Step as ModelStep;
+        use crate::option::Option;
+        use crate::testing::Inject;
+        use proptest::prelude::*;
+        use std::iter::Step as StdStep;
+
+        #[derive(Clone, Copy, PartialEq, PartialOrd, Debug)]
+        struct Wrap(u8);
+
+        // Under the F* cfg `crate::clone::Clone` has a blanket impl.
+        #[cfg(not(hax_backend_fstar))]
+        impl crate::clone::Clone for Wrap {
+            fn clone(self) -> Self {
+                self
+            }
+        }
+
+        impl ModelStep for Wrap {
+            fn steps_between(start: &Self, end: &Self) -> (usize, Option<usize>) {
+                <u8 as ModelStep>::steps_between(&start.0, &end.0)
+            }
+            fn forward_checked(start: Self, count: usize) -> Option<Self> {
+                match <u8 as ModelStep>::forward_checked(start.0, count) {
+                    Option::Some(v) => Option::Some(Wrap(v)),
+                    Option::None => Option::None,
+                }
+            }
+            fn backward_checked(start: Self, count: usize) -> Option<Self> {
+                match <u8 as ModelStep>::backward_checked(start.0, count) {
+                    Option::Some(v) => Option::Some(Wrap(v)),
+                    Option::None => Option::None,
+                }
+            }
+        }
+
+        proptest! {
+            #[test]
+            fn steps_between(a in any::<u8>(), b in any::<u8>()) {
+                // `Step: Clone` is only a bound, never called by the defaults.
+                prop_assert_eq!(crate::clone::Clone::clone(Wrap(a)), Wrap(a));
+                let (model_lower, model_exact) = <Wrap as ModelStep>::steps_between(&Wrap(a), &Wrap(b));
+                let (std_lower, std_exact) = <u8 as StdStep>::steps_between(&a, &b);
+                prop_assert_eq!(model_lower, std_lower);
+                prop_assert_eq!(model_exact, std_exact.inject());
+            }
+
+            #[test]
+            fn forward(x in any::<u8>(), n in 0usize..=255) {
+                prop_assume!(<u8 as StdStep>::forward_checked(x, n).is_some());
+                prop_assert_eq!(<Wrap as ModelStep>::forward(Wrap(x), n).0, <u8 as StdStep>::forward(x, n));
+                prop_assert_eq!(
+                    unsafe { <Wrap as ModelStep>::forward_unchecked(Wrap(x), n) }.0,
+                    unsafe { <u8 as StdStep>::forward_unchecked(x, n) }
+                );
+            }
+
+            #[test]
+            fn backward(x in any::<u8>(), n in 0usize..=255) {
+                prop_assume!(<u8 as StdStep>::backward_checked(x, n).is_some());
+                prop_assert_eq!(<Wrap as ModelStep>::backward(Wrap(x), n).0, <u8 as StdStep>::backward(x, n));
+                prop_assert_eq!(
+                    unsafe { <Wrap as ModelStep>::backward_unchecked(Wrap(x), n) }.0,
+                    unsafe { <u8 as StdStep>::backward_unchecked(x, n) }
+                );
+            }
+
+            #[test]
+            fn forward_checked(x in any::<u8>(), n in any::<usize>()) {
+                let model = <Wrap as ModelStep>::forward_checked(Wrap(x), n);
+                let expected = <u8 as StdStep>::forward_checked(x, n);
+                match (model, expected) {
+                    (Option::Some(m), Some(e)) => prop_assert_eq!(m.0, e),
+                    (Option::None, None) => {},
+                    _ => prop_assert!(false, "forward_checked disagrees"),
+                }
+            }
+
+            #[test]
+            fn backward_checked(x in any::<u8>(), n in any::<usize>()) {
+                let model = <Wrap as ModelStep>::backward_checked(Wrap(x), n);
+                let expected = <u8 as StdStep>::backward_checked(x, n);
+                match (model, expected) {
+                    (Option::Some(m), Some(e)) => prop_assert_eq!(m.0, e),
+                    (Option::None, None) => {},
+                    _ => prop_assert!(false, "backward_checked disagrees"),
+                }
+            }
+        }
     }
 
     step_tests!(step_u8, u8);

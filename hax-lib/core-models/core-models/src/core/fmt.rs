@@ -203,23 +203,20 @@ mod tests {
 
     // Everything in this module is a stub returning `Ok(())`: the model has no
     // output buffer, so `Ok(())` is the whole observable behaviour.
-    // `fmt::Error` has no `PartialEq`, hence `matches!` rather than `assert_eq!`.
+    // `fmt::Error` has no `PartialEq`, hence `is_ok` rather than `assert_eq!`.
     #[test]
     fn test_write_str() {
         let mut f = Formatter;
-        assert!(matches!(f.write_str("hello"), Result::Ok(())));
+        assert!(f.write_str("hello").is_ok());
     }
 
     #[test]
     fn test_debug_fmt() {
         let mut f = Formatter;
         #[cfg(not(hax_backend_fstar))]
-        assert!(matches!(super::Debug::fmt(&1u8, &mut f), Result::Ok(())));
+        assert!(super::Debug::fmt(&1u8, &mut f).is_ok());
         #[cfg(hax_backend_fstar)]
-        assert!(matches!(
-            super::Debug::dbg_fmt(&1u8, &mut f),
-            Result::Ok(())
-        ));
+        assert!(super::Debug::dbg_fmt(&1u8, &mut f).is_ok());
     }
 
     macro_rules! display_tests {
@@ -228,7 +225,7 @@ mod tests {
                 #[test]
                 fn [<test_display_ $t>]() {
                     let mut f = Formatter;
-                    assert!(matches!(Display::fmt(&(0 as $t), &mut f), Result::Ok(())));
+                    assert!(Display::fmt(&(0 as $t), &mut f).is_ok());
                 }
             )* }
         };
@@ -241,10 +238,7 @@ mod tests {
     #[test]
     fn test_write_fmt() {
         let mut f = Formatter;
-        assert!(matches!(
-            Arguments::write_fmt(&mut f, Arguments(&())),
-            Result::Ok(())
-        ));
+        assert!(Arguments::write_fmt(&mut f, Arguments(&())).is_ok());
     }
 
     // `Arguments` can only be built inside this module, so `panicking::panic_fmt`
