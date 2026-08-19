@@ -849,7 +849,7 @@ mod tests {
         }
 
         #[test]
-        fn test_get_usize(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in any::<usize>()) {
+        fn test_get_usize(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in prop_oneof![0usize..=11, any::<usize>()]) {
             prop_assert_eq!(
                 Slice::get(&slice[..], idx).map(|v: &u8| *v),
                 slice.get(idx).copied().inject()
@@ -1137,7 +1137,7 @@ mod tests {
         // `get_mut` / `get_unchecked_mut` have no F* model.
         #[cfg(not(hax_backend_fstar))]
         #[test]
-        fn test_get_mut_usize(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in any::<usize>(), v in any::<u8>()) {
+        fn test_get_mut_usize(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in prop_oneof![0usize..=11, any::<usize>()], v in any::<u8>()) {
             let mut model = slice.clone();
             let mut std_slice = slice.clone();
             if let crate::option::Option::Some(r) = Slice::get_mut(&mut model[..], idx) {
