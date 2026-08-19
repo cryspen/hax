@@ -318,3 +318,37 @@ pub mod arithmetic {
         i8 i16 i32 i64 i128 isize
     }
 }
+
+// `array_slice` is only reached through the F* variant of `core_models::array`'s
+// `Index` impls, and `seq_one`/`str_sub`/`str_index` have no model caller at
+// all, so they are checked here directly.
+#[cfg(test)]
+mod tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_array_slice(a in any::<[u8; 8]>(), i in 0usize..=8, j in 0usize..=8) {
+            let (b, e) = (i.min(j), i.max(j));
+            prop_assert_eq!(super::slice::array_slice(&a, b, e), &a[b..e]);
+        }
+
+        #[test]
+        fn test_seq_one(x in any::<u8>()) {
+            let s = super::sequence::seq_one(x);
+            prop_assert_eq!(super::sequence::seq_len(&s), 1);
+            prop_assert_eq!(super::sequence::seq_to_slice(&s), &[x][..]);
+        }
+
+        #[test]
+        fn test_str_sub_and_index(text in "[a-z]{1,10}", start in 0usize..10, len in 0usize..10) {
+            let chars: std::vec::Vec<char> = text.chars().collect();
+            let leaked: &'static str = Box::leak(text.into_boxed_str());
+            let b = start % chars.len();
+            let e = (b + len).min(chars.len());
+            let expected: String = chars[b..e].iter().collect();
+            prop_assert_eq!(super::string::str_sub(leaked, b, e), expected.as_str());
+            prop_assert_eq!(super::string::str_index(leaked, b), chars[b]);
+        }
+    }
+}
