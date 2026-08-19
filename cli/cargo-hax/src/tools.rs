@@ -14,6 +14,7 @@ pub mod defaults;
 pub mod haxlib;
 pub mod install;
 pub mod manifest;
+pub mod pin;
 pub mod project;
 pub mod resolve;
 mod subcommands;
@@ -190,5 +191,6 @@ pub fn run(command: &ToolsCommand, message_format: MessageFormat) -> i32 {
         } => subcommands::list(tool.as_deref(), *installed, *all, message_format),
         ToolsCommand::Remove { spec } => subcommands::remove(spec, message_format),
         ToolsCommand::Clean => subcommands::clean(message_format),
+        ToolsCommand::Pin { spec } => subcommands::pin(spec.as_deref(), message_format),
     }
 }

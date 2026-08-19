@@ -81,6 +81,34 @@ pub struct MemberCrate {
     pub hax_lib: Option<String>,
 }
 
+/// The directory roots of the current project, as `cargo metadata` reports
+/// them. Discovering them reads no `hax.toml`, so a command that writes one
+/// is not blocked by a file that configuration loading rejects.
+#[derive(Debug, Clone)]
+pub struct ProjectLayout {
+    pub workspace_root: PathBuf,
+    pub member_roots: Vec<PathBuf>,
+}
+
+impl ProjectLayout {
+    pub fn load(message_format: MessageFormat) -> Result<Self, String> {
+        // The layout needs no resolve graph, and asking for one would make
+        // discovery fail on a project whose dependencies do not resolve.
+        let metadata = run_cargo_metadata(&CargoArgs::default(), Deps::Skip)?;
+        let layout = Self {
+            workspace_root: metadata.workspace_root.clone().into(),
+            member_roots: metadata
+                .packages
+                .iter()
+                .filter(|package| metadata.workspace_members.contains(&package.id))
+                .map(package_root)
+                .collect(),
+        };
+        warn_stray_hax_tomls(&layout.workspace_root, &layout.member_roots, message_format);
+        Ok(layout)
+    }
+}
+
 /// The `hax.toml` configuration of the current project.
 #[derive(Debug, Clone)]
 pub struct ProjectContext {
@@ -131,26 +159,7 @@ impl ProjectContext {
     /// crates, as that build processes.
     pub fn load_for(cargo_flags: &[String], message_format: MessageFormat) -> Result<Self, String> {
         let cargo_args = CargoArgs::parse(cargo_flags);
-        let mut command = cargo_metadata::MetadataCommand::new();
-        if let Some(path) = &cargo_args.manifest_path {
-            command.manifest_path(path);
-        }
-        command.other_options(cargo_args.metadata_args);
-        let metadata = command.exec().map_err(|e| match e {
-            cargo_metadata::Error::CargoMetadata { stderr }
-                if cargo_args.manifest_path.is_none() =>
-            {
-                format!(
-                    "`cargo metadata` failed (this command must be run inside a \
-                     Cargo project):\n{}",
-                    stderr.trim()
-                )
-            }
-            cargo_metadata::Error::CargoMetadata { stderr } => {
-                format!("`cargo metadata` failed:\n{}", stderr.trim())
-            }
-            e => format!("`cargo metadata` failed: {e}"),
-        })?;
+        let metadata = run_cargo_metadata(&cargo_args, Deps::Resolve)?;
 
         let workspace_root: PathBuf = metadata.workspace_root.clone().into();
         let workspace_config = load_hax_toml(&workspace_root, message_format)?;
@@ -190,11 +199,7 @@ impl ProjectContext {
             .iter()
             .filter(|p| metadata.workspace_members.contains(&p.id))
         {
-            let root: PathBuf = package
-                .manifest_path
-                .parent()
-                .expect("a Cargo.toml always has a parent directory")
-                .into();
+            let root = package_root(package);
             let config = if root == workspace_root {
                 None
             } else {
@@ -210,11 +215,7 @@ impl ProjectContext {
 
         let root_package = metadata.root_package().map(|package| RootPackage {
             name: package.name.clone(),
-            dir: package
-                .manifest_path
-                .parent()
-                .expect("a Cargo.toml always has a parent directory")
-                .into(),
+            dir: package_root(package),
         });
         let ctx = ProjectContext {
             workspace_root,
@@ -246,29 +247,79 @@ impl ProjectContext {
         }
     }
 
-    /// Warn about `hax.toml` files in directories between the invocation
-    /// directory and the workspace root that are not member-crate roots:
-    /// they have no effect, which is usually a misplaced file.
     fn warn_stray_files(&self, message_format: MessageFormat) {
-        // `cargo metadata` reports canonical paths (symlinks resolved), so
-        // canonicalize the invocation directory too; otherwise a symlinked
-        // checkout (e.g. `/tmp` -> `/private/tmp` on macOS) makes the
-        // `starts_with` and per-member comparisons below spuriously fail.
-        let Ok(invocation_dir) = std::env::current_dir().and_then(|dir| std::fs::canonicalize(dir))
-        else {
-            return;
-        };
-        if !invocation_dir.starts_with(&self.workspace_root) {
-            return;
+        let member_roots: Vec<PathBuf> = self.members.iter().map(|m| m.root.clone()).collect();
+        warn_stray_hax_tomls(&self.workspace_root, &member_roots, message_format);
+    }
+}
+
+/// Whether the resolve graph is needed. Skipping it (`--no-deps`) skips
+/// dependency resolution, which needs neither the network nor a resolvable
+/// dependency set.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Deps {
+    Resolve,
+    Skip,
+}
+
+/// Run `cargo metadata` for the project of the invocation directory.
+fn run_cargo_metadata(args: &CargoArgs, deps: Deps) -> Result<cargo_metadata::Metadata, String> {
+    let mut command = cargo_metadata::MetadataCommand::new();
+    if let Some(path) = &args.manifest_path {
+        command.manifest_path(path);
+    }
+    if deps == Deps::Skip {
+        command.no_deps();
+    }
+    command.other_options(args.metadata_args.clone());
+    command.exec().map_err(|e| match e {
+        cargo_metadata::Error::CargoMetadata { stderr } if args.manifest_path.is_none() => {
+            format!(
+                "`cargo metadata` failed (this command must be run inside a \
+                 Cargo project):\n{}",
+                stderr.trim()
+            )
         }
-        for dir in invocation_dir.ancestors() {
-            if dir == self.workspace_root {
-                break;
-            }
-            let candidate = dir.join("hax.toml");
-            if candidate.is_file() && !self.members.iter().any(|m| m.root == dir) {
-                HaxMessage::StrayHaxToml { path: candidate }.report(message_format, None);
-            }
+        cargo_metadata::Error::CargoMetadata { stderr } => {
+            format!("`cargo metadata` failed:\n{}", stderr.trim())
+        }
+        e => format!("`cargo metadata` failed: {e}"),
+    })
+}
+
+fn package_root(package: &cargo_metadata::Package) -> PathBuf {
+    package
+        .manifest_path
+        .parent()
+        .expect("a Cargo.toml always has a parent directory")
+        .into()
+}
+
+/// Warn about `hax.toml` files in directories between the invocation
+/// directory and the workspace root that are not member-crate roots:
+/// they have no effect, which is usually a misplaced file.
+fn warn_stray_hax_tomls(
+    workspace_root: &Path,
+    member_roots: &[PathBuf],
+    message_format: MessageFormat,
+) {
+    // `cargo metadata` reports canonical paths (symlinks resolved), so
+    // canonicalize the invocation directory too; otherwise a symlinked
+    // checkout (e.g. `/tmp` -> `/private/tmp` on macOS) makes the
+    // `starts_with` and per-member comparisons below spuriously fail.
+    let Ok(invocation_dir) = std::env::current_dir().and_then(std::fs::canonicalize) else {
+        return;
+    };
+    if !invocation_dir.starts_with(workspace_root) {
+        return;
+    }
+    for dir in invocation_dir.ancestors() {
+        if dir == workspace_root {
+            break;
+        }
+        let candidate = dir.join("hax.toml");
+        if candidate.is_file() && !member_roots.iter().any(|root| root == dir) {
+            HaxMessage::StrayHaxToml { path: candidate }.report(message_format, None);
         }
     }
 }
