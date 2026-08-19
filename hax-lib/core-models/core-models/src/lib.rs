@@ -26,6 +26,9 @@
 //! proof assistants and other verification tools.
 
 #![allow(dead_code, unused)]
+// `coverage(off)` is unstable; `cfg(coverage_nightly)` is set only by
+// `cargo llvm-cov`, so normal builds and extraction never see this.
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 // int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
 #![cfg_attr(test, feature(step_trait, int_roundings))]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes

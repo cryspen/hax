@@ -60,6 +60,48 @@ pub mod slice {
     }
 }
 
+/// Layout and value-moving primitives backing `core_models::mem`. `core_models`
+/// must not call `core` itself, so every `mem` model delegates here.
+pub mod mem {
+    pub fn forget<T>(t: T) {
+        core::mem::forget(t)
+    }
+    pub fn size_of<T>() -> usize {
+        core::mem::size_of::<T>()
+    }
+    pub fn size_of_val<T: ?Sized>(val: &T) -> usize {
+        core::mem::size_of_val(val)
+    }
+    pub fn align_of<T>() -> usize {
+        core::mem::align_of::<T>()
+    }
+    pub fn align_of_val<T: ?Sized>(val: &T) -> usize {
+        core::mem::align_of_val(val)
+    }
+    pub fn needs_drop<T: ?Sized>() -> bool {
+        core::mem::needs_drop::<T>()
+    }
+    pub fn swap<T>(x: &mut T, y: &mut T) {
+        core::mem::swap(x, y)
+    }
+    pub fn replace<T>(dest: &mut T, src: T) -> T {
+        core::mem::replace(dest, src)
+    }
+    pub unsafe fn zeroed<T>() -> T {
+        unsafe { core::mem::zeroed() }
+    }
+    pub unsafe fn transmute_copy<Src, Dst>(src: &Src) -> Dst {
+        unsafe { core::mem::transmute_copy(src) }
+    }
+    // `core::mem::transmute` needs `Src` and `Dst` to have provably equal sizes,
+    // which no generic function can state; `transmute_copy` checks it at runtime.
+    pub unsafe fn transmute<Src, Dst>(src: Src) -> Dst {
+        let dst = unsafe { core::mem::transmute_copy(&src) };
+        core::mem::forget(src);
+        dst
+    }
+}
+
 pub mod sequence {
     #[derive(PartialEq, Debug)]
     pub struct Seq<T>(Vec<T>);
@@ -138,6 +180,26 @@ pub mod string {
     pub fn str_index(s: &'static str, i: usize) -> char {
         s.chars().nth(i).unwrap()
     }
+    // `Option`/`Result` are `core` types, which `core_models` may not touch, so
+    // these fallible primitives answer with a validity flag instead.
+    pub fn str_from_utf8(s: &[u8]) -> (bool, &str) {
+        match core::str::from_utf8(s) {
+            Ok(s) => (true, s),
+            Err(_) => (false, ""),
+        }
+    }
+    pub fn str_parse_u64(s: &str) -> (bool, u64) {
+        match s.parse::<u64>() {
+            Ok(v) => (true, v),
+            Err(_) => (false, 0),
+        }
+    }
+}
+
+pub mod float {
+    pub fn abs_f64(x: f64) -> f64 {
+        x.abs()
+    }
 }
 
 pub mod arithmetic {
@@ -209,6 +271,13 @@ pub mod arithmetic {
                 }
                 pub fn [<to_le_bytes_ $Self>](bytes: $Self) -> [u8; $Bytes] {
                     bytes.to_le_bytes()
+                }
+                // Validity flag rather than `Result`: see `string::str_from_utf8`.
+                pub fn [<from_str_radix_ $Self>](src: &str, radix: u32) -> (bool, $Self) {
+                    match $Self::from_str_radix(src, radix) {
+                        Ok(v) => (true, v),
+                        Err(_) => (false, 0),
+                    }
                 })*
             }
         }
