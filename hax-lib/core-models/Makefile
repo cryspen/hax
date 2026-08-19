@@ -59,7 +59,8 @@ ALLOC_CHARON_OPAQUE = \
 
 .PHONY: all extract patch lean build clean clean-generated tests \
         tests-clean alloc-stage alloc-extract alloc-clean \
-        coverage test-coverage test-coverage-check coverage-runs mutants \
+        coverage test-coverage test-coverage-check coverage-runs \
+        mutants mutants-fstar mutants-genuine \
         fstar fstar-clean fstar-prune fstar-core-models fstar-std fstar-alloc \
         fstar-rand-core
 
@@ -335,6 +336,30 @@ test-coverage-check: coverage-runs
 # -----------------------------------------------------------------------------
 
 MUTANTS_FLAGS ?=
+MUTANTS_RUSTFLAGS ?=
 
+# `--test-workspace` because a model's mutants are usually killed by *another*
+# crate's tests: with cargo-mutants' default (only the mutated package's own
+# tests) 43 of `rust_primitives`' mutants survive spuriously.
 mutants:
-	RUSTFLAGS= cargo mutants --in-place $(MUTANTS_FLAGS)
+	RUSTFLAGS="$(MUTANTS_RUSTFLAGS)" \
+	    cargo mutants --in-place --test-workspace true $(MUTANTS_FLAGS)
+
+# The same sweep under the other cfg. Model variants gated on
+# cfg(hax_backend_fstar) are not built by the default sweep, so their mutants are
+# never compiled and every one of them looks like a survivor (62 of alloc's 79).
+mutants-fstar:
+	$(MAKE) mutants MUTANTS_RUSTFLAGS="--cfg hax_backend_fstar" \
+	    MUTANTS_FLAGS="--output mutants-fstar.out $(MUTANTS_FLAGS)"
+
+# A mutant only counts if it survived in a cfg that builds it, so the genuine
+# survivors are the ones both sweeps missed.
+mutants-genuine:
+	@sort mutants.out/missed.txt > mutants.out/missed.sorted
+	@sort mutants-fstar.out/missed.txt > mutants-fstar.out/missed.sorted
+	@comm -12 mutants.out/missed.sorted mutants-fstar.out/missed.sorted \
+	    > mutants-genuine.txt
+	@cat mutants-genuine.txt
+	@test ! -s mutants-genuine.txt || { \
+	    echo "::error::mutants above survived in every configuration that builds them: strengthen the test, or mark the function #[cfg_attr(test, mutants::skip)]"; \
+	    exit 1; }

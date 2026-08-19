@@ -1,9 +1,9 @@
 name: core-models mutants
 
 # Mutation testing of the core/alloc models: does the test suite notice when a
-# model's behaviour changes? Coverage (see the `test-coverage` job in
+# model's behaviour changes? Coverage (the `test-coverage` job in
 # core_models.yml) only proves the code ran. Kept out of that workflow because a
-# full sweep is ~45 minutes of sequential rebuilds.
+# sweep is ~50 minutes per cfg.
 
 on:
   schedule:
@@ -23,45 +23,23 @@ defaults:
     working-directory: hax-lib/core-models
 
 jobs:
-  # Full sweep. Sharded because `--in-place` shares one source tree and one
-  # target dir, so mutants cannot run in parallel within a shard.
-  full:
-    name: all mutants (shard ${{ matrix.shard }}/4)
-    if: github.event_name != 'pull_request'
+  # One sweep per cfg. Both are needed: a model variant gated on
+  # cfg(hax_backend_fstar) is not built by the default sweep, so its mutants
+  # never compile and every one of them looks like a survivor.
+  sweep:
+    name: mutants (${{ matrix.name }} cfg)
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
-        # 0-based: `--shard 4/4` is out of range and silently tests almost
-        # nothing rather than failing.
-        shard: [0, 1, 2, 3]
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
-
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-mutants
-
-      - run: make MUTANTS_FLAGS="--shard ${{ matrix.shard }}/4" mutants
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: mutants-shard-${{ matrix.shard }}
-          path: hax-lib/core-models/mutants.out
-
-  # Only the mutants on the lines this PR touches.
-  in-diff:
-    name: mutants on changed lines
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+        include:
+          - name: default
+            target: mutants
+            out: mutants.out
+          - name: fstar
+            target: mutants-fstar
+            out: mutants-fstar.out
     steps:
       - uses: actions/checkout@v5
         with:
@@ -76,18 +54,48 @@ jobs:
         with:
           tool: cargo-mutants
 
-      # `--relative` so the paths match what cargo-mutants sees from
-      # hax-lib/core-models.
-      - run: git diff --relative origin/${{ github.base_ref }}...HEAD -- . > /tmp/pr.diff
+      # On a PR, only the mutants on the lines it changed. `--relative` so the
+      # paths match what cargo-mutants sees from hax-lib/core-models.
+      - if: github.event_name == 'pull_request'
+        run: |
+          git diff --relative origin/${{ github.base_ref }}...HEAD -- . > /tmp/pr.diff
+          echo "MUTANTS_FLAGS=--in-diff /tmp/pr.diff" >> $GITHUB_ENV
 
-      # Reporting only for now: `--in-diff` survivors include mutants that are
-      # equivalent by construction, so the skip set has to grow from real data
-      # before this can block a PR.
-      - run: make MUTANTS_FLAGS="--in-diff /tmp/pr.diff" mutants
-        continue-on-error: true
+      # Survivors are judged by the `genuine` job below, so a sweep that finds
+      # some is not itself a failure. cargo-mutants' exit codes are
+      # undocumented, so completion is asserted on the summary line instead: a
+      # sweep that never ran must not pass silently.
+      - run: make ${{ matrix.target }} 2>&1 | tee sweep.log || true
+
+      - run: |
+          grep -qE '[0-9]+ mutants tested' sweep.log || {
+            echo "::error::the mutants sweep did not complete"; tail -40 sweep.log; exit 1; }
 
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: mutants-in-diff
+          name: missed-${{ matrix.name }}
+          path: hax-lib/core-models/${{ matrix.out }}/missed.txt
+
+  # A mutant counts only if it survived in a cfg that builds it.
+  genuine:
+    name: survivors common to both cfgs
+    needs: sweep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: missed-default
           path: hax-lib/core-models/mutants.out
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: missed-fstar
+          path: hax-lib/core-models/mutants-fstar.out
+
+      # Reporting only for now: the surviving set has to be triaged (a test each,
+      # or `#[cfg_attr(test, mutants::skip)]` where the mutant is unkillable)
+      # before this can block.
+      - run: make mutants-genuine
+        continue-on-error: true
