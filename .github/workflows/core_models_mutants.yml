@@ -1,0 +1,91 @@
+name: core-models mutants
+
+# Mutation testing of the core/alloc models: does the test suite notice when a
+# model's behaviour changes? Coverage (see the `test-coverage` job in
+# core_models.yml) only proves the code ran. Kept out of that workflow because a
+# full sweep is ~45 minutes of sequential rebuilds.
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'hax-lib/core-models/**/src/**'
+      - '.github/workflows/core_models_mutants.yml'
+
+env:
+  RUST_TOOLCHAIN: nightly-2026-02-07
+
+defaults:
+  run:
+    working-directory: hax-lib/core-models
+
+jobs:
+  # Full sweep. Sharded because `--in-place` shares one source tree and one
+  # target dir, so mutants cannot run in parallel within a shard.
+  full:
+    name: all mutants (shard ${{ matrix.shard }}/4)
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants
+
+      - run: make MUTANTS_FLAGS="--shard ${{ matrix.shard }}/4" mutants
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutants-shard-${{ matrix.shard }}
+          path: hax-lib/core-models/mutants.out
+
+  # Only the mutants on the lines this PR touches.
+  in-diff:
+    name: mutants on changed lines
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants
+
+      # `--relative` so the paths match what cargo-mutants sees from
+      # hax-lib/core-models.
+      - run: git diff --relative origin/${{ github.base_ref }}...HEAD -- . > /tmp/pr.diff
+
+      # Reporting only for now: `--in-diff` survivors include mutants that are
+      # equivalent by construction, so the skip set has to grow from real data
+      # before this can block a PR.
+      - run: make MUTANTS_FLAGS="--in-diff /tmp/pr.diff" mutants
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutants-in-diff
+          path: hax-lib/core-models/mutants.out
