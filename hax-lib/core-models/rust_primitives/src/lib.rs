@@ -200,6 +200,9 @@ pub mod float {
     pub fn abs_f64(x: f64) -> f64 {
         x.abs()
     }
+    pub fn powf_f64(x: f64, y: f64) -> f64 {
+        x.powf(y)
+    }
 }
 
 pub mod arithmetic {

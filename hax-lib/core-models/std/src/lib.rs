@@ -58,11 +58,21 @@ mod f64 {
     #[allow(non_camel_case_types)]
     struct f64;
     impl f64 {
-        // Excluded from coverage: this placeholder is not `hax_lib::opaque`, so
-        // its body is what gets extracted and must not change here.
-        #[cfg_attr(coverage_nightly, coverage(off))]
         fn powf(x: core::primitive::f64, y: core::primitive::f64) -> core::primitive::f64 {
-            core_models::panicking::internal::panic()
+            rust_primitives::float::powf_f64(x, y)
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use proptest::prelude::*;
+
+        proptest! {
+            // Compared on bits so that NaN results still count.
+            #[test]
+            fn test_powf(x in any::<f64>(), y in any::<f64>()) {
+                prop_assert_eq!(super::f64::powf(x, y).to_bits(), x.powf(y).to_bits());
+            }
         }
     }
 }
