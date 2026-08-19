@@ -417,6 +417,7 @@ version = "0.1.0"
 dependencies = [
  "hax-lib",
  "pastey 0.1.1",
+ "proptest",
 ]
 
 [[package]]

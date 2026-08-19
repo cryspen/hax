@@ -1,4 +1,7 @@
 #![allow(unused)]
+// `coverage(off)` is unstable; `cfg(coverage_nightly)` is set only by
+// `cargo llvm-cov`, so normal builds and extraction never see this.
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 mod collections {
     mod hash {
@@ -14,10 +17,16 @@ mod collections {
             // Dummy impl for disambiguator (https://github.com/cryspen/hax/issues/828)
             impl HashMap<usize, usize, usize> {}
             impl<K, V, S> HashMap<K, V, S> {
+                // Excluded from coverage: `HashMap` is `hax_lib::opaque`, so it
+                // carries no representation to hold entries in, and there is no
+                // lookup for a body to perform.
+                #[cfg_attr(coverage_nightly, coverage(off))]
                 #[hax_lib::opaque]
                 fn get<Y>(m: HashMap<K, V, S>, k: K) -> core_models::option::Option<V> {
                     core_models::panicking::internal::panic()
                 }
+                // Excluded from coverage: see `get`.
+                #[cfg_attr(coverage_nightly, coverage(off))]
                 #[hax_lib::opaque]
                 fn insert(
                     m: HashMap<K, V, S>,
@@ -25,6 +34,19 @@ mod collections {
                     v: V,
                 ) -> (HashMap<K, V, S>, core_models::option::Option<V>) {
                     core_models::panicking::internal::panic()
+                }
+            }
+
+            #[cfg(test)]
+            mod tests {
+                #[test]
+                fn test_new_is_empty() {
+                    // `new` is the only runnable item here: the type is an
+                    // interface stub with no entries to compare against std's.
+                    let m = super::HashMap::<u8, u8, crate::hash::random::RandomState>::new();
+                    assert!(m.0.is_none());
+                    assert!(m.1.is_none());
+                    assert!(m.2.is_none());
                 }
             }
         }
@@ -36,6 +58,9 @@ mod f64 {
     #[allow(non_camel_case_types)]
     struct f64;
     impl f64 {
+        // Excluded from coverage: this placeholder is not `hax_lib::opaque`, so
+        // its body is what gets extracted and must not change here.
+        #[cfg_attr(coverage_nightly, coverage(off))]
         fn powf(x: core::primitive::f64, y: core::primitive::f64) -> core::primitive::f64 {
             core_models::panicking::internal::panic()
         }
@@ -139,6 +164,9 @@ mod io {
             Other,
         }
         impl Error {
+            // Excluded from coverage: the model's `Error` is a unit struct, so it
+            // records no kind for a body to report.
+            #[cfg_attr(coverage_nightly, coverage(off))]
             #[hax_lib::opaque]
             fn kind(&self) -> ErrorKind {
                 core_models::panicking::internal::panic()
@@ -188,6 +216,19 @@ mod io {
     mod stdio {
         #[hax_lib::opaque]
         fn e_print(args: core::fmt::Arguments) {}
+
+        #[cfg(test)]
+        mod tests {
+            use proptest::prelude::*;
+
+            proptest! {
+                // The model prints nothing; all there is to check is that it runs.
+                #[test]
+                fn test_e_print(x in any::<u8>()) {
+                    super::e_print(format_args!("{x}"));
+                }
+            }
+        }
     }
 
     #[cfg(test)]
