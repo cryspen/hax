@@ -6,8 +6,9 @@
 pub mod traits {
     pub mod iterator {
         use super::super::adapters::{
-            chain::Chain, enumerate::Enumerate, filter::Filter, flat_map::FlatMap,
-            flatten::Flatten, map::Map, skip::Skip, step_by::StepBy, take::Take, zip::Zip,
+            chain::Chain, enumerate::Enumerate, filter::Filter, filter_map::FilterMap,
+            flat_map::FlatMap, flatten::Flatten, map::Map, map_while::MapWhile, skip::Skip,
+            skip_while::SkipWhile, step_by::StepBy, take::Take, take_while::TakeWhile, zip::Zip,
         };
         use crate::option::Option;
         /// See [`std::iter::Iterator`]
@@ -17,93 +18,59 @@ pub mod traits {
             #[hax_lib::requires(true)]
             fn next(&mut self) -> Option<Self::Item>;
 
-            // Provided methods, modelled as `#[cfg(not(hax_backend_fstar))]` trait defaults:
-            // the F* backend can't extract trait defaults (hence the `IteratorMethods` workaround
-            // below), but the Lean/charon backend now can — same pattern as `cmp::PartialEq::ne`.
-            // The aeneas Lean backend names these `Iterator.<m>.default`, which is exactly what a
-            // downstream extraction references when it calls `.map(..)` / `.enumerate()`. Bodies
-            // mirror the (aeneas-excluded) `IteratorMethods` blanket impl below.
-            // NOTE: only the non-coinductive lazy adapters are promoted here. `rev` CANNOT be
-            // promoted onto the trait: its `Self: DoubleEndedIterator` bound makes `Iterator`
-            // reference `DoubleEndedIterator` (in the `rev` field type) while
-            // `DoubleEndedIterator: Iterator` references `Iterator` back — aeneas rejects the
-            // mutually-recursive trait declarations ("their model will not type-check"), the
-            // exact circularity Aeneas.Std's `Iter.lean` flags. So `rev` is supplied as a
-            // standalone `Iterator.rev.default`/`.trait_default` in `FunsEpilogue.lean` (again
-            // mirroring Aeneas.Std), together with the `DoubleEndedIterator`/`ExactSizeIterator`
-            // traits + `Rev` adapter + `next_back` instances defined below. `collect` is
-            // likewise standalone (it routes through `FromIterator`, the IntoIter↔Iterator
-            // coinductivity this model avoids).
-            #[cfg(not(hax_backend_fstar))]
-            #[hax_lib::requires(true)]
-            fn enumerate(self) -> Enumerate<Self>
-            where
-                Self: Sized,
-            {
-                Enumerate::new(self)
-            }
-            #[cfg(not(hax_backend_fstar))]
-            #[hax_lib::requires(true)]
-            fn map<O, F: Fn(Self::Item) -> O>(self, f: F) -> Map<Self, F>
-            where
-                Self: Sized,
-            {
-                Map::new(self, f)
-            }
-            // P2 lazy adapters (same promotion pattern as map/enumerate): construct an
-            // adapter struct, never consume. Their `Iterator::next` instances already exist.
-            #[cfg(not(hax_backend_fstar))]
-            #[hax_lib::requires(true)]
-            fn step_by(self, step: usize) -> StepBy<Self>
-            where
-                Self: Sized,
-            {
-                StepBy::new(self, step)
-            }
-            #[cfg(not(hax_backend_fstar))]
-            #[hax_lib::requires(true)]
-            fn take(self, n: usize) -> Take<Self>
-            where
-                Self: Sized,
-            {
-                Take::new(self, n)
-            }
-            #[cfg(not(hax_backend_fstar))]
-            #[hax_lib::requires(true)]
-            fn skip(self, n: usize) -> Skip<Self>
-            where
-                Self: Sized,
-            {
-                Skip::new(self, n)
-            }
-            // filter is field-safe (its `.default` takes only the `Fn` predicate
-            // instance, like `map` — no self-instance, so no recursive-field wall).
-            // zip/chain/flat_map/flatten are NOT promoted here: their `.default`
-            // takes the SELF Iterator instance (the extra `Iterator`/`Fn` bound
-            // threads it in), so a per-instance field `<m> := <m>.default SELF …`
-            // self-references the instance → the same `impl_def: could not resolve
-            // recursive fields` wall that `collect` hits (finding-log UPDATE 9).
-            // They need the standalone-epilogue treatment (like collect/rev) instead;
-            // they stay on `IteratorMethods` for now.
-            #[cfg(not(hax_backend_fstar))]
-            #[hax_lib::requires(true)]
-            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P>
-            where
-                Self: Sized,
-            {
-                Filter::new(self, predicate)
-            }
+            // NO provided methods are promoted onto this trait. Promoting them made
+            // aeneas emit them as STRUCTURE FIELDS, which then had to be back-filled
+            // on the cross-crate `alloc` `Iterator` instances by a `patch_lean.py`
+            // post-processor (`fill_iterator_default_fields`). To keep the generated
+            // Lean un-patched, EVERY `Iterator` provided method is instead supplied as
+            // a standalone `@[rust_fun]`-tagged function in `FunsEpilogue.lean` (the
+            // same shape aeneas itself uses for `rev`/`collect`, and that this model
+            // already uses for the eager consumers). The method *declarations* live on
+            // the aeneas-excluded `IteratorMethods` trait below (for the F* backend and
+            // the Rust differential tests); the Lean bodies live in the epilogue,
+            // delegating to the adapter `::new` constructors / the `iter_*` helpers.
+            // The `DoubleEndedIterator`/`ExactSizeIterator` traits + `Rev` adapter +
+            // `next_back` instances used by `rev` are defined below.
         }
 
-        // This trait is an addition to deal with the default methods that the F* backend doesn't handle
-        // (the ones NOT promoted onto `Iterator` above, because F* can't extract trait defaults).
+        // ALL `Iterator` provided methods are declared here (not on `Iterator`), so
+        // the F* backend and the Rust differential tests can call them via this
+        // aeneas-excluded blanket impl. The Lean backend gets standalone
+        // `@[rust_fun]`-tagged bodies in `FunsEpilogue.lean` instead (see the note on
+        // the `Iterator` trait) — nothing here is extracted to Lean.
         pub(crate) trait IteratorMethods: Iterator {
             fn fold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
             fn all<F: Fn(Self::Item) -> bool>(self, f: F) -> bool;
-            // zip/chain/flat_map/flatten are NOT promoted onto `Iterator` (their
-            // `.default` takes the self-instance → recursive-field wall as a trait
-            // field; see the note in the `Iterator` trait). They remain here until
-            // supplied as standalone epilogue functions (like collect/rev).
+            fn map<O, F: Fn(Self::Item) -> O>(self, f: F) -> Map<Self, F>
+            where
+                Self: Sized;
+            fn enumerate(self) -> Enumerate<Self>
+            where
+                Self: Sized;
+            fn step_by(self, step: usize) -> StepBy<Self>
+            where
+                Self: Sized;
+            fn take(self, n: usize) -> Take<Self>
+            where
+                Self: Sized;
+            fn skip(self, n: usize) -> Skip<Self>
+            where
+                Self: Sized;
+            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P>
+            where
+                Self: Sized;
+            fn filter_map<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> FilterMap<Self, F>
+            where
+                Self: Sized;
+            fn take_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> TakeWhile<Self, P>
+            where
+                Self: Sized;
+            fn skip_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> SkipWhile<Self, P>
+            where
+                Self: Sized;
+            fn map_while<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> MapWhile<Self, F>
+            where
+                Self: Sized;
             fn flat_map<U: Iterator, F: Fn(Self::Item) -> U>(self, f: F) -> FlatMap<Self, U, F>
             where
                 Self: Sized;
@@ -320,6 +287,46 @@ pub mod traits {
 
             fn all<F: Fn(I::Item) -> bool>(self, f: F) -> bool {
                 iter_all(self, f)
+            }
+
+            fn map<O, F: Fn(I::Item) -> O>(self, f: F) -> Map<I, F> {
+                Map::new(self, f)
+            }
+
+            fn enumerate(self) -> Enumerate<I> {
+                Enumerate::new(self)
+            }
+
+            fn step_by(self, step: usize) -> StepBy<I> {
+                StepBy::new(self, step)
+            }
+
+            fn take(self, n: usize) -> Take<I> {
+                Take::new(self, n)
+            }
+
+            fn skip(self, n: usize) -> Skip<I> {
+                Skip::new(self, n)
+            }
+
+            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P> {
+                Filter::new(self, predicate)
+            }
+
+            fn filter_map<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> FilterMap<Self, F> {
+                FilterMap::new(self, f)
+            }
+
+            fn take_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> TakeWhile<Self, P> {
+                TakeWhile::new(self, predicate)
+            }
+
+            fn skip_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> SkipWhile<Self, P> {
+                SkipWhile::new(self, predicate)
+            }
+
+            fn map_while<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> MapWhile<Self, F> {
+                MapWhile::new(self, f)
             }
 
             fn flat_map<U: Iterator, F: Fn(I::Item) -> U>(self, f: F) -> FlatMap<I, U, F> {
@@ -843,6 +850,138 @@ pub mod adapters {
             }
         }
     }
+    pub mod filter_map {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::FilterMap`]
+        pub struct FilterMap<I, F> {
+            iter: I,
+            f: F,
+        }
+        impl<I, F> FilterMap<I, F> {
+            pub fn new(iter: I, f: F) -> Self {
+                Self { iter, f }
+            }
+        }
+        // opaque: loop + Fn output projection, as with filter/flat_map.
+        #[hax_lib::opaque]
+        impl<I: Iterator, B, F: Fn(I::Item) -> Option<B>> Iterator for FilterMap<I, F> {
+            type Item = B;
+            fn next(&mut self) -> Option<B> {
+                loop {
+                    match self.iter.next() {
+                        Option::Some(x) => {
+                            if let Option::Some(y) = (self.f)(x) {
+                                return Option::Some(y);
+                            }
+                        }
+                        Option::None => return Option::None,
+                    }
+                }
+            }
+        }
+    }
+    pub mod take_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::TakeWhile`]
+        pub struct TakeWhile<I, P> {
+            iter: I,
+            flag: bool,
+            predicate: P,
+        }
+        impl<I, P> TakeWhile<I, P> {
+            pub fn new(iter: I, predicate: P) -> Self {
+                Self {
+                    iter,
+                    flag: false,
+                    predicate,
+                }
+            }
+        }
+        #[hax_lib::opaque]
+        impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for TakeWhile<I, P> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if self.flag {
+                    Option::None
+                } else {
+                    match self.iter.next() {
+                        Option::Some(x) => {
+                            if (self.predicate)(&x) {
+                                Option::Some(x)
+                            } else {
+                                self.flag = true;
+                                Option::None
+                            }
+                        }
+                        Option::None => Option::None,
+                    }
+                }
+            }
+        }
+    }
+    pub mod skip_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::SkipWhile`]
+        pub struct SkipWhile<I, P> {
+            iter: I,
+            flag: bool,
+            predicate: P,
+        }
+        impl<I, P> SkipWhile<I, P> {
+            pub fn new(iter: I, predicate: P) -> Self {
+                Self {
+                    iter,
+                    flag: false,
+                    predicate,
+                }
+            }
+        }
+        // opaque: loop + Fn output projection, as with filter/skip.
+        #[hax_lib::opaque]
+        impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for SkipWhile<I, P> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                loop {
+                    match self.iter.next() {
+                        Option::Some(x) => {
+                            if self.flag || !(self.predicate)(&x) {
+                                self.flag = true;
+                                return Option::Some(x);
+                            }
+                        }
+                        Option::None => return Option::None,
+                    }
+                }
+            }
+        }
+    }
+    pub mod map_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::MapWhile`]
+        pub struct MapWhile<I, F> {
+            iter: I,
+            f: F,
+        }
+        impl<I, F> MapWhile<I, F> {
+            pub fn new(iter: I, f: F) -> Self {
+                Self { iter, f }
+            }
+        }
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        impl<I: Iterator, B, F: Fn(I::Item) -> Option<B>> Iterator for MapWhile<I, F> {
+            type Item = B;
+            fn next(&mut self) -> Option<B> {
+                match self.iter.next() {
+                    Option::Some(x) => (self.f)(x),
+                    Option::None => Option::None,
+                }
+            }
+        }
+    }
 }
 
 pub mod range {
@@ -1269,6 +1408,55 @@ mod tests {
                 model.push(x);
             }
             let std_result: Vec<i32> = v.iter().flatten().copied().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        // P4a closure-driven adapters.
+        #[test]
+        fn test_filter_map(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).filter_map(
+                |x: i32| if x > 0 { Option::Some(x.wrapping_mul(2)) } else { Option::None });
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied()
+                .filter_map(|x| if x > 0 { Some(x.wrapping_mul(2)) } else { None }).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_take_while(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).take_while(|x: &i32| *x >= 0);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().take_while(|x| *x >= 0).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_skip_while(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).skip_while(|x: &i32| *x >= 0);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().skip_while(|x| *x >= 0).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_map_while(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).map_while(
+                |x: i32| if x > 0 { Option::Some(x.wrapping_mul(2)) } else { Option::None });
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied()
+                .map_while(|x| if x > 0 { Some(x.wrapping_mul(2)) } else { None }).collect();
             prop_assert_eq!(model, std_result);
         }
 

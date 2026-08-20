@@ -308,6 +308,94 @@ def iter.traits.iterator.Iterator.max.trait_default
     (self : Self) : Result (option.Option Clause0_Item) :=
   iter.traits.iterator.iter_max IteratorInst OrdInst self
 
+/-! ## Lazy adapters kept OFF the `Iterator` structure — map / enumerate / step_by /
+     take / skip / filter / filter_map / take_while / skip_while / map_while
+
+These COULD be trait fields (their `.default` is instance-free or takes only a
+closure `Fn` dictionary — no SELF instance), but making them fields forced a
+`patch_lean.py` back-fill (`fill_iterator_default_fields`) onto the cross-crate
+`alloc` `Iterator` instances. To keep the generated Lean un-patched we supply
+them here as standalone `@[rust_fun]`-tagged functions instead, exactly like
+rev/collect/zip/… . Bodies just build the adapter via its generated `::new`
+(the unused `Fn` dictionaries mirror what aeneas threads through). -/
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::map"]
+def iter.traits.iterator.Iterator.map.trait_default
+    {Self O F Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn F Clause0_Item O)
+    (self : Self) (f : F) : Result (iter.adapters.map.Map Self F) :=
+  iter.adapters.map.Map.new self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::enumerate"]
+def iter.traits.iterator.Iterator.enumerate.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) :
+    Result (iter.adapters.enumerate.Enumerate Self) :=
+  iter.adapters.enumerate.Enumerate.new self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::step_by"]
+def iter.traits.iterator.Iterator.step_by.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) (step : Aeneas.Std.Usize) :
+    Result (iter.adapters.step_by.StepBy Self) :=
+  iter.adapters.step_by.StepBy.new self step
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::take"]
+def iter.traits.iterator.Iterator.take.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) (n : Aeneas.Std.Usize) :
+    Result (iter.adapters.take.Take Self) :=
+  iter.adapters.take.Take.new self n
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::skip"]
+def iter.traits.iterator.Iterator.skip.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) (n : Aeneas.Std.Usize) :
+    Result (iter.adapters.skip.Skip Self) :=
+  iter.adapters.skip.Skip.new self n
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::filter"]
+def iter.traits.iterator.Iterator.filter.trait_default
+    {Self P Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) : Result (iter.adapters.filter.Filter Self P) :=
+  iter.adapters.filter.Filter.new self predicate
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::filter_map"]
+def iter.traits.iterator.Iterator.filter_map.trait_default
+    {Self B F Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn F Clause0_Item (option.Option B))
+    (self : Self) (f : F) : Result (iter.adapters.filter_map.FilterMap Self F) :=
+  iter.adapters.filter_map.FilterMap.new self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::take_while"]
+def iter.traits.iterator.Iterator.take_while.trait_default
+    {Self P Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) :
+    Result (iter.adapters.take_while.TakeWhile Self P) :=
+  iter.adapters.take_while.TakeWhile.new self predicate
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::skip_while"]
+def iter.traits.iterator.Iterator.skip_while.trait_default
+    {Self P Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) :
+    Result (iter.adapters.skip_while.SkipWhile Self P) :=
+  iter.adapters.skip_while.SkipWhile.new self predicate
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::map_while"]
+def iter.traits.iterator.Iterator.map_while.trait_default
+    {Self B F Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn F Clause0_Item (option.Option B))
+    (self : Self) (f : F) : Result (iter.adapters.map_while.MapWhile Self F) :=
+  iter.adapters.map_while.MapWhile.new self f
+
 end core
 
 namespace alloc
