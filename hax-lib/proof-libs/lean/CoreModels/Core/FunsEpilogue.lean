@@ -52,10 +52,9 @@ abbrev ops.range.Range.Insts.Core_modelsIterTraitsIteratorIterator.next :=
 abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
   @result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
 
--- NOTE (core-models-regressions): the `core::cmp::PartialOrd::{lt,le,gt,ge}
--- .default` trait-default methods are now emitted directly by the aeneas
--- backend into `Core/Funs.lean` (it can extract trait defaults), so the manual
--- delegates that used to live here were removed to avoid duplicate declarations.
+/-- Same aliasing as `Result` above, for `?` on `Option`. -/
+abbrev option.Option.Insts.CoreOpsTry_traitTry.branch :=
+  @option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
 
 end core
 
