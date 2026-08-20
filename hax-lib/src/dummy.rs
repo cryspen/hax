@@ -74,29 +74,8 @@ pub mod int {
         };
     }
 
-    #[derive(Copy, Clone)]
+    #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
     pub struct Int(pub u8);
-
-    // Explicit comparison impls, spelled out rather than `derive`d: the derived
-    // `PartialOrd`/`Ord`/`PartialEq`/`Eq` only surface `PartialOrd::le` through
-    // extraction, dropping the `PartialEq`/`Ord` instances the models rely on.
-    // Written against `core::cmp` so every method and instance extracts.
-    impl PartialEq for Int {
-        fn eq(&self, other: &Self) -> bool {
-            self.0 == other.0
-        }
-    }
-    impl Eq for Int {}
-    impl PartialOrd for Int {
-        fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
-            self.0.partial_cmp(&other.0)
-        }
-    }
-    impl Ord for Int {
-        fn cmp(&self, other: &Self) -> core::cmp::Ordering {
-            self.0.cmp(&other.0)
-        }
-    }
 
     impl Int {
         pub fn new(x: impl Into<u8>) -> Self {
