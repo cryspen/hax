@@ -361,6 +361,13 @@ mod tests {
         }
 
         #[test]
+        fn test_seq_to_slice_mut(x in any::<u8>(), y in any::<u8>()) {
+            let mut s = super::sequence::seq_create(x, 1);
+            super::sequence::seq_to_slice_mut(&mut s)[0] = y;
+            prop_assert_eq!(super::sequence::seq_to_slice(&s), &[y][..]);
+        }
+
+        #[test]
         fn test_str_sub_and_index(text in "[a-z]{1,10}", start in 0usize..10, len in 0usize..10) {
             let chars: std::vec::Vec<char> = text.chars().collect();
             let leaked: &'static str = Box::leak(text.into_boxed_str());

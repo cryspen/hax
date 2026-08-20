@@ -303,6 +303,9 @@ impl<T> crate::ops::try_trait::Try for Option<T> {
 // opaque for F*: can't prove the `Some(_)` (`Infallible`) arm unreachable.
 #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 impl<T> crate::ops::try_trait::FromResidual<Option<crate::convert::Infallible>> for Option<T> {
+    // Excluded from coverage: the `Some(_)` arm holds an `Infallible`, so no
+    // test can construct a value that reaches it.
+    #[cfg_attr(coverage_nightly, coverage(off))]
     fn from_residual(residual: Option<crate::convert::Infallible>) -> Self {
         match residual {
             None => None,
@@ -494,6 +497,45 @@ mod tests {
                 ),
                 x == y
             );
+        }
+
+        // Small domain so equal pairs (the interesting case) come up often.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_option_ne(x in prop::option::of(0u8..4), y in prop::option::of(0u8..4)) {
+            prop_assert_eq!(
+                <super::Option<u8> as crate::cmp::PartialEq<super::Option<u8>>>::ne(
+                    &x.inject(), &y.inject()
+                ),
+                x != y
+            );
+        }
+
+        #[test]
+        fn test_try_branch(x in any::<Option<u8>>()) {
+            use crate::ops::control_flow::ControlFlow;
+            use crate::ops::try_trait::Try;
+            match (x, Try::branch(x.inject())) {
+                (Some(v), ControlFlow::Continue(w)) => prop_assert_eq!(v, w),
+                (None, ControlFlow::Break(super::Option::None)) => {}
+                _ => prop_assert!(false, "branch disagreed with the input"),
+            }
+        }
+
+        // The two halves of `?` on `Option`: `from_output` wraps a value, and
+        // `from_residual` rebuilds `None` at the target type.
+        #[test]
+        fn test_try_from_output_and_residual(x in any::<u8>()) {
+            use crate::ops::try_trait::{FromResidual, Try};
+            prop_assert!(matches!(
+                <super::Option<u8> as Try>::from_output(x),
+                super::Option::Some(v) if v == x
+            ));
+            let residual: super::Option<crate::convert::Infallible> = super::Option::None;
+            prop_assert!(matches!(
+                <super::Option<u8> as FromResidual<_>>::from_residual(residual),
+                super::Option::None
+            ));
         }
 
         #[test]
