@@ -23,9 +23,17 @@ pub mod traits {
             // The aeneas Lean backend names these `Iterator.<m>.default`, which is exactly what a
             // downstream extraction references when it calls `.map(..)` / `.enumerate()`. Bodies
             // mirror the (aeneas-excluded) `IteratorMethods` blanket impl below.
-            // NOTE: only the non-coinductive adapters are promoted here. `rev` needs
-            // `DoubleEndedIterator` and `collect` routes through `FromIterator` (the IntoIter↔
-            // Iterator coinductivity this model deliberately avoids); they stay unmodelled.
+            // NOTE: only the non-coinductive lazy adapters are promoted here. `rev` CANNOT be
+            // promoted onto the trait: its `Self: DoubleEndedIterator` bound makes `Iterator`
+            // reference `DoubleEndedIterator` (in the `rev` field type) while
+            // `DoubleEndedIterator: Iterator` references `Iterator` back — aeneas rejects the
+            // mutually-recursive trait declarations ("their model will not type-check"), the
+            // exact circularity Aeneas.Std's `Iter.lean` flags. So `rev` is supplied as a
+            // standalone `Iterator.rev.default`/`.trait_default` in `FunsEpilogue.lean` (again
+            // mirroring Aeneas.Std), together with the `DoubleEndedIterator`/`ExactSizeIterator`
+            // traits + `Rev` adapter + `next_back` instances defined below. `collect` is
+            // likewise standalone (it routes through `FromIterator`, the IntoIter↔Iterator
+            // coinductivity this model avoids).
             #[cfg(not(hax_backend_fstar))]
             #[hax_lib::requires(true)]
             fn enumerate(self) -> Enumerate<Self>
@@ -380,7 +388,35 @@ pub mod traits {
             }
         }
 
-        // TODO rev: DoubleEndedIterator?
+    }
+    pub mod double_ended {
+        use super::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::DoubleEndedIterator`]
+        ///
+        /// Modelled only for the Lean/charon backend (the `rev` provided method that
+        /// drives it is `#[cfg(not(hax_backend_fstar))]`); F* keeps the original
+        /// `IteratorMethods` workaround, which never needs `rev`.
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::attributes]
+        pub trait DoubleEndedIterator: Iterator {
+            #[hax_lib::requires(true)]
+            fn next_back(&mut self) -> Option<Self::Item>;
+        }
+    }
+    pub mod exact_size {
+        use super::iterator::Iterator;
+        /// See [`std::iter::ExactSizeIterator`]
+        ///
+        /// `len` is modelled as a required method (real Rust makes it a provided method
+        /// over `size_hint`). Used by `Enumerate::next_back` to recover the yielded
+        /// element's original index. Lean/charon backend only (see `DoubleEndedIterator`).
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::attributes]
+        pub trait ExactSizeIterator: Iterator {
+            #[hax_lib::requires(true)]
+            fn len(&self) -> usize;
+        }
     }
     pub mod collect {
         /// See [`std::iter::IntoIterator`]
@@ -440,6 +476,51 @@ pub mod adapters {
                     }
                     Option::None => Option::None,
                 }
+            }
+        }
+        // `Enumerate<I>::next_back` is NOT in Aeneas.Std — authored fresh. After the
+        // inner `next_back` yields the back element, `I::len()` is the count still
+        // remaining, which is exactly that element's index relative to `count`
+        // (elements already consumed from the front). Requires the inner iterator to be
+        // both double-ended and exact-size (real Rust has the same bounds).
+        #[cfg(not(hax_backend_fstar))]
+        impl<
+                I: crate::iter::traits::double_ended::DoubleEndedIterator
+                    + crate::iter::traits::exact_size::ExactSizeIterator,
+            > crate::iter::traits::double_ended::DoubleEndedIterator for Enumerate<I>
+        {
+            fn next_back(&mut self) -> Option<(usize, <I as Iterator>::Item)> {
+                match self.iter.next_back() {
+                    Option::Some(a) => {
+                        let len = self.iter.len();
+                        hax_lib::assume!(self.count + len < crate::num::usize::MAX);
+                        Option::Some((self.count + len, a))
+                    }
+                    Option::None => Option::None,
+                }
+            }
+        }
+    }
+    pub mod rev {
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Rev`]
+        pub struct Rev<I> {
+            iter: I,
+        }
+        impl<I> Rev<I> {
+            pub fn new(iter: I) -> Rev<I> {
+                Rev { iter }
+            }
+        }
+        // `Rev<I>::next` delegates to the inner `next_back` (mirrors Aeneas.Std). Lean/
+        // charon backend only, matching the `rev` provided method and `DoubleEndedIterator`.
+        #[cfg(not(hax_backend_fstar))]
+        impl<I: DoubleEndedIterator> Iterator for Rev<I> {
+            type Item = <I as Iterator>::Item;
+            fn next(&mut self) -> Option<<I as Iterator>::Item> {
+                self.iter.next_back()
             }
         }
     }
@@ -992,7 +1073,65 @@ mod tests {
         }
     }
 
+    // Front cursor is `pos`; the back is consumed by popping `data`. Elements still
+    // pending are `data[pos..]`, so `len` is `data.len() - pos`. Lets us differential-
+    // test `next_back` / `Rev` / `Enumerate::next_back` against std.
+    impl<T: Clone> crate::iter::traits::double_ended::DoubleEndedIterator for VecIter<T> {
+        fn next_back(&mut self) -> Option<T> {
+            if self.pos < self.data.len() {
+                match self.data.pop() {
+                    std::option::Option::Some(v) => Option::Some(v),
+                    std::option::Option::None => Option::None,
+                }
+            } else {
+                Option::None
+            }
+        }
+    }
+    impl<T: Clone> crate::iter::traits::exact_size::ExactSizeIterator for VecIter<T> {
+        fn len(&self) -> usize {
+            self.data.len() - self.pos
+        }
+    }
+
     proptest! {
+        #[test]
+        fn test_range_next_back(lo in 0usize..50, len in 0usize..50) {
+            use crate::iter::traits::double_ended::DoubleEndedIterator;
+            let hi = lo + len;
+            let mut r = crate::ops::range::Range { start: lo, end: hi };
+            let mut model: Vec<usize> = Vec::new();
+            while let Option::Some(x) = r.next_back() {
+                model.push(x);
+            }
+            let std_result: Vec<usize> = (lo..hi).rev().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_rev_next_back(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            use crate::iter::traits::double_ended::DoubleEndedIterator;
+            let mut it = VecIter::new(v.clone());
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next_back() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().rev().copied().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_enumerate_next_back(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            use crate::iter::traits::double_ended::DoubleEndedIterator;
+            let mut it = crate::iter::adapters::enumerate::Enumerate::new(VecIter::new(v.clone()));
+            let mut model: Vec<(usize, i32)> = Vec::new();
+            while let Option::Some(x) = it.next_back() {
+                model.push(x);
+            }
+            let std_result: Vec<(usize, i32)> = v.iter().copied().enumerate().rev().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
         #[test]
         fn test_fold_sum(v in prop::collection::vec(any::<i32>(), 0..=20)) {
             let std_result = v.iter().fold(0i32, |acc, &x| acc.wrapping_add(x));

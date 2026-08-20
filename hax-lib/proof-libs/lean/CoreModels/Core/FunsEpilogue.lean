@@ -75,6 +75,35 @@ def iter.traits.iterator.Iterator.collect.default {Self B Clause0_Item : Type}
   collectFromIteratorInst.from_iter
     (iter.traits.collect.IntoIterator.Blanket IteratorInst) self
 
+/-! ## `Iterator::rev` (a provided method kept OFF the `Iterator` structure)
+
+`rev` cannot be promoted onto the `Iterator` trait like `map`/`enumerate`: its
+`Self: DoubleEndedIterator` bound makes the `Iterator` structure reference
+`DoubleEndedIterator`, which references `Iterator` back (its supertrait) — a
+mutual trait recursion aeneas rejects ("their model will not type-check"). This
+is the circularity Aeneas.Std's `Iter.lean` flags, and we resolve it the same
+way: keep `rev` off the structure and supply `rev.default`/`rev.trait_default`
+as standalone functions here (there the `Iterator`/`DoubleEndedIterator`
+instances are ordinary parameters, never `SELF`). The `DoubleEndedIterator`/
+`ExactSizeIterator` traits, the `Rev` adapter and its `Iterator::next`
+(delegating to `next_back`), and the `next_back` instances for `Range`/slice
+`Iter`/`Enumerate` are all generated from the Rust source; only these two
+dispatch shims are hand-written. The `@[rust_fun …]` tag maps a downstream
+`.rev()` call onto `rev.trait_default` (as in Aeneas.Std). -/
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.rev.default {Self : Type}
+    (self : Self) : Result (iter.adapters.rev.Rev Self) :=
+  iter.adapters.rev.Rev.new self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::rev"]
+def iter.traits.iterator.Iterator.rev.trait_default
+    {Self Clause0_Item Clause1_Item : Type}
+    (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (_DEInst : iter.traits.double_ended.DoubleEndedIterator Self Clause1_Item)
+    (self : Self) : Result (iter.adapters.rev.Rev Self) :=
+  iter.traits.iterator.Iterator.rev.default self
+
 end core
 
 namespace alloc

@@ -339,6 +339,20 @@ pub mod range {
                         }
                     }
                 }
+                // `next_back` yields from the high end: decrement `end`, yield the new
+                // `end`. Makes `(lo..hi).rev()` iterate. Lean/charon backend only.
+                #[cfg(not(hax_backend_fstar))]
+                #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+                impl crate::iter::traits::double_ended::DoubleEndedIterator for Range<$int_type> {
+                    fn next_back(&mut self) -> Option<$int_type> {
+                        if self.start >= self.end {
+                            Option::None
+                        } else {
+                            self.end -= 1;
+                            Option::Some(self.end)
+                        }
+                    }
+                }
             )*
         }
     }
