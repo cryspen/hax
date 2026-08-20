@@ -2,11 +2,11 @@
 weight: 100
 ---
 
-# Managing tool versions
+# Tool versions and proof scenarios
 
 Some hax backends rely on external tools. The `lean` backend (`cargo hax into lean`) runs the [aeneas](https://github.com/AeneasVerif/aeneas) pipeline, which needs the `aeneas` and `charon` binaries. hax manages these binaries for you: it knows which versions a project needs, downloads pre-built binaries on demand, verifies them against a manifest shipped with the release, and caches them so later runs reuse them.
 
-This page covers the `cargo hax tools` subcommands, the `hax.toml` file that pins versions per project, how a version is resolved, and how to point hax at a locally built binary instead.
+This page covers the `cargo hax tools` subcommands, the `hax.toml` file that pins versions per project, how a version is resolved, how to point hax at a locally built binary instead, and the proof scenarios that store complete extraction configurations in `hax.toml` (see [Proof scenarios](#proof-scenarios)).
 
 Using the default versions shipped with your hax release is the recommended way to work: they are tested together, and nothing has to be configured for them. Pinning versions individually is an advanced option for when the defaults do not work for your project. Combinations other than the defaults are untested, and establishing that one works, and keeps working across hax releases, is up to you.
 
@@ -145,7 +145,7 @@ A relative path is resolved against the directory of the `hax.toml` declaring it
 
 ## The `hax-lib` compatibility check
 
-`cargo-hax` and `hax-lib` are released together under one version number, and that pair is the only combination that is tested. Before processing a crate, hax checks that the crate's direct `hax-lib` dependency matches the binary's own version exactly (a 0.3.7 binary accepts only `hax-lib` 0.3.7). A crate with no direct `hax-lib` dependency is not checked, and neither are workspace members this run does not process. When the run selects packages itself (`-C -p <PKG> ;`, `-C --workspace ;`), hax leaves that selection to Cargo and aborts only on an incompatibility no selection can avoid, that is one shared by every member of the workspace; a workspace mixing compatible and incompatible `hax-lib` versions fails at compile time instead.
+`cargo-hax` and `hax-lib` are released together under one version number, and that pair is the only combination that is tested. Before processing a crate, hax checks that the crate's direct `hax-lib` dependency matches the binary's own version exactly (a 0.3.7 binary accepts only `hax-lib` 0.3.7). A crate with no direct `hax-lib` dependency is not checked, and neither are workspace members this run does not process. When the run selects packages itself, a plain `-C -p <member> ;` selection is checked exactly, against the named members only: a `-p` build also compiles those members' workspace-member dependencies, and an incompatible `hax-lib` on one of those passes the check and fails at compile time. For any broader selection (`-C --workspace ;`, `--exclude`, path or version specs) hax leaves the selection to Cargo and aborts only on an incompatibility no selection can avoid, that is one shared by every member of the workspace; a workspace mixing compatible and incompatible `hax-lib` versions fails at compile time instead.
 
 If the check fails, hax aborts before running any tool and prints the mismatch with a remedy:
 
@@ -153,6 +153,63 @@ If the check fails, hax aborts before running any tool and prints the mismatch w
 - when it is older, update the `hax-lib` dependency (for example `cargo update -p hax-lib --precise <version>`), or install the `cargo-hax` matching that `hax-lib`.
 
 The `tools` subcommands never abort on this check: `cargo hax tools show` reports the compatibility instead of failing, and `cargo hax tools install` ignores it.
+
+## Proof scenarios
+
+Real extraction invocations carry many flags: item selection, backend options, extra tool arguments. A proof scenario stores such an invocation in `hax.toml`, as a named, declarative `[scenario.<name>]` table, and `cargo hax extract` runs it. `cargo hax into` is unchanged and remains the flag-driven interface for ad-hoc experimentation; scenarios are never implicitly applied to it.
+
+```toml
+[scenario.treemath]
+backend = "lean"                     # required
+package = "openmls"                  # optional; see the resolution rules
+include = ["openmls::binary_tree::array_representation::treemath"]
+opaque = ["{impl tls_codec::Size for _}"]
+output-dir = "proofs/treemath/lean"  # optional; this is the default here
+
+[scenario.book-fstar]
+backend = "fstar"
+select-clauses = ["-**", "+**::process_order"]
+z3rlimit = 100
+```
+
+Scenario names consist of lowercase alphanumeric segments starting with a letter, separated by single hyphens. A name doubles as a directory name and, CamelCased, as the Lean package name (`book-fstar` becomes `BookFstar`), so names colliding with a backend name or a reserved Lean module root are rejected.
+
+### Scenario keys
+
+Keys applying to every backend: `backend`, `package`, `output-dir`, `features`, `all-features`, `no-default-features`, and `env`. The feature keys select cargo features for the build; `env` entries are set for every process a scenario run spawns, cargo included, so build-affecting variables such as `RUSTFLAGS` take effect. The `DRIVER_HAX_FRONTEND*` variables hax communicates through internally cannot be set.
+
+Item selection is unified across backends as `include` (root patterns whose transitive dependencies are extracted; absent means the whole crate), `exclude` (drop items entirely), `opaque` (extract signature-only), and `default-opaques` (whether the built-in opaque set applies, default `true`). In this version, these keys work for the Lean backend only, where they compile to charon's `--start-from`, `--exclude`, and `--opaque` flags and use charon's name-pattern language (paths, `::*`, `{impl Trait for Type}` with `_` wildcards). For the other backends, `select-clauses` takes raw `-i` clauses until the unified keys cover them. Prefer `opaque` over `exclude` unless removal is intended: charon's `--exclude` is not reachability-aware, and an excluded item that is still referenced makes aeneas fail.
+
+Backend-specific keys: `z3rlimit`, `fuel`, `ifuel`, `interfaces`, and `line-width` for F*; `charon-args`, `aeneas-args`, and `project-files` for Lean; `assume-items` for ProVerif. `charon-args` and `aeneas-args` are arrays passed verbatim, one element per process argument, after the arguments hax compiles from the structured keys; no shell splitting is applied. The per-scenario `project-files` key overrides the top-level one. Environment variables that supply defaults for `into` flags (currently `HAX_FSTAR_LINE_WIDTH`) do not apply to scenario runs, which never parse flags; set the corresponding key (`line-width`) instead.
+
+A key that does not apply to the declared backend is a hard error, as is an unknown key inside a scenario table: silently ignoring a misspelled `exclude` would change what is extracted. This means a `hax.toml` written for a newer hax can fail on an older scenario-aware hax, which is intentional; the warn-and-ignore rule for unknown top-level keys is unchanged and covers hax versions that predate scenarios.
+
+### The default opaque set
+
+Lean scenarios inherit a built-in set of opaque patterns for trait impls that are routinely derived but rarely worth translating (`Serialize`, `Deserialize`, `Debug`, `Display`). A project extends it with a `[scenario-defaults.lean]` table (`opaque` is the only key accepted there), in the workspace or member `hax.toml`; both extend rather than shadow. A scenario opts out of the whole combined set with `default-opaques = false`. `cargo hax extract --dry-run` prints the effective arguments including the inherited set. The set applies to scenario runs only; `cargo hax into` receives exactly the flags it is given.
+
+### Scenario resolution
+
+Scenarios live in a member crate's `hax.toml` or in the workspace one. A member-level scenario extracts that member; `package` is optional there and must match the member if given. A workspace-level scenario requires `package` when the workspace has more than one member, and `package` must name a member. A member-level scenario shadows a same-named workspace-level one, with a warning.
+
+Invoked from the workspace root, `cargo hax extract` sees all scenarios of all members plus the workspace-level ones; invoked from a member crate, it sees the member's own scenarios plus the workspace-level scenarios extracting that member. Two members may declare the same scenario name; a name given to `extract` then runs both, which is safe because the default output directories are per-crate. `-p` narrows the scope to one package when that is not wanted.
+
+### Running scenarios
+
+```bash
+cargo hax extract              # run all scenarios in scope
+cargo hax extract treemath     # run the named scenario(s)
+cargo hax extract -p openmls   # restrict the scope to one package; combines with names
+cargo hax extract --dry-run    # print resolved invocations without running them
+```
+
+`extract` also takes the shared diagnostics options of `into` (`-v`, `--message-format`), but not `-C ... ;`: a scenario's cargo invocation is derived from its own keys. For hermetic runs, `extract` takes cargo's `--locked`, `--frozen`, and `--offline` flags directly and applies them to every cargo invocation of the run: project discovery, the frontend's `cargo check`, and the build charon drives. An empty scope and a name matching no scenario are errors, so a missing or mis-located `hax.toml` fails loudly in CI. Before anything runs, and before `-p` narrows the scope, hax verifies that all scenarios in scope resolve to distinct output directories, none nested in another, and aborts otherwise; an `output-dir` equal to the scenario-less `proofs/<backend>/` layout is only warned about, since pointing a single scenario at the old path is a reasonable migration step. Scenarios run sequentially; a failing scenario does not abort the run, failures are collected into a summary and produce a non-zero exit code. Note that scenarios differing in `features` or `env` invalidate each other's build caches in the shared target directory.
+
+### Output layout
+
+A scenario writes to `<crate>/proofs/<scenario>/<backend>` by default, so two extractions of the same crate never overwrite each other. Engine backends keep their `extraction/` subdirectory below that. The Lean backend scaffolds a complete Lean package there, named after the scenario (CamelCase), each with its own `Verification/` folder; re-running `extract` regenerates only `Extraction/`. `output-dir` overrides the default and is resolved relative to the root of the extracted package; it must name a directory of its own, so an absolute path and a path resolving to the package root are rejected, while a `..` component is allowed so several members can extract into one shared tree. Renaming a scenario orphans its old directory, including `Verification/` content: a full-scope `cargo hax extract` warns about directories directly below `proofs/` that no scenario in scope accounts for and that are not a backend directory of the scenario-less layout.
+
+All scenarios of a project share one Lean toolchain and library pin, resolved through the `[versions]` mechanism above; versions are scenario-independent.
 
 ## The Lean project pin check
 

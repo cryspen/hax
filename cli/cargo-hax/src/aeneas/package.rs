@@ -29,7 +29,7 @@ const HAX_LEAN_LIB_REPO: &str = "https://github.com/cryspen/hax-lean";
 /// extracted assumption modules import). A package named like one of them
 /// fails inside `lake` in a confusing way, so the collision is caught up
 /// front.
-const RESERVED_MODULE_ROOTS: &[&str] = &[
+pub(crate) const RESERVED_MODULE_ROOTS: &[&str] = &[
     "Lean",
     "Init",
     "Std",

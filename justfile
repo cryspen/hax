@@ -51,7 +51,7 @@ expand *FLAGS:
 
 # Regenerate core models
 core-models-extract:
-  cd hax-lib/core-models && ./hax.sh extract
+  make -C hax-lib/core-models lean
 
 # Run core models tests
 core-models-test:

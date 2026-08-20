@@ -32,6 +32,7 @@ Changes to cargo-hax:
  - Check that the `hax-lib` version in scope matches the `cargo-hax` version before processing
  - `cargo hax into lean` generates a complete, buildable Lean package by default: project files, a root module, and a `Verification/` folder for handwritten proofs, created only when missing; stale files in `Extraction/` are removed and the root module's imports are checked on every run. Disable with a top-level `project-files = false` in `hax.toml`. The `--lakefile` flag is removed, subsumed by the new default
  - Models of external definitions move from `Extraction/` to a new `Assumptions/` folder, seeded from the aeneas templates and never modified by hax; existing `FunsExternal.lean`/`TypesExternal.lean` files are migrated there automatically
+ - Add proof scenarios: named extraction configurations committed as `[scenario.<name>]` tables in `hax.toml`, run with the new `cargo hax extract [NAME]...` subcommand into per-scenario `proofs/<scenario>/<backend>/` directories. Lean scenarios select items with unified `include`/`exclude`/`opaque` keys and inherit a default opaque set, extensible via `[scenario-defaults.lean]`; engine backends use `select-clauses` until the unified keys cover them. `extract --locked/--frozen/--offline` applies cargo's hermeticity flags to every cargo invocation of the run
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
