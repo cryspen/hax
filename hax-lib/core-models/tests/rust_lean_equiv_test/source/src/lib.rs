@@ -27,23 +27,16 @@
 
 // `core::hint::{likely, unlikely}` and `core::hint::cold_path` (exercised in
 // `core::hint`) are still unstable.
-#![feature(likely_unlikely, cold_path)]
-// `core::clone::UseCloned` (exercised in `core::clone`) is only reachable
-// behind this gate, which rustc flags as an incomplete feature.
-#![feature(ergonomic_clones)]
+#![feature(
+    cmp_minmax,
+    cold_path,
+    drop_guard,
+    ergonomic_clones,
+    likely_unlikely,
+    mem_copy_fn
+)]
 #![allow(incomplete_features)]
-// Some tests deliberately exercise edge comparisons like `u8::MAX < 0u8`
-// to pin the trait-dispatch behaviour at the extremes; rustc warns
-// those are tautologically false, but that *is* the observation we want
-// to verify.
 #![allow(unused_comparisons)]
-// `cmp::minmax` is still unstable in std; the equivalence tests call real std,
-// so the gate has to be opened here.
-#![feature(cmp_minmax)]
-// `core::mem::copy` and `core::mem::DropGuard` are still unstable; the latter is
-// only exercised by Rust-only tests, hence the `cfg(test)` gate.
-#![feature(mem_copy_fn)]
-#![cfg_attr(test, feature(drop_guard))]
 
 pub mod helpers;
 
