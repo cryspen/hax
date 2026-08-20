@@ -47,6 +47,11 @@ pub fn option_double(x: Option<u8>) -> u8 {
     }
 }
 
+/// `?` resolves through the `Try`/`FromResidual` impls on `Option`.
+pub fn option_question_mark(x: Option<u8>) -> Option<u8> {
+    Some(x? + 1)
+}
+
 // ----- Result ---------------------------------------------------------------
 
 pub fn result_ok(x: Result<u8, u8>) -> Option<u8> {
@@ -99,6 +104,10 @@ pub fn sub_u32(x: u32, y: u32) -> u32 {
 
 pub fn mul_u16(x: u16, y: u16) -> u16 {
     x * y
+}
+
+pub fn wrapping_neg_u32(x: u32) -> u32 {
+    x.wrapping_neg()
 }
 
 // ----- Comparisons ----------------------------------------------------------
@@ -287,6 +296,18 @@ pub fn vec_push_two(mut v: Vec<u8>, x: u8, y: u8) -> Vec<u8> {
 
 pub fn vec_insert(mut v: Vec<u8>, i: usize, x: u8) -> Vec<u8> {
     v.insert(i, x);
+    v
+}
+
+/// Indexed assignment resolves through `IndexMut` (`arr_set` above goes
+/// through `Slice.update` instead, so it does not cover this).
+pub fn vec_index_set(mut v: Vec<u32>, i: usize, x: u32) -> Vec<u32> {
+    v[i] = x;
+    v
+}
+
+pub fn vec_resize(mut v: Vec<u8>, n: usize, x: u8) -> Vec<u8> {
+    v.resize(n, x);
     v
 }
 
