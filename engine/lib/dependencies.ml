@@ -172,9 +172,9 @@ module Make (F : Features.T) = struct
         let mut_rec_bundles, non_mut_rec =
           SCC.scc_list g
           |> List.partition_map ~f:(function
-               | [] -> failwith "scc_list returned empty cluster"
-               | [ x ] when is_mut_rec_with_itself x |> not -> Second x
-               | bundle -> First bundle)
+            | [] -> failwith "scc_list returned empty cluster"
+            | [ x ] when is_mut_rec_with_itself x |> not -> Second x
+            | bundle -> First bundle)
         in
         { mut_rec_bundles; non_mut_rec }
 
@@ -425,13 +425,13 @@ module Make (F : Features.T) = struct
     in
     let show_inclusion_clause Types.{ kind; namespace } =
       (match kind with
-      | Excluded -> "-"
-      | SignatureOnly -> "+:"
-      | Included deps_kind -> (
-          match deps_kind with
-          | Transitive -> "+"
-          | Shallow -> "+~"
-          | None' -> "+!"))
+        | Excluded -> "-"
+        | SignatureOnly -> "+:"
+        | Included deps_kind -> (
+            match deps_kind with
+            | Transitive -> "+"
+            | Shallow -> "+~"
+            | None' -> "+!"))
       ^ "["
       ^ (List.map
            ~f:(function Glob One -> "*" | Glob Many -> "**" | Exact s -> s)
@@ -542,14 +542,13 @@ module Make (F : Features.T) = struct
       |> List.filter ~f:(function { v = Use _; _ } -> false | _ -> true)
       (* Exclude `NotImplementedYet` items *)
       |> List.filter ~f:(function
-           | { v = NotImplementedYet; _ } -> false
-           | _ -> true)
+        | { v = NotImplementedYet; _ } -> false
+        | _ -> true)
       |> List.concat_map ~f:(fun item ->
-             List.map
-               ~f:(fun id ->
-                 ( item,
-                   (id, Concrete_ident.move_to_fresh_module fresh_module id) ))
-               (idents_of item))
+          List.map
+            ~f:(fun id ->
+              (item, (id, Concrete_ident.move_to_fresh_module fresh_module id)))
+            (idents_of item))
     in
     let aliases =
       let inspect_view_last id =
@@ -615,10 +614,9 @@ module Make (F : Features.T) = struct
     let items_of_ns = Map.find items_per_ns >> Option.value ~default:[] in
     module_level_scc
     |> List.concat_map ~f:(fun nss ->
-           let multiple_heterogeneous_modules = Set.length nss > 1 in
-           let items = Set.to_list nss |> List.concat_map ~f:items_of_ns in
-           if multiple_heterogeneous_modules then fresh_module_for items
-           else items)
+        let multiple_heterogeneous_modules = Set.length nss > 1 in
+        let items = Set.to_list nss |> List.concat_map ~f:items_of_ns in
+        if multiple_heterogeneous_modules then fresh_module_for items else items)
 
   let recursive_bundles (items : item list) : item list list * item list =
     let g = ItemGraph.of_items ~original_items:items items in

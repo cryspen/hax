@@ -149,7 +149,9 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
             let wrap_parens =
               group
               >>
-              match ctx with AlreadyPar -> Fn.id | NeedsPar -> iblock braces
+              match ctx with
+              | AlreadyPar -> Fn.id
+              | NeedsPar -> iblock braces
             in
             match e with
             | If { cond; then_; else_ } ->
@@ -159,10 +161,10 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
                   ^//^ (print#expr_at Expr_If_then then_ |> braces |> nest 1)
                 in
                 (match else_ with
-                | None -> if_then
-                | Some else_ ->
-                    if_then ^^ break 1 ^^ string "else" ^^ space
-                    ^^ (print#expr_at Expr_If_else else_ |> iblock braces))
+                  | None -> if_then
+                  | Some else_ ->
+                      if_then ^^ break 1 ^^ string "else" ^^ space
+                      ^^ (print#expr_at Expr_If_else else_ |> iblock braces))
                 |> wrap_parens
             | Match { scrutinee; arms } ->
                 let header =
@@ -341,7 +343,9 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
             let wrap_parens =
               group
               >>
-              match ctx with AlreadyPar -> Fn.id | NeedsPar -> iblock braces
+              match ctx with
+              | AlreadyPar -> Fn.id
+              | NeedsPar -> iblock braces
             in
             function
             | PWild -> underscore
@@ -375,7 +379,7 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
             print#pat_at Pat_Ascription_pat pat
             ^^ colon
             ^^ print#with_span ~span:typ_span (fun () ->
-                   print#ty_at Pat_Ascription_typ typ)
+                print#ty_at Pat_Ascription_typ typ)
 
         method expr_unwrapped : par_state -> expr fn =
           fun ctx { e; _ } -> print#expr' ctx e

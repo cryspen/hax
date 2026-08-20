@@ -3,8 +3,8 @@ open! Prelude
 module%inlined_contents Make
     (FA :
       Features.T
-    (* with type raw_pointer = Features.off *)
-    (*  and type mutable_pointer = Features.off *)) =
+      (* with type raw_pointer = Features.off *)
+      (*  and type mutable_pointer = Features.off *)) =
 struct
   open Ast
 

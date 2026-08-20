@@ -229,17 +229,16 @@ struct
               (LhsLocalVar { var; typ }, no_lbs @@ SideEffects.writes var typ)
           | LhsArbitraryExpr { e; witness } ->
               let deep_mutation =
-                (object
-                   inherit [_] Visitors.reduce as _super
-                   inherit [_] bool_monoid as _m
+                object
+                  inherit [_] Visitors.reduce as _super
+                  inherit [_] bool_monoid as _m
 
-                   (* method visit_t _ _ = m#zero *)
-                   (* method visit_mutability _ _ _ = m#zero *)
-                   (* method! visit_Deref _ _ _ = true *)
-                   method! visit_item () _ = false
-                end)
-                  #visit_expr
-                  () e
+                  (* method visit_t _ _ = m#zero *)
+                  (* method visit_mutability _ _ _ = m#zero *)
+                  (* method! visit_Deref _ _ _ = true *)
+                  method! visit_item () _ = false
+                end
+                  #visit_expr () e
               in
               ( LhsArbitraryExpr { e; witness },
                 no_lbs { SideEffects.zero with deep_mutation } )
@@ -421,19 +420,15 @@ struct
                   List.map ~f:(self#visit_arm env) arms
                   (* materialize letbindings in each arms *)
                   |> List.map ~f:(fun ({ arm; span }, ({ lbs; effects } : t)) ->
-                         let arm =
-                           { arm with body = lets_of_bindings lbs arm.body }
-                         in
-                         (({ arm; span } : arm), { lbs = []; effects }))
-                     (* cancel effects that concern variables introduced in pats  *)
+                      let arm =
+                        { arm with body = lets_of_bindings lbs arm.body }
+                      in
+                      (({ arm; span } : arm), { lbs = []; effects }))
+                    (* cancel effects that concern variables introduced in pats  *)
                   |> List.map ~f:(fun (arm, { lbs; effects }) ->
-                         let vars =
-                           U.Reducers.variables_of_pat arm.arm.arm_pat
-                         in
-                         let effects =
-                           SideEffects.without_rw_vars vars effects
-                         in
-                         (arm, { lbs; effects }))
+                      let vars = U.Reducers.variables_of_pat arm.arm.arm_pat in
+                      let effects = SideEffects.without_rw_vars vars effects in
+                      (arm, { lbs; effects }))
                 in
                 ( List.map ~f:fst arms,
                   List.fold ~init:m#zero ~f:m#plus (List.map ~f:snd arms) )

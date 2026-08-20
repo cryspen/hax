@@ -845,10 +845,10 @@ struct
       List.map ~f:(of_generic_param span) generics.params
       @ (generics.constraints
         |> List.sort ~compare:(fun c1 c2 ->
-               match (c1, c2) with
-               | GCType _, GCProjection _ -> -1
-               | GCProjection _, GCType _ -> 1
-               | _ -> 0)
+            match (c1, c2) with
+            | GCType _, GCProjection _ -> -1
+            | GCProjection _, GCType _ -> 1
+            | _ -> 0)
         |> List.filter_mapi ~f:(of_generic_constraint span))
 
     let of_typ span (nth : int) typ : t =
@@ -1013,16 +1013,16 @@ struct
   let pdoc_comments attrs =
     attrs
     |> List.filter_map ~f:(fun (attr : attr) ->
-           match attr.kind with
-           | DocComment { kind; body } -> Some (kind, body)
-           | _ -> None)
+        match attr.kind with
+        | DocComment { kind; body } -> Some (kind, body)
+        | _ -> None)
     |> List.map ~f:(fun (kind, string) ->
-           match kind with
-           | DCKLine ->
-               String.split_lines string
-               |> List.map ~f:(fun s -> "///" ^ s)
-               |> String.concat_lines
-           | DCKBlock -> "(**" ^ string ^ "*)")
+        match kind with
+        | DCKLine ->
+            String.split_lines string
+            |> List.map ~f:(fun s -> "///" ^ s)
+            |> String.concat_lines
+        | DCKBlock -> "(**" ^ string ^ "*)")
     |> List.map ~f:(fun s -> `VerbatimIntf (s, `NoNewline))
 
   let rec pitem (e : item) :
@@ -1407,9 +1407,8 @@ struct
                         Attrs.associated_fns kind i.ti_attrs
                         |> List.hd
                         |> Option.map ~f:(fun attr ->
-                               ( attr,
-                                 [%eq: Attr_payloads.AssocRole.t] kind Requires
-                               ))
+                            ( attr,
+                              [%eq: Attr_payloads.AssocRole.t] kind Requires ))
                       in
                       Option.first_some (h Ensures) (h Requires)
                       |> Option.map
@@ -1418,12 +1417,11 @@ struct
                                List.find generics.params
                                  ~f:[%matches? { kind = GPType _; _ }]
                                |> Option.value_or_thunk ~default:(fun () ->
-                                      Error.assertion_failure i.ti_span
-                                        ("Expected a first generic of type \
-                                          `Self`. Instead generics params \
-                                          are: "
-                                        ^ [%show: generic_param list]
-                                            generics.params))
+                                   Error.assertion_failure i.ti_span
+                                     ("Expected a first generic of type \
+                                       `Self`. Instead generics params are: "
+                                     ^ [%show: generic_param list]
+                                         generics.params))
                                |> fun x -> x.ident
                              in
                              let self =
@@ -1485,7 +1483,7 @@ struct
                       in
                       weakest
                       |> Option.map ~f:(fun (generics, binders, expr, is_req) ->
-                             (generics, List.map ~f binders, expr, is_req))
+                          (generics, List.map ~f binders, expr, is_req))
                       |> Option.map
                            ~f:(fun (generics, binders, (expr : expr), is_req) ->
                              let result_ident = mk_fresh "pred" in
@@ -1512,14 +1510,14 @@ struct
                                  result )
                              |> F.term)
                       |> Option.value_or_thunk ~default:(fun _ ->
-                             let ty = pty e.span ty in
-                             match ty.tm with
-                             | F.AST.Product (inputs, _) ->
-                                 {
-                                   ty with
-                                   tm = F.AST.Product (inputs, F.type0_term);
-                                 }
-                             | _ -> F.type0_term)
+                          let ty = pty e.span ty in
+                          match ty.tm with
+                          | F.AST.Product (inputs, _) ->
+                              {
+                                ty with
+                                tm = F.AST.Product (inputs, F.type0_term);
+                              }
+                          | _ -> F.type0_term)
                     in
 
                     let ty =
@@ -1587,15 +1585,15 @@ struct
         let constraints_fields : FStar_Parser_AST.tycon_record =
           generics.constraints
           |> List.filter_map ~f:(fun c ->
-                 match c with
-                 | GCType { goal = bound; name = id } ->
-                     let name = "_super_" ^ id in
-                     let typ = pgeneric_constraint_type e.span c in
-                     Some (F.id name, None, [ F.Attrs.no_method ], typ)
-                 | GCProjection _ ->
-                     (* TODO: Not yet implemented, see https://github.com/hacspec/hax/issues/785 *)
-                     None
-                 | _ -> .)
+              match c with
+              | GCType { goal = bound; name = id } ->
+                  let name = "_super_" ^ id in
+                  let typ = pgeneric_constraint_type e.span c in
+                  Some (F.id name, None, [ F.Attrs.no_method ], typ)
+              | GCProjection _ ->
+                  (* TODO: Not yet implemented, see https://github.com/hacspec/hax/issues/785 *)
+                  None
+              | _ -> .)
         in
         let fields : FStar_Parser_AST.tycon_record =
           constraints_fields @ fields
@@ -1620,22 +1618,21 @@ struct
         let constraints_export =
           constraints_fields
           |> List.map ~f:(fun (super_name, _, _, typ) ->
-                 let super_name = FStar_Ident.string_of_id super_name in
-                 let tc_name = FStar_Ident.string_of_id name_id in
-                 let typ = FStar_Parser_AST.term_to_string typ in
-                 let binders = FStar_Parser_AST.binders_to_string ") (" bds in
-                 let tc_instance =
-                   name_id
-                   :: FStar_Parser_AST.idents_of_binders bds
-                        FStar_Compiler_Range.dummyRange
-                   |> List.map ~f:FStar_Ident.string_of_id
-                   |> String.concat ~sep:" "
-                 in
-                 `VerbatimIntf
-                   ( "[@@ FStar.Tactics.Typeclasses.tcinstance]\nlet _ = fun ("
-                     ^ binders ^ ") {|i: " ^ tc_instance ^ "|} -> i."
-                     ^ super_name,
-                     `Newline ))
+              let super_name = FStar_Ident.string_of_id super_name in
+              let tc_name = FStar_Ident.string_of_id name_id in
+              let typ = FStar_Parser_AST.term_to_string typ in
+              let binders = FStar_Parser_AST.binders_to_string ") (" bds in
+              let tc_instance =
+                name_id
+                :: FStar_Parser_AST.idents_of_binders bds
+                     FStar_Compiler_Range.dummyRange
+                |> List.map ~f:FStar_Ident.string_of_id
+                |> String.concat ~sep:" "
+              in
+              `VerbatimIntf
+                ( "[@@ FStar.Tactics.Typeclasses.tcinstance]\nlet _ = fun ("
+                  ^ binders ^ ") {|i: " ^ tc_instance ^ "|} -> i." ^ super_name,
+                  `Newline ))
         in
         `Intf { d; drange = F.dummyRange; quals = []; attrs = [] }
         :: constraints_export
@@ -1750,8 +1747,8 @@ struct
             | ItemQuote q -> Some q.fstar_options
             | _ -> None)
           |> Option.value_or_thunk ~default:(fun _ ->
-                 Error.assertion_failure e.span
-                   "Malformed `Quote` item: could not find a ItemQuote payload")
+              Error.assertion_failure e.span
+                "Malformed `Quote` item: could not find a ItemQuote payload")
           |> Option.value ~default:Types.{ intf = false; impl = true }
         in
         let payload = (pquote e.span quote, `Newline) in
@@ -1794,15 +1791,12 @@ let strings_of_item (bo : BackendOptions.t) m items (item : item) :
   let interface_mode' : Types.inclusion_kind =
     List.rev bo.interfaces
     |> List.find ~f:(fun (clause : Types.inclusion_clause) ->
-           let namespace = clause.namespace in
-           (* match anything under that **module** namespace *)
-           let namespace =
-             {
-               namespace with
-               chunks = namespace.chunks @ [ Glob One; Glob Many ];
-             }
-           in
-           Concrete_ident.matches_namespace namespace item.ident)
+        let namespace = clause.namespace in
+        (* match anything under that **module** namespace *)
+        let namespace =
+          { namespace with chunks = namespace.chunks @ [ Glob One; Glob Many ] }
+        in
+        Concrete_ident.matches_namespace namespace item.ident)
     |> Option.map ~f:(fun (clause : Types.inclusion_clause) -> clause.kind)
     |> Option.value ~default:(Types.Excluded : Types.inclusion_kind)
   in
@@ -1825,14 +1819,14 @@ let strings_of_item (bo : BackendOptions.t) m items (item : item) :
   in
   Print.pitem item
   |> List.concat_map ~f:(function
-       | `Impl i -> [ (mk_impl (Print.decl_to_string i), `Newline) ]
-       | `Intf i -> [ (mk_intf (Print.decl_to_string i), `Newline) ]
-       | `VerbatimIntf (s, nl) -> [ (mk_intf s, nl) ]
-       | `VerbatimImpl (s, nl) -> [ (`Impl s, nl) ]
-       | `Comment s ->
-           let s = "(* " ^ s ^ " *)" in
-           if interface_mode then [ (`Impl s, `Newline); (`Intf s, `Newline) ]
-           else [ (`Impl s, `Newline) ])
+    | `Impl i -> [ (mk_impl (Print.decl_to_string i), `Newline) ]
+    | `Intf i -> [ (mk_intf (Print.decl_to_string i), `Newline) ]
+    | `VerbatimIntf (s, nl) -> [ (mk_intf s, nl) ]
+    | `VerbatimImpl (s, nl) -> [ (`Impl s, nl) ]
+    | `Comment s ->
+        let s = "(* " ^ s ^ " *)" in
+        if interface_mode then [ (`Impl s, `Newline); (`Intf s, `Newline) ]
+        else [ (`Impl s, `Newline) ])
   |> List.filter ~f:(function `Impl _, _ when no_impl -> false | _ -> true)
 
 type rec_prefix = NonRec | FirstMutRec | MutRec
@@ -1858,10 +1852,10 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
       |> Fn.flip Set.remove mod_name
       |> Set.to_list
       |> List.filter ~f:(fun m ->
-             (* Special treatment for modules handled specifically in our F* libraries *)
-             String.is_prefix ~prefix:"Core_models." m |> not
-             && String.is_prefix ~prefix:"Alloc." m |> not
-             && String.equal "Hax_lib.Int" m |> not)
+          (* Special treatment for modules handled specifically in our F* libraries *)
+          String.is_prefix ~prefix:"Core_models." m |> not
+          && String.is_prefix ~prefix:"Alloc." m |> not
+          && String.equal "Hax_lib.Int" m |> not)
       |> List.map ~f:(fun mod_path -> "let open " ^ mod_path ^ " in")
     in
     match lines with
@@ -1993,26 +1987,25 @@ let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
   U.group_items_by_namespace items
   |> Map.to_alist
   |> List.filter_map ~f:(fun (_, items) ->
-         let* first_item = List.hd items in
-         Some ((RenderId.render first_item.ident).path, items))
+      let* first_item = List.hd items in
+      Some ((RenderId.render first_item.ident).path, items))
   |> List.concat_map ~f:(fun (ns, items) ->
-         let mod_name = module_name ns in
-         let impl, intf = string_of_items ~mod_name ~bundles bo m items in
-         let make ~ext body =
-           if String.is_empty body then None
-           else
-             Some
-               Types.
-                 {
-                   path = mod_name ^ "." ^ ext;
-                   contents =
-                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo mod_name
-                     ^ "\n\n" ^ body ^ "\n";
-                   sourcemap = None;
-                 }
-         in
-         List.filter_map ~f:Fn.id
-           [ make ~ext:"fst" impl; make ~ext:"fsti" intf ])
+      let mod_name = module_name ns in
+      let impl, intf = string_of_items ~mod_name ~bundles bo m items in
+      let make ~ext body =
+        if String.is_empty body then None
+        else
+          Some
+            Types.
+              {
+                path = mod_name ^ "." ^ ext;
+                contents =
+                  "module " ^ mod_name ^ "\n" ^ fstar_headers bo mod_name
+                  ^ "\n\n" ^ body ^ "\n";
+                sourcemap = None;
+              }
+      in
+      List.filter_map ~f:Fn.id [ make ~ext:"fst" impl; make ~ext:"fsti" intf ])
 
 let translate =
   if

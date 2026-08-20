@@ -260,7 +260,9 @@ module Make (Options : OPTS) : MAKE = struct
             let wrap_parens =
               group
               >>
-              match ctx with AlreadyPar -> Fn.id | NeedsPar -> iblock parens
+              match ctx with
+              | AlreadyPar -> Fn.id
+              | NeedsPar -> iblock parens
             in
             function
             | PBinding { mut; mode; var; typ; subpat } ->
@@ -281,7 +283,9 @@ module Make (Options : OPTS) : MAKE = struct
             let wrap_parens =
               group
               >>
-              match ctx with AlreadyPar -> Fn.id | NeedsPar -> iblock parens
+              match ctx with
+              | AlreadyPar -> Fn.id
+              | NeedsPar -> iblock parens
             in
             fun pat ->
               match pat with
@@ -376,7 +380,9 @@ module Make (Options : OPTS) : MAKE = struct
             let wrap_parens =
               group
               >>
-              match ctx with AlreadyPar -> Fn.id | NeedsPar -> iblock parens
+              match ctx with
+              | AlreadyPar -> Fn.id
+              | NeedsPar -> iblock parens
             in
             match e with
             | QuestionMark { e; return_typ; _ } -> print#expr ctx e
@@ -484,10 +490,10 @@ module Make (Options : OPTS) : MAKE = struct
           let assume_item =
             List.rev Options.options.assume_items
             |> List.find ~f:(fun (clause : Types.inclusion_clause) ->
-                   let namespace = clause.namespace in
-                   Concrete_ident.matches_namespace namespace item.ident)
+                let namespace = clause.namespace in
+                Concrete_ident.matches_namespace namespace item.ident)
             |> Option.map ~f:(fun (clause : Types.inclusion_clause) ->
-                   match clause.kind with Types.Excluded -> false | _ -> true)
+                match clause.kind with Types.Excluded -> false | _ -> true)
             |> Option.value ~default:false
           in
           let fun_and_reduc base_name constructor =

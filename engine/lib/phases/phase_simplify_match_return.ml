@@ -66,16 +66,16 @@ module Make (F : Features.T) =
                    in
                    let found = ref false in
                    let arm_pat =
-                     (object
-                        inherit [_] Visitors.map as super
+                     object
+                       inherit [_] Visitors.map as super
 
-                        method! visit_pat () p =
-                          match p.p with
-                          | PBinding b when [%eq: Local_ident.t] b.var var ->
-                              found := true;
-                              lhs
-                          | _ -> super#visit_pat () p
-                     end)
+                       method! visit_pat () p =
+                         match p.p with
+                         | PBinding b when [%eq: Local_ident.t] b.var var ->
+                             found := true;
+                             lhs
+                         | _ -> super#visit_pat () p
+                     end
                        #visit_pat
                        () arm_pat
                    in

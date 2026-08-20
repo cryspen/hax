@@ -366,8 +366,8 @@ end) : EXPR = struct
         | Some with_ ->
             Concrete_ident.of_name ~value:true name
             |> (Concrete_ident.map_path_strings [@alert "-unsafe"]) ~f:(function
-                 | "u128" -> with_
-                 | s -> s)
+              | "u128" -> with_
+              | s -> s)
         | None ->
             assertion_failure (Span.to_thir span)
               ("Binary operation: expected " ^ expected ^ " type, got "
@@ -731,8 +731,8 @@ end) : EXPR = struct
                 Local_ident.mk_id Cnst
                   (MyInt64.to_int id.index
                   |> Option.value_or_thunk ~default:(fun _ ->
-                         assertion_failure [ e.span ]
-                           "Expected const id to fit in an OCaml native int"));
+                      assertion_failure [ e.span ]
+                        "Expected const id to fit in an OCaml native int"));
             }
       | Repeat { value; count } ->
           let value = c_expr value in
@@ -1130,9 +1130,9 @@ end) : EXPR = struct
             item_ref.value.generic_args
           |> Option.all
           |> Option.value_or_thunk ~default:(fun _ ->
-                 assertion_failure [ span ]
-                   "Wrong generics for slice: expected a type. See \
-                    synthetic_items in hax frontend.")
+              assertion_failure [ span ]
+                "Wrong generics for slice: expected a type. See \
+                 synthetic_items in hax frontend.")
         in
         let types = List.map ~f:(fun ty -> GType (c_ty span ty)) types in
         TApp { ident = `TupleType (List.length types); args = types }
@@ -1155,8 +1155,8 @@ end) : EXPR = struct
               Local_ident.mk_id Typ
                 (MyInt64.to_int index
                 |> Option.value_or_thunk ~default:(fun _ ->
-                       assertion_failure [ span ]
-                         "Expected param id to fit in an OCaml native int"));
+                    assertion_failure [ span ]
+                      "Expected param id to fit in an OCaml native int"));
           }
     | Error ->
         assertion_failure [ span ]
@@ -1417,7 +1417,7 @@ end) : EXPR = struct
         let bounds =
           c_bounds span bounds
           |> List.filter_map ~f:(fun bound ->
-                 match bound with GCType impl -> Some impl | _ -> None)
+              match bound with GCType impl -> Some impl | _ -> None)
         in
         TIType bounds
     | Type (_, Some _) ->
@@ -1447,7 +1447,8 @@ let make ~krate : (module EXPR) =
   let is_core_item = String.(krate = "core" || krate = "core_hax_model") in
   let module M : EXPR = Make (struct
     let is_core_item = is_core_item
-  end) in
+  end)
+  in
   (module M)
 
 let c_trait_item (item : Thir.trait_item) : trait_item =
@@ -1664,15 +1665,15 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
         (* Each variant might introduce a anonymous constant defining its discriminant integer  *)
         List.filter_map ~f:(fun v -> v.disr_expr) variants
         |> List.map ~f:(fun Types.{ def_id; body; _ } ->
-               let name = Concrete_ident.of_def_id ~value:true def_id in
-               let generics = { params = []; constraints = [] } in
-               let body = c_expr body.expr in
-               {
-                 v = Fn { name; generics; body; params = []; safety = Safe };
-                 span;
-                 ident = name;
-                 attrs = [];
-               })
+            let name = Concrete_ident.of_def_id ~value:true def_id in
+            let generics = { params = []; constraints = [] } in
+            let body = c_expr body.expr in
+            {
+              v = Fn { name; generics; body; params = []; safety = Safe };
+              span;
+              ident = name;
+              attrs = [];
+            })
       in
       let is_primitive =
         List.for_all

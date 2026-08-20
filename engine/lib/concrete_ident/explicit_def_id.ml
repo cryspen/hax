@@ -155,7 +155,7 @@ module ImplInfoStore = struct
     state :=
       impl_infos
       |> List.map ~f:(fun ((id : Types.def_id), impl_infos) ->
-             (def_id_to_rust_ast id.contents.value, impl_infos))
+          (def_id_to_rust_ast id.contents.value, impl_infos))
       |> Hashtbl.of_alist_multi (module T)
       |> Hashtbl.map ~f:List.hd_exn |> Option.some
 

@@ -487,7 +487,7 @@ struct
         let get_fn_of kind f : document option =
           Attrs.associated_fn kind super.attrs
           |> Option.map ~f:(fun (g, p, x) ->
-                 f (g, List.hd_exn (List.rev p), self#entrypoint_expr x))
+              f (g, List.hd_exn (List.rev p), self#entrypoint_expr x))
         in
         let requires =
           get_expr_of Requires (fun x ->
@@ -965,8 +965,8 @@ struct
         match x1 with
         | { size; signedness } -> (
             (match signedness with
-            | Unsigned -> string "u"
-            | Signed -> string "i")
+              | Unsigned -> string "u"
+              | Signed -> string "i")
             ^^
             match size with
             | S8 -> string "8"
@@ -1038,7 +1038,8 @@ let make (module M : Attrs.WITH_ITEMS) =
         let default x = x
       end)
       (M) :
-      S) in
+      S)
+  in
   new_printer
 
 let translate m _ ~bundles:_ (items : AST.item list) : Types.file list =
@@ -1047,25 +1048,25 @@ let translate m _ ~bundles:_ (items : AST.item list) : Types.file list =
     U.group_items_by_namespace items
     |> Map.to_alist
     |> List.filter_map ~f:(fun (_, items) ->
-           let* first_item = List.hd items in
-           Some ((RenderId.render first_item.ident).path, items))
+        let* first_item = List.hd items in
+        Some ((RenderId.render first_item.ident).path, items))
   in
   (grouped_items
   |> List.map ~f:(fun (ns, items) ->
-         let mod_name =
-           String.concat ~sep:"_"
-             (List.map ~f:(map_first_letter String.uppercase) ns)
-         in
-         let sourcemap, contents =
-           let annotated = my_printer#entrypoint_modul items in
-           let open Generic_printer.AnnotatedString in
-           let header = pure hardcoded_coq_headers in
-           let annotated = concat header annotated in
-           (to_sourcemap annotated, to_string annotated)
-         in
-         let sourcemap = Some sourcemap in
-         let path = mod_name ^ ".v" in
-         Types.{ path; contents; sourcemap }))
+      let mod_name =
+        String.concat ~sep:"_"
+          (List.map ~f:(map_first_letter String.uppercase) ns)
+      in
+      let sourcemap, contents =
+        let annotated = my_printer#entrypoint_modul items in
+        let open Generic_printer.AnnotatedString in
+        let header = pure hardcoded_coq_headers in
+        let annotated = concat header annotated in
+        (to_sourcemap annotated, to_string annotated)
+      in
+      let sourcemap = Some sourcemap in
+      let path = mod_name ^ ".v" in
+      Types.{ path; contents; sourcemap }))
   @ [
       Types.
         {
@@ -1076,13 +1077,11 @@ let translate m _ ~bundles:_ (items : AST.item list) : Types.file list =
                 (List.rev
                    (grouped_items
                    |> List.map ~f:(fun (ns, items) ->
-                          let mod_name =
-                            String.concat ~sep:"_"
-                              (List.map
-                                 ~f:(map_first_letter String.uppercase)
-                                 ns)
-                          in
-                          mod_name ^ ".v")));
+                       let mod_name =
+                         String.concat ~sep:"_"
+                           (List.map ~f:(map_first_letter String.uppercase) ns)
+                       in
+                       mod_name ^ ".v")));
           sourcemap = None;
         };
     ]
