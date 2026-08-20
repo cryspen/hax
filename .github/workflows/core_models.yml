@@ -217,12 +217,6 @@ jobs:
       - name: Build Lean tactic tests
         working-directory: hax-lib/proof-libs/lean
         run: lake build Tests
-      # Inverted: a `skip_lean` test that PASSES means its blocker is gone.
-      - name: Skipped equivalence tests must still be failing
-        run: |
-          make -C tests/rust_lean_equiv_test \
-            CHARON=$AENEAS_DIR/charon/bin/charon AENEAS=$AENEAS_DIR/bin/aeneas \
-            check-skipped
 
       # ---- Enforce that committed extraction matches re-extraction ------
       # If this fails: someone changed Rust source / patcher without
@@ -297,3 +291,12 @@ jobs:
         unset CI # Allows us to use Aeneas's olean cache
         nix develop .#ci-examples --command make -C hax-lib/core-models/tests clean
         nix develop .#ci-examples --command make -C hax-lib/core-models/tests
+
+    # Inverted: a `skip_lean` test that PASSES means its blocker is gone.
+    # Runs here, not in `lean-build`: `check-skipped` re-extracts with
+    # `cargo hax`, which only this job's nix shell provides.
+    - name: Skipped equivalence tests must still be failing
+      run: |
+        unset CI
+        nix develop .#ci-examples --command \
+          make -C hax-lib/core-models/tests/rust_lean_equiv_test check-skipped
