@@ -48,13 +48,13 @@ inductive option.Option (T : Type) where
 -/
 
 /-- Trait declaration: [core_models::iter::traits::iterator::Iterator]
-    Source: 'core-models/src/core/iter.rs', lines 16:8-34:9
+    Source: 'core-models/src/core/iter.rs', lines 17:8-35:9
     Visibility: public -/
 structure iter.traits.iterator.Iterator (Self : Type) (Self_Item : Type) where
   next : Self → Result ((option.Option Self_Item) × Self)
 
 /-- Trait declaration: [core_models::iter::traits::collect::IntoIterator]
-    Source: 'core-models/src/core/iter.rs', lines 449:8-461:9
+    Source: 'core-models/src/core/iter.rs', lines 464:8-476:9
     Visibility: public -/
 structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   (Self_IntoIter : Type) where
@@ -293,15 +293,29 @@ structure hash.Hash (Self : Type) where
   hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → Result
     H
 
+/-- [core_models::iter::adapters::fuse::Fuse]
+    Source: 'core-models/src/core/iter.rs', lines 1031:8-1034:9
+    Visibility: public -/
+structure iter.adapters.fuse.Fuse (I : Type) where
+  iter : I
+  done : Bool
+
+/-- [core_models::iter::adapters::inspect::Inspect]
+    Source: 'core-models/src/core/iter.rs', lines 1004:8-1007:9
+    Visibility: public -/
+structure iter.adapters.inspect.Inspect (I : Type) (F : Type) where
+  iter : I
+  f : F
+
 /-- [core_models::iter::adapters::map_while::MapWhile]
-    Source: 'core-models/src/core/iter.rs', lines 965:8-968:9
+    Source: 'core-models/src/core/iter.rs', lines 980:8-983:9
     Visibility: public -/
 structure iter.adapters.map_while.MapWhile (I : Type) (F : Type) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::skip_while::SkipWhile]
-    Source: 'core-models/src/core/iter.rs', lines 928:8-932:9
+    Source: 'core-models/src/core/iter.rs', lines 943:8-947:9
     Visibility: public -/
 structure iter.adapters.skip_while.SkipWhile (I : Type) (P : Type) where
   iter : I
@@ -309,7 +323,7 @@ structure iter.adapters.skip_while.SkipWhile (I : Type) (P : Type) where
   predicate : P
 
 /-- [core_models::iter::adapters::take_while::TakeWhile]
-    Source: 'core-models/src/core/iter.rs', lines 888:8-892:9
+    Source: 'core-models/src/core/iter.rs', lines 903:8-907:9
     Visibility: public -/
 structure iter.adapters.take_while.TakeWhile (I : Type) (P : Type) where
   iter : I
@@ -317,42 +331,42 @@ structure iter.adapters.take_while.TakeWhile (I : Type) (P : Type) where
   predicate : P
 
 /-- [core_models::iter::adapters::filter_map::FilterMap]
-    Source: 'core-models/src/core/iter.rs', lines 857:8-860:9
+    Source: 'core-models/src/core/iter.rs', lines 872:8-875:9
     Visibility: public -/
 structure iter.adapters.filter_map.FilterMap (I : Type) (F : Type) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::skip::Skip]
-    Source: 'core-models/src/core/iter.rs', lines 829:8-832:9
+    Source: 'core-models/src/core/iter.rs', lines 844:8-847:9
     Visibility: public -/
 structure iter.adapters.skip.Skip (I : Type) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::chain::Chain]
-    Source: 'core-models/src/core/iter.rs', lines 798:8-801:9
+    Source: 'core-models/src/core/iter.rs', lines 813:8-816:9
     Visibility: public -/
 structure iter.adapters.chain.Chain (A : Type) (B : Type) where
   a : option.Option A
   b : B
 
 /-- [core_models::iter::adapters::filter::Filter]
-    Source: 'core-models/src/core/iter.rs', lines 764:8-767:9
+    Source: 'core-models/src/core/iter.rs', lines 779:8-782:9
     Visibility: public -/
 structure iter.adapters.filter.Filter (I : Type) (P : Type) where
   iter : I
   predicate : P
 
 /-- [core_models::iter::adapters::zip::Zip]
-    Source: 'core-models/src/core/iter.rs', lines 737:8-740:9
+    Source: 'core-models/src/core/iter.rs', lines 752:8-755:9
     Visibility: public -/
 structure iter.adapters.zip.Zip (I1 : Type) (I2 : Type) where
   it1 : I1
   it2 : I2
 
 /-- [core_models::iter::adapters::flatten::Flatten]
-    Source: 'core-models/src/core/iter.rs', lines 693:8-699:9
+    Source: 'core-models/src/core/iter.rs', lines 708:8-714:9
     Visibility: public -/
 structure iter.adapters.flatten.Flatten (I : Type) (Clause0_Item : Type)
   (Clause1_Item : Type) where
@@ -360,7 +374,7 @@ structure iter.adapters.flatten.Flatten (I : Type) (Clause0_Item : Type)
   current : option.Option Clause0_Item
 
 /-- [core_models::iter::adapters::flat_map::FlatMap]
-    Source: 'core-models/src/core/iter.rs', lines 655:8-659:9
+    Source: 'core-models/src/core/iter.rs', lines 670:8-674:9
     Visibility: public -/
 structure iter.adapters.flat_map.FlatMap (I : Type) (U : Type) (F : Type) where
   it : I
@@ -368,21 +382,21 @@ structure iter.adapters.flat_map.FlatMap (I : Type) (U : Type) (F : Type) where
   current : option.Option U
 
 /-- [core_models::iter::adapters::take::Take]
-    Source: 'core-models/src/core/iter.rs', lines 629:8-632:9
+    Source: 'core-models/src/core/iter.rs', lines 644:8-647:9
     Visibility: public -/
 structure iter.adapters.take.Take (I : Type) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::map::Map]
-    Source: 'core-models/src/core/iter.rs', lines 601:8-604:9
+    Source: 'core-models/src/core/iter.rs', lines 616:8-619:9
     Visibility: public -/
 structure iter.adapters.map.Map (I : Type) (F : Type) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::step_by::StepBy]
-    Source: 'core-models/src/core/iter.rs', lines 557:8-566:9
+    Source: 'core-models/src/core/iter.rs', lines 572:8-581:9
     Visibility: public -/
 structure iter.adapters.step_by.StepBy (I : Type) where
   iter : I
@@ -390,21 +404,21 @@ structure iter.adapters.step_by.StepBy (I : Type) where
   first : Bool
 
 /-- [core_models::iter::adapters::enumerate::Enumerate]
-    Source: 'core-models/src/core/iter.rs', lines 481:8-484:9
+    Source: 'core-models/src/core/iter.rs', lines 496:8-499:9
     Visibility: public -/
 structure iter.adapters.enumerate.Enumerate (I : Type) where
   iter : I
   count : Std.Usize
 
 /-- Trait declaration: [core_models::iter::traits::collect::FromIterator]
-    Source: 'core-models/src/core/iter.rs', lines 464:8-472:9
+    Source: 'core-models/src/core/iter.rs', lines 479:8-487:9
     Visibility: public -/
 structure iter.traits.collect.FromIterator (Self : Type) (A : Type) where
   from_iter : forall {T : Type} {Clause0_IntoIter : Type} (IntoIteratorInst :
     iter.traits.collect.IntoIterator T A Clause0_IntoIter), T → Result Self
 
 /-- Trait declaration: [core_models::iter::traits::iterator::IteratorMethods]
-    Source: 'core-models/src/core/iter.rs', lines 41:8-108:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 42:8-115:9 -/
 structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
   : Type) where
   IteratorInst : iter.traits.iterator.Iterator Self Self_Clause0_Item
@@ -435,6 +449,10 @@ structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
   map_while : forall {B : Type} {F : Type} (coreopsfunctionFnPTupleFOptionInst
     : core.ops.function.Fn F Self_Clause0_Item (option.Option B)), Self → F
     → Result (iter.adapters.map_while.MapWhile Self F)
+  inspect : forall {F : Type} (coreopsfunctionFnPTupleSharedPTupleInst :
+    core.ops.function.Fn F Self_Clause0_Item Unit), Self → F → Result
+    (iter.adapters.inspect.Inspect Self F)
+  fuse : Self → Result (iter.adapters.fuse.Fuse Self)
   flat_map : forall {U : Type} {F : Type} {Clause0_Item : Type} (IteratorInst1
     : iter.traits.iterator.Iterator U Clause0_Item)
     (coreopsfunctionFnPTupleFPInst : core.ops.function.Fn F Self_Clause0_Item
@@ -475,7 +493,7 @@ structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
     iter.traits.collect.FromIterator B Self_Clause0_Item), Self → Result B
 
 /-- Trait declaration: [core_models::iter::traits::double_ended::DoubleEndedIterator]
-    Source: 'core-models/src/core/iter.rs', lines 428:8-431:9
+    Source: 'core-models/src/core/iter.rs', lines 443:8-446:9
     Visibility: public -/
 structure iter.traits.double_ended.DoubleEndedIterator (Self : Type)
   (Self_Clause0_Item : Type) where
@@ -483,7 +501,7 @@ structure iter.traits.double_ended.DoubleEndedIterator (Self : Type)
   next_back : Self → Result ((option.Option Self_Clause0_Item) × Self)
 
 /-- Trait declaration: [core_models::iter::traits::exact_size::ExactSizeIterator]
-    Source: 'core-models/src/core/iter.rs', lines 442:8-445:9
+    Source: 'core-models/src/core/iter.rs', lines 457:8-460:9
     Visibility: public -/
 structure iter.traits.exact_size.ExactSizeIterator (Self : Type)
   (Self_Clause0_Item : Type) where
@@ -491,13 +509,13 @@ structure iter.traits.exact_size.ExactSizeIterator (Self : Type)
   len : Self → Result Std.Usize
 
 /-- [core_models::iter::adapters::rev::Rev]
-    Source: 'core-models/src/core/iter.rs', lines 535:8-537:9
+    Source: 'core-models/src/core/iter.rs', lines 550:8-552:9
     Visibility: public -/
 structure iter.adapters.rev.Rev (I : Type) where
   iter : I
 
 /-- Trait declaration: [core_models::iter::range::Step]
-    Source: 'core-models/src/core/iter.rs', lines 995:4-1015:5
+    Source: 'core-models/src/core/iter.rs', lines 1068:4-1088:5
     Visibility: public -/
 structure iter.range.Step (Self : Type) where
   cloneCloneInst : clone.Clone Self

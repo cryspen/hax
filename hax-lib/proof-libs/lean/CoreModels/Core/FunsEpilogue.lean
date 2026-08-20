@@ -396,6 +396,21 @@ def iter.traits.iterator.Iterator.map_while.trait_default
     (self : Self) (f : F) : Result (iter.adapters.map_while.MapWhile Self F) :=
   iter.adapters.map_while.MapWhile.new self f
 
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::inspect"]
+def iter.traits.iterator.Iterator.inspect.trait_default
+    {Self F Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn F Clause0_Item Unit)
+    (self : Self) (f : F) : Result (iter.adapters.inspect.Inspect Self F) :=
+  iter.adapters.inspect.Inspect.new self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::fuse"]
+def iter.traits.iterator.Iterator.fuse.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) :
+    Result (iter.adapters.fuse.Fuse Self) :=
+  iter.adapters.fuse.Fuse.new self
+
 end core
 
 namespace alloc

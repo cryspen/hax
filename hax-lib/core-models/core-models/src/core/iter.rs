@@ -7,8 +7,9 @@ pub mod traits {
     pub mod iterator {
         use super::super::adapters::{
             chain::Chain, enumerate::Enumerate, filter::Filter, filter_map::FilterMap,
-            flat_map::FlatMap, flatten::Flatten, map::Map, map_while::MapWhile, skip::Skip,
-            skip_while::SkipWhile, step_by::StepBy, take::Take, take_while::TakeWhile, zip::Zip,
+            flat_map::FlatMap, flatten::Flatten, fuse::Fuse, inspect::Inspect, map::Map,
+            map_while::MapWhile, skip::Skip, skip_while::SkipWhile, step_by::StepBy, take::Take,
+            take_while::TakeWhile, zip::Zip,
         };
         use crate::option::Option;
         /// See [`std::iter::Iterator`]
@@ -69,6 +70,12 @@ pub mod traits {
             where
                 Self: Sized;
             fn map_while<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> MapWhile<Self, F>
+            where
+                Self: Sized;
+            fn inspect<F: Fn(&Self::Item)>(self, f: F) -> Inspect<Self, F>
+            where
+                Self: Sized;
+            fn fuse(self) -> Fuse<Self>
             where
                 Self: Sized;
             fn flat_map<U: Iterator, F: Fn(Self::Item) -> U>(self, f: F) -> FlatMap<Self, U, F>
@@ -327,6 +334,14 @@ pub mod traits {
 
             fn map_while<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> MapWhile<Self, F> {
                 MapWhile::new(self, f)
+            }
+
+            fn inspect<F: Fn(&Self::Item)>(self, f: F) -> Inspect<Self, F> {
+                Inspect::new(self, f)
+            }
+
+            fn fuse(self) -> Fuse<Self> {
+                Fuse::new(self)
             }
 
             fn flat_map<U: Iterator, F: Fn(I::Item) -> U>(self, f: F) -> FlatMap<I, U, F> {
@@ -982,6 +997,64 @@ pub mod adapters {
             }
         }
     }
+    pub mod inspect {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Inspect`]
+        pub struct Inspect<I, F> {
+            iter: I,
+            f: F,
+        }
+        impl<I, F> Inspect<I, F> {
+            pub fn new(iter: I, f: F) -> Self {
+                Self { iter, f }
+            }
+        }
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        impl<I: Iterator, F: Fn(&I::Item)> Iterator for Inspect<I, F> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                match self.iter.next() {
+                    Option::Some(x) => {
+                        (self.f)(&x);
+                        Option::Some(x)
+                    }
+                    Option::None => Option::None,
+                }
+            }
+        }
+    }
+    pub mod fuse {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Fuse`] — once the inner iterator returns `None`, always `None`.
+        pub struct Fuse<I> {
+            iter: I,
+            done: bool,
+        }
+        impl<I> Fuse<I> {
+            pub fn new(iter: I) -> Self {
+                Self { iter, done: false }
+            }
+        }
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        impl<I: Iterator> Iterator for Fuse<I> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if self.done {
+                    Option::None
+                } else {
+                    match self.iter.next() {
+                        Option::Some(x) => Option::Some(x),
+                        Option::None => {
+                            self.done = true;
+                            Option::None
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 pub mod range {
@@ -1458,6 +1531,28 @@ mod tests {
             let std_result: Vec<i32> = v.iter().copied()
                 .map_while(|x| if x > 0 { Some(x.wrapping_mul(2)) } else { None }).collect();
             prop_assert_eq!(model, std_result);
+        }
+
+        // P4b adapters: inspect (passthrough) and fuse (identity over a well-behaved
+        // iterator) — both should reproduce the input sequence unchanged.
+        #[test]
+        fn test_inspect(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).inspect(|_x: &i32| {});
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            prop_assert_eq!(model, v);
+        }
+
+        #[test]
+        fn test_fuse(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).fuse();
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            prop_assert_eq!(model, v);
         }
 
         #[test]
