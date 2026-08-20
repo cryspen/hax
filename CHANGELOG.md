@@ -33,6 +33,7 @@ Changes to cargo-hax:
  - Add `cargo hax tools remove <tool>@<version>` and `cargo hax tools clean` to delete a cached tool version or the whole tool cache
  - Add `cargo hax tools pin` to write version pins into `hax.toml`, either this release's defaults or a single `<name>@<version>` entry
  - `cargo hax into lean` generates a complete, buildable Lean package by default: project files, a root module, and a `Verification/` folder for handwritten proofs, created only when missing; stale files in `Extraction/` are removed and the root module's imports are checked on every run. Disable with a top-level `project-files = false` in `hax.toml` (#2142)
+ - Compile with `cfg(hax)` in the `lean` backend, as the engine-based backends do. Without it `hax-lib` was its dummy implementation, and `loop_invariant!` expanded to code that did not type-check
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
@@ -59,6 +60,8 @@ Changes to hax-lib:
  - Restore the documentation of the proc-macros, which was missing on docs.rs and in builds without `--cfg hax` (#1759)
  - Fix the docs.rs build of `hax-lib`: its `docs.rs` metadata table was misspelled, and `--cfg hax` has to reach rustc too so that the `cfg(hax)` dependencies resolve (#2087)
  - Strengthen testing of core-models, especially rust/lean equivalence. Fix core-models bugs in `chunks`, `result::map_or_else`, `step_by`, and signature mismatches (#2119)
+ - Extract the core models to Lean with `cargo hax into lean` instead of calling charon and aeneas directly, so they use the tool versions hax pins. CI no longer builds its own charon/aeneas
+ - Retarget the core models' `cfg(hax)` items at `cfg(hax_backend_fstar)`: they are the F* models, and every backend now compiles with `cfg(hax)`
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
