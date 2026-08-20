@@ -3,9 +3,12 @@
 ⚠️ **Note: A CI workflow (deploy_hax_lean.yml) will copy this directory into the repo https://github.com/cryspen/hax-lean. Use that repo as a dependency in your lakefile because Lean's Reservoir supports only that repo.** ⚠️
 
 
-# Hax Lean Library
+# Support library for hax/Lean-translated Rust code
 
-This Lean library contains the Lean infrastructure of Hax. Most notably:
+[hax](https://hax.cryspen.com/) is a tool for translating a large subset of Rust into Lean and
+other languages.
+
+This library contains the Lean infrastructure of hax. Most notably:
 - the Lean extraction of our model of Rust core/std/alloc libraries and supporting infrastructure
 - tactics for verification of extracted code
 
