@@ -30,6 +30,7 @@ Changes to cargo-hax:
  - Manage aeneas and charon versions with `cargo hax tools` (`install`, `list`, `show`), pinned via a committed `hax.toml` and installed from pre-built binaries verified against a shipped manifest and cached under `$XDG_CACHE_HOME/hax/tools/`
  - Resolve aeneas and charon from the version manifest instead of `PATH`; use a `path` entry in `hax.toml` to point at a local build
  - Check that the `hax-lib` version in scope matches the `cargo-hax` version before processing
+ - Compile with `cfg(hax)` in the `lean` backend, as the engine-based backends do. Without it `hax-lib` was its dummy implementation, and `loop_invariant!` expanded to code that did not type-check
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
@@ -53,6 +54,8 @@ Changes to hax-lib:
    `impl<T: Clone>` block and relaxed `Vec::remove`'s postcondition to
    `len' <= len` (#2157)
  - Strengthen testing of core-models, especially rust/lean equivalence. Fix core-models bugs in `chunks`, `result::map_or_else`, `step_by`, and signature mismatches (#2119)
+ - Extract the core models to Lean with `cargo hax into lean` instead of calling charon and aeneas directly, so they use the tool versions hax pins. CI no longer builds its own charon/aeneas
+ - Retarget the core models' `cfg(hax)` items at `cfg(hax_backend_fstar)`: they are the F* models, and every backend now compiles with `cfg(hax)`
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
