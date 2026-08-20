@@ -188,6 +188,126 @@ def iter.traits.iterator.Iterator.flatten.trait_default
     Result (iter.adapters.flatten.Flatten Self Clause0_Item Clause1_Item) :=
   iter.traits.iterator.Iterator.flatten.default IteratorInst IteratorInst1 self
 
+/-! ## P3 eager consumers kept OFF the `Iterator` structure
+
+These consume the iterator (never build an adapter), so — like `collect` — a
+trait field would be `<m> := <m>.default SELF …`, self-referencing the instance
+→ the `impl_def` recursive-field wall. Supplied as standalone `@[rust_fun]`-
+tagged dispatch functions delegating to the generated opaque `iter_*` loop
+helpers (the instances/`Fn`/`Ord` dictionaries are ordinary params, never
+`SELF`). `nth` is omitted: its helper `iter_nth` is `aeneas::exclude`d (a Lean
+forward-reference to `core.Usize.Insts.CoreIterRangeStep`), so there is no
+`iter_nth` to delegate to. `sum`/`product` need `Sum`/`Product` accumulator
+traits (declared without instances) and are likewise left for later. -/
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::fold"]
+def iter.traits.iterator.Iterator.fold.trait_default
+    {Self B F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F (B × Clause0_Item) B)
+    (self : Self) (init : B) (f : F) : Result B :=
+  iter.traits.iterator.iter_fold IteratorInst FnInst self init f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::all"]
+def iter.traits.iterator.Iterator.all.trait_default
+    {Self F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item Bool)
+    (self : Self) (f : F) : Result Bool :=
+  iter.traits.iterator.iter_all IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::any"]
+def iter.traits.iterator.Iterator.any.trait_default
+    {Self F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item Bool)
+    (self : Self) (f : F) : Result Bool :=
+  iter.traits.iterator.iter_any IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::find"]
+def iter.traits.iterator.Iterator.find.trait_default
+    {Self P Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) : Result (option.Option Clause0_Item) := do
+  -- `iter_find` threads the `&mut self` (returns the advanced iterator); `find`
+  -- consumes `self`, so the returned iterator is discarded.
+  let (o, _) ← iter.traits.iterator.iter_find IteratorInst FnInst self predicate
+  .ok o
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::find_map"]
+def iter.traits.iterator.Iterator.find_map.trait_default
+    {Self B F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item (option.Option B))
+    (self : Self) (f : F) : Result (option.Option B) :=
+  iter.traits.iterator.iter_find_map IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::position"]
+def iter.traits.iterator.Iterator.position.trait_default
+    {Self P Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) : Result (option.Option Aeneas.Std.Usize) :=
+  iter.traits.iterator.iter_position IteratorInst FnInst self predicate
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::count"]
+def iter.traits.iterator.Iterator.count.trait_default
+    {Self Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (self : Self) : Result Aeneas.Std.Usize :=
+  iter.traits.iterator.iter_count IteratorInst self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::last"]
+def iter.traits.iterator.Iterator.last.trait_default
+    {Self Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (self : Self) : Result (option.Option Clause0_Item) :=
+  iter.traits.iterator.iter_last IteratorInst self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::for_each"]
+def iter.traits.iterator.Iterator.for_each.trait_default
+    {Self F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item Unit)
+    (self : Self) (f : F) : Result Unit :=
+  iter.traits.iterator.iter_for_each IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::reduce"]
+def iter.traits.iterator.Iterator.reduce.trait_default
+    {Self F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F (Clause0_Item × Clause0_Item) Clause0_Item)
+    (self : Self) (f : F) : Result (option.Option Clause0_Item) :=
+  iter.traits.iterator.iter_reduce IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::min"]
+def iter.traits.iterator.Iterator.min.trait_default
+    {Self Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (OrdInst : cmp.Ord Clause0_Item)
+    (self : Self) : Result (option.Option Clause0_Item) :=
+  iter.traits.iterator.iter_min IteratorInst OrdInst self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::max"]
+def iter.traits.iterator.Iterator.max.trait_default
+    {Self Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (OrdInst : cmp.Ord Clause0_Item)
+    (self : Self) : Result (option.Option Clause0_Item) :=
+  iter.traits.iterator.iter_max IteratorInst OrdInst self
+
 end core
 
 namespace alloc
