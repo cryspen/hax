@@ -275,6 +275,84 @@ let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t
         self.Core_models.Ops.Range.f_end
   }
 
+/// `end` is the last included index, hence the `end < len` bound. The
+/// precondition is stronger than std\'s: the empty inclusive range
+/// (`start == end + 1`) is rejected instead of denoting an empty slice.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_5 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeInclusive usize) (t_Slice v_T) =
+  {
+    f_Output = t_Slice v_T;
+    f_get_pre
+    =
+    (fun (self: Core_models.Ops.Range.t_RangeInclusive usize) (slice: t_Slice v_T) -> true);
+    f_get_post
+    =
+    (fun
+        (self: Core_models.Ops.Range.t_RangeInclusive usize)
+        (slice: t_Slice v_T)
+        (out: Core_models.Option.t_Option (t_Slice v_T))
+        ->
+        true);
+    f_get
+    =
+    (fun (self: Core_models.Ops.Range.t_RangeInclusive usize) (slice: t_Slice v_T) ->
+        if
+          self.Core_models.Ops.Range.f_start <=. self.Core_models.Ops.Range.f_end &&
+          self.Core_models.Ops.Range.f_end <.
+          (Rust_primitives.Slice.slice_length #v_T slice <: usize)
+        then
+          Core_models.Option.Option_Some
+          (Rust_primitives.Slice.slice_slice #v_T
+              slice
+              self.Core_models.Ops.Range.f_start
+              (self.Core_models.Ops.Range.f_end +! mk_usize 1 <: usize))
+          <:
+          Core_models.Option.t_Option (t_Slice v_T)
+        else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T));
+    f_index_pre
+    =
+    (fun (self_: Core_models.Ops.Range.t_RangeInclusive usize) (slice: t_Slice v_T) ->
+        self_.Core_models.Ops.Range.f_start <=. self_.Core_models.Ops.Range.f_end &&
+        self_.Core_models.Ops.Range.f_end <.
+        (Rust_primitives.Slice.slice_length #v_T slice <: usize));
+    f_index_post
+    =
+    (fun
+        (self: Core_models.Ops.Range.t_RangeInclusive usize)
+        (slice: t_Slice v_T)
+        (out: t_Slice v_T)
+        ->
+        true);
+    f_index
+    =
+    (fun (self: Core_models.Ops.Range.t_RangeInclusive usize) (slice: t_Slice v_T) ->
+        Rust_primitives.Slice.slice_slice #v_T
+          slice
+          self.Core_models.Ops.Range.f_start
+          (self.Core_models.Ops.Range.f_end +! mk_usize 1 <: usize));
+    f_get_unchecked_pre
+    =
+    (fun (self_: Core_models.Ops.Range.t_RangeInclusive usize) (slice: t_Slice v_T) ->
+        self_.Core_models.Ops.Range.f_start <=. self_.Core_models.Ops.Range.f_end &&
+        self_.Core_models.Ops.Range.f_end <.
+        (Rust_primitives.Slice.slice_length #v_T slice <: usize));
+    f_get_unchecked_post
+    =
+    (fun
+        (self: Core_models.Ops.Range.t_RangeInclusive usize)
+        (slice: t_Slice v_T)
+        (out: t_Slice v_T)
+        ->
+        true);
+    f_get_unchecked
+    =
+    fun (self: Core_models.Ops.Range.t_RangeInclusive usize) (slice: t_Slice v_T) ->
+      Rust_primitives.Slice.slice_slice #v_T
+        slice
+        self.Core_models.Ops.Range.f_start
+        (self.Core_models.Ops.Range.f_end +! mk_usize 1 <: usize)
+  }
+
 /// Generic `Index<I>` for `[T]`, matching std\'s
 /// `impl<T, I: SliceIndex<[T]>> Index<I> for [T]`
 /// in `core/src/slice/index.rs`. Body delegates to
@@ -282,7 +360,7 @@ let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t
 /// from the trait to avoid modeling raw pointers; std would call
 /// `index.index(self)` instead).
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5
+let impl_6
       (#v_T #v_I: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_SliceIndex v_I (t_Slice v_T))
     : Core_models.Ops.Index.t_Index (t_Slice v_T) v_I =

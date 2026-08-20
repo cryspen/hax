@@ -46,6 +46,7 @@ Changes to hax-lib:
  - Support `requires`, and `ensures` written behind a `cfg_attr` in
    an `impl` block or a trait annotated with `#[hax_lib::attributes]`, keeping
    the `cfg_attr` predicate (#1496)
+ - Model indexing by `RangeInclusive<usize>`: `SliceIndex<[T]>` for slices and, for the F* backend, `Index` for arrays. Both were missing, so any `Index` constraint on an inclusive range was unsolvable
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)

@@ -71,7 +71,7 @@ impl<T, const N: usize> crate::iter::traits::collect::IntoIterator for [T; N] {
 
 use crate::ops::{
     index::Index,
-    range::{Range, RangeFrom, RangeFull, RangeTo},
+    range::{Range, RangeFrom, RangeFull, RangeInclusive, RangeTo},
 };
 
 #[cfg(not(hax_backend_fstar))]
@@ -125,6 +125,18 @@ impl<T, const N: usize> Index<RangeFrom<usize>> for [T; N] {
     #[hax_lib::requires(i.start <= N)]
     fn index(&self, i: RangeFrom<usize>) -> &[T] {
         array_slice(self, i.start, N)
+    }
+}
+/// `i.end` is the last included index, hence the `i.end < N` bound. Like the
+/// slice impl, the precondition rules out the empty inclusive range.
+#[cfg(hax_backend_fstar)]
+#[hax_lib::attributes]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+impl<T, const N: usize> Index<RangeInclusive<usize>> for [T; N] {
+    type Output = [T];
+    #[hax_lib::requires(i.start <= i.end && i.end < N)]
+    fn index(&self, i: RangeInclusive<usize>) -> &[T] {
+        array_slice(self, i.start, i.end + 1)
     }
 }
 #[cfg(hax_backend_fstar)]

@@ -2441,7 +2441,7 @@ let impl_26 (#v_T: Type0) (v_N: usize)
 type t_RangeFull = | RangeFull : t_RangeFull
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_29 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) t_RangeFull =
+let impl_30 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) t_RangeFull =
   {
     f_Output = t_Slice v_T;
     f_index_pre = (fun (self: t_Array v_T v_N) (i: t_RangeFull) -> true);
@@ -2457,6 +2457,26 @@ type t_RangeInclusive (v_T: Type0) = {
   f_start:v_T;
   f_end:v_T
 }
+
+/// `i.end` is the last included index, hence the `i.end < N` bound. Like the
+/// slice impl, the precondition rules out the empty inclusive range.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_29 (#v_T: Type0) (v_N: usize)
+    : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (t_RangeInclusive usize) =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre
+    =
+    (fun (self_: t_Array v_T v_N) (i: t_RangeInclusive usize) ->
+        i.f_start <=. i.f_end && i.f_end <. v_N);
+    f_index_post
+    =
+    (fun (self: t_Array v_T v_N) (i: t_RangeInclusive usize) (out: t_Slice v_T) -> true);
+    f_index
+    =
+    fun (self: t_Array v_T v_N) (i: t_RangeInclusive usize) ->
+      Rust_primitives.Slice.array_slice #v_T v_N self i.f_start (i.f_end +! mk_usize 1 <: usize)
+  }
 
 /// See [`std::option::Option`]
 type t_Option (v_T: Type0) =
@@ -4248,7 +4268,7 @@ let impl_2 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_30: t_PartialOrd u8 u8 =
+let impl_30__from__cmp: t_PartialOrd u8 u8 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u8) (other: u8) -> true);
