@@ -1,5 +1,6 @@
 mod converts {
-    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    #[hax_lib::opaque]
+    #[cfg_attr(charon, charon::opaque)]
     fn from_utf8(s: &[u8]) -> crate::result::Result<&str, super::error::Utf8Error> {
         let (valid, decoded) = rust_primitives::string::str_from_utf8(s);
         if valid {

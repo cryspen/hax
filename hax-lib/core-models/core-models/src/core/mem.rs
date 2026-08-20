@@ -3,49 +3,57 @@
 use super::marker::Copy;
 
 /// See [`std::mem::forget`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn forget<T>(t: T) {
     rust_primitives::mem::forget(t)
 }
 
 /// See [`std::mem::forget_unsized`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn forget_unsized<T>(t: T) {
     rust_primitives::mem::forget(t)
 }
 
 /// See [`std::mem::size_of`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn size_of<T>() -> usize {
     rust_primitives::mem::size_of::<T>()
 }
 
 /// See [`std::mem::size_of_val`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn size_of_val<T: ?Sized>(val: &T) -> usize {
     rust_primitives::mem::size_of_val(val)
 }
 
 /// See [`std::mem::min_align_of`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn min_align_of<T>() -> usize {
     rust_primitives::mem::align_of::<T>()
 }
 
 /// See [`std::mem::min_align_of_val`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn min_align_of_val<T: ?Sized>(val: &T) -> usize {
     rust_primitives::mem::align_of_val(val)
 }
 
 /// See [`std::mem::align_of`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn align_of<T>() -> usize {
     rust_primitives::mem::align_of::<T>()
 }
 
 /// See [`std::mem::align_of_val`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn align_of_val<T: ?Sized>(val: &T) -> usize {
     rust_primitives::mem::align_of_val(val)
 }
@@ -60,7 +68,8 @@ pub unsafe fn align_of_val_raw<T>(val: T) -> usize {
 }
 
 /// See [`std::mem::needs_drop`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn needs_drop<T: ?Sized>() -> bool {
     rust_primitives::mem::needs_drop::<T>()
 }
@@ -74,13 +83,15 @@ pub unsafe fn uninitialized<T>() -> T {
 }
 
 /// See [`std::mem::swap`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn swap<T>(x: &mut T, y: &mut T) {
     rust_primitives::mem::swap(x, y)
 }
 
 /// See [`std::mem::replace`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub fn replace<T>(dest: &mut T, src: T) -> T {
     rust_primitives::mem::replace(dest, src)
 }
@@ -99,7 +110,8 @@ pub unsafe fn take<T>(x: &mut T) -> T {
 }
 
 /// See [`std::mem::transmute_copy`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub unsafe fn transmute_copy<Src, Dst>(src: &Src) -> Dst {
     unsafe { rust_primitives::mem::transmute_copy(src) }
 }
@@ -114,13 +126,15 @@ pub fn variant_count<T>() -> usize {
 }
 
 /// See [`std::mem::zeroed`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub unsafe fn zeroed<T>() -> T {
     unsafe { rust_primitives::mem::zeroed() }
 }
 
 /// See [`std::mem::transmute`]
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+#[hax_lib::opaque]
+#[cfg_attr(charon, charon::opaque)]
 pub unsafe fn transmute<Src, Dst>(src: Src) -> Dst {
     unsafe { rust_primitives::mem::transmute(src) }
 }
