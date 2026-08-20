@@ -990,7 +990,10 @@ pub fn legacy_lean_pure_requires_proof(
 /// This macro inserts a verbatim Lean proof showing that the `ensures`-condition is panic-free.
 /// The proof is inserted into the `pureEnsures` field of the Lean spec.
 #[proc_macro_attribute]
-pub fn legacy_lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+pub fn legacy_lean_pure_ensures_proof(
+    payload: pm::TokenStream,
+    item: pm::TokenStream,
+) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
     let payload = parse_macro_input!(payload as LitStr).value();
     let attr = AttrPayload::PureEnsuresProof(payload);
@@ -999,7 +1002,10 @@ pub fn legacy_lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenS
 
 /// Use the proof method `grind`. This influences the tactic and spec set used by Lean.
 #[proc_macro_attribute]
-pub fn legacy_lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+pub fn legacy_lean_proof_method_grind(
+    _attr: pm::TokenStream,
+    item: pm::TokenStream,
+) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
     let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::Grind);
     quote! {#attr #item}.into()
