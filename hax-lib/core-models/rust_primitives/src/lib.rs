@@ -231,11 +231,6 @@ pub mod string {
     pub fn str_sub(s: &'static str, b: usize, e: usize) -> &'static str {
         leak_string(s.chars().skip(b).take(e - b).collect())
     }
-    /// The `[b, e)` sub-string of `s`, in **byte** positions — i.e. `&s[b..e]`,
-    /// so it panics exactly where indexing a `str` does.
-    pub fn str_sub_bytes(s: &'static str, b: usize, e: usize) -> &'static str {
-        &s[b..e]
-    }
     /// The char at **char** position `i`.
     pub fn str_index(s: &'static str, i: usize) -> char {
         s.chars().nth(i).unwrap()
