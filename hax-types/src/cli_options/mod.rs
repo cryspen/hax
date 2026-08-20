@@ -170,7 +170,7 @@ pub struct FStarOptions {
 #[derive(JsonSchema, Parser, Debug, Clone, Hash, Eq, PartialEq)]
 #[command(after_help = "\
 TOOLS:
-  This backend runs `charon`, then `aeneas`, and scaffolds a Lean proof project.
+  This backend runs `charon`, then `aeneas`, and generates a Lean proof project.
   Tool versions are managed by hax: each tool resolves through, in order, the
   project's `hax.toml` (member crate, then workspace root) and the built-in
   default version this release was tested with, and is downloaded into the
@@ -186,19 +186,15 @@ INVOCATION:
 
   Overriding a flag that controls where output is written (aeneas's -backend,
   -dest, -subdir, or -split-files, or charon's --dest-file) may break the extraction
-  or the generated proof project.
+  or the generated proof project. Overriding -dest or -subdir additionally disables
+  the generation and checking of the Lean package files and the clearing of stale
+  extraction files, since hax no longer knows the package layout. Committing
+  `project-files = false` in `hax.toml` disables the package files for every
+  invocation.
 
   To use a binary you built yourself, commit a `path` entry for the tool in
   `hax.toml` instead of a version.")]
 pub struct LeanOptions {
-    /// Generate a `lakefile.toml` and `lean-toolchain` in the
-    /// `proofs/lean/` directory, with a dependency on the Aeneas
-    /// Lean library. Existing files are not overwritten, so it is safe
-    /// to re-run with this flag after editing the lakefile; pins that
-    /// differ from the resolved versions are warned about instead.
-    #[arg(long)]
-    pub lakefile: bool,
-
     /// Extra arguments forwarded to charon. Parsed with shell-style quoting,
     /// so values containing spaces can be single- or double-quoted.
     /// Example: --charon-args="--opaque '{impl Serialize for _}'"

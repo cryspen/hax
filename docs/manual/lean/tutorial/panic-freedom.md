@@ -22,11 +22,11 @@ pub fn square(x: u8) -> u8 {
 
 Run the following command to extract Lean code from this Rust project:
 ```
-cargo hax into lean --lakefile
+cargo hax into lean
 ```
-The `--lakefile` option will automatically set up the Lean scaffolding to
-obtain a working Lean project. The resulting Lean project can be found in the
-`proofs/lean` directory.
+Besides extracting the code, this sets up the Lean scaffolding around it, so
+the result is a working Lean project. It can be found in the `proofs/lean`
+directory.
 
 The file `proofs/lean/HaxTutorial/Extraction/Funs.lean` contains (among some boilerplate code) the translation of our `square` function:
 ```{.lean}
@@ -89,16 +89,30 @@ This file defines
 clause and
 - a definition `square.spec` of our overall specification.
 
+The root module `proofs/lean/HaxTutorial.lean` was created by the first
+extraction, before these files existed, so hax now warns that it does not
+import them. Add the import for the specification file:
+```{.lean}
+import HaxTutorial.Extraction.Specs
+```
+The second warning, about `ProofObligations.lean`, is the subject of the
+next section.
 
 ## Proving the specification correct
 
 Now, we'd like to
 prove that specification correct. To this end, hax already generated a template
-`proofs/lean/HaxTutorial/Extraction/ProofObligations.lean` for us. Copy the template and put
-it into a new directory `proofs/lean/HaxTutorial/Proofs/Proofs.lean`.
-To let Lean know about this new file, add the following line into `proofs/lean/HaxTutorial.lean`:
+`proofs/lean/HaxTutorial/Extraction/ProofObligations.lean` for us, which states
+the proof obligation. Files under `Extraction/` are regenerated on every
+extraction, so the proof work goes into
+`proofs/lean/HaxTutorial/Verification/ProofObligations.lean`, which the
+scaffolding created for exactly this purpose and which the root module already
+imports. Replace its contents with a copy of the template.
+The template itself must not be imported in addition (that would declare the
+obligation twice), so silence the warning about it by adding the commented-out
+import line to `proofs/lean/HaxTutorial.lean`:
 ```{.lean}
-import HaxTutorial.Proofs.Proofs
+-- import HaxTutorial.Extraction.ProofObligations
 ```
 Let's type-check all of this:
 ```
@@ -106,7 +120,7 @@ lake build
 ```
 Again, this succeeds. But besides the Aeneas warnings, we get another warning:
 ```
-warning: HaxTutorial/Proofs/Proofs.lean:25:8: declaration uses `sorry`
+warning: HaxTutorial/Verification/ProofObligations.lean:25:8: declaration uses `sorry`
 ```
 Everything type-checks, but we haven't proved anything yet. The template just contains the
 keyword `sorry` where the proof is supposed to be. This tells Lean: "Sorry, I don't have a proof
@@ -124,10 +138,10 @@ This unfolds the definitions of the specification `square.spec` and of the funct
 runs our tactic `hax_mvcgen` to generate verification conditions, and finally calls `grind` to
 discharge the verification conditions.
 
-Replace the `sorry` in `HaxTutorial/Proofs/Proofs.lean` with the proof above and rerun `lake build`.
+Replace the `sorry` in `HaxTutorial/Verification/ProofObligations.lean` with the proof above and rerun `lake build`.
 We get the following error:
 ```
-error: HaxTutorial/Proofs/Proofs.lean:28:12: `grind` failed
+error: HaxTutorial/Verification/ProofObligations.lean:28:12: `grind` failed
 case grind
 x : U8
 h : U8.max < ↑x * ↑x
@@ -197,7 +211,7 @@ Finally, run `lake build` again. This time Lean accepts the proof!
 
 However, we now get a couple of warnings of the form
 ```
-warning: HaxTutorial/Proofs/Proofs.lean:27:2: The `mvcgen` tactic is experimental and still under development. Avoid using it in production projects.
+warning: HaxTutorial/Verification/ProofObligations.lean:27:2: The `mvcgen` tactic is experimental and still under development. Avoid using it in production projects.
 ```
 They are harmless. You can deactivate them by adding the lines
 ```

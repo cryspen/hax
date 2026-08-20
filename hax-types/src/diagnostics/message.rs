@@ -240,6 +240,18 @@ pub enum HaxMessage {
         found: String,
         expected: String,
     } = 24,
+    /// A file the root module of a generated Lean package should import
+    /// exists, but the root module does not import it.
+    RootModuleMissingImport {
+        path: PathBuf,
+        import: String,
+    } = 25,
+    /// The root module of a generated Lean package imports an extraction
+    /// file that no longer exists.
+    RootModuleStaleImport {
+        path: PathBuf,
+        import: String,
+    } = 26,
 }
 
 impl HaxMessage {
@@ -488,7 +500,44 @@ impl HaxMessage {
                     "hax: {} pins {name} {found}; the current configuration expects {expected}",
                     path.display()
                 );
-                let remedy = "update the pin, or delete the file and re-run with --lakefile to regenerate it";
+                let remedy = "update the pin, or delete the file and re-run to regenerate it";
+                format!(
+                    "{}",
+                    renderer.render(
+                        Level::Warning
+                            .title(&title)
+                            .footer(Level::Help.title(remedy))
+                    )
+                )
+            }
+            Self::RootModuleMissingImport { path, import } => {
+                let path = relative_to_cwd(path);
+                let title = format!(
+                    "hax: {} does not import {import}, so `lake build` will not \
+                     check that file",
+                    path.display()
+                );
+                let remedy = format!(
+                    "add `import {import}`, or comment it out (`-- import {import}`) \
+                     to silence this warning"
+                );
+                format!(
+                    "{}",
+                    renderer.render(
+                        Level::Warning
+                            .title(&title)
+                            .footer(Level::Help.title(&remedy))
+                    )
+                )
+            }
+            Self::RootModuleStaleImport { path, import } => {
+                let path = relative_to_cwd(path);
+                let title = format!(
+                    "hax: {} imports {import}, but the extraction no longer \
+                     produces that file",
+                    path.display()
+                );
+                let remedy = "remove or comment out the import line";
                 format!(
                     "{}",
                     renderer.render(

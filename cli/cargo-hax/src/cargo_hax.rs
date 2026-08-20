@@ -672,14 +672,17 @@ fn main() {
             }
         }
 
+        let project = project
+            .as_ref()
+            .expect("the lean backend always discovers the project");
         let error = aeneas::run(
             aeneas_opts,
             backend.output_dir.clone(),
             backend.verbose,
             options.message_format,
-            project
-                .as_ref()
-                .expect("the lean backend always discovers the project"),
+            project,
+            aeneas::project_files_enabled(project),
+            None,
         );
         std::process::exit(if error { 1 } else { 0 });
     }
