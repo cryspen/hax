@@ -1,125 +1,34 @@
-mod hax_paths;
+//! Fallbacks used when hax is not running: the proc-macros of this crate should
+//! then be transparent. Only the macros that cannot simply forward their input
+//! need an implementation here.
 
-use hax_paths::*;
+use crate::hax_paths::*;
 use proc_macro::{TokenStream, TokenTree};
 use quote::quote;
 use syn::{visit_mut::VisitMut, *};
 
-macro_rules! identity_proc_macro_attribute {
-    ($($name:ident),*$(,)?) => {
-        $(
-            #[proc_macro_attribute]
-            pub fn $name(_attr: TokenStream, item: TokenStream) -> TokenStream {
-                item
-            }
-        )*
-    }
-}
-
-identity_proc_macro_attribute!(
-    fstar_options,
-    fstar_verification_status,
-    include,
-    exclude,
-    requires,
-    ensures,
-    decreases,
-    pv_handwritten,
-    pv_constructor,
-    protocol_messages,
-    process_init,
-    process_write,
-    process_read,
-    opaque,
-    opaque_type,
-    transparent,
-    refinement_type,
-    fstar_replace,
-    coq_replace,
-    legacy_lean_replace,
-    proverif_replace,
-    fstar_replace_body,
-    coq_replace_body,
-    legacy_lean_replace_body,
-    proverif_replace_body,
-    fstar_before,
-    coq_before,
-    legacy_lean_before,
-    proverif_before,
-    fstar_after,
-    coq_after,
-    legacy_lean_after,
-    proverif_after,
-    fstar_smt_pat,
-    fstar_postprocess_with,
-    legacy_lean_proof,
-    legacy_lean_pure_requires_proof,
-    legacy_lean_pure_ensures_proof,
-    legacy_lean_proof_method_grind,
-    legacy_lean_proof_method_bv_decide,
-);
-
-#[proc_macro]
-pub fn fstar_expr(_payload: TokenStream) -> TokenStream {
-    quote! { () }.into()
-}
-#[proc_macro]
-pub fn coq_expr(_payload: TokenStream) -> TokenStream {
-    quote! { () }.into()
-}
-#[proc_macro]
-pub fn legacy_lean_expr(_payload: TokenStream) -> TokenStream {
-    quote! { () }.into()
-}
-#[proc_macro]
-pub fn proverif_expr(_payload: TokenStream) -> TokenStream {
+/// Expansion of a `<BACKEND>_expr!` macro.
+pub fn unit_expr() -> TokenStream {
     quote! { () }.into()
 }
 
-#[proc_macro_attribute]
-pub fn lemma(_attr: TokenStream, _item: TokenStream) -> TokenStream {
-    quote! {}.into()
+/// Expansion of a `<BACKEND>_prop_expr!` macro.
+pub fn prop_expr() -> TokenStream {
+    quote! {::hax_lib::Prop::from_bool(true)}.into()
 }
 
-fn unsafe_expr() -> TokenStream {
-    // `*_unsafe_expr("<code>")` are macro generating a Rust expression of any type, that will be replaced by `<code>` in the backends.
-    // This should be used solely in hax-only contextes.
-    // If this macro is used, that means the user broke this rule.
+/// Expansion of a `<BACKEND>_unsafe_expr!` macro. Such a macro generates a Rust
+/// expression of any type, that gets replaced by verbatim backend code at
+/// extraction: it is meaningful only in hax-only contexts, so reaching this
+/// point means the user broke that rule.
+pub fn unsafe_expr() -> TokenStream {
     quote! { ::std::compile_error!("`hax_lib::unsafe_expr` has no meaning outside of hax extraction, please use it solely on hax-only places.") }.into()
 }
 
-#[proc_macro]
-pub fn fstar_unsafe_expr(_payload: TokenStream) -> TokenStream {
-    unsafe_expr()
-}
-#[proc_macro]
-pub fn coq_unsafe_expr(_payload: TokenStream) -> TokenStream {
-    unsafe_expr()
-}
-#[proc_macro]
-pub fn legacy_lean_unsafe_expr(_payload: TokenStream) -> TokenStream {
-    unsafe_expr()
-}
-#[proc_macro]
-pub fn proverif_unsafe_expr(_payload: TokenStream) -> TokenStream {
-    unsafe_expr()
-}
-
-#[proc_macro]
-pub fn fstar_prop_expr(_payload: TokenStream) -> TokenStream {
-    quote! {::hax_lib::Prop::from_bool(true)}.into()
-}
-#[proc_macro]
-pub fn coq_prop_expr(_payload: TokenStream) -> TokenStream {
-    quote! {::hax_lib::Prop::from_bool(true)}.into()
-}
-#[proc_macro]
-pub fn legacy_lean_prop_expr(_payload: TokenStream) -> TokenStream {
-    quote! {::hax_lib::Prop::from_bool(true)}.into()
-}
-#[proc_macro]
-pub fn proverif_prop_expr(_payload: TokenStream) -> TokenStream {
-    quote! {::hax_lib::Prop::from_bool(true)}.into()
+/// Expansion of an internal macro that was used directly.
+pub fn internal_macro_misuse(name: &str) -> TokenStream {
+    let message = format!("`{name}` is an internal macro and should never be used directly.");
+    quote! { ::std::compile_error!(#message) }.into()
 }
 
 fn not_hax_attribute(attr: &syn::Attribute) -> bool {
@@ -139,8 +48,8 @@ fn not_field_attribute(attr: &syn::Attribute) -> bool {
     }
 }
 
-#[proc_macro_attribute]
-pub fn attributes(_attr: TokenStream, item: TokenStream) -> TokenStream {
+/// Strips the hax attributes enabled by `#[attributes]`.
+pub fn attributes(item: TokenStream) -> TokenStream {
     let item: Item = parse_macro_input!(item);
 
     struct AttrVisitor;
@@ -184,7 +93,7 @@ pub fn attributes(_attr: TokenStream, item: TokenStream) -> TokenStream {
     quote! { #item }.into()
 }
 
-#[proc_macro]
+/// Expansion of `int!`.
 pub fn int(payload: TokenStream) -> TokenStream {
     let mut tokens = payload.into_iter().peekable();
     let negative = matches!(tokens.peek(), Some(TokenTree::Punct(p)) if p.as_char() == '-');
@@ -196,24 +105,4 @@ pub fn int(payload: TokenStream) -> TokenStream {
     };
     let lit: proc_macro2::TokenStream = TokenStream::from(lit.clone()).into();
     quote! {::hax_lib::int::Int(#lit)}.into()
-}
-
-#[proc_macro_attribute]
-pub fn impl_fn_decoration(_attr: TokenStream, _item: TokenStream) -> TokenStream {
-    quote! { ::std::compile_error!("`impl_fn_decoration` is an internal macro and should never be used directly.") }.into()
-}
-
-#[proc_macro_attribute]
-pub fn trait_fn_decoration(_attr: TokenStream, _item: TokenStream) -> TokenStream {
-    quote! { ::std::compile_error!("`trait_fn_decoration` is an internal macro and should never be used directly.") }.into()
-}
-
-#[proc_macro]
-pub fn loop_invariant(_predicate: TokenStream) -> TokenStream {
-    quote! {}.into()
-}
-
-#[proc_macro]
-pub fn loop_decreases(_predicate: TokenStream) -> TokenStream {
-    quote! {}.into()
 }

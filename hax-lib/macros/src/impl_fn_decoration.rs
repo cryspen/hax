@@ -55,8 +55,11 @@ impl parse::Parse for ImplFnDecoration {
                     });
                 }
                 _ => unreachable!(),
-            }
-            None => Err(Error::new(path_span, "Expected `::hax_lib::<KIND>`, `hax_lib::<KIND>` or `<KIND>` with `KIND` in {DECORATION_KINDS:?}"))?,
+            },
+            None => Err(Error::new(
+                path_span,
+                "Expected `::hax_lib::<KIND>`, `hax_lib::<KIND>` or `<KIND>` with `KIND` in {DECORATION_KINDS:?}",
+            ))?,
         };
 
         let (generics, self_ty, self_trait) = parse_next()?;
