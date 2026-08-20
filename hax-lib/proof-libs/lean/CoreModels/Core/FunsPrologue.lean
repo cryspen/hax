@@ -18,21 +18,21 @@ open Aeneas.Std Result
 
 /-! ## Scalar PartialEq / PartialOrd instances -/
 
-def U8.Insts.CoreCmpPartialEqU8       : cmp.PartialEq U8    U8    := { eq := fun x y => ok (x == y) }
-def U16.Insts.CoreCmpPartialEqU16     : cmp.PartialEq U16   U16   := { eq := fun x y => ok (x == y) }
-def U32.Insts.CoreCmpPartialEqU32     : cmp.PartialEq U32   U32   := { eq := fun x y => ok (x == y) }
-def U64.Insts.CoreCmpPartialEqU64     : cmp.PartialEq U64   U64   := { eq := fun x y => ok (x == y) }
-def U128.Insts.CoreCmpPartialEqU128   : cmp.PartialEq U128  U128  := { eq := fun x y => ok (x == y) }
-def Usize.Insts.CoreCmpPartialEqUsize : cmp.PartialEq Usize Usize := { eq := fun x y => ok (x == y) }
-def I8.Insts.CoreCmpPartialEqI8       : cmp.PartialEq I8    I8    := { eq := fun x y => ok (x == y) }
-def I16.Insts.CoreCmpPartialEqI16     : cmp.PartialEq I16   I16   := { eq := fun x y => ok (x == y) }
-def I32.Insts.CoreCmpPartialEqI32     : cmp.PartialEq I32   I32   := { eq := fun x y => ok (x == y) }
-def I64.Insts.CoreCmpPartialEqI64     : cmp.PartialEq I64   I64   := { eq := fun x y => ok (x == y) }
-def I128.Insts.CoreCmpPartialEqI128   : cmp.PartialEq I128  I128  := { eq := fun x y => ok (x == y) }
-def Isize.Insts.CoreCmpPartialEqIsize : cmp.PartialEq Isize Isize := { eq := fun x y => ok (x == y) }
+def U8.Insts.CoreCmpPartialEqU8       : cmp.PartialEq U8    U8    := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def U16.Insts.CoreCmpPartialEqU16     : cmp.PartialEq U16   U16   := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def U32.Insts.CoreCmpPartialEqU32     : cmp.PartialEq U32   U32   := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def U64.Insts.CoreCmpPartialEqU64     : cmp.PartialEq U64   U64   := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def U128.Insts.CoreCmpPartialEqU128   : cmp.PartialEq U128  U128  := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def Usize.Insts.CoreCmpPartialEqUsize : cmp.PartialEq Usize Usize := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def I8.Insts.CoreCmpPartialEqI8       : cmp.PartialEq I8    I8    := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def I16.Insts.CoreCmpPartialEqI16     : cmp.PartialEq I16   I16   := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def I32.Insts.CoreCmpPartialEqI32     : cmp.PartialEq I32   I32   := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def I64.Insts.CoreCmpPartialEqI64     : cmp.PartialEq I64   I64   := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def I128.Insts.CoreCmpPartialEqI128   : cmp.PartialEq I128  I128  := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+def Isize.Insts.CoreCmpPartialEqIsize : cmp.PartialEq Isize Isize := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
 
 def mkUPartialOrd {ty} : cmp.PartialOrd (UScalar ty) (UScalar ty) := {
-  PartialEqInst := { eq := fun x y => ok (x == y) }
+  PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
   partial_cmp := fun x y =>
     ok (option.Option.Some
       (match compare x.val y.val with
@@ -64,7 +64,7 @@ def IteratorRange.next {A : Type} (StepInst : iter.range.Step A) :
   else .ok (Option.none, range)
 
 def mkIPartialOrd {ty} : cmp.PartialOrd (IScalar ty) (IScalar ty) := {
-  PartialEqInst := { eq := fun x y => ok (x == y) }
+  PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
   partial_cmp := fun x y =>
     ok (option.Option.Some
       (match compare x.val y.val with
@@ -99,7 +99,7 @@ scalar (e.g. `<[T]>::cmp`, sorting, `BinaryHeap`) references an undefined
 `<int>.Insts.CoreCmpOrd`. -/
 
 def mkUOrd {ty} : cmp.Ord (UScalar ty) := {
-  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y) } }
+  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) } }
   PartialOrdInst := mkUPartialOrd
   cmp := fun x y =>
     ok (match compare x.val y.val with
@@ -109,7 +109,7 @@ def mkUOrd {ty} : cmp.Ord (UScalar ty) := {
 }
 
 def mkIOrd {ty} : cmp.Ord (IScalar ty) := {
-  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y) } }
+  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) } }
   PartialOrdInst := mkIPartialOrd
   cmp := fun x y =>
     ok (match compare x.val y.val with

@@ -521,6 +521,10 @@ pub mod vec {
     where
         T: PartialEq<U>,
     {
+        #[cfg(not(hax_backend_fstar))]
+        fn ne(&self, other: &Vec<U>) -> bool {
+            self.eq(other) == false
+        }
         fn eq(&self, other: &Vec<U>) -> bool {
             if !(self.len() == other.len()) {
                 false

@@ -9,6 +9,17 @@ where
     /// See [`std::cmp::PartialEq::eq`]
     #[hax_lib::requires(true)]
     fn eq(&self, other: &Rhs) -> bool;
+
+    /// See [`std::cmp::PartialEq::ne`]. Provided method: the aeneas Lean backend
+    /// synthesises `#[derive(PartialEq)]` instances as `{ eq := …, ne := …PartialEq.ne.default … }`,
+    /// so the model must carry `ne` or those instances fail with "`ne` is not a field of
+    /// `core.cmp.PartialEq`". Modelled exactly like the `PartialOrd::{lt,le,gt,ge}` defaults
+    /// below (cfg-guarded off F*; `== false` avoids negation for the F* lib).
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(true)]
+    fn ne(&self, other: &Rhs) -> bool {
+        self.eq(other) == false
+    }
 }
 
 /// See [`std::cmp::Eq`]
@@ -169,6 +180,10 @@ impl<T: PartialOrd<T>> PartialOrd<Reverse<T>> for Reverse<T> {
 }
 
 impl<T: PartialEq<T>> PartialEq<Reverse<T>> for Reverse<T> {
+    #[cfg(not(hax_backend_fstar))]
+    fn ne(&self, other: &Reverse<T>) -> bool {
+        self.eq(other) == false
+    }
     fn eq(&self, other: &Reverse<T>) -> bool {
         other.0.eq(&self.0)
     }

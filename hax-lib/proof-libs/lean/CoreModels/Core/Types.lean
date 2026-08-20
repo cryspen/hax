@@ -45,7 +45,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → Result Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 168:4-168:55
+    Source: 'core-models/src/core/array.rs', lines 172:4-172:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -64,10 +64,11 @@ structure clone.Clone (Self : Type) where
   clone : Self → Result Self
 
 /-- Trait declaration: [core_models::cmp::PartialEq]
-    Source: 'core-models/src/core/cmp.rs', lines 5:0-12:1
+    Source: 'core-models/src/core/cmp.rs', lines 5:0-23:1
     Visibility: public -/
 structure cmp.PartialEq (Self : Type) (Rhs : Type) where
   eq : Self → Rhs → Result Bool
+  ne : Self → Rhs → Result Bool
 
 /-
 /-- [core_models::option::Option]
@@ -91,14 +92,14 @@ structure borrow.Borrow (Self : Type) (Borrowed : Type) where
   borrow : Self → Result Borrowed
 
 /-- Trait declaration: [core_models::cmp::Eq]
-    Source: 'core-models/src/core/cmp.rs', lines 15:0-15:32
+    Source: 'core-models/src/core/cmp.rs', lines 26:0-26:32
     Visibility: public -/
 structure cmp.Eq (Self : Type) where
   PartialEqInst : cmp.PartialEq Self Self
 
 /-
 /-- [core_models::cmp::Ordering]
-    Source: 'core-models/src/core/cmp.rs', lines 19:0-26:1
+    Source: 'core-models/src/core/cmp.rs', lines 30:0-37:1
     Visibility: public -/
 @[discriminant isize [-1,0,1]]
 inductive cmp.Ordering where
@@ -108,7 +109,7 @@ inductive cmp.Ordering where
 -/
 
 /-- Trait declaration: [core_models::cmp::PartialOrd]
-    Source: 'core-models/src/core/cmp.rs', lines 30:0-68:1
+    Source: 'core-models/src/core/cmp.rs', lines 41:0-77:1
     Visibility: public -/
 structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   PartialEqInst : cmp.PartialEq Self Rhs
@@ -119,12 +120,12 @@ structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   ge : Self → Rhs → Result Bool
 
 /-- Trait declaration: [core_models::cmp::Neq]
-    Source: 'core-models/src/core/cmp.rs', lines 72:0-75:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 80:0-83:1 -/
 structure cmp.Neq (Self : Type) (Rhs : Type) where
   neq : Self → Rhs → Result Bool
 
 /-- Trait declaration: [core_models::cmp::Ord]
-    Source: 'core-models/src/core/cmp.rs', lines 145:0-149:1
+    Source: 'core-models/src/core/cmp.rs', lines 151:0-155:1
     Visibility: public -/
 structure cmp.Ord (Self : Type) where
   EqInst : cmp.Eq Self
@@ -132,7 +133,7 @@ structure cmp.Ord (Self : Type) where
   cmp : Self → Self → Result cmp.Ordering
 
 /-- [core_models::cmp::Reverse]
-    Source: 'core-models/src/core/cmp.rs', lines 168:0-168:29
+    Source: 'core-models/src/core/cmp.rs', lines 174:0-174:29
     Visibility: public -/
 @[reducible]
 def cmp.Reverse (T : Type) := T
@@ -839,7 +840,7 @@ structure slice.iter.Windows (T : Type) where
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 413:4-433:5
+    Source: 'core-models/src/core/slice.rs', lines 417:4-437:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where

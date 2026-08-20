@@ -69,7 +69,7 @@ macro_rules
 
 @[spec] def int.Int.Insts.CoreCmpPartialEqInt :
     cmp.PartialEq int.Int int.Int :=
-  { eq := fun a b => ok (a == b) }
+  { eq := fun a b => ok (a == b), ne := fun a b => ok (a != b) }
 
 @[spec] def int.Int.Insts.CoreCmpPartialOrdInt :
     cmp.PartialOrd int.Int int.Int :=

@@ -282,6 +282,10 @@ impl<T> Slice<T> {
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 impl<U, T: crate::cmp::PartialEq<U>> crate::cmp::PartialEq<[U]> for [T] {
+    #[cfg(not(hax_backend_fstar))]
+    fn ne(&self, other: &[U]) -> bool {
+        self.eq(other) == false
+    }
     fn eq(&self, other: &[U]) -> bool {
         if self.len() != other.len() {
             false
@@ -695,6 +699,10 @@ pub mod equality {
     #[hax_lib::attributes]
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<T: crate::cmp::PartialEq<U>, U, const N: usize> crate::cmp::PartialEq<[U; N]> for [T] {
+        #[cfg(not(hax_backend_fstar))]
+        fn ne(&self, other: &[U; N]) -> bool {
+            self.eq(other) == false
+        }
         fn eq(&self, other: &[U; N]) -> bool {
             if slice_length(self) != N {
                 false

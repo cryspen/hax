@@ -149,6 +149,10 @@ pub mod equality {
 
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<T: crate::cmp::PartialEq<U>, U, const N: usize> crate::cmp::PartialEq<[U; N]> for [T; N] {
+        #[cfg(not(hax_backend_fstar))]
+        fn ne(&self, other: &[U; N]) -> bool {
+            self.eq(other) == false
+        }
         fn eq(&self, other: &[U; N]) -> bool {
             let mut i = 0;
             while i < N {

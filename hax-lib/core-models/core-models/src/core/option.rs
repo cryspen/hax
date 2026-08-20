@@ -265,6 +265,10 @@ impl<T: super::clone::Clone> super::clone::Clone for Option<T> {
 
 #[hax_lib::attributes]
 impl<T: super::cmp::PartialEq<T>> super::cmp::PartialEq<Option<T>> for Option<T> {
+    #[cfg(not(hax_backend_fstar))]
+    fn ne(&self, other: &Self) -> bool {
+        self.eq(other) == false
+    }
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Some(a), Self::Some(b)) => a.eq(b),
