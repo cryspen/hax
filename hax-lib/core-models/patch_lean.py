@@ -293,6 +293,55 @@ def drop_intoiterator_iterator_inst(text: str) -> str:
     return transform_blocks(text, fn)
 
 
+def fill_iterator_default_fields(text: str) -> str:
+    """Back-fill the promoted `enumerate` / `map` trait-default fields on
+    alloc-crate `Iterator` impl records.
+
+    `core::iter::Iterator` now carries `enumerate`/`map` as provided methods
+    (promoted onto the trait so the Lean/charon backend extracts them as
+    `Iterator.<m>.default`, matching what downstream extractions reference when
+    they call `.map(..)` / `.enumerate()`). Aeneas back-fills those fields in
+    instances extracted *in the same crate as the trait* (core), but instances
+    in a *separately extracted* crate — alloc's `Vec`/`VecDeque` `IntoIter` and
+    `Drain` — are emitted as `{ next := ... }` only (Aeneas does not
+    materialise trait-default fields cross-crate → "Fields missing: enumerate,
+    map"). We inject them here, mirroring the core-side auto-filled shape.
+    """
+    ITER = "core.iter.traits.iterator.Iterator"
+
+    def fn(ident: str, block_lines: list[str]) -> str | None:
+        if "iter::traits::iterator::Iterator" not in ident:
+            return None
+        block = "\n".join(block_lines)
+        # Only trait-impl *records* (`:= {`) that set `next` but lack the
+        # promoted fields. The sibling `.next` *function* block has `:= do`.
+        if ":= {" not in block or "next :=" not in block or "enumerate :=" in block:
+            return None
+        # Parse the `Item` type argument: `...Iterator (<self>) <Item> := {`.
+        m = re.search(
+            r"iter\.traits\.iterator\.Iterator\s*\([^)]*\)\s*(\S+)\s*:=\s*\{",
+            block,
+        )
+        if m is None:
+            return None
+        item = m.group(1)
+        out: list[str] = []
+        injected = False
+        for line in block_lines:
+            if not injected and line.strip() == "}":
+                out.append(f"  enumerate := {ITER}.enumerate.default {item}")
+                out.append(
+                    f"  map := fun {{O : Type}} {{F : Type}} "
+                    f"(inst : core.ops.function.Fn F {item} O) => "
+                    f"{ITER}.map.default inst"
+                )
+                injected = True
+            out.append(line)
+        return "\n".join(out) if injected else None
+
+    return transform_blocks(text, fn)
+
+
 # Standalone `Result` / `ok` tokens, i.e. NOT already part of a dotted path
 # such as `result.Result`, `Aeneas.Std.Result`, or `result.Result.ok`.
 _BARE_RESULT_RE = re.compile(r"(?<![\w.])Result\b")
@@ -696,7 +745,10 @@ def patch_alloc() -> None:
         text = rewrite_phantom_data(text)
         if path == funs:
             text = rename_iter_param(text)
-            text = drop_intoiterator_iterator_inst(text)
+            # `drop_intoiterator_iterator_inst` removed: `IntoIterator` now carries
+            # the `iteratorIteratorInst` super-instance field (the `IntoIter: Iterator`
+            # bound is back, mirroring Aeneas.Std), so the alloc impls must KEEP it.
+            text = fill_iterator_default_fields(text)
         write(path, text)
     print(f"patched {ALLOC_DIR}.")
 

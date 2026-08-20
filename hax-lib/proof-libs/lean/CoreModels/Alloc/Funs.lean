@@ -162,6 +162,8 @@ def
   (collections.vec_deque.into_iter.IntoIter T A) T := {
   next :=
     collections.vec_deque.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
+  enumerate := core.iter.traits.iterator.Iterator.enumerate.default T
+  map := fun {O : Type} {F : Type} (inst : core.ops.function.Fn F T O) => core.iter.traits.iterator.Iterator.map.default inst
 }
 
 /-- [alloc::collections::vec_deque::{impl core::iter::traits::collect::IntoIterator<T, alloc::collections::vec_deque::into_iter::IntoIter<T, A>> for alloc::collections::vec_deque::VecDeque<T, A>}::into_iter]:
@@ -183,6 +185,9 @@ def
   (T : Type) (A : Type) : core.iter.traits.collect.IntoIterator
   (collections.vec_deque.VecDeque T A) T
   (collections.vec_deque.into_iter.IntoIter T A) := {
+  iteratorIteratorInst :=
+    collections.vec_deque.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator
+    T A
   into_iter :=
     collections.vec_deque.VecDeque.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
 }
@@ -450,6 +455,8 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
   core.iter.traits.iterator.Iterator (vec.into_iter.IntoIter T) T := {
   next := vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
+  enumerate := core.iter.traits.iterator.Iterator.enumerate.default T
+  map := fun {O : Type} {F : Type} (inst : core.ops.function.Fn F T O) => core.iter.traits.iterator.Iterator.map.default inst
 }
 
 /-- [alloc::vec::{impl core::iter::traits::collect::IntoIterator<T, alloc::vec::into_iter::IntoIter<T>> for alloc::vec::Vec<T>}::into_iter]:
@@ -465,6 +472,8 @@ def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
 def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) :
   core.iter.traits.collect.IntoIterator (vec.Vec T) T (vec.into_iter.IntoIter
   T) := {
+  iteratorIteratorInst :=
+    vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator T
   into_iter :=
     vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
 }
@@ -638,6 +647,8 @@ def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
 def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator (T : Type) (A : Type)
   : core.iter.traits.iterator.Iterator (vec.drain.Drain T A) T := {
   next := vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
+  enumerate := core.iter.traits.iterator.Iterator.enumerate.default T
+  map := fun {O : Type} {F : Type} (inst : core.ops.function.Fn F T O) => core.iter.traits.iterator.Iterator.map.default inst
 }
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_slice]:

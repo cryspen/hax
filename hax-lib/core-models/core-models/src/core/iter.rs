@@ -16,18 +16,39 @@ pub mod traits {
             type Item;
             #[hax_lib::requires(true)]
             fn next(&mut self) -> Option<Self::Item>;
+
+            // Provided methods, modelled as `#[cfg(not(hax_backend_fstar))]` trait defaults:
+            // the F* backend can't extract trait defaults (hence the `IteratorMethods` workaround
+            // below), but the Lean/charon backend now can — same pattern as `cmp::PartialEq::ne`.
+            // The aeneas Lean backend names these `Iterator.<m>.default`, which is exactly what a
+            // downstream extraction references when it calls `.map(..)` / `.enumerate()`. Bodies
+            // mirror the (aeneas-excluded) `IteratorMethods` blanket impl below.
+            // NOTE: only the non-coinductive adapters are promoted here. `rev` needs
+            // `DoubleEndedIterator` and `collect` routes through `FromIterator` (the IntoIter↔
+            // Iterator coinductivity this model deliberately avoids); they stay unmodelled.
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(true)]
+            fn enumerate(self) -> Enumerate<Self>
+            where
+                Self: Sized,
+            {
+                Enumerate::new(self)
+            }
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(true)]
+            fn map<O, F: Fn(Self::Item) -> O>(self, f: F) -> Map<Self, F>
+            where
+                Self: Sized,
+            {
+                Map::new(self, f)
+            }
         }
 
         // This trait is an addition to deal with the default methods that the F* backend doesn't handle
+        // (the ones NOT promoted onto `Iterator` above, because F* can't extract trait defaults).
         pub(crate) trait IteratorMethods: Iterator {
             fn fold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
-            fn enumerate(self) -> Enumerate<Self>
-            where
-                Self: Sized;
             fn step_by(self, step: usize) -> StepBy<Self>
-            where
-                Self: Sized;
-            fn map<O, F: Fn(Self::Item) -> O>(self, f: F) -> Map<Self, F>
             where
                 Self: Sized;
             fn all<F: Fn(Self::Item) -> bool>(self, f: F) -> bool;
@@ -254,16 +275,8 @@ pub mod traits {
                 iter_fold(self, init, f)
             }
 
-            fn enumerate(self) -> Enumerate<I> {
-                Enumerate::new(self)
-            }
-
             fn step_by(self, step: usize) -> StepBy<I> {
                 StepBy::new(self, step)
-            }
-
-            fn map<O, F: Fn(I::Item) -> O>(self, f: F) -> Map<I, F> {
-                Map::new(self, f)
             }
 
             fn all<F: Fn(I::Item) -> bool>(self, f: F) -> bool {
@@ -372,20 +385,28 @@ pub mod traits {
     pub mod collect {
         /// See [`std::iter::IntoIterator`]
         pub trait IntoIterator {
-            // The trait bound `IntoIter: Iterator<Item = Self::Item>` is
-            // omitted to avoid coinduction; the `Item` associated type
-            // itself is kept so downstream Aeneas extractions (which see
-            // std's IntoIterator with 2 associated types) produce
-            // 3-argument references that match our extracted struct.
+            // The `IntoIter: Iterator<Item = Self::Item>` bound carries the
+            // Iterator super-instance (extracted as the `iteratorInst` field),
+            // which `FromIterator::from_iter` needs to actually fold the
+            // iterator — mirroring Aeneas.Std's `IntoIterator`. (It was
+            // previously omitted to dodge the IntoIter↔Iterator coinduction,
+            // but the standalone `collect.default`/computable `from_iter` model
+            // — again mirroring Aeneas.Std — keeps that out of the recursive
+            // field resolution that `impl_def` chokes on.)
             type Item;
-            type IntoIter;
+            type IntoIter: super::iterator::Iterator<Item = Self::Item>;
             fn into_iter(self) -> Self::IntoIter;
         }
         /// See [`std::iter::FromIterator`]
         #[hax_lib::attributes]
         pub trait FromIterator<A>: Sized {
+            // `Item = A` pins the iterated element to the collection's element
+            // type (as in std and Aeneas.Std). Without it a real `from_iter`
+            // fold yields a free `List Clause0_Item` that can't be built into a
+            // `Vec<A>`, forcing an opaque stub. It requires the `Result`
+            // `FromIterator` impl (result.rs) to be phrased so it still compiles.
             #[hax_lib::requires(true)]
-            fn from_iter<T: IntoIterator>(iter: T) -> Self;
+            fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self;
         }
     }
 }

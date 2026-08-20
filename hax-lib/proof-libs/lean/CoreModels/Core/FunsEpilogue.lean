@@ -56,6 +56,25 @@ abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
 abbrev option.Option.Insts.CoreOpsTry_traitTry.branch :=
   @option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
 
+/-! ## `Iterator::collect` (a provided method kept OFF the `Iterator` structure)
+
+`collect` is EAGER, so a `collect` field would be `collect.default SELF`, whose
+resolution recurses through `IntoIterator.Blanket SELF` → the IntoIter↔Iterator
+coinductivity that makes `impl_def` report `could not resolve recursive fields:
+[collect]`. Aeneas.Std handles this by keeping `collect` off the structure and
+supplying `collect.default` as a *standalone* function (there `IteratorInst` is
+an ordinary parameter, never `SELF`). We mirror that exactly. The body is the
+same as Aeneas.Std's: fold `self` through the passed `FromIterator` instance,
+wrapping `self` as an `IntoIterator` via the `Blanket` (which now carries the
+`iteratorIteratorInst` super-instance, so `from_iter` has `next` to fold with). -/
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.collect.default {Self B Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (collectFromIteratorInst : iter.traits.collect.FromIterator B Clause0_Item)
+    (self : Self) : Result B :=
+  collectFromIteratorInst.from_iter
+    (iter.traits.collect.IntoIterator.Blanket IteratorInst) self
+
 end core
 
 namespace alloc
@@ -102,6 +121,47 @@ def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterato
   core.iter.traits.collect.FromIterator
     (collections.vec_deque.VecDeque T alloc.Global) T := {
   from_iter := collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter T
+}
+
+/-! ## Real (computable) `FromIterator<T>` for `Vec<T>`
+
+`collect::<Vec<_>>()` is idiomatic and must be executable. The Rust impl folds
+via `next` into a `Vec` (`vec.Vec.push`), but Aeneas can't extract it — it hits
+`type_var_id` resolving the `IntoIterator::Item` associated type (the same aeneas
+bug the carve saw), so the impl stays `--exclude`d and we hand-write it, exactly
+as Aeneas.Std hand-writes `alloc.vec.FromIteratorVec`. This is a genuine fold, not
+the empty stub the VecDeque one is — `IntoIterator` now carries `iteratorIteratorInst`
+(the `IntoIter: Iterator` bound), and `FromIterator::from_iter` pins `Item = A`, so
+the fold type-checks and `collect` is computable. -/
+open Aeneas.Std (Result) in
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
+    {T IntoIter : Type}
+    (iterInst : core.iter.traits.iterator.Iterator IntoIter T)
+    (it : IntoIter) (res : vec.Vec T) : Result (vec.Vec T) := do
+  let (o, it1) ← iterInst.next it
+  match o with
+  | core.option.Option.None => .ok res
+  | core.option.Option.Some x =>
+    let res1 ← vec.Vec.push res x
+    vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop iterInst it1 res1
+partial_fixpoint
+
+open Aeneas.Std (Result) in
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter
+    {T I IntoIter : Type}
+    (IntoIteratorInst : core.iter.traits.collect.IntoIterator I T IntoIter)
+    (iter : I) : Result (vec.Vec T) := do
+  let res ← vec.Vec.new T
+  let it ← IntoIteratorInst.into_iter iter
+  vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
+    IntoIteratorInst.iteratorIteratorInst it res
+
+@[reducible]
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator (T : Type) :
+    core.iter.traits.collect.FromIterator (vec.Vec T) T := {
+  from_iter := fun {T1 Clause0_IntoIter : Type}
+    (IntoIteratorInst : core.iter.traits.collect.IntoIterator T1 T Clause0_IntoIter) =>
+    vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter IntoIteratorInst
 }
 
 /-! ## `[T]::to_vec` and `Box<[T]>::into_vec`
