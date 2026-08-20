@@ -72,11 +72,11 @@ unfold
 let impl_1__truncate (#v_T #v_A: Type0) = impl_1__truncate' #v_T #v_A
 
 assume
-val impl_1__swap_remove': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> n: usize
+val impl_1__remove': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> index: usize
   -> (t_Vec v_T v_A & v_T)
 
 unfold
-let impl_1__swap_remove (#v_T #v_A: Type0) = impl_1__swap_remove' #v_T #v_A
+let impl_1__remove (#v_T #v_A: Type0) = impl_1__remove' #v_T #v_A
 
 assume
 val impl_1__clear': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> t_Vec v_T v_A
@@ -124,26 +124,35 @@ let impl_1__insert (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (index: usize) (elem
   let _:Prims.unit = () in
   self
 
-/// `remove` drops one element, so it never grows the vector. The exact
-/// `len\' = len - 1` would need `index < len` as a precondition (else on
-/// an empty vector it asserts a `usize` is `-1`), which callers holding
-/// only a length upper bound cannot discharge, so state the inequality.
 assume
-val impl_1__remove': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> index: usize
+val impl_1__swap_remove': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> n: usize
   -> Prims.Pure (t_Vec v_T v_A & v_T)
-      Prims.l_True
-      (ensures
-        fun temp_0_ ->
-          let (self_e_future: t_Vec v_T v_A), (_: v_T) = temp_0_ in
-          (Rust_primitives.Hax.Int.from_machine (impl_1__len #v_T #v_A self_e_future <: usize)
-            <:
-            Hax_lib.Int.t_Int) <=
-          (Rust_primitives.Hax.Int.from_machine (impl_1__len #v_T #v_A self <: usize)
-            <:
-            Hax_lib.Int.t_Int))
+      (requires n <. (impl_1__len #v_T #v_A self <: usize))
+      (fun _ -> Prims.l_True)
 
 unfold
-let impl_1__remove (#v_T #v_A: Type0) = impl_1__remove' #v_T #v_A
+let impl_1__swap_remove (#v_T #v_A: Type0) = impl_1__swap_remove' #v_T #v_A
+
+assume
+val impl_1__resize':
+    #v_T: Type0 ->
+    #v_A: Type0 ->
+    {| i0: Core_models.Clone.t_Clone v_T |} ->
+    self: t_Vec v_T v_A ->
+    new_size: usize ->
+    value: v_T
+  -> Prims.Pure (t_Vec v_T v_A)
+      Prims.l_True
+      (ensures
+        fun self_e_future ->
+          let self_e_future:t_Vec v_T v_A = self_e_future in
+          (impl_1__len #v_T #v_A self_e_future <: usize) =. new_size)
+
+unfold
+let impl_1__resize
+      (#v_T #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+     = impl_1__resize' #v_T #v_A #i0
 
 let impl_1__append (#v_T #v_A: Type0) (self other: t_Vec v_T v_A)
     : Prims.Pure (t_Vec v_T v_A & t_Vec v_T v_A)
@@ -210,27 +219,6 @@ let impl_2__extend_from_slice
     { self with _0 = Rust_primitives.Sequence.seq_extend #v_T self._0 other } <: t_Vec v_T v_A
   in
   self
-
-assume
-val impl_2__resize':
-    #v_T: Type0 ->
-    #v_A: Type0 ->
-    {| i0: Core_models.Clone.t_Clone v_T |} ->
-    self: t_Vec v_T v_A ->
-    new_size: usize ->
-    value: v_T
-  -> Prims.Pure (t_Vec v_T v_A)
-      Prims.l_True
-      (ensures
-        fun self_e_future ->
-          let self_e_future:t_Vec v_T v_A = self_e_future in
-          (impl_1__len #v_T #v_A self_e_future <: usize) =. new_size)
-
-unfold
-let impl_2__resize
-      (#v_T #v_A: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
-     = impl_2__resize' #v_T #v_A #i0
 
 /// Generic `Index<I>` impl, mirroring std\'s
 /// `impl<T, I: SliceIndex<[T]>, A: Allocator> Index<I> for Vec<T, A>`.

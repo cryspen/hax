@@ -1344,8 +1344,10 @@ let impl_12__unchecked_mul (x y: i8)
       (fun _ -> Prims.l_True) = x *! y
 
 /// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
-let impl_12__rem_euclid (x y: i8) : Prims.Pure i8 (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.rem_euclid_i8 x y
+let impl_12__rem_euclid (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i8 x y
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_12__abs (x: i8) : Prims.Pure i8 (requires x >. impl_12__MIN) (fun _ -> Prims.l_True) =
@@ -1533,8 +1535,9 @@ let impl_13__unchecked_mul (x y: i16)
 
 /// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
 let impl_13__rem_euclid (x y: i16)
-    : Prims.Pure i16 (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.rem_euclid_i16 x y
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i16 x y
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_13__abs (x: i16) : Prims.Pure i16 (requires x >. impl_13__MIN) (fun _ -> Prims.l_True) =
@@ -1722,8 +1725,9 @@ let impl_14__unchecked_mul (x y: i32)
 
 /// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
 let impl_14__rem_euclid (x y: i32)
-    : Prims.Pure i32 (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.rem_euclid_i32 x y
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i32 x y
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_14__abs (x: i32) : Prims.Pure i32 (requires x >. impl_14__MIN) (fun _ -> Prims.l_True) =
@@ -1911,8 +1915,9 @@ let impl_15__unchecked_mul (x y: i64)
 
 /// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
 let impl_15__rem_euclid (x y: i64)
-    : Prims.Pure i64 (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.rem_euclid_i64 x y
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i64 x y
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_15__abs (x: i64) : Prims.Pure i64 (requires x >. impl_15__MIN) (fun _ -> Prims.l_True) =
@@ -2101,8 +2106,9 @@ let impl_16__unchecked_mul (x y: i128)
 
 /// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
 let impl_16__rem_euclid (x y: i128)
-    : Prims.Pure i128 (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.rem_euclid_i128 x y
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i128 x y
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_16__abs (x: i128) : Prims.Pure i128 (requires x >. impl_16__MIN) (fun _ -> Prims.l_True) =
@@ -2294,8 +2300,9 @@ let impl_17__unchecked_mul (x y: isize)
 
 /// See [`std::primitive::u8::rem_euclid`] (and similar for other integer types)
 let impl_17__rem_euclid (x y: isize)
-    : Prims.Pure isize (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.rem_euclid_isize x y
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_isize x y
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_17__abs (x: isize) : Prims.Pure isize (requires x >. impl_17__MIN) (fun _ -> Prims.l_True) =
