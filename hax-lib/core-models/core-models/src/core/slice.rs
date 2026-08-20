@@ -182,7 +182,8 @@ impl<T> Slice<T> {
         todo!()
     }
     /// See [`std::slice::binary_search`]
-    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    #[hax_lib::opaque]
+    #[cfg_attr(charon, charon::opaque)]
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
     where
         T: crate::cmp::Ord,

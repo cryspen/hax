@@ -153,7 +153,8 @@ macro_rules! uint_impl {
                 paste! { [<ilog2_ $Name>](x) }
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[hax_lib::opaque]
+            #[cfg_attr(charon, charon::opaque)]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -425,7 +426,8 @@ macro_rules! iint_impl {
                 paste! { [<ilog2_ $Name>](x) }
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[hax_lib::opaque]
+            #[cfg_attr(charon, charon::opaque)]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,

@@ -7,7 +7,8 @@ struct f32;
 
 impl f32 {
     /// See [`std::primitive::f32::abs`]
-    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    #[hax_lib::opaque]
+    #[cfg_attr(charon, charon::opaque)]
     fn abs(x: f64) -> f64 {
         rust_primitives::float::abs_f64(x)
     }
