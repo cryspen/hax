@@ -591,6 +591,43 @@ pub mod index {
         }
     }
 
+    /// `end` is the last included index, hence the `end < len` bound. The
+    /// precondition is stronger than std's: the empty inclusive range
+    /// (`start == end + 1`) is rejected instead of denoting an empty slice.
+    #[hax_lib::attributes]
+    #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+    impl<T> SliceIndex<[T]> for crate::ops::range::RangeInclusive<usize> {
+        type Output = [T];
+        fn get(self, slice: &[T]) -> Option<&[T]> {
+            if self.start <= self.end && self.end < slice_length(slice) {
+                Option::Some(slice_slice(slice, self.start, self.end + 1))
+            } else {
+                Option::None
+            }
+        }
+        #[hax_lib::requires(self.start <= self.end && self.end < slice_length(slice))]
+        fn index(self, slice: &[T]) -> &[T] {
+            slice_slice(slice, self.start, self.end + 1)
+        }
+        #[hax_lib::requires(self.start <= self.end && self.end < slice_length(slice))]
+        fn get_unchecked(self, slice: &[T]) -> &[T] {
+            slice_slice(slice, self.start, self.end + 1)
+        }
+        #[cfg(not(hax_backend_fstar))]
+        fn get_mut(self, slice: &mut [T]) -> Option<&mut [T]> {
+            if self.start <= self.end && self.end < slice_length(slice) {
+                Option::Some(slice_slice_mut(slice, self.start, self.end + 1))
+            } else {
+                Option::None
+            }
+        }
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::requires(self.start <= self.end && self.end < slice_length(slice))]
+        fn get_unchecked_mut(self, slice: &mut [T]) -> &mut [T] {
+            slice_slice_mut(slice, self.start, self.end + 1)
+        }
+    }
+
     /// Generic `Index<I>` for `[T]`, matching std's
     /// `impl<T, I: SliceIndex<[T]>> Index<I> for [T]`
     /// in `core/src/slice/index.rs`. Body delegates to

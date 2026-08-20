@@ -99,7 +99,7 @@ include Core_models.Bundle {impl_4 as impl_4}
 
 include Core_models.Bundle {impl_5__from__cmp as impl_5}
 
-include Core_models.Bundle {impl_30 as impl_30}
+include Core_models.Bundle {impl_30__from__cmp as impl_30}
 
 include Core_models.Bundle {impl_31__from__cmp as impl_Ord_for_u8}
 
