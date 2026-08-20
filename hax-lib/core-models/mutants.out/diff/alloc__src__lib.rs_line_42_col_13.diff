@@ -1,0 +1,21 @@
+--- alloc/src/lib.rs
++++ replace borrow::<impl ToOwned for T>::to_owned -> Self with Default::default()
+@@ -34,17 +34,17 @@
+ mod borrow {
+     struct Cow<T>(T);
+ 
+     pub trait ToOwned {
+         fn to_owned(self) -> Self;
+     }
+     impl<T> ToOwned for T {
+         fn to_owned(self) -> Self {
+-            self
++            Default::default() /* ~ changed by cargo-mutants ~ */
+         }
+     }
+ 
+     #[cfg(test)]
+     mod tests {
+         use proptest::prelude::*;
+ 
+         proptest! {
