@@ -28,7 +28,8 @@
 #![allow(dead_code, unused)]
 // int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
 #![cfg_attr(test, feature(step_trait, int_roundings))]
-#![cfg_attr(charon, feature(register_tool))]
+// `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
+// from `cargo hax`.
 #![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]

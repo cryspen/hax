@@ -191,7 +191,7 @@ impl<T> Slice<T> {
     // opaque for F*: the generic precondition isn't provable here (the concrete
     // `SliceIndex` impls verify).
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-    #[hax_lib::requires(index.get(s).is_some())]
+    #[cfg_attr(not(charon), hax_lib::requires(index.get(s).is_some()))]
     fn get_unchecked<I: SliceIndex<[T]>>(s: &[T], index: I) -> &<I as SliceIndex<[T]>>::Output {
         index.get_unchecked(s)
     }
@@ -206,7 +206,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::get_unchecked_mut`]
     #[cfg(not(hax_backend_fstar))]
-    #[hax_lib::requires(index.get(s).is_some())]
+    #[cfg_attr(not(charon), hax_lib::requires(index.get(s).is_some()))]
     fn get_unchecked_mut<I: SliceIndex<[T]>>(
         s: &mut [T],
         index: I,
@@ -619,7 +619,7 @@ pub mod index {
         I: SliceIndex<[T]>,
     {
         type Output = I::Output;
-        #[hax_lib::requires(i.get(self).is_some())]
+        #[cfg_attr(not(charon), hax_lib::requires(i.get(self).is_some()))]
         fn index(&self, i: I) -> &I::Output {
             match i.get(self) {
                 Option::Some(r) => r,

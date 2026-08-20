@@ -3,13 +3,9 @@
 Post-process Aeneas-generated Lean files into the layout expected by our
 Aeneas core replacement library.
 
-For `core`, Aeneas writes the following files into ../proof-libs/lean/CoreModels/Core :
-    Funs.lean
-    Types.lean
-    FunsExternal_Template.lean
-    TypesExternal_Template.lean
-    
-For `alloc`, Aeneas writes the following files into ../proof-libs/lean/CoreModels/Alloc :
+The `patch` target of the Makefile installs these four Aeneas-generated files
+into ../proof-libs/lean/CoreModels/Core (for `core`) and
+../proof-libs/lean/CoreModels/Alloc (for `alloc`) before running this script:
     Funs.lean
     Types.lean
     FunsExternal_Template.lean
@@ -24,7 +20,7 @@ This script:
   * Fixes some other elaboration issues via search and replace.
 
 Note that some items are being removed before this script even runs:
-* some items are excluded via charon's `--exclude` argument in our `Makefile`
+* some items are excluded via charon's `--exclude`, passed by our `Makefile`
 * some items are excluded via `aeneas::exclude` annotations in the Rust sources.
 """
 

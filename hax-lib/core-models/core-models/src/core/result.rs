@@ -262,7 +262,7 @@ impl<T, E> Result<T, E> {
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::expect`]
-    #[hax_lib::requires(self.is_ok())]
+    #[cfg_attr(not(charon), hax_lib::requires(self.is_ok()))]
     pub fn expect(self, _msg: &str) -> T
     where
         E: super::fmt::Debug,
@@ -274,7 +274,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap`]
-    #[hax_lib::requires(self.is_ok())]
+    #[cfg_attr(not(charon), hax_lib::requires(self.is_ok()))]
     pub fn unwrap(self) -> T
     where
         E: super::fmt::Debug,
@@ -286,7 +286,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::expect_err`]
-    #[hax_lib::requires(self.is_err())]
+    #[cfg_attr(not(charon), hax_lib::requires(self.is_err()))]
     pub fn expect_err(self, _msg: &str) -> E
     where
         T: super::fmt::Debug,
@@ -298,7 +298,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap_err`]
-    #[hax_lib::requires(self.is_err())]
+    #[cfg_attr(not(charon), hax_lib::requires(self.is_err()))]
     pub fn unwrap_err(self) -> E
     where
         T: super::fmt::Debug,
