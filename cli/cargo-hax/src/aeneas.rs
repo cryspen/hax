@@ -268,35 +268,38 @@ pub fn run(
         "--preset=aeneas",
         "--dest-file",
         llbc_file.to_str().expect("non-UTF8 path"),
-        // Compile the crate as hax does: set `--cfg=hax_compilation` (so hax-lib
-        // proc macros emit their verification artifacts) and register the `_hax`
-        // tool attribute namespace.
+        // Compile the crate as hax does: `--cfg=hax_compilation` makes hax-lib proc
+        // macros emit their verification artifacts, and `hax_backend_lean` follows the
+        // engine's `hax_backend_<name>` convention, so a crate can scope a marker to
+        // this backend with `#[cfg_attr(hax_backend_lean, hax_lib::opaque)]`.
         "--rustc-arg=--cfg=hax_compilation",
-        "--rustc-arg=-Zcrate-attr=feature(register_tool)",
-        "--rustc-arg=-Zcrate-attr=register_tool(_hax)",
-        // Enable charon's native tool-attribute namespace and the `charon` cfg, so
-        // hax-lib markers (`hax_lib::opaque`/`exclude`) that emit a gated
-        // `#[cfg_attr(charon, charon::opaque)]` take effect here. This lane bypasses
-        // the hax engine, so charon's own attributes are how opacity reaches aeneas.
-        "--rustc-arg=--cfg=charon",
-        "--rustc-arg=-Zcrate-attr=register_tool(charon)",
-        // Backend identifier for per-backend scoping, matching the engine's
-        // `hax_backend_<name>` convention (e.g. `hax_backend_fstar`). Lets crates
-        // write `#[cfg_attr(hax_backend_lean, hax_lib::opaque)]` to target only this
-        // backend; the bare `cfg(hax)` form still applies to all backends.
         "--rustc-arg=--cfg=hax_backend_lean",
     ]);
     // User-supplied charon flags go before the `--` cargo separator.
     charon_cmd.args(&user_charon_args);
     // Everything after `--` is forwarded to cargo: build the host (proc-macro)
-    // crates with `--cfg hax` too, so hax-lib macros expand consistently.
+    // crates with `--cfg hax` too, so hax-lib macros expand consistently. `--cfg
+    // charon` additionally makes them emit charon's own `charon::opaque`/`exclude`
+    // markers: this lane bypasses the engine, so those are how a `hax_lib::opaque`
+    // reaches aeneas.
     charon_cmd.args([
         "--",
         "-Zhost-config",
         "-Ztarget-applies-to-host",
         "--config",
-        r#"host.rustflags=["--cfg","hax"]"#,
+        r#"host.rustflags=["--cfg","hax","--cfg","charon"]"#,
     ]);
+    // Register the tool-attribute namespaces through `RUSTFLAGS`, which cargo applies
+    // to every target crate. `--rustc-arg` only reaches the crate charon instruments,
+    // so markers in dependencies would fail to resolve.
+    let rustflags = std::env::var("RUSTFLAGS").unwrap_or_default();
+    charon_cmd.env(
+        "RUSTFLAGS",
+        format!(
+            "{rustflags} -Zcrate-attr=feature(register_tool) \
+             -Zcrate-attr=register_tool(_hax) -Zcrate-attr=register_tool(charon)"
+        ),
+    );
     if verbose > 0 {
         HaxMessage::SubprocessOutput {
             prefix: "cmd".into(),
