@@ -295,12 +295,8 @@ def urem_euclid {ty : UScalarTy} (x y : UScalar ty) : Result (UScalar ty) :=
 -- Lean's `%` on `Int` is already euclidean (non-negative for `y ≠ 0`), like Rust's.
 def irem_euclid {ty : IScalarTy} (x y : IScalar ty) : Result (IScalar ty) :=
   if y.val = 0 then fail .divisionByZero
-  -- Rust evaluates `x % y` first, which overflows exactly at `MIN % -1` — the
-  -- same overflow as negating `x`. `IScalar.min` is `irreducible`, so phrase the
-  -- check as a negation to keep this evaluable by `#guard`.
-  else if y.val = -1 then do
-    let _ ← IScalar.tryMk ty (-x.val)
-    ok ⟨BitVec.ofInt _ (x.val % y.val)⟩
+  -- Rust evaluates `x % y` first, which overflows exactly at `MIN % -1`.
+  else if x.val = IScalar.min ty ∧ y.val = -1 then fail .integerOverflow
   else ok ⟨BitVec.ofInt _ (x.val % y.val)⟩
 
 @[rust_fun "rust_primitives::arithmetic::saturating_mul_u8"]
@@ -950,9 +946,13 @@ def rust_primitives.arithmetic.to_le_bytes_i128 : Std.I128 → Result (Array Std
 def rust_primitives.arithmetic.to_le_bytes_isize : Std.Isize → Result (Array Std.U8 8#usize) :=
   fun x => ok ⟨ (x.bv.setWidth 64).toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
--- Rust's `abs` panics on `MIN` (negation overflow); `tryMk` reproduces that.
+-- Rust's `abs` panics on `MIN`, where negation overflows. Spelled as an explicit
+-- guard rather than via `tryMk`: `grind` cannot see through the latter's
+-- dependent `if`, which makes downstream specs unprovable.
 def iabs {ty : IScalarTy} (x : IScalar ty) : Result (IScalar ty) :=
-  if x.val < 0 then IScalar.tryMk ty (-x.val) else ok x
+  if x.val = IScalar.min ty then fail .integerOverflow
+  else if x.val < 0 then ok ⟨BitVec.ofInt _ (-x.val)⟩
+  else ok x
 
 @[rust_fun "rust_primitives::arithmetic::abs_i8"]
 def rust_primitives.arithmetic.abs_i8 : Std.I8 → Result Std.I8 :=
