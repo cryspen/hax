@@ -130,6 +130,13 @@ pub(crate) fn cfg_gate(tokens: TokenStream, pred: &Meta) -> TokenStream {
         .collect()
 }
 
+/// Emit one of charon's native `charon::*` markers. The lean backend drives charon
+/// directly, bypassing the engine, so it is the only one to set `cfg(charon)` on this
+/// crate's build; every other backend gets nothing.
+pub(crate) fn charon_attr(name: TokenStream) -> Option<TokenStream> {
+    cfg!(charon).then(|| quote! {#[charon::#name]})
+}
+
 /// Merge two `syn::Generics`, respecting lifetime orders
 pub(crate) fn merge_generics(x: Generics, y: Generics) -> Generics {
     Generics {

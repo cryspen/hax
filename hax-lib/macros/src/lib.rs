@@ -2,10 +2,10 @@
 //!
 //! Proc-macros must reside in the root of the crate: this module defines all of
 //! them, in every configuration, so that their documentation is always
-//! available. Each one is a thin shim that dispatches either to `implementation`
-//! (under `--cfg hax`) or to a no-op (otherwise). The real implementations are
-//! gated because they pull in `hax-lib-macros-types`, a dependency normal builds
-//! should not pay for.
+//! available. Small ones carry their implementation here, right under their
+//! documentation; bigger ones dispatch to `implementation`. Either way the
+//! implementation is gated on `--cfg hax`, since it needs
+//! `hax-lib-macros-types`, which is a `cfg(hax)`-only dependency.
 
 #![cfg_attr(hax, feature(macro_metavar_expr_concat))]
 
@@ -62,76 +62,35 @@ macro_rules! passthrough_attributes {
     };
 }
 
-passthrough_attributes! {
-    /// When extracting to F*, wrap this item in `#push-options "..."` and
-    /// `#pop-options`.
-    fstar_options;
+/// Defines attribute proc-macros whose implementation is inlined below, next to
+/// their documentation. The body is compiled only under `--cfg hax`; otherwise
+/// the macro is the identity.
+macro_rules! attribute_macros {
+    ($($(#[$meta:meta])* fn $name:ident($attr:ident, $item:ident) $body:block)*) => {
+        $(
+            $(#[$meta])*
+            #[proc_macro_attribute]
+            pub fn $name($attr: TokenStream, $item: TokenStream) -> TokenStream {
+                #[cfg(hax)]
+                {
+                    #[allow(unused_imports)]
+                    use crate::{
+                        impl_fn_decoration::*, prelude::*, rewrite_self::SelfProjection, utils::*,
+                    };
+                    $body
+                }
+                #[cfg(not(hax))]
+                { let _ = $attr; $item }
+            }
+        )*
+    };
+}
 
+passthrough_attributes! {
     /// When extracting to F*, inform about what is the current
     /// verification status for an item. It can either be `lax` or
     /// `panic_free`.
     fstar_verification_status;
-
-    /// Postprocess an item with a given tactic. This macro takes the tactic in
-    /// parameter: this may be a Rust identifier or a raw snippet of F* code as a
-    /// string literal.
-    fstar_postprocess_with;
-
-    /// Allows to add SMT patterns to a lemma.
-    /// For more informations about SMT patterns, please take a look here: https://fstar-lang.org/tutorial/book/under_the_hood/uth_smt.html#designing-a-library-with-smt-patterns.
-    fstar_smt_pat;
-
-    /// Include this item in the Hax translation. This overrides any exclusion resulting of `-i` flag.
-    include;
-
-    /// Exclude this item from the Hax translation.
-    exclude;
-
-    /// Provide a measure for a function: this measure will be used once
-    /// extracted in a backend for checking termination. The expression
-    /// that decreases can be of any type. (TODO: this is probably as it
-    /// is true only for F*, see #297)
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use hax_lib_macros::*;
-    /// #[decreases((m, n))]
-    /// pub fn ackermann(m: u64, n: u64) -> u64 {
-    ///     match (m, n) {
-    ///         (0, _) => n + 1,
-    ///         (_, 0) => ackermann(m - 1, 1),
-    ///         _ => ackermann(m - 1, ackermann(m, n - 1)),
-    ///     }
-    /// }
-    /// ```
-    decreases;
-
-    /// Add a logical precondition to a function.
-    // Note you can use the `forall` and `exists` operators. (TODO: commented out for now, see #297)
-    /// In the case of a function that has one or more `&mut` inputs, in
-    /// the `ensures` clause, you can refer to such an `&mut` input `x` as
-    /// `x` for its "past" value and `future(x)` for its "future" value.
-    ///
-    /// You can use the (unqualified) macro `fstar!` (`BACKEND!` for any
-    /// backend `BACKEND`) to inline F* (or Coq, ProVerif, etc.) code in
-    /// the precondition, e.g. `fstar!("true")`.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use hax_lib_macros::*;
-    /// #[requires(x.len() == y.len())]
-    // #[requires(x.len() == y.len() && forall(|i: usize| i >= x.len() || y[i] > 0))] (TODO: commented out for now, see #297)
-    /// pub fn div_pairwise(x: Vec<u64>, y: Vec<u64>) -> Vec<u64> {
-    ///     x.iter()
-    ///         .copied()
-    ///         .zip(y.iter().copied())
-    ///         .map(|(x, y)| x / y)
-    ///         .collect()
-    /// }
-    /// ```
-    requires;
 
     /// Add a logical postcondition to a function. Note you can use the
     /// `forall` and `exists` operators.
@@ -159,45 +118,6 @@ passthrough_attributes! {
     /// Mark an item opaque: the extraction will assume the
     /// type without revealing its definition.
     opaque;
-
-    /// Mark an item transparent: the extraction will not
-    /// make it opaque regardless of the `-i` flag default.
-    transparent;
-
-    /// A marker indicating a `fn` as a ProVerif process read.
-    process_read;
-
-    /// A marker indicating a `fn` as a ProVerif process write.
-    process_write;
-
-    /// A marker indicating a `fn` as a ProVerif process initialization.
-    process_init;
-
-    /// A marker indicating an `enum` as describing the protocol messages.
-    protocol_messages;
-
-    /// A marker indicating a `fn` should be automatically translated to a ProVerif constructor.
-    pv_constructor;
-
-    /// A marker indicating a `fn` requires manual modelling in ProVerif.
-    pv_handwritten;
-
-    /// This macro inserts a verbatim Lean proof into the extracted code.
-    legacy_lean_proof;
-
-    /// This macro inserts a verbatim Lean proof showing that the `requires`-condition is panic-free.
-    /// The proof is inserted into the `pureRequires` field of the Lean spec.
-    legacy_lean_pure_requires_proof;
-
-    /// This macro inserts a verbatim Lean proof showing that the `ensures`-condition is panic-free.
-    /// The proof is inserted into the `pureEnsures` field of the Lean spec.
-    legacy_lean_pure_ensures_proof;
-
-    /// Use the proof method `grind`. This influences the tactic and spec set used by Lean.
-    legacy_lean_proof_method_grind;
-
-    /// Use the proof method `bv_decide`. This influences the tactic and spec set used by Lean.
-    legacy_lean_proof_method_bv_decide;
 
     /// Marks a newtype `struct RefinedT(T);` as a refinement type. The
     /// struct should have exactly one unnamed private field.
@@ -230,6 +150,244 @@ passthrough_attributes! {
     /// refinement type: the use of such a type yields static proof
     /// obligations.
     refinement_type;
+}
+
+attribute_macros! {
+    /// When extracting to F*, wrap this item in `#push-options "..."` and
+    /// `#pop-options`.
+    fn fstar_options(attr, item) {
+        let item: TokenStream = item.into();
+        let lit_str = parse_macro_input!(attr as LitStr);
+        let payload = format!(r#"#push-options "{}""#, lit_str.value());
+        let payload = LitStr::new(&payload, lit_str.span());
+        quote! {
+            #[::hax_lib::fstar::before(#payload)]
+            #[::hax_lib::fstar::after(r#"#pop-options"#)]
+            #item
+        }
+        .into()
+    }
+
+    /// Postprocess an item with a given tactic. This macro takes the tactic in
+    /// parameter: this may be a Rust identifier or a raw snippet of F* code as a
+    /// string literal.
+    fn fstar_postprocess_with(attr, item) {
+        let item: TokenStream = item.into();
+        let payload: String = if let Ok(s) = syn::parse::<LitStr>(attr.clone()) {
+            s.value()
+        } else {
+            let e = parse_macro_input!(attr as Expr);
+            format!(" ${{ {} }} ", e.to_token_stream())
+        };
+        let payload = format!("[@@FStar.Tactics.postprocess_with ({payload})]");
+        let payload: Lit = Lit::Str(syn::LitStr::new(&payload, Span::call_site()));
+        quote! {#[::hax_lib::fstar::before(#payload)] #item}.into()
+    }
+
+    /// Allows to add SMT patterns to a lemma.
+    /// For more informations about SMT patterns, please take a look here: https://fstar-lang.org/tutorial/book/under_the_hood/uth_smt.html#designing-a-library-with-smt-patterns.
+    fn fstar_smt_pat(attr, item) {
+        let phi: syn::Expr = parse_macro_input!(attr);
+        let item: FnLike = parse_macro_input!(item);
+        let (requires, attr) = make_fn_decoration(
+            phi,
+            item.sig.clone(),
+            FnDecorationKind::SMTPat,
+            None,
+            None,
+            SelfProjection::Unknown,
+        );
+        quote! {#requires #attr #item}.into()
+    }
+
+    /// Include this item in the Hax translation. This overrides any exclusion resulting of `-i` flag.
+    fn include(attr, item) {
+        let item: TokenStream = item.into();
+        let _ = parse_macro_input!(attr as parse::Nothing);
+        let attr = AttrPayload::ItemStatus(ItemStatus::Included { late_skip: false });
+        quote! {#attr #item}.into()
+    }
+
+    /// Exclude this item from the Hax translation.
+    fn exclude(attr, item) {
+        let item: TokenStream = item.into();
+        let _ = parse_macro_input!(attr as parse::Nothing);
+        let attr = AttrPayload::ItemStatus(ItemStatus::Excluded { modeled_by: None });
+        let charon = charon_attr(quote! {exclude});
+        quote! {#attr #charon #item}.into()
+    }
+
+    /// Provide a measure for a function: this measure will be used once
+    /// extracted in a backend for checking termination. The expression
+    /// that decreases can be of any type. (TODO: this is probably as it
+    /// is true only for F*, see #297)
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use hax_lib_macros::*;
+    /// #[decreases((m, n))]
+    /// pub fn ackermann(m: u64, n: u64) -> u64 {
+    ///     match (m, n) {
+    ///         (0, _) => n + 1,
+    ///         (_, 0) => ackermann(m - 1, 1),
+    ///         _ => ackermann(m - 1, ackermann(m, n - 1)),
+    ///     }
+    /// }
+    /// ```
+    fn decreases(attr, item) {
+        let phi: syn::Expr = parse_macro_input!(attr);
+        let item: FnLike = parse_macro_input!(item);
+        let (requires, attr) = make_fn_decoration(
+            phi,
+            item.sig.clone(),
+            FnDecorationKind::Decreases,
+            None,
+            None,
+            SelfProjection::Unknown,
+        );
+        quote! {#requires #attr #item}.into()
+    }
+
+    /// Add a logical precondition to a function.
+    // Note you can use the `forall` and `exists` operators. (TODO: commented out for now, see #297)
+    /// In the case of a function that has one or more `&mut` inputs, in
+    /// the `ensures` clause, you can refer to such an `&mut` input `x` as
+    /// `x` for its "past" value and `future(x)` for its "future" value.
+    ///
+    /// You can use the (unqualified) macro `fstar!` (`BACKEND!` for any
+    /// backend `BACKEND`) to inline F* (or Coq, ProVerif, etc.) code in
+    /// the precondition, e.g. `fstar!("true")`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use hax_lib_macros::*;
+    /// #[requires(x.len() == y.len())]
+    // #[requires(x.len() == y.len() && forall(|i: usize| i >= x.len() || y[i] > 0))] (TODO: commented out for now, see #297)
+    /// pub fn div_pairwise(x: Vec<u64>, y: Vec<u64>) -> Vec<u64> {
+    ///     x.iter()
+    ///         .copied()
+    ///         .zip(y.iter().copied())
+    ///         .map(|(x, y)| x / y)
+    ///         .collect()
+    /// }
+    /// ```
+    fn requires(attr, item) {
+        let phi: syn::Expr = parse_macro_input!(attr);
+        let item: FnLike = parse_macro_input!(item);
+        let (requires, attr) = make_fn_decoration(
+            phi.clone(),
+            item.sig.clone(),
+            FnDecorationKind::Requires,
+            None,
+            None,
+            SelfProjection::Unknown,
+        );
+        let mut item_with_debug = item.clone();
+        item_with_debug
+            .block
+            .stmts
+            .insert(0, parse_quote! {debug_assert!(#phi);});
+        quote! {
+            #requires #attr
+            // TODO: disable `assert!`s for now (see #297)
+            #item
+            // #[cfg(    all(not(#HaxCfgOptionName),     debug_assertions )) ] #item_with_debug
+            // #[cfg(not(all(not(#HaxCfgOptionName),     debug_assertions )))] #item
+        }
+        .into()
+    }
+
+    /// Mark an item transparent: the extraction will not
+    /// make it opaque regardless of the `-i` flag default.
+    fn transparent(_attr, item) {
+        let item: Item = parse_macro_input!(item);
+        let attr = AttrPayload::NeverErased;
+        quote! {#attr #item}.into()
+    }
+
+    /// A marker indicating a `fn` as a ProVerif process read.
+    fn process_read(_attr, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let attr = AttrPayload::ProcessRead;
+        quote! {#attr #item}.into()
+    }
+
+    /// A marker indicating a `fn` as a ProVerif process write.
+    fn process_write(_attr, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let attr = AttrPayload::ProcessWrite;
+        quote! {#attr #item}.into()
+    }
+
+    /// A marker indicating a `fn` as a ProVerif process initialization.
+    fn process_init(_attr, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let attr = AttrPayload::ProcessInit;
+        quote! {#attr #item}.into()
+    }
+
+    /// A marker indicating an `enum` as describing the protocol messages.
+    fn protocol_messages(_attr, item) {
+        let item: ItemEnum = parse_macro_input!(item);
+        let attr = AttrPayload::ProtocolMessages;
+        quote! {#attr #item}.into()
+    }
+
+    /// A marker indicating a `fn` should be automatically translated to a ProVerif constructor.
+    fn pv_constructor(_attr, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let attr = AttrPayload::PVConstructor;
+        quote! {#attr #item}.into()
+    }
+
+    /// A marker indicating a `fn` requires manual modelling in ProVerif.
+    fn pv_handwritten(_attr, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let attr = AttrPayload::PVHandwritten;
+        quote! {#attr #item}.into()
+    }
+
+    /// This macro inserts a verbatim Lean proof into the extracted code.
+    fn legacy_lean_proof(payload, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let payload = parse_macro_input!(payload as LitStr).value();
+        let attr = AttrPayload::Proof(payload);
+        quote! {#attr #item}.into()
+    }
+
+    /// This macro inserts a verbatim Lean proof showing that the `requires`-condition is panic-free.
+    /// The proof is inserted into the `pureRequires` field of the Lean spec.
+    fn legacy_lean_pure_requires_proof(payload, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let payload = parse_macro_input!(payload as LitStr).value();
+        let attr = AttrPayload::PureRequiresProof(payload);
+        quote! {#attr #item}.into()
+    }
+
+    /// This macro inserts a verbatim Lean proof showing that the `ensures`-condition is panic-free.
+    /// The proof is inserted into the `pureEnsures` field of the Lean spec.
+    fn legacy_lean_pure_ensures_proof(payload, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let payload = parse_macro_input!(payload as LitStr).value();
+        let attr = AttrPayload::PureEnsuresProof(payload);
+        quote! {#attr #item}.into()
+    }
+
+    /// Use the proof method `grind`. This influences the tactic and spec set used by Lean.
+    fn legacy_lean_proof_method_grind(_attr, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::Grind);
+        quote! {#attr #item}.into()
+    }
+
+    /// Use the proof method `bv_decide`. This influences the tactic and spec set used by Lean.
+    fn legacy_lean_proof_method_bv_decide(_attr, item) {
+        let item: ItemFn = parse_macro_input!(item);
+        let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::BvDecide);
+        quote! {#attr #item}.into()
+    }
 }
 
 /// Mark a `Proof<{STATEMENT}>`-returning function as a lemma, where

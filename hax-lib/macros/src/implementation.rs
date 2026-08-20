@@ -1,5 +1,5 @@
-//! The actual implementation of the proc-macros of this crate. The
-//! `#[proc_macro*]` entry points live in `lib.rs` and merely dispatch here.
+//! Implementations of the proc-macros that are too big to sit next to their
+//! documentation in `lib.rs`, and the machinery they share.
 
 use crate::impl_fn_decoration::*;
 use crate::prelude::*;
@@ -35,19 +35,6 @@ macro_rules! abort_call_site {
             .to_compile_error()
             .into()
     };
-}
-
-pub fn fstar_options(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: TokenStream = item.into();
-    let lit_str = parse_macro_input!(attr as LitStr);
-    let payload = format!(r#"#push-options "{}""#, lit_str.value());
-    let payload = LitStr::new(&payload, lit_str.span());
-    quote! {
-        #[::hax_lib::fstar::before(#payload)]
-        #[::hax_lib::fstar::after(r#"#pop-options"#)]
-        #item
-    }
-    .into()
 }
 
 pub fn loop_invariant(predicate: pm::TokenStream) -> pm::TokenStream {
@@ -131,41 +118,6 @@ pub fn fstar_verification_status(attr: pm::TokenStream, item: pm::TokenStream) -
         _ => abort_call_site!("Expected `lax` or `panic_free`"),
     }
     .into()
-}
-
-pub fn fstar_postprocess_with(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: TokenStream = item.into();
-    let payload: String = if let Ok(s) = syn::parse::<LitStr>(attr.clone()) {
-        s.value()
-    } else {
-        let e = parse_macro_input!(attr as Expr);
-        format!(" ${{ {} }} ", e.to_token_stream())
-    };
-    let payload = format!("[@@FStar.Tactics.postprocess_with ({payload})]");
-    let payload: Lit = Lit::Str(syn::LitStr::new(&payload, Span::call_site()));
-    quote! {#[::hax_lib::fstar::before(#payload)] #item}.into()
-}
-
-/// Emit one of charon's native `charon::*` markers. The lean backend drives charon
-/// directly, bypassing the engine, so it is the only one to set `cfg(charon)` on this
-/// crate's build; every other backend gets nothing.
-fn charon_attr(name: TokenStream) -> Option<TokenStream> {
-    cfg!(charon).then(|| quote! {#[charon::#name]})
-}
-
-pub fn include(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: TokenStream = item.into();
-    let _ = parse_macro_input!(attr as parse::Nothing);
-    let attr = AttrPayload::ItemStatus(ItemStatus::Included { late_skip: false });
-    quote! {#attr #item}.into()
-}
-
-pub fn exclude(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: TokenStream = item.into();
-    let _ = parse_macro_input!(attr as parse::Nothing);
-    let attr = AttrPayload::ItemStatus(ItemStatus::Excluded { modeled_by: None });
-    let charon = charon_attr(quote! {exclude});
-    quote! {#attr #charon #item}.into()
 }
 
 /*
@@ -252,60 +204,6 @@ pub fn lemma(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
         item.sig.output.span(),
         "A lemma is expected to return a `Proof<{STATEMENT}>`, where {STATEMENT} is a `Prop` expression."
     )
-}
-
-pub fn decreases(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let phi: syn::Expr = parse_macro_input!(attr);
-    let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) = make_fn_decoration(
-        phi,
-        item.sig.clone(),
-        FnDecorationKind::Decreases,
-        None,
-        None,
-        SelfProjection::Unknown,
-    );
-    quote! {#requires #attr #item}.into()
-}
-
-pub fn fstar_smt_pat(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let phi: syn::Expr = parse_macro_input!(attr);
-    let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) = make_fn_decoration(
-        phi,
-        item.sig.clone(),
-        FnDecorationKind::SMTPat,
-        None,
-        None,
-        SelfProjection::Unknown,
-    );
-    quote! {#requires #attr #item}.into()
-}
-
-pub fn requires(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let phi: syn::Expr = parse_macro_input!(attr);
-    let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) = make_fn_decoration(
-        phi.clone(),
-        item.sig.clone(),
-        FnDecorationKind::Requires,
-        None,
-        None,
-        SelfProjection::Unknown,
-    );
-    let mut item_with_debug = item.clone();
-    item_with_debug
-        .block
-        .stmts
-        .insert(0, parse_quote! {debug_assert!(#phi);});
-    quote! {
-        #requires #attr
-        // TODO: disable `assert!`s for now (see #297)
-        #item
-        // #[cfg(    all(not(#HaxCfgOptionName),     debug_assertions )) ] #item_with_debug
-        // #[cfg(not(all(not(#HaxCfgOptionName),     debug_assertions )))] #item
-    }
-    .into()
 }
 
 pub fn ensures(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
@@ -675,48 +573,6 @@ pub fn opaque(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     quote! {#attr #charon #item}.into()
 }
 
-pub fn transparent(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: Item = parse_macro_input!(item);
-    let attr = AttrPayload::NeverErased;
-    quote! {#attr #item}.into()
-}
-
-pub fn process_read(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProcessRead;
-    quote! {#attr #item}.into()
-}
-
-pub fn process_write(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProcessWrite;
-    quote! {#attr #item}.into()
-}
-
-pub fn process_init(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProcessInit;
-    quote! {#attr #item}.into()
-}
-
-pub fn protocol_messages(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemEnum = parse_macro_input!(item);
-    let attr = AttrPayload::ProtocolMessages;
-    quote! {#attr #item}.into()
-}
-
-pub fn pv_constructor(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::PVConstructor;
-    quote! {#attr #item}.into()
-}
-
-pub fn pv_handwritten(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::PVHandwritten;
-    quote! {#attr #item}.into()
-}
-
 pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     let n: LitInt = parse_macro_input!(payload);
     let suffix = n.suffix();
@@ -725,51 +581,6 @@ pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     }
     let digits = n.base10_digits();
     quote! {::hax_lib::int::Int::_unsafe_from_str(#digits)}.into()
-}
-
-pub fn legacy_lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let payload = parse_macro_input!(payload as LitStr).value();
-    let attr = AttrPayload::Proof(payload);
-    quote! {#attr #item}.into()
-}
-
-pub fn legacy_lean_pure_requires_proof(
-    payload: pm::TokenStream,
-    item: pm::TokenStream,
-) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let payload = parse_macro_input!(payload as LitStr).value();
-    let attr = AttrPayload::PureRequiresProof(payload);
-    quote! {#attr #item}.into()
-}
-
-pub fn legacy_lean_pure_ensures_proof(
-    payload: pm::TokenStream,
-    item: pm::TokenStream,
-) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let payload = parse_macro_input!(payload as LitStr).value();
-    let attr = AttrPayload::PureEnsuresProof(payload);
-    quote! {#attr #item}.into()
-}
-
-pub fn legacy_lean_proof_method_grind(
-    _attr: pm::TokenStream,
-    item: pm::TokenStream,
-) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::Grind);
-    quote! {#attr #item}.into()
-}
-
-pub fn legacy_lean_proof_method_bv_decide(
-    _attr: pm::TokenStream,
-    item: pm::TokenStream,
-) -> pm::TokenStream {
-    let item: ItemFn = parse_macro_input!(item);
-    let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::BvDecide);
-    quote! {#attr #item}.into()
 }
 
 macro_rules! make_quoting_item_proc_macro {
