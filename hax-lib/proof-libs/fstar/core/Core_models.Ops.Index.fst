@@ -11,3 +11,11 @@ class t_Index (v_Self: Type0) (v_Idx: Type0) = {
   f_index:x0: v_Self -> x1: v_Idx
     -> Prims.Pure f_Output (f_index_pre x0 x1) (fun result -> f_index_post x0 x1 result)
 }
+
+/// See [`std::ops::IndexMut`]
+class t_IndexMut (v_Self: Type0) (v_Idx: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Index v_Self v_Idx
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) (v_Idx:Type0) {|i: t_IndexMut v_Self v_Idx|} -> i._super_i0

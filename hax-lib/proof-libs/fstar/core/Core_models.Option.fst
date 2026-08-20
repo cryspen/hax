@@ -17,7 +17,7 @@ include Core_models.Bundle {impl__is_none as impl__is_none}
 
 include Core_models.Bundle {impl__is_none_or as impl__is_none_or}
 
-include Core_models.Bundle {impl__as_ref as impl__as_ref}
+include Core_models.Bundle {impl__as_ref__from__option as impl__as_ref}
 
 include Core_models.Bundle {impl__expect as impl__expect}
 
@@ -29,7 +29,7 @@ include Core_models.Bundle {impl__unwrap_or_else as impl__unwrap_or_else}
 
 include Core_models.Bundle {impl__unwrap_or_default as impl__unwrap_or_default}
 
-include Core_models.Bundle {impl__map as impl__map}
+include Core_models.Bundle {impl__map__from__option as impl__map}
 
 include Core_models.Bundle {impl__map_or as impl__map_or}
 
