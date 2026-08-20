@@ -62,3 +62,7 @@ include Core_models.Bundle {impl_1__flatten as impl_1__flatten}
 include Core_models.Bundle {impl_2__from__option as impl_2}
 
 include Core_models.Bundle {impl_3__from__option as impl_3}
+
+include Core_models.Bundle {impl_4__from__option as impl_4}
+
+include Core_models.Bundle {impl_5 as impl_5}

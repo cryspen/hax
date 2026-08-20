@@ -52,6 +52,10 @@ abbrev ops.range.Range.Insts.Core_modelsIterTraitsIteratorIterator.next :=
 abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
   @result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
 
+/-- Same aliasing as `Result` above, for `?` on `Option`. -/
+abbrev option.Option.Insts.CoreOpsTry_traitTry.branch :=
+  @option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
+
 end core
 
 namespace alloc

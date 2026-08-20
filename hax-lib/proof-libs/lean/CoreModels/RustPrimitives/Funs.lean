@@ -967,6 +967,17 @@ def rust_primitives.sequence.seq_from_boxed_slice
 def rust_primitives.sequence.seq_to_slice
   {T : Type} : rust_primitives.sequence.Seq T → Result (Slice T) := fun s => ok s
 
+/-- [rust_primitives::sequence::seq_to_slice_mut]: the whole sequence viewed as a
+    mutable slice, plus its write-back (Aeneas's pure encoding of `&mut [T]` from
+    `&mut Seq<T>`). `Seq T` is `Slice T`, so the view is the identity and writing
+    a slice back replaces the sequence wholesale. Used by `Vec`'s `IndexMut`. -/
+@[rust_fun "rust_primitives::sequence::seq_to_slice_mut"]
+def rust_primitives.sequence.seq_to_slice_mut
+  {T : Type} :
+  rust_primitives.sequence.Seq T →
+    Result ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
+  fun s => ok (s, fun s' => s')
+
 @[rust_fun "rust_primitives::sequence::seq_concat"]
 def rust_primitives.sequence.seq_concat
   {T : Type} :

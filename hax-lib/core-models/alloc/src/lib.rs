@@ -521,6 +521,10 @@ pub mod vec {
     where
         T: PartialEq<U>,
     {
+        #[cfg(not(hax_backend_fstar))]
+        fn ne(&self, other: &Vec<U>) -> bool {
+            self.eq(other) == false
+        }
         fn eq(&self, other: &Vec<U>) -> bool {
             if !(self.len() == other.len()) {
                 false
@@ -621,14 +625,12 @@ pub mod vec {
         pub fn swap_remove(&mut self, n: usize) -> T {
             seq_remove(&mut self.0, n)
         }
+        /// `remove` drops one element, so it never grows the vector. The exact
+        /// `len' = len - 1` would need `index < len` as a precondition (else on
+        /// an empty vector it asserts a `usize` is `-1`), which callers holding
+        /// only a length upper bound cannot discharge, so state the inequality.
         #[hax_lib::opaque]
-        #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T)
-        where
-            T: Clone,
-        {
-        }
-        #[hax_lib::opaque]
+        #[hax_lib::ensures(|_| future(self).len().to_int() <= self.len().to_int())]
         pub fn remove(&mut self, index: usize) -> T {
             seq_remove(&mut self.0, index)
         }
@@ -674,12 +676,19 @@ pub mod vec {
         }
     }
 
+    // `resize` and `extend_from_slice` both require `T: Clone`, so real `alloc`
+    // keeps them in the same `impl` block; keep them together here too so the
+    // generated `impl_N__` prefix (`impl_2__resize`) matches what hax derives
+    // from real `alloc`.
     #[hax_lib::attributes]
     impl<T: Clone> Vec<T> {
         #[hax_lib::requires(seq_len(&self.0).to_int() + other.len().to_int() <= usize::MAX.to_int())]
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
+        #[hax_lib::opaque]
+        #[hax_lib::ensures(|_| future(self).len() == new_size)]
+        pub fn resize(&mut self, new_size: usize, value: &T) {}
     }
 
     /// Generic `Index<I>` impl for `Vec`, matching std's
@@ -703,6 +712,21 @@ pub mod vec {
         #[hax_lib::requires(self.get(i).is_some())]
         fn index(&self, i: I) -> &I::Output {
             std::ops::Index::index(&**self, i)
+        }
+    }
+
+    /// Generic `IndexMut<I>` for `Vec`, mirroring the `Index<I>` impl above and
+    /// std's `impl<T, I: SliceIndex<[T]>, A: Allocator> IndexMut<I> for Vec<T, A>`,
+    /// which routes through the mutable slice. Lean-only, like the slice
+    /// `IndexMut` it delegates to. This is what `v[i] = x` extracts against.
+    #[hax_lib::attributes]
+    impl<T, I> std::ops::IndexMut<I> for Vec<T>
+    where
+        I: std::slice::SliceIndex<[T]>,
+    {
+        #[hax_lib::requires(self.get(i).is_some())]
+        fn index_mut(&mut self, i: I) -> &mut I::Output {
+            std::ops::IndexMut::index_mut(seq_to_slice_mut(&mut self.0), i)
         }
     }
 
@@ -806,14 +830,12 @@ pub mod vec {
         pub fn swap_remove(&mut self, n: usize) -> T {
             seq_remove(&mut self.0, n)
         }
+        /// `remove` drops one element, so it never grows the vector. The exact
+        /// `len' = len - 1` would need `index < len` as a precondition (else on
+        /// an empty vector it asserts a `usize` is `-1`), which callers holding
+        /// only a length upper bound cannot discharge, so state the inequality.
         #[hax_lib::opaque]
-        #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T)
-        where
-            T: Clone,
-        {
-        }
-        #[hax_lib::opaque]
+        #[hax_lib::ensures(|_| future(self).len().to_int() <= self.len().to_int())]
         pub fn remove(&mut self, index: usize) -> T {
             seq_remove(&mut self.0, index)
         }
@@ -868,12 +890,19 @@ pub mod vec {
         }
     }
 
+    // `resize` and `extend_from_slice` both require `T: Clone`, so real `alloc`
+    // keeps them in the same `impl` block; keep them together here too so the
+    // generated `impl_N__` prefix (`impl_2__resize`) matches what hax derives
+    // from real `alloc`.
     #[hax_lib::attributes]
     impl<T: Clone, A> Vec<T, A> {
         #[hax_lib::requires(seq_len(&self.0).to_int() + other.len().to_int() <= usize::MAX.to_int())]
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
+        #[hax_lib::opaque]
+        #[hax_lib::ensures(|_| future(self).len() == new_size)]
+        pub fn resize(&mut self, new_size: usize, value: &T) {}
     }
 
     /// Generic `Index<I>` impl, mirroring std's

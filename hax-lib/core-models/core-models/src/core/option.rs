@@ -265,11 +265,48 @@ impl<T: super::clone::Clone> super::clone::Clone for Option<T> {
 
 #[hax_lib::attributes]
 impl<T: super::cmp::PartialEq<T>> super::cmp::PartialEq<Option<T>> for Option<T> {
+    #[cfg(not(hax_backend_fstar))]
+    fn ne(&self, other: &Self) -> bool {
+        self.eq(other) == false
+    }
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Some(a), Self::Some(b)) => a.eq(b),
             (Self::None, Self::None) => true,
             _ => false,
+        }
+    }
+}
+
+// The `?` operator on `Option`, mirroring the `Try`/`FromResidual` impls on
+// `Result`: `branch` sends `Some(v)` to `Continue(v)` and `None` to
+// `Break(None)`; `from_residual` rebuilds `None` at the target type.
+#[hax_lib::attributes]
+impl<T> crate::ops::try_trait::Try for Option<T> {
+    type Output = T;
+    type Residual = Option<crate::convert::Infallible>;
+
+    fn from_output(output: Self::Output) -> Self {
+        Some(output)
+    }
+
+    fn branch(self) -> crate::ops::control_flow::ControlFlow<Self::Residual, Self::Output> {
+        match self {
+            Some(v) => crate::ops::control_flow::ControlFlow::Continue(v),
+            None => crate::ops::control_flow::ControlFlow::Break(None),
+        }
+    }
+}
+
+/// The `None` half of `?` on `Option`: rebuild `None` at the target type. The
+/// residual carries `Infallible`, so the `Some` arm is unreachable.
+// opaque for F*: can't prove the `Some(_)` (`Infallible`) arm unreachable.
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+impl<T> crate::ops::try_trait::FromResidual<Option<crate::convert::Infallible>> for Option<T> {
+    fn from_residual(residual: Option<crate::convert::Infallible>) -> Self {
+        match residual {
+            None => None,
+            Some(_) => super::panicking::internal::panic(),
         }
     }
 }

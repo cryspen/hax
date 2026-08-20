@@ -78,6 +78,9 @@ pub mod sequence {
     pub fn seq_to_slice<T>(s: &Seq<T>) -> &[T] {
         s.0.as_slice()
     }
+    pub fn seq_to_slice_mut<T>(s: &mut Seq<T>) -> &mut [T] {
+        s.0.as_mut_slice()
+    }
     pub fn seq_concat<T>(s1: &mut Seq<T>, s2: &mut Seq<T>) {
         s1.0.append(&mut s2.0)
     }

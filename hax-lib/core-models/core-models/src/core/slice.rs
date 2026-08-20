@@ -282,6 +282,10 @@ impl<T> Slice<T> {
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 impl<U, T: crate::cmp::PartialEq<U>> crate::cmp::PartialEq<[U]> for [T] {
+    #[cfg(not(hax_backend_fstar))]
+    fn ne(&self, other: &[U]) -> bool {
+        self.eq(other) == false
+    }
     fn eq(&self, other: &[U]) -> bool {
         if self.len() != other.len() {
             false
@@ -612,6 +616,26 @@ pub mod index {
             }
         }
     }
+
+    /// Generic `IndexMut<I>` for `[T]`, mirroring the `Index<I>` impl above and
+    /// std's `impl<T, I: SliceIndex<[T]>> IndexMut<I> for [T]`. Delegates to
+    /// `SliceIndex::get_mut` (Lean-only, as the mutable accessors are).
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::attributes]
+    #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+    impl<T, I> crate::ops::index::IndexMut<I> for [T]
+    where
+        I: SliceIndex<[T]>,
+    {
+        // `get_unchecked_mut` (not a `get_mut` + panicking `match`): a panic in
+        // the `None` arm would have to produce the `&mut` return, which aeneas
+        // lowers to a `(value, write-back)` pair and cannot synthesise from a
+        // divergent `panic`. The precondition mirrors `Index::index`.
+        #[hax_lib::requires(i.get(self).is_some())]
+        fn index_mut(&mut self, i: I) -> &mut I::Output {
+            i.get_unchecked_mut(self)
+        }
+    }
 }
 
 pub use index::SliceIndex;
@@ -675,6 +699,10 @@ pub mod equality {
     #[hax_lib::attributes]
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<T: crate::cmp::PartialEq<U>, U, const N: usize> crate::cmp::PartialEq<[U; N]> for [T] {
+        #[cfg(not(hax_backend_fstar))]
+        fn ne(&self, other: &[U; N]) -> bool {
+            self.eq(other) == false
+        }
         fn eq(&self, other: &[U; N]) -> bool {
             if slice_length(self) != N {
                 false

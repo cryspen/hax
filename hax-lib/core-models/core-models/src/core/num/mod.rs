@@ -236,10 +236,12 @@ macro_rules! uint_impl {
             // fn swap_bytes(x: $Self) -> $Self {
             //     paste! { [<swap_bytes_ $Name>](x) }
             // }
-            // /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
-            // fn wrapping_neg(x: $Self) -> $Self {
-            //     paste! { [<wrapping_neg_ $Name>](x) }
-            // }
+            /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
+            // Modelled as `0.wrapping_sub(x)` (the definition of `wrapping_neg`)
+            // to reuse the existing `wrapping_sub` primitive.
+            pub fn wrapping_neg(x: $Self) -> $Self {
+                paste! { [<wrapping_sub_ $Name>](0, x) }
+            }
         }
     };
 }
@@ -501,10 +503,12 @@ macro_rules! iint_impl {
             // fn swap_bytes(x: $Self) -> $Self {
             //     paste! { [<swap_bytes_ $Name>](x) }
             // }
-            // /// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
-            // fn wrapping_neg(x: $Self) -> $Self {
-            //     paste! { [<wrapping_neg_ $Name>](x) }
-            // }
+            /// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
+            // Modelled as `0.wrapping_sub(x)` (the definition of `wrapping_neg`)
+            // to reuse the existing `wrapping_sub` primitive.
+            pub fn wrapping_neg(x: $Self) -> $Self {
+                paste! { [<wrapping_sub_ $Name>](0, x) }
+            }
         }
     };
 }
