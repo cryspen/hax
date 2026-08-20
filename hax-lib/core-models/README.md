@@ -45,6 +45,50 @@ CI verifies that the *committed* extracted Lean files under
 produces against the pinned toolchain. That means a downstream Lean consumer can
 just `lake update` this repo without installing the Rust toolchain.
 
+## What a proof trusts
+
+A downstream proof about hax-translated Rust rests on three things, none of
+which is checked by the proof assistant itself:
+
+1. **The Rust model** (`core-models/`, `alloc/`) — that it says what real
+   `core`/`alloc` say.
+2. **The hand-written backend models** — `../proof-libs/lean/CoreModels/`'s
+   `RustPrimitives/Funs.lean`, `Funs{Prologue,Epilogue}.lean` and
+   `TypesPrologue.lean`, plus the hand-written `.fst`/`.fsti` in
+   `../proof-libs/fstar/core` (see `FSTAR_HANDWRITTEN` in the `Makefile`).
+   These have no Rust counterpart; everything routed through
+   `rust_primitives::*` gets its *real* meaning here.
+3. **The translation** — that charon/aeneas (Lean) and hax (F\*) turn the Rust
+   model into the backend definitions faithfully.
+
+The two test surfaces cover these differently, and neither covers all three:
+
+- **Property tests** (`#[cfg(test)] proptest!` in the model crates) compare the
+  Rust model against real `std`. They exercise (1) only. For any item whose Rust
+  body just calls `std` — every `rust_primitives::arithmetic` op, for instance —
+  the comparison is a tautology and proves nothing.
+- **Equivalence tests** (`tests/rust_lean_equiv_test/`) pin one observation and
+  check it twice: once by running Rust, once by `#guard` against the extraction.
+  Those cross the arrow, so they are the only check that reaches (2) and (3).
+
+So (2) and (3) are covered *exclusively* by the equivalence tests, and only at
+the inputs those tests name. `core/num_exhaustive.rs` exists for that reason: it
+sweeps the `u8`/`i8` domain against references built from operations that do not
+route through `rust_primitives`, which is what makes the comparison meaningful
+on the Lean side.
+
+Two further gaps worth knowing about:
+
+- **`#[hax_lib::requires]` reaches F\* only.** Charon does not see it, so the
+  Lean definition is total where the contract is not. Where that would make Lean
+  disagree with a panicking Rust operation, the Lean primitive must fail
+  explicitly instead (as `abs` and `rem_euclid` do).
+- **`#[hax_lib::opaque]` reaches hax only.** Aeneas extracts the body regardless,
+  so an `opaque` item whose Rust body is a placeholder becomes a *wrong* Lean
+  definition. Such items must be `--exclude`d or `--opaque`d for charon in the
+  `Makefile`; prefer `#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]` when the
+  body is a faithful model and only F\* needs it dropped.
+
 ## Coverage
 
 [`COVERAGE.md`](COVERAGE.md) reports, per top-level module, how much of the
