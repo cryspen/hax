@@ -335,6 +335,11 @@ def fill_iterator_default_fields(text: str) -> str:
                     f"(inst : core.ops.function.Fn F {item} O) => "
                     f"{ITER}.map.default inst"
                 )
+                # P2 lazy adapters: same shape as `enumerate` (item type + no
+                # instance arg), so the core-side auto-fill is `<m>.default <item>`.
+                out.append(f"  step_by := {ITER}.step_by.default {item}")
+                out.append(f"  take := {ITER}.take.default {item}")
+                out.append(f"  skip := {ITER}.skip.default {item}")
                 injected = True
             out.append(line)
         return "\n".join(out) if injected else None

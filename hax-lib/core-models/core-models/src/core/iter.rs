@@ -50,19 +50,39 @@ pub mod traits {
             {
                 Map::new(self, f)
             }
+            // P2 lazy adapters (same promotion pattern as map/enumerate): construct an
+            // adapter struct, never consume. Their `Iterator::next` instances already exist.
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(true)]
+            fn step_by(self, step: usize) -> StepBy<Self>
+            where
+                Self: Sized,
+            {
+                StepBy::new(self, step)
+            }
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(true)]
+            fn take(self, n: usize) -> Take<Self>
+            where
+                Self: Sized,
+            {
+                Take::new(self, n)
+            }
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(true)]
+            fn skip(self, n: usize) -> Skip<Self>
+            where
+                Self: Sized,
+            {
+                Skip::new(self, n)
+            }
         }
 
         // This trait is an addition to deal with the default methods that the F* backend doesn't handle
         // (the ones NOT promoted onto `Iterator` above, because F* can't extract trait defaults).
         pub(crate) trait IteratorMethods: Iterator {
             fn fold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
-            fn step_by(self, step: usize) -> StepBy<Self>
-            where
-                Self: Sized;
             fn all<F: Fn(Self::Item) -> bool>(self, f: F) -> bool;
-            fn take(self, n: usize) -> Take<Self>
-            where
-                Self: Sized;
             fn flat_map<U: Iterator, F: Fn(Self::Item) -> U>(self, f: F) -> FlatMap<Self, U, F>
             where
                 Self: Sized;
@@ -77,9 +97,6 @@ pub mod traits {
             where
                 Self: Sized;
             fn chain<U: Iterator<Item = Self::Item>>(self, other: U) -> Chain<Self, U>
-            where
-                Self: Sized;
-            fn skip(self, n: usize) -> Skip<Self>
             where
                 Self: Sized;
             fn any<F: Fn(Self::Item) -> bool>(self, f: F) -> bool;
@@ -283,16 +300,8 @@ pub mod traits {
                 iter_fold(self, init, f)
             }
 
-            fn step_by(self, step: usize) -> StepBy<I> {
-                StepBy::new(self, step)
-            }
-
             fn all<F: Fn(I::Item) -> bool>(self, f: F) -> bool {
                 iter_all(self, f)
-            }
-
-            fn take(self, n: usize) -> Take<I> {
-                Take::new(self, n)
             }
 
             fn flat_map<U: Iterator, F: Fn(I::Item) -> U>(self, f: F) -> FlatMap<I, U, F> {
@@ -316,10 +325,6 @@ pub mod traits {
 
             fn chain<U: Iterator<Item = Self::Item>>(self, other: U) -> Chain<Self, U> {
                 Chain::new(self, other)
-            }
-
-            fn skip(self, n: usize) -> Skip<Self> {
-                Skip::new(self, n)
             }
 
             fn any<F: Fn(Self::Item) -> bool>(self, f: F) -> bool {
