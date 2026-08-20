@@ -367,6 +367,13 @@ mod tests {
         }
 
         #[test]
+        fn test_seq_to_slice_mut(x in any::<u8>(), y in any::<u8>()) {
+            let mut s = super::sequence::seq_one(x);
+            super::sequence::seq_to_slice_mut(&mut s)[0] = y;
+            prop_assert_eq!(super::sequence::seq_to_slice(&s), &[y][..]);
+        }
+
+        #[test]
         fn test_seq_one(x in any::<u8>()) {
             let s = super::sequence::seq_one(x);
             prop_assert_eq!(super::sequence::seq_len(&s), 1);

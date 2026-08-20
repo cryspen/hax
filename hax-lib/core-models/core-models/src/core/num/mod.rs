@@ -798,6 +798,11 @@ mod tests {
                         }
 
                         #[test]
+                        fn [<test_ $t _wrapping_neg>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::wrapping_neg(x.inject()), x.wrapping_neg());
+                        }
+
+                        #[test]
                         fn [<test_ $t _saturating_sub>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assert_eq!(super::$t::saturating_sub(x.inject(), y.inject()), x.saturating_sub(y));
                         }
