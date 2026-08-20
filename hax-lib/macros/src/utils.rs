@@ -266,7 +266,10 @@ impl VisitMut for RewriteFuture {
                     *e = parse_quote! {#arg};
                     return;
                 }
-                Some(format!("Cannot find an input `{arg}` of type `&mut _`. In the context, `future` can be called on the following inputs: {:?}.", self.0))
+                Some(format!(
+                    "Cannot find an input `{arg}` of type `&mut _`. In the context, `future` can be called on the following inputs: {:?}.",
+                    self.0
+                ))
             }
             Some(Err(error_kind)) => {
                 let message = match error_kind {

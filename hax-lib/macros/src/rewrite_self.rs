@@ -83,7 +83,10 @@ mod rewrite_self {
                 ..
             } = self;
             if typ.is_none() && !self_spans.is_empty() {
-                let mut error = Error::new(Span::call_site(), "This macro doesn't work on trait or impl items: you need to add a `#[hax_lib::attributes]` on the enclosing impl block or trait.");
+                let mut error = Error::new(
+                    Span::call_site(),
+                    "This macro doesn't work on trait or impl items: you need to add a `#[hax_lib::attributes]` on the enclosing impl block or trait.",
+                );
                 for SpanWrapper(span) in self_spans {
                     let use_site = Error::new(
                         span,
@@ -140,11 +143,22 @@ impl RewriteSelf {
         qself: &mut Option<QSelf>,
         path: &mut Path,
     ) {
-        let (None, Path { leading_colon: None, segments }) = (&*qself, &*path) else {
+        let (
+            None,
+            Path {
+                leading_colon: None,
+                segments,
+            },
+        ) = (&*qself, &*path)
+        else {
             return;
         };
         let mut segments = segments.iter();
-        let Some(PathSegment { ident, arguments: PathArguments::None }) = segments.next() else {
+        let Some(PathSegment {
+            ident,
+            arguments: PathArguments::None,
+        }) = segments.next()
+        else {
             return;
         };
         let suffix: Vec<_> = segments.collect();
