@@ -424,7 +424,7 @@ def Isize.Insts.CoreCloneClone : clone.Clone Std.Isize := {
 }
 
 /-- [core_models::cmp::PartialOrd::lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 44:4-46:5
+    Source: 'core-models/src/core/cmp.rs', lines 42:4-44:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.lt.default
@@ -442,7 +442,7 @@ def cmp.PartialOrd.lt.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::le]:
-    Source: 'core-models/src/core/cmp.rs', lines 49:4-54:5
+    Source: 'core-models/src/core/cmp.rs', lines 47:4-52:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.le.default
@@ -460,7 +460,7 @@ def cmp.PartialOrd.le.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 57:4-59:5
+    Source: 'core-models/src/core/cmp.rs', lines 55:4-57:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.gt.default
@@ -478,7 +478,7 @@ def cmp.PartialOrd.gt.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 62:4-67:5
+    Source: 'core-models/src/core/cmp.rs', lines 60:4-65:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.ge.default
@@ -496,7 +496,7 @@ def cmp.PartialOrd.ge.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::{impl core_models::cmp::Neq<T> for T}::neq]:
-    Source: 'core-models/src/core/cmp.rs', lines 78:4-81:5 -/
+    Source: 'core-models/src/core/cmp.rs', lines 75:4-78:5 -/
 def cmp.Neq.Blanket.neq
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : T) (y : T) :
   Result Bool
@@ -505,7 +505,7 @@ def cmp.Neq.Blanket.neq
   ok (b = false)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Neq<T> for T}]
-    Source: 'core-models/src/core/cmp.rs', lines 77:0-82:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 74:0-79:1 -/
 @[reducible]
 def cmp.Neq.Blanket {T : Type} (PartialEqInst : cmp.PartialEq T T) : cmp.Neq T
   T := {
@@ -513,7 +513,7 @@ def cmp.Neq.Blanket {T : Type} (PartialEqInst : cmp.PartialEq T T) : cmp.Neq T
 }
 
 /-- [core_models::cmp::max]:
-    Source: 'core-models/src/core/cmp.rs', lines 152:0-157:1
+    Source: 'core-models/src/core/cmp.rs', lines 147:0-152:1
     Visibility: public -/
 def cmp.max {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : Result T := do
   let o ← OrdInst.cmp v1 v2
@@ -523,7 +523,7 @@ def cmp.max {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : Result T := do
   | cmp.Ordering.Greater => ok v1
 
 /-- [core_models::cmp::min]:
-    Source: 'core-models/src/core/cmp.rs', lines 160:0-165:1
+    Source: 'core-models/src/core/cmp.rs', lines 155:0-160:1
     Visibility: public -/
 def cmp.min {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : Result T := do
   let o ← OrdInst.cmp v1 v2
@@ -533,7 +533,7 @@ def cmp.min {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : Result T := do
   | cmp.Ordering.Greater => ok v2
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 177:4-179:5
+    Source: 'core-models/src/core/cmp.rs', lines 172:4-174:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : cmp.Reverse T)
@@ -543,7 +543,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   PartialEqInst.eq other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 176:0-180:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 171:0-175:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type} (PartialEqInst
   : cmp.PartialEq T T) : cmp.PartialEq (cmp.Reverse T) (cmp.Reverse T) := {
@@ -551,7 +551,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type} (PartialEqInst
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::partial_cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 171:4-173:5
+    Source: 'core-models/src/core/cmp.rs', lines 166:4-168:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   {T : Type} (PartialOrdInst : cmp.PartialOrd T T) (self : cmp.Reverse T)
@@ -561,7 +561,7 @@ def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   PartialOrdInst.partial_cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 170:0-174:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 165:0-169:1 -/
 @[reducible]
 impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type}
   (PartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (cmp.Reverse T)
@@ -581,7 +581,7 @@ impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type}
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 182:0-182:32 -/
+    Source: 'core-models/src/core/cmp.rs', lines 177:0-177:32 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpEq {T : Type} (EqInst : cmp.Eq T) : cmp.Eq
   (cmp.Reverse T) := {
@@ -590,7 +590,7 @@ def cmp.Reverse.Insts.CoreCmpEq {T : Type} (EqInst : cmp.Eq T) : cmp.Eq
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}::cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 185:4-187:5
+    Source: 'core-models/src/core/cmp.rs', lines 180:4-182:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpOrd.cmp
   {T : Type} (OrdInst : cmp.Ord T) (self : cmp.Reverse T)
@@ -600,7 +600,7 @@ def cmp.Reverse.Insts.CoreCmpOrd.cmp
   OrdInst.cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 184:0-188:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 179:0-183:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
   cmp.Ord (cmp.Reverse T) := {
@@ -611,7 +611,7 @@ def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
 }
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 245:4-247:5
+    Source: 'core-models/src/core/cmp.rs', lines 240:4-242:5
     Visibility: public -/
 def cmp.Ordering.is_eq (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -620,7 +620,7 @@ def cmp.Ordering.is_eq (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 249:4-251:5
+    Source: 'core-models/src/core/cmp.rs', lines 244:4-246:5
     Visibility: public -/
 def cmp.Ordering.is_ne (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -629,7 +629,7 @@ def cmp.Ordering.is_ne (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 253:4-255:5
+    Source: 'core-models/src/core/cmp.rs', lines 248:4-250:5
     Visibility: public -/
 def cmp.Ordering.is_lt (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -638,7 +638,7 @@ def cmp.Ordering.is_lt (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 257:4-259:5
+    Source: 'core-models/src/core/cmp.rs', lines 252:4-254:5
     Visibility: public -/
 def cmp.Ordering.is_gt (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -647,7 +647,7 @@ def cmp.Ordering.is_gt (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_le]:
-    Source: 'core-models/src/core/cmp.rs', lines 261:4-263:5
+    Source: 'core-models/src/core/cmp.rs', lines 256:4-258:5
     Visibility: public -/
 def cmp.Ordering.is_le (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -656,7 +656,7 @@ def cmp.Ordering.is_le (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 265:4-267:5
+    Source: 'core-models/src/core/cmp.rs', lines 260:4-262:5
     Visibility: public -/
 def cmp.Ordering.is_ge (self : cmp.Ordering) : Result Bool := do
   match self with
@@ -665,7 +665,7 @@ def cmp.Ordering.is_ge (self : cmp.Ordering) : Result Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::reverse]:
-    Source: 'core-models/src/core/cmp.rs', lines 269:4-275:5
+    Source: 'core-models/src/core/cmp.rs', lines 264:4-270:5
     Visibility: public -/
 def cmp.Ordering.reverse (self : cmp.Ordering) : Result cmp.Ordering := do
   match self with
@@ -674,7 +674,7 @@ def cmp.Ordering.reverse (self : cmp.Ordering) : Result cmp.Ordering := do
   | cmp.Ordering.Greater => ok cmp.Ordering.Less
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then]:
-    Source: 'core-models/src/core/cmp.rs', lines 277:4-282:5
+    Source: 'core-models/src/core/cmp.rs', lines 272:4-277:5
     Visibility: public -/
 def cmp.Ordering.then
   (self : cmp.Ordering) (other : cmp.Ordering) : Result cmp.Ordering := do
@@ -684,7 +684,7 @@ def cmp.Ordering.then
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then_with]:
-    Source: 'core-models/src/core/cmp.rs', lines 284:4-289:5
+    Source: 'core-models/src/core/cmp.rs', lines 279:4-284:5
     Visibility: public -/
 def cmp.Ordering.then_with
   {F : Type} (coreopsfunctionFnOnceFTupleOrderingInst :
@@ -705,7 +705,7 @@ def panicking.internal.panic (T : Type) : Result T := do
   fail Error.panic
 
 /-- [core_models::cmp::clamp]:
-    Source: 'core-models/src/core/cmp.rs', lines 294:0-306:1
+    Source: 'core-models/src/core/cmp.rs', lines 289:0-301:1
     Visibility: public -/
 def cmp.clamp
   {T : Type} (OrdInst : cmp.Ord T) (value : T) (min : T) (max : T) :
