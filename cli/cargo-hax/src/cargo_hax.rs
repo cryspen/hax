@@ -75,7 +75,7 @@ fn rust_log_style() -> String {
 /// We set `cfg(hax)` so that client crates can include dependencies
 /// or cfg-gate pieces of code.
 const RUSTFLAGS: &str = "RUSTFLAGS";
-fn rustflags() -> String {
+pub fn rustflags() -> String {
     let rustflags = std::env::var(RUSTFLAGS).unwrap_or("".into());
     [rustflags, "--cfg hax".into()].join(" ")
 }

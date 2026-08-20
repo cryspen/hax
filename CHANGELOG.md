@@ -57,6 +57,7 @@ Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
 - Lean library for the new Lean/Aeneas backend (cryspen/hax-evit/188, #2080)
 - Support for hax_lib::int and hax_lib::prop (#2130)
+- Honor `hax_lib::opaque` and `hax_lib::exclude`, by emitting charon's own `charon::opaque` / `charon::exclude` attributes. Scope a marker to this backend with `#[cfg_attr(hax_backend_lean, ...)]` (#2071)
 
 Miscellaneous:
  - Update the required OCaml version to 5.4.1 (#2137)

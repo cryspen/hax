@@ -202,6 +202,13 @@ pub fn fstar_postprocess_with(attr: pm::TokenStream, item: pm::TokenStream) -> p
     quote! {#[::hax_lib::fstar::before(#payload)] #item}.into()
 }
 
+/// Emit one of charon's native `charon::*` markers. The lean backend drives charon
+/// directly, bypassing the engine, so it is the only one to set `cfg(charon)` on this
+/// crate's build; every other backend gets nothing.
+fn charon_attr(name: TokenStream) -> Option<TokenStream> {
+    cfg!(charon).then(|| quote! {#[charon::#name]})
+}
+
 /// Include this item in the Hax translation. This overrides any exclusion resulting of `-i` flag.
 #[proc_macro_attribute]
 pub fn include(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
@@ -217,7 +224,8 @@ pub fn exclude(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     let item: TokenStream = item.into();
     let _ = parse_macro_input!(attr as parse::Nothing);
     let attr = AttrPayload::ItemStatus(ItemStatus::Excluded { modeled_by: None });
-    quote! {#attr #item}.into()
+    let charon = charon_attr(quote! {exclude});
+    quote! {#attr #charon #item}.into()
 }
 
 /*
@@ -877,7 +885,8 @@ pub fn opaque_type(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
 pub fn opaque(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: Item = parse_macro_input!(item);
     let attr = AttrPayload::Erased;
-    quote! {#attr #item}.into()
+    let charon = charon_attr(quote! {opaque});
+    quote! {#attr #charon #item}.into()
 }
 
 /// Mark an item transparent: the extraction will not
