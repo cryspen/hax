@@ -114,6 +114,249 @@ let impl__fill
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
      = impl__fill' #v_T #i0
 
+/// See [`std::slice::fill_with`]
+assume
+val impl__fill_with':
+    #v_T: Type0 ->
+    #v_F: Type0 ->
+    {| i0: Core_models.Ops.Function.t_Fn v_F Prims.unit |} ->
+    s: t_Slice v_T ->
+    f: v_F
+  -> t_Slice v_T
+
+unfold
+let impl__fill_with
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F Prims.unit)
+     = impl__fill_with' #v_T #v_F #i0
+
+/// See [`std::slice::as_slice`]
+let impl__as_slice (#v_T: Type0) (s: t_Slice v_T) : t_Slice v_T = s
+
+/// See [`std::slice::split_first`]
+let impl__split_first (#v_T: Type0) (s: t_Slice v_T)
+    : Core_models.Option.t_Option (v_T & t_Slice v_T) =
+  if impl__is_empty #v_T s
+  then Core_models.Option.Option_None <: Core_models.Option.t_Option (v_T & t_Slice v_T)
+  else
+    Core_models.Option.Option_Some
+    (Rust_primitives.Slice.slice_index #v_T s (mk_usize 0),
+      Rust_primitives.Slice.slice_slice #v_T s (mk_usize 1) (impl__len #v_T s <: usize)
+      <:
+      (v_T & t_Slice v_T))
+    <:
+    Core_models.Option.t_Option (v_T & t_Slice v_T)
+
+/// See [`std::slice::split_last`]
+let impl__split_last (#v_T: Type0) (s: t_Slice v_T)
+    : Core_models.Option.t_Option (v_T & t_Slice v_T) =
+  if impl__is_empty #v_T s
+  then Core_models.Option.Option_None <: Core_models.Option.t_Option (v_T & t_Slice v_T)
+  else
+    let l:usize = impl__len #v_T s in
+    Core_models.Option.Option_Some
+    (Rust_primitives.Slice.slice_index #v_T s (l -! mk_usize 1 <: usize),
+      Rust_primitives.Slice.slice_slice #v_T s (mk_usize 0) (l -! mk_usize 1 <: usize)
+      <:
+      (v_T & t_Slice v_T))
+    <:
+    Core_models.Option.t_Option (v_T & t_Slice v_T)
+
+/// See [`std::slice::split`]
+let impl__split
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+      (s: t_Slice v_T)
+      (pred: v_P)
+    : Core_models.Slice.Iter.t_Split v_T v_P = Core_models.Slice.Iter.impl_11__new #v_T #v_P s pred
+
+/// See [`std::slice::split_inclusive`]
+let impl__split_inclusive
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+      (s: t_Slice v_T)
+      (pred: v_P)
+    : Core_models.Slice.Iter.t_SplitInclusive v_T v_P =
+  Core_models.Slice.Iter.impl_13__new #v_T #v_P s pred
+
+/// See [`std::slice::splitn`]
+let impl__splitn
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+      (s: t_Slice v_T)
+      (n: usize)
+      (pred: v_P)
+    : Core_models.Slice.Iter.t_SplitN v_T v_P =
+  Core_models.Slice.Iter.impl_15__new #v_T #v_P s n pred
+
+/// See [`std::slice::rsplit`]
+let impl__rsplit
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+      (s: t_Slice v_T)
+      (pred: v_P)
+    : Core_models.Slice.Iter.t_RSplit v_T v_P = Core_models.Slice.Iter.impl_17__new #v_T #v_P s pred
+
+/// See [`std::slice::rsplitn`]
+let impl__rsplitn
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+      (s: t_Slice v_T)
+      (n: usize)
+      (pred: v_P)
+    : Core_models.Slice.Iter.t_RSplitN v_T v_P =
+  Core_models.Slice.Iter.impl_19__new #v_T #v_P s n pred
+
+/// See [`std::slice::chunk_by`]
+let impl__chunk_by
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P (v_T & v_T))
+      (s: t_Slice v_T)
+      (pred: v_P)
+    : Core_models.Slice.Iter.t_ChunkBy v_T v_P =
+  Core_models.Slice.Iter.impl_21__new #v_T #v_P s pred
+
+/// See [`std::slice::split_once`]
+let impl__split_once
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+      (s: t_Slice v_T)
+      (pred: v_P)
+    : Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T) =
+  let len:usize = impl__len #v_T s in
+  let idx:usize = Core_models.Slice.Iter.position_of #v_T #v_P s pred in
+  if idx =. len
+  then Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
+  else
+    Core_models.Option.Option_Some
+    (Rust_primitives.Slice.slice_slice #v_T s (mk_usize 0) idx,
+      Rust_primitives.Slice.slice_slice #v_T s (idx +! mk_usize 1 <: usize) len
+      <:
+      (t_Slice v_T & t_Slice v_T))
+    <:
+    Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
+
+/// See [`std::slice::rsplit_once`]
+let impl__rsplit_once
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+      (s: t_Slice v_T)
+      (pred: v_P)
+    : Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T) =
+  let len:usize = impl__len #v_T s in
+  let idx:usize = Core_models.Slice.Iter.rposition_of #v_T #v_P s pred in
+  if idx =. len
+  then Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
+  else
+    Core_models.Option.Option_Some
+    (Rust_primitives.Slice.slice_slice #v_T s (mk_usize 0) idx,
+      Rust_primitives.Slice.slice_slice #v_T s (idx +! mk_usize 1 <: usize) len
+      <:
+      (t_Slice v_T & t_Slice v_T))
+    <:
+    Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
+
+/// See [`std::slice::binary_search_by`]
+assume
+val impl__binary_search_by':
+    #v_T: Type0 ->
+    #v_F: Type0 ->
+    {| i0: Core_models.Ops.Function.t_Fn v_F v_T |} ->
+    s: t_Slice v_T ->
+    f: v_F
+  -> Core_models.Result.t_Result usize usize
+
+unfold
+let impl__binary_search_by
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F v_T)
+     = impl__binary_search_by' #v_T #v_F #i0
+
+/// See [`std::slice::binary_search_by_key`]
+assume
+val impl__binary_search_by_key':
+    #v_T: Type0 ->
+    #v_B: Type0 ->
+    #v_F: Type0 ->
+    {| i0: Core_models.Cmp.t_Ord v_B |} ->
+    {| i1: Core_models.Ops.Function.t_Fn v_F v_T |} ->
+    s: t_Slice v_T ->
+    b: v_B ->
+    f: v_F
+  -> Core_models.Result.t_Result usize usize
+
+unfold
+let impl__binary_search_by_key
+      (#v_T #v_B #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_B)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F v_T)
+     = impl__binary_search_by_key' #v_T #v_B #v_F #i0 #i1
+
+/// See [`std::slice::partition_point`]
+assume
+val impl__partition_point':
+    #v_T: Type0 ->
+    #v_P: Type0 ->
+    {| i0: Core_models.Ops.Function.t_Fn v_P v_T |} ->
+    s: t_Slice v_T ->
+    pred: v_P
+  -> usize
+
+unfold
+let impl__partition_point
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_P v_T)
+     = impl__partition_point' #v_T #v_P #i0
+
+/// See [`std::slice::is_sorted`]
+assume
+val impl__is_sorted':
+    #v_T: Type0 ->
+    {| i0: Core_models.Cmp.t_PartialOrd v_T v_T |} ->
+    s: t_Slice v_T
+  -> bool
+
+unfold
+let impl__is_sorted
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialOrd v_T v_T)
+     = impl__is_sorted' #v_T #i0
+
+/// See [`std::slice::is_sorted_by`]
+assume
+val impl__is_sorted_by':
+    #v_T: Type0 ->
+    #v_F: Type0 ->
+    {| i0: Core_models.Ops.Function.t_Fn v_F (v_T & v_T) |} ->
+    s: t_Slice v_T ->
+    compare: v_F
+  -> bool
+
+unfold
+let impl__is_sorted_by
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F (v_T & v_T))
+     = impl__is_sorted_by' #v_T #v_F #i0
+
+/// See [`std::slice::is_sorted_by_key`]
+assume
+val impl__is_sorted_by_key':
+    #v_T: Type0 ->
+    #v_K: Type0 ->
+    #v_F: Type0 ->
+    {| i0: Core_models.Cmp.t_PartialOrd v_K v_K |} ->
+    {| i1: Core_models.Ops.Function.t_Fn v_F v_T |} ->
+    s: t_Slice v_T ->
+    f: v_F
+  -> bool
+
+unfold
+let impl__is_sorted_by_key
+      (#v_T #v_K #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialOrd v_K v_K)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F v_T)
+     = impl__is_sorted_by_key' #v_T #v_K #v_F #i0 #i1
+
 /// See [`std::slice::starts_with`]
 assume
 val impl__starts_with':
@@ -245,6 +488,54 @@ let impl__windows (#v_T: Type0) (s: t_Slice v_T) (size: usize)
     if size =. mk_usize 0 then Core_models.Panicking.Internal.panic #Prims.unit ()
   in
   Core_models.Slice.Iter.impl_5__new #v_T size s
+
+/// See [`std::slice::split_at_unchecked`]
+let impl__split_at_unchecked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
+    : Prims.Pure (t_Slice v_T & t_Slice v_T)
+      (requires mid <=. (impl__len #v_T s <: usize))
+      (fun _ -> Prims.l_True) = Rust_primitives.Slice.slice_split_at #v_T s mid
+
+/// See [`std::slice::swap_unchecked`]
+assume
+val impl__swap_unchecked': #v_T: Type0 -> s: t_Slice v_T -> a: usize -> b: usize
+  -> Prims.Pure (t_Slice v_T)
+      (requires a <. (impl__len #v_T s <: usize) && b <. (impl__len #v_T s <: usize))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl__swap_unchecked (#v_T: Type0) = impl__swap_unchecked' #v_T
+
+/// See [`std::slice::rotate_left`]
+assume
+val impl__rotate_left': #v_T: Type0 -> s: t_Slice v_T -> mid: usize
+  -> Prims.Pure (t_Slice v_T) (requires mid <=. (impl__len #v_T s <: usize)) (fun _ -> Prims.l_True)
+
+unfold
+let impl__rotate_left (#v_T: Type0) = impl__rotate_left' #v_T
+
+/// See [`std::slice::rotate_right`]
+assume
+val impl__rotate_right': #v_T: Type0 -> s: t_Slice v_T -> k: usize
+  -> Prims.Pure (t_Slice v_T) (requires k <=. (impl__len #v_T s <: usize)) (fun _ -> Prims.l_True)
+
+unfold
+let impl__rotate_right (#v_T: Type0) = impl__rotate_right' #v_T
+
+/// See [`std::slice::rchunks`]
+let impl__rchunks (#v_T: Type0) (s: t_Slice v_T) (cs: usize)
+    : Prims.Pure (Core_models.Slice.Iter.t_RChunks v_T)
+      (requires cs >. mk_usize 0)
+      (fun _ -> Prims.l_True) =
+  let _:Prims.unit = if cs =. mk_usize 0 then Core_models.Panicking.Internal.panic #Prims.unit () in
+  Core_models.Slice.Iter.impl_7__new #v_T cs s
+
+/// See [`std::slice::rchunks_exact`]
+let impl__rchunks_exact (#v_T: Type0) (s: t_Slice v_T) (cs: usize)
+    : Prims.Pure (Core_models.Slice.Iter.t_RChunksExact v_T)
+      (requires cs >. mk_usize 0)
+      (fun _ -> Prims.l_True) =
+  let _:Prims.unit = if cs =. mk_usize 0 then Core_models.Panicking.Internal.panic #Prims.unit () in
+  Core_models.Slice.Iter.impl_9__new #v_T cs s
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
@@ -383,3 +674,113 @@ let impl_10 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) usize =
     f_index_post = (fun (self: t_Slice v_T) (i: usize) (out: v_T) -> true);
     f_index = fun (self: t_Slice v_T) (i: usize) -> Rust_primitives.Slice.slice_index #v_T self i
   }
+
+/// See [`std::slice::SlicePattern`]
+class t_SlicePattern (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
+  f_as_slice_pre:v_Self -> Type0;
+  f_as_slice_post:v_Self -> t_Slice f_Item -> Type0;
+  f_as_slice:x0: v_Self
+    -> Prims.Pure (t_Slice f_Item) (f_as_slice_pre x0) (fun result -> f_as_slice_post x0 result)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_11 (#v_T: Type0) : t_SlicePattern (t_Slice v_T) =
+  {
+    f_Item = v_T;
+    f_as_slice_pre = (fun (self: t_Slice v_T) -> true);
+    f_as_slice_post = (fun (self: t_Slice v_T) (out: t_Slice v_T) -> true);
+    f_as_slice = fun (self: t_Slice v_T) -> self
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_12 (#v_T: Type0) (v_N: usize) : t_SlicePattern (t_Array v_T v_N) =
+  {
+    f_Item = v_T;
+    f_as_slice_pre = (fun (self: t_Array v_T v_N) -> true);
+    f_as_slice_post = (fun (self: t_Array v_T v_N) (out: t_Slice v_T) -> true);
+    f_as_slice = fun (self: t_Array v_T v_N) -> Rust_primitives.Slice.array_as_slice #v_T v_N self
+  }
+
+/// See [`std::slice::strip_prefix`]
+assume
+val impl_13__strip_prefix':
+    #v_T: Type0 ->
+    #v_P: Type0 ->
+    {| i0: t_SlicePattern v_P |} ->
+    {| i1: Core_models.Cmp.t_PartialEq v_T v_T |} ->
+    #_: unit{i0.f_Item == v_T} ->
+    s: t_Slice v_T ->
+    prefix: v_P
+  -> Core_models.Option.t_Option (t_Slice v_T)
+
+unfold
+let impl_13__strip_prefix
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_SlicePattern v_P)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Cmp.t_PartialEq v_T v_T)
+      (#_: unit{i0.f_Item == v_T})
+     = impl_13__strip_prefix' #v_T #v_P #i0 #i1 #_
+
+/// See [`std::slice::strip_suffix`]
+assume
+val impl_13__strip_suffix':
+    #v_T: Type0 ->
+    #v_P: Type0 ->
+    {| i0: t_SlicePattern v_P |} ->
+    {| i1: Core_models.Cmp.t_PartialEq v_T v_T |} ->
+    #_: unit{i0.f_Item == v_T} ->
+    s: t_Slice v_T ->
+    suffix: v_P
+  -> Core_models.Option.t_Option (t_Slice v_T)
+
+unfold
+let impl_13__strip_suffix
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_SlicePattern v_P)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Cmp.t_PartialEq v_T v_T)
+      (#_: unit{i0.f_Item == v_T})
+     = impl_13__strip_suffix' #v_T #v_P #i0 #i1 #_
+
+/// See [`std::slice::trim_prefix`]
+let impl_13__trim_prefix
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_SlicePattern v_P)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Cmp.t_PartialEq v_T v_T)
+      (#_: unit{i0.f_Item == v_T})
+      (s: t_Slice v_T)
+      (prefix: v_P)
+    : t_Slice v_T =
+  match impl_13__strip_prefix #v_T #v_P s prefix <: Core_models.Option.t_Option (t_Slice v_T) with
+  | Core_models.Option.Option_Some rest -> rest
+  | Core_models.Option.Option_None  -> s
+
+/// See [`std::slice::trim_suffix`]
+let impl_13__trim_suffix
+      (#v_T #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_SlicePattern v_P)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Cmp.t_PartialEq v_T v_T)
+      (#_: unit{i0.f_Item == v_T})
+      (s: t_Slice v_T)
+      (suffix: v_P)
+    : t_Slice v_T =
+  match impl_13__strip_suffix #v_T #v_P s suffix <: Core_models.Option.t_Option (t_Slice v_T) with
+  | Core_models.Option.Option_Some rest -> rest
+  | Core_models.Option.Option_None  -> s
+
+/// See [`std::slice::strip_circumfix`]
+let impl_13__strip_circumfix
+      (#v_T #v_S #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialEq v_T v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_SlicePattern v_S)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_SlicePattern v_P)
+      (#_: unit{i1.f_Item == v_T})
+      (#_: unit{i2.f_Item == v_T})
+      (s: t_Slice v_T)
+      (prefix: v_P)
+      (suffix: v_S)
+    : Core_models.Option.t_Option (t_Slice v_T) =
+  match impl_13__strip_prefix #v_T #v_P s prefix <: Core_models.Option.t_Option (t_Slice v_T) with
+  | Core_models.Option.Option_Some rest -> impl_13__strip_suffix #v_T #v_S rest suffix
+  | Core_models.Option.Option_None  ->
+    Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T)
