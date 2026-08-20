@@ -46,6 +46,12 @@ Changes to hax-lib:
  - Support `requires`, and `ensures` written behind a `cfg_attr` in
    an `impl` block or a trait annotated with `#[hax_lib::attributes]`, keeping
    the `cfg_attr` predicate (#1496)
+ - core-models: model the pieces the Lean and F* extractions referenced but
+   core-models did not provide: `IndexMut` for `[T]`/`Vec<T>` (so `v[i] = x`
+   extracts), `Try`/`FromResidual` for `Option` (the `?` operator),
+   `wrapping_neg`, and `PartialEq::ne`. Moved `Vec::resize` into the
+   `impl<T: Clone>` block and relaxed `Vec::remove`'s postcondition to
+   `len' <= len` (#2157)
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
