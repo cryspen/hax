@@ -34,7 +34,6 @@
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
 // from `cargo hax`.
 #![cfg_attr(charon, register_tool(aeneas))]
-#![cfg_attr(charon, register_tool(charon))]
 
 #[path = "core/array.rs"]
 pub mod array;

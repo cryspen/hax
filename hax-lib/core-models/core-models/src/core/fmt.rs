@@ -109,7 +109,6 @@ mod rt {
 
     // The formatting arguments carry no observable payload in this model, so
     // every constructor below yields the single placeholder value.
-    #[cfg_attr(charon, charon::opaque)]
     fn placeholder<'a>() -> ArgumentType<'a> {
         ArgumentType::Placeholder {
             _lifetime: std::marker::PhantomData,
@@ -118,34 +117,28 @@ mod rt {
 
     impl Argument<'_> {
         #[hax_lib::opaque]
-        #[cfg_attr(charon, charon::opaque)]
         fn new_display<T>(x: &T) -> Self {
             Argument { ty: placeholder() }
         }
         #[hax_lib::opaque]
-        #[cfg_attr(charon, charon::opaque)]
         fn new_debug<T>(x: &T) -> Self {
             Argument { ty: placeholder() }
         }
         #[hax_lib::opaque]
-        #[cfg_attr(charon, charon::opaque)]
         fn new_lower_hex<T>(x: &T) -> Self {
             Argument { ty: placeholder() }
         }
     }
     impl<'a> Argument<'a> {
         #[hax_lib::opaque]
-        #[cfg_attr(charon, charon::opaque)]
         fn new_binary<T>(x: &T) -> Self {
             Argument { ty: placeholder() }
         }
         #[hax_lib::opaque]
-        #[cfg_attr(charon, charon::opaque)]
         fn new_const<T, U>(x: &T, y: &U) -> super::Arguments<'a> {
             super::Arguments(&())
         }
         #[hax_lib::opaque]
-        #[cfg_attr(charon, charon::opaque)]
         fn new_v1<T, U, V, W>(x: &T, y: &U, z: &V, t: &W) -> super::Arguments<'a> {
             super::Arguments(&())
         }
@@ -153,7 +146,6 @@ mod rt {
             []
         }
         #[hax_lib::opaque]
-        #[cfg_attr(charon, charon::opaque)]
         fn new_v1_formatted<T, U, V>(x: &T, y: &U, z: &V) -> super::Arguments<'a> {
             super::Arguments(&())
         }
