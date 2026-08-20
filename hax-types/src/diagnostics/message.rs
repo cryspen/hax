@@ -119,6 +119,16 @@ pub struct InstalledTool {
     pub status: InstallStatus,
 }
 
+/// One entry a `pin` run wrote into `hax.toml`.
+#[derive_group(Serializers)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
+pub struct PinChange {
+    pub name: String,
+    pub version: String,
+    /// The version the entry pinned before, if it existed.
+    pub previous: Option<String>,
+}
+
 #[derive_group(Serializers)]
 #[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
 #[repr(u8)]
@@ -240,6 +250,14 @@ pub enum HaxMessage {
         found: String,
         expected: String,
     } = 24,
+    /// The result of `cargo hax tools pin`: the entries written into the
+    /// edited `hax.toml`, and the path-pinned ones left untouched. Empty
+    /// `changes` means the file was not written.
+    ToolsPinned {
+        path: PathBuf,
+        changes: Vec<PinChange>,
+        skipped: Vec<String>,
+    } = 25,
 }
 
 impl HaxMessage {
@@ -555,6 +573,11 @@ impl HaxMessage {
                 installed_only,
             } => render_tools_list(&tools, installed_only),
             Self::ToolsInstalled { installed } => render_tools_installed(&installed),
+            Self::ToolsPinned {
+                path,
+                changes,
+                skipped,
+            } => render_tools_pinned(&path, &changes, &skipped),
         }
     }
 }
@@ -715,6 +738,54 @@ fn render_tools_list(tools: &[ToolListing], installed_only: bool) -> String {
         blocks.push(lines.join("\n"));
     }
     blocks.join("\n\n")
+}
+
+/// `tools pin`: one Cargo-style line per skipped and per written entry,
+/// closed by the state of the file.
+fn render_tools_pinned(
+    path: &std::path::Path,
+    changes: &[PinChange],
+    skipped: &[String],
+) -> String {
+    use colored::Colorize;
+    let path = relative_to_cwd(path.to_path_buf());
+    let mut lines: Vec<String> = skipped
+        .iter()
+        .map(|name| {
+            format!(
+                "{:>12} {name} (pinned to a path)",
+                "Skipped".bold().yellow()
+            )
+        })
+        .chain(changes.iter().map(|change| {
+            let previous = match &change.previous {
+                Some(previous) => format!(" (was {previous})"),
+                None => String::new(),
+            };
+            format!(
+                "{:>12} {} {}{previous}",
+                "Pinned".bold().green(),
+                change.name,
+                change.version
+            )
+        }))
+        .collect();
+    lines.push(if !changes.is_empty() {
+        format!(
+            "{:>12} {} (run `cargo hax tools install` to pre-fetch)",
+            "Wrote".bold().green(),
+            path.display()
+        )
+    } else if !skipped.is_empty() {
+        format!("{:>12} {}", "Unchanged".bold().green(), path.display())
+    } else {
+        format!(
+            "{:>12} {} already pins these versions",
+            "Unchanged".bold().green(),
+            path.display()
+        )
+    });
+    lines.join("\n")
 }
 
 /// `tools install`: one Cargo-style line per version now in the cache.
