@@ -154,7 +154,6 @@ macro_rules! uint_impl {
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
             #[hax_lib::opaque]
-            #[cfg_attr(charon, charon::opaque)]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -427,7 +426,6 @@ macro_rules! iint_impl {
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
             #[hax_lib::opaque]
-            #[cfg_attr(charon, charon::opaque)]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
