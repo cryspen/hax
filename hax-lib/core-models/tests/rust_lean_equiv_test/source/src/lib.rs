@@ -61,14 +61,15 @@
     utf16_extra
 // Some `core::slice` items under test are still unstable in std.
 #![feature(
+    formatting_options,
+    int_format_into,
+    iter_advance_by,
     slice_split_once,
+    slice_swap_unchecked,
     strip_circumfix,
-    trim_prefix_suffix,
-    slice_swap_unchecked
+    trim_prefix_suffix
 )]
-// `Iterator::advance_by` is still unstable; the `core::iter` tests compare
-// against it.
-#![feature(iter_advance_by)]
+#![allow(unused_comparisons)]
 
 pub mod helpers;
 
