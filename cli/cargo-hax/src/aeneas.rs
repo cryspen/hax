@@ -291,13 +291,16 @@ pub fn run(
     ]);
     // Register the tool-attribute namespaces through `RUSTFLAGS`, which cargo applies
     // to every target crate. `--rustc-arg` only reaches the crate charon instruments,
-    // so markers in dependencies would fail to resolve.
-    let rustflags = std::env::var("RUSTFLAGS").unwrap_or_default();
+    // so markers in dependencies would fail to resolve. `RUSTFLAGS` replaces (never
+    // merges with) `build.rustflags` from `.cargo/config.toml`, so it must carry
+    // `--cfg hax` itself: without it `hax-lib` builds its no-op `dummy` half and the
+    // specifications the macros just emitted no longer resolve.
     charon_cmd.env(
         "RUSTFLAGS",
         format!(
-            "{rustflags} -Zcrate-attr=feature(register_tool) \
-             -Zcrate-attr=register_tool(_hax) -Zcrate-attr=register_tool(charon)"
+            "{} -Zcrate-attr=feature(register_tool) \
+             -Zcrate-attr=register_tool(_hax) -Zcrate-attr=register_tool(charon)",
+            super::rustflags()
         ),
     );
     if verbose > 0 {
