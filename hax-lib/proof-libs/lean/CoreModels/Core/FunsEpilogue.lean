@@ -104,6 +104,90 @@ def iter.traits.iterator.Iterator.rev.trait_default
     (self : Self) : Result (iter.adapters.rev.Rev Self) :=
   iter.traits.iterator.Iterator.rev.default self
 
+/-! ## P2c lazy adapters kept OFF the `Iterator` structure — zip / chain / flat_map / flatten
+
+Unlike step_by/take/skip/filter, these cannot be trait fields: their `.default`
+takes the SELF `Iterator` instance (the extra `Iterator`/`Fn` bound threads it
+in), so a per-instance field `<m> := <m>.default SELF …` self-references the
+instance → the same `impl_def: could not resolve recursive fields` wall that
+`collect` hits. Supplied here as standalone functions (the instances are
+ordinary parameters, never `SELF`), delegating to the generated adapter `.new`
+constructors. `@[rust_fun …]` maps a downstream `.<m>()` onto the shim. -/
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.zip.default
+    {Self I2 Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator I2 Clause1_Item)
+    (self : Self) (it2 : I2) : Result (iter.adapters.zip.Zip Self I2) :=
+  iter.adapters.zip.Zip.new IteratorInst IteratorInst1 self it2
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::zip"]
+def iter.traits.iterator.Iterator.zip.trait_default
+    {Self I2 Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator I2 Clause1_Item)
+    (self : Self) (it2 : I2) : Result (iter.adapters.zip.Zip Self I2) :=
+  iter.traits.iterator.Iterator.zip.default IteratorInst IteratorInst1 self it2
+
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.chain.default
+    {Self U Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator U Clause0_Item)
+    (self : Self) (other : U) : Result (iter.adapters.chain.Chain Self U) :=
+  iter.adapters.chain.Chain.new IteratorInst IteratorInst1 self other
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::chain"]
+def iter.traits.iterator.Iterator.chain.trait_default
+    {Self U Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator U Clause0_Item)
+    (self : Self) (other : U) : Result (iter.adapters.chain.Chain Self U) :=
+  iter.traits.iterator.Iterator.chain.default IteratorInst IteratorInst1 self other
+
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.flat_map.default
+    {Self U F Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator U Clause1_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item U)
+    (self : Self) (f : F) :
+    Result (iter.adapters.flat_map.FlatMap Self U F) :=
+  iter.adapters.flat_map.FlatMap.new IteratorInst IteratorInst1 FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::flat_map"]
+def iter.traits.iterator.Iterator.flat_map.trait_default
+    {Self U F Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator U Clause1_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item U)
+    (self : Self) (f : F) :
+    Result (iter.adapters.flat_map.FlatMap Self U F) :=
+  iter.traits.iterator.Iterator.flat_map.default
+    IteratorInst IteratorInst1 FnInst self f
+
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.flatten.default
+    {Self Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator Clause0_Item Clause1_Item)
+    (self : Self) :
+    Result (iter.adapters.flatten.Flatten Self Clause0_Item Clause1_Item) :=
+  iter.adapters.flatten.Flatten.new IteratorInst IteratorInst1 self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::flatten"]
+def iter.traits.iterator.Iterator.flatten.trait_default
+    {Self Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator Clause0_Item Clause1_Item)
+    (self : Self) :
+    Result (iter.adapters.flatten.Flatten Self Clause0_Item Clause1_Item) :=
+  iter.traits.iterator.Iterator.flatten.default IteratorInst IteratorInst1 self
+
 end core
 
 namespace alloc

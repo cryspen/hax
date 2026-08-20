@@ -1087,6 +1087,8 @@ mod tests {
     use proptest::prelude::*;
 
     /// A simple iterator over a Vec, used to test IteratorMethods.
+    /// `Clone` so a `VecIter<VecIter<_>>` is itself an `Iterator` (for `flatten`).
+    #[derive(Clone)]
     struct VecIter<T> {
         data: Vec<T>,
         pos: usize,
@@ -1213,6 +1215,60 @@ mod tests {
                 model.push(x);
             }
             let std_result: Vec<i32> = v.iter().copied().filter(|x| *x > 0).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        // P2c adapters (the standalone-epilogue ones): validate the underlying
+        // adapter `next` semantics the shims delegate to (never exercised before).
+        #[test]
+        fn test_zip(a in prop::collection::vec(any::<i32>(), 0..=15),
+                    b in prop::collection::vec(any::<i32>(), 0..=15)) {
+            let mut it = VecIter::new(a.clone()).zip(VecIter::new(b.clone()));
+            let mut model: Vec<(i32, i32)> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<(i32, i32)> =
+                a.iter().copied().zip(b.iter().copied()).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_chain(a in prop::collection::vec(any::<i32>(), 0..=15),
+                      b in prop::collection::vec(any::<i32>(), 0..=15)) {
+            let mut it = VecIter::new(a.clone()).chain(VecIter::new(b.clone()));
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> =
+                a.iter().copied().chain(b.iter().copied()).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_flat_map(v in prop::collection::vec(any::<i32>(), 0..=10)) {
+            let mut it = VecIter::new(v.clone()).flat_map(|x: i32| VecIter::new(vec![x, x]));
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> =
+                v.iter().copied().flat_map(|x| vec![x, x]).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_flatten(v in prop::collection::vec(
+                prop::collection::vec(any::<i32>(), 0..=5), 0..=5)) {
+            let inner: Vec<VecIter<i32>> =
+                v.iter().map(|xs| VecIter::new(xs.clone())).collect();
+            let mut it = VecIter::new(inner).flatten();
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().flatten().copied().collect();
             prop_assert_eq!(model, std_result);
         }
 
