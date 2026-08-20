@@ -420,6 +420,8 @@ pub mod adapters {
                         let i = self.count;
                         // TODO check what to do here. It would be bad to have an iterator with
                         // more than usize::MAX elements, this could be a requirement (but hard to formulate).
+                        // F* only: the Lean library has no `hax_lib::assume` model.
+                        #[cfg(hax_backend_fstar)]
                         hax_lib::assume!(self.count < crate::num::usize::MAX);
                         self.count += 1;
                         Option::Some((i, a))

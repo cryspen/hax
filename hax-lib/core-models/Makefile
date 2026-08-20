@@ -1,6 +1,6 @@
-CHARON ?= charon
-AENEAS ?= aeneas
 HAX ?= cargo hax
+# `cfg(charon)` marks the Lean pipeline in the model sources: it enables the
+# `aeneas::exclude` annotations and drops the specs Aeneas cannot translate.
 RUSTFLAGS ?= "--cfg charon"
 
 # Absolute path to the `hax-lib` crate, for the alloc-staging step below.
@@ -11,9 +11,10 @@ RUSTFLAGS ?= "--cfg charon"
 # where the staging directory sits.
 HAX_LIB_DIR := $(abspath ..)
 
-CRATE_NAME = core_models
-LLBC_FILE = $(CRATE_NAME).llbc
 LEAN_DIR = ../proof-libs/lean
+# `cargo hax into lean` writes here (Lean files and LLBC alike); `patch`
+# installs into $(LEAN_DIR) the subset the library needs.
+EXTRACT_DIR = .lean-extract
 FSTAR_DIR = ../proof-libs/fstar/core
 # The main Rust crate (`core-models`) lives under ./core-models/ — its
 # Cargo.toml is the package manifest. The root Cargo.toml is the
@@ -27,7 +28,6 @@ CORE_MODELS_DIR = core-models
 # rewritten to `name = "alloc_models"`. After Aeneas runs, the patcher
 # rewrites the resulting Lean files to put everything back in the `alloc`
 # namespace (downstream Aeneas-extracted code expects `alloc.vec.Vec` etc.).
-ALLOC_LLBC_FILE = alloc.llbc
 ALLOC_STAGE_DIR = .alloc-extract
 
 # Items in the `alloc` crate that must not reach Aeneas, either because it
@@ -48,15 +48,17 @@ ALLOC_CHARON_EXCLUDES = \
     --exclude '{impl core::iter::traits::collect::FromIterator<_> for alloc_models::collections::vec_deque::VecDeque<_, _>}::*' \
     --exclude 'alloc_models::slice::_::sort_by'
 
-.PHONY: all llbc extract patch lean build clean clean-generated tests \
-        tests-clean alloc-stage alloc-llbc alloc-extract alloc-clean \
+.PHONY: all extract patch lean build clean clean-generated tests \
+        tests-clean alloc-stage alloc-extract alloc-clean \
         coverage fstar fstar-clean fstar-core-models fstar-std fstar-alloc \
         fstar-rand-core
 
 all: lean fstar coverage
 
-# 1. Run charon to produce LLBC from the Rust crate.
-#
+# Our two model crates share one Lean package (`CoreModels/{Core,Alloc}`), so
+# the recipes below override hax's per-crate `-subdir`. hax warns about that.
+AENEAS_ARGS = -all-computable
+
 # `--exclude` removes items at the LLBC level so Aeneas never sees them.
 # We use it for pure-fn duplicates that we provide ourselves in
 # `Aeneas/PureFuns.lean` (Aeneas marks the corresponding `core::*` items
@@ -75,23 +77,14 @@ CHARON_EXCLUDES = \
     --exclude 'core_models::option::_::is_some' \
     --exclude 'core_models::option::_::is_none' \
     --exclude 'core_models::option::_::unwrap_or' \
-    --exclude 'core_models::option::_::take' 
+    --exclude 'core_models::option::_::take'
 
-llbc: $(LLBC_FILE)
-
-$(LLBC_FILE): $(CORE_MODELS_DIR)/src/**/*.rs $(CORE_MODELS_DIR)/Cargo.toml
-	cd $(CORE_MODELS_DIR) && RUSTFLAGS=$(RUSTFLAGS) $(CHARON) cargo --preset=aeneas \
-	    $(CHARON_EXCLUDES) \
-	    --dest-file $(abspath $(LLBC_FILE))
-
-# 2. Run Aeneas to extract Lean files into $(LEAN_DIR)/.
-#    Aeneas writes Funs.lean, Types.lean, FunsExternal_Template.lean,
-#    TypesExternal_Template.lean at the root of $(LEAN_DIR). Anything inside
-#    $(LEAN_DIR)/Aeneas/ is left untouched.
-extract: $(LLBC_FILE) alloc-extract
-	mkdir -p $(LEAN_DIR)
-	$(AENEAS) -core-models-lib -backend lean $(LLBC_FILE) -split-files -dest $(LEAN_DIR) \
-	-subdir CoreModels/Core -all-computable
+# 1. Run charon + Aeneas, writing the Lean files into $(EXTRACT_DIR)/CoreModels/Core/.
+extract: alloc-extract
+	cd $(CORE_MODELS_DIR) && RUSTFLAGS=$(RUSTFLAGS) $(HAX) into \
+	    --output-dir $(abspath $(EXTRACT_DIR)) lean \
+	    --charon-args="$(CHARON_EXCLUDES)" \
+	    --aeneas-args="-subdir CoreModels/Core $(AENEAS_ARGS)"
 
 # -----------------------------------------------------------------------------
 # alloc/ extraction (with the `alloc_models` crate-name workaround)
@@ -116,26 +109,32 @@ $(ALLOC_STAGE_DIR)/Cargo.toml: alloc/Cargo.toml Makefile
 
 alloc-stage: $(ALLOC_STAGE_DIR)/Cargo.toml
 
-$(ALLOC_LLBC_FILE): $(ALLOC_STAGE_DIR)/Cargo.toml alloc/src/lib.rs
-	cd $(ALLOC_STAGE_DIR) && RUSTFLAGS=$(RUSTFLAGS) $(CHARON) cargo --preset=aeneas \
-	    $(ALLOC_CHARON_EXCLUDES) \
-	    --dest-file $(abspath $(ALLOC_LLBC_FILE))
-
-alloc-llbc: $(ALLOC_LLBC_FILE)
-
-# Run Aeneas on the staged alloc llbc, writing into $(LEAN_DIR)/CoreModels/Alloc/.
+# Extract the staged crate, writing into $(EXTRACT_DIR)/CoreModels/Alloc/.
 # `-subdir CoreModels/Alloc` makes Aeneas emit `import CoreModels.Alloc.<X>` rather
 # than the auto-derived `Alloc_models.<X>` prefix.
-alloc-extract: $(ALLOC_LLBC_FILE)
-	$(AENEAS) -core-models-lib -backend lean $(ALLOC_LLBC_FILE) -split-files \
-	    -dest $(LEAN_DIR) -subdir CoreModels/Alloc -all-computable
+alloc-extract: $(ALLOC_STAGE_DIR)/Cargo.toml
+	cd $(ALLOC_STAGE_DIR) && RUSTFLAGS=$(RUSTFLAGS) $(HAX) into \
+	    --output-dir $(abspath $(EXTRACT_DIR)) lean \
+	    --charon-args="$(ALLOC_CHARON_EXCLUDES)" \
+	    --aeneas-args="-subdir CoreModels/Alloc $(AENEAS_ARGS)"
 
-# 3. Move generated files into $(LEAN_DIR)/CoreModels/ and apply our patches
+# 2. Move generated files into $(LEAN_DIR)/CoreModels/ and apply our patches
 #    (imports, opens, namespace rename, comment-outs of broken defs, etc.).
+#
+# Aeneas also writes `Specs.lean` and `ProofObligations.lean`, which the Lean
+# library has no use for yet: they stay in $(EXTRACT_DIR).
+GENERATED_LEAN = Funs.lean Types.lean \
+                 FunsExternal_Template.lean TypesExternal_Template.lean
+
 patch:
+	mkdir -p $(LEAN_DIR)/CoreModels/Core $(LEAN_DIR)/CoreModels/Alloc
+	cd $(EXTRACT_DIR)/CoreModels/Core && \
+	    cp $(GENERATED_LEAN) $(abspath $(LEAN_DIR))/CoreModels/Core/
+	cd $(EXTRACT_DIR)/CoreModels/Alloc && \
+	    cp $(GENERATED_LEAN) $(abspath $(LEAN_DIR))/CoreModels/Alloc/
 	python3 patch_lean.py
 
-# 4. Build the Lean library to verify it compiles.
+# 3. Build the Lean library to verify it compiles.
 build:
 	cd $(LEAN_DIR) && lake exe cache get && lake build
 
@@ -150,14 +149,13 @@ clean-generated:
 	rm -f $(LEAN_DIR)/CoreModels/Core/TypesExternal_Template.lean
 	rm -rf $(LEAN_DIR)/CoreModels/Alloc
 
-# Drop the staged alloc copy and its llbc.
+# Drop the staged alloc copy.
 alloc-clean:
 	rm -rf $(ALLOC_STAGE_DIR)
-	rm -f $(ALLOC_LLBC_FILE)
 
-# Full clean: drop the LLBC and the build cache too.
+# Full clean: drop the staged extraction (LLBC included) and the build cache too.
 clean: clean-generated alloc-clean fstar-clean
-	rm -f $(LLBC_FILE)
+	rm -rf $(EXTRACT_DIR)
 	rm -rf $(LEAN_DIR)/.lake
 
 FSTAR_CRATES = core-models std alloc rand_core

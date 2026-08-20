@@ -138,9 +138,9 @@ impl<T, const N: usize> Index<RangeFull> for [T; N] {
     }
 }
 
-// Also `not(hax_backend_fstar)`: that model's blanket `impl<T> Clone for T`
+// Not for `hax_backend_fstar`: that model's blanket `impl<T> Clone for T`
 // already covers arrays, and both in scope fails coherence.
-#[cfg(all(not(hax), not(hax_backend_fstar)))]
+#[cfg(not(hax_backend_fstar))]
 impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
     fn clone(self) -> Self {
         self
