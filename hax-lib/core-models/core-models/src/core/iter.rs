@@ -3539,6 +3539,11 @@ pub mod sources {
 
         impl<T> FusedIterator for super::empty::Empty<T> {}
         impl<T> FusedIterator for super::once::Once<T> {}
+        // Out of F*: the super-instance is `OnceWith`'s `Iterator`, which is
+        // opaque there and whose `A` appears only in a refinement, so typeclass
+        // resolution cannot instantiate it ("Tactic left uninstantiated
+        // unification variable", Error 217).
+        #[cfg(not(hax_backend_fstar))]
         impl<A, F: FnOnce() -> A> FusedIterator for super::once_with::OnceWith<F> {}
         impl<A: Clone> FusedIterator for super::repeat::Repeat<A> {}
         impl<A: Clone> FusedIterator for super::repeat_n::RepeatN<A> {}
