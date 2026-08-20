@@ -15,24 +15,13 @@ let impl_1 (#v_T: Type0)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_2
-      (#v_A #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i0:
-          Core_models.Ops.Function.t_FnOnce v_F Prims.unit)
-      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_A})
-    : Core_models.Iter.Traits.Marker.t_FusedIterator
-    (Core_models.Iter.Sources.Once_with.t_OnceWith v_F) =
-  { _super_i0 = FStar.Tactics.Typeclasses.solve }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3
       (#v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_A)
     : Core_models.Iter.Traits.Marker.t_FusedIterator (Core_models.Iter.Sources.Repeat.t_Repeat v_A) =
   { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4
+let impl_3
       (#v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_A)
     : Core_models.Iter.Traits.Marker.t_FusedIterator
@@ -40,7 +29,7 @@ let impl_4
   { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5
+let impl_4
       (#v_T #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_Fn v_F v_T)
     : Core_models.Iter.Traits.Marker.t_FusedIterator
