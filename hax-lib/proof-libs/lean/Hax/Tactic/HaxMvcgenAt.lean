@@ -34,6 +34,21 @@ register_option hax_mvcgen.warnings : Bool := {
   descr := "Enable or disable warnings produced by hax_mvcgen"
 }
 
+/-- Try to guess which function is missing a `@[spec]` lemma from a verification condition that
+`mvcgen` could not discharge: `mvcgen` gets stuck on the first program it has no specification
+for, leaving a goal that mentions `wp⟦f a₁ ... aₙ⟧`. Returns `none` when the head of that program
+is not a constant, or is mere monadic plumbing, which says nothing about the missing spec. -/
+private def missingSpecCandidate? (e : Expr) : Option Name := Id.run do
+  let some wpApp := e.find? (·.isAppOfArity' ``WP.wp 5) | return none
+  -- Look through `bind`s: the missing specification is the one of the program bound first,
+  -- i.e. the second-to-last argument of `Bind.bind .. x f`.
+  let mut prog := wpApp.appArg!
+  while prog.isAppOf ``Bind.bind && prog.getAppNumArgs ≥ 2 do
+    prog := prog.getAppArgs[prog.getAppNumArgs - 2]!
+  let .const n _ := prog.getAppFn | return none
+  return some n
+
+/-- Main entry point of `hax_mvcgen at` -/
 def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Parser.Tactic.optConfig) (argStx : Syntax) : TacticM (List MVarId) := do
   forallTelescope (cleanupAnnotations := true) (← instantiateMVars hyp.type) fun xs hbody => do
 
@@ -74,8 +89,14 @@ def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Pa
         newHypGoals := newHypGoals.push goal
       else
         if (target.find? (· == newHyp)).isSome then
-          Lean.Meta.throwTacticEx `hax_mvcgen mainGoal
-            (m!"VC goal target contains but is not equal to the mvar: {target}")
+          let mut msg :=
+            m!"Failed to process hypothesis {mkFVar hyp.fvarId}. Usually this error is due to \
+               missing specs for functions contained in the program."
+          if let some fnName := missingSpecCandidate? target then
+            msg := msg ++
+              m!" This is likely because {.ofConstName fnName} is missing a @[spec] lemma."
+          msg := msg ++ m!"\n\nRemaining goal:\n{target}"
+          goal.withContext do Lean.Meta.throwTacticEx `hax_mvcgen mainGoal msg
         sideGoals := sideGoals.push goal
 
     -- For each `newHypGoal`, we collect the local decls `newDecls` that have been introduced
