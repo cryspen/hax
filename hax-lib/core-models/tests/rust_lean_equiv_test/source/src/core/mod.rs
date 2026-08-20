@@ -8,6 +8,7 @@ pub mod hint;
 pub mod iter;
 pub mod mem;
 pub mod num;
+pub mod num_exhaustive;
 pub mod ops;
 pub mod option;
 pub mod result;
