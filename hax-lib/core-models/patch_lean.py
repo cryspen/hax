@@ -340,6 +340,13 @@ def fill_iterator_default_fields(text: str) -> str:
                 out.append(f"  step_by := {ITER}.step_by.default {item}")
                 out.append(f"  take := {ITER}.take.default {item}")
                 out.append(f"  skip := {ITER}.skip.default {item}")
+                # filter: same shape as `map` (the `Fn` predicate instance is a
+                # field arg; `filter.default` takes only it, no self-instance).
+                out.append(
+                    f"  filter := fun {{P : Type}} "
+                    f"(inst : core.ops.function.Fn P {item} Bool) => "
+                    f"{ITER}.filter.default inst"
+                )
                 injected = True
             out.append(line)
         return "\n".join(out) if injected else None

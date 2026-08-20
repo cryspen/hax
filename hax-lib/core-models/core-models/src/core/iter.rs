@@ -76,6 +76,23 @@ pub mod traits {
             {
                 Skip::new(self, n)
             }
+            // filter is field-safe (its `.default` takes only the `Fn` predicate
+            // instance, like `map` — no self-instance, so no recursive-field wall).
+            // zip/chain/flat_map/flatten are NOT promoted here: their `.default`
+            // takes the SELF Iterator instance (the extra `Iterator`/`Fn` bound
+            // threads it in), so a per-instance field `<m> := <m>.default SELF …`
+            // self-references the instance → the same `impl_def: could not resolve
+            // recursive fields` wall that `collect` hits (finding-log UPDATE 9).
+            // They need the standalone-epilogue treatment (like collect/rev) instead;
+            // they stay on `IteratorMethods` for now.
+            #[cfg(not(hax_backend_fstar))]
+            #[hax_lib::requires(true)]
+            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P>
+            where
+                Self: Sized,
+            {
+                Filter::new(self, predicate)
+            }
         }
 
         // This trait is an addition to deal with the default methods that the F* backend doesn't handle
@@ -83,6 +100,10 @@ pub mod traits {
         pub(crate) trait IteratorMethods: Iterator {
             fn fold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
             fn all<F: Fn(Self::Item) -> bool>(self, f: F) -> bool;
+            // zip/chain/flat_map/flatten are NOT promoted onto `Iterator` (their
+            // `.default` takes the self-instance → recursive-field wall as a trait
+            // field; see the note in the `Iterator` trait). They remain here until
+            // supplied as standalone epilogue functions (like collect/rev).
             fn flat_map<U: Iterator, F: Fn(Self::Item) -> U>(self, f: F) -> FlatMap<Self, U, F>
             where
                 Self: Sized;
@@ -91,9 +112,6 @@ pub mod traits {
                 Self::Item: Iterator,
                 Self: Sized;
             fn zip<I2: Iterator>(self, it2: I2) -> Zip<Self, I2>
-            where
-                Self: Sized;
-            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P>
             where
                 Self: Sized;
             fn chain<U: Iterator<Item = Self::Item>>(self, other: U) -> Chain<Self, U>
@@ -319,10 +337,6 @@ pub mod traits {
                 Zip::new(self, it2)
             }
 
-            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P> {
-                Filter::new(self, predicate)
-            }
-
             fn chain<U: Iterator<Item = Self::Item>>(self, other: U) -> Chain<Self, U> {
                 Chain::new(self, other)
             }
@@ -536,11 +550,21 @@ pub mod adapters {
         pub struct StepBy<I> {
             iter: I,
             step: usize,
+            // `step_by` yields the FIRST element directly, then steps. Without this
+            // flag `next` skipped `step-1` elements before every yield, so
+            // `step_by(2)` produced indices {1,3,5,…} instead of std's {0,2,4,…}
+            // (caught by the `test_step_by` differential test once `step_by` was
+            // promoted onto the `Iterator` trait and thus first exercised).
+            first: bool,
         }
 
         impl<I> StepBy<I> {
             pub fn new(iter: I, step: usize) -> Self {
-                StepBy { iter, step }
+                StepBy {
+                    iter,
+                    step,
+                    first: true,
+                }
             }
         }
 
@@ -549,7 +573,14 @@ pub mod adapters {
             type Item = <I as Iterator>::Item;
 
             fn next(&mut self) -> Option<<I as Iterator>::Item> {
-                for _ in 1..self.step {
+                // Skip `step-1` elements before yielding on every call EXCEPT the
+                // first (which yields index 0). Encoded via the loop bound so the
+                // loop stays top-level — nesting it inside an `if/else` defeats hax's
+                // loop-functionalization ("early returns inside of loops"). Using the
+                // bound (not a subtraction) also avoids underflow when `step == 0`.
+                let bound = if self.first { 1 } else { self.step };
+                self.first = false;
+                for _ in 1..bound {
                     if let Option::None = self.iter.next() {
                         return Option::None;
                     }
@@ -732,9 +763,11 @@ pub mod adapters {
                 Self { iter, predicate }
             }
         }
-        // opaque: loop + Fn output projection not provably bool in F*
+        // opaque: loop + Fn output projection not provably bool in F* (opaque still
+        // extracts a real computable loop for the Lean backend). Previously also
+        // `aeneas::exclude`d; un-excluded so `Iterator::filter`'s adapter has a `next`
+        // instance now that `filter` is promoted onto the `Iterator` trait.
         #[hax_lib::opaque]
-        #[cfg_attr(charon, aeneas::exclude)]
         impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for Filter<I, P> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
@@ -1134,6 +1167,52 @@ mod tests {
                 model.push(x);
             }
             let std_result: Vec<(usize, i32)> = v.iter().copied().enumerate().rev().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        // P2 lazy-adapter promotions: drive the promoted constructor + its adapter's
+        // `next` and compare to std.
+        #[test]
+        fn test_take(v in prop::collection::vec(any::<i32>(), 0..=20), n in 0usize..25) {
+            let mut it = VecIter::new(v.clone()).take(n);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().take(n).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_skip(v in prop::collection::vec(any::<i32>(), 0..=20), n in 0usize..25) {
+            let mut it = VecIter::new(v.clone()).skip(n);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().skip(n).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_step_by(v in prop::collection::vec(any::<i32>(), 0..=20), s in 1usize..6) {
+            let mut it = VecIter::new(v.clone()).step_by(s);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().step_by(s).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_filter(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).filter(|x: &i32| *x > 0);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().filter(|x| *x > 0).collect();
             prop_assert_eq!(model, std_result);
         }
 
