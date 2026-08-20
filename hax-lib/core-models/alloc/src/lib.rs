@@ -14,13 +14,11 @@
         allocator_api,
         box_into_boxed_slice,
         box_into_inner,
-        smart_pointer_try_map
+        push_mut,
+        smart_pointer_try_map,
+        try_with_capacity,
+        vec_try_remove
     )
-// Only the test build needs these: the property tests compare the model against
-// `alloc`'s own unstable surface (`try_remove`, `push_mut`, `allocator`, …).
-#![cfg_attr(
-    test,
-    feature(vec_try_remove, push_mut, allocator_api, try_with_capacity)
 )]
 
 #[cfg(test)]
@@ -307,15 +305,6 @@ mod boxed {
 mod collections {
     // All implementations are dummy (for interfaces only)
 
-    /// See [`std::collections::TryReserveError`]. The model never fails to
-    /// allocate, so no value of this type is ever built; it exists so the
-    /// `try_reserve`-family signatures can be spelled faithfully.
-    #[cfg_attr(test, derive(Debug))]
-    /// See [`std::collections::TryReserveError`]: the error returned by the
-    /// `try_reserve*` family. The model's collections never fail to reserve, so
-    /// it carries no information.
-    #[cfg_attr(test, derive(PartialEq, Debug))]
-    pub struct TryReserveError;
     /// See [`std::collections::TryReserveErrorKind`].
     ///
     /// DEVIATION(std): std's `AllocError` variant carries the

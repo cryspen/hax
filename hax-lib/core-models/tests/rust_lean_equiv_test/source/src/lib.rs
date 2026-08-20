@@ -67,23 +67,17 @@
 // tautologically false, but that *is* the observation under test.
 #![allow(unused_comparisons)]
 // `Cow::is_borrowed` / `Cow::is_owned` are still unstable in the real `alloc`.
-#![feature(cow_is_borrowed)]
-// The `Box` items exercised below (`new_in`, `into_boxed_slice`,
-// `into_inner`, `map`) are still unstable in real `alloc`, but the model
-// provides them, so the equivalence tests have to be able to call the real
-// ones.
 #![feature(
     allocator_api,
     box_into_boxed_slice,
     box_into_inner,
-    smart_pointer_try_map
+    cow_is_borrowed,
+    push_mut,
+    smart_pointer_try_map,
+    try_with_capacity,
+    vec_try_remove
 )]
-// A few of the `alloc::vec` items the model provides are still unstable in the
-// real `alloc`; the equivalence tests must call the real ones to be meaningful.
-// `charon` bundles a newer rustc than `rust-toolchain.toml`, where some of these
-// have since been stabilised — hence the `allow`.
 #![allow(stable_features)]
-#![feature(allocator_api, push_mut, try_with_capacity, vec_try_remove)]
 
 pub mod helpers;
 
