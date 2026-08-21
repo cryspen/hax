@@ -7,4 +7,6 @@ include Core_models.Bundle {t_Zip as t_Zip}
 
 include Core_models.Bundle {impl__new__from__zip as impl__new}
 
+include Core_models.Bundle {zip as zip}
+
 include Core_models.Bundle {impl_1__from__zip as impl_1}

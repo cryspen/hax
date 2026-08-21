@@ -2997,7 +2997,9 @@ mod tests {
                         }
 
                         #[test]
-                        fn [<test_ $t _checked_neg>](x in any::<$t>()) {
+                        fn [<test_ $t _checked_neg>](
+                            x in prop_oneof![Just(0 as $t), any::<$t>()],
+                        ) {
                             prop_assert_eq!(super::$t::checked_neg(x.inject()), x.checked_neg().inject());
                         }
 
@@ -3077,7 +3079,10 @@ mod tests {
 
                         // Total, so no guard at all.
                         #[test]
-                        fn [<test_ $t _checked_division_family>](x in any::<$t>(), y in any::<$t>()) {
+                        fn [<test_ $t _checked_division_family>](
+                            x in any::<$t>(),
+                            y in prop_oneof![Just(0 as $t), any::<$t>()],
+                        ) {
                             let (mx, my) = (x.inject(), y.inject());
                             prop_assert_eq!(super::$t::checked_div_euclid(mx, my), x.checked_div_euclid(y).inject());
                             prop_assert_eq!(super::$t::checked_rem_euclid(mx, my), x.checked_rem_euclid(y).inject());

@@ -288,6 +288,35 @@ def drop_do_on_duplicate_binder_matches(text: str) -> str:
     return "\n".join(lines)
 
 
+# `cmp.Ordering` / `cmp.Ord` / `cmp.PartialOrd` / `cmp.PartialEq` as a namespace
+# reference, i.e. not already part of a longer dotted path such as
+# `core.cmp.Ordering`.
+CMP_NAMESPACE_REF_RE = re.compile(r"(?<![\w.])cmp\.(Ordering|Ord|PartialOrd|PartialEq)\b")
+
+
+def qualify_cmp_refs_in_iterator_methods(text: str) -> str:
+    """Fully qualify the `core.cmp.*` references inside the generated
+    `iter.traits.iterator.IteratorMethods` structure.
+
+    `Iterator::cmp` gives that structure a field literally named `cmp`, and in a
+    Lean `structure` every field is in scope for the types of the *following*
+    fields. So `cmp.Ordering` in the type of `cmp_by`, `partial_cmp`, `eq`, `lt`,
+    … elaborates as generalised field notation on the preceding `cmp` field
+    (whose type is a function, hence `Function.Ordering`) instead of as a
+    reference to the `core.cmp` namespace. Writing `core.cmp.Ordering` sidesteps
+    it: no binder can shadow a path that starts at `core`. Same class of bug as
+    `fix_result_match` above.
+    """
+
+    def fn(ident: str, block_lines: list[str]) -> str | None:
+        if not _ident_matches(ident, "iter::traits::iterator::IteratorMethods"):
+            return None
+        patched = [CMP_NAMESPACE_REF_RE.sub(r"core.cmp.\1", l) for l in block_lines]
+        return None if patched == block_lines else "\n".join(patched)
+
+    return transform_blocks(text, fn)
+
+
 def rewrite_phantom_data(text: str) -> str:
     """Redefine `PhantomData`.
 
@@ -729,16 +758,23 @@ def relocate_blocks_to_end(
     `name_substrings` to the end of the namespace — just before the line
     `end_marker` — preserving their relative order.
 
-    Aeneas orders definitions from its *generic* call graph, which does not
-    see the *monomorphised* dependency a `StepBy<Range<usize>>` iterator has
-    on the concrete `Usize` `Step` instance. That instance is a computable
-    `def` emitted late in `Funs.lean` (interleaved with the `num.*` defs it
-    relies on), so the adapter lands *before* it and elaboration fails with
-    `unknown identifier core.Usize.Insts.CoreIterRangeStep`. Hoisting the
-    adapter past the instance fixes the order; nothing else in the file
-    references the adapter's `Iterator` impl, so no new forward reference is
-    introduced. The later (already-correct) users — e.g. the slice compare
-    loops — are untouched because they sit after the instance already.
+    Used wherever Aeneas emits a block *before* something it references. Two
+    cases so far:
+
+      * `Funs.lean` — Aeneas orders definitions from its *generic* call graph,
+        which does not see the *monomorphised* dependency a
+        `StepBy<Range<usize>>` iterator has on the concrete `Usize` `Step`
+        instance. That instance is a computable `def` emitted late (interleaved
+        with the `num.*` defs it relies on), so the adapter lands *before* it and
+        elaboration fails with
+        `unknown identifier core.Usize.Insts.CoreIterRangeStep`.
+      * `Types.lean` — `Iterator::copied` carries a `Copy` bound, which Aeneas
+        renders as `core.marker.Copy`; `Copy` is a charon builtin, so it is not
+        in the dependency graph and `structure marker.Copy` is emitted with the
+        rest of `core::marker`, *after* `IteratorMethods`.
+
+    In both cases nothing else in the file references the relocated block, so
+    hoisting it past its dependencies introduces no new forward reference.
     """
     captured: list[str] = []
 
@@ -807,6 +843,12 @@ def main() -> int:
         if path == types_path:
             text = qualify_hash_trait_refs(text)
             text = comment_out_types(text)
+            text = qualify_cmp_refs_in_iterator_methods(text)
+            text = relocate_blocks_to_end(
+                text,
+                ["iter::traits::iterator::IteratorMethods"],
+                end_marker="end CoreModels.core",
+            )
         write(path, text)
         print(f"patched {CORE_DIR}.")
 

@@ -78,6 +78,17 @@ impl<B: Inject, C: Inject> Inject for std::ops::ControlFlow<B, C> {
     }
 }
 
+impl Inject for std::fmt::Alignment {
+    type Model = crate::fmt::Alignment;
+    fn inject(&self) -> Self::Model {
+        match self {
+            std::fmt::Alignment::Left => crate::fmt::Alignment::Left,
+            std::fmt::Alignment::Right => crate::fmt::Alignment::Right,
+            std::fmt::Alignment::Center => crate::fmt::Alignment::Center,
+        }
+    }
+}
+
 impl<T: Inject> Inject for std::ops::Bound<T> {
     type Model = crate::ops::range::Bound<T::Model>;
     fn inject(&self) -> Self::Model {
@@ -85,6 +96,16 @@ impl<T: Inject> Inject for std::ops::Bound<T> {
             std::ops::Bound::Included(x) => crate::ops::range::Bound::Included(x.inject()),
             std::ops::Bound::Excluded(x) => crate::ops::range::Bound::Excluded(x.inject()),
             std::ops::Bound::Unbounded => crate::ops::range::Bound::Unbounded,
+        }
+    }
+}
+
+impl Inject for std::fmt::Sign {
+    type Model = crate::fmt::Sign;
+    fn inject(&self) -> Self::Model {
+        match self {
+            std::fmt::Sign::Plus => crate::fmt::Sign::Plus,
+            std::fmt::Sign::Minus => crate::fmt::Sign::Minus,
         }
     }
 }
@@ -117,6 +138,15 @@ macro_rules! inject_nonzero {
 }
 
 inject_nonzero! {u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize}
+impl Inject for std::fmt::DebugAsHex {
+    type Model = crate::fmt::DebugAsHex;
+    fn inject(&self) -> Self::Model {
+        match self {
+            std::fmt::DebugAsHex::Lower => crate::fmt::DebugAsHex::Lower,
+            std::fmt::DebugAsHex::Upper => crate::fmt::DebugAsHex::Upper,
+        }
+    }
+}
 
 impl Inject for std::num::TryFromIntError {
     type Model = crate::num::error::TryFromIntError;
@@ -144,6 +174,11 @@ impl<'a, T> Inject for &'a [T] {
     fn inject(&self) -> Self::Model {
         self
     }
+}
+
+impl Inject for () {
+    type Model = ();
+    fn inject(&self) -> () {}
 }
 
 impl<A: Inject, B: Inject> Inject for (A, B) {

@@ -33,6 +33,8 @@ include Core_models.Bundle {t_Residual as t_Residual}
 
 include Core_models.Bundle {f_TryType as f_TryType}
 
+include Core_models.Bundle {impl__from__try_trait as impl}
+
 include Core_models.Bundle {t_Yeet as t_Yeet}
 
 include Core_models.Bundle {Yeet as Yeet}

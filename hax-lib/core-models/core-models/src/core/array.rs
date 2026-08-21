@@ -202,7 +202,9 @@ pub mod equality {
     }
 }
 
-mod iter {
+// `pub` (as in std, where it is re-exported as `core::array::IntoIter`) so that
+// `core::iter`'s `ArrayChunks` / `Iterator::next_chunk` can name it.
+pub mod iter {
     use crate::option::Option;
     use rust_primitives::sequence::*;
     /// The elements not yet yielded, in order.
