@@ -767,13 +767,13 @@ def num.isize := Unit
 def num.nonzero.NonZero (T : Type) := T
 
 /-- [core_models::num::wrapping::Wrapping]
-    Source: 'core-models/src/core/num/mod.rs', lines 2656:4-2656:34
+    Source: 'core-models/src/core/num/mod.rs', lines 2659:4-2659:34
     Visibility: public -/
 @[reducible]
 def num.wrapping.Wrapping (T : Type) := T
 
 /-- [core_models::num::saturating::Saturating]
-    Source: 'core-models/src/core/num/mod.rs', lines 2726:4-2726:36
+    Source: 'core-models/src/core/num/mod.rs', lines 2729:4-2729:36
     Visibility: public -/
 @[reducible]
 def num.saturating.Saturating (T : Type) := T
