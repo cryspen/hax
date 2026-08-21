@@ -14,10 +14,11 @@ pub mod iter {
     /// there is none. A bounded loop with no early exit, which is the shape both
     /// backends handle; `pred` is taken by reference so the split iterators can
     /// call it out of `&mut self`.
-    // opaque: applying a `Fn` bound in F* leaves the result at the trait's
-    // abstract `Output` type rather than `bool`. The `ensures` is the only thing
-    // callers need out of the body, and it is what makes their subslices legal.
-    #[hax_lib::opaque]
+    // F*-only: applying a `Fn` bound in F* leaves the result at the trait's
+    // abstract `Output` type rather than `bool`, and there the `ensures` is the
+    // only thing callers need out of the body. `charon::opaque` would drop the
+    // Lean declaration, so the Lean lane takes the body.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     #[hax_lib::ensures(|res| res <= slice_length(s))]
     pub(super) fn position_of<T, P: Fn(&T) -> bool>(s: &[T], pred: &P) -> usize {
         let len = slice_length(s);
@@ -32,8 +33,8 @@ pub mod iter {
 
     /// Index of the *last* element of `s` satisfying `pred`, or `s.len()` if
     /// there is none.
-    // opaque: see `position_of`.
-    #[hax_lib::opaque]
+    // F*-only: see `position_of`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     #[hax_lib::ensures(|res| res <= slice_length(s))]
     pub(super) fn rposition_of<T, P: Fn(&T) -> bool>(s: &[T], pred: &P) -> usize {
         let len = slice_length(s);
@@ -647,8 +648,8 @@ impl<T> Slice<T> {
         }
     }
     /// See [`std::slice::fill_with`]
-    // opaque: see `fill`.
-    #[hax_lib::opaque]
+    // F*-only: see `fill`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn fill_with<F: Fn() -> T>(s: &mut [T], f: F) {
         for i in 0..s.len() {
             s[i] = f();
@@ -1632,8 +1633,8 @@ pub mod ascii {
             Self::trim_ascii_end(Self::trim_ascii_start(s))
         }
         /// See [`std::slice::make_ascii_lowercase`]
-        // opaque: for-loop + indexed mutation, like `fill`.
-        #[hax_lib::opaque]
+        // F*-only: for-loop + indexed mutation, like `fill`.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub(super) fn make_ascii_lowercase(s: &mut [u8]) {
             for i in 0..slice_length(s) {
                 let b = *slice_index(s, i);
@@ -1641,8 +1642,8 @@ pub mod ascii {
             }
         }
         /// See [`std::slice::make_ascii_uppercase`]
-        // opaque: see `make_ascii_lowercase`.
-        #[hax_lib::opaque]
+        // F*-only: see `make_ascii_lowercase`.
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub(super) fn make_ascii_uppercase(s: &mut [u8]) {
             for i in 0..slice_length(s) {
                 let b = *slice_index(s, i);
