@@ -50,4 +50,9 @@ impl PartialEq for Bumped {
     fn eq(&self, other: &Bumped) -> bool {
         self.0 + 1 == other.0 + 1
     }
+    // Spelled out: `ne` is a field of the extracted `PartialEq`, and the
+    // trait default is not synthesised for a manual impl.
+    fn ne(&self, other: &Bumped) -> bool {
+        !(self.0 + 1 == other.0 + 1)
+    }
 }
