@@ -183,12 +183,110 @@ def rewrite_alloc_imports(text: str) -> str:
     )
     return text
 
+_RESULT_ARM_RE = re.compile(r"^(\s*)\| result\.Result\.")
+_QUALIFY_ARM = "core."
+
+
 def fix_result_match(text: str) -> str:
-    """ A match on `result.Result` cannot be parsed properly by Lean in
-    `I128.Insts.Core_modelsIterStepStep.steps_between`.
+    """A match on `result.Result` cannot be parsed properly by Lean in
+    `I128.Insts.Core_modelsIterStepStep.steps_between`, so the pattern is
+    qualified.
+
+    Qualifying the pattern makes the arm head `len("core.")` characters longer.
+    When Aeneas put the arm's body on the same line *and* continued it on the
+    next ones, it aligned those continuations to the body column of the
+    *un*-qualified head, so they end up under-indented — Lean then reads them as
+    extra arguments to the last expression of the previous line rather than as
+    the next statement of the arm. Shift them by the same amount.
     """
-    return sub("fix_result_match", r"\| result\.Result\.",
-               r"| core.result.Result.", text)
+    lines = text.split("\n")
+    out: list[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        i += 1
+        m = _RESULT_ARM_RE.match(line)
+        if m is None:
+            out.append(line)
+            continue
+        out.append(line.replace("| result.Result.", "| " + _QUALIFY_ARM + "result.Result.", 1))
+        arrow = line.find(" => ")
+        if arrow < 0 or not line[arrow + 4:].strip():
+            continue  # body starts on the next line: its indent is head-independent
+        body_col = arrow + 4
+        bar_col = len(m.group(1))
+        while i < len(lines):
+            nxt = lines[i]
+            indent = len(nxt) - len(nxt.lstrip())
+            if not nxt.strip() or indent <= bar_col or indent < body_col:
+                break
+            out.append(" " * len(_QUALIFY_ARM) + nxt)
+            i += 1
+    return "\n".join(out)
+
+
+# A `structure hash.Hash`/`structure hash.BuildHasher` header, plus its
+# (indented) field lines.
+_HASH_TRAIT_BLOCK = re.compile(
+    r"^(structure hash\.(?:Hash|BuildHasher) [^\n]*\n)((?:[ \t]+[^\n]*\n)*)",
+    re.MULTILINE,
+)
+
+
+def qualify_hash_trait_refs(text: str) -> str:
+    """Qualify the `hash.{Hash,Hasher}` references inside the `hash` traits.
+
+    `core_models::hash::Hash` has a method named `hash`, and a second method
+    (`hash_slice`) whose type mentions the `Hasher` trait. Aeneas emits both as
+    fields of `structure hash.Hash`, and Lean brings each field into scope for
+    the *following* fields' types — so by the time `hash_slice` is elaborated the
+    binder `hash` shadows the `hash` *namespace*. `hash.Hasher` then elaborates
+    as generalised field notation on a function-typed binder, i.e. as the
+    non-existent `Function.Hasher`, and the whole structure fails to elaborate;
+    every later reference to `hash.Hash` (in `structure hash.BuildHasher`) then
+    falls back to Lean's own root `hash` and fails as `Hashable.hash.Hash`.
+
+    Spelling these references `core.hash.…` routes them through the `CoreModels`
+    namespace, which no binder can shadow — the same trick as
+    `fix_result_match`. The `structure` header lines are left alone, since those
+    *declare* the names.
+    """
+    return _HASH_TRAIT_BLOCK.sub(
+        lambda m: m.group(1)
+        + re.sub(r"\bhash\.(Hasher|Hash)\b", r"core.hash.\1", m.group(2)),
+        text,
+    )
+
+# `ControlFlow<T, T>::into_value` is the only model item that matches on a
+# scrutinee repeating a type variable, so its `def` is named here rather than
+# detected structurally.
+_DUPLICATE_BINDER_DEFS = ("def ops.control_flow.ControlFlow.into_value",)
+
+
+def drop_do_on_duplicate_binder_matches(text: str) -> str:
+    """Turn `:= do` into `:=` for the definitions in `_DUPLICATE_BINDER_DEFS`.
+
+    Aeneas's `do` elaborator collects each match arm's pattern binders by name
+    and rejects duplicates (`elabDoMatch: duplicate binder ...`, see
+    `backends/lean/Aeneas/Do/Elab.lean`). `ControlFlow<T, T>::into_value`
+    matches a scrutinee whose two type arguments are the *same* variable `T`,
+    so the pattern binds `T` twice and the generated `:= do match self with ...`
+    does not elaborate. `impl<T> ControlFlow<T, T>` is how real core spells it,
+    and any body has to destructure the value, so there is nothing to fix on
+    the Rust side. The body has no monadic binds, so dropping the `do` keeps
+    the same term while bypassing that elaborator.
+    """
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        if not any(line.startswith(d) for d in _DUPLICATE_BINDER_DEFS):
+            continue
+        # The signature spans a few lines; `:= do` closes it.
+        for j in range(i, min(i + 6, len(lines))):
+            if lines[j].endswith(":= do"):
+                lines[j] = lines[j][: -len(" do")]
+                break
+    return "\n".join(lines)
+
 
 def rewrite_phantom_data(text: str) -> str:
     """Redefine `PhantomData`.
@@ -342,12 +440,15 @@ def qualify_result_monad_impls(text: str) -> str:
     `namespace`/`end` lines and `Core_models`).
     """
     def fn(ident: str, block_lines: list[str]) -> str | None:
-        # Match both trait impls whose `Self` is `Result` (`... for
-        # core_models::result::Result<...>`) and *inherent* methods on
-        # `Result` (`{core_models::result::Result<...>}::method`, e.g.
-        # `unwrap_or` / `map_err`) — both land in the `result.Result.*`
-        # namespace and hit the same bare-`Result` monad clash.
-        if "for core_models::result::Result" not in ident \
+        # Anything *defined in* `core_models::result` lands in the `result.*`
+        # namespace and hits the clash — the inherent methods on `Result`
+        # (`{core_models::result::Result<...>}::method`), the trait impls whose
+        # `Self` is `Result`, and also the impls on the module's other types
+        # (`Iter` / `IntoIter`), whose `next` signature mentions bare `Result`.
+        # The first two patterns are kept because a trait impl *for* `Result`
+        # need not be declared in that module.
+        if not ident.startswith("core_models::result::") \
+                and "for core_models::result::Result" not in ident \
                 and "{core_models::result::Result<" not in ident:
             return None
         # Preserve the `/-- ... -/` doc comment; only rewrite the code below it.
@@ -672,6 +773,7 @@ def main() -> int:
             text = comment_out_num_bounds(text)
             text = desugar_pure_num_bound_binds(text)
             text = fix_result_match(text)
+            text = drop_do_on_duplicate_binder_matches(text)
             text = rename_iter_param(text)
             text = qualify_result_monad_impls(text)
             # The `StepBy` iterator monomorphises onto the concrete `Usize`
@@ -683,6 +785,7 @@ def main() -> int:
                 end_marker="end CoreModels.core",
             )
         if path == types_path:
+            text = qualify_hash_trait_refs(text)
             text = comment_out_types(text)
         write(path, text)
         print(f"patched {CORE_DIR}.")

@@ -30,9 +30,44 @@
 // `cargo llvm-cov`, so normal builds and extraction never see this.
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 // int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
-#![cfg_attr(test, feature(step_trait, int_roundings))]
+
+// likely_unlikely/cold_path: same, for the `hint` proptests.
+#![cfg_attr(
+    test,
+    feature(
+        array_into_iter_constructors,
+        bound_as_ref,
+        bound_copied,
+        cmp_minmax,
+        cold_path,
+        control_flow_into_value,
+        control_flow_ok,
+        drop_guard,
+        hasher_prefixfree_extras,
+        int_roundings,
+        likely_unlikely,
+        mem_copy_fn,
+        one_sided_range,
+        range_bounds_is_empty,
+        range_into_bounds,
+        step_trait
+    )
+)]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
 // from `cargo hax`.
+// likely_unlikely/cold_path: same, for the `hint` proptests.
+
+// hasher_prefixfree_extras: same, for `Hasher::{write_length_prefix, write_str}`.
+
+// cmp_minmax: same, for `cmp::minmax{,_by,_by_key}`.
+
+// array_into_iter_constructors: `core::array::IntoIter::empty` is still
+// unstable, and a proptest compares against it.
+
+// mem_copy_fn / drop_guard: same, for `core::mem::{copy, DropGuard}`.
+// The `bound_*` / `control_flow_*` / `range_*` / `one_sided_range` features let
+// the `ops` proptests call the still-unstable std counterparts of the range and
+// `ControlFlow` items the model provides.
 #![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]

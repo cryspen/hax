@@ -11,6 +11,7 @@ use self::Result::*;
 use super::clone::Clone;
 use super::default::Default;
 use super::option::Option;
+use rust_primitives::sequence::{Seq, seq_empty, seq_len, seq_one, seq_remove};
 
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
@@ -253,6 +254,53 @@ impl<T, E> Result<T, E> {
             Err(e) => Err(op(e)),
         }
     }
+
+    /// See [`std::result::Result::unwrap_unchecked`]
+    ///
+    /// Calling std's version on an `Err` is undefined behaviour; the `requires`
+    /// rules that input out, and the model panics rather than inventing a value.
+    // F*-only contract: the Lean pipeline now feeds `requires` to aeneas as a
+    // spec, and aeneas crashes computing the name of this one — `Not_found` in
+    // `NameMatcher.ty_to_pattern_aux` — for a `requires` on an `unsafe fn` in a
+    // generic inherent impl. The model still panics on the bad input, so the
+    // Lean side loses only the stated precondition, not the guard.
+    #[cfg_attr(hax_backend_fstar, hax_lib::requires(self.is_ok()))]
+    pub unsafe fn unwrap_unchecked(self) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => super::panicking::internal::panic(),
+        }
+    }
+
+    /// See [`std::result::Result::unwrap_err_unchecked`]
+    ///
+    /// See `unwrap_unchecked` for why the `Ok` arm panics.
+    #[cfg_attr(hax_backend_fstar, hax_lib::requires(self.is_err()))]
+    pub unsafe fn unwrap_err_unchecked(self) -> E {
+        match self {
+            Ok(_) => super::panicking::internal::panic(),
+            Err(e) => e,
+        }
+    }
+
+    /// See [`std::result::Result::iter`]
+    pub fn iter(&self) -> Iter<'_, T> {
+        match self {
+            Ok(t) => Iter(seq_one(t)),
+            Err(_) => Iter(seq_empty()),
+        }
+    }
+
+    /// See [`std::result::Result::iter_mut`]
+    // `&mut` returns are unsupported in the F* backend.
+    #[cfg_attr(charon, aeneas::exclude)]
+    #[hax_lib::exclude]
+    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+        match self {
+            Ok(t) => IterMut(seq_one(t)),
+            Err(_) => IterMut(seq_empty()),
+        }
+    }
 }
 
 /// aeneas/lean copies of the four methods whose std signature carries a `Debug`
@@ -431,10 +479,164 @@ impl<T, E, F: crate::convert::From<E>>
     }
 }
 
+/// See [`std::result::Iter`]
+///
+/// A `Result`'s iterators yield at most one element; the payload is a `Seq` so
+/// `next` can be written the same way as the slice/array iterators.
+pub struct Iter<'a, T>(pub Seq<&'a T>);
+
+#[hax_lib::attributes]
+impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
+    type Item = &'a T;
+    fn next(&mut self) -> Option<&'a T> {
+        if seq_len(&self.0) == 0 {
+            Option::None
+        } else {
+            Option::Some(seq_remove(&mut self.0, 0))
+        }
+    }
+}
+
+/// See [`std::result::IterMut`]
+// `&mut` returns are unsupported in the F* backend.
+#[cfg_attr(charon, aeneas::exclude)]
+// F*-only: `charon::exclude` would drop this dummy type while its `impl`
+// blocks still reference it (see f32.rs).
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+pub struct IterMut<'a, T>(pub Seq<&'a mut T>);
+
+#[hax_lib::attributes]
+#[cfg_attr(charon, aeneas::exclude)]
+#[hax_lib::exclude]
+impl<'a, T> crate::iter::traits::iterator::Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+    fn next(&mut self) -> Option<&'a mut T> {
+        if seq_len(&self.0) == 0 {
+            Option::None
+        } else {
+            Option::Some(seq_remove(&mut self.0, 0))
+        }
+    }
+}
+
+/// See [`std::result::IntoIter`]
+pub struct IntoIter<T>(pub Seq<T>);
+
+#[hax_lib::attributes]
+impl<T> crate::iter::traits::iterator::Iterator for IntoIter<T> {
+    type Item = T;
+    fn next(&mut self) -> Option<T> {
+        if seq_len(&self.0) == 0 {
+            Option::None
+        } else {
+            Option::Some(seq_remove(&mut self.0, 0))
+        }
+    }
+}
+
+#[hax_lib::attributes]
+impl<T, E> crate::iter::traits::collect::IntoIterator for Result<T, E> {
+    type Item = T;
+    type IntoIter = IntoIter<T>;
+    fn into_iter(self) -> IntoIter<T> {
+        match self {
+            Ok(t) => IntoIter(seq_one(t)),
+            Err(_) => IntoIter(seq_empty()),
+        }
+    }
+}
+
+/// Std bounds `as_deref` by `T: Deref`. The model's only `Deref` instance is
+/// `&T`, so the impl is specialised to `Result<&T, E>` — the same set of self
+/// types, without needing the bound.
+#[hax_lib::attributes]
+#[cfg_attr(charon, aeneas::exclude)]
+impl<'a, T, E> Result<&'a T, E> {
+    /// See [`std::result::Result::as_deref`]
+    pub fn as_deref(&self) -> Result<&T, &E> {
+        match self {
+            Ok(t) => Ok(*t),
+            Err(e) => Err(e),
+        }
+    }
+}
+
+/// Std bounds `as_deref_mut` by `T: DerefMut`; see `as_deref` above for why the
+/// model specialises the self type instead.
+#[hax_lib::attributes]
+#[cfg_attr(charon, aeneas::exclude)]
+impl<'a, T, E> Result<&'a mut T, E> {
+    /// See [`std::result::Result::as_deref_mut`]
+    // `&mut` returns are unsupported in the F* backend.
+    #[hax_lib::exclude]
+    pub fn as_deref_mut(&mut self) -> Result<&mut T, &mut E> {
+        match self {
+            Ok(t) => Ok(&mut **t),
+            Err(e) => Err(e),
+        }
+    }
+}
+
+/// `Copy` here is `core`'s, not the model's: reading `*t` out of a `&T` is a
+/// language operation, which the model's `marker::Copy` cannot license.
+#[hax_lib::attributes]
+#[cfg_attr(charon, aeneas::exclude)]
+impl<'a, T: Copy, E> Result<&'a T, E> {
+    /// See [`std::result::Result::copied`]
+    pub fn copied(self) -> Result<T, E> {
+        match self {
+            Ok(t) => Ok(*t),
+            Err(e) => Err(e),
+        }
+    }
+}
+
+/// Std spells the never type in the bounds of `into_ok`/`into_err`
+/// (`E: Into<!>`), which makes the impossible arm unreachable by typing. `!` is
+/// unstable and the model's `convert::Infallible` is a unit struct — hence
+/// inhabited — so the arm survives and needs the usual panic guard.
+#[hax_lib::attributes]
+#[cfg_attr(charon, aeneas::exclude)]
+impl<T> Result<T, crate::convert::Infallible> {
+    /// See [`std::result::Result::into_ok`]
+    #[hax_lib::requires(self.is_ok())]
+    pub fn into_ok(self) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => super::panicking::internal::panic(),
+        }
+    }
+}
+
+/// See the note on `into_ok`.
+#[hax_lib::attributes]
+#[cfg_attr(charon, aeneas::exclude)]
+impl<E> Result<crate::convert::Infallible, E> {
+    /// See [`std::result::Result::into_err`]
+    #[hax_lib::requires(self.is_err())]
+    pub fn into_err(self) -> E {
+        match self {
+            Ok(_) => super::panicking::internal::panic(),
+            Err(e) => e,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use crate::iter::traits::iterator::Iterator as ModelIterator;
+    use crate::option::Option as ModelOption;
     use crate::testing::Inject;
     use proptest::prelude::*;
+
+    /// The `Result` iterators are lazy; draining them is what observes them.
+    fn drain<I: ModelIterator>(mut it: I) -> Vec<I::Item> {
+        let mut out = Vec::new();
+        while let ModelOption::Some(x) = it.next() {
+            out.push(x);
+        }
+        out
+    }
 
     proptest! {
         #[test]
@@ -618,6 +820,166 @@ mod tests {
         // std's `Try` is unstable, so these pin the model's documented
         // semantics (which mirror `?`): `from_output` injects into `Ok`,
         // `branch` sends `Ok(v)` to `Continue(v)` and `Err(e)` to `Break(Err(e))`.
+
+        // ----- unwrap_unchecked / unwrap_err_unchecked -----------------------
+        // Only the in-domain half is exercised: std's versions are UB — not a
+        // panic — on the other variant, so there is nothing to compare against.
+
+        #[test]
+        fn test_unwrap_unchecked(v in any::<u8>()) {
+            let res: Result<u8, u8> = Ok(v);
+            prop_assert_eq!(
+                unsafe { res.clone().inject().unwrap_unchecked() },
+                unsafe { res.unwrap_unchecked() }
+            );
+        }
+
+        #[test]
+        fn test_unwrap_err_unchecked(e in any::<u8>()) {
+            let res: Result<u8, u8> = Err(e);
+            prop_assert_eq!(
+                unsafe { res.clone().inject().unwrap_err_unchecked() },
+                unsafe { res.unwrap_err_unchecked() }
+            );
+        }
+
+        // The out-of-domain halves have no std counterpart, so what is pinned is
+        // that the model panics rather than returning nonsense.
+        #[test]
+        fn test_unwrap_unchecked_on_err_panics(e in any::<u8>()) {
+            let res: super::Result<u8, u8> = super::Result::Err(e);
+            let panicked = std::panic::catch_unwind(|| unsafe { res.unwrap_unchecked() }).is_err();
+            prop_assert!(panicked);
+        }
+
+        #[test]
+        fn test_unwrap_err_unchecked_on_ok_panics(v in any::<u8>()) {
+            let res: super::Result<u8, u8> = super::Result::Ok(v);
+            let panicked =
+                std::panic::catch_unwind(|| unsafe { res.unwrap_err_unchecked() }).is_err();
+            prop_assert!(panicked);
+        }
+
+        // ----- iter / iter_mut / into_iter ------------------------------------
+
+        #[test]
+        fn test_iter(x in any::<Result<u8, u8>>()) {
+            let model = x.clone().inject();
+            prop_assert_eq!(
+                drain(model.iter()).into_iter().copied().collect::<Vec<u8>>(),
+                x.iter().copied().collect::<Vec<u8>>()
+            );
+        }
+
+        // Mutating through the yielded `&mut` is what distinguishes `iter_mut`.
+        #[test]
+        fn test_iter_mut(x in any::<Result<u8, u8>>()) {
+            let mut model = x.clone().inject();
+            for r in drain(model.iter_mut()) {
+                *r = r.wrapping_add(1);
+            }
+            let mut std_res = x.clone();
+            for r in std_res.iter_mut() {
+                *r = r.wrapping_add(1);
+            }
+            prop_assert!(model == std_res.inject());
+        }
+
+        #[test]
+        fn test_into_iter(x in any::<Result<u8, u8>>()) {
+            use crate::iter::traits::collect::IntoIterator as ModelIntoIterator;
+            let model = <super::Result<u8, u8> as ModelIntoIterator>::into_iter(x.clone().inject());
+            prop_assert_eq!(drain(model), x.into_iter().collect::<Vec<u8>>());
+        }
+
+        // ----- as_deref / as_deref_mut / copied ------------------------------
+
+        #[test]
+        fn test_as_deref(x in any::<Result<u8, u8>>()) {
+            let std_res: Result<&u8, u8> = match &x {
+                Ok(v) => Ok(v),
+                Err(e) => Err(*e),
+            };
+            let model: super::Result<&u8, u8> = match &x {
+                Ok(v) => super::Result::Ok(v),
+                Err(e) => super::Result::Err(*e),
+            };
+            prop_assert_eq!(
+                model.as_deref().map(|v: &u8| *v).map_err(|e: &u8| *e),
+                std_res.as_deref().map(|v| *v).map_err(|e| *e).inject()
+            );
+        }
+
+        #[test]
+        fn test_as_deref_mut(v in any::<u8>(), e in any::<u8>(), is_ok in any::<bool>()) {
+            let mut std_target = v;
+            let mut model_target = v;
+            let mut std_res: Result<&mut u8, u8> =
+                if is_ok { Ok(&mut std_target) } else { Err(e) };
+            let mut model: super::Result<&mut u8, u8> = if is_ok {
+                super::Result::Ok(&mut model_target)
+            } else {
+                super::Result::Err(e)
+            };
+            if let Ok(r) = std_res.as_deref_mut() {
+                *r = r.wrapping_add(1);
+            }
+            if let super::Result::Ok(r) = model.as_deref_mut() {
+                *r = r.wrapping_add(1);
+            }
+            drop(std_res);
+            drop(model);
+            prop_assert_eq!(model_target, std_target);
+        }
+
+        #[test]
+        fn test_copied(x in any::<Result<u8, u8>>()) {
+            let model: super::Result<&u8, u8> = match &x {
+                Ok(v) => super::Result::Ok(v),
+                Err(e) => super::Result::Err(*e),
+            };
+            // std's `Result::copied` is unstable; `as_ref().map(|v| *v)` is the
+            // stable spelling of the same behaviour.
+            prop_assert_eq!(
+                model.copied(),
+                x.as_ref().map(|v| *v).map_err(|e| *e).inject()
+            );
+        }
+
+        // ----- into_ok / into_err --------------------------------------------
+        // std bounds these by `E: Into<!>` / `T: Into<!>`; the never type is
+        // unstable, so there is no callable std counterpart and the expected
+        // behaviour is pinned directly.
+
+        #[test]
+        fn test_into_ok(v in any::<u8>()) {
+            let res: super::Result<u8, crate::convert::Infallible> = super::Result::Ok(v);
+            prop_assert_eq!(res.into_ok(), v);
+        }
+
+        #[test]
+        fn test_into_err(e in any::<u8>()) {
+            let res: super::Result<crate::convert::Infallible, u8> = super::Result::Err(e);
+            prop_assert_eq!(res.into_err(), e);
+        }
+
+        // The model's `Infallible` is a unit struct, so unlike std's never type
+        // the off-domain variant *is* constructible — and panics.
+        #[test]
+        fn test_into_ok_on_err_panics(_ignored in any::<u8>()) {
+            let res: super::Result<u8, crate::convert::Infallible> =
+                super::Result::Err(crate::convert::Infallible);
+            let panicked = std::panic::catch_unwind(|| res.into_ok()).is_err();
+            prop_assert!(panicked);
+        }
+
+        #[test]
+        fn test_into_err_on_ok_panics(_ignored in any::<u8>()) {
+            let res: super::Result<crate::convert::Infallible, u8> =
+                super::Result::Ok(crate::convert::Infallible);
+            let panicked = std::panic::catch_unwind(|| res.into_err()).is_err();
+            prop_assert!(panicked);
+        }
 
         #[test]
         fn test_try_from_output(v in any::<u8>()) {

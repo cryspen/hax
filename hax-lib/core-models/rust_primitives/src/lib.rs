@@ -1,4 +1,6 @@
 #![allow(unused_variables)]
+// Gated so the crate still builds on stable, where the attribute is unknown.
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 pub mod slice {
     pub fn slice_length<T>(s: &[T]) -> usize {
@@ -51,6 +53,47 @@ pub mod slice {
     }
     pub fn array_as_slice<T, const N: usize>(s: &[T; N]) -> &[T] {
         &s[..]
+    }
+    // A `[a, b]` literal written in the model extracts to
+    // `Rust_primitives.Hax.array_of_list`, and `Rust_primitives.Hax` depends on
+    // `Core_models.{Array, Slice, Ops.Range}`, which closes a module cycle
+    // through hax's bundle. Going through this helper keeps the construction in
+    // `Rust_primitives.Slice`, which `Core_models` does not depend on.
+    pub fn array_pair<T>(a: T, b: T) -> [T; 2] {
+        [a, b]
+    }
+    pub fn array_as_slice_mut<T, const N: usize>(s: &mut [T; N]) -> &mut [T] {
+        &mut s[..]
+    }
+    // Viewing a place as a one-element array is a pointer cast in real core, so
+    // it cannot be written in the model itself.
+    pub fn array_from_ref<T>(s: &T) -> &[T; 1] {
+        std::array::from_ref(s)
+    }
+    pub fn array_from_mut<T>(s: &mut T) -> &mut [T; 1] {
+        std::array::from_mut(s)
+    }
+    // `Clone` is Rust's here, not the model's: the model's `clone` consumes its
+    // receiver, so it cannot produce `N` copies of a single owned value. Like
+    // `core::array::repeat`, the last element is `val` itself and the other
+    // `N - 1` are clones.
+    pub fn array_repeat<T: Clone, const N: usize>(val: T) -> [T; N] {
+        // `repeat_n` rather than `from_fn(|_| val.clone())`: like `[val; N]` it
+        // clones `val` for all but the last slot, which takes `val` itself.
+        array_from_vec(std::iter::repeat_n(val, N).collect())
+    }
+    /// The `N` elements of `v` as an array. Panics on any other length; the one
+    /// caller above always passes `N`, so the panic is reached only by the test
+    /// that calls this directly.
+    // Excluded from coverage: the length check is per-instantiation, and only the
+    // one the test names can reach it. Split out of `array_repeat` so that the
+    // exclusion covers these four lines rather than the whole function.
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    pub(crate) fn array_from_vec<T, const N: usize>(v: Vec<T>) -> [T; N] {
+        match <[T; N]>::try_from(v) {
+            Ok(a) => a,
+            Err(v) => panic!("expected {} elements, got {}", N, v.len()),
+        }
     }
     pub fn array_slice<T, const N: usize>(a: &[T; N], b: usize, e: usize) -> &[T] {
         &a[b..e]
@@ -189,11 +232,26 @@ pub mod string {
     }
     // `Option`/`Result` are `core` types, which `core_models` may not touch, so
     // these fallible primitives answer with a validity flag instead.
-    pub fn str_from_utf8(s: &[u8]) -> (bool, &str) {
+    // On failure the last two components carry `Utf8Error`'s payload:
+    // `valid_up_to`, and `error_len` with 0 standing for `None` (a real
+    // `error_len` is 1..=3, so 0 is unambiguous).
+    pub fn str_from_utf8(s: &[u8]) -> (bool, &str, usize, u8) {
         match core::str::from_utf8(s) {
-            Ok(s) => (true, s),
-            Err(_) => (false, ""),
+            Ok(s) => (true, s, 0, 0),
+            Err(e) => (false, "", e.valid_up_to(), e.error_len().unwrap_or(0) as u8),
         }
+    }
+    /// The UTF-8 encoding of `s`. This is the gateway primitive for the
+    /// byte-oriented part of the `str` model: everything else there is written
+    /// in plain Rust on top of it.
+    pub fn str_as_bytes(s: &str) -> &[u8] {
+        s.as_bytes()
+    }
+    /// `&s[b..e]`, indexed in **bytes** (unlike `str_sub`, which counts
+    /// `char`s). Slicing a `str` off a char boundary panics.
+    #[hax_lib::requires(b <= e && e <= crate::slice::slice_length(str_as_bytes(s)))]
+    pub fn str_sub_bytes(s: &str, b: usize, e: usize) -> &str {
+        &s[b..e]
     }
 }
 
@@ -329,6 +387,15 @@ pub mod arithmetic {
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
+
+    // `array_repeat` always passes exactly `N` elements, so its length check is
+    // only reachable from here.
+    #[test]
+    fn test_array_from_vec_wrong_length_panics() {
+        let res =
+            std::panic::catch_unwind(|| crate::slice::array_from_vec::<u8, 3>(std::vec![1u8, 2]));
+        assert!(res.is_err());
+    }
 
     proptest! {
         #[test]
