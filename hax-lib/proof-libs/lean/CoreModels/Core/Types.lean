@@ -658,19 +658,19 @@ def marker.PhantomContravariantLifetime := marker.PhantomContravariant Unit
 def marker.PhantomInvariantLifetime := marker.PhantomInvariant Unit
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
-    Source: 'core-models/src/core/mem.rs', lines 163:4-165:5
+    Source: 'core-models/src/core/mem.rs', lines 168:4-170:5
     Visibility: public -/
 structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
 
 /-- [core_models::mem::maybe_dangling::MaybeDangling]
-    Source: 'core-models/src/core/mem.rs', lines 202:4-202:43
+    Source: 'core-models/src/core/mem.rs', lines 209:4-209:43
     Visibility: public -/
 @[reducible]
 def mem.maybe_dangling.MaybeDangling (P : Type) := P
 
 /-- [core_models::mem::drop_guard::DropGuard]
-    Source: 'core-models/src/core/mem.rs', lines 243:4-249:5
+    Source: 'core-models/src/core/mem.rs', lines 250:4-256:5
     Visibility: public -/
 structure mem.drop_guard.DropGuard (T : Type) (F : Type) where
   inner : T
