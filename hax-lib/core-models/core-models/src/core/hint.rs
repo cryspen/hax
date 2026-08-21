@@ -17,9 +17,10 @@ mod tests {
     proptest! {
         #[test]
         fn test_black_box(x in any::<u8>()) {
-            prop_assert_eq!(super::black_box(x), x);
+            prop_assert_eq!(super::black_box(x), core::hint::black_box(x));
         }
 
+        // `core::hint::must_use` is unstable, so this pins the identity directly.
         #[test]
         fn test_must_use(x in any::<u8>()) {
             prop_assert_eq!(super::must_use(x), x);

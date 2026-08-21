@@ -6,6 +6,19 @@ mod testing {
         type Model;
         fn inject(&self) -> Self::Model;
     }
+
+    /// Asserts the model and real `alloc` both panic on the same input.
+    #[track_caller]
+    pub fn panics_like_core<A, B>(model: impl FnOnce() -> A, core: impl FnOnce() -> B) {
+        use std::panic::{AssertUnwindSafe, catch_unwind};
+        let m = catch_unwind(AssertUnwindSafe(model));
+        let c = catch_unwind(AssertUnwindSafe(core));
+        assert!(m.is_err(), "the model did not panic");
+        assert!(
+            c.is_err(),
+            "real `alloc` did not panic, so the model must not either"
+        );
+    }
 }
 
 mod alloc {

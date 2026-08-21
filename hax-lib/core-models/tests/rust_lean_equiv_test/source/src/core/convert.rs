@@ -207,27 +207,15 @@ pub fn test_from_i32_to_i64_min() -> bool {
 
 // ----- Unsigned TryFrom: u16 -> u8 (Ok branch + overflow boundary) ----------
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_u16_to_u8_zero() -> bool {
     u8::try_from(0u16) == Ok(0u8)
 }
-*/
-*/
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_u16_to_u8_max_ok() -> bool {
     u8::try_from(255u16) == Ok(u8::MAX)
 }
-*/
-*/
 
 #[rust_lean_test]
 pub fn test_try_from_u16_to_u8_overflow_is_err() -> bool {
@@ -241,27 +229,15 @@ pub fn test_try_from_u16_to_u8_far_overflow_is_err() -> bool {
 
 // ----- Unsigned TryFrom: u32 -> u16 ------------------------------------------
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_u32_to_u16_zero() -> bool {
     u16::try_from(0u32) == Ok(0u16)
 }
-*/
-*/
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_u32_to_u16_max_ok() -> bool {
     u16::try_from(65535u32) == Ok(u16::MAX)
 }
-*/
-*/
 
 #[rust_lean_test]
 pub fn test_try_from_u32_to_u16_overflow_is_err() -> bool {
@@ -270,27 +246,15 @@ pub fn test_try_from_u32_to_u16_overflow_is_err() -> bool {
 
 // ----- Unsigned TryFrom: u64 -> u32 ------------------------------------------
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_u64_to_u32_zero() -> bool {
     u32::try_from(0u64) == Ok(0u32)
 }
-*/
-*/
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_u64_to_u32_max_ok() -> bool {
     u32::try_from(4294967295u64) == Ok(u32::MAX)
 }
-*/
-*/
 
 #[rust_lean_test]
 pub fn test_try_from_u64_to_u32_overflow_is_err() -> bool {
@@ -299,38 +263,20 @@ pub fn test_try_from_u64_to_u32_overflow_is_err() -> bool {
 
 // ----- Signed TryFrom: i16 -> i8 ---------------------------------------------
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_i16_to_i8_zero() -> bool {
     i8::try_from(0i16) == Ok(0i8)
 }
-*/
-*/
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_i16_to_i8_max_ok() -> bool {
     i8::try_from(127i16) == Ok(i8::MAX)
 }
-*/
-*/
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_i16_to_i8_min_ok() -> bool {
     i8::try_from(-128i16) == Ok(i8::MIN)
 }
-*/
-*/
 
 #[rust_lean_test]
 pub fn test_try_from_i16_to_i8_above_max_is_err() -> bool {
@@ -344,38 +290,20 @@ pub fn test_try_from_i16_to_i8_below_min_is_err() -> bool {
 
 // ----- Signed TryFrom: i32 -> i16 --------------------------------------------
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_i32_to_i16_zero() -> bool {
     i16::try_from(0i32) == Ok(0i16)
 }
-*/
-*/
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_i32_to_i16_max_ok() -> bool {
     i16::try_from(32767i32) == Ok(i16::MAX)
 }
-*/
-*/
 
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
-// TODO(result-eq-extraction: `Result ==` extracts to `core_models.result.Result.PartialEq.eq` (not in Lean library).)
-/*
 #[rust_lean_test]
 pub fn test_try_from_i32_to_i16_min_ok() -> bool {
     i16::try_from(-32768i32) == Ok(i16::MIN)
 }
-*/
-*/
 
 #[rust_lean_test]
 pub fn test_try_from_i32_to_i16_above_max_is_err() -> bool {

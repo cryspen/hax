@@ -453,6 +453,9 @@ mod tests {
             );
         }
 
+        // `PartialOrd::lt` only exists off the F* backend; the workaround
+        // trait is covered by `test_defaults_lt`.
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_int_lt(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(
@@ -461,6 +464,9 @@ mod tests {
             );
         }
 
+        // `PartialOrd::le` only exists off the F* backend; the workaround
+        // trait is covered by `test_defaults_le`.
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_int_le(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(
@@ -469,6 +475,9 @@ mod tests {
             );
         }
 
+        // `PartialOrd::gt` only exists off the F* backend; the workaround
+        // trait is covered by `test_defaults_gt`.
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_int_gt(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(
@@ -477,6 +486,9 @@ mod tests {
             );
         }
 
+        // `PartialOrd::ge` only exists off the F* backend; the workaround
+        // trait is covered by `test_defaults_ge`.
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_int_ge(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(
@@ -516,5 +528,13 @@ mod tests {
                 x >= y
             );
         }
+    }
+
+    #[test]
+    fn test_clamp_min_above_max_panics() {
+        crate::testing::panics_like_core(
+            || super::clamp(5u8, 7u8, 3u8),
+            || std::cmp::Ord::clamp(5u8, 7u8, 3u8),
+        );
     }
 }

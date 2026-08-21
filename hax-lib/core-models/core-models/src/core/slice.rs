@@ -107,7 +107,11 @@ impl<T> Slice<T> {
         rust_primitives::slice::slice_length(s)
     }
     /// See [`std::slice::chunks`]
+    #[hax_lib::requires(cs > 0)]
     fn chunks<'a>(s: &'a [T], cs: usize) -> iter::Chunks<'a, T> {
+        if cs == 0 {
+            crate::panicking::internal::panic()
+        }
         iter::Chunks::new(cs, s)
     }
     /// See [`std::slice::iter`]
@@ -115,7 +119,11 @@ impl<T> Slice<T> {
         iter::Iter(rust_primitives::sequence::seq_from_slice(s))
     }
     /// See [`std::slice::chunks_exact`]
+    #[hax_lib::requires(cs > 0)]
     fn chunks_exact<'a>(s: &'a [T], cs: usize) -> iter::ChunksExact<'a, T> {
+        if cs == 0 {
+            crate::panicking::internal::panic()
+        }
         iter::ChunksExact::new(cs, s)
     }
     /// See [`std::slice::copy_from_slice`]
@@ -169,7 +177,10 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::binary_search`]
     #[hax_lib::opaque]
-    fn binary_search(s: &[T], x: &T) -> Result<usize, usize> /* where T: super::ops::Ord */ {
+    fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
+    where
+        T: crate::cmp::Ord,
+    {
         todo!()
     }
     /// See [`std::slice::get`]
@@ -723,10 +734,55 @@ pub mod equality {
 #[cfg(test)]
 mod tests {
     use super::Slice;
+    use crate::iter::traits::iterator::Iterator as ModelIterator;
+    use crate::option::Option as ModelOption;
     use crate::testing::Inject;
     use proptest::prelude::*;
 
+    /// The slice iterators are lazy; draining them is what observes them.
+    fn drain<I: ModelIterator>(mut it: I) -> Vec<I::Item> {
+        let mut out = Vec::new();
+        while let ModelOption::Some(x) = it.next() {
+            out.push(x);
+        }
+        out
+    }
+
     proptest! {
+        #[test]
+        fn test_iter(slice in prop::collection::vec(any::<u8>(), 0..=20)) {
+            prop_assert_eq!(
+                drain(Slice::iter(&slice[..])),
+                slice.iter().collect::<Vec<_>>()
+            );
+        }
+
+        // Sizes run one past the slice length: `chunks` keeps a short final
+        // chunk, `chunks_exact` drops it.
+        #[test]
+        fn test_chunks(slice in prop::collection::vec(any::<u8>(), 0..=20), cs in 1usize..=21) {
+            prop_assert_eq!(
+                drain(Slice::chunks(&slice[..], cs)),
+                slice.chunks(cs).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_chunks_exact(slice in prop::collection::vec(any::<u8>(), 0..=20), cs in 1usize..=21) {
+            prop_assert_eq!(
+                drain(Slice::chunks_exact(&slice[..], cs)),
+                slice.chunks_exact(cs).collect::<Vec<_>>()
+            );
+        }
+
+        #[test]
+        fn test_windows(slice in prop::collection::vec(any::<u8>(), 0..=20), size in 1usize..=21) {
+            prop_assert_eq!(
+                drain(Slice::windows(&slice[..], size)),
+                slice.windows(size).collect::<Vec<_>>()
+            );
+        }
+
         #[test]
         fn test_len(slice in prop::collection::vec(any::<u8>(), 0..=20)) {
             prop_assert_eq!(Slice::len(&slice[..]), slice.len());
@@ -758,16 +814,20 @@ mod tests {
 
         #[test]
         fn test_copy_from_slice(src in prop::collection::vec(any::<u8>(), 1..=10)) {
-            let mut dest = vec![0u8; src.len()];
-            Slice::copy_from_slice(&mut dest[..], &src[..]);
-            prop_assert_eq!(dest, src);
+            let mut model_dest = vec![0u8; src.len()];
+            let mut std_dest = model_dest.clone();
+            Slice::copy_from_slice(&mut model_dest[..], &src[..]);
+            std_dest.copy_from_slice(&src[..]);
+            prop_assert_eq!(model_dest, std_dest);
         }
 
         #[test]
         fn test_clone_from_slice(src in prop::collection::vec(any::<u8>(), 1..=10)) {
-            let mut dest = vec![0u8; src.len()];
-            Slice::clone_from_slice(&mut dest[..], &src[..]);
-            prop_assert_eq!(dest, src);
+            let mut model_dest = vec![0u8; src.len()];
+            let mut std_dest = model_dest.clone();
+            Slice::clone_from_slice(&mut model_dest[..], &src[..]);
+            std_dest.clone_from_slice(&src[..]);
+            prop_assert_eq!(model_dest, std_dest);
         }
 
         #[test]
@@ -1034,6 +1094,8 @@ mod tests {
 
         // ----- get_mut / get_unchecked_mut (mutate through the &mut) ---------
 
+        // `get_mut` / `get_unchecked_mut` have no F* model.
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_usize(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in any::<usize>(), v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1047,6 +1109,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_range(slice in prop::collection::vec(any::<u8>(), 1..=10), start in 0usize..10, end in 0usize..10, v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1060,6 +1123,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_range_from(slice in prop::collection::vec(any::<u8>(), 1..=10), start in 0usize..=10, v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1073,6 +1137,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_range_to(slice in prop::collection::vec(any::<u8>(), 1..=10), end in 0usize..=10, v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1086,6 +1151,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_mut_range_full(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1099,6 +1165,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_unchecked_mut_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4, v in any::<u8>()) {
             let mut model = slice.clone();
@@ -1108,6 +1175,7 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_get_unchecked_mut_range(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..8, len in 0usize..8, v in any::<u8>()) {
             let end = (start + len).min(8);
@@ -1117,5 +1185,78 @@ mod tests {
             unsafe { std_slice.get_unchecked_mut(start..end).fill(v); }
             prop_assert_eq!(model, std_slice);
         }
+    }
+
+    #[test]
+    fn test_chunks_zero_panics() {
+        crate::testing::panics_like_core(
+            || Slice::chunks(&[1u8, 2, 3][..], 0),
+            || [1u8, 2, 3].chunks(0),
+        );
+    }
+
+    #[test]
+    fn test_chunks_exact_zero_panics() {
+        crate::testing::panics_like_core(
+            || Slice::chunks_exact(&[1u8, 2, 3][..], 0),
+            || [1u8, 2, 3].chunks_exact(0),
+        );
+    }
+
+    #[test]
+    fn test_windows_zero_panics() {
+        crate::testing::panics_like_core(
+            || Slice::windows(&[1u8, 2, 3][..], 0),
+            || [1u8, 2, 3].windows(0),
+        );
+    }
+
+    #[test]
+    fn test_split_at_past_end_panics() {
+        crate::testing::panics_like_core(
+            || Slice::split_at(&[1u8, 2, 3][..], 4),
+            || [1u8, 2, 3].split_at(4),
+        );
+    }
+
+    #[test]
+    fn test_swap_out_of_bounds_panics() {
+        crate::testing::panics_like_core(
+            || Slice::swap(&mut [1u8, 2, 3][..], 0, 3),
+            || [1u8, 2, 3].swap(0, 3),
+        );
+    }
+
+    #[test]
+    fn test_copy_from_slice_length_mismatch_panics() {
+        crate::testing::panics_like_core(
+            || Slice::copy_from_slice(&mut [0u8; 3][..], &[1u8, 2][..]),
+            || [0u8; 3].copy_from_slice(&[1u8, 2][..]),
+        );
+    }
+
+    #[test]
+    fn test_clone_from_slice_length_mismatch_panics() {
+        crate::testing::panics_like_core(
+            || Slice::clone_from_slice(&mut [0u8; 3][..], &[1u8, 2][..]),
+            || [0u8; 3].clone_from_slice(&[1u8, 2][..]),
+        );
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_index_out_of_bounds_panics() {
+        // `black_box` the index: a literal one is a compile-time error, not a panic.
+        let (model, real): (&[u8], [u8; 3]) = (&[1u8, 2, 3], [1u8, 2, 3]);
+        let i = std::hint::black_box(3usize);
+        crate::testing::panics_like_core(|| model[i], || real[i]);
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_index_range_past_end_panics() {
+        let (model, real): (&[u8], [u8; 3]) = (&[1u8, 2, 3], [1u8, 2, 3]);
+        let end = std::hint::black_box(4usize);
+        crate::testing::panics_like_core(|| &model[1..end], || &real[1..end]);
     }
 }

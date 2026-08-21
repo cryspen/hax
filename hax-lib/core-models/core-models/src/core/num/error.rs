@@ -5,6 +5,15 @@
 #[cfg_attr(test, derive(PartialEq, Debug))]
 pub struct TryFromIntError(pub(crate) ());
 
+/// Always `true` like std's derived instance — the type carries no payload.
+/// F* compares structurally, so this is aeneas/lean only.
+#[cfg(not(hax_backend_fstar))]
+impl crate::cmp::PartialEq<TryFromIntError> for TryFromIntError {
+    fn eq(&self, _other: &Self) -> bool {
+        true
+    }
+}
+
 /// See [`std::num::ParseIntError`]
 pub struct ParseIntError {
     pub(super) kind: IntErrorKind,

@@ -13,9 +13,9 @@ use super::default::Default;
 use super::option::Option;
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::is_ok`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn is_ok(&self) -> bool {
         matches!(*self, Ok(_))
     }
@@ -29,6 +29,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::is_err`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn is_err(&self) -> bool {
         !self.is_ok()
     }
@@ -42,6 +43,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_ref`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub const fn as_ref(&self) -> Result<&T, &E> {
         match *self {
             Ok(ref t) => Ok(t),
@@ -50,6 +52,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_mut`]
+    #[cfg_attr(charon, aeneas::exclude)]
     #[hax_lib::exclude]
     pub fn as_mut(&mut self) -> Result<&mut T, &mut E> {
         match *self {
@@ -59,6 +62,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::expect`]
+    #[cfg(hax_backend_fstar)]
     #[hax_lib::requires(self.is_ok())]
     pub fn expect(self, _msg: &str) -> T {
         match self {
@@ -68,6 +72,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap`]
+    #[cfg(hax_backend_fstar)]
     #[hax_lib::requires(self.is_ok())]
     pub fn unwrap(self) -> T {
         match self {
@@ -77,6 +82,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::expect_err`]
+    #[cfg(hax_backend_fstar)]
     #[hax_lib::requires(self.is_err())]
     pub fn expect_err(self, _msg: &str) -> E {
         match self {
@@ -86,6 +92,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap_err`]
+    #[cfg(hax_backend_fstar)]
     #[hax_lib::requires(self.is_err())]
     pub fn unwrap_err(self) -> E {
         match self {
@@ -138,8 +145,8 @@ impl<T, E> Result<T, E> {
     /// See [`std::result::Result::map_or_else`]
     pub fn map_or_else<U, D, F>(self, default: D, f: F) -> U
     where
-        F: FnOnce(T) -> U,
         D: FnOnce(E) -> U,
+        F: FnOnce(T) -> U,
     {
         match self {
             Ok(t) => f(t),
@@ -148,6 +155,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or_default`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn map_or_default<U, F>(self, f: F) -> U
     where
         F: FnOnce(T) -> U,
@@ -176,6 +184,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::ok`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn ok(self) -> Option<T> {
         match self {
             Ok(x) => Option::Some(x),
@@ -184,6 +193,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::err`]
+    #[cfg_attr(charon, aeneas::exclude)]
     pub fn err(self) -> Option<E> {
         match self {
             Ok(_) => Option::None,
@@ -226,12 +236,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    // F* names inherent methods by impl-block order, so `unwrap_or`/`map_err`
-    // live in this first block for F* to keep their `impl__` name. The
-    // aeneas/lean copies (which, unlike this excluded block, must be extracted)
-    // are in the `cfg(not(hax_backend_fstar))` block below.
     /// See [`std::result::Result::unwrap_or`]
-    #[cfg(hax_backend_fstar)]
     pub fn unwrap_or(self, default: T) -> T {
         match self {
             Ok(t) => t,
@@ -239,7 +244,6 @@ impl<T, E> Result<T, E> {
         }
     }
     /// See [`std::result::Result::map_err`]
-    #[cfg(hax_backend_fstar)]
     pub fn map_err<F, O>(self, op: O) -> Result<T, F>
     where
         O: FnOnce(E) -> F,
@@ -247,6 +251,61 @@ impl<T, E> Result<T, E> {
         match self {
             Ok(t) => Ok(t),
             Err(e) => Err(op(e)),
+        }
+    }
+}
+
+/// aeneas/lean copies of the four methods whose std signature carries a `Debug`
+/// bound: charon emits the dictionary, so the model must take it, but the F*
+/// versions above must stay bound-free to keep their `impl__` names.
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T, E> Result<T, E> {
+    /// See [`std::result::Result::expect`]
+    #[hax_lib::requires(self.is_ok())]
+    pub fn expect(self, _msg: &str) -> T
+    where
+        E: super::fmt::Debug,
+    {
+        match self {
+            Ok(t) => t,
+            Err(_) => super::panicking::internal::panic(),
+        }
+    }
+
+    /// See [`std::result::Result::unwrap`]
+    #[hax_lib::requires(self.is_ok())]
+    pub fn unwrap(self) -> T
+    where
+        E: super::fmt::Debug,
+    {
+        match self {
+            Ok(t) => t,
+            Err(_) => super::panicking::internal::panic(),
+        }
+    }
+
+    /// See [`std::result::Result::expect_err`]
+    #[hax_lib::requires(self.is_err())]
+    pub fn expect_err(self, _msg: &str) -> E
+    where
+        T: super::fmt::Debug,
+    {
+        match self {
+            Ok(_) => super::panicking::internal::panic(),
+            Err(e) => e,
+        }
+    }
+
+    /// See [`std::result::Result::unwrap_err`]
+    #[hax_lib::requires(self.is_err())]
+    pub fn unwrap_err(self) -> E
+    where
+        T: super::fmt::Debug,
+    {
+        match self {
+            Ok(_) => super::panicking::internal::panic(),
+            Err(e) => e,
         }
     }
 }
@@ -263,6 +322,7 @@ impl<T: Clone, E> Result<T, E> {
     }
 }
 
+#[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
 #[cfg_attr(charon, aeneas::exclude)]
 impl<T, E> Result<Option<T>, E> {
@@ -326,28 +386,31 @@ impl<T, E> crate::ops::try_trait::Try for Result<T, E> {
     }
 }
 
-/// aeneas/lean copies of `unwrap_or`/`map_err`: not in Aeneas's builtin `Result`
-/// and the `impl` above is excluded, so they're extracted here. Also defined in
-/// the F* `impl__` block above (see the comment there) to keep the F* name.
 #[cfg(not(hax_backend_fstar))]
 #[hax_lib::attributes]
-impl<T, E> Result<T, E> {
-    /// See [`std::result::Result::unwrap_or`]
-    pub fn unwrap_or(self, default: T) -> T {
+impl<T, E> Result<Option<T>, E> {
+    /// See [`std::result::Result::transpose`]
+    pub fn transpose(self) -> Option<Result<T, E>> {
         match self {
-            Ok(t) => t,
-            Err(_) => default,
+            Ok(Option::Some(t)) => Option::Some(Ok(t)),
+            Ok(Option::None) => Option::None,
+            Err(e) => Option::Some(Err(e)),
         }
     }
+}
 
-    /// See [`std::result::Result::map_err`]
-    pub fn map_err<F, O>(self, op: O) -> Result<T, F>
-    where
-        O: FnOnce(E) -> F,
-    {
-        match self {
-            Ok(t) => Ok(t),
-            Err(e) => Err(op(e)),
+/// Mirrors the `Option` instance in `core/option.rs`. F* compares `Result`s with
+/// its own structural equality, so this is only extracted for aeneas/lean.
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T: super::cmp::PartialEq<T>, E: super::cmp::PartialEq<E>> super::cmp::PartialEq<Result<T, E>>
+    for Result<T, E>
+{
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Ok(a), Ok(b)) => a.eq(b),
+            (Err(a), Err(b)) => a.eq(b),
+            _ => false,
         }
     }
 }
@@ -530,6 +593,16 @@ mod tests {
             prop_assert!(x.inject().flatten() == x.flatten().inject());
         }
 
+        // The model's `PartialEq for Result` is aeneas/lean-only.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_eq(x in any::<Result<u8, u8>>(), y in any::<Result<u8, u8>>()) {
+            prop_assert_eq!(
+                crate::cmp::PartialEq::eq(&x.clone().inject(), &y.clone().inject()),
+                x == y
+            );
+        }
+
         // ----- Try (from_output / branch) -----------------------------------
         // std's `Try` is unstable, so these pin the model's documented
         // semantics (which mirror `?`): `from_output` injects into `Ok`,
@@ -567,5 +640,37 @@ mod tests {
                 _ => prop_assert!(false, "Err should Break(Err(e))"),
             }
         }
+    }
+
+    #[test]
+    fn test_unwrap_on_err_panics() {
+        crate::testing::panics_like_core(
+            || super::Result::<u8, u8>::Err(1).unwrap(),
+            || Err::<u8, u8>(1).unwrap(),
+        );
+    }
+
+    #[test]
+    fn test_expect_on_err_panics() {
+        crate::testing::panics_like_core(
+            || super::Result::<u8, u8>::Err(1).expect("boom"),
+            || Err::<u8, u8>(1).expect("boom"),
+        );
+    }
+
+    #[test]
+    fn test_unwrap_err_on_ok_panics() {
+        crate::testing::panics_like_core(
+            || super::Result::<u8, u8>::Ok(1).unwrap_err(),
+            || Ok::<u8, u8>(1).unwrap_err(),
+        );
+    }
+
+    #[test]
+    fn test_expect_err_on_ok_panics() {
+        crate::testing::panics_like_core(
+            || super::Result::<u8, u8>::Ok(1).expect_err("boom"),
+            || Ok::<u8, u8>(1).expect_err("boom"),
+        );
     }
 }

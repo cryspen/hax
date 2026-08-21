@@ -65,8 +65,12 @@ jobs:
         env:
           RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
 
-      # `alloc` has a second, cfg-exclusive `vec` model for the F* backend
+      # Both crates have cfg-exclusive models the default-cfg run can't reach.
       - run: cargo test -p alloc
+        env:
+          RUSTFLAGS: "--cfg hax_backend_fstar"
+
+      - run: cargo test -p core-models
         env:
           RUSTFLAGS: "--cfg hax_backend_fstar"
 
@@ -217,15 +221,16 @@ jobs:
       # ---- Enforce that committed extraction matches re-extraction ------
       # If this fails: someone changed Rust source / patcher without
       # re-running `make lean` and committing the resulting diff.
+      # Whole tree, not a file list: `git diff` on a pathspec matching
+      # nothing exits 0, so a list goes stale silently.
       - name: Committed extraction must match a fresh re-extraction
         run: |
-          git diff --exit-code -- \
-            ../proof-libs/lean/CoreModels/Funs.lean \
-            ../proof-libs/lean/CoreModels/Types.lean \
-            ../proof-libs/lean/CoreModels/FunsExternal_Template.lean \
-            ../proof-libs/lean/CoreModels/TypesExternal_Template.lean \
-            ../proof-libs/lean/CoreModels/Alloc/Funs.lean \
-            ../proof-libs/lean/CoreModels/Alloc/Types.lean
+          if [ -n "$(git status --porcelain -- ../proof-libs/lean)" ]; then
+            echo "::error::Committed Lean extraction is stale — run 'make lean' in hax-lib/core-models and commit the result."
+            git status --porcelain -- ../proof-libs/lean
+            git diff -- ../proof-libs/lean
+            exit 1
+          fi
 
   fstar-build:
     name: hax F* extraction + typecheck
@@ -286,3 +291,12 @@ jobs:
         unset CI # Allows us to use Aeneas's olean cache
         nix develop .#ci-examples --command make -C hax-lib/core-models/tests clean
         nix develop .#ci-examples --command make -C hax-lib/core-models/tests
+
+    # Inverted: a `skip_lean` test that PASSES means its blocker is gone.
+    # Runs here, not in `lean-build`: `check-skipped` re-extracts with
+    # `cargo hax`, which only this job's nix shell provides.
+    - name: Skipped equivalence tests must still be failing
+      run: |
+        unset CI
+        nix develop .#ci-examples --command \
+          make -C hax-lib/core-models/tests/rust_lean_equiv_test check-skipped

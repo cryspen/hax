@@ -449,6 +449,25 @@ mod tests {
         }
 
         #[test]
+        fn test_eq(x in any::<Option<u8>>(), y in any::<Option<u8>>()) {
+            prop_assert_eq!(
+                crate::cmp::PartialEq::eq(&x.clone().inject(), &y.clone().inject()),
+                x == y
+            );
+        }
+
+        // `f` runs only on `Some`, so the side effect is the observation.
+        #[test]
+        fn test_inspect(x in any::<Option<u8>>()) {
+            let mut model_seen: Vec<u8> = Vec::new();
+            let model_result = x.clone().inject().inspect(|v: &u8| model_seen.push(*v));
+            let mut std_seen: Vec<u8> = Vec::new();
+            let std_result = x.clone().inspect(|v| std_seen.push(*v));
+            prop_assert!(model_result == std_result.inject());
+            prop_assert_eq!(model_seen, std_seen);
+        }
+
+        #[test]
         fn test_flatten(x in any::<Option<Option<u8>>>()) {
             prop_assert!(x.inject().flatten() == x.flatten().inject());
         }
@@ -493,5 +512,21 @@ mod tests {
         let model: super::Option<u8> = <super::Option<u8> as crate::default::Default>::default();
         let std_default: Option<u8> = Default::default();
         assert_eq!(model, std_default.inject());
+    }
+
+    #[test]
+    fn test_unwrap_on_none_panics() {
+        crate::testing::panics_like_core(
+            || super::Option::<u8>::None.unwrap(),
+            || Option::<u8>::None.unwrap(),
+        );
+    }
+
+    #[test]
+    fn test_expect_on_none_panics() {
+        crate::testing::panics_like_core(
+            || super::Option::<u8>::None.expect("boom"),
+            || Option::<u8>::None.expect("boom"),
+        );
     }
 }
