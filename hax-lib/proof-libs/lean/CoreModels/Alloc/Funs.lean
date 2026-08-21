@@ -25,67 +25,2556 @@ set_option maxRecDepth 2048
 namespace CoreModels.alloc
 
 /-- [alloc::alloc::{impl core::clone::Clone for alloc::alloc::Global}::clone]:
-    Source: 'src/lib.rs', lines 28:13-28:18
+    Source: 'src/lib.rs', lines 46:13-46:18
     Visibility: public -/
 def alloc.Global.Insts.CoreCloneClone.clone
   (self : alloc.Global) : Result alloc.Global := do
   ok ()
 
 /-- Trait implementation: [alloc::alloc::{impl core::clone::Clone for alloc::alloc::Global}]
-    Source: 'src/lib.rs', lines 28:13-28:18 -/
+    Source: 'src/lib.rs', lines 46:13-46:18 -/
 @[reducible]
 def alloc.Global.Insts.CoreCloneClone : core.clone.Clone alloc.Global := {
   clone := alloc.Global.Insts.CoreCloneClone.clone
 }
 
 /-- Trait implementation: [alloc::alloc::{impl alloc::alloc::Allocator for alloc::alloc::Global}]
-    Source: 'src/lib.rs', lines 31:4-31:32 -/
+    Source: 'src/lib.rs', lines 49:4-49:32 -/
 @[reducible]
 def alloc.Global.Insts.AllocAllocAllocator : alloc.Allocator
   alloc.Global := {
 }
 
-/-- [alloc::borrow::{impl alloc::borrow::ToOwned for T}::to_owned]:
-    Source: 'src/lib.rs', lines 41:8-43:9
+/-- [alloc::borrow::{impl alloc::borrow::ToOwned<T> for T}::to_owned]:
+    Source: 'src/lib.rs', lines 73:8-75:9
     Visibility: public -/
-def borrow.ToOwned.Blanket.to_owned {T : Type} (self : T) : Result T := do
-  ok self
+def borrow.ToOwned.Blanket.to_owned
+  {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : T) :
+  Result T
+  := do
+  corecloneCloneInst.clone self
 
-/-- Trait implementation: [alloc::borrow::{impl alloc::borrow::ToOwned for T}]
-    Source: 'src/lib.rs', lines 40:4-44:5 -/
+/-- Trait implementation: [alloc::borrow::{impl alloc::borrow::ToOwned<T> for T}]
+    Source: 'src/lib.rs', lines 71:4-76:5 -/
 @[reducible]
-def borrow.ToOwned.Blanket (T : Type) : borrow.ToOwned T := {
-  to_owned := borrow.ToOwned.Blanket.to_owned
+def borrow.ToOwned.Blanket {T : Type} (corecloneCloneInst : core.clone.Clone T)
+  : borrow.ToOwned T T := {
+  to_owned := borrow.ToOwned.Blanket.to_owned corecloneCloneInst
+}
+
+/-- [alloc::borrow::{alloc::borrow::Cow<B, Clause0_Owned>}::is_borrowed]:
+    Source: 'src/lib.rs', lines 93:8-98:9
+    Visibility: public -/
+def borrow.Cow.is_borrowed
+  {B : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned B
+  Clause0_Owned) (c : borrow.Cow B Clause0_Owned) :
+  Result Bool
+  := do
+  match c with
+  | borrow.Cow.Borrowed _ => ok true
+  | borrow.Cow.Owned _ => ok false
+
+/-- [alloc::borrow::{alloc::borrow::Cow<B, Clause0_Owned>}::is_owned]:
+    Source: 'src/lib.rs', lines 100:8-105:9
+    Visibility: public -/
+def borrow.Cow.is_owned
+  {B : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned B
+  Clause0_Owned) (c : borrow.Cow B Clause0_Owned) :
+  Result Bool
+  := do
+  match c with
+  | borrow.Cow.Borrowed _ => ok false
+  | borrow.Cow.Owned _ => ok true
+
+/-- [alloc::borrow::{alloc::borrow::Cow<B, Clause0_Owned>}::into_owned]:
+    Source: 'src/lib.rs', lines 107:8-112:9
+    Visibility: public -/
+def borrow.Cow.into_owned
+  {B : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned B
+  Clause0_Owned) (self : borrow.Cow B Clause0_Owned) :
+  Result Clause0_Owned
+  := do
+  match self with
+  | borrow.Cow.Borrowed b => ToOwnedInst.to_owned b
+  | borrow.Cow.Owned o => ok o
+
+/-- [alloc::borrow::{alloc::borrow::Cow<B, Clause0_Owned>}::to_mut]:
+    Source: 'src/lib.rs', lines 120:8-122:9
+    Visibility: public -/
+def borrow.Cow.to_mut
+  {B : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned B
+  Clause0_Owned) (self : borrow.Cow B Clause0_Owned) :
+  Result Clause0_Owned
+  := do
+  borrow.Cow.into_owned ToOwnedInst self
+
+/-- [alloc::borrow::{impl alloc::borrow::ToOwnedDefaults<Clause0_Owned> for T}::clone_into]:
+    Source: 'src/lib.rs', lines 138:8-140:9
+    Visibility: public -/
+def borrow.ToOwnedDefaults.Blanket.clone_into
+  {T : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned T
+  Clause0_Owned) (self : T) (target : Clause0_Owned) :
+  Result Clause0_Owned
+  := do
+  ToOwnedInst.to_owned self
+
+/-- Trait implementation: [alloc::borrow::{impl alloc::borrow::ToOwnedDefaults<Clause0_Owned> for T}]
+    Source: 'src/lib.rs', lines 137:4-141:5 -/
+@[reducible]
+def borrow.ToOwnedDefaults.Blanket {T : Type} {Clause0_Owned : Type}
+  (ToOwnedInst1 : borrow.ToOwned T Clause0_Owned) : borrow.ToOwnedDefaults T
+  Clause0_Owned := {
+  ToOwnedInst := ToOwnedInst1
+  clone_into := borrow.ToOwnedDefaults.Blanket.clone_into ToOwnedInst1
 }
 
 /-- [alloc::boxed::{alloc::boxed::Box<T>}::new]:
-    Source: 'src/lib.rs', lines 63:8-65:9 -/
+    Source: 'src/lib.rs', lines 209:8-211:9 -/
 def boxed.Box.new {T : Type} (v : T) : Result T := do
   ok v
 
-/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, U>}::new]:
-    Source: 'src/lib.rs', lines 225:16-227:17 -/
-def collections.btree.set.BTreeSet.new
-  (T : Type) (U : Type) : Result (collections.btree.set.BTreeSet T U) := do
-  ok (core.option.Option.None, core.option.Option.None)
+/-- [alloc::boxed::{alloc::boxed::Box<T>}::new_in]:
+    Source: 'src/lib.rs', lines 217:8-219:9 -/
+def boxed.Box.new_in
+  {T : Type} {A : Type} (x : T) (_alloc : A) : Result T := do
+  ok x
+
+/-- [alloc::boxed::{alloc::boxed::Box<T>}::into_inner]:
+    Source: 'src/lib.rs', lines 222:8-224:9 -/
+def boxed.Box.into_inner {T : Type} (boxed : T) : Result T := do
+  ok boxed
+
+/-- [alloc::boxed::{alloc::boxed::Box<T>}::map]:
+    Source: 'src/lib.rs', lines 228:8-230:9 -/
+def boxed.Box.map
+  {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
+  core.ops.function.FnOnce F T U) (this : T) (f : F) :
+  Result U
+  := do
+  coreopsfunctionFnOnceFTupleTUInst.call_once f this
+
+/-- [alloc::boxed::{alloc::boxed::Box<T>}::into_boxed_slice]:
+    Source: 'src/lib.rs', lines 235:8-237:9 -/
+def boxed.Box.into_boxed_slice {T : Type} (boxed : T) : Result (Slice T) := do
+  ok (Std.Array.to_slice (Array.make 1#usize [ boxed ] : Array T 1#usize))
+
+/-- [alloc::collections::{impl core::clone::Clone for alloc::collections::TryReserveErrorKind}::clone]:
+    Source: 'src/lib.rs', lines 298:13-298:18
+    Visibility: public -/
+def collections.TryReserveErrorKind.Insts.CoreCloneClone.clone
+  (self : collections.TryReserveErrorKind) :
+  Result collections.TryReserveErrorKind
+  := do
+  match self with
+  | collections.TryReserveErrorKind.CapacityOverflow =>
+    ok collections.TryReserveErrorKind.CapacityOverflow
+  | collections.TryReserveErrorKind.AllocError =>
+    ok collections.TryReserveErrorKind.AllocError
+
+/-- Trait implementation: [alloc::collections::{impl core::clone::Clone for alloc::collections::TryReserveErrorKind}]
+    Source: 'src/lib.rs', lines 298:13-298:18 -/
+@[reducible]
+def collections.TryReserveErrorKind.Insts.CoreCloneClone : core.clone.Clone
+  collections.TryReserveErrorKind := {
+  clone := collections.TryReserveErrorKind.Insts.CoreCloneClone.clone
+}
+
+/-- [alloc::collections::{impl core::clone::Clone for alloc::collections::TryReserveError}::clone]:
+    Source: 'src/lib.rs', lines 308:13-308:18
+    Visibility: public -/
+def collections.TryReserveError.Insts.CoreCloneClone.clone
+  (self : collections.TryReserveError) :
+  Result collections.TryReserveError
+  := do
+  let trek ← collections.TryReserveErrorKind.Insts.CoreCloneClone.clone self
+  ok trek
+
+/-- Trait implementation: [alloc::collections::{impl core::clone::Clone for alloc::collections::TryReserveError}]
+    Source: 'src/lib.rs', lines 308:13-308:18 -/
+@[reducible]
+def collections.TryReserveError.Insts.CoreCloneClone : core.clone.Clone
+  collections.TryReserveError := {
+  clone := collections.TryReserveError.Insts.CoreCloneClone.clone
+}
+
+/-- [alloc::collections::{alloc::collections::TryReserveError}::kind]:
+    Source: 'src/lib.rs', lines 314:8-316:9 -/
+def collections.TryReserveError.kind
+  (self : collections.TryReserveError) :
+  Result collections.TryReserveErrorKind
+  := do
+  collections.TryReserveErrorKind.Insts.CoreCloneClone.clone self
+
+/-- [alloc::collections::btree::seq_lower_bound]: loop body 0:
+    Source: 'src/lib.rs', lines 756:12-765:13 -/
+@[rust_loop_body]
+def collections.btree.seq_lower_bound_loop.body
+  {T : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (s : rust_primitives.sequence.Seq T) (key : T)
+  (iter_ : core.ops.range.Range Std.Usize) (pos : Std.Usize) (eq : Bool)
+  (done1 : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
+    Bool) (Std.Usize × Bool))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (pos, eq))
+  | core.option.Option.Some i =>
+    if done1
+    then ok (cont (iter1, pos, eq, true))
+    else
+      let t ← rust_primitives.sequence.seq_index s i
+      let o1 ← corecmpOrdInst.cmp t key
+      let b ← core.cmp.Ordering.is_lt o1
+      if b
+      then ok (cont (iter1, pos, eq, false))
+      else
+        let eq1 ← core.cmp.Ordering.is_eq o1
+        ok (cont (iter1, i, eq1, true))
+
+/-- [alloc::collections::btree::seq_lower_bound]: loop 0:
+    Source: 'src/lib.rs', lines 756:12-765:13 -/
+@[rust_loop]
+def collections.btree.seq_lower_bound_loop
+  {T : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
+  (key : T) (pos : Std.Usize) (eq : Bool) (done1 : Bool) :
+  Result (Std.Usize × Bool)
+  := do
+  loop
+    (fun (iter1, pos1, eq1, done2) =>
+      collections.btree.seq_lower_bound_loop.body corecmpOrdInst s key iter1
+      pos1 eq1 done2)
+    (iter_, pos, eq, done1)
+
+/-- [alloc::collections::btree::seq_lower_bound]:
+    Source: 'src/lib.rs', lines 751:8-767:9 -/
+def collections.btree.seq_lower_bound
+  {T : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (s : rust_primitives.sequence.Seq T) (key : T) :
+  Result (Std.Usize × Bool)
+  := do
+  let l ← rust_primitives.sequence.seq_len s
+  collections.btree.seq_lower_bound_loop corecmpOrdInst
+    { start := 0#usize, «end» := l } s key l false false
+
+/-- [alloc::collections::btree::seq_lower_bound_borrowed]: loop body 0:
+    Source: 'src/lib.rs', lines 783:12-792:13 -/
+@[rust_loop_body]
+def collections.btree.seq_lower_bound_borrowed_loop.body
+  {T : Type} {Q : Type} (coreborrowBorrowInst : core.borrow.Borrow T Q)
+  (corecmpOrdInst : core.cmp.Ord Q) (s : rust_primitives.sequence.Seq T)
+  (key : Q) (iter_ : core.ops.range.Range Std.Usize) (pos : Std.Usize)
+  (eq : Bool) (done1 : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
+    Bool) (Std.Usize × Bool))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (pos, eq))
+  | core.option.Option.Some i =>
+    if done1
+    then ok (cont (iter1, pos, eq, true))
+    else
+      let t ← rust_primitives.sequence.seq_index s i
+      let t1 ← coreborrowBorrowInst.borrow t
+      let o1 ← corecmpOrdInst.cmp t1 key
+      let b ← core.cmp.Ordering.is_lt o1
+      if b
+      then ok (cont (iter1, pos, eq, false))
+      else
+        let eq1 ← core.cmp.Ordering.is_eq o1
+        ok (cont (iter1, i, eq1, true))
+
+/-- [alloc::collections::btree::seq_lower_bound_borrowed]: loop 0:
+    Source: 'src/lib.rs', lines 783:12-792:13 -/
+@[rust_loop]
+def collections.btree.seq_lower_bound_borrowed_loop
+  {T : Type} {Q : Type} (coreborrowBorrowInst : core.borrow.Borrow T Q)
+  (corecmpOrdInst : core.cmp.Ord Q) (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq T) (key : Q) (pos : Std.Usize) (eq : Bool)
+  (done1 : Bool) :
+  Result (Std.Usize × Bool)
+  := do
+  loop
+    (fun (iter1, pos1, eq1, done2) =>
+      collections.btree.seq_lower_bound_borrowed_loop.body coreborrowBorrowInst
+      corecmpOrdInst s key iter1 pos1 eq1 done2)
+    (iter_, pos, eq, done1)
+
+/-- [alloc::collections::btree::seq_lower_bound_borrowed]:
+    Source: 'src/lib.rs', lines 774:8-794:9 -/
+def collections.btree.seq_lower_bound_borrowed
+  {T : Type} {Q : Type} (coreborrowBorrowInst : core.borrow.Borrow T Q)
+  (corecmpOrdInst : core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (s : rust_primitives.sequence.Seq T) (key : Q) :
+  Result (Std.Usize × Bool)
+  := do
+  let l ← rust_primitives.sequence.seq_len s
+  collections.btree.seq_lower_bound_borrowed_loop coreborrowBorrowInst
+    corecmpOrdInst1 { start := 0#usize, «end» := l } s key l false false
+
+/-- [alloc::collections::btree::seq_lower_bound_key]: loop body 0:
+    Source: 'src/lib.rs', lines 802:12-811:13 -/
+@[rust_loop_body]
+def collections.btree.seq_lower_bound_key_loop.body
+  {K : Type} {V : Type} (corecmpOrdInst : core.cmp.Ord K)
+  (s : rust_primitives.sequence.Seq (K × V)) (key : K)
+  (iter_ : core.ops.range.Range Std.Usize) (pos : Std.Usize) (eq : Bool)
+  (done1 : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
+    Bool) (Std.Usize × Bool))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (pos, eq))
+  | core.option.Option.Some i =>
+    if done1
+    then ok (cont (iter1, pos, eq, true))
+    else
+      let (t, _) ← rust_primitives.sequence.seq_index s i
+      let o1 ← corecmpOrdInst.cmp t key
+      let b ← core.cmp.Ordering.is_lt o1
+      if b
+      then ok (cont (iter1, pos, eq, false))
+      else
+        let eq1 ← core.cmp.Ordering.is_eq o1
+        ok (cont (iter1, i, eq1, true))
+
+/-- [alloc::collections::btree::seq_lower_bound_key]: loop 0:
+    Source: 'src/lib.rs', lines 802:12-811:13 -/
+@[rust_loop]
+def collections.btree.seq_lower_bound_key_loop
+  {K : Type} {V : Type} (corecmpOrdInst : core.cmp.Ord K)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq (K × V)) (key : K) (pos : Std.Usize)
+  (eq : Bool) (done1 : Bool) :
+  Result (Std.Usize × Bool)
+  := do
+  loop
+    (fun (iter1, pos1, eq1, done2) =>
+      collections.btree.seq_lower_bound_key_loop.body corecmpOrdInst s key
+      iter1 pos1 eq1 done2)
+    (iter_, pos, eq, done1)
+
+/-- [alloc::collections::btree::seq_lower_bound_key]:
+    Source: 'src/lib.rs', lines 797:8-813:9 -/
+def collections.btree.seq_lower_bound_key
+  {K : Type} {V : Type} (corecmpOrdInst : core.cmp.Ord K)
+  (s : rust_primitives.sequence.Seq (K × V)) (key : K) :
+  Result (Std.Usize × Bool)
+  := do
+  let l ← rust_primitives.sequence.seq_len s
+  collections.btree.seq_lower_bound_key_loop corecmpOrdInst
+    { start := 0#usize, «end» := l } s key l false false
+
+/-- [alloc::collections::btree::seq_lower_bound_key_borrowed]: loop body 0:
+    Source: 'src/lib.rs', lines 826:12-835:13 -/
+@[rust_loop_body]
+def collections.btree.seq_lower_bound_key_borrowed_loop.body
+  {K : Type} {V : Type} {Q : Type} (coreborrowBorrowInst : core.borrow.Borrow K
+  Q) (corecmpOrdInst : core.cmp.Ord Q)
+  (s : rust_primitives.sequence.Seq (K × V)) (key : Q)
+  (iter_ : core.ops.range.Range Std.Usize) (pos : Std.Usize) (eq : Bool)
+  (done1 : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
+    Bool) (Std.Usize × Bool))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (pos, eq))
+  | core.option.Option.Some i =>
+    if done1
+    then ok (cont (iter1, pos, eq, true))
+    else
+      let (t, _) ← rust_primitives.sequence.seq_index s i
+      let t1 ← coreborrowBorrowInst.borrow t
+      let o1 ← corecmpOrdInst.cmp t1 key
+      let b ← core.cmp.Ordering.is_lt o1
+      if b
+      then ok (cont (iter1, pos, eq, false))
+      else
+        let eq1 ← core.cmp.Ordering.is_eq o1
+        ok (cont (iter1, i, eq1, true))
+
+/-- [alloc::collections::btree::seq_lower_bound_key_borrowed]: loop 0:
+    Source: 'src/lib.rs', lines 826:12-835:13 -/
+@[rust_loop]
+def collections.btree.seq_lower_bound_key_borrowed_loop
+  {K : Type} {V : Type} {Q : Type} (coreborrowBorrowInst : core.borrow.Borrow K
+  Q) (corecmpOrdInst : core.cmp.Ord Q) (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq (K × V)) (key : Q) (pos : Std.Usize)
+  (eq : Bool) (done1 : Bool) :
+  Result (Std.Usize × Bool)
+  := do
+  loop
+    (fun (iter1, pos1, eq1, done2) =>
+      collections.btree.seq_lower_bound_key_borrowed_loop.body
+      coreborrowBorrowInst corecmpOrdInst s key iter1 pos1 eq1 done2)
+    (iter_, pos, eq, done1)
+
+/-- [alloc::collections::btree::seq_lower_bound_key_borrowed]:
+    Source: 'src/lib.rs', lines 817:8-837:9 -/
+def collections.btree.seq_lower_bound_key_borrowed
+  {K : Type} {V : Type} {Q : Type} (coreborrowBorrowInst : core.borrow.Borrow K
+  Q) (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (s : rust_primitives.sequence.Seq (K × V)) (key : Q) :
+  Result (Std.Usize × Bool)
+  := do
+  let l ← rust_primitives.sequence.seq_len s
+  collections.btree.seq_lower_bound_key_borrowed_loop coreborrowBorrowInst
+    corecmpOrdInst1 { start := 0#usize, «end» := l } s key l false false
+
+/-- [alloc::collections::btree::seq_insert]:
+    Source: 'src/lib.rs', lines 842:8-847:9 -/
+def collections.btree.seq_insert
+  {T : Type} (s : rust_primitives.sequence.Seq T) (index : Std.Usize)
+  (value : T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  let l ← rust_primitives.sequence.seq_len s
+  let (right, s1) ← rust_primitives.sequence.seq_drain s index l
+  let s2 ← rust_primitives.sequence.seq_push s1 value
+  let (s3, _) ← rust_primitives.sequence.seq_concat s2 right
+  ok s3
+
+/-- [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<(&'a K, &'a V)> for alloc::collections::btree::map::Iter<'a, K, V>}::next]:
+    Source: 'src/lib.rs', lines 883:16-890:17
+    Visibility: public -/
+def
+  collections.btree.map.Iter.Insts.CoreIterTraitsIteratorIteratorPairSharedAKSharedAV.next
+  {K : Type} {V : Type} (self : collections.btree.map.Iter K V) :
+  Result ((core.option.Option (K × V)) × (collections.btree.map.Iter K V))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let ((t, t1), s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (core.option.Option.Some (t, t1), s)
+
+/-- Trait implementation: [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<(&'a K, &'a V)> for alloc::collections::btree::map::Iter<'a, K, V>}]
+    Source: 'src/lib.rs', lines 881:12-891:13 -/
+@[reducible]
+def
+  collections.btree.map.Iter.Insts.CoreIterTraitsIteratorIteratorPairSharedAKSharedAV
+  (K : Type) (V : Type) : core.iter.traits.iterator.Iterator
+  (collections.btree.map.Iter K V) (K × V) := {
+  next :=
+    collections.btree.map.Iter.Insts.CoreIterTraitsIteratorIteratorPairSharedAKSharedAV.next
+}
+
+/-- [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<&'a K> for alloc::collections::btree::map::Keys<'a, K, V>}::next]:
+    Source: 'src/lib.rs', lines 894:16-900:17
+    Visibility: public -/
+def
+  collections.btree.map.Keys.Insts.CoreIterTraitsIteratorIteratorSharedAK.next
+  {K : Type} {V : Type} (self : collections.btree.map.Keys K V) :
+  Result ((core.option.Option K) × (collections.btree.map.Keys K V))
+  := do
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok (core.option.Option.None, (s, core.marker.PhantomData.mk))
+  else
+    let (t, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some t, (s1, core.marker.PhantomData.mk))
+
+/-- Trait implementation: [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<&'a K> for alloc::collections::btree::map::Keys<'a, K, V>}]
+    Source: 'src/lib.rs', lines 892:12-901:13 -/
+@[reducible]
+def collections.btree.map.Keys.Insts.CoreIterTraitsIteratorIteratorSharedAK (K
+  : Type) (V : Type) : core.iter.traits.iterator.Iterator
+  (collections.btree.map.Keys K V) K := {
+  next :=
+    collections.btree.map.Keys.Insts.CoreIterTraitsIteratorIteratorSharedAK.next
+}
+
+/-- [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<&'a V> for alloc::collections::btree::map::Values<'a, K, V>}::next]:
+    Source: 'src/lib.rs', lines 904:16-910:17
+    Visibility: public -/
+def
+  collections.btree.map.Values.Insts.CoreIterTraitsIteratorIteratorSharedAV.next
+  {K : Type} {V : Type} (self : collections.btree.map.Values K V) :
+  Result ((core.option.Option V) × (collections.btree.map.Values K V))
+  := do
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok (core.option.Option.None, (s, core.marker.PhantomData.mk))
+  else
+    let (t, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some t, (s1, core.marker.PhantomData.mk))
+
+/-- Trait implementation: [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<&'a V> for alloc::collections::btree::map::Values<'a, K, V>}]
+    Source: 'src/lib.rs', lines 902:12-911:13 -/
+@[reducible]
+def collections.btree.map.Values.Insts.CoreIterTraitsIteratorIteratorSharedAV
+  (K : Type) (V : Type) : core.iter.traits.iterator.Iterator
+  (collections.btree.map.Values K V) V := {
+  next :=
+    collections.btree.map.Values.Insts.CoreIterTraitsIteratorIteratorSharedAV.next
+}
+
+/-- [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<K> for alloc::collections::btree::map::IntoKeys<K, V, A>}::next]:
+    Source: 'src/lib.rs', lines 914:16-920:17
+    Visibility: public -/
+def collections.btree.map.IntoKeys.Insts.CoreIterTraitsIteratorIterator.next
+  {K : Type} {V : Type} {A : Type}
+  (self : collections.btree.map.IntoKeys K V A) :
+  Result ((core.option.Option K) × (collections.btree.map.IntoKeys K V A))
+  := do
+  let (s, pd) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let ((t, _), s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- Trait implementation: [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<K> for alloc::collections::btree::map::IntoKeys<K, V, A>}]
+    Source: 'src/lib.rs', lines 912:12-921:13 -/
+@[reducible]
+def collections.btree.map.IntoKeys.Insts.CoreIterTraitsIteratorIterator (K :
+  Type) (V : Type) (A : Type) : core.iter.traits.iterator.Iterator
+  (collections.btree.map.IntoKeys K V A) K := {
+  next :=
+    collections.btree.map.IntoKeys.Insts.CoreIterTraitsIteratorIterator.next
+}
+
+/-- [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<V> for alloc::collections::btree::map::IntoValues<K, V, A>}::next]:
+    Source: 'src/lib.rs', lines 924:16-930:17
+    Visibility: public -/
+def collections.btree.map.IntoValues.Insts.CoreIterTraitsIteratorIterator.next
+  {K : Type} {V : Type} {A : Type}
+  (self : collections.btree.map.IntoValues K V A) :
+  Result ((core.option.Option V) × (collections.btree.map.IntoValues K V A))
+  := do
+  let (s, pd) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let ((_, t), s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- Trait implementation: [alloc::collections::btree::map::{impl core::iter::traits::iterator::Iterator<V> for alloc::collections::btree::map::IntoValues<K, V, A>}]
+    Source: 'src/lib.rs', lines 922:12-931:13 -/
+@[reducible]
+def collections.btree.map.IntoValues.Insts.CoreIterTraitsIteratorIterator (K :
+  Type) (V : Type) (A : Type) : core.iter.traits.iterator.Iterator
+  (collections.btree.map.IntoValues K V A) V := {
+  next :=
+    collections.btree.map.IntoValues.Insts.CoreIterTraitsIteratorIterator.next
+}
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, alloc::alloc::Global>}::new]:
+    Source: 'src/lib.rs', lines 956:16-958:17 -/
+def collections.btree.map.BTreeMapKVGlobal.new
+  (K : Type) (V : Type) :
+  Result (collections.btree.map.BTreeMap K V alloc.Global)
+  := do
+  let s ← rust_primitives.sequence.seq_empty (K × V)
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::clear]:
+    Source: 'src/lib.rs', lines 966:16-968:17 -/
+def collections.btree.map.BTreeMap.clear
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result (collections.btree.map.BTreeMap K V A)
+  := do
+  let s ← rust_primitives.sequence.seq_empty (K × V)
+  let (_, pd) := self
+  ok (s, pd)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::new_in]:
+    Source: 'src/lib.rs', lines 970:16-972:17 -/
+def collections.btree.map.BTreeMap.new_in
+  (K : Type) (V : Type) {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (_alloc : A) :
+  Result (collections.btree.map.BTreeMap K V A)
+  := do
+  let s ← rust_primitives.sequence.seq_empty (K × V)
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::get]:
+    Source: 'src/lib.rs', lines 977:16-988:17 -/
+def collections.btree.map.BTreeMap.get
+  {K : Type} {V : Type} {A : Type} {Q : Type} (corecloneCloneInst :
+  core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
+  (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.map.BTreeMap K V A) (key : Q) :
+  Result (core.option.Option V)
+  := do
+  let (s, _) := self
+  let (i, b) ←
+    collections.btree.seq_lower_bound_key_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s key
+  if b
+  then
+    let (_, t) ← rust_primitives.sequence.seq_index s i
+    ok (core.option.Option.Some t)
+  else ok core.option.Option.None
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::get_key_value]:
+    Source: 'src/lib.rs', lines 990:16-1002:17 -/
+def collections.btree.map.BTreeMap.get_key_value
+  {K : Type} {V : Type} {A : Type} {Q : Type} (corecloneCloneInst :
+  core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
+  (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.map.BTreeMap K V A) (k : Q) :
+  Result (core.option.Option (K × V))
+  := do
+  let (s, _) := self
+  let (i, b) ←
+    collections.btree.seq_lower_bound_key_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s k
+  if b
+  then
+    let (t, t1) ← rust_primitives.sequence.seq_index s i
+    ok (core.option.Option.Some (t, t1))
+  else ok core.option.Option.None
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::get_mut]:
+    Source: 'src/lib.rs', lines 1006:16-1017:17 -/
+def collections.btree.map.BTreeMap.get_mut
+  {K : Type} {V : Type} {A : Type} {Q : Type} (corecloneCloneInst :
+  core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
+  (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.map.BTreeMap K V A) (key : Q) :
+  Result ((core.option.Option V) × (core.option.Option V →
+    collections.btree.map.BTreeMap K V A))
+  := do
+  let (s, pd) := self
+  let (i, b) ←
+    collections.btree.seq_lower_bound_key_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s key
+  if b
+  then
+    let ((t, t1), seq_index_mut_back) ←
+      rust_primitives.sequence.seq_index_mut s i
+    let back :=
+      fun o =>
+        let t2 := match o with
+                  | core.option.Option.Some t3 => t3
+                  | _ => t1
+        let s1 := seq_index_mut_back (t, t2)
+        (s1, pd)
+    ok (core.option.Option.Some t1, back)
+  else let back := fun o => self
+       ok (core.option.Option.None, back)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::contains_key]:
+    Source: 'src/lib.rs', lines 1019:16-1025:17 -/
+def collections.btree.map.BTreeMap.contains_key
+  {K : Type} {V : Type} {A : Type} {Q : Type} (corecloneCloneInst :
+  core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
+  (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.map.BTreeMap K V A) (key : Q) :
+  Result Bool
+  := do
+  let (s, _) := self
+  let (_, b) ←
+    collections.btree.seq_lower_bound_key_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s key
+  ok b
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::first_key_value]:
+    Source: 'src/lib.rs', lines 1027:16-1037:17 -/
+def collections.btree.map.BTreeMap.first_key_value
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord K)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result (core.option.Option (K × V))
+  := do
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok core.option.Option.None
+  else
+    let (t, t1) ← rust_primitives.sequence.seq_index s 0#usize
+    ok (core.option.Option.Some (t, t1))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::last_key_value]:
+    Source: 'src/lib.rs', lines 1039:16-1050:17 -/
+def collections.btree.map.BTreeMap.last_key_value
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord K)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result (core.option.Option (K × V))
+  := do
+  let (s, _) := self
+  let l ← rust_primitives.sequence.seq_len s
+  if l = 0#usize
+  then ok core.option.Option.None
+  else
+    let i ← l - 1#usize
+    let (t, t1) ← rust_primitives.sequence.seq_index s i
+    ok (core.option.Option.Some (t, t1))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::pop_first]:
+    Source: 'src/lib.rs', lines 1052:16-1061:17 -/
+def collections.btree.map.BTreeMap.pop_first
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord K)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
+    A))
+  := do
+  let (s, pd) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (p, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some p, (s1, pd))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::pop_last]:
+    Source: 'src/lib.rs', lines 1063:16-1073:17 -/
+def collections.btree.map.BTreeMap.pop_last
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord K)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
+    A))
+  := do
+  let (s, pd) := self
+  let l ← rust_primitives.sequence.seq_len s
+  if l = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let i ← l - 1#usize
+    let (p, s1) ← rust_primitives.sequence.seq_remove s i
+    ok (core.option.Option.Some p, (s1, pd))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::insert]:
+    Source: 'src/lib.rs', lines 1082:16-1095:17 -/
+def collections.btree.map.BTreeMap.insert
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord K)
+  (self : collections.btree.map.BTreeMap K V A) (key : K) (value : V) :
+  Result ((core.option.Option V) × (collections.btree.map.BTreeMap K V A))
+  := do
+  let (s, pd) := self
+  let (i, b) ← collections.btree.seq_lower_bound_key corecmpOrdInst s key
+  if b
+  then
+    let ((t, t1), s1) ← rust_primitives.sequence.seq_remove s i
+    let s2 ← collections.btree.seq_insert s1 i (t, value)
+    ok (core.option.Option.Some t1, (s2, pd))
+  else
+    let s1 ← collections.btree.seq_insert s i (key, value)
+    ok (core.option.Option.None, (s1, pd))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::remove]:
+    Source: 'src/lib.rs', lines 1097:16-1108:17 -/
+def collections.btree.map.BTreeMap.remove
+  {K : Type} {V : Type} {A : Type} {Q : Type} (corecloneCloneInst :
+  core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
+  (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.map.BTreeMap K V A) (key : Q) :
+  Result ((core.option.Option V) × (collections.btree.map.BTreeMap K V A))
+  := do
+  let (s, pd) := self
+  let (i, b) ←
+    collections.btree.seq_lower_bound_key_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s key
+  if b
+  then
+    let ((_, t), s1) ← rust_primitives.sequence.seq_remove s i
+    ok (core.option.Option.Some t, (s1, pd))
+  else ok (core.option.Option.None, self)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::remove_entry]:
+    Source: 'src/lib.rs', lines 1110:16-1121:17 -/
+def collections.btree.map.BTreeMap.remove_entry
+  {K : Type} {V : Type} {A : Type} {Q : Type} (corecloneCloneInst :
+  core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
+  (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.map.BTreeMap K V A) (key : Q) :
+  Result ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
+    A))
+  := do
+  let (s, pd) := self
+  let (i, b) ←
+    collections.btree.seq_lower_bound_key_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s key
+  if b
+  then
+    let (p, s1) ← rust_primitives.sequence.seq_remove s i
+    ok (core.option.Option.Some p, (s1, pd))
+  else ok (core.option.Option.None, self)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::append]: loop body 0:
+    Source: 'src/lib.rs', lines 1130:20-1135:21 -/
+@[rust_loop_body]
+def collections.btree.map.BTreeMap.append_loop.body
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord K) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.map.BTreeMap K V A)
+  (s : rust_primitives.sequence.Seq (K × V)) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (collections.btree.map.BTreeMap K V A) × (rust_primitives.sequence.Seq (K
+    × V))) ((collections.btree.map.BTreeMap K V A) ×
+    (rust_primitives.sequence.Seq (K × V))))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (self, s))
+  | core.option.Option.Some _ =>
+    let i ← rust_primitives.sequence.seq_len s
+    if i > 0#usize
+    then
+      let ((t, t1), s1) ← rust_primitives.sequence.seq_remove s 0#usize
+      let (_, self1) ←
+        collections.btree.map.BTreeMap.insert corecloneCloneInst corecmpOrdInst
+          self t t1
+      ok (cont (iter1, self1, s1))
+    else ok (cont (iter1, self, s))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::append]: loop 0:
+    Source: 'src/lib.rs', lines 1130:20-1135:21 -/
+@[rust_loop]
+def collections.btree.map.BTreeMap.append_loop
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord K) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.map.BTreeMap K V A)
+  (s : rust_primitives.sequence.Seq (K × V)) :
+  Result ((collections.btree.map.BTreeMap K V A) ×
+    (rust_primitives.sequence.Seq (K × V)))
+  := do
+  loop
+    (fun (iter1, self1, s1) => collections.btree.map.BTreeMap.append_loop.body
+      corecloneCloneInst corecmpOrdInst iter1 self1 s1)
+    (iter_, self, s)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::append]:
+    Source: 'src/lib.rs', lines 1124:16-1136:17 -/
+def collections.btree.map.BTreeMap.append
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord K) (corecloneCloneInst1 : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A)
+  (other : collections.btree.map.BTreeMap K V A) :
+  Result ((collections.btree.map.BTreeMap K V A) ×
+    (collections.btree.map.BTreeMap K V A))
+  := do
+  let (s, pd) := other
+  let l ← rust_primitives.sequence.seq_len s
+  let (self1, s1) ←
+    collections.btree.map.BTreeMap.append_loop corecloneCloneInst
+      corecmpOrdInst { start := 0#usize, «end» := l } self s
+  ok (self1, (s1, pd))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::split_off]:
+    Source: 'src/lib.rs', lines 1139:16-1147:17 -/
+def collections.btree.map.BTreeMap.split_off
+  {K : Type} {V : Type} {A : Type} {Q : Type} (corecloneCloneInst :
+  core.clone.Clone A) (corecmpOrdInst : core.cmp.Ord Q) (coreborrowBorrowInst :
+  core.borrow.Borrow K Q) (corecmpOrdInst1 : core.cmp.Ord K)
+  (corecloneCloneInst1 : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) (key : Q) :
+  Result ((collections.btree.map.BTreeMap K V A) ×
+    (collections.btree.map.BTreeMap K V A))
+  := do
+  let (s, pd) := self
+  let l ← rust_primitives.sequence.seq_len s
+  let (i, _) ←
+    collections.btree.seq_lower_bound_key_borrowed coreborrowBorrowInst
+      corecmpOrdInst1 corecmpOrdInst s key
+  let (s1, s2) ← rust_primitives.sequence.seq_drain s i l
+  ok ((s1, core.marker.PhantomData.mk), (s2, pd))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::into_keys]:
+    Source: 'src/lib.rs', lines 1149:16-1151:17 -/
+def collections.btree.map.BTreeMap.into_keys
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result (collections.btree.map.IntoKeys K V A)
+  := do
+  let (s, _) := self
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::into_values]:
+    Source: 'src/lib.rs', lines 1153:16-1155:17 -/
+def collections.btree.map.BTreeMap.into_values
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result (collections.btree.map.IntoValues K V A)
+  := do
+  let (s, _) := self
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::len]:
+    Source: 'src/lib.rs', lines 1236:16-1238:17 -/
+def collections.btree.map.BTreeMap.len
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result Std.Usize
+  := do
+  let (s, _) := self
+  rust_primitives.sequence.seq_len s
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::is_empty]:
+    Source: 'src/lib.rs', lines 1240:16-1242:17 -/
+def collections.btree.map.BTreeMap.is_empty
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result Bool
+  := do
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  ok (i = 0#usize)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::iter]:
+    Source: 'src/lib.rs', lines 1244:16-1246:17 -/
+def collections.btree.map.BTreeMap.iter
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result (collections.btree.map.Iter K V)
+  := do
+  let (s, _) := self
+  let s1 ← rust_primitives.sequence.seq_to_slice s
+  let s2 ← rust_primitives.sequence.seq_from_slice s1
+  ok s2
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::keys]: loop body 0:
+    Source: 'src/lib.rs', lines 1250:20-1252:21 -/
+@[rust_loop_body]
+def collections.btree.map.BTreeMap.keys_loop.body
+  {K : Type} {V : Type} (s : rust_primitives.sequence.Seq (K × V))
+  (iter_ : core.ops.range.Range Std.Usize)
+  (out : rust_primitives.sequence.Seq K) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq K)) (rust_primitives.sequence.Seq K))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done out)
+  | core.option.Option.Some i =>
+    let (t, _) ← rust_primitives.sequence.seq_index s i
+    let out1 ← rust_primitives.sequence.seq_push out t
+    ok (cont (iter1, out1))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::keys]: loop 0:
+    Source: 'src/lib.rs', lines 1250:20-1252:21 -/
+@[rust_loop]
+def collections.btree.map.BTreeMap.keys_loop
+  {K : Type} {V : Type} (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq (K × V))
+  (out : rust_primitives.sequence.Seq K) :
+  Result (rust_primitives.sequence.Seq K)
+  := do
+  loop
+    (fun (iter1, out1) => collections.btree.map.BTreeMap.keys_loop.body s iter1
+      out1)
+    (iter_, out)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::keys]:
+    Source: 'src/lib.rs', lines 1248:16-1254:17 -/
+def collections.btree.map.BTreeMap.keys
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result (collections.btree.map.Keys K V)
+  := do
+  let out ← rust_primitives.sequence.seq_empty K
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  let out1 ←
+    collections.btree.map.BTreeMap.keys_loop { start := 0#usize, «end» := i }
+      s out
+  ok (out1, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::values]: loop body 0:
+    Source: 'src/lib.rs', lines 1258:20-1260:21 -/
+@[rust_loop_body]
+def collections.btree.map.BTreeMap.values_loop.body
+  {K : Type} {V : Type} (s : rust_primitives.sequence.Seq (K × V))
+  (iter_ : core.ops.range.Range Std.Usize)
+  (out : rust_primitives.sequence.Seq V) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq V)) (rust_primitives.sequence.Seq V))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done out)
+  | core.option.Option.Some i =>
+    let (_, t) ← rust_primitives.sequence.seq_index s i
+    let out1 ← rust_primitives.sequence.seq_push out t
+    ok (cont (iter1, out1))
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::values]: loop 0:
+    Source: 'src/lib.rs', lines 1258:20-1260:21 -/
+@[rust_loop]
+def collections.btree.map.BTreeMap.values_loop
+  {K : Type} {V : Type} (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq (K × V))
+  (out : rust_primitives.sequence.Seq V) :
+  Result (rust_primitives.sequence.Seq V)
+  := do
+  loop
+    (fun (iter1, out1) => collections.btree.map.BTreeMap.values_loop.body s
+      iter1 out1)
+    (iter_, out)
+
+/-- [alloc::collections::btree::map::{alloc::collections::btree::map::BTreeMap<K, V, A>}::values]:
+    Source: 'src/lib.rs', lines 1256:16-1262:17 -/
+def collections.btree.map.BTreeMap.values
+  {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.map.BTreeMap K V A) :
+  Result (collections.btree.map.Values K V)
+  := do
+  let out ← rust_primitives.sequence.seq_empty V
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  let out1 ←
+    collections.btree.map.BTreeMap.values_loop
+      { start := 0#usize, «end» := i } s out
+  ok (out1, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::Iter<'a, T>}::next]:
+    Source: 'src/lib.rs', lines 1504:16-1510:17
+    Visibility: public -/
+def
+  collections.btree.set.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+  {T : Type} (self : collections.btree.set.Iter T) :
+  Result ((core.option.Option T) × (collections.btree.set.Iter T))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (core.option.Option.Some t, s)
+
+/-- Trait implementation: [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::Iter<'a, T>}]
+    Source: 'src/lib.rs', lines 1502:12-1511:13 -/
+@[reducible]
+def collections.btree.set.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T
+  : Type) : core.iter.traits.iterator.Iterator (collections.btree.set.Iter T) T
+  := {
+  next :=
+    collections.btree.set.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+}
+
+/-- [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::Difference<'a, T, A>}::next]:
+    Source: 'src/lib.rs', lines 1514:16-1520:17
+    Visibility: public -/
+def
+  collections.btree.set.Difference.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+  {T : Type} {A : Type} (self : collections.btree.set.Difference T A) :
+  Result ((core.option.Option T) × (collections.btree.set.Difference T A))
+  := do
+  let (s, pd) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (t, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- Trait implementation: [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::Difference<'a, T, A>}]
+    Source: 'src/lib.rs', lines 1512:12-1521:13 -/
+@[reducible]
+def
+  collections.btree.set.Difference.Insts.CoreIterTraitsIteratorIteratorSharedAT
+  (T : Type) (A : Type) : core.iter.traits.iterator.Iterator
+  (collections.btree.set.Difference T A) T := {
+  next :=
+    collections.btree.set.Difference.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+}
+
+/-- [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::Intersection<'a, T, A>}::next]:
+    Source: 'src/lib.rs', lines 1524:16-1530:17
+    Visibility: public -/
+def
+  collections.btree.set.Intersection.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+  {T : Type} {A : Type} (self : collections.btree.set.Intersection T A) :
+  Result ((core.option.Option T) × (collections.btree.set.Intersection T A))
+  := do
+  let (s, pd) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (t, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- Trait implementation: [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::Intersection<'a, T, A>}]
+    Source: 'src/lib.rs', lines 1522:12-1531:13 -/
+@[reducible]
+def
+  collections.btree.set.Intersection.Insts.CoreIterTraitsIteratorIteratorSharedAT
+  (T : Type) (A : Type) : core.iter.traits.iterator.Iterator
+  (collections.btree.set.Intersection T A) T := {
+  next :=
+    collections.btree.set.Intersection.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+}
+
+/-- [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::Union<'a, T>}::next]:
+    Source: 'src/lib.rs', lines 1534:16-1540:17
+    Visibility: public -/
+def
+  collections.btree.set.Union.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+  {T : Type} (self : collections.btree.set.Union T) :
+  Result ((core.option.Option T) × (collections.btree.set.Union T))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (core.option.Option.Some t, s)
+
+/-- Trait implementation: [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::Union<'a, T>}]
+    Source: 'src/lib.rs', lines 1532:12-1541:13 -/
+@[reducible]
+def collections.btree.set.Union.Insts.CoreIterTraitsIteratorIteratorSharedAT (T
+  : Type) : core.iter.traits.iterator.Iterator (collections.btree.set.Union T)
+  T := {
+  next :=
+    collections.btree.set.Union.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+}
+
+/-- [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::SymmetricDifference<'a, T>}::next]:
+    Source: 'src/lib.rs', lines 1544:16-1550:17
+    Visibility: public -/
+def
+  collections.btree.set.SymmetricDifference.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+  {T : Type} (self : collections.btree.set.SymmetricDifference T) :
+  Result ((core.option.Option T) × (collections.btree.set.SymmetricDifference
+    T))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (core.option.Option.Some t, s)
+
+/-- Trait implementation: [alloc::collections::btree::set::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::btree::set::SymmetricDifference<'a, T>}]
+    Source: 'src/lib.rs', lines 1542:12-1551:13 -/
+@[reducible]
+def
+  collections.btree.set.SymmetricDifference.Insts.CoreIterTraitsIteratorIteratorSharedAT
+  (T : Type) : core.iter.traits.iterator.Iterator
+  (collections.btree.set.SymmetricDifference T) T := {
+  next :=
+    collections.btree.set.SymmetricDifference.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+}
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, alloc::alloc::Global>}::new]:
+    Source: 'src/lib.rs', lines 1572:16-1574:17 -/
+def collections.btree.set.BTreeSetTGlobal.new
+  (T : Type) : Result (collections.btree.set.BTreeSet T alloc.Global) := do
+  let s ← rust_primitives.sequence.seq_empty T
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::new_in]:
+    Source: 'src/lib.rs', lines 1586:16-1588:17 -/
+def collections.btree.set.BTreeSet.new_in
+  (T : Type) {A : Type} (corecloneCloneInst : core.clone.Clone A) (_alloc : A)
+  :
+  Result (collections.btree.set.BTreeSet T A)
+  := do
+  let s ← rust_primitives.sequence.seq_empty T
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::len]:
+    Source: 'src/lib.rs', lines 1590:16-1592:17 -/
+def collections.btree.set.BTreeSet.len
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.set.BTreeSet T A) :
+  Result Std.Usize
+  := do
+  let (s, _) := self
+  rust_primitives.sequence.seq_len s
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::is_empty]:
+    Source: 'src/lib.rs', lines 1594:16-1596:17 -/
+def collections.btree.set.BTreeSet.is_empty
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.set.BTreeSet T A) :
+  Result Bool
+  := do
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  ok (i = 0#usize)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::clear]:
+    Source: 'src/lib.rs', lines 1601:16-1606:17 -/
+def collections.btree.set.BTreeSet.clear
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecloneCloneInst1 : core.clone.Clone A)
+  (self : collections.btree.set.BTreeSet T A) :
+  Result (collections.btree.set.BTreeSet T A)
+  := do
+  let s ← rust_primitives.sequence.seq_empty T
+  let (_, pd) := self
+  ok (s, pd)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::first]:
+    Source: 'src/lib.rs', lines 1608:16-1617:17 -/
+def collections.btree.set.BTreeSet.first
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  :
+  Result (core.option.Option T)
+  := do
+  let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  if i = 0#usize
+  then ok core.option.Option.None
+  else
+    let (s, _) := self
+    let t ← rust_primitives.sequence.seq_index s 0#usize
+    ok (core.option.Option.Some t)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::last]:
+    Source: 'src/lib.rs', lines 1619:16-1629:17 -/
+def collections.btree.set.BTreeSet.last
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  :
+  Result (core.option.Option T)
+  := do
+  let l ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  if l = 0#usize
+  then ok core.option.Option.None
+  else
+    let (s, _) := self
+    let i ← l - 1#usize
+    let t ← rust_primitives.sequence.seq_index s i
+    ok (core.option.Option.Some t)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::pop_first]:
+    Source: 'src/lib.rs', lines 1631:16-1640:17 -/
+def collections.btree.set.BTreeSet.pop_first
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  :
+  Result ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
+  := do
+  let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (s, pd) := self
+    let (t, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::pop_last]:
+    Source: 'src/lib.rs', lines 1642:16-1652:17 -/
+def collections.btree.set.BTreeSet.pop_last
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  :
+  Result ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
+  := do
+  let l ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  if l = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (s, pd) := self
+    let i ← l - 1#usize
+    let (t, s1) ← rust_primitives.sequence.seq_remove s i
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::insert]:
+    Source: 'src/lib.rs', lines 1656:16-1667:17 -/
+def collections.btree.set.BTreeSet.insert
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (value : T) :
+  Result (Bool × (collections.btree.set.BTreeSet T A))
+  := do
+  let (s, pd) := self
+  let (i, b) ← collections.btree.seq_lower_bound corecmpOrdInst s value
+  if b
+  then ok (false, self)
+  else let s1 ← collections.btree.seq_insert s i value
+       ok (true, (s1, pd))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::replace]:
+    Source: 'src/lib.rs', lines 1671:16-1684:17 -/
+def collections.btree.set.BTreeSet.replace
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (value : T) :
+  Result ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
+  := do
+  let (s, pd) := self
+  let (i, b) ← collections.btree.seq_lower_bound corecmpOrdInst s value
+  if b
+  then
+    let (old, s1) ← rust_primitives.sequence.seq_remove s i
+    let s2 ← collections.btree.seq_insert s1 i value
+    ok (core.option.Option.Some old, (s2, pd))
+  else
+    let s1 ← collections.btree.seq_insert s i value
+    ok (core.option.Option.None, (s1, pd))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::contains]:
+    Source: 'src/lib.rs', lines 1686:16-1692:17 -/
+def collections.btree.set.BTreeSet.contains
+  {T : Type} {A : Type} {Q : Type} (corecloneCloneInst : core.clone.Clone A)
+  (coreborrowBorrowInst : core.borrow.Borrow T Q) (corecmpOrdInst :
+  core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.set.BTreeSet T A) (value : Q) :
+  Result Bool
+  := do
+  let (s, _) := self
+  let (_, b) ←
+    collections.btree.seq_lower_bound_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s value
+  ok b
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::get]:
+    Source: 'src/lib.rs', lines 1694:16-1705:17 -/
+def collections.btree.set.BTreeSet.get
+  {T : Type} {A : Type} {Q : Type} (corecloneCloneInst : core.clone.Clone A)
+  (coreborrowBorrowInst : core.borrow.Borrow T Q) (corecmpOrdInst :
+  core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.set.BTreeSet T A) (value : Q) :
+  Result (core.option.Option T)
+  := do
+  let (s, _) := self
+  let (i, b) ←
+    collections.btree.seq_lower_bound_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s value
+  if b
+  then
+    let t ← rust_primitives.sequence.seq_index s i
+    ok (core.option.Option.Some t)
+  else ok core.option.Option.None
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::remove]:
+    Source: 'src/lib.rs', lines 1707:16-1719:17 -/
+def collections.btree.set.BTreeSet.remove
+  {T : Type} {A : Type} {Q : Type} (corecloneCloneInst : core.clone.Clone A)
+  (coreborrowBorrowInst : core.borrow.Borrow T Q) (corecmpOrdInst :
+  core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.set.BTreeSet T A) (value : Q) :
+  Result (Bool × (collections.btree.set.BTreeSet T A))
+  := do
+  let (s, pd) := self
+  let (i, b) ←
+    collections.btree.seq_lower_bound_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s value
+  if b
+  then
+    let (_, s1) ← rust_primitives.sequence.seq_remove s i
+    ok (true, (s1, pd))
+  else ok (false, self)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::take]:
+    Source: 'src/lib.rs', lines 1721:16-1732:17 -/
+def collections.btree.set.BTreeSet.take
+  {T : Type} {A : Type} {Q : Type} (corecloneCloneInst : core.clone.Clone A)
+  (coreborrowBorrowInst : core.borrow.Borrow T Q) (corecmpOrdInst :
+  core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
+  (self : collections.btree.set.BTreeSet T A) (value : Q) :
+  Result ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
+  := do
+  let (s, pd) := self
+  let (i, b) ←
+    collections.btree.seq_lower_bound_borrowed coreborrowBorrowInst
+      corecmpOrdInst corecmpOrdInst1 s value
+  if b
+  then
+    let (t, s1) ← rust_primitives.sequence.seq_remove s i
+    ok (core.option.Option.Some t, (s1, pd))
+  else ok (core.option.Option.None, self)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::split_off]:
+    Source: 'src/lib.rs', lines 1735:16-1743:17 -/
+def collections.btree.set.BTreeSet.split_off
+  {T : Type} {A : Type} {Q : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord Q) (coreborrowBorrowInst : core.borrow.Borrow
+  T Q) (corecmpOrdInst1 : core.cmp.Ord T) (corecloneCloneInst1 :
+  core.clone.Clone A) (self : collections.btree.set.BTreeSet T A) (value : Q) :
+  Result ((collections.btree.set.BTreeSet T A) ×
+    (collections.btree.set.BTreeSet T A))
+  := do
+  let l ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  let (s, pd) := self
+  let (i, _) ←
+    collections.btree.seq_lower_bound_borrowed coreborrowBorrowInst
+      corecmpOrdInst1 corecmpOrdInst s value
+  let (s1, s2) ← rust_primitives.sequence.seq_drain s i l
+  ok ((s1, core.marker.PhantomData.mk), (s2, pd))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::append]: loop body 0:
+    Source: 'src/lib.rs', lines 1752:20-1757:21 -/
+@[rust_loop_body]
+def collections.btree.set.BTreeSet.append_loop.body
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (collections.btree.set.BTreeSet T A) × (collections.btree.set.BTreeSet T
+    A)) ((collections.btree.set.BTreeSet T A) ×
+    (collections.btree.set.BTreeSet T A)))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (self, other))
+  | core.option.Option.Some _ =>
+    let i ← collections.btree.set.BTreeSet.len corecloneCloneInst other
+    if i > 0#usize
+    then
+      let (s, pd) := other
+      let (x, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+      let (_, self1) ←
+        collections.btree.set.BTreeSet.replace corecloneCloneInst
+          corecmpOrdInst self x
+      ok (cont (iter1, self1, (s1, pd)))
+    else ok (cont (iter1, self, other))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::append]: loop 0:
+    Source: 'src/lib.rs', lines 1752:20-1757:21 -/
+@[rust_loop]
+def collections.btree.set.BTreeSet.append_loop
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result ((collections.btree.set.BTreeSet T A) ×
+    (collections.btree.set.BTreeSet T A))
+  := do
+  loop
+    (fun (iter1, self1, other1) =>
+      collections.btree.set.BTreeSet.append_loop.body corecloneCloneInst
+      corecmpOrdInst iter1 self1 other1)
+    (iter_, self, other)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::append]:
+    Source: 'src/lib.rs', lines 1746:16-1758:17 -/
+def collections.btree.set.BTreeSet.append
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (corecloneCloneInst1 : core.clone.Clone A)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result ((collections.btree.set.BTreeSet T A) ×
+    (collections.btree.set.BTreeSet T A))
+  := do
+  let l ← collections.btree.set.BTreeSet.len corecloneCloneInst other
+  collections.btree.set.BTreeSet.append_loop corecloneCloneInst corecmpOrdInst
+    { start := 0#usize, «end» := l } self other
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::retain]: loop body 0:
+    Source: 'src/lib.rs', lines 1768:20-1779:21 -/
+@[rust_loop_body]
+def collections.btree.set.BTreeSet.retain_loop.body
+  {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleSharedTBoolInst :
+  core.ops.function.FnMut F T Bool) (l : Std.Usize)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.set.BTreeSet T A) (f : F) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (collections.btree.set.BTreeSet T A) × F) (collections.btree.set.BTreeSet
+    T A))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done self)
+  | core.option.Option.Some k =>
+    let i ← l - 1#usize
+    let i1 ← i - k
+    let (s, pd) := self
+    let t ← rust_primitives.sequence.seq_index s i1
+    let (b, f1) ← coreopsfunctionFnMutFTupleSharedTBoolInst.call_mut f t
+    if b
+    then ok (cont (iter1, self, f1))
+    else
+      let (_, s1) ← rust_primitives.sequence.seq_remove s i1
+      ok (cont (iter1, (s1, pd), f1))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::retain]: loop 0:
+    Source: 'src/lib.rs', lines 1768:20-1779:21 -/
+@[rust_loop]
+def collections.btree.set.BTreeSet.retain_loop
+  {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleSharedTBoolInst :
+  core.ops.function.FnMut F T Bool) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.set.BTreeSet T A) (f : F) (l : Std.Usize) :
+  Result (collections.btree.set.BTreeSet T A)
+  := do
+  loop
+    (fun (iter1, self1, f1) => collections.btree.set.BTreeSet.retain_loop.body
+      coreopsfunctionFnMutFTupleSharedTBoolInst l iter1 self1 f1)
+    (iter_, self, f)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::retain]:
+    Source: 'src/lib.rs', lines 1762:16-1780:17 -/
+def collections.btree.set.BTreeSet.retain
+  {T : Type} {A : Type} {F : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (coreopsfunctionFnMutFTupleShared0TBoolInst
+  : core.ops.function.FnMut F T Bool)
+  (self : collections.btree.set.BTreeSet T A) (f : F) :
+  Result (collections.btree.set.BTreeSet T A)
+  := do
+  let l ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  collections.btree.set.BTreeSet.retain_loop
+    coreopsfunctionFnMutFTupleShared0TBoolInst
+    { start := 0#usize, «end» := l } self f l
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::iter]:
+    Source: 'src/lib.rs', lines 1782:16-1784:17 -/
+def collections.btree.set.BTreeSet.iter
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.btree.set.BTreeSet T A) :
+  Result (collections.btree.set.Iter T)
+  := do
+  let (s, _) := self
+  let s1 ← rust_primitives.sequence.seq_to_slice s
+  let s2 ← rust_primitives.sequence.seq_from_slice s1
+  ok s2
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::is_subset]: loop body 0:
+    Source: 'src/lib.rs', lines 1791:20-1795:21 -/
+@[rust_loop_body]
+def collections.btree.set.BTreeSet.is_subset_loop.body
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (iter_ : core.ops.range.Range Std.Usize) (res : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done res)
+  | core.option.Option.Some i =>
+    let (s, _) := other
+    let (s1, _) := self
+    let t ← rust_primitives.sequence.seq_index s1 i
+    let (_, b) ← collections.btree.seq_lower_bound corecmpOrdInst s t
+    if b
+    then ok (cont (iter1, res))
+    else ok (cont (iter1, false))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::is_subset]: loop 0:
+    Source: 'src/lib.rs', lines 1791:20-1795:21 -/
+@[rust_loop]
+def collections.btree.set.BTreeSet.is_subset_loop
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) (res : Bool) :
+  Result Bool
+  := do
+  loop
+    (fun (iter1, res1) => collections.btree.set.BTreeSet.is_subset_loop.body
+      corecmpOrdInst self other iter1 res1)
+    (iter_, res)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::is_subset]:
+    Source: 'src/lib.rs', lines 1786:16-1797:17 -/
+def collections.btree.set.BTreeSet.is_subset
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result Bool
+  := do
+  let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  collections.btree.set.BTreeSet.is_subset_loop corecmpOrdInst
+    { start := 0#usize, «end» := i } self other true
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::is_superset]:
+    Source: 'src/lib.rs', lines 1799:16-1804:17 -/
+def collections.btree.set.BTreeSet.is_superset
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result Bool
+  := do
+  collections.btree.set.BTreeSet.is_subset corecloneCloneInst corecmpOrdInst
+    other self
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::is_disjoint]: loop body 0:
+    Source: 'src/lib.rs', lines 1811:20-1815:21 -/
+@[rust_loop_body]
+def collections.btree.set.BTreeSet.is_disjoint_loop.body
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (iter_ : core.ops.range.Range Std.Usize) (res : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done res)
+  | core.option.Option.Some i =>
+    let (s, _) := other
+    let (s1, _) := self
+    let t ← rust_primitives.sequence.seq_index s1 i
+    let (_, b) ← collections.btree.seq_lower_bound corecmpOrdInst s t
+    if b
+    then ok (cont (iter1, false))
+    else ok (cont (iter1, res))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::is_disjoint]: loop 0:
+    Source: 'src/lib.rs', lines 1811:20-1815:21 -/
+@[rust_loop]
+def collections.btree.set.BTreeSet.is_disjoint_loop
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) (res : Bool) :
+  Result Bool
+  := do
+  loop
+    (fun (iter1, res1) => collections.btree.set.BTreeSet.is_disjoint_loop.body
+      corecmpOrdInst self other iter1 res1)
+    (iter_, res)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::is_disjoint]:
+    Source: 'src/lib.rs', lines 1806:16-1817:17 -/
+def collections.btree.set.BTreeSet.is_disjoint
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result Bool
+  := do
+  let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  collections.btree.set.BTreeSet.is_disjoint_loop corecmpOrdInst
+    { start := 0#usize, «end» := i } self other true
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::difference]: loop body 0:
+    Source: 'src/lib.rs', lines 1824:20-1829:21 -/
+@[rust_loop_body]
+def collections.btree.set.BTreeSet.difference_loop.body
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (out : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done out)
+  | core.option.Option.Some i =>
+    let (s, _) := self
+    let x ← rust_primitives.sequence.seq_index s i
+    let (s1, _) := other
+    let (_, b) ← collections.btree.seq_lower_bound corecmpOrdInst s1 x
+    if b
+    then ok (cont (iter1, out))
+    else
+      let out1 ← rust_primitives.sequence.seq_push out x
+      ok (cont (iter1, out1))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::difference]: loop 0:
+    Source: 'src/lib.rs', lines 1824:20-1829:21 -/
+@[rust_loop]
+def collections.btree.set.BTreeSet.difference_loop
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (out : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, out1) => collections.btree.set.BTreeSet.difference_loop.body
+      corecmpOrdInst self other iter1 out1)
+    (iter_, out)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::difference]:
+    Source: 'src/lib.rs', lines 1819:16-1831:17 -/
+def collections.btree.set.BTreeSet.difference
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result (collections.btree.set.Difference T A)
+  := do
+  let out ← rust_primitives.sequence.seq_empty T
+  let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  let out1 ←
+    collections.btree.set.BTreeSet.difference_loop corecmpOrdInst
+      { start := 0#usize, «end» := i } self other out
+  ok (out1, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::intersection]: loop body 0:
+    Source: 'src/lib.rs', lines 1838:20-1843:21 -/
+@[rust_loop_body]
+def collections.btree.set.BTreeSet.intersection_loop.body
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (out : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done out)
+  | core.option.Option.Some i =>
+    let (s, _) := self
+    let x ← rust_primitives.sequence.seq_index s i
+    let (s1, _) := other
+    let (_, b) ← collections.btree.seq_lower_bound corecmpOrdInst s1 x
+    if b
+    then
+      let out1 ← rust_primitives.sequence.seq_push out x
+      ok (cont (iter1, out1))
+    else ok (cont (iter1, out))
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::intersection]: loop 0:
+    Source: 'src/lib.rs', lines 1838:20-1843:21 -/
+@[rust_loop]
+def collections.btree.set.BTreeSet.intersection_loop
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (out : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, out1) => collections.btree.set.BTreeSet.intersection_loop.body
+      corecmpOrdInst self other iter1 out1)
+    (iter_, out)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::intersection]:
+    Source: 'src/lib.rs', lines 1833:16-1845:17 -/
+def collections.btree.set.BTreeSet.intersection
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result (collections.btree.set.Intersection T A)
+  := do
+  let out ← rust_primitives.sequence.seq_empty T
+  let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  let out1 ←
+    collections.btree.set.BTreeSet.intersection_loop corecmpOrdInst
+      { start := 0#usize, «end» := i } self other out
+  ok (out1, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::union]: loop body 0:
+    Source: 'src/lib.rs', lines 1855:20-1878:21 -/
+@[rust_loop_body]
+def collections.btree.set.BTreeSet.union_loop.body
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (out : rust_primitives.sequence.Seq T) (i : Std.Usize) (j : Std.Usize) :
+  Result (ControlFlow ((rust_primitives.sequence.Seq T) × Std.Usize ×
+    Std.Usize) (rust_primitives.sequence.Seq T))
+  := do
+  let i1 ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  if i < i1
+  then
+    if i >= i1
+    then
+      let (s, _) := other
+      let t ← rust_primitives.sequence.seq_index s j
+      let out1 ← rust_primitives.sequence.seq_push out t
+      let j1 ← j + 1#usize
+      ok (cont (out1, i, j1))
+    else
+      let i2 ← collections.btree.set.BTreeSet.len corecloneCloneInst other
+      if j >= i2
+      then
+        let (s, _) := self
+        let t ← rust_primitives.sequence.seq_index s i
+        let out1 ← rust_primitives.sequence.seq_push out t
+        let i3 ← i + 1#usize
+        ok (cont (out1, i3, j))
+      else
+        let (s, _) := self
+        let a ← rust_primitives.sequence.seq_index s i
+        let (s1, _) := other
+        let b ← rust_primitives.sequence.seq_index s1 j
+        let o ← corecmpOrdInst.cmp a b
+        let b1 ← core.cmp.Ordering.is_lt o
+        if b1
+        then
+          let out1 ← rust_primitives.sequence.seq_push out a
+          let i3 ← i + 1#usize
+          ok (cont (out1, i3, j))
+        else
+          let b2 ← core.cmp.Ordering.is_gt o
+          if b2
+          then
+            let out1 ← rust_primitives.sequence.seq_push out b
+            let j1 ← j + 1#usize
+            ok (cont (out1, i, j1))
+          else
+            let out1 ← rust_primitives.sequence.seq_push out a
+            let i3 ← i + 1#usize
+            let j1 ← j + 1#usize
+            ok (cont (out1, i3, j1))
+  else
+    let i2 ← collections.btree.set.BTreeSet.len corecloneCloneInst other
+    if j < i2
+    then
+      if i >= i1
+      then
+        let (s, _) := other
+        let t ← rust_primitives.sequence.seq_index s j
+        let out1 ← rust_primitives.sequence.seq_push out t
+        let j1 ← j + 1#usize
+        ok (cont (out1, i, j1))
+      else
+        if j >= i2
+        then
+          let (s, _) := self
+          let t ← rust_primitives.sequence.seq_index s i
+          let out1 ← rust_primitives.sequence.seq_push out t
+          let i3 ← i + 1#usize
+          ok (cont (out1, i3, j))
+        else
+          let (s, _) := self
+          let a ← rust_primitives.sequence.seq_index s i
+          let (s1, _) := other
+          let b ← rust_primitives.sequence.seq_index s1 j
+          let o ← corecmpOrdInst.cmp a b
+          let b1 ← core.cmp.Ordering.is_lt o
+          if b1
+          then
+            let out1 ← rust_primitives.sequence.seq_push out a
+            let i3 ← i + 1#usize
+            ok (cont (out1, i3, j))
+          else
+            let b2 ← core.cmp.Ordering.is_gt o
+            if b2
+            then
+              let out1 ← rust_primitives.sequence.seq_push out b
+              let j1 ← j + 1#usize
+              ok (cont (out1, i, j1))
+            else
+              let out1 ← rust_primitives.sequence.seq_push out a
+              let i3 ← i + 1#usize
+              let j1 ← j + 1#usize
+              ok (cont (out1, i3, j1))
+    else ok (done out)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::union]: loop 0:
+    Source: 'src/lib.rs', lines 1855:20-1878:21 -/
+@[rust_loop]
+def collections.btree.set.BTreeSet.union_loop
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (out : rust_primitives.sequence.Seq T) (i : Std.Usize) (j : Std.Usize) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (out1, i1, j1) => collections.btree.set.BTreeSet.union_loop.body
+      corecloneCloneInst corecmpOrdInst self other out1 i1 j1)
+    (out, i, j)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::union]:
+    Source: 'src/lib.rs', lines 1848:16-1880:17 -/
+def collections.btree.set.BTreeSet.union
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result (collections.btree.set.Union T)
+  := do
+  let out ← rust_primitives.sequence.seq_empty T
+  let out1 ←
+    collections.btree.set.BTreeSet.union_loop corecloneCloneInst corecmpOrdInst
+      self other out 0#usize 0#usize
+  ok out1
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::symmetric_difference]: loop body 0:
+    Source: 'src/lib.rs', lines 1892:20-1914:21 -/
+@[rust_loop_body]
+def collections.btree.set.BTreeSet.symmetric_difference_loop.body
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (out : rust_primitives.sequence.Seq T) (i : Std.Usize) (j : Std.Usize) :
+  Result (ControlFlow ((rust_primitives.sequence.Seq T) × Std.Usize ×
+    Std.Usize) (rust_primitives.sequence.Seq T))
+  := do
+  let i1 ← collections.btree.set.BTreeSet.len corecloneCloneInst self
+  if i < i1
+  then
+    if i >= i1
+    then
+      let (s, _) := other
+      let t ← rust_primitives.sequence.seq_index s j
+      let out1 ← rust_primitives.sequence.seq_push out t
+      let j1 ← j + 1#usize
+      ok (cont (out1, i, j1))
+    else
+      let i2 ← collections.btree.set.BTreeSet.len corecloneCloneInst other
+      if j >= i2
+      then
+        let (s, _) := self
+        let t ← rust_primitives.sequence.seq_index s i
+        let out1 ← rust_primitives.sequence.seq_push out t
+        let i3 ← i + 1#usize
+        ok (cont (out1, i3, j))
+      else
+        let (s, _) := self
+        let a ← rust_primitives.sequence.seq_index s i
+        let (s1, _) := other
+        let b ← rust_primitives.sequence.seq_index s1 j
+        let o ← corecmpOrdInst.cmp a b
+        let b1 ← core.cmp.Ordering.is_lt o
+        if b1
+        then
+          let out1 ← rust_primitives.sequence.seq_push out a
+          let i3 ← i + 1#usize
+          ok (cont (out1, i3, j))
+        else
+          let b2 ← core.cmp.Ordering.is_gt o
+          if b2
+          then
+            let out1 ← rust_primitives.sequence.seq_push out b
+            let j1 ← j + 1#usize
+            ok (cont (out1, i, j1))
+          else
+            let i3 ← i + 1#usize
+            let j1 ← j + 1#usize
+            ok (cont (out, i3, j1))
+  else
+    let i2 ← collections.btree.set.BTreeSet.len corecloneCloneInst other
+    if j < i2
+    then
+      if i >= i1
+      then
+        let (s, _) := other
+        let t ← rust_primitives.sequence.seq_index s j
+        let out1 ← rust_primitives.sequence.seq_push out t
+        let j1 ← j + 1#usize
+        ok (cont (out1, i, j1))
+      else
+        if j >= i2
+        then
+          let (s, _) := self
+          let t ← rust_primitives.sequence.seq_index s i
+          let out1 ← rust_primitives.sequence.seq_push out t
+          let i3 ← i + 1#usize
+          ok (cont (out1, i3, j))
+        else
+          let (s, _) := self
+          let a ← rust_primitives.sequence.seq_index s i
+          let (s1, _) := other
+          let b ← rust_primitives.sequence.seq_index s1 j
+          let o ← corecmpOrdInst.cmp a b
+          let b1 ← core.cmp.Ordering.is_lt o
+          if b1
+          then
+            let out1 ← rust_primitives.sequence.seq_push out a
+            let i3 ← i + 1#usize
+            ok (cont (out1, i3, j))
+          else
+            let b2 ← core.cmp.Ordering.is_gt o
+            if b2
+            then
+              let out1 ← rust_primitives.sequence.seq_push out b
+              let j1 ← j + 1#usize
+              ok (cont (out1, i, j1))
+            else
+              let i3 ← i + 1#usize
+              let j1 ← j + 1#usize
+              ok (cont (out, i3, j1))
+    else ok (done out)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::symmetric_difference]: loop 0:
+    Source: 'src/lib.rs', lines 1892:20-1914:21 -/
+@[rust_loop]
+def collections.btree.set.BTreeSet.symmetric_difference_loop
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A)
+  (out : rust_primitives.sequence.Seq T) (i : Std.Usize) (j : Std.Usize) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (out1, i1, j1) =>
+      collections.btree.set.BTreeSet.symmetric_difference_loop.body
+      corecloneCloneInst corecmpOrdInst self other out1 i1 j1)
+    (out, i, j)
+
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, A>}::symmetric_difference]:
+    Source: 'src/lib.rs', lines 1882:16-1916:17 -/
+def collections.btree.set.BTreeSet.symmetric_difference
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
+  (other : collections.btree.set.BTreeSet T A) :
+  Result (collections.btree.set.SymmetricDifference T)
+  := do
+  let out ← rust_primitives.sequence.seq_empty T
+  let out1 ←
+    collections.btree.set.BTreeSet.symmetric_difference_loop corecloneCloneInst
+      corecmpOrdInst self other out 0#usize 0#usize
+  ok out1
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, alloc::alloc::Global>}::new]:
+    Source: 'src/lib.rs', lines 2196:12-2198:13 -/
+def collections.linked_list.LinkedListTGlobal.new
+  (T : Type) : Result (collections.linked_list.LinkedList T alloc.Global) := do
+  let s ← rust_primitives.sequence.seq_empty T
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::len]:
+    Source: 'src/lib.rs', lines 2214:12-2216:13 -/
+def collections.linked_list.LinkedList.len
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result Std.Usize
+  := do
+  let (s, _) := self
+  rust_primitives.sequence.seq_len s
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, alloc::alloc::Global>}::append]:
+    Source: 'src/lib.rs', lines 2201:12-2204:13 -/
+def collections.linked_list.LinkedListTGlobal.append
+  {T : Type} (self : collections.linked_list.LinkedList T alloc.Global)
+  (other : collections.linked_list.LinkedList T alloc.Global) :
+  Result ((collections.linked_list.LinkedList T alloc.Global) ×
+    (collections.linked_list.LinkedList T alloc.Global))
+  := do
+  let (s, pd) := self
+  let (s1, pd1) := other
+  let (s2, _) ← rust_primitives.sequence.seq_concat s s1
+  let s3 ← rust_primitives.sequence.seq_empty T
+  ok ((s2, pd), (s3, pd1))
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::new_in]:
+    Source: 'src/lib.rs', lines 2210:12-2212:13 -/
+def collections.linked_list.LinkedList.new_in
+  (T : Type) {A : Type} (_alloc : A) :
+  Result (collections.linked_list.LinkedList T A)
+  := do
+  let s ← rust_primitives.sequence.seq_empty T
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::is_empty]:
+    Source: 'src/lib.rs', lines 2218:12-2220:13 -/
+def collections.linked_list.LinkedList.is_empty
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result Bool
+  := do
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  ok (i = 0#usize)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::clear]:
+    Source: 'src/lib.rs', lines 2222:12-2224:13 -/
+def collections.linked_list.LinkedList.clear
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result (collections.linked_list.LinkedList T A)
+  := do
+  let s ← rust_primitives.sequence.seq_empty T
+  let (_, pd) := self
+  ok (s, pd)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::front]:
+    Source: 'src/lib.rs', lines 2226:12-2232:13 -/
+def collections.linked_list.LinkedList.front
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result (core.option.Option T)
+  := do
+  let i ← collections.linked_list.LinkedList.len self
+  if i = 0#usize
+  then ok core.option.Option.None
+  else
+    let (s, _) := self
+    let t ← rust_primitives.sequence.seq_index s 0#usize
+    ok (core.option.Option.Some t)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::back]:
+    Source: 'src/lib.rs', lines 2234:12-2241:13 -/
+def collections.linked_list.LinkedList.back
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result (core.option.Option T)
+  := do
+  let l ← collections.linked_list.LinkedList.len self
+  if l = 0#usize
+  then ok core.option.Option.None
+  else
+    let (s, _) := self
+    let i ← l - 1#usize
+    let t ← rust_primitives.sequence.seq_index s i
+    ok (core.option.Option.Some t)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::front_mut]:
+    Source: 'src/lib.rs', lines 2245:12-2251:13 -/
+def collections.linked_list.LinkedList.front_mut
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result ((core.option.Option T) × (core.option.Option T →
+    collections.linked_list.LinkedList T A))
+  := do
+  let i ← collections.linked_list.LinkedList.len self
+  if i = 0#usize
+  then let back := fun o => self
+       ok (core.option.Option.None, back)
+  else
+    let (s, pd) := self
+    let (t, seq_index_mut_back) ←
+      rust_primitives.sequence.seq_index_mut s 0#usize
+    let back :=
+      fun o =>
+        let t1 := match o with
+                  | core.option.Option.Some t2 => t2
+                  | _ => t
+        let s1 := seq_index_mut_back t1
+        (s1, pd)
+    ok (core.option.Option.Some t, back)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::back_mut]:
+    Source: 'src/lib.rs', lines 2254:12-2261:13 -/
+def collections.linked_list.LinkedList.back_mut
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result ((core.option.Option T) × (core.option.Option T →
+    collections.linked_list.LinkedList T A))
+  := do
+  let l ← collections.linked_list.LinkedList.len self
+  if l = 0#usize
+  then let back := fun o => self
+       ok (core.option.Option.None, back)
+  else
+    let (s, pd) := self
+    let i ← l - 1#usize
+    let (t, seq_index_mut_back) ← rust_primitives.sequence.seq_index_mut s i
+    let back :=
+      fun o =>
+        let t1 := match o with
+                  | core.option.Option.Some t2 => t2
+                  | _ => t
+        let s1 := seq_index_mut_back t1
+        (s1, pd)
+    ok (core.option.Option.Some t, back)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::push_front]:
+    Source: 'src/lib.rs', lines 2279:12-2284:13 -/
+def collections.linked_list.LinkedList.push_front
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
+  (elt : T) :
+  Result (collections.linked_list.LinkedList T A)
+  := do
+  let (s, pd) := self
+  let l ← rust_primitives.sequence.seq_len s
+  let (right, s1) ← rust_primitives.sequence.seq_drain s 0#usize l
+  let s2 ← rust_primitives.sequence.seq_push s1 elt
+  let (s3, _) ← rust_primitives.sequence.seq_concat s2 right
+  ok (s3, pd)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::push_front_mut]:
+    Source: 'src/lib.rs', lines 2265:12-2268:13 -/
+def collections.linked_list.LinkedList.push_front_mut
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
+  (elt : T) :
+  Result (T × (T → collections.linked_list.LinkedList T A))
+  := do
+  let self1 ← collections.linked_list.LinkedList.push_front self elt
+  let (s, pd) := self1
+  let (t, seq_index_mut_back) ←
+    rust_primitives.sequence.seq_index_mut s 0#usize
+  let back := fun t1 => let s1 := seq_index_mut_back t1
+                        (s1, pd)
+  ok (t, back)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::push_back]:
+    Source: 'src/lib.rs', lines 2287:12-2289:13 -/
+def collections.linked_list.LinkedList.push_back
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
+  (elt : T) :
+  Result (collections.linked_list.LinkedList T A)
+  := do
+  let (s, pd) := self
+  let s1 ← rust_primitives.sequence.seq_push s elt
+  ok (s1, pd)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::push_back_mut]:
+    Source: 'src/lib.rs', lines 2272:12-2276:13 -/
+def collections.linked_list.LinkedList.push_back_mut
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
+  (elt : T) :
+  Result (T × (T → collections.linked_list.LinkedList T A))
+  := do
+  let self1 ← collections.linked_list.LinkedList.push_back self elt
+  let l ← collections.linked_list.LinkedList.len self1
+  let (s, pd) := self1
+  let i ← l - 1#usize
+  let (t, seq_index_mut_back) ← rust_primitives.sequence.seq_index_mut s i
+  let back := fun t1 => let s1 := seq_index_mut_back t1
+                        (s1, pd)
+  ok (t, back)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::pop_front]:
+    Source: 'src/lib.rs', lines 2291:12-2297:13 -/
+def collections.linked_list.LinkedList.pop_front
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result ((core.option.Option T) × (collections.linked_list.LinkedList T A))
+  := do
+  let i ← collections.linked_list.LinkedList.len self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (s, pd) := self
+    let (t, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::pop_back]:
+    Source: 'src/lib.rs', lines 2299:12-2306:13 -/
+def collections.linked_list.LinkedList.pop_back
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result ((core.option.Option T) × (collections.linked_list.LinkedList T A))
+  := do
+  let l ← collections.linked_list.LinkedList.len self
+  if l = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (s, pd) := self
+    let i ← l - 1#usize
+    let (t, s1) ← rust_primitives.sequence.seq_remove s i
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::split_off]:
+    Source: 'src/lib.rs', lines 2309:12-2315:13 -/
+def collections.linked_list.LinkedList.split_off
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.linked_list.LinkedList T A) (at1 : Std.Usize) :
+  Result ((collections.linked_list.LinkedList T A) ×
+    (collections.linked_list.LinkedList T A))
+  := do
+  let l ← collections.linked_list.LinkedList.len self
+  let (s, pd) := self
+  let (s1, s2) ← rust_primitives.sequence.seq_drain s at1 l
+  ok ((s1, core.marker.PhantomData.mk), (s2, pd))
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::remove]:
+    Source: 'src/lib.rs', lines 2320:12-2322:13 -/
+def collections.linked_list.LinkedList.remove
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
+  (at1 : Std.Usize) :
+  Result (T × (collections.linked_list.LinkedList T A))
+  := do
+  let (s, pd) := self
+  let (t, s1) ← rust_primitives.sequence.seq_remove s at1
+  ok (t, (s1, pd))
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::contains]: loop body 0:
+    Source: 'src/lib.rs', lines 2334:16-2338:17 -/
+@[rust_loop_body]
+def collections.linked_list.LinkedList.contains_loop.body
+  {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
+  (self : collections.linked_list.LinkedList T A) (x : T)
+  (iter_ : core.ops.range.Range Std.Usize) (found : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done found)
+  | core.option.Option.Some i =>
+    let (s, _) := self
+    let t ← rust_primitives.sequence.seq_index s i
+    let b ← corecmpPartialEqInst.eq t x
+    if b
+    then ok (cont (iter1, true))
+    else ok (cont (iter1, found))
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::contains]: loop 0:
+    Source: 'src/lib.rs', lines 2334:16-2338:17 -/
+@[rust_loop]
+def collections.linked_list.LinkedList.contains_loop
+  {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.linked_list.LinkedList T A) (x : T) (found : Bool) :
+  Result Bool
+  := do
+  loop
+    (fun (iter1, found1) =>
+      collections.linked_list.LinkedList.contains_loop.body
+      corecmpPartialEqInst self x iter1 found1)
+    (iter_, found)
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::contains]:
+    Source: 'src/lib.rs', lines 2329:12-2340:13 -/
+def collections.linked_list.LinkedList.contains
+  {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
+  (self : collections.linked_list.LinkedList T A) (x : T) :
+  Result Bool
+  := do
+  let i ← collections.linked_list.LinkedList.len self
+  collections.linked_list.LinkedList.contains_loop corecmpPartialEqInst
+    { start := 0#usize, «end» := i } self x false
+
+/-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::iter]:
+    Source: 'src/lib.rs', lines 2342:12-2344:13 -/
+def collections.linked_list.LinkedList.iter
+  {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
+  Result (collections.linked_list.Iter T)
+  := do
+  let (s, _) := self
+  let s1 ← rust_primitives.sequence.seq_to_slice s
+  let s2 ← rust_primitives.sequence.seq_from_slice s1
+  ok s2
+
+/-- [alloc::collections::linked_list::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::linked_list::Iter<'a, T>}::next]:
+    Source: 'src/lib.rs', lines 2349:12-2355:13
+    Visibility: public -/
+def
+  collections.linked_list.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+  {T : Type} (self : collections.linked_list.Iter T) :
+  Result ((core.option.Option T) × (collections.linked_list.Iter T))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (core.option.Option.Some t, s)
+
+/-- Trait implementation: [alloc::collections::linked_list::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::linked_list::Iter<'a, T>}]
+    Source: 'src/lib.rs', lines 2347:8-2356:9 -/
+@[reducible]
+def collections.linked_list.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT
+  (T : Type) : core.iter.traits.iterator.Iterator (collections.linked_list.Iter
+  T) T := {
+  next :=
+    collections.linked_list.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+}
+
+/-- [alloc::collections::vec_deque::seq_insert]:
+    Source: 'src/lib.rs', lines 2623:8-2628:9 -/
+def collections.vec_deque.seq_insert
+  {T : Type} (s : rust_primitives.sequence.Seq T) (index : Std.Usize)
+  (value : T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  let l ← rust_primitives.sequence.seq_len s
+  let (right, s1) ← rust_primitives.sequence.seq_drain s index l
+  let s2 ← rust_primitives.sequence.seq_push s1 value
+  let (s3, _) ← rust_primitives.sequence.seq_concat s2 right
+  ok s3
 
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, alloc::alloc::Global>}::new]:
-    Source: 'src/lib.rs', lines 256:12-258:13 -/
+    Source: 'src/lib.rs', lines 2632:12-2634:13 -/
 def collections.vec_deque.VecDequeTGlobal.new
   (T : Type) : Result (collections.vec_deque.VecDeque T alloc.Global) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok (s, core.marker.PhantomData.mk)
 
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, alloc::alloc::Global>}::with_capacity]:
-    Source: 'src/lib.rs', lines 259:12-261:13 -/
+    Source: 'src/lib.rs', lines 2636:12-2638:13 -/
 def collections.vec_deque.VecDequeTGlobal.with_capacity
   (T : Type) (_capacity : Std.Usize) :
   Result (collections.vec_deque.VecDeque T alloc.Global)
   := do
   collections.vec_deque.VecDequeTGlobal.new T
 
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, alloc::alloc::Global>}::try_with_capacity]:
+    Source: 'src/lib.rs', lines 2642:12-2646:13 -/
+def collections.vec_deque.VecDequeTGlobal.try_with_capacity
+  (T : Type) (_capacity : Std.Usize) :
+  Result (core.result.Result (collections.vec_deque.VecDeque T alloc.Global)
+    collections.TryReserveError)
+  := do
+  let vd ← collections.vec_deque.VecDequeTGlobal.new T
+  ok (core.result.Result.Ok vd)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::new_in]:
+    Source: 'src/lib.rs', lines 2652:12-2654:13 -/
+def collections.vec_deque.VecDeque.new_in
+  (T : Type) {A : Type} (_alloc : A) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let s ← rust_primitives.sequence.seq_empty T
+  ok (s, core.marker.PhantomData.mk)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::with_capacity_in]:
+    Source: 'src/lib.rs', lines 2656:12-2658:13 -/
+def collections.vec_deque.VecDeque.with_capacity_in
+  (T : Type) {A : Type} (_capacity : Std.Usize) (alloc : A) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  collections.vec_deque.VecDeque.new_in T alloc
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::len]:
+    Source: 'src/lib.rs', lines 2660:12-2662:13 -/
+def collections.vec_deque.VecDeque.len
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result Std.Usize
+  := do
+  let (s, _) := self
+  rust_primitives.sequence.seq_len s
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::is_empty]:
+    Source: 'src/lib.rs', lines 2664:12-2666:13 -/
+def collections.vec_deque.VecDeque.is_empty
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result Bool
+  := do
+  let (s, _) := self
+  let i ← rust_primitives.sequence.seq_len s
+  ok (i = 0#usize)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::get]:
+    Source: 'src/lib.rs', lines 2668:12-2674:13 -/
+def collections.vec_deque.VecDeque.get
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (index : Std.Usize) :
+  Result (core.option.Option T)
+  := do
+  let i ← collections.vec_deque.VecDeque.len self
+  if index < i
+  then
+    let (s, _) := self
+    let t ← rust_primitives.sequence.seq_index s index
+    ok (core.option.Option.Some t)
+  else ok core.option.Option.None
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::front]:
+    Source: 'src/lib.rs', lines 2676:12-2678:13 -/
+def collections.vec_deque.VecDeque.front
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result (core.option.Option T)
+  := do
+  collections.vec_deque.VecDeque.get self 0#usize
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::back]:
+    Source: 'src/lib.rs', lines 2680:12-2686:13 -/
+def collections.vec_deque.VecDeque.back
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result (core.option.Option T)
+  := do
+  let i ← collections.vec_deque.VecDeque.len self
+  if i = 0#usize
+  then ok core.option.Option.None
+  else let i1 ← i - 1#usize
+       collections.vec_deque.VecDeque.get self i1
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::get_mut]:
+    Source: 'src/lib.rs', lines 2694:12-2700:13 -/
+def collections.vec_deque.VecDeque.get_mut
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (index : Std.Usize) :
+  Result ((core.option.Option T) × (core.option.Option T →
+    collections.vec_deque.VecDeque T A))
+  := do
+  let i ← collections.vec_deque.VecDeque.len self
+  if index < i
+  then
+    let (s, pd) := self
+    let (t, seq_index_mut_back) ←
+      rust_primitives.sequence.seq_index_mut s index
+    let back :=
+      fun o =>
+        let t1 := match o with
+                  | core.option.Option.Some t2 => t2
+                  | _ => t
+        let s1 := seq_index_mut_back t1
+        (s1, pd)
+    ok (core.option.Option.Some t, back)
+  else let back := fun o => self
+       ok (core.option.Option.None, back)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::front_mut]:
+    Source: 'src/lib.rs', lines 2703:12-2705:13 -/
+def collections.vec_deque.VecDeque.front_mut
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result ((core.option.Option T) × (core.option.Option T →
+    collections.vec_deque.VecDeque T A))
+  := do
+  collections.vec_deque.VecDeque.get_mut self 0#usize
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::back_mut]:
+    Source: 'src/lib.rs', lines 2708:12-2711:13 -/
+def collections.vec_deque.VecDeque.back_mut
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result ((core.option.Option T) × (core.option.Option T →
+    collections.vec_deque.VecDeque T A))
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  if l = 0#usize
+  then let back := fun o => self
+       ok (core.option.Option.None, back)
+  else let i ← l - 1#usize
+       collections.vec_deque.VecDeque.get_mut self i
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::make_contiguous]:
+    Source: 'src/lib.rs', lines 2716:12-2718:13 -/
+def collections.vec_deque.VecDeque.make_contiguous
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result ((Slice T) × (Slice T → collections.vec_deque.VecDeque T A))
+  := do
+  let (s, pd) := self
+  let (s1, seq_to_slice_mut_back) ←
+    rust_primitives.sequence.seq_to_slice_mut s
+  let back := fun s2 => let s3 := seq_to_slice_mut_back s2
+                        (s3, pd)
+  ok (s1, back)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::insert_mut]:
+    Source: 'src/lib.rs', lines 2722:12-2725:13 -/
+def collections.vec_deque.VecDeque.insert_mut
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (index : Std.Usize) (value : T) :
+  Result (T × (T → collections.vec_deque.VecDeque T A))
+  := do
+  let (s, pd) := self
+  let s1 ← collections.vec_deque.seq_insert s index value
+  let (t, seq_index_mut_back) ←
+    rust_primitives.sequence.seq_index_mut s1 index
+  let back := fun t1 => let s2 := seq_index_mut_back t1
+                        (s2, pd)
+  ok (t, back)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::push_front]:
+    Source: 'src/lib.rs', lines 2755:12-2757:13 -/
+def collections.vec_deque.VecDeque.push_front
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) (value : T)
+  :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let (s, pd) := self
+  let s1 ← collections.vec_deque.seq_insert s 0#usize value
+  ok (s1, pd)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::push_front_mut]:
+    Source: 'src/lib.rs', lines 2729:12-2732:13 -/
+def collections.vec_deque.VecDeque.push_front_mut
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) (value : T)
+  :
+  Result (T × (T → collections.vec_deque.VecDeque T A))
+  := do
+  let self1 ← collections.vec_deque.VecDeque.push_front self value
+  let (s, pd) := self1
+  let (t, seq_index_mut_back) ←
+    rust_primitives.sequence.seq_index_mut s 0#usize
+  let back := fun t1 => let s1 := seq_index_mut_back t1
+                        (s1, pd)
+  ok (t, back)
+
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::push_back]:
-    Source: 'src/lib.rs', lines 267:12-269:13 -/
+    Source: 'src/lib.rs', lines 2750:12-2752:13 -/
 def collections.vec_deque.VecDeque.push_back
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) (x : T) :
   Result (collections.vec_deque.VecDeque T A)
@@ -94,17 +2583,24 @@ def collections.vec_deque.VecDeque.push_back
   let s1 ← rust_primitives.sequence.seq_push s x
   ok (s1, pd)
 
-/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::len]:
-    Source: 'src/lib.rs', lines 270:12-272:13 -/
-def collections.vec_deque.VecDeque.len
-  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result Std.Usize
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::push_back_mut]:
+    Source: 'src/lib.rs', lines 2736:12-2740:13 -/
+def collections.vec_deque.VecDeque.push_back_mut
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) (value : T)
+  :
+  Result (T × (T → collections.vec_deque.VecDeque T A))
   := do
-  let (s, _) := self
-  rust_primitives.sequence.seq_len s
+  let self1 ← collections.vec_deque.VecDeque.push_back self value
+  let l ← collections.vec_deque.VecDeque.len self1
+  let (s, pd) := self1
+  let i ← l - 1#usize
+  let (t, seq_index_mut_back) ← rust_primitives.sequence.seq_index_mut s i
+  let back := fun t1 => let s1 := seq_index_mut_back t1
+                        (s1, pd)
+  ok (t, back)
 
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::pop_front]:
-    Source: 'src/lib.rs', lines 273:12-279:13 -/
+    Source: 'src/lib.rs', lines 2759:12-2765:13 -/
 def collections.vec_deque.VecDeque.pop_front
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
   Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
@@ -117,8 +2613,760 @@ def collections.vec_deque.VecDeque.pop_front
     let (t, s1) ← rust_primitives.sequence.seq_remove s 0#usize
     ok (core.option.Option.Some t, (s1, pd))
 
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::pop_back]:
+    Source: 'src/lib.rs', lines 2767:12-2774:13 -/
+def collections.vec_deque.VecDeque.pop_back
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  if l = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (s, pd) := self
+    let i ← l - 1#usize
+    let (t, s1) ← rust_primitives.sequence.seq_remove s i
+    ok (core.option.Option.Some t, (s1, pd))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::swap]:
+    Source: 'src/lib.rs', lines 2777:12-2786:13 -/
+def collections.vec_deque.VecDeque.swap
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (i : Std.Usize) (j : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  if i != j
+  then
+    let lo ← if i < j
+               then ok i
+               else ok j
+    let hi ← if i < j
+               then ok j
+               else ok i
+    let (s, pd) := self
+    let (high, s1) ← rust_primitives.sequence.seq_remove s hi
+    let (low, s2) ← rust_primitives.sequence.seq_remove s1 lo
+    let s3 ← collections.vec_deque.seq_insert s2 lo high
+    let s4 ← collections.vec_deque.seq_insert s3 hi low
+    ok (s4, pd)
+  else ok self
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::insert]:
+    Source: 'src/lib.rs', lines 2789:12-2791:13 -/
+def collections.vec_deque.VecDeque.insert
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (index : Std.Usize) (value : T) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let (s, pd) := self
+  let s1 ← collections.vec_deque.seq_insert s index value
+  ok (s1, pd)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::remove]:
+    Source: 'src/lib.rs', lines 2793:12-2799:13 -/
+def collections.vec_deque.VecDeque.remove
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (index : Std.Usize) :
+  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  := do
+  let i ← collections.vec_deque.VecDeque.len self
+  if index < i
+  then
+    let (s, pd) := self
+    let (t, s1) ← rust_primitives.sequence.seq_remove s index
+    ok (core.option.Option.Some t, (s1, pd))
+  else ok (core.option.Option.None, self)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::swap_remove_front]:
+    Source: 'src/lib.rs', lines 2801:12-2808:13 -/
+def collections.vec_deque.VecDeque.swap_remove_front
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (index : Std.Usize) :
+  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  := do
+  let i ← collections.vec_deque.VecDeque.len self
+  if index < i
+  then
+    let self1 ← collections.vec_deque.VecDeque.swap self index 0#usize
+    collections.vec_deque.VecDeque.pop_front self1
+  else ok (core.option.Option.None, self)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::swap_remove_back]:
+    Source: 'src/lib.rs', lines 2810:12-2818:13 -/
+def collections.vec_deque.VecDeque.swap_remove_back
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (index : Std.Usize) :
+  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  if index < l
+  then
+    let i ← l - 1#usize
+    let self1 ← collections.vec_deque.VecDeque.swap self index i
+    collections.vec_deque.VecDeque.pop_back self1
+  else ok (core.option.Option.None, self)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::clear]:
+    Source: 'src/lib.rs', lines 2820:12-2822:13 -/
+def collections.vec_deque.VecDeque.clear
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let s ← rust_primitives.sequence.seq_empty T
+  let (_, pd) := self
+  ok (s, pd)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::truncate]:
+    Source: 'src/lib.rs', lines 2824:12-2829:13 -/
+def collections.vec_deque.VecDeque.truncate
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (len : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  if len < l
+  then
+    let (s, pd) := self
+    let (_, s1) ← rust_primitives.sequence.seq_drain s len l
+    ok (s1, pd)
+  else ok self
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::truncate_front]:
+    Source: 'src/lib.rs', lines 2832:12-2837:13 -/
+def collections.vec_deque.VecDeque.truncate_front
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (len : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  if len < l
+  then
+    let (s, pd) := self
+    let i ← l - len
+    let (_, s1) ← rust_primitives.sequence.seq_drain s 0#usize i
+    ok (s1, pd)
+  else ok self
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::split_off]:
+    Source: 'src/lib.rs', lines 2846:12-2852:13 -/
+def collections.vec_deque.VecDeque.split_off
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
+  (self : collections.vec_deque.VecDeque T A) (at1 : Std.Usize) :
+  Result ((collections.vec_deque.VecDeque T A) ×
+    (collections.vec_deque.VecDeque T A))
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  let (s, pd) := self
+  let (s1, s2) ← rust_primitives.sequence.seq_drain s at1 l
+  ok ((s1, core.marker.PhantomData.mk), (s2, pd))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::append]:
+    Source: 'src/lib.rs', lines 2855:12-2858:13 -/
+def collections.vec_deque.VecDeque.append
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (other : collections.vec_deque.VecDeque T A) :
+  Result ((collections.vec_deque.VecDeque T A) ×
+    (collections.vec_deque.VecDeque T A))
+  := do
+  let (s, pd) := self
+  let (s1, pd1) := other
+  let (s2, _) ← rust_primitives.sequence.seq_concat s s1
+  let s3 ← rust_primitives.sequence.seq_empty T
+  ok ((s2, pd), (s3, pd1))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::rotate_left]:
+    Source: 'src/lib.rs', lines 2861:12-2864:13 -/
+def collections.vec_deque.VecDeque.rotate_left
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (n : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let (s, pd) := self
+  let (head, s1) ← rust_primitives.sequence.seq_drain s 0#usize n
+  let (s2, _) ← rust_primitives.sequence.seq_concat s1 head
+  ok (s2, pd)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::rotate_right]:
+    Source: 'src/lib.rs', lines 2867:12-2870:13 -/
+def collections.vec_deque.VecDeque.rotate_right
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (n : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  let i ← l - n
+  collections.vec_deque.VecDeque.rotate_left self i
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::contains]: loop body 0:
+    Source: 'src/lib.rs', lines 2883:16-2887:17 -/
+@[rust_loop_body]
+def collections.vec_deque.VecDeque.contains_loop.body
+  {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
+  (self : collections.vec_deque.VecDeque T A) (x : T)
+  (iter_ : core.ops.range.Range Std.Usize) (found : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done found)
+  | core.option.Option.Some i =>
+    let (s, _) := self
+    let t ← rust_primitives.sequence.seq_index s i
+    let b ← corecmpPartialEqInst.eq t x
+    if b
+    then ok (cont (iter1, true))
+    else ok (cont (iter1, found))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::contains]: loop 0:
+    Source: 'src/lib.rs', lines 2883:16-2887:17 -/
+@[rust_loop]
+def collections.vec_deque.VecDeque.contains_loop
+  {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (x : T) (found : Bool) :
+  Result Bool
+  := do
+  loop
+    (fun (iter1, found1) => collections.vec_deque.VecDeque.contains_loop.body
+      corecmpPartialEqInst self x iter1 found1)
+    (iter_, found)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::contains]:
+    Source: 'src/lib.rs', lines 2878:12-2889:13 -/
+def collections.vec_deque.VecDeque.contains
+  {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
+  (self : collections.vec_deque.VecDeque T A) (x : T) :
+  Result Bool
+  := do
+  let i ← collections.vec_deque.VecDeque.len self
+  collections.vec_deque.VecDeque.contains_loop corecmpPartialEqInst
+    { start := 0#usize, «end» := i } self x false
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::as_slices]:
+    Source: 'src/lib.rs', lines 2896:12-2902:13 -/
+def collections.vec_deque.VecDeque.as_slices
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result ((Slice T) × (Slice T))
+  := do
+  let (s, _) := self
+  let s1 ← rust_primitives.sequence.seq_to_slice s
+  let i ← collections.vec_deque.VecDeque.len self
+  let s2 ← rust_primitives.slice.slice_slice s1 i i
+  ok (s1, s2)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::iter]:
+    Source: 'src/lib.rs', lines 2904:12-2906:13 -/
+def collections.vec_deque.VecDeque.iter
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result (collections.vec_deque.iter.Iter T)
+  := do
+  let (s, _) := self
+  let s1 ← rust_primitives.sequence.seq_to_slice s
+  let s2 ← rust_primitives.sequence.seq_from_slice s1
+  ok s2
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::reserve]:
+    Source: 'src/lib.rs', lines 2909:12-2909:56 -/
+def collections.vec_deque.VecDeque.reserve
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (_additional : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  ok self
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::reserve_exact]:
+    Source: 'src/lib.rs', lines 2911:12-2911:62 -/
+def collections.vec_deque.VecDeque.reserve_exact
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (_additional : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  ok self
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::shrink_to_fit]:
+    Source: 'src/lib.rs', lines 2913:12-2913:42 -/
+def collections.vec_deque.VecDeque.shrink_to_fit
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  ok self
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::shrink_to]:
+    Source: 'src/lib.rs', lines 2915:12-2915:60 -/
+def collections.vec_deque.VecDeque.shrink_to
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (_min_capacity : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  ok self
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::try_reserve]:
+    Source: 'src/lib.rs', lines 2918:12-2920:13 -/
+def collections.vec_deque.VecDeque.try_reserve
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (_additional : Std.Usize) :
+  Result ((core.result.Result Unit collections.TryReserveError) ×
+    (collections.vec_deque.VecDeque T A))
+  := do
+  ok (core.result.Result.Ok (), self)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::try_reserve_exact]:
+    Source: 'src/lib.rs', lines 2922:12-2927:13 -/
+def collections.vec_deque.VecDeque.try_reserve_exact
+  {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
+  (_additional : Std.Usize) :
+  Result ((core.result.Result Unit collections.TryReserveError) ×
+    (collections.vec_deque.VecDeque T A))
+  := do
+  ok (core.result.Result.Ok (), self)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::retain]: loop body 0:
+    Source: 'src/lib.rs', lines 2945:16-2956:17 -/
+@[rust_loop_body]
+def collections.vec_deque.VecDeque.retain_loop.body
+  {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleSharedTBoolInst :
+  core.ops.function.FnMut F T Bool) (l : Std.Usize)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (f : F) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (collections.vec_deque.VecDeque T A) × F) (collections.vec_deque.VecDeque
+    T A))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done self)
+  | core.option.Option.Some k =>
+    let i ← l - 1#usize
+    let i1 ← i - k
+    let (s, pd) := self
+    let t ← rust_primitives.sequence.seq_index s i1
+    let (b, f1) ← coreopsfunctionFnMutFTupleSharedTBoolInst.call_mut f t
+    if b
+    then ok (cont (iter1, self, f1))
+    else
+      let (_, s1) ← rust_primitives.sequence.seq_remove s i1
+      ok (cont (iter1, (s1, pd), f1))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::retain]: loop 0:
+    Source: 'src/lib.rs', lines 2945:16-2956:17 -/
+@[rust_loop]
+def collections.vec_deque.VecDeque.retain_loop
+  {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleSharedTBoolInst :
+  core.ops.function.FnMut F T Bool) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (f : F) (l : Std.Usize) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  loop
+    (fun (iter1, self1, f1) => collections.vec_deque.VecDeque.retain_loop.body
+      coreopsfunctionFnMutFTupleSharedTBoolInst l iter1 self1 f1)
+    (iter_, self, f)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::retain]:
+    Source: 'src/lib.rs', lines 2940:12-2957:13 -/
+def collections.vec_deque.VecDeque.retain
+  {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleShared0TBoolInst
+  : core.ops.function.FnMut F T Bool)
+  (self : collections.vec_deque.VecDeque T A) (f : F) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  collections.vec_deque.VecDeque.retain_loop
+    coreopsfunctionFnMutFTupleShared0TBoolInst
+    { start := 0#usize, «end» := l } self f l
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::resize_with]: loop body 0:
+    Source: 'src/lib.rs', lines 2972:20-2974:21 -/
+@[rust_loop_body]
+def collections.vec_deque.VecDeque.resize_with_loop.body
+  {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleTInst :
+  core.ops.function.FnMut F Unit T) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (generator : F) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (collections.vec_deque.VecDeque T A) × F) (collections.vec_deque.VecDeque
+    T A))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done self)
+  | core.option.Option.Some _ =>
+    let (s, pd) := self
+    let (t, generator1) ←
+      coreopsfunctionFnMutFTupleTInst.call_mut generator ()
+    let s1 ← rust_primitives.sequence.seq_push s t
+    ok (cont (iter1, (s1, pd), generator1))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::resize_with]: loop 0:
+    Source: 'src/lib.rs', lines 2972:20-2974:21 -/
+@[rust_loop]
+def collections.vec_deque.VecDeque.resize_with_loop
+  {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleTInst :
+  core.ops.function.FnMut F Unit T) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (generator : F) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  loop
+    (fun (iter1, self1, generator1) =>
+      collections.vec_deque.VecDeque.resize_with_loop.body
+      coreopsfunctionFnMutFTupleTInst iter1 self1 generator1)
+    (iter_, self, generator)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::resize_with]:
+    Source: 'src/lib.rs', lines 2966:12-2978:13 -/
+def collections.vec_deque.VecDeque.resize_with
+  {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleTInst :
+  core.ops.function.FnMut F Unit T) (self : collections.vec_deque.VecDeque T A)
+  (new_len : Std.Usize) (generator : F) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  if new_len > l
+  then
+    let i ← new_len - l
+    collections.vec_deque.VecDeque.resize_with_loop
+      coreopsfunctionFnMutFTupleTInst { start := 0#usize, «end» := i } self
+      generator
+  else collections.vec_deque.VecDeque.truncate self new_len
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search_by]: loop body 0:
+    Source: 'src/lib.rs', lines 3009:16-3025:17 -/
+@[rust_loop_body]
+def collections.vec_deque.VecDeque.binary_search_by_loop.body
+  {T : Type} {A : Type} {F : Type}
+  (coreopsfunctionFnMutFTupleSharedTOrderingInst : core.ops.function.FnMut F T
+  core.cmp.Ordering) (self : collections.vec_deque.VecDeque T A)
+  (iter_ : core.ops.range.Range Std.Usize) (f : F) (pos : Std.Usize) (eq : Bool)
+  (done1 : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × F × Std.Usize ×
+    Bool × Bool) (Std.Usize × Bool))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (pos, eq))
+  | core.option.Option.Some i =>
+    if done1
+    then ok (cont (iter1, f, pos, eq, true))
+    else
+      let (s, _) := self
+      let t ← rust_primitives.sequence.seq_index s i
+      let (o1, f1) ←
+        coreopsfunctionFnMutFTupleSharedTOrderingInst.call_mut f t
+      match o1 with
+      | core.cmp.Ordering.Less => ok (cont (iter1, f1, pos, eq, false))
+      | core.cmp.Ordering.Equal => ok (cont (iter1, f1, i, true, true))
+      | core.cmp.Ordering.Greater => ok (cont (iter1, f1, i, false, true))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search_by]: loop 0:
+    Source: 'src/lib.rs', lines 3009:16-3025:17 -/
+@[rust_loop]
+def collections.vec_deque.VecDeque.binary_search_by_loop
+  {T : Type} {A : Type} {F : Type}
+  (coreopsfunctionFnMutFTupleSharedTOrderingInst : core.ops.function.FnMut F T
+  core.cmp.Ordering) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (f : F) (pos : Std.Usize)
+  (eq : Bool) (done1 : Bool) :
+  Result (Std.Usize × Bool)
+  := do
+  loop
+    (fun (iter1, f1, pos1, eq1, done2) =>
+      collections.vec_deque.VecDeque.binary_search_by_loop.body
+      coreopsfunctionFnMutFTupleSharedTOrderingInst self iter1 f1 pos1 eq1
+      done2)
+    (iter_, f, pos, eq, done1)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search_by]:
+    Source: 'src/lib.rs', lines 3002:12-3027:13 -/
+def collections.vec_deque.VecDeque.binary_search_by
+  {T : Type} {A : Type} {F : Type}
+  (coreopsfunctionFnMutFTupleShared0TOrderingInst : core.ops.function.FnMut F T
+  core.cmp.Ordering) (self : collections.vec_deque.VecDeque T A) (f : F) :
+  Result (core.result.Result Std.Usize Std.Usize)
+  := do
+  let pos ← collections.vec_deque.VecDeque.len self
+  let (pos1, eq) ←
+    collections.vec_deque.VecDeque.binary_search_by_loop
+      coreopsfunctionFnMutFTupleShared0TOrderingInst
+      { start := 0#usize, «end» := pos } self f pos false false
+  if eq
+  then ok (core.result.Result.Ok pos1)
+  else ok (core.result.Result.Err pos1)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::{impl core::ops::function::FnMut<(&'_ T,), core::cmp::Ordering> for alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::closure<'_0, T, A>}::call_mut]:
+    Source: 'src/lib.rs', lines 2991:38-2991:58 -/
+def
+  collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnMutTupleSharedTOrdering.call_mut
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (c : collections.vec_deque.VecDeque.binary_search.closure T A)
+  (tupled_args : T) :
+  Result (core.cmp.Ordering ×
+    (collections.vec_deque.VecDeque.binary_search.closure T A))
+  := do
+  let o ← corecmpOrdInst.cmp tupled_args c
+  ok (o, c)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::{impl core::ops::function::FnOnce<(&'_ T,), core::cmp::Ordering> for alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::closure<'_0, T, A>}::call_once]:
+    Source: 'src/lib.rs', lines 2991:38-2991:58 -/
+def
+  collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnOnceTupleSharedTOrdering.call_once
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (c : collections.vec_deque.VecDeque.binary_search.closure T A) (t : T) :
+  Result core.cmp.Ordering
+  := do
+  let (o, _) ←
+    collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnMutTupleSharedTOrdering.call_mut
+      corecmpOrdInst c t
+  ok o
+
+/-- Trait implementation: [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::{impl core::ops::function::FnOnce<(&'_ T,), core::cmp::Ordering> for alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::closure<'_0, T, A>}]
+    Source: 'src/lib.rs', lines 2991:38-2991:58 -/
+@[reducible]
+def
+  collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnOnceTupleSharedTOrdering
+  {T : Type} (A : Type) (corecmpOrdInst : core.cmp.Ord T) :
+  core.ops.function.FnOnce
+  (collections.vec_deque.VecDeque.binary_search.closure T A) T
+  core.cmp.Ordering := {
+  call_once :=
+    collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnOnceTupleSharedTOrdering.call_once
+    corecmpOrdInst
+}
+
+/-- Trait implementation: [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::{impl core::ops::function::FnMut<(&'_ T,), core::cmp::Ordering> for alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::closure<'_0, T, A>}]
+    Source: 'src/lib.rs', lines 2991:38-2991:58 -/
+@[reducible]
+def
+  collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnMutTupleSharedTOrdering
+  {T : Type} (A : Type) (corecmpOrdInst : core.cmp.Ord T) :
+  core.ops.function.FnMut (collections.vec_deque.VecDeque.binary_search.closure
+  T A) T core.cmp.Ordering := {
+  FnOnceInst :=
+    collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnOnceTupleSharedTOrdering
+    A corecmpOrdInst
+  call_mut :=
+    collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnMutTupleSharedTOrdering.call_mut
+    corecmpOrdInst
+}
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search]:
+    Source: 'src/lib.rs', lines 2987:12-2992:13 -/
+def collections.vec_deque.VecDeque.binary_search
+  {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
+  (self : collections.vec_deque.VecDeque T A) (x : T) :
+  Result (core.result.Result Std.Usize Std.Usize)
+  := do
+  collections.vec_deque.VecDeque.binary_search_by
+    (collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnMutTupleSharedTOrdering
+    A corecmpOrdInst) self x
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search_by_key]: loop body 0:
+    Source: 'src/lib.rs', lines 3049:16-3065:17 -/
+@[rust_loop_body]
+def collections.vec_deque.VecDeque.binary_search_by_key_loop.body
+  {T : Type} {A : Type} {B : Type} {F : Type}
+  (coreopsfunctionFnMutFTupleSharedTBInst : core.ops.function.FnMut F T B)
+  (corecmpOrdInst : core.cmp.Ord B) (self : collections.vec_deque.VecDeque T A)
+  (b : B) (iter_ : core.ops.range.Range Std.Usize) (f : F) (pos : Std.Usize)
+  (eq : Bool) (done1 : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × F × Std.Usize ×
+    Bool × Bool) (Std.Usize × Bool))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (pos, eq))
+  | core.option.Option.Some i =>
+    if done1
+    then ok (cont (iter1, f, pos, eq, true))
+    else
+      let (s, _) := self
+      let t ← rust_primitives.sequence.seq_index s i
+      let (t1, f1) ← coreopsfunctionFnMutFTupleSharedTBInst.call_mut f t
+      let o1 ← corecmpOrdInst.cmp t1 b
+      match o1 with
+      | core.cmp.Ordering.Less => ok (cont (iter1, f1, pos, eq, false))
+      | core.cmp.Ordering.Equal => ok (cont (iter1, f1, i, true, true))
+      | core.cmp.Ordering.Greater => ok (cont (iter1, f1, i, false, true))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search_by_key]: loop 0:
+    Source: 'src/lib.rs', lines 3049:16-3065:17 -/
+@[rust_loop]
+def collections.vec_deque.VecDeque.binary_search_by_key_loop
+  {T : Type} {A : Type} {B : Type} {F : Type}
+  (coreopsfunctionFnMutFTupleSharedTBInst : core.ops.function.FnMut F T B)
+  (corecmpOrdInst : core.cmp.Ord B) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (b : B) (f : F) (pos : Std.Usize)
+  (eq : Bool) (done1 : Bool) :
+  Result (Std.Usize × Bool)
+  := do
+  loop
+    (fun (iter1, f1, pos1, eq1, done2) =>
+      collections.vec_deque.VecDeque.binary_search_by_key_loop.body
+      coreopsfunctionFnMutFTupleSharedTBInst corecmpOrdInst self b iter1 f1
+      pos1 eq1 done2)
+    (iter_, f, pos, eq, done1)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search_by_key]:
+    Source: 'src/lib.rs', lines 3041:12-3067:13 -/
+def collections.vec_deque.VecDeque.binary_search_by_key
+  {T : Type} {A : Type} {B : Type} {F : Type}
+  (coreopsfunctionFnMutFTupleShared0TBInst : core.ops.function.FnMut F T B)
+  (corecmpOrdInst : core.cmp.Ord B) (self : collections.vec_deque.VecDeque T A)
+  (b : B) (f : F) :
+  Result (core.result.Result Std.Usize Std.Usize)
+  := do
+  let pos ← collections.vec_deque.VecDeque.len self
+  let (pos1, eq) ←
+    collections.vec_deque.VecDeque.binary_search_by_key_loop
+      coreopsfunctionFnMutFTupleShared0TBInst corecmpOrdInst
+      { start := 0#usize, «end» := pos } self b f pos false false
+  if eq
+  then ok (core.result.Result.Ok pos1)
+  else ok (core.result.Result.Err pos1)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::partition_point]: loop body 0:
+    Source: 'src/lib.rs', lines 1:0-3087:17 -/
+@[rust_loop_body]
+def collections.vec_deque.VecDeque.partition_point_loop.body
+  {T : Type} {A : Type} {P : Type} (coreopsfunctionFnMutPTupleSharedTBoolInst :
+  core.ops.function.FnMut P T Bool) (self : collections.vec_deque.VecDeque T A)
+  (iter_ : core.ops.range.Range Std.Usize) (pred : P) (pos : Std.Usize)
+  (done1 : Bool) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) × P × Std.Usize ×
+    Bool) Std.Usize)
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done pos)
+  | core.option.Option.Some i =>
+    if done1
+    then ok (cont (iter1, pred, pos, true))
+    else
+      let (s, _) := self
+      let t ← rust_primitives.sequence.seq_index s i
+      let (b, pred1) ←
+        coreopsfunctionFnMutPTupleSharedTBoolInst.call_mut pred t
+      if b
+      then ok (cont (iter1, pred1, pos, false))
+      else ok (cont (iter1, pred1, i, true))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::partition_point]: loop 0:
+    Source: 'src/lib.rs', lines 1:0-3087:17 -/
+@[rust_loop]
+def collections.vec_deque.VecDeque.partition_point_loop
+  {T : Type} {A : Type} {P : Type} (coreopsfunctionFnMutPTupleSharedTBoolInst :
+  core.ops.function.FnMut P T Bool) (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (pred : P) (pos : Std.Usize)
+  (done1 : Bool) :
+  Result Std.Usize
+  := do
+  loop
+    (fun (iter1, pred1, pos1, done2) =>
+      collections.vec_deque.VecDeque.partition_point_loop.body
+      coreopsfunctionFnMutPTupleSharedTBoolInst self iter1 pred1 pos1 done2)
+    (iter_, pred, pos, done1)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::partition_point]:
+    Source: 'src/lib.rs', lines 3076:12-3089:13 -/
+def collections.vec_deque.VecDeque.partition_point
+  {T : Type} {A : Type} {P : Type} (coreopsfunctionFnMutPTupleShared0TBoolInst
+  : core.ops.function.FnMut P T Bool)
+  (self : collections.vec_deque.VecDeque T A) (pred : P) :
+  Result Std.Usize
+  := do
+  let pos ← collections.vec_deque.VecDeque.len self
+  collections.vec_deque.VecDeque.partition_point_loop
+    coreopsfunctionFnMutPTupleShared0TBoolInst
+    { start := 0#usize, «end» := pos } self pred pos false
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::resize]: loop body 0:
+    Source: 'src/lib.rs', lines 3102:20-3110:21 -/
+@[rust_loop_body]
+def collections.vec_deque.VecDeque.resize_loop.body
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone T) (value : T)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (collections.vec_deque.VecDeque T A)) (collections.vec_deque.VecDeque T A))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done self)
+  | core.option.Option.Some _ =>
+    let (s, pd) := self
+    let t ← corecloneCloneInst.clone value
+    let s1 ← rust_primitives.sequence.seq_push s t
+    ok (cont (iter1, (s1, pd)))
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::resize]: loop 0:
+    Source: 'src/lib.rs', lines 3102:20-3110:21 -/
+@[rust_loop]
+def collections.vec_deque.VecDeque.resize_loop
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone T)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (self : collections.vec_deque.VecDeque T A) (value : T) :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  loop
+    (fun (iter1, self1) => collections.vec_deque.VecDeque.resize_loop.body
+      corecloneCloneInst value iter1 self1)
+    (iter_, self)
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::resize]:
+    Source: 'src/lib.rs', lines 3099:12-3114:13 -/
+def collections.vec_deque.VecDeque.resize
+  {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone T)
+  (self : collections.vec_deque.VecDeque T A) (new_len : Std.Usize) (value : T)
+  :
+  Result (collections.vec_deque.VecDeque T A)
+  := do
+  let l ← collections.vec_deque.VecDeque.len self
+  if new_len > l
+  then
+    let i ← new_len - l
+    collections.vec_deque.VecDeque.resize_loop corecloneCloneInst
+      { start := 0#usize, «end» := i } self value
+  else collections.vec_deque.VecDeque.truncate self new_len
+
+/-- [alloc::collections::vec_deque::iter::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::vec_deque::iter::Iter<'a, T>}::next]:
+    Source: 'src/lib.rs', lines 3125:16-3131:17
+    Visibility: public -/
+def
+  collections.vec_deque.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+  {T : Type} (self : collections.vec_deque.iter.Iter T) :
+  Result ((core.option.Option T) × (collections.vec_deque.iter.Iter T))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (core.option.Option.Some t, s)
+
+/-- Trait implementation: [alloc::collections::vec_deque::iter::{impl core::iter::traits::iterator::Iterator<&'a T> for alloc::collections::vec_deque::iter::Iter<'a, T>}]
+    Source: 'src/lib.rs', lines 3123:12-3132:13 -/
+@[reducible]
+def
+  collections.vec_deque.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT
+  (T : Type) : core.iter.traits.iterator.Iterator
+  (collections.vec_deque.iter.Iter T) T := {
+  next :=
+    collections.vec_deque.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+}
+
 /-- [alloc::collections::vec_deque::{impl core::ops::index::Index<usize, T> for alloc::collections::vec_deque::VecDeque<T, A>}::index]:
-    Source: 'src/lib.rs', lines 286:12-288:13
+    Source: 'src/lib.rs', lines 3139:12-3141:13
     Visibility: public -/
 def collections.vec_deque.VecDeque.Insts.CoreOpsIndexIndexUsizeT.index
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
@@ -129,7 +3377,7 @@ def collections.vec_deque.VecDeque.Insts.CoreOpsIndexIndexUsizeT.index
   rust_primitives.sequence.seq_index s i
 
 /-- Trait implementation: [alloc::collections::vec_deque::{impl core::ops::index::Index<usize, T> for alloc::collections::vec_deque::VecDeque<T, A>}]
-    Source: 'src/lib.rs', lines 283:8-289:9 -/
+    Source: 'src/lib.rs', lines 3136:8-3142:9 -/
 @[reducible]
 def collections.vec_deque.VecDeque.Insts.CoreOpsIndexIndexUsizeT (T : Type) (A
   : Type) : core.ops.index.Index (collections.vec_deque.VecDeque T A) Std.Usize
@@ -138,7 +3386,7 @@ def collections.vec_deque.VecDeque.Insts.CoreOpsIndexIndexUsizeT (T : Type) (A
 }
 
 /-- [alloc::collections::vec_deque::into_iter::{impl core::iter::traits::iterator::Iterator<T> for alloc::collections::vec_deque::into_iter::IntoIter<T, A>}::next]:
-    Source: 'src/lib.rs', lines 296:16-302:17
+    Source: 'src/lib.rs', lines 3149:16-3155:17
     Visibility: public -/
 def
   collections.vec_deque.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
@@ -155,7 +3403,7 @@ def
     ok (core.option.Option.Some t, (s1, pd))
 
 /-- Trait implementation: [alloc::collections::vec_deque::into_iter::{impl core::iter::traits::iterator::Iterator<T> for alloc::collections::vec_deque::into_iter::IntoIter<T, A>}]
-    Source: 'src/lib.rs', lines 294:12-303:13 -/
+    Source: 'src/lib.rs', lines 3147:12-3156:13 -/
 @[reducible]
 def
   collections.vec_deque.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator
@@ -166,7 +3414,7 @@ def
 }
 
 /-- [alloc::collections::vec_deque::{impl core::iter::traits::collect::IntoIterator<T, alloc::collections::vec_deque::into_iter::IntoIter<T, A>> for alloc::collections::vec_deque::VecDeque<T, A>}::into_iter]:
-    Source: 'src/lib.rs', lines 310:12-312:13
+    Source: 'src/lib.rs', lines 3163:12-3165:13
     Visibility: public -/
 def
   collections.vec_deque.VecDeque.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
@@ -177,7 +3425,7 @@ def
   ok (s, core.marker.PhantomData.mk)
 
 /-- Trait implementation: [alloc::collections::vec_deque::{impl core::iter::traits::collect::IntoIterator<T, alloc::collections::vec_deque::into_iter::IntoIter<T, A>> for alloc::collections::vec_deque::VecDeque<T, A>}]
-    Source: 'src/lib.rs', lines 307:8-313:9 -/
+    Source: 'src/lib.rs', lines 3160:8-3166:9 -/
 @[reducible]
 def
   collections.vec_deque.VecDeque.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter
@@ -189,13 +3437,13 @@ def
 }
 
 /-- [alloc::vec::from_seq]:
-    Source: 'src/lib.rs', lines 668:4-670:5 -/
+    Source: 'src/lib.rs', lines 4536:4-4538:5 -/
 def vec.from_seq
   {T : Type} (s : rust_primitives.sequence.Seq T) : Result (vec.Vec T) := do
   ok s
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::to_vec]:
-    Source: 'src/lib.rs', lines 451:8-458:9 -/
+    Source: 'src/lib.rs', lines 3829:8-3836:9 -/
 def slice.Dummy.to_vec
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (s : Slice T) :
   Result (vec.Vec T)
@@ -205,13 +3453,13 @@ def slice.Dummy.to_vec
   vec.from_seq seq1
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::into_vec]:
-    Source: 'src/lib.rs', lines 460:8-462:9 -/
+    Source: 'src/lib.rs', lines 3838:8-3840:9 -/
 def slice.Dummy.into_vec {T : Type} (s : Slice T) : Result (vec.Vec T) := do
   let s1 ← rust_primitives.sequence.seq_from_boxed_slice s
   vec.from_seq s1
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]: loop body 0:
-    Source: 'src/lib.rs', lines 475:12-478:13 -/
+    Source: 'src/lib.rs', lines 3853:12-3856:13 -/
 @[rust_loop_body]
 def slice.Dummy.concat_loop.body
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
@@ -231,7 +3479,7 @@ def slice.Dummy.concat_loop.body
   else ok (done out)
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]: loop 0:
-    Source: 'src/lib.rs', lines 475:12-478:13 -/
+    Source: 'src/lib.rs', lines 3853:12-3856:13 -/
 @[rust_loop]
 def slice.Dummy.concat_loop
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
@@ -245,7 +3493,7 @@ def slice.Dummy.concat_loop
     (out, i)
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]:
-    Source: 'src/lib.rs', lines 469:8-480:9 -/
+    Source: 'src/lib.rs', lines 3847:8-3858:9 -/
 def slice.Dummy.concat
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
   (coreborrowBorrowTSliceInst : core.borrow.Borrow T (Slice Item))
@@ -259,20 +3507,20 @@ def slice.Dummy.concat
   vec.from_seq out1
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::as_slice]:
-    Source: 'src/lib.rs', lines 783:8-785:9
+    Source: 'src/lib.rs', lines 4666:8-4668:9
     Visibility: public -/
 def vec.Vec.as_slice {T : Type} (self : vec.Vec T) : Result (Slice T) := do
   rust_primitives.sequence.seq_to_slice self
 
 /-- [alloc::vec::{impl core::ops::deref::Deref<[T]> for alloc::vec::Vec<T>}::deref]:
-    Source: 'src/lib.rs', lines 930:8-932:9
+    Source: 'src/lib.rs', lines 5125:8-5127:9
     Visibility: public -/
 def vec.Vec.Insts.CoreOpsDerefDerefSlice.deref
   {T : Type} (self : vec.Vec T) : Result (Slice T) := do
   vec.Vec.as_slice self
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]: loop body 0:
-    Source: 'src/lib.rs', lines 675:12-677:13
+    Source: 'src/lib.rs', lines 4543:12-4545:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.Insts.CoreCloneClone.clone_loop.body
@@ -291,7 +3539,7 @@ def vec.Vec.Insts.CoreCloneClone.clone_loop.body
     ok (cont (iter1, new_vec1))
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]: loop 0:
-    Source: 'src/lib.rs', lines 675:12-677:13
+    Source: 'src/lib.rs', lines 4543:12-4545:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.Insts.CoreCloneClone.clone_loop
@@ -305,7 +3553,7 @@ def vec.Vec.Insts.CoreCloneClone.clone_loop
     (iter_, new_vec)
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]:
-    Source: 'src/lib.rs', lines 673:8-679:9
+    Source: 'src/lib.rs', lines 4541:8-4547:9
     Visibility: public -/
 def vec.Vec.Insts.CoreCloneClone.clone
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T) :
@@ -319,7 +3567,7 @@ def vec.Vec.Insts.CoreCloneClone.clone
   ok new_vec1
 
 /-- Trait implementation: [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 672:4-680:5 -/
+    Source: 'src/lib.rs', lines 4540:4-4548:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
   core.clone.Clone T) : core.clone.Clone (vec.Vec T) := {
@@ -327,7 +3575,7 @@ def vec.Vec.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
 }
 
 /-- [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}::index]:
-    Source: 'src/lib.rs', lines 905:8-907:9
+    Source: 'src/lib.rs', lines 5100:8-5102:9
     Visibility: public -/
 def vec.Vec.Insts.CoreOpsIndexIndex.index
   {T : Type} {I : Type} {Clause0_Output : Type}
@@ -341,13 +3589,13 @@ def vec.Vec.Insts.CoreOpsIndexIndex.index
     coresliceindexSliceIndexISliceClause0_OutputInst s i
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::len]:
-    Source: 'src/lib.rs', lines 757:8-759:9
+    Source: 'src/lib.rs', lines 4640:8-4642:9
     Visibility: public -/
 def vec.Vec.len {T : Type} (self : vec.Vec T) : Result Std.Usize := do
   rust_primitives.sequence.seq_len self
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]: loop body 0:
-    Source: 'src/lib.rs', lines 1:0-701:17
+    Source: 'src/lib.rs', lines 1:0-4569:17
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop.body
@@ -377,7 +3625,7 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop.body
     else ok (cont (iter1, false))
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]: loop 0:
-    Source: 'src/lib.rs', lines 1:0-701:17
+    Source: 'src/lib.rs', lines 1:0-4569:17
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop
@@ -392,7 +3640,7 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop
     (iter_, res)
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]:
-    Source: 'src/lib.rs', lines 689:8-704:9
+    Source: 'src/lib.rs', lines 4557:8-4572:9
     Visibility: public -/
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
@@ -408,7 +3656,7 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq
   else ok false
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::ne]:
-    Source: 'src/lib.rs', lines 686:8-688:9
+    Source: 'src/lib.rs', lines 4554:8-4556:9
     Visibility: public -/
 def vec.Vec.Insts.CoreCmpPartialEqVec.ne
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
@@ -420,7 +3668,7 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.ne
   ok (b = false)
 
 /-- Trait implementation: [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 681:4-705:5 -/
+    Source: 'src/lib.rs', lines 4549:4-4573:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreCmpPartialEqVec {T : Type} {U : Type}
   (corecmpPartialEqInst : core.cmp.PartialEq T U) : core.cmp.PartialEq (vec.Vec
@@ -430,7 +3678,7 @@ def vec.Vec.Insts.CoreCmpPartialEqVec {T : Type} {U : Type}
 }
 
 /-- [alloc::vec::into_iter::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::into_iter::IntoIter<T>}::next]:
-    Source: 'src/lib.rs', lines 716:12-722:13
+    Source: 'src/lib.rs', lines 4584:12-4590:13
     Visibility: public -/
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} (self : vec.into_iter.IntoIter T) :
@@ -444,22 +3692,49 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
     ok (core.option.Option.Some t, s)
 
 /-- Trait implementation: [alloc::vec::into_iter::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::into_iter::IntoIter<T>}]
-    Source: 'src/lib.rs', lines 714:8-723:9 -/
+    Source: 'src/lib.rs', lines 4582:8-4591:9 -/
 @[reducible]
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
   core.iter.traits.iterator.Iterator (vec.into_iter.IntoIter T) T := {
   next := vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
 }
 
+/-- [alloc::vec::into_iter::{alloc::vec::into_iter::IntoIter<T>}::as_slice]:
+    Source: 'src/lib.rs', lines 4595:12-4597:13
+    Visibility: public -/
+def vec.into_iter.IntoIter.as_slice
+  {T : Type} (self : vec.into_iter.IntoIter T) : Result (Slice T) := do
+  rust_primitives.sequence.seq_to_slice self
+
+/-- [alloc::vec::into_iter::{alloc::vec::into_iter::IntoIter<T>}::as_mut_slice]:
+    Source: 'src/lib.rs', lines 4599:12-4601:13
+    Visibility: public -/
+def vec.into_iter.IntoIter.as_mut_slice
+  {T : Type} (self : vec.into_iter.IntoIter T) :
+  Result ((Slice T) × (Slice T → vec.into_iter.IntoIter T))
+  := do
+  let (s, seq_to_slice_mut_back) ←
+    rust_primitives.sequence.seq_to_slice_mut self
+  let back := fun s1 => let s2 := seq_to_slice_mut_back s1
+                        s2
+  ok (s, back)
+
+/-- [alloc::vec::into_iter::{alloc::vec::into_iter::IntoIter<T>}::allocator]:
+    Source: 'src/lib.rs', lines 4603:12-4605:13
+    Visibility: public -/
+def vec.into_iter.IntoIter.allocator
+  {T : Type} (self : vec.into_iter.IntoIter T) : Result alloc.Global := do
+  ok ()
+
 /-- [alloc::vec::{impl core::iter::traits::collect::IntoIterator<T, alloc::vec::into_iter::IntoIter<T>> for alloc::vec::Vec<T>}::into_iter]:
-    Source: 'src/lib.rs', lines 729:8-731:9
+    Source: 'src/lib.rs', lines 4612:8-4614:9
     Visibility: public -/
 def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
   {T : Type} (self : vec.Vec T) : Result (vec.into_iter.IntoIter T) := do
   ok self
 
 /-- Trait implementation: [alloc::vec::{impl core::iter::traits::collect::IntoIterator<T, alloc::vec::into_iter::IntoIter<T>> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 726:4-732:5 -/
+    Source: 'src/lib.rs', lines 4609:4-4615:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) :
   core.iter.traits.collect.IntoIterator (vec.Vec T) T (vec.into_iter.IntoIter
@@ -469,7 +3744,7 @@ def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) :
 }
 
 /-- [alloc::vec::from_elem]:
-    Source: 'src/lib.rs', lines 734:4-736:5 -/
+    Source: 'src/lib.rs', lines 4617:4-4619:5 -/
 def vec.from_elem
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (item : T)
   (len : Std.Usize) :
@@ -479,28 +3754,28 @@ def vec.from_elem
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::new]:
-    Source: 'src/lib.rs', lines 740:8-742:9
+    Source: 'src/lib.rs', lines 4623:8-4625:9
     Visibility: public -/
 def vec.Vec.new (T : Type) : Result (vec.Vec T) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::with_capacity]:
-    Source: 'src/lib.rs', lines 743:8-745:9
+    Source: 'src/lib.rs', lines 4626:8-4628:9
     Visibility: public -/
 def vec.Vec.with_capacity
   (T : Type) (_c : Std.Usize) : Result (vec.Vec T) := do
   vec.Vec.new T
 
 /-- [alloc::vec::{impl core::default::Default for alloc::vec::Vec<T>}::default]:
-    Source: 'src/lib.rs', lines 750:8-752:9
+    Source: 'src/lib.rs', lines 4633:8-4635:9
     Visibility: public -/
 def vec.Vec.Insts.CoreDefaultDefault.default
   (T : Type) : Result (vec.Vec T) := do
   vec.Vec.new T
 
 /-- Trait implementation: [alloc::vec::{impl core::default::Default for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 749:4-753:5 -/
+    Source: 'src/lib.rs', lines 4632:4-4636:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreDefaultDefault (T : Type) : core.default.Default (vec.Vec
   T) := {
@@ -508,7 +3783,7 @@ def vec.Vec.Insts.CoreDefaultDefault (T : Type) : core.default.Default (vec.Vec
 }
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::push]:
-    Source: 'src/lib.rs', lines 761:8-763:9
+    Source: 'src/lib.rs', lines 4644:8-4646:9
     Visibility: public -/
 def vec.Vec.push
   {T : Type} (self : vec.Vec T) (x : T) : Result (vec.Vec T) := do
@@ -516,7 +3791,7 @@ def vec.Vec.push
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::pop]:
-    Source: 'src/lib.rs', lines 764:8-772:9
+    Source: 'src/lib.rs', lines 4647:8-4655:9
     Visibility: public -/
 def vec.Vec.pop
   {T : Type} (self : vec.Vec T) :
@@ -531,14 +3806,14 @@ def vec.Vec.pop
   else ok (core.option.Option.None, self)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::is_empty]:
-    Source: 'src/lib.rs', lines 773:8-775:9
+    Source: 'src/lib.rs', lines 4656:8-4658:9
     Visibility: public -/
 def vec.Vec.is_empty {T : Type} (self : vec.Vec T) : Result Bool := do
   let i ← rust_primitives.sequence.seq_len self
   ok (i = 0#usize)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::insert]:
-    Source: 'src/lib.rs', lines 777:8-782:9
+    Source: 'src/lib.rs', lines 4660:8-4665:9
     Visibility: public -/
 def vec.Vec.insert
   {T : Type} (self : vec.Vec T) (index : Std.Usize) (element : T) :
@@ -551,7 +3826,7 @@ def vec.Vec.insert
   ok s2
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::truncate]:
-    Source: 'src/lib.rs', lines 789:8-794:9
+    Source: 'src/lib.rs', lines 4672:8-4677:9
     Visibility: public -/
 def vec.Vec.truncate
   {T : Type} (self : vec.Vec T) (n : Std.Usize) : Result (vec.Vec T) := do
@@ -562,7 +3837,7 @@ def vec.Vec.truncate
   else ok self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::swap_remove]:
-    Source: 'src/lib.rs', lines 797:8-807:9
+    Source: 'src/lib.rs', lines 4680:8-4690:9
     Visibility: public -/
 def vec.Vec.swap_remove
   {T : Type} (self : vec.Vec T) (n : Std.Usize) :
@@ -579,7 +3854,7 @@ def vec.Vec.swap_remove
     ok (removed, self1)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::remove]:
-    Source: 'src/lib.rs', lines 814:8-816:9
+    Source: 'src/lib.rs', lines 4697:8-4699:9
     Visibility: public -/
 def vec.Vec.remove
   {T : Type} (self : vec.Vec T) (index : Std.Usize) :
@@ -589,14 +3864,14 @@ def vec.Vec.remove
   ok (t, s)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::clear]:
-    Source: 'src/lib.rs', lines 818:8-820:9
+    Source: 'src/lib.rs', lines 4701:8-4703:9
     Visibility: public -/
 def vec.Vec.clear {T : Type} (self : vec.Vec T) : Result (vec.Vec T) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::append]:
-    Source: 'src/lib.rs', lines 822:8-825:9
+    Source: 'src/lib.rs', lines 4705:8-4708:9
     Visibility: public -/
 def vec.Vec.append
   {T : Type} (self : vec.Vec T) (other : vec.Vec T) :
@@ -607,7 +3882,7 @@ def vec.Vec.append
   ok (s, s1)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::split_off]:
-    Source: 'src/lib.rs', lines 829:8-832:9
+    Source: 'src/lib.rs', lines 4712:8-4715:9
     Visibility: public -/
 def vec.Vec.split_off
   {T : Type} (self : vec.Vec T) (at1 : Std.Usize) :
@@ -617,8 +3892,430 @@ def vec.Vec.split_off
   let (s, s1) ← rust_primitives.sequence.seq_drain self at1 l
   ok (s, s1)
 
+/-- [alloc::vec::{alloc::vec::Vec<T>}::capacity]:
+    Source: 'src/lib.rs', lines 4734:8-4736:9
+    Visibility: public -/
+def vec.Vec.capacity {T : Type} (self : vec.Vec T) : Result Std.Usize := do
+  rust_primitives.sequence.seq_len self
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::reserve]:
+    Source: 'src/lib.rs', lines 4739:8-4739:56
+    Visibility: public -/
+def vec.Vec.reserve
+  {T : Type} (self : vec.Vec T) (_additional : Std.Usize) :
+  Result (vec.Vec T)
+  := do
+  ok self
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::reserve_exact]:
+    Source: 'src/lib.rs', lines 4741:8-4741:62
+    Visibility: public -/
+def vec.Vec.reserve_exact
+  {T : Type} (self : vec.Vec T) (_additional : Std.Usize) :
+  Result (vec.Vec T)
+  := do
+  ok self
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::shrink_to_fit]:
+    Source: 'src/lib.rs', lines 4743:8-4743:42
+    Visibility: public -/
+def vec.Vec.shrink_to_fit
+  {T : Type} (self : vec.Vec T) : Result (vec.Vec T) := do
+  ok self
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::shrink_to]:
+    Source: 'src/lib.rs', lines 4745:8-4745:60
+    Visibility: public -/
+def vec.Vec.shrink_to
+  {T : Type} (self : vec.Vec T) (_min_capacity : Std.Usize) :
+  Result (vec.Vec T)
+  := do
+  ok self
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::try_reserve]:
+    Source: 'src/lib.rs', lines 4747:8-4752:9
+    Visibility: public -/
+def vec.Vec.try_reserve
+  {T : Type} (self : vec.Vec T) (_additional : Std.Usize) :
+  Result ((core.result.Result Unit collections.TryReserveError) × (vec.Vec T))
+  := do
+  ok (core.result.Result.Ok (), self)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::try_reserve_exact]:
+    Source: 'src/lib.rs', lines 4754:8-4759:9
+    Visibility: public -/
+def vec.Vec.try_reserve_exact
+  {T : Type} (self : vec.Vec T) (_additional : Std.Usize) :
+  Result ((core.result.Result Unit collections.TryReserveError) × (vec.Vec T))
+  := do
+  ok (core.result.Result.Ok (), self)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::try_with_capacity]:
+    Source: 'src/lib.rs', lines 4761:8-4765:9
+    Visibility: public -/
+def vec.Vec.try_with_capacity
+  (T : Type) (_capacity : Std.Usize) :
+  Result (core.result.Result (vec.Vec T) collections.TryReserveError)
+  := do
+  let v ← vec.Vec.new T
+  ok (core.result.Result.Ok v)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::new_in]:
+    Source: 'src/lib.rs', lines 4773:8-4775:9
+    Visibility: public -/
+def vec.Vec.new_in
+  (T : Type) {A : Type} (_alloc : A) : Result (vec.Vec T) := do
+  vec.Vec.new T
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::with_capacity_in]:
+    Source: 'src/lib.rs', lines 4777:8-4779:9
+    Visibility: public -/
+def vec.Vec.with_capacity_in
+  (T : Type) {A : Type} (_c : Std.Usize) (_alloc : A) :
+  Result (vec.Vec T)
+  := do
+  vec.Vec.new T
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::try_with_capacity_in]:
+    Source: 'src/lib.rs', lines 4781:8-4786:9
+    Visibility: public -/
+def vec.Vec.try_with_capacity_in
+  (T : Type) {A : Type} (_c : Std.Usize) (_alloc : A) :
+  Result (core.result.Result (vec.Vec T) collections.TryReserveError)
+  := do
+  let v ← vec.Vec.new T
+  ok (core.result.Result.Ok v)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::allocator]:
+    Source: 'src/lib.rs', lines 4794:8-4796:9
+    Visibility: public -/
+def vec.Vec.allocator {T : Type} (self : vec.Vec T) : Result alloc.Global := do
+  ok ()
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::as_mut_slice]:
+    Source: 'src/lib.rs', lines 4798:8-4800:9
+    Visibility: public -/
+def vec.Vec.as_mut_slice
+  {T : Type} (self : vec.Vec T) :
+  Result ((Slice T) × (Slice T → vec.Vec T))
+  := do
+  let (s, seq_to_slice_mut_back) ←
+    rust_primitives.sequence.seq_to_slice_mut self
+  let back := fun s1 => let s2 := seq_to_slice_mut_back s1
+                        s2
+  ok (s, back)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::into_boxed_slice]:
+    Source: 'src/lib.rs', lines 4802:8-4804:9
+    Visibility: public -/
+def vec.Vec.into_boxed_slice
+  {T : Type} (self : vec.Vec T) : Result (Slice T) := do
+  rust_primitives.sequence.seq_into_boxed_slice self
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::try_remove]:
+    Source: 'src/lib.rs', lines 4806:8-4812:9
+    Visibility: public -/
+def vec.Vec.try_remove
+  {T : Type} (self : vec.Vec T) (index : Std.Usize) :
+  Result ((core.option.Option T) × (vec.Vec T))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if index < i
+  then
+    let (t, s) ← rust_primitives.sequence.seq_remove self index
+    ok (core.option.Option.Some t, s)
+  else ok (core.option.Option.None, self)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::insert_mut]:
+    Source: 'src/lib.rs', lines 4815:8-4818:9
+    Visibility: public -/
+def vec.Vec.insert_mut
+  {T : Type} (self : vec.Vec T) (index : Std.Usize) (element : T) :
+  Result (T × (T → vec.Vec T))
+  := do
+  let self1 ← vec.Vec.insert self index element
+  let (t, seq_index_mut_back) ←
+    rust_primitives.sequence.seq_index_mut self1 index
+  let back := fun t1 => let s := seq_index_mut_back t1
+                        s
+  ok (t, back)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::push_mut]:
+    Source: 'src/lib.rs', lines 4821:8-4825:9
+    Visibility: public -/
+def vec.Vec.push_mut
+  {T : Type} (self : vec.Vec T) (value : T) :
+  Result (T × (T → vec.Vec T))
+  := do
+  let s ← rust_primitives.sequence.seq_push self value
+  let l ← rust_primitives.sequence.seq_len s
+  let i ← l - 1#usize
+  let (t, seq_index_mut_back) ← rust_primitives.sequence.seq_index_mut s i
+  let back := fun t1 => let s1 := seq_index_mut_back t1
+                        s1
+  ok (t, back)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::pop_if]:
+    Source: 'src/lib.rs', lines 4827:8-4836:9
+    Visibility: public -/
+def vec.Vec.pop_if
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleShared0TBoolInst :
+  core.ops.function.Fn F T Bool) (self : vec.Vec T) (predicate : F) :
+  Result ((core.option.Option T) × (vec.Vec T))
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  if l = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let i ← l - 1#usize
+    let t ← rust_primitives.sequence.seq_index self i
+    let b ← coreopsfunctionFnFTupleShared0TBoolInst.call predicate t
+    if b
+    then
+      let (t1, s) ← rust_primitives.sequence.seq_remove self i
+      ok (core.option.Option.Some t1, s)
+    else ok (core.option.Option.None, self)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::resize_with]: loop body 0:
+    Source: 'src/lib.rs', lines 4841:16-4843:17
+    Visibility: public -/
+@[rust_loop_body]
+def vec.Vec.resize_with_loop.body
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleTInst : core.ops.function.Fn F
+  Unit T) (f : F) (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done s)
+  | core.option.Option.Some _ =>
+    let t ← coreopsfunctionFnFTupleTInst.call f ()
+    let s1 ← rust_primitives.sequence.seq_push s t
+    ok (cont (iter1, s1))
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::resize_with]: loop 0:
+    Source: 'src/lib.rs', lines 4841:16-4843:17
+    Visibility: public -/
+@[rust_loop]
+def vec.Vec.resize_with_loop
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleTInst : core.ops.function.Fn F
+  Unit T) (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq T) (f : F) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, s1) => vec.Vec.resize_with_loop.body
+      coreopsfunctionFnFTupleTInst f iter1 s1)
+    (iter_, s)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::resize_with]:
+    Source: 'src/lib.rs', lines 4838:8-4847:9
+    Visibility: public -/
+def vec.Vec.resize_with
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleTInst : core.ops.function.Fn F
+  Unit T) (self : vec.Vec T) (new_len : Std.Usize) (f : F) :
+  Result (vec.Vec T)
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  if new_len > l
+  then
+    let i ← new_len - l
+    let s ←
+      vec.Vec.resize_with_loop coreopsfunctionFnFTupleTInst
+        { start := 0#usize, «end» := i } self f
+    ok s
+  else let (_, s) ← rust_primitives.sequence.seq_drain self new_len l
+       ok s
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::retain]: loop body 0:
+    Source: 'src/lib.rs', lines 4852:12-4857:13
+    Visibility: public -/
+@[rust_loop_body]
+def vec.Vec.retain_loop.body
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleSharedTBoolInst :
+  core.ops.function.Fn F T Bool) (f : F)
+  (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
+  (rest : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
+    (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done s)
+  | core.option.Option.Some _ =>
+    let (x, rest1) ← rust_primitives.sequence.seq_remove rest 0#usize
+    let b ← coreopsfunctionFnFTupleSharedTBoolInst.call f x
+    if b
+    then
+      let s1 ← rust_primitives.sequence.seq_push s x
+      ok (cont (iter1, s1, rest1))
+    else ok (cont (iter1, s, rest1))
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::retain]: loop 0:
+    Source: 'src/lib.rs', lines 4852:12-4857:13
+    Visibility: public -/
+@[rust_loop]
+def vec.Vec.retain_loop
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleSharedTBoolInst :
+  core.ops.function.Fn F T Bool) (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq T) (f : F)
+  (rest : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, s1, rest1) => vec.Vec.retain_loop.body
+      coreopsfunctionFnFTupleSharedTBoolInst f iter1 s1 rest1)
+    (iter_, s, rest)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::retain]:
+    Source: 'src/lib.rs', lines 4849:8-4858:9
+    Visibility: public -/
+def vec.Vec.retain
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleShared0TBoolInst :
+  core.ops.function.Fn F T Bool) (self : vec.Vec T) (f : F) :
+  Result (vec.Vec T)
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
+  let s1 ←
+    vec.Vec.retain_loop coreopsfunctionFnFTupleShared0TBoolInst
+      { start := 0#usize, «end» := l } s f rest
+  ok s1
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::retain_mut]:
+    Source: 'src/lib.rs', lines 4865:8-4867:9
+    Visibility: public -/
+def vec.Vec.retain_mut
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleShared0TBoolInst :
+  core.ops.function.Fn F T Bool) (self : vec.Vec T) (f : F) :
+  Result (vec.Vec T)
+  := do
+  vec.Vec.retain coreopsfunctionFnFTupleShared0TBoolInst self f
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::from_fn]: loop body 0:
+    Source: 'src/lib.rs', lines 4873:12-4875:13
+    Visibility: public -/
+@[rust_loop_body]
+def vec.Vec.from_fn_loop.body
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleUsizeTInst :
+  core.ops.function.Fn F Std.Usize T) (f : F)
+  (iter_ : core.ops.range.Range Std.Usize)
+  (out : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done out)
+  | core.option.Option.Some i =>
+    let t ← coreopsfunctionFnFTupleUsizeTInst.call f i
+    let out1 ← rust_primitives.sequence.seq_push out t
+    ok (cont (iter1, out1))
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::from_fn]: loop 0:
+    Source: 'src/lib.rs', lines 4873:12-4875:13
+    Visibility: public -/
+@[rust_loop]
+def vec.Vec.from_fn_loop
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleUsizeTInst :
+  core.ops.function.Fn F Std.Usize T) (iter_ : core.ops.range.Range Std.Usize)
+  (f : F) (out : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, out1) => vec.Vec.from_fn_loop.body
+      coreopsfunctionFnFTupleUsizeTInst f iter1 out1)
+    (iter_, out)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::from_fn]:
+    Source: 'src/lib.rs', lines 4871:8-4877:9
+    Visibility: public -/
+def vec.Vec.from_fn
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleUsizeTInst :
+  core.ops.function.Fn F Std.Usize T) (n : Std.Usize) (f : F) :
+  Result (vec.Vec T)
+  := do
+  let out ← rust_primitives.sequence.seq_empty T
+  let out1 ←
+    vec.Vec.from_fn_loop coreopsfunctionFnFTupleUsizeTInst
+      { start := 0#usize, «end» := n } f out
+  ok out1
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::extract_if]: loop body 0:
+    Source: 'src/lib.rs', lines 4892:12-4899:13
+    Visibility: public -/
+@[rust_loop_body]
+def vec.Vec.extract_if_loop.body
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleSharedTBoolInst :
+  core.ops.function.Fn F T Bool) (filter : F)
+  (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
+  (rest : rust_primitives.sequence.Seq T)
+  (extracted : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T) ×
+    (rust_primitives.sequence.Seq T)) ((rust_primitives.sequence.Seq T) ×
+    (rust_primitives.sequence.Seq T)))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done (s, extracted))
+  | core.option.Option.Some _ =>
+    let (x, rest1) ← rust_primitives.sequence.seq_remove rest 0#usize
+    let b ← coreopsfunctionFnFTupleSharedTBoolInst.call filter x
+    if b
+    then
+      let extracted1 ← rust_primitives.sequence.seq_push extracted x
+      ok (cont (iter1, s, rest1, extracted1))
+    else
+      let s1 ← rust_primitives.sequence.seq_push s x
+      ok (cont (iter1, s1, rest1, extracted))
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::extract_if]: loop 0:
+    Source: 'src/lib.rs', lines 4892:12-4899:13
+    Visibility: public -/
+@[rust_loop]
+def vec.Vec.extract_if_loop
+  {T : Type} {F : Type} (coreopsfunctionFnFTupleSharedTBoolInst :
+  core.ops.function.Fn F T Bool) (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq T) (filter : F)
+  (rest : rust_primitives.sequence.Seq T)
+  (extracted : rust_primitives.sequence.Seq T) :
+  Result ((rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
+  := do
+  loop
+    (fun (iter1, s1, rest1, extracted1) => vec.Vec.extract_if_loop.body
+      coreopsfunctionFnFTupleSharedTBoolInst filter iter1 s1 rest1 extracted1)
+    (iter_, s, rest, extracted)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::extract_if]:
+    Source: 'src/lib.rs', lines 4884:8-4901:9
+    Visibility: public -/
+def vec.Vec.extract_if
+  {T : Type} {F : Type} {R : Type} (coreopsfunctionFnFTupleShared0TBoolInst :
+  core.ops.function.Fn F T Bool) (self : vec.Vec T) (_range : R) (filter : F) :
+  Result ((vec.extract_if.ExtractIf T) × (vec.Vec T))
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
+  let extracted ← rust_primitives.sequence.seq_empty T
+  let (s1, extracted1) ←
+    vec.Vec.extract_if_loop coreopsfunctionFnFTupleShared0TBoolInst
+      { start := 0#usize, «end» := l } s filter rest extracted
+  ok (extracted1, s1)
+
 /-- [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}::next]:
-    Source: 'src/lib.rs', lines 850:12-857:13
+    Source: 'src/lib.rs', lines 4908:12-4915:13
     Visibility: public -/
 def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} {A : Type} (self : vec.drain.Drain T A) :
@@ -633,15 +4330,315 @@ def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
     ok (core.option.Option.Some res, (s1, pd))
 
 /-- Trait implementation: [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}]
-    Source: 'src/lib.rs', lines 848:8-858:9 -/
+    Source: 'src/lib.rs', lines 4906:8-4916:9 -/
 @[reducible]
 def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator (T : Type) (A : Type)
   : core.iter.traits.iterator.Iterator (vec.drain.Drain T A) T := {
   next := vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
 }
 
+/-- [alloc::vec::drain::{alloc::vec::drain::Drain<T, A>}::as_slice]:
+    Source: 'src/lib.rs', lines 4919:12-4921:13
+    Visibility: public -/
+def vec.drain.Drain.as_slice
+  {T : Type} {A : Type} (self : vec.drain.Drain T A) : Result (Slice T) := do
+  let (s, _) := self
+  rust_primitives.sequence.seq_to_slice s
+
+/-- [alloc::vec::drain::{alloc::vec::drain::Drain<T, alloc::alloc::Global>}::allocator]:
+    Source: 'src/lib.rs', lines 4927:12-4929:13
+    Visibility: public -/
+def vec.drain.DrainTGlobal.allocator
+  {T : Type} (self : vec.drain.Drain T alloc.Global) :
+  Result alloc.Global
+  := do
+  ok ()
+
+/-- [alloc::vec::extract_if::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::extract_if::ExtractIf<T>}::next]:
+    Source: 'src/lib.rs', lines 4940:12-4946:13
+    Visibility: public -/
+def vec.extract_if.ExtractIf.Insts.CoreIterTraitsIteratorIterator.next
+  {T : Type} (self : vec.extract_if.ExtractIf T) :
+  Result ((core.option.Option T) × (vec.extract_if.ExtractIf T))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (core.option.Option.Some t, s)
+
+/-- Trait implementation: [alloc::vec::extract_if::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::extract_if::ExtractIf<T>}]
+    Source: 'src/lib.rs', lines 4938:8-4947:9 -/
+@[reducible]
+def vec.extract_if.ExtractIf.Insts.CoreIterTraitsIteratorIterator (T : Type) :
+  core.iter.traits.iterator.Iterator (vec.extract_if.ExtractIf T) T := {
+  next := vec.extract_if.ExtractIf.Insts.CoreIterTraitsIteratorIterator.next
+}
+
+/-- [alloc::vec::extract_if::{alloc::vec::extract_if::ExtractIf<T>}::allocator]:
+    Source: 'src/lib.rs', lines 4950:12-4952:13
+    Visibility: public -/
+def vec.extract_if.ExtractIf.allocator
+  {T : Type} (self : vec.extract_if.ExtractIf T) : Result alloc.Global := do
+  ok ()
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup]: loop body 0:
+    Source: 'src/lib.rs', lines 4962:12-4978:13
+    Visibility: public -/
+@[rust_loop_body]
+def vec.Vec.dedup_loop.body
+  {T : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
+  (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
+  (rest : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
+    (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done s)
+  | core.option.Option.Some _ =>
+    let (x, rest1) ← rust_primitives.sequence.seq_remove rest 0#usize
+    let n ← rust_primitives.sequence.seq_len s
+    let is_dup ←
+      if n = 0#usize
+      then ok false
+      else
+        do
+        let i ← n - 1#usize
+        let t ← rust_primitives.sequence.seq_index s i
+        corecmpPartialEqInst.eq t x
+    if is_dup
+    then ok (cont (iter1, s, rest1))
+    else
+      let s1 ← rust_primitives.sequence.seq_push s x
+      ok (cont (iter1, s1, rest1))
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup]: loop 0:
+    Source: 'src/lib.rs', lines 4962:12-4978:13
+    Visibility: public -/
+@[rust_loop]
+def vec.Vec.dedup_loop
+  {T : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
+  (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
+  (rest : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, s1, rest1) => vec.Vec.dedup_loop.body corecmpPartialEqInst
+      iter1 s1 rest1)
+    (iter_, s, rest)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup]:
+    Source: 'src/lib.rs', lines 4959:8-4979:9
+    Visibility: public -/
+def vec.Vec.dedup
+  {T : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T) (self : vec.Vec T)
+  :
+  Result (vec.Vec T)
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
+  let s1 ←
+    vec.Vec.dedup_loop corecmpPartialEqInst { start := 0#usize, «end» := l }
+      s rest
+  ok s1
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by]: loop body 0:
+    Source: 'src/lib.rs', lines 4993:12-5005:13
+    Visibility: public -/
+@[rust_loop_body]
+def vec.Vec.dedup_by_loop.body
+  {T : Type} {F : Type} (coreopsfunctionFnFPairSharedTSharedTBoolInst :
+  core.ops.function.Fn F (T × T) Bool) (same_bucket : F)
+  (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
+  (rest : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
+    (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done s)
+  | core.option.Option.Some _ =>
+    let (x, rest1) ← rust_primitives.sequence.seq_remove rest 0#usize
+    let n ← rust_primitives.sequence.seq_len s
+    let is_dup ←
+      if n = 0#usize
+      then ok false
+      else
+        do
+        let i ← n - 1#usize
+        let t ← rust_primitives.sequence.seq_index s i
+        coreopsfunctionFnFPairSharedTSharedTBoolInst.call same_bucket (x, t)
+    if is_dup
+    then ok (cont (iter1, s, rest1))
+    else
+      let s1 ← rust_primitives.sequence.seq_push s x
+      ok (cont (iter1, s1, rest1))
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by]: loop 0:
+    Source: 'src/lib.rs', lines 4993:12-5005:13
+    Visibility: public -/
+@[rust_loop]
+def vec.Vec.dedup_by_loop
+  {T : Type} {F : Type} (coreopsfunctionFnFPairSharedTSharedTBoolInst :
+  core.ops.function.Fn F (T × T) Bool) (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq T) (same_bucket : F)
+  (rest : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, s1, rest1) => vec.Vec.dedup_by_loop.body
+      coreopsfunctionFnFPairSharedTSharedTBoolInst same_bucket iter1 s1 rest1)
+    (iter_, s, rest)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by]:
+    Source: 'src/lib.rs', lines 4990:8-5006:9
+    Visibility: public -/
+def vec.Vec.dedup_by
+  {T : Type} {F : Type} (coreopsfunctionFnFPairShared0TSharedTBoolInst :
+  core.ops.function.Fn F (T × T) Bool) (self : vec.Vec T) (same_bucket : F) :
+  Result (vec.Vec T)
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
+  let s1 ←
+    vec.Vec.dedup_by_loop coreopsfunctionFnFPairShared0TSharedTBoolInst
+      { start := 0#usize, «end» := l } s same_bucket rest
+  ok s1
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by_key]: loop body 0:
+    Source: 'src/lib.rs', lines 5013:12-5025:13
+    Visibility: public -/
+@[rust_loop_body]
+def vec.Vec.dedup_by_key_loop.body
+  {T : Type} {K : Type} {F : Type} (corecmpPartialEqInst : core.cmp.PartialEq K
+  K) (coreopsfunctionFnFTupleSharedTKInst : core.ops.function.Fn F T K)
+  (key : F) (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq T) (rest : rust_primitives.sequence.Seq T)
+  :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
+    (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done s)
+  | core.option.Option.Some _ =>
+    let (x, rest1) ← rust_primitives.sequence.seq_remove rest 0#usize
+    let n ← rust_primitives.sequence.seq_len s
+    let is_dup ←
+      if n = 0#usize
+      then ok false
+      else
+        do
+        let t ← coreopsfunctionFnFTupleSharedTKInst.call key x
+        let i ← n - 1#usize
+        let t1 ← rust_primitives.sequence.seq_index s i
+        let t2 ← coreopsfunctionFnFTupleSharedTKInst.call key t1
+        corecmpPartialEqInst.eq t t2
+    if is_dup
+    then ok (cont (iter1, s, rest1))
+    else
+      let s1 ← rust_primitives.sequence.seq_push s x
+      ok (cont (iter1, s1, rest1))
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by_key]: loop 0:
+    Source: 'src/lib.rs', lines 5013:12-5025:13
+    Visibility: public -/
+@[rust_loop]
+def vec.Vec.dedup_by_key_loop
+  {T : Type} {K : Type} {F : Type} (corecmpPartialEqInst : core.cmp.PartialEq K
+  K) (coreopsfunctionFnFTupleSharedTKInst : core.ops.function.Fn F T K)
+  (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
+  (key : F) (rest : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, s1, rest1) => vec.Vec.dedup_by_key_loop.body
+      corecmpPartialEqInst coreopsfunctionFnFTupleSharedTKInst key iter1 s1
+      rest1)
+    (iter_, s, rest)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by_key]:
+    Source: 'src/lib.rs', lines 5010:8-5026:9
+    Visibility: public -/
+def vec.Vec.dedup_by_key
+  {T : Type} {K : Type} {F : Type} (corecmpPartialEqInst : core.cmp.PartialEq K
+  K) (coreopsfunctionFnFTupleShared0TKInst : core.ops.function.Fn F T K)
+  (self : vec.Vec T) (key : F) :
+  Result (vec.Vec T)
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
+  let s1 ←
+    vec.Vec.dedup_by_key_loop corecmpPartialEqInst
+      coreopsfunctionFnFTupleShared0TKInst { start := 0#usize, «end» := l } s
+      key rest
+  ok s1
+
+/-- [alloc::vec::{alloc::vec::Vec<[T; N]>}::into_flattened]: loop body 0:
+    Source: 'src/lib.rs', lines 5035:12-5038:13
+    Visibility: public -/
+@[rust_loop_body]
+def vec.VecArray.into_flattened_loop.body
+  {T : Type} {N : Std.Usize} (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq (Array T N))
+  (out : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq (Array T N)) × (rust_primitives.sequence.Seq
+    T)) (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done out)
+  | core.option.Option.Some _ =>
+    let (a, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    let chunk ← rust_primitives.sequence.seq_from_array a
+    let (out1, _) ← rust_primitives.sequence.seq_concat out chunk
+    ok (cont (iter1, s1, out1))
+
+/-- [alloc::vec::{alloc::vec::Vec<[T; N]>}::into_flattened]: loop 0:
+    Source: 'src/lib.rs', lines 5035:12-5038:13
+    Visibility: public -/
+@[rust_loop]
+def vec.VecArray.into_flattened_loop
+  {T : Type} {N : Std.Usize} (iter_ : core.ops.range.Range Std.Usize)
+  (s : rust_primitives.sequence.Seq (Array T N))
+  (out : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, s1, out1) => vec.VecArray.into_flattened_loop.body iter1 s1
+      out1)
+    (iter_, s, out)
+
+/-- [alloc::vec::{alloc::vec::Vec<[T; N]>}::into_flattened]:
+    Source: 'src/lib.rs', lines 5032:8-5040:9
+    Visibility: public -/
+def vec.VecArray.into_flattened
+  {T : Type} {N : Std.Usize} (self : vec.Vec (Array T N)) :
+  Result (vec.Vec T)
+  := do
+  let n ← rust_primitives.sequence.seq_len self
+  let out ← rust_primitives.sequence.seq_empty T
+  let out1 ←
+    vec.VecArray.into_flattened_loop { start := 0#usize, «end» := n } self
+      out
+  ok out1
+
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_slice]:
-    Source: 'src/lib.rs', lines 868:8-870:9 -/
+    Source: 'src/lib.rs', lines 5050:8-5052:9 -/
 def vec.Vec.extend_from_slice
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
   (other : Slice T) :
@@ -651,7 +4648,7 @@ def vec.Vec.extend_from_slice
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::resize]:
-    Source: 'src/lib.rs', lines 875:8-883:9
+    Source: 'src/lib.rs', lines 5057:8-5065:9
     Visibility: public -/
 def vec.Vec.resize
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
@@ -669,8 +4666,61 @@ def vec.Vec.resize
   else let (_, s) ← rust_primitives.sequence.seq_drain self new_size l
        ok s
 
+/-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_within]: loop body 0:
+    Source: 'src/lib.rs', lines 5074:12-5076:13
+    Visibility: public -/
+@[rust_loop_body]
+def vec.Vec.extend_from_within_loop.body
+  {T : Type} (corecloneCloneInst : core.clone.Clone T)
+  (s : rust_primitives.sequence.Seq T) (iter_ : core.ops.range.Range Std.Usize)
+  (copy : rust_primitives.sequence.Seq T) :
+  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+    (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
+  := do
+  let (o, iter1) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.Usize.Insts.CoreIterRangeStep iter_
+  match o with
+  | core.option.Option.None => ok (done copy)
+  | core.option.Option.Some i =>
+    let t ← rust_primitives.sequence.seq_index s i
+    let t1 ← corecloneCloneInst.clone t
+    let copy1 ← rust_primitives.sequence.seq_push copy t1
+    ok (cont (iter1, copy1))
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_within]: loop 0:
+    Source: 'src/lib.rs', lines 5074:12-5076:13
+    Visibility: public -/
+@[rust_loop]
+def vec.Vec.extend_from_within_loop
+  {T : Type} (corecloneCloneInst : core.clone.Clone T)
+  (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
+  (copy : rust_primitives.sequence.Seq T) :
+  Result (rust_primitives.sequence.Seq T)
+  := do
+  loop
+    (fun (iter1, copy1) => vec.Vec.extend_from_within_loop.body
+      corecloneCloneInst s iter1 copy1)
+    (iter_, copy)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_within]:
+    Source: 'src/lib.rs', lines 5071:8-5078:9
+    Visibility: public -/
+def vec.Vec.extend_from_within
+  {T : Type} {R : Type} (corecloneCloneInst : core.clone.Clone T)
+  (self : vec.Vec T) (_src : R) :
+  Result (vec.Vec T)
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  let copy ← rust_primitives.sequence.seq_empty T
+  let copy1 ←
+    vec.Vec.extend_from_within_loop corecloneCloneInst
+      { start := 0#usize, «end» := l } self copy
+  let (s, _) ← rust_primitives.sequence.seq_concat self copy1
+  ok s
+
 /-- Trait implementation: [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 899:4-908:5 -/
+    Source: 'src/lib.rs', lines 5094:4-5103:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output :
   Type} (coresliceindexSliceIndexISliceClause0_OutputInst :
@@ -681,7 +4731,7 @@ def vec.Vec.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output :
 }
 
 /-- [alloc::vec::{impl core::ops::index::IndexMut<I, Clause0_Output> for alloc::vec::Vec<T>}::index_mut]:
-    Source: 'src/lib.rs', lines 921:8-923:9
+    Source: 'src/lib.rs', lines 5116:8-5118:9
     Visibility: public -/
 def vec.Vec.Insts.CoreOpsIndexIndexMut.index_mut
   {T : Type} {I : Type} {Clause0_Output : Type}
@@ -702,7 +4752,7 @@ def vec.Vec.Insts.CoreOpsIndexIndexMut.index_mut
   ok (t, back)
 
 /-- Trait implementation: [alloc::vec::{impl core::ops::index::IndexMut<I, Clause0_Output> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 915:4-924:5 -/
+    Source: 'src/lib.rs', lines 5110:4-5119:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreOpsIndexIndexMut {T : Type} {I : Type} {Clause0_Output :
   Type} (coresliceindexSliceIndexISliceClause0_OutputInst :
@@ -715,7 +4765,7 @@ def vec.Vec.Insts.CoreOpsIndexIndexMut {T : Type} {I : Type} {Clause0_Output :
 }
 
 /-- Trait implementation: [alloc::vec::{impl core::ops::deref::Deref<[T]> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 927:4-933:5 -/
+    Source: 'src/lib.rs', lines 5122:4-5128:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreOpsDerefDerefSlice (T : Type) : core.ops.deref.Deref
   (vec.Vec T) (Slice T) := {
