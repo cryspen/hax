@@ -619,6 +619,9 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
+        pub fn as_mut_slice(&mut self) -> &mut [T] {
+            seq_to_slice_mut(&mut self.0)
+        }
         #[hax_lib::opaque]
         pub fn truncate(&mut self, n: usize) {}
         #[hax_lib::opaque]
@@ -740,6 +743,13 @@ pub mod vec {
     }
 
     #[hax_lib::attributes]
+    impl<T> core::ops::DerefMut for Vec<T> {
+        fn deref_mut(&mut self) -> &mut [T] {
+            self.as_mut_slice()
+        }
+    }
+
+    #[hax_lib::attributes]
     #[hax_lib::opaque]
     impl<T> std::iter::FromIterator<T> for Vec<T> {
         fn from_iter<I>(iter: I) -> Self
@@ -823,6 +833,9 @@ pub mod vec {
         }
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
+        }
+        pub fn as_mut_slice(&mut self) -> &mut [T] {
+            seq_to_slice_mut(&mut self.0)
         }
         #[hax_lib::opaque]
         pub fn truncate(&mut self, n: usize) {}

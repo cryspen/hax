@@ -49,6 +49,14 @@ impl<T> Option<T> {
         }
     }
 
+    /// See [`std::option::Option::as_mut`]
+    pub fn as_mut(&mut self) -> Option<&mut T> {
+        match *self {
+            Some(ref mut x) => Some(x),
+            None => None,
+        }
+    }
+
     /// See [`std::option::Option::expect`]
     #[hax_lib::requires(self.is_some())]
     pub fn expect(self, _msg: &str) -> T {

@@ -851,38 +851,46 @@ structure ops.try_trait.Try (Self : Type) (Self_Output : Type) (Self_Residual :
 structure ops.deref.Deref (Self : Type) (Self_Target : Type) where
   deref : Self → Result Self_Target
 
+/-- Trait declaration: [core_models::ops::deref::DerefMut]
+    Source: 'core-models/src/core/ops.rs', lines 296:4-298:5
+    Visibility: public -/
+structure ops.deref.DerefMut (Self : Type) (Self_Clause0_Target : Type) where
+  DerefInst : ops.deref.Deref Self Self_Clause0_Target
+  deref_mut : Self → Result (Self_Clause0_Target × (Self_Clause0_Target →
+    Self))
+
 /-- Trait declaration: [core_models::ops::drop::Drop]
-    Source: 'core-models/src/core/ops.rs', lines 298:4-300:5 -/
+    Source: 'core-models/src/core/ops.rs', lines 303:4-305:5 -/
 structure ops.drop.Drop (Self : Type) where
   drop : Self → Result Self
 
 /-- [core_models::ops::range::RangeTo]
-    Source: 'core-models/src/core/ops.rs', lines 305:4-307:5
+    Source: 'core-models/src/core/ops.rs', lines 310:4-312:5
     Visibility: public -/
 structure ops.range.RangeTo (T : Type) where
   «end» : T
 
 /-- [core_models::ops::range::RangeFrom]
-    Source: 'core-models/src/core/ops.rs', lines 309:4-311:5
+    Source: 'core-models/src/core/ops.rs', lines 314:4-316:5
     Visibility: public -/
 structure ops.range.RangeFrom (T : Type) where
   start : T
 
 /-- [core_models::ops::range::Range]
-    Source: 'core-models/src/core/ops.rs', lines 313:4-316:5
+    Source: 'core-models/src/core/ops.rs', lines 318:4-321:5
     Visibility: public -/
 structure ops.range.Range (T : Type) where
   start : T
   «end» : T
 
 /-- [core_models::ops::range::RangeFull]
-    Source: 'core-models/src/core/ops.rs', lines 318:4-318:25
+    Source: 'core-models/src/core/ops.rs', lines 323:4-323:25
     Visibility: public -/
 @[reducible]
 def ops.range.RangeFull := Unit
 
 /-- [core_models::ops::range::RangeInclusive]
-    Source: 'core-models/src/core/ops.rs', lines 320:4-323:5
+    Source: 'core-models/src/core/ops.rs', lines 325:4-328:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
   start : T
@@ -916,14 +924,14 @@ structure slice.iter.ChunksExact (T : Type) where
 def slice.iter.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::slice::iter::Windows]
-    Source: 'core-models/src/core/slice.rs', lines 100:4-103:5
+    Source: 'core-models/src/core/slice.rs', lines 108:4-111:5
     Visibility: public -/
 structure slice.iter.Windows (T : Type) where
   size : Std.Usize
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 440:4-460:5
+    Source: 'core-models/src/core/slice.rs', lines 448:4-468:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
