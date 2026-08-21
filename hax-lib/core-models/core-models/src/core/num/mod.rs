@@ -516,40 +516,42 @@ macro_rules! iint_impl {
 // These types are a trick to define impls on the right names as
 // it is forbidden to do it on primitive types
 /// See [`std::primitive::u8`]
-#[hax_lib::exclude]
+// F*-only: `charon::exclude` would drop these dummy types while their `impl`
+// blocks still reference them (see f32.rs).
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct u8;
 /// See [`std::primitive::u16`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct u16;
 /// See [`std::primitive::u32`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct u32;
 /// See [`std::primitive::u64`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct u64;
 /// See [`std::primitive::u128`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct u128;
 /// See [`std::primitive::usize`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct usize;
 /// See [`std::primitive::i8`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct i8;
 /// See [`std::primitive::i16`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct i16;
 /// See [`std::primitive::i32`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct i32;
 /// See [`std::primitive::i64`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct i64;
 /// See [`std::primitive::i128`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct i128;
 /// See [`std::primitive::isize`]
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct isize;
 
 // Placeholders to get the same impl numbering as in core:
