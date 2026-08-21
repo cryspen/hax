@@ -408,6 +408,9 @@ mod collections {
                 let mut max: Option<&T> = None;
                 let mut index = 0;
                 for i in 0..self.len() {
+                    // Not in the Lean lane: aeneas translates the invariant into `hax_lib`
+                    // items the Lean library does not define.
+                    #[cfg(not(charon))]
                     hax_lib::loop_invariant!(|i: usize| (i > 0) == max.is_some());
                     if max.is_none_or(|max| self.0[i] > *max) {
                         max = Some(&self.0[i]);
@@ -532,6 +535,9 @@ mod collections {
             {
                 let mut max: Option<&T> = None;
                 for i in 0..self.len() {
+                    // Not in the Lean lane: aeneas translates the invariant into `hax_lib`
+                    // items the Lean library does not define.
+                    #[cfg(not(charon))]
                     hax_lib::loop_invariant!(|i: usize| (i > 0) == max.is_some());
                     if max.is_none_or(|max| self.0[i] > *max) {
                         max = Some(&self.0[i]);
@@ -1763,6 +1769,9 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 {
                     let l = self.len();
                     for k in 0..l {
+                        // Not in the Lean lane: aeneas translates the invariant into `hax_lib`
+                        // items the Lean library does not define.
+                        #[cfg(not(charon))]
                         hax_lib::loop_invariant!(
                             |k: usize| seq_len(&self.0).to_int() + k.to_int() >= l.to_int()
                         );
@@ -2937,6 +2946,9 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             {
                 let l = self.len();
                 for k in 0..l {
+                    // Not in the Lean lane: aeneas translates the invariant into `hax_lib`
+                    // items the Lean library does not define.
+                    #[cfg(not(charon))]
                     hax_lib::loop_invariant!(
                         |k: usize| seq_len(&self.0).to_int() + k.to_int() >= l.to_int()
                     );
@@ -3091,6 +3103,9 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 let l = self.len();
                 if new_len > l {
                     for k in 0..(new_len - l) {
+                        // Not in the Lean lane: aeneas translates the invariant into `hax_lib`
+                        // items the Lean library does not define.
+                        #[cfg(not(charon))]
                         hax_lib::loop_invariant!(
                             |k: usize| seq_len(&self.0).to_int() == l.to_int() + k.to_int()
                         );
