@@ -174,9 +174,16 @@ def rust_primitives.slice.array_from_fn
 @[rust_fun "rust_primitives::slice::array_map"]
 def rust_primitives.slice.array_map
   {T : Type} {U : Type} {F : Type} {N : Std.Usize}
-  (coreopsfunctionFnFTupleTUInst : core.ops.function.Fn F T U) :
+  (coreopsfunctionFnMutFTupleTUInst : core.ops.function.FnMut F T U) :
   Array T N → F → Result (Array U N) := fun a f =>
-  match h : a.val.mapM (fun x => coreopsfunctionFnFTupleTUInst.call f x) with
+  -- `[T; N]::map` takes an `FnMut` closure (matching std); `call_mut` returns
+  -- `(output, new_self)`. aeneas only hands `array::map` a closure whose `FnMut`
+  -- instance fits the 2-tuple `call_mut` — i.e. NOT one capturing `&mut` (that shape
+  -- is a 3-tuple, unmodelled) — so the threaded `new_self` never differs from `f` and
+  -- mapping with the original `f` each element is exact. `new_self` is discarded.
+  match h : a.val.mapM (fun x => do
+      let r ← coreopsfunctionFnMutFTupleTUInst.call_mut f x
+      ok r.1) with
   | ok mapped => ok ⟨mapped, by
       have := List.mapM_Result_length h; have := a.property; omega⟩
   | fail e => fail e

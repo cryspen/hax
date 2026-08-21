@@ -46,7 +46,7 @@ pub mod slice {
     pub fn array_from_fn<T, const N: usize, F: FnMut(usize) -> T>(f: F) -> [T; N] {
         std::array::from_fn(f)
     }
-    pub fn array_map<T, U, const N: usize, F: Fn(T) -> U>(s: [T; N], f: F) -> [U; N] {
+    pub fn array_map<T, U, const N: usize, F: FnMut(T) -> U>(s: [T; N], f: F) -> [U; N] {
         s.map(f)
     }
     pub fn array_as_slice<T, const N: usize>(s: &[T; N]) -> &[T] {
