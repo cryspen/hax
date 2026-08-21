@@ -28,13 +28,13 @@ def array.TryFromSliceError := Unit
 
 /-
 /-- [core_models::array::Array]
-    Source: 'core-models/src/core/array.rs', lines 8:0-8:40 -/
+    Source: 'core-models/src/core/array.rs', lines 10:0-10:40 -/
 @[reducible]
 def array.Array (T : Type) (N : Std.Usize) := Array T N
 -/
 
 /-- [core_models::array::{core_models::array::Array<T, N>}::each_ref::closure]
-    Source: 'core-models/src/core/array.rs', lines 55:22-55:43 -/
+    Source: 'core-models/src/core/array.rs', lines 57:22-57:43 -/
 @[reducible]
 def array.Array.each_ref.closure (T : Type) (N : Std.Usize) := Array T N
 
@@ -46,7 +46,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → Result Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 175:4-175:55
+    Source: 'core-models/src/core/array.rs', lines 177:4-177:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -236,7 +236,7 @@ structure error.Error (Self : Type) where
   fmtDebugInst : fmt.Debug Self
 
 /-- [core_models::f32::f32]
-    Source: 'core-models/src/core/f32.rs', lines 4:0-4:11 -/
+    Source: 'core-models/src/core/f32.rs', lines 6:0-6:11 -/
 @[reducible]
 def f32.f32 := Unit
 
@@ -245,12 +245,6 @@ def f32.f32 := Unit
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
-
-/-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 95:4-102:5 -/
-@[discriminant isize]
-inductive fmt.rt.ArgumentType where
-| Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
     Source: 'core-models/src/core/fmt.rs', lines 104:4-106:5
@@ -499,73 +493,73 @@ structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
 
 /-- [core_models::num::u8]
-    Source: 'core-models/src/core/num/mod.rs', lines 520:0-520:14
+    Source: 'core-models/src/core/num/mod.rs', lines 522:0-522:14
     Visibility: public -/
 @[reducible]
 def num.u8 := Unit
 
 /-- [core_models::num::u16]
-    Source: 'core-models/src/core/num/mod.rs', lines 523:0-523:15
+    Source: 'core-models/src/core/num/mod.rs', lines 525:0-525:15
     Visibility: public -/
 @[reducible]
 def num.u16 := Unit
 
 /-- [core_models::num::u32]
-    Source: 'core-models/src/core/num/mod.rs', lines 526:0-526:15
+    Source: 'core-models/src/core/num/mod.rs', lines 528:0-528:15
     Visibility: public -/
 @[reducible]
 def num.u32 := Unit
 
 /-- [core_models::num::u64]
-    Source: 'core-models/src/core/num/mod.rs', lines 529:0-529:15
+    Source: 'core-models/src/core/num/mod.rs', lines 531:0-531:15
     Visibility: public -/
 @[reducible]
 def num.u64 := Unit
 
 /-- [core_models::num::u128]
-    Source: 'core-models/src/core/num/mod.rs', lines 532:0-532:16
+    Source: 'core-models/src/core/num/mod.rs', lines 534:0-534:16
     Visibility: public -/
 @[reducible]
 def num.u128 := Unit
 
 /-- [core_models::num::usize]
-    Source: 'core-models/src/core/num/mod.rs', lines 535:0-535:17
+    Source: 'core-models/src/core/num/mod.rs', lines 537:0-537:17
     Visibility: public -/
 @[reducible]
 def num.usize := Unit
 
 /-- [core_models::num::i8]
-    Source: 'core-models/src/core/num/mod.rs', lines 538:0-538:14
+    Source: 'core-models/src/core/num/mod.rs', lines 540:0-540:14
     Visibility: public -/
 @[reducible]
 def num.i8 := Unit
 
 /-- [core_models::num::i16]
-    Source: 'core-models/src/core/num/mod.rs', lines 541:0-541:15
+    Source: 'core-models/src/core/num/mod.rs', lines 543:0-543:15
     Visibility: public -/
 @[reducible]
 def num.i16 := Unit
 
 /-- [core_models::num::i32]
-    Source: 'core-models/src/core/num/mod.rs', lines 544:0-544:15
+    Source: 'core-models/src/core/num/mod.rs', lines 546:0-546:15
     Visibility: public -/
 @[reducible]
 def num.i32 := Unit
 
 /-- [core_models::num::i64]
-    Source: 'core-models/src/core/num/mod.rs', lines 547:0-547:15
+    Source: 'core-models/src/core/num/mod.rs', lines 549:0-549:15
     Visibility: public -/
 @[reducible]
 def num.i64 := Unit
 
 /-- [core_models::num::i128]
-    Source: 'core-models/src/core/num/mod.rs', lines 550:0-550:16
+    Source: 'core-models/src/core/num/mod.rs', lines 552:0-552:16
     Visibility: public -/
 @[reducible]
 def num.i128 := Unit
 
 /-- [core_models::num::isize]
-    Source: 'core-models/src/core/num/mod.rs', lines 553:0-553:17
+    Source: 'core-models/src/core/num/mod.rs', lines 555:0-555:17
     Visibility: public -/
 @[reducible]
 def num.isize := Unit
@@ -808,40 +802,40 @@ structure ops.range.RangeInclusive (T : Type) where
 
 /-
 /-- [core_models::slice::Slice]
-    Source: 'core-models/src/core/slice.rs', lines 5:0-5:21 -/
+    Source: 'core-models/src/core/slice.rs', lines 7:0-7:21 -/
 @[reducible]
 def slice.Slice (T : Type) := Slice T
 -/
 
 /-- [core_models::slice::iter::Chunks]
-    Source: 'core-models/src/core/slice.rs', lines 12:4-15:5
+    Source: 'core-models/src/core/slice.rs', lines 14:4-17:5
     Visibility: public -/
 structure slice.iter.Chunks (T : Type) where
   cs : Std.Usize
   elements : Slice T
 
 /-- [core_models::slice::iter::ChunksExact]
-    Source: 'core-models/src/core/slice.rs', lines 22:4-25:5
+    Source: 'core-models/src/core/slice.rs', lines 24:4-27:5
     Visibility: public -/
 structure slice.iter.ChunksExact (T : Type) where
   cs : Std.Usize
   elements : Slice T
 
 /-- [core_models::slice::iter::Iter]
-    Source: 'core-models/src/core/slice.rs', lines 32:4-32:43
+    Source: 'core-models/src/core/slice.rs', lines 34:4-34:43
     Visibility: public -/
 @[reducible]
 def slice.iter.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::slice::iter::Windows]
-    Source: 'core-models/src/core/slice.rs', lines 77:4-80:5
+    Source: 'core-models/src/core/slice.rs', lines 79:4-82:5
     Visibility: public -/
 structure slice.iter.Windows (T : Type) where
   size : Std.Usize
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 428:4-448:5
+    Source: 'core-models/src/core/slice.rs', lines 430:4-450:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
