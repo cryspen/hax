@@ -188,11 +188,9 @@ _QUALIFY_ARM = "core."
 
 
 def fix_result_match(text: str) -> str:
-    """ A match on `result.Result` cannot be parsed properly by Lean in
-    `I128.Insts.Core_modelsIterStepStep.steps_between`.
-    """
-    return sub("fix_result_match", r"\| result\.Result\.",
-               r"| core.result.Result.", text)
+    """A match on `result.Result` cannot be parsed properly by Lean in
+    `I128.Insts.Core_modelsIterStepStep.steps_between`, so the pattern is
+    qualified.
 
     Qualifying the pattern makes the arm head `len("core.")` characters longer.
     When Aeneas put the arm's body on the same line *and* continued it on the
