@@ -634,7 +634,10 @@ mod tests {
         #[test]
         fn test_clamp_at_min(x in any::<u8>(), hi in any::<u8>()) {
             let hi = std::cmp::max(x, hi);
-            prop_assert_eq!(super::clamp(x.inject(), x.inject(), hi.inject()), x.clamp(x, hi));
+            prop_assert_eq!(
+                super::clamp(x.inject(), x.inject(), hi.inject()),
+                std::cmp::Ord::clamp(x, x, hi)
+            );
         }
 
         #[test]

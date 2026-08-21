@@ -240,11 +240,11 @@ mod converts {
     // opaque: deciding UTF-8 validity needs a `char`/UTF-8 model we do not have.
     #[hax_lib::opaque]
     fn from_utf8(s: &[u8]) -> crate::result::Result<&str, super::error::Utf8Error> {
-        let (valid, decoded) = rust_primitives::string::str_from_utf8(s);
+        let (valid, decoded, valid_up_to, error_len) = rust_primitives::string::str_from_utf8(s);
         if valid {
             crate::result::Result::Ok(decoded)
         } else {
-            crate::result::Result::Err(super::error::Utf8Error)
+            crate::result::Result::Err(super::error::Utf8Error::new(valid_up_to, error_len))
         }
     }
 
@@ -290,6 +290,19 @@ pub mod error {
     }
 
     impl Utf8Error {
+        /// Build one from what `rust_primitives::string::str_from_utf8` reports;
+        /// `error_len == 0` is its encoding of `None`.
+        pub(super) fn new(valid_up_to: usize, error_len: u8) -> Utf8Error {
+            Utf8Error {
+                valid_up_to,
+                error_len: if error_len == 0 {
+                    Option::None
+                } else {
+                    Option::Some(error_len)
+                },
+            }
+        }
+
         /// See [`std::str::Utf8Error::valid_up_to`]
         pub fn valid_up_to(&self) -> usize {
             self.valid_up_to

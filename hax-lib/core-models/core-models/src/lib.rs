@@ -65,15 +65,9 @@
 // unstable, and a proptest compares against it.
 
 // mem_copy_fn / drop_guard: same, for `core::mem::{copy, DropGuard}`.
-// hasher_prefixfree_extras: same, for `Hasher::{write_length_prefix, write_str}`.
-// cmp_minmax: same, for `cmp::minmax{,_by,_by_key}`.
-// array_into_iter_constructors: `core::array::IntoIter::empty` is still
-// unstable, and a proptest compares against it.
-// mem_copy_fn / drop_guard: same, for `core::mem::{copy, DropGuard}`.
 // The `bound_*` / `control_flow_*` / `range_*` / `one_sided_range` features let
 // the `ops` proptests call the still-unstable std counterparts of the range and
 // `ControlFlow` items the model provides.
-#![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]

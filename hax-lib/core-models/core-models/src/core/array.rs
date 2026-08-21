@@ -310,6 +310,9 @@ mod tests {
                     triple(x)
                 );
             }
+        }
+    }
+
     /// `IntoIter` is lazy; draining it is what observes it.
     fn drain<I: ModelIterator>(mut it: I) -> Vec<I::Item> {
         let mut out = Vec::new();
@@ -441,6 +444,8 @@ mod tests {
                 <[u8; 4] as crate::ops::index::Index<usize>>::index(&m, idx),
                 &arr[idx]
             );
+        }
+
         // `as_mut_slice` / `from_mut` have no F* model (`&mut` returns).
         #[cfg(not(hax_backend_fstar))]
         #[test]
@@ -555,6 +560,9 @@ mod tests {
             let m = arr.inject();
             prop_assert_eq!(crate::ops::index::Index::index(&m, idx), &arr[idx]);
         }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
         fn test_into_iter_as_mut_slice(arr in any::<[u8; 4]>(), taken in 0usize..=4, v in any::<u8>()) {
             let mut model = super::iter::IntoIter::new(arr.inject());
             let mut std_it = arr.into_iter();

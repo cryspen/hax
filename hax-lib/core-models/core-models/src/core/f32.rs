@@ -30,7 +30,6 @@ struct f32;
 
 impl f32 {
     /// See [`std::primitive::f32::abs`]
-    // opaque: there is nothing to compute with (see the module docs).
     #[hax_lib::opaque]
     fn abs(x: f64) -> f64 {
         rust_primitives::float::abs_f64(x)
@@ -47,7 +46,5 @@ mod tests {
         fn test_abs(x in any::<f64>()) {
             prop_assert_eq!(super::f32::abs(x).to_bits(), x.abs().to_bits());
         }
-    fn abs(x: core::primitive::f32) -> core::primitive::f32 {
-        panic!()
     }
 }
