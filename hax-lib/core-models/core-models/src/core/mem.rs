@@ -321,13 +321,12 @@ mod tests {
             prop_assert_eq!(m.into_inner(), y);
         }
 
-        // `dismiss` is still spelled `into_inner` on the toolchain this crate
-        // builds with. Both drop the closure without calling it.
+        // Both drop the closure without calling it.
         #[test]
         fn test_drop_guard_dismiss(x in any::<u32>()) {
             prop_assert_eq!(
                 DropGuard::dismiss(DropGuard::new(x, |_: u32| ())),
-                core::mem::DropGuard::into_inner(core::mem::DropGuard::new(x, |_: u32| ()))
+                core::mem::DropGuard::dismiss(core::mem::DropGuard::new(x, |_: u32| ()))
             );
         }
     }
