@@ -63,6 +63,7 @@ ALLOC_CHARON_OPAQUE = \
 .PHONY: all extract patch lean build clean clean-generated tests \
         tests-clean alloc-stage alloc-extract alloc-clean \
         coverage test-coverage test-coverage-check coverage-runs \
+        coverage-exclusions \
         mutants mutants-fstar mutants-genuine \
         fstar fstar-clean fstar-prune fstar-core-models fstar-std fstar-alloc \
         fstar-rand-core
@@ -324,9 +325,24 @@ coverage-runs:
 test-coverage: coverage-runs
 	$(LLVM_COV) report --show-missing-lines $(COV_FILTER)
 
+# Every `coverage(off)` must say why the item cannot be exercised. Without this,
+# an item that is merely *broken* can be excluded instead of tested, which is
+# how `String::pop` sat panicking on every non-empty string.
+coverage-exclusions:
+	@awk '\
+	  /^[ \t]*\/\/[^\/]/ { cmt=1; next } \
+	  /coverage\(off\)/ { if (!cmt) { print FILENAME ":" FNR; bad=1 } next } \
+	  /^[ \t]*#\[/ { next } \
+	  /^[ \t]*\/\/\// { next } \
+	  { cmt=0 } \
+	  END { exit bad }' \
+	  $$(find core-models/src alloc/src std/src rust_primitives/src rand_core/src -name '*.rs') \
+	  || { echo "::error::each #[cfg_attr(coverage_nightly, coverage(off))] above needs a preceding // comment saying why the item cannot be exercised by a test"; exit 1; }
+	@echo "coverage exclusions: all justified"
+
 # The CI gate. Prints the missing file:line list on failure, so the author sees
 # exactly what to test.
-test-coverage-check: coverage-runs
+test-coverage-check: coverage-runs coverage-exclusions
 	@$(LLVM_COV) report --show-missing-lines $(COV_FILTER) \
 	    --fail-under-lines 100 --fail-under-functions 100 --fail-under-regions 100 \
 	  || { echo "::error::model code above is not covered by the test suite: add a test, or mark the item #[cfg_attr(coverage_nightly, coverage(off))] if it cannot be exercised"; exit 1; }
