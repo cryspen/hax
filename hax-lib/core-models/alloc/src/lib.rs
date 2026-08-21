@@ -1,4 +1,7 @@
 #![allow(unused)]
+// Gated so a normal build, which does not define `coverage_nightly`, does
+// not see the still-unstable attribute.
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 // `Cow::is_borrowed` / `Cow::is_owned` are still unstable in the real `alloc`,
 // and the property tests compare the model against them.
 #![cfg_attr(test, feature(cow_is_borrowed))]
@@ -454,6 +457,11 @@ mod collections {
             /// out the smallest remaining element), but proving the `Vec::push`
             /// bound through the loop needs an invariant relating two locals,
             /// which `hax_lib::loop_invariant!` cannot state here.
+            //
+            // Excluded from coverage: the `min.is_some()` guard is what justifies
+            // the `remove`, and inside `0..n` the heap is never empty, so its
+            // false arm cannot be reached.
+            #[cfg_attr(coverage_nightly, coverage(off))]
             #[hax_lib::opaque]
             fn into_sorted_vec(mut self) -> Vec<T>
             where
@@ -3578,9 +3586,17 @@ let update_at_usize (#v_T #v_A: Type0)
                     std_deque.shrink_to(n);
                     model.shrink_to_fit();
                     std_deque.shrink_to_fit();
-                    prop_assert_eq!(model.try_reserve(n), std_deque.try_reserve(n).map_err(|_| unreachable!()));
-                    prop_assert_eq!(model.try_reserve_exact(n),
-                                    std_deque.try_reserve_exact(n).map_err(|_| unreachable!()));
+                    // Neither side can fail to allocate here, so what is compared
+                    // is that both succeed — `map_err`'s closure would be dead
+                    // code.
+                    prop_assert_eq!(
+                        model.try_reserve(n).is_ok(),
+                        std_deque.try_reserve(n).is_ok()
+                    );
+                    prop_assert_eq!(
+                        model.try_reserve_exact(n).is_ok(),
+                        std_deque.try_reserve_exact(n).is_ok()
+                    );
                     prop_assert_eq!(model, std_deque.inject());
                 }
 

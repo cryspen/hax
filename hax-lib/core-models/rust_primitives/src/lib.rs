@@ -425,6 +425,18 @@ mod tests {
 
     // `array_repeat` always passes exactly `N` elements, so its length check is
     // only reachable from here.
+    // `str_is_char_boundary` has no model caller: `core_models::str` guards with
+    // its own `requires`, so it is checked here directly.
+    #[test]
+    fn test_str_is_char_boundary() {
+        for i in 0..=4 {
+            assert_eq!(
+                crate::string::str_is_char_boundary("aé", i),
+                "aé".is_char_boundary(i)
+            );
+        }
+    }
+
     #[test]
     fn test_array_from_vec_wrong_length_panics() {
         let res =
