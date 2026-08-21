@@ -415,6 +415,35 @@ def iter.traits.iterator.Iterator.fuse.trait_default
     Result (iter.adapters.fuse.Fuse Self) :=
   iter.adapters.fuse.Fuse.new self
 
+/-! ## `slice::iter_mut` / `IterMut` — the &mut-yielding slice iterator (opaque model)
+
+`IterMut` yields `&mut T`, so its `next` returns a 3-tuple `(Option T) × Self ×
+(Self → Option T → Self)` — the third component writes the (possibly-modified)
+element back. This can't be an `Iterator` trait instance (2-tuple `next`), so the
+extraction calls this specialised `next` directly (as with Aeneas.Std's
+`SliceIter`). Bodies mirror Aeneas.Std, adapted to `core.option.Option`. -/
+open Aeneas.Std in
+def slice.iter.IterMut.Insts.CoreIterTraitsIteratorIteratorMutAT.next {T : Type}
+    (it : slice.iter.IterMut T) :
+    Aeneas.Std.Result ((option.Option T) × (slice.iter.IterMut T) ×
+      (slice.iter.IterMut T → option.Option T → slice.iter.IterMut T)) :=
+  if h : it.i < it.slice.length then
+    let x := it.slice[it.i]
+    let i := it.i
+    let it := { it with i := i + 1 }
+    let back := fun (it' : slice.iter.IterMut T) (o : option.Option T) =>
+      match o with
+      | option.Option.None => it'
+      | option.Option.Some x => { it' with slice := it'.slice.setAtNat i x }
+    .ok (option.Option.Some x, it, back)
+  else .ok (option.Option.None, it, fun it' _ => it')
+
+open Aeneas.Std in
+def slice.Slice.iter_mut {T : Type} (s : Aeneas.Std.Slice T) :
+    Aeneas.Std.Result ((slice.iter.IterMut T) ×
+      (slice.iter.IterMut T → Aeneas.Std.Slice T)) :=
+  .ok ({ slice := s, i := 0 }, fun it => it.slice)
+
 end core
 
 namespace alloc
