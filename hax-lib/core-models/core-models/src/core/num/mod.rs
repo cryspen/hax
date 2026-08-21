@@ -133,27 +133,27 @@ macro_rules! uint_impl {
                 paste! { [<count_ones_ $Name>](x) }
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_right_ $Name>](x, n) }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_left_ $Name>](x, n) }
             }
             /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn leading_zeros(x: $Self) -> core::primitive::u32 {
                 paste! { [<leading_zeros_ $Name>](x) }
             }
             /// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn ilog2(x: $Self) -> core::primitive::u32 {
                 paste! { [<ilog2_ $Name>](x) }
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -161,22 +161,22 @@ macro_rules! uint_impl {
                 crate::panicking::internal::panic()
             }
             /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn from_be_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
                 paste! { [<from_be_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn from_le_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
                 paste! { [<from_le_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn to_be_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_be_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
@@ -396,27 +396,27 @@ macro_rules! iint_impl {
                 paste! { [<abs_ $Name>](x) }
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_right_ $Name>](x, n) }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_left_ $Name>](x, n) }
             }
             /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn leading_zeros(x: $Self) -> core::primitive::u32 {
                 paste! { [<leading_zeros_ $Name>](x) }
             }
             /// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn ilog2(x: $Self) -> core::primitive::u32 {
                 paste! { [<ilog2_ $Name>](x) }
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -424,22 +424,22 @@ macro_rules! iint_impl {
                 crate::panicking::internal::panic()
             }
             /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn from_be_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
                 paste! { [<from_be_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::from_le_bytes`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn from_le_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
                 paste! { [<from_le_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::to_be_bytes`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn to_be_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_be_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }

@@ -357,7 +357,7 @@ impl<T, E> Result<Result<T, E>, E> {
 /// short-circuiting body cannot be written in terms of the iterator's items;
 /// the behaviour is axiomatised. The body below exists only to typecheck —
 /// it delegates to `V`'s own `from_iter`.
-#[hax_lib::opaque]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 #[hax_lib::attributes]
 impl<A, E, V: crate::iter::traits::collect::FromIterator<A>>
     crate::iter::traits::collect::FromIterator<Result<A, E>> for Result<V, E>

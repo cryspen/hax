@@ -83,7 +83,7 @@ pub mod traits {
         // methods within an impl block, so we use standalone functions and delegate.
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_fold<I: Iterator, B, F: Fn(B, I::Item) -> B>(mut iter: I, init: B, f: F) -> B {
             let mut accum = init;
             while let Option::Some(x) = iter.next() {
@@ -93,7 +93,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_all<I: Iterator, F: Fn(I::Item) -> bool>(mut iter: I, f: F) -> bool {
             while let Option::Some(x) = iter.next() {
                 if !f(x) {
@@ -104,7 +104,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_any<I: Iterator, F: Fn(I::Item) -> bool>(mut iter: I, f: F) -> bool {
             while let Option::Some(x) = iter.next() {
                 if f(x) {
@@ -115,7 +115,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_find<I: Iterator, P: Fn(&I::Item) -> bool>(
             iter: &mut I,
             predicate: P,
@@ -129,7 +129,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_find_map<I: Iterator, B, F: Fn(I::Item) -> Option<B>>(
             mut iter: I,
             f: F,
@@ -143,7 +143,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_position<I: Iterator, P: Fn(I::Item) -> bool>(
             mut iter: I,
             predicate: P,
@@ -159,7 +159,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_count<I: Iterator>(mut iter: I) -> usize {
             let mut n: usize = 0;
             while let Option::Some(_) = iter.next() {
@@ -169,7 +169,7 @@ pub mod traits {
         }
 
         // opaque: for-loop generates Rust_primitives.Hax.Folds, causing F* dependency cycle
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         #[cfg_attr(charon, aeneas::exclude)] // forward reference in lean (`core.Usize.Insts.CoreIterRangeStep`)
         fn iter_nth<I: Iterator>(mut iter: I, n: usize) -> Option<I::Item> {
             for _ in 0..n {
@@ -181,7 +181,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_last<I: Iterator>(mut iter: I) -> Option<I::Item> {
             let mut last = Option::None;
             while let Option::Some(x) = iter.next() {
@@ -191,7 +191,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_for_each<I: Iterator, F: Fn(I::Item)>(mut iter: I, f: F) {
             while let Option::Some(x) = iter.next() {
                 f(x);
@@ -199,7 +199,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_reduce<I: Iterator, F: Fn(I::Item, I::Item) -> I::Item>(
             mut iter: I,
             f: F,
@@ -215,7 +215,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_min<I: Iterator>(mut iter: I) -> Option<I::Item>
         where
             I::Item: crate::cmp::Ord,
@@ -233,7 +233,7 @@ pub mod traits {
         }
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn iter_max<I: Iterator>(mut iter: I) -> Option<I::Item>
         where
             I::Item: crate::cmp::Ord,
@@ -453,7 +453,7 @@ pub mod adapters {
         }
 
         #[hax_lib::attributes]
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator> Iterator for StepBy<I> {
             type Item = <I as Iterator>::Item;
 
@@ -545,7 +545,7 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator, U: Iterator, F: Fn(I::Item) -> U> Iterator for FlatMap<I, U, F> {
             type Item = U::Item;
             fn next(&mut self) -> Option<U::Item> {
@@ -589,7 +589,7 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator> Iterator for Flatten<I>
         where
             I::Item: Iterator,
@@ -626,7 +626,7 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I1: Iterator, I2: Iterator> Iterator for Zip<I1, I2> {
             type Item = (I1::Item, I2::Item);
             fn next(&mut self) -> Option<Self::Item> {
@@ -656,7 +656,7 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         // opaque: loop + Fn output projection not provably bool in F*
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         #[cfg_attr(charon, aeneas::exclude)]
         impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for Filter<I, P> {
             type Item = I::Item;
@@ -693,7 +693,7 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         // opaque: `ref mut` pattern in if-let is not supported by hax
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<A: Iterator, B: Iterator<Item = A::Item>> Iterator for Chain<A, B> {
             type Item = A::Item;
             fn next(&mut self) -> Option<A::Item> {
@@ -723,7 +723,7 @@ pub mod adapters {
         }
         #[hax_lib::attributes]
         // opaque: while-loop generates Rust_primitives.Hax.while_loop, causing F* dependency cycle
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator> Iterator for Skip<I> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
