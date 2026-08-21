@@ -501,7 +501,8 @@ mod string {
             *self = String(str_concat(self.0, str_of_char(c)))
         }
         fn pop(&mut self) -> Option<char> {
-            let l = self.0.len();
+            // Char count, not `str::len`: the primitives below index by char.
+            let l = str_len(self.0);
             if l > 0 {
                 // Read the last char before truncating: afterwards `l - 1` is
                 // out of bounds.
@@ -545,11 +546,10 @@ mod string {
         }
 
         proptest! {
-            // ASCII only: the model mixes `str::len` (bytes) with the
-            // char-indexed `str_sub`/`str_index` primitives, so the two agree
-            // only on single-byte chars.
+            // Arbitrary chars, including multi-byte ones: indexing by char
+            // where `str::len` counts bytes is exactly the bug this catches.
             #[test]
-            fn test_pop(cs in prop::collection::vec(prop::char::range('a', 'z'), 0..8)) {
+            fn test_pop(cs in prop::collection::vec(any::<char>(), 0..8)) {
                 let mut model = super::String::new();
                 let mut std_s = std::string::String::new();
                 for c in &cs {

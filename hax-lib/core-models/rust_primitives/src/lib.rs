@@ -180,6 +180,11 @@ pub mod string {
     pub fn str_index(s: &'static str, i: usize) -> char {
         s.chars().nth(i).unwrap()
     }
+    /// Length in `char`s, to match `str_sub`/`str_index` above. `str::len`
+    /// counts bytes, so the two disagree on any multi-byte char.
+    pub fn str_len(s: &'static str) -> usize {
+        s.chars().count()
+    }
     // `Option`/`Result` are `core` types, which `core_models` may not touch, so
     // these fallible primitives answer with a validity flag instead.
     pub fn str_from_utf8(s: &[u8]) -> (bool, &str) {
