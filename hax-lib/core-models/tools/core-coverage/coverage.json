@@ -19276,7 +19276,7 @@
    },
    {
     "module": "borrow",
-    "covered": 8,
+    "covered": 9,
     "total": 9,
     "in_scope": true,
     "covered_items": [
@@ -19287,11 +19287,10 @@
      "Cow::to_mut",
      "ToOwned",
      "ToOwned::Owned",
+     "ToOwned::clone_into",
      "ToOwned::to_owned"
     ],
-    "missing_items": [
-     "ToOwned::clone_into"
-    ]
+    "missing_items": []
    },
    {
     "module": "boxed",
