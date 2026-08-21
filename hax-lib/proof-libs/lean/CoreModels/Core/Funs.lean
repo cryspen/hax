@@ -8453,21 +8453,21 @@ def mem.copy
   ok x
 
 /-- [core_models::mem::manually_drop::{core_models::mem::manually_drop::ManuallyDrop<T>}::new]:
-    Source: 'core-models/src/core/mem.rs', lines 169:8-171:9
+    Source: 'core-models/src/core/mem.rs', lines 174:8-176:9
     Visibility: public -/
 def mem.manually_drop.ManuallyDrop.new
   {T : Type} (value : T) : Result (mem.manually_drop.ManuallyDrop T) := do
   ok { value }
 
 /-- [core_models::mem::manually_drop::{core_models::mem::manually_drop::ManuallyDrop<T>}::into_inner]:
-    Source: 'core-models/src/core/mem.rs', lines 174:8-176:9
+    Source: 'core-models/src/core/mem.rs', lines 179:8-181:9
     Visibility: public -/
 def mem.manually_drop.ManuallyDrop.into_inner
   {T : Type} (slot : mem.manually_drop.ManuallyDrop T) : Result T := do
   ok slot.value
 
 /-- [core_models::mem::manually_drop::{core_models::mem::manually_drop::ManuallyDrop<T>}::drop]:
-    Source: 'core-models/src/core/mem.rs', lines 193:8-193:57
+    Source: 'core-models/src/core/mem.rs', lines 200:8-200:57
     Visibility: public -/
 def mem.manually_drop.ManuallyDrop.drop
   {T : Type} (slot : mem.manually_drop.ManuallyDrop T) :
@@ -8476,21 +8476,21 @@ def mem.manually_drop.ManuallyDrop.drop
   ok slot
 
 /-- [core_models::mem::maybe_dangling::{core_models::mem::maybe_dangling::MaybeDangling<P>}::new]:
-    Source: 'core-models/src/core/mem.rs', lines 206:8-211:9
+    Source: 'core-models/src/core/mem.rs', lines 213:8-218:9
     Visibility: public -/
 def mem.maybe_dangling.MaybeDangling.new
   {P : Type} (x : P) : Result (mem.maybe_dangling.MaybeDangling P) := do
   ok x
 
 /-- [core_models::mem::maybe_dangling::{core_models::mem::maybe_dangling::MaybeDangling<P>}::as_ref]:
-    Source: 'core-models/src/core/mem.rs', lines 214:8-216:9
+    Source: 'core-models/src/core/mem.rs', lines 221:8-223:9
     Visibility: public -/
 def mem.maybe_dangling.MaybeDangling.as_ref
   {P : Type} (self : mem.maybe_dangling.MaybeDangling P) : Result P := do
   ok self
 
 /-- [core_models::mem::maybe_dangling::{core_models::mem::maybe_dangling::MaybeDangling<P>}::as_mut]:
-    Source: 'core-models/src/core/mem.rs', lines 223:8-225:9
+    Source: 'core-models/src/core/mem.rs', lines 230:8-232:9
     Visibility: public -/
 def mem.maybe_dangling.MaybeDangling.as_mut
   {P : Type} (self : mem.maybe_dangling.MaybeDangling P) :
@@ -8500,14 +8500,14 @@ def mem.maybe_dangling.MaybeDangling.as_mut
   ok (self, back)
 
 /-- [core_models::mem::maybe_dangling::{core_models::mem::maybe_dangling::MaybeDangling<P>}::into_inner]:
-    Source: 'core-models/src/core/mem.rs', lines 228:8-233:9
+    Source: 'core-models/src/core/mem.rs', lines 235:8-240:9
     Visibility: public -/
 def mem.maybe_dangling.MaybeDangling.into_inner
   {P : Type} (self : mem.maybe_dangling.MaybeDangling P) : Result P := do
   ok self
 
 /-- [core_models::mem::drop_guard::{core_models::mem::drop_guard::DropGuard<T, F>}::new]:
-    Source: 'core-models/src/core/mem.rs', lines 253:8-255:9
+    Source: 'core-models/src/core/mem.rs', lines 260:8-262:9
     Visibility: public -/
 def mem.drop_guard.DropGuard.new
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleTTupleInst :
@@ -8517,7 +8517,7 @@ def mem.drop_guard.DropGuard.new
   ok { inner, f }
 
 /-- [core_models::mem::drop_guard::{core_models::mem::drop_guard::DropGuard<T, F>}::dismiss]:
-    Source: 'core-models/src/core/mem.rs', lines 258:8-260:9
+    Source: 'core-models/src/core/mem.rs', lines 265:8-267:9
     Visibility: public -/
 def mem.drop_guard.DropGuard.dismiss
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleTTupleInst :
