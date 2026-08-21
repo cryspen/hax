@@ -134,6 +134,43 @@ def Isize.Insts.CoreCmpOrd : cmp.Ord Isize := mkIOrd
 abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next :=
   @IteratorRange.next
 
+/-- `next_back` for `Range<A>`, parameterised over `Step` — mirrors Aeneas.Std's
+    `RangeIter`. Consume from the high end: if `start < end`, decrement `end` by one
+    and yield the new `end`; otherwise `none`. -/
+def IteratorRange.next_back {A : Type} (StepInst : iter.range.Step A) :
+    ops.range.Range A → Aeneas.Std.Result ((Option A) × ops.range.Range A) := fun range => do
+  let lt ← StepInst.corecmpPartialOrdInst.lt range.start range.«end»
+  if lt then do
+    let b ← StepInst.backward_checked range.«end» 1#usize
+    match b with
+    | Option.none      => .fail .panic
+    | Option.some e'   => .ok (Option.some e', { range with «end» := e' })
+  else .ok (Option.none, range)
+
+/-! ## Full generic `Range<A>` iterator instance dicts
+
+aeneas models `Range` iteration GENERICALLY (`Range<A: Step>`) and emits
+`core.ops.range.Range.Insts.CoreIterTraits…(StepInst)` at downstream `for`/`.map`/
+`.rev`/`.collect` sites. Core-models' Rust source instead defines Range iteration
+PER-SCALAR-TYPE (the `impl_iterator_range_int!` macro → `RangeUsize.Insts.…`), so
+the generic instance dict is missing. We provide it here (delegating to the generic
+`IteratorRange.next`/`.next_back` above), mirroring Aeneas.Std's `RangeIter`. The
+`.next` abbrev above is the function form the same-crate generated code calls; this
+is the full dict a downstream extraction passes as an `Iterator`/`DoubleEnded`
+dictionary. -/
+def ops.range.Range.Insts.CoreIterTraitsIteratorIterator {A : Type}
+    (StepInst : iter.range.Step A) :
+    iter.traits.iterator.Iterator (ops.range.Range A) A := {
+  next := IteratorRange.next StepInst
+}
+
+def ops.range.Range.Insts.CoreIterTraitsDouble_endedDoubleEndedIterator {A : Type}
+    (StepInst : iter.range.Step A) :
+    iter.traits.double_ended.DoubleEndedIterator (ops.range.Range A) A := {
+  iteratorIteratorInst := ops.range.Range.Insts.CoreIterTraitsIteratorIterator StepInst
+  next_back := IteratorRange.next_back StepInst
+}
+
 /-- [core::cmp::impls::{core::cmp::PartialOrd<&0 (B)> for &1 (A)}::lt]:
     Source: '/rustc/library/core/src/cmp.rs', lines 2133:8-2133:40
     Name pattern: [core::cmp::impls::{core::cmp::PartialOrd<&'1 @A, &'0 @B>}::lt]
