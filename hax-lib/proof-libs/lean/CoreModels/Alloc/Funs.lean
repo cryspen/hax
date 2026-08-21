@@ -63,12 +63,6 @@ def borrow.ToOwned.Blanket (T : Type) : borrow.ToOwned T := {
 def boxed.Box.new {T : Type} (v : T) : Result T := do
   ok v
 
-/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, U>}::new]:
-    Source: 'src/lib.rs', lines 201:16-203:17 -/
-def collections.btree.set.BTreeSet.new
-  (T : Type) (U : Type) : Result (collections.btree.set.BTreeSet T U) := do
-  ok (core.option.Option.None, core.option.Option.None)
-
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, alloc::alloc::Global>}::new]:
     Source: 'src/lib.rs', lines 217:12-219:13 -/
 def collections.vec_deque.VecDequeTGlobal.new
@@ -189,13 +183,13 @@ def
 }
 
 /-- [alloc::vec::from_seq]:
-    Source: 'src/lib.rs', lines 577:4-579:5 -/
+    Source: 'src/lib.rs', lines 579:4-581:5 -/
 def vec.from_seq
   {T : Type} (s : rust_primitives.sequence.Seq T) : Result (vec.Vec T) := do
   ok s
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::to_vec]:
-    Source: 'src/lib.rs', lines 370:8-377:9 -/
+    Source: 'src/lib.rs', lines 372:8-379:9 -/
 def slice.Dummy.to_vec
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (s : Slice T) :
   Result (vec.Vec T)
@@ -205,13 +199,13 @@ def slice.Dummy.to_vec
   vec.from_seq seq1
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::into_vec]:
-    Source: 'src/lib.rs', lines 379:8-381:9 -/
+    Source: 'src/lib.rs', lines 381:8-383:9 -/
 def slice.Dummy.into_vec {T : Type} (s : Slice T) : Result (vec.Vec T) := do
   let s1 ← rust_primitives.sequence.seq_from_boxed_slice s
   vec.from_seq s1
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]: loop body 0:
-    Source: 'src/lib.rs', lines 394:12-397:13 -/
+    Source: 'src/lib.rs', lines 396:12-399:13 -/
 @[rust_loop_body]
 def slice.Dummy.concat_loop.body
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
@@ -231,7 +225,7 @@ def slice.Dummy.concat_loop.body
   else ok (done out)
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]: loop 0:
-    Source: 'src/lib.rs', lines 394:12-397:13 -/
+    Source: 'src/lib.rs', lines 396:12-399:13 -/
 @[rust_loop]
 def slice.Dummy.concat_loop
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
@@ -245,7 +239,7 @@ def slice.Dummy.concat_loop
     (out, i)
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]:
-    Source: 'src/lib.rs', lines 388:8-399:9 -/
+    Source: 'src/lib.rs', lines 390:8-401:9 -/
 def slice.Dummy.concat
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
   (coreborrowBorrowTSliceInst : core.borrow.Borrow T (Slice Item))
@@ -259,20 +253,20 @@ def slice.Dummy.concat
   vec.from_seq out1
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::as_slice]:
-    Source: 'src/lib.rs', lines 688:8-690:9
+    Source: 'src/lib.rs', lines 694:8-696:9
     Visibility: public -/
 def vec.Vec.as_slice {T : Type} (self : vec.Vec T) : Result (Slice T) := do
   rust_primitives.sequence.seq_to_slice self
 
 /-- [alloc::vec::{impl core::ops::deref::Deref<[T]> for alloc::vec::Vec<T>}::deref]:
-    Source: 'src/lib.rs', lines 813:8-815:9
+    Source: 'src/lib.rs', lines 841:8-843:9
     Visibility: public -/
 def vec.Vec.Insts.CoreOpsDerefDerefSlice.deref
   {T : Type} (self : vec.Vec T) : Result (Slice T) := do
   vec.Vec.as_slice self
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]: loop body 0:
-    Source: 'src/lib.rs', lines 584:12-586:13
+    Source: 'src/lib.rs', lines 586:12-588:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.Insts.CoreCloneClone.clone_loop.body
@@ -291,7 +285,7 @@ def vec.Vec.Insts.CoreCloneClone.clone_loop.body
     ok (cont (iter1, new_vec1))
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]: loop 0:
-    Source: 'src/lib.rs', lines 584:12-586:13
+    Source: 'src/lib.rs', lines 586:12-588:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.Insts.CoreCloneClone.clone_loop
@@ -305,7 +299,7 @@ def vec.Vec.Insts.CoreCloneClone.clone_loop
     (iter_, new_vec)
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]:
-    Source: 'src/lib.rs', lines 582:8-588:9
+    Source: 'src/lib.rs', lines 584:8-590:9
     Visibility: public -/
 def vec.Vec.Insts.CoreCloneClone.clone
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T) :
@@ -319,7 +313,7 @@ def vec.Vec.Insts.CoreCloneClone.clone
   ok new_vec1
 
 /-- Trait implementation: [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 581:4-589:5 -/
+    Source: 'src/lib.rs', lines 583:4-591:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
   core.clone.Clone T) : core.clone.Clone (vec.Vec T) := {
@@ -327,7 +321,7 @@ def vec.Vec.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
 }
 
 /-- [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}::index]:
-    Source: 'src/lib.rs', lines 804:8-806:9
+    Source: 'src/lib.rs', lines 816:8-818:9
     Visibility: public -/
 def vec.Vec.Insts.CoreOpsIndexIndex.index
   {T : Type} {I : Type} {Clause0_Output : Type}
@@ -341,13 +335,13 @@ def vec.Vec.Insts.CoreOpsIndexIndex.index
     coresliceindexSliceIndexISliceClause0_OutputInst s i
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::len]:
-    Source: 'src/lib.rs', lines 662:8-664:9
+    Source: 'src/lib.rs', lines 668:8-670:9
     Visibility: public -/
 def vec.Vec.len {T : Type} (self : vec.Vec T) : Result Std.Usize := do
   rust_primitives.sequence.seq_len self
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]: loop body 0:
-    Source: 'src/lib.rs', lines 1:0-606:17
+    Source: 'src/lib.rs', lines 1:0-612:17
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop.body
@@ -377,7 +371,7 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop.body
     else ok (cont (iter1, false))
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]: loop 0:
-    Source: 'src/lib.rs', lines 1:0-606:17
+    Source: 'src/lib.rs', lines 1:0-612:17
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop
@@ -392,7 +386,7 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop
     (iter_, res)
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]:
-    Source: 'src/lib.rs', lines 594:8-609:9
+    Source: 'src/lib.rs', lines 600:8-615:9
     Visibility: public -/
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
@@ -407,17 +401,30 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq
       { start := 0#usize, «end» := i } self other true
   else ok false
 
+/-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::ne]:
+    Source: 'src/lib.rs', lines 597:8-599:9
+    Visibility: public -/
+def vec.Vec.Insts.CoreCmpPartialEqVec.ne
+  {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
+  (self : vec.Vec T) (other : vec.Vec U) :
+  Result Bool
+  := do
+  let b ←
+    vec.Vec.Insts.CoreCmpPartialEqVec.eq corecmpPartialEqInst self other
+  ok (b = false)
+
 /-- Trait implementation: [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 590:4-610:5 -/
+    Source: 'src/lib.rs', lines 592:4-616:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreCmpPartialEqVec {T : Type} {U : Type}
   (corecmpPartialEqInst : core.cmp.PartialEq T U) : core.cmp.PartialEq (vec.Vec
   T) (vec.Vec U) := {
   eq := vec.Vec.Insts.CoreCmpPartialEqVec.eq corecmpPartialEqInst
+  ne := vec.Vec.Insts.CoreCmpPartialEqVec.ne corecmpPartialEqInst
 }
 
 /-- [alloc::vec::into_iter::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::into_iter::IntoIter<T>}::next]:
-    Source: 'src/lib.rs', lines 621:12-627:13
+    Source: 'src/lib.rs', lines 627:12-633:13
     Visibility: public -/
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} (self : vec.into_iter.IntoIter T) :
@@ -431,7 +438,7 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
     ok (core.option.Option.Some t, s)
 
 /-- Trait implementation: [alloc::vec::into_iter::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::into_iter::IntoIter<T>}]
-    Source: 'src/lib.rs', lines 619:8-628:9 -/
+    Source: 'src/lib.rs', lines 625:8-634:9 -/
 @[reducible]
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
   core.iter.traits.iterator.Iterator (vec.into_iter.IntoIter T) T := {
@@ -439,14 +446,14 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
 }
 
 /-- [alloc::vec::{impl core::iter::traits::collect::IntoIterator<T, alloc::vec::into_iter::IntoIter<T>> for alloc::vec::Vec<T>}::into_iter]:
-    Source: 'src/lib.rs', lines 634:8-636:9
+    Source: 'src/lib.rs', lines 640:8-642:9
     Visibility: public -/
 def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
   {T : Type} (self : vec.Vec T) : Result (vec.into_iter.IntoIter T) := do
   ok self
 
 /-- Trait implementation: [alloc::vec::{impl core::iter::traits::collect::IntoIterator<T, alloc::vec::into_iter::IntoIter<T>> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 631:4-637:5 -/
+    Source: 'src/lib.rs', lines 637:4-643:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) :
   core.iter.traits.collect.IntoIterator (vec.Vec T) T (vec.into_iter.IntoIter
@@ -456,7 +463,7 @@ def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) :
 }
 
 /-- [alloc::vec::from_elem]:
-    Source: 'src/lib.rs', lines 639:4-641:5 -/
+    Source: 'src/lib.rs', lines 645:4-647:5 -/
 def vec.from_elem
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (item : T)
   (len : Std.Usize) :
@@ -466,28 +473,28 @@ def vec.from_elem
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::new]:
-    Source: 'src/lib.rs', lines 645:8-647:9
+    Source: 'src/lib.rs', lines 651:8-653:9
     Visibility: public -/
 def vec.Vec.new (T : Type) : Result (vec.Vec T) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::with_capacity]:
-    Source: 'src/lib.rs', lines 648:8-650:9
+    Source: 'src/lib.rs', lines 654:8-656:9
     Visibility: public -/
 def vec.Vec.with_capacity
   (T : Type) (_c : Std.Usize) : Result (vec.Vec T) := do
   vec.Vec.new T
 
 /-- [alloc::vec::{impl core::default::Default for alloc::vec::Vec<T>}::default]:
-    Source: 'src/lib.rs', lines 655:8-657:9
+    Source: 'src/lib.rs', lines 661:8-663:9
     Visibility: public -/
 def vec.Vec.Insts.CoreDefaultDefault.default
   (T : Type) : Result (vec.Vec T) := do
   vec.Vec.new T
 
 /-- Trait implementation: [alloc::vec::{impl core::default::Default for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 654:4-658:5 -/
+    Source: 'src/lib.rs', lines 660:4-664:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreDefaultDefault (T : Type) : core.default.Default (vec.Vec
   T) := {
@@ -495,7 +502,7 @@ def vec.Vec.Insts.CoreDefaultDefault (T : Type) : core.default.Default (vec.Vec
 }
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::push]:
-    Source: 'src/lib.rs', lines 666:8-668:9
+    Source: 'src/lib.rs', lines 672:8-674:9
     Visibility: public -/
 def vec.Vec.push
   {T : Type} (self : vec.Vec T) (x : T) : Result (vec.Vec T) := do
@@ -503,7 +510,7 @@ def vec.Vec.push
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::pop]:
-    Source: 'src/lib.rs', lines 669:8-677:9
+    Source: 'src/lib.rs', lines 675:8-683:9
     Visibility: public -/
 def vec.Vec.pop
   {T : Type} (self : vec.Vec T) :
@@ -518,14 +525,14 @@ def vec.Vec.pop
   else ok (core.option.Option.None, self)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::is_empty]:
-    Source: 'src/lib.rs', lines 678:8-680:9
+    Source: 'src/lib.rs', lines 684:8-686:9
     Visibility: public -/
 def vec.Vec.is_empty {T : Type} (self : vec.Vec T) : Result Bool := do
   let i ← rust_primitives.sequence.seq_len self
   ok (i = 0#usize)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::insert]:
-    Source: 'src/lib.rs', lines 682:8-687:9
+    Source: 'src/lib.rs', lines 688:8-693:9
     Visibility: public -/
 def vec.Vec.insert
   {T : Type} (self : vec.Vec T) (index : Std.Usize) (element : T) :
@@ -538,7 +545,7 @@ def vec.Vec.insert
   ok s2
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::truncate]:
-    Source: 'src/lib.rs', lines 694:8-699:9
+    Source: 'src/lib.rs', lines 700:8-705:9
     Visibility: public -/
 def vec.Vec.truncate
   {T : Type} (self : vec.Vec T) (n : Std.Usize) : Result (vec.Vec T) := do
@@ -549,7 +556,7 @@ def vec.Vec.truncate
   else ok self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::swap_remove]:
-    Source: 'src/lib.rs', lines 702:8-712:9
+    Source: 'src/lib.rs', lines 708:8-718:9
     Visibility: public -/
 def vec.Vec.swap_remove
   {T : Type} (self : vec.Vec T) (n : Std.Usize) :
@@ -565,8 +572,80 @@ def vec.Vec.swap_remove
     let self1 ← vec.Vec.insert s1 n last
     ok (removed, self1)
 
+/-- [alloc::vec::{alloc::vec::Vec<T>}::remove]:
+    Source: 'src/lib.rs', lines 725:8-727:9
+    Visibility: public -/
+def vec.Vec.remove
+  {T : Type} (self : vec.Vec T) (index : Std.Usize) :
+  Result (T × (vec.Vec T))
+  := do
+  let (t, s) ← rust_primitives.sequence.seq_remove self index
+  ok (t, s)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::clear]:
+    Source: 'src/lib.rs', lines 729:8-731:9
+    Visibility: public -/
+def vec.Vec.clear {T : Type} (self : vec.Vec T) : Result (vec.Vec T) := do
+  let s ← rust_primitives.sequence.seq_empty T
+  ok s
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::append]:
+    Source: 'src/lib.rs', lines 733:8-736:9
+    Visibility: public -/
+def vec.Vec.append
+  {T : Type} (self : vec.Vec T) (other : vec.Vec T) :
+  Result ((vec.Vec T) × (vec.Vec T))
+  := do
+  let (s, _) ← rust_primitives.sequence.seq_concat self other
+  let s1 ← rust_primitives.sequence.seq_empty T
+  ok (s, s1)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::split_off]:
+    Source: 'src/lib.rs', lines 740:8-743:9
+    Visibility: public -/
+def vec.Vec.split_off
+  {T : Type} (self : vec.Vec T) (at1 : Std.Usize) :
+  Result ((vec.Vec T) × (vec.Vec T))
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  let (s, s1) ← rust_primitives.sequence.seq_drain self at1 l
+  ok (s, s1)
+
+/-- [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}::next]:
+    Source: 'src/lib.rs', lines 761:12-768:13
+    Visibility: public -/
+def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
+  {T : Type} {A : Type} (self : vec.drain.Drain T A) :
+  Result ((core.option.Option T) × (vec.drain.Drain T A))
+  := do
+  let (s, pd) := self
+  let i ← rust_primitives.sequence.seq_len s
+  if i = 0#usize
+  then ok (core.option.Option.None, self)
+  else
+    let (res, s1) ← rust_primitives.sequence.seq_remove s 0#usize
+    ok (core.option.Option.Some res, (s1, pd))
+
+/-- Trait implementation: [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}]
+    Source: 'src/lib.rs', lines 759:8-769:9 -/
+@[reducible]
+def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator (T : Type) (A : Type)
+  : core.iter.traits.iterator.Iterator (vec.drain.Drain T A) T := {
+  next := vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
+}
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_slice]:
+    Source: 'src/lib.rs', lines 779:8-781:9 -/
+def vec.Vec.extend_from_slice
+  {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
+  (other : Slice T) :
+  Result (vec.Vec T)
+  := do
+  let s ← rust_primitives.sequence.seq_extend corecloneCloneInst self other
+  ok s
+
 /-- [alloc::vec::{alloc::vec::Vec<T>}::resize]:
-    Source: 'src/lib.rs', lines 717:8-728:9
+    Source: 'src/lib.rs', lines 786:8-794:9
     Visibility: public -/
 def vec.Vec.resize
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
@@ -584,80 +663,8 @@ def vec.Vec.resize
   else let (_, s) ← rust_primitives.sequence.seq_drain self new_size l
        ok s
 
-/-- [alloc::vec::{alloc::vec::Vec<T>}::remove]:
-    Source: 'src/lib.rs', lines 730:8-732:9
-    Visibility: public -/
-def vec.Vec.remove
-  {T : Type} (self : vec.Vec T) (index : Std.Usize) :
-  Result (T × (vec.Vec T))
-  := do
-  let (t, s) ← rust_primitives.sequence.seq_remove self index
-  ok (t, s)
-
-/-- [alloc::vec::{alloc::vec::Vec<T>}::clear]:
-    Source: 'src/lib.rs', lines 734:8-736:9
-    Visibility: public -/
-def vec.Vec.clear {T : Type} (self : vec.Vec T) : Result (vec.Vec T) := do
-  let s ← rust_primitives.sequence.seq_empty T
-  ok s
-
-/-- [alloc::vec::{alloc::vec::Vec<T>}::append]:
-    Source: 'src/lib.rs', lines 738:8-741:9
-    Visibility: public -/
-def vec.Vec.append
-  {T : Type} (self : vec.Vec T) (other : vec.Vec T) :
-  Result ((vec.Vec T) × (vec.Vec T))
-  := do
-  let (s, _) ← rust_primitives.sequence.seq_concat self other
-  let s1 ← rust_primitives.sequence.seq_empty T
-  ok (s, s1)
-
-/-- [alloc::vec::{alloc::vec::Vec<T>}::split_off]:
-    Source: 'src/lib.rs', lines 745:8-748:9
-    Visibility: public -/
-def vec.Vec.split_off
-  {T : Type} (self : vec.Vec T) (at1 : Std.Usize) :
-  Result ((vec.Vec T) × (vec.Vec T))
-  := do
-  let l ← rust_primitives.sequence.seq_len self
-  let (s, s1) ← rust_primitives.sequence.seq_drain self at1 l
-  ok (s, s1)
-
-/-- [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}::next]:
-    Source: 'src/lib.rs', lines 766:12-773:13
-    Visibility: public -/
-def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
-  {T : Type} {A : Type} (self : vec.drain.Drain T A) :
-  Result ((core.option.Option T) × (vec.drain.Drain T A))
-  := do
-  let (s, pd) := self
-  let i ← rust_primitives.sequence.seq_len s
-  if i = 0#usize
-  then ok (core.option.Option.None, self)
-  else
-    let (res, s1) ← rust_primitives.sequence.seq_remove s 0#usize
-    ok (core.option.Option.Some res, (s1, pd))
-
-/-- Trait implementation: [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}]
-    Source: 'src/lib.rs', lines 764:8-774:9 -/
-@[reducible]
-def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator (T : Type) (A : Type)
-  : core.iter.traits.iterator.Iterator (vec.drain.Drain T A) T := {
-  next := vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
-}
-
-/-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_slice]:
-    Source: 'src/lib.rs', lines 780:8-782:9 -/
-def vec.Vec.extend_from_slice
-  {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
-  (other : Slice T) :
-  Result (vec.Vec T)
-  := do
-  let s ← rust_primitives.sequence.seq_extend corecloneCloneInst self other
-  ok s
-
 /-- Trait implementation: [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 798:4-807:5 -/
+    Source: 'src/lib.rs', lines 810:4-819:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output :
   Type} (coresliceindexSliceIndexISliceClause0_OutputInst :
@@ -667,8 +674,42 @@ def vec.Vec.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output :
     coresliceindexSliceIndexISliceClause0_OutputInst
 }
 
+/-- [alloc::vec::{impl core::ops::index::IndexMut<I, Clause0_Output> for alloc::vec::Vec<T>}::index_mut]:
+    Source: 'src/lib.rs', lines 832:8-834:9
+    Visibility: public -/
+def vec.Vec.Insts.CoreOpsIndexIndexMut.index_mut
+  {T : Type} {I : Type} {Clause0_Output : Type}
+  (coresliceindexSliceIndexISliceClause0_OutputInst :
+  core.slice.index.SliceIndex I (Slice T) Clause0_Output) (self : vec.Vec T)
+  (i : I) :
+  Result (Clause0_Output × (Clause0_Output → vec.Vec T))
+  := do
+  let (s, seq_to_slice_mut_back) ←
+    rust_primitives.sequence.seq_to_slice_mut self
+  let (t, index_mut_back) ←
+    core.Slice.Insts.CoreOpsIndexIndexMut.index_mut
+      coresliceindexSliceIndexISliceClause0_OutputInst s i
+  let back :=
+    fun t1 => let s1 := index_mut_back t1
+              let s2 := seq_to_slice_mut_back s1
+              s2
+  ok (t, back)
+
+/-- Trait implementation: [alloc::vec::{impl core::ops::index::IndexMut<I, Clause0_Output> for alloc::vec::Vec<T>}]
+    Source: 'src/lib.rs', lines 826:4-835:5 -/
+@[reducible]
+def vec.Vec.Insts.CoreOpsIndexIndexMut {T : Type} {I : Type} {Clause0_Output :
+  Type} (coresliceindexSliceIndexISliceClause0_OutputInst :
+  core.slice.index.SliceIndex I (Slice T) Clause0_Output) :
+  core.ops.index.IndexMut (vec.Vec T) I Clause0_Output := {
+  IndexInst := vec.Vec.Insts.CoreOpsIndexIndex
+    coresliceindexSliceIndexISliceClause0_OutputInst
+  index_mut := vec.Vec.Insts.CoreOpsIndexIndexMut.index_mut
+    coresliceindexSliceIndexISliceClause0_OutputInst
+}
+
 /-- Trait implementation: [alloc::vec::{impl core::ops::deref::Deref<[T]> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 810:4-816:5 -/
+    Source: 'src/lib.rs', lines 838:4-844:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreOpsDerefDerefSlice (T : Type) : core.ops.deref.Deref
   (vec.Vec T) (Slice T) := {
