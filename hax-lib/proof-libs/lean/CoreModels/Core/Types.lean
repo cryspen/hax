@@ -28,13 +28,13 @@ def array.TryFromSliceError := Unit
 
 /-
 /-- [core_models::array::Array]
-    Source: 'core-models/src/core/array.rs', lines 11:0-11:40 -/
+    Source: 'core-models/src/core/array.rs', lines 10:0-10:40 -/
 @[reducible]
 def array.Array (T : Type) (N : Std.Usize) := Array T N
 -/
 
 /-- [core_models::array::{core_models::array::Array<T, N>}::each_ref::closure]
-    Source: 'core-models/src/core/array.rs', lines 58:22-58:43 -/
+    Source: 'core-models/src/core/array.rs', lines 57:22-57:43 -/
 @[reducible]
 def array.Array.each_ref.closure (T : Type) (N : Std.Usize) := Array T N
 
@@ -46,7 +46,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → Result Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 178:4-178:55
+    Source: 'core-models/src/core/array.rs', lines 177:4-177:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
