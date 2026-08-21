@@ -108,7 +108,10 @@ mod rt {
     }
 
     // The formatting arguments carry no observable payload in this model, so
-    // every constructor below yields the single placeholder value.
+    // every constructor below yields the single placeholder value. Opaque like
+    // `ArgumentType` itself: charon drops that enum's variants, so a body
+    // building one would leave aeneas without the fields.
+    #[hax_lib::opaque]
     fn placeholder<'a>() -> ArgumentType<'a> {
         ArgumentType::Placeholder {
             _lifetime: std::marker::PhantomData,
