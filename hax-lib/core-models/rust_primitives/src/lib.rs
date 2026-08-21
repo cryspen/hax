@@ -188,12 +188,6 @@ pub mod string {
             Err(_) => (false, ""),
         }
     }
-    pub fn str_parse_u64(s: &str) -> (bool, u64) {
-        match s.parse::<u64>() {
-            Ok(v) => (true, v),
-            Err(_) => (false, 0),
-        }
-    }
 }
 
 pub mod float {
