@@ -87,8 +87,6 @@
 // unstable: `div_ceil`/`div_floor`/`next_multiple_of` (int_roundings),
 // `exact_div` (exact_div, which is what the pinned toolchain calls the method
 // rustdoc now names `div_exact`), and `unchecked_neg`.
-
-#![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]

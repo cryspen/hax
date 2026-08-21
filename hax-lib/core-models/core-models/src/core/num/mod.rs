@@ -254,6 +254,7 @@ macro_rules! uint_impl {
             // to reuse the existing `wrapping_sub` primitive.
             pub fn wrapping_neg(x: $Self) -> $Self {
                 paste! { [<wrapping_sub_ $Name>](0, x) }
+            }
             /// See [`std::primitive::u8::min_value`] (and similar for other integer types)
             pub fn min_value() -> $Self {
                 <$Name>::MIN
@@ -277,10 +278,6 @@ macro_rules! uint_impl {
                 } else {
                     Option::Some(Self::ilog2(x))
                 }
-            }
-            /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
-            pub fn wrapping_neg(x: $Self) -> $Self {
-                Self::wrapping_sub(0, x)
             }
             /// See [`std::primitive::u8::overflowing_neg`] (and similar for other integer types)
             pub fn overflowing_neg(x: $Self) -> ($Self, bool) {
@@ -1178,6 +1175,7 @@ macro_rules! iint_impl {
             // to reuse the existing `wrapping_sub` primitive.
             pub fn wrapping_neg(x: $Self) -> $Self {
                 paste! { [<wrapping_sub_ $Name>](0, x) }
+            }
             /// See [`std::primitive::i8::min_value`] (and similar for other integer types)
             pub fn min_value() -> $Self {
                 <$Name>::MIN
@@ -1209,10 +1207,6 @@ macro_rules! iint_impl {
                 } else {
                     Option::Some(Self::ilog2(x))
                 }
-            }
-            /// See [`std::primitive::i8::wrapping_neg`] (and similar for other integer types)
-            pub fn wrapping_neg(x: $Self) -> $Self {
-                Self::wrapping_sub(0, x)
             }
             /// See [`std::primitive::i8::overflowing_neg`] (and similar for other integer types)
             pub fn overflowing_neg(x: $Self) -> ($Self, bool) {
@@ -1917,6 +1911,7 @@ macro_rules! iint_impl {
 
 // These types are a trick to define impls on the right names as
 // it is forbidden to do it on primitive types
+
 /// See [`std::primitive::u8`]
 // F*-only: `charon::exclude` would drop these dummy types while their `impl`
 // blocks still reference them (see f32.rs).
@@ -2981,11 +2976,6 @@ mod tests {
                         }
 
                         #[test]
-                        fn [<test_ $t _wrapping_neg>](x in any::<$t>()) {
-                            prop_assert_eq!(super::$t::wrapping_neg(x.inject()), x.wrapping_neg());
-                        }
-
-                        #[test]
                         fn [<test_ $t _overflowing_neg>](x in any::<$t>()) {
                             prop_assert_eq!(super::$t::overflowing_neg(x.inject()), x.overflowing_neg());
                         }
@@ -3234,6 +3224,8 @@ mod tests {
                             prop_assert_eq!(
                                 super::$t::is_multiple_of(x.inject(), (0 as $t).inject()),
                                 x.is_multiple_of(0));
+                        }
+
                         #[test]
                         fn [<test_ $t _next_multiple_of>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assume!(x.checked_next_multiple_of(y).is_some());
