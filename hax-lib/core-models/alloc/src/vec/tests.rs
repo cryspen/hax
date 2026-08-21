@@ -236,6 +236,29 @@ proptest! {
         prop_assert_eq!(a.inject() == b.inject(), a == b);
     }
 
+    // `v[i] = x` goes through the model's `IndexMut`.
+    #[test]
+    fn test_vec_index_mut(v in prop::collection::vec(any::<u8>(), 1..20), x in any::<u8>()) {
+        let i = x as usize % v.len();
+        let mut model = v.inject();
+        let mut std_v = v.clone();
+        model[i] = x;
+        std_v[i] = x;
+        prop_assert_eq!(model.as_slice(), std_v.as_slice());
+    }
+
+    // Small domain and an explicit equal case: `ne` inverts `eq`, so the equal
+    // pair is the one worth reaching.
+    #[test]
+    fn test_vec_ne(
+        a in prop::collection::vec(0u8..4, 0..6),
+        b in prop::collection::vec(0u8..4, 0..6),
+        use_equal in any::<bool>(),
+    ) {
+        let b = if use_equal { a.clone() } else { b };
+        prop_assert_eq!(a.inject() != b.inject(), a != b);
+    }
+
     #[test]
     fn test_vec_into_iter(v in prop::collection::vec(any::<u8>(), 0..30)) {
         let mut it = v.inject().into_iter();

@@ -202,6 +202,19 @@ mod tests {
 
     use proptest::prelude::*;
 
+    // Equal arrays are the case `ne` inverts, so reach that case explicitly.
+    #[cfg(not(hax_backend_fstar))]
+    proptest! {
+        #[test]
+        fn test_array_ne(a in any::<[u8; 3]>(), b in any::<[u8; 3]>(), use_equal in any::<bool>()) {
+            let b = if use_equal { a } else { b };
+            prop_assert_eq!(
+                <[u8; 3] as crate::cmp::PartialEq<[u8; 3]>>::ne(&a, &b),
+                a != b
+            );
+        }
+    }
+
     // Under the F* cfg `map` takes a `fn` pointer plus a phantom `F: FnOnce<..>`
     // parameter (the backend types the function through it). Nothing in the model
     // implements that trait, so the test supplies a witness.
@@ -224,6 +237,7 @@ mod tests {
         }
 
         proptest! {
+
             #[test]
             fn test_map(arr in any::<[u8; 4]>()) {
                 prop_assert_eq!(

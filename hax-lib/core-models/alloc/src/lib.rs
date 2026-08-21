@@ -42,6 +42,18 @@ mod borrow {
             self
         }
     }
+
+    #[cfg(test)]
+    mod tests {
+        use proptest::prelude::*;
+
+        proptest! {
+            #[test]
+            fn test_to_owned(v in prop::collection::vec(any::<u8>(), 0..20)) {
+                prop_assert_eq!(super::ToOwned::to_owned(v.clone()), v);
+            }
+        }
+    }
 }
 
 mod boxed {
@@ -50,6 +62,18 @@ mod boxed {
         // Hax removes boxes, so this should be the identity
         fn new(v: T) -> T {
             v
+        }
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use proptest::prelude::*;
+
+        proptest! {
+            #[test]
+            fn test_new_is_identity(x in any::<u8>()) {
+                prop_assert_eq!(super::Box::<u8>::new(x), x);
+            }
         }
     }
 }
@@ -202,6 +226,21 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     BTreeSet(None, None)
                 }
             }
+
+            #[cfg(test)]
+            mod tests {
+                use proptest::prelude::*;
+
+                proptest! {
+                    // The set is a dummy carrying no elements.
+                    #[test]
+                    fn test_new_is_empty(_ignored in any::<u8>()) {
+                        let s = super::BTreeSet::<u8, u8>::new();
+                        prop_assert!(s.0.is_none());
+                        prop_assert!(s.1.is_none());
+                    }
+                }
+            }
         }
     }
     mod vec_deque {
@@ -328,6 +367,29 @@ let update_at_usize (#v_T #v_A: Type0)
                 }
 
                 #[test]
+                fn test_into_iter(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let mut model = Model::new();
+                    let mut std_deque = std::collections::VecDeque::new();
+                    for &e in &elements {
+                        model.push_back(e);
+                        std_deque.push_back(e);
+                    }
+                    let mut it = IntoIterator::into_iter(model);
+                    let mut collected = std::vec::Vec::new();
+                    while let Some(x) = it.next() {
+                        collected.push(x);
+                    }
+                    prop_assert_eq!(collected, std_deque.into_iter().collect::<std::vec::Vec<u8>>());
+                }
+
+                // `from_iter` is a dummy: it drops the elements.
+                #[test]
+                fn test_from_iter_is_a_dummy(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let model: Model<u8> = elements.into_iter().collect();
+                    prop_assert_eq!(model.len(), 0);
+                }
+
+                #[test]
                 fn test_pop_front(elements in prop::collection::vec(any::<u8>(), 0..20)) {
                     let mut model = Model::with_capacity(elements.len());
                     let mut std_deque = std::collections::VecDeque::with_capacity(elements.len());
@@ -356,6 +418,23 @@ mod fmt {
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn format(args: core::fmt::Arguments) -> String {
         String::new()
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use proptest::prelude::*;
+
+        proptest! {
+            // `fmt::Arguments` is not modelled, so this is a deliberate
+            // placeholder (kept opaque for charon; see the Makefile).
+            #[test]
+            fn test_format_is_a_placeholder(x in any::<u8>()) {
+                // Bound first: `prop_assert!` stringifies its argument into a
+                // format string, where a literal `{}` would be a placeholder.
+                let formatted = super::format(format_args!("{}", x));
+                prop_assert!(formatted.is_empty());
+            }
+        }
     }
 }
 
@@ -469,8 +548,18 @@ mod slice {
             }
         }
 
-        // Only the non-F* `concat` is a real model; the F* one is a deliberate
-        // placeholder (see its definition), so there is nothing to check there.
+        // The F* `concat` is a deliberate placeholder returning an empty `Vec`.
+        #[cfg(hax_backend_fstar)]
+        proptest! {
+            #[test]
+            fn test_concat_placeholder_is_empty(v in prop::collection::vec(any::<u8>(), 0..5)) {
+                let slices: std::vec::Vec<&[u8]> = v.iter().map(std::slice::from_ref).collect();
+                let model: crate::vec::Vec<u8> = super::Dummy::<&[u8]>::concat(&slices);
+                prop_assert!(model.as_slice().is_empty());
+            }
+        }
+
+        // Only the non-F* `concat` is a real model.
         #[cfg(not(hax_backend_fstar))]
         proptest! {
             #[test]

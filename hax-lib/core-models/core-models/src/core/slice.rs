@@ -175,6 +175,8 @@ impl<T> Slice<T> {
     // limitation as `alloc`'s `Vec::drain`).
     #[cfg_attr(coverage_nightly, coverage(off))]
     #[hax_lib::opaque]
+    // mutants::skip: excluded from coverage above, so no test can kill a mutant here.
+    #[cfg_attr(test, mutants::skip)]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
     where
         T: Copy,
@@ -1085,6 +1087,54 @@ mod tests {
         // `[T]: PartialEq<[U; N]>` — slice vs array (`s == [..]`). `use_equal`
         // biases toward the equal case, which random slices rarely hit.
         #[test]
+        // `use_equal` makes the equal case common, which is what `ne` turns on.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_ne_slice(
+            a in prop::collection::vec(0u8..4, 0..=4),
+            b in prop::collection::vec(0u8..4, 0..=4),
+            use_equal in any::<bool>(),
+        ) {
+            let b: Vec<u8> = if use_equal { a.clone() } else { b };
+            prop_assert_eq!(
+                <[u8] as crate::cmp::PartialEq<[u8]>>::ne(&a[..], &b[..]),
+                a[..] != b[..]
+            );
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_ne_slice_array(
+            arr in any::<[u8; 3]>(),
+            other in any::<[u8; 3]>(),
+            kind in 0u8..3,
+        ) {
+            // All three shapes: equal, same length but different (the
+            // element-wise loop), and a length mismatch (the early `false`).
+            let v: Vec<u8> = match kind {
+                0 => arr.to_vec(),
+                1 => other.to_vec(),
+                _ => vec![arr[0]],
+            };
+            let s: &[u8] = &v[..];
+            prop_assert_eq!(
+                <[u8] as crate::cmp::PartialEq<[u8; 3]>>::ne(s, &arr),
+                s != arr
+            );
+        }
+
+        // `index_mut` writes through the model's `IndexMut` (`v[i] = x`).
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_index_mut(v in prop::collection::vec(any::<u8>(), 1..=8), x in any::<u8>()) {
+            let mut model = v.clone();
+            let mut std_v = v.clone();
+            let i = x as usize % v.len();
+            *crate::ops::index::IndexMut::index_mut(&mut model[..], i) = x;
+            std_v[i] = x;
+            prop_assert_eq!(model, std_v);
+        }
+
         fn test_eq_array(
             arr in any::<[u8; 3]>(),
             other in prop::collection::vec(any::<u8>(), 0..=6),

@@ -481,7 +481,7 @@ def marker.PhantomData (T : Type) := T
 -/  -- replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
-    Source: 'core-models/src/core/mem.rs', lines 129:4-131:5
+    Source: 'core-models/src/core/mem.rs', lines 135:4-137:5
     Visibility: public -/
 structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
@@ -841,7 +841,7 @@ structure slice.iter.Windows (T : Type) where
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 446:4-466:5
+    Source: 'core-models/src/core/slice.rs', lines 448:4-468:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
