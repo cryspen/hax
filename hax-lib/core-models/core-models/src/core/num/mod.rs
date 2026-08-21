@@ -138,11 +138,17 @@ macro_rules! uint_impl {
                 paste! { [<count_ones_ $Name>](x) }
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+
+            // F*-only: `charon::opaque` drops the declaration too, and the Lean
+            // lane has this primitive, so it can take the body instead.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_right_ $Name>](x, n) }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+
+            // F*-only: `charon::opaque` drops the declaration too, and the Lean
+            // lane has this primitive, so it can take the body instead.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_left_ $Name>](x, n) }
@@ -816,9 +822,10 @@ macro_rules! uint_impl {
                 }
             }
             /// See [`std::primitive::u8::next_power_of_two`] (and similar for other unsigned integer types)
-            // Opaque: the `+ 1` is in range exactly when a next power of two exists, and
-            // tying that to the (opaque) `leading_zeros` needs bit-level reasoning.
-            #[hax_lib::opaque]
+            // F*-only: the `+ 1` is in range exactly when a next power of two
+            // exists, and tying that to `leading_zeros` needs bit-level
+            // reasoning. Lean's `Result` carries the failure instead.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             #[hax_lib::requires(x.to_int() * 2.to_int() <= <$Name>::MAX.to_int() + 1.to_int())]
             pub fn next_power_of_two(x: $Self) -> $Self {
                 match Self::checked_next_power_of_two(x) {
@@ -1055,11 +1062,17 @@ macro_rules! iint_impl {
                 paste! { [<abs_ $Name>](x) }
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+
+            // F*-only: `charon::opaque` drops the declaration too, and the Lean
+            // lane has this primitive, so it can take the body instead.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_right_ $Name>](x, n) }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+
+            // F*-only: `charon::opaque` drops the declaration too, and the Lean
+            // lane has this primitive, so it can take the body instead.
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
                 paste! { [<rotate_left_ $Name>](x, n) }
@@ -1720,9 +1733,9 @@ macro_rules! iint_impl {
                 Self::leading_zeros(Self::wrapping_sub(-1, x))
             }
             /// See [`std::primitive::i8::highest_one`] (and similar for other signed integer types)
-            // Opaque: `leading_zeros` is opaque, so no backend can see that subtracting it
-            // from `BITS - 1` stays in range.
-            #[hax_lib::opaque]
+            // F*-only: F* cannot see that subtracting `leading_zeros` from
+            // `BITS - 1` stays in range. Lean's `Result` carries the failure.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn highest_one(x: $Self) -> Option<core::primitive::u32> {
                 if x == 0 {
                     Option::None
@@ -2319,16 +2332,10 @@ mod nonzero {
                     NonZero(<$Name>::isolate_lowest_one(self.0))
                 }
                 /// See [`std::num::NonZero::<u8>::rotate_left`] (and similar for other integer types)
-                // Dropped from the Lean lane: `rotate_left` has no Lean primitive, so it
-                // stays `#[hax_lib::opaque]` and has no Lean declaration to forward to.
-                #[cfg_attr(charon, aeneas::exclude)]
                 pub fn rotate_left(self, n: core::primitive::u32) -> Self {
                     NonZero(<$Name>::rotate_left(self.0, n))
                 }
                 /// See [`std::num::NonZero::<u8>::rotate_right`] (and similar for other integer types)
-                // Dropped from the Lean lane: `rotate_right` has no Lean primitive, so it
-                // stays `#[hax_lib::opaque]` and has no Lean declaration to forward to.
-                #[cfg_attr(charon, aeneas::exclude)]
                 pub fn rotate_right(self, n: core::primitive::u32) -> Self {
                     NonZero(<$Name>::rotate_right(self.0, n))
                 }
@@ -2601,16 +2608,10 @@ macro_rules! wrapper_impl {
                 <$Name>::leading_zeros(self.0)
             }
             /// See [`std::num::Wrapping::rotate_left`] (and similar for `Saturating` and other integer types)
-            // Dropped from the Lean lane: `rotate_left` has no Lean primitive, so it
-            // stays `#[hax_lib::opaque]` and has no Lean declaration to forward to.
-            #[cfg_attr(charon, aeneas::exclude)]
             pub fn rotate_left(self, n: core::primitive::u32) -> Self {
                 $Wrap(<$Name>::rotate_left(self.0, n))
             }
             /// See [`std::num::Wrapping::rotate_right`] (and similar for `Saturating` and other integer types)
-            // Dropped from the Lean lane: `rotate_right` has no Lean primitive, so it
-            // stays `#[hax_lib::opaque]` and has no Lean declaration to forward to.
-            #[cfg_attr(charon, aeneas::exclude)]
             pub fn rotate_right(self, n: core::primitive::u32) -> Self {
                 $Wrap(<$Name>::rotate_right(self.0, n))
             }
