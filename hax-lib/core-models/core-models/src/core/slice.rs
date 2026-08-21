@@ -182,7 +182,9 @@ impl<T> Slice<T> {
         todo!()
     }
     /// See [`std::slice::binary_search`]
-    #[hax_lib::opaque]
+    // F*-only: the equivalence tests call this, so Lean needs the body; it is
+    // written over primitives the Lean library provides.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
     where
         T: crate::cmp::Ord,
