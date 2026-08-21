@@ -90,7 +90,9 @@ impl<'a> Arguments<'a> {
 }
 
 mod rt {
-    #[hax_lib::opaque]
+    // F*-only: `charon::opaque` drops the declaration too, and `Argument`'s
+    // field still names this type, so Lean would not elaborate.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     // The internals of this are not important in this model
     enum ArgumentType<'a> {
         Placeholder {
