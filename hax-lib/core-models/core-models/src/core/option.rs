@@ -177,7 +177,7 @@ impl<T> Option<T> {
 
     /// See [`std::option::Option::filter`]
     // opaque: F* cannot prove that the Fn output projection equals bool in an if-condition
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     pub fn filter<P: FnOnce(&T) -> bool>(self, predicate: P) -> Option<T> {
         match self {
             Some(x) => {

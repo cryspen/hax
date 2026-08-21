@@ -108,36 +108,36 @@ mod rt {
     }
 
     impl Argument<'_> {
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_display<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_debug<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_lower_hex<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
     }
     impl<'a> Argument<'a> {
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_binary<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_const<T, U>(x: &T, y: &U) -> super::Arguments<'a> {
             crate::panicking::internal::panic()
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_v1<T, U, V, W>(x: &T, y: &U, z: &V, t: &W) -> super::Arguments<'a> {
             crate::panicking::internal::panic()
         }
         fn none() -> [Self; 0] {
             []
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn new_v1_formatted<T, U, V>(x: &T, y: &U, z: &V) -> super::Arguments<'a> {
             crate::panicking::internal::panic()
         }

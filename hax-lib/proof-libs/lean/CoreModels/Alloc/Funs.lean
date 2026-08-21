@@ -63,6 +63,12 @@ def borrow.ToOwned.Blanket (T : Type) : borrow.ToOwned T := {
 def boxed.Box.new {T : Type} (v : T) : Result T := do
   ok v
 
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, U>}::new]:
+    Source: 'src/lib.rs', lines 201:16-203:17 -/
+def collections.btree.set.BTreeSet.new
+  (T : Type) (U : Type) : Result (collections.btree.set.BTreeSet T U) := do
+  ok (core.option.Option.None, core.option.Option.None)
+
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, alloc::alloc::Global>}::new]:
     Source: 'src/lib.rs', lines 217:12-219:13 -/
 def collections.vec_deque.VecDequeTGlobal.new
@@ -181,6 +187,11 @@ def
   into_iter :=
     collections.vec_deque.VecDeque.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
 }
+
+/-- [alloc::fmt::format]:
+    Source: 'src/lib.rs', lines 357:4-359:5 -/
+def fmt.format (args : core.fmt.Arguments) : Result alloc.string.String := do
+  alloc.string.String.new
 
 /-- [alloc::vec::from_seq]:
     Source: 'src/lib.rs', lines 522:4-524:5 -/
@@ -541,6 +552,39 @@ def vec.Vec.insert
   let (s2, _) ← rust_primitives.sequence.seq_concat s1 right
   ok s2
 
+/-- [alloc::vec::{alloc::vec::Vec<T>}::truncate]:
+    Source: 'src/lib.rs', lines 638:8-638:47
+    Visibility: public -/
+def vec.Vec.truncate
+  {T : Type} (self : vec.Vec T) (n : Std.Usize) : Result (vec.Vec T) := do
+  ok self
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::swap_remove]:
+    Source: 'src/lib.rs', lines 640:8-642:9
+    Visibility: public -/
+def vec.Vec.swap_remove
+  {T : Type} (self : vec.Vec T) (n : Std.Usize) :
+  Result (T × (vec.Vec T))
+  := do
+  let (t, s) ← rust_primitives.sequence.seq_remove self n
+  ok (t, s)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::remove]:
+    Source: 'src/lib.rs', lines 649:8-651:9
+    Visibility: public -/
+def vec.Vec.remove
+  {T : Type} (self : vec.Vec T) (index : Std.Usize) :
+  Result (T × (vec.Vec T))
+  := do
+  let (t, s) ← rust_primitives.sequence.seq_remove self index
+  ok (t, s)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::clear]:
+    Source: 'src/lib.rs', lines 653:8-653:34
+    Visibility: public -/
+def vec.Vec.clear {T : Type} (self : vec.Vec T) : Result (vec.Vec T) := do
+  ok self
+
 /-- [alloc::vec::{alloc::vec::Vec<T>}::append]:
     Source: 'src/lib.rs', lines 655:8-658:9
     Visibility: public -/
@@ -562,6 +606,17 @@ def vec.Vec.split_off
   let l ← rust_primitives.sequence.seq_len self
   let (s, s1) ← rust_primitives.sequence.seq_drain self at1 l
   ok (s, s1)
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::drain]:
+    Source: 'src/lib.rs', lines 667:8-676:9
+    Visibility: public -/
+def vec.Vec.drain
+  {T : Type} {R : Type} (self : vec.Vec T) (_range : R) :
+  Result ((vec.drain.Drain T alloc.Global) × (vec.Vec T))
+  := do
+  let l ← rust_primitives.sequence.seq_len self
+  let (s, s1) ← rust_primitives.sequence.seq_drain self 0#usize l
+  ok ((s, core.marker.PhantomData.mk), s1)
 
 /-- [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}::next]:
     Source: 'src/lib.rs', lines 683:12-690:13
@@ -595,6 +650,16 @@ def vec.Vec.extend_from_slice
   := do
   let s ← rust_primitives.sequence.seq_extend corecloneCloneInst self other
   ok s
+
+/-- [alloc::vec::{alloc::vec::Vec<T>}::resize]:
+    Source: 'src/lib.rs', lines 706:8-706:63
+    Visibility: public -/
+def vec.Vec.resize
+  {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
+  (new_size : Std.Usize) (value : T) :
+  Result (vec.Vec T)
+  := do
+  ok self
 
 /-- Trait implementation: [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}]
     Source: 'src/lib.rs', lines 722:4-731:5 -/

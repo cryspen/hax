@@ -87,7 +87,7 @@ pub mod iter {
     }
     // opaque: F* cannot prove slice bounds (1 <= length) in the else branch
     // This needs the invariant that size > 0
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<'a, T> crate::iter::traits::iterator::Iterator for Windows<'a, T> {
         type Item = &'a [T];
         fn next(&mut self) -> Option<Self::Item> {
@@ -162,7 +162,7 @@ impl<T> Slice<T> {
         Self::len(s) == 0
     }
     /// See [`std::slice::contains`]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn contains(s: &[T], v: &T) -> bool
     where
         T: PartialEq,
@@ -170,7 +170,7 @@ impl<T> Slice<T> {
         rust_primitives::slice::slice_contains(s, v)
     }
     /// See [`std::slice::copy_within`]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
     where
         T: Copy,
@@ -178,7 +178,7 @@ impl<T> Slice<T> {
         todo!()
     }
     /// See [`std::slice::binary_search`]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
     where
         T: crate::cmp::Ord,
@@ -254,7 +254,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::fill`]
     // opaque: for-loop + indexed mutation causes F* dependency cycle through Rust_primitives.Hax
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn fill(s: &mut [T], value: T)
     where
         T: Clone,
@@ -271,7 +271,7 @@ impl<T> Slice<T> {
     // reference to `eq`.
     /// See [`std::slice::starts_with`]
     #[cfg(hax_backend_fstar)]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn starts_with(s: &[T], needle: &[T]) -> bool
     where
         T: PartialEq,
@@ -281,7 +281,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::ends_with`]
     #[cfg(hax_backend_fstar)]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn ends_with(s: &[T], needle: &[T]) -> bool
     where
         T: PartialEq,
@@ -382,7 +382,7 @@ impl<T: crate::cmp::Ord> crate::cmp::Ord for [T] {
 impl<T> Slice<T> {
     /// See [`std::slice::starts_with`]
     // opaque: slice equality requires eqtype in F*, but T is extracted as Type0
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn starts_with(s: &[T], needle: &[T]) -> bool
     where
         T: PartialEq,
@@ -392,7 +392,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::ends_with`]
     // opaque: slice equality requires eqtype in F*, but T is extracted as Type0
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn ends_with(s: &[T], needle: &[T]) -> bool
     where
         T: PartialEq,
