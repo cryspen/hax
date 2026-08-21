@@ -113,7 +113,9 @@ tune and no baseline file to keep in sync. `make test-coverage-check` is the gat
 CI runs on every PR.
 
 An item that cannot be exercised by a test — a `panic!()`-bodied layout
-intrinsic, say — is excluded at the item:
+intrinsic, say — is excluded at the item (and `make test-coverage-check`
+enforces that each exclusion says *why*, so a merely-broken item cannot be
+buried under one):
 
 ```rust
 // no observable behaviour to test: hax drops the body, layout is not modelled
