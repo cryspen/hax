@@ -12,7 +12,7 @@ pub struct TryFromSliceError;
 // that name is what makes those calls land on the definitions below. (So the
 // coverage tool, which keys these methods `array::*` after the primitive, needs
 // an alias rather than a rename here.)
-#[hax_lib::exclude]
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 struct Array<T, const N: usize>([T; N]);
 
 // Array impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)

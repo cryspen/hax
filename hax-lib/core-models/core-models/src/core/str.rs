@@ -30,7 +30,9 @@ use rust_primitives::string::{str_as_bytes, str_sub_bytes};
 /// so the `str::*` methods hang off this dummy the way `slice::Slice` does for
 /// `[T]`. Each method takes the `str` it operates on as its first argument.
 /// See [`std::primitive::str`]
-#[hax_lib::exclude]
+// F*-only: `charon::exclude` would drop this dummy type while its `impl`
+// blocks still reference it (see f32.rs).
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 struct str;
 
 /// `b` is one of the five bytes `u8::is_ascii_whitespace` accepts (space, tab,

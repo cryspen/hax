@@ -500,7 +500,9 @@ impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
 /// See [`std::result::IterMut`]
 // `&mut` returns are unsupported in the F* backend.
 #[cfg_attr(charon, aeneas::exclude)]
-#[hax_lib::exclude]
+// F*-only: `charon::exclude` would drop this dummy type while its `impl`
+// blocks still reference it (see f32.rs).
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 pub struct IterMut<'a, T>(pub Seq<&'a mut T>);
 
 #[hax_lib::attributes]
