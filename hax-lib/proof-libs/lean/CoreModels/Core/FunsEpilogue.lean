@@ -444,6 +444,15 @@ def slice.Slice.iter_mut {T : Type} (s : Aeneas.Std.Slice T) :
       (slice.iter.IterMut T → Aeneas.Std.Slice T)) :=
   .ok ({ slice := s, i := 0 }, fun it => it.slice)
 
+/-! ## `str::as_bytes`
+
+`Str` is definitionally `Slice U8` (Aeneas.Std `StringDef`), so `str::as_bytes` is
+the identity on the underlying bytes — faithful, no opacity, no trust expansion.
+(The verify path passes a domain-separator `label : Str` to `Transcript::new`.) -/
+open Aeneas.Std in
+def str.Str.as_bytes (s : Str) : Aeneas.Std.Result (Slice U8) :=
+  .ok s
+
 end core
 
 namespace alloc
