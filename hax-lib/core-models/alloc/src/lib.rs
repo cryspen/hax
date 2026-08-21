@@ -4083,13 +4083,6 @@ mod string {
                 // out of bounds.
                 let c = str_index(self.0, l - 1);
                 *self = String(str_sub(self.0, 0, l - 1));
-            // `str_index`/`str_sub` count chars, so the length has to as well —
-            // `self.0.len()` is bytes. Read the last char before truncating:
-            // afterwards `n - 1` is out of bounds.
-            let n = str_char_count(self.0);
-            if n > 0 {
-                let c = str_index(self.0, n - 1);
-                *self = String(str_sub(self.0, 0, n - 1));
                 Some(c)
             } else {
                 None
@@ -4544,8 +4537,9 @@ mod string {
         proptest! {
             // Arbitrary chars, including multi-byte ones: indexing by char
             // where `str::len` counts bytes is exactly the bug this catches.
+            // (The `STR`-driven `test_pop` above covers the general case.)
             #[test]
-            fn test_pop(cs in prop::collection::vec(any::<char>(), 0..8)) {
+            fn test_pop_multibyte(cs in prop::collection::vec(any::<char>(), 0..8)) {
                 let mut model = super::String::new();
                 let mut std_s = std::string::String::new();
                 for c in &cs {
