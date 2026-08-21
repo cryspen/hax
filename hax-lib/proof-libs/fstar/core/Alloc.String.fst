@@ -21,7 +21,7 @@ let impl_String__push (self: t_String) (c: FStar.Char.char) : t_String =
   self
 
 let impl_String__pop (self: t_String) : (t_String & Core_models.Option.t_Option FStar.Char.char) =
-  let l:usize = Core_models.Str.impl_str__len self._0 in
+  let l:usize = Rust_primitives.String.str_len self._0 in
   let (self: t_String), (hax_temp_output: Core_models.Option.t_Option FStar.Char.char) =
     if l >. mk_usize 0
     then
