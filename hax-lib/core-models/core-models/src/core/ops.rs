@@ -962,6 +962,86 @@ pub mod range {
     }
 
     impl_iterator_range_int!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
+
+    // The range *types* only ever produce an `Included` start and an
+    // `Excluded`/`Included`/`Unbounded` end, so going through them leaves the
+    // `Excluded`-start and mixed arms of the three helpers below unreached.
+    // std implements `RangeBounds`/`IntoBounds` for `(Bound, Bound)`, which the
+    // model does not, so the helpers are driven directly and compared against
+    // that tuple form.
+    #[cfg(test)]
+    mod bounds {
+        use super::{Bound, RangeBoundsDefaults};
+        use crate::testing::Inject;
+        use proptest::prelude::*;
+
+        /// Every `Bound<u8>` shape, model and std side by side.
+        fn pair(tag: u8, v: u8) -> (Bound<u8>, std::ops::Bound<u8>) {
+            match tag % 3 {
+                0 => (Bound::Included(v), std::ops::Bound::Included(v)),
+                1 => (Bound::Excluded(v), std::ops::Bound::Excluded(v)),
+                _ => (Bound::Unbounded, std::ops::Bound::Unbounded),
+            }
+        }
+
+        fn as_ref(b: &Bound<u8>) -> Bound<&u8> {
+            match b {
+                Bound::Included(v) => Bound::Included(v),
+                Bound::Excluded(v) => Bound::Excluded(v),
+                Bound::Unbounded => Bound::Unbounded,
+            }
+        }
+
+        proptest! {
+            #[test]
+            fn test_bounds_contain(st in 0u8..3, sv in any::<u8>(), et in 0u8..3,
+                                   ev in any::<u8>(), item in any::<u8>()) {
+                let (ms, ss) = pair(st, sv);
+                let (me, se) = pair(et, ev);
+                prop_assert_eq!(
+                    super::bounds_contain(as_ref(&ms), as_ref(&me), &item),
+                    std::ops::RangeBounds::contains(&(ss, se), &item)
+                );
+            }
+
+            #[test]
+            fn test_bounds_are_empty(st in 0u8..3, sv in any::<u8>(), et in 0u8..3,
+                                     ev in any::<u8>()) {
+                let (ms, ss) = pair(st, sv);
+                let (me, se) = pair(et, ev);
+                prop_assert_eq!(
+                    super::bounds_are_empty(as_ref(&ms), as_ref(&me)),
+                    std::ops::RangeBounds::<u8>::is_empty(&(ss, se))
+                );
+            }
+
+            #[test]
+            fn test_bounds_intersect(ast in 0u8..3, asv in any::<u8>(), aet in 0u8..3,
+                                     aev in any::<u8>(), bst in 0u8..3, bsv in any::<u8>(),
+                                     bet in 0u8..3, bev in any::<u8>()) {
+                let (mas, sas) = pair(ast, asv);
+                let (mae, sae) = pair(aet, aev);
+                let (mbs, sbs) = pair(bst, bsv);
+                let (mbe, sbe) = pair(bet, bev);
+                prop_assert_eq!(
+                    super::bounds_intersect((mas, mae), (mbs, mbe)),
+                    std::ops::IntoBounds::intersect((sas, sae), (sbs, sbe)).inject()
+                );
+            }
+
+            // `RangeBoundsDefaults` is what routes a range type into the two
+            // predicates above; this keeps that path exercised too.
+            #[test]
+            fn test_defaults_agree_with_helpers(a in any::<u8>(), b in any::<u8>(),
+                                                item in any::<u8>()) {
+                let r = super::Range { start: a, end: b };
+                prop_assert_eq!(
+                    RangeBoundsDefaults::contains(&r, &item),
+                    super::bounds_contain(Bound::Included(&a), Bound::Excluded(&b), &item)
+                );
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -1598,6 +1678,28 @@ mod tests {
         }
 
         proptest! {
+            // `Deref`/`Index` are supertraits of the `*Mut` pair, so both halves
+            // are implemented here; these run the immutable ones.
+            #[test]
+            fn test_deref(x in any::<u8>()) {
+                let model = Cell(x);
+                let std_value = Cell(x);
+                prop_assert_eq!(
+                    *crate::ops::deref::Deref::deref(&model),
+                    *std::ops::Deref::deref(&std_value)
+                );
+            }
+
+            #[test]
+            fn test_index(xs in prop::array::uniform4(any::<u8>()), i in 0usize..4) {
+                let model = Buf(xs);
+                let std_value = Buf(xs);
+                prop_assert_eq!(
+                    *crate::ops::index::Index::index(&model, i),
+                    *std::ops::Index::index(&std_value, i)
+                );
+            }
+
             #[test]
             fn test_deref_mut(x in any::<u8>(), v in any::<u8>()) {
                 let mut model = Cell(x);

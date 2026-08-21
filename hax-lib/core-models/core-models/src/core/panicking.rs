@@ -263,6 +263,10 @@ mod tests {
     /// one. Compared against the message `core` actually produces.
     #[test]
     fn test_panic_const_messages_match_core() {
+        // Excluded from coverage: every panic compared below carries a `&str`
+        // payload, so the `String` fallback is unreachable — and some fallback
+        // has to be written, since `downcast_ref` returns an `Option`.
+        #[cfg_attr(coverage_nightly, coverage(off))]
         fn message_of(f: impl FnOnce()) -> String {
             let payload = std::panic::catch_unwind(std::panic::AssertUnwindSafe(f)).unwrap_err();
             match payload.downcast_ref::<&str>() {

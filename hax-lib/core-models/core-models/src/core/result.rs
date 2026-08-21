@@ -843,6 +843,23 @@ mod tests {
             );
         }
 
+        // The out-of-domain halves have no std counterpart, so what is pinned is
+        // that the model panics rather than returning nonsense.
+        #[test]
+        fn test_unwrap_unchecked_on_err_panics(e in any::<u8>()) {
+            let res: super::Result<u8, u8> = super::Result::Err(e);
+            let panicked = std::panic::catch_unwind(|| unsafe { res.unwrap_unchecked() }).is_err();
+            prop_assert!(panicked);
+        }
+
+        #[test]
+        fn test_unwrap_err_unchecked_on_ok_panics(v in any::<u8>()) {
+            let res: super::Result<u8, u8> = super::Result::Ok(v);
+            let panicked =
+                std::panic::catch_unwind(|| unsafe { res.unwrap_err_unchecked() }).is_err();
+            prop_assert!(panicked);
+        }
+
         // ----- iter / iter_mut / into_iter ------------------------------------
 
         #[test]
@@ -944,6 +961,24 @@ mod tests {
         fn test_into_err(e in any::<u8>()) {
             let res: super::Result<crate::convert::Infallible, u8> = super::Result::Err(e);
             prop_assert_eq!(res.into_err(), e);
+        }
+
+        // The model's `Infallible` is a unit struct, so unlike std's never type
+        // the off-domain variant *is* constructible — and panics.
+        #[test]
+        fn test_into_ok_on_err_panics(_ignored in any::<u8>()) {
+            let res: super::Result<u8, crate::convert::Infallible> =
+                super::Result::Err(crate::convert::Infallible);
+            let panicked = std::panic::catch_unwind(|| res.into_ok()).is_err();
+            prop_assert!(panicked);
+        }
+
+        #[test]
+        fn test_into_err_on_ok_panics(_ignored in any::<u8>()) {
+            let res: super::Result<crate::convert::Infallible, u8> =
+                super::Result::Ok(crate::convert::Infallible);
+            let panicked = std::panic::catch_unwind(|| res.into_err()).is_err();
+            prop_assert!(panicked);
         }
 
         #[test]

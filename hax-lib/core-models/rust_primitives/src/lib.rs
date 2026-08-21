@@ -1,4 +1,6 @@
 #![allow(unused_variables)]
+// Gated so the crate still builds on stable, where the attribute is unknown.
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 pub mod slice {
     pub fn slice_length<T>(s: &[T]) -> usize {
@@ -76,11 +78,21 @@ pub mod slice {
     // `core::array::repeat`, the last element is `val` itself and the other
     // `N - 1` are clones.
     pub fn array_repeat<T: Clone, const N: usize>(val: T) -> [T; N] {
-        let v: Vec<T> = std::iter::repeat_n(val, N).collect();
+        // `repeat_n` rather than `from_fn(|_| val.clone())`: like `[val; N]` it
+        // clones `val` for all but the last slot, which takes `val` itself.
+        array_from_vec(std::iter::repeat_n(val, N).collect())
+    }
+    /// The `N` elements of `v` as an array. Panics on any other length; the one
+    /// caller above always passes `N`, so the panic is reached only by the test
+    /// that calls this directly.
+    // Excluded from coverage: the length check is per-instantiation, and only the
+    // one the test names can reach it. Split out of `array_repeat` so that the
+    // exclusion covers these four lines rather than the whole function.
+    #[cfg_attr(coverage_nightly, coverage(off))]
+    pub(crate) fn array_from_vec<T, const N: usize>(v: Vec<T>) -> [T; N] {
         match <[T; N]>::try_from(v) {
             Ok(a) => a,
-            // `repeat_n(_, N)` yields exactly `N` elements.
-            Err(_) => unreachable!(),
+            Err(v) => panic!("expected {} elements, got {}", N, v.len()),
         }
     }
     pub fn array_slice<T, const N: usize>(a: &[T; N], b: usize, e: usize) -> &[T] {
@@ -375,6 +387,15 @@ pub mod arithmetic {
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
+
+    // `array_repeat` always passes exactly `N` elements, so its length check is
+    // only reachable from here.
+    #[test]
+    fn test_array_from_vec_wrong_length_panics() {
+        let res =
+            std::panic::catch_unwind(|| crate::slice::array_from_vec::<u8, 3>(std::vec![1u8, 2]));
+        assert!(res.is_err());
+    }
 
     proptest! {
         #[test]

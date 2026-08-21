@@ -612,6 +612,14 @@ mod tests {
         assert!("yes".parse::<bool>().is_err());
     }
 
+    // `assert_eq!` above goes through the derived `PartialEq`; this runs the
+    // model's own instance, which is what the extraction uses.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_parse_bool_error_model_eq() {
+        assert!(crate::cmp::PartialEq::eq(&ParseBoolError, &ParseBoolError));
+    }
+
     #[test]
     fn test_split_at_off_boundary_panics() {
         // "é" is two bytes, so index 1 is inside it.

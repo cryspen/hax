@@ -47,6 +47,19 @@ mod tests {
 
     impl core::error::Error for StdError {}
 
+    // The two `Display` impls are here to satisfy `Error`'s supertrait bound,
+    // and `description` never calls them; this runs both so the pair is
+    // exercised rather than merely declared. The model's `fmt` writes nothing
+    // and cannot fail, so running it is the whole check — matching on its
+    // `Result` would leave the `Err` arm unreachable — and the std side is what
+    // carries an assertion.
+    #[test]
+    fn test_display_impls_run() {
+        let mut f = Formatter;
+        let _: Result = Display::fmt(&ModelError, &mut f);
+        assert_eq!(std::format!("{}", StdError), "std error");
+    }
+
     // `description` takes no input, so this is a single comparison against the
     // default body in real core rather than a proptest.
     #[test]

@@ -983,6 +983,17 @@ mod tests {
             );
         }
 
+        // The `None` case has no std counterpart to compare against, so what is
+        // pinned is that the model panics rather than returning nonsense.
+        #[test]
+        fn test_unwrap_unchecked_on_none_panics(_ignored in any::<u8>()) {
+            let panicked = std::panic::catch_unwind(|| unsafe {
+                super::Option::<u8>::None.unwrap_unchecked()
+            })
+            .is_err();
+            prop_assert!(panicked);
+        }
+
         // ----- iter / iter_mut / into_iter / into_flat_iter -------------------
 
         #[test]
