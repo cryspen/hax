@@ -1120,13 +1120,6 @@ def rust_primitives.sequence.seq_push
     if h : extended.length ≤ Usize.max then ok ⟨extended, h⟩
     else fail .maximumSizeExceeded
 
--- Routed through `seq_push` on the empty slice rather than `⟨[x], _⟩` so the
--- `1 ≤ Usize.max` side condition is discharged the same way every other
--- length-growing helper here discharges it.
-@[rust_fun "rust_primitives::sequence::seq_one"]
-def rust_primitives.sequence.seq_one
-  {T : Type} : T → Result (rust_primitives.sequence.Seq T) :=
-  fun x => rust_primitives.sequence.seq_push (Slice.new T) x
 /-- [rust_primitives::sequence::seq_one]: the one-element sequence. Defined
     through `seq_empty`/`seq_push` so the length bound needs no proof. -/
 @[rust_fun "rust_primitives::sequence::seq_one"]
