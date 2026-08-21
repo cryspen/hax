@@ -434,3 +434,145 @@ pub fn test_inspect_err_returns_self() -> bool {
         Err(e) => e == 4,
     }
 }
+
+// ----- unwrap_unchecked ------------------------------------------------------
+// Only the in-domain variant is pinned: std's version is undefined behaviour on
+// the other one, so there is no agreed answer to compare.
+
+#[rust_lean_test]
+pub fn test_unwrap_unchecked_ok_zero() -> bool {
+    unsafe { ok_u8_u8(0).unwrap_unchecked() == 0 }
+}
+
+#[rust_lean_test]
+pub fn test_unwrap_unchecked_ok_max() -> bool {
+    unsafe { ok_u8_u8(u8::MAX).unwrap_unchecked() == u8::MAX }
+}
+
+#[rust_lean_test]
+pub fn test_unwrap_unchecked_ok_mid() -> bool {
+    unsafe { ok_u8_u8(7).unwrap_unchecked() == 7 }
+}
+
+// ----- unwrap_err_unchecked --------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_unwrap_err_unchecked_err_zero() -> bool {
+    unsafe { err_u8_u8(0).unwrap_err_unchecked() == 0 }
+}
+
+#[rust_lean_test]
+pub fn test_unwrap_err_unchecked_err_max() -> bool {
+    unsafe { err_u8_u8(u8::MAX).unwrap_err_unchecked() == u8::MAX }
+}
+
+#[rust_lean_test]
+pub fn test_unwrap_err_unchecked_err_mid() -> bool {
+    unsafe { err_u8_u8(7).unwrap_err_unchecked() == 7 }
+}
+
+// ----- iter / iter_mut / into_iter -------------------------------------------
+
+// Rust-only: observing an iterator goes through the `IteratorMethods` surface,
+// which does not translate (see `core::iter`).
+#[cfg(test)]
+mod iterators {
+    #[test]
+    fn test_iter_ok_yields_the_value() {
+        let r: Result<u8, u8> = Ok(7);
+        assert_eq!(r.iter().copied().collect::<Vec<u8>>(), vec![7]);
+    }
+
+    #[test]
+    fn test_iter_ok_zero() {
+        let r: Result<u8, u8> = Ok(0);
+        assert_eq!(r.iter().copied().collect::<Vec<u8>>(), vec![0]);
+    }
+
+    #[test]
+    fn test_iter_err_is_empty() {
+        let r: Result<u8, u8> = Err(u8::MAX);
+        assert!(r.iter().next().is_none());
+    }
+
+    #[test]
+    fn test_iter_mut_mutates_ok() {
+        let mut r: Result<u8, u8> = Ok(u8::MAX - 1);
+        for v in r.iter_mut() {
+            *v += 1;
+        }
+        assert_eq!(r, Ok(u8::MAX));
+    }
+
+    #[test]
+    fn test_iter_mut_err_is_empty() {
+        let mut r: Result<u8, u8> = Err(3);
+        assert!(r.iter_mut().next().is_none());
+        assert_eq!(r, Err(3));
+    }
+
+    #[test]
+    fn test_into_iter_ok() {
+        let r: Result<u8, u8> = Ok(0);
+        assert_eq!(r.into_iter().collect::<Vec<u8>>(), vec![0]);
+    }
+
+    #[test]
+    fn test_into_iter_err() {
+        let r: Result<u8, u8> = Err(0);
+        assert_eq!(r.into_iter().collect::<Vec<u8>>(), Vec::<u8>::new());
+    }
+}
+
+// ----- as_deref / as_deref_mut / copied (not extracted) ----------------------
+
+// Rust-only: like `as_ref`/`as_mut`/`cloned`, these are `aeneas::exclude`d in the
+// model, so no extracted Lean definition exists to guard against.
+#[cfg(test)]
+mod deref_and_copy {
+    #[test]
+    fn test_as_deref_ok() {
+        let v: u8 = 7;
+        let r: Result<&u8, u8> = Ok(&v);
+        assert_eq!(r.as_deref(), Ok(&7u8));
+    }
+
+    #[test]
+    fn test_as_deref_err() {
+        let r: Result<&u8, u8> = Err(u8::MAX);
+        assert_eq!(r.as_deref(), Err(&u8::MAX));
+    }
+
+    #[test]
+    fn test_as_deref_mut_ok_mutates_through() {
+        let mut v: u8 = 0;
+        let mut r: Result<&mut u8, u8> = Ok(&mut v);
+        if let Ok(inner) = r.as_deref_mut() {
+            *inner = u8::MAX;
+        }
+        drop(r);
+        assert_eq!(v, u8::MAX);
+    }
+
+    #[test]
+    fn test_as_deref_mut_err() {
+        let mut r: Result<&mut u8, u8> = Err(3);
+        assert!(r.as_deref_mut().is_err());
+    }
+
+    // `Result::copied` is unstable in std; `as_ref().map(|v| *v)` is the stable
+    // spelling of the same behaviour.
+    #[test]
+    fn test_copied_ok() {
+        let v: u8 = 0;
+        let r: Result<&u8, u8> = Ok(&v);
+        assert_eq!(r.as_ref().map(|v| **v).map_err(|e| *e), Ok::<u8, u8>(0));
+    }
+}
+
+// ----- into_ok / into_err (no callable std counterpart) ----------------------
+
+// std bounds these by `E: Into<!>` / `T: Into<!>`. The never type is unstable and
+// the model pins the parameter to `convert::Infallible` instead, so there is no
+// std call to make here — the model's behaviour is pinned by the proptest in
+// `core-models/src/core/result.rs`.

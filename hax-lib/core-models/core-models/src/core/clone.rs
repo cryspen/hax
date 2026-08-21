@@ -23,6 +23,22 @@ impl<T> Clone for T {
     }
 }
 
+// Real core makes this an `unsafe trait` (implementing it asserts that `clone`
+// is a bitwise copy). Like `marker::Send`/`marker::Sync`, the model drops the
+// `unsafe`: there is no unsafe obligation to discharge in a pure model.
+/// See [`std::clone::TrivialClone`]
+pub trait TrivialClone: Clone {}
+
+/// See [`std::clone::UseCloned`]
+pub trait UseCloned: Clone {}
+
+// In our model for F*, `Clone` is the identity on every type, so both markers
+// hold everywhere.
+#[cfg(hax_backend_fstar)]
+impl<T> TrivialClone for T {}
+#[cfg(hax_backend_fstar)]
+impl<T> UseCloned for T {}
+
 macro_rules! clone_impl_for_copy {
     ($($t:ty),*) => {
         $(
@@ -31,6 +47,8 @@ macro_rules! clone_impl_for_copy {
                     self
                 }
             }
+            impl crate::clone::TrivialClone for $t {}
+            impl crate::clone::UseCloned for $t {}
         )*
     };
 }
@@ -58,6 +76,17 @@ mod tests {
     use pastey::paste;
     use proptest::prelude::*;
 
+    // `TrivialClone` and `UseCloned` are empty markers, so the only thing to
+    // observe is that the primitive impls exist and that cloning through the
+    // bound still agrees with std's `clone`.
+    fn clone_trivial<T: crate::clone::TrivialClone>(x: T) -> T {
+        crate::clone::Clone::clone(x)
+    }
+
+    fn clone_used<T: crate::clone::UseCloned>(x: T) -> T {
+        crate::clone::Clone::clone(x)
+    }
+
     // For every `Copy` type with a `Clone` impl, check the model's `Clone`
     // agrees with std's on a random value.
     macro_rules! clone_tests {
@@ -67,6 +96,19 @@ mod tests {
                     #[test]
                     fn [<test_clone_ $t>](x in any::<$t>()) {
                         prop_assert_eq!(crate::clone::Clone::clone(x.inject()), x.clone().inject());
+                    }
+
+                    // `TrivialClone` postdates the toolchain we build with and
+                    // `UseCloned` is unstable, so both expectations are pinned
+                    // against std's plain `Clone` rather than the std markers.
+                    #[test]
+                    fn [<test_trivial_clone_ $t>](x in any::<$t>()) {
+                        prop_assert_eq!(clone_trivial(x.inject()), x.clone().inject());
+                    }
+
+                    #[test]
+                    fn [<test_use_cloned_ $t>](x in any::<$t>()) {
+                        prop_assert_eq!(clone_used(x.inject()), x.clone().inject());
                     }
                 }
             )* }

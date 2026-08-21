@@ -3,6 +3,12 @@ module Core_models.Ops.Deref
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::ops::DerefPure`]
+class t_DerefPure (v_Self: Type0) = { __marker_trait_t_DerefPure:Prims.unit }
+
+/// See [`std::ops::Receiver`]
+class t_Receiver (v_Self: Type0) = { [@@@ FStar.Tactics.Typeclasses.no_method]f_Target:Type0 }
+
 /// See [`std::ops::Deref`]
 class t_Deref (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Target:Type0;
@@ -19,3 +25,11 @@ let impl (#v_T: Type0) : t_Deref v_T =
     f_deref_post = (fun (self: v_T) (out: v_T) -> true);
     f_deref = fun (self: v_T) -> self
   }
+
+/// See [`std::ops::DerefMut`]
+class t_DerefMut (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Deref v_Self
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) {|i: t_DerefMut v_Self|} -> i._super_i0
