@@ -3975,42 +3975,49 @@ def fmt.Arguments.write_fmt
   := do
   ok (result.Result.Ok (), f)
 
+/-- [core_models::fmt::{core_models::fmt::Arguments<'a>}::from_str]:
+    Source: 'core-models/src/core/fmt.rs', lines 96:4-98:5
+    Visibility: public -/
+def fmt.Arguments.from_str (s : Str) : Result fmt.Arguments := do
+  let _ ← panicking.internal.panic fmt.Arguments
+  ok ()
+
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'_0>}::new_display]:
-    Source: 'core-models/src/core/fmt.rs', lines 110:8-112:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 119:8-121:9 -/
 def fmt.rt.Argument.new_display
   {T : Type} (x : T) : Result fmt.rt.Argument := do
   let _ ← panicking.internal.panic fmt.rt.Argument
   ok { ty := (fmt.rt.ArgumentType.Placeholder core.marker.PhantomData.mk) }
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'_0>}::new_debug]:
-    Source: 'core-models/src/core/fmt.rs', lines 114:8-116:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 123:8-125:9 -/
 def fmt.rt.Argument.new_debug {T : Type} (x : T) : Result fmt.rt.Argument := do
   let _ ← panicking.internal.panic fmt.rt.Argument
   ok { ty := (fmt.rt.ArgumentType.Placeholder core.marker.PhantomData.mk) }
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'_0>}::new_lower_hex]:
-    Source: 'core-models/src/core/fmt.rs', lines 118:8-120:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 127:8-129:9 -/
 def fmt.rt.Argument.new_lower_hex
   {T : Type} (x : T) : Result fmt.rt.Argument := do
   let _ ← panicking.internal.panic fmt.rt.Argument
   ok { ty := (fmt.rt.ArgumentType.Placeholder core.marker.PhantomData.mk) }
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::new_binary]:
-    Source: 'core-models/src/core/fmt.rs', lines 124:8-126:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 133:8-135:9 -/
 def fmt.rt.Argument.new_binary
   {T : Type} (x : T) : Result fmt.rt.Argument := do
   let _ ← panicking.internal.panic fmt.rt.Argument
   ok { ty := (fmt.rt.ArgumentType.Placeholder core.marker.PhantomData.mk) }
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::new_const]:
-    Source: 'core-models/src/core/fmt.rs', lines 128:8-130:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 137:8-139:9 -/
 def fmt.rt.Argument.new_const
   {T : Type} {U : Type} (x : T) (y : U) : Result fmt.Arguments := do
   let _ ← panicking.internal.panic fmt.Arguments
   ok ()
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::new_v1]:
-    Source: 'core-models/src/core/fmt.rs', lines 132:8-134:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 141:8-143:9 -/
 def fmt.rt.Argument.new_v1
   {T : Type} {U : Type} {V : Type} {W : Type} (x : T) (y : U) (z : V) (t : W) :
   Result fmt.Arguments
@@ -4019,12 +4026,12 @@ def fmt.rt.Argument.new_v1
   ok ()
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::none]:
-    Source: 'core-models/src/core/fmt.rs', lines 135:8-137:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 144:8-146:9 -/
 def fmt.rt.Argument.none : Result (Array fmt.rt.Argument 0#usize) := do
   ok (Std.Array.empty fmt.rt.Argument)
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::new_v1_formatted]:
-    Source: 'core-models/src/core/fmt.rs', lines 139:8-141:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 148:8-150:9 -/
 def fmt.rt.Argument.new_v1_formatted
   {T : Type} {U : Type} {V : Type} (x : T) (y : U) (z : V) :
   Result fmt.Arguments
