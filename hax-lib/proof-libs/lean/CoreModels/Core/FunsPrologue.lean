@@ -131,6 +131,29 @@ def I64.Insts.CoreCmpOrd   : cmp.Ord I64   := mkIOrd
 def I128.Insts.CoreCmpOrd  : cmp.Ord I128  := mkIOrd
 def Isize.Insts.CoreCmpOrd : cmp.Ord Isize := mkIOrd
 
+/-! ## Scalar `Eq` instances
+
+`core::cmp::Eq for <int>` is `aeneas::exclude`d in `cmp.rs` alongside PartialEq/
+PartialOrd/Ord, so re-provide it here (a downstream `==`/derived-Eq on a scalar
+references `<int>.Insts.CoreCmpEq`). `cmp.Eq` is just the `PartialEq` marker. -/
+def mkUEq {ty} : cmp.Eq (UScalar ty) :=
+  { PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) } }
+def mkIEq {ty} : cmp.Eq (IScalar ty) :=
+  { PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) } }
+
+def U8.Insts.CoreCmpEq    : cmp.Eq U8    := mkUEq
+def U16.Insts.CoreCmpEq   : cmp.Eq U16   := mkUEq
+def U32.Insts.CoreCmpEq   : cmp.Eq U32   := mkUEq
+def U64.Insts.CoreCmpEq   : cmp.Eq U64   := mkUEq
+def U128.Insts.CoreCmpEq  : cmp.Eq U128  := mkUEq
+def Usize.Insts.CoreCmpEq : cmp.Eq Usize := mkUEq
+def I8.Insts.CoreCmpEq    : cmp.Eq I8    := mkIEq
+def I16.Insts.CoreCmpEq   : cmp.Eq I16   := mkIEq
+def I32.Insts.CoreCmpEq   : cmp.Eq I32   := mkIEq
+def I64.Insts.CoreCmpEq   : cmp.Eq I64   := mkIEq
+def I128.Insts.CoreCmpEq  : cmp.Eq I128  := mkIEq
+def Isize.Insts.CoreCmpEq : cmp.Eq Isize := mkIEq
+
 abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next :=
   @IteratorRange.next
 
