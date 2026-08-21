@@ -49,6 +49,11 @@ structure borrow.ToOwned (Self : Type) where
 @[reducible]
 def boxed.Box (T : Type) := T
 
+/-- [alloc::collections::btree::set::BTreeSet]
+    Source: 'src/lib.rs', lines 209:12-209:56 -/
+def collections.btree.set.BTreeSet (T : Type) (U : Type) :=
+  core.option.Option T × core.option.Option U
+
 /-- [alloc::collections::vec_deque::VecDeque]
     Source: 'src/lib.rs', lines 248:8-248:75
     Visibility: public -/
