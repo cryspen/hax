@@ -469,20 +469,40 @@ def qualify_result_monad_impls(text: str) -> str:
 
 
 def desugar_pure_num_bound_binds(text: str) -> str:
-    """The generated `Funs.lean` uses monadic bind syntax to fetch numeric
-    bounds:
+    """`comment_out_num_bounds` drops the generated numeric bounds in favour of
+    `FunsPrologue`'s, which re-exports all 24 of them from Aeneas as PURE
+    values. In Aeneas's own extraction some of them are `Result <T>` instead —
+    the `usize`/`isize` ones, whose initialiser reads a `rust_primitives`
+    constant — so every reference Aeneas emitted for those has to lose a level
+    of monad. Two shapes occur:
 
-        let i ← num.Isize.MIN
-        let i ← num.U64.MAX
+        let i ← num.Isize.MIN        ->  let i := num.Isize.MIN
+        then num.Usize.MAX           ->  then ok num.Usize.MAX
 
-    because in the original Aeneas extraction those bounds are `Result <T>`
-    (computed via `rust_primitives.arithmetic.<X>_{MIN,MAX}`). Our
-    `Aeneas.Primitives` provides them as PURE values, so the call sites must
-    use `:=` instead of `←`. Rewrite all such bind occurrences.
+    The first rewrite is anchored at end of line on purpose. In
+
+        let i ← num.U8.MAX / 2#u8
+
+    the bind belongs to the *division*, which is genuinely `Result`-valued even
+    though `num.U8.MAX` is pure, so it must keep its `←`; an unanchored pattern
+    silently turns those into a type error. The second rewrite covers a bound
+    left in tail position of a `Result`-typed `do` block, where Aeneas emitted
+    no `ok` because it believed the bound was already monadic.
     """
     int_alt = "(?:U8|U16|U32|U64|U128|Usize|I8|I16|I32|I64|I128|Isize)"
-    pat = re.compile(
-        rf"(let\s+\w+)\s+←\s+(num\.{int_alt}\.(?:MIN|MAX))\b"
+    bound = rf"num\.{int_alt}\.(?:MIN|MAX)"
+    text = re.sub(
+        rf"(let\s+\w+)\s+←\s+({bound})\s*$", r"\1 := \2", text, flags=re.M
+    )
+    # A bare bound needs an `ok` exactly when Aeneas believed it was monadic,
+    # which is exactly when its model initialiser reads a
+    # `rust_primitives::arithmetic` constant: these three. (`usize::MIN` is the
+    # literal `0`, so it is pure like every other width.) For a pure bound a bare
+    # reference is a *pure* body and has to stay as it is — e.g.
+    # `def num.saturating.SaturatingU64.MAX : Saturating U64 := num.U64.MAX`.
+    size_bound = r"num\.(?:Usize\.MAX|Isize\.MAX|Isize\.MIN)"
+    return re.sub(
+        rf"^(\s*)(then |else |=> )?({size_bound})\s*$", r"\1\2ok \3", text, flags=re.M
     )
     new, n = pat.subn(r"\1 := \2", text)
     _record("desugar_pure_num_bound_binds", n)

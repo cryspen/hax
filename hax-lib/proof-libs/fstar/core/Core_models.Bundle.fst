@@ -422,6 +422,293 @@ let impl_6__is_multiple_of (x y: u8) : bool =
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_6__wrapping_neg (x: u8) : u8 = Rust_primitives.Arithmetic.wrapping_sub_u8 (mk_u8 0) x
 
+/// See [`std::primitive::u8::min_value`] (and similar for other integer types)
+let impl_6__min_value (_: Prims.unit) : u8 = impl_6__MIN
+
+/// See [`std::primitive::u8::max_value`] (and similar for other integer types)
+let impl_6__max_value (_: Prims.unit) : u8 = impl_6__MAX
+
+/// See [`std::primitive::u8::cast_signed`] (and similar for other unsigned integer types)
+let impl_6__cast_signed (x: u8) : i8 = cast (x <: u8) <: i8
+
+/// See [`std::primitive::u8::count_zeros`] (and similar for other integer types)
+let impl_6__count_zeros (x: u8) : u32 = impl_6__BITS -! (impl_6__count_ones x <: u32)
+
+/// See [`std::primitive::u8::overflowing_neg`] (and similar for other integer types)
+let impl_6__overflowing_neg (x: u8) : (u8 & bool) =
+  impl_6__wrapping_neg x, x <>. mk_u8 0 <: (u8 & bool)
+
+/// See [`std::primitive::u8::wrapping_pow`] (and similar for other integer types)
+let impl_6__wrapping_pow (x: u8) (exp: u32) : u8 =
+  let (result: u8), (_: bool) = impl_6__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::u8::saturating_pow`] (and similar for other unsigned integer types)
+let impl_6__saturating_pow (x: u8) (exp: u32) : u8 =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_pow x exp in
+  if overflowed then impl_6__MAX else result
+
+/// See [`std::primitive::u8::abs_diff`] (and similar for other unsigned integer types)
+let impl_6__abs_diff (x y: u8) : u8 = if x <. y then y -! x else x -! y
+
+/// See [`std::primitive::u8::midpoint`] (and similar for other unsigned integer types)
+let impl_6__midpoint (x y: u8) : u8 =
+  impl_6__wrapping_add ((x ^. y <: u8) >>! mk_i32 1 <: u8) (x &. y <: u8)
+
+/// See [`std::primitive::u8::wrapping_add_signed`] (and similar for other unsigned integer types)
+let impl_6__wrapping_add_signed (x: u8) (y: i8) : u8 = impl_6__wrapping_add x (cast (y <: i8) <: u8)
+
+/// See [`std::primitive::u8::wrapping_sub_signed`] (and similar for other unsigned integer types)
+let impl_6__wrapping_sub_signed (x: u8) (y: i8) : u8 = impl_6__wrapping_sub x (cast (y <: i8) <: u8)
+
+/// See [`std::primitive::u8::overflowing_add_signed`] (and similar for other unsigned integer types)
+let impl_6__overflowing_add_signed (x: u8) (y: i8) : (u8 & bool) =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_add x (cast (y <: i8) <: u8) in
+  result, overflowed <>. (y <. mk_i8 0 <: bool) <: (u8 & bool)
+
+/// See [`std::primitive::u8::overflowing_sub_signed`] (and similar for other unsigned integer types)
+let impl_6__overflowing_sub_signed (x: u8) (y: i8) : (u8 & bool) =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_sub x (cast (y <: i8) <: u8) in
+  result, overflowed <>. (y <. mk_i8 0 <: bool) <: (u8 & bool)
+
+/// See [`std::primitive::u8::saturating_add_signed`] (and similar for other unsigned integer types)
+let impl_6__saturating_add_signed (x: u8) (y: i8) : u8 =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_add_signed x y in
+  if ~.overflowed then result else if y <. mk_i8 0 then impl_6__MIN else impl_6__MAX
+
+/// See [`std::primitive::u8::saturating_sub_signed`] (and similar for other unsigned integer types)
+let impl_6__saturating_sub_signed (x: u8) (y: i8) : u8 =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_sub_signed x y in
+  if ~.overflowed then result else if y <. mk_i8 0 then impl_6__MAX else impl_6__MIN
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+let impl_6__trailing_zeros (x: u8) : u32 =
+  if x =. mk_u8 0
+  then impl_6__BITS
+  else
+    impl_6__count_ones (impl_6__wrapping_sub (x &. (impl_6__wrapping_neg x <: u8) <: u8) (mk_u8 1)
+        <:
+        u8)
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+let impl_6__trailing_ones (x: u8) : u32 =
+  impl_6__trailing_zeros (impl_6__wrapping_sub impl_6__MAX x <: u8)
+
+/// See [`std::primitive::u8::leading_ones`] (and similar for other integer types)
+let impl_6__leading_ones (x: u8) : u32 =
+  impl_6__leading_zeros (impl_6__wrapping_sub impl_6__MAX x <: u8)
+
+/// See [`std::primitive::u8::bit_width`] (and similar for other unsigned integer types)
+assume
+val impl_6__bit_width': x: u8 -> u32
+
+unfold
+let impl_6__bit_width = impl_6__bit_width'
+
+/// See [`std::primitive::u8::isolate_lowest_one`] (and similar for other integer types)
+let impl_6__isolate_lowest_one (x: u8) : u8 = x &. (impl_6__wrapping_neg x <: u8)
+
+/// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
+let impl_6__swap_bytes (x: u8) : u8 =
+  impl_6__from_le_bytes (impl_6__to_be_bytes x <: t_Array u8 (mk_usize 1))
+
+/// See [`std::primitive::u8::to_be`] (and similar for other integer types)
+let impl_6__to_be (x: u8) : u8 = impl_6__swap_bytes x
+
+/// See [`std::primitive::u8::to_le`] (and similar for other integer types)
+let impl_6__to_le (x: u8) : u8 = x
+
+/// See [`std::primitive::u8::from_be`] (and similar for other integer types)
+let impl_6__from_be (x: u8) : u8 = impl_6__swap_bytes x
+
+/// See [`std::primitive::u8::from_le`] (and similar for other integer types)
+let impl_6__from_le (x: u8) : u8 = x
+
+/// See [`std::primitive::u8::to_ne_bytes`] (and similar for other integer types)
+let impl_6__to_ne_bytes (x: u8) : t_Array u8 (mk_usize 1) = impl_6__to_le_bytes x
+
+/// See [`std::primitive::u8::from_ne_bytes`] (and similar for other integer types)
+let impl_6__from_ne_bytes (bytes: t_Array u8 (mk_usize 1)) : u8 = impl_6__from_le_bytes bytes
+
+/// See [`std::primitive::u8::wrapping_shl`] (and similar for other integer types)
+let impl_6__wrapping_shl (x: u8) (n: u32) : u8 = x <<! (n %! impl_6__BITS <: u32)
+
+/// See [`std::primitive::u8::wrapping_shr`] (and similar for other integer types)
+let impl_6__wrapping_shr (x: u8) (n: u32) : u8 = x >>! (n %! impl_6__BITS <: u32)
+
+/// See [`std::primitive::u8::isolate_highest_one`] (and similar for other integer types)
+let impl_6__isolate_highest_one (x: u8) : u8 =
+  x &.
+  (impl_6__wrapping_shr ((impl_6__MAX /! mk_u8 2 <: u8) +! mk_u8 1 <: u8)
+      (impl_6__leading_zeros x <: u32)
+    <:
+    u8)
+
+/// See [`std::primitive::u8::overflowing_shl`] (and similar for other integer types)
+let impl_6__overflowing_shl (x: u8) (n: u32) : (u8 & bool) =
+  impl_6__wrapping_shl x n, n >=. impl_6__BITS <: (u8 & bool)
+
+/// See [`std::primitive::u8::overflowing_shr`] (and similar for other integer types)
+let impl_6__overflowing_shr (x: u8) (n: u32) : (u8 & bool) =
+  impl_6__wrapping_shr x n, n >=. impl_6__BITS <: (u8 & bool)
+
+/// See [`std::primitive::u8::unbounded_shl`] (and similar for other integer types)
+let impl_6__unbounded_shl (x: u8) (n: u32) : u8 = if n <. impl_6__BITS then x <<! n else mk_u8 0
+
+/// See [`std::primitive::u8::unbounded_shr`] (and similar for other unsigned integer types)
+let impl_6__unbounded_shr (x: u8) (n: u32) : u8 = if n <. impl_6__BITS then x >>! n else mk_u8 0
+
+/// See [`std::primitive::u8::wrapping_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_6__wrapping_next_power_of_two (x: u8) : u8 =
+  if x <=. mk_u8 1
+  then mk_u8 1
+  else
+    impl_6__wrapping_add (impl_6__MAX >>!
+        ((impl_6__leading_zeros (x -! mk_u8 1 <: u8) <: u32) %! impl_6__BITS <: u32)
+        <:
+        u8)
+      (mk_u8 1)
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_6__reverse_bits (x: u8) : u8 =
+  let m1:u8 = impl_6__MAX /! mk_u8 3 in
+  let m2:u8 = impl_6__MAX /! mk_u8 5 in
+  let m4:u8 = impl_6__MAX /! mk_u8 17 in
+  let x:u8 =
+    (impl_6__wrapping_shl (x &. m1 <: u8) (mk_u32 1) <: u8) |.
+    ((impl_6__wrapping_shr x (mk_u32 1) <: u8) &. m1 <: u8)
+  in
+  let x:u8 =
+    (impl_6__wrapping_shl (x &. m2 <: u8) (mk_u32 2) <: u8) |.
+    ((impl_6__wrapping_shr x (mk_u32 2) <: u8) &. m2 <: u8)
+  in
+  let x:u8 =
+    (impl_6__wrapping_shl (x &. m4 <: u8) (mk_u32 4) <: u8) |.
+    ((impl_6__wrapping_shr x (mk_u32 4) <: u8) &. m4 <: u8)
+  in
+  impl_6__swap_bytes x
+
+/// See [`std::primitive::u8::widening_mul`] (and similar for other unsigned integer types)
+let impl_6__widening_mul (x y: u8) : (u8 & u8) =
+  let half:u32 = impl_6__BITS /! mk_u32 2 in
+  let lo_mask:u8 = impl_6__wrapping_shr impl_6__MAX half in
+  let xl:u8 = x &. lo_mask in
+  let xh:u8 = impl_6__wrapping_shr x half in
+  let yl:u8 = y &. lo_mask in
+  let yh:u8 = impl_6__wrapping_shr y half in
+  let ll:u8 = impl_6__wrapping_mul xl yl in
+  let lh:u8 = impl_6__wrapping_mul xl yh in
+  let hl:u8 = impl_6__wrapping_mul xh yl in
+  let hh:u8 = impl_6__wrapping_mul xh yh in
+  let mid:u8 =
+    impl_6__wrapping_add (impl_6__wrapping_add (impl_6__wrapping_shr ll half <: u8)
+          (lh &. lo_mask <: u8)
+        <:
+        u8)
+      (hl &. lo_mask <: u8)
+  in
+  let low:u8 = (ll &. lo_mask <: u8) |. (impl_6__wrapping_shl (mid &. lo_mask <: u8) half <: u8) in
+  let high:u8 =
+    impl_6__wrapping_add (impl_6__wrapping_add (impl_6__wrapping_add hh
+              (impl_6__wrapping_shr lh half <: u8)
+            <:
+            u8)
+          (impl_6__wrapping_shr hl half <: u8)
+        <:
+        u8)
+      (impl_6__wrapping_shr mid half <: u8)
+  in
+  low, high <: (u8 & u8)
+
+/// See [`std::primitive::u8::carrying_mul_add`] (and similar for other unsigned integer types)
+let impl_6__carrying_mul_add (x y carry add: u8) : (u8 & u8) =
+  let (low: u8), (high: u8) = impl_6__widening_mul x y in
+  let (low: u8), (c1: bool) = impl_6__overflowing_add low carry in
+  let (low: u8), (c2: bool) = impl_6__overflowing_add low add in
+  let high:u8 = impl_6__wrapping_add high (if c1 then mk_u8 1 else mk_u8 0) in
+  let high:u8 = impl_6__wrapping_add high (if c2 then mk_u8 1 else mk_u8 0) in
+  low, high <: (u8 & u8)
+
+/// See [`std::primitive::u8::carrying_mul`] (and similar for other unsigned integer types)
+let impl_6__carrying_mul (x y carry: u8) : (u8 & u8) = impl_6__carrying_mul_add x y carry (mk_u8 0)
+
+/// See [`std::primitive::u8::carrying_add`] (and similar for other integer types)
+let impl_6__carrying_add (x y: u8) (carry: bool) : (u8 & bool) =
+  let (a: u8), (c1: bool) = impl_6__overflowing_add x y in
+  let (b: u8), (c2: bool) = impl_6__overflowing_add a (if carry then mk_u8 1 else mk_u8 0) in
+  b, c1 || c2 <: (u8 & bool)
+
+/// See [`std::primitive::u8::borrowing_sub`] (and similar for other integer types)
+let impl_6__borrowing_sub (x y: u8) (borrow: bool) : (u8 & bool) =
+  let (a: u8), (c1: bool) = impl_6__overflowing_sub x y in
+  let (b: u8), (c2: bool) = impl_6__overflowing_sub a (if borrow then mk_u8 1 else mk_u8 0) in
+  b, c1 || c2 <: (u8 & bool)
+
+/// See [`std::primitive::u8::is_ascii`]
+let impl_6__is_ascii (x: u8) : bool = x <. mk_u8 128
+
+/// See [`std::primitive::u8::is_ascii_uppercase`]
+let impl_6__is_ascii_uppercase (x: u8) : bool = x >=. mk_u8 65 && x <=. mk_u8 90
+
+/// See [`std::primitive::u8::is_ascii_lowercase`]
+let impl_6__is_ascii_lowercase (x: u8) : bool = x >=. mk_u8 97 && x <=. mk_u8 122
+
+/// See [`std::primitive::u8::is_ascii_alphabetic`]
+let impl_6__is_ascii_alphabetic (x: u8) : bool =
+  impl_6__is_ascii_uppercase x || impl_6__is_ascii_lowercase x
+
+/// See [`std::primitive::u8::is_ascii_digit`]
+let impl_6__is_ascii_digit (x: u8) : bool = x >=. mk_u8 48 && x <=. mk_u8 57
+
+/// See [`std::primitive::u8::is_ascii_octdigit`]
+let impl_6__is_ascii_octdigit (x: u8) : bool = x >=. mk_u8 48 && x <=. mk_u8 55
+
+/// See [`std::primitive::u8::is_ascii_hexdigit`]
+let impl_6__is_ascii_hexdigit (x: u8) : bool =
+  impl_6__is_ascii_digit x || x >=. mk_u8 65 && x <=. mk_u8 70 || x >=. mk_u8 97 && x <=. mk_u8 102
+
+/// See [`std::primitive::u8::is_ascii_alphanumeric`]
+let impl_6__is_ascii_alphanumeric (x: u8) : bool =
+  impl_6__is_ascii_alphabetic x || impl_6__is_ascii_digit x
+
+/// See [`std::primitive::u8::is_ascii_punctuation`]
+let impl_6__is_ascii_punctuation (x: u8) : bool =
+  x >=. mk_u8 33 && x <=. mk_u8 47 || x >=. mk_u8 58 && x <=. mk_u8 64 ||
+  x >=. mk_u8 91 && x <=. mk_u8 96 ||
+  x >=. mk_u8 123 && x <=. mk_u8 126
+
+/// See [`std::primitive::u8::is_ascii_graphic`]
+let impl_6__is_ascii_graphic (x: u8) : bool = x >=. mk_u8 33 && x <=. mk_u8 126
+
+/// See [`std::primitive::u8::is_ascii_whitespace`]
+let impl_6__is_ascii_whitespace (x: u8) : bool =
+  x =. mk_u8 32 || x =. mk_u8 9 || x =. mk_u8 10 || x =. mk_u8 12 || x =. mk_u8 13
+
+/// See [`std::primitive::u8::is_ascii_control`]
+let impl_6__is_ascii_control (x: u8) : bool = x <=. mk_u8 31 || x =. mk_u8 127
+
+/// See [`std::primitive::u8::to_ascii_uppercase`]
+let impl_6__to_ascii_uppercase (x: u8) : u8 =
+  if x >=. mk_u8 97 && x <=. mk_u8 122 then x -! mk_u8 32 else x
+
+/// See [`std::primitive::u8::to_ascii_lowercase`]
+let impl_6__to_ascii_lowercase (x: u8) : u8 =
+  if x >=. mk_u8 65 && x <=. mk_u8 90 then x +! mk_u8 32 else x
+
+/// See [`std::primitive::u8::eq_ignore_ascii_case`]
+let impl_6__eq_ignore_ascii_case (x other: u8) : bool =
+  (impl_6__to_ascii_lowercase x <: u8) =. (impl_6__to_ascii_lowercase other <: u8)
+
+/// See [`std::primitive::u8::make_ascii_uppercase`]
+let impl_6__make_ascii_uppercase (x: u8) : u8 =
+  let x:u8 = impl_6__to_ascii_uppercase x in
+  x
+
+/// See [`std::primitive::u8::make_ascii_lowercase`]
+let impl_6__make_ascii_lowercase (x: u8) : u8 =
+  let x:u8 = impl_6__to_ascii_lowercase x in
+  x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_6__unchecked_add (x y: u8)
     : Prims.Pure u8
@@ -465,6 +752,234 @@ let impl_6__div_ceil (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -
   let d:u8 = x /! y in
   let r:u8 = x %! y in
   if r >. mk_u8 0 then d +! mk_u8 1 else d
+
+/// See [`std::primitive::u8::strict_neg`] (and similar for other integer types)
+let impl_6__strict_neg (x: u8) : Prims.Pure u8 (requires x =. mk_u8 0) (fun _ -> Prims.l_True) =
+  if x =. mk_u8 0 then mk_u8 0 else Core_models.Panicking.Internal.panic #u8 ()
+
+/// See [`std::primitive::u8::strict_pow`] (and similar for other integer types)
+let impl_6__strict_pow (x: u8) (exp: u32)
+    : Prims.Pure u8
+      (requires (impl_6__overflowing_pow x exp <: (u8 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #u8 () else result
+
+/// See [`std::primitive::u8::strict_add`] (and similar for other integer types)
+let impl_6__strict_add (x y: u8)
+    : Prims.Pure u8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u8 () else result
+
+/// See [`std::primitive::u8::strict_sub`] (and similar for other integer types)
+let impl_6__strict_sub (x y: u8) : Prims.Pure u8 (requires x >=. y) (fun _ -> Prims.l_True) =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u8 () else result
+
+/// See [`std::primitive::u8::strict_mul`] (and similar for other integer types)
+let impl_6__strict_mul (x y: u8)
+    : Prims.Pure u8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u8 () else result
+
+/// See [`std::primitive::u8::wrapping_div`] (and similar for other unsigned integer types)
+let impl_6__wrapping_div (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::wrapping_rem`] (and similar for other unsigned integer types)
+let impl_6__wrapping_rem (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x %! y
+
+/// See [`std::primitive::u8::wrapping_div_euclid`] (and similar for other unsigned integer types)
+let impl_6__wrapping_div_euclid (x y: u8)
+    : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem_euclid`] (and similar for other unsigned integer types)
+let impl_6__wrapping_rem_euclid (x y: u8)
+    : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::saturating_div`] (and similar for other unsigned integer types)
+let impl_6__saturating_div (x y: u8)
+    : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_div`] (and similar for other unsigned integer types)
+let impl_6__strict_div (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::strict_rem`] (and similar for other unsigned integer types)
+let impl_6__strict_rem (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x %! y
+
+/// See [`std::primitive::u8::strict_div_euclid`] (and similar for other unsigned integer types)
+let impl_6__strict_div_euclid (x y: u8)
+    : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_rem_euclid`] (and similar for other unsigned integer types)
+let impl_6__strict_rem_euclid (x y: u8)
+    : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_euclid`] (and similar for other unsigned integer types)
+let impl_6__div_euclid (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::div_floor`] (and similar for other unsigned integer types)
+let impl_6__div_floor (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::overflowing_div`] (and similar for other unsigned integer types)
+let impl_6__overflowing_div (x y: u8)
+    : Prims.Pure (u8 & bool) (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u8 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem`] (and similar for other unsigned integer types)
+let impl_6__overflowing_rem (x y: u8)
+    : Prims.Pure (u8 & bool) (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u8 & bool)
+
+/// See [`std::primitive::u8::overflowing_div_euclid`] (and similar for other unsigned integer types)
+let impl_6__overflowing_div_euclid (x y: u8)
+    : Prims.Pure (u8 & bool) (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u8 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem_euclid`] (and similar for other unsigned integer types)
+let impl_6__overflowing_rem_euclid (x y: u8)
+    : Prims.Pure (u8 & bool) (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u8 & bool)
+
+/// See [`std::primitive::u8::unchecked_div_exact`] (and similar for other unsigned integer types)
+let impl_6__unchecked_div_exact (x y: u8)
+    : Prims.Pure u8 (requires y <>. mk_u8 0 && (x %! y <: u8) =. mk_u8 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::next_multiple_of`] (and similar for other unsigned integer types)
+let impl_6__next_multiple_of (x y: u8)
+    : Prims.Pure u8
+      (requires
+        y <>. mk_u8 0 &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine ((y -! (x %! y <: u8) <: u8) %! y <: u8)
+            <:
+            Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! ((y -! (x %! y <: u8) <: u8) %! y <: u8)
+
+/// See [`std::primitive::u8::strict_add_signed`] (and similar for other unsigned integer types)
+let impl_6__strict_add_signed (x: u8) (y: i8)
+    : Prims.Pure u8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_add_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u8 () else result
+
+/// See [`std::primitive::u8::strict_sub_signed`] (and similar for other unsigned integer types)
+let impl_6__strict_sub_signed (x: u8) (y: i8)
+    : Prims.Pure u8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_6__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_sub_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u8 () else result
+
+/// See [`std::primitive::u8::strict_shl`] (and similar for other integer types)
+let impl_6__strict_shl (x: u8) (n: u32)
+    : Prims.Pure u8 (requires n <. impl_6__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_6__BITS then x <<! n else Core_models.Panicking.Internal.panic #u8 ()
+
+/// See [`std::primitive::u8::strict_shr`] (and similar for other integer types)
+let impl_6__strict_shr (x: u8) (n: u32)
+    : Prims.Pure u8 (requires n <. impl_6__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_6__BITS then x >>! n else Core_models.Panicking.Internal.panic #u8 ()
+
+/// See [`std::primitive::u8::unchecked_shl`] (and similar for other integer types)
+let impl_6__unchecked_shl (x: u8) (n: u32)
+    : Prims.Pure u8 (requires n <. impl_6__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr`] (and similar for other integer types)
+let impl_6__unchecked_shr (x: u8) (n: u32)
+    : Prims.Pure u8 (requires n <. impl_6__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::unchecked_shl_exact`] (and similar for other unsigned integer types)
+let impl_6__unchecked_shl_exact (x: u8) (n: u32)
+    : Prims.Pure u8
+      (requires n <=. (impl_6__leading_zeros x <: u32) && n <. impl_6__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_6__unchecked_shr_exact (x: u8) (n: u32)
+    : Prims.Pure u8
+      (requires n <=. (impl_6__trailing_zeros x <: u32) && n <. impl_6__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::funnel_shl`] (and similar for other unsigned integer types)
+let impl_6__funnel_shl (x y: u8) (n: u32)
+    : Prims.Pure u8 (requires n <. impl_6__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then x
+  else (impl_6__wrapping_shl x n <: u8) |. (impl_6__wrapping_shr y (impl_6__BITS -! n <: u32) <: u8)
+
+/// See [`std::primitive::u8::funnel_shr`] (and similar for other unsigned integer types)
+let impl_6__funnel_shr (x y: u8) (n: u32)
+    : Prims.Pure u8 (requires n <. impl_6__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then y
+  else (impl_6__wrapping_shr y n <: u8) |. (impl_6__wrapping_shl x (impl_6__BITS -! n <: u32) <: u8)
+
+/// See [`std::primitive::u8::unchecked_disjoint_bitor`] (and similar for other unsigned integer types)
+let impl_6__unchecked_disjoint_bitor (x y: u8)
+    : Prims.Pure u8 (requires (x &. y <: u8) =. mk_u8 0) (fun _ -> Prims.l_True) = x |. y
+
+/// See [`std::primitive::u8::next_power_of_two`] (and similar for other unsigned integer types)
+assume
+val impl_6__next_power_of_two': x: u8
+  -> Prims.Pure u8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 2) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        ((Rust_primitives.Hax.Int.from_machine impl_6__MAX <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 1) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl_6__next_power_of_two = impl_6__next_power_of_two'
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_7__MIN: u16 = mk_u16 0
@@ -582,6 +1097,237 @@ let impl_7__is_multiple_of (x y: u16) : bool =
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_7__wrapping_neg (x: u16) : u16 = Rust_primitives.Arithmetic.wrapping_sub_u16 (mk_u16 0) x
 
+/// See [`std::primitive::u8::min_value`] (and similar for other integer types)
+let impl_7__min_value (_: Prims.unit) : u16 = impl_7__MIN
+
+/// See [`std::primitive::u8::max_value`] (and similar for other integer types)
+let impl_7__max_value (_: Prims.unit) : u16 = impl_7__MAX
+
+/// See [`std::primitive::u8::cast_signed`] (and similar for other unsigned integer types)
+let impl_7__cast_signed (x: u16) : i16 = cast (x <: u16) <: i16
+
+/// See [`std::primitive::u8::count_zeros`] (and similar for other integer types)
+let impl_7__count_zeros (x: u16) : u32 = impl_7__BITS -! (impl_7__count_ones x <: u32)
+
+/// See [`std::primitive::u8::overflowing_neg`] (and similar for other integer types)
+let impl_7__overflowing_neg (x: u16) : (u16 & bool) =
+  impl_7__wrapping_neg x, x <>. mk_u16 0 <: (u16 & bool)
+
+/// See [`std::primitive::u8::wrapping_pow`] (and similar for other integer types)
+let impl_7__wrapping_pow (x: u16) (exp: u32) : u16 =
+  let (result: u16), (_: bool) = impl_7__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::u8::saturating_pow`] (and similar for other unsigned integer types)
+let impl_7__saturating_pow (x: u16) (exp: u32) : u16 =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_pow x exp in
+  if overflowed then impl_7__MAX else result
+
+/// See [`std::primitive::u8::abs_diff`] (and similar for other unsigned integer types)
+let impl_7__abs_diff (x y: u16) : u16 = if x <. y then y -! x else x -! y
+
+/// See [`std::primitive::u8::midpoint`] (and similar for other unsigned integer types)
+let impl_7__midpoint (x y: u16) : u16 =
+  impl_7__wrapping_add ((x ^. y <: u16) >>! mk_i32 1 <: u16) (x &. y <: u16)
+
+/// See [`std::primitive::u8::wrapping_add_signed`] (and similar for other unsigned integer types)
+let impl_7__wrapping_add_signed (x: u16) (y: i16) : u16 =
+  impl_7__wrapping_add x (cast (y <: i16) <: u16)
+
+/// See [`std::primitive::u8::wrapping_sub_signed`] (and similar for other unsigned integer types)
+let impl_7__wrapping_sub_signed (x: u16) (y: i16) : u16 =
+  impl_7__wrapping_sub x (cast (y <: i16) <: u16)
+
+/// See [`std::primitive::u8::overflowing_add_signed`] (and similar for other unsigned integer types)
+let impl_7__overflowing_add_signed (x: u16) (y: i16) : (u16 & bool) =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_add x (cast (y <: i16) <: u16) in
+  result, overflowed <>. (y <. mk_i16 0 <: bool) <: (u16 & bool)
+
+/// See [`std::primitive::u8::overflowing_sub_signed`] (and similar for other unsigned integer types)
+let impl_7__overflowing_sub_signed (x: u16) (y: i16) : (u16 & bool) =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_sub x (cast (y <: i16) <: u16) in
+  result, overflowed <>. (y <. mk_i16 0 <: bool) <: (u16 & bool)
+
+/// See [`std::primitive::u8::saturating_add_signed`] (and similar for other unsigned integer types)
+let impl_7__saturating_add_signed (x: u16) (y: i16) : u16 =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_add_signed x y in
+  if ~.overflowed then result else if y <. mk_i16 0 then impl_7__MIN else impl_7__MAX
+
+/// See [`std::primitive::u8::saturating_sub_signed`] (and similar for other unsigned integer types)
+let impl_7__saturating_sub_signed (x: u16) (y: i16) : u16 =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_sub_signed x y in
+  if ~.overflowed then result else if y <. mk_i16 0 then impl_7__MAX else impl_7__MIN
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+let impl_7__trailing_zeros (x: u16) : u32 =
+  if x =. mk_u16 0
+  then impl_7__BITS
+  else
+    impl_7__count_ones (impl_7__wrapping_sub (x &. (impl_7__wrapping_neg x <: u16) <: u16)
+          (mk_u16 1)
+        <:
+        u16)
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+let impl_7__trailing_ones (x: u16) : u32 =
+  impl_7__trailing_zeros (impl_7__wrapping_sub impl_7__MAX x <: u16)
+
+/// See [`std::primitive::u8::leading_ones`] (and similar for other integer types)
+let impl_7__leading_ones (x: u16) : u32 =
+  impl_7__leading_zeros (impl_7__wrapping_sub impl_7__MAX x <: u16)
+
+/// See [`std::primitive::u8::bit_width`] (and similar for other unsigned integer types)
+assume
+val impl_7__bit_width': x: u16 -> u32
+
+unfold
+let impl_7__bit_width = impl_7__bit_width'
+
+/// See [`std::primitive::u8::isolate_lowest_one`] (and similar for other integer types)
+let impl_7__isolate_lowest_one (x: u16) : u16 = x &. (impl_7__wrapping_neg x <: u16)
+
+/// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
+let impl_7__swap_bytes (x: u16) : u16 =
+  impl_7__from_le_bytes (impl_7__to_be_bytes x <: t_Array u8 (mk_usize 2))
+
+/// See [`std::primitive::u8::to_be`] (and similar for other integer types)
+let impl_7__to_be (x: u16) : u16 = impl_7__swap_bytes x
+
+/// See [`std::primitive::u8::to_le`] (and similar for other integer types)
+let impl_7__to_le (x: u16) : u16 = x
+
+/// See [`std::primitive::u8::from_be`] (and similar for other integer types)
+let impl_7__from_be (x: u16) : u16 = impl_7__swap_bytes x
+
+/// See [`std::primitive::u8::from_le`] (and similar for other integer types)
+let impl_7__from_le (x: u16) : u16 = x
+
+/// See [`std::primitive::u8::to_ne_bytes`] (and similar for other integer types)
+let impl_7__to_ne_bytes (x: u16) : t_Array u8 (mk_usize 2) = impl_7__to_le_bytes x
+
+/// See [`std::primitive::u8::from_ne_bytes`] (and similar for other integer types)
+let impl_7__from_ne_bytes (bytes: t_Array u8 (mk_usize 2)) : u16 = impl_7__from_le_bytes bytes
+
+/// See [`std::primitive::u8::wrapping_shl`] (and similar for other integer types)
+let impl_7__wrapping_shl (x: u16) (n: u32) : u16 = x <<! (n %! impl_7__BITS <: u32)
+
+/// See [`std::primitive::u8::wrapping_shr`] (and similar for other integer types)
+let impl_7__wrapping_shr (x: u16) (n: u32) : u16 = x >>! (n %! impl_7__BITS <: u32)
+
+/// See [`std::primitive::u8::isolate_highest_one`] (and similar for other integer types)
+let impl_7__isolate_highest_one (x: u16) : u16 =
+  x &.
+  (impl_7__wrapping_shr ((impl_7__MAX /! mk_u16 2 <: u16) +! mk_u16 1 <: u16)
+      (impl_7__leading_zeros x <: u32)
+    <:
+    u16)
+
+/// See [`std::primitive::u8::overflowing_shl`] (and similar for other integer types)
+let impl_7__overflowing_shl (x: u16) (n: u32) : (u16 & bool) =
+  impl_7__wrapping_shl x n, n >=. impl_7__BITS <: (u16 & bool)
+
+/// See [`std::primitive::u8::overflowing_shr`] (and similar for other integer types)
+let impl_7__overflowing_shr (x: u16) (n: u32) : (u16 & bool) =
+  impl_7__wrapping_shr x n, n >=. impl_7__BITS <: (u16 & bool)
+
+/// See [`std::primitive::u8::unbounded_shl`] (and similar for other integer types)
+let impl_7__unbounded_shl (x: u16) (n: u32) : u16 = if n <. impl_7__BITS then x <<! n else mk_u16 0
+
+/// See [`std::primitive::u8::unbounded_shr`] (and similar for other unsigned integer types)
+let impl_7__unbounded_shr (x: u16) (n: u32) : u16 = if n <. impl_7__BITS then x >>! n else mk_u16 0
+
+/// See [`std::primitive::u8::wrapping_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_7__wrapping_next_power_of_two (x: u16) : u16 =
+  if x <=. mk_u16 1
+  then mk_u16 1
+  else
+    impl_7__wrapping_add (impl_7__MAX >>!
+        ((impl_7__leading_zeros (x -! mk_u16 1 <: u16) <: u32) %! impl_7__BITS <: u32)
+        <:
+        u16)
+      (mk_u16 1)
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_7__reverse_bits (x: u16) : u16 =
+  let m1:u16 = impl_7__MAX /! mk_u16 3 in
+  let m2:u16 = impl_7__MAX /! mk_u16 5 in
+  let m4:u16 = impl_7__MAX /! mk_u16 17 in
+  let x:u16 =
+    (impl_7__wrapping_shl (x &. m1 <: u16) (mk_u32 1) <: u16) |.
+    ((impl_7__wrapping_shr x (mk_u32 1) <: u16) &. m1 <: u16)
+  in
+  let x:u16 =
+    (impl_7__wrapping_shl (x &. m2 <: u16) (mk_u32 2) <: u16) |.
+    ((impl_7__wrapping_shr x (mk_u32 2) <: u16) &. m2 <: u16)
+  in
+  let x:u16 =
+    (impl_7__wrapping_shl (x &. m4 <: u16) (mk_u32 4) <: u16) |.
+    ((impl_7__wrapping_shr x (mk_u32 4) <: u16) &. m4 <: u16)
+  in
+  impl_7__swap_bytes x
+
+/// See [`std::primitive::u8::widening_mul`] (and similar for other unsigned integer types)
+let impl_7__widening_mul (x y: u16) : (u16 & u16) =
+  let half:u32 = impl_7__BITS /! mk_u32 2 in
+  let lo_mask:u16 = impl_7__wrapping_shr impl_7__MAX half in
+  let xl:u16 = x &. lo_mask in
+  let xh:u16 = impl_7__wrapping_shr x half in
+  let yl:u16 = y &. lo_mask in
+  let yh:u16 = impl_7__wrapping_shr y half in
+  let ll:u16 = impl_7__wrapping_mul xl yl in
+  let lh:u16 = impl_7__wrapping_mul xl yh in
+  let hl:u16 = impl_7__wrapping_mul xh yl in
+  let hh:u16 = impl_7__wrapping_mul xh yh in
+  let mid:u16 =
+    impl_7__wrapping_add (impl_7__wrapping_add (impl_7__wrapping_shr ll half <: u16)
+          (lh &. lo_mask <: u16)
+        <:
+        u16)
+      (hl &. lo_mask <: u16)
+  in
+  let low:u16 =
+    (ll &. lo_mask <: u16) |. (impl_7__wrapping_shl (mid &. lo_mask <: u16) half <: u16)
+  in
+  let high:u16 =
+    impl_7__wrapping_add (impl_7__wrapping_add (impl_7__wrapping_add hh
+              (impl_7__wrapping_shr lh half <: u16)
+            <:
+            u16)
+          (impl_7__wrapping_shr hl half <: u16)
+        <:
+        u16)
+      (impl_7__wrapping_shr mid half <: u16)
+  in
+  low, high <: (u16 & u16)
+
+/// See [`std::primitive::u8::carrying_mul_add`] (and similar for other unsigned integer types)
+let impl_7__carrying_mul_add (x y carry add: u16) : (u16 & u16) =
+  let (low: u16), (high: u16) = impl_7__widening_mul x y in
+  let (low: u16), (c1: bool) = impl_7__overflowing_add low carry in
+  let (low: u16), (c2: bool) = impl_7__overflowing_add low add in
+  let high:u16 = impl_7__wrapping_add high (if c1 then mk_u16 1 else mk_u16 0) in
+  let high:u16 = impl_7__wrapping_add high (if c2 then mk_u16 1 else mk_u16 0) in
+  low, high <: (u16 & u16)
+
+/// See [`std::primitive::u8::carrying_mul`] (and similar for other unsigned integer types)
+let impl_7__carrying_mul (x y carry: u16) : (u16 & u16) =
+  impl_7__carrying_mul_add x y carry (mk_u16 0)
+
+/// See [`std::primitive::u8::carrying_add`] (and similar for other integer types)
+let impl_7__carrying_add (x y: u16) (carry: bool) : (u16 & bool) =
+  let (a: u16), (c1: bool) = impl_7__overflowing_add x y in
+  let (b: u16), (c2: bool) = impl_7__overflowing_add a (if carry then mk_u16 1 else mk_u16 0) in
+  b, c1 || c2 <: (u16 & bool)
+
+/// See [`std::primitive::u8::borrowing_sub`] (and similar for other integer types)
+let impl_7__borrowing_sub (x y: u16) (borrow: bool) : (u16 & bool) =
+  let (a: u16), (c1: bool) = impl_7__overflowing_sub x y in
+  let (b: u16), (c2: bool) = impl_7__overflowing_sub a (if borrow then mk_u16 1 else mk_u16 0) in
+  b, c1 || c2 <: (u16 & bool)
+
+/// See [`std::primitive::u16::is_utf16_surrogate`]
+let impl_7__is_utf16_surrogate (x: u16) : bool = x >=. mk_u16 55296 && x <=. mk_u16 57343
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_7__unchecked_add (x y: u16)
     : Prims.Pure u16
@@ -625,6 +1371,237 @@ let impl_7__div_ceil (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun 
   let d:u16 = x /! y in
   let r:u16 = x %! y in
   if r >. mk_u16 0 then d +! mk_u16 1 else d
+
+/// See [`std::primitive::u8::strict_neg`] (and similar for other integer types)
+let impl_7__strict_neg (x: u16) : Prims.Pure u16 (requires x =. mk_u16 0) (fun _ -> Prims.l_True) =
+  if x =. mk_u16 0 then mk_u16 0 else Core_models.Panicking.Internal.panic #u16 ()
+
+/// See [`std::primitive::u8::strict_pow`] (and similar for other integer types)
+let impl_7__strict_pow (x: u16) (exp: u32)
+    : Prims.Pure u16
+      (requires (impl_7__overflowing_pow x exp <: (u16 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #u16 () else result
+
+/// See [`std::primitive::u8::strict_add`] (and similar for other integer types)
+let impl_7__strict_add (x y: u16)
+    : Prims.Pure u16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u16 () else result
+
+/// See [`std::primitive::u8::strict_sub`] (and similar for other integer types)
+let impl_7__strict_sub (x y: u16) : Prims.Pure u16 (requires x >=. y) (fun _ -> Prims.l_True) =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u16 () else result
+
+/// See [`std::primitive::u8::strict_mul`] (and similar for other integer types)
+let impl_7__strict_mul (x y: u16)
+    : Prims.Pure u16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u16 () else result
+
+/// See [`std::primitive::u8::wrapping_div`] (and similar for other unsigned integer types)
+let impl_7__wrapping_div (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem`] (and similar for other unsigned integer types)
+let impl_7__wrapping_rem (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::wrapping_div_euclid`] (and similar for other unsigned integer types)
+let impl_7__wrapping_div_euclid (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem_euclid`] (and similar for other unsigned integer types)
+let impl_7__wrapping_rem_euclid (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::saturating_div`] (and similar for other unsigned integer types)
+let impl_7__saturating_div (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_div`] (and similar for other unsigned integer types)
+let impl_7__strict_div (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::strict_rem`] (and similar for other unsigned integer types)
+let impl_7__strict_rem (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  x %! y
+
+/// See [`std::primitive::u8::strict_div_euclid`] (and similar for other unsigned integer types)
+let impl_7__strict_div_euclid (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_rem_euclid`] (and similar for other unsigned integer types)
+let impl_7__strict_rem_euclid (x y: u16)
+    : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_euclid`] (and similar for other unsigned integer types)
+let impl_7__div_euclid (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::div_floor`] (and similar for other unsigned integer types)
+let impl_7__div_floor (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::overflowing_div`] (and similar for other unsigned integer types)
+let impl_7__overflowing_div (x y: u16)
+    : Prims.Pure (u16 & bool) (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u16 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem`] (and similar for other unsigned integer types)
+let impl_7__overflowing_rem (x y: u16)
+    : Prims.Pure (u16 & bool) (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u16 & bool)
+
+/// See [`std::primitive::u8::overflowing_div_euclid`] (and similar for other unsigned integer types)
+let impl_7__overflowing_div_euclid (x y: u16)
+    : Prims.Pure (u16 & bool) (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u16 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem_euclid`] (and similar for other unsigned integer types)
+let impl_7__overflowing_rem_euclid (x y: u16)
+    : Prims.Pure (u16 & bool) (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u16 & bool)
+
+/// See [`std::primitive::u8::unchecked_div_exact`] (and similar for other unsigned integer types)
+let impl_7__unchecked_div_exact (x y: u16)
+    : Prims.Pure u16
+      (requires y <>. mk_u16 0 && (x %! y <: u16) =. mk_u16 0)
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::next_multiple_of`] (and similar for other unsigned integer types)
+let impl_7__next_multiple_of (x y: u16)
+    : Prims.Pure u16
+      (requires
+        y <>. mk_u16 0 &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine ((y -! (x %! y <: u16) <: u16) %! y <: u16)
+            <:
+            Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! ((y -! (x %! y <: u16) <: u16) %! y <: u16)
+
+/// See [`std::primitive::u8::strict_add_signed`] (and similar for other unsigned integer types)
+let impl_7__strict_add_signed (x: u16) (y: i16)
+    : Prims.Pure u16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_add_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u16 () else result
+
+/// See [`std::primitive::u8::strict_sub_signed`] (and similar for other unsigned integer types)
+let impl_7__strict_sub_signed (x: u16) (y: i16)
+    : Prims.Pure u16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_7__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_sub_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u16 () else result
+
+/// See [`std::primitive::u8::strict_shl`] (and similar for other integer types)
+let impl_7__strict_shl (x: u16) (n: u32)
+    : Prims.Pure u16 (requires n <. impl_7__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_7__BITS then x <<! n else Core_models.Panicking.Internal.panic #u16 ()
+
+/// See [`std::primitive::u8::strict_shr`] (and similar for other integer types)
+let impl_7__strict_shr (x: u16) (n: u32)
+    : Prims.Pure u16 (requires n <. impl_7__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_7__BITS then x >>! n else Core_models.Panicking.Internal.panic #u16 ()
+
+/// See [`std::primitive::u8::unchecked_shl`] (and similar for other integer types)
+let impl_7__unchecked_shl (x: u16) (n: u32)
+    : Prims.Pure u16 (requires n <. impl_7__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr`] (and similar for other integer types)
+let impl_7__unchecked_shr (x: u16) (n: u32)
+    : Prims.Pure u16 (requires n <. impl_7__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::unchecked_shl_exact`] (and similar for other unsigned integer types)
+let impl_7__unchecked_shl_exact (x: u16) (n: u32)
+    : Prims.Pure u16
+      (requires n <=. (impl_7__leading_zeros x <: u32) && n <. impl_7__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_7__unchecked_shr_exact (x: u16) (n: u32)
+    : Prims.Pure u16
+      (requires n <=. (impl_7__trailing_zeros x <: u32) && n <. impl_7__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::funnel_shl`] (and similar for other unsigned integer types)
+let impl_7__funnel_shl (x y: u16) (n: u32)
+    : Prims.Pure u16 (requires n <. impl_7__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then x
+  else
+    (impl_7__wrapping_shl x n <: u16) |. (impl_7__wrapping_shr y (impl_7__BITS -! n <: u32) <: u16)
+
+/// See [`std::primitive::u8::funnel_shr`] (and similar for other unsigned integer types)
+let impl_7__funnel_shr (x y: u16) (n: u32)
+    : Prims.Pure u16 (requires n <. impl_7__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then y
+  else
+    (impl_7__wrapping_shr y n <: u16) |. (impl_7__wrapping_shl x (impl_7__BITS -! n <: u32) <: u16)
+
+/// See [`std::primitive::u8::unchecked_disjoint_bitor`] (and similar for other unsigned integer types)
+let impl_7__unchecked_disjoint_bitor (x y: u16)
+    : Prims.Pure u16 (requires (x &. y <: u16) =. mk_u16 0) (fun _ -> Prims.l_True) = x |. y
+
+/// See [`std::primitive::u8::next_power_of_two`] (and similar for other unsigned integer types)
+assume
+val impl_7__next_power_of_two': x: u16
+  -> Prims.Pure u16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 2) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        ((Rust_primitives.Hax.Int.from_machine impl_7__MAX <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 1) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl_7__next_power_of_two = impl_7__next_power_of_two'
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_8__MIN: u32 = mk_u32 0
@@ -742,6 +1719,234 @@ let impl_8__is_multiple_of (x y: u32) : bool =
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_8__wrapping_neg (x: u32) : u32 = Rust_primitives.Arithmetic.wrapping_sub_u32 (mk_u32 0) x
 
+/// See [`std::primitive::u8::min_value`] (and similar for other integer types)
+let impl_8__min_value (_: Prims.unit) : u32 = impl_8__MIN
+
+/// See [`std::primitive::u8::max_value`] (and similar for other integer types)
+let impl_8__max_value (_: Prims.unit) : u32 = impl_8__MAX
+
+/// See [`std::primitive::u8::cast_signed`] (and similar for other unsigned integer types)
+let impl_8__cast_signed (x: u32) : i32 = cast (x <: u32) <: i32
+
+/// See [`std::primitive::u8::count_zeros`] (and similar for other integer types)
+let impl_8__count_zeros (x: u32) : u32 = impl_8__BITS -! (impl_8__count_ones x <: u32)
+
+/// See [`std::primitive::u8::overflowing_neg`] (and similar for other integer types)
+let impl_8__overflowing_neg (x: u32) : (u32 & bool) =
+  impl_8__wrapping_neg x, x <>. mk_u32 0 <: (u32 & bool)
+
+/// See [`std::primitive::u8::wrapping_pow`] (and similar for other integer types)
+let impl_8__wrapping_pow (x exp: u32) : u32 =
+  let (result: u32), (_: bool) = impl_8__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::u8::saturating_pow`] (and similar for other unsigned integer types)
+let impl_8__saturating_pow (x exp: u32) : u32 =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_pow x exp in
+  if overflowed then impl_8__MAX else result
+
+/// See [`std::primitive::u8::abs_diff`] (and similar for other unsigned integer types)
+let impl_8__abs_diff (x y: u32) : u32 = if x <. y then y -! x else x -! y
+
+/// See [`std::primitive::u8::midpoint`] (and similar for other unsigned integer types)
+let impl_8__midpoint (x y: u32) : u32 =
+  impl_8__wrapping_add ((x ^. y <: u32) >>! mk_i32 1 <: u32) (x &. y <: u32)
+
+/// See [`std::primitive::u8::wrapping_add_signed`] (and similar for other unsigned integer types)
+let impl_8__wrapping_add_signed (x: u32) (y: i32) : u32 =
+  impl_8__wrapping_add x (cast (y <: i32) <: u32)
+
+/// See [`std::primitive::u8::wrapping_sub_signed`] (and similar for other unsigned integer types)
+let impl_8__wrapping_sub_signed (x: u32) (y: i32) : u32 =
+  impl_8__wrapping_sub x (cast (y <: i32) <: u32)
+
+/// See [`std::primitive::u8::overflowing_add_signed`] (and similar for other unsigned integer types)
+let impl_8__overflowing_add_signed (x: u32) (y: i32) : (u32 & bool) =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_add x (cast (y <: i32) <: u32) in
+  result, overflowed <>. (y <. mk_i32 0 <: bool) <: (u32 & bool)
+
+/// See [`std::primitive::u8::overflowing_sub_signed`] (and similar for other unsigned integer types)
+let impl_8__overflowing_sub_signed (x: u32) (y: i32) : (u32 & bool) =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_sub x (cast (y <: i32) <: u32) in
+  result, overflowed <>. (y <. mk_i32 0 <: bool) <: (u32 & bool)
+
+/// See [`std::primitive::u8::saturating_add_signed`] (and similar for other unsigned integer types)
+let impl_8__saturating_add_signed (x: u32) (y: i32) : u32 =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_add_signed x y in
+  if ~.overflowed then result else if y <. mk_i32 0 then impl_8__MIN else impl_8__MAX
+
+/// See [`std::primitive::u8::saturating_sub_signed`] (and similar for other unsigned integer types)
+let impl_8__saturating_sub_signed (x: u32) (y: i32) : u32 =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_sub_signed x y in
+  if ~.overflowed then result else if y <. mk_i32 0 then impl_8__MAX else impl_8__MIN
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+let impl_8__trailing_zeros (x: u32) : u32 =
+  if x =. mk_u32 0
+  then impl_8__BITS
+  else
+    impl_8__count_ones (impl_8__wrapping_sub (x &. (impl_8__wrapping_neg x <: u32) <: u32)
+          (mk_u32 1)
+        <:
+        u32)
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+let impl_8__trailing_ones (x: u32) : u32 =
+  impl_8__trailing_zeros (impl_8__wrapping_sub impl_8__MAX x <: u32)
+
+/// See [`std::primitive::u8::leading_ones`] (and similar for other integer types)
+let impl_8__leading_ones (x: u32) : u32 =
+  impl_8__leading_zeros (impl_8__wrapping_sub impl_8__MAX x <: u32)
+
+/// See [`std::primitive::u8::bit_width`] (and similar for other unsigned integer types)
+assume
+val impl_8__bit_width': x: u32 -> u32
+
+unfold
+let impl_8__bit_width = impl_8__bit_width'
+
+/// See [`std::primitive::u8::isolate_lowest_one`] (and similar for other integer types)
+let impl_8__isolate_lowest_one (x: u32) : u32 = x &. (impl_8__wrapping_neg x <: u32)
+
+/// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
+let impl_8__swap_bytes (x: u32) : u32 =
+  impl_8__from_le_bytes (impl_8__to_be_bytes x <: t_Array u8 (mk_usize 4))
+
+/// See [`std::primitive::u8::to_be`] (and similar for other integer types)
+let impl_8__to_be (x: u32) : u32 = impl_8__swap_bytes x
+
+/// See [`std::primitive::u8::to_le`] (and similar for other integer types)
+let impl_8__to_le (x: u32) : u32 = x
+
+/// See [`std::primitive::u8::from_be`] (and similar for other integer types)
+let impl_8__from_be (x: u32) : u32 = impl_8__swap_bytes x
+
+/// See [`std::primitive::u8::from_le`] (and similar for other integer types)
+let impl_8__from_le (x: u32) : u32 = x
+
+/// See [`std::primitive::u8::to_ne_bytes`] (and similar for other integer types)
+let impl_8__to_ne_bytes (x: u32) : t_Array u8 (mk_usize 4) = impl_8__to_le_bytes x
+
+/// See [`std::primitive::u8::from_ne_bytes`] (and similar for other integer types)
+let impl_8__from_ne_bytes (bytes: t_Array u8 (mk_usize 4)) : u32 = impl_8__from_le_bytes bytes
+
+/// See [`std::primitive::u8::wrapping_shl`] (and similar for other integer types)
+let impl_8__wrapping_shl (x n: u32) : u32 = x <<! (n %! impl_8__BITS <: u32)
+
+/// See [`std::primitive::u8::wrapping_shr`] (and similar for other integer types)
+let impl_8__wrapping_shr (x n: u32) : u32 = x >>! (n %! impl_8__BITS <: u32)
+
+/// See [`std::primitive::u8::isolate_highest_one`] (and similar for other integer types)
+let impl_8__isolate_highest_one (x: u32) : u32 =
+  x &.
+  (impl_8__wrapping_shr ((impl_8__MAX /! mk_u32 2 <: u32) +! mk_u32 1 <: u32)
+      (impl_8__leading_zeros x <: u32)
+    <:
+    u32)
+
+/// See [`std::primitive::u8::overflowing_shl`] (and similar for other integer types)
+let impl_8__overflowing_shl (x n: u32) : (u32 & bool) =
+  impl_8__wrapping_shl x n, n >=. impl_8__BITS <: (u32 & bool)
+
+/// See [`std::primitive::u8::overflowing_shr`] (and similar for other integer types)
+let impl_8__overflowing_shr (x n: u32) : (u32 & bool) =
+  impl_8__wrapping_shr x n, n >=. impl_8__BITS <: (u32 & bool)
+
+/// See [`std::primitive::u8::unbounded_shl`] (and similar for other integer types)
+let impl_8__unbounded_shl (x n: u32) : u32 = if n <. impl_8__BITS then x <<! n else mk_u32 0
+
+/// See [`std::primitive::u8::unbounded_shr`] (and similar for other unsigned integer types)
+let impl_8__unbounded_shr (x n: u32) : u32 = if n <. impl_8__BITS then x >>! n else mk_u32 0
+
+/// See [`std::primitive::u8::wrapping_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_8__wrapping_next_power_of_two (x: u32) : u32 =
+  if x <=. mk_u32 1
+  then mk_u32 1
+  else
+    impl_8__wrapping_add (impl_8__MAX >>!
+        ((impl_8__leading_zeros (x -! mk_u32 1 <: u32) <: u32) %! impl_8__BITS <: u32)
+        <:
+        u32)
+      (mk_u32 1)
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_8__reverse_bits (x: u32) : u32 =
+  let m1:u32 = impl_8__MAX /! mk_u32 3 in
+  let m2:u32 = impl_8__MAX /! mk_u32 5 in
+  let m4:u32 = impl_8__MAX /! mk_u32 17 in
+  let x:u32 =
+    (impl_8__wrapping_shl (x &. m1 <: u32) (mk_u32 1) <: u32) |.
+    ((impl_8__wrapping_shr x (mk_u32 1) <: u32) &. m1 <: u32)
+  in
+  let x:u32 =
+    (impl_8__wrapping_shl (x &. m2 <: u32) (mk_u32 2) <: u32) |.
+    ((impl_8__wrapping_shr x (mk_u32 2) <: u32) &. m2 <: u32)
+  in
+  let x:u32 =
+    (impl_8__wrapping_shl (x &. m4 <: u32) (mk_u32 4) <: u32) |.
+    ((impl_8__wrapping_shr x (mk_u32 4) <: u32) &. m4 <: u32)
+  in
+  impl_8__swap_bytes x
+
+/// See [`std::primitive::u8::widening_mul`] (and similar for other unsigned integer types)
+let impl_8__widening_mul (x y: u32) : (u32 & u32) =
+  let half:u32 = impl_8__BITS /! mk_u32 2 in
+  let lo_mask:u32 = impl_8__wrapping_shr impl_8__MAX half in
+  let xl:u32 = x &. lo_mask in
+  let xh:u32 = impl_8__wrapping_shr x half in
+  let yl:u32 = y &. lo_mask in
+  let yh:u32 = impl_8__wrapping_shr y half in
+  let ll:u32 = impl_8__wrapping_mul xl yl in
+  let lh:u32 = impl_8__wrapping_mul xl yh in
+  let hl:u32 = impl_8__wrapping_mul xh yl in
+  let hh:u32 = impl_8__wrapping_mul xh yh in
+  let mid:u32 =
+    impl_8__wrapping_add (impl_8__wrapping_add (impl_8__wrapping_shr ll half <: u32)
+          (lh &. lo_mask <: u32)
+        <:
+        u32)
+      (hl &. lo_mask <: u32)
+  in
+  let low:u32 =
+    (ll &. lo_mask <: u32) |. (impl_8__wrapping_shl (mid &. lo_mask <: u32) half <: u32)
+  in
+  let high:u32 =
+    impl_8__wrapping_add (impl_8__wrapping_add (impl_8__wrapping_add hh
+              (impl_8__wrapping_shr lh half <: u32)
+            <:
+            u32)
+          (impl_8__wrapping_shr hl half <: u32)
+        <:
+        u32)
+      (impl_8__wrapping_shr mid half <: u32)
+  in
+  low, high <: (u32 & u32)
+
+/// See [`std::primitive::u8::carrying_mul_add`] (and similar for other unsigned integer types)
+let impl_8__carrying_mul_add (x y carry add: u32) : (u32 & u32) =
+  let (low: u32), (high: u32) = impl_8__widening_mul x y in
+  let (low: u32), (c1: bool) = impl_8__overflowing_add low carry in
+  let (low: u32), (c2: bool) = impl_8__overflowing_add low add in
+  let high:u32 = impl_8__wrapping_add high (if c1 then mk_u32 1 else mk_u32 0) in
+  let high:u32 = impl_8__wrapping_add high (if c2 then mk_u32 1 else mk_u32 0) in
+  low, high <: (u32 & u32)
+
+/// See [`std::primitive::u8::carrying_mul`] (and similar for other unsigned integer types)
+let impl_8__carrying_mul (x y carry: u32) : (u32 & u32) =
+  impl_8__carrying_mul_add x y carry (mk_u32 0)
+
+/// See [`std::primitive::u8::carrying_add`] (and similar for other integer types)
+let impl_8__carrying_add (x y: u32) (carry: bool) : (u32 & bool) =
+  let (a: u32), (c1: bool) = impl_8__overflowing_add x y in
+  let (b: u32), (c2: bool) = impl_8__overflowing_add a (if carry then mk_u32 1 else mk_u32 0) in
+  b, c1 || c2 <: (u32 & bool)
+
+/// See [`std::primitive::u8::borrowing_sub`] (and similar for other integer types)
+let impl_8__borrowing_sub (x y: u32) (borrow: bool) : (u32 & bool) =
+  let (a: u32), (c1: bool) = impl_8__overflowing_sub x y in
+  let (b: u32), (c2: bool) = impl_8__overflowing_sub a (if borrow then mk_u32 1 else mk_u32 0) in
+  b, c1 || c2 <: (u32 & bool)
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_8__unchecked_add (x y: u32)
     : Prims.Pure u32
@@ -785,6 +1990,237 @@ let impl_8__div_ceil (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun 
   let d:u32 = x /! y in
   let r:u32 = x %! y in
   if r >. mk_u32 0 then d +! mk_u32 1 else d
+
+/// See [`std::primitive::u8::strict_neg`] (and similar for other integer types)
+let impl_8__strict_neg (x: u32) : Prims.Pure u32 (requires x =. mk_u32 0) (fun _ -> Prims.l_True) =
+  if x =. mk_u32 0 then mk_u32 0 else Core_models.Panicking.Internal.panic #u32 ()
+
+/// See [`std::primitive::u8::strict_pow`] (and similar for other integer types)
+let impl_8__strict_pow (x exp: u32)
+    : Prims.Pure u32
+      (requires (impl_8__overflowing_pow x exp <: (u32 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #u32 () else result
+
+/// See [`std::primitive::u8::strict_add`] (and similar for other integer types)
+let impl_8__strict_add (x y: u32)
+    : Prims.Pure u32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u32 () else result
+
+/// See [`std::primitive::u8::strict_sub`] (and similar for other integer types)
+let impl_8__strict_sub (x y: u32) : Prims.Pure u32 (requires x >=. y) (fun _ -> Prims.l_True) =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u32 () else result
+
+/// See [`std::primitive::u8::strict_mul`] (and similar for other integer types)
+let impl_8__strict_mul (x y: u32)
+    : Prims.Pure u32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u32 () else result
+
+/// See [`std::primitive::u8::wrapping_div`] (and similar for other unsigned integer types)
+let impl_8__wrapping_div (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem`] (and similar for other unsigned integer types)
+let impl_8__wrapping_rem (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::wrapping_div_euclid`] (and similar for other unsigned integer types)
+let impl_8__wrapping_div_euclid (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem_euclid`] (and similar for other unsigned integer types)
+let impl_8__wrapping_rem_euclid (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::saturating_div`] (and similar for other unsigned integer types)
+let impl_8__saturating_div (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_div`] (and similar for other unsigned integer types)
+let impl_8__strict_div (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::strict_rem`] (and similar for other unsigned integer types)
+let impl_8__strict_rem (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  x %! y
+
+/// See [`std::primitive::u8::strict_div_euclid`] (and similar for other unsigned integer types)
+let impl_8__strict_div_euclid (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_rem_euclid`] (and similar for other unsigned integer types)
+let impl_8__strict_rem_euclid (x y: u32)
+    : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_euclid`] (and similar for other unsigned integer types)
+let impl_8__div_euclid (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::div_floor`] (and similar for other unsigned integer types)
+let impl_8__div_floor (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::overflowing_div`] (and similar for other unsigned integer types)
+let impl_8__overflowing_div (x y: u32)
+    : Prims.Pure (u32 & bool) (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u32 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem`] (and similar for other unsigned integer types)
+let impl_8__overflowing_rem (x y: u32)
+    : Prims.Pure (u32 & bool) (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u32 & bool)
+
+/// See [`std::primitive::u8::overflowing_div_euclid`] (and similar for other unsigned integer types)
+let impl_8__overflowing_div_euclid (x y: u32)
+    : Prims.Pure (u32 & bool) (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u32 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem_euclid`] (and similar for other unsigned integer types)
+let impl_8__overflowing_rem_euclid (x y: u32)
+    : Prims.Pure (u32 & bool) (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u32 & bool)
+
+/// See [`std::primitive::u8::unchecked_div_exact`] (and similar for other unsigned integer types)
+let impl_8__unchecked_div_exact (x y: u32)
+    : Prims.Pure u32
+      (requires y <>. mk_u32 0 && (x %! y <: u32) =. mk_u32 0)
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::next_multiple_of`] (and similar for other unsigned integer types)
+let impl_8__next_multiple_of (x y: u32)
+    : Prims.Pure u32
+      (requires
+        y <>. mk_u32 0 &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine ((y -! (x %! y <: u32) <: u32) %! y <: u32)
+            <:
+            Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! ((y -! (x %! y <: u32) <: u32) %! y <: u32)
+
+/// See [`std::primitive::u8::strict_add_signed`] (and similar for other unsigned integer types)
+let impl_8__strict_add_signed (x: u32) (y: i32)
+    : Prims.Pure u32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_add_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u32 () else result
+
+/// See [`std::primitive::u8::strict_sub_signed`] (and similar for other unsigned integer types)
+let impl_8__strict_sub_signed (x: u32) (y: i32)
+    : Prims.Pure u32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_8__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_sub_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u32 () else result
+
+/// See [`std::primitive::u8::strict_shl`] (and similar for other integer types)
+let impl_8__strict_shl (x n: u32)
+    : Prims.Pure u32 (requires n <. impl_8__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_8__BITS then x <<! n else Core_models.Panicking.Internal.panic #u32 ()
+
+/// See [`std::primitive::u8::strict_shr`] (and similar for other integer types)
+let impl_8__strict_shr (x n: u32)
+    : Prims.Pure u32 (requires n <. impl_8__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_8__BITS then x >>! n else Core_models.Panicking.Internal.panic #u32 ()
+
+/// See [`std::primitive::u8::unchecked_shl`] (and similar for other integer types)
+let impl_8__unchecked_shl (x n: u32)
+    : Prims.Pure u32 (requires n <. impl_8__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr`] (and similar for other integer types)
+let impl_8__unchecked_shr (x n: u32)
+    : Prims.Pure u32 (requires n <. impl_8__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::unchecked_shl_exact`] (and similar for other unsigned integer types)
+let impl_8__unchecked_shl_exact (x n: u32)
+    : Prims.Pure u32
+      (requires n <=. (impl_8__leading_zeros x <: u32) && n <. impl_8__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_8__unchecked_shr_exact (x n: u32)
+    : Prims.Pure u32
+      (requires n <=. (impl_8__trailing_zeros x <: u32) && n <. impl_8__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::funnel_shl`] (and similar for other unsigned integer types)
+let impl_8__funnel_shl (x y n: u32)
+    : Prims.Pure u32 (requires n <. impl_8__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then x
+  else
+    (impl_8__wrapping_shl x n <: u32) |. (impl_8__wrapping_shr y (impl_8__BITS -! n <: u32) <: u32)
+
+/// See [`std::primitive::u8::funnel_shr`] (and similar for other unsigned integer types)
+let impl_8__funnel_shr (x y n: u32)
+    : Prims.Pure u32 (requires n <. impl_8__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then y
+  else
+    (impl_8__wrapping_shr y n <: u32) |. (impl_8__wrapping_shl x (impl_8__BITS -! n <: u32) <: u32)
+
+/// See [`std::primitive::u8::unchecked_disjoint_bitor`] (and similar for other unsigned integer types)
+let impl_8__unchecked_disjoint_bitor (x y: u32)
+    : Prims.Pure u32 (requires (x &. y <: u32) =. mk_u32 0) (fun _ -> Prims.l_True) = x |. y
+
+/// See [`std::primitive::u8::next_power_of_two`] (and similar for other unsigned integer types)
+assume
+val impl_8__next_power_of_two': x: u32
+  -> Prims.Pure u32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 2) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        ((Rust_primitives.Hax.Int.from_machine impl_8__MAX <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 1) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl_8__next_power_of_two = impl_8__next_power_of_two'
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_9__MIN: u64 = mk_u64 0
@@ -902,6 +2338,234 @@ let impl_9__is_multiple_of (x y: u64) : bool =
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_9__wrapping_neg (x: u64) : u64 = Rust_primitives.Arithmetic.wrapping_sub_u64 (mk_u64 0) x
 
+/// See [`std::primitive::u8::min_value`] (and similar for other integer types)
+let impl_9__min_value (_: Prims.unit) : u64 = impl_9__MIN
+
+/// See [`std::primitive::u8::max_value`] (and similar for other integer types)
+let impl_9__max_value (_: Prims.unit) : u64 = impl_9__MAX
+
+/// See [`std::primitive::u8::cast_signed`] (and similar for other unsigned integer types)
+let impl_9__cast_signed (x: u64) : i64 = cast (x <: u64) <: i64
+
+/// See [`std::primitive::u8::count_zeros`] (and similar for other integer types)
+let impl_9__count_zeros (x: u64) : u32 = impl_9__BITS -! (impl_9__count_ones x <: u32)
+
+/// See [`std::primitive::u8::overflowing_neg`] (and similar for other integer types)
+let impl_9__overflowing_neg (x: u64) : (u64 & bool) =
+  impl_9__wrapping_neg x, x <>. mk_u64 0 <: (u64 & bool)
+
+/// See [`std::primitive::u8::wrapping_pow`] (and similar for other integer types)
+let impl_9__wrapping_pow (x: u64) (exp: u32) : u64 =
+  let (result: u64), (_: bool) = impl_9__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::u8::saturating_pow`] (and similar for other unsigned integer types)
+let impl_9__saturating_pow (x: u64) (exp: u32) : u64 =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_pow x exp in
+  if overflowed then impl_9__MAX else result
+
+/// See [`std::primitive::u8::abs_diff`] (and similar for other unsigned integer types)
+let impl_9__abs_diff (x y: u64) : u64 = if x <. y then y -! x else x -! y
+
+/// See [`std::primitive::u8::midpoint`] (and similar for other unsigned integer types)
+let impl_9__midpoint (x y: u64) : u64 =
+  impl_9__wrapping_add ((x ^. y <: u64) >>! mk_i32 1 <: u64) (x &. y <: u64)
+
+/// See [`std::primitive::u8::wrapping_add_signed`] (and similar for other unsigned integer types)
+let impl_9__wrapping_add_signed (x: u64) (y: i64) : u64 =
+  impl_9__wrapping_add x (cast (y <: i64) <: u64)
+
+/// See [`std::primitive::u8::wrapping_sub_signed`] (and similar for other unsigned integer types)
+let impl_9__wrapping_sub_signed (x: u64) (y: i64) : u64 =
+  impl_9__wrapping_sub x (cast (y <: i64) <: u64)
+
+/// See [`std::primitive::u8::overflowing_add_signed`] (and similar for other unsigned integer types)
+let impl_9__overflowing_add_signed (x: u64) (y: i64) : (u64 & bool) =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_add x (cast (y <: i64) <: u64) in
+  result, overflowed <>. (y <. mk_i64 0 <: bool) <: (u64 & bool)
+
+/// See [`std::primitive::u8::overflowing_sub_signed`] (and similar for other unsigned integer types)
+let impl_9__overflowing_sub_signed (x: u64) (y: i64) : (u64 & bool) =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_sub x (cast (y <: i64) <: u64) in
+  result, overflowed <>. (y <. mk_i64 0 <: bool) <: (u64 & bool)
+
+/// See [`std::primitive::u8::saturating_add_signed`] (and similar for other unsigned integer types)
+let impl_9__saturating_add_signed (x: u64) (y: i64) : u64 =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_add_signed x y in
+  if ~.overflowed then result else if y <. mk_i64 0 then impl_9__MIN else impl_9__MAX
+
+/// See [`std::primitive::u8::saturating_sub_signed`] (and similar for other unsigned integer types)
+let impl_9__saturating_sub_signed (x: u64) (y: i64) : u64 =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_sub_signed x y in
+  if ~.overflowed then result else if y <. mk_i64 0 then impl_9__MAX else impl_9__MIN
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+let impl_9__trailing_zeros (x: u64) : u32 =
+  if x =. mk_u64 0
+  then impl_9__BITS
+  else
+    impl_9__count_ones (impl_9__wrapping_sub (x &. (impl_9__wrapping_neg x <: u64) <: u64)
+          (mk_u64 1)
+        <:
+        u64)
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+let impl_9__trailing_ones (x: u64) : u32 =
+  impl_9__trailing_zeros (impl_9__wrapping_sub impl_9__MAX x <: u64)
+
+/// See [`std::primitive::u8::leading_ones`] (and similar for other integer types)
+let impl_9__leading_ones (x: u64) : u32 =
+  impl_9__leading_zeros (impl_9__wrapping_sub impl_9__MAX x <: u64)
+
+/// See [`std::primitive::u8::bit_width`] (and similar for other unsigned integer types)
+assume
+val impl_9__bit_width': x: u64 -> u32
+
+unfold
+let impl_9__bit_width = impl_9__bit_width'
+
+/// See [`std::primitive::u8::isolate_lowest_one`] (and similar for other integer types)
+let impl_9__isolate_lowest_one (x: u64) : u64 = x &. (impl_9__wrapping_neg x <: u64)
+
+/// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
+let impl_9__swap_bytes (x: u64) : u64 =
+  impl_9__from_le_bytes (impl_9__to_be_bytes x <: t_Array u8 (mk_usize 8))
+
+/// See [`std::primitive::u8::to_be`] (and similar for other integer types)
+let impl_9__to_be (x: u64) : u64 = impl_9__swap_bytes x
+
+/// See [`std::primitive::u8::to_le`] (and similar for other integer types)
+let impl_9__to_le (x: u64) : u64 = x
+
+/// See [`std::primitive::u8::from_be`] (and similar for other integer types)
+let impl_9__from_be (x: u64) : u64 = impl_9__swap_bytes x
+
+/// See [`std::primitive::u8::from_le`] (and similar for other integer types)
+let impl_9__from_le (x: u64) : u64 = x
+
+/// See [`std::primitive::u8::to_ne_bytes`] (and similar for other integer types)
+let impl_9__to_ne_bytes (x: u64) : t_Array u8 (mk_usize 8) = impl_9__to_le_bytes x
+
+/// See [`std::primitive::u8::from_ne_bytes`] (and similar for other integer types)
+let impl_9__from_ne_bytes (bytes: t_Array u8 (mk_usize 8)) : u64 = impl_9__from_le_bytes bytes
+
+/// See [`std::primitive::u8::wrapping_shl`] (and similar for other integer types)
+let impl_9__wrapping_shl (x: u64) (n: u32) : u64 = x <<! (n %! impl_9__BITS <: u32)
+
+/// See [`std::primitive::u8::wrapping_shr`] (and similar for other integer types)
+let impl_9__wrapping_shr (x: u64) (n: u32) : u64 = x >>! (n %! impl_9__BITS <: u32)
+
+/// See [`std::primitive::u8::isolate_highest_one`] (and similar for other integer types)
+let impl_9__isolate_highest_one (x: u64) : u64 =
+  x &.
+  (impl_9__wrapping_shr ((impl_9__MAX /! mk_u64 2 <: u64) +! mk_u64 1 <: u64)
+      (impl_9__leading_zeros x <: u32)
+    <:
+    u64)
+
+/// See [`std::primitive::u8::overflowing_shl`] (and similar for other integer types)
+let impl_9__overflowing_shl (x: u64) (n: u32) : (u64 & bool) =
+  impl_9__wrapping_shl x n, n >=. impl_9__BITS <: (u64 & bool)
+
+/// See [`std::primitive::u8::overflowing_shr`] (and similar for other integer types)
+let impl_9__overflowing_shr (x: u64) (n: u32) : (u64 & bool) =
+  impl_9__wrapping_shr x n, n >=. impl_9__BITS <: (u64 & bool)
+
+/// See [`std::primitive::u8::unbounded_shl`] (and similar for other integer types)
+let impl_9__unbounded_shl (x: u64) (n: u32) : u64 = if n <. impl_9__BITS then x <<! n else mk_u64 0
+
+/// See [`std::primitive::u8::unbounded_shr`] (and similar for other unsigned integer types)
+let impl_9__unbounded_shr (x: u64) (n: u32) : u64 = if n <. impl_9__BITS then x >>! n else mk_u64 0
+
+/// See [`std::primitive::u8::wrapping_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_9__wrapping_next_power_of_two (x: u64) : u64 =
+  if x <=. mk_u64 1
+  then mk_u64 1
+  else
+    impl_9__wrapping_add (impl_9__MAX >>!
+        ((impl_9__leading_zeros (x -! mk_u64 1 <: u64) <: u32) %! impl_9__BITS <: u32)
+        <:
+        u64)
+      (mk_u64 1)
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_9__reverse_bits (x: u64) : u64 =
+  let m1:u64 = impl_9__MAX /! mk_u64 3 in
+  let m2:u64 = impl_9__MAX /! mk_u64 5 in
+  let m4:u64 = impl_9__MAX /! mk_u64 17 in
+  let x:u64 =
+    (impl_9__wrapping_shl (x &. m1 <: u64) (mk_u32 1) <: u64) |.
+    ((impl_9__wrapping_shr x (mk_u32 1) <: u64) &. m1 <: u64)
+  in
+  let x:u64 =
+    (impl_9__wrapping_shl (x &. m2 <: u64) (mk_u32 2) <: u64) |.
+    ((impl_9__wrapping_shr x (mk_u32 2) <: u64) &. m2 <: u64)
+  in
+  let x:u64 =
+    (impl_9__wrapping_shl (x &. m4 <: u64) (mk_u32 4) <: u64) |.
+    ((impl_9__wrapping_shr x (mk_u32 4) <: u64) &. m4 <: u64)
+  in
+  impl_9__swap_bytes x
+
+/// See [`std::primitive::u8::widening_mul`] (and similar for other unsigned integer types)
+let impl_9__widening_mul (x y: u64) : (u64 & u64) =
+  let half:u32 = impl_9__BITS /! mk_u32 2 in
+  let lo_mask:u64 = impl_9__wrapping_shr impl_9__MAX half in
+  let xl:u64 = x &. lo_mask in
+  let xh:u64 = impl_9__wrapping_shr x half in
+  let yl:u64 = y &. lo_mask in
+  let yh:u64 = impl_9__wrapping_shr y half in
+  let ll:u64 = impl_9__wrapping_mul xl yl in
+  let lh:u64 = impl_9__wrapping_mul xl yh in
+  let hl:u64 = impl_9__wrapping_mul xh yl in
+  let hh:u64 = impl_9__wrapping_mul xh yh in
+  let mid:u64 =
+    impl_9__wrapping_add (impl_9__wrapping_add (impl_9__wrapping_shr ll half <: u64)
+          (lh &. lo_mask <: u64)
+        <:
+        u64)
+      (hl &. lo_mask <: u64)
+  in
+  let low:u64 =
+    (ll &. lo_mask <: u64) |. (impl_9__wrapping_shl (mid &. lo_mask <: u64) half <: u64)
+  in
+  let high:u64 =
+    impl_9__wrapping_add (impl_9__wrapping_add (impl_9__wrapping_add hh
+              (impl_9__wrapping_shr lh half <: u64)
+            <:
+            u64)
+          (impl_9__wrapping_shr hl half <: u64)
+        <:
+        u64)
+      (impl_9__wrapping_shr mid half <: u64)
+  in
+  low, high <: (u64 & u64)
+
+/// See [`std::primitive::u8::carrying_mul_add`] (and similar for other unsigned integer types)
+let impl_9__carrying_mul_add (x y carry add: u64) : (u64 & u64) =
+  let (low: u64), (high: u64) = impl_9__widening_mul x y in
+  let (low: u64), (c1: bool) = impl_9__overflowing_add low carry in
+  let (low: u64), (c2: bool) = impl_9__overflowing_add low add in
+  let high:u64 = impl_9__wrapping_add high (if c1 then mk_u64 1 else mk_u64 0) in
+  let high:u64 = impl_9__wrapping_add high (if c2 then mk_u64 1 else mk_u64 0) in
+  low, high <: (u64 & u64)
+
+/// See [`std::primitive::u8::carrying_mul`] (and similar for other unsigned integer types)
+let impl_9__carrying_mul (x y carry: u64) : (u64 & u64) =
+  impl_9__carrying_mul_add x y carry (mk_u64 0)
+
+/// See [`std::primitive::u8::carrying_add`] (and similar for other integer types)
+let impl_9__carrying_add (x y: u64) (carry: bool) : (u64 & bool) =
+  let (a: u64), (c1: bool) = impl_9__overflowing_add x y in
+  let (b: u64), (c2: bool) = impl_9__overflowing_add a (if carry then mk_u64 1 else mk_u64 0) in
+  b, c1 || c2 <: (u64 & bool)
+
+/// See [`std::primitive::u8::borrowing_sub`] (and similar for other integer types)
+let impl_9__borrowing_sub (x y: u64) (borrow: bool) : (u64 & bool) =
+  let (a: u64), (c1: bool) = impl_9__overflowing_sub x y in
+  let (b: u64), (c2: bool) = impl_9__overflowing_sub a (if borrow then mk_u64 1 else mk_u64 0) in
+  b, c1 || c2 <: (u64 & bool)
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_9__unchecked_add (x y: u64)
     : Prims.Pure u64
@@ -945,6 +2609,237 @@ let impl_9__div_ceil (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun 
   let d:u64 = x /! y in
   let r:u64 = x %! y in
   if r >. mk_u64 0 then d +! mk_u64 1 else d
+
+/// See [`std::primitive::u8::strict_neg`] (and similar for other integer types)
+let impl_9__strict_neg (x: u64) : Prims.Pure u64 (requires x =. mk_u64 0) (fun _ -> Prims.l_True) =
+  if x =. mk_u64 0 then mk_u64 0 else Core_models.Panicking.Internal.panic #u64 ()
+
+/// See [`std::primitive::u8::strict_pow`] (and similar for other integer types)
+let impl_9__strict_pow (x: u64) (exp: u32)
+    : Prims.Pure u64
+      (requires (impl_9__overflowing_pow x exp <: (u64 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #u64 () else result
+
+/// See [`std::primitive::u8::strict_add`] (and similar for other integer types)
+let impl_9__strict_add (x y: u64)
+    : Prims.Pure u64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u64 () else result
+
+/// See [`std::primitive::u8::strict_sub`] (and similar for other integer types)
+let impl_9__strict_sub (x y: u64) : Prims.Pure u64 (requires x >=. y) (fun _ -> Prims.l_True) =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u64 () else result
+
+/// See [`std::primitive::u8::strict_mul`] (and similar for other integer types)
+let impl_9__strict_mul (x y: u64)
+    : Prims.Pure u64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u64 () else result
+
+/// See [`std::primitive::u8::wrapping_div`] (and similar for other unsigned integer types)
+let impl_9__wrapping_div (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem`] (and similar for other unsigned integer types)
+let impl_9__wrapping_rem (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::wrapping_div_euclid`] (and similar for other unsigned integer types)
+let impl_9__wrapping_div_euclid (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem_euclid`] (and similar for other unsigned integer types)
+let impl_9__wrapping_rem_euclid (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::saturating_div`] (and similar for other unsigned integer types)
+let impl_9__saturating_div (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_div`] (and similar for other unsigned integer types)
+let impl_9__strict_div (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::strict_rem`] (and similar for other unsigned integer types)
+let impl_9__strict_rem (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  x %! y
+
+/// See [`std::primitive::u8::strict_div_euclid`] (and similar for other unsigned integer types)
+let impl_9__strict_div_euclid (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_rem_euclid`] (and similar for other unsigned integer types)
+let impl_9__strict_rem_euclid (x y: u64)
+    : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_euclid`] (and similar for other unsigned integer types)
+let impl_9__div_euclid (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::div_floor`] (and similar for other unsigned integer types)
+let impl_9__div_floor (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::u8::overflowing_div`] (and similar for other unsigned integer types)
+let impl_9__overflowing_div (x y: u64)
+    : Prims.Pure (u64 & bool) (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u64 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem`] (and similar for other unsigned integer types)
+let impl_9__overflowing_rem (x y: u64)
+    : Prims.Pure (u64 & bool) (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u64 & bool)
+
+/// See [`std::primitive::u8::overflowing_div_euclid`] (and similar for other unsigned integer types)
+let impl_9__overflowing_div_euclid (x y: u64)
+    : Prims.Pure (u64 & bool) (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u64 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem_euclid`] (and similar for other unsigned integer types)
+let impl_9__overflowing_rem_euclid (x y: u64)
+    : Prims.Pure (u64 & bool) (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u64 & bool)
+
+/// See [`std::primitive::u8::unchecked_div_exact`] (and similar for other unsigned integer types)
+let impl_9__unchecked_div_exact (x y: u64)
+    : Prims.Pure u64
+      (requires y <>. mk_u64 0 && (x %! y <: u64) =. mk_u64 0)
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::next_multiple_of`] (and similar for other unsigned integer types)
+let impl_9__next_multiple_of (x y: u64)
+    : Prims.Pure u64
+      (requires
+        y <>. mk_u64 0 &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine ((y -! (x %! y <: u64) <: u64) %! y <: u64)
+            <:
+            Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! ((y -! (x %! y <: u64) <: u64) %! y <: u64)
+
+/// See [`std::primitive::u8::strict_add_signed`] (and similar for other unsigned integer types)
+let impl_9__strict_add_signed (x: u64) (y: i64)
+    : Prims.Pure u64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_add_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u64 () else result
+
+/// See [`std::primitive::u8::strict_sub_signed`] (and similar for other unsigned integer types)
+let impl_9__strict_sub_signed (x: u64) (y: i64)
+    : Prims.Pure u64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_9__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_sub_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u64 () else result
+
+/// See [`std::primitive::u8::strict_shl`] (and similar for other integer types)
+let impl_9__strict_shl (x: u64) (n: u32)
+    : Prims.Pure u64 (requires n <. impl_9__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_9__BITS then x <<! n else Core_models.Panicking.Internal.panic #u64 ()
+
+/// See [`std::primitive::u8::strict_shr`] (and similar for other integer types)
+let impl_9__strict_shr (x: u64) (n: u32)
+    : Prims.Pure u64 (requires n <. impl_9__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_9__BITS then x >>! n else Core_models.Panicking.Internal.panic #u64 ()
+
+/// See [`std::primitive::u8::unchecked_shl`] (and similar for other integer types)
+let impl_9__unchecked_shl (x: u64) (n: u32)
+    : Prims.Pure u64 (requires n <. impl_9__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr`] (and similar for other integer types)
+let impl_9__unchecked_shr (x: u64) (n: u32)
+    : Prims.Pure u64 (requires n <. impl_9__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::unchecked_shl_exact`] (and similar for other unsigned integer types)
+let impl_9__unchecked_shl_exact (x: u64) (n: u32)
+    : Prims.Pure u64
+      (requires n <=. (impl_9__leading_zeros x <: u32) && n <. impl_9__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_9__unchecked_shr_exact (x: u64) (n: u32)
+    : Prims.Pure u64
+      (requires n <=. (impl_9__trailing_zeros x <: u32) && n <. impl_9__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::funnel_shl`] (and similar for other unsigned integer types)
+let impl_9__funnel_shl (x y: u64) (n: u32)
+    : Prims.Pure u64 (requires n <. impl_9__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then x
+  else
+    (impl_9__wrapping_shl x n <: u64) |. (impl_9__wrapping_shr y (impl_9__BITS -! n <: u32) <: u64)
+
+/// See [`std::primitive::u8::funnel_shr`] (and similar for other unsigned integer types)
+let impl_9__funnel_shr (x y: u64) (n: u32)
+    : Prims.Pure u64 (requires n <. impl_9__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then y
+  else
+    (impl_9__wrapping_shr y n <: u64) |. (impl_9__wrapping_shl x (impl_9__BITS -! n <: u32) <: u64)
+
+/// See [`std::primitive::u8::unchecked_disjoint_bitor`] (and similar for other unsigned integer types)
+let impl_9__unchecked_disjoint_bitor (x y: u64)
+    : Prims.Pure u64 (requires (x &. y <: u64) =. mk_u64 0) (fun _ -> Prims.l_True) = x |. y
+
+/// See [`std::primitive::u8::next_power_of_two`] (and similar for other unsigned integer types)
+assume
+val impl_9__next_power_of_two': x: u64
+  -> Prims.Pure u64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 2) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        ((Rust_primitives.Hax.Int.from_machine impl_9__MAX <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 1) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl_9__next_power_of_two = impl_9__next_power_of_two'
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_10__MIN: u128 = mk_u128 0
@@ -1063,6 +2958,238 @@ let impl_10__is_multiple_of (x y: u128) : bool =
 let impl_10__wrapping_neg (x: u128) : u128 =
   Rust_primitives.Arithmetic.wrapping_sub_u128 (mk_u128 0) x
 
+/// See [`std::primitive::u8::min_value`] (and similar for other integer types)
+let impl_10__min_value (_: Prims.unit) : u128 = impl_10__MIN
+
+/// See [`std::primitive::u8::max_value`] (and similar for other integer types)
+let impl_10__max_value (_: Prims.unit) : u128 = impl_10__MAX
+
+/// See [`std::primitive::u8::cast_signed`] (and similar for other unsigned integer types)
+let impl_10__cast_signed (x: u128) : i128 = cast (x <: u128) <: i128
+
+/// See [`std::primitive::u8::count_zeros`] (and similar for other integer types)
+let impl_10__count_zeros (x: u128) : u32 = impl_10__BITS -! (impl_10__count_ones x <: u32)
+
+/// See [`std::primitive::u8::overflowing_neg`] (and similar for other integer types)
+let impl_10__overflowing_neg (x: u128) : (u128 & bool) =
+  impl_10__wrapping_neg x, x <>. mk_u128 0 <: (u128 & bool)
+
+/// See [`std::primitive::u8::wrapping_pow`] (and similar for other integer types)
+let impl_10__wrapping_pow (x: u128) (exp: u32) : u128 =
+  let (result: u128), (_: bool) = impl_10__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::u8::saturating_pow`] (and similar for other unsigned integer types)
+let impl_10__saturating_pow (x: u128) (exp: u32) : u128 =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_pow x exp in
+  if overflowed then impl_10__MAX else result
+
+/// See [`std::primitive::u8::abs_diff`] (and similar for other unsigned integer types)
+let impl_10__abs_diff (x y: u128) : u128 = if x <. y then y -! x else x -! y
+
+/// See [`std::primitive::u8::midpoint`] (and similar for other unsigned integer types)
+let impl_10__midpoint (x y: u128) : u128 =
+  impl_10__wrapping_add ((x ^. y <: u128) >>! mk_i32 1 <: u128) (x &. y <: u128)
+
+/// See [`std::primitive::u8::wrapping_add_signed`] (and similar for other unsigned integer types)
+let impl_10__wrapping_add_signed (x: u128) (y: i128) : u128 =
+  impl_10__wrapping_add x (cast (y <: i128) <: u128)
+
+/// See [`std::primitive::u8::wrapping_sub_signed`] (and similar for other unsigned integer types)
+let impl_10__wrapping_sub_signed (x: u128) (y: i128) : u128 =
+  impl_10__wrapping_sub x (cast (y <: i128) <: u128)
+
+/// See [`std::primitive::u8::overflowing_add_signed`] (and similar for other unsigned integer types)
+let impl_10__overflowing_add_signed (x: u128) (y: i128) : (u128 & bool) =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_add x (cast (y <: i128) <: u128) in
+  result, overflowed <>. (y <. mk_i128 0 <: bool) <: (u128 & bool)
+
+/// See [`std::primitive::u8::overflowing_sub_signed`] (and similar for other unsigned integer types)
+let impl_10__overflowing_sub_signed (x: u128) (y: i128) : (u128 & bool) =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_sub x (cast (y <: i128) <: u128) in
+  result, overflowed <>. (y <. mk_i128 0 <: bool) <: (u128 & bool)
+
+/// See [`std::primitive::u8::saturating_add_signed`] (and similar for other unsigned integer types)
+let impl_10__saturating_add_signed (x: u128) (y: i128) : u128 =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_add_signed x y in
+  if ~.overflowed then result else if y <. mk_i128 0 then impl_10__MIN else impl_10__MAX
+
+/// See [`std::primitive::u8::saturating_sub_signed`] (and similar for other unsigned integer types)
+let impl_10__saturating_sub_signed (x: u128) (y: i128) : u128 =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_sub_signed x y in
+  if ~.overflowed then result else if y <. mk_i128 0 then impl_10__MAX else impl_10__MIN
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+let impl_10__trailing_zeros (x: u128) : u32 =
+  if x =. mk_u128 0
+  then impl_10__BITS
+  else
+    impl_10__count_ones (impl_10__wrapping_sub (x &. (impl_10__wrapping_neg x <: u128) <: u128)
+          (mk_u128 1)
+        <:
+        u128)
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+let impl_10__trailing_ones (x: u128) : u32 =
+  impl_10__trailing_zeros (impl_10__wrapping_sub impl_10__MAX x <: u128)
+
+/// See [`std::primitive::u8::leading_ones`] (and similar for other integer types)
+let impl_10__leading_ones (x: u128) : u32 =
+  impl_10__leading_zeros (impl_10__wrapping_sub impl_10__MAX x <: u128)
+
+/// See [`std::primitive::u8::bit_width`] (and similar for other unsigned integer types)
+assume
+val impl_10__bit_width': x: u128 -> u32
+
+unfold
+let impl_10__bit_width = impl_10__bit_width'
+
+/// See [`std::primitive::u8::isolate_lowest_one`] (and similar for other integer types)
+let impl_10__isolate_lowest_one (x: u128) : u128 = x &. (impl_10__wrapping_neg x <: u128)
+
+/// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
+let impl_10__swap_bytes (x: u128) : u128 =
+  impl_10__from_le_bytes (impl_10__to_be_bytes x <: t_Array u8 (mk_usize 16))
+
+/// See [`std::primitive::u8::to_be`] (and similar for other integer types)
+let impl_10__to_be (x: u128) : u128 = impl_10__swap_bytes x
+
+/// See [`std::primitive::u8::to_le`] (and similar for other integer types)
+let impl_10__to_le (x: u128) : u128 = x
+
+/// See [`std::primitive::u8::from_be`] (and similar for other integer types)
+let impl_10__from_be (x: u128) : u128 = impl_10__swap_bytes x
+
+/// See [`std::primitive::u8::from_le`] (and similar for other integer types)
+let impl_10__from_le (x: u128) : u128 = x
+
+/// See [`std::primitive::u8::to_ne_bytes`] (and similar for other integer types)
+let impl_10__to_ne_bytes (x: u128) : t_Array u8 (mk_usize 16) = impl_10__to_le_bytes x
+
+/// See [`std::primitive::u8::from_ne_bytes`] (and similar for other integer types)
+let impl_10__from_ne_bytes (bytes: t_Array u8 (mk_usize 16)) : u128 = impl_10__from_le_bytes bytes
+
+/// See [`std::primitive::u8::wrapping_shl`] (and similar for other integer types)
+let impl_10__wrapping_shl (x: u128) (n: u32) : u128 = x <<! (n %! impl_10__BITS <: u32)
+
+/// See [`std::primitive::u8::wrapping_shr`] (and similar for other integer types)
+let impl_10__wrapping_shr (x: u128) (n: u32) : u128 = x >>! (n %! impl_10__BITS <: u32)
+
+/// See [`std::primitive::u8::isolate_highest_one`] (and similar for other integer types)
+let impl_10__isolate_highest_one (x: u128) : u128 =
+  x &.
+  (impl_10__wrapping_shr ((impl_10__MAX /! mk_u128 2 <: u128) +! mk_u128 1 <: u128)
+      (impl_10__leading_zeros x <: u32)
+    <:
+    u128)
+
+/// See [`std::primitive::u8::overflowing_shl`] (and similar for other integer types)
+let impl_10__overflowing_shl (x: u128) (n: u32) : (u128 & bool) =
+  impl_10__wrapping_shl x n, n >=. impl_10__BITS <: (u128 & bool)
+
+/// See [`std::primitive::u8::overflowing_shr`] (and similar for other integer types)
+let impl_10__overflowing_shr (x: u128) (n: u32) : (u128 & bool) =
+  impl_10__wrapping_shr x n, n >=. impl_10__BITS <: (u128 & bool)
+
+/// See [`std::primitive::u8::unbounded_shl`] (and similar for other integer types)
+let impl_10__unbounded_shl (x: u128) (n: u32) : u128 =
+  if n <. impl_10__BITS then x <<! n else mk_u128 0
+
+/// See [`std::primitive::u8::unbounded_shr`] (and similar for other unsigned integer types)
+let impl_10__unbounded_shr (x: u128) (n: u32) : u128 =
+  if n <. impl_10__BITS then x >>! n else mk_u128 0
+
+/// See [`std::primitive::u8::wrapping_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_10__wrapping_next_power_of_two (x: u128) : u128 =
+  if x <=. mk_u128 1
+  then mk_u128 1
+  else
+    impl_10__wrapping_add (impl_10__MAX >>!
+        ((impl_10__leading_zeros (x -! mk_u128 1 <: u128) <: u32) %! impl_10__BITS <: u32)
+        <:
+        u128)
+      (mk_u128 1)
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_10__reverse_bits (x: u128) : u128 =
+  let m1:u128 = impl_10__MAX /! mk_u128 3 in
+  let m2:u128 = impl_10__MAX /! mk_u128 5 in
+  let m4:u128 = impl_10__MAX /! mk_u128 17 in
+  let x:u128 =
+    (impl_10__wrapping_shl (x &. m1 <: u128) (mk_u32 1) <: u128) |.
+    ((impl_10__wrapping_shr x (mk_u32 1) <: u128) &. m1 <: u128)
+  in
+  let x:u128 =
+    (impl_10__wrapping_shl (x &. m2 <: u128) (mk_u32 2) <: u128) |.
+    ((impl_10__wrapping_shr x (mk_u32 2) <: u128) &. m2 <: u128)
+  in
+  let x:u128 =
+    (impl_10__wrapping_shl (x &. m4 <: u128) (mk_u32 4) <: u128) |.
+    ((impl_10__wrapping_shr x (mk_u32 4) <: u128) &. m4 <: u128)
+  in
+  impl_10__swap_bytes x
+
+/// See [`std::primitive::u8::widening_mul`] (and similar for other unsigned integer types)
+let impl_10__widening_mul (x y: u128) : (u128 & u128) =
+  let half:u32 = impl_10__BITS /! mk_u32 2 in
+  let lo_mask:u128 = impl_10__wrapping_shr impl_10__MAX half in
+  let xl:u128 = x &. lo_mask in
+  let xh:u128 = impl_10__wrapping_shr x half in
+  let yl:u128 = y &. lo_mask in
+  let yh:u128 = impl_10__wrapping_shr y half in
+  let ll:u128 = impl_10__wrapping_mul xl yl in
+  let lh:u128 = impl_10__wrapping_mul xl yh in
+  let hl:u128 = impl_10__wrapping_mul xh yl in
+  let hh:u128 = impl_10__wrapping_mul xh yh in
+  let mid:u128 =
+    impl_10__wrapping_add (impl_10__wrapping_add (impl_10__wrapping_shr ll half <: u128)
+          (lh &. lo_mask <: u128)
+        <:
+        u128)
+      (hl &. lo_mask <: u128)
+  in
+  let low:u128 =
+    (ll &. lo_mask <: u128) |. (impl_10__wrapping_shl (mid &. lo_mask <: u128) half <: u128)
+  in
+  let high:u128 =
+    impl_10__wrapping_add (impl_10__wrapping_add (impl_10__wrapping_add hh
+              (impl_10__wrapping_shr lh half <: u128)
+            <:
+            u128)
+          (impl_10__wrapping_shr hl half <: u128)
+        <:
+        u128)
+      (impl_10__wrapping_shr mid half <: u128)
+  in
+  low, high <: (u128 & u128)
+
+/// See [`std::primitive::u8::carrying_mul_add`] (and similar for other unsigned integer types)
+let impl_10__carrying_mul_add (x y carry add: u128) : (u128 & u128) =
+  let (low: u128), (high: u128) = impl_10__widening_mul x y in
+  let (low: u128), (c1: bool) = impl_10__overflowing_add low carry in
+  let (low: u128), (c2: bool) = impl_10__overflowing_add low add in
+  let high:u128 = impl_10__wrapping_add high (if c1 then mk_u128 1 else mk_u128 0) in
+  let high:u128 = impl_10__wrapping_add high (if c2 then mk_u128 1 else mk_u128 0) in
+  low, high <: (u128 & u128)
+
+/// See [`std::primitive::u8::carrying_mul`] (and similar for other unsigned integer types)
+let impl_10__carrying_mul (x y carry: u128) : (u128 & u128) =
+  impl_10__carrying_mul_add x y carry (mk_u128 0)
+
+/// See [`std::primitive::u8::carrying_add`] (and similar for other integer types)
+let impl_10__carrying_add (x y: u128) (carry: bool) : (u128 & bool) =
+  let (a: u128), (c1: bool) = impl_10__overflowing_add x y in
+  let (b: u128), (c2: bool) = impl_10__overflowing_add a (if carry then mk_u128 1 else mk_u128 0) in
+  b, c1 || c2 <: (u128 & bool)
+
+/// See [`std::primitive::u8::borrowing_sub`] (and similar for other integer types)
+let impl_10__borrowing_sub (x y: u128) (borrow: bool) : (u128 & bool) =
+  let (a: u128), (c1: bool) = impl_10__overflowing_sub x y in
+  let (b: u128), (c2: bool) =
+    impl_10__overflowing_sub a (if borrow then mk_u128 1 else mk_u128 0)
+  in
+  b, c1 || c2 <: (u128 & bool)
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_10__unchecked_add (x y: u128)
     : Prims.Pure u128
@@ -1108,6 +3235,240 @@ let impl_10__div_ceil (x y: u128)
   let d:u128 = x /! y in
   let r:u128 = x %! y in
   if r >. mk_u128 0 then d +! mk_u128 1 else d
+
+/// See [`std::primitive::u8::strict_neg`] (and similar for other integer types)
+let impl_10__strict_neg (x: u128)
+    : Prims.Pure u128 (requires x =. mk_u128 0) (fun _ -> Prims.l_True) =
+  if x =. mk_u128 0 then mk_u128 0 else Core_models.Panicking.Internal.panic #u128 ()
+
+/// See [`std::primitive::u8::strict_pow`] (and similar for other integer types)
+let impl_10__strict_pow (x: u128) (exp: u32)
+    : Prims.Pure u128
+      (requires (impl_10__overflowing_pow x exp <: (u128 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #u128 () else result
+
+/// See [`std::primitive::u8::strict_add`] (and similar for other integer types)
+let impl_10__strict_add (x y: u128)
+    : Prims.Pure u128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u128 () else result
+
+/// See [`std::primitive::u8::strict_sub`] (and similar for other integer types)
+let impl_10__strict_sub (x y: u128) : Prims.Pure u128 (requires x >=. y) (fun _ -> Prims.l_True) =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u128 () else result
+
+/// See [`std::primitive::u8::strict_mul`] (and similar for other integer types)
+let impl_10__strict_mul (x y: u128)
+    : Prims.Pure u128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u128 () else result
+
+/// See [`std::primitive::u8::wrapping_div`] (and similar for other unsigned integer types)
+let impl_10__wrapping_div (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem`] (and similar for other unsigned integer types)
+let impl_10__wrapping_rem (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::wrapping_div_euclid`] (and similar for other unsigned integer types)
+let impl_10__wrapping_div_euclid (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem_euclid`] (and similar for other unsigned integer types)
+let impl_10__wrapping_rem_euclid (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::saturating_div`] (and similar for other unsigned integer types)
+let impl_10__saturating_div (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_div`] (and similar for other unsigned integer types)
+let impl_10__strict_div (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_rem`] (and similar for other unsigned integer types)
+let impl_10__strict_rem (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::strict_div_euclid`] (and similar for other unsigned integer types)
+let impl_10__strict_div_euclid (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_rem_euclid`] (and similar for other unsigned integer types)
+let impl_10__strict_rem_euclid (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_euclid`] (and similar for other unsigned integer types)
+let impl_10__div_euclid (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::div_floor`] (and similar for other unsigned integer types)
+let impl_10__div_floor (x y: u128)
+    : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::overflowing_div`] (and similar for other unsigned integer types)
+let impl_10__overflowing_div (x y: u128)
+    : Prims.Pure (u128 & bool) (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u128 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem`] (and similar for other unsigned integer types)
+let impl_10__overflowing_rem (x y: u128)
+    : Prims.Pure (u128 & bool) (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u128 & bool)
+
+/// See [`std::primitive::u8::overflowing_div_euclid`] (and similar for other unsigned integer types)
+let impl_10__overflowing_div_euclid (x y: u128)
+    : Prims.Pure (u128 & bool) (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (u128 & bool)
+
+/// See [`std::primitive::u8::overflowing_rem_euclid`] (and similar for other unsigned integer types)
+let impl_10__overflowing_rem_euclid (x y: u128)
+    : Prims.Pure (u128 & bool) (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (u128 & bool)
+
+/// See [`std::primitive::u8::unchecked_div_exact`] (and similar for other unsigned integer types)
+let impl_10__unchecked_div_exact (x y: u128)
+    : Prims.Pure u128
+      (requires y <>. mk_u128 0 && (x %! y <: u128) =. mk_u128 0)
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::next_multiple_of`] (and similar for other unsigned integer types)
+let impl_10__next_multiple_of (x y: u128)
+    : Prims.Pure u128
+      (requires
+        y <>. mk_u128 0 &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine ((y -! (x %! y <: u128) <: u128) %! y <: u128)
+            <:
+            Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! ((y -! (x %! y <: u128) <: u128) %! y <: u128)
+
+/// See [`std::primitive::u8::strict_add_signed`] (and similar for other unsigned integer types)
+let impl_10__strict_add_signed (x: u128) (y: i128)
+    : Prims.Pure u128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_add_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u128 () else result
+
+/// See [`std::primitive::u8::strict_sub_signed`] (and similar for other unsigned integer types)
+let impl_10__strict_sub_signed (x: u128) (y: i128)
+    : Prims.Pure u128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_10__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_sub_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #u128 () else result
+
+/// See [`std::primitive::u8::strict_shl`] (and similar for other integer types)
+let impl_10__strict_shl (x: u128) (n: u32)
+    : Prims.Pure u128 (requires n <. impl_10__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_10__BITS then x <<! n else Core_models.Panicking.Internal.panic #u128 ()
+
+/// See [`std::primitive::u8::strict_shr`] (and similar for other integer types)
+let impl_10__strict_shr (x: u128) (n: u32)
+    : Prims.Pure u128 (requires n <. impl_10__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_10__BITS then x >>! n else Core_models.Panicking.Internal.panic #u128 ()
+
+/// See [`std::primitive::u8::unchecked_shl`] (and similar for other integer types)
+let impl_10__unchecked_shl (x: u128) (n: u32)
+    : Prims.Pure u128 (requires n <. impl_10__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr`] (and similar for other integer types)
+let impl_10__unchecked_shr (x: u128) (n: u32)
+    : Prims.Pure u128 (requires n <. impl_10__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::unchecked_shl_exact`] (and similar for other unsigned integer types)
+let impl_10__unchecked_shl_exact (x: u128) (n: u32)
+    : Prims.Pure u128
+      (requires n <=. (impl_10__leading_zeros x <: u32) && n <. impl_10__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_10__unchecked_shr_exact (x: u128) (n: u32)
+    : Prims.Pure u128
+      (requires n <=. (impl_10__trailing_zeros x <: u32) && n <. impl_10__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::funnel_shl`] (and similar for other unsigned integer types)
+let impl_10__funnel_shl (x y: u128) (n: u32)
+    : Prims.Pure u128 (requires n <. impl_10__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then x
+  else
+    (impl_10__wrapping_shl x n <: u128) |.
+    (impl_10__wrapping_shr y (impl_10__BITS -! n <: u32) <: u128)
+
+/// See [`std::primitive::u8::funnel_shr`] (and similar for other unsigned integer types)
+let impl_10__funnel_shr (x y: u128) (n: u32)
+    : Prims.Pure u128 (requires n <. impl_10__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then y
+  else
+    (impl_10__wrapping_shr y n <: u128) |.
+    (impl_10__wrapping_shl x (impl_10__BITS -! n <: u32) <: u128)
+
+/// See [`std::primitive::u8::unchecked_disjoint_bitor`] (and similar for other unsigned integer types)
+let impl_10__unchecked_disjoint_bitor (x y: u128)
+    : Prims.Pure u128 (requires (x &. y <: u128) =. mk_u128 0) (fun _ -> Prims.l_True) = x |. y
+
+/// See [`std::primitive::u8::next_power_of_two`] (and similar for other unsigned integer types)
+assume
+val impl_10__next_power_of_two': x: u128
+  -> Prims.Pure u128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 2) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        ((Rust_primitives.Hax.Int.from_machine impl_10__MAX <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 1) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl_10__next_power_of_two = impl_10__next_power_of_two'
 
 /// See [`std::primitive::u8::MIN`] (and similar for other unsigned integer types)
 let impl_11__MIN: usize = mk_usize 0
@@ -1229,6 +3590,244 @@ let impl_11__is_multiple_of (x y: usize) : bool =
 let impl_11__wrapping_neg (x: usize) : usize =
   Rust_primitives.Arithmetic.wrapping_sub_usize (mk_usize 0) x
 
+/// See [`std::primitive::u8::min_value`] (and similar for other integer types)
+let impl_11__min_value (_: Prims.unit) : usize = impl_11__MIN
+
+/// See [`std::primitive::u8::max_value`] (and similar for other integer types)
+let impl_11__max_value (_: Prims.unit) : usize = impl_11__MAX
+
+/// See [`std::primitive::u8::cast_signed`] (and similar for other unsigned integer types)
+let impl_11__cast_signed (x: usize) : isize = cast (x <: usize) <: isize
+
+/// See [`std::primitive::u8::count_zeros`] (and similar for other integer types)
+let impl_11__count_zeros (x: usize) : u32 = impl_11__BITS -! (impl_11__count_ones x <: u32)
+
+/// See [`std::primitive::u8::overflowing_neg`] (and similar for other integer types)
+let impl_11__overflowing_neg (x: usize) : (usize & bool) =
+  impl_11__wrapping_neg x, x <>. mk_usize 0 <: (usize & bool)
+
+/// See [`std::primitive::u8::wrapping_pow`] (and similar for other integer types)
+let impl_11__wrapping_pow (x: usize) (exp: u32) : usize =
+  let (result: usize), (_: bool) = impl_11__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::u8::saturating_pow`] (and similar for other unsigned integer types)
+let impl_11__saturating_pow (x: usize) (exp: u32) : usize =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_pow x exp in
+  if overflowed then impl_11__MAX else result
+
+/// See [`std::primitive::u8::abs_diff`] (and similar for other unsigned integer types)
+let impl_11__abs_diff (x y: usize) : usize = if x <. y then y -! x else x -! y
+
+/// See [`std::primitive::u8::midpoint`] (and similar for other unsigned integer types)
+let impl_11__midpoint (x y: usize) : usize =
+  impl_11__wrapping_add ((x ^. y <: usize) >>! mk_i32 1 <: usize) (x &. y <: usize)
+
+/// See [`std::primitive::u8::wrapping_add_signed`] (and similar for other unsigned integer types)
+let impl_11__wrapping_add_signed (x: usize) (y: isize) : usize =
+  impl_11__wrapping_add x (cast (y <: isize) <: usize)
+
+/// See [`std::primitive::u8::wrapping_sub_signed`] (and similar for other unsigned integer types)
+let impl_11__wrapping_sub_signed (x: usize) (y: isize) : usize =
+  impl_11__wrapping_sub x (cast (y <: isize) <: usize)
+
+/// See [`std::primitive::u8::overflowing_add_signed`] (and similar for other unsigned integer types)
+let impl_11__overflowing_add_signed (x: usize) (y: isize) : (usize & bool) =
+  let (result: usize), (overflowed: bool) =
+    impl_11__overflowing_add x (cast (y <: isize) <: usize)
+  in
+  result, overflowed <>. (y <. mk_isize 0 <: bool) <: (usize & bool)
+
+/// See [`std::primitive::u8::overflowing_sub_signed`] (and similar for other unsigned integer types)
+let impl_11__overflowing_sub_signed (x: usize) (y: isize) : (usize & bool) =
+  let (result: usize), (overflowed: bool) =
+    impl_11__overflowing_sub x (cast (y <: isize) <: usize)
+  in
+  result, overflowed <>. (y <. mk_isize 0 <: bool) <: (usize & bool)
+
+/// See [`std::primitive::u8::saturating_add_signed`] (and similar for other unsigned integer types)
+let impl_11__saturating_add_signed (x: usize) (y: isize) : usize =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_add_signed x y in
+  if ~.overflowed then result else if y <. mk_isize 0 then impl_11__MIN else impl_11__MAX
+
+/// See [`std::primitive::u8::saturating_sub_signed`] (and similar for other unsigned integer types)
+let impl_11__saturating_sub_signed (x: usize) (y: isize) : usize =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_sub_signed x y in
+  if ~.overflowed then result else if y <. mk_isize 0 then impl_11__MAX else impl_11__MIN
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
+let impl_11__trailing_zeros (x: usize) : u32 =
+  if x =. mk_usize 0
+  then impl_11__BITS
+  else
+    impl_11__count_ones (impl_11__wrapping_sub (x &. (impl_11__wrapping_neg x <: usize) <: usize)
+          (mk_usize 1)
+        <:
+        usize)
+
+/// See [`std::primitive::u8::trailing_ones`] (and similar for other integer types)
+let impl_11__trailing_ones (x: usize) : u32 =
+  impl_11__trailing_zeros (impl_11__wrapping_sub impl_11__MAX x <: usize)
+
+/// See [`std::primitive::u8::leading_ones`] (and similar for other integer types)
+let impl_11__leading_ones (x: usize) : u32 =
+  impl_11__leading_zeros (impl_11__wrapping_sub impl_11__MAX x <: usize)
+
+/// See [`std::primitive::u8::bit_width`] (and similar for other unsigned integer types)
+assume
+val impl_11__bit_width': x: usize -> u32
+
+unfold
+let impl_11__bit_width = impl_11__bit_width'
+
+/// See [`std::primitive::u8::isolate_lowest_one`] (and similar for other integer types)
+let impl_11__isolate_lowest_one (x: usize) : usize = x &. (impl_11__wrapping_neg x <: usize)
+
+/// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
+let impl_11__swap_bytes (x: usize) : usize =
+  impl_11__from_le_bytes (impl_11__to_be_bytes x <: t_Array u8 (mk_usize 8))
+
+/// See [`std::primitive::u8::to_be`] (and similar for other integer types)
+let impl_11__to_be (x: usize) : usize = impl_11__swap_bytes x
+
+/// See [`std::primitive::u8::to_le`] (and similar for other integer types)
+let impl_11__to_le (x: usize) : usize = x
+
+/// See [`std::primitive::u8::from_be`] (and similar for other integer types)
+let impl_11__from_be (x: usize) : usize = impl_11__swap_bytes x
+
+/// See [`std::primitive::u8::from_le`] (and similar for other integer types)
+let impl_11__from_le (x: usize) : usize = x
+
+/// See [`std::primitive::u8::to_ne_bytes`] (and similar for other integer types)
+let impl_11__to_ne_bytes (x: usize) : t_Array u8 (mk_usize 8) = impl_11__to_le_bytes x
+
+/// See [`std::primitive::u8::from_ne_bytes`] (and similar for other integer types)
+let impl_11__from_ne_bytes (bytes: t_Array u8 (mk_usize 8)) : usize = impl_11__from_le_bytes bytes
+
+/// See [`std::primitive::u8::wrapping_shl`] (and similar for other integer types)
+let impl_11__wrapping_shl (x: usize) (n: u32) : usize = x <<! (n %! impl_11__BITS <: u32)
+
+/// See [`std::primitive::u8::wrapping_shr`] (and similar for other integer types)
+let impl_11__wrapping_shr (x: usize) (n: u32) : usize = x >>! (n %! impl_11__BITS <: u32)
+
+/// See [`std::primitive::u8::isolate_highest_one`] (and similar for other integer types)
+let impl_11__isolate_highest_one (x: usize) : usize =
+  x &.
+  (impl_11__wrapping_shr ((impl_11__MAX /! mk_usize 2 <: usize) +! mk_usize 1 <: usize)
+      (impl_11__leading_zeros x <: u32)
+    <:
+    usize)
+
+/// See [`std::primitive::u8::overflowing_shl`] (and similar for other integer types)
+let impl_11__overflowing_shl (x: usize) (n: u32) : (usize & bool) =
+  impl_11__wrapping_shl x n, n >=. impl_11__BITS <: (usize & bool)
+
+/// See [`std::primitive::u8::overflowing_shr`] (and similar for other integer types)
+let impl_11__overflowing_shr (x: usize) (n: u32) : (usize & bool) =
+  impl_11__wrapping_shr x n, n >=. impl_11__BITS <: (usize & bool)
+
+/// See [`std::primitive::u8::unbounded_shl`] (and similar for other integer types)
+let impl_11__unbounded_shl (x: usize) (n: u32) : usize =
+  if n <. impl_11__BITS then x <<! n else mk_usize 0
+
+/// See [`std::primitive::u8::unbounded_shr`] (and similar for other unsigned integer types)
+let impl_11__unbounded_shr (x: usize) (n: u32) : usize =
+  if n <. impl_11__BITS then x >>! n else mk_usize 0
+
+/// See [`std::primitive::u8::wrapping_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_11__wrapping_next_power_of_two (x: usize) : usize =
+  if x <=. mk_usize 1
+  then mk_usize 1
+  else
+    impl_11__wrapping_add (impl_11__MAX >>!
+        ((impl_11__leading_zeros (x -! mk_usize 1 <: usize) <: u32) %! impl_11__BITS <: u32)
+        <:
+        usize)
+      (mk_usize 1)
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_11__reverse_bits (x: usize) : usize =
+  let m1:usize = impl_11__MAX /! mk_usize 3 in
+  let m2:usize = impl_11__MAX /! mk_usize 5 in
+  let m4:usize = impl_11__MAX /! mk_usize 17 in
+  let x:usize =
+    (impl_11__wrapping_shl (x &. m1 <: usize) (mk_u32 1) <: usize) |.
+    ((impl_11__wrapping_shr x (mk_u32 1) <: usize) &. m1 <: usize)
+  in
+  let x:usize =
+    (impl_11__wrapping_shl (x &. m2 <: usize) (mk_u32 2) <: usize) |.
+    ((impl_11__wrapping_shr x (mk_u32 2) <: usize) &. m2 <: usize)
+  in
+  let x:usize =
+    (impl_11__wrapping_shl (x &. m4 <: usize) (mk_u32 4) <: usize) |.
+    ((impl_11__wrapping_shr x (mk_u32 4) <: usize) &. m4 <: usize)
+  in
+  impl_11__swap_bytes x
+
+/// See [`std::primitive::u8::widening_mul`] (and similar for other unsigned integer types)
+let impl_11__widening_mul (x y: usize) : (usize & usize) =
+  let half:u32 = impl_11__BITS /! mk_u32 2 in
+  let lo_mask:usize = impl_11__wrapping_shr impl_11__MAX half in
+  let xl:usize = x &. lo_mask in
+  let xh:usize = impl_11__wrapping_shr x half in
+  let yl:usize = y &. lo_mask in
+  let yh:usize = impl_11__wrapping_shr y half in
+  let ll:usize = impl_11__wrapping_mul xl yl in
+  let lh:usize = impl_11__wrapping_mul xl yh in
+  let hl:usize = impl_11__wrapping_mul xh yl in
+  let hh:usize = impl_11__wrapping_mul xh yh in
+  let mid:usize =
+    impl_11__wrapping_add (impl_11__wrapping_add (impl_11__wrapping_shr ll half <: usize)
+          (lh &. lo_mask <: usize)
+        <:
+        usize)
+      (hl &. lo_mask <: usize)
+  in
+  let low:usize =
+    (ll &. lo_mask <: usize) |. (impl_11__wrapping_shl (mid &. lo_mask <: usize) half <: usize)
+  in
+  let high:usize =
+    impl_11__wrapping_add (impl_11__wrapping_add (impl_11__wrapping_add hh
+              (impl_11__wrapping_shr lh half <: usize)
+            <:
+            usize)
+          (impl_11__wrapping_shr hl half <: usize)
+        <:
+        usize)
+      (impl_11__wrapping_shr mid half <: usize)
+  in
+  low, high <: (usize & usize)
+
+/// See [`std::primitive::u8::carrying_mul_add`] (and similar for other unsigned integer types)
+let impl_11__carrying_mul_add (x y carry add: usize) : (usize & usize) =
+  let (low: usize), (high: usize) = impl_11__widening_mul x y in
+  let (low: usize), (c1: bool) = impl_11__overflowing_add low carry in
+  let (low: usize), (c2: bool) = impl_11__overflowing_add low add in
+  let high:usize = impl_11__wrapping_add high (if c1 then mk_usize 1 else mk_usize 0) in
+  let high:usize = impl_11__wrapping_add high (if c2 then mk_usize 1 else mk_usize 0) in
+  low, high <: (usize & usize)
+
+/// See [`std::primitive::u8::carrying_mul`] (and similar for other unsigned integer types)
+let impl_11__carrying_mul (x y carry: usize) : (usize & usize) =
+  impl_11__carrying_mul_add x y carry (mk_usize 0)
+
+/// See [`std::primitive::u8::carrying_add`] (and similar for other integer types)
+let impl_11__carrying_add (x y: usize) (carry: bool) : (usize & bool) =
+  let (a: usize), (c1: bool) = impl_11__overflowing_add x y in
+  let (b: usize), (c2: bool) =
+    impl_11__overflowing_add a (if carry then mk_usize 1 else mk_usize 0)
+  in
+  b, c1 || c2 <: (usize & bool)
+
+/// See [`std::primitive::u8::borrowing_sub`] (and similar for other integer types)
+let impl_11__borrowing_sub (x y: usize) (borrow: bool) : (usize & bool) =
+  let (a: usize), (c1: bool) = impl_11__overflowing_sub x y in
+  let (b: usize), (c2: bool) =
+    impl_11__overflowing_sub a (if borrow then mk_usize 1 else mk_usize 0)
+  in
+  b, c1 || c2 <: (usize & bool)
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_11__unchecked_add (x y: usize)
     : Prims.Pure usize
@@ -1274,6 +3873,240 @@ let impl_11__div_ceil (x y: usize)
   let d:usize = x /! y in
   let r:usize = x %! y in
   if r >. mk_usize 0 then d +! mk_usize 1 else d
+
+/// See [`std::primitive::u8::strict_neg`] (and similar for other integer types)
+let impl_11__strict_neg (x: usize)
+    : Prims.Pure usize (requires x =. mk_usize 0) (fun _ -> Prims.l_True) =
+  if x =. mk_usize 0 then mk_usize 0 else Core_models.Panicking.Internal.panic #usize ()
+
+/// See [`std::primitive::u8::strict_pow`] (and similar for other integer types)
+let impl_11__strict_pow (x: usize) (exp: u32)
+    : Prims.Pure usize
+      (requires (impl_11__overflowing_pow x exp <: (usize & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #usize () else result
+
+/// See [`std::primitive::u8::strict_add`] (and similar for other integer types)
+let impl_11__strict_add (x y: usize)
+    : Prims.Pure usize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #usize () else result
+
+/// See [`std::primitive::u8::strict_sub`] (and similar for other integer types)
+let impl_11__strict_sub (x y: usize) : Prims.Pure usize (requires x >=. y) (fun _ -> Prims.l_True) =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #usize () else result
+
+/// See [`std::primitive::u8::strict_mul`] (and similar for other integer types)
+let impl_11__strict_mul (x y: usize)
+    : Prims.Pure usize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #usize () else result
+
+/// See [`std::primitive::u8::wrapping_div`] (and similar for other unsigned integer types)
+let impl_11__wrapping_div (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem`] (and similar for other unsigned integer types)
+let impl_11__wrapping_rem (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::wrapping_div_euclid`] (and similar for other unsigned integer types)
+let impl_11__wrapping_div_euclid (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::wrapping_rem_euclid`] (and similar for other unsigned integer types)
+let impl_11__wrapping_rem_euclid (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::saturating_div`] (and similar for other unsigned integer types)
+let impl_11__saturating_div (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_div`] (and similar for other unsigned integer types)
+let impl_11__strict_div (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_rem`] (and similar for other unsigned integer types)
+let impl_11__strict_rem (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::strict_div_euclid`] (and similar for other unsigned integer types)
+let impl_11__strict_div_euclid (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::strict_rem_euclid`] (and similar for other unsigned integer types)
+let impl_11__strict_rem_euclid (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x %! y
+
+/// See [`std::primitive::u8::div_euclid`] (and similar for other unsigned integer types)
+let impl_11__div_euclid (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::div_floor`] (and similar for other unsigned integer types)
+let impl_11__div_floor (x y: usize)
+    : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::overflowing_div`] (and similar for other unsigned integer types)
+let impl_11__overflowing_div (x y: usize)
+    : Prims.Pure (usize & bool) (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (usize & bool)
+
+/// See [`std::primitive::u8::overflowing_rem`] (and similar for other unsigned integer types)
+let impl_11__overflowing_rem (x y: usize)
+    : Prims.Pure (usize & bool) (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (usize & bool)
+
+/// See [`std::primitive::u8::overflowing_div_euclid`] (and similar for other unsigned integer types)
+let impl_11__overflowing_div_euclid (x y: usize)
+    : Prims.Pure (usize & bool) (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
+  x /! y, false <: (usize & bool)
+
+/// See [`std::primitive::u8::overflowing_rem_euclid`] (and similar for other unsigned integer types)
+let impl_11__overflowing_rem_euclid (x y: usize)
+    : Prims.Pure (usize & bool) (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
+  x %! y, false <: (usize & bool)
+
+/// See [`std::primitive::u8::unchecked_div_exact`] (and similar for other unsigned integer types)
+let impl_11__unchecked_div_exact (x y: usize)
+    : Prims.Pure usize
+      (requires y <>. mk_usize 0 && (x %! y <: usize) =. mk_usize 0)
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::u8::next_multiple_of`] (and similar for other unsigned integer types)
+let impl_11__next_multiple_of (x y: usize)
+    : Prims.Pure usize
+      (requires
+        y <>. mk_usize 0 &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine ((y -! (x %! y <: usize) <: usize) %! y <: usize)
+            <:
+            Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) = x +! ((y -! (x %! y <: usize) <: usize) %! y <: usize)
+
+/// See [`std::primitive::u8::strict_add_signed`] (and similar for other unsigned integer types)
+let impl_11__strict_add_signed (x: usize) (y: isize)
+    : Prims.Pure usize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_add_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #usize () else result
+
+/// See [`std::primitive::u8::strict_sub_signed`] (and similar for other unsigned integer types)
+let impl_11__strict_sub_signed (x: usize) (y: isize)
+    : Prims.Pure usize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MIN <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_11__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_sub_signed x y in
+  if overflowed then Core_models.Panicking.Internal.panic #usize () else result
+
+/// See [`std::primitive::u8::strict_shl`] (and similar for other integer types)
+let impl_11__strict_shl (x: usize) (n: u32)
+    : Prims.Pure usize (requires n <. impl_11__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_11__BITS then x <<! n else Core_models.Panicking.Internal.panic #usize ()
+
+/// See [`std::primitive::u8::strict_shr`] (and similar for other integer types)
+let impl_11__strict_shr (x: usize) (n: u32)
+    : Prims.Pure usize (requires n <. impl_11__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_11__BITS then x >>! n else Core_models.Panicking.Internal.panic #usize ()
+
+/// See [`std::primitive::u8::unchecked_shl`] (and similar for other integer types)
+let impl_11__unchecked_shl (x: usize) (n: u32)
+    : Prims.Pure usize (requires n <. impl_11__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr`] (and similar for other integer types)
+let impl_11__unchecked_shr (x: usize) (n: u32)
+    : Prims.Pure usize (requires n <. impl_11__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::unchecked_shl_exact`] (and similar for other unsigned integer types)
+let impl_11__unchecked_shl_exact (x: usize) (n: u32)
+    : Prims.Pure usize
+      (requires n <=. (impl_11__leading_zeros x <: u32) && n <. impl_11__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::u8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_11__unchecked_shr_exact (x: usize) (n: u32)
+    : Prims.Pure usize
+      (requires n <=. (impl_11__trailing_zeros x <: u32) && n <. impl_11__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::u8::funnel_shl`] (and similar for other unsigned integer types)
+let impl_11__funnel_shl (x y: usize) (n: u32)
+    : Prims.Pure usize (requires n <. impl_11__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then x
+  else
+    (impl_11__wrapping_shl x n <: usize) |.
+    (impl_11__wrapping_shr y (impl_11__BITS -! n <: u32) <: usize)
+
+/// See [`std::primitive::u8::funnel_shr`] (and similar for other unsigned integer types)
+let impl_11__funnel_shr (x y: usize) (n: u32)
+    : Prims.Pure usize (requires n <. impl_11__BITS) (fun _ -> Prims.l_True) =
+  if n =. mk_u32 0
+  then y
+  else
+    (impl_11__wrapping_shr y n <: usize) |.
+    (impl_11__wrapping_shl x (impl_11__BITS -! n <: u32) <: usize)
+
+/// See [`std::primitive::u8::unchecked_disjoint_bitor`] (and similar for other unsigned integer types)
+let impl_11__unchecked_disjoint_bitor (x y: usize)
+    : Prims.Pure usize (requires (x &. y <: usize) =. mk_usize 0) (fun _ -> Prims.l_True) = x |. y
+
+/// See [`std::primitive::u8::next_power_of_two`] (and similar for other unsigned integer types)
+assume
+val impl_11__next_power_of_two': x: usize
+  -> Prims.Pure usize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 2) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        ((Rust_primitives.Hax.Int.from_machine impl_11__MAX <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine (mk_i32 1) <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl_11__next_power_of_two = impl_11__next_power_of_two'
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_12__MIN: i8 = mk_i8 (-128)
@@ -1386,6 +4219,221 @@ let impl_12__signum (x: i8) : i8 =
 /// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
 let impl_12__wrapping_neg (x: i8) : i8 = Rust_primitives.Arithmetic.wrapping_sub_i8 (mk_i8 0) x
 
+/// See [`std::primitive::i8::min_value`] (and similar for other integer types)
+let impl_12__min_value (_: Prims.unit) : i8 = impl_12__MIN
+
+/// See [`std::primitive::i8::max_value`] (and similar for other integer types)
+let impl_12__max_value (_: Prims.unit) : i8 = impl_12__MAX
+
+/// See [`std::primitive::i8::cast_unsigned`] (and similar for other signed integer types)
+let impl_12__cast_unsigned (x: i8) : u8 = cast (x <: i8) <: u8
+
+/// See [`std::primitive::i8::is_positive`] (and similar for other signed integer types)
+let impl_12__is_positive (x: i8) : bool = x >. mk_i8 0
+
+/// See [`std::primitive::i8::is_negative`] (and similar for other signed integer types)
+let impl_12__is_negative (x: i8) : bool = x <. mk_i8 0
+
+/// See [`std::primitive::i8::count_zeros`] (and similar for other integer types)
+let impl_12__count_zeros (x: i8) : u32 = impl_12__BITS -! (impl_12__count_ones x <: u32)
+
+/// See [`std::primitive::i8::overflowing_neg`] (and similar for other integer types)
+let impl_12__overflowing_neg (x: i8) : (i8 & bool) =
+  if x =. impl_12__MIN
+  then impl_12__MIN, true <: (i8 & bool)
+  else impl_12__wrapping_neg x, false <: (i8 & bool)
+
+/// See [`std::primitive::i8::saturating_neg`] (and similar for other signed integer types)
+let impl_12__saturating_neg (x: i8) : i8 =
+  if x =. impl_12__MIN then impl_12__MAX else impl_12__wrapping_neg x
+
+/// See [`std::primitive::i8::wrapping_abs`] (and similar for other signed integer types)
+let impl_12__wrapping_abs (x: i8) : i8 = if x <. mk_i8 0 then impl_12__wrapping_neg x else x
+
+/// See [`std::primitive::i8::overflowing_abs`] (and similar for other signed integer types)
+let impl_12__overflowing_abs (x: i8) : (i8 & bool) =
+  impl_12__wrapping_abs x, x =. impl_12__MIN <: (i8 & bool)
+
+/// See [`std::primitive::i8::saturating_abs`] (and similar for other signed integer types)
+let impl_12__saturating_abs (x: i8) : i8 = if x <. mk_i8 0 then impl_12__saturating_neg x else x
+
+/// See [`std::primitive::i8::unsigned_abs`] (and similar for other signed integer types)
+let impl_12__unsigned_abs (x: i8) : u8 = cast (impl_12__wrapping_abs x <: i8) <: u8
+
+/// See [`std::primitive::i8::wrapping_pow`] (and similar for other integer types)
+let impl_12__wrapping_pow (x: i8) (exp: u32) : i8 =
+  let (result: i8), (_: bool) = impl_12__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::i8::saturating_pow`] (and similar for other signed integer types)
+let impl_12__saturating_pow (x: i8) (exp: u32) : i8 =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_pow x exp in
+  if ~.overflowed
+  then result
+  else if x <. mk_i8 0 && (exp %! mk_u32 2 <: u32) =. mk_u32 1 then impl_12__MIN else impl_12__MAX
+
+/// See [`std::primitive::i8::abs_diff`] (and similar for other signed integer types)
+let impl_12__abs_diff (x y: i8) : u8 =
+  if x <. y
+  then cast (impl_12__wrapping_sub y x <: i8) <: u8
+  else cast (impl_12__wrapping_sub x y <: i8) <: u8
+
+/// See [`std::primitive::i8::midpoint`] (and similar for other signed integer types)
+let impl_12__midpoint (x y: i8) : i8 =
+  let d:i8 = x ^. y in
+  let t:i8 = impl_12__wrapping_add (d >>! mk_i32 1 <: i8) (x &. y <: i8) in
+  if t <. mk_i8 0 then impl_12__wrapping_add t (d &. mk_i8 1 <: i8) else t
+
+/// See [`std::primitive::i8::wrapping_add_unsigned`] (and similar for other signed integer types)
+let impl_12__wrapping_add_unsigned (x: i8) (y: u8) : i8 =
+  impl_12__wrapping_add x (cast (y <: u8) <: i8)
+
+/// See [`std::primitive::i8::wrapping_sub_unsigned`] (and similar for other signed integer types)
+let impl_12__wrapping_sub_unsigned (x: i8) (y: u8) : i8 =
+  impl_12__wrapping_sub x (cast (y <: u8) <: i8)
+
+/// See [`std::primitive::i8::overflowing_add_unsigned`] (and similar for other signed integer types)
+let impl_12__overflowing_add_unsigned (x: i8) (y: u8) : (i8 & bool) =
+  let rhs:i8 = cast (y <: u8) <: i8 in
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_add x rhs in
+  result, overflowed <>. (rhs <. mk_i8 0 <: bool) <: (i8 & bool)
+
+/// See [`std::primitive::i8::overflowing_sub_unsigned`] (and similar for other signed integer types)
+let impl_12__overflowing_sub_unsigned (x: i8) (y: u8) : (i8 & bool) =
+  let rhs:i8 = cast (y <: u8) <: i8 in
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_sub x rhs in
+  result, overflowed <>. (rhs <. mk_i8 0 <: bool) <: (i8 & bool)
+
+/// See [`std::primitive::i8::saturating_add_unsigned`] (and similar for other signed integer types)
+let impl_12__saturating_add_unsigned (x: i8) (y: u8) : i8 =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_add_unsigned x y in
+  if overflowed then impl_12__MAX else result
+
+/// See [`std::primitive::i8::saturating_sub_unsigned`] (and similar for other signed integer types)
+let impl_12__saturating_sub_unsigned (x: i8) (y: u8) : i8 =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_sub_unsigned x y in
+  if overflowed then impl_12__MIN else result
+
+/// See [`std::primitive::i8::reverse_bits`] (and similar for other signed integer types)
+let impl_12__reverse_bits (x: i8) : i8 =
+  cast (impl_6__reverse_bits (cast (x <: i8) <: u8) <: u8) <: i8
+
+/// See [`std::primitive::i8::widening_mul`] (and similar for other signed integer types)
+let impl_12__widening_mul (x y: i8) : (u8 & i8) =
+  let (low: u8), (high: u8) = impl_6__widening_mul (cast (x <: i8) <: u8) (cast (y <: i8) <: u8) in
+  let high:i8 = cast (high <: u8) <: i8 in
+  let high:i8 = if x <. mk_i8 0 then impl_12__wrapping_sub high y else high in
+  let high:i8 = if y <. mk_i8 0 then impl_12__wrapping_sub high x else high in
+  low, high <: (u8 & i8)
+
+/// See [`std::primitive::i8::carrying_mul_add`] (and similar for other signed integer types)
+let impl_12__carrying_mul_add (x y carry add: i8) : (u8 & i8) =
+  let (low: u8), (high: i8) = impl_12__widening_mul x y in
+  let (low: u8), (c1: bool) = impl_6__overflowing_add low (cast (carry <: i8) <: u8) in
+  let (low: u8), (c2: bool) = impl_6__overflowing_add low (cast (add <: i8) <: u8) in
+  let high:i8 = impl_12__wrapping_add high (if c1 then mk_i8 1 else mk_i8 0) in
+  let high:i8 = impl_12__wrapping_add high (if c2 then mk_i8 1 else mk_i8 0) in
+  let high:i8 =
+    impl_12__wrapping_add high (if carry <. mk_i8 0 <: bool then mk_i8 (-1) else mk_i8 0)
+  in
+  let high:i8 =
+    impl_12__wrapping_add high (if add <. mk_i8 0 <: bool then mk_i8 (-1) else mk_i8 0)
+  in
+  low, high <: (u8 & i8)
+
+/// See [`std::primitive::i8::carrying_mul`] (and similar for other signed integer types)
+let impl_12__carrying_mul (x y carry: i8) : (u8 & i8) =
+  impl_12__carrying_mul_add x y carry (mk_i8 0)
+
+/// See [`std::primitive::i8::carrying_add`] (and similar for other integer types)
+let impl_12__carrying_add (x y: i8) (carry: bool) : (i8 & bool) =
+  let (a: i8), (b: bool) = impl_12__overflowing_add x y in
+  let (c: i8), (d: bool) = impl_12__overflowing_add a (if carry then mk_i8 1 else mk_i8 0) in
+  c, b <>. d <: (i8 & bool)
+
+/// See [`std::primitive::i8::borrowing_sub`] (and similar for other integer types)
+let impl_12__borrowing_sub (x y: i8) (borrow: bool) : (i8 & bool) =
+  let (a: i8), (b: bool) = impl_12__overflowing_sub x y in
+  let (c: i8), (d: bool) = impl_12__overflowing_sub a (if borrow then mk_i8 1 else mk_i8 0) in
+  c, b <>. d <: (i8 & bool)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other integer types)
+let impl_12__trailing_zeros (x: i8) : u32 =
+  if x =. mk_i8 0
+  then impl_12__BITS
+  else
+    impl_12__count_ones (impl_12__wrapping_sub (x &. (impl_12__wrapping_neg x <: i8) <: i8)
+          (mk_i8 1)
+        <:
+        i8)
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other integer types)
+let impl_12__trailing_ones (x: i8) : u32 =
+  impl_12__trailing_zeros (impl_12__wrapping_sub (mk_i8 (-1)) x <: i8)
+
+/// See [`std::primitive::i8::leading_ones`] (and similar for other integer types)
+let impl_12__leading_ones (x: i8) : u32 =
+  impl_12__leading_zeros (impl_12__wrapping_sub (mk_i8 (-1)) x <: i8)
+
+/// See [`std::primitive::i8::isolate_lowest_one`] (and similar for other integer types)
+let impl_12__isolate_lowest_one (x: i8) : i8 = x &. (impl_12__wrapping_neg x <: i8)
+
+/// See [`std::primitive::i8::swap_bytes`] (and similar for other integer types)
+let impl_12__swap_bytes (x: i8) : i8 =
+  impl_12__from_le_bytes (impl_12__to_be_bytes x <: t_Array u8 (mk_usize 1))
+
+/// See [`std::primitive::i8::to_be`] (and similar for other integer types)
+let impl_12__to_be (x: i8) : i8 = impl_12__swap_bytes x
+
+/// See [`std::primitive::i8::to_le`] (and similar for other integer types)
+let impl_12__to_le (x: i8) : i8 = x
+
+/// See [`std::primitive::i8::from_be`] (and similar for other integer types)
+let impl_12__from_be (x: i8) : i8 = impl_12__swap_bytes x
+
+/// See [`std::primitive::i8::from_le`] (and similar for other integer types)
+let impl_12__from_le (x: i8) : i8 = x
+
+/// See [`std::primitive::i8::to_ne_bytes`] (and similar for other integer types)
+let impl_12__to_ne_bytes (x: i8) : t_Array u8 (mk_usize 1) = impl_12__to_le_bytes x
+
+/// See [`std::primitive::i8::from_ne_bytes`] (and similar for other integer types)
+let impl_12__from_ne_bytes (bytes: t_Array u8 (mk_usize 1)) : i8 = impl_12__from_le_bytes bytes
+
+/// See [`std::primitive::i8::wrapping_shl`] (and similar for other integer types)
+let impl_12__wrapping_shl (x: i8) (n: u32) : i8 = x <<! (n %! impl_12__BITS <: u32)
+
+/// See [`std::primitive::i8::wrapping_shr`] (and similar for other integer types)
+let impl_12__wrapping_shr (x: i8) (n: u32) : i8 = x >>! (n %! impl_12__BITS <: u32)
+
+/// See [`std::primitive::i8::isolate_highest_one`] (and similar for other integer types)
+let impl_12__isolate_highest_one (x: i8) : i8 =
+  x &. (impl_12__wrapping_shr impl_12__MIN (impl_12__leading_zeros x <: u32) <: i8)
+
+/// See [`std::primitive::i8::overflowing_shl`] (and similar for other integer types)
+let impl_12__overflowing_shl (x: i8) (n: u32) : (i8 & bool) =
+  impl_12__wrapping_shl x n, n >=. impl_12__BITS <: (i8 & bool)
+
+/// See [`std::primitive::i8::overflowing_shr`] (and similar for other integer types)
+let impl_12__overflowing_shr (x: i8) (n: u32) : (i8 & bool) =
+  impl_12__wrapping_shr x n, n >=. impl_12__BITS <: (i8 & bool)
+
+/// See [`std::primitive::i8::unbounded_shl`] (and similar for other integer types)
+let impl_12__unbounded_shl (x: i8) (n: u32) : i8 = if n <. impl_12__BITS then x <<! n else mk_i8 0
+
+/// See [`std::primitive::i8::unbounded_shr`] (and similar for other signed integer types)
+let impl_12__unbounded_shr (x: i8) (n: u32) : i8 =
+  if n <. impl_12__BITS then x >>! n else x >>! (impl_12__BITS -! mk_u32 1 <: u32)
+
+/// See [`std::primitive::i8::clamp_magnitude`] (and similar for other signed integer types)
+let impl_12__clamp_magnitude (x: i8) (limit: u8) : i8 =
+  if limit >. (cast (impl_12__MAX <: i8) <: u8)
+  then x
+  else
+    let hi:i8 = cast (limit <: u8) <: i8 in
+    let lo:i8 = impl_12__wrapping_neg hi in
+    if x <. lo then lo else if x >. hi then hi else x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_12__unchecked_add (x y: i8)
     : Prims.Pure i8
@@ -1464,6 +4512,254 @@ let impl_12__div_ceil (x y: i8)
   let d:i8 = x /! y in
   let r:i8 = x %! y in
   if r >. mk_i8 0 && y >. mk_i8 0 || r <. mk_i8 0 && y <. mk_i8 0 then d +! mk_i8 1 else d
+
+/// See [`std::primitive::i8::strict_neg`] (and similar for other integer types)
+let impl_12__strict_neg (x: i8)
+    : Prims.Pure i8 (requires x <>. impl_12__MIN) (fun _ -> Prims.l_True) =
+  if x =. impl_12__MIN then Core_models.Panicking.Internal.panic #i8 () else impl_12__wrapping_neg x
+
+/// See [`std::primitive::i8::unchecked_neg`] (and similar for other signed integer types)
+let impl_12__unchecked_neg (x: i8)
+    : Prims.Pure i8 (requires x <>. impl_12__MIN) (fun _ -> Prims.l_True) = mk_i8 0 -! x
+
+/// See [`std::primitive::i8::strict_abs`] (and similar for other signed integer types)
+let impl_12__strict_abs (x: i8)
+    : Prims.Pure i8 (requires x <>. impl_12__MIN) (fun _ -> Prims.l_True) =
+  if x <. mk_i8 0 then impl_12__strict_neg x else x
+
+/// See [`std::primitive::i8::strict_pow`] (and similar for other integer types)
+let impl_12__strict_pow (x: i8) (exp: u32)
+    : Prims.Pure i8
+      (requires (impl_12__overflowing_pow x exp <: (i8 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::strict_add`] (and similar for other integer types)
+let impl_12__strict_add (x y: i8)
+    : Prims.Pure i8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::strict_sub`] (and similar for other integer types)
+let impl_12__strict_sub (x y: i8)
+    : Prims.Pure i8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::strict_mul`] (and similar for other integer types)
+let impl_12__strict_mul (x y: i8)
+    : Prims.Pure i8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::overflowing_div`] (and similar for other signed integer types)
+let impl_12__overflowing_div (x y: i8)
+    : Prims.Pure (i8 & bool) (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  if x =. impl_12__MIN && y =. mk_i8 (-1)
+  then x, true <: (i8 & bool)
+  else x /! y, false <: (i8 & bool)
+
+/// See [`std::primitive::i8::overflowing_rem`] (and similar for other signed integer types)
+let impl_12__overflowing_rem (x y: i8)
+    : Prims.Pure (i8 & bool) (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i8 (-1)
+  then mk_i8 0, x =. impl_12__MIN <: (i8 & bool)
+  else x %! y, false <: (i8 & bool)
+
+/// See [`std::primitive::i8::wrapping_div`] (and similar for other signed integer types)
+let impl_12__wrapping_div (x y: i8) : Prims.Pure i8 (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  let (result: i8), (_: bool) = impl_12__overflowing_div x y in
+  result
+
+/// See [`std::primitive::i8::wrapping_rem`] (and similar for other signed integer types)
+let impl_12__wrapping_rem (x y: i8) : Prims.Pure i8 (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  let (result: i8), (_: bool) = impl_12__overflowing_rem x y in
+  result
+
+/// See [`std::primitive::i8::saturating_div`] (and similar for other signed integer types)
+let impl_12__saturating_div (x y: i8)
+    : Prims.Pure i8 (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_div x y in
+  if overflowed then impl_12__MAX else result
+
+/// See [`std::primitive::i8::strict_div`] (and similar for other signed integer types)
+let impl_12__strict_div (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_div x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::strict_rem`] (and similar for other signed integer types)
+let impl_12__strict_rem (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_rem x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::div_euclid`] (and similar for other signed integer types)
+let impl_12__div_euclid (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let q:i8 = x /! y in
+  if (x %! y <: i8) <. mk_i8 0
+  then if y >. mk_i8 0 then impl_12__wrapping_sub q (mk_i8 1) else impl_12__wrapping_add q (mk_i8 1)
+  else q
+
+/// See [`std::primitive::i8::overflowing_div_euclid`] (and similar for other signed integer types)
+let impl_12__overflowing_div_euclid (x y: i8)
+    : Prims.Pure (i8 & bool) (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  if x =. impl_12__MIN && y =. mk_i8 (-1)
+  then x, true <: (i8 & bool)
+  else impl_12__div_euclid x y, false <: (i8 & bool)
+
+/// See [`std::primitive::i8::wrapping_div_euclid`] (and similar for other signed integer types)
+let impl_12__wrapping_div_euclid (x y: i8)
+    : Prims.Pure i8 (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  let (result: i8), (_: bool) = impl_12__overflowing_div_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_div_euclid`] (and similar for other signed integer types)
+let impl_12__strict_div_euclid (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_div_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::overflowing_rem_euclid`] (and similar for other signed integer types)
+let impl_12__overflowing_rem_euclid (x y: i8)
+    : Prims.Pure (i8 & bool) (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i8 (-1)
+  then mk_i8 0, x =. impl_12__MIN <: (i8 & bool)
+  else impl_12__rem_euclid x y, false <: (i8 & bool)
+
+/// See [`std::primitive::i8::wrapping_rem_euclid`] (and similar for other signed integer types)
+let impl_12__wrapping_rem_euclid (x y: i8)
+    : Prims.Pure i8 (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
+  let (result: i8), (_: bool) = impl_12__overflowing_rem_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_rem_euclid`] (and similar for other signed integer types)
+let impl_12__strict_rem_euclid (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_rem_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::div_floor`] (and similar for other signed integer types)
+let impl_12__div_floor (x y: i8)
+    : Prims.Pure i8
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i8 = x /! y in
+  let r:i8 = x %! y in
+  if r <>. mk_i8 0 && (x <. mk_i8 0 <: bool) <>. (y <. mk_i8 0 <: bool)
+  then impl_12__wrapping_sub d (mk_i8 1)
+  else d
+
+/// See [`std::primitive::i8::unchecked_div_exact`] (and similar for other signed integer types)
+let impl_12__unchecked_div_exact (x y: i8)
+    : Prims.Pure i8 (requires y >. mk_i8 0 && (x %! y <: i8) =. mk_i8 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::i8::strict_add_unsigned`] (and similar for other signed integer types)
+let impl_12__strict_add_unsigned (x: i8) (y: u8)
+    : Prims.Pure i8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_add_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::strict_sub_unsigned`] (and similar for other signed integer types)
+let impl_12__strict_sub_unsigned (x: i8) (y: u8)
+    : Prims.Pure i8
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_12__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i8), (overflowed: bool) = impl_12__overflowing_sub_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i8 () else result
+
+/// See [`std::primitive::i8::strict_shl`] (and similar for other integer types)
+let impl_12__strict_shl (x: i8) (n: u32)
+    : Prims.Pure i8 (requires n <. impl_12__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_12__BITS then x <<! n else Core_models.Panicking.Internal.panic #i8 ()
+
+/// See [`std::primitive::i8::strict_shr`] (and similar for other integer types)
+let impl_12__strict_shr (x: i8) (n: u32)
+    : Prims.Pure i8 (requires n <. impl_12__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_12__BITS then x >>! n else Core_models.Panicking.Internal.panic #i8 ()
+
+/// See [`std::primitive::i8::unchecked_shl`] (and similar for other integer types)
+let impl_12__unchecked_shl (x: i8) (n: u32)
+    : Prims.Pure i8 (requires n <. impl_12__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr`] (and similar for other integer types)
+let impl_12__unchecked_shr (x: i8) (n: u32)
+    : Prims.Pure i8 (requires n <. impl_12__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::i8::unchecked_shl_exact`] (and similar for other signed integer types)
+let impl_12__unchecked_shl_exact (x: i8) (n: u32)
+    : Prims.Pure i8
+      (requires
+        (n <. (impl_12__leading_zeros x <: u32) || n <. (impl_12__leading_ones x <: u32)) &&
+        n <. impl_12__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_12__unchecked_shr_exact (x: i8) (n: u32)
+    : Prims.Pure i8
+      (requires n <=. (impl_12__trailing_zeros x <: u32) && n <. impl_12__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_13__MIN: i16 = mk_i16 (-32768)
@@ -1576,6 +4872,224 @@ let impl_13__signum (x: i16) : i16 =
 /// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
 let impl_13__wrapping_neg (x: i16) : i16 = Rust_primitives.Arithmetic.wrapping_sub_i16 (mk_i16 0) x
 
+/// See [`std::primitive::i8::min_value`] (and similar for other integer types)
+let impl_13__min_value (_: Prims.unit) : i16 = impl_13__MIN
+
+/// See [`std::primitive::i8::max_value`] (and similar for other integer types)
+let impl_13__max_value (_: Prims.unit) : i16 = impl_13__MAX
+
+/// See [`std::primitive::i8::cast_unsigned`] (and similar for other signed integer types)
+let impl_13__cast_unsigned (x: i16) : u16 = cast (x <: i16) <: u16
+
+/// See [`std::primitive::i8::is_positive`] (and similar for other signed integer types)
+let impl_13__is_positive (x: i16) : bool = x >. mk_i16 0
+
+/// See [`std::primitive::i8::is_negative`] (and similar for other signed integer types)
+let impl_13__is_negative (x: i16) : bool = x <. mk_i16 0
+
+/// See [`std::primitive::i8::count_zeros`] (and similar for other integer types)
+let impl_13__count_zeros (x: i16) : u32 = impl_13__BITS -! (impl_13__count_ones x <: u32)
+
+/// See [`std::primitive::i8::overflowing_neg`] (and similar for other integer types)
+let impl_13__overflowing_neg (x: i16) : (i16 & bool) =
+  if x =. impl_13__MIN
+  then impl_13__MIN, true <: (i16 & bool)
+  else impl_13__wrapping_neg x, false <: (i16 & bool)
+
+/// See [`std::primitive::i8::saturating_neg`] (and similar for other signed integer types)
+let impl_13__saturating_neg (x: i16) : i16 =
+  if x =. impl_13__MIN then impl_13__MAX else impl_13__wrapping_neg x
+
+/// See [`std::primitive::i8::wrapping_abs`] (and similar for other signed integer types)
+let impl_13__wrapping_abs (x: i16) : i16 = if x <. mk_i16 0 then impl_13__wrapping_neg x else x
+
+/// See [`std::primitive::i8::overflowing_abs`] (and similar for other signed integer types)
+let impl_13__overflowing_abs (x: i16) : (i16 & bool) =
+  impl_13__wrapping_abs x, x =. impl_13__MIN <: (i16 & bool)
+
+/// See [`std::primitive::i8::saturating_abs`] (and similar for other signed integer types)
+let impl_13__saturating_abs (x: i16) : i16 = if x <. mk_i16 0 then impl_13__saturating_neg x else x
+
+/// See [`std::primitive::i8::unsigned_abs`] (and similar for other signed integer types)
+let impl_13__unsigned_abs (x: i16) : u16 = cast (impl_13__wrapping_abs x <: i16) <: u16
+
+/// See [`std::primitive::i8::wrapping_pow`] (and similar for other integer types)
+let impl_13__wrapping_pow (x: i16) (exp: u32) : i16 =
+  let (result: i16), (_: bool) = impl_13__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::i8::saturating_pow`] (and similar for other signed integer types)
+let impl_13__saturating_pow (x: i16) (exp: u32) : i16 =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_pow x exp in
+  if ~.overflowed
+  then result
+  else if x <. mk_i16 0 && (exp %! mk_u32 2 <: u32) =. mk_u32 1 then impl_13__MIN else impl_13__MAX
+
+/// See [`std::primitive::i8::abs_diff`] (and similar for other signed integer types)
+let impl_13__abs_diff (x y: i16) : u16 =
+  if x <. y
+  then cast (impl_13__wrapping_sub y x <: i16) <: u16
+  else cast (impl_13__wrapping_sub x y <: i16) <: u16
+
+/// See [`std::primitive::i8::midpoint`] (and similar for other signed integer types)
+let impl_13__midpoint (x y: i16) : i16 =
+  let d:i16 = x ^. y in
+  let t:i16 = impl_13__wrapping_add (d >>! mk_i32 1 <: i16) (x &. y <: i16) in
+  if t <. mk_i16 0 then impl_13__wrapping_add t (d &. mk_i16 1 <: i16) else t
+
+/// See [`std::primitive::i8::wrapping_add_unsigned`] (and similar for other signed integer types)
+let impl_13__wrapping_add_unsigned (x: i16) (y: u16) : i16 =
+  impl_13__wrapping_add x (cast (y <: u16) <: i16)
+
+/// See [`std::primitive::i8::wrapping_sub_unsigned`] (and similar for other signed integer types)
+let impl_13__wrapping_sub_unsigned (x: i16) (y: u16) : i16 =
+  impl_13__wrapping_sub x (cast (y <: u16) <: i16)
+
+/// See [`std::primitive::i8::overflowing_add_unsigned`] (and similar for other signed integer types)
+let impl_13__overflowing_add_unsigned (x: i16) (y: u16) : (i16 & bool) =
+  let rhs:i16 = cast (y <: u16) <: i16 in
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_add x rhs in
+  result, overflowed <>. (rhs <. mk_i16 0 <: bool) <: (i16 & bool)
+
+/// See [`std::primitive::i8::overflowing_sub_unsigned`] (and similar for other signed integer types)
+let impl_13__overflowing_sub_unsigned (x: i16) (y: u16) : (i16 & bool) =
+  let rhs:i16 = cast (y <: u16) <: i16 in
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_sub x rhs in
+  result, overflowed <>. (rhs <. mk_i16 0 <: bool) <: (i16 & bool)
+
+/// See [`std::primitive::i8::saturating_add_unsigned`] (and similar for other signed integer types)
+let impl_13__saturating_add_unsigned (x: i16) (y: u16) : i16 =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_add_unsigned x y in
+  if overflowed then impl_13__MAX else result
+
+/// See [`std::primitive::i8::saturating_sub_unsigned`] (and similar for other signed integer types)
+let impl_13__saturating_sub_unsigned (x: i16) (y: u16) : i16 =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_sub_unsigned x y in
+  if overflowed then impl_13__MIN else result
+
+/// See [`std::primitive::i8::reverse_bits`] (and similar for other signed integer types)
+let impl_13__reverse_bits (x: i16) : i16 =
+  cast (impl_7__reverse_bits (cast (x <: i16) <: u16) <: u16) <: i16
+
+/// See [`std::primitive::i8::widening_mul`] (and similar for other signed integer types)
+let impl_13__widening_mul (x y: i16) : (u16 & i16) =
+  let (low: u16), (high: u16) =
+    impl_7__widening_mul (cast (x <: i16) <: u16) (cast (y <: i16) <: u16)
+  in
+  let high:i16 = cast (high <: u16) <: i16 in
+  let high:i16 = if x <. mk_i16 0 then impl_13__wrapping_sub high y else high in
+  let high:i16 = if y <. mk_i16 0 then impl_13__wrapping_sub high x else high in
+  low, high <: (u16 & i16)
+
+/// See [`std::primitive::i8::carrying_mul_add`] (and similar for other signed integer types)
+let impl_13__carrying_mul_add (x y carry add: i16) : (u16 & i16) =
+  let (low: u16), (high: i16) = impl_13__widening_mul x y in
+  let (low: u16), (c1: bool) = impl_7__overflowing_add low (cast (carry <: i16) <: u16) in
+  let (low: u16), (c2: bool) = impl_7__overflowing_add low (cast (add <: i16) <: u16) in
+  let high:i16 = impl_13__wrapping_add high (if c1 then mk_i16 1 else mk_i16 0) in
+  let high:i16 = impl_13__wrapping_add high (if c2 then mk_i16 1 else mk_i16 0) in
+  let high:i16 =
+    impl_13__wrapping_add high (if carry <. mk_i16 0 <: bool then mk_i16 (-1) else mk_i16 0)
+  in
+  let high:i16 =
+    impl_13__wrapping_add high (if add <. mk_i16 0 <: bool then mk_i16 (-1) else mk_i16 0)
+  in
+  low, high <: (u16 & i16)
+
+/// See [`std::primitive::i8::carrying_mul`] (and similar for other signed integer types)
+let impl_13__carrying_mul (x y carry: i16) : (u16 & i16) =
+  impl_13__carrying_mul_add x y carry (mk_i16 0)
+
+/// See [`std::primitive::i8::carrying_add`] (and similar for other integer types)
+let impl_13__carrying_add (x y: i16) (carry: bool) : (i16 & bool) =
+  let (a: i16), (b: bool) = impl_13__overflowing_add x y in
+  let (c: i16), (d: bool) = impl_13__overflowing_add a (if carry then mk_i16 1 else mk_i16 0) in
+  c, b <>. d <: (i16 & bool)
+
+/// See [`std::primitive::i8::borrowing_sub`] (and similar for other integer types)
+let impl_13__borrowing_sub (x y: i16) (borrow: bool) : (i16 & bool) =
+  let (a: i16), (b: bool) = impl_13__overflowing_sub x y in
+  let (c: i16), (d: bool) = impl_13__overflowing_sub a (if borrow then mk_i16 1 else mk_i16 0) in
+  c, b <>. d <: (i16 & bool)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other integer types)
+let impl_13__trailing_zeros (x: i16) : u32 =
+  if x =. mk_i16 0
+  then impl_13__BITS
+  else
+    impl_13__count_ones (impl_13__wrapping_sub (x &. (impl_13__wrapping_neg x <: i16) <: i16)
+          (mk_i16 1)
+        <:
+        i16)
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other integer types)
+let impl_13__trailing_ones (x: i16) : u32 =
+  impl_13__trailing_zeros (impl_13__wrapping_sub (mk_i16 (-1)) x <: i16)
+
+/// See [`std::primitive::i8::leading_ones`] (and similar for other integer types)
+let impl_13__leading_ones (x: i16) : u32 =
+  impl_13__leading_zeros (impl_13__wrapping_sub (mk_i16 (-1)) x <: i16)
+
+/// See [`std::primitive::i8::isolate_lowest_one`] (and similar for other integer types)
+let impl_13__isolate_lowest_one (x: i16) : i16 = x &. (impl_13__wrapping_neg x <: i16)
+
+/// See [`std::primitive::i8::swap_bytes`] (and similar for other integer types)
+let impl_13__swap_bytes (x: i16) : i16 =
+  impl_13__from_le_bytes (impl_13__to_be_bytes x <: t_Array u8 (mk_usize 2))
+
+/// See [`std::primitive::i8::to_be`] (and similar for other integer types)
+let impl_13__to_be (x: i16) : i16 = impl_13__swap_bytes x
+
+/// See [`std::primitive::i8::to_le`] (and similar for other integer types)
+let impl_13__to_le (x: i16) : i16 = x
+
+/// See [`std::primitive::i8::from_be`] (and similar for other integer types)
+let impl_13__from_be (x: i16) : i16 = impl_13__swap_bytes x
+
+/// See [`std::primitive::i8::from_le`] (and similar for other integer types)
+let impl_13__from_le (x: i16) : i16 = x
+
+/// See [`std::primitive::i8::to_ne_bytes`] (and similar for other integer types)
+let impl_13__to_ne_bytes (x: i16) : t_Array u8 (mk_usize 2) = impl_13__to_le_bytes x
+
+/// See [`std::primitive::i8::from_ne_bytes`] (and similar for other integer types)
+let impl_13__from_ne_bytes (bytes: t_Array u8 (mk_usize 2)) : i16 = impl_13__from_le_bytes bytes
+
+/// See [`std::primitive::i8::wrapping_shl`] (and similar for other integer types)
+let impl_13__wrapping_shl (x: i16) (n: u32) : i16 = x <<! (n %! impl_13__BITS <: u32)
+
+/// See [`std::primitive::i8::wrapping_shr`] (and similar for other integer types)
+let impl_13__wrapping_shr (x: i16) (n: u32) : i16 = x >>! (n %! impl_13__BITS <: u32)
+
+/// See [`std::primitive::i8::isolate_highest_one`] (and similar for other integer types)
+let impl_13__isolate_highest_one (x: i16) : i16 =
+  x &. (impl_13__wrapping_shr impl_13__MIN (impl_13__leading_zeros x <: u32) <: i16)
+
+/// See [`std::primitive::i8::overflowing_shl`] (and similar for other integer types)
+let impl_13__overflowing_shl (x: i16) (n: u32) : (i16 & bool) =
+  impl_13__wrapping_shl x n, n >=. impl_13__BITS <: (i16 & bool)
+
+/// See [`std::primitive::i8::overflowing_shr`] (and similar for other integer types)
+let impl_13__overflowing_shr (x: i16) (n: u32) : (i16 & bool) =
+  impl_13__wrapping_shr x n, n >=. impl_13__BITS <: (i16 & bool)
+
+/// See [`std::primitive::i8::unbounded_shl`] (and similar for other integer types)
+let impl_13__unbounded_shl (x: i16) (n: u32) : i16 =
+  if n <. impl_13__BITS then x <<! n else mk_i16 0
+
+/// See [`std::primitive::i8::unbounded_shr`] (and similar for other signed integer types)
+let impl_13__unbounded_shr (x: i16) (n: u32) : i16 =
+  if n <. impl_13__BITS then x >>! n else x >>! (impl_13__BITS -! mk_u32 1 <: u32)
+
+/// See [`std::primitive::i8::clamp_magnitude`] (and similar for other signed integer types)
+let impl_13__clamp_magnitude (x: i16) (limit: u16) : i16 =
+  if limit >. (cast (impl_13__MAX <: i16) <: u16)
+  then x
+  else
+    let hi:i16 = cast (limit <: u16) <: i16 in
+    let lo:i16 = impl_13__wrapping_neg hi in
+    if x <. lo then lo else if x >. hi then hi else x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_13__unchecked_add (x y: i16)
     : Prims.Pure i16
@@ -1654,6 +5168,259 @@ let impl_13__div_ceil (x y: i16)
   let d:i16 = x /! y in
   let r:i16 = x %! y in
   if r >. mk_i16 0 && y >. mk_i16 0 || r <. mk_i16 0 && y <. mk_i16 0 then d +! mk_i16 1 else d
+
+/// See [`std::primitive::i8::strict_neg`] (and similar for other integer types)
+let impl_13__strict_neg (x: i16)
+    : Prims.Pure i16 (requires x <>. impl_13__MIN) (fun _ -> Prims.l_True) =
+  if x =. impl_13__MIN
+  then Core_models.Panicking.Internal.panic #i16 ()
+  else impl_13__wrapping_neg x
+
+/// See [`std::primitive::i8::unchecked_neg`] (and similar for other signed integer types)
+let impl_13__unchecked_neg (x: i16)
+    : Prims.Pure i16 (requires x <>. impl_13__MIN) (fun _ -> Prims.l_True) = mk_i16 0 -! x
+
+/// See [`std::primitive::i8::strict_abs`] (and similar for other signed integer types)
+let impl_13__strict_abs (x: i16)
+    : Prims.Pure i16 (requires x <>. impl_13__MIN) (fun _ -> Prims.l_True) =
+  if x <. mk_i16 0 then impl_13__strict_neg x else x
+
+/// See [`std::primitive::i8::strict_pow`] (and similar for other integer types)
+let impl_13__strict_pow (x: i16) (exp: u32)
+    : Prims.Pure i16
+      (requires (impl_13__overflowing_pow x exp <: (i16 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::strict_add`] (and similar for other integer types)
+let impl_13__strict_add (x y: i16)
+    : Prims.Pure i16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::strict_sub`] (and similar for other integer types)
+let impl_13__strict_sub (x y: i16)
+    : Prims.Pure i16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::strict_mul`] (and similar for other integer types)
+let impl_13__strict_mul (x y: i16)
+    : Prims.Pure i16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::overflowing_div`] (and similar for other signed integer types)
+let impl_13__overflowing_div (x y: i16)
+    : Prims.Pure (i16 & bool) (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  if x =. impl_13__MIN && y =. mk_i16 (-1)
+  then x, true <: (i16 & bool)
+  else x /! y, false <: (i16 & bool)
+
+/// See [`std::primitive::i8::overflowing_rem`] (and similar for other signed integer types)
+let impl_13__overflowing_rem (x y: i16)
+    : Prims.Pure (i16 & bool) (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i16 (-1)
+  then mk_i16 0, x =. impl_13__MIN <: (i16 & bool)
+  else x %! y, false <: (i16 & bool)
+
+/// See [`std::primitive::i8::wrapping_div`] (and similar for other signed integer types)
+let impl_13__wrapping_div (x y: i16)
+    : Prims.Pure i16 (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  let (result: i16), (_: bool) = impl_13__overflowing_div x y in
+  result
+
+/// See [`std::primitive::i8::wrapping_rem`] (and similar for other signed integer types)
+let impl_13__wrapping_rem (x y: i16)
+    : Prims.Pure i16 (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  let (result: i16), (_: bool) = impl_13__overflowing_rem x y in
+  result
+
+/// See [`std::primitive::i8::saturating_div`] (and similar for other signed integer types)
+let impl_13__saturating_div (x y: i16)
+    : Prims.Pure i16 (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_div x y in
+  if overflowed then impl_13__MAX else result
+
+/// See [`std::primitive::i8::strict_div`] (and similar for other signed integer types)
+let impl_13__strict_div (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_div x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::strict_rem`] (and similar for other signed integer types)
+let impl_13__strict_rem (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_rem x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::div_euclid`] (and similar for other signed integer types)
+let impl_13__div_euclid (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let q:i16 = x /! y in
+  if (x %! y <: i16) <. mk_i16 0
+  then
+    if y >. mk_i16 0 then impl_13__wrapping_sub q (mk_i16 1) else impl_13__wrapping_add q (mk_i16 1)
+  else q
+
+/// See [`std::primitive::i8::overflowing_div_euclid`] (and similar for other signed integer types)
+let impl_13__overflowing_div_euclid (x y: i16)
+    : Prims.Pure (i16 & bool) (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  if x =. impl_13__MIN && y =. mk_i16 (-1)
+  then x, true <: (i16 & bool)
+  else impl_13__div_euclid x y, false <: (i16 & bool)
+
+/// See [`std::primitive::i8::wrapping_div_euclid`] (and similar for other signed integer types)
+let impl_13__wrapping_div_euclid (x y: i16)
+    : Prims.Pure i16 (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  let (result: i16), (_: bool) = impl_13__overflowing_div_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_div_euclid`] (and similar for other signed integer types)
+let impl_13__strict_div_euclid (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_div_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::overflowing_rem_euclid`] (and similar for other signed integer types)
+let impl_13__overflowing_rem_euclid (x y: i16)
+    : Prims.Pure (i16 & bool) (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i16 (-1)
+  then mk_i16 0, x =. impl_13__MIN <: (i16 & bool)
+  else impl_13__rem_euclid x y, false <: (i16 & bool)
+
+/// See [`std::primitive::i8::wrapping_rem_euclid`] (and similar for other signed integer types)
+let impl_13__wrapping_rem_euclid (x y: i16)
+    : Prims.Pure i16 (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
+  let (result: i16), (_: bool) = impl_13__overflowing_rem_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_rem_euclid`] (and similar for other signed integer types)
+let impl_13__strict_rem_euclid (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_rem_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::div_floor`] (and similar for other signed integer types)
+let impl_13__div_floor (x y: i16)
+    : Prims.Pure i16
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i16 = x /! y in
+  let r:i16 = x %! y in
+  if r <>. mk_i16 0 && (x <. mk_i16 0 <: bool) <>. (y <. mk_i16 0 <: bool)
+  then impl_13__wrapping_sub d (mk_i16 1)
+  else d
+
+/// See [`std::primitive::i8::unchecked_div_exact`] (and similar for other signed integer types)
+let impl_13__unchecked_div_exact (x y: i16)
+    : Prims.Pure i16 (requires y >. mk_i16 0 && (x %! y <: i16) =. mk_i16 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::i8::strict_add_unsigned`] (and similar for other signed integer types)
+let impl_13__strict_add_unsigned (x: i16) (y: u16)
+    : Prims.Pure i16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_add_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::strict_sub_unsigned`] (and similar for other signed integer types)
+let impl_13__strict_sub_unsigned (x: i16) (y: u16)
+    : Prims.Pure i16
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_13__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i16), (overflowed: bool) = impl_13__overflowing_sub_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i16 () else result
+
+/// See [`std::primitive::i8::strict_shl`] (and similar for other integer types)
+let impl_13__strict_shl (x: i16) (n: u32)
+    : Prims.Pure i16 (requires n <. impl_13__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_13__BITS then x <<! n else Core_models.Panicking.Internal.panic #i16 ()
+
+/// See [`std::primitive::i8::strict_shr`] (and similar for other integer types)
+let impl_13__strict_shr (x: i16) (n: u32)
+    : Prims.Pure i16 (requires n <. impl_13__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_13__BITS then x >>! n else Core_models.Panicking.Internal.panic #i16 ()
+
+/// See [`std::primitive::i8::unchecked_shl`] (and similar for other integer types)
+let impl_13__unchecked_shl (x: i16) (n: u32)
+    : Prims.Pure i16 (requires n <. impl_13__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr`] (and similar for other integer types)
+let impl_13__unchecked_shr (x: i16) (n: u32)
+    : Prims.Pure i16 (requires n <. impl_13__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::i8::unchecked_shl_exact`] (and similar for other signed integer types)
+let impl_13__unchecked_shl_exact (x: i16) (n: u32)
+    : Prims.Pure i16
+      (requires
+        (n <. (impl_13__leading_zeros x <: u32) || n <. (impl_13__leading_ones x <: u32)) &&
+        n <. impl_13__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_13__unchecked_shr_exact (x: i16) (n: u32)
+    : Prims.Pure i16
+      (requires n <=. (impl_13__trailing_zeros x <: u32) && n <. impl_13__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_14__MIN: i32 = mk_i32 (-2147483648)
@@ -1766,6 +5533,224 @@ let impl_14__signum (x: i32) : i32 =
 /// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
 let impl_14__wrapping_neg (x: i32) : i32 = Rust_primitives.Arithmetic.wrapping_sub_i32 (mk_i32 0) x
 
+/// See [`std::primitive::i8::min_value`] (and similar for other integer types)
+let impl_14__min_value (_: Prims.unit) : i32 = impl_14__MIN
+
+/// See [`std::primitive::i8::max_value`] (and similar for other integer types)
+let impl_14__max_value (_: Prims.unit) : i32 = impl_14__MAX
+
+/// See [`std::primitive::i8::cast_unsigned`] (and similar for other signed integer types)
+let impl_14__cast_unsigned (x: i32) : u32 = cast (x <: i32) <: u32
+
+/// See [`std::primitive::i8::is_positive`] (and similar for other signed integer types)
+let impl_14__is_positive (x: i32) : bool = x >. mk_i32 0
+
+/// See [`std::primitive::i8::is_negative`] (and similar for other signed integer types)
+let impl_14__is_negative (x: i32) : bool = x <. mk_i32 0
+
+/// See [`std::primitive::i8::count_zeros`] (and similar for other integer types)
+let impl_14__count_zeros (x: i32) : u32 = impl_14__BITS -! (impl_14__count_ones x <: u32)
+
+/// See [`std::primitive::i8::overflowing_neg`] (and similar for other integer types)
+let impl_14__overflowing_neg (x: i32) : (i32 & bool) =
+  if x =. impl_14__MIN
+  then impl_14__MIN, true <: (i32 & bool)
+  else impl_14__wrapping_neg x, false <: (i32 & bool)
+
+/// See [`std::primitive::i8::saturating_neg`] (and similar for other signed integer types)
+let impl_14__saturating_neg (x: i32) : i32 =
+  if x =. impl_14__MIN then impl_14__MAX else impl_14__wrapping_neg x
+
+/// See [`std::primitive::i8::wrapping_abs`] (and similar for other signed integer types)
+let impl_14__wrapping_abs (x: i32) : i32 = if x <. mk_i32 0 then impl_14__wrapping_neg x else x
+
+/// See [`std::primitive::i8::overflowing_abs`] (and similar for other signed integer types)
+let impl_14__overflowing_abs (x: i32) : (i32 & bool) =
+  impl_14__wrapping_abs x, x =. impl_14__MIN <: (i32 & bool)
+
+/// See [`std::primitive::i8::saturating_abs`] (and similar for other signed integer types)
+let impl_14__saturating_abs (x: i32) : i32 = if x <. mk_i32 0 then impl_14__saturating_neg x else x
+
+/// See [`std::primitive::i8::unsigned_abs`] (and similar for other signed integer types)
+let impl_14__unsigned_abs (x: i32) : u32 = cast (impl_14__wrapping_abs x <: i32) <: u32
+
+/// See [`std::primitive::i8::wrapping_pow`] (and similar for other integer types)
+let impl_14__wrapping_pow (x: i32) (exp: u32) : i32 =
+  let (result: i32), (_: bool) = impl_14__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::i8::saturating_pow`] (and similar for other signed integer types)
+let impl_14__saturating_pow (x: i32) (exp: u32) : i32 =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_pow x exp in
+  if ~.overflowed
+  then result
+  else if x <. mk_i32 0 && (exp %! mk_u32 2 <: u32) =. mk_u32 1 then impl_14__MIN else impl_14__MAX
+
+/// See [`std::primitive::i8::abs_diff`] (and similar for other signed integer types)
+let impl_14__abs_diff (x y: i32) : u32 =
+  if x <. y
+  then cast (impl_14__wrapping_sub y x <: i32) <: u32
+  else cast (impl_14__wrapping_sub x y <: i32) <: u32
+
+/// See [`std::primitive::i8::midpoint`] (and similar for other signed integer types)
+let impl_14__midpoint (x y: i32) : i32 =
+  let d:i32 = x ^. y in
+  let t:i32 = impl_14__wrapping_add (d >>! mk_i32 1 <: i32) (x &. y <: i32) in
+  if t <. mk_i32 0 then impl_14__wrapping_add t (d &. mk_i32 1 <: i32) else t
+
+/// See [`std::primitive::i8::wrapping_add_unsigned`] (and similar for other signed integer types)
+let impl_14__wrapping_add_unsigned (x: i32) (y: u32) : i32 =
+  impl_14__wrapping_add x (cast (y <: u32) <: i32)
+
+/// See [`std::primitive::i8::wrapping_sub_unsigned`] (and similar for other signed integer types)
+let impl_14__wrapping_sub_unsigned (x: i32) (y: u32) : i32 =
+  impl_14__wrapping_sub x (cast (y <: u32) <: i32)
+
+/// See [`std::primitive::i8::overflowing_add_unsigned`] (and similar for other signed integer types)
+let impl_14__overflowing_add_unsigned (x: i32) (y: u32) : (i32 & bool) =
+  let rhs:i32 = cast (y <: u32) <: i32 in
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_add x rhs in
+  result, overflowed <>. (rhs <. mk_i32 0 <: bool) <: (i32 & bool)
+
+/// See [`std::primitive::i8::overflowing_sub_unsigned`] (and similar for other signed integer types)
+let impl_14__overflowing_sub_unsigned (x: i32) (y: u32) : (i32 & bool) =
+  let rhs:i32 = cast (y <: u32) <: i32 in
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_sub x rhs in
+  result, overflowed <>. (rhs <. mk_i32 0 <: bool) <: (i32 & bool)
+
+/// See [`std::primitive::i8::saturating_add_unsigned`] (and similar for other signed integer types)
+let impl_14__saturating_add_unsigned (x: i32) (y: u32) : i32 =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_add_unsigned x y in
+  if overflowed then impl_14__MAX else result
+
+/// See [`std::primitive::i8::saturating_sub_unsigned`] (and similar for other signed integer types)
+let impl_14__saturating_sub_unsigned (x: i32) (y: u32) : i32 =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_sub_unsigned x y in
+  if overflowed then impl_14__MIN else result
+
+/// See [`std::primitive::i8::reverse_bits`] (and similar for other signed integer types)
+let impl_14__reverse_bits (x: i32) : i32 =
+  cast (impl_8__reverse_bits (cast (x <: i32) <: u32) <: u32) <: i32
+
+/// See [`std::primitive::i8::widening_mul`] (and similar for other signed integer types)
+let impl_14__widening_mul (x y: i32) : (u32 & i32) =
+  let (low: u32), (high: u32) =
+    impl_8__widening_mul (cast (x <: i32) <: u32) (cast (y <: i32) <: u32)
+  in
+  let high:i32 = cast (high <: u32) <: i32 in
+  let high:i32 = if x <. mk_i32 0 then impl_14__wrapping_sub high y else high in
+  let high:i32 = if y <. mk_i32 0 then impl_14__wrapping_sub high x else high in
+  low, high <: (u32 & i32)
+
+/// See [`std::primitive::i8::carrying_mul_add`] (and similar for other signed integer types)
+let impl_14__carrying_mul_add (x y carry add: i32) : (u32 & i32) =
+  let (low: u32), (high: i32) = impl_14__widening_mul x y in
+  let (low: u32), (c1: bool) = impl_8__overflowing_add low (cast (carry <: i32) <: u32) in
+  let (low: u32), (c2: bool) = impl_8__overflowing_add low (cast (add <: i32) <: u32) in
+  let high:i32 = impl_14__wrapping_add high (if c1 then mk_i32 1 else mk_i32 0) in
+  let high:i32 = impl_14__wrapping_add high (if c2 then mk_i32 1 else mk_i32 0) in
+  let high:i32 =
+    impl_14__wrapping_add high (if carry <. mk_i32 0 <: bool then mk_i32 (-1) else mk_i32 0)
+  in
+  let high:i32 =
+    impl_14__wrapping_add high (if add <. mk_i32 0 <: bool then mk_i32 (-1) else mk_i32 0)
+  in
+  low, high <: (u32 & i32)
+
+/// See [`std::primitive::i8::carrying_mul`] (and similar for other signed integer types)
+let impl_14__carrying_mul (x y carry: i32) : (u32 & i32) =
+  impl_14__carrying_mul_add x y carry (mk_i32 0)
+
+/// See [`std::primitive::i8::carrying_add`] (and similar for other integer types)
+let impl_14__carrying_add (x y: i32) (carry: bool) : (i32 & bool) =
+  let (a: i32), (b: bool) = impl_14__overflowing_add x y in
+  let (c: i32), (d: bool) = impl_14__overflowing_add a (if carry then mk_i32 1 else mk_i32 0) in
+  c, b <>. d <: (i32 & bool)
+
+/// See [`std::primitive::i8::borrowing_sub`] (and similar for other integer types)
+let impl_14__borrowing_sub (x y: i32) (borrow: bool) : (i32 & bool) =
+  let (a: i32), (b: bool) = impl_14__overflowing_sub x y in
+  let (c: i32), (d: bool) = impl_14__overflowing_sub a (if borrow then mk_i32 1 else mk_i32 0) in
+  c, b <>. d <: (i32 & bool)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other integer types)
+let impl_14__trailing_zeros (x: i32) : u32 =
+  if x =. mk_i32 0
+  then impl_14__BITS
+  else
+    impl_14__count_ones (impl_14__wrapping_sub (x &. (impl_14__wrapping_neg x <: i32) <: i32)
+          (mk_i32 1)
+        <:
+        i32)
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other integer types)
+let impl_14__trailing_ones (x: i32) : u32 =
+  impl_14__trailing_zeros (impl_14__wrapping_sub (mk_i32 (-1)) x <: i32)
+
+/// See [`std::primitive::i8::leading_ones`] (and similar for other integer types)
+let impl_14__leading_ones (x: i32) : u32 =
+  impl_14__leading_zeros (impl_14__wrapping_sub (mk_i32 (-1)) x <: i32)
+
+/// See [`std::primitive::i8::isolate_lowest_one`] (and similar for other integer types)
+let impl_14__isolate_lowest_one (x: i32) : i32 = x &. (impl_14__wrapping_neg x <: i32)
+
+/// See [`std::primitive::i8::swap_bytes`] (and similar for other integer types)
+let impl_14__swap_bytes (x: i32) : i32 =
+  impl_14__from_le_bytes (impl_14__to_be_bytes x <: t_Array u8 (mk_usize 4))
+
+/// See [`std::primitive::i8::to_be`] (and similar for other integer types)
+let impl_14__to_be (x: i32) : i32 = impl_14__swap_bytes x
+
+/// See [`std::primitive::i8::to_le`] (and similar for other integer types)
+let impl_14__to_le (x: i32) : i32 = x
+
+/// See [`std::primitive::i8::from_be`] (and similar for other integer types)
+let impl_14__from_be (x: i32) : i32 = impl_14__swap_bytes x
+
+/// See [`std::primitive::i8::from_le`] (and similar for other integer types)
+let impl_14__from_le (x: i32) : i32 = x
+
+/// See [`std::primitive::i8::to_ne_bytes`] (and similar for other integer types)
+let impl_14__to_ne_bytes (x: i32) : t_Array u8 (mk_usize 4) = impl_14__to_le_bytes x
+
+/// See [`std::primitive::i8::from_ne_bytes`] (and similar for other integer types)
+let impl_14__from_ne_bytes (bytes: t_Array u8 (mk_usize 4)) : i32 = impl_14__from_le_bytes bytes
+
+/// See [`std::primitive::i8::wrapping_shl`] (and similar for other integer types)
+let impl_14__wrapping_shl (x: i32) (n: u32) : i32 = x <<! (n %! impl_14__BITS <: u32)
+
+/// See [`std::primitive::i8::wrapping_shr`] (and similar for other integer types)
+let impl_14__wrapping_shr (x: i32) (n: u32) : i32 = x >>! (n %! impl_14__BITS <: u32)
+
+/// See [`std::primitive::i8::isolate_highest_one`] (and similar for other integer types)
+let impl_14__isolate_highest_one (x: i32) : i32 =
+  x &. (impl_14__wrapping_shr impl_14__MIN (impl_14__leading_zeros x <: u32) <: i32)
+
+/// See [`std::primitive::i8::overflowing_shl`] (and similar for other integer types)
+let impl_14__overflowing_shl (x: i32) (n: u32) : (i32 & bool) =
+  impl_14__wrapping_shl x n, n >=. impl_14__BITS <: (i32 & bool)
+
+/// See [`std::primitive::i8::overflowing_shr`] (and similar for other integer types)
+let impl_14__overflowing_shr (x: i32) (n: u32) : (i32 & bool) =
+  impl_14__wrapping_shr x n, n >=. impl_14__BITS <: (i32 & bool)
+
+/// See [`std::primitive::i8::unbounded_shl`] (and similar for other integer types)
+let impl_14__unbounded_shl (x: i32) (n: u32) : i32 =
+  if n <. impl_14__BITS then x <<! n else mk_i32 0
+
+/// See [`std::primitive::i8::unbounded_shr`] (and similar for other signed integer types)
+let impl_14__unbounded_shr (x: i32) (n: u32) : i32 =
+  if n <. impl_14__BITS then x >>! n else x >>! (impl_14__BITS -! mk_u32 1 <: u32)
+
+/// See [`std::primitive::i8::clamp_magnitude`] (and similar for other signed integer types)
+let impl_14__clamp_magnitude (x: i32) (limit: u32) : i32 =
+  if limit >. (cast (impl_14__MAX <: i32) <: u32)
+  then x
+  else
+    let hi:i32 = cast (limit <: u32) <: i32 in
+    let lo:i32 = impl_14__wrapping_neg hi in
+    if x <. lo then lo else if x >. hi then hi else x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_14__unchecked_add (x y: i32)
     : Prims.Pure i32
@@ -1844,6 +5829,259 @@ let impl_14__div_ceil (x y: i32)
   let d:i32 = x /! y in
   let r:i32 = x %! y in
   if r >. mk_i32 0 && y >. mk_i32 0 || r <. mk_i32 0 && y <. mk_i32 0 then d +! mk_i32 1 else d
+
+/// See [`std::primitive::i8::strict_neg`] (and similar for other integer types)
+let impl_14__strict_neg (x: i32)
+    : Prims.Pure i32 (requires x <>. impl_14__MIN) (fun _ -> Prims.l_True) =
+  if x =. impl_14__MIN
+  then Core_models.Panicking.Internal.panic #i32 ()
+  else impl_14__wrapping_neg x
+
+/// See [`std::primitive::i8::unchecked_neg`] (and similar for other signed integer types)
+let impl_14__unchecked_neg (x: i32)
+    : Prims.Pure i32 (requires x <>. impl_14__MIN) (fun _ -> Prims.l_True) = mk_i32 0 -! x
+
+/// See [`std::primitive::i8::strict_abs`] (and similar for other signed integer types)
+let impl_14__strict_abs (x: i32)
+    : Prims.Pure i32 (requires x <>. impl_14__MIN) (fun _ -> Prims.l_True) =
+  if x <. mk_i32 0 then impl_14__strict_neg x else x
+
+/// See [`std::primitive::i8::strict_pow`] (and similar for other integer types)
+let impl_14__strict_pow (x: i32) (exp: u32)
+    : Prims.Pure i32
+      (requires (impl_14__overflowing_pow x exp <: (i32 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::strict_add`] (and similar for other integer types)
+let impl_14__strict_add (x y: i32)
+    : Prims.Pure i32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::strict_sub`] (and similar for other integer types)
+let impl_14__strict_sub (x y: i32)
+    : Prims.Pure i32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::strict_mul`] (and similar for other integer types)
+let impl_14__strict_mul (x y: i32)
+    : Prims.Pure i32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::overflowing_div`] (and similar for other signed integer types)
+let impl_14__overflowing_div (x y: i32)
+    : Prims.Pure (i32 & bool) (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  if x =. impl_14__MIN && y =. mk_i32 (-1)
+  then x, true <: (i32 & bool)
+  else x /! y, false <: (i32 & bool)
+
+/// See [`std::primitive::i8::overflowing_rem`] (and similar for other signed integer types)
+let impl_14__overflowing_rem (x y: i32)
+    : Prims.Pure (i32 & bool) (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i32 (-1)
+  then mk_i32 0, x =. impl_14__MIN <: (i32 & bool)
+  else x %! y, false <: (i32 & bool)
+
+/// See [`std::primitive::i8::wrapping_div`] (and similar for other signed integer types)
+let impl_14__wrapping_div (x y: i32)
+    : Prims.Pure i32 (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  let (result: i32), (_: bool) = impl_14__overflowing_div x y in
+  result
+
+/// See [`std::primitive::i8::wrapping_rem`] (and similar for other signed integer types)
+let impl_14__wrapping_rem (x y: i32)
+    : Prims.Pure i32 (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  let (result: i32), (_: bool) = impl_14__overflowing_rem x y in
+  result
+
+/// See [`std::primitive::i8::saturating_div`] (and similar for other signed integer types)
+let impl_14__saturating_div (x y: i32)
+    : Prims.Pure i32 (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_div x y in
+  if overflowed then impl_14__MAX else result
+
+/// See [`std::primitive::i8::strict_div`] (and similar for other signed integer types)
+let impl_14__strict_div (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_div x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::strict_rem`] (and similar for other signed integer types)
+let impl_14__strict_rem (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_rem x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::div_euclid`] (and similar for other signed integer types)
+let impl_14__div_euclid (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let q:i32 = x /! y in
+  if (x %! y <: i32) <. mk_i32 0
+  then
+    if y >. mk_i32 0 then impl_14__wrapping_sub q (mk_i32 1) else impl_14__wrapping_add q (mk_i32 1)
+  else q
+
+/// See [`std::primitive::i8::overflowing_div_euclid`] (and similar for other signed integer types)
+let impl_14__overflowing_div_euclid (x y: i32)
+    : Prims.Pure (i32 & bool) (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  if x =. impl_14__MIN && y =. mk_i32 (-1)
+  then x, true <: (i32 & bool)
+  else impl_14__div_euclid x y, false <: (i32 & bool)
+
+/// See [`std::primitive::i8::wrapping_div_euclid`] (and similar for other signed integer types)
+let impl_14__wrapping_div_euclid (x y: i32)
+    : Prims.Pure i32 (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  let (result: i32), (_: bool) = impl_14__overflowing_div_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_div_euclid`] (and similar for other signed integer types)
+let impl_14__strict_div_euclid (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_div_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::overflowing_rem_euclid`] (and similar for other signed integer types)
+let impl_14__overflowing_rem_euclid (x y: i32)
+    : Prims.Pure (i32 & bool) (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i32 (-1)
+  then mk_i32 0, x =. impl_14__MIN <: (i32 & bool)
+  else impl_14__rem_euclid x y, false <: (i32 & bool)
+
+/// See [`std::primitive::i8::wrapping_rem_euclid`] (and similar for other signed integer types)
+let impl_14__wrapping_rem_euclid (x y: i32)
+    : Prims.Pure i32 (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
+  let (result: i32), (_: bool) = impl_14__overflowing_rem_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_rem_euclid`] (and similar for other signed integer types)
+let impl_14__strict_rem_euclid (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_rem_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::div_floor`] (and similar for other signed integer types)
+let impl_14__div_floor (x y: i32)
+    : Prims.Pure i32
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i32 = x /! y in
+  let r:i32 = x %! y in
+  if r <>. mk_i32 0 && (x <. mk_i32 0 <: bool) <>. (y <. mk_i32 0 <: bool)
+  then impl_14__wrapping_sub d (mk_i32 1)
+  else d
+
+/// See [`std::primitive::i8::unchecked_div_exact`] (and similar for other signed integer types)
+let impl_14__unchecked_div_exact (x y: i32)
+    : Prims.Pure i32 (requires y >. mk_i32 0 && (x %! y <: i32) =. mk_i32 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::i8::strict_add_unsigned`] (and similar for other signed integer types)
+let impl_14__strict_add_unsigned (x: i32) (y: u32)
+    : Prims.Pure i32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_add_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::strict_sub_unsigned`] (and similar for other signed integer types)
+let impl_14__strict_sub_unsigned (x: i32) (y: u32)
+    : Prims.Pure i32
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_14__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i32), (overflowed: bool) = impl_14__overflowing_sub_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i32 () else result
+
+/// See [`std::primitive::i8::strict_shl`] (and similar for other integer types)
+let impl_14__strict_shl (x: i32) (n: u32)
+    : Prims.Pure i32 (requires n <. impl_14__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_14__BITS then x <<! n else Core_models.Panicking.Internal.panic #i32 ()
+
+/// See [`std::primitive::i8::strict_shr`] (and similar for other integer types)
+let impl_14__strict_shr (x: i32) (n: u32)
+    : Prims.Pure i32 (requires n <. impl_14__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_14__BITS then x >>! n else Core_models.Panicking.Internal.panic #i32 ()
+
+/// See [`std::primitive::i8::unchecked_shl`] (and similar for other integer types)
+let impl_14__unchecked_shl (x: i32) (n: u32)
+    : Prims.Pure i32 (requires n <. impl_14__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr`] (and similar for other integer types)
+let impl_14__unchecked_shr (x: i32) (n: u32)
+    : Prims.Pure i32 (requires n <. impl_14__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::i8::unchecked_shl_exact`] (and similar for other signed integer types)
+let impl_14__unchecked_shl_exact (x: i32) (n: u32)
+    : Prims.Pure i32
+      (requires
+        (n <. (impl_14__leading_zeros x <: u32) || n <. (impl_14__leading_ones x <: u32)) &&
+        n <. impl_14__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_14__unchecked_shr_exact (x: i32) (n: u32)
+    : Prims.Pure i32
+      (requires n <=. (impl_14__trailing_zeros x <: u32) && n <. impl_14__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_15__MIN: i64 = mk_i64 (-9223372036854775808)
@@ -1956,6 +6194,224 @@ let impl_15__signum (x: i64) : i64 =
 /// See [`std::primitive::i8::wrapping_neg`] (and similar for other signed integer types)
 let impl_15__wrapping_neg (x: i64) : i64 = Rust_primitives.Arithmetic.wrapping_sub_i64 (mk_i64 0) x
 
+/// See [`std::primitive::i8::min_value`] (and similar for other integer types)
+let impl_15__min_value (_: Prims.unit) : i64 = impl_15__MIN
+
+/// See [`std::primitive::i8::max_value`] (and similar for other integer types)
+let impl_15__max_value (_: Prims.unit) : i64 = impl_15__MAX
+
+/// See [`std::primitive::i8::cast_unsigned`] (and similar for other signed integer types)
+let impl_15__cast_unsigned (x: i64) : u64 = cast (x <: i64) <: u64
+
+/// See [`std::primitive::i8::is_positive`] (and similar for other signed integer types)
+let impl_15__is_positive (x: i64) : bool = x >. mk_i64 0
+
+/// See [`std::primitive::i8::is_negative`] (and similar for other signed integer types)
+let impl_15__is_negative (x: i64) : bool = x <. mk_i64 0
+
+/// See [`std::primitive::i8::count_zeros`] (and similar for other integer types)
+let impl_15__count_zeros (x: i64) : u32 = impl_15__BITS -! (impl_15__count_ones x <: u32)
+
+/// See [`std::primitive::i8::overflowing_neg`] (and similar for other integer types)
+let impl_15__overflowing_neg (x: i64) : (i64 & bool) =
+  if x =. impl_15__MIN
+  then impl_15__MIN, true <: (i64 & bool)
+  else impl_15__wrapping_neg x, false <: (i64 & bool)
+
+/// See [`std::primitive::i8::saturating_neg`] (and similar for other signed integer types)
+let impl_15__saturating_neg (x: i64) : i64 =
+  if x =. impl_15__MIN then impl_15__MAX else impl_15__wrapping_neg x
+
+/// See [`std::primitive::i8::wrapping_abs`] (and similar for other signed integer types)
+let impl_15__wrapping_abs (x: i64) : i64 = if x <. mk_i64 0 then impl_15__wrapping_neg x else x
+
+/// See [`std::primitive::i8::overflowing_abs`] (and similar for other signed integer types)
+let impl_15__overflowing_abs (x: i64) : (i64 & bool) =
+  impl_15__wrapping_abs x, x =. impl_15__MIN <: (i64 & bool)
+
+/// See [`std::primitive::i8::saturating_abs`] (and similar for other signed integer types)
+let impl_15__saturating_abs (x: i64) : i64 = if x <. mk_i64 0 then impl_15__saturating_neg x else x
+
+/// See [`std::primitive::i8::unsigned_abs`] (and similar for other signed integer types)
+let impl_15__unsigned_abs (x: i64) : u64 = cast (impl_15__wrapping_abs x <: i64) <: u64
+
+/// See [`std::primitive::i8::wrapping_pow`] (and similar for other integer types)
+let impl_15__wrapping_pow (x: i64) (exp: u32) : i64 =
+  let (result: i64), (_: bool) = impl_15__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::i8::saturating_pow`] (and similar for other signed integer types)
+let impl_15__saturating_pow (x: i64) (exp: u32) : i64 =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_pow x exp in
+  if ~.overflowed
+  then result
+  else if x <. mk_i64 0 && (exp %! mk_u32 2 <: u32) =. mk_u32 1 then impl_15__MIN else impl_15__MAX
+
+/// See [`std::primitive::i8::abs_diff`] (and similar for other signed integer types)
+let impl_15__abs_diff (x y: i64) : u64 =
+  if x <. y
+  then cast (impl_15__wrapping_sub y x <: i64) <: u64
+  else cast (impl_15__wrapping_sub x y <: i64) <: u64
+
+/// See [`std::primitive::i8::midpoint`] (and similar for other signed integer types)
+let impl_15__midpoint (x y: i64) : i64 =
+  let d:i64 = x ^. y in
+  let t:i64 = impl_15__wrapping_add (d >>! mk_i32 1 <: i64) (x &. y <: i64) in
+  if t <. mk_i64 0 then impl_15__wrapping_add t (d &. mk_i64 1 <: i64) else t
+
+/// See [`std::primitive::i8::wrapping_add_unsigned`] (and similar for other signed integer types)
+let impl_15__wrapping_add_unsigned (x: i64) (y: u64) : i64 =
+  impl_15__wrapping_add x (cast (y <: u64) <: i64)
+
+/// See [`std::primitive::i8::wrapping_sub_unsigned`] (and similar for other signed integer types)
+let impl_15__wrapping_sub_unsigned (x: i64) (y: u64) : i64 =
+  impl_15__wrapping_sub x (cast (y <: u64) <: i64)
+
+/// See [`std::primitive::i8::overflowing_add_unsigned`] (and similar for other signed integer types)
+let impl_15__overflowing_add_unsigned (x: i64) (y: u64) : (i64 & bool) =
+  let rhs:i64 = cast (y <: u64) <: i64 in
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_add x rhs in
+  result, overflowed <>. (rhs <. mk_i64 0 <: bool) <: (i64 & bool)
+
+/// See [`std::primitive::i8::overflowing_sub_unsigned`] (and similar for other signed integer types)
+let impl_15__overflowing_sub_unsigned (x: i64) (y: u64) : (i64 & bool) =
+  let rhs:i64 = cast (y <: u64) <: i64 in
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_sub x rhs in
+  result, overflowed <>. (rhs <. mk_i64 0 <: bool) <: (i64 & bool)
+
+/// See [`std::primitive::i8::saturating_add_unsigned`] (and similar for other signed integer types)
+let impl_15__saturating_add_unsigned (x: i64) (y: u64) : i64 =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_add_unsigned x y in
+  if overflowed then impl_15__MAX else result
+
+/// See [`std::primitive::i8::saturating_sub_unsigned`] (and similar for other signed integer types)
+let impl_15__saturating_sub_unsigned (x: i64) (y: u64) : i64 =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_sub_unsigned x y in
+  if overflowed then impl_15__MIN else result
+
+/// See [`std::primitive::i8::reverse_bits`] (and similar for other signed integer types)
+let impl_15__reverse_bits (x: i64) : i64 =
+  cast (impl_9__reverse_bits (cast (x <: i64) <: u64) <: u64) <: i64
+
+/// See [`std::primitive::i8::widening_mul`] (and similar for other signed integer types)
+let impl_15__widening_mul (x y: i64) : (u64 & i64) =
+  let (low: u64), (high: u64) =
+    impl_9__widening_mul (cast (x <: i64) <: u64) (cast (y <: i64) <: u64)
+  in
+  let high:i64 = cast (high <: u64) <: i64 in
+  let high:i64 = if x <. mk_i64 0 then impl_15__wrapping_sub high y else high in
+  let high:i64 = if y <. mk_i64 0 then impl_15__wrapping_sub high x else high in
+  low, high <: (u64 & i64)
+
+/// See [`std::primitive::i8::carrying_mul_add`] (and similar for other signed integer types)
+let impl_15__carrying_mul_add (x y carry add: i64) : (u64 & i64) =
+  let (low: u64), (high: i64) = impl_15__widening_mul x y in
+  let (low: u64), (c1: bool) = impl_9__overflowing_add low (cast (carry <: i64) <: u64) in
+  let (low: u64), (c2: bool) = impl_9__overflowing_add low (cast (add <: i64) <: u64) in
+  let high:i64 = impl_15__wrapping_add high (if c1 then mk_i64 1 else mk_i64 0) in
+  let high:i64 = impl_15__wrapping_add high (if c2 then mk_i64 1 else mk_i64 0) in
+  let high:i64 =
+    impl_15__wrapping_add high (if carry <. mk_i64 0 <: bool then mk_i64 (-1) else mk_i64 0)
+  in
+  let high:i64 =
+    impl_15__wrapping_add high (if add <. mk_i64 0 <: bool then mk_i64 (-1) else mk_i64 0)
+  in
+  low, high <: (u64 & i64)
+
+/// See [`std::primitive::i8::carrying_mul`] (and similar for other signed integer types)
+let impl_15__carrying_mul (x y carry: i64) : (u64 & i64) =
+  impl_15__carrying_mul_add x y carry (mk_i64 0)
+
+/// See [`std::primitive::i8::carrying_add`] (and similar for other integer types)
+let impl_15__carrying_add (x y: i64) (carry: bool) : (i64 & bool) =
+  let (a: i64), (b: bool) = impl_15__overflowing_add x y in
+  let (c: i64), (d: bool) = impl_15__overflowing_add a (if carry then mk_i64 1 else mk_i64 0) in
+  c, b <>. d <: (i64 & bool)
+
+/// See [`std::primitive::i8::borrowing_sub`] (and similar for other integer types)
+let impl_15__borrowing_sub (x y: i64) (borrow: bool) : (i64 & bool) =
+  let (a: i64), (b: bool) = impl_15__overflowing_sub x y in
+  let (c: i64), (d: bool) = impl_15__overflowing_sub a (if borrow then mk_i64 1 else mk_i64 0) in
+  c, b <>. d <: (i64 & bool)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other integer types)
+let impl_15__trailing_zeros (x: i64) : u32 =
+  if x =. mk_i64 0
+  then impl_15__BITS
+  else
+    impl_15__count_ones (impl_15__wrapping_sub (x &. (impl_15__wrapping_neg x <: i64) <: i64)
+          (mk_i64 1)
+        <:
+        i64)
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other integer types)
+let impl_15__trailing_ones (x: i64) : u32 =
+  impl_15__trailing_zeros (impl_15__wrapping_sub (mk_i64 (-1)) x <: i64)
+
+/// See [`std::primitive::i8::leading_ones`] (and similar for other integer types)
+let impl_15__leading_ones (x: i64) : u32 =
+  impl_15__leading_zeros (impl_15__wrapping_sub (mk_i64 (-1)) x <: i64)
+
+/// See [`std::primitive::i8::isolate_lowest_one`] (and similar for other integer types)
+let impl_15__isolate_lowest_one (x: i64) : i64 = x &. (impl_15__wrapping_neg x <: i64)
+
+/// See [`std::primitive::i8::swap_bytes`] (and similar for other integer types)
+let impl_15__swap_bytes (x: i64) : i64 =
+  impl_15__from_le_bytes (impl_15__to_be_bytes x <: t_Array u8 (mk_usize 8))
+
+/// See [`std::primitive::i8::to_be`] (and similar for other integer types)
+let impl_15__to_be (x: i64) : i64 = impl_15__swap_bytes x
+
+/// See [`std::primitive::i8::to_le`] (and similar for other integer types)
+let impl_15__to_le (x: i64) : i64 = x
+
+/// See [`std::primitive::i8::from_be`] (and similar for other integer types)
+let impl_15__from_be (x: i64) : i64 = impl_15__swap_bytes x
+
+/// See [`std::primitive::i8::from_le`] (and similar for other integer types)
+let impl_15__from_le (x: i64) : i64 = x
+
+/// See [`std::primitive::i8::to_ne_bytes`] (and similar for other integer types)
+let impl_15__to_ne_bytes (x: i64) : t_Array u8 (mk_usize 8) = impl_15__to_le_bytes x
+
+/// See [`std::primitive::i8::from_ne_bytes`] (and similar for other integer types)
+let impl_15__from_ne_bytes (bytes: t_Array u8 (mk_usize 8)) : i64 = impl_15__from_le_bytes bytes
+
+/// See [`std::primitive::i8::wrapping_shl`] (and similar for other integer types)
+let impl_15__wrapping_shl (x: i64) (n: u32) : i64 = x <<! (n %! impl_15__BITS <: u32)
+
+/// See [`std::primitive::i8::wrapping_shr`] (and similar for other integer types)
+let impl_15__wrapping_shr (x: i64) (n: u32) : i64 = x >>! (n %! impl_15__BITS <: u32)
+
+/// See [`std::primitive::i8::isolate_highest_one`] (and similar for other integer types)
+let impl_15__isolate_highest_one (x: i64) : i64 =
+  x &. (impl_15__wrapping_shr impl_15__MIN (impl_15__leading_zeros x <: u32) <: i64)
+
+/// See [`std::primitive::i8::overflowing_shl`] (and similar for other integer types)
+let impl_15__overflowing_shl (x: i64) (n: u32) : (i64 & bool) =
+  impl_15__wrapping_shl x n, n >=. impl_15__BITS <: (i64 & bool)
+
+/// See [`std::primitive::i8::overflowing_shr`] (and similar for other integer types)
+let impl_15__overflowing_shr (x: i64) (n: u32) : (i64 & bool) =
+  impl_15__wrapping_shr x n, n >=. impl_15__BITS <: (i64 & bool)
+
+/// See [`std::primitive::i8::unbounded_shl`] (and similar for other integer types)
+let impl_15__unbounded_shl (x: i64) (n: u32) : i64 =
+  if n <. impl_15__BITS then x <<! n else mk_i64 0
+
+/// See [`std::primitive::i8::unbounded_shr`] (and similar for other signed integer types)
+let impl_15__unbounded_shr (x: i64) (n: u32) : i64 =
+  if n <. impl_15__BITS then x >>! n else x >>! (impl_15__BITS -! mk_u32 1 <: u32)
+
+/// See [`std::primitive::i8::clamp_magnitude`] (and similar for other signed integer types)
+let impl_15__clamp_magnitude (x: i64) (limit: u64) : i64 =
+  if limit >. (cast (impl_15__MAX <: i64) <: u64)
+  then x
+  else
+    let hi:i64 = cast (limit <: u64) <: i64 in
+    let lo:i64 = impl_15__wrapping_neg hi in
+    if x <. lo then lo else if x >. hi then hi else x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_15__unchecked_add (x y: i64)
     : Prims.Pure i64
@@ -2034,6 +6490,259 @@ let impl_15__div_ceil (x y: i64)
   let d:i64 = x /! y in
   let r:i64 = x %! y in
   if r >. mk_i64 0 && y >. mk_i64 0 || r <. mk_i64 0 && y <. mk_i64 0 then d +! mk_i64 1 else d
+
+/// See [`std::primitive::i8::strict_neg`] (and similar for other integer types)
+let impl_15__strict_neg (x: i64)
+    : Prims.Pure i64 (requires x <>. impl_15__MIN) (fun _ -> Prims.l_True) =
+  if x =. impl_15__MIN
+  then Core_models.Panicking.Internal.panic #i64 ()
+  else impl_15__wrapping_neg x
+
+/// See [`std::primitive::i8::unchecked_neg`] (and similar for other signed integer types)
+let impl_15__unchecked_neg (x: i64)
+    : Prims.Pure i64 (requires x <>. impl_15__MIN) (fun _ -> Prims.l_True) = mk_i64 0 -! x
+
+/// See [`std::primitive::i8::strict_abs`] (and similar for other signed integer types)
+let impl_15__strict_abs (x: i64)
+    : Prims.Pure i64 (requires x <>. impl_15__MIN) (fun _ -> Prims.l_True) =
+  if x <. mk_i64 0 then impl_15__strict_neg x else x
+
+/// See [`std::primitive::i8::strict_pow`] (and similar for other integer types)
+let impl_15__strict_pow (x: i64) (exp: u32)
+    : Prims.Pure i64
+      (requires (impl_15__overflowing_pow x exp <: (i64 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::strict_add`] (and similar for other integer types)
+let impl_15__strict_add (x y: i64)
+    : Prims.Pure i64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::strict_sub`] (and similar for other integer types)
+let impl_15__strict_sub (x y: i64)
+    : Prims.Pure i64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::strict_mul`] (and similar for other integer types)
+let impl_15__strict_mul (x y: i64)
+    : Prims.Pure i64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::overflowing_div`] (and similar for other signed integer types)
+let impl_15__overflowing_div (x y: i64)
+    : Prims.Pure (i64 & bool) (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  if x =. impl_15__MIN && y =. mk_i64 (-1)
+  then x, true <: (i64 & bool)
+  else x /! y, false <: (i64 & bool)
+
+/// See [`std::primitive::i8::overflowing_rem`] (and similar for other signed integer types)
+let impl_15__overflowing_rem (x y: i64)
+    : Prims.Pure (i64 & bool) (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i64 (-1)
+  then mk_i64 0, x =. impl_15__MIN <: (i64 & bool)
+  else x %! y, false <: (i64 & bool)
+
+/// See [`std::primitive::i8::wrapping_div`] (and similar for other signed integer types)
+let impl_15__wrapping_div (x y: i64)
+    : Prims.Pure i64 (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  let (result: i64), (_: bool) = impl_15__overflowing_div x y in
+  result
+
+/// See [`std::primitive::i8::wrapping_rem`] (and similar for other signed integer types)
+let impl_15__wrapping_rem (x y: i64)
+    : Prims.Pure i64 (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  let (result: i64), (_: bool) = impl_15__overflowing_rem x y in
+  result
+
+/// See [`std::primitive::i8::saturating_div`] (and similar for other signed integer types)
+let impl_15__saturating_div (x y: i64)
+    : Prims.Pure i64 (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_div x y in
+  if overflowed then impl_15__MAX else result
+
+/// See [`std::primitive::i8::strict_div`] (and similar for other signed integer types)
+let impl_15__strict_div (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_div x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::strict_rem`] (and similar for other signed integer types)
+let impl_15__strict_rem (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_rem x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::div_euclid`] (and similar for other signed integer types)
+let impl_15__div_euclid (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let q:i64 = x /! y in
+  if (x %! y <: i64) <. mk_i64 0
+  then
+    if y >. mk_i64 0 then impl_15__wrapping_sub q (mk_i64 1) else impl_15__wrapping_add q (mk_i64 1)
+  else q
+
+/// See [`std::primitive::i8::overflowing_div_euclid`] (and similar for other signed integer types)
+let impl_15__overflowing_div_euclid (x y: i64)
+    : Prims.Pure (i64 & bool) (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  if x =. impl_15__MIN && y =. mk_i64 (-1)
+  then x, true <: (i64 & bool)
+  else impl_15__div_euclid x y, false <: (i64 & bool)
+
+/// See [`std::primitive::i8::wrapping_div_euclid`] (and similar for other signed integer types)
+let impl_15__wrapping_div_euclid (x y: i64)
+    : Prims.Pure i64 (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  let (result: i64), (_: bool) = impl_15__overflowing_div_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_div_euclid`] (and similar for other signed integer types)
+let impl_15__strict_div_euclid (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_div_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::overflowing_rem_euclid`] (and similar for other signed integer types)
+let impl_15__overflowing_rem_euclid (x y: i64)
+    : Prims.Pure (i64 & bool) (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i64 (-1)
+  then mk_i64 0, x =. impl_15__MIN <: (i64 & bool)
+  else impl_15__rem_euclid x y, false <: (i64 & bool)
+
+/// See [`std::primitive::i8::wrapping_rem_euclid`] (and similar for other signed integer types)
+let impl_15__wrapping_rem_euclid (x y: i64)
+    : Prims.Pure i64 (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
+  let (result: i64), (_: bool) = impl_15__overflowing_rem_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_rem_euclid`] (and similar for other signed integer types)
+let impl_15__strict_rem_euclid (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_rem_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::div_floor`] (and similar for other signed integer types)
+let impl_15__div_floor (x y: i64)
+    : Prims.Pure i64
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i64 = x /! y in
+  let r:i64 = x %! y in
+  if r <>. mk_i64 0 && (x <. mk_i64 0 <: bool) <>. (y <. mk_i64 0 <: bool)
+  then impl_15__wrapping_sub d (mk_i64 1)
+  else d
+
+/// See [`std::primitive::i8::unchecked_div_exact`] (and similar for other signed integer types)
+let impl_15__unchecked_div_exact (x y: i64)
+    : Prims.Pure i64 (requires y >. mk_i64 0 && (x %! y <: i64) =. mk_i64 0) (fun _ -> Prims.l_True) =
+  x /! y
+
+/// See [`std::primitive::i8::strict_add_unsigned`] (and similar for other signed integer types)
+let impl_15__strict_add_unsigned (x: i64) (y: u64)
+    : Prims.Pure i64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_add_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::strict_sub_unsigned`] (and similar for other signed integer types)
+let impl_15__strict_sub_unsigned (x: i64) (y: u64)
+    : Prims.Pure i64
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_15__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i64), (overflowed: bool) = impl_15__overflowing_sub_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i64 () else result
+
+/// See [`std::primitive::i8::strict_shl`] (and similar for other integer types)
+let impl_15__strict_shl (x: i64) (n: u32)
+    : Prims.Pure i64 (requires n <. impl_15__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_15__BITS then x <<! n else Core_models.Panicking.Internal.panic #i64 ()
+
+/// See [`std::primitive::i8::strict_shr`] (and similar for other integer types)
+let impl_15__strict_shr (x: i64) (n: u32)
+    : Prims.Pure i64 (requires n <. impl_15__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_15__BITS then x >>! n else Core_models.Panicking.Internal.panic #i64 ()
+
+/// See [`std::primitive::i8::unchecked_shl`] (and similar for other integer types)
+let impl_15__unchecked_shl (x: i64) (n: u32)
+    : Prims.Pure i64 (requires n <. impl_15__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr`] (and similar for other integer types)
+let impl_15__unchecked_shr (x: i64) (n: u32)
+    : Prims.Pure i64 (requires n <. impl_15__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::i8::unchecked_shl_exact`] (and similar for other signed integer types)
+let impl_15__unchecked_shl_exact (x: i64) (n: u32)
+    : Prims.Pure i64
+      (requires
+        (n <. (impl_15__leading_zeros x <: u32) || n <. (impl_15__leading_ones x <: u32)) &&
+        n <. impl_15__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_15__unchecked_shr_exact (x: i64) (n: u32)
+    : Prims.Pure i64
+      (requires n <=. (impl_15__trailing_zeros x <: u32) && n <. impl_15__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_16__MIN: i128 = mk_i128 (-170141183460469231731687303715884105728)
@@ -2147,6 +6856,225 @@ let impl_16__signum (x: i128) : i128 =
 let impl_16__wrapping_neg (x: i128) : i128 =
   Rust_primitives.Arithmetic.wrapping_sub_i128 (mk_i128 0) x
 
+/// See [`std::primitive::i8::min_value`] (and similar for other integer types)
+let impl_16__min_value (_: Prims.unit) : i128 = impl_16__MIN
+
+/// See [`std::primitive::i8::max_value`] (and similar for other integer types)
+let impl_16__max_value (_: Prims.unit) : i128 = impl_16__MAX
+
+/// See [`std::primitive::i8::cast_unsigned`] (and similar for other signed integer types)
+let impl_16__cast_unsigned (x: i128) : u128 = cast (x <: i128) <: u128
+
+/// See [`std::primitive::i8::is_positive`] (and similar for other signed integer types)
+let impl_16__is_positive (x: i128) : bool = x >. mk_i128 0
+
+/// See [`std::primitive::i8::is_negative`] (and similar for other signed integer types)
+let impl_16__is_negative (x: i128) : bool = x <. mk_i128 0
+
+/// See [`std::primitive::i8::count_zeros`] (and similar for other integer types)
+let impl_16__count_zeros (x: i128) : u32 = impl_16__BITS -! (impl_16__count_ones x <: u32)
+
+/// See [`std::primitive::i8::overflowing_neg`] (and similar for other integer types)
+let impl_16__overflowing_neg (x: i128) : (i128 & bool) =
+  if x =. impl_16__MIN
+  then impl_16__MIN, true <: (i128 & bool)
+  else impl_16__wrapping_neg x, false <: (i128 & bool)
+
+/// See [`std::primitive::i8::saturating_neg`] (and similar for other signed integer types)
+let impl_16__saturating_neg (x: i128) : i128 =
+  if x =. impl_16__MIN then impl_16__MAX else impl_16__wrapping_neg x
+
+/// See [`std::primitive::i8::wrapping_abs`] (and similar for other signed integer types)
+let impl_16__wrapping_abs (x: i128) : i128 = if x <. mk_i128 0 then impl_16__wrapping_neg x else x
+
+/// See [`std::primitive::i8::overflowing_abs`] (and similar for other signed integer types)
+let impl_16__overflowing_abs (x: i128) : (i128 & bool) =
+  impl_16__wrapping_abs x, x =. impl_16__MIN <: (i128 & bool)
+
+/// See [`std::primitive::i8::saturating_abs`] (and similar for other signed integer types)
+let impl_16__saturating_abs (x: i128) : i128 =
+  if x <. mk_i128 0 then impl_16__saturating_neg x else x
+
+/// See [`std::primitive::i8::unsigned_abs`] (and similar for other signed integer types)
+let impl_16__unsigned_abs (x: i128) : u128 = cast (impl_16__wrapping_abs x <: i128) <: u128
+
+/// See [`std::primitive::i8::wrapping_pow`] (and similar for other integer types)
+let impl_16__wrapping_pow (x: i128) (exp: u32) : i128 =
+  let (result: i128), (_: bool) = impl_16__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::i8::saturating_pow`] (and similar for other signed integer types)
+let impl_16__saturating_pow (x: i128) (exp: u32) : i128 =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_pow x exp in
+  if ~.overflowed
+  then result
+  else if x <. mk_i128 0 && (exp %! mk_u32 2 <: u32) =. mk_u32 1 then impl_16__MIN else impl_16__MAX
+
+/// See [`std::primitive::i8::abs_diff`] (and similar for other signed integer types)
+let impl_16__abs_diff (x y: i128) : u128 =
+  if x <. y
+  then cast (impl_16__wrapping_sub y x <: i128) <: u128
+  else cast (impl_16__wrapping_sub x y <: i128) <: u128
+
+/// See [`std::primitive::i8::midpoint`] (and similar for other signed integer types)
+let impl_16__midpoint (x y: i128) : i128 =
+  let d:i128 = x ^. y in
+  let t:i128 = impl_16__wrapping_add (d >>! mk_i32 1 <: i128) (x &. y <: i128) in
+  if t <. mk_i128 0 then impl_16__wrapping_add t (d &. mk_i128 1 <: i128) else t
+
+/// See [`std::primitive::i8::wrapping_add_unsigned`] (and similar for other signed integer types)
+let impl_16__wrapping_add_unsigned (x: i128) (y: u128) : i128 =
+  impl_16__wrapping_add x (cast (y <: u128) <: i128)
+
+/// See [`std::primitive::i8::wrapping_sub_unsigned`] (and similar for other signed integer types)
+let impl_16__wrapping_sub_unsigned (x: i128) (y: u128) : i128 =
+  impl_16__wrapping_sub x (cast (y <: u128) <: i128)
+
+/// See [`std::primitive::i8::overflowing_add_unsigned`] (and similar for other signed integer types)
+let impl_16__overflowing_add_unsigned (x: i128) (y: u128) : (i128 & bool) =
+  let rhs:i128 = cast (y <: u128) <: i128 in
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_add x rhs in
+  result, overflowed <>. (rhs <. mk_i128 0 <: bool) <: (i128 & bool)
+
+/// See [`std::primitive::i8::overflowing_sub_unsigned`] (and similar for other signed integer types)
+let impl_16__overflowing_sub_unsigned (x: i128) (y: u128) : (i128 & bool) =
+  let rhs:i128 = cast (y <: u128) <: i128 in
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_sub x rhs in
+  result, overflowed <>. (rhs <. mk_i128 0 <: bool) <: (i128 & bool)
+
+/// See [`std::primitive::i8::saturating_add_unsigned`] (and similar for other signed integer types)
+let impl_16__saturating_add_unsigned (x: i128) (y: u128) : i128 =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_add_unsigned x y in
+  if overflowed then impl_16__MAX else result
+
+/// See [`std::primitive::i8::saturating_sub_unsigned`] (and similar for other signed integer types)
+let impl_16__saturating_sub_unsigned (x: i128) (y: u128) : i128 =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_sub_unsigned x y in
+  if overflowed then impl_16__MIN else result
+
+/// See [`std::primitive::i8::reverse_bits`] (and similar for other signed integer types)
+let impl_16__reverse_bits (x: i128) : i128 =
+  cast (impl_10__reverse_bits (cast (x <: i128) <: u128) <: u128) <: i128
+
+/// See [`std::primitive::i8::widening_mul`] (and similar for other signed integer types)
+let impl_16__widening_mul (x y: i128) : (u128 & i128) =
+  let (low: u128), (high: u128) =
+    impl_10__widening_mul (cast (x <: i128) <: u128) (cast (y <: i128) <: u128)
+  in
+  let high:i128 = cast (high <: u128) <: i128 in
+  let high:i128 = if x <. mk_i128 0 then impl_16__wrapping_sub high y else high in
+  let high:i128 = if y <. mk_i128 0 then impl_16__wrapping_sub high x else high in
+  low, high <: (u128 & i128)
+
+/// See [`std::primitive::i8::carrying_mul_add`] (and similar for other signed integer types)
+let impl_16__carrying_mul_add (x y carry add: i128) : (u128 & i128) =
+  let (low: u128), (high: i128) = impl_16__widening_mul x y in
+  let (low: u128), (c1: bool) = impl_10__overflowing_add low (cast (carry <: i128) <: u128) in
+  let (low: u128), (c2: bool) = impl_10__overflowing_add low (cast (add <: i128) <: u128) in
+  let high:i128 = impl_16__wrapping_add high (if c1 then mk_i128 1 else mk_i128 0) in
+  let high:i128 = impl_16__wrapping_add high (if c2 then mk_i128 1 else mk_i128 0) in
+  let high:i128 =
+    impl_16__wrapping_add high (if carry <. mk_i128 0 <: bool then mk_i128 (-1) else mk_i128 0)
+  in
+  let high:i128 =
+    impl_16__wrapping_add high (if add <. mk_i128 0 <: bool then mk_i128 (-1) else mk_i128 0)
+  in
+  low, high <: (u128 & i128)
+
+/// See [`std::primitive::i8::carrying_mul`] (and similar for other signed integer types)
+let impl_16__carrying_mul (x y carry: i128) : (u128 & i128) =
+  impl_16__carrying_mul_add x y carry (mk_i128 0)
+
+/// See [`std::primitive::i8::carrying_add`] (and similar for other integer types)
+let impl_16__carrying_add (x y: i128) (carry: bool) : (i128 & bool) =
+  let (a: i128), (b: bool) = impl_16__overflowing_add x y in
+  let (c: i128), (d: bool) = impl_16__overflowing_add a (if carry then mk_i128 1 else mk_i128 0) in
+  c, b <>. d <: (i128 & bool)
+
+/// See [`std::primitive::i8::borrowing_sub`] (and similar for other integer types)
+let impl_16__borrowing_sub (x y: i128) (borrow: bool) : (i128 & bool) =
+  let (a: i128), (b: bool) = impl_16__overflowing_sub x y in
+  let (c: i128), (d: bool) = impl_16__overflowing_sub a (if borrow then mk_i128 1 else mk_i128 0) in
+  c, b <>. d <: (i128 & bool)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other integer types)
+let impl_16__trailing_zeros (x: i128) : u32 =
+  if x =. mk_i128 0
+  then impl_16__BITS
+  else
+    impl_16__count_ones (impl_16__wrapping_sub (x &. (impl_16__wrapping_neg x <: i128) <: i128)
+          (mk_i128 1)
+        <:
+        i128)
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other integer types)
+let impl_16__trailing_ones (x: i128) : u32 =
+  impl_16__trailing_zeros (impl_16__wrapping_sub (mk_i128 (-1)) x <: i128)
+
+/// See [`std::primitive::i8::leading_ones`] (and similar for other integer types)
+let impl_16__leading_ones (x: i128) : u32 =
+  impl_16__leading_zeros (impl_16__wrapping_sub (mk_i128 (-1)) x <: i128)
+
+/// See [`std::primitive::i8::isolate_lowest_one`] (and similar for other integer types)
+let impl_16__isolate_lowest_one (x: i128) : i128 = x &. (impl_16__wrapping_neg x <: i128)
+
+/// See [`std::primitive::i8::swap_bytes`] (and similar for other integer types)
+let impl_16__swap_bytes (x: i128) : i128 =
+  impl_16__from_le_bytes (impl_16__to_be_bytes x <: t_Array u8 (mk_usize 16))
+
+/// See [`std::primitive::i8::to_be`] (and similar for other integer types)
+let impl_16__to_be (x: i128) : i128 = impl_16__swap_bytes x
+
+/// See [`std::primitive::i8::to_le`] (and similar for other integer types)
+let impl_16__to_le (x: i128) : i128 = x
+
+/// See [`std::primitive::i8::from_be`] (and similar for other integer types)
+let impl_16__from_be (x: i128) : i128 = impl_16__swap_bytes x
+
+/// See [`std::primitive::i8::from_le`] (and similar for other integer types)
+let impl_16__from_le (x: i128) : i128 = x
+
+/// See [`std::primitive::i8::to_ne_bytes`] (and similar for other integer types)
+let impl_16__to_ne_bytes (x: i128) : t_Array u8 (mk_usize 16) = impl_16__to_le_bytes x
+
+/// See [`std::primitive::i8::from_ne_bytes`] (and similar for other integer types)
+let impl_16__from_ne_bytes (bytes: t_Array u8 (mk_usize 16)) : i128 = impl_16__from_le_bytes bytes
+
+/// See [`std::primitive::i8::wrapping_shl`] (and similar for other integer types)
+let impl_16__wrapping_shl (x: i128) (n: u32) : i128 = x <<! (n %! impl_16__BITS <: u32)
+
+/// See [`std::primitive::i8::wrapping_shr`] (and similar for other integer types)
+let impl_16__wrapping_shr (x: i128) (n: u32) : i128 = x >>! (n %! impl_16__BITS <: u32)
+
+/// See [`std::primitive::i8::isolate_highest_one`] (and similar for other integer types)
+let impl_16__isolate_highest_one (x: i128) : i128 =
+  x &. (impl_16__wrapping_shr impl_16__MIN (impl_16__leading_zeros x <: u32) <: i128)
+
+/// See [`std::primitive::i8::overflowing_shl`] (and similar for other integer types)
+let impl_16__overflowing_shl (x: i128) (n: u32) : (i128 & bool) =
+  impl_16__wrapping_shl x n, n >=. impl_16__BITS <: (i128 & bool)
+
+/// See [`std::primitive::i8::overflowing_shr`] (and similar for other integer types)
+let impl_16__overflowing_shr (x: i128) (n: u32) : (i128 & bool) =
+  impl_16__wrapping_shr x n, n >=. impl_16__BITS <: (i128 & bool)
+
+/// See [`std::primitive::i8::unbounded_shl`] (and similar for other integer types)
+let impl_16__unbounded_shl (x: i128) (n: u32) : i128 =
+  if n <. impl_16__BITS then x <<! n else mk_i128 0
+
+/// See [`std::primitive::i8::unbounded_shr`] (and similar for other signed integer types)
+let impl_16__unbounded_shr (x: i128) (n: u32) : i128 =
+  if n <. impl_16__BITS then x >>! n else x >>! (impl_16__BITS -! mk_u32 1 <: u32)
+
+/// See [`std::primitive::i8::clamp_magnitude`] (and similar for other signed integer types)
+let impl_16__clamp_magnitude (x: i128) (limit: u128) : i128 =
+  if limit >. (cast (impl_16__MAX <: i128) <: u128)
+  then x
+  else
+    let hi:i128 = cast (limit <: u128) <: i128 in
+    let lo:i128 = impl_16__wrapping_neg hi in
+    if x <. lo then lo else if x >. hi then hi else x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_16__unchecked_add (x y: i128)
     : Prims.Pure i128
@@ -2225,6 +7153,262 @@ let impl_16__div_ceil (x y: i128)
   let d:i128 = x /! y in
   let r:i128 = x %! y in
   if r >. mk_i128 0 && y >. mk_i128 0 || r <. mk_i128 0 && y <. mk_i128 0 then d +! mk_i128 1 else d
+
+/// See [`std::primitive::i8::strict_neg`] (and similar for other integer types)
+let impl_16__strict_neg (x: i128)
+    : Prims.Pure i128 (requires x <>. impl_16__MIN) (fun _ -> Prims.l_True) =
+  if x =. impl_16__MIN
+  then Core_models.Panicking.Internal.panic #i128 ()
+  else impl_16__wrapping_neg x
+
+/// See [`std::primitive::i8::unchecked_neg`] (and similar for other signed integer types)
+let impl_16__unchecked_neg (x: i128)
+    : Prims.Pure i128 (requires x <>. impl_16__MIN) (fun _ -> Prims.l_True) = mk_i128 0 -! x
+
+/// See [`std::primitive::i8::strict_abs`] (and similar for other signed integer types)
+let impl_16__strict_abs (x: i128)
+    : Prims.Pure i128 (requires x <>. impl_16__MIN) (fun _ -> Prims.l_True) =
+  if x <. mk_i128 0 then impl_16__strict_neg x else x
+
+/// See [`std::primitive::i8::strict_pow`] (and similar for other integer types)
+let impl_16__strict_pow (x: i128) (exp: u32)
+    : Prims.Pure i128
+      (requires (impl_16__overflowing_pow x exp <: (i128 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::strict_add`] (and similar for other integer types)
+let impl_16__strict_add (x y: i128)
+    : Prims.Pure i128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::strict_sub`] (and similar for other integer types)
+let impl_16__strict_sub (x y: i128)
+    : Prims.Pure i128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::strict_mul`] (and similar for other integer types)
+let impl_16__strict_mul (x y: i128)
+    : Prims.Pure i128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::overflowing_div`] (and similar for other signed integer types)
+let impl_16__overflowing_div (x y: i128)
+    : Prims.Pure (i128 & bool) (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  if x =. impl_16__MIN && y =. mk_i128 (-1)
+  then x, true <: (i128 & bool)
+  else x /! y, false <: (i128 & bool)
+
+/// See [`std::primitive::i8::overflowing_rem`] (and similar for other signed integer types)
+let impl_16__overflowing_rem (x y: i128)
+    : Prims.Pure (i128 & bool) (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i128 (-1)
+  then mk_i128 0, x =. impl_16__MIN <: (i128 & bool)
+  else x %! y, false <: (i128 & bool)
+
+/// See [`std::primitive::i8::wrapping_div`] (and similar for other signed integer types)
+let impl_16__wrapping_div (x y: i128)
+    : Prims.Pure i128 (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  let (result: i128), (_: bool) = impl_16__overflowing_div x y in
+  result
+
+/// See [`std::primitive::i8::wrapping_rem`] (and similar for other signed integer types)
+let impl_16__wrapping_rem (x y: i128)
+    : Prims.Pure i128 (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  let (result: i128), (_: bool) = impl_16__overflowing_rem x y in
+  result
+
+/// See [`std::primitive::i8::saturating_div`] (and similar for other signed integer types)
+let impl_16__saturating_div (x y: i128)
+    : Prims.Pure i128 (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_div x y in
+  if overflowed then impl_16__MAX else result
+
+/// See [`std::primitive::i8::strict_div`] (and similar for other signed integer types)
+let impl_16__strict_div (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_div x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::strict_rem`] (and similar for other signed integer types)
+let impl_16__strict_rem (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_rem x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::div_euclid`] (and similar for other signed integer types)
+let impl_16__div_euclid (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let q:i128 = x /! y in
+  if (x %! y <: i128) <. mk_i128 0
+  then
+    if y >. mk_i128 0
+    then impl_16__wrapping_sub q (mk_i128 1)
+    else impl_16__wrapping_add q (mk_i128 1)
+  else q
+
+/// See [`std::primitive::i8::overflowing_div_euclid`] (and similar for other signed integer types)
+let impl_16__overflowing_div_euclid (x y: i128)
+    : Prims.Pure (i128 & bool) (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  if x =. impl_16__MIN && y =. mk_i128 (-1)
+  then x, true <: (i128 & bool)
+  else impl_16__div_euclid x y, false <: (i128 & bool)
+
+/// See [`std::primitive::i8::wrapping_div_euclid`] (and similar for other signed integer types)
+let impl_16__wrapping_div_euclid (x y: i128)
+    : Prims.Pure i128 (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  let (result: i128), (_: bool) = impl_16__overflowing_div_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_div_euclid`] (and similar for other signed integer types)
+let impl_16__strict_div_euclid (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_div_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::overflowing_rem_euclid`] (and similar for other signed integer types)
+let impl_16__overflowing_rem_euclid (x y: i128)
+    : Prims.Pure (i128 & bool) (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  if y =. mk_i128 (-1)
+  then mk_i128 0, x =. impl_16__MIN <: (i128 & bool)
+  else impl_16__rem_euclid x y, false <: (i128 & bool)
+
+/// See [`std::primitive::i8::wrapping_rem_euclid`] (and similar for other signed integer types)
+let impl_16__wrapping_rem_euclid (x y: i128)
+    : Prims.Pure i128 (requires y <>. mk_i128 0) (fun _ -> Prims.l_True) =
+  let (result: i128), (_: bool) = impl_16__overflowing_rem_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_rem_euclid`] (and similar for other signed integer types)
+let impl_16__strict_rem_euclid (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_rem_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::div_floor`] (and similar for other signed integer types)
+let impl_16__div_floor (x y: i128)
+    : Prims.Pure i128
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:i128 = x /! y in
+  let r:i128 = x %! y in
+  if r <>. mk_i128 0 && (x <. mk_i128 0 <: bool) <>. (y <. mk_i128 0 <: bool)
+  then impl_16__wrapping_sub d (mk_i128 1)
+  else d
+
+/// See [`std::primitive::i8::unchecked_div_exact`] (and similar for other signed integer types)
+let impl_16__unchecked_div_exact (x y: i128)
+    : Prims.Pure i128
+      (requires y >. mk_i128 0 && (x %! y <: i128) =. mk_i128 0)
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::i8::strict_add_unsigned`] (and similar for other signed integer types)
+let impl_16__strict_add_unsigned (x: i128) (y: u128)
+    : Prims.Pure i128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_add_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::strict_sub_unsigned`] (and similar for other signed integer types)
+let impl_16__strict_sub_unsigned (x: i128) (y: u128)
+    : Prims.Pure i128
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_16__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: i128), (overflowed: bool) = impl_16__overflowing_sub_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #i128 () else result
+
+/// See [`std::primitive::i8::strict_shl`] (and similar for other integer types)
+let impl_16__strict_shl (x: i128) (n: u32)
+    : Prims.Pure i128 (requires n <. impl_16__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_16__BITS then x <<! n else Core_models.Panicking.Internal.panic #i128 ()
+
+/// See [`std::primitive::i8::strict_shr`] (and similar for other integer types)
+let impl_16__strict_shr (x: i128) (n: u32)
+    : Prims.Pure i128 (requires n <. impl_16__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_16__BITS then x >>! n else Core_models.Panicking.Internal.panic #i128 ()
+
+/// See [`std::primitive::i8::unchecked_shl`] (and similar for other integer types)
+let impl_16__unchecked_shl (x: i128) (n: u32)
+    : Prims.Pure i128 (requires n <. impl_16__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr`] (and similar for other integer types)
+let impl_16__unchecked_shr (x: i128) (n: u32)
+    : Prims.Pure i128 (requires n <. impl_16__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::i8::unchecked_shl_exact`] (and similar for other signed integer types)
+let impl_16__unchecked_shl_exact (x: i128) (n: u32)
+    : Prims.Pure i128
+      (requires
+        (n <. (impl_16__leading_zeros x <: u32) || n <. (impl_16__leading_ones x <: u32)) &&
+        n <. impl_16__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_16__unchecked_shr_exact (x: i128) (n: u32)
+    : Prims.Pure i128
+      (requires n <=. (impl_16__trailing_zeros x <: u32) && n <. impl_16__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
 
 /// See [`std::primitive::i8::MIN`] (and similar for other signed integer types)
 let impl_17__MIN: isize = Rust_primitives.Arithmetic.v_ISIZE_MIN
@@ -2341,6 +7525,231 @@ let impl_17__signum (x: isize) : isize =
 let impl_17__wrapping_neg (x: isize) : isize =
   Rust_primitives.Arithmetic.wrapping_sub_isize (mk_isize 0) x
 
+/// See [`std::primitive::i8::min_value`] (and similar for other integer types)
+let impl_17__min_value (_: Prims.unit) : isize = impl_17__MIN
+
+/// See [`std::primitive::i8::max_value`] (and similar for other integer types)
+let impl_17__max_value (_: Prims.unit) : isize = impl_17__MAX
+
+/// See [`std::primitive::i8::cast_unsigned`] (and similar for other signed integer types)
+let impl_17__cast_unsigned (x: isize) : usize = cast (x <: isize) <: usize
+
+/// See [`std::primitive::i8::is_positive`] (and similar for other signed integer types)
+let impl_17__is_positive (x: isize) : bool = x >. mk_isize 0
+
+/// See [`std::primitive::i8::is_negative`] (and similar for other signed integer types)
+let impl_17__is_negative (x: isize) : bool = x <. mk_isize 0
+
+/// See [`std::primitive::i8::count_zeros`] (and similar for other integer types)
+let impl_17__count_zeros (x: isize) : u32 = impl_17__BITS -! (impl_17__count_ones x <: u32)
+
+/// See [`std::primitive::i8::overflowing_neg`] (and similar for other integer types)
+let impl_17__overflowing_neg (x: isize) : (isize & bool) =
+  if x =. impl_17__MIN
+  then impl_17__MIN, true <: (isize & bool)
+  else impl_17__wrapping_neg x, false <: (isize & bool)
+
+/// See [`std::primitive::i8::saturating_neg`] (and similar for other signed integer types)
+let impl_17__saturating_neg (x: isize) : isize =
+  if x =. impl_17__MIN then impl_17__MAX else impl_17__wrapping_neg x
+
+/// See [`std::primitive::i8::wrapping_abs`] (and similar for other signed integer types)
+let impl_17__wrapping_abs (x: isize) : isize =
+  if x <. mk_isize 0 then impl_17__wrapping_neg x else x
+
+/// See [`std::primitive::i8::overflowing_abs`] (and similar for other signed integer types)
+let impl_17__overflowing_abs (x: isize) : (isize & bool) =
+  impl_17__wrapping_abs x, x =. impl_17__MIN <: (isize & bool)
+
+/// See [`std::primitive::i8::saturating_abs`] (and similar for other signed integer types)
+let impl_17__saturating_abs (x: isize) : isize =
+  if x <. mk_isize 0 then impl_17__saturating_neg x else x
+
+/// See [`std::primitive::i8::unsigned_abs`] (and similar for other signed integer types)
+let impl_17__unsigned_abs (x: isize) : usize = cast (impl_17__wrapping_abs x <: isize) <: usize
+
+/// See [`std::primitive::i8::wrapping_pow`] (and similar for other integer types)
+let impl_17__wrapping_pow (x: isize) (exp: u32) : isize =
+  let (result: isize), (_: bool) = impl_17__overflowing_pow x exp in
+  result
+
+/// See [`std::primitive::i8::saturating_pow`] (and similar for other signed integer types)
+let impl_17__saturating_pow (x: isize) (exp: u32) : isize =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_pow x exp in
+  if ~.overflowed
+  then result
+  else
+    if x <. mk_isize 0 && (exp %! mk_u32 2 <: u32) =. mk_u32 1 then impl_17__MIN else impl_17__MAX
+
+/// See [`std::primitive::i8::abs_diff`] (and similar for other signed integer types)
+let impl_17__abs_diff (x y: isize) : usize =
+  if x <. y
+  then cast (impl_17__wrapping_sub y x <: isize) <: usize
+  else cast (impl_17__wrapping_sub x y <: isize) <: usize
+
+/// See [`std::primitive::i8::midpoint`] (and similar for other signed integer types)
+let impl_17__midpoint (x y: isize) : isize =
+  let d:isize = x ^. y in
+  let t:isize = impl_17__wrapping_add (d >>! mk_i32 1 <: isize) (x &. y <: isize) in
+  if t <. mk_isize 0 then impl_17__wrapping_add t (d &. mk_isize 1 <: isize) else t
+
+/// See [`std::primitive::i8::wrapping_add_unsigned`] (and similar for other signed integer types)
+let impl_17__wrapping_add_unsigned (x: isize) (y: usize) : isize =
+  impl_17__wrapping_add x (cast (y <: usize) <: isize)
+
+/// See [`std::primitive::i8::wrapping_sub_unsigned`] (and similar for other signed integer types)
+let impl_17__wrapping_sub_unsigned (x: isize) (y: usize) : isize =
+  impl_17__wrapping_sub x (cast (y <: usize) <: isize)
+
+/// See [`std::primitive::i8::overflowing_add_unsigned`] (and similar for other signed integer types)
+let impl_17__overflowing_add_unsigned (x: isize) (y: usize) : (isize & bool) =
+  let rhs:isize = cast (y <: usize) <: isize in
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_add x rhs in
+  result, overflowed <>. (rhs <. mk_isize 0 <: bool) <: (isize & bool)
+
+/// See [`std::primitive::i8::overflowing_sub_unsigned`] (and similar for other signed integer types)
+let impl_17__overflowing_sub_unsigned (x: isize) (y: usize) : (isize & bool) =
+  let rhs:isize = cast (y <: usize) <: isize in
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_sub x rhs in
+  result, overflowed <>. (rhs <. mk_isize 0 <: bool) <: (isize & bool)
+
+/// See [`std::primitive::i8::saturating_add_unsigned`] (and similar for other signed integer types)
+let impl_17__saturating_add_unsigned (x: isize) (y: usize) : isize =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_add_unsigned x y in
+  if overflowed then impl_17__MAX else result
+
+/// See [`std::primitive::i8::saturating_sub_unsigned`] (and similar for other signed integer types)
+let impl_17__saturating_sub_unsigned (x: isize) (y: usize) : isize =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_sub_unsigned x y in
+  if overflowed then impl_17__MIN else result
+
+/// See [`std::primitive::i8::reverse_bits`] (and similar for other signed integer types)
+let impl_17__reverse_bits (x: isize) : isize =
+  cast (impl_11__reverse_bits (cast (x <: isize) <: usize) <: usize) <: isize
+
+/// See [`std::primitive::i8::widening_mul`] (and similar for other signed integer types)
+let impl_17__widening_mul (x y: isize) : (usize & isize) =
+  let (low: usize), (high: usize) =
+    impl_11__widening_mul (cast (x <: isize) <: usize) (cast (y <: isize) <: usize)
+  in
+  let high:isize = cast (high <: usize) <: isize in
+  let high:isize = if x <. mk_isize 0 then impl_17__wrapping_sub high y else high in
+  let high:isize = if y <. mk_isize 0 then impl_17__wrapping_sub high x else high in
+  low, high <: (usize & isize)
+
+/// See [`std::primitive::i8::carrying_mul_add`] (and similar for other signed integer types)
+let impl_17__carrying_mul_add (x y carry add: isize) : (usize & isize) =
+  let (low: usize), (high: isize) = impl_17__widening_mul x y in
+  let (low: usize), (c1: bool) = impl_11__overflowing_add low (cast (carry <: isize) <: usize) in
+  let (low: usize), (c2: bool) = impl_11__overflowing_add low (cast (add <: isize) <: usize) in
+  let high:isize = impl_17__wrapping_add high (if c1 then mk_isize 1 else mk_isize 0) in
+  let high:isize = impl_17__wrapping_add high (if c2 then mk_isize 1 else mk_isize 0) in
+  let high:isize =
+    impl_17__wrapping_add high (if carry <. mk_isize 0 <: bool then mk_isize (-1) else mk_isize 0)
+  in
+  let high:isize =
+    impl_17__wrapping_add high (if add <. mk_isize 0 <: bool then mk_isize (-1) else mk_isize 0)
+  in
+  low, high <: (usize & isize)
+
+/// See [`std::primitive::i8::carrying_mul`] (and similar for other signed integer types)
+let impl_17__carrying_mul (x y carry: isize) : (usize & isize) =
+  impl_17__carrying_mul_add x y carry (mk_isize 0)
+
+/// See [`std::primitive::i8::carrying_add`] (and similar for other integer types)
+let impl_17__carrying_add (x y: isize) (carry: bool) : (isize & bool) =
+  let (a: isize), (b: bool) = impl_17__overflowing_add x y in
+  let (c: isize), (d: bool) =
+    impl_17__overflowing_add a (if carry then mk_isize 1 else mk_isize 0)
+  in
+  c, b <>. d <: (isize & bool)
+
+/// See [`std::primitive::i8::borrowing_sub`] (and similar for other integer types)
+let impl_17__borrowing_sub (x y: isize) (borrow: bool) : (isize & bool) =
+  let (a: isize), (b: bool) = impl_17__overflowing_sub x y in
+  let (c: isize), (d: bool) =
+    impl_17__overflowing_sub a (if borrow then mk_isize 1 else mk_isize 0)
+  in
+  c, b <>. d <: (isize & bool)
+
+/// See [`std::primitive::i8::trailing_zeros`] (and similar for other integer types)
+let impl_17__trailing_zeros (x: isize) : u32 =
+  if x =. mk_isize 0
+  then impl_17__BITS
+  else
+    impl_17__count_ones (impl_17__wrapping_sub (x &. (impl_17__wrapping_neg x <: isize) <: isize)
+          (mk_isize 1)
+        <:
+        isize)
+
+/// See [`std::primitive::i8::trailing_ones`] (and similar for other integer types)
+let impl_17__trailing_ones (x: isize) : u32 =
+  impl_17__trailing_zeros (impl_17__wrapping_sub (mk_isize (-1)) x <: isize)
+
+/// See [`std::primitive::i8::leading_ones`] (and similar for other integer types)
+let impl_17__leading_ones (x: isize) : u32 =
+  impl_17__leading_zeros (impl_17__wrapping_sub (mk_isize (-1)) x <: isize)
+
+/// See [`std::primitive::i8::isolate_lowest_one`] (and similar for other integer types)
+let impl_17__isolate_lowest_one (x: isize) : isize = x &. (impl_17__wrapping_neg x <: isize)
+
+/// See [`std::primitive::i8::swap_bytes`] (and similar for other integer types)
+let impl_17__swap_bytes (x: isize) : isize =
+  impl_17__from_le_bytes (impl_17__to_be_bytes x <: t_Array u8 (mk_usize 8))
+
+/// See [`std::primitive::i8::to_be`] (and similar for other integer types)
+let impl_17__to_be (x: isize) : isize = impl_17__swap_bytes x
+
+/// See [`std::primitive::i8::to_le`] (and similar for other integer types)
+let impl_17__to_le (x: isize) : isize = x
+
+/// See [`std::primitive::i8::from_be`] (and similar for other integer types)
+let impl_17__from_be (x: isize) : isize = impl_17__swap_bytes x
+
+/// See [`std::primitive::i8::from_le`] (and similar for other integer types)
+let impl_17__from_le (x: isize) : isize = x
+
+/// See [`std::primitive::i8::to_ne_bytes`] (and similar for other integer types)
+let impl_17__to_ne_bytes (x: isize) : t_Array u8 (mk_usize 8) = impl_17__to_le_bytes x
+
+/// See [`std::primitive::i8::from_ne_bytes`] (and similar for other integer types)
+let impl_17__from_ne_bytes (bytes: t_Array u8 (mk_usize 8)) : isize = impl_17__from_le_bytes bytes
+
+/// See [`std::primitive::i8::wrapping_shl`] (and similar for other integer types)
+let impl_17__wrapping_shl (x: isize) (n: u32) : isize = x <<! (n %! impl_17__BITS <: u32)
+
+/// See [`std::primitive::i8::wrapping_shr`] (and similar for other integer types)
+let impl_17__wrapping_shr (x: isize) (n: u32) : isize = x >>! (n %! impl_17__BITS <: u32)
+
+/// See [`std::primitive::i8::isolate_highest_one`] (and similar for other integer types)
+let impl_17__isolate_highest_one (x: isize) : isize =
+  x &. (impl_17__wrapping_shr impl_17__MIN (impl_17__leading_zeros x <: u32) <: isize)
+
+/// See [`std::primitive::i8::overflowing_shl`] (and similar for other integer types)
+let impl_17__overflowing_shl (x: isize) (n: u32) : (isize & bool) =
+  impl_17__wrapping_shl x n, n >=. impl_17__BITS <: (isize & bool)
+
+/// See [`std::primitive::i8::overflowing_shr`] (and similar for other integer types)
+let impl_17__overflowing_shr (x: isize) (n: u32) : (isize & bool) =
+  impl_17__wrapping_shr x n, n >=. impl_17__BITS <: (isize & bool)
+
+/// See [`std::primitive::i8::unbounded_shl`] (and similar for other integer types)
+let impl_17__unbounded_shl (x: isize) (n: u32) : isize =
+  if n <. impl_17__BITS then x <<! n else mk_isize 0
+
+/// See [`std::primitive::i8::unbounded_shr`] (and similar for other signed integer types)
+let impl_17__unbounded_shr (x: isize) (n: u32) : isize =
+  if n <. impl_17__BITS then x >>! n else x >>! (impl_17__BITS -! mk_u32 1 <: u32)
+
+/// See [`std::primitive::i8::clamp_magnitude`] (and similar for other signed integer types)
+let impl_17__clamp_magnitude (x: isize) (limit: usize) : isize =
+  if limit >. (cast (impl_17__MAX <: isize) <: usize)
+  then x
+  else
+    let hi:isize = cast (limit <: usize) <: isize in
+    let lo:isize = impl_17__wrapping_neg hi in
+    if x <. lo then lo else if x >. hi then hi else x
+
 /// See [`std::primitive::u8::unchecked_add`] (and similar for other integer types)
 let impl_17__unchecked_add (x y: isize)
     : Prims.Pure isize
@@ -2421,6 +7830,262 @@ let impl_17__div_ceil (x y: isize)
   if r >. mk_isize 0 && y >. mk_isize 0 || r <. mk_isize 0 && y <. mk_isize 0
   then d +! mk_isize 1
   else d
+
+/// See [`std::primitive::i8::strict_neg`] (and similar for other integer types)
+let impl_17__strict_neg (x: isize)
+    : Prims.Pure isize (requires x <>. impl_17__MIN) (fun _ -> Prims.l_True) =
+  if x =. impl_17__MIN
+  then Core_models.Panicking.Internal.panic #isize ()
+  else impl_17__wrapping_neg x
+
+/// See [`std::primitive::i8::unchecked_neg`] (and similar for other signed integer types)
+let impl_17__unchecked_neg (x: isize)
+    : Prims.Pure isize (requires x <>. impl_17__MIN) (fun _ -> Prims.l_True) = mk_isize 0 -! x
+
+/// See [`std::primitive::i8::strict_abs`] (and similar for other signed integer types)
+let impl_17__strict_abs (x: isize)
+    : Prims.Pure isize (requires x <>. impl_17__MIN) (fun _ -> Prims.l_True) =
+  if x <. mk_isize 0 then impl_17__strict_neg x else x
+
+/// See [`std::primitive::i8::strict_pow`] (and similar for other integer types)
+let impl_17__strict_pow (x: isize) (exp: u32)
+    : Prims.Pure isize
+      (requires (impl_17__overflowing_pow x exp <: (isize & bool))._2 =. false)
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_pow x exp in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::strict_add`] (and similar for other integer types)
+let impl_17__strict_add (x y: isize)
+    : Prims.Pure isize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_add x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::strict_sub`] (and similar for other integer types)
+let impl_17__strict_sub (x y: isize)
+    : Prims.Pure isize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_sub x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::strict_mul`] (and similar for other integer types)
+let impl_17__strict_mul (x y: isize)
+    : Prims.Pure isize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MAX <: Hax_lib.Int.t_Int) &&
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_mul x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::overflowing_div`] (and similar for other signed integer types)
+let impl_17__overflowing_div (x y: isize)
+    : Prims.Pure (isize & bool) (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  if x =. impl_17__MIN && y =. mk_isize (-1)
+  then x, true <: (isize & bool)
+  else x /! y, false <: (isize & bool)
+
+/// See [`std::primitive::i8::overflowing_rem`] (and similar for other signed integer types)
+let impl_17__overflowing_rem (x y: isize)
+    : Prims.Pure (isize & bool) (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  if y =. mk_isize (-1)
+  then mk_isize 0, x =. impl_17__MIN <: (isize & bool)
+  else x %! y, false <: (isize & bool)
+
+/// See [`std::primitive::i8::wrapping_div`] (and similar for other signed integer types)
+let impl_17__wrapping_div (x y: isize)
+    : Prims.Pure isize (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  let (result: isize), (_: bool) = impl_17__overflowing_div x y in
+  result
+
+/// See [`std::primitive::i8::wrapping_rem`] (and similar for other signed integer types)
+let impl_17__wrapping_rem (x y: isize)
+    : Prims.Pure isize (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  let (result: isize), (_: bool) = impl_17__overflowing_rem x y in
+  result
+
+/// See [`std::primitive::i8::saturating_div`] (and similar for other signed integer types)
+let impl_17__saturating_div (x y: isize)
+    : Prims.Pure isize (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_div x y in
+  if overflowed then impl_17__MAX else result
+
+/// See [`std::primitive::i8::strict_div`] (and similar for other signed integer types)
+let impl_17__strict_div (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_div x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::strict_rem`] (and similar for other signed integer types)
+let impl_17__strict_rem (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_rem x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::div_euclid`] (and similar for other signed integer types)
+let impl_17__div_euclid (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let q:isize = x /! y in
+  if (x %! y <: isize) <. mk_isize 0
+  then
+    if y >. mk_isize 0
+    then impl_17__wrapping_sub q (mk_isize 1)
+    else impl_17__wrapping_add q (mk_isize 1)
+  else q
+
+/// See [`std::primitive::i8::overflowing_div_euclid`] (and similar for other signed integer types)
+let impl_17__overflowing_div_euclid (x y: isize)
+    : Prims.Pure (isize & bool) (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  if x =. impl_17__MIN && y =. mk_isize (-1)
+  then x, true <: (isize & bool)
+  else impl_17__div_euclid x y, false <: (isize & bool)
+
+/// See [`std::primitive::i8::wrapping_div_euclid`] (and similar for other signed integer types)
+let impl_17__wrapping_div_euclid (x y: isize)
+    : Prims.Pure isize (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  let (result: isize), (_: bool) = impl_17__overflowing_div_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_div_euclid`] (and similar for other signed integer types)
+let impl_17__strict_div_euclid (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_div_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::overflowing_rem_euclid`] (and similar for other signed integer types)
+let impl_17__overflowing_rem_euclid (x y: isize)
+    : Prims.Pure (isize & bool) (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  if y =. mk_isize (-1)
+  then mk_isize 0, x =. impl_17__MIN <: (isize & bool)
+  else impl_17__rem_euclid x y, false <: (isize & bool)
+
+/// See [`std::primitive::i8::wrapping_rem_euclid`] (and similar for other signed integer types)
+let impl_17__wrapping_rem_euclid (x y: isize)
+    : Prims.Pure isize (requires y <>. mk_isize 0) (fun _ -> Prims.l_True) =
+  let (result: isize), (_: bool) = impl_17__overflowing_rem_euclid x y in
+  result
+
+/// See [`std::primitive::i8::strict_rem_euclid`] (and similar for other signed integer types)
+let impl_17__strict_rem_euclid (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_rem_euclid x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::div_floor`] (and similar for other signed integer types)
+let impl_17__div_floor (x y: isize)
+    : Prims.Pure isize
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  let d:isize = x /! y in
+  let r:isize = x %! y in
+  if r <>. mk_isize 0 && (x <. mk_isize 0 <: bool) <>. (y <. mk_isize 0 <: bool)
+  then impl_17__wrapping_sub d (mk_isize 1)
+  else d
+
+/// See [`std::primitive::i8::unchecked_div_exact`] (and similar for other signed integer types)
+let impl_17__unchecked_div_exact (x y: isize)
+    : Prims.Pure isize
+      (requires y >. mk_isize 0 && (x %! y <: isize) =. mk_isize 0)
+      (fun _ -> Prims.l_True) = x /! y
+
+/// See [`std::primitive::i8::strict_add_unsigned`] (and similar for other signed integer types)
+let impl_17__strict_add_unsigned (x: isize) (y: usize)
+    : Prims.Pure isize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) <=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MAX <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_add_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::strict_sub_unsigned`] (and similar for other signed integer types)
+let impl_17__strict_sub_unsigned (x: isize) (y: usize)
+    : Prims.Pure isize
+      (requires
+        ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+          (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+          <:
+          Hax_lib.Int.t_Int) >=
+        (Rust_primitives.Hax.Int.from_machine impl_17__MIN <: Hax_lib.Int.t_Int))
+      (fun _ -> Prims.l_True) =
+  let (result: isize), (overflowed: bool) = impl_17__overflowing_sub_unsigned x y in
+  if overflowed then Core_models.Panicking.Internal.panic #isize () else result
+
+/// See [`std::primitive::i8::strict_shl`] (and similar for other integer types)
+let impl_17__strict_shl (x: isize) (n: u32)
+    : Prims.Pure isize (requires n <. impl_17__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_17__BITS then x <<! n else Core_models.Panicking.Internal.panic #isize ()
+
+/// See [`std::primitive::i8::strict_shr`] (and similar for other integer types)
+let impl_17__strict_shr (x: isize) (n: u32)
+    : Prims.Pure isize (requires n <. impl_17__BITS) (fun _ -> Prims.l_True) =
+  if n <. impl_17__BITS then x >>! n else Core_models.Panicking.Internal.panic #isize ()
+
+/// See [`std::primitive::i8::unchecked_shl`] (and similar for other integer types)
+let impl_17__unchecked_shl (x: isize) (n: u32)
+    : Prims.Pure isize (requires n <. impl_17__BITS) (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr`] (and similar for other integer types)
+let impl_17__unchecked_shr (x: isize) (n: u32)
+    : Prims.Pure isize (requires n <. impl_17__BITS) (fun _ -> Prims.l_True) = x >>! n
+
+/// See [`std::primitive::i8::unchecked_shl_exact`] (and similar for other signed integer types)
+let impl_17__unchecked_shl_exact (x: isize) (n: u32)
+    : Prims.Pure isize
+      (requires
+        (n <. (impl_17__leading_zeros x <: u32) || n <. (impl_17__leading_ones x <: u32)) &&
+        n <. impl_17__BITS)
+      (fun _ -> Prims.l_True) = x <<! n
+
+/// See [`std::primitive::i8::unchecked_shr_exact`] (and similar for other integer types)
+let impl_17__unchecked_shr_exact (x: isize) (n: u32)
+    : Prims.Pure isize
+      (requires n <=. (impl_17__trailing_zeros x <: u32) && n <. impl_17__BITS)
+      (fun _ -> Prims.l_True) = x >>! n
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_18__from__num: Core_models.Default.t_Default u8 =
@@ -2809,6 +8474,100 @@ let impl_6__checked_div (x y: u8) : t_Option u8 =
 let impl_6__checked_rem (x y: u8) : t_Option u8 =
   if y =. mk_u8 0 then Option_None <: t_Option u8 else Option_Some (x %! y) <: t_Option u8
 
+/// See [`std::primitive::u8::checked_ilog2`] (and similar for other integer types)
+let impl_6__checked_ilog2 (x: u8) : t_Option u32 =
+  if x =. mk_u8 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_6__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_neg`] (and similar for other integer types)
+let impl_6__checked_neg (x: u8) : t_Option u8 =
+  if x =. mk_u8 0 then Option_Some (mk_u8 0) <: t_Option u8 else Option_None <: t_Option u8
+
+/// See [`std::primitive::u8::checked_div_euclid`] (and similar for other unsigned integer types)
+let impl_6__checked_div_euclid (x y: u8) : t_Option u8 =
+  if y =. mk_u8 0 then Option_None <: t_Option u8 else Option_Some (x /! y) <: t_Option u8
+
+/// See [`std::primitive::u8::checked_rem_euclid`] (and similar for other unsigned integer types)
+let impl_6__checked_rem_euclid (x y: u8) : t_Option u8 =
+  if y =. mk_u8 0 then Option_None <: t_Option u8 else Option_Some (x %! y) <: t_Option u8
+
+/// See [`std::primitive::u8::div_exact`] (and similar for other unsigned integer types)
+let impl_6__div_exact (x y: u8)
+    : Prims.Pure (t_Option u8) (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
+  if (x %! y <: u8) <>. mk_u8 0
+  then Option_None <: t_Option u8
+  else Option_Some (x /! y) <: t_Option u8
+
+/// See [`std::primitive::u8::checked_div_exact`] (and similar for other unsigned integer types)
+let impl_6__checked_div_exact (x y: u8) : t_Option u8 =
+  if y =. mk_u8 0 || (x %! y <: u8) <>. mk_u8 0
+  then Option_None <: t_Option u8
+  else Option_Some (x /! y) <: t_Option u8
+
+/// See [`std::primitive::u8::checked_next_multiple_of`] (and similar for other unsigned integer types)
+let impl_6__checked_next_multiple_of (x y: u8) : t_Option u8 =
+  if y =. mk_u8 0
+  then Option_None <: t_Option u8
+  else impl_6__checked_add x ((y -! (x %! y <: u8) <: u8) %! y <: u8)
+
+/// See [`std::primitive::u8::checked_signed_diff`] (and similar for other unsigned integer types)
+let impl_6__checked_signed_diff (x y: u8) : t_Option i8 =
+  let result:i8 = cast (impl_6__wrapping_sub x y <: u8) <: i8 in
+  if (x >=. y <: bool) =. (result <. mk_i8 0 <: bool)
+  then Option_None <: t_Option i8
+  else Option_Some result <: t_Option i8
+
+/// See [`std::primitive::u8::checked_add_signed`] (and similar for other unsigned integer types)
+let impl_6__checked_add_signed (x: u8) (y: i8) : t_Option u8 =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_add_signed x y in
+  if overflowed then Option_None <: t_Option u8 else Option_Some result <: t_Option u8
+
+/// See [`std::primitive::u8::checked_sub_signed`] (and similar for other unsigned integer types)
+let impl_6__checked_sub_signed (x: u8) (y: i8) : t_Option u8 =
+  let (result: u8), (overflowed: bool) = impl_6__overflowing_sub_signed x y in
+  if overflowed then Option_None <: t_Option u8 else Option_Some result <: t_Option u8
+
+/// See [`std::primitive::u8::highest_one`] (and similar for other unsigned integer types)
+let impl_6__highest_one (x: u8) : t_Option u32 = impl_6__checked_ilog2 x
+
+/// See [`std::primitive::u8::lowest_one`] (and similar for other integer types)
+let impl_6__lowest_one (x: u8) : t_Option u32 =
+  if x =. mk_u8 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_6__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other integer types)
+let impl_6__checked_shl (x: u8) (n: u32) : t_Option u8 =
+  if n <. impl_6__BITS then Option_Some (x <<! n) <: t_Option u8 else Option_None <: t_Option u8
+
+/// See [`std::primitive::u8::checked_shr`] (and similar for other integer types)
+let impl_6__checked_shr (x: u8) (n: u32) : t_Option u8 =
+  if n <. impl_6__BITS then Option_Some (x >>! n) <: t_Option u8 else Option_None <: t_Option u8
+
+/// See [`std::primitive::u8::shl_exact`] (and similar for other unsigned integer types)
+let impl_6__shl_exact (x: u8) (n: u32) : t_Option u8 =
+  if n <=. (impl_6__leading_zeros x <: u32) && n <. impl_6__BITS
+  then Option_Some (x <<! n) <: t_Option u8
+  else Option_None <: t_Option u8
+
+/// See [`std::primitive::u8::shr_exact`] (and similar for other integer types)
+let impl_6__shr_exact (x: u8) (n: u32) : t_Option u8 =
+  if n <=. (impl_6__trailing_zeros x <: u32) && n <. impl_6__BITS
+  then Option_Some (x >>! n) <: t_Option u8
+  else Option_None <: t_Option u8
+
+/// See [`std::primitive::u8::checked_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_6__checked_next_power_of_two (x: u8) : t_Option u8 =
+  if x <=. mk_u8 1
+  then Option_Some (mk_u8 1) <: t_Option u8
+  else
+    impl_6__checked_add (impl_6__MAX >>!
+        ((impl_6__leading_zeros (x -! mk_u8 1 <: u8) <: u32) %! impl_6__BITS <: u32)
+        <:
+        u8)
+      (mk_u8 1)
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_7__checked_add (x y: u16) : t_Option u16 =
   let (result: u16), (overflowed: bool) = impl_7__overflowing_add x y in
@@ -2831,6 +8590,100 @@ let impl_7__checked_div (x y: u16) : t_Option u16 =
 /// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
 let impl_7__checked_rem (x y: u16) : t_Option u16 =
   if y =. mk_u16 0 then Option_None <: t_Option u16 else Option_Some (x %! y) <: t_Option u16
+
+/// See [`std::primitive::u8::checked_ilog2`] (and similar for other integer types)
+let impl_7__checked_ilog2 (x: u16) : t_Option u32 =
+  if x =. mk_u16 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_7__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_neg`] (and similar for other integer types)
+let impl_7__checked_neg (x: u16) : t_Option u16 =
+  if x =. mk_u16 0 then Option_Some (mk_u16 0) <: t_Option u16 else Option_None <: t_Option u16
+
+/// See [`std::primitive::u8::checked_div_euclid`] (and similar for other unsigned integer types)
+let impl_7__checked_div_euclid (x y: u16) : t_Option u16 =
+  if y =. mk_u16 0 then Option_None <: t_Option u16 else Option_Some (x /! y) <: t_Option u16
+
+/// See [`std::primitive::u8::checked_rem_euclid`] (and similar for other unsigned integer types)
+let impl_7__checked_rem_euclid (x y: u16) : t_Option u16 =
+  if y =. mk_u16 0 then Option_None <: t_Option u16 else Option_Some (x %! y) <: t_Option u16
+
+/// See [`std::primitive::u8::div_exact`] (and similar for other unsigned integer types)
+let impl_7__div_exact (x y: u16)
+    : Prims.Pure (t_Option u16) (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
+  if (x %! y <: u16) <>. mk_u16 0
+  then Option_None <: t_Option u16
+  else Option_Some (x /! y) <: t_Option u16
+
+/// See [`std::primitive::u8::checked_div_exact`] (and similar for other unsigned integer types)
+let impl_7__checked_div_exact (x y: u16) : t_Option u16 =
+  if y =. mk_u16 0 || (x %! y <: u16) <>. mk_u16 0
+  then Option_None <: t_Option u16
+  else Option_Some (x /! y) <: t_Option u16
+
+/// See [`std::primitive::u8::checked_next_multiple_of`] (and similar for other unsigned integer types)
+let impl_7__checked_next_multiple_of (x y: u16) : t_Option u16 =
+  if y =. mk_u16 0
+  then Option_None <: t_Option u16
+  else impl_7__checked_add x ((y -! (x %! y <: u16) <: u16) %! y <: u16)
+
+/// See [`std::primitive::u8::checked_signed_diff`] (and similar for other unsigned integer types)
+let impl_7__checked_signed_diff (x y: u16) : t_Option i16 =
+  let result:i16 = cast (impl_7__wrapping_sub x y <: u16) <: i16 in
+  if (x >=. y <: bool) =. (result <. mk_i16 0 <: bool)
+  then Option_None <: t_Option i16
+  else Option_Some result <: t_Option i16
+
+/// See [`std::primitive::u8::checked_add_signed`] (and similar for other unsigned integer types)
+let impl_7__checked_add_signed (x: u16) (y: i16) : t_Option u16 =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_add_signed x y in
+  if overflowed then Option_None <: t_Option u16 else Option_Some result <: t_Option u16
+
+/// See [`std::primitive::u8::checked_sub_signed`] (and similar for other unsigned integer types)
+let impl_7__checked_sub_signed (x: u16) (y: i16) : t_Option u16 =
+  let (result: u16), (overflowed: bool) = impl_7__overflowing_sub_signed x y in
+  if overflowed then Option_None <: t_Option u16 else Option_Some result <: t_Option u16
+
+/// See [`std::primitive::u8::highest_one`] (and similar for other unsigned integer types)
+let impl_7__highest_one (x: u16) : t_Option u32 = impl_7__checked_ilog2 x
+
+/// See [`std::primitive::u8::lowest_one`] (and similar for other integer types)
+let impl_7__lowest_one (x: u16) : t_Option u32 =
+  if x =. mk_u16 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_7__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other integer types)
+let impl_7__checked_shl (x: u16) (n: u32) : t_Option u16 =
+  if n <. impl_7__BITS then Option_Some (x <<! n) <: t_Option u16 else Option_None <: t_Option u16
+
+/// See [`std::primitive::u8::checked_shr`] (and similar for other integer types)
+let impl_7__checked_shr (x: u16) (n: u32) : t_Option u16 =
+  if n <. impl_7__BITS then Option_Some (x >>! n) <: t_Option u16 else Option_None <: t_Option u16
+
+/// See [`std::primitive::u8::shl_exact`] (and similar for other unsigned integer types)
+let impl_7__shl_exact (x: u16) (n: u32) : t_Option u16 =
+  if n <=. (impl_7__leading_zeros x <: u32) && n <. impl_7__BITS
+  then Option_Some (x <<! n) <: t_Option u16
+  else Option_None <: t_Option u16
+
+/// See [`std::primitive::u8::shr_exact`] (and similar for other integer types)
+let impl_7__shr_exact (x: u16) (n: u32) : t_Option u16 =
+  if n <=. (impl_7__trailing_zeros x <: u32) && n <. impl_7__BITS
+  then Option_Some (x >>! n) <: t_Option u16
+  else Option_None <: t_Option u16
+
+/// See [`std::primitive::u8::checked_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_7__checked_next_power_of_two (x: u16) : t_Option u16 =
+  if x <=. mk_u16 1
+  then Option_Some (mk_u16 1) <: t_Option u16
+  else
+    impl_7__checked_add (impl_7__MAX >>!
+        ((impl_7__leading_zeros (x -! mk_u16 1 <: u16) <: u32) %! impl_7__BITS <: u32)
+        <:
+        u16)
+      (mk_u16 1)
 
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_8__checked_add (x y: u32) : t_Option u32 =
@@ -2855,6 +8708,100 @@ let impl_8__checked_div (x y: u32) : t_Option u32 =
 let impl_8__checked_rem (x y: u32) : t_Option u32 =
   if y =. mk_u32 0 then Option_None <: t_Option u32 else Option_Some (x %! y) <: t_Option u32
 
+/// See [`std::primitive::u8::checked_ilog2`] (and similar for other integer types)
+let impl_8__checked_ilog2 (x: u32) : t_Option u32 =
+  if x =. mk_u32 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_8__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_neg`] (and similar for other integer types)
+let impl_8__checked_neg (x: u32) : t_Option u32 =
+  if x =. mk_u32 0 then Option_Some (mk_u32 0) <: t_Option u32 else Option_None <: t_Option u32
+
+/// See [`std::primitive::u8::checked_div_euclid`] (and similar for other unsigned integer types)
+let impl_8__checked_div_euclid (x y: u32) : t_Option u32 =
+  if y =. mk_u32 0 then Option_None <: t_Option u32 else Option_Some (x /! y) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_rem_euclid`] (and similar for other unsigned integer types)
+let impl_8__checked_rem_euclid (x y: u32) : t_Option u32 =
+  if y =. mk_u32 0 then Option_None <: t_Option u32 else Option_Some (x %! y) <: t_Option u32
+
+/// See [`std::primitive::u8::div_exact`] (and similar for other unsigned integer types)
+let impl_8__div_exact (x y: u32)
+    : Prims.Pure (t_Option u32) (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
+  if (x %! y <: u32) <>. mk_u32 0
+  then Option_None <: t_Option u32
+  else Option_Some (x /! y) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_div_exact`] (and similar for other unsigned integer types)
+let impl_8__checked_div_exact (x y: u32) : t_Option u32 =
+  if y =. mk_u32 0 || (x %! y <: u32) <>. mk_u32 0
+  then Option_None <: t_Option u32
+  else Option_Some (x /! y) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_next_multiple_of`] (and similar for other unsigned integer types)
+let impl_8__checked_next_multiple_of (x y: u32) : t_Option u32 =
+  if y =. mk_u32 0
+  then Option_None <: t_Option u32
+  else impl_8__checked_add x ((y -! (x %! y <: u32) <: u32) %! y <: u32)
+
+/// See [`std::primitive::u8::checked_signed_diff`] (and similar for other unsigned integer types)
+let impl_8__checked_signed_diff (x y: u32) : t_Option i32 =
+  let result:i32 = cast (impl_8__wrapping_sub x y <: u32) <: i32 in
+  if (x >=. y <: bool) =. (result <. mk_i32 0 <: bool)
+  then Option_None <: t_Option i32
+  else Option_Some result <: t_Option i32
+
+/// See [`std::primitive::u8::checked_add_signed`] (and similar for other unsigned integer types)
+let impl_8__checked_add_signed (x: u32) (y: i32) : t_Option u32 =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_add_signed x y in
+  if overflowed then Option_None <: t_Option u32 else Option_Some result <: t_Option u32
+
+/// See [`std::primitive::u8::checked_sub_signed`] (and similar for other unsigned integer types)
+let impl_8__checked_sub_signed (x: u32) (y: i32) : t_Option u32 =
+  let (result: u32), (overflowed: bool) = impl_8__overflowing_sub_signed x y in
+  if overflowed then Option_None <: t_Option u32 else Option_Some result <: t_Option u32
+
+/// See [`std::primitive::u8::highest_one`] (and similar for other unsigned integer types)
+let impl_8__highest_one (x: u32) : t_Option u32 = impl_8__checked_ilog2 x
+
+/// See [`std::primitive::u8::lowest_one`] (and similar for other integer types)
+let impl_8__lowest_one (x: u32) : t_Option u32 =
+  if x =. mk_u32 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_8__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other integer types)
+let impl_8__checked_shl (x n: u32) : t_Option u32 =
+  if n <. impl_8__BITS then Option_Some (x <<! n) <: t_Option u32 else Option_None <: t_Option u32
+
+/// See [`std::primitive::u8::checked_shr`] (and similar for other integer types)
+let impl_8__checked_shr (x n: u32) : t_Option u32 =
+  if n <. impl_8__BITS then Option_Some (x >>! n) <: t_Option u32 else Option_None <: t_Option u32
+
+/// See [`std::primitive::u8::shl_exact`] (and similar for other unsigned integer types)
+let impl_8__shl_exact (x n: u32) : t_Option u32 =
+  if n <=. (impl_8__leading_zeros x <: u32) && n <. impl_8__BITS
+  then Option_Some (x <<! n) <: t_Option u32
+  else Option_None <: t_Option u32
+
+/// See [`std::primitive::u8::shr_exact`] (and similar for other integer types)
+let impl_8__shr_exact (x n: u32) : t_Option u32 =
+  if n <=. (impl_8__trailing_zeros x <: u32) && n <. impl_8__BITS
+  then Option_Some (x >>! n) <: t_Option u32
+  else Option_None <: t_Option u32
+
+/// See [`std::primitive::u8::checked_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_8__checked_next_power_of_two (x: u32) : t_Option u32 =
+  if x <=. mk_u32 1
+  then Option_Some (mk_u32 1) <: t_Option u32
+  else
+    impl_8__checked_add (impl_8__MAX >>!
+        ((impl_8__leading_zeros (x -! mk_u32 1 <: u32) <: u32) %! impl_8__BITS <: u32)
+        <:
+        u32)
+      (mk_u32 1)
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_9__checked_add (x y: u64) : t_Option u64 =
   let (result: u64), (overflowed: bool) = impl_9__overflowing_add x y in
@@ -2877,6 +8824,100 @@ let impl_9__checked_div (x y: u64) : t_Option u64 =
 /// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
 let impl_9__checked_rem (x y: u64) : t_Option u64 =
   if y =. mk_u64 0 then Option_None <: t_Option u64 else Option_Some (x %! y) <: t_Option u64
+
+/// See [`std::primitive::u8::checked_ilog2`] (and similar for other integer types)
+let impl_9__checked_ilog2 (x: u64) : t_Option u32 =
+  if x =. mk_u64 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_9__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_neg`] (and similar for other integer types)
+let impl_9__checked_neg (x: u64) : t_Option u64 =
+  if x =. mk_u64 0 then Option_Some (mk_u64 0) <: t_Option u64 else Option_None <: t_Option u64
+
+/// See [`std::primitive::u8::checked_div_euclid`] (and similar for other unsigned integer types)
+let impl_9__checked_div_euclid (x y: u64) : t_Option u64 =
+  if y =. mk_u64 0 then Option_None <: t_Option u64 else Option_Some (x /! y) <: t_Option u64
+
+/// See [`std::primitive::u8::checked_rem_euclid`] (and similar for other unsigned integer types)
+let impl_9__checked_rem_euclid (x y: u64) : t_Option u64 =
+  if y =. mk_u64 0 then Option_None <: t_Option u64 else Option_Some (x %! y) <: t_Option u64
+
+/// See [`std::primitive::u8::div_exact`] (and similar for other unsigned integer types)
+let impl_9__div_exact (x y: u64)
+    : Prims.Pure (t_Option u64) (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
+  if (x %! y <: u64) <>. mk_u64 0
+  then Option_None <: t_Option u64
+  else Option_Some (x /! y) <: t_Option u64
+
+/// See [`std::primitive::u8::checked_div_exact`] (and similar for other unsigned integer types)
+let impl_9__checked_div_exact (x y: u64) : t_Option u64 =
+  if y =. mk_u64 0 || (x %! y <: u64) <>. mk_u64 0
+  then Option_None <: t_Option u64
+  else Option_Some (x /! y) <: t_Option u64
+
+/// See [`std::primitive::u8::checked_next_multiple_of`] (and similar for other unsigned integer types)
+let impl_9__checked_next_multiple_of (x y: u64) : t_Option u64 =
+  if y =. mk_u64 0
+  then Option_None <: t_Option u64
+  else impl_9__checked_add x ((y -! (x %! y <: u64) <: u64) %! y <: u64)
+
+/// See [`std::primitive::u8::checked_signed_diff`] (and similar for other unsigned integer types)
+let impl_9__checked_signed_diff (x y: u64) : t_Option i64 =
+  let result:i64 = cast (impl_9__wrapping_sub x y <: u64) <: i64 in
+  if (x >=. y <: bool) =. (result <. mk_i64 0 <: bool)
+  then Option_None <: t_Option i64
+  else Option_Some result <: t_Option i64
+
+/// See [`std::primitive::u8::checked_add_signed`] (and similar for other unsigned integer types)
+let impl_9__checked_add_signed (x: u64) (y: i64) : t_Option u64 =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_add_signed x y in
+  if overflowed then Option_None <: t_Option u64 else Option_Some result <: t_Option u64
+
+/// See [`std::primitive::u8::checked_sub_signed`] (and similar for other unsigned integer types)
+let impl_9__checked_sub_signed (x: u64) (y: i64) : t_Option u64 =
+  let (result: u64), (overflowed: bool) = impl_9__overflowing_sub_signed x y in
+  if overflowed then Option_None <: t_Option u64 else Option_Some result <: t_Option u64
+
+/// See [`std::primitive::u8::highest_one`] (and similar for other unsigned integer types)
+let impl_9__highest_one (x: u64) : t_Option u32 = impl_9__checked_ilog2 x
+
+/// See [`std::primitive::u8::lowest_one`] (and similar for other integer types)
+let impl_9__lowest_one (x: u64) : t_Option u32 =
+  if x =. mk_u64 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_9__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other integer types)
+let impl_9__checked_shl (x: u64) (n: u32) : t_Option u64 =
+  if n <. impl_9__BITS then Option_Some (x <<! n) <: t_Option u64 else Option_None <: t_Option u64
+
+/// See [`std::primitive::u8::checked_shr`] (and similar for other integer types)
+let impl_9__checked_shr (x: u64) (n: u32) : t_Option u64 =
+  if n <. impl_9__BITS then Option_Some (x >>! n) <: t_Option u64 else Option_None <: t_Option u64
+
+/// See [`std::primitive::u8::shl_exact`] (and similar for other unsigned integer types)
+let impl_9__shl_exact (x: u64) (n: u32) : t_Option u64 =
+  if n <=. (impl_9__leading_zeros x <: u32) && n <. impl_9__BITS
+  then Option_Some (x <<! n) <: t_Option u64
+  else Option_None <: t_Option u64
+
+/// See [`std::primitive::u8::shr_exact`] (and similar for other integer types)
+let impl_9__shr_exact (x: u64) (n: u32) : t_Option u64 =
+  if n <=. (impl_9__trailing_zeros x <: u32) && n <. impl_9__BITS
+  then Option_Some (x >>! n) <: t_Option u64
+  else Option_None <: t_Option u64
+
+/// See [`std::primitive::u8::checked_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_9__checked_next_power_of_two (x: u64) : t_Option u64 =
+  if x <=. mk_u64 1
+  then Option_Some (mk_u64 1) <: t_Option u64
+  else
+    impl_9__checked_add (impl_9__MAX >>!
+        ((impl_9__leading_zeros (x -! mk_u64 1 <: u64) <: u32) %! impl_9__BITS <: u32)
+        <:
+        u64)
+      (mk_u64 1)
 
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_10__checked_add (x y: u128) : t_Option u128 =
@@ -2901,6 +8942,104 @@ let impl_10__checked_div (x y: u128) : t_Option u128 =
 let impl_10__checked_rem (x y: u128) : t_Option u128 =
   if y =. mk_u128 0 then Option_None <: t_Option u128 else Option_Some (x %! y) <: t_Option u128
 
+/// See [`std::primitive::u8::checked_ilog2`] (and similar for other integer types)
+let impl_10__checked_ilog2 (x: u128) : t_Option u32 =
+  if x =. mk_u128 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_10__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_neg`] (and similar for other integer types)
+let impl_10__checked_neg (x: u128) : t_Option u128 =
+  if x =. mk_u128 0 then Option_Some (mk_u128 0) <: t_Option u128 else Option_None <: t_Option u128
+
+/// See [`std::primitive::u8::checked_div_euclid`] (and similar for other unsigned integer types)
+let impl_10__checked_div_euclid (x y: u128) : t_Option u128 =
+  if y =. mk_u128 0 then Option_None <: t_Option u128 else Option_Some (x /! y) <: t_Option u128
+
+/// See [`std::primitive::u8::checked_rem_euclid`] (and similar for other unsigned integer types)
+let impl_10__checked_rem_euclid (x y: u128) : t_Option u128 =
+  if y =. mk_u128 0 then Option_None <: t_Option u128 else Option_Some (x %! y) <: t_Option u128
+
+/// See [`std::primitive::u8::div_exact`] (and similar for other unsigned integer types)
+let impl_10__div_exact (x y: u128)
+    : Prims.Pure (t_Option u128) (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
+  if (x %! y <: u128) <>. mk_u128 0
+  then Option_None <: t_Option u128
+  else Option_Some (x /! y) <: t_Option u128
+
+/// See [`std::primitive::u8::checked_div_exact`] (and similar for other unsigned integer types)
+let impl_10__checked_div_exact (x y: u128) : t_Option u128 =
+  if y =. mk_u128 0 || (x %! y <: u128) <>. mk_u128 0
+  then Option_None <: t_Option u128
+  else Option_Some (x /! y) <: t_Option u128
+
+/// See [`std::primitive::u8::checked_next_multiple_of`] (and similar for other unsigned integer types)
+let impl_10__checked_next_multiple_of (x y: u128) : t_Option u128 =
+  if y =. mk_u128 0
+  then Option_None <: t_Option u128
+  else impl_10__checked_add x ((y -! (x %! y <: u128) <: u128) %! y <: u128)
+
+/// See [`std::primitive::u8::checked_signed_diff`] (and similar for other unsigned integer types)
+let impl_10__checked_signed_diff (x y: u128) : t_Option i128 =
+  let result:i128 = cast (impl_10__wrapping_sub x y <: u128) <: i128 in
+  if (x >=. y <: bool) =. (result <. mk_i128 0 <: bool)
+  then Option_None <: t_Option i128
+  else Option_Some result <: t_Option i128
+
+/// See [`std::primitive::u8::checked_add_signed`] (and similar for other unsigned integer types)
+let impl_10__checked_add_signed (x: u128) (y: i128) : t_Option u128 =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_add_signed x y in
+  if overflowed then Option_None <: t_Option u128 else Option_Some result <: t_Option u128
+
+/// See [`std::primitive::u8::checked_sub_signed`] (and similar for other unsigned integer types)
+let impl_10__checked_sub_signed (x: u128) (y: i128) : t_Option u128 =
+  let (result: u128), (overflowed: bool) = impl_10__overflowing_sub_signed x y in
+  if overflowed then Option_None <: t_Option u128 else Option_Some result <: t_Option u128
+
+/// See [`std::primitive::u8::highest_one`] (and similar for other unsigned integer types)
+let impl_10__highest_one (x: u128) : t_Option u32 = impl_10__checked_ilog2 x
+
+/// See [`std::primitive::u8::lowest_one`] (and similar for other integer types)
+let impl_10__lowest_one (x: u128) : t_Option u32 =
+  if x =. mk_u128 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_10__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other integer types)
+let impl_10__checked_shl (x: u128) (n: u32) : t_Option u128 =
+  if n <. impl_10__BITS
+  then Option_Some (x <<! n) <: t_Option u128
+  else Option_None <: t_Option u128
+
+/// See [`std::primitive::u8::checked_shr`] (and similar for other integer types)
+let impl_10__checked_shr (x: u128) (n: u32) : t_Option u128 =
+  if n <. impl_10__BITS
+  then Option_Some (x >>! n) <: t_Option u128
+  else Option_None <: t_Option u128
+
+/// See [`std::primitive::u8::shl_exact`] (and similar for other unsigned integer types)
+let impl_10__shl_exact (x: u128) (n: u32) : t_Option u128 =
+  if n <=. (impl_10__leading_zeros x <: u32) && n <. impl_10__BITS
+  then Option_Some (x <<! n) <: t_Option u128
+  else Option_None <: t_Option u128
+
+/// See [`std::primitive::u8::shr_exact`] (and similar for other integer types)
+let impl_10__shr_exact (x: u128) (n: u32) : t_Option u128 =
+  if n <=. (impl_10__trailing_zeros x <: u32) && n <. impl_10__BITS
+  then Option_Some (x >>! n) <: t_Option u128
+  else Option_None <: t_Option u128
+
+/// See [`std::primitive::u8::checked_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_10__checked_next_power_of_two (x: u128) : t_Option u128 =
+  if x <=. mk_u128 1
+  then Option_Some (mk_u128 1) <: t_Option u128
+  else
+    impl_10__checked_add (impl_10__MAX >>!
+        ((impl_10__leading_zeros (x -! mk_u128 1 <: u128) <: u32) %! impl_10__BITS <: u32)
+        <:
+        u128)
+      (mk_u128 1)
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_11__checked_add (x y: usize) : t_Option usize =
   let (result: usize), (overflowed: bool) = impl_11__overflowing_add x y in
@@ -2923,6 +9062,106 @@ let impl_11__checked_div (x y: usize) : t_Option usize =
 /// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
 let impl_11__checked_rem (x y: usize) : t_Option usize =
   if y =. mk_usize 0 then Option_None <: t_Option usize else Option_Some (x %! y) <: t_Option usize
+
+/// See [`std::primitive::u8::checked_ilog2`] (and similar for other integer types)
+let impl_11__checked_ilog2 (x: usize) : t_Option u32 =
+  if x =. mk_usize 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_11__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_neg`] (and similar for other integer types)
+let impl_11__checked_neg (x: usize) : t_Option usize =
+  if x =. mk_usize 0
+  then Option_Some (mk_usize 0) <: t_Option usize
+  else Option_None <: t_Option usize
+
+/// See [`std::primitive::u8::checked_div_euclid`] (and similar for other unsigned integer types)
+let impl_11__checked_div_euclid (x y: usize) : t_Option usize =
+  if y =. mk_usize 0 then Option_None <: t_Option usize else Option_Some (x /! y) <: t_Option usize
+
+/// See [`std::primitive::u8::checked_rem_euclid`] (and similar for other unsigned integer types)
+let impl_11__checked_rem_euclid (x y: usize) : t_Option usize =
+  if y =. mk_usize 0 then Option_None <: t_Option usize else Option_Some (x %! y) <: t_Option usize
+
+/// See [`std::primitive::u8::div_exact`] (and similar for other unsigned integer types)
+let impl_11__div_exact (x y: usize)
+    : Prims.Pure (t_Option usize) (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
+  if (x %! y <: usize) <>. mk_usize 0
+  then Option_None <: t_Option usize
+  else Option_Some (x /! y) <: t_Option usize
+
+/// See [`std::primitive::u8::checked_div_exact`] (and similar for other unsigned integer types)
+let impl_11__checked_div_exact (x y: usize) : t_Option usize =
+  if y =. mk_usize 0 || (x %! y <: usize) <>. mk_usize 0
+  then Option_None <: t_Option usize
+  else Option_Some (x /! y) <: t_Option usize
+
+/// See [`std::primitive::u8::checked_next_multiple_of`] (and similar for other unsigned integer types)
+let impl_11__checked_next_multiple_of (x y: usize) : t_Option usize =
+  if y =. mk_usize 0
+  then Option_None <: t_Option usize
+  else impl_11__checked_add x ((y -! (x %! y <: usize) <: usize) %! y <: usize)
+
+/// See [`std::primitive::u8::checked_signed_diff`] (and similar for other unsigned integer types)
+let impl_11__checked_signed_diff (x y: usize) : t_Option isize =
+  let result:isize = cast (impl_11__wrapping_sub x y <: usize) <: isize in
+  if (x >=. y <: bool) =. (result <. mk_isize 0 <: bool)
+  then Option_None <: t_Option isize
+  else Option_Some result <: t_Option isize
+
+/// See [`std::primitive::u8::checked_add_signed`] (and similar for other unsigned integer types)
+let impl_11__checked_add_signed (x: usize) (y: isize) : t_Option usize =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_add_signed x y in
+  if overflowed then Option_None <: t_Option usize else Option_Some result <: t_Option usize
+
+/// See [`std::primitive::u8::checked_sub_signed`] (and similar for other unsigned integer types)
+let impl_11__checked_sub_signed (x: usize) (y: isize) : t_Option usize =
+  let (result: usize), (overflowed: bool) = impl_11__overflowing_sub_signed x y in
+  if overflowed then Option_None <: t_Option usize else Option_Some result <: t_Option usize
+
+/// See [`std::primitive::u8::highest_one`] (and similar for other unsigned integer types)
+let impl_11__highest_one (x: usize) : t_Option u32 = impl_11__checked_ilog2 x
+
+/// See [`std::primitive::u8::lowest_one`] (and similar for other integer types)
+let impl_11__lowest_one (x: usize) : t_Option u32 =
+  if x =. mk_usize 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_11__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other integer types)
+let impl_11__checked_shl (x: usize) (n: u32) : t_Option usize =
+  if n <. impl_11__BITS
+  then Option_Some (x <<! n) <: t_Option usize
+  else Option_None <: t_Option usize
+
+/// See [`std::primitive::u8::checked_shr`] (and similar for other integer types)
+let impl_11__checked_shr (x: usize) (n: u32) : t_Option usize =
+  if n <. impl_11__BITS
+  then Option_Some (x >>! n) <: t_Option usize
+  else Option_None <: t_Option usize
+
+/// See [`std::primitive::u8::shl_exact`] (and similar for other unsigned integer types)
+let impl_11__shl_exact (x: usize) (n: u32) : t_Option usize =
+  if n <=. (impl_11__leading_zeros x <: u32) && n <. impl_11__BITS
+  then Option_Some (x <<! n) <: t_Option usize
+  else Option_None <: t_Option usize
+
+/// See [`std::primitive::u8::shr_exact`] (and similar for other integer types)
+let impl_11__shr_exact (x: usize) (n: u32) : t_Option usize =
+  if n <=. (impl_11__trailing_zeros x <: u32) && n <. impl_11__BITS
+  then Option_Some (x >>! n) <: t_Option usize
+  else Option_None <: t_Option usize
+
+/// See [`std::primitive::u8::checked_next_power_of_two`] (and similar for other unsigned integer types)
+let impl_11__checked_next_power_of_two (x: usize) : t_Option usize =
+  if x <=. mk_usize 1
+  then Option_Some (mk_usize 1) <: t_Option usize
+  else
+    impl_11__checked_add (impl_11__MAX >>!
+        ((impl_11__leading_zeros (x -! mk_usize 1 <: usize) <: u32) %! impl_11__BITS <: u32)
+        <:
+        usize)
+      (mk_usize 1)
 
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_12__checked_add (x y: i8) : t_Option i8 =
@@ -2965,6 +9204,114 @@ let impl_12__checked_rem (x y: i8) : t_Option i8 =
   then Option_None <: t_Option i8
   else Option_Some (x %! y) <: t_Option i8
 
+/// See [`std::primitive::i8::checked_ilog2`] (and similar for other integer types)
+let impl_12__checked_ilog2 (x: i8) : t_Option u32 =
+  if x <=. mk_i8 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_12__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_neg`] (and similar for other integer types)
+let impl_12__checked_neg (x: i8) : t_Option i8 =
+  if x =. impl_12__MIN
+  then Option_None <: t_Option i8
+  else Option_Some (impl_12__wrapping_neg x) <: t_Option i8
+
+/// See [`std::primitive::i8::checked_abs`] (and similar for other signed integer types)
+let impl_12__checked_abs (x: i8) : t_Option i8 =
+  if x <. mk_i8 0 then impl_12__checked_neg x else Option_Some x <: t_Option i8
+
+/// See [`std::primitive::i8::checked_div_euclid`] (and similar for other signed integer types)
+let impl_12__checked_div_euclid (x y: i8) : t_Option i8 =
+  if y =. mk_i8 0 || x =. impl_12__MIN && y =. mk_i8 (-1)
+  then Option_None <: t_Option i8
+  else Option_Some (impl_12__div_euclid x y) <: t_Option i8
+
+/// See [`std::primitive::i8::checked_rem_euclid`] (and similar for other signed integer types)
+let impl_12__checked_rem_euclid (x y: i8) : t_Option i8 =
+  if y =. mk_i8 0 || x =. impl_12__MIN && y =. mk_i8 (-1)
+  then Option_None <: t_Option i8
+  else Option_Some (impl_12__rem_euclid x y) <: t_Option i8
+
+/// See [`std::primitive::i8::div_exact`] (and similar for other signed integer types)
+let impl_12__div_exact (x y: i8)
+    : Prims.Pure (t_Option i8)
+      (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  if (x %! y <: i8) <>. mk_i8 0
+  then Option_None <: t_Option i8
+  else Option_Some (x /! y) <: t_Option i8
+
+/// See [`std::primitive::i8::checked_div_exact`] (and similar for other signed integer types)
+let impl_12__checked_div_exact (x y: i8) : t_Option i8 =
+  if y =. mk_i8 0 || x =. impl_12__MIN && y =. mk_i8 (-1) || (x %! y <: i8) <>. mk_i8 0
+  then Option_None <: t_Option i8
+  else Option_Some (x /! y) <: t_Option i8
+
+/// See [`std::primitive::i8::checked_next_multiple_of`] (and similar for other signed integer types)
+let impl_12__checked_next_multiple_of (x y: i8) : t_Option i8 =
+  if y =. mk_i8 (-1)
+  then Option_Some x <: t_Option i8
+  else
+    if y =. mk_i8 0
+    then Option_None <: t_Option i8
+    else
+      let r:i8 = x %! y in
+      let m:i8 =
+        if r >. mk_i8 0 && y <. mk_i8 0 || r <. mk_i8 0 && y >. mk_i8 0
+        then impl_12__wrapping_add r y
+        else r
+      in
+      if m =. mk_i8 0
+      then Option_Some x <: t_Option i8
+      else impl_12__checked_add x (impl_12__wrapping_sub y m <: i8)
+
+/// See [`std::primitive::i8::highest_one`] (and similar for other signed integer types)
+assume
+val impl_12__highest_one': x: i8 -> t_Option u32
+
+unfold
+let impl_12__highest_one = impl_12__highest_one'
+
+/// See [`std::primitive::i8::lowest_one`] (and similar for other integer types)
+let impl_12__lowest_one (x: i8) : t_Option u32 =
+  if x =. mk_i8 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_12__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_shl`] (and similar for other integer types)
+let impl_12__checked_shl (x: i8) (n: u32) : t_Option i8 =
+  if n <. impl_12__BITS then Option_Some (x <<! n) <: t_Option i8 else Option_None <: t_Option i8
+
+/// See [`std::primitive::i8::checked_shr`] (and similar for other integer types)
+let impl_12__checked_shr (x: i8) (n: u32) : t_Option i8 =
+  if n <. impl_12__BITS then Option_Some (x >>! n) <: t_Option i8 else Option_None <: t_Option i8
+
+/// See [`std::primitive::i8::shl_exact`] (and similar for other signed integer types)
+let impl_12__shl_exact (x: i8) (n: u32) : t_Option i8 =
+  if
+    (n <. (impl_12__leading_zeros x <: u32) || n <. (impl_12__leading_ones x <: u32)) &&
+    n <. impl_12__BITS
+  then Option_Some (x <<! n) <: t_Option i8
+  else Option_None <: t_Option i8
+
+/// See [`std::primitive::i8::shr_exact`] (and similar for other integer types)
+let impl_12__shr_exact (x: i8) (n: u32) : t_Option i8 =
+  if n <=. (impl_12__trailing_zeros x <: u32) && n <. impl_12__BITS
+  then Option_Some (x >>! n) <: t_Option i8
+  else Option_None <: t_Option i8
+
+/// See [`std::primitive::i8::next_multiple_of`] (and similar for other signed integer types)
+let impl_12__next_multiple_of (x y: i8)
+    : Prims.Pure i8
+      (requires
+        (match impl_12__checked_next_multiple_of x y <: t_Option i8 with
+          | Option_Some _ -> true
+          | Option_None  -> false))
+      (fun _ -> Prims.l_True) =
+  match impl_12__checked_next_multiple_of x y <: t_Option i8 with
+  | Option_Some result -> result
+  | Option_None  -> Core_models.Panicking.Internal.panic #i8 ()
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_13__checked_add (x y: i16) : t_Option i16 =
   let (result: i16), (overflowed: bool) = impl_13__overflowing_add x y in
@@ -3005,6 +9352,114 @@ let impl_13__checked_rem (x y: i16) : t_Option i16 =
   if y =. mk_i16 0 || x =. impl_13__MIN && y =. mk_i16 (-1)
   then Option_None <: t_Option i16
   else Option_Some (x %! y) <: t_Option i16
+
+/// See [`std::primitive::i8::checked_ilog2`] (and similar for other integer types)
+let impl_13__checked_ilog2 (x: i16) : t_Option u32 =
+  if x <=. mk_i16 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_13__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_neg`] (and similar for other integer types)
+let impl_13__checked_neg (x: i16) : t_Option i16 =
+  if x =. impl_13__MIN
+  then Option_None <: t_Option i16
+  else Option_Some (impl_13__wrapping_neg x) <: t_Option i16
+
+/// See [`std::primitive::i8::checked_abs`] (and similar for other signed integer types)
+let impl_13__checked_abs (x: i16) : t_Option i16 =
+  if x <. mk_i16 0 then impl_13__checked_neg x else Option_Some x <: t_Option i16
+
+/// See [`std::primitive::i8::checked_div_euclid`] (and similar for other signed integer types)
+let impl_13__checked_div_euclid (x y: i16) : t_Option i16 =
+  if y =. mk_i16 0 || x =. impl_13__MIN && y =. mk_i16 (-1)
+  then Option_None <: t_Option i16
+  else Option_Some (impl_13__div_euclid x y) <: t_Option i16
+
+/// See [`std::primitive::i8::checked_rem_euclid`] (and similar for other signed integer types)
+let impl_13__checked_rem_euclid (x y: i16) : t_Option i16 =
+  if y =. mk_i16 0 || x =. impl_13__MIN && y =. mk_i16 (-1)
+  then Option_None <: t_Option i16
+  else Option_Some (impl_13__rem_euclid x y) <: t_Option i16
+
+/// See [`std::primitive::i8::div_exact`] (and similar for other signed integer types)
+let impl_13__div_exact (x y: i16)
+    : Prims.Pure (t_Option i16)
+      (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  if (x %! y <: i16) <>. mk_i16 0
+  then Option_None <: t_Option i16
+  else Option_Some (x /! y) <: t_Option i16
+
+/// See [`std::primitive::i8::checked_div_exact`] (and similar for other signed integer types)
+let impl_13__checked_div_exact (x y: i16) : t_Option i16 =
+  if y =. mk_i16 0 || x =. impl_13__MIN && y =. mk_i16 (-1) || (x %! y <: i16) <>. mk_i16 0
+  then Option_None <: t_Option i16
+  else Option_Some (x /! y) <: t_Option i16
+
+/// See [`std::primitive::i8::checked_next_multiple_of`] (and similar for other signed integer types)
+let impl_13__checked_next_multiple_of (x y: i16) : t_Option i16 =
+  if y =. mk_i16 (-1)
+  then Option_Some x <: t_Option i16
+  else
+    if y =. mk_i16 0
+    then Option_None <: t_Option i16
+    else
+      let r:i16 = x %! y in
+      let m:i16 =
+        if r >. mk_i16 0 && y <. mk_i16 0 || r <. mk_i16 0 && y >. mk_i16 0
+        then impl_13__wrapping_add r y
+        else r
+      in
+      if m =. mk_i16 0
+      then Option_Some x <: t_Option i16
+      else impl_13__checked_add x (impl_13__wrapping_sub y m <: i16)
+
+/// See [`std::primitive::i8::highest_one`] (and similar for other signed integer types)
+assume
+val impl_13__highest_one': x: i16 -> t_Option u32
+
+unfold
+let impl_13__highest_one = impl_13__highest_one'
+
+/// See [`std::primitive::i8::lowest_one`] (and similar for other integer types)
+let impl_13__lowest_one (x: i16) : t_Option u32 =
+  if x =. mk_i16 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_13__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_shl`] (and similar for other integer types)
+let impl_13__checked_shl (x: i16) (n: u32) : t_Option i16 =
+  if n <. impl_13__BITS then Option_Some (x <<! n) <: t_Option i16 else Option_None <: t_Option i16
+
+/// See [`std::primitive::i8::checked_shr`] (and similar for other integer types)
+let impl_13__checked_shr (x: i16) (n: u32) : t_Option i16 =
+  if n <. impl_13__BITS then Option_Some (x >>! n) <: t_Option i16 else Option_None <: t_Option i16
+
+/// See [`std::primitive::i8::shl_exact`] (and similar for other signed integer types)
+let impl_13__shl_exact (x: i16) (n: u32) : t_Option i16 =
+  if
+    (n <. (impl_13__leading_zeros x <: u32) || n <. (impl_13__leading_ones x <: u32)) &&
+    n <. impl_13__BITS
+  then Option_Some (x <<! n) <: t_Option i16
+  else Option_None <: t_Option i16
+
+/// See [`std::primitive::i8::shr_exact`] (and similar for other integer types)
+let impl_13__shr_exact (x: i16) (n: u32) : t_Option i16 =
+  if n <=. (impl_13__trailing_zeros x <: u32) && n <. impl_13__BITS
+  then Option_Some (x >>! n) <: t_Option i16
+  else Option_None <: t_Option i16
+
+/// See [`std::primitive::i8::next_multiple_of`] (and similar for other signed integer types)
+let impl_13__next_multiple_of (x y: i16)
+    : Prims.Pure i16
+      (requires
+        (match impl_13__checked_next_multiple_of x y <: t_Option i16 with
+          | Option_Some _ -> true
+          | Option_None  -> false))
+      (fun _ -> Prims.l_True) =
+  match impl_13__checked_next_multiple_of x y <: t_Option i16 with
+  | Option_Some result -> result
+  | Option_None  -> Core_models.Panicking.Internal.panic #i16 ()
 
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_14__checked_add (x y: i32) : t_Option i32 =
@@ -3047,6 +9502,114 @@ let impl_14__checked_rem (x y: i32) : t_Option i32 =
   then Option_None <: t_Option i32
   else Option_Some (x %! y) <: t_Option i32
 
+/// See [`std::primitive::i8::checked_ilog2`] (and similar for other integer types)
+let impl_14__checked_ilog2 (x: i32) : t_Option u32 =
+  if x <=. mk_i32 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_14__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_neg`] (and similar for other integer types)
+let impl_14__checked_neg (x: i32) : t_Option i32 =
+  if x =. impl_14__MIN
+  then Option_None <: t_Option i32
+  else Option_Some (impl_14__wrapping_neg x) <: t_Option i32
+
+/// See [`std::primitive::i8::checked_abs`] (and similar for other signed integer types)
+let impl_14__checked_abs (x: i32) : t_Option i32 =
+  if x <. mk_i32 0 then impl_14__checked_neg x else Option_Some x <: t_Option i32
+
+/// See [`std::primitive::i8::checked_div_euclid`] (and similar for other signed integer types)
+let impl_14__checked_div_euclid (x y: i32) : t_Option i32 =
+  if y =. mk_i32 0 || x =. impl_14__MIN && y =. mk_i32 (-1)
+  then Option_None <: t_Option i32
+  else Option_Some (impl_14__div_euclid x y) <: t_Option i32
+
+/// See [`std::primitive::i8::checked_rem_euclid`] (and similar for other signed integer types)
+let impl_14__checked_rem_euclid (x y: i32) : t_Option i32 =
+  if y =. mk_i32 0 || x =. impl_14__MIN && y =. mk_i32 (-1)
+  then Option_None <: t_Option i32
+  else Option_Some (impl_14__rem_euclid x y) <: t_Option i32
+
+/// See [`std::primitive::i8::div_exact`] (and similar for other signed integer types)
+let impl_14__div_exact (x y: i32)
+    : Prims.Pure (t_Option i32)
+      (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  if (x %! y <: i32) <>. mk_i32 0
+  then Option_None <: t_Option i32
+  else Option_Some (x /! y) <: t_Option i32
+
+/// See [`std::primitive::i8::checked_div_exact`] (and similar for other signed integer types)
+let impl_14__checked_div_exact (x y: i32) : t_Option i32 =
+  if y =. mk_i32 0 || x =. impl_14__MIN && y =. mk_i32 (-1) || (x %! y <: i32) <>. mk_i32 0
+  then Option_None <: t_Option i32
+  else Option_Some (x /! y) <: t_Option i32
+
+/// See [`std::primitive::i8::checked_next_multiple_of`] (and similar for other signed integer types)
+let impl_14__checked_next_multiple_of (x y: i32) : t_Option i32 =
+  if y =. mk_i32 (-1)
+  then Option_Some x <: t_Option i32
+  else
+    if y =. mk_i32 0
+    then Option_None <: t_Option i32
+    else
+      let r:i32 = x %! y in
+      let m:i32 =
+        if r >. mk_i32 0 && y <. mk_i32 0 || r <. mk_i32 0 && y >. mk_i32 0
+        then impl_14__wrapping_add r y
+        else r
+      in
+      if m =. mk_i32 0
+      then Option_Some x <: t_Option i32
+      else impl_14__checked_add x (impl_14__wrapping_sub y m <: i32)
+
+/// See [`std::primitive::i8::highest_one`] (and similar for other signed integer types)
+assume
+val impl_14__highest_one': x: i32 -> t_Option u32
+
+unfold
+let impl_14__highest_one = impl_14__highest_one'
+
+/// See [`std::primitive::i8::lowest_one`] (and similar for other integer types)
+let impl_14__lowest_one (x: i32) : t_Option u32 =
+  if x =. mk_i32 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_14__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_shl`] (and similar for other integer types)
+let impl_14__checked_shl (x: i32) (n: u32) : t_Option i32 =
+  if n <. impl_14__BITS then Option_Some (x <<! n) <: t_Option i32 else Option_None <: t_Option i32
+
+/// See [`std::primitive::i8::checked_shr`] (and similar for other integer types)
+let impl_14__checked_shr (x: i32) (n: u32) : t_Option i32 =
+  if n <. impl_14__BITS then Option_Some (x >>! n) <: t_Option i32 else Option_None <: t_Option i32
+
+/// See [`std::primitive::i8::shl_exact`] (and similar for other signed integer types)
+let impl_14__shl_exact (x: i32) (n: u32) : t_Option i32 =
+  if
+    (n <. (impl_14__leading_zeros x <: u32) || n <. (impl_14__leading_ones x <: u32)) &&
+    n <. impl_14__BITS
+  then Option_Some (x <<! n) <: t_Option i32
+  else Option_None <: t_Option i32
+
+/// See [`std::primitive::i8::shr_exact`] (and similar for other integer types)
+let impl_14__shr_exact (x: i32) (n: u32) : t_Option i32 =
+  if n <=. (impl_14__trailing_zeros x <: u32) && n <. impl_14__BITS
+  then Option_Some (x >>! n) <: t_Option i32
+  else Option_None <: t_Option i32
+
+/// See [`std::primitive::i8::next_multiple_of`] (and similar for other signed integer types)
+let impl_14__next_multiple_of (x y: i32)
+    : Prims.Pure i32
+      (requires
+        (match impl_14__checked_next_multiple_of x y <: t_Option i32 with
+          | Option_Some _ -> true
+          | Option_None  -> false))
+      (fun _ -> Prims.l_True) =
+  match impl_14__checked_next_multiple_of x y <: t_Option i32 with
+  | Option_Some result -> result
+  | Option_None  -> Core_models.Panicking.Internal.panic #i32 ()
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_15__checked_add (x y: i64) : t_Option i64 =
   let (result: i64), (overflowed: bool) = impl_15__overflowing_add x y in
@@ -3088,6 +9651,114 @@ let impl_15__checked_rem (x y: i64) : t_Option i64 =
   then Option_None <: t_Option i64
   else Option_Some (x %! y) <: t_Option i64
 
+/// See [`std::primitive::i8::checked_ilog2`] (and similar for other integer types)
+let impl_15__checked_ilog2 (x: i64) : t_Option u32 =
+  if x <=. mk_i64 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_15__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_neg`] (and similar for other integer types)
+let impl_15__checked_neg (x: i64) : t_Option i64 =
+  if x =. impl_15__MIN
+  then Option_None <: t_Option i64
+  else Option_Some (impl_15__wrapping_neg x) <: t_Option i64
+
+/// See [`std::primitive::i8::checked_abs`] (and similar for other signed integer types)
+let impl_15__checked_abs (x: i64) : t_Option i64 =
+  if x <. mk_i64 0 then impl_15__checked_neg x else Option_Some x <: t_Option i64
+
+/// See [`std::primitive::i8::checked_div_euclid`] (and similar for other signed integer types)
+let impl_15__checked_div_euclid (x y: i64) : t_Option i64 =
+  if y =. mk_i64 0 || x =. impl_15__MIN && y =. mk_i64 (-1)
+  then Option_None <: t_Option i64
+  else Option_Some (impl_15__div_euclid x y) <: t_Option i64
+
+/// See [`std::primitive::i8::checked_rem_euclid`] (and similar for other signed integer types)
+let impl_15__checked_rem_euclid (x y: i64) : t_Option i64 =
+  if y =. mk_i64 0 || x =. impl_15__MIN && y =. mk_i64 (-1)
+  then Option_None <: t_Option i64
+  else Option_Some (impl_15__rem_euclid x y) <: t_Option i64
+
+/// See [`std::primitive::i8::div_exact`] (and similar for other signed integer types)
+let impl_15__div_exact (x y: i64)
+    : Prims.Pure (t_Option i64)
+      (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  if (x %! y <: i64) <>. mk_i64 0
+  then Option_None <: t_Option i64
+  else Option_Some (x /! y) <: t_Option i64
+
+/// See [`std::primitive::i8::checked_div_exact`] (and similar for other signed integer types)
+let impl_15__checked_div_exact (x y: i64) : t_Option i64 =
+  if y =. mk_i64 0 || x =. impl_15__MIN && y =. mk_i64 (-1) || (x %! y <: i64) <>. mk_i64 0
+  then Option_None <: t_Option i64
+  else Option_Some (x /! y) <: t_Option i64
+
+/// See [`std::primitive::i8::checked_next_multiple_of`] (and similar for other signed integer types)
+let impl_15__checked_next_multiple_of (x y: i64) : t_Option i64 =
+  if y =. mk_i64 (-1)
+  then Option_Some x <: t_Option i64
+  else
+    if y =. mk_i64 0
+    then Option_None <: t_Option i64
+    else
+      let r:i64 = x %! y in
+      let m:i64 =
+        if r >. mk_i64 0 && y <. mk_i64 0 || r <. mk_i64 0 && y >. mk_i64 0
+        then impl_15__wrapping_add r y
+        else r
+      in
+      if m =. mk_i64 0
+      then Option_Some x <: t_Option i64
+      else impl_15__checked_add x (impl_15__wrapping_sub y m <: i64)
+
+/// See [`std::primitive::i8::highest_one`] (and similar for other signed integer types)
+assume
+val impl_15__highest_one': x: i64 -> t_Option u32
+
+unfold
+let impl_15__highest_one = impl_15__highest_one'
+
+/// See [`std::primitive::i8::lowest_one`] (and similar for other integer types)
+let impl_15__lowest_one (x: i64) : t_Option u32 =
+  if x =. mk_i64 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_15__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_shl`] (and similar for other integer types)
+let impl_15__checked_shl (x: i64) (n: u32) : t_Option i64 =
+  if n <. impl_15__BITS then Option_Some (x <<! n) <: t_Option i64 else Option_None <: t_Option i64
+
+/// See [`std::primitive::i8::checked_shr`] (and similar for other integer types)
+let impl_15__checked_shr (x: i64) (n: u32) : t_Option i64 =
+  if n <. impl_15__BITS then Option_Some (x >>! n) <: t_Option i64 else Option_None <: t_Option i64
+
+/// See [`std::primitive::i8::shl_exact`] (and similar for other signed integer types)
+let impl_15__shl_exact (x: i64) (n: u32) : t_Option i64 =
+  if
+    (n <. (impl_15__leading_zeros x <: u32) || n <. (impl_15__leading_ones x <: u32)) &&
+    n <. impl_15__BITS
+  then Option_Some (x <<! n) <: t_Option i64
+  else Option_None <: t_Option i64
+
+/// See [`std::primitive::i8::shr_exact`] (and similar for other integer types)
+let impl_15__shr_exact (x: i64) (n: u32) : t_Option i64 =
+  if n <=. (impl_15__trailing_zeros x <: u32) && n <. impl_15__BITS
+  then Option_Some (x >>! n) <: t_Option i64
+  else Option_None <: t_Option i64
+
+/// See [`std::primitive::i8::next_multiple_of`] (and similar for other signed integer types)
+let impl_15__next_multiple_of (x y: i64)
+    : Prims.Pure i64
+      (requires
+        (match impl_15__checked_next_multiple_of x y <: t_Option i64 with
+          | Option_Some _ -> true
+          | Option_None  -> false))
+      (fun _ -> Prims.l_True) =
+  match impl_15__checked_next_multiple_of x y <: t_Option i64 with
+  | Option_Some result -> result
+  | Option_None  -> Core_models.Panicking.Internal.panic #i64 ()
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_16__checked_add (x y: i128) : t_Option i128 =
   let (result: i128), (overflowed: bool) = impl_16__overflowing_add x y in
@@ -3128,6 +9799,118 @@ let impl_16__checked_rem (x y: i128) : t_Option i128 =
   if y =. mk_i128 0 || x =. impl_16__MIN && y =. mk_i128 (-1)
   then Option_None <: t_Option i128
   else Option_Some (x %! y) <: t_Option i128
+
+/// See [`std::primitive::i8::checked_ilog2`] (and similar for other integer types)
+let impl_16__checked_ilog2 (x: i128) : t_Option u32 =
+  if x <=. mk_i128 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_16__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_neg`] (and similar for other integer types)
+let impl_16__checked_neg (x: i128) : t_Option i128 =
+  if x =. impl_16__MIN
+  then Option_None <: t_Option i128
+  else Option_Some (impl_16__wrapping_neg x) <: t_Option i128
+
+/// See [`std::primitive::i8::checked_abs`] (and similar for other signed integer types)
+let impl_16__checked_abs (x: i128) : t_Option i128 =
+  if x <. mk_i128 0 then impl_16__checked_neg x else Option_Some x <: t_Option i128
+
+/// See [`std::primitive::i8::checked_div_euclid`] (and similar for other signed integer types)
+let impl_16__checked_div_euclid (x y: i128) : t_Option i128 =
+  if y =. mk_i128 0 || x =. impl_16__MIN && y =. mk_i128 (-1)
+  then Option_None <: t_Option i128
+  else Option_Some (impl_16__div_euclid x y) <: t_Option i128
+
+/// See [`std::primitive::i8::checked_rem_euclid`] (and similar for other signed integer types)
+let impl_16__checked_rem_euclid (x y: i128) : t_Option i128 =
+  if y =. mk_i128 0 || x =. impl_16__MIN && y =. mk_i128 (-1)
+  then Option_None <: t_Option i128
+  else Option_Some (impl_16__rem_euclid x y) <: t_Option i128
+
+/// See [`std::primitive::i8::div_exact`] (and similar for other signed integer types)
+let impl_16__div_exact (x y: i128)
+    : Prims.Pure (t_Option i128)
+      (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  if (x %! y <: i128) <>. mk_i128 0
+  then Option_None <: t_Option i128
+  else Option_Some (x /! y) <: t_Option i128
+
+/// See [`std::primitive::i8::checked_div_exact`] (and similar for other signed integer types)
+let impl_16__checked_div_exact (x y: i128) : t_Option i128 =
+  if y =. mk_i128 0 || x =. impl_16__MIN && y =. mk_i128 (-1) || (x %! y <: i128) <>. mk_i128 0
+  then Option_None <: t_Option i128
+  else Option_Some (x /! y) <: t_Option i128
+
+/// See [`std::primitive::i8::checked_next_multiple_of`] (and similar for other signed integer types)
+let impl_16__checked_next_multiple_of (x y: i128) : t_Option i128 =
+  if y =. mk_i128 (-1)
+  then Option_Some x <: t_Option i128
+  else
+    if y =. mk_i128 0
+    then Option_None <: t_Option i128
+    else
+      let r:i128 = x %! y in
+      let m:i128 =
+        if r >. mk_i128 0 && y <. mk_i128 0 || r <. mk_i128 0 && y >. mk_i128 0
+        then impl_16__wrapping_add r y
+        else r
+      in
+      if m =. mk_i128 0
+      then Option_Some x <: t_Option i128
+      else impl_16__checked_add x (impl_16__wrapping_sub y m <: i128)
+
+/// See [`std::primitive::i8::highest_one`] (and similar for other signed integer types)
+assume
+val impl_16__highest_one': x: i128 -> t_Option u32
+
+unfold
+let impl_16__highest_one = impl_16__highest_one'
+
+/// See [`std::primitive::i8::lowest_one`] (and similar for other integer types)
+let impl_16__lowest_one (x: i128) : t_Option u32 =
+  if x =. mk_i128 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_16__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_shl`] (and similar for other integer types)
+let impl_16__checked_shl (x: i128) (n: u32) : t_Option i128 =
+  if n <. impl_16__BITS
+  then Option_Some (x <<! n) <: t_Option i128
+  else Option_None <: t_Option i128
+
+/// See [`std::primitive::i8::checked_shr`] (and similar for other integer types)
+let impl_16__checked_shr (x: i128) (n: u32) : t_Option i128 =
+  if n <. impl_16__BITS
+  then Option_Some (x >>! n) <: t_Option i128
+  else Option_None <: t_Option i128
+
+/// See [`std::primitive::i8::shl_exact`] (and similar for other signed integer types)
+let impl_16__shl_exact (x: i128) (n: u32) : t_Option i128 =
+  if
+    (n <. (impl_16__leading_zeros x <: u32) || n <. (impl_16__leading_ones x <: u32)) &&
+    n <. impl_16__BITS
+  then Option_Some (x <<! n) <: t_Option i128
+  else Option_None <: t_Option i128
+
+/// See [`std::primitive::i8::shr_exact`] (and similar for other integer types)
+let impl_16__shr_exact (x: i128) (n: u32) : t_Option i128 =
+  if n <=. (impl_16__trailing_zeros x <: u32) && n <. impl_16__BITS
+  then Option_Some (x >>! n) <: t_Option i128
+  else Option_None <: t_Option i128
+
+/// See [`std::primitive::i8::next_multiple_of`] (and similar for other signed integer types)
+let impl_16__next_multiple_of (x y: i128)
+    : Prims.Pure i128
+      (requires
+        (match impl_16__checked_next_multiple_of x y <: t_Option i128 with
+          | Option_Some _ -> true
+          | Option_None  -> false))
+      (fun _ -> Prims.l_True) =
+  match impl_16__checked_next_multiple_of x y <: t_Option i128 with
+  | Option_Some result -> result
+  | Option_None  -> Core_models.Panicking.Internal.panic #i128 ()
 
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_17__checked_add (x y: isize) : t_Option isize =
@@ -3173,6 +9956,118 @@ let impl_17__checked_rem (x y: isize) : t_Option isize =
   if y =. mk_isize 0 || x =. impl_17__MIN && y =. mk_isize (-1)
   then Option_None <: t_Option isize
   else Option_Some (x %! y) <: t_Option isize
+
+/// See [`std::primitive::i8::checked_ilog2`] (and similar for other integer types)
+let impl_17__checked_ilog2 (x: isize) : t_Option u32 =
+  if x <=. mk_isize 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_17__ilog2 x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_neg`] (and similar for other integer types)
+let impl_17__checked_neg (x: isize) : t_Option isize =
+  if x =. impl_17__MIN
+  then Option_None <: t_Option isize
+  else Option_Some (impl_17__wrapping_neg x) <: t_Option isize
+
+/// See [`std::primitive::i8::checked_abs`] (and similar for other signed integer types)
+let impl_17__checked_abs (x: isize) : t_Option isize =
+  if x <. mk_isize 0 then impl_17__checked_neg x else Option_Some x <: t_Option isize
+
+/// See [`std::primitive::i8::checked_div_euclid`] (and similar for other signed integer types)
+let impl_17__checked_div_euclid (x y: isize) : t_Option isize =
+  if y =. mk_isize 0 || x =. impl_17__MIN && y =. mk_isize (-1)
+  then Option_None <: t_Option isize
+  else Option_Some (impl_17__div_euclid x y) <: t_Option isize
+
+/// See [`std::primitive::i8::checked_rem_euclid`] (and similar for other signed integer types)
+let impl_17__checked_rem_euclid (x y: isize) : t_Option isize =
+  if y =. mk_isize 0 || x =. impl_17__MIN && y =. mk_isize (-1)
+  then Option_None <: t_Option isize
+  else Option_Some (impl_17__rem_euclid x y) <: t_Option isize
+
+/// See [`std::primitive::i8::div_exact`] (and similar for other signed integer types)
+let impl_17__div_exact (x y: isize)
+    : Prims.Pure (t_Option isize)
+      (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
+      (fun _ -> Prims.l_True) =
+  if (x %! y <: isize) <>. mk_isize 0
+  then Option_None <: t_Option isize
+  else Option_Some (x /! y) <: t_Option isize
+
+/// See [`std::primitive::i8::checked_div_exact`] (and similar for other signed integer types)
+let impl_17__checked_div_exact (x y: isize) : t_Option isize =
+  if y =. mk_isize 0 || x =. impl_17__MIN && y =. mk_isize (-1) || (x %! y <: isize) <>. mk_isize 0
+  then Option_None <: t_Option isize
+  else Option_Some (x /! y) <: t_Option isize
+
+/// See [`std::primitive::i8::checked_next_multiple_of`] (and similar for other signed integer types)
+let impl_17__checked_next_multiple_of (x y: isize) : t_Option isize =
+  if y =. mk_isize (-1)
+  then Option_Some x <: t_Option isize
+  else
+    if y =. mk_isize 0
+    then Option_None <: t_Option isize
+    else
+      let r:isize = x %! y in
+      let m:isize =
+        if r >. mk_isize 0 && y <. mk_isize 0 || r <. mk_isize 0 && y >. mk_isize 0
+        then impl_17__wrapping_add r y
+        else r
+      in
+      if m =. mk_isize 0
+      then Option_Some x <: t_Option isize
+      else impl_17__checked_add x (impl_17__wrapping_sub y m <: isize)
+
+/// See [`std::primitive::i8::highest_one`] (and similar for other signed integer types)
+assume
+val impl_17__highest_one': x: isize -> t_Option u32
+
+unfold
+let impl_17__highest_one = impl_17__highest_one'
+
+/// See [`std::primitive::i8::lowest_one`] (and similar for other integer types)
+let impl_17__lowest_one (x: isize) : t_Option u32 =
+  if x =. mk_isize 0
+  then Option_None <: t_Option u32
+  else Option_Some (impl_17__trailing_zeros x) <: t_Option u32
+
+/// See [`std::primitive::i8::checked_shl`] (and similar for other integer types)
+let impl_17__checked_shl (x: isize) (n: u32) : t_Option isize =
+  if n <. impl_17__BITS
+  then Option_Some (x <<! n) <: t_Option isize
+  else Option_None <: t_Option isize
+
+/// See [`std::primitive::i8::checked_shr`] (and similar for other integer types)
+let impl_17__checked_shr (x: isize) (n: u32) : t_Option isize =
+  if n <. impl_17__BITS
+  then Option_Some (x >>! n) <: t_Option isize
+  else Option_None <: t_Option isize
+
+/// See [`std::primitive::i8::shl_exact`] (and similar for other signed integer types)
+let impl_17__shl_exact (x: isize) (n: u32) : t_Option isize =
+  if
+    (n <. (impl_17__leading_zeros x <: u32) || n <. (impl_17__leading_ones x <: u32)) &&
+    n <. impl_17__BITS
+  then Option_Some (x <<! n) <: t_Option isize
+  else Option_None <: t_Option isize
+
+/// See [`std::primitive::i8::shr_exact`] (and similar for other integer types)
+let impl_17__shr_exact (x: isize) (n: u32) : t_Option isize =
+  if n <=. (impl_17__trailing_zeros x <: u32) && n <. impl_17__BITS
+  then Option_Some (x >>! n) <: t_Option isize
+  else Option_None <: t_Option isize
+
+/// See [`std::primitive::i8::next_multiple_of`] (and similar for other signed integer types)
+let impl_17__next_multiple_of (x y: isize)
+    : Prims.Pure isize
+      (requires
+        (match impl_17__checked_next_multiple_of x y <: t_Option isize with
+          | Option_Some _ -> true
+          | Option_None  -> false))
+      (fun _ -> Prims.l_True) =
+  match impl_17__checked_next_multiple_of x y <: t_Option isize with
+  | Option_Some result -> result
+  | Option_None  -> Core_models.Panicking.Internal.panic #isize ()
 
 /// See [`std::ops::ControlFlow::break_value`]
 let impl__break_value (#v_B #v_C: Type0) (self: t_ControlFlow v_B v_C) : t_Option v_B =
