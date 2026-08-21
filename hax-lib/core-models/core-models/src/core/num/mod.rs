@@ -606,9 +606,9 @@ macro_rules! uint_impl {
                 Self::leading_zeros(Self::wrapping_sub(<$Name>::MAX, x))
             }
             /// See [`std::primitive::u8::bit_width`] (and similar for other unsigned integer types)
-            // Opaque: the natural body is `BITS - leading_zeros(x)`, and `leading_zeros`
-            // is itself opaque, so no backend can see that the subtraction is in range.
-            #[hax_lib::opaque]
+            // F*-only: the body is `BITS - leading_zeros(x)` and F* cannot see the
+            // subtraction is in range. Lean's `Result` carries the failure instead.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn bit_width(x: $Self) -> core::primitive::u32 {
                 <$Name>::BITS - Self::leading_zeros(x)
             }
@@ -2319,10 +2319,16 @@ mod nonzero {
                     NonZero(<$Name>::isolate_lowest_one(self.0))
                 }
                 /// See [`std::num::NonZero::<u8>::rotate_left`] (and similar for other integer types)
+                // Dropped from the Lean lane: `rotate_left` has no Lean primitive, so it
+                // stays `#[hax_lib::opaque]` and has no Lean declaration to forward to.
+                #[cfg_attr(charon, aeneas::exclude)]
                 pub fn rotate_left(self, n: core::primitive::u32) -> Self {
                     NonZero(<$Name>::rotate_left(self.0, n))
                 }
                 /// See [`std::num::NonZero::<u8>::rotate_right`] (and similar for other integer types)
+                // Dropped from the Lean lane: `rotate_right` has no Lean primitive, so it
+                // stays `#[hax_lib::opaque]` and has no Lean declaration to forward to.
+                #[cfg_attr(charon, aeneas::exclude)]
                 pub fn rotate_right(self, n: core::primitive::u32) -> Self {
                     NonZero(<$Name>::rotate_right(self.0, n))
                 }
@@ -2595,10 +2601,16 @@ macro_rules! wrapper_impl {
                 <$Name>::leading_zeros(self.0)
             }
             /// See [`std::num::Wrapping::rotate_left`] (and similar for `Saturating` and other integer types)
+            // Dropped from the Lean lane: `rotate_left` has no Lean primitive, so it
+            // stays `#[hax_lib::opaque]` and has no Lean declaration to forward to.
+            #[cfg_attr(charon, aeneas::exclude)]
             pub fn rotate_left(self, n: core::primitive::u32) -> Self {
                 $Wrap(<$Name>::rotate_left(self.0, n))
             }
             /// See [`std::num::Wrapping::rotate_right`] (and similar for `Saturating` and other integer types)
+            // Dropped from the Lean lane: `rotate_right` has no Lean primitive, so it
+            // stays `#[hax_lib::opaque]` and has no Lean declaration to forward to.
+            #[cfg_attr(charon, aeneas::exclude)]
             pub fn rotate_right(self, n: core::primitive::u32) -> Self {
                 $Wrap(<$Name>::rotate_right(self.0, n))
             }
