@@ -841,7 +841,7 @@ structure slice.iter.Windows (T : Type) where
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 444:4-464:5
+    Source: 'core-models/src/core/slice.rs', lines 446:4-466:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
