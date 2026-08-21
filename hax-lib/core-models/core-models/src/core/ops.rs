@@ -395,4 +395,42 @@ mod tests {
     }
 
     assign_test! { u8 u16 u32 u64 }
+
+    macro_rules! range_iter_test {
+        ($($t:ident)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        // `len` is kept small and added saturatingly so the range
+                        // stays inside `$t` for every type.
+                        #[test]
+                        fn [<test_ $t _range_iter>](start in any::<$t>(), len in 0u8..=20) {
+                            let end = start.saturating_add(len as $t);
+                            let mut model = super::range::Range { start, end };
+                            let mut collected = std::vec::Vec::new();
+                            while let crate::option::Option::Some(x) =
+                                crate::iter::traits::iterator::Iterator::next(&mut model)
+                            {
+                                collected.push(x);
+                            }
+                            prop_assert_eq!(collected, (start..end).collect::<std::vec::Vec<$t>>());
+                        }
+                    }
+                )*
+            }
+        }
+    }
+
+    range_iter_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+
+    proptest! {
+        #[test]
+        fn test_deref_ref(x in any::<u8>()) {
+            let r = &x;
+            prop_assert_eq!(
+                *super::deref::Deref::deref(&r),
+                *core::ops::Deref::deref(&r)
+            );
+        }
+    }
 }

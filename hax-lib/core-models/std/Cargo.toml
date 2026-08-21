@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 hax-lib.workspace = true
 core-models = { path = "../core-models" }
+rust_primitives = { path = "../rust_primitives" }
 
 [dev-dependencies]
 proptest = "1.9.0"
@@ -14,4 +15,4 @@ proptest = "1.9.0"
 doctest = false
 
 [lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)', 'cfg(hax_backend_lean)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)', 'cfg(hax_backend_lean)', 'cfg(coverage)', 'cfg(coverage_nightly)'] }

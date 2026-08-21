@@ -21,20 +21,17 @@ let impl_String__push (self: t_String) (c: FStar.Char.char) : t_String =
   self
 
 let impl_String__pop (self: t_String) : (t_String & Core_models.Option.t_Option FStar.Char.char) =
-  let l:usize = Core_models.Str.impl_str__len self._0 in
+  let l:usize = Rust_primitives.String.str_len self._0 in
   let (self: t_String), (hax_temp_output: Core_models.Option.t_Option FStar.Char.char) =
     if l >. mk_usize 0
     then
+      let c:FStar.Char.char = Rust_primitives.String.str_index self._0 (l -! mk_usize 1 <: usize) in
       let self:t_String =
         String (Rust_primitives.String.str_sub self._0 (mk_usize 0) (l -! mk_usize 1 <: usize))
         <:
         t_String
       in
-      self,
-      (Core_models.Option.Option_Some
-        (Rust_primitives.String.str_index self._0 (l -! mk_usize 1 <: usize))
-        <:
-        Core_models.Option.t_Option FStar.Char.char)
+      self, (Core_models.Option.Option_Some c <: Core_models.Option.t_Option FStar.Char.char)
       <:
       (t_String & Core_models.Option.t_Option FStar.Char.char)
     else

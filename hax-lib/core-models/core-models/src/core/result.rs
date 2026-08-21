@@ -603,6 +603,17 @@ mod tests {
             );
         }
 
+        // `x == x` exercises the equal-payload `(Ok, Ok)` / `(Err, Err)` arms;
+        // two independent draws hit an equal `Err` pair about once in 512.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_eq_reflexive(x in any::<Result<u8, u8>>()) {
+            prop_assert!(crate::cmp::PartialEq::eq(
+                &x.clone().inject(),
+                &x.clone().inject()
+            ));
+        }
+
         // ----- Try (from_output / branch) -----------------------------------
         // std's `Try` is unstable, so these pin the model's documented
         // semantics (which mirror `?`): `from_output` injects into `Ok`,
@@ -640,6 +651,58 @@ mod tests {
                 _ => prop_assert!(false, "Err should Break(Err(e))"),
             }
         }
+
+        #[test]
+        fn test_as_mut(x in any::<Result<u8, u8>>()) {
+            let mut model = x.clone().inject();
+            let mut std_value = x.clone();
+            match (model.as_mut(), std_value.as_mut()) {
+                (super::Ok(m), Ok(s)) => { *m = 1; *s = 1; }
+                (super::Err(m), Err(s)) => { *m = 2; *s = 2; }
+                _ => prop_assert!(false, "as_mut changed the variant"),
+            }
+            prop_assert_eq!(model, std_value.inject());
+        }
+
+        #[test]
+        fn test_inspect(x in any::<Result<u8, u8>>()) {
+            let model_seen = std::cell::Cell::new(0u8);
+            let model = x.clone().inject().inspect(|v: &u8| model_seen.set(*v));
+            let std_seen = std::cell::Cell::new(0u8);
+            let std_value = x.clone().inspect(|v: &u8| std_seen.set(*v));
+            prop_assert_eq!(model_seen.get(), std_seen.get());
+            prop_assert_eq!(model, std_value.inject());
+        }
+
+        #[test]
+        fn test_inspect_err(x in any::<Result<u8, u8>>()) {
+            let model_seen = std::cell::Cell::new(0u8);
+            let model = x.clone().inject().inspect_err(|e: &u8| model_seen.set(*e));
+            let std_seen = std::cell::Cell::new(0u8);
+            let std_value = x.clone().inspect_err(|e: &u8| std_seen.set(*e));
+            prop_assert_eq!(model_seen.get(), std_seen.get());
+            prop_assert_eq!(model, std_value.inject());
+        }
+
+        // `?` on an `Err`: re-inject the residual, widening `u8` to `u16`.
+        #[test]
+        fn test_from_residual(e in any::<u8>()) {
+            use crate::ops::try_trait::FromResidual;
+            let residual: super::Result<crate::convert::Infallible, u8> = super::Err(e);
+            let widened: super::Result<u8, u16> = FromResidual::from_residual(residual);
+            prop_assert_eq!(widened, super::Err(e as u16));
+        }
+    }
+
+    // The `Ok(_)` arm of `from_residual` is unreachable for a real residual (its
+    // payload would have to be an `Infallible`), so it can only be run directly.
+    #[test]
+    #[should_panic]
+    fn test_from_residual_ok_panics() {
+        use crate::ops::try_trait::FromResidual;
+        let residual: super::Result<crate::convert::Infallible, u8> =
+            super::Ok(crate::convert::Infallible);
+        let _: super::Result<u8, u16> = FromResidual::from_residual(residual);
     }
 
     #[test]

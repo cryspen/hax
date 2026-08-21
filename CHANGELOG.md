@@ -56,6 +56,7 @@ Changes to hax-lib:
  - Strengthen testing of core-models, especially rust/lean equivalence. Fix core-models bugs in `chunks`, `result::map_or_else`, `step_by`, and signature mismatches (#2119)
  - Extract the core models to Lean with `cargo hax into lean` instead of calling charon and aeneas directly, so they use the tool versions hax pins. CI no longer builds its own charon/aeneas
  - Retarget the core models' `cfg(hax)` items at `cfg(hax_backend_fstar)`: they are the F* models, and every backend now compiles with `cfg(hax)`
+ - Implement the `panic!()`-bodied `core` models through `rust_primitives` and test them against real Rust, marking them `charon::opaque` so Lean drops their panicking definitions; fix `String::pop` (it indexed the already-truncated string) and `std::f64::powf`
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)

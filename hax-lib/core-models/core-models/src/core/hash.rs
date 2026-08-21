@@ -47,3 +47,44 @@ impl_hash_for_int!(
     core::primitive::i128,
     core::primitive::isize
 );
+
+#[cfg(test)]
+mod tests {
+    use super::{Hash, Hasher};
+    use pastey::paste;
+    use proptest::prelude::*;
+
+    /// Records the bytes fed to it. The model's `Hasher` is abstract, so a
+    /// recorder is the only way to observe what `hash` writes.
+    struct Recorder(std::vec::Vec<u8>);
+
+    impl Hasher for Recorder {
+        fn finish(&self) -> u64 {
+            self.0.len() as u64
+        }
+        fn write(&mut self, bytes: &[u8]) {
+            self.0.extend_from_slice(bytes)
+        }
+    }
+
+    // DEVIATION(std): the model feeds one cast byte instead of `to_ne_bytes()`
+    // (see `impl_hash_for_int`), so there is nothing in `core` to compare to.
+    macro_rules! hash_tests {
+        ($($t:ident),*) => {
+            paste! { $(
+                proptest! {
+                    #[test]
+                    fn [<test_hash_ $t>](x in any::<$t>()) {
+                        let h = Hash::hash(&x, Recorder(std::vec::Vec::new()));
+                        prop_assert_eq!(h.0.as_slice(), &[x as u8][..]);
+                        prop_assert_eq!(h.finish(), 1);
+                    }
+                }
+            )* }
+        };
+    }
+
+    hash_tests!(
+        u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize
+    );
+}

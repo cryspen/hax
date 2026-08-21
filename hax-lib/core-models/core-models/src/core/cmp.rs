@@ -380,6 +380,66 @@ mod tests {
             prop_assert_eq!(model_ord1.then(model_ord2), std_ord1.then(std_ord2).inject());
         }
 
+        // The `Equal` arms of `reverse`/`then`/`then_with`/`clamp` need both sides
+        // of a comparison to agree, which a pair of independent draws never does.
+        // Two independent draws are essentially never equal, so the `Equal` input
+        // of each predicate needs a reflexive comparison. `Ordering` is not
+        // `Copy`, hence the closure.
+        #[test]
+        fn test_ordering_predicates_on_equal(x in any::<u8>()) {
+            let m = || <u8 as Ord>::cmp(&x.inject(), &x.inject());
+            let s = std::cmp::Ord::cmp(&x, &x);
+            prop_assert_eq!(m().is_eq(), s.is_eq());
+            prop_assert_eq!(m().is_ne(), s.is_ne());
+            prop_assert_eq!(m().is_lt(), s.is_lt());
+            prop_assert_eq!(m().is_gt(), s.is_gt());
+            prop_assert_eq!(m().is_le(), s.is_le());
+            prop_assert_eq!(m().is_ge(), s.is_ge());
+        }
+
+        #[test]
+        fn test_ordering_reverse_equal(x in any::<u8>()) {
+            let model_ord = <u8 as Ord>::cmp(&x.inject(), &x.inject());
+            let std_ord = std::cmp::Ord::cmp(&x, &x);
+            prop_assert_eq!(model_ord.reverse(), std_ord.reverse().inject());
+        }
+
+        #[test]
+        fn test_ordering_then_equal(x in any::<u8>(), a in any::<u8>(), b in any::<u8>()) {
+            let model_ord2 = <u8 as Ord>::cmp(&a.inject(), &b.inject());
+            let std_ord2 = std::cmp::Ord::cmp(&a, &b);
+            prop_assert_eq!(
+                <u8 as Ord>::cmp(&x.inject(), &x.inject()).then(model_ord2),
+                std::cmp::Ord::cmp(&x, &x).then(std_ord2).inject()
+            );
+        }
+
+        // One test, not one per arm: `then_with` is generic in the closure, so a
+        // second test would be a second instantiation reaching only one arm.
+        // `equal` decides whether the first ordering is `Equal`.
+        #[test]
+        fn test_ordering_then_with(
+            x in any::<u8>(),
+            y in any::<u8>(),
+            equal in any::<bool>(),
+            a in any::<u8>(),
+            b in any::<u8>(),
+        ) {
+            let y = if equal { x } else { y };
+            let model_ord2 = <u8 as Ord>::cmp(&a.inject(), &b.inject());
+            let std_ord2 = std::cmp::Ord::cmp(&a, &b);
+            prop_assert_eq!(
+                <u8 as Ord>::cmp(&x.inject(), &y.inject()).then_with(|| model_ord2),
+                std::cmp::Ord::cmp(&x, &y).then_with(|| std_ord2).inject()
+            );
+        }
+
+        #[test]
+        fn test_clamp_at_min(x in any::<u8>(), hi in any::<u8>()) {
+            let hi = std::cmp::max(x, hi);
+            prop_assert_eq!(super::clamp(x.inject(), x.inject(), hi.inject()), x.clamp(x, hi));
+        }
+
         #[test]
         fn test_clamp(x in any::<u8>(), a in any::<u8>(), b in any::<u8>()) {
             let lo = std::cmp::min(a, b);
@@ -406,6 +466,11 @@ mod tests {
                 super::Reverse(x.inject()).partial_cmp(&super::Reverse(y.inject())),
                 std::cmp::Reverse(x).partial_cmp(&std::cmp::Reverse(y)).inject()
             );
+        }
+
+        #[test]
+        fn test_reverse_inject(x in any::<u8>()) {
+            prop_assert_eq!(std::cmp::Reverse(x).inject().0, x);
         }
 
         #[test]

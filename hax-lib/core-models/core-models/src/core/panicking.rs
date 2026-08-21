@@ -27,3 +27,28 @@ pub mod internal {
         panic!("")
     }
 }
+
+// These all return `!`, so `should_panic` is the only way to run them. There is
+// no public `core` counterpart to compare against (`core::panicking` is
+// internal), hence no `panics_like_core` here. `panic_fmt` is tested from
+// `fmt`'s test module, the only place an `Arguments` can be built.
+#[cfg(test)]
+mod tests {
+    #[test]
+    #[should_panic]
+    fn test_panic_explicit() {
+        super::panic_explicit()
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_panic() {
+        super::panic("boom")
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_internal_panic() {
+        super::internal::panic::<()>()
+    }
+}

@@ -409,8 +409,25 @@ mod slice {
         fn concat<Item>(s: &[T]) -> Vec<Item> {
             from_seq(seq_empty())
         }
-        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
+        #[hax_lib::opaque]
+        // Insertion sort: charon excludes `sort_by` (see the Makefile), so the
+        // body models std for the Rust tests only, over the primitives.
+        fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {
+            use rust_primitives::slice::{slice_index, slice_length, slice_swap};
+            let len = slice_length(s);
+            let mut i = 1;
+            while i < len {
+                let mut j = i;
+                while j > 0
+                    && compare(slice_index(s, j - 1), slice_index(s, j))
+                        == core::cmp::Ordering::Greater
+                {
+                    slice_swap(s, j - 1, j);
+                    j -= 1;
+                }
+                i += 1;
+            }
+        }
     }
 
     #[cfg(test)]
@@ -429,6 +446,26 @@ mod slice {
                 let boxed: Box<[u8]> = v.clone().into_boxed_slice();
                 let model: crate::vec::Vec<u8> = super::Dummy::<u8>::into_vec(boxed);
                 prop_assert_eq!(model.as_slice(), v.as_slice());
+            }
+
+            #[test]
+            fn test_sort_by(v in prop::collection::vec(any::<u8>(), 0..30)) {
+                let mut model = v.clone();
+                let mut std_slice = v;
+                super::Dummy::<u8>::sort_by(&mut model[..], u8::cmp);
+                std_slice.sort_by(u8::cmp);
+                prop_assert_eq!(model, std_slice);
+            }
+
+            // Reverse order exercises the descending comparator as well.
+            #[test]
+            fn test_sort_by_reversed(v in prop::collection::vec(any::<u8>(), 0..30)) {
+                let cmp = |a: &u8, b: &u8| b.cmp(a);
+                let mut model = v.clone();
+                let mut std_slice = v;
+                super::Dummy::<u8>::sort_by(&mut model[..], cmp);
+                std_slice.sort_by(cmp);
+                prop_assert_eq!(model, std_slice);
             }
         }
 
@@ -464,10 +501,14 @@ mod string {
             *self = String(str_concat(self.0, str_of_char(c)))
         }
         fn pop(&mut self) -> Option<char> {
-            let l = self.0.len();
+            // Char count, not `str::len`: the primitives below index by char.
+            let l = str_len(self.0);
             if l > 0 {
+                // Read the last char before truncating: afterwards `l - 1` is
+                // out of bounds.
+                let c = str_index(self.0, l - 1);
                 *self = String(str_sub(self.0, 0, l - 1));
-                Some(str_index(self.0, l - 1))
+                Some(c)
             } else {
                 None
             }
@@ -502,6 +543,22 @@ mod string {
         fn test_new() {
             let model = super::String::new();
             assert_eq!(model.0, std::string::String::new());
+        }
+
+        proptest! {
+            // Arbitrary chars, including multi-byte ones: indexing by char
+            // where `str::len` counts bytes is exactly the bug this catches.
+            #[test]
+            fn test_pop(cs in prop::collection::vec(any::<char>(), 0..8)) {
+                let mut model = super::String::new();
+                let mut std_s = std::string::String::new();
+                for c in &cs {
+                    model.push(*c);
+                    std_s.push(*c);
+                }
+                prop_assert_eq!(model.pop(), std_s.pop());
+                prop_assert_eq!(model.0, std_s);
+            }
         }
     }
 }
