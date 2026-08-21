@@ -931,6 +931,10 @@ pub mod traits {
         /// iterator over a `rust_primitives` sequence.
         struct SeqIter<T>(Seq<T>);
 
+        // Excluded from coverage: `FromIterator::from_iter` cannot walk its
+        // argument (its `T: IntoIterator` bound does not require
+        // `T::IntoIter: Iterator`), so nothing in the model ever pulls from this.
+        #[cfg_attr(coverage_nightly, coverage(off))]
         impl<T> Iterator for SeqIter<T> {
             type Item = T;
             fn next(&mut self) -> Option<T> {
@@ -4248,6 +4252,55 @@ mod tests {
                 );
             }
 
+            // `Fuse` has to stay done from the back too, and remember it.
+            #[test]
+            fn test_fuse_next_back_stays_exhausted(
+                v in prop::collection::vec(any::<u8>(), 0..=20),
+            ) {
+                let mut model = VecIter::new(v.clone()).fuse();
+                let mut std_iter = v.iter().copied().fuse();
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for _ in 0..v.len() + 2 {
+                    model_out.push(model.next_back());
+                    std_out.push(std_iter.next_back().inject());
+                }
+                prop_assert_eq!(model_out, std_out);
+            }
+
+            // Draining a `chain` from the back has to fall through the second
+            // half into the first, and answer `None` once both are done.
+            #[test]
+            fn test_chain_next_back_through_both_halves(
+                a in prop::collection::vec(any::<u8>(), 0..=8),
+                b in prop::collection::vec(any::<u8>(), 0..=8),
+            ) {
+                let mut model = VecIter::new(a.clone()).chain(VecIter::new(b.clone()));
+                let mut std_iter = a.iter().copied().chain(b.iter().copied());
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for _ in 0..a.len() + b.len() + 2 {
+                    model_out.push(model.next_back());
+                    std_out.push(std_iter.next_back().inject());
+                }
+                prop_assert_eq!(model_out, std_out);
+            }
+
+            // Draining forward first leaves `chain`'s front half taken; a
+            // `next_back` after that has to answer from the empty state.
+            #[test]
+            fn test_chain_next_back_after_forward_drain(
+                a in prop::collection::vec(any::<u8>(), 0..=8),
+                b in prop::collection::vec(any::<u8>(), 0..=8),
+            ) {
+                let mut model = VecIter::new(a.clone()).chain(VecIter::new(b.clone()));
+                let mut std_iter = a.iter().copied().chain(b.iter().copied());
+                for _ in 0..a.len() + b.len() {
+                    prop_assert_eq!(Iterator::next(&mut model), std_iter.next().inject());
+                }
+                prop_assert_eq!(model.next_back(), std_iter.next_back().inject());
+            }
+
             // Alternating ends: the two cursors have to meet in the middle.
             #[test]
             fn test_next_and_next_back(v in prop::collection::vec(any::<u8>(), 0..=20)) {
@@ -4370,6 +4423,24 @@ mod tests {
                     drain(crate::ops::range::Range { start: a, end: b }.rev()),
                     (a..b).rev().collect::<Vec<_>>()
                 );
+            }
+
+            // One case per width the two `range_exact_size_*` macros cover, so
+            // no instantiation is left unexercised.
+            #[test]
+            fn test_range_len_every_width(a in any::<u8>(), b in any::<u8>()) {
+                macro_rules! check {
+                    ($($t:ty)*) => { $({
+                        let (a, b) = (a as $t, b as $t);
+                        prop_assert_eq!(
+                            ExactSizeIterator::len(
+                                &crate::ops::range::Range { start: a, end: b }
+                            ),
+                            (a..b).len()
+                        );
+                    })* };
+                }
+                check!(u8 u16 u32 usize i8 i16 i32 isize);
             }
 
             #[test]
@@ -4549,6 +4620,32 @@ mod tests {
             // `sum`/`product` and the comparison family are not part of the
             // F* model (see the note on `IteratorMethods::sum`).
             #[cfg(not(hax_backend_fstar))]
+            // One width at a time is not enough: `Sum`/`Product` are
+            // implemented per integer type, so each has its own body.
+            // Not part of the F* model (see the note on `IteratorMethods::sum`).
+            #[cfg(not(hax_backend_fstar))]
+            #[test]
+            // Small values and few of them: the product has to stay inside `i8`,
+            // the narrowest of the widths below.
+            fn test_sum_and_product_every_width(v in prop::collection::vec(0u8..=2, 0..=4)) {
+                macro_rules! check {
+                    ($($t:ty)*) => { $({
+                        let v: Vec<$t> = v.iter().map(|x| *x as $t).collect();
+                        prop_assert_eq!(
+                            IteratorMethods::sum::<$t>(VecIter::new(v.clone())),
+                            v.iter().copied().sum::<$t>()
+                        );
+                        prop_assert_eq!(
+                            IteratorMethods::product::<$t>(VecIter::new(v.clone())),
+                            v.iter().copied().product::<$t>()
+                        );
+                    })* };
+                }
+                check!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
+            }
+
+            // Not part of the F* model (see the note on `IteratorMethods::sum`).
+            #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_product(v in prop::collection::vec(0..=3u64, 0..=20)) {
                 prop_assert_eq!(
@@ -4689,6 +4786,23 @@ mod tests {
                 prop_assert_eq!(
                     VecIter::new(a.clone()).ge(VecIter::new(b.clone())),
                     a.iter().ge(b.iter())
+                );
+            }
+
+            // Same length, one element apart: the element-mismatch exit of
+            // `iter_eq_by`, which independent draws reach only by chance.
+            #[test]
+            fn test_eq_by_same_length_one_apart(
+                a in prop::collection::vec(any::<u8>(), 1..=6),
+                i in 0usize..6,
+            ) {
+                let mut b = a.clone();
+                let i = i % a.len();
+                b[i] = b[i].wrapping_add(1);
+                prop_assert_eq!(
+                    VecIter::new(a.clone())
+                        .eq_by(VecIter::new(b.clone()), |x: u8, y: u8| x == y),
+                    a.iter().copied().eq_by(b.iter().copied(), |x, y| x == y)
                 );
             }
 
@@ -5012,6 +5126,8 @@ mod tests {
     mod new_adapters {
         #[cfg(not(hax_backend_fstar))]
         use super::super::adapters::by_ref_sized::ByRefSized;
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::exact_size::ExactSizeIterator;
         use super::super::traits::iterator::{Iterator, IteratorMethods};
         use super::{VecIter, drain};
         use crate::option::Option;
@@ -5040,6 +5156,77 @@ mod tests {
                     drain(refs(&v).copied()),
                     v.iter().copied().collect::<Vec<u8>>()
                 );
+            }
+
+            // The `DoubleEndedIterator`/`ExactSizeIterator` halves of the three
+            // reference-taking adapters: `next` alone never reaches them.
+            #[test]
+            fn test_cloned_next_back_and_len(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = refs(&v).cloned();
+                let mut std_iter = v.iter().cloned();
+                prop_assert_eq!(ExactSizeIterator::len(&model), std_iter.len());
+                // Past the end as well, so the exhausted answer is pinned too.
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for _ in 0..v.len() + 2 {
+                    model_out.push(model.next_back());
+                    std_out.push(std_iter.next_back().inject());
+                }
+                prop_assert_eq!(model_out, std_out);
+            }
+
+            #[test]
+            fn test_copied_next_back_and_len(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let mut model = refs(&v).copied();
+                let mut std_iter = v.iter().copied();
+                prop_assert_eq!(ExactSizeIterator::len(&model), std_iter.len());
+                // Past the end as well, so the exhausted answer is pinned too.
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for _ in 0..v.len() + 2 {
+                    model_out.push(model.next_back());
+                    std_out.push(std_iter.next_back().inject());
+                }
+                prop_assert_eq!(model_out, std_out);
+            }
+
+            #[test]
+            fn test_inspect_next_back_and_len(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let seen = Cell::new(0usize);
+                let mut model = VecIter::new(v.clone()).inspect(|_: &u8| {
+                    seen.set(seen.get() + 1)
+                });
+                let std_seen = Cell::new(0usize);
+                let mut std_iter = v
+                    .iter()
+                    .copied()
+                    .inspect(|_| std_seen.set(std_seen.get() + 1));
+                prop_assert_eq!(ExactSizeIterator::len(&model), std_iter.len());
+                // Past the end as well, so the exhausted answer is pinned too.
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for _ in 0..v.len() + 2 {
+                    model_out.push(model.next_back());
+                    std_out.push(std_iter.next_back().inject());
+                }
+                prop_assert_eq!(model_out, std_out);
+                prop_assert_eq!(seen.get(), std_seen.get());
+            }
+
+            // Once the predicate fails, `take_while` must stay done rather than
+            // consult the source again.
+            #[test]
+            fn test_take_while_stays_exhausted(v in prop::collection::vec(any::<u8>(), 0..=20),
+                                               bound in any::<u8>()) {
+                let mut model = VecIter::new(v.clone()).take_while(|x: &u8| *x < bound);
+                let mut std_iter = v.iter().copied().take_while(|x| *x < bound);
+                let mut model_out = Vec::new();
+                let mut std_out = Vec::new();
+                for _ in 0..v.len() + 2 {
+                    model_out.push(Iterator::next(&mut model));
+                    std_out.push(std_iter.next().inject());
+                }
+                prop_assert_eq!(model_out, std_out);
             }
 
             // `inspect` must yield every element unchanged *and* run the closure
@@ -5207,6 +5394,20 @@ mod tests {
                 prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
             }
 
+            // The matching half: a random `u8` almost never equals the head, so
+            // the expected value is taken from the sequence itself.
+            #[test]
+            fn test_peekable_next_if_eq_matches(v in prop::collection::vec(any::<u8>(), 1..=20)) {
+                let mut model = VecIter::new(v.clone()).peekable();
+                let mut std_iter = v.iter().copied().peekable();
+                let head = v[0];
+                prop_assert_eq!(
+                    model.next_if_eq(&head),
+                    std_iter.next_if_eq(&head).inject()
+                );
+                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+            }
+
             #[test]
             fn test_peekable_next_if_map(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let mut model = VecIter::new(v.clone()).peekable();
@@ -5277,15 +5478,12 @@ mod tests {
             #[test]
             fn test_array_chunks_into_remainder(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let model = VecIter::new(v.clone()).array_chunks::<3>().into_remainder();
-                // The pinned toolchain's `into_remainder` still returns an
-                // `Option`; current core (and the model) returns the iterator.
                 let expected: Vec<u8> = v
                     .iter()
                     .copied()
                     .array_chunks::<3>()
                     .into_remainder()
-                    .map(|it| it.collect::<Vec<u8>>())
-                    .unwrap_or_default();
+                    .collect();
                 prop_assert_eq!(drain(model), expected);
             }
 
@@ -5326,6 +5524,20 @@ mod tests {
                 let std_rest: Vec<u8> = std_iter.collect();
                 prop_assert_eq!(taken, std_taken);
                 prop_assert_eq!(rest, std_rest);
+            }
+
+            // The `DoubleEndedIterator`/`ExactSizeIterator` halves of the same
+            // wrapper: `by_ref().take(..)` above only drives `next`.
+            #[cfg(not(hax_backend_fstar))]
+            #[test]
+            fn test_by_ref_sized_next_back_and_len(
+                v in prop::collection::vec(any::<u8>(), 1..=20),
+            ) {
+                let mut model = VecIter::new(v.clone());
+                let mut wrapped = ByRefSized(&mut model);
+                let mut std_iter = v.iter().copied();
+                prop_assert_eq!(ExactSizeIterator::len(&wrapped), std_iter.len());
+                prop_assert_eq!(wrapped.next_back(), std_iter.next_back().inject());
             }
 
             #[test]

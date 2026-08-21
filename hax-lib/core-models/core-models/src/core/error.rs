@@ -24,7 +24,19 @@ impl<T: Error> ErrorDefaults for T {
 #[cfg(test)]
 mod tests {
     use super::{Error, ErrorDefaults};
-    use crate::fmt::{Display, Formatter, Result};
+    use crate::fmt::{Display, Formatter, FormattingOptions, Result, Write};
+
+    /// A `Write` for `create_formatter`. The model's `Formatter` does not keep
+    /// the writer (see the `fmt` module docs), so nothing arrives here — it is
+    /// only what lets a `Formatter` be built.
+    struct Sink(std::string::String);
+
+    impl Write for Sink {
+        fn write_str(&mut self, s: &str) -> Result {
+            self.0.push_str(s);
+            Result::Ok(())
+        }
+    }
 
     struct ModelError;
 
@@ -55,9 +67,19 @@ mod tests {
     // carries an assertion.
     #[test]
     fn test_display_impls_run() {
-        let mut f = Formatter;
+        let mut sink = Sink(std::string::String::new());
+        let mut f = FormattingOptions::new().create_formatter(&mut sink);
         let _: Result = Display::fmt(&ModelError, &mut f);
         assert_eq!(std::format!("{}", StdError), "std error");
+    }
+
+    // The `Sink` above only exists to build a `Formatter`; this runs its own
+    // body so it is exercised rather than merely declared.
+    #[test]
+    fn test_sink_records_what_it_is_given() {
+        let mut sink = Sink(std::string::String::new());
+        let _: Result = sink.write_str("model error");
+        assert_eq!(sink.0, "model error");
     }
 
     // `description` takes no input, so this is a single comparison against the

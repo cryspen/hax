@@ -64,6 +64,12 @@
 // `exact_div` (exact_div, which is what the pinned toolchain calls the method
 // rustdoc now names `div_exact`), and `unchecked_neg`.
 // The slice proptests compare against still-unstable `[T]` methods.
+
+// iter_advance_by / exact_size_is_empty / rev_into_inner: same, for the
+// still-unstable `core::iter` methods the `iter` proptests compare against.
+// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
+// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
+// proptests compare against them.
 #![cfg_attr(
     test,
     feature(
@@ -74,6 +80,7 @@
         cold_path,
         control_flow_into_value,
         control_flow_ok,
+        debug_closure_helpers,
         disjoint_bitor,
         drop_guard,
         exact_div,
@@ -142,6 +149,7 @@
         range_bounds_is_empty,
         range_into_bounds,
         rev_into_inner,
+        signed_bigint_helpers,
         slice_pattern,
         slice_split_once,
         slice_swap_unchecked,
@@ -153,7 +161,9 @@
         uint_bit_width,
         unchecked_neg,
         unchecked_shifts,
+        unsigned_bigint_helpers,
         utf16_extra,
+        widening_mul,
         wrapping_int_impl,
         wrapping_next_power_of_two
     )
