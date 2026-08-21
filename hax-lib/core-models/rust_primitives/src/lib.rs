@@ -400,6 +400,27 @@ pub mod arithmetic {
 mod tests {
     use proptest::prelude::*;
 
+    // `array_repeat` always passes exactly `N` elements, so its length check is
+    // only reachable from here.
+    // `str_is_char_boundary` has no model caller: `core_models::str` guards with
+    // its own `requires`, so it is checked here directly.
+    #[test]
+    fn test_str_is_char_boundary() {
+        for i in 0..=4 {
+            assert_eq!(
+                crate::string::str_is_char_boundary("aé", i),
+                "aé".is_char_boundary(i)
+            );
+        }
+    }
+
+    #[test]
+    fn test_array_from_vec_wrong_length_panics() {
+        let res =
+            std::panic::catch_unwind(|| crate::slice::array_from_vec::<u8, 3>(std::vec![1u8, 2]));
+        assert!(res.is_err());
+    }
+
     proptest! {
         #[test]
         fn test_array_slice(a in any::<[u8; 8]>(), i in 0usize..=8, j in 0usize..=8) {
