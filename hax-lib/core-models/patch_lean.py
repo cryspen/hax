@@ -210,11 +210,9 @@ def rewrite_phantom_data(text: str) -> str:
     `Core/{Types,Funs}.lean` and `Alloc/{Types,Funs}.lean`:
 
       1. Rewrite the `()` constructor in phantom-field position to
-         `core.Phantom.mk`. Two textual shapes are handled:
+         `core.Phantom.mk`. One textual shape is handled:
            - `, ())` — the common form, where the phantom is the second
              slot of a 2-tuple (`vec.Vec`, `VecDeque`, `Drain`, …).
-           - `fmt.rt.ArgumentType.Placeholder ()` — a one-off in
-             `Core/Types.lean` that the comma heuristic can't catch.
          Destructured forms like `(seq, pd)` don't textually match `, ()`
          and are left alone.
 
@@ -223,10 +221,6 @@ def rewrite_phantom_data(text: str) -> str:
     """
     text = sub("phantom/tuple ()", r",\s*\(\)\)",
                ", core.marker.PhantomData.mk)", text)
-    text = sub("phantom/ArgumentType.Placeholder",
-               r"fmt\.rt\.ArgumentType\.Placeholder \(\)",
-               "fmt.rt.ArgumentType.Placeholder core.marker.PhantomData.mk", text)
-    
     return comment_out_blocks(
         text, ["core_models::marker::PhantomData"],
         trailer="replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`",
