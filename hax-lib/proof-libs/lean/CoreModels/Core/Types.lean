@@ -697,91 +697,91 @@ structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
 
 /-- [core_models::num::u8]
-    Source: 'core-models/src/core/num/mod.rs', lines 1919:0-1919:14
+    Source: 'core-models/src/core/num/mod.rs', lines 1943:0-1943:14
     Visibility: public -/
 @[reducible]
 def num.u8 := Unit
 
 /-- [core_models::num::u16]
-    Source: 'core-models/src/core/num/mod.rs', lines 1922:0-1922:15
+    Source: 'core-models/src/core/num/mod.rs', lines 1946:0-1946:15
     Visibility: public -/
 @[reducible]
 def num.u16 := Unit
 
 /-- [core_models::num::u32]
-    Source: 'core-models/src/core/num/mod.rs', lines 1925:0-1925:15
+    Source: 'core-models/src/core/num/mod.rs', lines 1949:0-1949:15
     Visibility: public -/
 @[reducible]
 def num.u32 := Unit
 
 /-- [core_models::num::u64]
-    Source: 'core-models/src/core/num/mod.rs', lines 1928:0-1928:15
+    Source: 'core-models/src/core/num/mod.rs', lines 1952:0-1952:15
     Visibility: public -/
 @[reducible]
 def num.u64 := Unit
 
 /-- [core_models::num::u128]
-    Source: 'core-models/src/core/num/mod.rs', lines 1931:0-1931:16
+    Source: 'core-models/src/core/num/mod.rs', lines 1955:0-1955:16
     Visibility: public -/
 @[reducible]
 def num.u128 := Unit
 
 /-- [core_models::num::usize]
-    Source: 'core-models/src/core/num/mod.rs', lines 1934:0-1934:17
+    Source: 'core-models/src/core/num/mod.rs', lines 1958:0-1958:17
     Visibility: public -/
 @[reducible]
 def num.usize := Unit
 
 /-- [core_models::num::i8]
-    Source: 'core-models/src/core/num/mod.rs', lines 1937:0-1937:14
+    Source: 'core-models/src/core/num/mod.rs', lines 1961:0-1961:14
     Visibility: public -/
 @[reducible]
 def num.i8 := Unit
 
 /-- [core_models::num::i16]
-    Source: 'core-models/src/core/num/mod.rs', lines 1940:0-1940:15
+    Source: 'core-models/src/core/num/mod.rs', lines 1964:0-1964:15
     Visibility: public -/
 @[reducible]
 def num.i16 := Unit
 
 /-- [core_models::num::i32]
-    Source: 'core-models/src/core/num/mod.rs', lines 1943:0-1943:15
+    Source: 'core-models/src/core/num/mod.rs', lines 1967:0-1967:15
     Visibility: public -/
 @[reducible]
 def num.i32 := Unit
 
 /-- [core_models::num::i64]
-    Source: 'core-models/src/core/num/mod.rs', lines 1946:0-1946:15
+    Source: 'core-models/src/core/num/mod.rs', lines 1970:0-1970:15
     Visibility: public -/
 @[reducible]
 def num.i64 := Unit
 
 /-- [core_models::num::i128]
-    Source: 'core-models/src/core/num/mod.rs', lines 1949:0-1949:16
+    Source: 'core-models/src/core/num/mod.rs', lines 1973:0-1973:16
     Visibility: public -/
 @[reducible]
 def num.i128 := Unit
 
 /-- [core_models::num::isize]
-    Source: 'core-models/src/core/num/mod.rs', lines 1952:0-1952:17
+    Source: 'core-models/src/core/num/mod.rs', lines 1976:0-1976:17
     Visibility: public -/
 @[reducible]
 def num.isize := Unit
 
 /-- [core_models::num::nonzero::NonZero]
-    Source: 'core-models/src/core/num/mod.rs', lines 2230:4-2230:40
+    Source: 'core-models/src/core/num/mod.rs', lines 2254:4-2254:40
     Visibility: public -/
 @[reducible]
 def num.nonzero.NonZero (T : Type) := T
 
 /-- [core_models::num::wrapping::Wrapping]
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:4-2643:34
+    Source: 'core-models/src/core/num/mod.rs', lines 2679:4-2679:34
     Visibility: public -/
 @[reducible]
 def num.wrapping.Wrapping (T : Type) := T
 
 /-- [core_models::num::saturating::Saturating]
-    Source: 'core-models/src/core/num/mod.rs', lines 2713:4-2713:36
+    Source: 'core-models/src/core/num/mod.rs', lines 2749:4-2749:36
     Visibility: public -/
 @[reducible]
 def num.saturating.Saturating (T : Type) := T
