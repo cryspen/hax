@@ -448,6 +448,20 @@ end core
 
 namespace alloc
 
+/-! ## `IntoIterator` for `&Vec<T>` (aeneas's `SharedAVec`)
+
+`(&vec).into_iter()` / iterating a `&Vec<T>` yields `&T` via a slice `Iter`. aeneas
+names this shared-reference `IntoIterator` instance `alloc.SharedAVec.Insts.
+CoreIterTraitsCollectIntoIteratorSharedATIter` (cf. Aeneas.Std's `SharedArray` for
+`&[T; N]`). Core-models didn't provide it; supply `into_iter` by hand —
+`Vec::as_slice` then the slice `Iter` constructor — matching the name/signature the
+extraction calls directly. -/
+open Aeneas.Std (Result) in
+def SharedAVec.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
+    {T : Type} (v : vec.Vec T) : Result (core.slice.iter.Iter T) := do
+  let s ← vec.Vec.as_slice v
+  core.slice.Slice.iter s
+
 /-! ## `IntoIter::map` (a provided `Iterator` method)
 
 `map` lives on the extraction-excluded `IteratorMethods` trait, so Aeneas
