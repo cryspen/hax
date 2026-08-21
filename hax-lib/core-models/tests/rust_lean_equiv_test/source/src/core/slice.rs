@@ -328,9 +328,7 @@ fn test_iter_count() {
     assert_eq!(a.as_slice().iter().count(), 3);
 }
 
-#[rust_lean_test(
-    skip_lean = "`binary_search` is `#[hax_lib::opaque]` in the model; the Lean body is uninterpreted"
-)]
+#[rust_lean_test]
 pub fn test_binary_search() -> bool {
     let a: [u8; 4] = [1, 3, 5, 7];
     a.as_slice().binary_search(&5) == Ok(2)
