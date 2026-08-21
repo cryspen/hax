@@ -61,7 +61,7 @@ include Core_models.Bundle {f_as_ref_post as f_as_ref_post}
 
 include Core_models.Bundle {f_as_ref as f_as_ref}
 
-include Core_models.Bundle {impl_5 as impl_5}
+include Core_models.Bundle {impl_5__from__convert as impl_5}
 
 include Core_models.Bundle {impl_6__from__convert as impl_6}
 

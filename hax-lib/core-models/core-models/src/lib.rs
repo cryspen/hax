@@ -78,8 +78,11 @@
         drop_guard,
         exact_div,
         exact_size_is_empty,
+
+        formatting_options,
         funnel_shifts,
         hasher_prefixfree_extras,
+        int_format_into,
         int_lowest_highest_one,
         int_roundings,
         is_ascii_octdigit,
@@ -129,8 +132,15 @@
         iter_order_by,
         iterator_try_collect,
         iterator_try_reduce,
+        likely_unlikely,
+        mem_copy_fn,
         next_index,
+        nonzero_bitwise,
+        nonzero_ops,
+        one_sided_range,
         peekable_next_if_map,
+        range_bounds_is_empty,
+        range_into_bounds,
         rev_into_inner,
         slice_pattern,
         slice_split_once,
@@ -139,7 +149,13 @@
         step_trait,
         strip_circumfix,
         trim_prefix_suffix,
-        try_find
+        try_find,
+        uint_bit_width,
+        unchecked_neg,
+        unchecked_shifts,
+        utf16_extra,
+        wrapping_int_impl,
+        wrapping_next_power_of_two
     )
 )]
 // likely_unlikely/cold_path: same, for the `hint` proptests.

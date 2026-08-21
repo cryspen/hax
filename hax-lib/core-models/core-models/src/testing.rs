@@ -74,6 +74,10 @@ impl<B: Inject, C: Inject> Inject for std::ops::ControlFlow<B, C> {
             std::ops::ControlFlow::Break(b) => {
                 crate::ops::control_flow::ControlFlow::Break(b.inject())
             }
+        }
+    }
+}
+
 impl Inject for std::fmt::Alignment {
     type Model = crate::fmt::Alignment;
     fn inject(&self) -> Self::Model {
@@ -92,6 +96,10 @@ impl<T: Inject> Inject for std::ops::Bound<T> {
             std::ops::Bound::Included(x) => crate::ops::range::Bound::Included(x.inject()),
             std::ops::Bound::Excluded(x) => crate::ops::range::Bound::Excluded(x.inject()),
             std::ops::Bound::Unbounded => crate::ops::range::Bound::Unbounded,
+        }
+    }
+}
+
 impl Inject for std::fmt::Sign {
     type Model = crate::fmt::Sign;
     fn inject(&self) -> Self::Model {

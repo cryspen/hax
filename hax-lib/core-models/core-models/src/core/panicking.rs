@@ -387,13 +387,13 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_panic_nounwind_fmt() {
-        super::panic_nounwind_fmt(crate::fmt::Arguments(&()), false);
+        super::panic_nounwind_fmt(crate::fmt::Arguments::from_str(""), false);
     }
 
     #[test]
     #[should_panic]
     fn test_const_panic_fmt() {
-        super::const_panic_fmt(crate::fmt::Arguments(&()));
+        super::const_panic_fmt(crate::fmt::Arguments::from_str(""));
     }
 
     // The pre-existing diverging helpers. `should_panic` is the only way to run
