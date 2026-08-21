@@ -63,6 +63,12 @@ def borrow.ToOwned.Blanket (T : Type) : borrow.ToOwned T := {
 def boxed.Box.new {T : Type} (v : T) : Result T := do
   ok v
 
+/-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, U>}::new]:
+    Source: 'src/lib.rs', lines 225:16-227:17 -/
+def collections.btree.set.BTreeSet.new
+  (T : Type) (U : Type) : Result (collections.btree.set.BTreeSet T U) := do
+  ok (core.option.Option.None, core.option.Option.None)
+
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, alloc::alloc::Global>}::new]:
     Source: 'src/lib.rs', lines 256:12-258:13 -/
 def collections.vec_deque.VecDequeTGlobal.new
