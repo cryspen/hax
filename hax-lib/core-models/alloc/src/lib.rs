@@ -181,7 +181,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
     }
     mod btree {
         mod set {
-            #[hax_lib::opaque]
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             struct BTreeSet<T, U>(Option<T>, Option<U>);
 
             impl BTreeSet<(), ()> {}
@@ -197,7 +197,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             impl BTreeSet<(), ()> {}
 
             impl<T, U> BTreeSet<T, U> {
-                #[hax_lib::opaque]
+                #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
                 fn new() -> BTreeSet<T, U> {
                     BTreeSet(None, None)
                 }
@@ -278,7 +278,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
         // `from_iter`), so `Self` is `VecDeque<T, Global>` — matching the
         // `VecDequeTGlobal` impl name downstream expects.
         #[hax_lib::attributes]
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<T> std::iter::FromIterator<T> for VecDeque<T, crate::alloc::Global> {
             fn from_iter<I>(iter: I) -> Self
             where
@@ -353,14 +353,16 @@ let update_at_usize (#v_T #v_A: Type0)
 }
 
 mod fmt {
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn format(args: core::fmt::Arguments) -> String {
         String::new()
     }
 }
 
 mod slice {
-    #[hax_lib::exclude]
+    // F*-only: `charon::exclude` would drop this dummy type while its `impl`
+    // blocks still reference it (see core-models' f32.rs).
+    #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     struct Dummy<T>(T);
 
     use super::vec::{Vec, from_seq};
@@ -403,11 +405,11 @@ mod slice {
         // dictionary. Without the bound nothing relates `T` to `[Item]`, so the
         // flattening is not statable and the body is only a placeholder.
         #[cfg(hax_backend_fstar)]
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn concat<Item>(s: &[T]) -> Vec<Item> {
             from_seq(seq_empty())
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
     }
 
@@ -632,9 +634,9 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn truncate(&mut self, n: usize) {}
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn swap_remove(&mut self, n: usize) -> T {
             seq_remove(&mut self.0, n)
         }
@@ -642,12 +644,12 @@ pub mod vec {
         /// `len' = len - 1` would need `index < len` as a precondition (else on
         /// an empty vector it asserts a `usize` is `-1`), which callers holding
         /// only a length upper bound cannot discharge, so state the inequality.
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         #[hax_lib::ensures(|_| future(self).len().to_int() <= self.len().to_int())]
         pub fn remove(&mut self, index: usize) -> T {
             seq_remove(&mut self.0, index)
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn clear(&mut self) {}
         #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= usize::MAX.to_int())]
         pub fn append(&mut self, other: &mut Vec<T>) {
@@ -661,7 +663,7 @@ pub mod vec {
             let l = seq_len(&self.0);
             Vec(seq_drain(&mut self.0, at, l))
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn drain<R /* : RangeBounds<usize> */>(
             &mut self,
             _range: R,
@@ -699,7 +701,7 @@ pub mod vec {
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         #[hax_lib::ensures(|_| future(self).len() == new_size)]
         pub fn resize(&mut self, new_size: usize, value: &T) {}
     }
@@ -737,7 +739,8 @@ pub mod vec {
     where
         I: std::slice::SliceIndex<[T]>,
     {
-        #[hax_lib::requires(self.get(i).is_some())]
+        // F*-only, as for the slice `IndexMut` this delegates to.
+        #[cfg_attr(hax_backend_fstar, hax_lib::requires(self.get(i).is_some()))]
         fn index_mut(&mut self, i: I) -> &mut I::Output {
             std::ops::IndexMut::index_mut(seq_to_slice_mut(&mut self.0), i)
         }
@@ -753,7 +756,7 @@ pub mod vec {
     }
 
     #[hax_lib::attributes]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<T> std::iter::FromIterator<T> for Vec<T> {
         fn from_iter<I>(iter: I) -> Self
         where
@@ -837,9 +840,9 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn truncate(&mut self, n: usize) {}
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn swap_remove(&mut self, n: usize) -> T {
             seq_remove(&mut self.0, n)
         }
@@ -847,12 +850,12 @@ pub mod vec {
         /// `len' = len - 1` would need `index < len` as a precondition (else on
         /// an empty vector it asserts a `usize` is `-1`), which callers holding
         /// only a length upper bound cannot discharge, so state the inequality.
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         #[hax_lib::ensures(|_| future(self).len().to_int() <= self.len().to_int())]
         pub fn remove(&mut self, index: usize) -> T {
             seq_remove(&mut self.0, index)
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn clear(&mut self) {}
         #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= usize::MAX.to_int())]
         pub fn append(&mut self, other: &mut Vec<T, A>) {
@@ -866,7 +869,7 @@ pub mod vec {
             let l = seq_len(&self.0);
             Vec(seq_drain(&mut self.0, at, l), PhantomData)
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn drain<R /* : RangeBounds<usize> */>(&mut self, _range: R) -> drain::Drain<T, A> {
             let l = seq_len(&self.0);
             drain::Drain(seq_drain(&mut self.0, 0, l), PhantomData) // TODO use range bounds
@@ -913,7 +916,7 @@ pub mod vec {
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
-        #[hax_lib::opaque]
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         #[hax_lib::ensures(|_| future(self).len() == new_size)]
         pub fn resize(&mut self, new_size: usize, value: &T) {}
     }
@@ -942,7 +945,7 @@ pub mod vec {
     }
 
     #[hax_lib::attributes]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<T> std::iter::FromIterator<T> for Vec<T, Global> {
         fn from_iter<I>(iter: I) -> Self
         where

@@ -262,7 +262,7 @@ impl<T, E> Result<T, E> {
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::expect`]
-    #[hax_lib::requires(self.is_ok())]
+    #[cfg_attr(not(charon), hax_lib::requires(self.is_ok()))]
     pub fn expect(self, _msg: &str) -> T
     where
         E: super::fmt::Debug,
@@ -274,7 +274,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap`]
-    #[hax_lib::requires(self.is_ok())]
+    #[cfg_attr(not(charon), hax_lib::requires(self.is_ok()))]
     pub fn unwrap(self) -> T
     where
         E: super::fmt::Debug,
@@ -286,7 +286,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::expect_err`]
-    #[hax_lib::requires(self.is_err())]
+    #[cfg_attr(not(charon), hax_lib::requires(self.is_err()))]
     pub fn expect_err(self, _msg: &str) -> E
     where
         T: super::fmt::Debug,
@@ -298,7 +298,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::unwrap_err`]
-    #[hax_lib::requires(self.is_err())]
+    #[cfg_attr(not(charon), hax_lib::requires(self.is_err()))]
     pub fn unwrap_err(self) -> E
     where
         T: super::fmt::Debug,
@@ -357,7 +357,7 @@ impl<T, E> Result<Result<T, E>, E> {
 /// short-circuiting body cannot be written in terms of the iterator's items;
 /// the behaviour is axiomatised. The body below exists only to typecheck —
 /// it delegates to `V`'s own `from_iter`.
-#[hax_lib::opaque]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 #[hax_lib::attributes]
 impl<A, E, V: crate::iter::traits::collect::FromIterator<A>>
     crate::iter::traits::collect::FromIterator<Result<A, E>> for Result<V, E>

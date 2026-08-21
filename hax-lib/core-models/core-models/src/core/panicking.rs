@@ -1,16 +1,18 @@
-#[hax_lib::opaque]
+// F*-only: `charon::opaque` drops the declaration too, and extracted bodies
+// across the model call these, so Lean would not elaborate.
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 #[hax_lib::requires(false)]
 pub fn panic_explicit() -> ! {
     panic!()
 }
 
-#[hax_lib::opaque]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 #[hax_lib::requires(false)]
 pub fn panic(_msg: &str) -> ! {
     panic!()
 }
 
-#[hax_lib::opaque]
+#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
 #[hax_lib::requires(false)]
 pub fn panic_fmt(_fmt: super::fmt::Arguments) -> ! {
     panic!()
@@ -19,7 +21,7 @@ pub fn panic_fmt(_fmt: super::fmt::Arguments) -> ! {
 pub mod internal {
     // This module is used to break a dependency cycle (other core modules have
     // panics and this brings a dependency on core::fmt that we need to avoid)
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     #[hax_lib::requires(false)]
     pub fn panic<T>() -> T {
         panic!("")

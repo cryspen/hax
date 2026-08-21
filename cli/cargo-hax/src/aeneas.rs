@@ -275,6 +275,10 @@ pub fn run(
         "--rustc-arg=--cfg=hax_compilation",
         "--rustc-arg=--cfg=hax_backend_lean",
     ]);
+    // Adds `--cfg hax` to the inherited flags. Unlike `--rustc-arg`, which
+    // charon applies to workspace members only, this reaches `hax-lib`, whose
+    // spec helpers the macros expand against.
+    charon_cmd.env("RUSTFLAGS", super::rustflags());
     // User-supplied charon flags go before the `--` cargo separator.
     charon_cmd.args(&user_charon_args);
     // Everything after `--` is forwarded to cargo: build the host (proc-macro)
