@@ -78,13 +78,13 @@ def slice.Dummy (T : Type) := T
 def vec.Vec (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 564:8-564:43
+    Source: 'src/lib.rs', lines 567:8-567:43
     Visibility: public -/
 @[reducible]
 def vec.into_iter.IntoIter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::drain::Drain]
-    Source: 'src/lib.rs', lines 680:8-680:76
+    Source: 'src/lib.rs', lines 701:8-701:76
     Visibility: public -/
 def vec.drain.Drain (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A

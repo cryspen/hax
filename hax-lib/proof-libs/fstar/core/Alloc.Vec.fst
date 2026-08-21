@@ -72,13 +72,6 @@ unfold
 let impl_1__truncate (#v_T #v_A: Type0) = impl_1__truncate' #v_T #v_A
 
 assume
-val impl_1__swap_remove': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> n: usize
-  -> (t_Vec v_T v_A & v_T)
-
-unfold
-let impl_1__swap_remove (#v_T #v_A: Type0) = impl_1__swap_remove' #v_T #v_A
-
-assume
 val impl_1__clear': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> t_Vec v_T v_A
 
 unfold
@@ -123,6 +116,15 @@ let impl_1__insert (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (index: usize) (elem
   let right:Rust_primitives.Sequence.t_Seq v_T = tmp1 in
   let _:Prims.unit = () in
   self
+
+assume
+val impl_1__swap_remove': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> n: usize
+  -> Prims.Pure (t_Vec v_T v_A & v_T)
+      (requires n <. (impl_1__len #v_T #v_A self <: usize))
+      (fun _ -> Prims.l_True)
+
+unfold
+let impl_1__swap_remove (#v_T #v_A: Type0) = impl_1__swap_remove' #v_T #v_A
 
 /// `remove` drops one element, so it never grows the vector. The exact
 /// `len\' = len - 1` would need `index < len` as a precondition (else on

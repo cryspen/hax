@@ -546,7 +546,10 @@ pub mod vec {
             } else {
                 let mut res = true;
                 for i in 0..self.len() {
-                    if !(self[i] == other[i]) {
+                    // `res &&` keeps this short-circuiting like std's early
+                    // return: once unequal, `T::eq` is not called again (it may
+                    // panic). Aeneas has no early return, hence the flag.
+                    if res && !(self[i] == other[i]) {
                         res = false
                     }
                 }
@@ -634,11 +637,27 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
+        // These are opaque for F* only: a bare `#[hax_lib::opaque]` is invisible to
+        // charon, so aeneas extracts the body regardless and it must model std.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        pub fn truncate(&mut self, n: usize) {}
+        pub fn truncate(&mut self, n: usize) {
+            let l = seq_len(&self.0);
+            if n < l {
+                seq_drain(&mut self.0, n, l);
+            }
+        }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[hax_lib::requires(n < self.len())]
         pub fn swap_remove(&mut self, n: usize) -> T {
-            seq_remove(&mut self.0, n)
+            let l = seq_len(&self.0);
+            let last = seq_remove(&mut self.0, l - 1);
+            if n == l - 1 {
+                last
+            } else {
+                let removed = seq_remove(&mut self.0, n);
+                self.insert(n, last);
+                removed
+            }
         }
         /// `remove` drops one element, so it never grows the vector. The exact
         /// `len' = len - 1` would need `index < len` as a precondition (else on
@@ -650,7 +669,9 @@ pub mod vec {
             seq_remove(&mut self.0, index)
         }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        pub fn clear(&mut self) {}
+        pub fn clear(&mut self) {
+            self.0 = seq_empty()
+        }
         #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= usize::MAX.to_int())]
         pub fn append(&mut self, other: &mut Vec<T>) {
             seq_concat(&mut self.0, &mut other.0);
@@ -701,9 +722,19 @@ pub mod vec {
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
+        // Like std's `extend_with`: `value` is cloned into all but the last new
+        // slot, which takes `value` itself.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T) {}
+        pub fn resize(&mut self, new_size: usize, value: T) {
+            let l = seq_len(&self.0);
+            if new_size > l {
+                let mut extra = seq_create(value, new_size - l);
+                seq_concat(&mut self.0, &mut extra);
+            } else {
+                seq_drain(&mut self.0, new_size, l);
+            }
+        }
     }
 
     /// Generic `Index<I>` impl for `Vec`, matching std's
@@ -840,11 +871,27 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
+        // These are opaque for F* only: a bare `#[hax_lib::opaque]` is invisible to
+        // charon, so aeneas extracts the body regardless and it must model std.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        pub fn truncate(&mut self, n: usize) {}
+        pub fn truncate(&mut self, n: usize) {
+            let l = seq_len(&self.0);
+            if n < l {
+                seq_drain(&mut self.0, n, l);
+            }
+        }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[hax_lib::requires(n < self.len())]
         pub fn swap_remove(&mut self, n: usize) -> T {
-            seq_remove(&mut self.0, n)
+            let l = seq_len(&self.0);
+            let last = seq_remove(&mut self.0, l - 1);
+            if n == l - 1 {
+                last
+            } else {
+                let removed = seq_remove(&mut self.0, n);
+                self.insert(n, last);
+                removed
+            }
         }
         /// `remove` drops one element, so it never grows the vector. The exact
         /// `len' = len - 1` would need `index < len` as a precondition (else on
@@ -856,7 +903,9 @@ pub mod vec {
             seq_remove(&mut self.0, index)
         }
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        pub fn clear(&mut self) {}
+        pub fn clear(&mut self) {
+            self.0 = seq_empty()
+        }
         #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= usize::MAX.to_int())]
         pub fn append(&mut self, other: &mut Vec<T, A>) {
             seq_concat(&mut self.0, &mut other.0);
@@ -916,9 +965,19 @@ pub mod vec {
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
+        // Like std's `extend_with`: `value` is cloned into all but the last new
+        // slot, which takes `value` itself.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T) {}
+        pub fn resize(&mut self, new_size: usize, value: T) {
+            let l = seq_len(&self.0);
+            if new_size > l {
+                let mut extra = seq_create(value, new_size - l);
+                seq_concat(&mut self.0, &mut extra);
+            } else {
+                seq_drain(&mut self.0, new_size, l);
+            }
+        }
     }
 
     /// Generic `Index<I>` impl, mirroring std's
