@@ -281,7 +281,12 @@ impl<T> Option<T> {
     ///
     /// Calling std's version on a `None` is undefined behaviour; the `requires`
     /// rules that input out, and the model panics rather than inventing a value.
-    #[hax_lib::requires(self.is_some())]
+    // F*-only contract: the Lean pipeline now feeds `requires` to aeneas as a
+    // spec, and aeneas crashes computing the name of this one — `Not_found` in
+    // `NameMatcher.ty_to_pattern_aux` — for a `requires` on an `unsafe fn` in a
+    // generic inherent impl. The model still panics on the bad input, so the
+    // Lean side loses only the stated precondition, not the guard.
+    #[cfg_attr(hax_backend_fstar, hax_lib::requires(self.is_some()))]
     pub unsafe fn unwrap_unchecked(self) -> T {
         match self {
             Some(x) => x,
@@ -524,6 +529,10 @@ impl<T> crate::ops::try_trait::Try for Option<T> {
         match self {
             Some(v) => crate::ops::control_flow::ControlFlow::Continue(v),
             None => crate::ops::control_flow::ControlFlow::Break(None),
+        }
+    }
+}
+
 #[hax_lib::attributes]
 impl<T, E> Option<Result<T, E>> {
     /// See [`std::option::Option::transpose`]
@@ -548,6 +557,10 @@ impl<T> crate::ops::try_trait::FromResidual<Option<crate::convert::Infallible>> 
         match residual {
             None => None,
             Some(_) => super::panicking::internal::panic(),
+        }
+    }
+}
+
 #[hax_lib::attributes]
 impl<T, U> Option<(T, U)> {
     /// See [`std::option::Option::unzip`]

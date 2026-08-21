@@ -214,10 +214,13 @@ pub mod string {
     }
     // `Option`/`Result` are `core` types, which `core_models` may not touch, so
     // these fallible primitives answer with a validity flag instead.
-    pub fn str_from_utf8(s: &[u8]) -> (bool, &str) {
+    // On failure the last two components carry `Utf8Error`'s payload:
+    // `valid_up_to`, and `error_len` with 0 standing for `None` (a real
+    // `error_len` is 1..=3, so 0 is unambiguous).
+    pub fn str_from_utf8(s: &[u8]) -> (bool, &str, usize, u8) {
         match core::str::from_utf8(s) {
-            Ok(s) => (true, s),
-            Err(_) => (false, ""),
+            Ok(s) => (true, s, 0, 0),
+            Err(e) => (false, "", e.valid_up_to(), e.error_len().unwrap_or(0) as u8),
         }
     }
     /// The UTF-8 encoding of `s`. This is the gateway primitive for the

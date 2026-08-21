@@ -259,7 +259,12 @@ impl<T, E> Result<T, E> {
     ///
     /// Calling std's version on an `Err` is undefined behaviour; the `requires`
     /// rules that input out, and the model panics rather than inventing a value.
-    #[hax_lib::requires(self.is_ok())]
+    // F*-only contract: the Lean pipeline now feeds `requires` to aeneas as a
+    // spec, and aeneas crashes computing the name of this one — `Not_found` in
+    // `NameMatcher.ty_to_pattern_aux` — for a `requires` on an `unsafe fn` in a
+    // generic inherent impl. The model still panics on the bad input, so the
+    // Lean side loses only the stated precondition, not the guard.
+    #[cfg_attr(hax_backend_fstar, hax_lib::requires(self.is_ok()))]
     pub unsafe fn unwrap_unchecked(self) -> T {
         match self {
             Ok(t) => t,
@@ -270,7 +275,7 @@ impl<T, E> Result<T, E> {
     /// See [`std::result::Result::unwrap_err_unchecked`]
     ///
     /// See `unwrap_unchecked` for why the `Ok` arm panics.
-    #[hax_lib::requires(self.is_err())]
+    #[cfg_attr(hax_backend_fstar, hax_lib::requires(self.is_err()))]
     pub unsafe fn unwrap_err_unchecked(self) -> E {
         match self {
             Ok(_) => super::panicking::internal::panic(),

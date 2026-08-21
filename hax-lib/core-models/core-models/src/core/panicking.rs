@@ -139,16 +139,6 @@ pub mod internal {
     }
 }
 
-// These all return `!`, so `should_panic` is the only way to run them. There is
-// no public `core` counterpart to compare against (`core::panicking` is
-// internal), hence no `panics_like_core` here. `panic_fmt` is tested from
-// `fmt`'s test module, the only place an `Arguments` can be built.
-#[cfg(test)]
-mod tests {
-    #[test]
-    #[should_panic]
-    fn test_panic_explicit() {
-        super::panic_explicit()
 #[cfg(test)]
 mod tests {
     use super::panic_const::*;
@@ -386,16 +376,12 @@ mod tests {
 
     #[test]
     #[should_panic]
-    fn test_panic() {
-        super::panic("boom")
     fn test_panic_nounwind_nobacktrace() {
         super::panic_nounwind_nobacktrace("boom");
     }
 
     #[test]
     #[should_panic]
-    fn test_internal_panic() {
-        super::internal::panic::<()>()
     fn test_panic_nounwind_fmt() {
         super::panic_nounwind_fmt(crate::fmt::Arguments(&()), false);
     }
@@ -404,5 +390,26 @@ mod tests {
     #[should_panic]
     fn test_const_panic_fmt() {
         super::const_panic_fmt(crate::fmt::Arguments(&()));
+    }
+
+    // The pre-existing diverging helpers. `should_panic` is the only way to run
+    // them: `core::panicking` is internal, so there is no counterpart to pass to
+    // `panics_like_core`.
+    #[test]
+    #[should_panic]
+    fn test_panic_explicit() {
+        super::panic_explicit()
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_panic() {
+        super::panic("boom")
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_internal_panic() {
+        super::internal::panic::<()>()
     }
 }

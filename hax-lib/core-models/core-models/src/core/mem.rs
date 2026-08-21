@@ -331,10 +331,7 @@ mod tests {
             );
         }
     }
-}
 
-#[cfg(test)]
-mod tests {
     use proptest::prelude::*;
 
     // Layout queries take no runtime input, so they are checked per type

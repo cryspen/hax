@@ -231,14 +231,6 @@ pub mod index {
     #[cfg(not(hax_backend_fstar))]
     pub trait IndexMut<Idx>: Index<Idx> {
         fn index_mut(&mut self, i: Idx) -> &mut Self::Output;
-
-    /// See [`std::ops::IndexMut`]
-    pub trait IndexMut<Idx>: Index<Idx> {
-        // `&mut` returns are unsupported in the F* backend, as for
-        // `slice::index::SliceIndex::get_mut`.
-        /// See [`std::ops::IndexMut::index_mut`]
-        #[cfg(not(hax_backend_fstar))]
-        fn index_mut(&mut self, index: Idx) -> &mut Self::Output;
     }
 }
 
