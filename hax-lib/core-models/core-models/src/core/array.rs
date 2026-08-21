@@ -4,7 +4,9 @@ use rust_primitives::{sequence::*, slice::*};
 pub struct TryFromSliceError;
 
 // Dummy type to allow impls
-#[hax_lib::exclude]
+// F*-only: `charon::exclude` would drop this dummy type while its `impl`
+// blocks still reference it (see f32.rs).
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 struct Array<T, const N: usize>([T; N]);
 
 // Array impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)

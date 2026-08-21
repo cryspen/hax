@@ -360,7 +360,9 @@ mod fmt {
 }
 
 mod slice {
-    #[hax_lib::exclude]
+    // F*-only: `charon::exclude` would drop this dummy type while its `impl`
+    // blocks still reference it (see core-models' f32.rs).
+    #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     struct Dummy<T>(T);
 
     use super::vec::{Vec, from_seq};
@@ -737,7 +739,8 @@ pub mod vec {
     where
         I: std::slice::SliceIndex<[T]>,
     {
-        #[hax_lib::requires(self.get(i).is_some())]
+        // F*-only, as for the slice `IndexMut` this delegates to.
+        #[cfg_attr(hax_backend_fstar, hax_lib::requires(self.get(i).is_some()))]
         fn index_mut(&mut self, i: I) -> &mut I::Output {
             std::ops::IndexMut::index_mut(seq_to_slice_mut(&mut self.0), i)
         }
