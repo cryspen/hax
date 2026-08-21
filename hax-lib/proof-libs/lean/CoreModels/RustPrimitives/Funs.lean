@@ -1085,12 +1085,6 @@ def rust_primitives.sequence.seq_to_slice_mut
   {T : Type} :
   rust_primitives.sequence.Seq T →
     Result ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
--- A `Seq T` *is* a `Slice T`, so the write-back is the identity.
-@[rust_fun "rust_primitives::sequence::seq_to_slice_mut"]
-def rust_primitives.sequence.seq_to_slice_mut
-  {T : Type} :
-  rust_primitives.sequence.Seq T → Result
-    ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
   fun s => ok (s, fun s' => s')
 
 @[rust_fun "rust_primitives::sequence::seq_concat"]
