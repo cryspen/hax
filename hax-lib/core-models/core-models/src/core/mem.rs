@@ -328,13 +328,14 @@ mod tests {
             prop_assert_eq!(m.into_inner(), y);
         }
 
-        // Both drop the closure without calling it.
+        // std renamed this accessor (`into_inner` -> `dismiss`) between the two
+        // nightlies core-models CI compiles with, so what is pinned is the
+        // behaviour rather than a call that only builds on one of them: the
+        // inner value comes back out, and the closure is dropped unrun (which
+        // `core::mem::drop_guard`'s equivalence tests check on the Lean side).
         #[test]
         fn test_drop_guard_dismiss(x in any::<u32>()) {
-            prop_assert_eq!(
-                DropGuard::dismiss(DropGuard::new(x, |_: u32| ())),
-                core::mem::DropGuard::dismiss(core::mem::DropGuard::new(x, |_: u32| ()))
-            );
+            prop_assert_eq!(DropGuard::dismiss(DropGuard::new(x, |_: u32| ())), x);
         }
     }
 
