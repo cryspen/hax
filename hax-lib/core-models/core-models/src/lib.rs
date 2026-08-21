@@ -29,12 +29,6 @@
 // `coverage(off)` is unstable; `cfg(coverage_nightly)` is set only by
 // `cargo llvm-cov`, so normal builds and extraction never see this.
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
-// int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
-
-// likely_unlikely/cold_path: same, for the `hint` proptests.
-// The slice proptests compare against still-unstable `[T]` methods.
-// iter_advance_by / exact_size_is_empty / rev_into_inner: same, for the
-// still-unstable `core::iter` methods the `iter` proptests compare against.
 #![cfg_attr(
     test,
     feature(
@@ -48,8 +42,11 @@
         disjoint_bitor,
         drop_guard,
         exact_div,
+        exact_size_is_empty,
+        formatting_options,
         funnel_shifts,
         hasher_prefixfree_extras,
+        int_format_into,
         int_lowest_highest_one,
         int_roundings,
         is_ascii_octdigit,
@@ -99,8 +96,15 @@
         iter_order_by,
         iterator_try_collect,
         iterator_try_reduce,
+        likely_unlikely,
+        mem_copy_fn,
         next_index,
+        nonzero_bitwise,
+        nonzero_ops,
+        one_sided_range,
         peekable_next_if_map,
+        range_bounds_is_empty,
+        range_into_bounds,
         rev_into_inner,
         slice_pattern,
         slice_split_once,
@@ -109,30 +113,15 @@
         step_trait,
         strip_circumfix,
         trim_prefix_suffix,
-        try_find
+        try_find,
+        uint_bit_width,
+        unchecked_neg,
+        unchecked_shifts,
+        utf16_extra,
+        wrapping_int_impl,
+        wrapping_next_power_of_two
     )
 )]
-// `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
-// from `cargo hax`.
-// likely_unlikely/cold_path: same, for the `hint` proptests.
-
-// hasher_prefixfree_extras: same, for `Hasher::{write_length_prefix, write_str}`.
-
-// cmp_minmax: same, for `cmp::minmax{,_by,_by_key}`.
-
-// array_into_iter_constructors: `core::array::IntoIter::empty` is still
-// unstable, and a proptest compares against it.
-
-// mem_copy_fn / drop_guard: same, for `core::mem::{copy, DropGuard}`.
-// The `bound_*` / `control_flow_*` / `range_*` / `one_sided_range` features let
-// the `ops` proptests call the still-unstable std counterparts of the range and
-// `ControlFlow` items the model provides.
-// The proptests compare the model against std counterparts that are still
-// unstable: `div_ceil`/`div_floor`/`next_multiple_of` (int_roundings),
-// `exact_div` (exact_div, which is what the pinned toolchain calls the method
-// rustdoc now names `div_exact`), and `unchecked_neg`.
-// The slice proptests compare against still-unstable `[T]` methods.
-#![cfg_attr(charon, feature(register_tool))]
 #![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]

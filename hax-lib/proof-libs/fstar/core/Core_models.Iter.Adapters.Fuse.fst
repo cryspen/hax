@@ -5,7 +5,7 @@ open Rust_primitives
 
 include Core_models.Bundle {t_Fuse as t_Fuse}
 
-include Core_models.Bundle {impl_1__new as impl_1__new}
+include Core_models.Bundle {impl_1__new__from__fuse as impl_1__new}
 
 include Core_models.Bundle {impl_2__from__fuse as impl_2}
 

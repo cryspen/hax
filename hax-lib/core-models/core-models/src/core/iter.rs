@@ -1802,11 +1802,18 @@ pub mod traits {
         }
 
         // Companion trait for the one default method, as for `IteratorMethods`.
+        // Out of F*: hax derives a trait method's contract lemmas as top-level
+        // `f_<method>_pre`/`_post` and puts a whole crate's traits in one bundle
+        // module, so a method name is effectively crate-global there. This
+        // `is_empty` collides with `ops::range::RangeBoundsDefaults::is_empty`,
+        // which the F* library needs — keep `ExactSizeIteratorMethods` out of F*.
+        #[cfg(not(hax_backend_fstar))]
         #[hax_lib::attributes]
         pub(crate) trait ExactSizeIteratorMethods: ExactSizeIterator {
             fn is_empty(&self) -> bool;
         }
 
+        #[cfg(not(hax_backend_fstar))]
         #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
         impl<I: ExactSizeIterator> ExactSizeIteratorMethods for I {
@@ -4198,7 +4205,9 @@ mod tests {
 
     mod double_ended {
         use super::super::traits::double_ended::{DoubleEndedIterator, DoubleEndedIteratorMethods};
-        use super::super::traits::exact_size::{ExactSizeIterator, ExactSizeIteratorMethods};
+        use super::super::traits::exact_size::ExactSizeIterator;
+        #[cfg(not(hax_backend_fstar))]
+        use super::super::traits::exact_size::ExactSizeIteratorMethods;
         use super::super::traits::iterator::{Iterator, IteratorMethods};
         use super::{VecIter, drain};
         use crate::option::Option;
@@ -4332,9 +4341,16 @@ mod tests {
             }
 
             #[test]
-            fn test_len_and_is_empty(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+            fn test_len(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let model = VecIter::new(v.clone());
                 prop_assert_eq!(ExactSizeIterator::len(&model), v.iter().len());
+            }
+
+            // `ExactSizeIteratorMethods` is absent under the F* cfg.
+            #[cfg(not(hax_backend_fstar))]
+            #[test]
+            fn test_is_empty(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+                let model = VecIter::new(v.clone());
                 prop_assert_eq!(model.is_empty(), v.iter().is_empty());
             }
 
@@ -4474,6 +4490,7 @@ mod tests {
                 ExactSizeIterator::len(&model),
                 std::iter::empty::<u8>().len()
             );
+            #[cfg(not(hax_backend_fstar))]
             assert!(model.is_empty());
         }
     }

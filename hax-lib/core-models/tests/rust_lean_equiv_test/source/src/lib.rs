@@ -28,47 +28,43 @@
 // `core::hint::{likely, unlikely}` and `core::hint::cold_path` (exercised in
 // `core::hint`) are still unstable.
 #![feature(
+    allocator_api,
+    box_into_boxed_slice,
+    box_into_inner,
     cmp_minmax,
     cold_path,
+    cow_is_borrowed,
+    disjoint_bitor,
     drop_guard,
     ergonomic_clones,
-    likely_unlikely,
-    mem_copy_fn
-)]
-#![allow(incomplete_features)]
-// `core::fmt::{FormattingOptions, Sign, DebugAsHex, NumBuffer, NumBufferTrait}`
-// are the only `core::fmt` items whose behaviour is observable without a
-// `Formatter`, and they are still unstable — see `core/fmt.rs`.
-#![feature(formatting_options, int_format_into)]
-// Some tests deliberately exercise edge comparisons like `u8::MAX < 0u8`
-// to pin the trait-dispatch behaviour at the extremes; rustc warns
-// those are tautologically false, but that *is* the observation we want
-// to verify.
-#![allow(unused_comparisons)]
-// Several of the `core::num` items the equivalence tests exercise are still
-// unstable in std, so calling them here needs the gates.
-#![feature(
-    int_roundings,
-    uint_bit_width,
-    int_lowest_highest_one,
-    isolate_most_least_significant_one,
-    unchecked_shifts,
-    funnel_shifts,
-    disjoint_bitor,
-    wrapping_next_power_of_two,
-    is_ascii_octdigit,
-    wrapping_int_impl,
-    utf16_extra
-// Some `core::slice` items under test are still unstable in std.
-#![feature(
     formatting_options,
+    funnel_shifts,
     int_format_into,
+    int_lowest_highest_one,
+    int_roundings,
+    is_ascii_octdigit,
+    isolate_most_least_significant_one,
     iter_advance_by,
+    likely_unlikely,
+    mem_copy_fn,
+    push_mut,
     slice_split_once,
     slice_swap_unchecked,
+    smart_pointer_try_map,
     strip_circumfix,
-    trim_prefix_suffix
+    trim_prefix_suffix,
+    try_with_capacity,
+    uint_bit_width,
+    unchecked_shifts,
+    utf16_extra,
+    vec_try_remove,
+    wrapping_int_impl,
+    wrapping_next_power_of_two
 )]
+#![allow(incomplete_features)]
+// Some tests deliberately exercise edge comparisons like `u8::MAX < 0u8`
+// to pin trait-dispatch behaviour at the extremes; rustc warns those are
+// tautologically false, but that *is* the observation under test.
 #![allow(unused_comparisons)]
 
 pub mod helpers;

@@ -345,11 +345,6 @@ pub mod try_trait {
         fn from_residual(x: R) -> Self;
     }
 
-    /// See [`std::ops::Residual`]
-    pub trait Residual<O> {
-        type TryType: Try<Output = O, Residual = Self>;
-    }
-
     /// See [`std::ops::Try`]
     pub trait Try {
         type Output;

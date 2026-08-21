@@ -219,7 +219,6 @@ pub trait Debug {
 // The field is a placeholder — the model does not track format arguments. It is
 // `pub` only so that other modules' tests can build one to pass to the
 // `Arguments`-taking functions in `crate::panicking`.
-pub struct Arguments<'a>(pub &'a ());
 ///
 /// The only thing the model records is the "no placeholders" case
 /// (`format_args!("a literal")`), which is what [`Arguments::as_str`] observes.
@@ -1105,18 +1104,18 @@ mod rt {
         }
         #[hax_lib::opaque]
         fn new_const<T, U>(x: &T, y: &U) -> super::Arguments<'a> {
-            super::Arguments(&())
+            super::Arguments::from_str("")
         }
         #[hax_lib::opaque]
         fn new_v1<T, U, V, W>(x: &T, y: &U, z: &V, t: &W) -> super::Arguments<'a> {
-            super::Arguments(&())
+            super::Arguments::from_str("")
         }
         fn none() -> [Self; 0] {
             []
         }
         #[hax_lib::opaque]
         fn new_v1_formatted<T, U, V>(x: &T, y: &U, z: &V) -> super::Arguments<'a> {
-            super::Arguments(&())
+            super::Arguments::from_str("")
         }
     }
 
@@ -1168,20 +1167,15 @@ mod rt {
 
 #[cfg(test)]
 mod tests {
-    use super::{Arguments, Display, Formatter, Result};
+    use super::{Arguments, Display, Formatter, FormattingOptions, Result, Write};
 
     // Everything in this module is a stub returning `Ok(())`: the model has no
     // output buffer, so `Ok(())` is the whole observable behaviour.
     // `fmt::Error` has no `PartialEq`, hence `is_ok` rather than `assert_eq!`.
     #[test]
-    fn test_write_str() {
-        let mut f = Formatter;
-        assert!(f.write_str("hello").is_ok());
-    }
-
-    #[test]
     fn test_debug_fmt() {
-        let mut f = Formatter;
+        let mut sink = Sink(String::new());
+        let mut f = Formatter::new(&mut sink, FormattingOptions::new());
         #[cfg(not(hax_backend_fstar))]
         assert!(super::Debug::fmt(&1u8, &mut f).is_ok());
         #[cfg(hax_backend_fstar)]
@@ -1193,7 +1187,8 @@ mod tests {
             pastey::paste! { $(
                 #[test]
                 fn [<test_display_ $t>]() {
-                    let mut f = Formatter;
+                    let mut sink = Sink(String::new());
+        let mut f = Formatter::new(&mut sink, FormattingOptions::new());
                     assert!(Display::fmt(&(0 as $t), &mut f).is_ok());
                 }
             )* }
@@ -1206,8 +1201,9 @@ mod tests {
 
     #[test]
     fn test_write_fmt() {
-        let mut f = Formatter;
-        assert!(Arguments::write_fmt(&mut f, Arguments(&())).is_ok());
+        let mut sink = Sink(String::new());
+        let mut f = Formatter::new(&mut sink, FormattingOptions::new());
+        assert!(Arguments::write_fmt(&mut f, Arguments::from_str("")).is_ok());
     }
 
     // `Arguments` can only be built inside this module, so `panicking::panic_fmt`
@@ -1215,7 +1211,9 @@ mod tests {
     #[test]
     #[should_panic]
     fn test_panic_fmt() {
-        crate::panicking::panic_fmt(Arguments(&()));
+        crate::panicking::panic_fmt(Arguments::from_str(""));
+    }
+
     use crate::option::Option as MOption;
     use crate::result::Result as MResult;
     use crate::testing::{Inject, panics_like_core};
