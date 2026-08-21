@@ -11,6 +11,11 @@ type t_Utf8Error = {
   f_error_len:Core_models.Option.t_Option u8
 }
 
+/// Build one from what `rust_primitives::string::str_from_utf8` reports;
+/// `error_len == 0` is its encoding of `None`.
+val impl_Utf8Error__new (valid_up_to: usize) (error_len: u8)
+    : Prims.Pure t_Utf8Error Prims.l_True (fun _ -> Prims.l_True)
+
 /// See [`std::str::Utf8Error::valid_up_to`]
 val impl_Utf8Error__valid_up_to (self: t_Utf8Error)
     : Prims.Pure usize Prims.l_True (fun _ -> Prims.l_True)
