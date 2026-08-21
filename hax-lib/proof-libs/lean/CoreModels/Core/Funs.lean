@@ -22967,259 +22967,259 @@ def num.nonzero.NonZeroIsize.get
   ok self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.leading_zeros
   (self : num.nonzero.NonZero Std.U8) : Result Std.U32 := do
   num.U8.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.leading_zeros
   (self : num.nonzero.NonZero Std.U16) : Result Std.U32 := do
   num.U16.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.leading_zeros
   (self : num.nonzero.NonZero Std.U32) : Result Std.U32 := do
   num.U32.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.leading_zeros
   (self : num.nonzero.NonZero Std.U64) : Result Std.U32 := do
   num.U64.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.leading_zeros
   (self : num.nonzero.NonZero Std.U128) : Result Std.U32 := do
   num.U128.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.leading_zeros
   (self : num.nonzero.NonZero Std.Usize) : Result Std.U32 := do
   num.Usize.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.leading_zeros
   (self : num.nonzero.NonZero Std.I8) : Result Std.U32 := do
   num.I8.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.leading_zeros
   (self : num.nonzero.NonZero Std.I16) : Result Std.U32 := do
   num.I16.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.leading_zeros
   (self : num.nonzero.NonZero Std.I32) : Result Std.U32 := do
   num.I32.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.leading_zeros
   (self : num.nonzero.NonZero Std.I64) : Result Std.U32 := do
   num.I64.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.leading_zeros
   (self : num.nonzero.NonZero Std.I128) : Result Std.U32 := do
   num.I128.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2311:16-2313:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2314:16-2316:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.leading_zeros
   (self : num.nonzero.NonZero Std.Isize) : Result Std.U32 := do
   num.Isize.leading_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.trailing_zeros
   (self : num.nonzero.NonZero Std.U8) : Result Std.U32 := do
   num.U8.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.trailing_zeros
   (self : num.nonzero.NonZero Std.U16) : Result Std.U32 := do
   num.U16.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.trailing_zeros
   (self : num.nonzero.NonZero Std.U32) : Result Std.U32 := do
   num.U32.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.trailing_zeros
   (self : num.nonzero.NonZero Std.U64) : Result Std.U32 := do
   num.U64.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.trailing_zeros
   (self : num.nonzero.NonZero Std.U128) : Result Std.U32 := do
   num.U128.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.trailing_zeros
   (self : num.nonzero.NonZero Std.Usize) : Result Std.U32 := do
   num.Usize.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.trailing_zeros
   (self : num.nonzero.NonZero Std.I8) : Result Std.U32 := do
   num.I8.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.trailing_zeros
   (self : num.nonzero.NonZero Std.I16) : Result Std.U32 := do
   num.I16.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.trailing_zeros
   (self : num.nonzero.NonZero Std.I32) : Result Std.U32 := do
   num.I32.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.trailing_zeros
   (self : num.nonzero.NonZero Std.I64) : Result Std.U32 := do
   num.I64.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.trailing_zeros
   (self : num.nonzero.NonZero Std.I128) : Result Std.U32 := do
   num.I128.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2315:16-2317:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2318:16-2320:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.trailing_zeros
   (self : num.nonzero.NonZero Std.Isize) : Result Std.U32 := do
   num.Isize.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.lowest_one
   (self : num.nonzero.NonZero Std.U8) : Result Std.U32 := do
   num.U8.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.lowest_one
   (self : num.nonzero.NonZero Std.U16) : Result Std.U32 := do
   num.U16.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.lowest_one
   (self : num.nonzero.NonZero Std.U32) : Result Std.U32 := do
   num.U32.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.lowest_one
   (self : num.nonzero.NonZero Std.U64) : Result Std.U32 := do
   num.U64.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.lowest_one
   (self : num.nonzero.NonZero Std.U128) : Result Std.U32 := do
   num.U128.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.lowest_one
   (self : num.nonzero.NonZero Std.Usize) : Result Std.U32 := do
   num.Usize.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.lowest_one
   (self : num.nonzero.NonZero Std.I8) : Result Std.U32 := do
   num.I8.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.lowest_one
   (self : num.nonzero.NonZero Std.I16) : Result Std.U32 := do
   num.I16.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.lowest_one
   (self : num.nonzero.NonZero Std.I32) : Result Std.U32 := do
   num.I32.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.lowest_one
   (self : num.nonzero.NonZero Std.I64) : Result Std.U32 := do
   num.I64.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.lowest_one
   (self : num.nonzero.NonZero Std.I128) : Result Std.U32 := do
   num.I128.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2319:16-2321:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2322:16-2324:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.lowest_one
   (self : num.nonzero.NonZero Std.Isize) : Result Std.U32 := do
   num.Isize.trailing_zeros self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.count_ones
   (self : num.nonzero.NonZero Std.U8) :
@@ -23229,7 +23229,7 @@ def num.nonzero.NonZeroU8.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.count_ones
   (self : num.nonzero.NonZero Std.U16) :
@@ -23239,7 +23239,7 @@ def num.nonzero.NonZeroU16.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.count_ones
   (self : num.nonzero.NonZero Std.U32) :
@@ -23249,7 +23249,7 @@ def num.nonzero.NonZeroU32.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.count_ones
   (self : num.nonzero.NonZero Std.U64) :
@@ -23259,7 +23259,7 @@ def num.nonzero.NonZeroU64.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.count_ones
   (self : num.nonzero.NonZero Std.U128) :
@@ -23269,7 +23269,7 @@ def num.nonzero.NonZeroU128.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.count_ones
   (self : num.nonzero.NonZero Std.Usize) :
@@ -23279,7 +23279,7 @@ def num.nonzero.NonZeroUsize.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.count_ones
   (self : num.nonzero.NonZero Std.I8) :
@@ -23289,7 +23289,7 @@ def num.nonzero.NonZeroI8.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.count_ones
   (self : num.nonzero.NonZero Std.I16) :
@@ -23299,7 +23299,7 @@ def num.nonzero.NonZeroI16.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.count_ones
   (self : num.nonzero.NonZero Std.I32) :
@@ -23309,7 +23309,7 @@ def num.nonzero.NonZeroI32.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.count_ones
   (self : num.nonzero.NonZero Std.I64) :
@@ -23319,7 +23319,7 @@ def num.nonzero.NonZeroI64.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.count_ones
   (self : num.nonzero.NonZero Std.I128) :
@@ -23329,7 +23329,7 @@ def num.nonzero.NonZeroI128.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2323:16-2325:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2326:16-2328:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.count_ones
   (self : num.nonzero.NonZero Std.Isize) :
@@ -23339,7 +23339,7 @@ def num.nonzero.NonZeroIsize.count_ones
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.isolate_highest_one
   (self : num.nonzero.NonZero Std.U8) :
@@ -23349,7 +23349,7 @@ def num.nonzero.NonZeroU8.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.isolate_highest_one
   (self : num.nonzero.NonZero Std.U16) :
@@ -23359,7 +23359,7 @@ def num.nonzero.NonZeroU16.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.isolate_highest_one
   (self : num.nonzero.NonZero Std.U32) :
@@ -23369,7 +23369,7 @@ def num.nonzero.NonZeroU32.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.isolate_highest_one
   (self : num.nonzero.NonZero Std.U64) :
@@ -23379,7 +23379,7 @@ def num.nonzero.NonZeroU64.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.isolate_highest_one
   (self : num.nonzero.NonZero Std.U128) :
@@ -23389,7 +23389,7 @@ def num.nonzero.NonZeroU128.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.isolate_highest_one
   (self : num.nonzero.NonZero Std.Usize) :
@@ -23399,7 +23399,7 @@ def num.nonzero.NonZeroUsize.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.isolate_highest_one
   (self : num.nonzero.NonZero Std.I8) :
@@ -23409,7 +23409,7 @@ def num.nonzero.NonZeroI8.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.isolate_highest_one
   (self : num.nonzero.NonZero Std.I16) :
@@ -23419,7 +23419,7 @@ def num.nonzero.NonZeroI16.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.isolate_highest_one
   (self : num.nonzero.NonZero Std.I32) :
@@ -23429,7 +23429,7 @@ def num.nonzero.NonZeroI32.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.isolate_highest_one
   (self : num.nonzero.NonZero Std.I64) :
@@ -23439,7 +23439,7 @@ def num.nonzero.NonZeroI64.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.isolate_highest_one
   (self : num.nonzero.NonZero Std.I128) :
@@ -23449,7 +23449,7 @@ def num.nonzero.NonZeroI128.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::isolate_highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2327:16-2329:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2330:16-2332:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.isolate_highest_one
   (self : num.nonzero.NonZero Std.Isize) :
@@ -23459,7 +23459,7 @@ def num.nonzero.NonZeroIsize.isolate_highest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.isolate_lowest_one
   (self : num.nonzero.NonZero Std.U8) :
@@ -23469,7 +23469,7 @@ def num.nonzero.NonZeroU8.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.isolate_lowest_one
   (self : num.nonzero.NonZero Std.U16) :
@@ -23479,7 +23479,7 @@ def num.nonzero.NonZeroU16.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.isolate_lowest_one
   (self : num.nonzero.NonZero Std.U32) :
@@ -23489,7 +23489,7 @@ def num.nonzero.NonZeroU32.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.isolate_lowest_one
   (self : num.nonzero.NonZero Std.U64) :
@@ -23499,7 +23499,7 @@ def num.nonzero.NonZeroU64.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.isolate_lowest_one
   (self : num.nonzero.NonZero Std.U128) :
@@ -23509,7 +23509,7 @@ def num.nonzero.NonZeroU128.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.isolate_lowest_one
   (self : num.nonzero.NonZero Std.Usize) :
@@ -23519,7 +23519,7 @@ def num.nonzero.NonZeroUsize.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.isolate_lowest_one
   (self : num.nonzero.NonZero Std.I8) :
@@ -23529,7 +23529,7 @@ def num.nonzero.NonZeroI8.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.isolate_lowest_one
   (self : num.nonzero.NonZero Std.I16) :
@@ -23539,7 +23539,7 @@ def num.nonzero.NonZeroI16.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.isolate_lowest_one
   (self : num.nonzero.NonZero Std.I32) :
@@ -23549,7 +23549,7 @@ def num.nonzero.NonZeroI32.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.isolate_lowest_one
   (self : num.nonzero.NonZero Std.I64) :
@@ -23559,7 +23559,7 @@ def num.nonzero.NonZeroI64.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.isolate_lowest_one
   (self : num.nonzero.NonZero Std.I128) :
@@ -23569,7 +23569,7 @@ def num.nonzero.NonZeroI128.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::isolate_lowest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2331:16-2333:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2334:16-2336:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.isolate_lowest_one
   (self : num.nonzero.NonZero Std.Isize) :
@@ -23579,7 +23579,7 @@ def num.nonzero.NonZeroIsize.isolate_lowest_one
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.rotate_left
   (self : num.nonzero.NonZero Std.U8) (n : Std.U32) :
@@ -23589,7 +23589,7 @@ def num.nonzero.NonZeroU8.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.rotate_left
   (self : num.nonzero.NonZero Std.U16) (n : Std.U32) :
@@ -23599,7 +23599,7 @@ def num.nonzero.NonZeroU16.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.rotate_left
   (self : num.nonzero.NonZero Std.U32) (n : Std.U32) :
@@ -23609,7 +23609,7 @@ def num.nonzero.NonZeroU32.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.rotate_left
   (self : num.nonzero.NonZero Std.U64) (n : Std.U32) :
@@ -23619,7 +23619,7 @@ def num.nonzero.NonZeroU64.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.rotate_left
   (self : num.nonzero.NonZero Std.U128) (n : Std.U32) :
@@ -23629,7 +23629,7 @@ def num.nonzero.NonZeroU128.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.rotate_left
   (self : num.nonzero.NonZero Std.Usize) (n : Std.U32) :
@@ -23639,7 +23639,7 @@ def num.nonzero.NonZeroUsize.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.rotate_left
   (self : num.nonzero.NonZero Std.I8) (n : Std.U32) :
@@ -23649,7 +23649,7 @@ def num.nonzero.NonZeroI8.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.rotate_left
   (self : num.nonzero.NonZero Std.I16) (n : Std.U32) :
@@ -23659,7 +23659,7 @@ def num.nonzero.NonZeroI16.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.rotate_left
   (self : num.nonzero.NonZero Std.I32) (n : Std.U32) :
@@ -23669,7 +23669,7 @@ def num.nonzero.NonZeroI32.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.rotate_left
   (self : num.nonzero.NonZero Std.I64) (n : Std.U32) :
@@ -23679,7 +23679,7 @@ def num.nonzero.NonZeroI64.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.rotate_left
   (self : num.nonzero.NonZero Std.I128) (n : Std.U32) :
@@ -23689,7 +23689,7 @@ def num.nonzero.NonZeroI128.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2335:16-2337:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2338:16-2340:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.rotate_left
   (self : num.nonzero.NonZero Std.Isize) (n : Std.U32) :
@@ -23699,7 +23699,7 @@ def num.nonzero.NonZeroIsize.rotate_left
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.rotate_right
   (self : num.nonzero.NonZero Std.U8) (n : Std.U32) :
@@ -23709,7 +23709,7 @@ def num.nonzero.NonZeroU8.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.rotate_right
   (self : num.nonzero.NonZero Std.U16) (n : Std.U32) :
@@ -23719,7 +23719,7 @@ def num.nonzero.NonZeroU16.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.rotate_right
   (self : num.nonzero.NonZero Std.U32) (n : Std.U32) :
@@ -23729,7 +23729,7 @@ def num.nonzero.NonZeroU32.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.rotate_right
   (self : num.nonzero.NonZero Std.U64) (n : Std.U32) :
@@ -23739,7 +23739,7 @@ def num.nonzero.NonZeroU64.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.rotate_right
   (self : num.nonzero.NonZero Std.U128) (n : Std.U32) :
@@ -23749,7 +23749,7 @@ def num.nonzero.NonZeroU128.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.rotate_right
   (self : num.nonzero.NonZero Std.Usize) (n : Std.U32) :
@@ -23759,7 +23759,7 @@ def num.nonzero.NonZeroUsize.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.rotate_right
   (self : num.nonzero.NonZero Std.I8) (n : Std.U32) :
@@ -23769,7 +23769,7 @@ def num.nonzero.NonZeroI8.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.rotate_right
   (self : num.nonzero.NonZero Std.I16) (n : Std.U32) :
@@ -23779,7 +23779,7 @@ def num.nonzero.NonZeroI16.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.rotate_right
   (self : num.nonzero.NonZero Std.I32) (n : Std.U32) :
@@ -23789,7 +23789,7 @@ def num.nonzero.NonZeroI32.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.rotate_right
   (self : num.nonzero.NonZero Std.I64) (n : Std.U32) :
@@ -23799,7 +23799,7 @@ def num.nonzero.NonZeroI64.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.rotate_right
   (self : num.nonzero.NonZero Std.I128) (n : Std.U32) :
@@ -23809,7 +23809,7 @@ def num.nonzero.NonZeroI128.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2339:16-2341:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2342:16-2344:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.rotate_right
   (self : num.nonzero.NonZero Std.Isize) (n : Std.U32) :
@@ -23819,7 +23819,7 @@ def num.nonzero.NonZeroIsize.rotate_right
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.reverse_bits
   (self : num.nonzero.NonZero Std.U8) :
@@ -23829,7 +23829,7 @@ def num.nonzero.NonZeroU8.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.reverse_bits
   (self : num.nonzero.NonZero Std.U16) :
@@ -23839,7 +23839,7 @@ def num.nonzero.NonZeroU16.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.reverse_bits
   (self : num.nonzero.NonZero Std.U32) :
@@ -23849,7 +23849,7 @@ def num.nonzero.NonZeroU32.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.reverse_bits
   (self : num.nonzero.NonZero Std.U64) :
@@ -23859,7 +23859,7 @@ def num.nonzero.NonZeroU64.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.reverse_bits
   (self : num.nonzero.NonZero Std.U128) :
@@ -23869,7 +23869,7 @@ def num.nonzero.NonZeroU128.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.reverse_bits
   (self : num.nonzero.NonZero Std.Usize) :
@@ -23879,7 +23879,7 @@ def num.nonzero.NonZeroUsize.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.reverse_bits
   (self : num.nonzero.NonZero Std.I8) :
@@ -23889,7 +23889,7 @@ def num.nonzero.NonZeroI8.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.reverse_bits
   (self : num.nonzero.NonZero Std.I16) :
@@ -23899,7 +23899,7 @@ def num.nonzero.NonZeroI16.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.reverse_bits
   (self : num.nonzero.NonZero Std.I32) :
@@ -23909,7 +23909,7 @@ def num.nonzero.NonZeroI32.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.reverse_bits
   (self : num.nonzero.NonZero Std.I64) :
@@ -23919,7 +23919,7 @@ def num.nonzero.NonZeroI64.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.reverse_bits
   (self : num.nonzero.NonZero Std.I128) :
@@ -23929,7 +23929,7 @@ def num.nonzero.NonZeroI128.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2343:16-2345:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2346:16-2348:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.reverse_bits
   (self : num.nonzero.NonZero Std.Isize) :
@@ -23939,7 +23939,7 @@ def num.nonzero.NonZeroIsize.reverse_bits
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.swap_bytes
   (self : num.nonzero.NonZero Std.U8) :
@@ -23949,7 +23949,7 @@ def num.nonzero.NonZeroU8.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.swap_bytes
   (self : num.nonzero.NonZero Std.U16) :
@@ -23959,7 +23959,7 @@ def num.nonzero.NonZeroU16.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.swap_bytes
   (self : num.nonzero.NonZero Std.U32) :
@@ -23969,7 +23969,7 @@ def num.nonzero.NonZeroU32.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.swap_bytes
   (self : num.nonzero.NonZero Std.U64) :
@@ -23979,7 +23979,7 @@ def num.nonzero.NonZeroU64.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.swap_bytes
   (self : num.nonzero.NonZero Std.U128) :
@@ -23989,7 +23989,7 @@ def num.nonzero.NonZeroU128.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.swap_bytes
   (self : num.nonzero.NonZero Std.Usize) :
@@ -23999,7 +23999,7 @@ def num.nonzero.NonZeroUsize.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.swap_bytes
   (self : num.nonzero.NonZero Std.I8) :
@@ -24009,7 +24009,7 @@ def num.nonzero.NonZeroI8.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.swap_bytes
   (self : num.nonzero.NonZero Std.I16) :
@@ -24019,7 +24019,7 @@ def num.nonzero.NonZeroI16.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.swap_bytes
   (self : num.nonzero.NonZero Std.I32) :
@@ -24029,7 +24029,7 @@ def num.nonzero.NonZeroI32.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.swap_bytes
   (self : num.nonzero.NonZero Std.I64) :
@@ -24039,7 +24039,7 @@ def num.nonzero.NonZeroI64.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.swap_bytes
   (self : num.nonzero.NonZero Std.I128) :
@@ -24049,7 +24049,7 @@ def num.nonzero.NonZeroI128.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2347:16-2349:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2350:16-2352:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.swap_bytes
   (self : num.nonzero.NonZero Std.Isize) :
@@ -24059,7 +24059,7 @@ def num.nonzero.NonZeroIsize.swap_bytes
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.to_be
   (self : num.nonzero.NonZero Std.U8) :
@@ -24069,7 +24069,7 @@ def num.nonzero.NonZeroU8.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.to_be
   (self : num.nonzero.NonZero Std.U16) :
@@ -24079,7 +24079,7 @@ def num.nonzero.NonZeroU16.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.to_be
   (self : num.nonzero.NonZero Std.U32) :
@@ -24089,7 +24089,7 @@ def num.nonzero.NonZeroU32.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.to_be
   (self : num.nonzero.NonZero Std.U64) :
@@ -24099,7 +24099,7 @@ def num.nonzero.NonZeroU64.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.to_be
   (self : num.nonzero.NonZero Std.U128) :
@@ -24109,7 +24109,7 @@ def num.nonzero.NonZeroU128.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.to_be
   (self : num.nonzero.NonZero Std.Usize) :
@@ -24119,7 +24119,7 @@ def num.nonzero.NonZeroUsize.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.to_be
   (self : num.nonzero.NonZero Std.I8) :
@@ -24129,7 +24129,7 @@ def num.nonzero.NonZeroI8.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.to_be
   (self : num.nonzero.NonZero Std.I16) :
@@ -24139,7 +24139,7 @@ def num.nonzero.NonZeroI16.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.to_be
   (self : num.nonzero.NonZero Std.I32) :
@@ -24149,7 +24149,7 @@ def num.nonzero.NonZeroI32.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.to_be
   (self : num.nonzero.NonZero Std.I64) :
@@ -24159,7 +24159,7 @@ def num.nonzero.NonZeroI64.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.to_be
   (self : num.nonzero.NonZero Std.I128) :
@@ -24169,7 +24169,7 @@ def num.nonzero.NonZeroI128.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2351:16-2353:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2354:16-2356:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.to_be
   (self : num.nonzero.NonZero Std.Isize) :
@@ -24179,7 +24179,7 @@ def num.nonzero.NonZeroIsize.to_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.to_le
   (self : num.nonzero.NonZero Std.U8) :
@@ -24189,7 +24189,7 @@ def num.nonzero.NonZeroU8.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.to_le
   (self : num.nonzero.NonZero Std.U16) :
@@ -24199,7 +24199,7 @@ def num.nonzero.NonZeroU16.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.to_le
   (self : num.nonzero.NonZero Std.U32) :
@@ -24209,7 +24209,7 @@ def num.nonzero.NonZeroU32.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.to_le
   (self : num.nonzero.NonZero Std.U64) :
@@ -24219,7 +24219,7 @@ def num.nonzero.NonZeroU64.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.to_le
   (self : num.nonzero.NonZero Std.U128) :
@@ -24229,7 +24229,7 @@ def num.nonzero.NonZeroU128.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.to_le
   (self : num.nonzero.NonZero Std.Usize) :
@@ -24239,7 +24239,7 @@ def num.nonzero.NonZeroUsize.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.to_le
   (self : num.nonzero.NonZero Std.I8) :
@@ -24249,7 +24249,7 @@ def num.nonzero.NonZeroI8.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.to_le
   (self : num.nonzero.NonZero Std.I16) :
@@ -24259,7 +24259,7 @@ def num.nonzero.NonZeroI16.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.to_le
   (self : num.nonzero.NonZero Std.I32) :
@@ -24269,7 +24269,7 @@ def num.nonzero.NonZeroI32.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.to_le
   (self : num.nonzero.NonZero Std.I64) :
@@ -24279,7 +24279,7 @@ def num.nonzero.NonZeroI64.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.to_le
   (self : num.nonzero.NonZero Std.I128) :
@@ -24289,7 +24289,7 @@ def num.nonzero.NonZeroI128.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2355:16-2357:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2358:16-2360:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.to_le
   (self : num.nonzero.NonZero Std.Isize) :
@@ -24299,7 +24299,7 @@ def num.nonzero.NonZeroIsize.to_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.from_be
   (x : num.nonzero.NonZero Std.U8) : Result (num.nonzero.NonZero Std.U8) := do
@@ -24307,7 +24307,7 @@ def num.nonzero.NonZeroU8.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.from_be
   (x : num.nonzero.NonZero Std.U16) :
@@ -24317,7 +24317,7 @@ def num.nonzero.NonZeroU16.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.from_be
   (x : num.nonzero.NonZero Std.U32) :
@@ -24327,7 +24327,7 @@ def num.nonzero.NonZeroU32.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.from_be
   (x : num.nonzero.NonZero Std.U64) :
@@ -24337,7 +24337,7 @@ def num.nonzero.NonZeroU64.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.from_be
   (x : num.nonzero.NonZero Std.U128) :
@@ -24347,7 +24347,7 @@ def num.nonzero.NonZeroU128.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.from_be
   (x : num.nonzero.NonZero Std.Usize) :
@@ -24357,7 +24357,7 @@ def num.nonzero.NonZeroUsize.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.from_be
   (x : num.nonzero.NonZero Std.I8) : Result (num.nonzero.NonZero Std.I8) := do
@@ -24365,7 +24365,7 @@ def num.nonzero.NonZeroI8.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.from_be
   (x : num.nonzero.NonZero Std.I16) :
@@ -24375,7 +24375,7 @@ def num.nonzero.NonZeroI16.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.from_be
   (x : num.nonzero.NonZero Std.I32) :
@@ -24385,7 +24385,7 @@ def num.nonzero.NonZeroI32.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.from_be
   (x : num.nonzero.NonZero Std.I64) :
@@ -24395,7 +24395,7 @@ def num.nonzero.NonZeroI64.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.from_be
   (x : num.nonzero.NonZero Std.I128) :
@@ -24405,7 +24405,7 @@ def num.nonzero.NonZeroI128.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2359:16-2361:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2362:16-2364:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.from_be
   (x : num.nonzero.NonZero Std.Isize) :
@@ -24415,7 +24415,7 @@ def num.nonzero.NonZeroIsize.from_be
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.from_le
   (x : num.nonzero.NonZero Std.U8) : Result (num.nonzero.NonZero Std.U8) := do
@@ -24423,7 +24423,7 @@ def num.nonzero.NonZeroU8.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.from_le
   (x : num.nonzero.NonZero Std.U16) :
@@ -24433,7 +24433,7 @@ def num.nonzero.NonZeroU16.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.from_le
   (x : num.nonzero.NonZero Std.U32) :
@@ -24443,7 +24443,7 @@ def num.nonzero.NonZeroU32.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.from_le
   (x : num.nonzero.NonZero Std.U64) :
@@ -24453,7 +24453,7 @@ def num.nonzero.NonZeroU64.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.from_le
   (x : num.nonzero.NonZero Std.U128) :
@@ -24463,7 +24463,7 @@ def num.nonzero.NonZeroU128.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.from_le
   (x : num.nonzero.NonZero Std.Usize) :
@@ -24473,7 +24473,7 @@ def num.nonzero.NonZeroUsize.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.from_le
   (x : num.nonzero.NonZero Std.I8) : Result (num.nonzero.NonZero Std.I8) := do
@@ -24481,7 +24481,7 @@ def num.nonzero.NonZeroI8.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.from_le
   (x : num.nonzero.NonZero Std.I16) :
@@ -24491,7 +24491,7 @@ def num.nonzero.NonZeroI16.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.from_le
   (x : num.nonzero.NonZero Std.I32) :
@@ -24501,7 +24501,7 @@ def num.nonzero.NonZeroI32.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.from_le
   (x : num.nonzero.NonZero Std.I64) :
@@ -24511,7 +24511,7 @@ def num.nonzero.NonZeroI64.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.from_le
   (x : num.nonzero.NonZero Std.I128) :
@@ -24521,7 +24521,7 @@ def num.nonzero.NonZeroI128.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2363:16-2365:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2366:16-2368:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.from_le
   (x : num.nonzero.NonZero Std.Isize) :
@@ -24531,7 +24531,7 @@ def num.nonzero.NonZeroIsize.from_le
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.checked_mul
   (self : num.nonzero.NonZero Std.U8) (other : num.nonzero.NonZero Std.U8) :
@@ -24543,7 +24543,7 @@ def num.nonzero.NonZeroU8.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.checked_mul
   (self : num.nonzero.NonZero Std.U16) (other : num.nonzero.NonZero Std.U16) :
@@ -24555,7 +24555,7 @@ def num.nonzero.NonZeroU16.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.checked_mul
   (self : num.nonzero.NonZero Std.U32) (other : num.nonzero.NonZero Std.U32) :
@@ -24567,7 +24567,7 @@ def num.nonzero.NonZeroU32.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.checked_mul
   (self : num.nonzero.NonZero Std.U64) (other : num.nonzero.NonZero Std.U64) :
@@ -24579,7 +24579,7 @@ def num.nonzero.NonZeroU64.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.checked_mul
   (self : num.nonzero.NonZero Std.U128) (other : num.nonzero.NonZero Std.U128)
@@ -24592,7 +24592,7 @@ def num.nonzero.NonZeroU128.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.checked_mul
   (self : num.nonzero.NonZero Std.Usize)
@@ -24605,7 +24605,7 @@ def num.nonzero.NonZeroUsize.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.checked_mul
   (self : num.nonzero.NonZero Std.I8) (other : num.nonzero.NonZero Std.I8) :
@@ -24617,7 +24617,7 @@ def num.nonzero.NonZeroI8.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.checked_mul
   (self : num.nonzero.NonZero Std.I16) (other : num.nonzero.NonZero Std.I16) :
@@ -24629,7 +24629,7 @@ def num.nonzero.NonZeroI16.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.checked_mul
   (self : num.nonzero.NonZero Std.I32) (other : num.nonzero.NonZero Std.I32) :
@@ -24641,7 +24641,7 @@ def num.nonzero.NonZeroI32.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.checked_mul
   (self : num.nonzero.NonZero Std.I64) (other : num.nonzero.NonZero Std.I64) :
@@ -24653,7 +24653,7 @@ def num.nonzero.NonZeroI64.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.checked_mul
   (self : num.nonzero.NonZero Std.I128) (other : num.nonzero.NonZero Std.I128)
@@ -24666,7 +24666,7 @@ def num.nonzero.NonZeroI128.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2367:16-2374:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2370:16-2377:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.checked_mul
   (self : num.nonzero.NonZero Std.Isize)
@@ -24679,7 +24679,7 @@ def num.nonzero.NonZeroIsize.checked_mul
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.saturating_mul
   (self : num.nonzero.NonZero Std.U8) (other : num.nonzero.NonZero Std.U8) :
@@ -24689,7 +24689,7 @@ def num.nonzero.NonZeroU8.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.saturating_mul
   (self : num.nonzero.NonZero Std.U16) (other : num.nonzero.NonZero Std.U16) :
@@ -24699,7 +24699,7 @@ def num.nonzero.NonZeroU16.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.saturating_mul
   (self : num.nonzero.NonZero Std.U32) (other : num.nonzero.NonZero Std.U32) :
@@ -24709,7 +24709,7 @@ def num.nonzero.NonZeroU32.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.saturating_mul
   (self : num.nonzero.NonZero Std.U64) (other : num.nonzero.NonZero Std.U64) :
@@ -24719,7 +24719,7 @@ def num.nonzero.NonZeroU64.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.saturating_mul
   (self : num.nonzero.NonZero Std.U128) (other : num.nonzero.NonZero Std.U128)
@@ -24730,7 +24730,7 @@ def num.nonzero.NonZeroU128.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.saturating_mul
   (self : num.nonzero.NonZero Std.Usize)
@@ -24741,7 +24741,7 @@ def num.nonzero.NonZeroUsize.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.saturating_mul
   (self : num.nonzero.NonZero Std.I8) (other : num.nonzero.NonZero Std.I8) :
@@ -24751,7 +24751,7 @@ def num.nonzero.NonZeroI8.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.saturating_mul
   (self : num.nonzero.NonZero Std.I16) (other : num.nonzero.NonZero Std.I16) :
@@ -24761,7 +24761,7 @@ def num.nonzero.NonZeroI16.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.saturating_mul
   (self : num.nonzero.NonZero Std.I32) (other : num.nonzero.NonZero Std.I32) :
@@ -24771,7 +24771,7 @@ def num.nonzero.NonZeroI32.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.saturating_mul
   (self : num.nonzero.NonZero Std.I64) (other : num.nonzero.NonZero Std.I64) :
@@ -24781,7 +24781,7 @@ def num.nonzero.NonZeroI64.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.saturating_mul
   (self : num.nonzero.NonZero Std.I128) (other : num.nonzero.NonZero Std.I128)
@@ -24792,7 +24792,7 @@ def num.nonzero.NonZeroI128.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2376:16-2378:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2379:16-2381:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.saturating_mul
   (self : num.nonzero.NonZero Std.Isize)
@@ -24803,7 +24803,7 @@ def num.nonzero.NonZeroIsize.saturating_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.checked_pow
   (self : num.nonzero.NonZero Std.U8) (other : Std.U32) :
@@ -24815,7 +24815,7 @@ def num.nonzero.NonZeroU8.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.checked_pow
   (self : num.nonzero.NonZero Std.U16) (other : Std.U32) :
@@ -24827,7 +24827,7 @@ def num.nonzero.NonZeroU16.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.checked_pow
   (self : num.nonzero.NonZero Std.U32) (other : Std.U32) :
@@ -24839,7 +24839,7 @@ def num.nonzero.NonZeroU32.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.checked_pow
   (self : num.nonzero.NonZero Std.U64) (other : Std.U32) :
@@ -24851,7 +24851,7 @@ def num.nonzero.NonZeroU64.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.checked_pow
   (self : num.nonzero.NonZero Std.U128) (other : Std.U32) :
@@ -24863,7 +24863,7 @@ def num.nonzero.NonZeroU128.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.checked_pow
   (self : num.nonzero.NonZero Std.Usize) (other : Std.U32) :
@@ -24875,7 +24875,7 @@ def num.nonzero.NonZeroUsize.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.checked_pow
   (self : num.nonzero.NonZero Std.I8) (other : Std.U32) :
@@ -24887,7 +24887,7 @@ def num.nonzero.NonZeroI8.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.checked_pow
   (self : num.nonzero.NonZero Std.I16) (other : Std.U32) :
@@ -24899,7 +24899,7 @@ def num.nonzero.NonZeroI16.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.checked_pow
   (self : num.nonzero.NonZero Std.I32) (other : Std.U32) :
@@ -24911,7 +24911,7 @@ def num.nonzero.NonZeroI32.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.checked_pow
   (self : num.nonzero.NonZero Std.I64) (other : Std.U32) :
@@ -24923,7 +24923,7 @@ def num.nonzero.NonZeroI64.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.checked_pow
   (self : num.nonzero.NonZero Std.I128) (other : Std.U32) :
@@ -24935,7 +24935,7 @@ def num.nonzero.NonZeroI128.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2380:16-2387:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2383:16-2390:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.checked_pow
   (self : num.nonzero.NonZero Std.Isize) (other : Std.U32) :
@@ -24947,7 +24947,7 @@ def num.nonzero.NonZeroIsize.checked_pow
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroU8.saturating_pow
   (self : num.nonzero.NonZero Std.U8) (other : Std.U32) :
@@ -24957,7 +24957,7 @@ def num.nonzero.NonZeroU8.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroU16.saturating_pow
   (self : num.nonzero.NonZero Std.U16) (other : Std.U32) :
@@ -24967,7 +24967,7 @@ def num.nonzero.NonZeroU16.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroU32.saturating_pow
   (self : num.nonzero.NonZero Std.U32) (other : Std.U32) :
@@ -24977,7 +24977,7 @@ def num.nonzero.NonZeroU32.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroU64.saturating_pow
   (self : num.nonzero.NonZero Std.U64) (other : Std.U32) :
@@ -24987,7 +24987,7 @@ def num.nonzero.NonZeroU64.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroU128.saturating_pow
   (self : num.nonzero.NonZero Std.U128) (other : Std.U32) :
@@ -24997,7 +24997,7 @@ def num.nonzero.NonZeroU128.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroUsize.saturating_pow
   (self : num.nonzero.NonZero Std.Usize) (other : Std.U32) :
@@ -25007,7 +25007,7 @@ def num.nonzero.NonZeroUsize.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroI8.saturating_pow
   (self : num.nonzero.NonZero Std.I8) (other : Std.U32) :
@@ -25017,7 +25017,7 @@ def num.nonzero.NonZeroI8.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroI16.saturating_pow
   (self : num.nonzero.NonZero Std.I16) (other : Std.U32) :
@@ -25027,7 +25027,7 @@ def num.nonzero.NonZeroI16.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroI32.saturating_pow
   (self : num.nonzero.NonZero Std.I32) (other : Std.U32) :
@@ -25037,7 +25037,7 @@ def num.nonzero.NonZeroI32.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroI64.saturating_pow
   (self : num.nonzero.NonZero Std.I64) (other : Std.U32) :
@@ -25047,7 +25047,7 @@ def num.nonzero.NonZeroI64.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroI128.saturating_pow
   (self : num.nonzero.NonZero Std.I128) (other : Std.U32) :
@@ -25057,7 +25057,7 @@ def num.nonzero.NonZeroI128.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::saturating_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2389:16-2391:17
+    Source: 'core-models/src/core/num/mod.rs', lines 2392:16-2394:17
     Visibility: public -/
 def num.nonzero.NonZeroIsize.saturating_pow
   (self : num.nonzero.NonZero Std.Isize) (other : Std.U32) :
@@ -25067,91 +25067,91 @@ def num.nonzero.NonZeroIsize.saturating_pow
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2402:20-2405:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2405:20-2408:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.highest_one
   (self : num.nonzero.NonZero Std.U8) : Result Std.U32 := do
   num.U8.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2402:20-2405:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2405:20-2408:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.highest_one
   (self : num.nonzero.NonZero Std.U16) : Result Std.U32 := do
   num.U16.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2402:20-2405:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2405:20-2408:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.highest_one
   (self : num.nonzero.NonZero Std.U32) : Result Std.U32 := do
   num.U32.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2402:20-2405:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2405:20-2408:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.highest_one
   (self : num.nonzero.NonZero Std.U64) : Result Std.U32 := do
   num.U64.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2402:20-2405:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2405:20-2408:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.highest_one
   (self : num.nonzero.NonZero Std.U128) : Result Std.U32 := do
   num.U128.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::highest_one]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2402:20-2405:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2405:20-2408:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.highest_one
   (self : num.nonzero.NonZero Std.Usize) : Result Std.U32 := do
   num.Usize.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2407:20-2409:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2410:20-2412:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.ilog2
   (self : num.nonzero.NonZero Std.U8) : Result Std.U32 := do
   num.U8.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2407:20-2409:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2410:20-2412:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.ilog2
   (self : num.nonzero.NonZero Std.U16) : Result Std.U32 := do
   num.U16.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2407:20-2409:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2410:20-2412:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.ilog2
   (self : num.nonzero.NonZero Std.U32) : Result Std.U32 := do
   num.U32.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2407:20-2409:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2410:20-2412:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.ilog2
   (self : num.nonzero.NonZero Std.U64) : Result Std.U32 := do
   num.U64.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2407:20-2409:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2410:20-2412:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.ilog2
   (self : num.nonzero.NonZero Std.U128) : Result Std.U32 := do
   num.U128.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2407:20-2409:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2410:20-2412:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.ilog2
   (self : num.nonzero.NonZero Std.Usize) : Result Std.U32 := do
   num.Usize.ilog2 self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::bit_width]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2411:20-2413:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2414:20-2416:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.bit_width
   (self : num.nonzero.NonZero Std.U8) :
@@ -25161,7 +25161,7 @@ def num.nonzero.NonZeroU8.bit_width
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::bit_width]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2411:20-2413:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2414:20-2416:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.bit_width
   (self : num.nonzero.NonZero Std.U16) :
@@ -25171,7 +25171,7 @@ def num.nonzero.NonZeroU16.bit_width
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::bit_width]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2411:20-2413:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2414:20-2416:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.bit_width
   (self : num.nonzero.NonZero Std.U32) :
@@ -25181,7 +25181,7 @@ def num.nonzero.NonZeroU32.bit_width
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::bit_width]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2411:20-2413:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2414:20-2416:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.bit_width
   (self : num.nonzero.NonZero Std.U64) :
@@ -25191,7 +25191,7 @@ def num.nonzero.NonZeroU64.bit_width
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::bit_width]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2411:20-2413:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2414:20-2416:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.bit_width
   (self : num.nonzero.NonZero Std.U128) :
@@ -25201,7 +25201,7 @@ def num.nonzero.NonZeroU128.bit_width
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::bit_width]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2411:20-2413:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2414:20-2416:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.bit_width
   (self : num.nonzero.NonZero Std.Usize) :
@@ -25211,7 +25211,7 @@ def num.nonzero.NonZeroUsize.bit_width
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2415:20-2422:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2418:20-2425:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.checked_add
   (self : num.nonzero.NonZero Std.U8) (other : Std.U8) :
@@ -25223,7 +25223,7 @@ def num.nonzero.NonZeroU8.checked_add
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2415:20-2422:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2418:20-2425:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.checked_add
   (self : num.nonzero.NonZero Std.U16) (other : Std.U16) :
@@ -25235,7 +25235,7 @@ def num.nonzero.NonZeroU16.checked_add
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2415:20-2422:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2418:20-2425:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.checked_add
   (self : num.nonzero.NonZero Std.U32) (other : Std.U32) :
@@ -25247,7 +25247,7 @@ def num.nonzero.NonZeroU32.checked_add
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2415:20-2422:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2418:20-2425:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.checked_add
   (self : num.nonzero.NonZero Std.U64) (other : Std.U64) :
@@ -25259,7 +25259,7 @@ def num.nonzero.NonZeroU64.checked_add
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2415:20-2422:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2418:20-2425:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.checked_add
   (self : num.nonzero.NonZero Std.U128) (other : Std.U128) :
@@ -25271,7 +25271,7 @@ def num.nonzero.NonZeroU128.checked_add
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2415:20-2422:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2418:20-2425:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.checked_add
   (self : num.nonzero.NonZero Std.Usize) (other : Std.Usize) :
@@ -25283,7 +25283,7 @@ def num.nonzero.NonZeroUsize.checked_add
   else ok (option.Option.Some result)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2424:20-2426:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2427:20-2429:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.saturating_add
   (self : num.nonzero.NonZero Std.U8) (other : Std.U8) :
@@ -25293,7 +25293,7 @@ def num.nonzero.NonZeroU8.saturating_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2424:20-2426:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2427:20-2429:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.saturating_add
   (self : num.nonzero.NonZero Std.U16) (other : Std.U16) :
@@ -25303,7 +25303,7 @@ def num.nonzero.NonZeroU16.saturating_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2424:20-2426:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2427:20-2429:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.saturating_add
   (self : num.nonzero.NonZero Std.U32) (other : Std.U32) :
@@ -25313,7 +25313,7 @@ def num.nonzero.NonZeroU32.saturating_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2424:20-2426:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2427:20-2429:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.saturating_add
   (self : num.nonzero.NonZero Std.U64) (other : Std.U64) :
@@ -25323,7 +25323,7 @@ def num.nonzero.NonZeroU64.saturating_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2424:20-2426:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2427:20-2429:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.saturating_add
   (self : num.nonzero.NonZero Std.U128) (other : Std.U128) :
@@ -25333,7 +25333,7 @@ def num.nonzero.NonZeroU128.saturating_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2424:20-2426:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2427:20-2429:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.saturating_add
   (self : num.nonzero.NonZero Std.Usize) (other : Std.Usize) :
@@ -25343,7 +25343,7 @@ def num.nonzero.NonZeroUsize.saturating_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2429:20-2431:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2432:20-2434:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.unchecked_add
   (self : num.nonzero.NonZero Std.U8) (other : Std.U8) :
@@ -25353,7 +25353,7 @@ def num.nonzero.NonZeroU8.unchecked_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2429:20-2431:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2432:20-2434:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.unchecked_add
   (self : num.nonzero.NonZero Std.U16) (other : Std.U16) :
@@ -25363,7 +25363,7 @@ def num.nonzero.NonZeroU16.unchecked_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2429:20-2431:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2432:20-2434:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.unchecked_add
   (self : num.nonzero.NonZero Std.U32) (other : Std.U32) :
@@ -25373,7 +25373,7 @@ def num.nonzero.NonZeroU32.unchecked_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2429:20-2431:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2432:20-2434:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.unchecked_add
   (self : num.nonzero.NonZero Std.U64) (other : Std.U64) :
@@ -25383,7 +25383,7 @@ def num.nonzero.NonZeroU64.unchecked_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2429:20-2431:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2432:20-2434:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.unchecked_add
   (self : num.nonzero.NonZero Std.U128) (other : Std.U128) :
@@ -25393,7 +25393,7 @@ def num.nonzero.NonZeroU128.unchecked_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2429:20-2431:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2432:20-2434:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.unchecked_add
   (self : num.nonzero.NonZero Std.Usize) (other : Std.Usize) :
@@ -25403,7 +25403,7 @@ def num.nonzero.NonZeroUsize.unchecked_add
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2434:20-2436:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2437:20-2439:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.unchecked_mul
   (self : num.nonzero.NonZero Std.U8) (other : num.nonzero.NonZero Std.U8) :
@@ -25413,7 +25413,7 @@ def num.nonzero.NonZeroU8.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2434:20-2436:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2437:20-2439:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.unchecked_mul
   (self : num.nonzero.NonZero Std.U16) (other : num.nonzero.NonZero Std.U16) :
@@ -25423,7 +25423,7 @@ def num.nonzero.NonZeroU16.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2434:20-2436:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2437:20-2439:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.unchecked_mul
   (self : num.nonzero.NonZero Std.U32) (other : num.nonzero.NonZero Std.U32) :
@@ -25433,7 +25433,7 @@ def num.nonzero.NonZeroU32.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2434:20-2436:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2437:20-2439:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.unchecked_mul
   (self : num.nonzero.NonZero Std.U64) (other : num.nonzero.NonZero Std.U64) :
@@ -25443,7 +25443,7 @@ def num.nonzero.NonZeroU64.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2434:20-2436:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2437:20-2439:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.unchecked_mul
   (self : num.nonzero.NonZero Std.U128) (other : num.nonzero.NonZero Std.U128)
@@ -25454,7 +25454,7 @@ def num.nonzero.NonZeroU128.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2434:20-2436:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2437:20-2439:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.unchecked_mul
   (self : num.nonzero.NonZero Std.Usize)
@@ -25465,7 +25465,7 @@ def num.nonzero.NonZeroUsize.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::checked_next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2438:20-2443:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2441:20-2446:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.checked_next_power_of_two
   (self : num.nonzero.NonZero Std.U8) :
@@ -25477,7 +25477,7 @@ def num.nonzero.NonZeroU8.checked_next_power_of_two
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::checked_next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2438:20-2443:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2441:20-2446:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.checked_next_power_of_two
   (self : num.nonzero.NonZero Std.U16) :
@@ -25489,7 +25489,7 @@ def num.nonzero.NonZeroU16.checked_next_power_of_two
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::checked_next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2438:20-2443:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2441:20-2446:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.checked_next_power_of_two
   (self : num.nonzero.NonZero Std.U32) :
@@ -25501,7 +25501,7 @@ def num.nonzero.NonZeroU32.checked_next_power_of_two
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::checked_next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2438:20-2443:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2441:20-2446:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.checked_next_power_of_two
   (self : num.nonzero.NonZero Std.U64) :
@@ -25513,7 +25513,7 @@ def num.nonzero.NonZeroU64.checked_next_power_of_two
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::checked_next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2438:20-2443:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2441:20-2446:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.checked_next_power_of_two
   (self : num.nonzero.NonZero Std.U128) :
@@ -25525,7 +25525,7 @@ def num.nonzero.NonZeroU128.checked_next_power_of_two
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::checked_next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2438:20-2443:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2441:20-2446:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.checked_next_power_of_two
   (self : num.nonzero.NonZero Std.Usize) :
@@ -25537,7 +25537,7 @@ def num.nonzero.NonZeroUsize.checked_next_power_of_two
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::midpoint]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2445:20-2447:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2448:20-2450:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.midpoint
   (self : num.nonzero.NonZero Std.U8) (rhs : num.nonzero.NonZero Std.U8) :
@@ -25547,7 +25547,7 @@ def num.nonzero.NonZeroU8.midpoint
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::midpoint]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2445:20-2447:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2448:20-2450:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.midpoint
   (self : num.nonzero.NonZero Std.U16) (rhs : num.nonzero.NonZero Std.U16) :
@@ -25557,7 +25557,7 @@ def num.nonzero.NonZeroU16.midpoint
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::midpoint]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2445:20-2447:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2448:20-2450:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.midpoint
   (self : num.nonzero.NonZero Std.U32) (rhs : num.nonzero.NonZero Std.U32) :
@@ -25567,7 +25567,7 @@ def num.nonzero.NonZeroU32.midpoint
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::midpoint]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2445:20-2447:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2448:20-2450:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.midpoint
   (self : num.nonzero.NonZero Std.U64) (rhs : num.nonzero.NonZero Std.U64) :
@@ -25577,7 +25577,7 @@ def num.nonzero.NonZeroU64.midpoint
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::midpoint]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2445:20-2447:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2448:20-2450:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.midpoint
   (self : num.nonzero.NonZero Std.U128) (rhs : num.nonzero.NonZero Std.U128) :
@@ -25587,7 +25587,7 @@ def num.nonzero.NonZeroU128.midpoint
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::midpoint]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2445:20-2447:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2448:20-2450:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.midpoint
   (self : num.nonzero.NonZero Std.Usize) (rhs : num.nonzero.NonZero Std.Usize)
@@ -25598,7 +25598,7 @@ def num.nonzero.NonZeroUsize.midpoint
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2449:20-2452:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2452:20-2455:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.is_power_of_two
   (self : num.nonzero.NonZero Std.U8) : Result Bool := do
@@ -25606,7 +25606,7 @@ def num.nonzero.NonZeroU8.is_power_of_two
   ok (i < 2#u32)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2449:20-2452:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2452:20-2455:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.is_power_of_two
   (self : num.nonzero.NonZero Std.U16) : Result Bool := do
@@ -25614,7 +25614,7 @@ def num.nonzero.NonZeroU16.is_power_of_two
   ok (i < 2#u32)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2449:20-2452:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2452:20-2455:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.is_power_of_two
   (self : num.nonzero.NonZero Std.U32) : Result Bool := do
@@ -25622,7 +25622,7 @@ def num.nonzero.NonZeroU32.is_power_of_two
   ok (i < 2#u32)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2449:20-2452:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2452:20-2455:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.is_power_of_two
   (self : num.nonzero.NonZero Std.U64) : Result Bool := do
@@ -25630,7 +25630,7 @@ def num.nonzero.NonZeroU64.is_power_of_two
   ok (i < 2#u32)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2449:20-2452:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2452:20-2455:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.is_power_of_two
   (self : num.nonzero.NonZero Std.U128) : Result Bool := do
@@ -25638,7 +25638,7 @@ def num.nonzero.NonZeroU128.is_power_of_two
   ok (i < 2#u32)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2449:20-2452:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2452:20-2455:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.is_power_of_two
   (self : num.nonzero.NonZero Std.Usize) : Result Bool := do
@@ -25646,7 +25646,7 @@ def num.nonzero.NonZeroUsize.is_power_of_two
   ok (i < 2#u32)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::cast_signed]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2454:20-2456:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2457:20-2459:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.cast_signed
   (self : num.nonzero.NonZero Std.U8) :
@@ -25656,7 +25656,7 @@ def num.nonzero.NonZeroU8.cast_signed
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::cast_signed]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2454:20-2456:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2457:20-2459:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.cast_signed
   (self : num.nonzero.NonZero Std.U16) :
@@ -25666,7 +25666,7 @@ def num.nonzero.NonZeroU16.cast_signed
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::cast_signed]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2454:20-2456:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2457:20-2459:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.cast_signed
   (self : num.nonzero.NonZero Std.U32) :
@@ -25676,7 +25676,7 @@ def num.nonzero.NonZeroU32.cast_signed
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::cast_signed]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2454:20-2456:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2457:20-2459:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.cast_signed
   (self : num.nonzero.NonZero Std.U64) :
@@ -25686,7 +25686,7 @@ def num.nonzero.NonZeroU64.cast_signed
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::cast_signed]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2454:20-2456:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2457:20-2459:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.cast_signed
   (self : num.nonzero.NonZero Std.U128) :
@@ -25696,7 +25696,7 @@ def num.nonzero.NonZeroU128.cast_signed
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::cast_signed]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2454:20-2456:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2457:20-2459:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.cast_signed
   (self : num.nonzero.NonZero Std.Usize) :
@@ -25706,7 +25706,7 @@ def num.nonzero.NonZeroUsize.cast_signed
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u8>}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2461:20-2463:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2464:20-2466:21
     Visibility: public -/
 def num.nonzero.NonZeroU8.div_ceil
   (self : num.nonzero.NonZero Std.U8) (rhs : num.nonzero.NonZero Std.U8) :
@@ -25716,7 +25716,7 @@ def num.nonzero.NonZeroU8.div_ceil
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u16>}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2461:20-2463:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2464:20-2466:21
     Visibility: public -/
 def num.nonzero.NonZeroU16.div_ceil
   (self : num.nonzero.NonZero Std.U16) (rhs : num.nonzero.NonZero Std.U16) :
@@ -25726,7 +25726,7 @@ def num.nonzero.NonZeroU16.div_ceil
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u32>}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2461:20-2463:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2464:20-2466:21
     Visibility: public -/
 def num.nonzero.NonZeroU32.div_ceil
   (self : num.nonzero.NonZero Std.U32) (rhs : num.nonzero.NonZero Std.U32) :
@@ -25736,7 +25736,7 @@ def num.nonzero.NonZeroU32.div_ceil
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u64>}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2461:20-2463:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2464:20-2466:21
     Visibility: public -/
 def num.nonzero.NonZeroU64.div_ceil
   (self : num.nonzero.NonZero Std.U64) (rhs : num.nonzero.NonZero Std.U64) :
@@ -25746,7 +25746,7 @@ def num.nonzero.NonZeroU64.div_ceil
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<u128>}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2461:20-2463:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2464:20-2466:21
     Visibility: public -/
 def num.nonzero.NonZeroU128.div_ceil
   (self : num.nonzero.NonZero Std.U128) (rhs : num.nonzero.NonZero Std.U128) :
@@ -25756,7 +25756,7 @@ def num.nonzero.NonZeroU128.div_ceil
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<usize>}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2461:20-2463:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2464:20-2466:21
     Visibility: public -/
 def num.nonzero.NonZeroUsize.div_ceil
   (self : num.nonzero.NonZero Std.Usize) (rhs : num.nonzero.NonZero Std.Usize)
@@ -25767,7 +25767,7 @@ def num.nonzero.NonZeroUsize.div_ceil
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2482:20-2484:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2485:20-2487:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.unchecked_mul
   (self : num.nonzero.NonZero Std.I8) (other : num.nonzero.NonZero Std.I8) :
@@ -25777,7 +25777,7 @@ def num.nonzero.NonZeroI8.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2482:20-2484:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2485:20-2487:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.unchecked_mul
   (self : num.nonzero.NonZero Std.I16) (other : num.nonzero.NonZero Std.I16) :
@@ -25787,7 +25787,7 @@ def num.nonzero.NonZeroI16.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2482:20-2484:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2485:20-2487:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.unchecked_mul
   (self : num.nonzero.NonZero Std.I32) (other : num.nonzero.NonZero Std.I32) :
@@ -25797,7 +25797,7 @@ def num.nonzero.NonZeroI32.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2482:20-2484:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2485:20-2487:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.unchecked_mul
   (self : num.nonzero.NonZero Std.I64) (other : num.nonzero.NonZero Std.I64) :
@@ -25807,7 +25807,7 @@ def num.nonzero.NonZeroI64.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2482:20-2484:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2485:20-2487:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.unchecked_mul
   (self : num.nonzero.NonZero Std.I128) (other : num.nonzero.NonZero Std.I128)
@@ -25818,7 +25818,7 @@ def num.nonzero.NonZeroI128.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2482:20-2484:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2485:20-2487:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.unchecked_mul
   (self : num.nonzero.NonZero Std.Isize)
@@ -25829,7 +25829,7 @@ def num.nonzero.NonZeroIsize.unchecked_mul
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2487:20-2489:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2490:20-2492:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.abs
   (self : num.nonzero.NonZero Std.I8) :
@@ -25839,7 +25839,7 @@ def num.nonzero.NonZeroI8.abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2487:20-2489:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2490:20-2492:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.abs
   (self : num.nonzero.NonZero Std.I16) :
@@ -25849,7 +25849,7 @@ def num.nonzero.NonZeroI16.abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2487:20-2489:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2490:20-2492:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.abs
   (self : num.nonzero.NonZero Std.I32) :
@@ -25859,7 +25859,7 @@ def num.nonzero.NonZeroI32.abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2487:20-2489:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2490:20-2492:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.abs
   (self : num.nonzero.NonZero Std.I64) :
@@ -25869,7 +25869,7 @@ def num.nonzero.NonZeroI64.abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2487:20-2489:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2490:20-2492:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.abs
   (self : num.nonzero.NonZero Std.I128) :
@@ -25879,7 +25879,7 @@ def num.nonzero.NonZeroI128.abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2487:20-2489:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2490:20-2492:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.abs
   (self : num.nonzero.NonZero Std.Isize) :
@@ -25889,7 +25889,7 @@ def num.nonzero.NonZeroIsize.abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::checked_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2491:20-2496:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2494:20-2499:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.checked_abs
   (self : num.nonzero.NonZero Std.I8) :
@@ -25901,7 +25901,7 @@ def num.nonzero.NonZeroI8.checked_abs
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::checked_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2491:20-2496:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2494:20-2499:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.checked_abs
   (self : num.nonzero.NonZero Std.I16) :
@@ -25913,7 +25913,7 @@ def num.nonzero.NonZeroI16.checked_abs
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::checked_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2491:20-2496:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2494:20-2499:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.checked_abs
   (self : num.nonzero.NonZero Std.I32) :
@@ -25925,7 +25925,7 @@ def num.nonzero.NonZeroI32.checked_abs
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::checked_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2491:20-2496:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2494:20-2499:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.checked_abs
   (self : num.nonzero.NonZero Std.I64) :
@@ -25937,7 +25937,7 @@ def num.nonzero.NonZeroI64.checked_abs
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::checked_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2491:20-2496:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2494:20-2499:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.checked_abs
   (self : num.nonzero.NonZero Std.I128) :
@@ -25949,7 +25949,7 @@ def num.nonzero.NonZeroI128.checked_abs
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::checked_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2491:20-2496:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2494:20-2499:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.checked_abs
   (self : num.nonzero.NonZero Std.Isize) :
@@ -25961,7 +25961,7 @@ def num.nonzero.NonZeroIsize.checked_abs
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::overflowing_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2498:20-2501:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2501:20-2504:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.overflowing_abs
   (self : num.nonzero.NonZero Std.I8) :
@@ -25971,7 +25971,7 @@ def num.nonzero.NonZeroI8.overflowing_abs
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::overflowing_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2498:20-2501:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2501:20-2504:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.overflowing_abs
   (self : num.nonzero.NonZero Std.I16) :
@@ -25981,7 +25981,7 @@ def num.nonzero.NonZeroI16.overflowing_abs
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::overflowing_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2498:20-2501:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2501:20-2504:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.overflowing_abs
   (self : num.nonzero.NonZero Std.I32) :
@@ -25991,7 +25991,7 @@ def num.nonzero.NonZeroI32.overflowing_abs
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::overflowing_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2498:20-2501:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2501:20-2504:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.overflowing_abs
   (self : num.nonzero.NonZero Std.I64) :
@@ -26001,7 +26001,7 @@ def num.nonzero.NonZeroI64.overflowing_abs
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::overflowing_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2498:20-2501:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2501:20-2504:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.overflowing_abs
   (self : num.nonzero.NonZero Std.I128) :
@@ -26011,7 +26011,7 @@ def num.nonzero.NonZeroI128.overflowing_abs
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::overflowing_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2498:20-2501:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2501:20-2504:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.overflowing_abs
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26021,7 +26021,7 @@ def num.nonzero.NonZeroIsize.overflowing_abs
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::saturating_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2503:20-2505:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2506:20-2508:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.saturating_abs
   (self : num.nonzero.NonZero Std.I8) :
@@ -26031,7 +26031,7 @@ def num.nonzero.NonZeroI8.saturating_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::saturating_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2503:20-2505:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2506:20-2508:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.saturating_abs
   (self : num.nonzero.NonZero Std.I16) :
@@ -26041,7 +26041,7 @@ def num.nonzero.NonZeroI16.saturating_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::saturating_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2503:20-2505:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2506:20-2508:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.saturating_abs
   (self : num.nonzero.NonZero Std.I32) :
@@ -26051,7 +26051,7 @@ def num.nonzero.NonZeroI32.saturating_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::saturating_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2503:20-2505:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2506:20-2508:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.saturating_abs
   (self : num.nonzero.NonZero Std.I64) :
@@ -26061,7 +26061,7 @@ def num.nonzero.NonZeroI64.saturating_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::saturating_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2503:20-2505:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2506:20-2508:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.saturating_abs
   (self : num.nonzero.NonZero Std.I128) :
@@ -26071,7 +26071,7 @@ def num.nonzero.NonZeroI128.saturating_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::saturating_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2503:20-2505:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2506:20-2508:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.saturating_abs
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26081,7 +26081,7 @@ def num.nonzero.NonZeroIsize.saturating_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::wrapping_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2507:20-2509:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2510:20-2512:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.wrapping_abs
   (self : num.nonzero.NonZero Std.I8) :
@@ -26091,7 +26091,7 @@ def num.nonzero.NonZeroI8.wrapping_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::wrapping_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2507:20-2509:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2510:20-2512:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.wrapping_abs
   (self : num.nonzero.NonZero Std.I16) :
@@ -26101,7 +26101,7 @@ def num.nonzero.NonZeroI16.wrapping_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::wrapping_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2507:20-2509:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2510:20-2512:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.wrapping_abs
   (self : num.nonzero.NonZero Std.I32) :
@@ -26111,7 +26111,7 @@ def num.nonzero.NonZeroI32.wrapping_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::wrapping_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2507:20-2509:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2510:20-2512:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.wrapping_abs
   (self : num.nonzero.NonZero Std.I64) :
@@ -26121,7 +26121,7 @@ def num.nonzero.NonZeroI64.wrapping_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::wrapping_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2507:20-2509:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2510:20-2512:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.wrapping_abs
   (self : num.nonzero.NonZero Std.I128) :
@@ -26131,7 +26131,7 @@ def num.nonzero.NonZeroI128.wrapping_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::wrapping_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2507:20-2509:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2510:20-2512:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.wrapping_abs
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26141,7 +26141,7 @@ def num.nonzero.NonZeroIsize.wrapping_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2511:20-2513:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2514:20-2516:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.unsigned_abs
   (self : num.nonzero.NonZero Std.I8) :
@@ -26151,7 +26151,7 @@ def num.nonzero.NonZeroI8.unsigned_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2511:20-2513:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2514:20-2516:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.unsigned_abs
   (self : num.nonzero.NonZero Std.I16) :
@@ -26161,7 +26161,7 @@ def num.nonzero.NonZeroI16.unsigned_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2511:20-2513:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2514:20-2516:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.unsigned_abs
   (self : num.nonzero.NonZero Std.I32) :
@@ -26171,7 +26171,7 @@ def num.nonzero.NonZeroI32.unsigned_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2511:20-2513:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2514:20-2516:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.unsigned_abs
   (self : num.nonzero.NonZero Std.I64) :
@@ -26181,7 +26181,7 @@ def num.nonzero.NonZeroI64.unsigned_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2511:20-2513:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2514:20-2516:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.unsigned_abs
   (self : num.nonzero.NonZero Std.I128) :
@@ -26191,7 +26191,7 @@ def num.nonzero.NonZeroI128.unsigned_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2511:20-2513:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2514:20-2516:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.unsigned_abs
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26201,91 +26201,91 @@ def num.nonzero.NonZeroIsize.unsigned_abs
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2515:20-2517:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2518:20-2520:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.is_positive
   (self : num.nonzero.NonZero Std.I8) : Result Bool := do
   num.I8.is_positive self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2515:20-2517:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2518:20-2520:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.is_positive
   (self : num.nonzero.NonZero Std.I16) : Result Bool := do
   num.I16.is_positive self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2515:20-2517:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2518:20-2520:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.is_positive
   (self : num.nonzero.NonZero Std.I32) : Result Bool := do
   num.I32.is_positive self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2515:20-2517:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2518:20-2520:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.is_positive
   (self : num.nonzero.NonZero Std.I64) : Result Bool := do
   num.I64.is_positive self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2515:20-2517:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2518:20-2520:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.is_positive
   (self : num.nonzero.NonZero Std.I128) : Result Bool := do
   num.I128.is_positive self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2515:20-2517:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2518:20-2520:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.is_positive
   (self : num.nonzero.NonZero Std.Isize) : Result Bool := do
   num.Isize.is_positive self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2519:20-2521:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2522:20-2524:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.is_negative
   (self : num.nonzero.NonZero Std.I8) : Result Bool := do
   num.I8.is_negative self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2519:20-2521:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2522:20-2524:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.is_negative
   (self : num.nonzero.NonZero Std.I16) : Result Bool := do
   num.I16.is_negative self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2519:20-2521:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2522:20-2524:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.is_negative
   (self : num.nonzero.NonZero Std.I32) : Result Bool := do
   num.I32.is_negative self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2519:20-2521:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2522:20-2524:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.is_negative
   (self : num.nonzero.NonZero Std.I64) : Result Bool := do
   num.I64.is_negative self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2519:20-2521:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2522:20-2524:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.is_negative
   (self : num.nonzero.NonZero Std.I128) : Result Bool := do
   num.I128.is_negative self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2519:20-2521:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2522:20-2524:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.is_negative
   (self : num.nonzero.NonZero Std.Isize) : Result Bool := do
   num.Isize.is_negative self
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::checked_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2523:20-2528:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2526:20-2531:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.checked_neg
   (self : num.nonzero.NonZero Std.I8) :
@@ -26297,7 +26297,7 @@ def num.nonzero.NonZeroI8.checked_neg
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::checked_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2523:20-2528:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2526:20-2531:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.checked_neg
   (self : num.nonzero.NonZero Std.I16) :
@@ -26309,7 +26309,7 @@ def num.nonzero.NonZeroI16.checked_neg
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::checked_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2523:20-2528:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2526:20-2531:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.checked_neg
   (self : num.nonzero.NonZero Std.I32) :
@@ -26321,7 +26321,7 @@ def num.nonzero.NonZeroI32.checked_neg
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::checked_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2523:20-2528:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2526:20-2531:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.checked_neg
   (self : num.nonzero.NonZero Std.I64) :
@@ -26333,7 +26333,7 @@ def num.nonzero.NonZeroI64.checked_neg
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::checked_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2523:20-2528:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2526:20-2531:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.checked_neg
   (self : num.nonzero.NonZero Std.I128) :
@@ -26345,7 +26345,7 @@ def num.nonzero.NonZeroI128.checked_neg
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::checked_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2523:20-2528:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2526:20-2531:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.checked_neg
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26357,7 +26357,7 @@ def num.nonzero.NonZeroIsize.checked_neg
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::overflowing_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2530:20-2533:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2533:20-2536:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.overflowing_neg
   (self : num.nonzero.NonZero Std.I8) :
@@ -26367,7 +26367,7 @@ def num.nonzero.NonZeroI8.overflowing_neg
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::overflowing_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2530:20-2533:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2533:20-2536:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.overflowing_neg
   (self : num.nonzero.NonZero Std.I16) :
@@ -26377,7 +26377,7 @@ def num.nonzero.NonZeroI16.overflowing_neg
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::overflowing_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2530:20-2533:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2533:20-2536:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.overflowing_neg
   (self : num.nonzero.NonZero Std.I32) :
@@ -26387,7 +26387,7 @@ def num.nonzero.NonZeroI32.overflowing_neg
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::overflowing_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2530:20-2533:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2533:20-2536:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.overflowing_neg
   (self : num.nonzero.NonZero Std.I64) :
@@ -26397,7 +26397,7 @@ def num.nonzero.NonZeroI64.overflowing_neg
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::overflowing_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2530:20-2533:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2533:20-2536:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.overflowing_neg
   (self : num.nonzero.NonZero Std.I128) :
@@ -26407,7 +26407,7 @@ def num.nonzero.NonZeroI128.overflowing_neg
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::overflowing_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2530:20-2533:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2533:20-2536:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.overflowing_neg
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26417,7 +26417,7 @@ def num.nonzero.NonZeroIsize.overflowing_neg
   ok (result, overflowed)
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::saturating_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2535:20-2537:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2538:20-2540:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.saturating_neg
   (self : num.nonzero.NonZero Std.I8) :
@@ -26427,7 +26427,7 @@ def num.nonzero.NonZeroI8.saturating_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::saturating_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2535:20-2537:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2538:20-2540:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.saturating_neg
   (self : num.nonzero.NonZero Std.I16) :
@@ -26437,7 +26437,7 @@ def num.nonzero.NonZeroI16.saturating_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::saturating_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2535:20-2537:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2538:20-2540:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.saturating_neg
   (self : num.nonzero.NonZero Std.I32) :
@@ -26447,7 +26447,7 @@ def num.nonzero.NonZeroI32.saturating_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::saturating_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2535:20-2537:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2538:20-2540:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.saturating_neg
   (self : num.nonzero.NonZero Std.I64) :
@@ -26457,7 +26457,7 @@ def num.nonzero.NonZeroI64.saturating_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::saturating_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2535:20-2537:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2538:20-2540:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.saturating_neg
   (self : num.nonzero.NonZero Std.I128) :
@@ -26467,7 +26467,7 @@ def num.nonzero.NonZeroI128.saturating_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::saturating_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2535:20-2537:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2538:20-2540:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.saturating_neg
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26477,7 +26477,7 @@ def num.nonzero.NonZeroIsize.saturating_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2539:20-2541:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2542:20-2544:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.wrapping_neg
   (self : num.nonzero.NonZero Std.I8) :
@@ -26487,7 +26487,7 @@ def num.nonzero.NonZeroI8.wrapping_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2539:20-2541:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2542:20-2544:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.wrapping_neg
   (self : num.nonzero.NonZero Std.I16) :
@@ -26497,7 +26497,7 @@ def num.nonzero.NonZeroI16.wrapping_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2539:20-2541:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2542:20-2544:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.wrapping_neg
   (self : num.nonzero.NonZero Std.I32) :
@@ -26507,7 +26507,7 @@ def num.nonzero.NonZeroI32.wrapping_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2539:20-2541:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2542:20-2544:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.wrapping_neg
   (self : num.nonzero.NonZero Std.I64) :
@@ -26517,7 +26517,7 @@ def num.nonzero.NonZeroI64.wrapping_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2539:20-2541:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2542:20-2544:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.wrapping_neg
   (self : num.nonzero.NonZero Std.I128) :
@@ -26527,7 +26527,7 @@ def num.nonzero.NonZeroI128.wrapping_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2539:20-2541:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2542:20-2544:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.wrapping_neg
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26537,7 +26537,7 @@ def num.nonzero.NonZeroIsize.wrapping_neg
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i8>}::cast_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2543:20-2545:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2546:20-2548:21
     Visibility: public -/
 def num.nonzero.NonZeroI8.cast_unsigned
   (self : num.nonzero.NonZero Std.I8) :
@@ -26547,7 +26547,7 @@ def num.nonzero.NonZeroI8.cast_unsigned
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i16>}::cast_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2543:20-2545:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2546:20-2548:21
     Visibility: public -/
 def num.nonzero.NonZeroI16.cast_unsigned
   (self : num.nonzero.NonZero Std.I16) :
@@ -26557,7 +26557,7 @@ def num.nonzero.NonZeroI16.cast_unsigned
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i32>}::cast_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2543:20-2545:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2546:20-2548:21
     Visibility: public -/
 def num.nonzero.NonZeroI32.cast_unsigned
   (self : num.nonzero.NonZero Std.I32) :
@@ -26567,7 +26567,7 @@ def num.nonzero.NonZeroI32.cast_unsigned
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i64>}::cast_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2543:20-2545:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2546:20-2548:21
     Visibility: public -/
 def num.nonzero.NonZeroI64.cast_unsigned
   (self : num.nonzero.NonZero Std.I64) :
@@ -26577,7 +26577,7 @@ def num.nonzero.NonZeroI64.cast_unsigned
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<i128>}::cast_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2543:20-2545:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2546:20-2548:21
     Visibility: public -/
 def num.nonzero.NonZeroI128.cast_unsigned
   (self : num.nonzero.NonZero Std.I128) :
@@ -26587,7 +26587,7 @@ def num.nonzero.NonZeroI128.cast_unsigned
   ok i
 
 /-- [core_models::num::nonzero::{core_models::num::nonzero::NonZero<isize>}::cast_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2543:20-2545:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2546:20-2548:21
     Visibility: public -/
 def num.nonzero.NonZeroIsize.cast_unsigned
   (self : num.nonzero.NonZero Std.Isize) :
@@ -26597,76 +26597,76 @@ def num.nonzero.NonZeroIsize.cast_unsigned
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU8.MIN : num.wrapping.Wrapping Std.U8 := num.U8.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU16.MIN : num.wrapping.Wrapping Std.U16 := num.U16.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU32.MIN : num.wrapping.Wrapping Std.U32 := num.U32.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU64.MIN : num.wrapping.Wrapping Std.U64 := num.U64.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU128.MIN : num.wrapping.Wrapping Std.U128 :=
   num.U128.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingUsize.MIN : num.wrapping.Wrapping Std.Usize :=
   num.Usize.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI8.MIN : num.wrapping.Wrapping Std.I8 := num.I8.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI16.MIN : num.wrapping.Wrapping Std.I16 := num.I16.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI32.MIN : num.wrapping.Wrapping Std.I32 := num.I32.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI64.MIN : num.wrapping.Wrapping Std.I64 := num.I64.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI128.MIN : num.wrapping.Wrapping Std.I128 :=
   num.I128.MIN
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingIsize.MIN
@@ -26675,84 +26675,84 @@ def num.wrapping.WrappingIsize.MIN
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU8.MIN : num.saturating.Saturating Std.U8 :=
   num.U8.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU16.MIN : num.saturating.Saturating Std.U16 :=
   num.U16.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU32.MIN : num.saturating.Saturating Std.U32 :=
   num.U32.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU64.MIN : num.saturating.Saturating Std.U64 :=
   num.U64.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU128.MIN : num.saturating.Saturating Std.U128 :=
   num.U128.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingUsize.MIN : num.saturating.Saturating Std.Usize :=
   num.Usize.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI8.MIN : num.saturating.Saturating Std.I8 :=
   num.I8.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI16.MIN : num.saturating.Saturating Std.I16 :=
   num.I16.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI32.MIN : num.saturating.Saturating Std.I32 :=
   num.I32.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI64.MIN : num.saturating.Saturating Std.I64 :=
   num.I64.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI128.MIN : num.saturating.Saturating Std.I128 :=
   num.I128.MIN
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 2589:12-2589:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2592:12-2592:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingIsize.MIN
@@ -26761,38 +26761,38 @@ def num.saturating.SaturatingIsize.MIN
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU8.MAX : num.wrapping.Wrapping Std.U8 := num.U8.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU16.MAX : num.wrapping.Wrapping Std.U16 := num.U16.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU32.MAX : num.wrapping.Wrapping Std.U32 := num.U32.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU64.MAX : num.wrapping.Wrapping Std.U64 := num.U64.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU128.MAX : num.wrapping.Wrapping Std.U128 :=
   num.U128.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingUsize.MAX
@@ -26801,38 +26801,38 @@ def num.wrapping.WrappingUsize.MAX
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI8.MAX : num.wrapping.Wrapping Std.I8 := num.I8.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI16.MAX : num.wrapping.Wrapping Std.I16 := num.I16.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI32.MAX : num.wrapping.Wrapping Std.I32 := num.I32.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI64.MAX : num.wrapping.Wrapping Std.I64 := num.I64.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI128.MAX : num.wrapping.Wrapping Std.I128 :=
   num.I128.MAX
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingIsize.MAX
@@ -26841,42 +26841,42 @@ def num.wrapping.WrappingIsize.MAX
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU8.MAX : num.saturating.Saturating Std.U8 :=
   num.U8.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU16.MAX : num.saturating.Saturating Std.U16 :=
   num.U16.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU32.MAX : num.saturating.Saturating Std.U32 :=
   num.U32.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU64.MAX : num.saturating.Saturating Std.U64 :=
   num.U64.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU128.MAX : num.saturating.Saturating Std.U128 :=
   num.U128.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingUsize.MAX
@@ -26885,42 +26885,42 @@ def num.saturating.SaturatingUsize.MAX
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI8.MAX : num.saturating.Saturating Std.I8 :=
   num.I8.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI16.MAX : num.saturating.Saturating Std.I16 :=
   num.I16.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI32.MAX : num.saturating.Saturating Std.I32 :=
   num.I32.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI64.MAX : num.saturating.Saturating Std.I64 :=
   num.I64.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI128.MAX : num.saturating.Saturating Std.I128 :=
   num.I128.MAX
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 2591:12-2591:54
+    Source: 'core-models/src/core/num/mod.rs', lines 2594:12-2594:54
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingIsize.MAX
@@ -26929,823 +26929,823 @@ def num.saturating.SaturatingIsize.MAX
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU8.BITS : Std.U32 := num.U8.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU16.BITS : Std.U32 := num.U16.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU32.BITS : Std.U32 := num.U32.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU64.BITS : Std.U32 := num.U64.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingU128.BITS : Std.U32 := num.U128.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingUsize.BITS : Result Std.U32 := num.Usize.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI8.BITS : Std.U32 := num.I8.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI16.BITS : Std.U32 := num.I16.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI32.BITS : Std.U32 := num.I32.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI64.BITS : Std.U32 := num.I64.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingI128.BITS : Std.U32 := num.I128.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.wrapping.WrappingIsize.BITS : Result Std.U32 := num.Isize.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU8.BITS : Std.U32 := num.U8.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU16.BITS : Std.U32 := num.U16.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU32.BITS : Std.U32 := num.U32.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU64.BITS : Std.U32 := num.U64.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingU128.BITS : Std.U32 := num.U128.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingUsize.BITS : Result Std.U32 := num.Usize.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI8.BITS : Std.U32 := num.I8.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI16.BITS : Std.U32 := num.I16.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI32.BITS : Std.U32 := num.I32.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI64.BITS : Std.U32 := num.I64.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingI128.BITS : Std.U32 := num.I128.BITS
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 2593:12-2593:65
+    Source: 'core-models/src/core/num/mod.rs', lines 2596:12-2596:65
     Visibility: public -/
 @[global_simps, irreducible]
 def num.saturating.SaturatingIsize.BITS : Result Std.U32 := num.Isize.BITS
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingU8.count_ones
   (self : num.wrapping.Wrapping Std.U8) : Result Std.U32 := do
   num.U8.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingU16.count_ones
   (self : num.wrapping.Wrapping Std.U16) : Result Std.U32 := do
   num.U16.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingU32.count_ones
   (self : num.wrapping.Wrapping Std.U32) : Result Std.U32 := do
   num.U32.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingU64.count_ones
   (self : num.wrapping.Wrapping Std.U64) : Result Std.U32 := do
   num.U64.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingU128.count_ones
   (self : num.wrapping.Wrapping Std.U128) : Result Std.U32 := do
   num.U128.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.count_ones
   (self : num.wrapping.Wrapping Std.Usize) : Result Std.U32 := do
   num.Usize.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingI8.count_ones
   (self : num.wrapping.Wrapping Std.I8) : Result Std.U32 := do
   num.I8.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingI16.count_ones
   (self : num.wrapping.Wrapping Std.I16) : Result Std.U32 := do
   num.I16.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingI32.count_ones
   (self : num.wrapping.Wrapping Std.I32) : Result Std.U32 := do
   num.I32.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingI64.count_ones
   (self : num.wrapping.Wrapping Std.I64) : Result Std.U32 := do
   num.I64.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingI128.count_ones
   (self : num.wrapping.Wrapping Std.I128) : Result Std.U32 := do
   num.I128.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.count_ones
   (self : num.wrapping.Wrapping Std.Isize) : Result Std.U32 := do
   num.Isize.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingU8.count_ones
   (self : num.saturating.Saturating Std.U8) : Result Std.U32 := do
   num.U8.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingU16.count_ones
   (self : num.saturating.Saturating Std.U16) : Result Std.U32 := do
   num.U16.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingU32.count_ones
   (self : num.saturating.Saturating Std.U32) : Result Std.U32 := do
   num.U32.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingU64.count_ones
   (self : num.saturating.Saturating Std.U64) : Result Std.U32 := do
   num.U64.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingU128.count_ones
   (self : num.saturating.Saturating Std.U128) : Result Std.U32 := do
   num.U128.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.count_ones
   (self : num.saturating.Saturating Std.Usize) : Result Std.U32 := do
   num.Usize.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingI8.count_ones
   (self : num.saturating.Saturating Std.I8) : Result Std.U32 := do
   num.I8.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingI16.count_ones
   (self : num.saturating.Saturating Std.I16) : Result Std.U32 := do
   num.I16.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingI32.count_ones
   (self : num.saturating.Saturating Std.I32) : Result Std.U32 := do
   num.I32.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingI64.count_ones
   (self : num.saturating.Saturating Std.I64) : Result Std.U32 := do
   num.I64.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingI128.count_ones
   (self : num.saturating.Saturating Std.I128) : Result Std.U32 := do
   num.I128.count_ones self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2595:12-2597:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2598:12-2600:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.count_ones
   (self : num.saturating.Saturating Std.Isize) : Result Std.U32 := do
   num.Isize.count_ones self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingU8.count_zeros
   (self : num.wrapping.Wrapping Std.U8) : Result Std.U32 := do
   num.U8.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingU16.count_zeros
   (self : num.wrapping.Wrapping Std.U16) : Result Std.U32 := do
   num.U16.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingU32.count_zeros
   (self : num.wrapping.Wrapping Std.U32) : Result Std.U32 := do
   num.U32.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingU64.count_zeros
   (self : num.wrapping.Wrapping Std.U64) : Result Std.U32 := do
   num.U64.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingU128.count_zeros
   (self : num.wrapping.Wrapping Std.U128) : Result Std.U32 := do
   num.U128.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.count_zeros
   (self : num.wrapping.Wrapping Std.Usize) : Result Std.U32 := do
   num.Usize.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingI8.count_zeros
   (self : num.wrapping.Wrapping Std.I8) : Result Std.U32 := do
   num.I8.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingI16.count_zeros
   (self : num.wrapping.Wrapping Std.I16) : Result Std.U32 := do
   num.I16.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingI32.count_zeros
   (self : num.wrapping.Wrapping Std.I32) : Result Std.U32 := do
   num.I32.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingI64.count_zeros
   (self : num.wrapping.Wrapping Std.I64) : Result Std.U32 := do
   num.I64.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingI128.count_zeros
   (self : num.wrapping.Wrapping Std.I128) : Result Std.U32 := do
   num.I128.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.count_zeros
   (self : num.wrapping.Wrapping Std.Isize) : Result Std.U32 := do
   num.Isize.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingU8.count_zeros
   (self : num.saturating.Saturating Std.U8) : Result Std.U32 := do
   num.U8.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingU16.count_zeros
   (self : num.saturating.Saturating Std.U16) : Result Std.U32 := do
   num.U16.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingU32.count_zeros
   (self : num.saturating.Saturating Std.U32) : Result Std.U32 := do
   num.U32.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingU64.count_zeros
   (self : num.saturating.Saturating Std.U64) : Result Std.U32 := do
   num.U64.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingU128.count_zeros
   (self : num.saturating.Saturating Std.U128) : Result Std.U32 := do
   num.U128.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.count_zeros
   (self : num.saturating.Saturating Std.Usize) : Result Std.U32 := do
   num.Usize.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingI8.count_zeros
   (self : num.saturating.Saturating Std.I8) : Result Std.U32 := do
   num.I8.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingI16.count_zeros
   (self : num.saturating.Saturating Std.I16) : Result Std.U32 := do
   num.I16.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingI32.count_zeros
   (self : num.saturating.Saturating Std.I32) : Result Std.U32 := do
   num.I32.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingI64.count_zeros
   (self : num.saturating.Saturating Std.I64) : Result Std.U32 := do
   num.I64.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingI128.count_zeros
   (self : num.saturating.Saturating Std.I128) : Result Std.U32 := do
   num.I128.count_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::count_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2599:12-2601:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2602:12-2604:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.count_zeros
   (self : num.saturating.Saturating Std.Isize) : Result Std.U32 := do
   num.Isize.count_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingU8.trailing_zeros
   (self : num.wrapping.Wrapping Std.U8) : Result Std.U32 := do
   num.U8.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingU16.trailing_zeros
   (self : num.wrapping.Wrapping Std.U16) : Result Std.U32 := do
   num.U16.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingU32.trailing_zeros
   (self : num.wrapping.Wrapping Std.U32) : Result Std.U32 := do
   num.U32.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingU64.trailing_zeros
   (self : num.wrapping.Wrapping Std.U64) : Result Std.U32 := do
   num.U64.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingU128.trailing_zeros
   (self : num.wrapping.Wrapping Std.U128) : Result Std.U32 := do
   num.U128.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.trailing_zeros
   (self : num.wrapping.Wrapping Std.Usize) : Result Std.U32 := do
   num.Usize.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingI8.trailing_zeros
   (self : num.wrapping.Wrapping Std.I8) : Result Std.U32 := do
   num.I8.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingI16.trailing_zeros
   (self : num.wrapping.Wrapping Std.I16) : Result Std.U32 := do
   num.I16.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingI32.trailing_zeros
   (self : num.wrapping.Wrapping Std.I32) : Result Std.U32 := do
   num.I32.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingI64.trailing_zeros
   (self : num.wrapping.Wrapping Std.I64) : Result Std.U32 := do
   num.I64.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingI128.trailing_zeros
   (self : num.wrapping.Wrapping Std.I128) : Result Std.U32 := do
   num.I128.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.trailing_zeros
   (self : num.wrapping.Wrapping Std.Isize) : Result Std.U32 := do
   num.Isize.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingU8.trailing_zeros
   (self : num.saturating.Saturating Std.U8) : Result Std.U32 := do
   num.U8.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingU16.trailing_zeros
   (self : num.saturating.Saturating Std.U16) : Result Std.U32 := do
   num.U16.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingU32.trailing_zeros
   (self : num.saturating.Saturating Std.U32) : Result Std.U32 := do
   num.U32.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingU64.trailing_zeros
   (self : num.saturating.Saturating Std.U64) : Result Std.U32 := do
   num.U64.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingU128.trailing_zeros
   (self : num.saturating.Saturating Std.U128) : Result Std.U32 := do
   num.U128.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.trailing_zeros
   (self : num.saturating.Saturating Std.Usize) : Result Std.U32 := do
   num.Usize.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingI8.trailing_zeros
   (self : num.saturating.Saturating Std.I8) : Result Std.U32 := do
   num.I8.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingI16.trailing_zeros
   (self : num.saturating.Saturating Std.I16) : Result Std.U32 := do
   num.I16.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingI32.trailing_zeros
   (self : num.saturating.Saturating Std.I32) : Result Std.U32 := do
   num.I32.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingI64.trailing_zeros
   (self : num.saturating.Saturating Std.I64) : Result Std.U32 := do
   num.I64.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingI128.trailing_zeros
   (self : num.saturating.Saturating Std.I128) : Result Std.U32 := do
   num.I128.trailing_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::trailing_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2603:12-2605:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2606:12-2608:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.trailing_zeros
   (self : num.saturating.Saturating Std.Isize) : Result Std.U32 := do
   num.Isize.trailing_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingU8.leading_zeros
   (self : num.wrapping.Wrapping Std.U8) : Result Std.U32 := do
   num.U8.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingU16.leading_zeros
   (self : num.wrapping.Wrapping Std.U16) : Result Std.U32 := do
   num.U16.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingU32.leading_zeros
   (self : num.wrapping.Wrapping Std.U32) : Result Std.U32 := do
   num.U32.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingU64.leading_zeros
   (self : num.wrapping.Wrapping Std.U64) : Result Std.U32 := do
   num.U64.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingU128.leading_zeros
   (self : num.wrapping.Wrapping Std.U128) : Result Std.U32 := do
   num.U128.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.leading_zeros
   (self : num.wrapping.Wrapping Std.Usize) : Result Std.U32 := do
   num.Usize.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingI8.leading_zeros
   (self : num.wrapping.Wrapping Std.I8) : Result Std.U32 := do
   num.I8.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingI16.leading_zeros
   (self : num.wrapping.Wrapping Std.I16) : Result Std.U32 := do
   num.I16.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingI32.leading_zeros
   (self : num.wrapping.Wrapping Std.I32) : Result Std.U32 := do
   num.I32.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingI64.leading_zeros
   (self : num.wrapping.Wrapping Std.I64) : Result Std.U32 := do
   num.I64.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingI128.leading_zeros
   (self : num.wrapping.Wrapping Std.I128) : Result Std.U32 := do
   num.I128.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.leading_zeros
   (self : num.wrapping.Wrapping Std.Isize) : Result Std.U32 := do
   num.Isize.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingU8.leading_zeros
   (self : num.saturating.Saturating Std.U8) : Result Std.U32 := do
   num.U8.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingU16.leading_zeros
   (self : num.saturating.Saturating Std.U16) : Result Std.U32 := do
   num.U16.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingU32.leading_zeros
   (self : num.saturating.Saturating Std.U32) : Result Std.U32 := do
   num.U32.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingU64.leading_zeros
   (self : num.saturating.Saturating Std.U64) : Result Std.U32 := do
   num.U64.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingU128.leading_zeros
   (self : num.saturating.Saturating Std.U128) : Result Std.U32 := do
   num.U128.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.leading_zeros
   (self : num.saturating.Saturating Std.Usize) : Result Std.U32 := do
   num.Usize.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingI8.leading_zeros
   (self : num.saturating.Saturating Std.I8) : Result Std.U32 := do
   num.I8.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingI16.leading_zeros
   (self : num.saturating.Saturating Std.I16) : Result Std.U32 := do
   num.I16.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingI32.leading_zeros
   (self : num.saturating.Saturating Std.I32) : Result Std.U32 := do
   num.I32.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingI64.leading_zeros
   (self : num.saturating.Saturating Std.I64) : Result Std.U32 := do
   num.I64.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingI128.leading_zeros
   (self : num.saturating.Saturating Std.I128) : Result Std.U32 := do
   num.I128.leading_zeros self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2607:12-2609:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2610:12-2612:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.leading_zeros
   (self : num.saturating.Saturating Std.Isize) : Result Std.U32 := do
   num.Isize.leading_zeros self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingU8.rotate_left
   (self : num.wrapping.Wrapping Std.U8) (n : Std.U32) :
@@ -27755,7 +27755,7 @@ def num.wrapping.WrappingU8.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingU16.rotate_left
   (self : num.wrapping.Wrapping Std.U16) (n : Std.U32) :
@@ -27765,7 +27765,7 @@ def num.wrapping.WrappingU16.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingU32.rotate_left
   (self : num.wrapping.Wrapping Std.U32) (n : Std.U32) :
@@ -27775,7 +27775,7 @@ def num.wrapping.WrappingU32.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingU64.rotate_left
   (self : num.wrapping.Wrapping Std.U64) (n : Std.U32) :
@@ -27785,7 +27785,7 @@ def num.wrapping.WrappingU64.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingU128.rotate_left
   (self : num.wrapping.Wrapping Std.U128) (n : Std.U32) :
@@ -27795,7 +27795,7 @@ def num.wrapping.WrappingU128.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.rotate_left
   (self : num.wrapping.Wrapping Std.Usize) (n : Std.U32) :
@@ -27805,7 +27805,7 @@ def num.wrapping.WrappingUsize.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingI8.rotate_left
   (self : num.wrapping.Wrapping Std.I8) (n : Std.U32) :
@@ -27815,7 +27815,7 @@ def num.wrapping.WrappingI8.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingI16.rotate_left
   (self : num.wrapping.Wrapping Std.I16) (n : Std.U32) :
@@ -27825,7 +27825,7 @@ def num.wrapping.WrappingI16.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingI32.rotate_left
   (self : num.wrapping.Wrapping Std.I32) (n : Std.U32) :
@@ -27835,7 +27835,7 @@ def num.wrapping.WrappingI32.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingI64.rotate_left
   (self : num.wrapping.Wrapping Std.I64) (n : Std.U32) :
@@ -27845,7 +27845,7 @@ def num.wrapping.WrappingI64.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingI128.rotate_left
   (self : num.wrapping.Wrapping Std.I128) (n : Std.U32) :
@@ -27855,7 +27855,7 @@ def num.wrapping.WrappingI128.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.rotate_left
   (self : num.wrapping.Wrapping Std.Isize) (n : Std.U32) :
@@ -27865,7 +27865,7 @@ def num.wrapping.WrappingIsize.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingU8.rotate_left
   (self : num.saturating.Saturating Std.U8) (n : Std.U32) :
@@ -27875,7 +27875,7 @@ def num.saturating.SaturatingU8.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingU16.rotate_left
   (self : num.saturating.Saturating Std.U16) (n : Std.U32) :
@@ -27885,7 +27885,7 @@ def num.saturating.SaturatingU16.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingU32.rotate_left
   (self : num.saturating.Saturating Std.U32) (n : Std.U32) :
@@ -27895,7 +27895,7 @@ def num.saturating.SaturatingU32.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingU64.rotate_left
   (self : num.saturating.Saturating Std.U64) (n : Std.U32) :
@@ -27905,7 +27905,7 @@ def num.saturating.SaturatingU64.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingU128.rotate_left
   (self : num.saturating.Saturating Std.U128) (n : Std.U32) :
@@ -27915,7 +27915,7 @@ def num.saturating.SaturatingU128.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.rotate_left
   (self : num.saturating.Saturating Std.Usize) (n : Std.U32) :
@@ -27925,7 +27925,7 @@ def num.saturating.SaturatingUsize.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingI8.rotate_left
   (self : num.saturating.Saturating Std.I8) (n : Std.U32) :
@@ -27935,7 +27935,7 @@ def num.saturating.SaturatingI8.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingI16.rotate_left
   (self : num.saturating.Saturating Std.I16) (n : Std.U32) :
@@ -27945,7 +27945,7 @@ def num.saturating.SaturatingI16.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingI32.rotate_left
   (self : num.saturating.Saturating Std.I32) (n : Std.U32) :
@@ -27955,7 +27955,7 @@ def num.saturating.SaturatingI32.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingI64.rotate_left
   (self : num.saturating.Saturating Std.I64) (n : Std.U32) :
@@ -27965,7 +27965,7 @@ def num.saturating.SaturatingI64.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingI128.rotate_left
   (self : num.saturating.Saturating Std.I128) (n : Std.U32) :
@@ -27975,7 +27975,7 @@ def num.saturating.SaturatingI128.rotate_left
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2611:12-2613:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2614:12-2616:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.rotate_left
   (self : num.saturating.Saturating Std.Isize) (n : Std.U32) :
@@ -27985,7 +27985,7 @@ def num.saturating.SaturatingIsize.rotate_left
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingU8.rotate_right
   (self : num.wrapping.Wrapping Std.U8) (n : Std.U32) :
@@ -27995,7 +27995,7 @@ def num.wrapping.WrappingU8.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingU16.rotate_right
   (self : num.wrapping.Wrapping Std.U16) (n : Std.U32) :
@@ -28005,7 +28005,7 @@ def num.wrapping.WrappingU16.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingU32.rotate_right
   (self : num.wrapping.Wrapping Std.U32) (n : Std.U32) :
@@ -28015,7 +28015,7 @@ def num.wrapping.WrappingU32.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingU64.rotate_right
   (self : num.wrapping.Wrapping Std.U64) (n : Std.U32) :
@@ -28025,7 +28025,7 @@ def num.wrapping.WrappingU64.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingU128.rotate_right
   (self : num.wrapping.Wrapping Std.U128) (n : Std.U32) :
@@ -28035,7 +28035,7 @@ def num.wrapping.WrappingU128.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.rotate_right
   (self : num.wrapping.Wrapping Std.Usize) (n : Std.U32) :
@@ -28045,7 +28045,7 @@ def num.wrapping.WrappingUsize.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingI8.rotate_right
   (self : num.wrapping.Wrapping Std.I8) (n : Std.U32) :
@@ -28055,7 +28055,7 @@ def num.wrapping.WrappingI8.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingI16.rotate_right
   (self : num.wrapping.Wrapping Std.I16) (n : Std.U32) :
@@ -28065,7 +28065,7 @@ def num.wrapping.WrappingI16.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingI32.rotate_right
   (self : num.wrapping.Wrapping Std.I32) (n : Std.U32) :
@@ -28075,7 +28075,7 @@ def num.wrapping.WrappingI32.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingI64.rotate_right
   (self : num.wrapping.Wrapping Std.I64) (n : Std.U32) :
@@ -28085,7 +28085,7 @@ def num.wrapping.WrappingI64.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingI128.rotate_right
   (self : num.wrapping.Wrapping Std.I128) (n : Std.U32) :
@@ -28095,7 +28095,7 @@ def num.wrapping.WrappingI128.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.rotate_right
   (self : num.wrapping.Wrapping Std.Isize) (n : Std.U32) :
@@ -28105,7 +28105,7 @@ def num.wrapping.WrappingIsize.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingU8.rotate_right
   (self : num.saturating.Saturating Std.U8) (n : Std.U32) :
@@ -28115,7 +28115,7 @@ def num.saturating.SaturatingU8.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingU16.rotate_right
   (self : num.saturating.Saturating Std.U16) (n : Std.U32) :
@@ -28125,7 +28125,7 @@ def num.saturating.SaturatingU16.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingU32.rotate_right
   (self : num.saturating.Saturating Std.U32) (n : Std.U32) :
@@ -28135,7 +28135,7 @@ def num.saturating.SaturatingU32.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingU64.rotate_right
   (self : num.saturating.Saturating Std.U64) (n : Std.U32) :
@@ -28145,7 +28145,7 @@ def num.saturating.SaturatingU64.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingU128.rotate_right
   (self : num.saturating.Saturating Std.U128) (n : Std.U32) :
@@ -28155,7 +28155,7 @@ def num.saturating.SaturatingU128.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.rotate_right
   (self : num.saturating.Saturating Std.Usize) (n : Std.U32) :
@@ -28165,7 +28165,7 @@ def num.saturating.SaturatingUsize.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingI8.rotate_right
   (self : num.saturating.Saturating Std.I8) (n : Std.U32) :
@@ -28175,7 +28175,7 @@ def num.saturating.SaturatingI8.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingI16.rotate_right
   (self : num.saturating.Saturating Std.I16) (n : Std.U32) :
@@ -28185,7 +28185,7 @@ def num.saturating.SaturatingI16.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingI32.rotate_right
   (self : num.saturating.Saturating Std.I32) (n : Std.U32) :
@@ -28195,7 +28195,7 @@ def num.saturating.SaturatingI32.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingI64.rotate_right
   (self : num.saturating.Saturating Std.I64) (n : Std.U32) :
@@ -28205,7 +28205,7 @@ def num.saturating.SaturatingI64.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingI128.rotate_right
   (self : num.saturating.Saturating Std.I128) (n : Std.U32) :
@@ -28215,7 +28215,7 @@ def num.saturating.SaturatingI128.rotate_right
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2615:12-2617:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2618:12-2620:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.rotate_right
   (self : num.saturating.Saturating Std.Isize) (n : Std.U32) :
@@ -28225,7 +28225,7 @@ def num.saturating.SaturatingIsize.rotate_right
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingU8.swap_bytes
   (self : num.wrapping.Wrapping Std.U8) :
@@ -28235,7 +28235,7 @@ def num.wrapping.WrappingU8.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingU16.swap_bytes
   (self : num.wrapping.Wrapping Std.U16) :
@@ -28245,7 +28245,7 @@ def num.wrapping.WrappingU16.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingU32.swap_bytes
   (self : num.wrapping.Wrapping Std.U32) :
@@ -28255,7 +28255,7 @@ def num.wrapping.WrappingU32.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingU64.swap_bytes
   (self : num.wrapping.Wrapping Std.U64) :
@@ -28265,7 +28265,7 @@ def num.wrapping.WrappingU64.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingU128.swap_bytes
   (self : num.wrapping.Wrapping Std.U128) :
@@ -28275,7 +28275,7 @@ def num.wrapping.WrappingU128.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.swap_bytes
   (self : num.wrapping.Wrapping Std.Usize) :
@@ -28285,7 +28285,7 @@ def num.wrapping.WrappingUsize.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingI8.swap_bytes
   (self : num.wrapping.Wrapping Std.I8) :
@@ -28295,7 +28295,7 @@ def num.wrapping.WrappingI8.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingI16.swap_bytes
   (self : num.wrapping.Wrapping Std.I16) :
@@ -28305,7 +28305,7 @@ def num.wrapping.WrappingI16.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingI32.swap_bytes
   (self : num.wrapping.Wrapping Std.I32) :
@@ -28315,7 +28315,7 @@ def num.wrapping.WrappingI32.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingI64.swap_bytes
   (self : num.wrapping.Wrapping Std.I64) :
@@ -28325,7 +28325,7 @@ def num.wrapping.WrappingI64.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingI128.swap_bytes
   (self : num.wrapping.Wrapping Std.I128) :
@@ -28335,7 +28335,7 @@ def num.wrapping.WrappingI128.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.swap_bytes
   (self : num.wrapping.Wrapping Std.Isize) :
@@ -28345,7 +28345,7 @@ def num.wrapping.WrappingIsize.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingU8.swap_bytes
   (self : num.saturating.Saturating Std.U8) :
@@ -28355,7 +28355,7 @@ def num.saturating.SaturatingU8.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingU16.swap_bytes
   (self : num.saturating.Saturating Std.U16) :
@@ -28365,7 +28365,7 @@ def num.saturating.SaturatingU16.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingU32.swap_bytes
   (self : num.saturating.Saturating Std.U32) :
@@ -28375,7 +28375,7 @@ def num.saturating.SaturatingU32.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingU64.swap_bytes
   (self : num.saturating.Saturating Std.U64) :
@@ -28385,7 +28385,7 @@ def num.saturating.SaturatingU64.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingU128.swap_bytes
   (self : num.saturating.Saturating Std.U128) :
@@ -28395,7 +28395,7 @@ def num.saturating.SaturatingU128.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.swap_bytes
   (self : num.saturating.Saturating Std.Usize) :
@@ -28405,7 +28405,7 @@ def num.saturating.SaturatingUsize.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingI8.swap_bytes
   (self : num.saturating.Saturating Std.I8) :
@@ -28415,7 +28415,7 @@ def num.saturating.SaturatingI8.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingI16.swap_bytes
   (self : num.saturating.Saturating Std.I16) :
@@ -28425,7 +28425,7 @@ def num.saturating.SaturatingI16.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingI32.swap_bytes
   (self : num.saturating.Saturating Std.I32) :
@@ -28435,7 +28435,7 @@ def num.saturating.SaturatingI32.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingI64.swap_bytes
   (self : num.saturating.Saturating Std.I64) :
@@ -28445,7 +28445,7 @@ def num.saturating.SaturatingI64.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingI128.swap_bytes
   (self : num.saturating.Saturating Std.I128) :
@@ -28455,7 +28455,7 @@ def num.saturating.SaturatingI128.swap_bytes
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::swap_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2619:12-2621:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2622:12-2624:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.swap_bytes
   (self : num.saturating.Saturating Std.Isize) :
@@ -28465,7 +28465,7 @@ def num.saturating.SaturatingIsize.swap_bytes
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingU8.to_be
   (self : num.wrapping.Wrapping Std.U8) :
@@ -28475,7 +28475,7 @@ def num.wrapping.WrappingU8.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingU16.to_be
   (self : num.wrapping.Wrapping Std.U16) :
@@ -28485,7 +28485,7 @@ def num.wrapping.WrappingU16.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingU32.to_be
   (self : num.wrapping.Wrapping Std.U32) :
@@ -28495,7 +28495,7 @@ def num.wrapping.WrappingU32.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingU64.to_be
   (self : num.wrapping.Wrapping Std.U64) :
@@ -28505,7 +28505,7 @@ def num.wrapping.WrappingU64.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingU128.to_be
   (self : num.wrapping.Wrapping Std.U128) :
@@ -28515,7 +28515,7 @@ def num.wrapping.WrappingU128.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.to_be
   (self : num.wrapping.Wrapping Std.Usize) :
@@ -28525,7 +28525,7 @@ def num.wrapping.WrappingUsize.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingI8.to_be
   (self : num.wrapping.Wrapping Std.I8) :
@@ -28535,7 +28535,7 @@ def num.wrapping.WrappingI8.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingI16.to_be
   (self : num.wrapping.Wrapping Std.I16) :
@@ -28545,7 +28545,7 @@ def num.wrapping.WrappingI16.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingI32.to_be
   (self : num.wrapping.Wrapping Std.I32) :
@@ -28555,7 +28555,7 @@ def num.wrapping.WrappingI32.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingI64.to_be
   (self : num.wrapping.Wrapping Std.I64) :
@@ -28565,7 +28565,7 @@ def num.wrapping.WrappingI64.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingI128.to_be
   (self : num.wrapping.Wrapping Std.I128) :
@@ -28575,7 +28575,7 @@ def num.wrapping.WrappingI128.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.to_be
   (self : num.wrapping.Wrapping Std.Isize) :
@@ -28585,7 +28585,7 @@ def num.wrapping.WrappingIsize.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingU8.to_be
   (self : num.saturating.Saturating Std.U8) :
@@ -28595,7 +28595,7 @@ def num.saturating.SaturatingU8.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingU16.to_be
   (self : num.saturating.Saturating Std.U16) :
@@ -28605,7 +28605,7 @@ def num.saturating.SaturatingU16.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingU32.to_be
   (self : num.saturating.Saturating Std.U32) :
@@ -28615,7 +28615,7 @@ def num.saturating.SaturatingU32.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingU64.to_be
   (self : num.saturating.Saturating Std.U64) :
@@ -28625,7 +28625,7 @@ def num.saturating.SaturatingU64.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingU128.to_be
   (self : num.saturating.Saturating Std.U128) :
@@ -28635,7 +28635,7 @@ def num.saturating.SaturatingU128.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.to_be
   (self : num.saturating.Saturating Std.Usize) :
@@ -28645,7 +28645,7 @@ def num.saturating.SaturatingUsize.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingI8.to_be
   (self : num.saturating.Saturating Std.I8) :
@@ -28655,7 +28655,7 @@ def num.saturating.SaturatingI8.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingI16.to_be
   (self : num.saturating.Saturating Std.I16) :
@@ -28665,7 +28665,7 @@ def num.saturating.SaturatingI16.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingI32.to_be
   (self : num.saturating.Saturating Std.I32) :
@@ -28675,7 +28675,7 @@ def num.saturating.SaturatingI32.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingI64.to_be
   (self : num.saturating.Saturating Std.I64) :
@@ -28685,7 +28685,7 @@ def num.saturating.SaturatingI64.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingI128.to_be
   (self : num.saturating.Saturating Std.I128) :
@@ -28695,7 +28695,7 @@ def num.saturating.SaturatingI128.to_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::to_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2623:12-2625:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2626:12-2628:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.to_be
   (self : num.saturating.Saturating Std.Isize) :
@@ -28705,7 +28705,7 @@ def num.saturating.SaturatingIsize.to_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingU8.to_le
   (self : num.wrapping.Wrapping Std.U8) :
@@ -28715,7 +28715,7 @@ def num.wrapping.WrappingU8.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingU16.to_le
   (self : num.wrapping.Wrapping Std.U16) :
@@ -28725,7 +28725,7 @@ def num.wrapping.WrappingU16.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingU32.to_le
   (self : num.wrapping.Wrapping Std.U32) :
@@ -28735,7 +28735,7 @@ def num.wrapping.WrappingU32.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingU64.to_le
   (self : num.wrapping.Wrapping Std.U64) :
@@ -28745,7 +28745,7 @@ def num.wrapping.WrappingU64.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingU128.to_le
   (self : num.wrapping.Wrapping Std.U128) :
@@ -28755,7 +28755,7 @@ def num.wrapping.WrappingU128.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.to_le
   (self : num.wrapping.Wrapping Std.Usize) :
@@ -28765,7 +28765,7 @@ def num.wrapping.WrappingUsize.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingI8.to_le
   (self : num.wrapping.Wrapping Std.I8) :
@@ -28775,7 +28775,7 @@ def num.wrapping.WrappingI8.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingI16.to_le
   (self : num.wrapping.Wrapping Std.I16) :
@@ -28785,7 +28785,7 @@ def num.wrapping.WrappingI16.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingI32.to_le
   (self : num.wrapping.Wrapping Std.I32) :
@@ -28795,7 +28795,7 @@ def num.wrapping.WrappingI32.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingI64.to_le
   (self : num.wrapping.Wrapping Std.I64) :
@@ -28805,7 +28805,7 @@ def num.wrapping.WrappingI64.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingI128.to_le
   (self : num.wrapping.Wrapping Std.I128) :
@@ -28815,7 +28815,7 @@ def num.wrapping.WrappingI128.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.to_le
   (self : num.wrapping.Wrapping Std.Isize) :
@@ -28825,7 +28825,7 @@ def num.wrapping.WrappingIsize.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingU8.to_le
   (self : num.saturating.Saturating Std.U8) :
@@ -28835,7 +28835,7 @@ def num.saturating.SaturatingU8.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingU16.to_le
   (self : num.saturating.Saturating Std.U16) :
@@ -28845,7 +28845,7 @@ def num.saturating.SaturatingU16.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingU32.to_le
   (self : num.saturating.Saturating Std.U32) :
@@ -28855,7 +28855,7 @@ def num.saturating.SaturatingU32.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingU64.to_le
   (self : num.saturating.Saturating Std.U64) :
@@ -28865,7 +28865,7 @@ def num.saturating.SaturatingU64.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingU128.to_le
   (self : num.saturating.Saturating Std.U128) :
@@ -28875,7 +28875,7 @@ def num.saturating.SaturatingU128.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.to_le
   (self : num.saturating.Saturating Std.Usize) :
@@ -28885,7 +28885,7 @@ def num.saturating.SaturatingUsize.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingI8.to_le
   (self : num.saturating.Saturating Std.I8) :
@@ -28895,7 +28895,7 @@ def num.saturating.SaturatingI8.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingI16.to_le
   (self : num.saturating.Saturating Std.I16) :
@@ -28905,7 +28905,7 @@ def num.saturating.SaturatingI16.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingI32.to_le
   (self : num.saturating.Saturating Std.I32) :
@@ -28915,7 +28915,7 @@ def num.saturating.SaturatingI32.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingI64.to_le
   (self : num.saturating.Saturating Std.I64) :
@@ -28925,7 +28925,7 @@ def num.saturating.SaturatingI64.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingI128.to_le
   (self : num.saturating.Saturating Std.I128) :
@@ -28935,7 +28935,7 @@ def num.saturating.SaturatingI128.to_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::to_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2627:12-2629:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2630:12-2632:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.to_le
   (self : num.saturating.Saturating Std.Isize) :
@@ -28945,7 +28945,7 @@ def num.saturating.SaturatingIsize.to_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingU8.from_be
   (x : num.wrapping.Wrapping Std.U8) :
@@ -28955,7 +28955,7 @@ def num.wrapping.WrappingU8.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingU16.from_be
   (x : num.wrapping.Wrapping Std.U16) :
@@ -28965,7 +28965,7 @@ def num.wrapping.WrappingU16.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingU32.from_be
   (x : num.wrapping.Wrapping Std.U32) :
@@ -28975,7 +28975,7 @@ def num.wrapping.WrappingU32.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingU64.from_be
   (x : num.wrapping.Wrapping Std.U64) :
@@ -28985,7 +28985,7 @@ def num.wrapping.WrappingU64.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingU128.from_be
   (x : num.wrapping.Wrapping Std.U128) :
@@ -28995,7 +28995,7 @@ def num.wrapping.WrappingU128.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.from_be
   (x : num.wrapping.Wrapping Std.Usize) :
@@ -29005,7 +29005,7 @@ def num.wrapping.WrappingUsize.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingI8.from_be
   (x : num.wrapping.Wrapping Std.I8) :
@@ -29015,7 +29015,7 @@ def num.wrapping.WrappingI8.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingI16.from_be
   (x : num.wrapping.Wrapping Std.I16) :
@@ -29025,7 +29025,7 @@ def num.wrapping.WrappingI16.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingI32.from_be
   (x : num.wrapping.Wrapping Std.I32) :
@@ -29035,7 +29035,7 @@ def num.wrapping.WrappingI32.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingI64.from_be
   (x : num.wrapping.Wrapping Std.I64) :
@@ -29045,7 +29045,7 @@ def num.wrapping.WrappingI64.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingI128.from_be
   (x : num.wrapping.Wrapping Std.I128) :
@@ -29055,7 +29055,7 @@ def num.wrapping.WrappingI128.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.from_be
   (x : num.wrapping.Wrapping Std.Isize) :
@@ -29065,7 +29065,7 @@ def num.wrapping.WrappingIsize.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingU8.from_be
   (x : num.saturating.Saturating Std.U8) :
@@ -29075,7 +29075,7 @@ def num.saturating.SaturatingU8.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingU16.from_be
   (x : num.saturating.Saturating Std.U16) :
@@ -29085,7 +29085,7 @@ def num.saturating.SaturatingU16.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingU32.from_be
   (x : num.saturating.Saturating Std.U32) :
@@ -29095,7 +29095,7 @@ def num.saturating.SaturatingU32.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingU64.from_be
   (x : num.saturating.Saturating Std.U64) :
@@ -29105,7 +29105,7 @@ def num.saturating.SaturatingU64.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingU128.from_be
   (x : num.saturating.Saturating Std.U128) :
@@ -29115,7 +29115,7 @@ def num.saturating.SaturatingU128.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.from_be
   (x : num.saturating.Saturating Std.Usize) :
@@ -29125,7 +29125,7 @@ def num.saturating.SaturatingUsize.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingI8.from_be
   (x : num.saturating.Saturating Std.I8) :
@@ -29135,7 +29135,7 @@ def num.saturating.SaturatingI8.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingI16.from_be
   (x : num.saturating.Saturating Std.I16) :
@@ -29145,7 +29145,7 @@ def num.saturating.SaturatingI16.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingI32.from_be
   (x : num.saturating.Saturating Std.I32) :
@@ -29155,7 +29155,7 @@ def num.saturating.SaturatingI32.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingI64.from_be
   (x : num.saturating.Saturating Std.I64) :
@@ -29165,7 +29165,7 @@ def num.saturating.SaturatingI64.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingI128.from_be
   (x : num.saturating.Saturating Std.I128) :
@@ -29175,7 +29175,7 @@ def num.saturating.SaturatingI128.from_be
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::from_be]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2631:12-2633:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2634:12-2636:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.from_be
   (x : num.saturating.Saturating Std.Isize) :
@@ -29185,7 +29185,7 @@ def num.saturating.SaturatingIsize.from_be
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingU8.from_le
   (x : num.wrapping.Wrapping Std.U8) :
@@ -29195,7 +29195,7 @@ def num.wrapping.WrappingU8.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingU16.from_le
   (x : num.wrapping.Wrapping Std.U16) :
@@ -29205,7 +29205,7 @@ def num.wrapping.WrappingU16.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingU32.from_le
   (x : num.wrapping.Wrapping Std.U32) :
@@ -29215,7 +29215,7 @@ def num.wrapping.WrappingU32.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingU64.from_le
   (x : num.wrapping.Wrapping Std.U64) :
@@ -29225,7 +29225,7 @@ def num.wrapping.WrappingU64.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingU128.from_le
   (x : num.wrapping.Wrapping Std.U128) :
@@ -29235,7 +29235,7 @@ def num.wrapping.WrappingU128.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.from_le
   (x : num.wrapping.Wrapping Std.Usize) :
@@ -29245,7 +29245,7 @@ def num.wrapping.WrappingUsize.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingI8.from_le
   (x : num.wrapping.Wrapping Std.I8) :
@@ -29255,7 +29255,7 @@ def num.wrapping.WrappingI8.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingI16.from_le
   (x : num.wrapping.Wrapping Std.I16) :
@@ -29265,7 +29265,7 @@ def num.wrapping.WrappingI16.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingI32.from_le
   (x : num.wrapping.Wrapping Std.I32) :
@@ -29275,7 +29275,7 @@ def num.wrapping.WrappingI32.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingI64.from_le
   (x : num.wrapping.Wrapping Std.I64) :
@@ -29285,7 +29285,7 @@ def num.wrapping.WrappingI64.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingI128.from_le
   (x : num.wrapping.Wrapping Std.I128) :
@@ -29295,7 +29295,7 @@ def num.wrapping.WrappingI128.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.from_le
   (x : num.wrapping.Wrapping Std.Isize) :
@@ -29305,7 +29305,7 @@ def num.wrapping.WrappingIsize.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingU8.from_le
   (x : num.saturating.Saturating Std.U8) :
@@ -29315,7 +29315,7 @@ def num.saturating.SaturatingU8.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingU16.from_le
   (x : num.saturating.Saturating Std.U16) :
@@ -29325,7 +29325,7 @@ def num.saturating.SaturatingU16.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingU32.from_le
   (x : num.saturating.Saturating Std.U32) :
@@ -29335,7 +29335,7 @@ def num.saturating.SaturatingU32.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingU64.from_le
   (x : num.saturating.Saturating Std.U64) :
@@ -29345,7 +29345,7 @@ def num.saturating.SaturatingU64.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingU128.from_le
   (x : num.saturating.Saturating Std.U128) :
@@ -29355,7 +29355,7 @@ def num.saturating.SaturatingU128.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.from_le
   (x : num.saturating.Saturating Std.Usize) :
@@ -29365,7 +29365,7 @@ def num.saturating.SaturatingUsize.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingI8.from_le
   (x : num.saturating.Saturating Std.I8) :
@@ -29375,7 +29375,7 @@ def num.saturating.SaturatingI8.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingI16.from_le
   (x : num.saturating.Saturating Std.I16) :
@@ -29385,7 +29385,7 @@ def num.saturating.SaturatingI16.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingI32.from_le
   (x : num.saturating.Saturating Std.I32) :
@@ -29395,7 +29395,7 @@ def num.saturating.SaturatingI32.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingI64.from_le
   (x : num.saturating.Saturating Std.I64) :
@@ -29405,7 +29405,7 @@ def num.saturating.SaturatingI64.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingI128.from_le
   (x : num.saturating.Saturating Std.I128) :
@@ -29415,7 +29415,7 @@ def num.saturating.SaturatingI128.from_le
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::from_le]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2635:12-2637:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2638:12-2640:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.from_le
   (x : num.saturating.Saturating Std.Isize) :
@@ -29425,7 +29425,7 @@ def num.saturating.SaturatingIsize.from_le
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingU8.reverse_bits
   (self : num.wrapping.Wrapping Std.U8) :
@@ -29435,7 +29435,7 @@ def num.wrapping.WrappingU8.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingU16.reverse_bits
   (self : num.wrapping.Wrapping Std.U16) :
@@ -29445,7 +29445,7 @@ def num.wrapping.WrappingU16.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingU32.reverse_bits
   (self : num.wrapping.Wrapping Std.U32) :
@@ -29455,7 +29455,7 @@ def num.wrapping.WrappingU32.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingU64.reverse_bits
   (self : num.wrapping.Wrapping Std.U64) :
@@ -29465,7 +29465,7 @@ def num.wrapping.WrappingU64.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingU128.reverse_bits
   (self : num.wrapping.Wrapping Std.U128) :
@@ -29475,7 +29475,7 @@ def num.wrapping.WrappingU128.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.reverse_bits
   (self : num.wrapping.Wrapping Std.Usize) :
@@ -29485,7 +29485,7 @@ def num.wrapping.WrappingUsize.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingI8.reverse_bits
   (self : num.wrapping.Wrapping Std.I8) :
@@ -29495,7 +29495,7 @@ def num.wrapping.WrappingI8.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingI16.reverse_bits
   (self : num.wrapping.Wrapping Std.I16) :
@@ -29505,7 +29505,7 @@ def num.wrapping.WrappingI16.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingI32.reverse_bits
   (self : num.wrapping.Wrapping Std.I32) :
@@ -29515,7 +29515,7 @@ def num.wrapping.WrappingI32.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingI64.reverse_bits
   (self : num.wrapping.Wrapping Std.I64) :
@@ -29525,7 +29525,7 @@ def num.wrapping.WrappingI64.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingI128.reverse_bits
   (self : num.wrapping.Wrapping Std.I128) :
@@ -29535,7 +29535,7 @@ def num.wrapping.WrappingI128.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.reverse_bits
   (self : num.wrapping.Wrapping Std.Isize) :
@@ -29545,7 +29545,7 @@ def num.wrapping.WrappingIsize.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingU8.reverse_bits
   (self : num.saturating.Saturating Std.U8) :
@@ -29555,7 +29555,7 @@ def num.saturating.SaturatingU8.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingU16.reverse_bits
   (self : num.saturating.Saturating Std.U16) :
@@ -29565,7 +29565,7 @@ def num.saturating.SaturatingU16.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingU32.reverse_bits
   (self : num.saturating.Saturating Std.U32) :
@@ -29575,7 +29575,7 @@ def num.saturating.SaturatingU32.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingU64.reverse_bits
   (self : num.saturating.Saturating Std.U64) :
@@ -29585,7 +29585,7 @@ def num.saturating.SaturatingU64.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingU128.reverse_bits
   (self : num.saturating.Saturating Std.U128) :
@@ -29595,7 +29595,7 @@ def num.saturating.SaturatingU128.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.reverse_bits
   (self : num.saturating.Saturating Std.Usize) :
@@ -29605,7 +29605,7 @@ def num.saturating.SaturatingUsize.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingI8.reverse_bits
   (self : num.saturating.Saturating Std.I8) :
@@ -29615,7 +29615,7 @@ def num.saturating.SaturatingI8.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingI16.reverse_bits
   (self : num.saturating.Saturating Std.I16) :
@@ -29625,7 +29625,7 @@ def num.saturating.SaturatingI16.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingI32.reverse_bits
   (self : num.saturating.Saturating Std.I32) :
@@ -29635,7 +29635,7 @@ def num.saturating.SaturatingI32.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingI64.reverse_bits
   (self : num.saturating.Saturating Std.I64) :
@@ -29645,7 +29645,7 @@ def num.saturating.SaturatingI64.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingI128.reverse_bits
   (self : num.saturating.Saturating Std.I128) :
@@ -29655,7 +29655,7 @@ def num.saturating.SaturatingI128.reverse_bits
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::reverse_bits]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2639:12-2641:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2642:12-2644:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.reverse_bits
   (self : num.saturating.Saturating Std.Isize) :
@@ -29665,7 +29665,7 @@ def num.saturating.SaturatingIsize.reverse_bits
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingU8.pow
   (self : num.wrapping.Wrapping Std.U8) (exp : Std.U32) :
@@ -29675,7 +29675,7 @@ def num.wrapping.WrappingU8.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingU16.pow
   (self : num.wrapping.Wrapping Std.U16) (exp : Std.U32) :
@@ -29685,7 +29685,7 @@ def num.wrapping.WrappingU16.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingU32.pow
   (self : num.wrapping.Wrapping Std.U32) (exp : Std.U32) :
@@ -29695,7 +29695,7 @@ def num.wrapping.WrappingU32.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingU64.pow
   (self : num.wrapping.Wrapping Std.U64) (exp : Std.U32) :
@@ -29705,7 +29705,7 @@ def num.wrapping.WrappingU64.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingU128.pow
   (self : num.wrapping.Wrapping Std.U128) (exp : Std.U32) :
@@ -29715,7 +29715,7 @@ def num.wrapping.WrappingU128.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingUsize.pow
   (self : num.wrapping.Wrapping Std.Usize) (exp : Std.U32) :
@@ -29725,7 +29725,7 @@ def num.wrapping.WrappingUsize.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingI8.pow
   (self : num.wrapping.Wrapping Std.I8) (exp : Std.U32) :
@@ -29735,7 +29735,7 @@ def num.wrapping.WrappingI8.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingI16.pow
   (self : num.wrapping.Wrapping Std.I16) (exp : Std.U32) :
@@ -29745,7 +29745,7 @@ def num.wrapping.WrappingI16.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingI32.pow
   (self : num.wrapping.Wrapping Std.I32) (exp : Std.U32) :
@@ -29755,7 +29755,7 @@ def num.wrapping.WrappingI32.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingI64.pow
   (self : num.wrapping.Wrapping Std.I64) (exp : Std.U32) :
@@ -29765,7 +29765,7 @@ def num.wrapping.WrappingI64.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingI128.pow
   (self : num.wrapping.Wrapping Std.I128) (exp : Std.U32) :
@@ -29775,7 +29775,7 @@ def num.wrapping.WrappingI128.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.wrapping.WrappingIsize.pow
   (self : num.wrapping.Wrapping Std.Isize) (exp : Std.U32) :
@@ -29785,7 +29785,7 @@ def num.wrapping.WrappingIsize.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingU8.pow
   (self : num.saturating.Saturating Std.U8) (exp : Std.U32) :
@@ -29795,7 +29795,7 @@ def num.saturating.SaturatingU8.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingU16.pow
   (self : num.saturating.Saturating Std.U16) (exp : Std.U32) :
@@ -29805,7 +29805,7 @@ def num.saturating.SaturatingU16.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingU32.pow
   (self : num.saturating.Saturating Std.U32) (exp : Std.U32) :
@@ -29815,7 +29815,7 @@ def num.saturating.SaturatingU32.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingU64.pow
   (self : num.saturating.Saturating Std.U64) (exp : Std.U32) :
@@ -29825,7 +29825,7 @@ def num.saturating.SaturatingU64.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingU128.pow
   (self : num.saturating.Saturating Std.U128) (exp : Std.U32) :
@@ -29835,7 +29835,7 @@ def num.saturating.SaturatingU128.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingUsize.pow
   (self : num.saturating.Saturating Std.Usize) (exp : Std.U32) :
@@ -29845,7 +29845,7 @@ def num.saturating.SaturatingUsize.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingI8.pow
   (self : num.saturating.Saturating Std.I8) (exp : Std.U32) :
@@ -29855,7 +29855,7 @@ def num.saturating.SaturatingI8.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingI16.pow
   (self : num.saturating.Saturating Std.I16) (exp : Std.U32) :
@@ -29865,7 +29865,7 @@ def num.saturating.SaturatingI16.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingI32.pow
   (self : num.saturating.Saturating Std.I32) (exp : Std.U32) :
@@ -29875,7 +29875,7 @@ def num.saturating.SaturatingI32.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingI64.pow
   (self : num.saturating.Saturating Std.I64) (exp : Std.U32) :
@@ -29885,7 +29885,7 @@ def num.saturating.SaturatingI64.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingI128.pow
   (self : num.saturating.Saturating Std.I128) (exp : Std.U32) :
@@ -29895,7 +29895,7 @@ def num.saturating.SaturatingI128.pow
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2643:12-2645:13
+    Source: 'core-models/src/core/num/mod.rs', lines 2646:12-2648:13
     Visibility: public -/
 def num.saturating.SaturatingIsize.pow
   (self : num.saturating.Saturating Std.Isize) (exp : Std.U32) :
@@ -29905,49 +29905,49 @@ def num.saturating.SaturatingIsize.pow
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2663:20-2665:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2666:20-2668:21
     Visibility: public -/
 def num.wrapping.WrappingU8.is_power_of_two
   (self : num.wrapping.Wrapping Std.U8) : Result Bool := do
   num.U8.is_power_of_two self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2663:20-2665:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2666:20-2668:21
     Visibility: public -/
 def num.wrapping.WrappingU16.is_power_of_two
   (self : num.wrapping.Wrapping Std.U16) : Result Bool := do
   num.U16.is_power_of_two self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2663:20-2665:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2666:20-2668:21
     Visibility: public -/
 def num.wrapping.WrappingU32.is_power_of_two
   (self : num.wrapping.Wrapping Std.U32) : Result Bool := do
   num.U32.is_power_of_two self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2663:20-2665:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2666:20-2668:21
     Visibility: public -/
 def num.wrapping.WrappingU64.is_power_of_two
   (self : num.wrapping.Wrapping Std.U64) : Result Bool := do
   num.U64.is_power_of_two self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2663:20-2665:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2666:20-2668:21
     Visibility: public -/
 def num.wrapping.WrappingU128.is_power_of_two
   (self : num.wrapping.Wrapping Std.U128) : Result Bool := do
   num.U128.is_power_of_two self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2663:20-2665:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2666:20-2668:21
     Visibility: public -/
 def num.wrapping.WrappingUsize.is_power_of_two
   (self : num.wrapping.Wrapping Std.Usize) : Result Bool := do
   num.Usize.is_power_of_two self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u8>}::next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2667:20-2669:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2670:20-2672:21
     Visibility: public -/
 def num.wrapping.WrappingU8.next_power_of_two
   (self : num.wrapping.Wrapping Std.U8) :
@@ -29957,7 +29957,7 @@ def num.wrapping.WrappingU8.next_power_of_two
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u16>}::next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2667:20-2669:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2670:20-2672:21
     Visibility: public -/
 def num.wrapping.WrappingU16.next_power_of_two
   (self : num.wrapping.Wrapping Std.U16) :
@@ -29967,7 +29967,7 @@ def num.wrapping.WrappingU16.next_power_of_two
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u32>}::next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2667:20-2669:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2670:20-2672:21
     Visibility: public -/
 def num.wrapping.WrappingU32.next_power_of_two
   (self : num.wrapping.Wrapping Std.U32) :
@@ -29977,7 +29977,7 @@ def num.wrapping.WrappingU32.next_power_of_two
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u64>}::next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2667:20-2669:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2670:20-2672:21
     Visibility: public -/
 def num.wrapping.WrappingU64.next_power_of_two
   (self : num.wrapping.Wrapping Std.U64) :
@@ -29987,7 +29987,7 @@ def num.wrapping.WrappingU64.next_power_of_two
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<u128>}::next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2667:20-2669:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2670:20-2672:21
     Visibility: public -/
 def num.wrapping.WrappingU128.next_power_of_two
   (self : num.wrapping.Wrapping Std.U128) :
@@ -29997,7 +29997,7 @@ def num.wrapping.WrappingU128.next_power_of_two
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<usize>}::next_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2667:20-2669:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2670:20-2672:21
     Visibility: public -/
 def num.wrapping.WrappingUsize.next_power_of_two
   (self : num.wrapping.Wrapping Std.Usize) :
@@ -30007,7 +30007,7 @@ def num.wrapping.WrappingUsize.next_power_of_two
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2680:20-2682:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2683:20-2685:21
     Visibility: public -/
 def num.wrapping.WrappingI8.abs
   (self : num.wrapping.Wrapping Std.I8) :
@@ -30017,7 +30017,7 @@ def num.wrapping.WrappingI8.abs
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2680:20-2682:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2683:20-2685:21
     Visibility: public -/
 def num.wrapping.WrappingI16.abs
   (self : num.wrapping.Wrapping Std.I16) :
@@ -30027,7 +30027,7 @@ def num.wrapping.WrappingI16.abs
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2680:20-2682:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2683:20-2685:21
     Visibility: public -/
 def num.wrapping.WrappingI32.abs
   (self : num.wrapping.Wrapping Std.I32) :
@@ -30037,7 +30037,7 @@ def num.wrapping.WrappingI32.abs
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2680:20-2682:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2683:20-2685:21
     Visibility: public -/
 def num.wrapping.WrappingI64.abs
   (self : num.wrapping.Wrapping Std.I64) :
@@ -30047,7 +30047,7 @@ def num.wrapping.WrappingI64.abs
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2680:20-2682:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2683:20-2685:21
     Visibility: public -/
 def num.wrapping.WrappingI128.abs
   (self : num.wrapping.Wrapping Std.I128) :
@@ -30057,7 +30057,7 @@ def num.wrapping.WrappingI128.abs
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2680:20-2682:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2683:20-2685:21
     Visibility: public -/
 def num.wrapping.WrappingIsize.abs
   (self : num.wrapping.Wrapping Std.Isize) :
@@ -30067,7 +30067,7 @@ def num.wrapping.WrappingIsize.abs
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2684:20-2686:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2687:20-2689:21
     Visibility: public -/
 def num.wrapping.WrappingI8.signum
   (self : num.wrapping.Wrapping Std.I8) :
@@ -30077,7 +30077,7 @@ def num.wrapping.WrappingI8.signum
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2684:20-2686:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2687:20-2689:21
     Visibility: public -/
 def num.wrapping.WrappingI16.signum
   (self : num.wrapping.Wrapping Std.I16) :
@@ -30087,7 +30087,7 @@ def num.wrapping.WrappingI16.signum
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2684:20-2686:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2687:20-2689:21
     Visibility: public -/
 def num.wrapping.WrappingI32.signum
   (self : num.wrapping.Wrapping Std.I32) :
@@ -30097,7 +30097,7 @@ def num.wrapping.WrappingI32.signum
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2684:20-2686:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2687:20-2689:21
     Visibility: public -/
 def num.wrapping.WrappingI64.signum
   (self : num.wrapping.Wrapping Std.I64) :
@@ -30107,7 +30107,7 @@ def num.wrapping.WrappingI64.signum
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2684:20-2686:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2687:20-2689:21
     Visibility: public -/
 def num.wrapping.WrappingI128.signum
   (self : num.wrapping.Wrapping Std.I128) :
@@ -30117,7 +30117,7 @@ def num.wrapping.WrappingI128.signum
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2684:20-2686:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2687:20-2689:21
     Visibility: public -/
 def num.wrapping.WrappingIsize.signum
   (self : num.wrapping.Wrapping Std.Isize) :
@@ -30127,133 +30127,133 @@ def num.wrapping.WrappingIsize.signum
   ok i
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2688:20-2690:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2691:20-2693:21
     Visibility: public -/
 def num.wrapping.WrappingI8.is_positive
   (self : num.wrapping.Wrapping Std.I8) : Result Bool := do
   num.I8.is_positive self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2688:20-2690:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2691:20-2693:21
     Visibility: public -/
 def num.wrapping.WrappingI16.is_positive
   (self : num.wrapping.Wrapping Std.I16) : Result Bool := do
   num.I16.is_positive self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2688:20-2690:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2691:20-2693:21
     Visibility: public -/
 def num.wrapping.WrappingI32.is_positive
   (self : num.wrapping.Wrapping Std.I32) : Result Bool := do
   num.I32.is_positive self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2688:20-2690:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2691:20-2693:21
     Visibility: public -/
 def num.wrapping.WrappingI64.is_positive
   (self : num.wrapping.Wrapping Std.I64) : Result Bool := do
   num.I64.is_positive self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2688:20-2690:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2691:20-2693:21
     Visibility: public -/
 def num.wrapping.WrappingI128.is_positive
   (self : num.wrapping.Wrapping Std.I128) : Result Bool := do
   num.I128.is_positive self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2688:20-2690:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2691:20-2693:21
     Visibility: public -/
 def num.wrapping.WrappingIsize.is_positive
   (self : num.wrapping.Wrapping Std.Isize) : Result Bool := do
   num.Isize.is_positive self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i8>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2692:20-2694:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2695:20-2697:21
     Visibility: public -/
 def num.wrapping.WrappingI8.is_negative
   (self : num.wrapping.Wrapping Std.I8) : Result Bool := do
   num.I8.is_negative self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i16>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2692:20-2694:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2695:20-2697:21
     Visibility: public -/
 def num.wrapping.WrappingI16.is_negative
   (self : num.wrapping.Wrapping Std.I16) : Result Bool := do
   num.I16.is_negative self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i32>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2692:20-2694:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2695:20-2697:21
     Visibility: public -/
 def num.wrapping.WrappingI32.is_negative
   (self : num.wrapping.Wrapping Std.I32) : Result Bool := do
   num.I32.is_negative self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i64>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2692:20-2694:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2695:20-2697:21
     Visibility: public -/
 def num.wrapping.WrappingI64.is_negative
   (self : num.wrapping.Wrapping Std.I64) : Result Bool := do
   num.I64.is_negative self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<i128>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2692:20-2694:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2695:20-2697:21
     Visibility: public -/
 def num.wrapping.WrappingI128.is_negative
   (self : num.wrapping.Wrapping Std.I128) : Result Bool := do
   num.I128.is_negative self
 
 /-- [core_models::num::wrapping::{core_models::num::wrapping::Wrapping<isize>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2692:20-2694:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2695:20-2697:21
     Visibility: public -/
 def num.wrapping.WrappingIsize.is_negative
   (self : num.wrapping.Wrapping Std.Isize) : Result Bool := do
   num.Isize.is_negative self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u8>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2733:20-2735:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2736:20-2738:21
     Visibility: public -/
 def num.saturating.SaturatingU8.is_power_of_two
   (self : num.saturating.Saturating Std.U8) : Result Bool := do
   num.U8.is_power_of_two self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u16>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2733:20-2735:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2736:20-2738:21
     Visibility: public -/
 def num.saturating.SaturatingU16.is_power_of_two
   (self : num.saturating.Saturating Std.U16) : Result Bool := do
   num.U16.is_power_of_two self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u32>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2733:20-2735:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2736:20-2738:21
     Visibility: public -/
 def num.saturating.SaturatingU32.is_power_of_two
   (self : num.saturating.Saturating Std.U32) : Result Bool := do
   num.U32.is_power_of_two self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u64>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2733:20-2735:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2736:20-2738:21
     Visibility: public -/
 def num.saturating.SaturatingU64.is_power_of_two
   (self : num.saturating.Saturating Std.U64) : Result Bool := do
   num.U64.is_power_of_two self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<u128>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2733:20-2735:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2736:20-2738:21
     Visibility: public -/
 def num.saturating.SaturatingU128.is_power_of_two
   (self : num.saturating.Saturating Std.U128) : Result Bool := do
   num.U128.is_power_of_two self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<usize>}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2733:20-2735:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2736:20-2738:21
     Visibility: public -/
 def num.saturating.SaturatingUsize.is_power_of_two
   (self : num.saturating.Saturating Std.Usize) : Result Bool := do
   num.Usize.is_power_of_two self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2746:20-2748:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2749:20-2751:21
     Visibility: public -/
 def num.saturating.SaturatingI8.abs
   (self : num.saturating.Saturating Std.I8) :
@@ -30263,7 +30263,7 @@ def num.saturating.SaturatingI8.abs
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2746:20-2748:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2749:20-2751:21
     Visibility: public -/
 def num.saturating.SaturatingI16.abs
   (self : num.saturating.Saturating Std.I16) :
@@ -30273,7 +30273,7 @@ def num.saturating.SaturatingI16.abs
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2746:20-2748:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2749:20-2751:21
     Visibility: public -/
 def num.saturating.SaturatingI32.abs
   (self : num.saturating.Saturating Std.I32) :
@@ -30283,7 +30283,7 @@ def num.saturating.SaturatingI32.abs
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2746:20-2748:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2749:20-2751:21
     Visibility: public -/
 def num.saturating.SaturatingI64.abs
   (self : num.saturating.Saturating Std.I64) :
@@ -30293,7 +30293,7 @@ def num.saturating.SaturatingI64.abs
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2746:20-2748:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2749:20-2751:21
     Visibility: public -/
 def num.saturating.SaturatingI128.abs
   (self : num.saturating.Saturating Std.I128) :
@@ -30303,7 +30303,7 @@ def num.saturating.SaturatingI128.abs
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2746:20-2748:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2749:20-2751:21
     Visibility: public -/
 def num.saturating.SaturatingIsize.abs
   (self : num.saturating.Saturating Std.Isize) :
@@ -30313,7 +30313,7 @@ def num.saturating.SaturatingIsize.abs
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2750:20-2752:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2753:20-2755:21
     Visibility: public -/
 def num.saturating.SaturatingI8.signum
   (self : num.saturating.Saturating Std.I8) :
@@ -30323,7 +30323,7 @@ def num.saturating.SaturatingI8.signum
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2750:20-2752:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2753:20-2755:21
     Visibility: public -/
 def num.saturating.SaturatingI16.signum
   (self : num.saturating.Saturating Std.I16) :
@@ -30333,7 +30333,7 @@ def num.saturating.SaturatingI16.signum
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2750:20-2752:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2753:20-2755:21
     Visibility: public -/
 def num.saturating.SaturatingI32.signum
   (self : num.saturating.Saturating Std.I32) :
@@ -30343,7 +30343,7 @@ def num.saturating.SaturatingI32.signum
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2750:20-2752:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2753:20-2755:21
     Visibility: public -/
 def num.saturating.SaturatingI64.signum
   (self : num.saturating.Saturating Std.I64) :
@@ -30353,7 +30353,7 @@ def num.saturating.SaturatingI64.signum
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2750:20-2752:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2753:20-2755:21
     Visibility: public -/
 def num.saturating.SaturatingI128.signum
   (self : num.saturating.Saturating Std.I128) :
@@ -30363,7 +30363,7 @@ def num.saturating.SaturatingI128.signum
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2750:20-2752:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2753:20-2755:21
     Visibility: public -/
 def num.saturating.SaturatingIsize.signum
   (self : num.saturating.Saturating Std.Isize) :
@@ -30373,84 +30373,84 @@ def num.saturating.SaturatingIsize.signum
   ok i
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2754:20-2756:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2757:20-2759:21
     Visibility: public -/
 def num.saturating.SaturatingI8.is_positive
   (self : num.saturating.Saturating Std.I8) : Result Bool := do
   num.I8.is_positive self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2754:20-2756:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2757:20-2759:21
     Visibility: public -/
 def num.saturating.SaturatingI16.is_positive
   (self : num.saturating.Saturating Std.I16) : Result Bool := do
   num.I16.is_positive self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2754:20-2756:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2757:20-2759:21
     Visibility: public -/
 def num.saturating.SaturatingI32.is_positive
   (self : num.saturating.Saturating Std.I32) : Result Bool := do
   num.I32.is_positive self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2754:20-2756:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2757:20-2759:21
     Visibility: public -/
 def num.saturating.SaturatingI64.is_positive
   (self : num.saturating.Saturating Std.I64) : Result Bool := do
   num.I64.is_positive self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2754:20-2756:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2757:20-2759:21
     Visibility: public -/
 def num.saturating.SaturatingI128.is_positive
   (self : num.saturating.Saturating Std.I128) : Result Bool := do
   num.I128.is_positive self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::is_positive]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2754:20-2756:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2757:20-2759:21
     Visibility: public -/
 def num.saturating.SaturatingIsize.is_positive
   (self : num.saturating.Saturating Std.Isize) : Result Bool := do
   num.Isize.is_positive self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i8>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2758:20-2760:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2761:20-2763:21
     Visibility: public -/
 def num.saturating.SaturatingI8.is_negative
   (self : num.saturating.Saturating Std.I8) : Result Bool := do
   num.I8.is_negative self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i16>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2758:20-2760:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2761:20-2763:21
     Visibility: public -/
 def num.saturating.SaturatingI16.is_negative
   (self : num.saturating.Saturating Std.I16) : Result Bool := do
   num.I16.is_negative self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i32>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2758:20-2760:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2761:20-2763:21
     Visibility: public -/
 def num.saturating.SaturatingI32.is_negative
   (self : num.saturating.Saturating Std.I32) : Result Bool := do
   num.I32.is_negative self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i64>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2758:20-2760:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2761:20-2763:21
     Visibility: public -/
 def num.saturating.SaturatingI64.is_negative
   (self : num.saturating.Saturating Std.I64) : Result Bool := do
   num.I64.is_negative self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<i128>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2758:20-2760:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2761:20-2763:21
     Visibility: public -/
 def num.saturating.SaturatingI128.is_negative
   (self : num.saturating.Saturating Std.I128) : Result Bool := do
   num.I128.is_negative self
 
 /-- [core_models::num::saturating::{core_models::num::saturating::Saturating<isize>}::is_negative]:
-    Source: 'core-models/src/core/num/mod.rs', lines 2758:20-2760:21
+    Source: 'core-models/src/core/num/mod.rs', lines 2761:20-2763:21
     Visibility: public -/
 def num.saturating.SaturatingIsize.is_negative
   (self : num.saturating.Saturating Std.Isize) : Result Bool := do
