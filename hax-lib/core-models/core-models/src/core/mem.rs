@@ -146,6 +146,9 @@ pub fn copy<T: core::marker::Copy>(x: &T) -> T {
 // Signature only: conjuring a `T` out of nothing is sound exactly when `T` is an
 // inhabited zero-sized type, a layout property the model cannot state (real core
 // panics otherwise).
+// Excluded from coverage: the body is that placeholder, so there is no callable
+// meaning to give it.
+#[cfg_attr(coverage_nightly, coverage(off))]
 #[hax_lib::opaque]
 pub unsafe fn conjure_zst<T>() -> T {
     panic!()
@@ -154,6 +157,8 @@ pub unsafe fn conjure_zst<T>() -> T {
 /// See [`std::mem::size_of_val_raw`]
 // Takes the value rather than real core's `*const T`, mirroring the deviation
 // `align_of_val_raw` above already makes: the model has no raw pointers.
+// Excluded from coverage for the same reason as `align_of_val_raw`.
+#[cfg_attr(coverage_nightly, coverage(off))]
 #[hax_lib::opaque]
 pub unsafe fn size_of_val_raw<T>(val: T) -> usize {
     panic!()
@@ -181,6 +186,8 @@ mod manually_drop {
         // leaving the slot logically moved out. The model has no raw pointers,
         // and `clone::Clone::clone` consumes its argument, so there is no way to
         // produce a `T` from `&mut ManuallyDrop<T>`.
+        // Excluded from coverage: that placeholder body is all there is to run.
+        #[cfg_attr(coverage_nightly, coverage(off))]
         #[hax_lib::opaque]
         pub unsafe fn take(slot: &mut ManuallyDrop<T>) -> T {
             panic!()

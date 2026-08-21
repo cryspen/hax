@@ -911,4 +911,59 @@ mod tests {
             );
         }
     }
+
+    // The F* variants of the three `*_by_key` functions take the function as a
+    // `fn` pointer plus a phantom `F: FnOnce<..>` the backend types it through.
+    // Nothing in the model implements that trait, so the tests name a witness
+    // and turbofish it (same shape as `array`'s `fstar_map`).
+    #[cfg(hax_backend_fstar)]
+    mod fstar_by_key {
+        use super::{Tagged, key};
+        use crate::testing::Inject;
+        use proptest::prelude::*;
+
+        struct Key;
+
+        impl crate::ops::function::FnOnce<Tagged> for Key {
+            type Output = u8;
+            fn call_once(&self, args: Tagged) -> u8 {
+                args.0
+            }
+        }
+
+        proptest! {
+            #[test]
+            fn test_max_by_key(x in any::<Tagged>(), y in any::<Tagged>()) {
+                prop_assert_eq!(
+                    super::super::max_by_key::<Tagged, Key, u8>(x.inject(), y.inject(), key),
+                    std::cmp::max_by_key(x, y, key).inject()
+                );
+            }
+
+            #[test]
+            fn test_min_by_key(x in any::<Tagged>(), y in any::<Tagged>()) {
+                prop_assert_eq!(
+                    super::super::min_by_key::<Tagged, Key, u8>(x.inject(), y.inject(), key),
+                    std::cmp::min_by_key(x, y, key).inject()
+                );
+            }
+
+            #[test]
+            fn test_minmax_by_key(x in any::<Tagged>(), y in any::<Tagged>()) {
+                prop_assert_eq!(
+                    super::super::minmax_by_key::<Tagged, Key, u8>(x.inject(), y.inject(), key),
+                    std::cmp::minmax_by_key(x, y, key).inject()
+                );
+            }
+
+            // The witness's own body, so it is exercised rather than declared.
+            #[test]
+            fn test_witness_call_once(x in any::<Tagged>()) {
+                prop_assert_eq!(
+                    crate::ops::function::FnOnce::call_once(&Key, x),
+                    key(&x)
+                );
+            }
+        }
+    }
 }

@@ -151,6 +151,16 @@ mod tests {
         assert!(res.is_err());
     }
 
+    // Same for a false `assert_unchecked`: UB in real core, a panic here, which
+    // is what its `requires(cond)` forbids.
+    #[test]
+    fn test_assert_unchecked_false_panics() {
+        let res = std::panic::catch_unwind(|| unsafe {
+            super::assert_unchecked(std::hint::black_box(false))
+        });
+        assert!(res.is_err());
+    }
+
     // `Locality` and the `prefetch_*` no-ops postdate the toolchain this crate
     // is built with, so their behaviour is pinned directly rather than compared
     // against std.
