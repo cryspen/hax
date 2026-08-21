@@ -66,17 +66,6 @@
 // to pin trait-dispatch behaviour at the extremes; rustc warns those are
 // tautologically false, but that *is* the observation under test.
 #![allow(unused_comparisons)]
-// `Cow::is_borrowed` / `Cow::is_owned` are still unstable in the real `alloc`.
-#![feature(
-    allocator_api,
-    box_into_boxed_slice,
-    box_into_inner,
-    cow_is_borrowed,
-    push_mut,
-    smart_pointer_try_map,
-    try_with_capacity,
-    vec_try_remove
-)]
 #![allow(stable_features)]
 
 pub mod helpers;

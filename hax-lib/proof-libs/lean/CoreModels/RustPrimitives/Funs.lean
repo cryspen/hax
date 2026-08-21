@@ -1086,15 +1086,6 @@ def rust_primitives.sequence.seq_to_slice_mut
   rust_primitives.sequence.Seq T →
     Result ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
   fun s => ok (s, fun s' => s')
-/-- The whole sequence as a mutable slice, plus its write-back (Aeneas's pure
-    encoding of `&mut [T]`). `Seq` *is* `Slice` here, so the borrow's length is
-    the sequence's and both directions are the identity. -/
-@[rust_fun "rust_primitives::sequence::seq_to_slice_mut"]
-def rust_primitives.sequence.seq_to_slice_mut
-  {T : Type} :
-  rust_primitives.sequence.Seq T → Result ((Slice T) ×
-    (Slice T → rust_primitives.sequence.Seq T)) :=
-  fun s => ok (s, fun s' => s')
 
 @[rust_fun "rust_primitives::sequence::seq_into_boxed_slice"]
 def rust_primitives.sequence.seq_into_boxed_slice
