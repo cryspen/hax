@@ -193,17 +193,10 @@ mod borrow {
                 let mut std_o: std::borrow::Cow<u8> = std::borrow::Cow::Owned(x);
                 prop_assert_eq!(Cow::<u8>::Owned(x).to_mut(), *std_o.to_mut());
             }
-        }
-    }
 
-    #[cfg(test)]
-    mod tests {
-        use proptest::prelude::*;
-
-        proptest! {
             #[test]
-            fn test_to_owned(v in prop::collection::vec(any::<u8>(), 0..20)) {
-                prop_assert_eq!(super::ToOwned::to_owned(v.clone()), v);
+            fn test_to_owned_vec(v in prop::collection::vec(any::<u8>(), 0..20)) {
+                prop_assert_eq!(ToOwned::to_owned(v.clone()), v);
             }
         }
     }
@@ -283,14 +276,7 @@ mod boxed {
                     std::boxed::Box::into_boxed_slice(std::boxed::Box::new(x))
                 );
             }
-        }
-    }
 
-    #[cfg(test)]
-    mod tests {
-        use proptest::prelude::*;
-
-        proptest! {
             #[test]
             fn test_new_is_identity(x in any::<u8>()) {
                 prop_assert_eq!(super::Box::<u8>::new(x), x);
@@ -2159,21 +2145,6 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                         rust_primitives::sequence::seq_to_slice(&seq),
                         &expected[..]
                     );
-                }
-            }
-
-            #[cfg(test)]
-            mod tests {
-                use proptest::prelude::*;
-
-                proptest! {
-                    // The set is a dummy carrying no elements.
-                    #[test]
-                    fn test_new_is_empty(_ignored in any::<u8>()) {
-                        let s = super::BTreeSet::<u8, u8>::new();
-                        prop_assert!(s.0.is_none());
-                        prop_assert!(s.1.is_none());
-                    }
                 }
             }
         }
@@ -4081,6 +4052,9 @@ mod string {
                 // out of bounds.
                 let c = str_index(self.0, l - 1);
                 *self = String(str_sub(self.0, 0, l - 1));
+            // `str_index`/`str_sub` count chars, so the length has to as well —
+            // `self.0.len()` is bytes. Read the last char before truncating:
+            // afterwards `n - 1` is out of bounds.
             let n = str_char_count(self.0);
             if n > 0 {
                 let c = str_index(self.0, n - 1);
@@ -5096,6 +5070,7 @@ pub mod vec {
             } else {
                 seq_drain(&mut self.0, new_size, l);
             }
+        }
         /// See [`std::vec::Vec::extend_from_within`].
         //
         // DEVIATION(std): like `drain`, the range argument is ignored and the
