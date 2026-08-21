@@ -689,9 +689,9 @@ pub mod vec {
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
-        #[hax_lib::opaque]
-        #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T) {}
+        pub fn resize(&mut self, new_size: usize, value: &T) {
+            seq_resize(&mut self.0, new_size, value)
+        }
     }
 
     /// Generic `Index<I>` impl for `Vec`, matching std's
@@ -913,9 +913,9 @@ pub mod vec {
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
-        #[hax_lib::opaque]
-        #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T) {}
+        pub fn resize(&mut self, new_size: usize, value: &T) {
+            seq_resize(&mut self.0, new_size, value)
+        }
     }
 
     /// Generic `Index<I>` impl, mirroring std's

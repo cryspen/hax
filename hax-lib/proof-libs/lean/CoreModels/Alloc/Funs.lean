@@ -669,21 +669,16 @@ def vec.Vec.extend_from_slice
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::resize]:
-    Source: 'src/lib.rs', lines 694:8-694:63
+    Source: 'src/lib.rs', lines 692:8-694:9
     Visibility: public -/
 def vec.Vec.resize
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
   (new_size : Std.Usize) (value : T) :
-  Result (vec.Vec T) :=
-  -- FIX (EXECUTE-caught bug): the generated model was the NO-OP `ok self`, because the Rust
-  -- source declares `resize` `#[hax_lib::opaque]` with an empty body (`ensures` is proof-only).
-  -- `Vec::resize` pads with `value` (or truncates) to length `new_size`. `vec.Vec := Slice`, so
-  -- the result list has length `new_size` (≤ Usize.max); the `dite` supplies the bound proof.
-  let n := new_size.val
-  let l : List T :=
-    if n ≤ self.val.length then self.val.take n
-    else self.val ++ List.replicate (n - self.val.length) value
-  if h : l.length ≤ Std.Usize.max then ok ⟨l, h⟩ else ok self
+  Result (vec.Vec T)
+  := do
+  let s ←
+    rust_primitives.sequence.seq_resize corecloneCloneInst self new_size value
+  ok s
 
 /-- Trait implementation: [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}]
     Source: 'src/lib.rs', lines 710:4-719:5 -/

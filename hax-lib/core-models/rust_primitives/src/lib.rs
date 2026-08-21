@@ -93,6 +93,12 @@ pub mod sequence {
     pub fn seq_push<T>(s1: &mut Seq<T>, v: T) {
         s1.0.push(v)
     }
+    pub fn seq_resize<T>(s: &mut Seq<T>, new_size: usize, value: &T)
+    where
+        T: Clone,
+    {
+        s.0.resize(new_size, value.clone())
+    }
     pub fn seq_one<T>(x: T) -> Seq<T> {
         Seq(vec![x])
     }

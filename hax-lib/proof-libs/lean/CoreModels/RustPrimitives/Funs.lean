@@ -1013,6 +1013,19 @@ def rust_primitives.sequence.seq_push
     if h : extended.length ≤ Usize.max then ok ⟨extended, h⟩
     else fail .maximumSizeExceeded
 
+@[rust_fun "rust_primitives::sequence::seq_resize"]
+def rust_primitives.sequence.seq_resize
+  {T : Type} (_corecloneCloneInst : core.clone.Clone T) :
+  rust_primitives.sequence.Seq T → Std.Usize → T → Result
+    (rust_primitives.sequence.Seq T) :=
+  fun s new_size value =>
+    let n := new_size.val
+    let l : List T :=
+      if n ≤ s.val.length then s.val.take n
+      else s.val ++ List.replicate (n - s.val.length) value
+    if h : l.length ≤ Usize.max then ok ⟨l, h⟩
+    else fail .maximumSizeExceeded
+
 @[rust_fun "rust_primitives::sequence::seq_create"]
 def rust_primitives.sequence.seq_create
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
