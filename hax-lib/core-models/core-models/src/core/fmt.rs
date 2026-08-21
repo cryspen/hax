@@ -300,6 +300,10 @@ impl<'a> Arguments<'a> {
     }
 
     /// See [`std::fmt::Arguments::as_str`]
+    // Excluded from coverage: `from_str` is the only constructor, so the `None`
+    // arm — real `core`'s "has placeholders" case, which this model cannot
+    // represent — is unconstructible.
+    #[cfg_attr(coverage_nightly, coverage(off))]
     #[cfg_attr(charon, aeneas::exclude)]
     pub fn as_str(&self) -> Option<&'static str> {
         match &self.0 {
@@ -611,6 +615,9 @@ impl Write for Formatter {
 /// Real `core` renders the template and the arguments; the model can only
 /// forward the literal case (see [`Arguments`]), and drops the rest. `W`
 /// replaces real `core`'s `dyn Write`, as in [`Formatter::new`].
+// Excluded from coverage: as for `Arguments::as_str`, the `None` arm cannot be
+// reached — no constructor produces a placeholder-carrying `Arguments`.
+#[cfg_attr(coverage_nightly, coverage(off))]
 #[cfg_attr(charon, aeneas::exclude)]
 pub fn write<W: Write>(output: &mut W, args: Arguments) -> Result {
     match args.as_str() {
@@ -1450,6 +1457,9 @@ mod tests {
             MResult::Ok(())
         );
         assert_eq!(super::Display::fmt(&1u8, &mut f), MResult::Ok(()));
+        // Through the trait: `f.write_str` above resolves to the inherent method
+        // of the same name, so `impl Write for Formatter` needs naming.
+        assert_eq!(super::Write::write_str(&mut f, "abc"), MResult::Ok(()));
     }
 
     /// All six numeric formatting traits are implemented for every integer type.
@@ -1490,6 +1500,43 @@ mod tests {
         check(-1isize);
     }
 
+    /// The same six impls under the F* cfg, where each method carries its own
+    /// name rather than `fmt`.
+    #[cfg(hax_backend_fstar)]
+    #[test]
+    fn test_numeric_fmt_traits_cover_the_integers() {
+        fn check<
+            T: super::Binary
+                + super::Octal
+                + super::LowerHex
+                + super::UpperHex
+                + super::LowerExp
+                + super::UpperExp,
+        >(
+            x: T,
+        ) {
+            let mut f = formatter();
+            assert_eq!(super::Binary::binary_fmt(&x, &mut f), MResult::Ok(()));
+            assert_eq!(super::Octal::octal_fmt(&x, &mut f), MResult::Ok(()));
+            assert_eq!(super::LowerHex::lower_hex_fmt(&x, &mut f), MResult::Ok(()));
+            assert_eq!(super::UpperHex::upper_hex_fmt(&x, &mut f), MResult::Ok(()));
+            assert_eq!(super::LowerExp::lower_exp_fmt(&x, &mut f), MResult::Ok(()));
+            assert_eq!(super::UpperExp::upper_exp_fmt(&x, &mut f), MResult::Ok(()));
+        }
+        check(1u8);
+        check(1u16);
+        check(1u32);
+        check(1u64);
+        check(1u128);
+        check(1usize);
+        check(-1i8);
+        check(-1i16);
+        check(-1i32);
+        check(-1i64);
+        check(-1i128);
+        check(-1isize);
+    }
+
     #[test]
     fn test_debug_builders_succeed() {
         let mut f = formatter();
@@ -1499,21 +1546,21 @@ mod tests {
         );
         assert_eq!(
             f.debug_struct("S")
-                .field_with("a", |_| MResult::Ok(()))
+                .field_with("a", write_nothing)
                 .finish_non_exhaustive(),
             MResult::Ok(())
         );
         assert_eq!(f.debug_tuple("T").field(&1u8).finish(), MResult::Ok(()));
         assert_eq!(
             f.debug_tuple("T")
-                .field_with(|_| MResult::Ok(()))
+                .field_with(write_nothing)
                 .finish_non_exhaustive(),
             MResult::Ok(())
         );
         assert_eq!(
             f.debug_list()
                 .entry(&1u8)
-                .entry_with(|_| MResult::Ok(()))
+                .entry_with(write_nothing)
                 .entries([2u8, 3u8])
                 .finish(),
             MResult::Ok(())
@@ -1522,7 +1569,7 @@ mod tests {
         assert_eq!(
             f.debug_set()
                 .entry(&1u8)
-                .entry_with(|_| MResult::Ok(()))
+                .entry_with(write_nothing)
                 .entries([2u8, 3u8])
                 .finish(),
             MResult::Ok(())
@@ -1533,8 +1580,8 @@ mod tests {
                 .entry(&1u8, &2u8)
                 .key(&3u8)
                 .value(&4u8)
-                .key_with(|_| MResult::Ok(()))
-                .value_with(|_| MResult::Ok(()))
+                .key_with(write_nothing)
+                .value_with(write_nothing)
                 .entries([(5u8, 6u8)])
                 .finish(),
             MResult::Ok(())
@@ -1598,8 +1645,91 @@ mod tests {
         );
     }
 
+    // The same three misuses through the `*_with` entry points and
+    // `finish_non_exhaustive`, which assert in real `core` too.
+    // One named function rather than a closure per call site: the model's
+    // `key_with`/`value_with` never invoke theirs (there is nowhere to write),
+    // so a fresh closure at each call site would be dead code. `from_fn` below
+    // is what runs this one.
+    fn write_nothing(_: &mut super::Formatter) -> super::Result {
+        MResult::Ok(())
+    }
+
+    fn write_nothing_std(_: &mut std::fmt::Formatter) -> std::fmt::Result {
+        Ok(())
+    }
+
+    struct TwoKeysWith;
+    impl std::fmt::Debug for TwoKeysWith {
+        fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+            f.debug_map()
+                .key_with(write_nothing_std)
+                .key_with(write_nothing_std)
+                .finish()
+        }
+    }
+
+    struct ValueWithBeforeKey;
+    impl std::fmt::Debug for ValueWithBeforeKey {
+        fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+            f.debug_map().value_with(write_nothing_std).finish()
+        }
+    }
+
+    struct DanglingKeyNonExhaustive;
+    impl std::fmt::Debug for DanglingKeyNonExhaustive {
+        fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+            f.debug_map().key(&1u8).finish_non_exhaustive()
+        }
+    }
+
+    #[test]
+    fn test_debug_map_second_key_with_panics() {
+        panics_like_core(
+            || {
+                let mut f = formatter();
+                f.debug_map()
+                    .key_with(write_nothing)
+                    .key_with(write_nothing)
+                    .finish()
+            },
+            || format!("{:?}", TwoKeysWith),
+        );
+    }
+
+    #[test]
+    fn test_debug_map_value_with_before_key_panics() {
+        panics_like_core(
+            || {
+                let mut f = formatter();
+                f.debug_map().value_with(write_nothing).finish()
+            },
+            || format!("{:?}", ValueWithBeforeKey),
+        );
+    }
+
+    #[test]
+    fn test_debug_map_dangling_key_finish_non_exhaustive_panics() {
+        panics_like_core(
+            || {
+                let mut f = formatter();
+                f.debug_map().key(&1u8).finish_non_exhaustive()
+            },
+            || format!("{:?}", DanglingKeyNonExhaustive),
+        );
+    }
+
     /// `from_fn`'s `Display` calls the closure exactly once, like std's — the
     /// model just has nowhere to put what the closure writes.
+    // Also the one place a `&mut Formatter` closure is actually invoked, which
+    // is what covers `write_nothing`.
+    #[test]
+    fn test_from_fn_runs_a_named_writer() {
+        let value = super::from_fn(write_nothing);
+        let mut f = formatter();
+        assert_eq!(super::Display::fmt(&value, &mut f), MResult::Ok(()));
+    }
+
     #[test]
     fn test_from_fn_calls_its_closure() {
         let calls = std::cell::Cell::new(0u32);

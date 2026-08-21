@@ -29,6 +29,9 @@
 // `coverage(off)` is unstable; `cfg(coverage_nightly)` is set only by
 // `cargo llvm-cov`, so normal builds and extraction never see this.
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
+// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
+// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
+// proptests compare against them.
 #![cfg_attr(
     test,
     feature(
@@ -39,6 +42,7 @@
         cold_path,
         control_flow_into_value,
         control_flow_ok,
+        debug_closure_helpers,
         disjoint_bitor,
         drop_guard,
         exact_div,
@@ -51,41 +55,6 @@
         int_roundings,
         is_ascii_octdigit,
         isolate_most_least_significant_one,
-        likely_unlikely,
-        mem_copy_fn,
-        nonzero_bitwise,
-        nonzero_ops,
-        one_sided_range,
-        range_bounds_is_empty,
-        range_into_bounds,
-        signed_bigint_helpers,
-        slice_pattern,
-        slice_split_once,
-        slice_swap_unchecked,
-        split_as_slice,
-        step_trait,
-        strip_circumfix,
-        trim_prefix_suffix,
-        uint_bit_width,
-        unchecked_neg,
-        unchecked_shifts,
-        unsigned_bigint_helpers,
-        utf16_extra,
-        widening_mul,
-        wrapping_int_impl,
-        wrapping_next_power_of_two
-    )
-// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
-// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
-// proptests compare against them.
-#![cfg_attr(
-    test,
-    feature(step_trait, int_roundings, formatting_options, int_format_into)
-        iter_advance_by,
-        exact_size_is_empty,
-        formatting_options,
-        int_format_into,
-        int_roundings,
         iter_advance_by,
         iter_array_chunks,
         iter_collect_into,
@@ -106,6 +75,7 @@
         range_bounds_is_empty,
         range_into_bounds,
         rev_into_inner,
+        signed_bigint_helpers,
         slice_pattern,
         slice_split_once,
         slice_swap_unchecked,
@@ -117,7 +87,9 @@
         uint_bit_width,
         unchecked_neg,
         unchecked_shifts,
+        unsigned_bigint_helpers,
         utf16_extra,
+        widening_mul,
         wrapping_int_impl,
         wrapping_next_power_of_two
     )

@@ -2035,6 +2035,7 @@ mod tests {
             prop_assert_eq!(model, std_v);
         }
 
+        #[test]
         fn test_eq_array(
             arr in any::<[u8; 3]>(),
             other in prop::collection::vec(any::<u8>(), 0..=6),
@@ -2829,6 +2830,15 @@ mod tests {
             || Slice::rchunks_exact(&[1u8, 2, 3][..], 0),
             || [1u8, 2, 3].rchunks_exact(0),
         );
+    }
+
+    // `Slice::rchunks_exact` panics on `0` (above), so the guard inside the
+    // constructor is reachable only by calling it directly. It is there so the
+    // backends can discharge the division, as in `ChunksExact::new`.
+    #[test]
+    fn test_rchunks_exact_new_zero_chunk_size() {
+        let it = super::iter::RChunksExact::new(0, &[1u8, 2, 3][..]);
+        assert_eq!(it.remainder(), &[] as &[u8]);
     }
 
     #[test]
