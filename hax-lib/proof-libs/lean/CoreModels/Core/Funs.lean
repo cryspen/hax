@@ -738,6 +738,12 @@ def cmp.Ordering.then_with
     coreopsfunctionFnOnceFTupleOrderingInst.call_once f ()
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
+/-- [core_models::panicking::internal::panic]:
+    Source: 'core-models/src/core/panicking.rs', lines 26:4-28:5
+    Visibility: public -/
+def panicking.internal.panic (T : Type) : Result T := do
+  fail Error.panic
+
 /-- [core_models::cmp::clamp]:
     Source: 'core-models/src/core/cmp.rs', lines 304:0-316:1
     Visibility: public -/
@@ -4012,7 +4018,7 @@ def fmt.rt.Argument.new_v1
   ok ()
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::none]:
-    Source: 'core-models/src/core/fmt.rs', lines 146:8-148:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 148:8-150:9 -/
 def fmt.rt.Argument.none : Result (Array fmt.rt.Argument 0#usize) := do
   ok (Std.Array.empty fmt.rt.Argument)
 
@@ -9840,6 +9846,24 @@ def option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible (T
     T
 }
 
+/-- [core_models::panicking::panic_explicit]:
+    Source: 'core-models/src/core/panicking.rs', lines 5:0-7:1
+    Visibility: public -/
+def panicking.panic_explicit : Result Never := do
+  fail Error.panic
+
+/-- [core_models::panicking::panic]:
+    Source: 'core-models/src/core/panicking.rs', lines 11:0-13:1
+    Visibility: public -/
+def panicking.panic (_msg : Str) : Result Never := do
+  fail Error.panic
+
+/-- [core_models::panicking::panic_fmt]:
+    Source: 'core-models/src/core/panicking.rs', lines 17:0-19:1
+    Visibility: public -/
+def panicking.panic_fmt (_fmt : fmt.Arguments) : Result Never := do
+  fail Error.panic
+
 /-- [core_models::result::{core_models::result::Result<T, E>}::is_ok_and]:
     Source: 'core-models/src/core/result.rs', lines 24:4-29:5
     Visibility: public -/
@@ -11410,16 +11434,13 @@ def str.converts.from_utf8
   fail Error.panic
 
 /-- [core_models::str::traits::{impl core_models::str::traits::FromStr<u64> for u64}::from_str]:
-    Source: 'core-models/src/core/str.rs', lines 60:8-69:9 -/
+    Source: 'core-models/src/core/str.rs', lines 64:8-66:9 -/
 def U64.Insts.CoreStrTraitsFromStrU64.from_str
   (s : Str) : Result (result.Result Std.U64 Std.U64) := do
-  let (parsed, value) ← rust_primitives.string.str_parse_u64 s
-  if parsed
-  then ok (result.Result.Ok value)
-  else ok (result.Result.Err 0#u64)
+  fail Error.panic
 
 /-- Trait implementation: [core_models::str::traits::{impl core_models::str::traits::FromStr<u64> for u64}]
-    Source: 'core-models/src/core/str.rs', lines 58:4-70:5 -/
+    Source: 'core-models/src/core/str.rs', lines 58:4-67:5 -/
 @[reducible]
 def U64.Insts.CoreStrTraitsFromStrU64 : str.traits.FromStr Std.U64
   Std.U64 := {

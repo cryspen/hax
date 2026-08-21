@@ -134,6 +134,10 @@ def escape_keyword_binders(text: str) -> str:
         text,
     )
 
+def fix_fail_panic(text: str) -> str:
+    """In the definition of a Lean `item` called `panic`, the name `panic`
+    does not resolve to `Error.panic` as it should."""
+    return replace("fix_fail_panic", text, "  fail panic\n", "  fail Error.panic\n")
 
 def rename_namespace(text: str) -> str:
     """
@@ -685,6 +689,7 @@ def main() -> int:
         text = rewrite_phantom_data(text)
         text = escape_keyword_binders(text)
         if path == funs_path:
+            text = fix_fail_panic(text)
             text = add_funs_prologue_import(text)
             text = comment_out_num_bounds(text)
             text = desugar_pure_num_bound_binds(text)
@@ -744,6 +749,7 @@ def patch_alloc() -> None:
         text = read(path)
         text = rename_alloc_models(text)
         text = rewrite_alloc_imports(text)
+        text = fix_fail_panic(text)
         text = rewrite_phantom_data(text)
         text = escape_keyword_binders(text)
         if path == funs:
