@@ -625,8 +625,13 @@ pub mod adapters {
         }
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        // `FnMut` (not `Fn`), matching `std::iter::Map` — a downstream `.map(closure)`
+        // where the closure captures mutably yields an `FnMut` instance, so
+        // `Map<_, closure>: Iterator` must hold for `FnMut` (else `collect` over the
+        // map fails to resolve). `Fn` here would be stricter than std and reject such
+        // closures. Confirmed against the re-extracted Longfellow call site.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        impl<I: Iterator, O, F: Fn(I::Item) -> O> Iterator for Map<I, F> {
+        impl<I: Iterator, O, F: FnMut(I::Item) -> O> Iterator for Map<I, F> {
             type Item = O;
 
             fn next(&mut self) -> Option<O> {

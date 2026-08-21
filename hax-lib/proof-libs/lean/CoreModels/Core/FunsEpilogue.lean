@@ -90,19 +90,17 @@ instances are ordinary parameters, never `SELF`). The `DoubleEndedIterator`/
 `Iter`/`Enumerate` are all generated from the Rust source; only these two
 dispatch shims are hand-written. The `@[rust_fun …]` tag maps a downstream
 `.rev()` call onto `rev.trait_default` (as in Aeneas.Std). -/
-open Aeneas.Std (Result) in
-def iter.traits.iterator.Iterator.rev.default {Self : Type}
-    (self : Self) : Result (iter.adapters.rev.Rev Self) :=
-  iter.adapters.rev.Rev.new self
-
+-- aeneas emits `Iterator.rev.default (IteratorInst) (DEInst) (self)` at a downstream
+-- `.rev()` call (verified against the re-extracted Longfellow), so THAT is the
+-- signature `.default` must have (the dictionaries are ordinary, unused params).
 open Aeneas.Std (Result) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::rev"]
-def iter.traits.iterator.Iterator.rev.trait_default
+def iter.traits.iterator.Iterator.rev.default
     {Self Clause0_Item Clause1_Item : Type}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_DEInst : iter.traits.double_ended.DoubleEndedIterator Self Clause1_Item)
     (self : Self) : Result (iter.adapters.rev.Rev Self) :=
-  iter.traits.iterator.Iterator.rev.default self
+  iter.adapters.rev.Rev.new self
 
 /-! ## P2c lazy adapters kept OFF the `Iterator` structure — zip / chain / flat_map / flatten
 
@@ -318,19 +316,25 @@ closure `Fn` dictionary — no SELF instance), but making them fields forced a
 them here as standalone `@[rust_fun]`-tagged functions instead, exactly like
 rev/collect/zip/… . Bodies just build the adapter via its generated `::new`
 (the unused `Fn` dictionaries mirror what aeneas threads through). -/
+-- Signatures match aeneas's downstream emission `Iterator.<m>.default (IteratorInst)
+-- [otherInsts] (self) [args]` (verified against the re-extracted Longfellow call
+-- sites). `map`'s closure dictionary is `FnMut` (std uses FnMut), matching the
+-- `Map` adapter's `FnMut` bound.
 open Aeneas.Std (Result) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::map"]
-def iter.traits.iterator.Iterator.map.trait_default
+def iter.traits.iterator.Iterator.map.default
     {Self O F Clause0_Item : Type}
-    (_FnInst : core.ops.function.Fn F Clause0_Item O)
+    (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (_FnMutInst : core.ops.function.FnMut F Clause0_Item O)
     (self : Self) (f : F) : Result (iter.adapters.map.Map Self F) :=
   iter.adapters.map.Map.new self f
 
 open Aeneas.Std (Result) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::enumerate"]
-def iter.traits.iterator.Iterator.enumerate.trait_default
-    {Self : Type} (_Clause0_Item : Type) (self : Self) :
-    Result (iter.adapters.enumerate.Enumerate Self) :=
+def iter.traits.iterator.Iterator.enumerate.default
+    {Self Clause0_Item : Type}
+    (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (self : Self) : Result (iter.adapters.enumerate.Enumerate Self) :=
   iter.adapters.enumerate.Enumerate.new self
 
 open Aeneas.Std (Result) in
