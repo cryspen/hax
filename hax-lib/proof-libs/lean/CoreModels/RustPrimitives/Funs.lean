@@ -1087,6 +1087,10 @@ def rust_primitives.sequence.seq_to_slice_mut
     Result ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
   fun s => ok (s, fun s' => s')
 
+@[rust_fun "rust_primitives::sequence::seq_into_boxed_slice"]
+def rust_primitives.sequence.seq_into_boxed_slice
+  {T : Type} : rust_primitives.sequence.Seq T → Result (Slice T) := fun s => ok s
+
 @[rust_fun "rust_primitives::sequence::seq_concat"]
 def rust_primitives.sequence.seq_concat
   {T : Type} :
@@ -1160,6 +1164,14 @@ def rust_primitives.sequence.seq_drain
 def rust_primitives.sequence.seq_index
   {T : Type} : rust_primitives.sequence.Seq T → Std.Usize → Result T :=
   Slice.index_usize
+
+/-- Element `i` together with its write-back, like `slice_index_mut`. -/
+@[rust_fun "rust_primitives::sequence::seq_index_mut"]
+def rust_primitives.sequence.seq_index_mut
+  {T : Type} :
+  rust_primitives.sequence.Seq T → Std.Usize → Result (T ×
+    (T → rust_primitives.sequence.Seq T)) :=
+  fun s i => Slice.index_mut_usize s i
 
 def rust_primitives.arithmetic.wrapping_add_i8 (x y : I8) : Result I8 :=
   .ok (Aeneas.Std.I8.wrapping_add x y)

@@ -66,6 +66,7 @@
 // to pin trait-dispatch behaviour at the extremes; rustc warns those are
 // tautologically false, but that *is* the observation under test.
 #![allow(unused_comparisons)]
+#![allow(stable_features)]
 
 pub mod helpers;
 

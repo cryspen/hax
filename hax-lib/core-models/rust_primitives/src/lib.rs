@@ -168,6 +168,10 @@ pub mod sequence {
     pub fn seq_to_slice_mut<T>(s: &mut Seq<T>) -> &mut [T] {
         s.0.as_mut_slice()
     }
+
+    pub fn seq_into_boxed_slice<T>(s: Seq<T>) -> Box<[T]> {
+        s.0.into_boxed_slice()
+    }
     pub fn seq_concat<T>(s1: &mut Seq<T>, s2: &mut Seq<T>) {
         s1.0.append(&mut s2.0)
     }
@@ -198,6 +202,10 @@ pub mod sequence {
     pub fn seq_index<T>(s: &Seq<T>, i: usize) -> &T {
         &s.0[i]
     }
+    #[hax_lib::requires(i < seq_len(s))]
+    pub fn seq_index_mut<T>(s: &mut Seq<T>, i: usize) -> &mut T {
+        &mut s.0[i]
+    }
 }
 
 pub mod string {
@@ -219,9 +227,11 @@ pub mod string {
     pub fn str_of_char(c: char) -> &'static str {
         leak_string(c.to_string())
     }
+    /// The `[b, e)` sub-string of `s`, in **char** positions.
     pub fn str_sub(s: &'static str, b: usize, e: usize) -> &'static str {
         leak_string(s.chars().skip(b).take(e - b).collect())
     }
+    /// The char at **char** position `i`.
     pub fn str_index(s: &'static str, i: usize) -> char {
         s.chars().nth(i).unwrap()
     }
@@ -252,6 +262,31 @@ pub mod string {
     #[hax_lib::requires(b <= e && e <= crate::slice::slice_length(str_as_bytes(s)))]
     pub fn str_sub_bytes(s: &str, b: usize, e: usize) -> &str {
         &s[b..e]
+    }
+    /// The number of chars in `s` (not its byte length).
+    pub fn str_char_count(s: &'static str) -> usize {
+        s.chars().count()
+    }
+    /// Mirrors [`str::is_char_boundary`]: `false` for `i > s.len()`.
+    pub fn str_is_char_boundary(s: &'static str, i: usize) -> bool {
+        s.is_char_boundary(i)
+    }
+    /// Whether `bytes` is a valid UTF-8 encoding.
+    pub fn str_is_utf8(bytes: &[u8]) -> bool {
+        core::str::from_utf8(bytes).is_ok()
+    }
+    /// `bytes` decoded as UTF-8, invalid sequences replaced by U+FFFD
+    /// (the conversion behind `String::from_utf8_lossy`). It is the identity
+    /// on valid input, which is what lets `String::from_utf8` reuse it.
+    pub fn str_from_utf8_lossy(bytes: &[u8]) -> &'static str {
+        leak_string(String::from_utf8_lossy(bytes).into_owned())
+    }
+    /// `x` rendered through its [`core::fmt::Display`] implementation. Only
+    /// reachable from `ToString`'s blanket impl, which is `#[hax_lib::opaque]`:
+    /// running a `Display` impl is not something the model can express, so this
+    /// is a Rust-side oracle and never surfaces in an extraction.
+    pub fn str_of_display<T: core::fmt::Display>(x: &T) -> &'static str {
+        leak_string(format!("{}", x))
     }
 }
 
@@ -390,6 +425,18 @@ mod tests {
 
     // `array_repeat` always passes exactly `N` elements, so its length check is
     // only reachable from here.
+    // `str_is_char_boundary` has no model caller: `core_models::str` guards with
+    // its own `requires`, so it is checked here directly.
+    #[test]
+    fn test_str_is_char_boundary() {
+        for i in 0..=4 {
+            assert_eq!(
+                crate::string::str_is_char_boundary("aé", i),
+                "aé".is_char_boundary(i)
+            );
+        }
+    }
+
     #[test]
     fn test_array_from_vec_wrong_length_panics() {
         let res =

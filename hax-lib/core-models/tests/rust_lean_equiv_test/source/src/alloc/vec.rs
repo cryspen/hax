@@ -425,6 +425,339 @@ pub fn test_vec_default_empty() -> bool {
     (a == b) == true
 }
 
+// ----- capacity --------------------------------------------------------------
+//
+// The model's capacity is exact where std's is only a lower bound (see the
+// `DEVIATION` note on `Vec::capacity`), so the observations below are limited to
+// the cases where the two agree: a fresh `Vec`, a `vec![x; n]` (which std
+// allocates exactly), and std's `capacity() >= len()` guarantee.
+
+#[rust_lean_test]
+pub fn test_vec_capacity_new_zero() -> bool {
+    let v: Vec<u8> = Vec::new();
+    v.capacity() == 0
+}
+
+#[rust_lean_test]
+pub fn test_vec_capacity_from_elem_exact() -> bool {
+    let v: Vec<u8> = vec![7u8; 3];
+    v.capacity() == 3
+}
+
+#[rust_lean_test]
+pub fn test_vec_capacity_at_least_len() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.capacity() >= v.len()
+}
+
+// ----- reserve / reserve_exact / shrink_to_fit / shrink_to -------------------
+
+#[rust_lean_test]
+pub fn test_vec_reserve_keeps_contents() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(5);
+    v.reserve(100);
+    match v.pop() {
+        Some(x) => x == 5 && v.is_empty(),
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_vec_reserve_exact_keeps_len() -> bool {
+    let mut v: Vec<u8> = vec![1u8; 2];
+    v.reserve_exact(10);
+    v.len() == 2
+}
+
+#[rust_lean_test]
+pub fn test_vec_shrink_to_fit_capacity_is_len() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.shrink_to_fit();
+    v.capacity() == v.len()
+}
+
+#[rust_lean_test]
+pub fn test_vec_shrink_to_keeps_len() -> bool {
+    let mut v: Vec<u8> = vec![3u8; 4];
+    v.shrink_to(1);
+    v.len() == 4
+}
+
+// ----- try_reserve / try_reserve_exact --------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_try_reserve_ok() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.try_reserve(10).is_ok()
+}
+
+#[rust_lean_test]
+pub fn test_vec_try_reserve_exact_ok() -> bool {
+    let mut v: Vec<u8> = vec![1u8; 1];
+    v.try_reserve_exact(10).is_ok() && v.len() == 1
+}
+
+// ----- try_with_capacity -----------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_try_with_capacity_empty() -> bool {
+    match Vec::<u8>::try_with_capacity(8) {
+        Ok(v) => v.is_empty(),
+        Err(_) => false,
+    }
+}
+
+// ----- new_in / with_capacity_in / try_with_capacity_in ---------------------
+//
+// The model drops the allocator argument (see the `DEVIATION` note on
+// `Vec::new_in`); only the resulting `Vec` is observable.
+
+#[rust_lean_test]
+pub fn test_vec_new_in_empty() -> bool {
+    let v: Vec<u8> = Vec::new_in(std::alloc::Global);
+    v.is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_vec_with_capacity_in_empty() -> bool {
+    let v: Vec<u8> = Vec::with_capacity_in(4, std::alloc::Global);
+    v.len() == 0
+}
+
+#[rust_lean_test]
+pub fn test_vec_try_with_capacity_in_empty() -> bool {
+    match Vec::<u8>::try_with_capacity_in(4, std::alloc::Global) {
+        Ok(v) => v.is_empty(),
+        Err(_) => false,
+    }
+}
+
+// ----- allocator -------------------------------------------------------------
+
+// TODO(no-observable-result): `Vec::allocator`, `Drain::allocator`,
+// `IntoIter::allocator` and `ExtractIf::allocator` all return the (zero-sized)
+// global allocator, which real `alloc` gives no `PartialEq`/`Debug` for, so
+// there is no `bool` observation to pin. They are covered by the property tests
+// in `alloc/src/vec/tests.rs`.
+
+// ----- as_mut_slice ----------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_as_mut_slice_len() -> bool {
+    let mut v: Vec<u8> = vec![1u8; 3];
+    v.as_mut_slice().len() == 3
+}
+
+#[rust_lean_test]
+pub fn test_vec_as_mut_slice_empty() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.as_mut_slice().is_empty()
+}
+
+// ----- into_boxed_slice ------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_into_boxed_slice_len() -> bool {
+    let v: Vec<u8> = vec![4u8; 3];
+    v.into_boxed_slice().len() == 3
+}
+
+#[rust_lean_test]
+pub fn test_vec_into_boxed_slice_empty() -> bool {
+    let v: Vec<u8> = Vec::new();
+    v.into_boxed_slice().is_empty()
+}
+
+// ----- try_remove ------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_try_remove_in_bounds() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    match v.try_remove(0) {
+        Some(x) => x == 1 && v.len() == 1,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_vec_try_remove_out_of_bounds() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    match v.try_remove(1) {
+        Some(_) => false,
+        None => v.len() == 1,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_vec_try_remove_empty() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.try_remove(0) == crate::helpers::none_u8()
+}
+
+// ----- push_mut / insert_mut -------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_push_mut_returns_pushed() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    let r = v.push_mut(9u8);
+    *r == 9
+}
+
+#[rust_lean_test]
+pub fn test_vec_push_mut_write_back() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    let r = v.push_mut(9u8);
+    *r = 3;
+    match v.pop() {
+        Some(x) => x == 3,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_vec_insert_mut_front() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(2);
+    let r = v.insert_mut(0, 1u8);
+    *r == 1 && v.len() == 2
+}
+
+// ----- dedup -----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_dedup_consecutive() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(1);
+    v.push(2);
+    v.dedup();
+    v.len() == 2
+}
+
+#[rust_lean_test]
+pub fn test_vec_dedup_non_consecutive_kept() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.push(1);
+    v.dedup();
+    v.len() == 3
+}
+
+#[rust_lean_test]
+pub fn test_vec_dedup_empty() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.dedup();
+    v.is_empty()
+}
+
+// Exercises the `PartialEq` dictionary: `Bumped`'s `eq` is not `u8`'s.
+#[rust_lean_test]
+pub fn test_vec_dedup_applies_partial_eq() -> bool {
+    let mut v: Vec<Bumped> = Vec::new();
+    v.push(Bumped(1));
+    v.push(Bumped(1));
+    v.push(Bumped(2));
+    v.dedup();
+    v.len() == 2
+}
+
+// ----- extend_from_within ----------------------------------------------------
+
+// TODO(range-bounds-unmodeled): `Vec::extend_from_within` is generic over
+// `RangeBounds<usize>`, and a client call site passes that dictionary. Neither
+// `core::ops::RangeBounds` nor its impls are modeled (which is also why
+// `Vec::drain` ignores its range), so the extracted call has both an unknown
+// constant and one argument too many. Same blocker as `drain` below.
+// pub fn test_vec_extend_from_within_full() -> bool {
+//     let mut v: Vec<u8> = Vec::new();
+//     v.push(1);
+//     v.push(2);
+//     v.extend_from_within(..);
+//     v.len() == 4
+// }
+
+// ----- into_flattened --------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_into_flattened_len() -> bool {
+    let mut v: Vec<[u8; 2]> = Vec::new();
+    v.push([1, 2]);
+    v.push([3, 4]);
+    v.into_flattened().len() == 4
+}
+
+#[rust_lean_test]
+pub fn test_vec_into_flattened_order() -> bool {
+    let mut v: Vec<[u8; 2]> = Vec::new();
+    v.push([1, 2]);
+    v.push([3, 4]);
+    let mut f = v.into_flattened();
+    match f.pop() {
+        Some(x) => x == 4,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_vec_into_flattened_empty() -> bool {
+    let v: Vec<[u8; 2]> = Vec::new();
+    v.into_flattened().is_empty()
+}
+
+// ----- Drain::as_slice -------------------------------------------------------
+
+// TODO(range-bounds-unmodeled): reaching `Drain::as_slice` needs `Vec::drain`,
+// whose extracted call site passes a `RangeBounds` dictionary and an explicit
+// allocator type the model's `drain` does not take (see `extend_from_within`).
+// pub fn test_vec_drain_as_slice_len() -> bool {
+//     let mut v: Vec<u8> = vec![1u8; 3];
+//     v.drain(..).as_slice().len() == 3
+// }
+
+// ----- IntoIter::as_slice / as_mut_slice -------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_into_iter_as_slice_len() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.into_iter().as_slice().len() == 2
+}
+
+#[rust_lean_test]
+pub fn test_vec_into_iter_as_slice_after_next() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    let mut it = v.into_iter();
+    it.next();
+    it.as_slice().len() == 1
+}
+
+#[rust_lean_test]
+pub fn test_vec_into_iter_as_mut_slice_len() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    let mut it = v.into_iter();
+    it.as_mut_slice().len() == 1
+}
+
+// ----- closure-taking additions (not extracted) ------------------------------
+
+// TODO(closure-extraction): `Vec::retain`, `retain_mut`, `dedup_by`,
+// `dedup_by_key`, `resize_with`, `pop_if`, `extract_if` and `from_fn` all take a
+// closure, which the equivalence tests cannot drive through Aeneas yet. Their
+// property tests live in `alloc/src/vec/tests.rs`.
+
 // ----- split_off -------------------------------------------------------------
 
 #[rust_lean_test]
