@@ -2300,6 +2300,9 @@ mod nonzero {
                     self.0
                 }
                 /// See [`std::num::NonZero::<u8>::from_str_radix`] (and similar for other integer types)
+                // Excluded from coverage: the Lean library models no string
+                // primitives, so the body is a placeholder rather than a model.
+                #[cfg_attr(coverage_nightly, coverage(off))]
                 #[hax_lib::opaque]
                 pub fn from_str_radix(
                     src: &str,
@@ -3052,8 +3055,7 @@ mod tests {
                             prop_assert_eq!(super::$t::strict_rem(mx, my), x.strict_rem(y));
                             prop_assert_eq!(super::$t::strict_div_euclid(mx, my), x.strict_div_euclid(y));
                             prop_assert_eq!(super::$t::strict_rem_euclid(mx, my), x.strict_rem_euclid(y));
-                            // The pinned toolchain still calls `div_exact` `exact_div`.
-                            prop_assert_eq!(super::$t::div_exact(mx, my), x.exact_div(y).inject());
+                            prop_assert_eq!(super::$t::div_exact(mx, my), x.div_exact(y).inject());
                         }
 
                         // Only `y != 0` is needed here: these all answer `MIN / -1`
@@ -3079,8 +3081,10 @@ mod tests {
                             let (mx, my) = (x.inject(), y.inject());
                             prop_assert_eq!(super::$t::checked_div_euclid(mx, my), x.checked_div_euclid(y).inject());
                             prop_assert_eq!(super::$t::checked_rem_euclid(mx, my), x.checked_rem_euclid(y).inject());
-                            // The pinned toolchain still calls `checked_div_exact` `checked_exact_div`.
-                            prop_assert_eq!(super::$t::checked_div_exact(mx, my), x.checked_exact_div(y).inject());
+                            prop_assert_eq!(
+                                super::$t::checked_div_exact(mx, my),
+                                x.checked_div_exact(y).inject(),
+                            );
                             prop_assert_eq!(
                                 super::$t::checked_next_multiple_of(mx, my),
                                 x.checked_next_multiple_of(y).inject(),
@@ -3097,8 +3101,13 @@ mod tests {
                             prop_assert_eq!(super::$t::midpoint(x.inject(), y.inject()), x.midpoint(y));
                         }
 
+                        // `0` is where `lowest_one`/`highest_one` answer `None`, and
+                        // random draws reach it far too rarely at the wider widths, so
+                        // it is one of the generated values rather than left to chance.
                         #[test]
-                        fn [<test_ $t _bit_counting_family>](x in any::<$t>()) {
+                        fn [<test_ $t _bit_counting_family>](
+                            x in prop_oneof![Just(0 as $t), any::<$t>()],
+                        ) {
                             let mx = x.inject();
                             prop_assert_eq!(super::$t::trailing_zeros(mx), x.trailing_zeros());
                             prop_assert_eq!(super::$t::trailing_ones(mx), x.trailing_ones());
@@ -3619,8 +3628,6 @@ mod tests {
                                 x >> n);
                         }
 
-                        // No `unchecked_div_exact` in std on the pinned toolchain; under
-                        // its precondition (`y > 0` and an exact division) `/` stands in.
                         #[test]
                         fn [<test_ $t _unchecked_div_exact>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assume!(y > 0);
@@ -3629,7 +3636,7 @@ mod tests {
                             let x = x - x % y;
                             prop_assert_eq!(
                                 unsafe { super::$t::unchecked_div_exact(x.inject(), y.inject()) },
-                                x / y);
+                                unsafe { x.unchecked_div_exact(y) });
                         }
                     }
                 )*
@@ -3717,7 +3724,7 @@ mod tests {
                         crate::testing::panics_like_core(|| super::$t::strict_rem(mx, my), || x.strict_rem(y));
                         crate::testing::panics_like_core(|| super::$t::strict_div_euclid(mx, my), || x.strict_div_euclid(y));
                         crate::testing::panics_like_core(|| super::$t::strict_rem_euclid(mx, my), || x.strict_rem_euclid(y));
-                        crate::testing::panics_like_core(|| super::$t::div_exact(mx, my), || x.exact_div(y));
+                        crate::testing::panics_like_core(|| super::$t::div_exact(mx, my), || x.div_exact(y));
                     }
                 )*
             }
@@ -3740,7 +3747,7 @@ mod tests {
                         crate::testing::panics_like_core(|| super::$t::strict_rem(mx, my), || x.strict_rem(y));
                         crate::testing::panics_like_core(|| super::$t::strict_div_euclid(mx, my), || x.strict_div_euclid(y));
                         crate::testing::panics_like_core(|| super::$t::strict_rem_euclid(mx, my), || x.strict_rem_euclid(y));
-                        crate::testing::panics_like_core(|| super::$t::div_exact(mx, my), || x.exact_div(y));
+                        crate::testing::panics_like_core(|| super::$t::div_exact(mx, my), || x.div_exact(y));
                     }
                 )*
             }
@@ -4182,6 +4189,7 @@ mod tests {
                             prop_assert_eq!(m.isolate_lowest_one(), s.isolate_lowest_one().inject());
                             prop_assert_eq!(m.rotate_left(n), s.rotate_left(n).inject());
                             prop_assert_eq!(m.rotate_right(n), s.rotate_right(n).inject());
+                            prop_assert_eq!(m.reverse_bits(), s.reverse_bits().inject());
                             prop_assert_eq!(m.swap_bytes(), s.swap_bytes().inject());
                             prop_assert_eq!(m.to_be(), s.to_be().inject());
                             prop_assert_eq!(m.to_le(), s.to_le().inject());
