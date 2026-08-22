@@ -428,7 +428,6 @@ pub mod traits {
                 self
             }
         }
-
     }
     pub mod double_ended {
         use super::iterator::Iterator;
@@ -526,9 +525,9 @@ pub mod adapters {
         // both double-ended and exact-size (real Rust has the same bounds).
         #[cfg(not(hax_backend_fstar))]
         impl<
-                I: crate::iter::traits::double_ended::DoubleEndedIterator
-                    + crate::iter::traits::exact_size::ExactSizeIterator,
-            > crate::iter::traits::double_ended::DoubleEndedIterator for Enumerate<I>
+            I: crate::iter::traits::double_ended::DoubleEndedIterator
+                + crate::iter::traits::exact_size::ExactSizeIterator,
+        > crate::iter::traits::double_ended::DoubleEndedIterator for Enumerate<I>
         {
             fn next_back(&mut self) -> Option<(usize, <I as Iterator>::Item)> {
                 match self.iter.next_back() {
