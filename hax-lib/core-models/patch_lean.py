@@ -696,7 +696,13 @@ def patch_alloc() -> None:
         text = rewrite_phantom_data(text)
         if path == funs:
             text = rename_iter_param(text)
-            text = drop_intoiterator_iterator_inst(text)
+            # `drop_intoiterator_iterator_inst` removed: `IntoIterator` now carries
+            # the `iteratorIteratorInst` super-instance field (the `IntoIter: Iterator`
+            # bound is back, mirroring Aeneas.Std), so the alloc impls must KEEP it.
+            # `fill_iterator_default_fields` removed: no `Iterator` provided method is a
+            # trait field any more (all are standalone `@[rust_fun]` shims in the
+            # epilogue), so the alloc `Iterator` instances are just `{ next := … }` and
+            # need no cross-crate back-fill.
         write(path, text)
     print(f"patched {ALLOC_DIR}.")
 

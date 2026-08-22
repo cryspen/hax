@@ -87,6 +87,15 @@ impl<'a> Arguments<'a> {
     fn write_fmt(f: &mut Formatter, args: Arguments) -> Result {
         Result::Ok(())
     }
+    /// The carve lowers panic/assert messages to `Arguments::from_str(msg)`
+    /// (the formatted value is discarded); model it as an opaque stub so those
+    /// call sites resolve. Not a real `std::fmt::Arguments` method. Opaque
+    /// because constructing the phantom `Arguments(&())` is a "bottom" aeneas
+    /// can't translate — and the result is unused anyway.
+    #[hax_lib::opaque]
+    pub fn from_str(s: &str) -> Arguments<'a> {
+        crate::panicking::internal::panic()
+    }
 }
 
 mod rt {
