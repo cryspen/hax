@@ -619,6 +619,9 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
+        pub fn as_mut_slice(&mut self) -> &mut [T] {
+            seq_to_slice_mut(&mut self.0)
+        }
         #[hax_lib::opaque]
         pub fn truncate(&mut self, n: usize) {}
         #[hax_lib::opaque]
@@ -686,9 +689,9 @@ pub mod vec {
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
-        #[hax_lib::opaque]
-        #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T) {}
+        pub fn resize(&mut self, new_size: usize, value: &T) {
+            seq_resize(&mut self.0, new_size, value)
+        }
     }
 
     /// Generic `Index<I>` impl for `Vec`, matching std's
@@ -736,6 +739,16 @@ pub mod vec {
 
         fn deref(&self) -> &[T] {
             self.as_slice()
+        }
+    }
+
+    // Excluded from the F* backend to match `core::ops::DerefMut`, which is not
+    // extracted there (HAX0003, hacspec/hax#420); aeneas/lean/native keep it.
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::attributes]
+    impl<T> core::ops::DerefMut for Vec<T> {
+        fn deref_mut(&mut self) -> &mut [T] {
+            self.as_mut_slice()
         }
     }
 
@@ -824,6 +837,9 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
+        // No `as_mut_slice` here: it returns `&mut [T]`, which the F* backend can't
+        // model (HAX0003/HAX0010, hacspec/hax#420). The `#[cfg(not(hax_backend_fstar))]`
+        // Vec block above keeps it for aeneas/lean/native; nothing in F* uses it.
         #[hax_lib::opaque]
         pub fn truncate(&mut self, n: usize) {}
         #[hax_lib::opaque]
@@ -900,9 +916,9 @@ pub mod vec {
         fn extend_from_slice(&mut self, other: &[T]) {
             seq_extend(&mut self.0, other)
         }
-        #[hax_lib::opaque]
-        #[hax_lib::ensures(|_| future(self).len() == new_size)]
-        pub fn resize(&mut self, new_size: usize, value: &T) {}
+        pub fn resize(&mut self, new_size: usize, value: &T) {
+            seq_resize(&mut self.0, new_size, value)
+        }
     }
 
     /// Generic `Index<I>` impl, mirroring std's

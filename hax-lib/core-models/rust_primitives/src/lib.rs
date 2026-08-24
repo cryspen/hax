@@ -46,7 +46,7 @@ pub mod slice {
     pub fn array_from_fn<T, const N: usize, F: FnMut(usize) -> T>(f: F) -> [T; N] {
         std::array::from_fn(f)
     }
-    pub fn array_map<T, U, const N: usize, F: Fn(T) -> U>(s: [T; N], f: F) -> [U; N] {
+    pub fn array_map<T, U, const N: usize, F: FnMut(T) -> U>(s: [T; N], f: F) -> [U; N] {
         s.map(f)
     }
     pub fn array_as_slice<T, const N: usize>(s: &[T; N]) -> &[T] {
@@ -92,6 +92,12 @@ pub mod sequence {
     }
     pub fn seq_push<T>(s1: &mut Seq<T>, v: T) {
         s1.0.push(v)
+    }
+    pub fn seq_resize<T>(s: &mut Seq<T>, new_size: usize, value: &T)
+    where
+        T: Clone,
+    {
+        s.0.resize(new_size, value.clone())
     }
     pub fn seq_one<T>(x: T) -> Seq<T> {
         Seq(vec![x])

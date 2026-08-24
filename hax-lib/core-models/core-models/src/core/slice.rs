@@ -43,6 +43,37 @@ pub mod iter {
         }
     }
 
+    // `next_back` pops the last element; `len` is the remaining count. Lean/charon
+    // backend only, matching `DoubleEndedIterator`/`ExactSizeIterator`. These make
+    // `slice.iter().rev()` and `slice.iter().enumerate().rev()` iterate.
+    #[cfg(not(hax_backend_fstar))]
+    impl<'a, T> crate::iter::traits::double_ended::DoubleEndedIterator for Iter<'a, T> {
+        fn next_back(&mut self) -> Option<Self::Item> {
+            let n = seq_len(&self.0);
+            if n == 0 {
+                Option::None
+            } else {
+                let res = seq_remove(&mut self.0, n - 1);
+                Option::Some(res)
+            }
+        }
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    impl<'a, T> crate::iter::traits::exact_size::ExactSizeIterator for Iter<'a, T> {
+        fn len(&self) -> usize {
+            seq_len(&self.0)
+        }
+    }
+
+    // NOTE: `slice::iter_mut`/`IterMut` are NOT modelled as an `impl Iterator`:
+    // a `&mut`-yielding iterator's `next` must return a 3-tuple `(Option T) × Self
+    // × back-prop-fn` (aeneas models the yielded `&mut T` with a write-back), but the
+    // `Iterator` trait's `next` is the 2-tuple `(Option Item) × Self`. Aeneas.Std
+    // models `IterMut` as an OPAQUE type with a specialised `next` instead
+    // (SliceIter.lean); supplying that in core-models is a hand-written Lean model,
+    // not a Rust `impl`. Deferred — see FunsEpilogue / the residuals task.
+
     impl<'a, T> crate::iter::traits::iterator::Iterator for Chunks<'a, T> {
         type Item = &'a [T];
         fn next(&mut self) -> Option<Self::Item> {

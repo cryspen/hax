@@ -271,6 +271,7 @@ let impl_5 (#v_T: Type0) : Core_models.Iter.Traits.Collect.t_IntoIterator (t_Sli
   {
     f_Item = v_T;
     f_IntoIter = Core_models.Slice.Iter.t_Iter v_T;
+    f_IntoIter_i0 = FStar.Tactics.Typeclasses.solve;
     f_into_iter_pre = (fun (self: t_Slice v_T) -> true);
     f_into_iter_post = (fun (self: t_Slice v_T) (out: Core_models.Slice.Iter.t_Iter v_T) -> true);
     f_into_iter = fun (self: t_Slice v_T) -> impl__iter #v_T self

@@ -20,6 +20,16 @@ let seq_extend #t (s1: t_Seq t) (s2: t_Seq t {(Seq.length s1) + (Seq.length s2) 
 
 let seq_push #t (s: t_Seq t {Seq.length s < max_usize}) (x: t): t_Seq t = Seq.append s (Seq.create 1 x)
 
+// Models `Vec::resize` (`s.0.resize(new_size, value.clone())`): shrink by truncating
+// to the first `new_size` elements, grow by appending copies of `value`. The result
+// has length `new_size`, which is a valid `usize`, so no length bound is needed.
+let seq_resize #t (s: t_Seq t) (new_size: usize) (value: t): t_Seq t =
+  let len = Seq.length s in
+  let n = v new_size in
+  if n <= len
+  then Seq.slice s 0 n
+  else Seq.append s (Seq.create (n - len) value)
+
 let seq_one #t (x: t): t_Seq t = Seq.create 1 x
 
 let seq_create #t (x: t) (n: usize): t_Seq t = Seq.create (v n) x

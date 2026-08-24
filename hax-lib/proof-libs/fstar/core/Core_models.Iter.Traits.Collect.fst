@@ -3,23 +3,22 @@ module Core_models.Iter.Traits.Collect
 open FStar.Mul
 open Rust_primitives
 
-/// See [`std::iter::IntoIterator`]
-class t_IntoIterator (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
-  [@@@ FStar.Tactics.Typeclasses.no_method]f_IntoIter:Type0;
-  f_into_iter_pre:v_Self -> Type0;
-  f_into_iter_post:v_Self -> f_IntoIter -> Type0;
-  f_into_iter:x0: v_Self
-    -> Prims.Pure f_IntoIter (f_into_iter_pre x0) (fun result -> f_into_iter_post x0 result)
-}
+include Core_models.Bundle {t_IntoIterator as t_IntoIterator}
 
-/// See [`std::iter::FromIterator`]
-class t_FromIterator (v_Self: Type0) (v_A: Type0) = {
-  f_from_iter_pre:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> iter: v_T
-    -> pred: Type0{true ==> pred};
-  f_from_iter_post:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> v_T -> v_Self -> Type0;
-  f_from_iter:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> x0: v_T
-    -> Prims.Pure v_Self
-        (f_from_iter_pre #v_T #i1 x0)
-        (fun result -> f_from_iter_post #v_T #i1 x0 result)
-}
+include Core_models.Bundle {f_Item as f_Item}
+
+include Core_models.Bundle {f_IntoIter as f_IntoIter}
+
+include Core_models.Bundle {f_into_iter_pre as f_into_iter_pre}
+
+include Core_models.Bundle {f_into_iter_post as f_into_iter_post}
+
+include Core_models.Bundle {f_into_iter as f_into_iter}
+
+include Core_models.Bundle {t_FromIterator as t_FromIterator}
+
+include Core_models.Bundle {f_from_iter_pre as f_from_iter_pre}
+
+include Core_models.Bundle {f_from_iter_post as f_from_iter_post}
+
+include Core_models.Bundle {f_from_iter as f_from_iter}

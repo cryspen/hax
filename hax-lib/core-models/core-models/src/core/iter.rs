@@ -6,8 +6,10 @@
 pub mod traits {
     pub mod iterator {
         use super::super::adapters::{
-            chain::Chain, enumerate::Enumerate, filter::Filter, flat_map::FlatMap,
-            flatten::Flatten, map::Map, skip::Skip, step_by::StepBy, take::Take, zip::Zip,
+            chain::Chain, enumerate::Enumerate, filter::Filter, filter_map::FilterMap,
+            flat_map::FlatMap, flatten::Flatten, fuse::Fuse, inspect::Inspect, map::Map,
+            map_while::MapWhile, skip::Skip, skip_while::SkipWhile, step_by::StepBy, take::Take,
+            take_while::TakeWhile, zip::Zip,
         };
         use crate::option::Option;
         /// See [`std::iter::Iterator`]
@@ -16,22 +18,64 @@ pub mod traits {
             type Item;
             #[hax_lib::requires(true)]
             fn next(&mut self) -> Option<Self::Item>;
+
+            // NO provided methods are promoted onto this trait. Promoting them made
+            // aeneas emit them as STRUCTURE FIELDS, which then had to be back-filled
+            // on the cross-crate `alloc` `Iterator` instances by a `patch_lean.py`
+            // post-processor (`fill_iterator_default_fields`). To keep the generated
+            // Lean un-patched, EVERY `Iterator` provided method is instead supplied as
+            // a standalone `@[rust_fun]`-tagged function in `FunsEpilogue.lean` (the
+            // same shape aeneas itself uses for `rev`/`collect`, and that this model
+            // already uses for the eager consumers). The method *declarations* live on
+            // the aeneas-excluded `IteratorMethods` trait below (for the F* backend and
+            // the Rust differential tests); the Lean bodies live in the epilogue,
+            // delegating to the adapter `::new` constructors / the `iter_*` helpers.
+            // The `DoubleEndedIterator`/`ExactSizeIterator` traits + `Rev` adapter +
+            // `next_back` instances used by `rev` are defined below.
         }
 
-        // This trait is an addition to deal with the default methods that the F* backend doesn't handle
+        // ALL `Iterator` provided methods are declared here (not on `Iterator`), so
+        // the F* backend and the Rust differential tests can call them via this
+        // aeneas-excluded blanket impl. The Lean backend gets standalone
+        // `@[rust_fun]`-tagged bodies in `FunsEpilogue.lean` instead (see the note on
+        // the `Iterator` trait) — nothing here is extracted to Lean.
         pub(crate) trait IteratorMethods: Iterator {
             fn fold<B, F: Fn(B, Self::Item) -> B>(self, init: B, f: F) -> B;
+            fn all<F: Fn(Self::Item) -> bool>(self, f: F) -> bool;
+            fn map<O, F: Fn(Self::Item) -> O>(self, f: F) -> Map<Self, F>
+            where
+                Self: Sized;
             fn enumerate(self) -> Enumerate<Self>
             where
                 Self: Sized;
             fn step_by(self, step: usize) -> StepBy<Self>
             where
                 Self: Sized;
-            fn map<O, F: Fn(Self::Item) -> O>(self, f: F) -> Map<Self, F>
+            fn take(self, n: usize) -> Take<Self>
             where
                 Self: Sized;
-            fn all<F: Fn(Self::Item) -> bool>(self, f: F) -> bool;
-            fn take(self, n: usize) -> Take<Self>
+            fn skip(self, n: usize) -> Skip<Self>
+            where
+                Self: Sized;
+            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P>
+            where
+                Self: Sized;
+            fn filter_map<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> FilterMap<Self, F>
+            where
+                Self: Sized;
+            fn take_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> TakeWhile<Self, P>
+            where
+                Self: Sized;
+            fn skip_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> SkipWhile<Self, P>
+            where
+                Self: Sized;
+            fn map_while<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> MapWhile<Self, F>
+            where
+                Self: Sized;
+            fn inspect<F: Fn(&Self::Item)>(self, f: F) -> Inspect<Self, F>
+            where
+                Self: Sized;
+            fn fuse(self) -> Fuse<Self>
             where
                 Self: Sized;
             fn flat_map<U: Iterator, F: Fn(Self::Item) -> U>(self, f: F) -> FlatMap<Self, U, F>
@@ -44,13 +88,7 @@ pub mod traits {
             fn zip<I2: Iterator>(self, it2: I2) -> Zip<Self, I2>
             where
                 Self: Sized;
-            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P>
-            where
-                Self: Sized;
             fn chain<U: Iterator<Item = Self::Item>>(self, other: U) -> Chain<Self, U>
-            where
-                Self: Sized;
-            fn skip(self, n: usize) -> Skip<Self>
             where
                 Self: Sized;
             fn any<F: Fn(Self::Item) -> bool>(self, f: F) -> bool;
@@ -254,6 +292,14 @@ pub mod traits {
                 iter_fold(self, init, f)
             }
 
+            fn all<F: Fn(I::Item) -> bool>(self, f: F) -> bool {
+                iter_all(self, f)
+            }
+
+            fn map<O, F: Fn(I::Item) -> O>(self, f: F) -> Map<I, F> {
+                Map::new(self, f)
+            }
+
             fn enumerate(self) -> Enumerate<I> {
                 Enumerate::new(self)
             }
@@ -262,16 +308,40 @@ pub mod traits {
                 StepBy::new(self, step)
             }
 
-            fn map<O, F: Fn(I::Item) -> O>(self, f: F) -> Map<I, F> {
-                Map::new(self, f)
-            }
-
-            fn all<F: Fn(I::Item) -> bool>(self, f: F) -> bool {
-                iter_all(self, f)
-            }
-
             fn take(self, n: usize) -> Take<I> {
                 Take::new(self, n)
+            }
+
+            fn skip(self, n: usize) -> Skip<I> {
+                Skip::new(self, n)
+            }
+
+            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P> {
+                Filter::new(self, predicate)
+            }
+
+            fn filter_map<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> FilterMap<Self, F> {
+                FilterMap::new(self, f)
+            }
+
+            fn take_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> TakeWhile<Self, P> {
+                TakeWhile::new(self, predicate)
+            }
+
+            fn skip_while<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> SkipWhile<Self, P> {
+                SkipWhile::new(self, predicate)
+            }
+
+            fn map_while<B, F: Fn(Self::Item) -> Option<B>>(self, f: F) -> MapWhile<Self, F> {
+                MapWhile::new(self, f)
+            }
+
+            fn inspect<F: Fn(&Self::Item)>(self, f: F) -> Inspect<Self, F> {
+                Inspect::new(self, f)
+            }
+
+            fn fuse(self) -> Fuse<Self> {
+                Fuse::new(self)
             }
 
             fn flat_map<U: Iterator, F: Fn(I::Item) -> U>(self, f: F) -> FlatMap<I, U, F> {
@@ -289,16 +359,8 @@ pub mod traits {
                 Zip::new(self, it2)
             }
 
-            fn filter<P: Fn(&Self::Item) -> bool>(self, predicate: P) -> Filter<Self, P> {
-                Filter::new(self, predicate)
-            }
-
             fn chain<U: Iterator<Item = Self::Item>>(self, other: U) -> Chain<Self, U> {
                 Chain::new(self, other)
-            }
-
-            fn skip(self, n: usize) -> Skip<Self> {
-                Skip::new(self, n)
             }
 
             fn any<F: Fn(Self::Item) -> bool>(self, f: F) -> bool {
@@ -366,26 +428,61 @@ pub mod traits {
                 self
             }
         }
-
-        // TODO rev: DoubleEndedIterator?
+    }
+    pub mod double_ended {
+        use super::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::DoubleEndedIterator`]
+        ///
+        /// Modelled only for the Lean/charon backend (the `rev` provided method that
+        /// drives it is `#[cfg(not(hax_backend_fstar))]`); F* keeps the original
+        /// `IteratorMethods` workaround, which never needs `rev`.
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::attributes]
+        pub trait DoubleEndedIterator: Iterator {
+            #[hax_lib::requires(true)]
+            fn next_back(&mut self) -> Option<Self::Item>;
+        }
+    }
+    pub mod exact_size {
+        use super::iterator::Iterator;
+        /// See [`std::iter::ExactSizeIterator`]
+        ///
+        /// `len` is modelled as a required method (real Rust makes it a provided method
+        /// over `size_hint`). Used by `Enumerate::next_back` to recover the yielded
+        /// element's original index. Lean/charon backend only (see `DoubleEndedIterator`).
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::attributes]
+        pub trait ExactSizeIterator: Iterator {
+            #[hax_lib::requires(true)]
+            fn len(&self) -> usize;
+        }
     }
     pub mod collect {
         /// See [`std::iter::IntoIterator`]
         pub trait IntoIterator {
-            // The trait bound `IntoIter: Iterator<Item = Self::Item>` is
-            // omitted to avoid coinduction; the `Item` associated type
-            // itself is kept so downstream Aeneas extractions (which see
-            // std's IntoIterator with 2 associated types) produce
-            // 3-argument references that match our extracted struct.
+            // The `IntoIter: Iterator<Item = Self::Item>` bound carries the
+            // Iterator super-instance (extracted as the `iteratorInst` field),
+            // which `FromIterator::from_iter` needs to actually fold the
+            // iterator — mirroring Aeneas.Std's `IntoIterator`. (It was
+            // previously omitted to dodge the IntoIter↔Iterator coinduction,
+            // but the standalone `collect.default`/computable `from_iter` model
+            // — again mirroring Aeneas.Std — keeps that out of the recursive
+            // field resolution that `impl_def` chokes on.)
             type Item;
-            type IntoIter;
+            type IntoIter: super::iterator::Iterator<Item = Self::Item>;
             fn into_iter(self) -> Self::IntoIter;
         }
         /// See [`std::iter::FromIterator`]
         #[hax_lib::attributes]
         pub trait FromIterator<A>: Sized {
+            // `Item = A` pins the iterated element to the collection's element
+            // type (as in std and Aeneas.Std). Without it a real `from_iter`
+            // fold yields a free `List Clause0_Item` that can't be built into a
+            // `Vec<A>`, forcing an opaque stub. It requires the `Result`
+            // `FromIterator` impl (result.rs) to be phrased so it still compiles.
             #[hax_lib::requires(true)]
-            fn from_iter<T: IntoIterator>(iter: T) -> Self;
+            fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self;
         }
     }
 }
@@ -421,6 +518,54 @@ pub mod adapters {
                 }
             }
         }
+        // `Enumerate<I>::next_back` is NOT in Aeneas.Std — authored fresh. After the
+        // inner `next_back` yields the back element, `I::len()` is the count still
+        // remaining, which is exactly that element's index relative to `count`
+        // (elements already consumed from the front). Requires the inner iterator to be
+        // both double-ended and exact-size (real Rust has the same bounds).
+        #[cfg(not(hax_backend_fstar))]
+        impl<
+            I: crate::iter::traits::double_ended::DoubleEndedIterator
+                + crate::iter::traits::exact_size::ExactSizeIterator,
+        > crate::iter::traits::double_ended::DoubleEndedIterator for Enumerate<I>
+        {
+            fn next_back(&mut self) -> Option<(usize, <I as Iterator>::Item)> {
+                match self.iter.next_back() {
+                    Option::Some(a) => {
+                        let len = self.iter.len();
+                        hax_lib::assume!(self.count + len < crate::num::usize::MAX);
+                        Option::Some((self.count + len, a))
+                    }
+                    Option::None => Option::None,
+                }
+            }
+        }
+    }
+    pub mod rev {
+        // The trait is Lean/charon-only (see `double_ended`), so its import must be
+        // gated to match — otherwise F* extraction hits an unresolved import (E0432).
+        #[cfg(not(hax_backend_fstar))]
+        use super::super::traits::double_ended::DoubleEndedIterator;
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Rev`]
+        pub struct Rev<I> {
+            iter: I,
+        }
+        impl<I> Rev<I> {
+            pub fn new(iter: I) -> Rev<I> {
+                Rev { iter }
+            }
+        }
+        // `Rev<I>::next` delegates to the inner `next_back` (mirrors Aeneas.Std). Lean/
+        // charon backend only, matching the `rev` provided method and `DoubleEndedIterator`.
+        #[cfg(not(hax_backend_fstar))]
+        impl<I: DoubleEndedIterator> Iterator for Rev<I> {
+            type Item = <I as Iterator>::Item;
+            fn next(&mut self) -> Option<<I as Iterator>::Item> {
+                self.iter.next_back()
+            }
+        }
     }
     pub mod step_by {
         use super::super::traits::iterator::Iterator;
@@ -429,11 +574,21 @@ pub mod adapters {
         pub struct StepBy<I> {
             iter: I,
             step: usize,
+            // `step_by` yields the FIRST element directly, then steps. Without this
+            // flag `next` skipped `step-1` elements before every yield, so
+            // `step_by(2)` produced indices {1,3,5,…} instead of std's {0,2,4,…}
+            // (caught by the `test_step_by` differential test once `step_by` was
+            // promoted onto the `Iterator` trait and thus first exercised).
+            first: bool,
         }
 
         impl<I> StepBy<I> {
             pub fn new(iter: I, step: usize) -> Self {
-                StepBy { iter, step }
+                StepBy {
+                    iter,
+                    step,
+                    first: true,
+                }
             }
         }
 
@@ -442,7 +597,14 @@ pub mod adapters {
             type Item = <I as Iterator>::Item;
 
             fn next(&mut self) -> Option<<I as Iterator>::Item> {
-                for _ in 1..self.step {
+                // Skip `step-1` elements before yielding on every call EXCEPT the
+                // first (which yields index 0). Encoded via the loop bound so the
+                // loop stays top-level — nesting it inside an `if/else` defeats hax's
+                // loop-functionalization ("early returns inside of loops"). Using the
+                // bound (not a subtraction) also avoids underflow when `step == 0`.
+                let bound = if self.first { 1 } else { self.step };
+                self.first = false;
+                for _ in 1..bound {
                     if let Option::None = self.iter.next() {
                         return Option::None;
                     }
@@ -465,8 +627,13 @@ pub mod adapters {
         }
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        // `FnMut` (not `Fn`), matching `std::iter::Map` — a downstream `.map(closure)`
+        // where the closure captures mutably yields an `FnMut` instance, so
+        // `Map<_, closure>: Iterator` must hold for `FnMut` (else `collect` over the
+        // map fails to resolve). `Fn` here would be stricter than std and reject such
+        // closures. Confirmed against the re-extracted Longfellow call site.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        impl<I: Iterator, O, F: Fn(I::Item) -> O> Iterator for Map<I, F> {
+        impl<I: Iterator, O, F: FnMut(I::Item) -> O> Iterator for Map<I, F> {
             type Item = O;
 
             fn next(&mut self) -> Option<O> {
@@ -625,9 +792,11 @@ pub mod adapters {
                 Self { iter, predicate }
             }
         }
-        // opaque: loop + Fn output projection not provably bool in F*
+        // opaque: loop + Fn output projection not provably bool in F* (opaque still
+        // extracts a real computable loop for the Lean backend). Previously also
+        // `aeneas::exclude`d; un-excluded so `Iterator::filter`'s adapter has a `next`
+        // instance now that `filter` is promoted onto the `Iterator` trait.
         #[hax_lib::opaque]
-        #[cfg_attr(charon, aeneas::exclude)]
         impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for Filter<I, P> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
@@ -700,6 +869,196 @@ pub mod adapters {
                     }
                 }
                 self.iter.next()
+            }
+        }
+    }
+    pub mod filter_map {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::FilterMap`]
+        pub struct FilterMap<I, F> {
+            iter: I,
+            f: F,
+        }
+        impl<I, F> FilterMap<I, F> {
+            pub fn new(iter: I, f: F) -> Self {
+                Self { iter, f }
+            }
+        }
+        // opaque: loop + Fn output projection, as with filter/flat_map.
+        #[hax_lib::opaque]
+        impl<I: Iterator, B, F: Fn(I::Item) -> Option<B>> Iterator for FilterMap<I, F> {
+            type Item = B;
+            fn next(&mut self) -> Option<B> {
+                loop {
+                    match self.iter.next() {
+                        Option::Some(x) => {
+                            if let Option::Some(y) = (self.f)(x) {
+                                return Option::Some(y);
+                            }
+                        }
+                        Option::None => return Option::None,
+                    }
+                }
+            }
+        }
+    }
+    pub mod take_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::TakeWhile`]
+        pub struct TakeWhile<I, P> {
+            iter: I,
+            flag: bool,
+            predicate: P,
+        }
+        impl<I, P> TakeWhile<I, P> {
+            pub fn new(iter: I, predicate: P) -> Self {
+                Self {
+                    iter,
+                    flag: false,
+                    predicate,
+                }
+            }
+        }
+        #[hax_lib::opaque]
+        impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for TakeWhile<I, P> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if self.flag {
+                    Option::None
+                } else {
+                    match self.iter.next() {
+                        Option::Some(x) => {
+                            if (self.predicate)(&x) {
+                                Option::Some(x)
+                            } else {
+                                self.flag = true;
+                                Option::None
+                            }
+                        }
+                        Option::None => Option::None,
+                    }
+                }
+            }
+        }
+    }
+    pub mod skip_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::SkipWhile`]
+        pub struct SkipWhile<I, P> {
+            iter: I,
+            flag: bool,
+            predicate: P,
+        }
+        impl<I, P> SkipWhile<I, P> {
+            pub fn new(iter: I, predicate: P) -> Self {
+                Self {
+                    iter,
+                    flag: false,
+                    predicate,
+                }
+            }
+        }
+        // opaque: loop + Fn output projection, as with filter/skip.
+        #[hax_lib::opaque]
+        impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for SkipWhile<I, P> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                loop {
+                    match self.iter.next() {
+                        Option::Some(x) => {
+                            if self.flag || !(self.predicate)(&x) {
+                                self.flag = true;
+                                return Option::Some(x);
+                            }
+                        }
+                        Option::None => return Option::None,
+                    }
+                }
+            }
+        }
+    }
+    pub mod map_while {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::MapWhile`]
+        pub struct MapWhile<I, F> {
+            iter: I,
+            f: F,
+        }
+        impl<I, F> MapWhile<I, F> {
+            pub fn new(iter: I, f: F) -> Self {
+                Self { iter, f }
+            }
+        }
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        impl<I: Iterator, B, F: Fn(I::Item) -> Option<B>> Iterator for MapWhile<I, F> {
+            type Item = B;
+            fn next(&mut self) -> Option<B> {
+                match self.iter.next() {
+                    Option::Some(x) => (self.f)(x),
+                    Option::None => Option::None,
+                }
+            }
+        }
+    }
+    pub mod inspect {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Inspect`]
+        pub struct Inspect<I, F> {
+            iter: I,
+            f: F,
+        }
+        impl<I, F> Inspect<I, F> {
+            pub fn new(iter: I, f: F) -> Self {
+                Self { iter, f }
+            }
+        }
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        impl<I: Iterator, F: Fn(&I::Item)> Iterator for Inspect<I, F> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                match self.iter.next() {
+                    Option::Some(x) => {
+                        (self.f)(&x);
+                        Option::Some(x)
+                    }
+                    Option::None => Option::None,
+                }
+            }
+        }
+    }
+    pub mod fuse {
+        use super::super::traits::iterator::Iterator;
+        use crate::option::Option;
+        /// See [`std::iter::Fuse`] — once the inner iterator returns `None`, always `None`.
+        pub struct Fuse<I> {
+            iter: I,
+            done: bool,
+        }
+        impl<I> Fuse<I> {
+            pub fn new(iter: I) -> Self {
+                Self { iter, done: false }
+            }
+        }
+        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        impl<I: Iterator> Iterator for Fuse<I> {
+            type Item = I::Item;
+            fn next(&mut self) -> Option<I::Item> {
+                if self.done {
+                    Option::None
+                } else {
+                    match self.iter.next() {
+                        Option::Some(x) => Option::Some(x),
+                        Option::None => {
+                            self.done = true;
+                            Option::None
+                        }
+                    }
+                }
             }
         }
     }
@@ -947,6 +1306,8 @@ mod tests {
     use proptest::prelude::*;
 
     /// A simple iterator over a Vec, used to test IteratorMethods.
+    /// `Clone` so a `VecIter<VecIter<_>>` is itself an `Iterator` (for `flatten`).
+    #[derive(Clone)]
     struct VecIter<T> {
         data: Vec<T>,
         pos: usize,
@@ -971,7 +1332,236 @@ mod tests {
         }
     }
 
+    // Front cursor is `pos`; the back is consumed by popping `data`. Elements still
+    // pending are `data[pos..]`, so `len` is `data.len() - pos`. Lets us differential-
+    // test `next_back` / `Rev` / `Enumerate::next_back` against std.
+    impl<T: Clone> crate::iter::traits::double_ended::DoubleEndedIterator for VecIter<T> {
+        fn next_back(&mut self) -> Option<T> {
+            if self.pos < self.data.len() {
+                match self.data.pop() {
+                    std::option::Option::Some(v) => Option::Some(v),
+                    std::option::Option::None => Option::None,
+                }
+            } else {
+                Option::None
+            }
+        }
+    }
+    impl<T: Clone> crate::iter::traits::exact_size::ExactSizeIterator for VecIter<T> {
+        fn len(&self) -> usize {
+            self.data.len() - self.pos
+        }
+    }
+
     proptest! {
+        #[test]
+        fn test_range_next_back(lo in 0usize..50, len in 0usize..50) {
+            use crate::iter::traits::double_ended::DoubleEndedIterator;
+            let hi = lo + len;
+            let mut r = crate::ops::range::Range { start: lo, end: hi };
+            let mut model: Vec<usize> = Vec::new();
+            while let Option::Some(x) = r.next_back() {
+                model.push(x);
+            }
+            let std_result: Vec<usize> = (lo..hi).rev().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_rev_next_back(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            use crate::iter::traits::double_ended::DoubleEndedIterator;
+            let mut it = VecIter::new(v.clone());
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next_back() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().rev().copied().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_enumerate_next_back(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            use crate::iter::traits::double_ended::DoubleEndedIterator;
+            let mut it = crate::iter::adapters::enumerate::Enumerate::new(VecIter::new(v.clone()));
+            let mut model: Vec<(usize, i32)> = Vec::new();
+            while let Option::Some(x) = it.next_back() {
+                model.push(x);
+            }
+            let std_result: Vec<(usize, i32)> = v.iter().copied().enumerate().rev().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        // P2 lazy-adapter promotions: drive the promoted constructor + its adapter's
+        // `next` and compare to std.
+        #[test]
+        fn test_take(v in prop::collection::vec(any::<i32>(), 0..=20), n in 0usize..25) {
+            let mut it = VecIter::new(v.clone()).take(n);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().take(n).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_skip(v in prop::collection::vec(any::<i32>(), 0..=20), n in 0usize..25) {
+            let mut it = VecIter::new(v.clone()).skip(n);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().skip(n).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_step_by(v in prop::collection::vec(any::<i32>(), 0..=20), s in 1usize..6) {
+            let mut it = VecIter::new(v.clone()).step_by(s);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().step_by(s).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_filter(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).filter(|x: &i32| *x > 0);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().filter(|x| *x > 0).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        // P2c adapters (the standalone-epilogue ones): validate the underlying
+        // adapter `next` semantics the shims delegate to (never exercised before).
+        #[test]
+        fn test_zip(a in prop::collection::vec(any::<i32>(), 0..=15),
+                    b in prop::collection::vec(any::<i32>(), 0..=15)) {
+            let mut it = VecIter::new(a.clone()).zip(VecIter::new(b.clone()));
+            let mut model: Vec<(i32, i32)> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<(i32, i32)> =
+                a.iter().copied().zip(b.iter().copied()).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_chain(a in prop::collection::vec(any::<i32>(), 0..=15),
+                      b in prop::collection::vec(any::<i32>(), 0..=15)) {
+            let mut it = VecIter::new(a.clone()).chain(VecIter::new(b.clone()));
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> =
+                a.iter().copied().chain(b.iter().copied()).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_flat_map(v in prop::collection::vec(any::<i32>(), 0..=10)) {
+            let mut it = VecIter::new(v.clone()).flat_map(|x: i32| VecIter::new(vec![x, x]));
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> =
+                v.iter().copied().flat_map(|x| vec![x, x]).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_flatten(v in prop::collection::vec(
+                prop::collection::vec(any::<i32>(), 0..=5), 0..=5)) {
+            let inner: Vec<VecIter<i32>> =
+                v.iter().map(|xs| VecIter::new(xs.clone())).collect();
+            let mut it = VecIter::new(inner).flatten();
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().flatten().copied().collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        // P4a closure-driven adapters.
+        #[test]
+        fn test_filter_map(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).filter_map(
+                |x: i32| if x > 0 { Option::Some(x.wrapping_mul(2)) } else { Option::None });
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied()
+                .filter_map(|x| if x > 0 { Some(x.wrapping_mul(2)) } else { None }).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_take_while(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).take_while(|x: &i32| *x >= 0);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().take_while(|x| *x >= 0).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_skip_while(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).skip_while(|x: &i32| *x >= 0);
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied().skip_while(|x| *x >= 0).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        #[test]
+        fn test_map_while(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).map_while(
+                |x: i32| if x > 0 { Option::Some(x.wrapping_mul(2)) } else { Option::None });
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            let std_result: Vec<i32> = v.iter().copied()
+                .map_while(|x| if x > 0 { Some(x.wrapping_mul(2)) } else { None }).collect();
+            prop_assert_eq!(model, std_result);
+        }
+
+        // P4b adapters: inspect (passthrough) and fuse (identity over a well-behaved
+        // iterator) — both should reproduce the input sequence unchanged.
+        #[test]
+        fn test_inspect(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).inspect(|_x: &i32| {});
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            prop_assert_eq!(model, v);
+        }
+
+        #[test]
+        fn test_fuse(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            let mut it = VecIter::new(v.clone()).fuse();
+            let mut model: Vec<i32> = Vec::new();
+            while let Option::Some(x) = it.next() {
+                model.push(x);
+            }
+            prop_assert_eq!(model, v);
+        }
+
         #[test]
         fn test_fold_sum(v in prop::collection::vec(any::<i32>(), 0..=20)) {
             let std_result = v.iter().fold(0i32, |acc, &x| acc.wrapping_add(x));

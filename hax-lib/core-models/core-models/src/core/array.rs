@@ -34,8 +34,11 @@ impl<T> Array<T, 0> {}
 
 impl<T, const N: usize> Array<T, N> {
     /// See [`std::array::map`]
+    // `FnMut` (not `Fn`) matches `std::array::map`'s bound; aeneas synthesises the
+    // closure's `FnMut` instance at a `[T; N]::map(closure)` call site, so a `Fn`
+    // bound here fails to unify with it.
     #[cfg(not(hax_backend_fstar))]
-    pub fn map<F: Fn(T) -> U, U>(s: [T; N], f: F) -> [U; N] {
+    pub fn map<F: FnMut(T) -> U, U>(s: [T; N], f: F) -> [U; N] {
         array_map(s, f)
     }
     #[cfg(hax_backend_fstar)]

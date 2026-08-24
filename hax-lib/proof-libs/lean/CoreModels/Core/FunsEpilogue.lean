@@ -56,9 +56,420 @@ abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
 abbrev option.Option.Insts.CoreOpsTry_traitTry.branch :=
   @option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
 
+/-! ## `Iterator::collect` (a provided method kept OFF the `Iterator` structure)
+
+`collect` is EAGER, so a `collect` field would be `collect.default SELF`, whose
+resolution recurses through `IntoIterator.Blanket SELF` → the IntoIter↔Iterator
+coinductivity that makes `impl_def` report `could not resolve recursive fields:
+[collect]`. Aeneas.Std handles this by keeping `collect` off the structure and
+supplying `collect.default` as a *standalone* function (there `IteratorInst` is
+an ordinary parameter, never `SELF`). We mirror that exactly. The body is the
+same as Aeneas.Std's: fold `self` through the passed `FromIterator` instance,
+wrapping `self` as an `IntoIterator` via the `Blanket` (which now carries the
+`iteratorIteratorInst` super-instance, so `from_iter` has `next` to fold with). -/
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.collect.default {Self B Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (collectFromIteratorInst : iter.traits.collect.FromIterator B Clause0_Item)
+    (self : Self) : Result B :=
+  collectFromIteratorInst.from_iter
+    (iter.traits.collect.IntoIterator.Blanket IteratorInst) self
+
+/-! ## `Iterator::rev` (a provided method kept OFF the `Iterator` structure)
+
+`rev` cannot be promoted onto the `Iterator` trait like `map`/`enumerate`: its
+`Self: DoubleEndedIterator` bound makes the `Iterator` structure reference
+`DoubleEndedIterator`, which references `Iterator` back (its supertrait) — a
+mutual trait recursion aeneas rejects ("their model will not type-check"). This
+is the circularity Aeneas.Std's `Iter.lean` flags, and we resolve it the same
+way: keep `rev` off the structure and supply `rev.default`/`rev.trait_default`
+as standalone functions here (there the `Iterator`/`DoubleEndedIterator`
+instances are ordinary parameters, never `SELF`). The `DoubleEndedIterator`/
+`ExactSizeIterator` traits, the `Rev` adapter and its `Iterator::next`
+(delegating to `next_back`), and the `next_back` instances for `Range`/slice
+`Iter`/`Enumerate` are all generated from the Rust source; only these two
+dispatch shims are hand-written. The `@[rust_fun …]` tag maps a downstream
+`.rev()` call onto `rev.trait_default` (as in Aeneas.Std). -/
+-- aeneas emits `Iterator.rev.default (IteratorInst) (DEInst) (self)` at a downstream
+-- `.rev()` call (verified against the re-extracted Longfellow), so THAT is the
+-- signature `.default` must have (the dictionaries are ordinary, unused params).
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::rev"]
+def iter.traits.iterator.Iterator.rev.default
+    {Self Clause0_Item Clause1_Item : Type}
+    (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (_DEInst : iter.traits.double_ended.DoubleEndedIterator Self Clause1_Item)
+    (self : Self) : Result (iter.adapters.rev.Rev Self) :=
+  iter.adapters.rev.Rev.new self
+
+/-! ## P2c lazy adapters kept OFF the `Iterator` structure — zip / chain / flat_map / flatten
+
+Unlike step_by/take/skip/filter, these cannot be trait fields: their `.default`
+takes the SELF `Iterator` instance (the extra `Iterator`/`Fn` bound threads it
+in), so a per-instance field `<m> := <m>.default SELF …` self-references the
+instance → the same `impl_def: could not resolve recursive fields` wall that
+`collect` hits. Supplied here as standalone functions (the instances are
+ordinary parameters, never `SELF`), delegating to the generated adapter `.new`
+constructors. `@[rust_fun …]` maps a downstream `.<m>()` onto the shim. -/
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.zip.default
+    {Self I2 Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator I2 Clause1_Item)
+    (self : Self) (it2 : I2) : Result (iter.adapters.zip.Zip Self I2) :=
+  iter.adapters.zip.Zip.new IteratorInst IteratorInst1 self it2
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::zip"]
+def iter.traits.iterator.Iterator.zip.trait_default
+    {Self I2 Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator I2 Clause1_Item)
+    (self : Self) (it2 : I2) : Result (iter.adapters.zip.Zip Self I2) :=
+  iter.traits.iterator.Iterator.zip.default IteratorInst IteratorInst1 self it2
+
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.chain.default
+    {Self U Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator U Clause0_Item)
+    (self : Self) (other : U) : Result (iter.adapters.chain.Chain Self U) :=
+  iter.adapters.chain.Chain.new IteratorInst IteratorInst1 self other
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::chain"]
+def iter.traits.iterator.Iterator.chain.trait_default
+    {Self U Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator U Clause0_Item)
+    (self : Self) (other : U) : Result (iter.adapters.chain.Chain Self U) :=
+  iter.traits.iterator.Iterator.chain.default IteratorInst IteratorInst1 self other
+
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.flat_map.default
+    {Self U F Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator U Clause1_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item U)
+    (self : Self) (f : F) :
+    Result (iter.adapters.flat_map.FlatMap Self U F) :=
+  iter.adapters.flat_map.FlatMap.new IteratorInst IteratorInst1 FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::flat_map"]
+def iter.traits.iterator.Iterator.flat_map.trait_default
+    {Self U F Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator U Clause1_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item U)
+    (self : Self) (f : F) :
+    Result (iter.adapters.flat_map.FlatMap Self U F) :=
+  iter.traits.iterator.Iterator.flat_map.default
+    IteratorInst IteratorInst1 FnInst self f
+
+open Aeneas.Std (Result) in
+def iter.traits.iterator.Iterator.flatten.default
+    {Self Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator Clause0_Item Clause1_Item)
+    (self : Self) :
+    Result (iter.adapters.flatten.Flatten Self Clause0_Item Clause1_Item) :=
+  iter.adapters.flatten.Flatten.new IteratorInst IteratorInst1 self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::flatten"]
+def iter.traits.iterator.Iterator.flatten.trait_default
+    {Self Clause0_Item Clause1_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (IteratorInst1 : iter.traits.iterator.Iterator Clause0_Item Clause1_Item)
+    (self : Self) :
+    Result (iter.adapters.flatten.Flatten Self Clause0_Item Clause1_Item) :=
+  iter.traits.iterator.Iterator.flatten.default IteratorInst IteratorInst1 self
+
+/-! ## P3 eager consumers kept OFF the `Iterator` structure
+
+These consume the iterator (never build an adapter), so — like `collect` — a
+trait field would be `<m> := <m>.default SELF …`, self-referencing the instance
+→ the `impl_def` recursive-field wall. Supplied as standalone `@[rust_fun]`-
+tagged dispatch functions delegating to the generated opaque `iter_*` loop
+helpers (the instances/`Fn`/`Ord` dictionaries are ordinary params, never
+`SELF`). `nth` is omitted: its helper `iter_nth` is `aeneas::exclude`d (a Lean
+forward-reference to `core.Usize.Insts.CoreIterRangeStep`), so there is no
+`iter_nth` to delegate to. `sum`/`product` need `Sum`/`Product` accumulator
+traits (declared without instances) and are likewise left for later. -/
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::fold"]
+def iter.traits.iterator.Iterator.fold.trait_default
+    {Self B F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F (B × Clause0_Item) B)
+    (self : Self) (init : B) (f : F) : Result B :=
+  iter.traits.iterator.iter_fold IteratorInst FnInst self init f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::all"]
+def iter.traits.iterator.Iterator.all.trait_default
+    {Self F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item Bool)
+    (self : Self) (f : F) : Result Bool :=
+  iter.traits.iterator.iter_all IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::any"]
+def iter.traits.iterator.Iterator.any.trait_default
+    {Self F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item Bool)
+    (self : Self) (f : F) : Result Bool :=
+  iter.traits.iterator.iter_any IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::find"]
+def iter.traits.iterator.Iterator.find.trait_default
+    {Self P Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) : Result (option.Option Clause0_Item) := do
+  -- `iter_find` threads the `&mut self` (returns the advanced iterator); `find`
+  -- consumes `self`, so the returned iterator is discarded.
+  let (o, _) ← iter.traits.iterator.iter_find IteratorInst FnInst self predicate
+  .ok o
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::find_map"]
+def iter.traits.iterator.Iterator.find_map.trait_default
+    {Self B F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item (option.Option B))
+    (self : Self) (f : F) : Result (option.Option B) :=
+  iter.traits.iterator.iter_find_map IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::position"]
+def iter.traits.iterator.Iterator.position.trait_default
+    {Self P Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) : Result (option.Option Aeneas.Std.Usize) :=
+  iter.traits.iterator.iter_position IteratorInst FnInst self predicate
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::count"]
+def iter.traits.iterator.Iterator.count.trait_default
+    {Self Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (self : Self) : Result Aeneas.Std.Usize :=
+  iter.traits.iterator.iter_count IteratorInst self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::last"]
+def iter.traits.iterator.Iterator.last.trait_default
+    {Self Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (self : Self) : Result (option.Option Clause0_Item) :=
+  iter.traits.iterator.iter_last IteratorInst self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::for_each"]
+def iter.traits.iterator.Iterator.for_each.trait_default
+    {Self F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F Clause0_Item Unit)
+    (self : Self) (f : F) : Result Unit :=
+  iter.traits.iterator.iter_for_each IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::reduce"]
+def iter.traits.iterator.Iterator.reduce.trait_default
+    {Self F Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (FnInst : core.ops.function.Fn F (Clause0_Item × Clause0_Item) Clause0_Item)
+    (self : Self) (f : F) : Result (option.Option Clause0_Item) :=
+  iter.traits.iterator.iter_reduce IteratorInst FnInst self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::min"]
+def iter.traits.iterator.Iterator.min.trait_default
+    {Self Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (OrdInst : cmp.Ord Clause0_Item)
+    (self : Self) : Result (option.Option Clause0_Item) :=
+  iter.traits.iterator.iter_min IteratorInst OrdInst self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::max"]
+def iter.traits.iterator.Iterator.max.trait_default
+    {Self Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (OrdInst : cmp.Ord Clause0_Item)
+    (self : Self) : Result (option.Option Clause0_Item) :=
+  iter.traits.iterator.iter_max IteratorInst OrdInst self
+
+/-! ## Lazy adapters kept OFF the `Iterator` structure — map / enumerate / step_by /
+     take / skip / filter / filter_map / take_while / skip_while / map_while
+
+These COULD be trait fields (their `.default` is instance-free or takes only a
+closure `Fn` dictionary — no SELF instance), but making them fields forced a
+`patch_lean.py` back-fill (`fill_iterator_default_fields`) onto the cross-crate
+`alloc` `Iterator` instances. To keep the generated Lean un-patched we supply
+them here as standalone `@[rust_fun]`-tagged functions instead, exactly like
+rev/collect/zip/… . Bodies just build the adapter via its generated `::new`
+(the unused `Fn` dictionaries mirror what aeneas threads through). -/
+-- Signatures match aeneas's downstream emission `Iterator.<m>.default (IteratorInst)
+-- [otherInsts] (self) [args]` (verified against the re-extracted Longfellow call
+-- sites). `map`'s closure dictionary is `FnMut` (std uses FnMut), matching the
+-- `Map` adapter's `FnMut` bound.
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::map"]
+def iter.traits.iterator.Iterator.map.default
+    {Self O F Clause0_Item : Type}
+    (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (_FnMutInst : core.ops.function.FnMut F Clause0_Item O)
+    (self : Self) (f : F) : Result (iter.adapters.map.Map Self F) :=
+  iter.adapters.map.Map.new self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::enumerate"]
+def iter.traits.iterator.Iterator.enumerate.default
+    {Self Clause0_Item : Type}
+    (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (self : Self) : Result (iter.adapters.enumerate.Enumerate Self) :=
+  iter.adapters.enumerate.Enumerate.new self
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::step_by"]
+def iter.traits.iterator.Iterator.step_by.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) (step : Aeneas.Std.Usize) :
+    Result (iter.adapters.step_by.StepBy Self) :=
+  iter.adapters.step_by.StepBy.new self step
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::take"]
+def iter.traits.iterator.Iterator.take.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) (n : Aeneas.Std.Usize) :
+    Result (iter.adapters.take.Take Self) :=
+  iter.adapters.take.Take.new self n
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::skip"]
+def iter.traits.iterator.Iterator.skip.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) (n : Aeneas.Std.Usize) :
+    Result (iter.adapters.skip.Skip Self) :=
+  iter.adapters.skip.Skip.new self n
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::filter"]
+def iter.traits.iterator.Iterator.filter.trait_default
+    {Self P Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) : Result (iter.adapters.filter.Filter Self P) :=
+  iter.adapters.filter.Filter.new self predicate
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::filter_map"]
+def iter.traits.iterator.Iterator.filter_map.trait_default
+    {Self B F Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn F Clause0_Item (option.Option B))
+    (self : Self) (f : F) : Result (iter.adapters.filter_map.FilterMap Self F) :=
+  iter.adapters.filter_map.FilterMap.new self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::take_while"]
+def iter.traits.iterator.Iterator.take_while.trait_default
+    {Self P Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) :
+    Result (iter.adapters.take_while.TakeWhile Self P) :=
+  iter.adapters.take_while.TakeWhile.new self predicate
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::skip_while"]
+def iter.traits.iterator.Iterator.skip_while.trait_default
+    {Self P Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn P Clause0_Item Bool)
+    (self : Self) (predicate : P) :
+    Result (iter.adapters.skip_while.SkipWhile Self P) :=
+  iter.adapters.skip_while.SkipWhile.new self predicate
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::map_while"]
+def iter.traits.iterator.Iterator.map_while.trait_default
+    {Self B F Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn F Clause0_Item (option.Option B))
+    (self : Self) (f : F) : Result (iter.adapters.map_while.MapWhile Self F) :=
+  iter.adapters.map_while.MapWhile.new self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::inspect"]
+def iter.traits.iterator.Iterator.inspect.trait_default
+    {Self F Clause0_Item : Type}
+    (_FnInst : core.ops.function.Fn F Clause0_Item Unit)
+    (self : Self) (f : F) : Result (iter.adapters.inspect.Inspect Self F) :=
+  iter.adapters.inspect.Inspect.new self f
+
+open Aeneas.Std (Result) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::fuse"]
+def iter.traits.iterator.Iterator.fuse.trait_default
+    {Self : Type} (_Clause0_Item : Type) (self : Self) :
+    Result (iter.adapters.fuse.Fuse Self) :=
+  iter.adapters.fuse.Fuse.new self
+
+/-! ## `slice::iter_mut` / `IterMut` — the &mut-yielding slice iterator (opaque model)
+
+`IterMut` yields `&mut T`, so its `next` returns a 3-tuple `(Option T) × Self ×
+(Self → Option T → Self)` — the third component writes the (possibly-modified)
+element back. This can't be an `Iterator` trait instance (2-tuple `next`), so the
+extraction calls this specialised `next` directly (as with Aeneas.Std's
+`SliceIter`). Bodies mirror Aeneas.Std, adapted to `core.option.Option`. -/
+open Aeneas.Std in
+def slice.iter.IterMut.Insts.CoreIterTraitsIteratorIteratorMutAT.next {T : Type}
+    (it : slice.iter.IterMut T) :
+    Aeneas.Std.Result ((option.Option T) × (slice.iter.IterMut T) ×
+      (slice.iter.IterMut T → option.Option T → slice.iter.IterMut T)) :=
+  if h : it.i < it.slice.length then
+    let x := it.slice[it.i]
+    let i := it.i
+    let it := { it with i := i + 1 }
+    let back := fun (it' : slice.iter.IterMut T) (o : option.Option T) =>
+      match o with
+      | option.Option.None => it'
+      | option.Option.Some x => { it' with slice := it'.slice.setAtNat i x }
+    .ok (option.Option.Some x, it, back)
+  else .ok (option.Option.None, it, fun it' _ => it')
+
+open Aeneas.Std in
+def slice.Slice.iter_mut {T : Type} (s : Aeneas.Std.Slice T) :
+    Aeneas.Std.Result ((slice.iter.IterMut T) ×
+      (slice.iter.IterMut T → Aeneas.Std.Slice T)) :=
+  .ok ({ slice := s, i := 0 }, fun it => it.slice)
+
+/-! ## `str::as_bytes`
+
+`Str` is definitionally `Slice U8` (Aeneas.Std `StringDef`), so `str::as_bytes` is
+the identity on the underlying bytes — faithful, no opacity, no trust expansion.
+(The verify path passes a domain-separator `label : Str` to `Transcript::new`.) -/
+open Aeneas.Std in
+def str.Str.as_bytes (s : Str) : Aeneas.Std.Result (Slice U8) :=
+  .ok s
+
 end core
 
 namespace alloc
+
+/-! ## `IntoIterator` for `&Vec<T>` (aeneas's `SharedAVec`)
+
+`(&vec).into_iter()` / iterating a `&Vec<T>` yields `&T` via a slice `Iter`. aeneas
+names this shared-reference `IntoIterator` instance `alloc.SharedAVec.Insts.
+CoreIterTraitsCollectIntoIteratorSharedATIter` (cf. Aeneas.Std's `SharedArray` for
+`&[T; N]`). Core-models didn't provide it; supply `into_iter` by hand —
+`Vec::as_slice` then the slice `Iter` constructor — matching the name/signature the
+extraction calls directly. -/
+open Aeneas.Std (Result) in
+def SharedAVec.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
+    {T : Type} (v : vec.Vec T) : Result (core.slice.iter.Iter T) := do
+  let s ← vec.Vec.as_slice v
+  core.slice.Slice.iter s
 
 /-! ## `IntoIter::map` (a provided `Iterator` method)
 
@@ -102,6 +513,47 @@ def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterato
   core.iter.traits.collect.FromIterator
     (collections.vec_deque.VecDeque T alloc.Global) T := {
   from_iter := collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter T
+}
+
+/-! ## Real (computable) `FromIterator<T>` for `Vec<T>`
+
+`collect::<Vec<_>>()` is idiomatic and must be executable. The Rust impl folds
+via `next` into a `Vec` (`vec.Vec.push`), but Aeneas can't extract it — it hits
+`type_var_id` resolving the `IntoIterator::Item` associated type (the same aeneas
+bug the carve saw), so the impl stays `--exclude`d and we hand-write it, exactly
+as Aeneas.Std hand-writes `alloc.vec.FromIteratorVec`. This is a genuine fold, not
+the empty stub the VecDeque one is — `IntoIterator` now carries `iteratorIteratorInst`
+(the `IntoIter: Iterator` bound), and `FromIterator::from_iter` pins `Item = A`, so
+the fold type-checks and `collect` is computable. -/
+open Aeneas.Std (Result) in
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
+    {T IntoIter : Type}
+    (iterInst : core.iter.traits.iterator.Iterator IntoIter T)
+    (it : IntoIter) (res : vec.Vec T) : Result (vec.Vec T) := do
+  let (o, it1) ← iterInst.next it
+  match o with
+  | core.option.Option.None => .ok res
+  | core.option.Option.Some x =>
+    let res1 ← vec.Vec.push res x
+    vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop iterInst it1 res1
+partial_fixpoint
+
+open Aeneas.Std (Result) in
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter
+    {T I IntoIter : Type}
+    (IntoIteratorInst : core.iter.traits.collect.IntoIterator I T IntoIter)
+    (iter : I) : Result (vec.Vec T) := do
+  let res ← vec.Vec.new T
+  let it ← IntoIteratorInst.into_iter iter
+  vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
+    IntoIteratorInst.iteratorIteratorInst it res
+
+@[reducible]
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator (T : Type) :
+    core.iter.traits.collect.FromIterator (vec.Vec T) T := {
+  from_iter := fun {T1 Clause0_IntoIter : Type}
+    (IntoIteratorInst : core.iter.traits.collect.IntoIterator T1 T Clause0_IntoIter) =>
+    vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter IntoIteratorInst
 }
 
 /-! ## `[T]::to_vec` and `Box<[T]>::into_vec`

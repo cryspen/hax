@@ -45,20 +45,6 @@ let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
 type t_IntoIter (v_T: Type0) (v_N: usize) =
   | IntoIter : Rust_primitives.Sequence.t_Seq v_T -> t_IntoIter v_T v_N
 
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_24 (#v_T: Type0) (v_N: usize)
-    : Core_models.Iter.Traits.Collect.t_IntoIterator (t_Array v_T v_N) =
-  {
-    f_Item = v_T;
-    f_IntoIter = t_IntoIter v_T v_N;
-    f_into_iter_pre = (fun (self: t_Array v_T v_N) -> true);
-    f_into_iter_post = (fun (self: t_Array v_T v_N) (out: t_IntoIter v_T v_N) -> true);
-    f_into_iter
-    =
-    fun (self: t_Array v_T v_N) ->
-      IntoIter (Rust_primitives.Sequence.seq_from_array #v_T v_N self) <: t_IntoIter v_T v_N
-  }
-
 /// See [`std::cmp::Ordering`]
 type t_Ordering =
   | Ordering_Less : t_Ordering
@@ -169,6 +155,33 @@ type t_Filter (v_I: Type0) (v_P: Type0) = {
 let impl__new__from__filter (#v_I #v_P: Type0) (iter: v_I) (predicate: v_P) : t_Filter v_I v_P =
   { f_iter = iter; f_predicate = predicate } <: t_Filter v_I v_P
 
+/// See [`std::iter::FilterMap`]
+type t_FilterMap (v_I: Type0) (v_F: Type0) = {
+  f_iter:v_I;
+  f_f:v_F
+}
+
+let impl__new__from__filter_map (#v_I #v_F: Type0) (iter: v_I) (f: v_F) : t_FilterMap v_I v_F =
+  { f_iter = iter; f_f = f } <: t_FilterMap v_I v_F
+
+/// See [`std::iter::Fuse`] — once the inner iterator returns `None`, always `None`.
+type t_Fuse (v_I: Type0) = {
+  f_iter:v_I;
+  f_done:bool
+}
+
+let impl__new__from__fuse (#v_I: Type0) (iter: v_I) : t_Fuse v_I =
+  { f_iter = iter; f_done = false } <: t_Fuse v_I
+
+/// See [`std::iter::Inspect`]
+type t_Inspect (v_I: Type0) (v_F: Type0) = {
+  f_iter:v_I;
+  f_f:v_F
+}
+
+let impl__new__from__inspect (#v_I #v_F: Type0) (iter: v_I) (f: v_F) : t_Inspect v_I v_F =
+  { f_iter = iter; f_f = f } <: t_Inspect v_I v_F
+
 /// See [`std::iter::Map`]
 type t_Map (v_I: Type0) (v_F: Type0) = {
   f_iter:v_I;
@@ -177,6 +190,15 @@ type t_Map (v_I: Type0) (v_F: Type0) = {
 
 let impl__new__from__map (#v_I #v_F: Type0) (iter: v_I) (f: v_F) : t_Map v_I v_F =
   { f_iter = iter; f_f = f } <: t_Map v_I v_F
+
+/// See [`std::iter::MapWhile`]
+type t_MapWhile (v_I: Type0) (v_F: Type0) = {
+  f_iter:v_I;
+  f_f:v_F
+}
+
+let impl__new__from__map_while (#v_I #v_F: Type0) (iter: v_I) (f: v_F) : t_MapWhile v_I v_F =
+  { f_iter = iter; f_f = f } <: t_MapWhile v_I v_F
 
 /// See [`std::iter::Skip`]
 type t_Skip (v_I: Type0) = {
@@ -187,14 +209,26 @@ type t_Skip (v_I: Type0) = {
 let impl__new__from__skip (#v_I: Type0) (iter: v_I) (n: usize) : t_Skip v_I =
   { f_iter = iter; f_n = n } <: t_Skip v_I
 
+/// See [`std::iter::SkipWhile`]
+type t_SkipWhile (v_I: Type0) (v_P: Type0) = {
+  f_iter:v_I;
+  f_flag:bool;
+  f_predicate:v_P
+}
+
+let impl__new__from__skip_while (#v_I #v_P: Type0) (iter: v_I) (predicate: v_P)
+    : t_SkipWhile v_I v_P =
+  { f_iter = iter; f_flag = false; f_predicate = predicate } <: t_SkipWhile v_I v_P
+
 /// See [`std::iter::StepBy`]
 type t_StepBy (v_I: Type0) = {
   f_iter:v_I;
-  f_step:usize
+  f_step:usize;
+  f_first:bool
 }
 
 let impl__new__from__step_by (#v_I: Type0) (iter: v_I) (step: usize) : t_StepBy v_I =
-  { f_iter = iter; f_step = step } <: t_StepBy v_I
+  { f_iter = iter; f_step = step; f_first = true } <: t_StepBy v_I
 
 /// See [`std::iter::Take`]
 type t_Take (v_I: Type0) = {
@@ -204,6 +238,17 @@ type t_Take (v_I: Type0) = {
 
 let impl__new__from__take (#v_I: Type0) (iter: v_I) (n: usize) : t_Take v_I =
   { f_iter = iter; f_n = n } <: t_Take v_I
+
+/// See [`std::iter::TakeWhile`]
+type t_TakeWhile (v_I: Type0) (v_P: Type0) = {
+  f_iter:v_I;
+  f_flag:bool;
+  f_predicate:v_P
+}
+
+let impl__new__from__take_while (#v_I #v_P: Type0) (iter: v_I) (predicate: v_P)
+    : t_TakeWhile v_I v_P =
+  { f_iter = iter; f_flag = false; f_predicate = predicate } <: t_TakeWhile v_I v_P
 
 /// See [`std::iter::Zip`]
 type t_Zip (v_I1: Type0) (v_I2: Type0) = {
@@ -1021,7 +1066,7 @@ let impl_11__MIN: usize = mk_usize 0
 let impl_11__MAX: usize = Rust_primitives.Arithmetic.v_USIZE_MAX
 
 /// See [`std::primitive::u8::BITS`] (and similar for other unsigned integer types)
-let impl_11__BITS: u32 = Rust_primitives.Arithmetic.v_SIZE_BITS
+let impl_11__BITS: u32 = mk_u32 64
 
 /// See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
 let impl_11__wrapping_add (x y: usize) : usize = Rust_primitives.Arithmetic.wrapping_add_usize x y
@@ -2132,7 +2177,7 @@ let impl_17__MIN: isize = Rust_primitives.Arithmetic.v_ISIZE_MIN
 let impl_17__MAX: isize = Rust_primitives.Arithmetic.v_ISIZE_MAX
 
 /// See [`std::primitive::i8::BITS`] (and similar for other signed integer types)
-let impl_17__BITS: u32 = Rust_primitives.Arithmetic.v_SIZE_BITS
+let impl_17__BITS: u32 = mk_u32 64
 
 let impl_17__wrapping_add (x y: isize) : isize = Rust_primitives.Arithmetic.wrapping_add_isize x y
 
@@ -3642,31 +3687,6 @@ let impl_3__flatten (#v_T #v_E: Type0) (self: t_Result (t_Result v_T v_E) v_E) :
   match self <: t_Result (t_Result v_T v_E) v_E with
   | Result_Ok inner -> inner
   | Result_Err e -> Result_Err e <: t_Result v_T v_E
-
-/// Models the std impl `FromIterator<Result<A, E>> for Result<V, E>`: collect
-/// an iterator of `Result`s into a `Result` of a collection, short-circuiting
-/// on the first `Err`.
-/// Opaque: our `FromIterator::from_iter` signature deliberately omits the
-/// `Item = ...` bound (to avoid the associated-type constraint), so the
-/// short-circuiting body cannot be written in terms of the iterator\'s items;
-/// the behaviour is axiomatised. The body below exists only to typecheck —
-/// it delegates to `V`\'s own `from_iter`.
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-assume
-val impl_4__from__result':
-    #v_A: Type0 ->
-    #v_E: Type0 ->
-    #v_V: Type0 ->
-    {| i0: Core_models.Iter.Traits.Collect.t_FromIterator v_V v_A |}
-  -> Core_models.Iter.Traits.Collect.t_FromIterator (t_Result v_V v_E) (t_Result v_A v_E)
-
-unfold
-let impl_4__from__result
-      (#v_A #v_E #v_V: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i0:
-          Core_models.Iter.Traits.Collect.t_FromIterator v_V v_A)
-     = impl_4__from__result' #v_A #v_E #v_V #i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_5__from__result (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t_Result v_T v_E) =
@@ -6841,6 +6861,23 @@ let impl_1__from__filter
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
      = impl_1__from__filter' #v_I #v_P #i0 #i1
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_1__from__filter_map':
+    #v_I: Type0 ->
+    #v_B: Type0 ->
+    #v_F: Type0 ->
+    {| i0: t_Iterator v_I |} ->
+    {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |}
+  -> t_Iterator (t_FilterMap v_I v_F)
+
+unfold
+let impl_1__from__filter_map
+      (#v_I #v_B #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+     = impl_1__from__filter_map' #v_I #v_B #v_F #i0 #i1
+
 let impl__new__from__flat_map
       (#v_I #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
@@ -6902,20 +6939,61 @@ let impl_1__from__flatten
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
+val impl_1__from__fuse': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> t_Iterator (t_Fuse v_I)
+
+unfold
+let impl_1__from__fuse (#v_I: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I) =
+  impl_1__from__fuse' #v_I #i0
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_1__from__inspect':
+    #v_I: Type0 ->
+    #v_F: Type0 ->
+    {| i0: t_Iterator v_I |} ->
+    {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |}
+  -> t_Iterator (t_Inspect v_I v_F)
+
+unfold
+let impl_1__from__inspect
+      (#v_I #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+     = impl_1__from__inspect' #v_I #v_F #i0 #i1
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
 val impl_1__from__map':
     #v_I: Type0 ->
     #v_O: Type0 ->
     #v_F: Type0 ->
     {| i0: t_Iterator v_I |} ->
-    {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |}
+    {| i1: Core_models.Ops.Function.t_FnMut v_F i0.f_Item |}
   -> t_Iterator (t_Map v_I v_F)
 
 unfold
 let impl_1__from__map
       (#v_I #v_O #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_FnMut v_F i0.f_Item)
      = impl_1__from__map' #v_I #v_O #v_F #i0 #i1
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_1__from__map_while':
+    #v_I: Type0 ->
+    #v_B: Type0 ->
+    #v_F: Type0 ->
+    {| i0: t_Iterator v_I |} ->
+    {| i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item |}
+  -> t_Iterator (t_MapWhile v_I v_F)
+
+unfold
+let impl_1__from__map_while
+      (#v_I #v_B #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+     = impl_1__from__map_while' #v_I #v_B #v_F #i0 #i1
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
@@ -6924,6 +7002,22 @@ val impl_1__from__skip': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> t_Iterator (
 unfold
 let impl_1__from__skip (#v_I: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I) =
   impl_1__from__skip' #v_I #i0
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_1__from__skip_while':
+    #v_I: Type0 ->
+    #v_P: Type0 ->
+    {| i0: t_Iterator v_I |} ->
+    {| i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item |}
+  -> t_Iterator (t_SkipWhile v_I v_P)
+
+unfold
+let impl_1__from__skip_while
+      (#v_I #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+     = impl_1__from__skip_while' #v_I #v_P #i0 #i1
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
@@ -6958,6 +7052,22 @@ let impl_1__from__take (#v_I: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] 
       in
       self, hax_temp_output <: (t_Take v_I & t_Option i0.f_Item)
   }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_1__from__take_while':
+    #v_I: Type0 ->
+    #v_P: Type0 ->
+    {| i0: t_Iterator v_I |} ->
+    {| i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item |}
+  -> t_Iterator (t_TakeWhile v_I v_P)
+
+unfold
+let impl_1__from__take_while
+      (#v_I #v_P: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+     = impl_1__from__take_while' #v_I #v_P #i0 #i1
 
 let impl__new__from__zip
       (#v_I1 #v_I2: Type0)
@@ -7147,17 +7257,6 @@ let iter_reduce
           i1:
           Core_models.Ops.Function.t_Fn v_F (i0.f_Item & i0.f_Item))
      = iter_reduce' #v_I #v_F #i0 #i1
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1 (#v_I: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
-    : Core_models.Iter.Traits.Collect.t_IntoIterator v_I =
-  {
-    f_Item = i0.f_Item;
-    f_IntoIter = v_I;
-    f_into_iter_pre = (fun (self: v_I) -> true);
-    f_into_iter_post = (fun (self: v_I) (out: v_I) -> true);
-    f_into_iter = fun (self: v_I) -> self
-  }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl__from__range: t_Iterator (t_Range u8) =
@@ -7422,6 +7521,31 @@ let _ = fun (v_Self:Type0) {|i: t_Ord v_Self|} -> i._super_i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let _ = fun (v_Self:Type0) {|i: t_Ord v_Self|} -> i._super_i1
+
+/// See [`std::iter::IntoIterator`]
+class t_IntoIterator (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_IntoIter:Type0;
+  f_IntoIter_i0:t_Iterator f_IntoIter;
+  f_into_iter_pre:v_Self -> Type0;
+  f_into_iter_post:v_Self -> f_IntoIter -> Type0;
+  f_into_iter:x0: v_Self
+    -> Prims.Pure f_IntoIter (f_into_iter_pre x0) (fun result -> f_into_iter_post x0 result)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_24 (#v_T: Type0) (v_N: usize) : t_IntoIterator (t_Array v_T v_N) =
+  {
+    f_Item = v_T;
+    f_IntoIter = t_IntoIter v_T v_N;
+    f_IntoIter_i0 = FStar.Tactics.Typeclasses.solve;
+    f_into_iter_pre = (fun (self: t_Array v_T v_N) -> true);
+    f_into_iter_post = (fun (self: t_Array v_T v_N) (out: t_IntoIter v_T v_N) -> true);
+    f_into_iter
+    =
+    fun (self: t_Array v_T v_N) ->
+      IntoIter (Rust_primitives.Sequence.seq_from_array #v_T v_N self) <: t_IntoIter v_T v_N
+  }
 
 class t_PartialOrdDefaults (v_Self: Type0) (v_Rhs: Type0) = {
   f_lt_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
@@ -7865,6 +7989,61 @@ let clamp
     | Ordering_Greater  -> max
     | _ -> value
 
+assume
+val iter_min': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I
+  -> t_Option i0.f_Item
+
+unfold
+let iter_min
+      (#v_I: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
+     = iter_min' #v_I #i0 #i1
+
+assume
+val iter_max': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I
+  -> t_Option i0.f_Item
+
+unfold
+let iter_max
+      (#v_I: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
+     = iter_max' #v_I #i0 #i1
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1 (#v_I: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+    : t_IntoIterator v_I =
+  {
+    f_Item = i0.f_Item;
+    f_IntoIter = v_I;
+    f_IntoIter_i0 = FStar.Tactics.Typeclasses.solve;
+    f_into_iter_pre = (fun (self: v_I) -> true);
+    f_into_iter_post = (fun (self: v_I) (out: v_I) -> true);
+    f_into_iter = fun (self: v_I) -> self
+  }
+
+/// See [`std::iter::FromIterator`]
+class t_FromIterator (v_Self: Type0) (v_A: Type0) = {
+  f_from_iter_pre:
+      #v_T: Type0 ->
+      {| i1: t_IntoIterator v_T |} ->
+      #_: unit{i1.f_Item == v_A} ->
+      iter: v_T
+    -> pred: Type0{true ==> pred};
+  f_from_iter_post:
+      #v_T: Type0 ->
+      {| i1: t_IntoIterator v_T |} ->
+      #_: unit{i1.f_Item == v_A} ->
+      v_T ->
+      v_Self
+    -> Type0;
+  f_from_iter:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> #_: unit{i1.f_Item == v_A} -> x0: v_T
+    -> Prims.Pure v_Self
+        (f_from_iter_pre #v_T #i1 #_ x0)
+        (fun result -> f_from_iter_post #v_T #i1 #_ x0 result)
+}
+
 class t_IteratorMethods (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Iterator v_Self;
   f_fold_pre:
@@ -7894,18 +8073,25 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure v_B
         (f_fold_pre #v_B #v_F #i1 x0 x1 x2)
         (fun result -> f_fold_post #v_B #v_F #i1 x0 x1 x2 result);
-  f_enumerate_pre:v_Self -> Type0;
-  f_enumerate_post:v_Self -> t_Enumerate v_Self -> Type0;
-  f_enumerate:x0: v_Self
-    -> Prims.Pure (t_Enumerate v_Self)
-        (f_enumerate_pre x0)
-        (fun result -> f_enumerate_post x0 result);
-  f_step_by_pre:v_Self -> usize -> Type0;
-  f_step_by_post:v_Self -> usize -> t_StepBy v_Self -> Type0;
-  f_step_by:x0: v_Self -> x1: usize
-    -> Prims.Pure (t_StepBy v_Self)
-        (f_step_by_pre x0 x1)
-        (fun result -> f_step_by_post x0 x1 result);
+  f_all_pre:
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      v_Self ->
+      v_F
+    -> Type0;
+  f_all_post:
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      v_Self ->
+      v_F ->
+      bool
+    -> Type0;
+  f_all:
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      x0: v_Self ->
+      x1: v_F
+    -> Prims.Pure bool (f_all_pre #v_F #i1 x0 x1) (fun result -> f_all_post #v_F #i1 x0 x1 result);
   f_map_pre:
       #v_O: Type0 ->
       #v_F: Type0 ->
@@ -7930,29 +8116,162 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Map v_Self v_F)
         (f_map_pre #v_O #v_F #i1 x0 x1)
         (fun result -> f_map_post #v_O #v_F #i1 x0 x1 result);
-  f_all_pre:
+  f_enumerate_pre:v_Self -> Type0;
+  f_enumerate_post:v_Self -> t_Enumerate v_Self -> Type0;
+  f_enumerate:x0: v_Self
+    -> Prims.Pure (t_Enumerate v_Self)
+        (f_enumerate_pre x0)
+        (fun result -> f_enumerate_post x0 result);
+  f_step_by_pre:v_Self -> usize -> Type0;
+  f_step_by_post:v_Self -> usize -> t_StepBy v_Self -> Type0;
+  f_step_by:x0: v_Self -> x1: usize
+    -> Prims.Pure (t_StepBy v_Self)
+        (f_step_by_pre x0 x1)
+        (fun result -> f_step_by_post x0 x1 result);
+  f_take_pre:v_Self -> usize -> Type0;
+  f_take_post:v_Self -> usize -> t_Take v_Self -> Type0;
+  f_take:x0: v_Self -> x1: usize
+    -> Prims.Pure (t_Take v_Self) (f_take_pre x0 x1) (fun result -> f_take_post x0 x1 result);
+  f_skip_pre:v_Self -> usize -> Type0;
+  f_skip_post:v_Self -> usize -> t_Skip v_Self -> Type0;
+  f_skip:x0: v_Self -> x1: usize
+    -> Prims.Pure (t_Skip v_Self) (f_skip_pre x0 x1) (fun result -> f_skip_post x0 x1 result);
+  f_filter_pre:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      v_Self ->
+      v_P
+    -> Type0;
+  f_filter_post:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      v_Self ->
+      v_P ->
+      t_Filter v_Self v_P
+    -> Type0;
+  f_filter:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      x0: v_Self ->
+      x1: v_P
+    -> Prims.Pure (t_Filter v_Self v_P)
+        (f_filter_pre #v_P #i1 x0 x1)
+        (fun result -> f_filter_post #v_P #i1 x0 x1 result);
+  f_filter_map_pre:
+      #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
     -> Type0;
-  f_all_post:
+  f_filter_map_post:
+      #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
-      bool
+      t_FilterMap v_Self v_F
     -> Type0;
-  f_all:
+  f_filter_map:
+      #v_B: Type0 ->
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
       x0: v_Self ->
       x1: v_F
-    -> Prims.Pure bool (f_all_pre #v_F #i1 x0 x1) (fun result -> f_all_post #v_F #i1 x0 x1 result);
-  f_take_pre:v_Self -> usize -> Type0;
-  f_take_post:v_Self -> usize -> t_Take v_Self -> Type0;
-  f_take:x0: v_Self -> x1: usize
-    -> Prims.Pure (t_Take v_Self) (f_take_pre x0 x1) (fun result -> f_take_post x0 x1 result);
+    -> Prims.Pure (t_FilterMap v_Self v_F)
+        (f_filter_map_pre #v_B #v_F #i1 x0 x1)
+        (fun result -> f_filter_map_post #v_B #v_F #i1 x0 x1 result);
+  f_take_while_pre:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      v_Self ->
+      v_P
+    -> Type0;
+  f_take_while_post:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      v_Self ->
+      v_P ->
+      t_TakeWhile v_Self v_P
+    -> Type0;
+  f_take_while:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      x0: v_Self ->
+      x1: v_P
+    -> Prims.Pure (t_TakeWhile v_Self v_P)
+        (f_take_while_pre #v_P #i1 x0 x1)
+        (fun result -> f_take_while_post #v_P #i1 x0 x1 result);
+  f_skip_while_pre:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      v_Self ->
+      v_P
+    -> Type0;
+  f_skip_while_post:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      v_Self ->
+      v_P ->
+      t_SkipWhile v_Self v_P
+    -> Type0;
+  f_skip_while:
+      #v_P: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
+      x0: v_Self ->
+      x1: v_P
+    -> Prims.Pure (t_SkipWhile v_Self v_P)
+        (f_skip_while_pre #v_P #i1 x0 x1)
+        (fun result -> f_skip_while_post #v_P #i1 x0 x1 result);
+  f_map_while_pre:
+      #v_B: Type0 ->
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      v_Self ->
+      v_F
+    -> Type0;
+  f_map_while_post:
+      #v_B: Type0 ->
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      v_Self ->
+      v_F ->
+      t_MapWhile v_Self v_F
+    -> Type0;
+  f_map_while:
+      #v_B: Type0 ->
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      x0: v_Self ->
+      x1: v_F
+    -> Prims.Pure (t_MapWhile v_Self v_F)
+        (f_map_while_pre #v_B #v_F #i1 x0 x1)
+        (fun result -> f_map_while_post #v_B #v_F #i1 x0 x1 result);
+  f_inspect_pre:
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      v_Self ->
+      v_F
+    -> Type0;
+  f_inspect_post:
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      v_Self ->
+      v_F ->
+      t_Inspect v_Self v_F
+    -> Type0;
+  f_inspect:
+      #v_F: Type0 ->
+      {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
+      x0: v_Self ->
+      x1: v_F
+    -> Prims.Pure (t_Inspect v_Self v_F)
+        (f_inspect_pre #v_F #i1 x0 x1)
+        (fun result -> f_inspect_post #v_F #i1 x0 x1 result);
+  f_fuse_pre:v_Self -> Type0;
+  f_fuse_post:v_Self -> t_Fuse v_Self -> Type0;
+  f_fuse:x0: v_Self
+    -> Prims.Pure (t_Fuse v_Self) (f_fuse_pre x0) (fun result -> f_fuse_post x0 result);
   f_flat_map_pre:
       #v_U: Type0 ->
       #v_F: Type0 ->
@@ -7993,27 +8312,6 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Zip v_Self v_I2)
         (f_zip_pre #v_I2 #i1 x0 x1)
         (fun result -> f_zip_post #v_I2 #i1 x0 x1 result);
-  f_filter_pre:
-      #v_P: Type0 ->
-      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
-      v_Self ->
-      v_P
-    -> Type0;
-  f_filter_post:
-      #v_P: Type0 ->
-      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
-      v_Self ->
-      v_P ->
-      t_Filter v_Self v_P
-    -> Type0;
-  f_filter:
-      #v_P: Type0 ->
-      {| i1: Core_models.Ops.Function.t_Fn v_P (_super_i0).f_Item |} ->
-      x0: v_Self ->
-      x1: v_P
-    -> Prims.Pure (t_Filter v_Self v_P)
-        (f_filter_pre #v_P #i1 x0 x1)
-        (fun result -> f_filter_post #v_P #i1 x0 x1 result);
   f_chain_pre:
       #v_U: Type0 ->
       {| i1: t_Iterator v_U |} ->
@@ -8038,10 +8336,6 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Chain v_Self v_U)
         (f_chain_pre #v_U #i1 #_ x0 x1)
         (fun result -> f_chain_post #v_U #i1 #_ x0 x1 result);
-  f_skip_pre:v_Self -> usize -> Type0;
-  f_skip_post:v_Self -> usize -> t_Skip v_Self -> Type0;
-  f_skip:x0: v_Self -> x1: usize
-    -> Prims.Pure (t_Skip v_Self) (f_skip_pre x0 x1) (fun result -> f_skip_post x0 x1 result);
   f_any_pre:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_Fn v_F (_super_i0).f_Item |} ->
@@ -8196,48 +8490,15 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Option (_super_i0).f_Item)
         (f_max_pre #i1 x0)
         (fun result -> f_max_post #i1 x0 result);
-  f_collect_pre:
-      #v_B: Type0 ->
-      {| i1: Core_models.Iter.Traits.Collect.t_FromIterator v_B (_super_i0).f_Item |} ->
-      v_Self
+  f_collect_pre:#v_B: Type0 -> {| i1: t_FromIterator v_B (_super_i0).f_Item |} -> v_Self -> Type0;
+  f_collect_post:#v_B: Type0 -> {| i1: t_FromIterator v_B (_super_i0).f_Item |} -> v_Self -> v_B
     -> Type0;
-  f_collect_post:
-      #v_B: Type0 ->
-      {| i1: Core_models.Iter.Traits.Collect.t_FromIterator v_B (_super_i0).f_Item |} ->
-      v_Self ->
-      v_B
-    -> Type0;
-  f_collect:
-      #v_B: Type0 ->
-      {| i1: Core_models.Iter.Traits.Collect.t_FromIterator v_B (_super_i0).f_Item |} ->
-      x0: v_Self
+  f_collect:#v_B: Type0 -> {| i1: t_FromIterator v_B (_super_i0).f_Item |} -> x0: v_Self
     -> Prims.Pure v_B (f_collect_pre #v_B #i1 x0) (fun result -> f_collect_post #v_B #i1 x0 result)
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let _ = fun (v_Self:Type0) {|i: t_IteratorMethods v_Self|} -> i._super_i0
-
-assume
-val iter_min': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I
-  -> t_Option i0.f_Item
-
-unfold
-let iter_min
-      (#v_I: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
-     = iter_min' #v_I #i0 #i1
-
-assume
-val iter_max': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I
-  -> t_Option i0.f_Item
-
-unfold
-let iter_max
-      (#v_I: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
-     = iter_max' #v_I #i0 #i1
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl__from__iterator
@@ -8286,12 +8547,34 @@ let impl__from__iterator
         (f: v_F)
         ->
         iter_fold #v_I #v_B #v_F self init f);
-    f_enumerate_pre = (fun (self: v_I) -> true);
-    f_enumerate_post = (fun (self: v_I) (out: t_Enumerate v_I) -> true);
-    f_enumerate = (fun (self: v_I) -> impl__new #v_I self);
-    f_step_by_pre = (fun (self: v_I) (step: usize) -> true);
-    f_step_by_post = (fun (self: v_I) (step: usize) (out: t_StepBy v_I) -> true);
-    f_step_by = (fun (self: v_I) (step: usize) -> impl__new__from__step_by #v_I self step);
+    f_all_pre
+    =
+    (fun
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        ->
+        true);
+    f_all_post
+    =
+    (fun
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        (out: bool)
+        ->
+        true);
+    f_all
+    =
+    (fun
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        ->
+        iter_all #v_I #v_F self f);
     f_map_pre
     =
     (fun
@@ -8323,37 +8606,195 @@ let impl__from__iterator
         (f: v_F)
         ->
         impl__new__from__map #v_I #v_F self f);
-    f_all_pre
-    =
-    (fun
-        (#v_F: Type0)
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
-        (self: v_I)
-        (f: v_F)
-        ->
-        true);
-    f_all_post
-    =
-    (fun
-        (#v_F: Type0)
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
-        (self: v_I)
-        (f: v_F)
-        (out: bool)
-        ->
-        true);
-    f_all
-    =
-    (fun
-        (#v_F: Type0)
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
-        (self: v_I)
-        (f: v_F)
-        ->
-        iter_all #v_I #v_F self f);
+    f_enumerate_pre = (fun (self: v_I) -> true);
+    f_enumerate_post = (fun (self: v_I) (out: t_Enumerate v_I) -> true);
+    f_enumerate = (fun (self: v_I) -> impl__new #v_I self);
+    f_step_by_pre = (fun (self: v_I) (step: usize) -> true);
+    f_step_by_post = (fun (self: v_I) (step: usize) (out: t_StepBy v_I) -> true);
+    f_step_by = (fun (self: v_I) (step: usize) -> impl__new__from__step_by #v_I self step);
     f_take_pre = (fun (self: v_I) (n: usize) -> true);
     f_take_post = (fun (self: v_I) (n: usize) (out: t_Take v_I) -> true);
     f_take = (fun (self: v_I) (n: usize) -> impl__new__from__take #v_I self n);
+    f_skip_pre = (fun (self: v_I) (n: usize) -> true);
+    f_skip_post = (fun (self: v_I) (n: usize) (out: t_Skip v_I) -> true);
+    f_skip = (fun (self: v_I) (n: usize) -> impl__new__from__skip #v_I self n);
+    f_filter_pre
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        ->
+        true);
+    f_filter_post
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        (out: t_Filter v_I v_P)
+        ->
+        true);
+    f_filter
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        ->
+        impl__new__from__filter #v_I #v_P self predicate);
+    f_filter_map_pre
+    =
+    (fun
+        (#v_B: Type0)
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        ->
+        true);
+    f_filter_map_post
+    =
+    (fun
+        (#v_B: Type0)
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        (out: t_FilterMap v_I v_F)
+        ->
+        true);
+    f_filter_map
+    =
+    (fun
+        (#v_B: Type0)
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        ->
+        impl__new__from__filter_map #v_I #v_F self f);
+    f_take_while_pre
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        ->
+        true);
+    f_take_while_post
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        (out: t_TakeWhile v_I v_P)
+        ->
+        true);
+    f_take_while
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        ->
+        impl__new__from__take_while #v_I #v_P self predicate);
+    f_skip_while_pre
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        ->
+        true);
+    f_skip_while_post
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        (out: t_SkipWhile v_I v_P)
+        ->
+        true);
+    f_skip_while
+    =
+    (fun
+        (#v_P: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
+        (self: v_I)
+        (predicate: v_P)
+        ->
+        impl__new__from__skip_while #v_I #v_P self predicate);
+    f_map_while_pre
+    =
+    (fun
+        (#v_B: Type0)
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        ->
+        true);
+    f_map_while_post
+    =
+    (fun
+        (#v_B: Type0)
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        (out: t_MapWhile v_I v_F)
+        ->
+        true);
+    f_map_while
+    =
+    (fun
+        (#v_B: Type0)
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        ->
+        impl__new__from__map_while #v_I #v_F self f);
+    f_inspect_pre
+    =
+    (fun
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        ->
+        true);
+    f_inspect_post
+    =
+    (fun
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        (out: t_Inspect v_I v_F)
+        ->
+        true);
+    f_inspect
+    =
+    (fun
+        (#v_F: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_F i0.f_Item)
+        (self: v_I)
+        (f: v_F)
+        ->
+        impl__new__from__inspect #v_I #v_F self f);
+    f_fuse_pre = (fun (self: v_I) -> true);
+    f_fuse_post = (fun (self: v_I) (out: t_Fuse v_I) -> true);
+    f_fuse = (fun (self: v_I) -> impl__new__from__fuse #v_I self);
     f_flat_map_pre
     =
     (fun
@@ -8431,34 +8872,6 @@ let impl__from__iterator
         (it2: v_I2)
         ->
         impl__new__from__zip #v_I #v_I2 self it2);
-    f_filter_pre
-    =
-    (fun
-        (#v_P: Type0)
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
-        (self: v_I)
-        (predicate: v_P)
-        ->
-        true);
-    f_filter_post
-    =
-    (fun
-        (#v_P: Type0)
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
-        (self: v_I)
-        (predicate: v_P)
-        (out: t_Filter v_I v_P)
-        ->
-        true);
-    f_filter
-    =
-    (fun
-        (#v_P: Type0)
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_Fn v_P i0.f_Item)
-        (self: v_I)
-        (predicate: v_P)
-        ->
-        impl__new__from__filter #v_I #v_P self predicate);
     f_chain_pre
     =
     (fun
@@ -8487,9 +8900,6 @@ let impl__from__iterator
         (other: v_U)
         ->
         impl__new__from__chain #v_I #v_U self other);
-    f_skip_pre = (fun (self: v_I) (n: usize) -> true);
-    f_skip_post = (fun (self: v_I) (n: usize) (out: t_Skip v_I) -> true);
-    f_skip = (fun (self: v_I) (n: usize) -> impl__new__from__skip #v_I self n);
     f_any_pre
     =
     (fun
@@ -8712,9 +9122,7 @@ let impl__from__iterator
     =
     (fun
         (#v_B: Type0)
-        (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i1:
-          Core_models.Iter.Traits.Collect.t_FromIterator v_B i0.f_Item)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_FromIterator v_B i0.f_Item)
         (self: v_I)
         ->
         true);
@@ -8722,9 +9130,7 @@ let impl__from__iterator
     =
     (fun
         (#v_B: Type0)
-        (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i1:
-          Core_models.Iter.Traits.Collect.t_FromIterator v_B i0.f_Item)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_FromIterator v_B i0.f_Item)
         (self: v_I)
         (out: v_B)
         ->
@@ -8733,14 +9139,31 @@ let impl__from__iterator
     =
     fun
       (#v_B: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()]
-        i1:
-        Core_models.Iter.Traits.Collect.t_FromIterator v_B i0.f_Item)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_FromIterator v_B i0.f_Item)
       (self: v_I)
       ->
-      Core_models.Iter.Traits.Collect.f_from_iter #v_B
-        #i0.f_Item
-        #FStar.Tactics.Typeclasses.solve
-        #v_I
-        self
+      f_from_iter #v_B #i0.f_Item #FStar.Tactics.Typeclasses.solve #v_I self
   }
+
+/// Models the std impl `FromIterator<Result<A, E>> for Result<V, E>`: collect
+/// an iterator of `Result`s into a `Result` of a collection, short-circuiting
+/// on the first `Err`.
+/// Opaque: the real short-circuiting shunt (collect the `Ok`s, stop at the
+/// first `Err`) needs to accumulate items, which `core` has no collection for.
+/// So the behaviour is axiomatised — this impl exists so `collect::<Result<_,
+/// _>>()` still *resolves* (it is NOT stubbed away); the body below only has to
+/// typecheck under the `Item = Result<A, E>` bound and is never extracted.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_4__from__result':
+    #v_A: Type0 ->
+    #v_E: Type0 ->
+    #v_V: Type0 ->
+    {| i0: t_FromIterator v_V v_A |}
+  -> t_FromIterator (t_Result v_V v_E) (t_Result v_A v_E)
+
+unfold
+let impl_4__from__result
+      (#v_A #v_E #v_V: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_FromIterator v_V v_A)
+     = impl_4__from__result' #v_A #v_E #v_V #i0

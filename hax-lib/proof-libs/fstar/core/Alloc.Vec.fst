@@ -187,6 +187,20 @@ let impl_1__split_off (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (at: usize)
   in
   self, hax_temp_output <: (t_Vec v_T v_A & t_Vec v_T v_A)
 
+let impl_2__resize
+      (#v_T #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (self: t_Vec v_T v_A)
+      (new_size: usize)
+      (value: v_T)
+    : t_Vec v_T v_A =
+  let self:t_Vec v_T v_A =
+    { self with _0 = Rust_primitives.Sequence.seq_resize #v_T self._0 new_size value }
+    <:
+    t_Vec v_T v_A
+  in
+  self
+
 let impl_2__extend_from_slice
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
@@ -210,27 +224,6 @@ let impl_2__extend_from_slice
     { self with _0 = Rust_primitives.Sequence.seq_extend #v_T self._0 other } <: t_Vec v_T v_A
   in
   self
-
-assume
-val impl_2__resize':
-    #v_T: Type0 ->
-    #v_A: Type0 ->
-    {| i0: Core_models.Clone.t_Clone v_T |} ->
-    self: t_Vec v_T v_A ->
-    new_size: usize ->
-    value: v_T
-  -> Prims.Pure (t_Vec v_T v_A)
-      Prims.l_True
-      (ensures
-        fun self_e_future ->
-          let self_e_future:t_Vec v_T v_A = self_e_future in
-          (impl_1__len #v_T #v_A self_e_future <: usize) =. new_size)
-
-unfold
-let impl_2__resize
-      (#v_T #v_A: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
-     = impl_2__resize' #v_T #v_A #i0
 
 /// Generic `Index<I>` impl, mirroring std\'s
 /// `impl<T, I: SliceIndex<[T]>, A: Allocator> Index<I> for Vec<T, A>`.
