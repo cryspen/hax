@@ -3088,6 +3088,11 @@ pub mod adapters {
         #[hax_lib::attributes]
         impl<I: Iterator, const N: usize> ArrayChunks<I, N> {
             // std panics in `Iterator::array_chunks`, this constructor's only caller.
+            // Excluded from coverage: `N` is a const parameter, so each width is
+            // its own instantiation and no single one can take both arms of the
+            // guard — `test_array_chunks_zero_panics` covers `N == 0`, every other
+            // test covers `N != 0`.
+            #[cfg_attr(coverage_nightly, coverage(off))]
             #[hax_lib::requires(N != 0)]
             pub fn new(it: I) -> Self {
                 if N == 0 {
@@ -3163,6 +3168,10 @@ pub mod adapters {
         #[hax_lib::attributes]
         impl<I: Iterator, F, const N: usize> MapWindows<I, F, N> {
             // std panics in `Iterator::map_windows`, this constructor's only caller.
+            // Excluded from coverage for the same reason as `ArrayChunks::new`:
+            // `N` is a const parameter, so the guard's two arms belong to
+            // different instantiations.
+            #[cfg_attr(coverage_nightly, coverage(off))]
             #[hax_lib::requires(N != 0)]
             pub fn new(it: I, f: F) -> Self {
                 if N == 0 {
@@ -3512,6 +3521,11 @@ pub mod sources {
         }
 
         /// See [`std::iter::successors`]
+        // Excluded from coverage: the arm for a `None` seed is per-instantiation
+        // dead code — a caller that passes `None` gets its own monomorphisation,
+        // whose `Some` arm is then the unreachable one, so no set of tests covers
+        // both arms of any single instantiation.
+        #[cfg_attr(coverage_nightly, coverage(off))]
         pub fn successors<T, F: Fn(&T) -> Option<T>>(
             first: Option<T>,
             succ: F,
@@ -3651,6 +3665,12 @@ pub mod range {
                         }
                     }
 
+                    // Excluded from coverage: the `Err` arm is per-instantiation
+                    // dead code — at the widths where every `usize` fits the type
+                    // (`u64`/`u128`/`usize` here) the conversion cannot fail, and
+                    // the narrow widths that do reach it are separate
+                    // monomorphisations.
+                    #[cfg_attr(coverage_nightly, coverage(off))]
                     fn forward_checked(start: Self, n: usize) -> Option<Self> {
                         match <Self as crate::convert::TryFrom<usize>>::try_from(n) {
                             Result::Ok(n) => <$UName>::checked_add(start, n),
@@ -3658,6 +3678,12 @@ pub mod range {
                         }
                     }
 
+                    // Excluded from coverage: the `Err` arm is per-instantiation
+                    // dead code — at the widths where every `usize` fits the type
+                    // (`u64`/`u128`/`usize` here) the conversion cannot fail, and
+                    // the narrow widths that do reach it are separate
+                    // monomorphisations.
+                    #[cfg_attr(coverage_nightly, coverage(off))]
                     fn backward_checked(start: Self, n: usize) -> Option<Self> {
                         match <Self as crate::convert::TryFrom<usize>>::try_from(n) {
                             Result::Ok(n) => <$UName>::checked_sub(start, n),
@@ -3684,6 +3710,13 @@ pub mod range {
                         }
                     }
 
+                    // Excluded from coverage: both the `Err` arm and the
+                    // overflow arm are per-instantiation dead code — at the widths
+                    // where every `usize` fits the unsigned counterpart the
+                    // conversion cannot fail, and at the narrow ones it cannot
+                    // succeed far enough to overflow. Each width is its own
+                    // monomorphisation, so no set of tests covers both in one.
+                    #[cfg_attr(coverage_nightly, coverage(off))]
                     fn forward_checked(start: Self, n: usize) -> Option<Self> {
                         match <$u_narrower as crate::convert::TryFrom<usize>>::try_from(n) {
                             Result::Ok(n) => {
@@ -3704,6 +3737,13 @@ pub mod range {
                         }
                     }
 
+                    // Excluded from coverage: both the `Err` arm and the
+                    // overflow arm are per-instantiation dead code — at the widths
+                    // where every `usize` fits the unsigned counterpart the
+                    // conversion cannot fail, and at the narrow ones it cannot
+                    // succeed far enough to overflow. Each width is its own
+                    // monomorphisation, so no set of tests covers both in one.
+                    #[cfg_attr(coverage_nightly, coverage(off))]
                     fn backward_checked(start: Self, n: usize) -> Option<Self> {
                         match <$u_narrower as crate::convert::TryFrom<usize>>::try_from(n) {
                             Result::Ok(n) => {
@@ -4723,10 +4763,15 @@ mod tests {
                 a in prop::collection::vec(any::<u8>(), 0..=6),
                 b in prop::collection::vec(any::<u8>(), 0..=6),
             ) {
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).cmp(VecIter::new(b.clone())),
-                    a.iter().cmp(b.iter()).inject()
-                );
+                // `a` against itself as well: the walk only takes another step
+                // on a pair that compares `Equal`, and two independent draws
+                // agree at the same index only by chance.
+                for b in [b, a.clone()] {
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).cmp(VecIter::new(b.clone())),
+                        a.iter().cmp(b.iter()).inject()
+                    );
+                }
             }
 
             #[test]
@@ -4734,11 +4779,16 @@ mod tests {
                 a in prop::collection::vec(any::<u8>(), 0..=6),
                 b in prop::collection::vec(any::<u8>(), 0..=6),
             ) {
-                prop_assert_eq!(
-                    VecIter::new(a.clone())
-                        .cmp_by(VecIter::new(b.clone()), |x: u8, y: u8| x.cmp(&y).inject()),
-                    a.iter().copied().cmp_by(b.iter().copied(), |x, y| x.cmp(&y)).inject()
-                );
+                // `a` against itself as well: the walk only takes another step
+                // on a pair that compares `Equal`, and two independent draws
+                // agree at the same index only by chance.
+                for b in [b, a.clone()] {
+                    prop_assert_eq!(
+                        VecIter::new(a.clone())
+                            .cmp_by(VecIter::new(b.clone()), |x: u8, y: u8| x.cmp(&y).inject()),
+                        a.iter().copied().cmp_by(b.iter().copied(), |x, y| x.cmp(&y)).inject()
+                    );
+                }
             }
 
             // `sum`/`product` and the comparison family are not part of the
@@ -4749,10 +4799,15 @@ mod tests {
                 a in prop::collection::vec(any::<u8>(), 0..=6),
                 b in prop::collection::vec(any::<u8>(), 0..=6),
             ) {
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).partial_cmp(VecIter::new(b.clone())),
-                    a.iter().partial_cmp(b.iter()).inject()
-                );
+                // `a` against itself as well: only a pair that compares `Equal`
+                // makes the walk take another step, and two independent draws
+                // agree at the same index only by chance.
+                for b in [b, a.clone()] {
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).partial_cmp(VecIter::new(b.clone())),
+                        a.iter().partial_cmp(b.iter()).inject()
+                    );
+                }
             }
 
             #[test]
@@ -4760,17 +4815,20 @@ mod tests {
                 a in prop::collection::vec(any::<u8>(), 0..=6),
                 b in prop::collection::vec(any::<u8>(), 0..=6),
             ) {
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).partial_cmp_by(
-                        VecIter::new(b.clone()),
-                        |x: u8, y: u8| x.partial_cmp(&y).inject()
-                    ),
-                    a.iter()
-                        .copied()
-                        .partial_cmp_by(b.iter().copied(), |x, y| x.partial_cmp(&y))
-                        .inject()
-                );
+                // See `test_cmp`: an equal pair is what makes the walk step.
+                for b in [b, a.clone()] {
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).partial_cmp_by(
+                            VecIter::new(b.clone()),
+                            |x: u8, y: u8| x.partial_cmp(&y).inject()
+                        ),
+                        a.iter()
+                            .copied()
+                            .partial_cmp_by(b.iter().copied(), |x, y| x.partial_cmp(&y))
+                            .inject()
+                    );
             }
+                }
 
             // `sum`/`product` and the comparison family are not part of the
             // F* model (see the note on `IteratorMethods::sum`).
@@ -4780,30 +4838,33 @@ mod tests {
                 a in prop::collection::vec(any::<u8>(), 0..=6),
                 b in prop::collection::vec(any::<u8>(), 0..=6),
             ) {
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).eq(VecIter::new(b.clone())),
-                    a.iter().eq(b.iter())
-                );
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).ne(VecIter::new(b.clone())),
-                    a.iter().ne(b.iter())
-                );
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).lt(VecIter::new(b.clone())),
-                    a.iter().lt(b.iter())
-                );
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).le(VecIter::new(b.clone())),
-                    a.iter().le(b.iter())
-                );
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).gt(VecIter::new(b.clone())),
-                    a.iter().gt(b.iter())
-                );
-                prop_assert_eq!(
-                    VecIter::new(a.clone()).ge(VecIter::new(b.clone())),
-                    a.iter().ge(b.iter())
-                );
+                // See `test_cmp`: an equal pair is what makes the walk step.
+                for b in [b, a.clone()] {
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).eq(VecIter::new(b.clone())),
+                        a.iter().eq(b.iter())
+                    );
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).ne(VecIter::new(b.clone())),
+                        a.iter().ne(b.iter())
+                    );
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).lt(VecIter::new(b.clone())),
+                        a.iter().lt(b.iter())
+                    );
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).le(VecIter::new(b.clone())),
+                        a.iter().le(b.iter())
+                    );
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).gt(VecIter::new(b.clone())),
+                        a.iter().gt(b.iter())
+                    );
+                    prop_assert_eq!(
+                        VecIter::new(a.clone()).ge(VecIter::new(b.clone())),
+                        a.iter().ge(b.iter())
+                    );
+                }
             }
 
             // Same length, one element apart: the element-mismatch exit of
@@ -4813,14 +4874,21 @@ mod tests {
                 a in prop::collection::vec(any::<u8>(), 1..=6),
                 i in 0usize..6,
             ) {
-                let mut b = a.clone();
+                let mut one_apart = a.clone();
                 let i = i % a.len();
-                b[i] = b[i].wrapping_add(1);
-                prop_assert_eq!(
-                    VecIter::new(a.clone())
-                        .eq_by(VecIter::new(b.clone()), |x: u8, y: u8| x == y),
-                    a.iter().copied().eq_by(b.iter().copied(), |x, y| x == y)
-                );
+                one_apart[i] = one_apart[i].wrapping_add(1);
+                // All four exits of the walk, through one closure so they land in
+                // one instantiation: differing (stop early), identical (walk to
+                // exhaustion), and either side running out first.
+                let shorter = a[..a.len() - 1].to_vec();
+                let longer = { let mut v = a.clone(); v.push(0); v };
+                for b in [one_apart, a.clone(), shorter, longer] {
+                    prop_assert_eq!(
+                        VecIter::new(a.clone())
+                            .eq_by(VecIter::new(b.clone()), |x: u8, y: u8| x == y),
+                        a.iter().copied().eq_by(b.iter().copied(), |x, y| x == y)
+                    );
+                }
             }
 
             #[test]
@@ -4828,11 +4896,16 @@ mod tests {
                 a in prop::collection::vec(any::<u8>(), 0..=6),
                 b in prop::collection::vec(any::<u8>(), 0..=6),
             ) {
-                prop_assert_eq!(
-                    VecIter::new(a.clone())
-                        .eq_by(VecIter::new(b.clone()), |x: u8, y: u8| x == y),
-                    a.iter().copied().eq_by(b.iter().copied(), |x, y| x == y)
-                );
+                // `a` against itself as well: two independent draws differ at the
+                // first element almost always, so the walk would never take a
+                // second step.
+                for b in [b, a.clone()] {
+                    prop_assert_eq!(
+                        VecIter::new(a.clone())
+                            .eq_by(VecIter::new(b.clone()), |x: u8, y: u8| x == y),
+                        a.iter().copied().eq_by(b.iter().copied(), |x, y| x == y)
+                    );
+                }
             }
 
             // Not part of the F* model (see the note on
@@ -5044,15 +5117,21 @@ mod tests {
             #[cfg(not(hax_backend_fstar))]
             #[test]
             fn test_try_find(v in prop::collection::vec(any::<u8>(), 0..=20), bound in any::<u8>()) {
-                let mut model = VecIter::new(v.clone());
-                let m: Result<Option<u8>, u8> = model.try_find(|x: &u8| {
-                    if *x == 0 { Result::Err(*x) } else { Result::Ok(*x > bound) }
-                });
-                let mut std_iter = v.iter().copied();
-                let s: std::result::Result<std::option::Option<u8>, u8> =
-                    std_iter.try_find(|x| if *x == 0 { Err(*x) } else { Ok(*x > bound) });
-                prop_assert_eq!(m, s.inject());
-                prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+                // A `0` is what makes the closure answer `Err`, so one input
+                // always carries one: otherwise the short-circuit is only
+                // exercised when the draw happens to contain a zero.
+                let with_zero = { let mut v = v.clone(); v.push(0); v };
+                for v in [v, with_zero] {
+                    let mut model = VecIter::new(v.clone());
+                    let m: Result<Option<u8>, u8> = model.try_find(|x: &u8| {
+                        if *x == 0 { Result::Err(*x) } else { Result::Ok(*x > bound) }
+                    });
+                    let mut std_iter = v.iter().copied();
+                    let s: std::result::Result<std::option::Option<u8>, u8> =
+                        std_iter.try_find(|x| if *x == 0 { Err(*x) } else { Ok(*x > bound) });
+                    prop_assert_eq!(m, s.inject());
+                    prop_assert_eq!(drain(model), std_iter.collect::<Vec<u8>>());
+                }
             }
 
             // Not part of the F* model (see the note on
@@ -5602,48 +5681,58 @@ mod tests {
             empty::empty, from_fn::from_fn, once::once, once_with::once_with, repeat::repeat,
             repeat_n::repeat_n, repeat_with::repeat_with, successors::successors,
         };
-        use super::super::traits::iterator::IteratorMethods;
+        use super::super::traits::iterator::{Iterator, IteratorMethods};
         use super::{VecIter, drain};
         use crate::option::Option;
+        use crate::testing::Inject;
         use proptest::prelude::*;
         use std::cell::Cell;
 
+        // Observed through `next` rather than `drain`: `drain`'s loop body is
+        // counted per instantiation, and an iterator that is always empty gives
+        // its own monomorphisation a body no run can enter.
         #[test]
         fn test_empty() {
-            assert_eq!(
-                drain(empty::<u8>()),
-                std::iter::empty::<u8>().collect::<Vec<u8>>()
-            );
+            let mut model = empty::<u8>();
+            let mut std_iter = std::iter::empty::<u8>();
+            assert_eq!(Iterator::next(&mut model), std_iter.next().inject());
+            assert_eq!(Iterator::next(&mut model), std_iter.next().inject());
         }
 
         // `successors(None, f)` never calls `f`, so a closure spelled here would
-        // be dead code: `same` is a named function, exercised below as well.
-        fn same(x: &u8) -> Option<u8> {
-            Option::Some(*x)
+        // be dead code: `up_to_nine` is a named function, exercised below as well.
+        // It both continues and stops, which is what reaches either arm of
+        // `Successors::next` — a constant successor would only ever reach one,
+        // and each successor function is its own instantiation.
+        fn up_to_nine(x: &u8) -> Option<u8> {
+            if *x < 9 {
+                Option::Some(*x + 1)
+            } else {
+                Option::None
+            }
         }
 
-        fn same_std(x: &u8) -> std::option::Option<u8> {
-            Some(*x)
+        fn up_to_nine_std(x: &u8) -> std::option::Option<u8> {
+            if *x < 9 { Some(*x + 1) } else { None }
         }
 
+        // Same reason as `test_empty`: `successors(None, _)` yields nothing, so
+        // it is observed through `next`.
         #[test]
         fn test_successors_none() {
-            let model: Vec<u8> = drain(successors(Option::None, same));
-            assert_eq!(
-                model,
-                std::iter::successors(None, same_std).collect::<Vec<u8>>()
-            );
+            let mut model = successors(Option::None, up_to_nine);
+            let mut std_iter = std::iter::successors(None, up_to_nine_std);
+            assert_eq!(Iterator::next(&mut model), std_iter.next().inject());
         }
 
-        // Which is what runs `same`/`same_std`: one step, then stop.
+        // Which is what runs `up_to_nine`/`up_to_nine_std`: a few elements, then
+        // the sequence ends — so `drain` gets a non-empty iterator here too.
         #[test]
         fn test_successors_one_step() {
-            let model: Vec<u8> = drain(successors(Option::Some(7u8), same).take(2));
+            let model: Vec<u8> = drain(successors(Option::Some(7u8), up_to_nine));
             assert_eq!(
                 model,
-                std::iter::successors(Some(7u8), same_std)
-                    .take(2)
-                    .collect::<Vec<u8>>()
+                std::iter::successors(Some(7u8), up_to_nine_std).collect::<Vec<u8>>()
             );
         }
 
