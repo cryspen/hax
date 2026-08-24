@@ -542,6 +542,9 @@ pub mod adapters {
         }
     }
     pub mod rev {
+        // The trait is Lean/charon-only (see `double_ended`), so its import must be
+        // gated to match — otherwise F* extraction hits an unresolved import (E0432).
+        #[cfg(not(hax_backend_fstar))]
         use super::super::traits::double_ended::DoubleEndedIterator;
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;

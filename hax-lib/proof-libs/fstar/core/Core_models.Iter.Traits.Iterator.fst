@@ -21,6 +21,18 @@ include Core_models.Bundle {f_fold_post as f_fold_post}
 
 include Core_models.Bundle {f_fold as f_fold}
 
+include Core_models.Bundle {f_all_pre as f_all_pre}
+
+include Core_models.Bundle {f_all_post as f_all_post}
+
+include Core_models.Bundle {f_all as f_all}
+
+include Core_models.Bundle {f_map_pre as f_map_pre}
+
+include Core_models.Bundle {f_map_post as f_map_post}
+
+include Core_models.Bundle {f_map as f_map}
+
 include Core_models.Bundle {f_enumerate_pre as f_enumerate_pre}
 
 include Core_models.Bundle {f_enumerate_post as f_enumerate_post}
@@ -33,23 +45,59 @@ include Core_models.Bundle {f_step_by_post as f_step_by_post}
 
 include Core_models.Bundle {f_step_by as f_step_by}
 
-include Core_models.Bundle {f_map_pre as f_map_pre}
-
-include Core_models.Bundle {f_map_post as f_map_post}
-
-include Core_models.Bundle {f_map as f_map}
-
-include Core_models.Bundle {f_all_pre as f_all_pre}
-
-include Core_models.Bundle {f_all_post as f_all_post}
-
-include Core_models.Bundle {f_all as f_all}
-
 include Core_models.Bundle {f_take_pre as f_take_pre}
 
 include Core_models.Bundle {f_take_post as f_take_post}
 
 include Core_models.Bundle {f_take as f_take}
+
+include Core_models.Bundle {f_skip_pre as f_skip_pre}
+
+include Core_models.Bundle {f_skip_post as f_skip_post}
+
+include Core_models.Bundle {f_skip as f_skip}
+
+include Core_models.Bundle {f_filter_pre as f_filter_pre}
+
+include Core_models.Bundle {f_filter_post as f_filter_post}
+
+include Core_models.Bundle {f_filter as f_filter}
+
+include Core_models.Bundle {f_filter_map_pre as f_filter_map_pre}
+
+include Core_models.Bundle {f_filter_map_post as f_filter_map_post}
+
+include Core_models.Bundle {f_filter_map as f_filter_map}
+
+include Core_models.Bundle {f_take_while_pre as f_take_while_pre}
+
+include Core_models.Bundle {f_take_while_post as f_take_while_post}
+
+include Core_models.Bundle {f_take_while as f_take_while}
+
+include Core_models.Bundle {f_skip_while_pre as f_skip_while_pre}
+
+include Core_models.Bundle {f_skip_while_post as f_skip_while_post}
+
+include Core_models.Bundle {f_skip_while as f_skip_while}
+
+include Core_models.Bundle {f_map_while_pre as f_map_while_pre}
+
+include Core_models.Bundle {f_map_while_post as f_map_while_post}
+
+include Core_models.Bundle {f_map_while as f_map_while}
+
+include Core_models.Bundle {f_inspect_pre as f_inspect_pre}
+
+include Core_models.Bundle {f_inspect_post as f_inspect_post}
+
+include Core_models.Bundle {f_inspect as f_inspect}
+
+include Core_models.Bundle {f_fuse_pre as f_fuse_pre}
+
+include Core_models.Bundle {f_fuse_post as f_fuse_post}
+
+include Core_models.Bundle {f_fuse as f_fuse}
 
 include Core_models.Bundle {f_flat_map_pre as f_flat_map_pre}
 
@@ -69,23 +117,11 @@ include Core_models.Bundle {f_zip_post as f_zip_post}
 
 include Core_models.Bundle {f_zip as f_zip}
 
-include Core_models.Bundle {f_filter_pre as f_filter_pre}
-
-include Core_models.Bundle {f_filter_post as f_filter_post}
-
-include Core_models.Bundle {f_filter as f_filter}
-
 include Core_models.Bundle {f_chain_pre as f_chain_pre}
 
 include Core_models.Bundle {f_chain_post as f_chain_post}
 
 include Core_models.Bundle {f_chain as f_chain}
-
-include Core_models.Bundle {f_skip_pre as f_skip_pre}
-
-include Core_models.Bundle {f_skip_post as f_skip_post}
-
-include Core_models.Bundle {f_skip as f_skip}
 
 include Core_models.Bundle {f_any_pre as f_any_pre}
 

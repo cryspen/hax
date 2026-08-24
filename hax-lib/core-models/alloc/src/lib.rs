@@ -742,6 +742,9 @@ pub mod vec {
         }
     }
 
+    // Excluded from the F* backend to match `core::ops::DerefMut`, which is not
+    // extracted there (HAX0003, hacspec/hax#420); aeneas/lean/native keep it.
+    #[cfg(not(hax_backend_fstar))]
     #[hax_lib::attributes]
     impl<T> core::ops::DerefMut for Vec<T> {
         fn deref_mut(&mut self) -> &mut [T] {
@@ -834,9 +837,9 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
-        pub fn as_mut_slice(&mut self) -> &mut [T] {
-            seq_to_slice_mut(&mut self.0)
-        }
+        // No `as_mut_slice` here: it returns `&mut [T]`, which the F* backend can't
+        // model (HAX0003/HAX0010, hacspec/hax#420). The `#[cfg(not(hax_backend_fstar))]`
+        // Vec block above keeps it for aeneas/lean/native; nothing in F* uses it.
         #[hax_lib::opaque]
         pub fn truncate(&mut self, n: usize) {}
         #[hax_lib::opaque]
