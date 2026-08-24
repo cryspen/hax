@@ -118,105 +118,105 @@ def collections.btree.map.IntoValues (K : Type) (V : Type) (A : Type) :=
   rust_primitives.sequence.Seq (K × V) × core.marker.PhantomData A
 
 /-- [alloc::collections::btree::set::BTreeSet]
-    Source: 'src/lib.rs', lines 1497:12-1497:66
+    Source: 'src/lib.rs', lines 1503:12-1503:66
     Visibility: public -/
 def collections.btree.set.BTreeSet (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::collections::btree::set::Iter]
-    Source: 'src/lib.rs', lines 1500:12-1500:51
+    Source: 'src/lib.rs', lines 1506:12-1506:51
     Visibility: public -/
 @[reducible]
 def collections.btree.set.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::collections::btree::set::Difference]
-    Source: 'src/lib.rs', lines 1502:12-1502:76
+    Source: 'src/lib.rs', lines 1508:12-1508:76
     Visibility: public -/
 def collections.btree.set.Difference (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::collections::btree::set::Intersection]
-    Source: 'src/lib.rs', lines 1504:12-1504:78
+    Source: 'src/lib.rs', lines 1510:12-1510:78
     Visibility: public -/
 def collections.btree.set.Intersection (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::collections::btree::set::Union]
-    Source: 'src/lib.rs', lines 1506:12-1506:52
+    Source: 'src/lib.rs', lines 1512:12-1512:52
     Visibility: public -/
 @[reducible]
 def collections.btree.set.Union (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::collections::btree::set::SymmetricDifference]
-    Source: 'src/lib.rs', lines 1508:12-1508:66
+    Source: 'src/lib.rs', lines 1514:12-1514:66
     Visibility: public -/
 @[reducible]
 def collections.btree.set.SymmetricDifference (T : Type) :=
   rust_primitives.sequence.Seq T
 
 /-- [alloc::collections::linked_list::LinkedList]
-    Source: 'src/lib.rs', lines 2180:8-2180:77
+    Source: 'src/lib.rs', lines 2190:8-2190:77
     Visibility: public -/
 def collections.linked_list.LinkedList (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::collections::linked_list::Iter]
-    Source: 'src/lib.rs', lines 2184:8-2184:47
+    Source: 'src/lib.rs', lines 2194:8-2194:47
     Visibility: public -/
 @[reducible]
 def collections.linked_list.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::collections::vec_deque::VecDeque]
-    Source: 'src/lib.rs', lines 2608:8-2608:75
+    Source: 'src/lib.rs', lines 2618:8-2618:75
     Visibility: public -/
 def collections.vec_deque.VecDeque (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::collections::vec_deque::iter::Iter]
-    Source: 'src/lib.rs', lines 3130:12-3130:51
+    Source: 'src/lib.rs', lines 3140:12-3140:51
     Visibility: public -/
 @[reducible]
 def collections.vec_deque.iter.Iter (T : Type) :=
   rust_primitives.sequence.Seq T
 
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::closure]
-    Source: 'src/lib.rs', lines 2999:38-2999:58 -/
+    Source: 'src/lib.rs', lines 3009:38-3009:58 -/
 @[reducible]
 def collections.vec_deque.VecDeque.binary_search.closure (T : Type) (A : Type)
   :=
   T
 
 /-- [alloc::collections::vec_deque::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 3154:12-3154:83
+    Source: 'src/lib.rs', lines 3164:12-3164:83
     Visibility: public -/
 def collections.vec_deque.into_iter.IntoIter (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::slice::Dummy]
-    Source: 'src/lib.rs', lines 3839:4-3839:23 -/
+    Source: 'src/lib.rs', lines 3849:4-3849:23 -/
 @[reducible]
 def slice.Dummy (T : Type) := T
 
 /-- [alloc::vec::Vec]
-    Source: 'src/lib.rs', lines 4564:4-4564:34
+    Source: 'src/lib.rs', lines 4574:4-4574:34
     Visibility: public -/
 @[reducible]
 def vec.Vec (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 4614:8-4614:43
+    Source: 'src/lib.rs', lines 4624:8-4624:43
     Visibility: public -/
 @[reducible]
 def vec.into_iter.IntoIter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::drain::Drain]
-    Source: 'src/lib.rs', lines 4938:8-4938:76
+    Source: 'src/lib.rs', lines 4948:8-4948:76
     Visibility: public -/
 def vec.drain.Drain (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::vec::extract_if::ExtractIf]
-    Source: 'src/lib.rs', lines 4970:8-4970:44
+    Source: 'src/lib.rs', lines 4980:8-4980:44
     Visibility: public -/
 @[reducible]
 def vec.extract_if.ExtractIf (T : Type) := rust_primitives.sequence.Seq T
