@@ -2832,9 +2832,15 @@ mod tests {
         );
     }
 
-    // `Slice::rchunks_exact` panics on `0` (above), so the guard inside the
-    // constructor is reachable only by calling it directly. It is there so the
-    // backends can discharge the division, as in `ChunksExact::new`.
+    // `Slice::chunks_exact`/`rchunks_exact` panic on `0` (above), so the guards
+    // inside the constructors are reachable only by calling them directly. They
+    // are there so the backends can discharge the division.
+    #[test]
+    fn test_chunks_exact_new_zero_chunk_size() {
+        let it = super::iter::ChunksExact::new(0, &[1u8, 2, 3][..]);
+        assert_eq!(it.remainder(), &[] as &[u8]);
+    }
+
     #[test]
     fn test_rchunks_exact_new_zero_chunk_size() {
         let it = super::iter::RChunksExact::new(0, &[1u8, 2, 3][..]);

@@ -5576,7 +5576,7 @@ mod tests {
             let it = VecIter::new(vec![1u8, 2, 3]);
             let (lower, upper) = it.size_hint();
             assert_eq!(lower, 0);
-            assert!(matches!(upper, Option::None));
+            assert_eq!(upper, None::<usize>.inject());
         }
 
         #[test]
@@ -5616,12 +5616,34 @@ mod tests {
             );
         }
 
+        // `successors(None, f)` never calls `f`, so a closure spelled here would
+        // be dead code: `same` is a named function, exercised below as well.
+        fn same(x: &u8) -> Option<u8> {
+            Option::Some(*x)
+        }
+
+        fn same_std(x: &u8) -> std::option::Option<u8> {
+            Some(*x)
+        }
+
         #[test]
         fn test_successors_none() {
-            let model: Vec<u8> = drain(successors(Option::None, |x: &u8| Option::Some(*x)));
+            let model: Vec<u8> = drain(successors(Option::None, same));
             assert_eq!(
                 model,
-                std::iter::successors(None, |x: &u8| Some(*x)).collect::<Vec<u8>>()
+                std::iter::successors(None, same_std).collect::<Vec<u8>>()
+            );
+        }
+
+        // Which is what runs `same`/`same_std`: one step, then stop.
+        #[test]
+        fn test_successors_one_step() {
+            let model: Vec<u8> = drain(successors(Option::Some(7u8), same).take(2));
+            assert_eq!(
+                model,
+                std::iter::successors(Some(7u8), same_std)
+                    .take(2)
+                    .collect::<Vec<u8>>()
             );
         }
 
