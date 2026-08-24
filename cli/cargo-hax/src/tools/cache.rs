@@ -97,6 +97,121 @@ pub fn installed_versions(tool: &str) -> Vec<String> {
     versions
 }
 
+/// Outcome of a removal that has taken effect.
+pub struct Removal<T> {
+    pub result: T,
+    /// Warning about a staging directory that could not be deleted. It
+    /// holds no live data: removing it manually is safe, and a later
+    /// removal sweeping the same location reaps it.
+    pub leftover: Option<String>,
+}
+
+impl<T> Removal<T> {
+    fn done(result: T) -> Self {
+        Self {
+            result,
+            leftover: None,
+        }
+    }
+}
+
+/// Delete a staging directory whose contents are already logically
+/// removed. Failure is a warning, not an error: the removal has taken
+/// effect, only disk space is still held.
+fn delete_staging(staging: tempfile::TempDir) -> Option<String> {
+    let path = staging.keep();
+    match std::fs::remove_dir_all(&path) {
+        Ok(()) => None,
+        Err(e) => Some(format!(
+            "could not delete {}: {e}; delete it manually to reclaim the space",
+            path.display()
+        )),
+    }
+}
+
+/// Best-effort removal of staging directories a previous run left behind.
+/// Errors are ignored: a directory may belong to a concurrent removal, and
+/// whatever blocked the original deletion may still hold. The sweep can
+/// delete a concurrent removal's staging directory before its rename,
+/// failing that removal with a spurious "could not move aside" error; the
+/// window is a few syscalls wide and retrying recovers.
+fn sweep_staging(dir: &Path, prefix: &str) {
+    for entry in std::fs::read_dir(dir).into_iter().flatten().flatten() {
+        if entry.file_name().to_string_lossy().starts_with(prefix) {
+            let _ = std::fs::remove_dir_all(entry.path());
+        }
+    }
+}
+
+/// Remove an installed tool version. Returns whether the version was
+/// present. The directory is renamed into a temporary sibling before
+/// deletion, so a concurrent reader never observes a partially deleted
+/// version directory.
+pub fn remove_version(tool: &str, version: &str) -> Result<Removal<bool>, String> {
+    let dir = version_dir(tool, version)?;
+    if !dir.is_dir() {
+        return Ok(Removal::done(false));
+    }
+    let parent = tool_dir(tool)?;
+    sweep_staging(&parent, ".remove-");
+    let staging = tempfile::Builder::new()
+        .prefix(".remove-")
+        .tempdir_in(&parent)
+        .map_err(|e| format!("could not create a temporary directory: {e}"))?;
+    match std::fs::rename(&dir, staging.path().join("contents")) {
+        Ok(()) => {}
+        // A concurrent removal won the race.
+        Err(_) if !dir.exists() => return Ok(Removal::done(false)),
+        Err(e) => return Err(format!("could not move aside {}: {e}", dir.display())),
+    }
+    Ok(Removal {
+        result: true,
+        leftover: delete_staging(staging),
+    })
+}
+
+/// Delete the entire tool cache. Returns how many tool versions it held,
+/// including versions of tools this binary does not manage. The `tools`
+/// directory is renamed into a temporary sibling before deletion, so a
+/// concurrent reader observes an empty cache rather than a shrinking one.
+pub fn clean() -> Result<Removal<usize>, String> {
+    let root = cache_root()?;
+    sweep_staging(&root, ".clean-");
+    let dir = root.join("tools");
+    if !dir.is_dir() {
+        return Ok(Removal::done(0));
+    }
+    let subdirectories = |dir: &Path| -> Vec<PathBuf> {
+        std::fs::read_dir(dir)
+            .into_iter()
+            .flatten()
+            .filter_map(|entry| {
+                let entry = entry.ok()?;
+                let name = entry.file_name().into_string().ok()?;
+                (entry.file_type().ok()?.is_dir() && !name.starts_with('.')).then(|| entry.path())
+            })
+            .collect()
+    };
+    let removed = subdirectories(&dir)
+        .iter()
+        .map(|tool| subdirectories(tool).len())
+        .sum();
+    let staging = tempfile::Builder::new()
+        .prefix(".clean-")
+        .tempdir_in(&root)
+        .map_err(|e| format!("could not create a temporary directory: {e}"))?;
+    match std::fs::rename(&dir, staging.path().join("contents")) {
+        Ok(()) => {}
+        // A concurrent clean won the race.
+        Err(_) if !dir.exists() => return Ok(Removal::done(0)),
+        Err(e) => return Err(format!("could not move aside {}: {e}", dir.display())),
+    }
+    Ok(Removal {
+        result: removed,
+        leftover: delete_staging(staging),
+    })
+}
+
 /// Read a version directory's metadata. A missing file is `None` (the
 /// `bin/` convention applies); an unreadable one is an error, since the
 /// executables' locations may depend on it.
@@ -172,6 +287,18 @@ mod tests {
         assert!(cache_root_of(None, None).is_err());
         assert!(cache_root_of(Some(""), Some("")).is_err());
         assert!(cache_root_of(Some(".cache"), Some("home")).is_err());
+    }
+
+    #[test]
+    fn sweep_staging_removes_only_matching_directories() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::create_dir_all(dir.path().join(".remove-old/contents")).unwrap();
+        std::fs::create_dir(dir.path().join("1.2.3")).unwrap();
+        std::fs::create_dir(dir.path().join(".clean-x")).unwrap();
+        sweep_staging(dir.path(), ".remove-");
+        assert!(!dir.path().join(".remove-old").exists());
+        assert!(dir.path().join("1.2.3").is_dir());
+        assert!(dir.path().join(".clean-x").is_dir());
     }
 
     #[test]
