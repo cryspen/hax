@@ -70,6 +70,9 @@
 // formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
 // DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
 // proptests compare against them.
+// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
+// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
+// proptests compare against them.
 #![cfg_attr(
     test,
     feature(
@@ -149,7 +152,6 @@
         range_bounds_is_empty,
         range_into_bounds,
         rev_into_inner,
-        signed_bigint_helpers,
         slice_pattern,
         slice_split_once,
         slice_swap_unchecked,
@@ -161,9 +163,7 @@
         uint_bit_width,
         unchecked_neg,
         unchecked_shifts,
-        unsigned_bigint_helpers,
         utf16_extra,
-        widening_mul,
         wrapping_int_impl,
         wrapping_next_power_of_two
     )

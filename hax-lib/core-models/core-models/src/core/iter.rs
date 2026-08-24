@@ -5478,12 +5478,10 @@ mod tests {
             #[test]
             fn test_array_chunks_into_remainder(v in prop::collection::vec(any::<u8>(), 0..=20)) {
                 let model = VecIter::new(v.clone()).array_chunks::<3>().into_remainder();
-                let expected: Vec<u8> = v
-                    .iter()
-                    .copied()
-                    .array_chunks::<3>()
-                    .into_remainder()
-                    .collect();
+                // std's `into_remainder` answers with an `Option` on one of the
+                // two nightlies CI uses and with the iterator on the other, so
+                // the leftover is spelled out: whatever the last full chunk left.
+                let expected: Vec<u8> = v[v.len() - v.len() % 3..].to_vec();
                 prop_assert_eq!(drain(model), expected);
             }
 
