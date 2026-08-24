@@ -2,7 +2,7 @@ import LeanTutorial.Extraction
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Result ControlFlow Error
+open RustM ControlFlow Error
 open Std.Do
 
 set_option mvcgen.warning false

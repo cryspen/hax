@@ -3,7 +3,7 @@ import LoopEquivalence.Extraction
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Result ControlFlow Error
+open RustM ControlFlow Error
 open Std.Do
 open Std.Tactic
 
@@ -55,8 +55,8 @@ private theorem list_eq_of_pointwise {α} [Inhabited α] [DecidableEq α] (xs ys
       simp [h0, ih']
 
 private theorem add_one_usize (j : Usize) (h : j.val + 1 ≤ Usize.max) :
-    ∃ k : Usize, (j + 1#usize : Result Usize) = .ok k ∧ k.val = j.val + 1 := by
-  have hSpec : (j + 1#usize : Result Usize) ⦃ k => k.val = j.val + 1#usize.val ⦄ := by
+    ∃ k : Usize, (j + 1#usize : RustM Usize) = .ok k ∧ k.val = j.val + 1 := by
+  have hSpec : (j + 1#usize : RustM Usize) ⦃ k => k.val = j.val + 1#usize.val ⦄ := by
     apply UScalar.add_spec.step_spec
     scalar_tac
   obtain ⟨k, hk, hkVal⟩ := Aeneas.Std.WP.spec_imp_exists hSpec
@@ -86,20 +86,20 @@ private theorem eq_loop_correct {N : Usize} (a0 a1 : Array U64 N) (i : Usize)
     show Aeneas.Std.WP.spec (do
       let t1 ← rust_primitives.slice.array_index a1 j
       let b ← core.U64.Insts.CoreCmpPartialEqU64.eq a0.val[j.val]! t1
-      if b then let i1 ← j + 1#usize; Result.ok (ControlFlow.cont i1)
-      else Result.ok (ControlFlow.done false)) _
+      if b then let i1 ← j + 1#usize; RustM.ok (ControlFlow.cont i1)
+      else RustM.ok (ControlFlow.done false)) _
     rw [array_index_U64_eq a1 j hjLt]
     show Aeneas.Std.WP.spec (do
       let b ← core.U64.Insts.CoreCmpPartialEqU64.eq a0.val[j.val]! a1.val[j.val]!
-      if b then let i1 ← j + 1#usize; Result.ok (ControlFlow.cont i1)
-      else Result.ok (ControlFlow.done false)) _
+      if b then let i1 ← j + 1#usize; RustM.ok (ControlFlow.cont i1)
+      else RustM.ok (ControlFlow.done false)) _
     have hcmp : core.U64.Insts.CoreCmpPartialEqU64.eq a0.val[j.val]! a1.val[j.val]!
         = .ok (a0.val[j.val]! == a1.val[j.val]!) := rfl
     rw [hcmp]
     show Aeneas.Std.WP.spec
       (if (a0.val[j.val]! == a1.val[j.val]!)
-       then (do let i1 ← j + 1#usize; Result.ok (ControlFlow.cont i1))
-       else Result.ok (ControlFlow.done false)) _
+       then (do let i1 ← j + 1#usize; RustM.ok (ControlFlow.cont i1))
+       else RustM.ok (ControlFlow.done false)) _
     have hj1Bound : j.val + 1 ≤ Usize.max := by
       have hN := N.hBounds
       have : N.val ≤ Usize.max := by scalar_tac
@@ -156,7 +156,7 @@ theorem array.equality.PartialEqArray.eq_spec {N : Usize} (a0 : Array U64 N) (a1
     apply eq_loop_correct a0 a1 0#usize (by simp) (fun k hk => by simp at hk)
   obtain ⟨b, hx, hb⟩ := Aeneas.Std.WP.spec_imp_exists hSpec
   rw [hx]
-  apply Result.ok_spec
+  apply RustM.ok_spec
   rw [hb]; exact h
 
 end loop_equivalence

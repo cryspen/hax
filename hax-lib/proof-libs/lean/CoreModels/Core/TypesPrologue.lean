@@ -18,15 +18,15 @@ namespace CoreModels.core
 
 namespace ops.function
 structure FnOnce (Self : Type) (Args : Type) (Self_Output : Type) where
-  call_once : Self → Args → Result Self_Output
+  call_once : Self → Args → RustM Self_Output
 
 structure FnMut (Self : Type) (Args : Type) (Self_Clause0_Output : Type) where
   FnOnceInst : FnOnce Self Args Self_Clause0_Output
-  call_mut : Self → Args → Result (Self_Clause0_Output × Self)
+  call_mut : Self → Args → RustM (Self_Clause0_Output × Self)
 
 structure Fn (Self : Type) (Args : Type) (Self_Clause0_Output : Type) where
   FnMutInst : FnMut Self Args Self_Clause0_Output
-  call : Self → Args → Result Self_Clause0_Output
+  call : Self → Args → RustM Self_Clause0_Output
 end ops.function
 
 def marker.PhantomData (_ : Type) := Unit
@@ -59,28 +59,28 @@ inductive Result (T : Type) (E : Type) where
 | Ok : T → Result T E
 | Err : E → Result T E
 
-def Result.ok {T E : Type} (r : Result T E) : Aeneas.Std.Result (_root_.Option T) :=
+def Result.ok {T E : Type} (r : Result T E) : Aeneas.Std.RustM (_root_.Option T) :=
   match r with
-  | Result.Ok t  => Aeneas.Std.Result.ok (some t)
-  | Result.Err _ => Aeneas.Std.Result.ok none
+  | Result.Ok t  => Aeneas.Std.RustM.ok (some t)
+  | Result.Err _ => Aeneas.Std.RustM.ok none
 
 /-- `Result<T, E>::err(self) -> Option<E>`. Same `abbrev` rationale. -/
-def Result.err {T E : Type} (r : Result T E) : Aeneas.Std.Result (_root_.Option E) :=
+def Result.err {T E : Type} (r : Result T E) : Aeneas.Std.RustM (_root_.Option E) :=
   match r with
-  | Result.Ok _  => Aeneas.Std.Result.ok none
-  | Result.Err e => Aeneas.Std.Result.ok (some e)
+  | Result.Ok _  => Aeneas.Std.RustM.ok none
+  | Result.Err e => Aeneas.Std.RustM.ok (some e)
 
 /-- `Result<T, E>::is_ok(&self) -> bool`. -/
-def Result.is_ok {T E : Type} (r : Result T E) : Aeneas.Std.Result Bool :=
+def Result.is_ok {T E : Type} (r : Result T E) : Aeneas.Std.RustM Bool :=
   match r with
-  | Result.Ok _  => Aeneas.Std.Result.ok true
-  | Result.Err _ => Aeneas.Std.Result.ok false
+  | Result.Ok _  => Aeneas.Std.RustM.ok true
+  | Result.Err _ => Aeneas.Std.RustM.ok false
 
 /-- `Result<T, E>::is_err(&self) -> bool`. -/
-def Result.is_err {T E : Type} (r : Result T E) : Aeneas.Std.Result Bool :=
+def Result.is_err {T E : Type} (r : Result T E) : Aeneas.Std.RustM Bool :=
   match r with
-  | Result.Ok _  => Aeneas.Std.Result.ok false
-  | Result.Err _ => Aeneas.Std.Result.ok true
+  | Result.Ok _  => Aeneas.Std.RustM.ok false
+  | Result.Err _ => Aeneas.Std.RustM.ok true
 end result
 
 end CoreModels.core

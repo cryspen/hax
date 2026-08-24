@@ -68,6 +68,21 @@ url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.18-ae
 sha256 = "324a0bfda891a0196af186645cc5eb219ee29b833415eb567085b75ee4cf9e62"
 entry_points = { aeneas = "aeneas" }
 
+[tools.aeneas."nightly-2026.08.24-f8a0eb8".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-linux-x86_64.tar.gz"
+sha256 = "e268e3c18e9d024821b8144ccce388ae335dd6a800913da3f0018532390e1a85"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.24-f8a0eb8".linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-linux-aarch64.tar.gz"
+sha256 = "7fb030721d5f052fcf6578af6a3d0d61e5e89cf7e1dc0272e2b98520b6ad37fa"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."nightly-2026.08.24-f8a0eb8".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-macos-aarch64.tar.gz"
+sha256 = "6c25dc83c77df970550ce50b1071cdbe265324df99f038532853291c580f1b93"
+entry_points = { aeneas = "aeneas" }
+
 # ---- charon -----------------------------------------------------------------
 # Provenance: upstream AeneasVerif/charon nightly releases. Archives are
 # flat: `charon`, `charon-driver` and a `rust-toolchain` file at the root.
@@ -100,6 +115,21 @@ entry_points = { charon = "charon", charon-driver = "charon-driver" }
 [tools.charon."nightly-2026.07.24".macos-aarch64]
 url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.07.24/charon-macos-aarch64.tar.gz"
 sha256 = "a8d2c82dd6988f4283666b00eae9092403cbe6c0f7c2e88bc6de8d242a50e2b4"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.08.20".linux-x86_64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.08.20/charon-linux-x86_64.tar.gz"
+sha256 = "0ce0f9ab5c59e391b4039ebc25a06db673e1f1a1aaed986ec260fa00b07192fa"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.08.20".linux-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.08.20/charon-linux-aarch64.tar.gz"
+sha256 = "aca007539188040d8c0584a3cee5c302687a3ef4e32302c405244f9ed823eef8"
+entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[tools.charon."nightly-2026.08.20".macos-aarch64]
+url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.08.20/charon-macos-aarch64.tar.gz"
+sha256 = "e6e5450c3193f1782e5ccd88fdd5222f1efd1bc88c2997bdbe07f1da32c2309b"
 entry_points = { charon = "charon", charon-driver = "charon-driver" }
 
 # ---- fallback templates -----------------------------------------------------

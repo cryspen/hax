@@ -11,7 +11,7 @@ set_option mvcgen.warning false
 
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Result ControlFlow Error
+open RustM ControlFlow Error
 open Std.Do
 open Std.Tactic
 
@@ -106,8 +106,8 @@ theorem IteratorRange_next_spec_usize (i e : Usize) {Q}
 
 @[spec]
 theorem forLoopWithInvariant_spec {β : Type}
-    (body : I32 → β → Result β)
-    (init : β) (s e : I32) (inv : I32 → β → Result Prop)
+    (body : I32 → β → RustM β)
+    (init : β) (s e : I32) (inv : I32 → β → RustM Prop)
     (h_le : s.val ≤ e.val)
     (h_init : (inv s init).holds)
     (h_step : ∀ acc (i : I32), s.val ≤ i.val → i.val < e.val →
@@ -122,7 +122,7 @@ theorem forLoopWithInvariant_spec {β : Type}
   unfold Hax.forLoopWithInvariant
   apply loop_range_spec _ init s e inv h_le h_init
   intro acc i hsi hie hinv
-  unfold  Result.holds at hinv
+  unfold  RustM.holds at hinv
   mvcgen [hinv, uncurry, h_step]
     <;> grind only [ScalarTac.IScalar.bounds, IScalar.eq_equiv]
 
@@ -130,8 +130,8 @@ theorem forLoopWithInvariant_spec {β : Type}
 
 @[spec]
 theorem forLoopWithInvariant_spec_usize {β : Type}
-    (body : Usize → β → Result β)
-    (init : β) (s e : Usize) (inv : Usize → β → Result Prop)
+    (body : Usize → β → RustM β)
+    (init : β) (s e : Usize) (inv : Usize → β → RustM Prop)
     (h_le : s.val ≤ e.val)
     (h_init : (inv s init).holds)
     (h_step : ∀ acc (i : Usize), s.val ≤ i.val → i.val < e.val →
@@ -146,7 +146,7 @@ theorem forLoopWithInvariant_spec_usize {β : Type}
   unfold Hax.forLoopWithInvariant
   apply loop_range_spec_unsigned _ init s e inv h_le h_init
   intro acc i hsi hie hinv
-  unfold  Result.holds at hinv
+  unfold  RustM.holds at hinv
   mvcgen [hinv, uncurry, h_step]
   · grind
   · have : i = e := by grind

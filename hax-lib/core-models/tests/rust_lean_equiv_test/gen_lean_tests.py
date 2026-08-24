@@ -12,7 +12,7 @@ path. Reading the extracted def list directly keeps the gen script
 agnostic to that mapping.
 
 The Lean build then fails for any test whose Aeneas translation does
-not evaluate to `Result.ok true`.
+not evaluate to `RustM.ok true`.
 
 Tests marked `#[rust_lean_test(skip_lean = "why")]` get their guard
 written to `SkippedTests.lean` instead. Nothing imports that file, so a
@@ -169,7 +169,7 @@ def generate() -> None:
             [
                 "-- One `#guard` per `#[rust_lean_test]` function in `source/src/**/*.rs`.",
                 "-- Each guard fails the build if Aeneas's translation does not evaluate",
-                "-- to `Result.ok true`.",
+                "-- to `RustM.ok true`.",
             ],
         )
     )

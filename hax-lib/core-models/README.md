@@ -195,7 +195,7 @@ twice:
   `Funs.lean`, and emits one
   `#guard <fully-qualified-name> == .ok true` into
   `lean/RustLeanTests/LeanTests.lean`. Lake fails the build for any
-  guard whose Aeneas-evaluated body is not `Result.ok true`.
+  guard whose Aeneas-evaluated body is not `RustM.ok true`.
 
 Both halves must pass. Together they say: "for this concrete input,
 Rust std and the Lean translation of `core_models` give the same

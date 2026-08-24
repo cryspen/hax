@@ -30,7 +30,7 @@ directory.
 
 The file `proofs/lean/HaxTutorial/Extraction/Funs.lean` contains (among some boilerplate code) the translation of our `square` function:
 ```{.lean}
-def square (x : Std.U8) : Result Std.U8 := do
+def square (x : Std.U8) : RustM Std.U8 := do
   x * x
 ```
 To type-check the extraction, run
@@ -42,7 +42,7 @@ The first time you run this, it might take a while to download dependencies.
 Ultimately, the type checking succeeds. If you have used the F* backend before,
 this might come as a surprise because the function can panic when `x` is so large that the
 multiplication causes an integer overflow.
-In Lean, our translation is wrapped in a monad called `Result` that allows us
+In Lean, our translation is wrapped in a monad called `RustM` that allows us
 to model functions that panic.
 
 In the output of `lake build`, you will see a couple of warnings
@@ -78,7 +78,7 @@ specification for our `square` function:
 /-- [hax_tutorial::square::post]:
     Source: 'src/lib.rs', lines 1:0-1:31 -/
 @[reducible]
-def square.post (x : Std.U8) (res : Std.U8) : Result Bool := do
+def square.post (x : Std.U8) (res : Std.U8) : RustM Bool := do
   ok true
 
 def square.spec (x : Std.U8) : Prop :=
@@ -132,7 +132,7 @@ error: HaxTutorial/Verification/ProofObligations.lean:28:12: `grind` failed
 case grind
 x : U8
 h : U8.max < ↑x * ↑x
-h_1 : ¬(ExceptConds.false.1 { down := integerOverflow }).down
+h_1 : ¬(ExceptConds.false.1 { down := panic }).down
 ⊢ False
 ```
 The error is hard to read, but what Lean is trying to tell us is that it failed to prove
@@ -179,13 +179,13 @@ Now, the Lean specification also contains this precondition:
 ```{.lean}
 /-- [hax_tutorial::square::pre]:
     Source: 'src/lib.rs', lines 1:0-1:28 -/
-@[reducible] def square.pre (x : Std.U8) : Result Bool := do
+@[reducible] def square.pre (x : Std.U8) : RustM Bool := do
                ok (x < 16#u8)
 
 /-- [hax_tutorial::square::post]:
     Source: 'src/lib.rs', lines 2:0-2:31 -/
 @[reducible]
-def square.post (x : Std.U8) (res : Std.U8) : Result Bool := do
+def square.post (x : Std.U8) (res : Std.U8) : RustM Bool := do
   ok true
 
 def square.spec (x : Std.U8) : Prop :=

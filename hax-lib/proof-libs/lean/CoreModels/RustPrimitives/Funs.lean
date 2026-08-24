@@ -4,7 +4,7 @@ import CoreModels.Core.TypesPrologue
 import CoreModels.Core.Types
 open Aeneas
 open Aeneas.Std hiding namespace core
-open Result ControlFlow Error
+open RustM ControlFlow Error
 set_option linter.dupNamespace false
 set_option linter.hashCommand false
 set_option linter.unusedVariables false
@@ -13,16 +13,16 @@ namespace CoreModels
 
 @[spec]
 def rust_primitives.slice.slice_length
-  {T : Type} : Slice T → Result Std.Usize := fun s => ok (Slice.len s)
+  {T : Type} : Slice T → RustM Std.Usize := fun s => ok (Slice.len s)
 
 @[spec]
 def rust_primitives.slice.slice_split_at
-  {T : Type} : Slice T → Std.Usize → Result ((Slice T) × (Slice T)) :=
+  {T : Type} : Slice T → Std.Usize → RustM ((Slice T) × (Slice T)) :=
   Aeneas.Std.core.slice.Slice.split_at
 
 /-- Recursive helper function for `slice_contains` -/
 def rust_primitives.slice.slice_contains_go {T : Type}
-    (inst : core.cmp.PartialEq T T) (x : T) : List T → Result Bool
+    (inst : core.cmp.PartialEq T T) (x : T) : List T → RustM Bool
   | [] => ok false
   | y :: ys => do
     let b ← inst.eq y x
@@ -30,27 +30,27 @@ def rust_primitives.slice.slice_contains_go {T : Type}
 
 def rust_primitives.slice.slice_contains
   {T : Type} (CoreCmpPartialEqInst : core.cmp.PartialEq T T) :
-  Slice T → T → Result Bool := fun s x =>
+  Slice T → T → RustM Bool := fun s x =>
   slice_contains_go CoreCmpPartialEqInst x s.val
 
 @[spec]
 def rust_primitives.slice.slice_index
-  {T : Type} : Slice T → Std.Usize → Result T := Slice.index_usize
+  {T : Type} : Slice T → Std.Usize → RustM T := Slice.index_usize
 
 @[spec]
 def rust_primitives.slice.slice_slice
-  {T : Type} : Slice T → Std.Usize → Std.Usize → Result (Slice T) :=
+  {T : Type} : Slice T → Std.Usize → Std.Usize → RustM (Slice T) :=
   fun s i j => Slice.subslice s ⟨i, j⟩
 
 @[spec]
 def rust_primitives.slice.slice_clone_from_slice
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
-  Slice T → Slice T → Result (Slice T) := fun dest src =>
+  Slice T → Slice T → RustM (Slice T) := fun dest src =>
   if dest.length = src.length then
     -- Cloned, so `clone`'s effects are observable and cannot be skipped.
     match h : src.val.mapM corecloneCloneInst.clone with
     | ok cloned => ok ⟨cloned, by
-        have := List.mapM_Result_length h; have := src.property; omega⟩
+        have := List.mapM_RustM_length h; have := src.property; omega⟩
     | fail e => fail e
     | div => div
   else fail .panic
@@ -59,7 +59,7 @@ def rust_primitives.slice.slice_clone_from_slice
     the write-back function (Aeneas's pure encoding of `&mut s[i]`). -/
 @[spec]
 def rust_primitives.slice.slice_index_mut
-  {T : Type} : Slice T → Std.Usize → Result (T × (T → Slice T)) :=
+  {T : Type} : Slice T → Std.Usize → RustM (T × (T → Slice T)) :=
   fun s i => Slice.index_mut_usize s i
 
 /-- [rust_primitives::slice::slice_slice_mut]: the subslice `s[b..e]` plus its
@@ -67,7 +67,7 @@ def rust_primitives.slice.slice_index_mut
     fixed at `e - b`, so writing `ss` back overwrites exactly `[b, e)`. -/
 @[spec]
 def rust_primitives.slice.slice_slice_mut
-  {T : Type} : Slice T → Std.Usize → Std.Usize → Result ((Slice T) × (Slice T → Slice T)) :=
+  {T : Type} : Slice T → Std.Usize → Std.Usize → RustM ((Slice T) × (Slice T → Slice T)) :=
   fun s b e => do
   let sub ← Slice.subslice s ⟨b, e⟩
   ok (sub, fun ss => ⟨s.val.setSlice! b.val ss.val, by scalar_tac⟩)
@@ -76,13 +76,13 @@ def rust_primitives.slice.slice_slice_mut
     `Slice T → Slice T`. -/
 @[spec]
 def rust_primitives.slice.slice_reverse
-  {T : Type} : Slice T → Result (Slice T) :=
+  {T : Type} : Slice T → RustM (Slice T) :=
   fun s => ok ⟨ s.val.reverse, by simp [s.property] ⟩
 
 /-- [rust_primitives::slice::slice_swap]: swap elements `a` and `b`. -/
 @[spec]
 def rust_primitives.slice.slice_swap
-  {T : Type} : Slice T → Std.Usize → Std.Usize → Result (Slice T) :=
+  {T : Type} : Slice T → Std.Usize → Std.Usize → RustM (Slice T) :=
   fun s a b => do
   let va ← Slice.index_usize s a
   let vb ← Slice.index_usize s b
@@ -92,7 +92,7 @@ def rust_primitives.slice.slice_swap
 /-- This helper function for `array_from_fn` takes a `FnMut` closure and produces a list. A list
     is easier to produce than an array because we do not need to produce a length-proof. -/
 def rust_primitives.slice.array_from_fn_go {T F : Type}
-    (inst : core.ops.function.FnMut F Std.Usize T) : F → Nat → Result (List T × F)
+    (inst : core.ops.function.FnMut F Std.Usize T) : F → Nat → RustM (List T × F)
   | c, 0 => ok ([], c)
   | c, n + 1 => do
     let p ← array_from_fn_go inst c n
@@ -100,7 +100,7 @@ def rust_primitives.slice.array_from_fn_go {T F : Type}
     ok (p.1 ++ [q.1], q.2)
 
 private theorem foldlM_list_build_length {A T F : Type}
-    (step : List T × F → A → Result (List T × F))
+    (step : List T × F → A → RustM (List T × F))
     (hstep : ∀ l f i r, step (l, f) i = .ok r → r.1.length = l.length + 1) :
     ∀ (l : List A) (acc : List T) (f : F) (result : List T × F),
     l.foldlM step (acc, f) = .ok result → result.1.length = acc.length + l.length := by
@@ -109,7 +109,7 @@ private theorem foldlM_list_build_length {A T F : Type}
   | nil =>
     intro acc f result h
     simp only [List.foldlM_nil] at h
-    have heq : result = (acc, f) := (Result.ok.inj h).symm
+    have heq : result = (acc, f) := (RustM.ok.inj h).symm
     simp [heq]
   | cons x xs ih =>
     intro acc f result h
@@ -128,7 +128,7 @@ private theorem foldlM_list_build_length {A T F : Type}
 def rust_primitives.slice.array_from_fn
   {T : Type} {F : Type} (N : Std.Usize) (coreopsfunctionFnMutFTupleUsizeTInst :
   core.ops.function.FnMut F Std.Usize T) :
-  F → Result (Array T N) := fun f => do
+  F → RustM (Array T N) := fun f => do
   let p ← array_from_fn_go coreopsfunctionFnMutFTupleUsizeTInst f N.val
   -- The `else` is unreachable: `array_from_fn_go` always returns one element per
   -- index, so `p.1.length = N.val`. It's easier to prove that in the spec than here.
@@ -136,7 +136,7 @@ def rust_primitives.slice.array_from_fn
 
 /-- Recursive helper function for `array_map` -/
 def rust_primitives.slice.array_map_go {T U F : Type}
-    (inst : core.ops.function.Fn F T U) (f : F) : List T → Result (List U)
+    (inst : core.ops.function.Fn F T U) (f : F) : List T → RustM (List U)
   | [] => ok []
   | x :: xs => do
     let y ← inst.call f x
@@ -146,7 +146,7 @@ def rust_primitives.slice.array_map_go {T U F : Type}
 def rust_primitives.slice.array_map
   {T : Type} {U : Type} {F : Type} {N : Std.Usize}
   (coreopsfunctionFnMutFTupleTUInst : core.ops.function.FnMut F T U) :
-  Array T N → F → Result (Array U N) := fun a f =>
+  Array T N → F → RustM (Array U N) := fun a f =>
   match h : a.val.foldlM
     (fun (s : List U × F) (x : T) => do
       let (v, f') ← coreopsfunctionFnMutFTupleTUInst.call_mut s.2 x
@@ -165,7 +165,7 @@ def rust_primitives.slice.array_map
           | ok p =>
             obtain ⟨v, fv⟩ := p
             simp only [hcall, bind_tc_ok] at hr
-            have heq : r = (l ++ [v], fv) := (Result.ok.inj hr).symm
+            have heq : r = (l ++ [v], fv) := (RustM.ok.inj hr).symm
             simp [heq, List.length_append]
           | fail e =>
             simp only [hcall, bind_tc_fail] at hr
@@ -180,44 +180,44 @@ def rust_primitives.slice.array_map
 
 @[spec]
 def rust_primitives.slice.array_as_slice
-  {T : Type} {N : Std.Usize} : Array T N → Result (Slice T) :=
+  {T : Type} {N : Std.Usize} : Array T N → RustM (Slice T) :=
   fun a => ok (Array.to_slice a)
 
 @[spec]
 def rust_primitives.slice.array_slice
   {T : Type} {N : Std.Usize} :
-  Array T N → Std.Usize → Std.Usize → Result (Slice T) :=
+  Array T N → Std.Usize → Std.Usize → RustM (Slice T) :=
   fun a i j => Array.subslice a ⟨i, j⟩
 
 @[spec]
 def rust_primitives.slice.array_index
-  {T : Type} {N : Std.Usize} : Array T N → Std.Usize → Result T :=
+  {T : Type} {N : Std.Usize} : Array T N → Std.Usize → RustM T :=
   fun a i => Slice.index_usize (Array.to_slice a) i
 
 @[spec]
 def rust_primitives.sequence.seq_from_slice
-  {T : Type} : Slice T → Result (rust_primitives.sequence.Seq T) := fun s => ok s
+  {T : Type} : Slice T → RustM (rust_primitives.sequence.Seq T) := fun s => ok s
 
 @[spec]
 def rust_primitives.sequence.seq_from_array
   {T : Type} {N : Std.Usize} :
-  Array T N → Result (rust_primitives.sequence.Seq T) := fun a => ok (Array.to_slice a)
+  Array T N → RustM (rust_primitives.sequence.Seq T) := fun a => ok (Array.to_slice a)
 
 @[spec]
 def rust_primitives.sequence.seq_len
-  {T : Type} : rust_primitives.sequence.Seq T → Result Std.Usize :=
+  {T : Type} : rust_primitives.sequence.Seq T → RustM Std.Usize :=
   fun s => ok (Slice.len s)
 
 @[spec]
 def rust_primitives.sequence.seq_remove
   {T : Type} :
-  rust_primitives.sequence.Seq T → Std.Usize → Result (T ×
+  rust_primitives.sequence.Seq T → Std.Usize → RustM (T ×
     (rust_primitives.sequence.Seq T)) := fun s i =>
   if h : i.val < s.val.length then
     ok (s.val.get ⟨i.val, h⟩, ⟨s.val.take i.val ++ s.val.drop (i.val + 1), by
       simp only [List.length_append, List.length_take, List.length_drop]
       have := s.property; omega⟩)
-  else fail .arrayOutOfBounds
+  else fail .panic
 
 def usaturating_mul {ty : UScalarTy} (x y : UScalar ty) : UScalar ty :=
   ⟨BitVec.ofNat _ (Min.min (UScalar.max ty) (x.val * y.val))⟩
@@ -226,100 +226,100 @@ def isaturating_mul {ty : IScalarTy} (x y : IScalar ty) : IScalar ty :=
   ⟨BitVec.ofInt _ (Max.max (IScalar.min ty) (Min.min (IScalar.max ty) (x.val * y.val)))⟩
 
 @[spec]
-def urem_euclid {ty : UScalarTy} (x y : UScalar ty) : Result (UScalar ty) :=
-  if y.val = 0 then fail .divisionByZero
+def urem_euclid {ty : UScalarTy} (x y : UScalar ty) : RustM (UScalar ty) :=
+  if y.val = 0 then fail .panic
   else ok ⟨BitVec.ofNat _ (x.val % y.val)⟩
 
 -- Lean's `%` on `Int` is already euclidean (non-negative for `y ≠ 0`), like Rust's.
-def irem_euclid {ty : IScalarTy} (x y : IScalar ty) : Result (IScalar ty) :=
-  if y.val = 0 then fail .divisionByZero
+def irem_euclid {ty : IScalarTy} (x y : IScalar ty) : RustM (IScalar ty) :=
+  if y.val = 0 then fail .panic
   -- Rust evaluates `x % y` first, which overflows exactly at `MIN % -1`.
-  else if x.val = IScalar.min ty ∧ y.val = -1 then fail .integerOverflow
+  else if x.val = IScalar.min ty ∧ y.val = -1 then fail .panic
   else ok ⟨BitVec.ofInt _ (x.val % y.val)⟩
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_u8 : Std.U8 → Std.U8 → Result Std.U8 :=
+def rust_primitives.arithmetic.saturating_mul_u8 : Std.U8 → Std.U8 → RustM Std.U8 :=
   fun x y => ok (usaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_u8 : Std.U8 → Std.U8 → Result Std.U8 := urem_euclid
+def rust_primitives.arithmetic.rem_euclid_u8 : Std.U8 → Std.U8 → RustM Std.U8 := urem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_u16 : Std.U16 → Std.U16 → Result Std.U16 :=
+def rust_primitives.arithmetic.saturating_mul_u16 : Std.U16 → Std.U16 → RustM Std.U16 :=
   fun x y => ok (usaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_u16 : Std.U16 → Std.U16 → Result Std.U16 := urem_euclid
+def rust_primitives.arithmetic.rem_euclid_u16 : Std.U16 → Std.U16 → RustM Std.U16 := urem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_u32 : Std.U32 → Std.U32 → Result Std.U32 :=
+def rust_primitives.arithmetic.saturating_mul_u32 : Std.U32 → Std.U32 → RustM Std.U32 :=
   fun x y => ok (usaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_u32 : Std.U32 → Std.U32 → Result Std.U32 := urem_euclid
+def rust_primitives.arithmetic.rem_euclid_u32 : Std.U32 → Std.U32 → RustM Std.U32 := urem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_u64 : Std.U64 → Std.U64 → Result Std.U64 :=
+def rust_primitives.arithmetic.saturating_mul_u64 : Std.U64 → Std.U64 → RustM Std.U64 :=
   fun x y => ok (usaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_u64 : Std.U64 → Std.U64 → Result Std.U64 := urem_euclid
+def rust_primitives.arithmetic.rem_euclid_u64 : Std.U64 → Std.U64 → RustM Std.U64 := urem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_u128 : Std.U128 → Std.U128 → Result Std.U128 :=
+def rust_primitives.arithmetic.saturating_mul_u128 : Std.U128 → Std.U128 → RustM Std.U128 :=
   fun x y => ok (usaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_u128 : Std.U128 → Std.U128 → Result Std.U128 := urem_euclid
+def rust_primitives.arithmetic.rem_euclid_u128 : Std.U128 → Std.U128 → RustM Std.U128 := urem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_usize : Std.Usize → Std.Usize → Result Std.Usize :=
+def rust_primitives.arithmetic.saturating_mul_usize : Std.Usize → Std.Usize → RustM Std.Usize :=
   fun x y => ok (usaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_usize : Std.Usize → Std.Usize → Result Std.Usize := urem_euclid
+def rust_primitives.arithmetic.rem_euclid_usize : Std.Usize → Std.Usize → RustM Std.Usize := urem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_i8 : Std.I8 → Std.I8 → Result Std.I8 :=
+def rust_primitives.arithmetic.saturating_mul_i8 : Std.I8 → Std.I8 → RustM Std.I8 :=
   fun x y => ok (isaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_i8 : Std.I8 → Std.I8 → Result Std.I8 := irem_euclid
+def rust_primitives.arithmetic.rem_euclid_i8 : Std.I8 → Std.I8 → RustM Std.I8 := irem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_i16 : Std.I16 → Std.I16 → Result Std.I16 :=
+def rust_primitives.arithmetic.saturating_mul_i16 : Std.I16 → Std.I16 → RustM Std.I16 :=
   fun x y => ok (isaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_i16 : Std.I16 → Std.I16 → Result Std.I16 := irem_euclid
+def rust_primitives.arithmetic.rem_euclid_i16 : Std.I16 → Std.I16 → RustM Std.I16 := irem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_i32 : Std.I32 → Std.I32 → Result Std.I32 :=
+def rust_primitives.arithmetic.saturating_mul_i32 : Std.I32 → Std.I32 → RustM Std.I32 :=
   fun x y => ok (isaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_i32 : Std.I32 → Std.I32 → Result Std.I32 := irem_euclid
+def rust_primitives.arithmetic.rem_euclid_i32 : Std.I32 → Std.I32 → RustM Std.I32 := irem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_i64 : Std.I64 → Std.I64 → Result Std.I64 :=
+def rust_primitives.arithmetic.saturating_mul_i64 : Std.I64 → Std.I64 → RustM Std.I64 :=
   fun x y => ok (isaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_i64 : Std.I64 → Std.I64 → Result Std.I64 := irem_euclid
+def rust_primitives.arithmetic.rem_euclid_i64 : Std.I64 → Std.I64 → RustM Std.I64 := irem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_i128 : Std.I128 → Std.I128 → Result Std.I128 :=
+def rust_primitives.arithmetic.saturating_mul_i128 : Std.I128 → Std.I128 → RustM Std.I128 :=
   fun x y => ok (isaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_i128 : Std.I128 → Std.I128 → Result Std.I128 := irem_euclid
+def rust_primitives.arithmetic.rem_euclid_i128 : Std.I128 → Std.I128 → RustM Std.I128 := irem_euclid
 
 @[spec]
-def rust_primitives.arithmetic.saturating_mul_isize : Std.Isize → Std.Isize → Result Std.Isize :=
+def rust_primitives.arithmetic.saturating_mul_isize : Std.Isize → Std.Isize → RustM Std.Isize :=
   fun x y => ok (isaturating_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.rem_euclid_isize : Std.Isize → Std.Isize → Result Std.Isize := irem_euclid
+def rust_primitives.arithmetic.rem_euclid_isize : Std.Isize → Std.Isize → RustM Std.Isize := irem_euclid
 
 def uoverflowing_sub {ty : UScalarTy} (x y : UScalar ty) : UScalar ty × Bool :=
   (⟨x.bv - y.bv⟩, decide (x.val < y.val))
@@ -355,279 +355,279 @@ def ioverflowing_pow {ty : IScalarTy} (x : IScalar ty) (n : Std.U32) : IScalar t
    decide (¬ (-2 ^ (ty.numBits - 1) ≤ z ∧ z < 2 ^ (ty.numBits - 1))))
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_u8 : Std.U8 → Std.U8 → Result (Std.U8 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_u8 : Std.U8 → Std.U8 → RustM (Std.U8 × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_u8 : Std.U8 → Std.U8 → Result (Std.U8 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_u8 : Std.U8 → Std.U8 → RustM (Std.U8 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_u8 : Std.U8 → Std.U32 → Result (Std.U8 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_u8 : Std.U8 → Std.U32 → RustM (Std.U8 × Bool) :=
   fun x n => ok (uoverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_u16 : Std.U16 → Std.U16 → Result (Std.U16 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_u16 : Std.U16 → Std.U16 → RustM (Std.U16 × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_u16 : Std.U16 → Std.U16 → Result (Std.U16 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_u16 : Std.U16 → Std.U16 → RustM (Std.U16 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_u16 : Std.U16 → Std.U32 → Result (Std.U16 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_u16 : Std.U16 → Std.U32 → RustM (Std.U16 × Bool) :=
   fun x n => ok (uoverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_u32 : Std.U32 → Std.U32 → Result (Std.U32 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_u32 : Std.U32 → Std.U32 → RustM (Std.U32 × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_u32 : Std.U32 → Std.U32 → Result (Std.U32 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_u32 : Std.U32 → Std.U32 → RustM (Std.U32 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_u32 : Std.U32 → Std.U32 → Result (Std.U32 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_u32 : Std.U32 → Std.U32 → RustM (Std.U32 × Bool) :=
   fun x n => ok (uoverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_u64 : Std.U64 → Std.U64 → Result (Std.U64 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_u64 : Std.U64 → Std.U64 → RustM (Std.U64 × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_u64 : Std.U64 → Std.U64 → Result (Std.U64 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_u64 : Std.U64 → Std.U64 → RustM (Std.U64 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_u64 : Std.U64 → Std.U32 → Result (Std.U64 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_u64 : Std.U64 → Std.U32 → RustM (Std.U64 × Bool) :=
   fun x n => ok (uoverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_u128 : Std.U128 → Std.U128 → Result (Std.U128 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_u128 : Std.U128 → Std.U128 → RustM (Std.U128 × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_u128 : Std.U128 → Std.U128 → Result (Std.U128 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_u128 : Std.U128 → Std.U128 → RustM (Std.U128 × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_u128 : Std.U128 → Std.U32 → Result (Std.U128 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_u128 : Std.U128 → Std.U32 → RustM (Std.U128 × Bool) :=
   fun x n => ok (uoverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_usize : Std.Usize → Std.Usize → Result (Std.Usize × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_usize : Std.Usize → Std.Usize → RustM (Std.Usize × Bool) :=
   fun x y => ok (uoverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_usize : Std.Usize → Std.Usize → Result (Std.Usize × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_usize : Std.Usize → Std.Usize → RustM (Std.Usize × Bool) :=
   fun x y => ok (uoverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_usize : Std.Usize → Std.U32 → Result (Std.Usize × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_usize : Std.Usize → Std.U32 → RustM (Std.Usize × Bool) :=
   fun x n => ok (uoverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_i8 : Std.I8 → Std.I8 → Result (Std.I8 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_i8 : Std.I8 → Std.I8 → RustM (Std.I8 × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_i8 : Std.I8 → Std.I8 → Result (Std.I8 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_i8 : Std.I8 → Std.I8 → RustM (Std.I8 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_i8 : Std.I8 → Std.U32 → Result (Std.I8 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_i8 : Std.I8 → Std.U32 → RustM (Std.I8 × Bool) :=
   fun x n => ok (ioverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_i16 : Std.I16 → Std.I16 → Result (Std.I16 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_i16 : Std.I16 → Std.I16 → RustM (Std.I16 × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_i16 : Std.I16 → Std.I16 → Result (Std.I16 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_i16 : Std.I16 → Std.I16 → RustM (Std.I16 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_i16 : Std.I16 → Std.U32 → Result (Std.I16 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_i16 : Std.I16 → Std.U32 → RustM (Std.I16 × Bool) :=
   fun x n => ok (ioverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_i32 : Std.I32 → Std.I32 → Result (Std.I32 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_i32 : Std.I32 → Std.I32 → RustM (Std.I32 × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_i32 : Std.I32 → Std.I32 → Result (Std.I32 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_i32 : Std.I32 → Std.I32 → RustM (Std.I32 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_i32 : Std.I32 → Std.U32 → Result (Std.I32 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_i32 : Std.I32 → Std.U32 → RustM (Std.I32 × Bool) :=
   fun x n => ok (ioverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_i64 : Std.I64 → Std.I64 → Result (Std.I64 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_i64 : Std.I64 → Std.I64 → RustM (Std.I64 × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_i64 : Std.I64 → Std.I64 → Result (Std.I64 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_i64 : Std.I64 → Std.I64 → RustM (Std.I64 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_i64 : Std.I64 → Std.U32 → Result (Std.I64 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_i64 : Std.I64 → Std.U32 → RustM (Std.I64 × Bool) :=
   fun x n => ok (ioverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_i128 : Std.I128 → Std.I128 → Result (Std.I128 × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_i128 : Std.I128 → Std.I128 → RustM (Std.I128 × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_i128 : Std.I128 → Std.I128 → Result (Std.I128 × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_i128 : Std.I128 → Std.I128 → RustM (Std.I128 × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_i128 : Std.I128 → Std.U32 → Result (Std.I128 × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_i128 : Std.I128 → Std.U32 → RustM (Std.I128 × Bool) :=
   fun x n => ok (ioverflowing_pow x n)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_sub_isize : Std.Isize → Std.Isize → Result (Std.Isize × Bool) :=
+def rust_primitives.arithmetic.overflowing_sub_isize : Std.Isize → Std.Isize → RustM (Std.Isize × Bool) :=
   fun x y => ok (ioverflowing_sub x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_mul_isize : Std.Isize → Std.Isize → Result (Std.Isize × Bool) :=
+def rust_primitives.arithmetic.overflowing_mul_isize : Std.Isize → Std.Isize → RustM (Std.Isize × Bool) :=
   fun x y => ok (ioverflowing_mul x y)
 
 @[spec]
-def rust_primitives.arithmetic.overflowing_pow_isize : Std.Isize → Std.U32 → Result (Std.Isize × Bool) :=
+def rust_primitives.arithmetic.overflowing_pow_isize : Std.Isize → Std.U32 → RustM (Std.Isize × Bool) :=
   fun x n => ok (ioverflowing_pow x n)
 
-def rust_primitives.arithmetic.pow_u8 : Std.U8 → Std.U32 → Result Std.U8 :=
+def rust_primitives.arithmetic.pow_u8 : Std.U8 → Std.U32 → RustM Std.U8 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_u16 : Std.U16 → Std.U32 → Result Std.U16 :=
+def rust_primitives.arithmetic.pow_u16 : Std.U16 → Std.U32 → RustM Std.U16 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_u32 : Std.U32 → Std.U32 → Result Std.U32 :=
+def rust_primitives.arithmetic.pow_u32 : Std.U32 → Std.U32 → RustM Std.U32 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_u64 : Std.U64 → Std.U32 → Result Std.U64 :=
+def rust_primitives.arithmetic.pow_u64 : Std.U64 → Std.U32 → RustM Std.U64 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_u128 : Std.U128 → Std.U32 → Result Std.U128 :=
+def rust_primitives.arithmetic.pow_u128 : Std.U128 → Std.U32 → RustM Std.U128 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_usize : Std.Usize → Std.U32 → Result Std.Usize :=
+def rust_primitives.arithmetic.pow_usize : Std.Usize → Std.U32 → RustM Std.Usize :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_i8 : Std.I8 → Std.U32 → Result Std.I8 :=
+def rust_primitives.arithmetic.pow_i8 : Std.I8 → Std.U32 → RustM Std.I8 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_i16 : Std.I16 → Std.U32 → Result Std.I16 :=
+def rust_primitives.arithmetic.pow_i16 : Std.I16 → Std.U32 → RustM Std.I16 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_i32 : Std.I32 → Std.U32 → Result Std.I32 :=
+def rust_primitives.arithmetic.pow_i32 : Std.I32 → Std.U32 → RustM Std.I32 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_i64 : Std.I64 → Std.U32 → Result Std.I64 :=
+def rust_primitives.arithmetic.pow_i64 : Std.I64 → Std.U32 → RustM Std.I64 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_i128 : Std.I128 → Std.U32 → Result Std.I128 :=
+def rust_primitives.arithmetic.pow_i128 : Std.I128 → Std.U32 → RustM Std.I128 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
-def rust_primitives.arithmetic.pow_isize : Std.Isize → Std.U32 → Result Std.Isize :=
+def rust_primitives.arithmetic.pow_isize : Std.Isize → Std.U32 → RustM Std.Isize :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_u8 : Array Std.U8 1#usize → Result Std.U8 :=
+def rust_primitives.arithmetic.from_be_bytes_u8 : Array Std.U8 1#usize → RustM Std.U8 :=
   fun a => ok (Aeneas.Std.core.num.U8.from_be_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_u8 : Array Std.U8 1#usize → Result Std.U8 :=
+def rust_primitives.arithmetic.from_le_bytes_u8 : Array Std.U8 1#usize → RustM Std.U8 :=
   fun a => ok (Aeneas.Std.core.num.U8.from_le_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_u16 : Array Std.U8 2#usize → Result Std.U16 :=
+def rust_primitives.arithmetic.from_be_bytes_u16 : Array Std.U8 2#usize → RustM Std.U16 :=
   fun a => ok (Aeneas.Std.core.num.U16.from_be_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_u16 : Array Std.U8 2#usize → Result Std.U16 :=
+def rust_primitives.arithmetic.from_le_bytes_u16 : Array Std.U8 2#usize → RustM Std.U16 :=
   fun a => ok (Aeneas.Std.core.num.U16.from_le_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_u32 : Array Std.U8 4#usize → Result Std.U32 :=
+def rust_primitives.arithmetic.from_be_bytes_u32 : Array Std.U8 4#usize → RustM Std.U32 :=
   fun a => ok (Aeneas.Std.core.num.U32.from_be_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_u32 : Array Std.U8 4#usize → Result Std.U32 :=
+def rust_primitives.arithmetic.from_le_bytes_u32 : Array Std.U8 4#usize → RustM Std.U32 :=
   fun a => ok (Aeneas.Std.core.num.U32.from_le_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_u64 : Array Std.U8 8#usize → Result Std.U64 :=
+def rust_primitives.arithmetic.from_be_bytes_u64 : Array Std.U8 8#usize → RustM Std.U64 :=
   fun a => ok (Aeneas.Std.core.num.U64.from_be_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_u64 : Array Std.U8 8#usize → Result Std.U64 :=
+def rust_primitives.arithmetic.from_le_bytes_u64 : Array Std.U8 8#usize → RustM Std.U64 :=
   fun a => ok (Aeneas.Std.core.num.U64.from_le_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_u128 : Array Std.U8 16#usize → Result Std.U128 :=
+def rust_primitives.arithmetic.from_be_bytes_u128 : Array Std.U8 16#usize → RustM Std.U128 :=
   fun a => ok (Aeneas.Std.core.num.U128.from_be_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_u128 : Array Std.U8 16#usize → Result Std.U128 :=
+def rust_primitives.arithmetic.from_le_bytes_u128 : Array Std.U8 16#usize → RustM Std.U128 :=
   fun a => ok (Aeneas.Std.core.num.U128.from_le_bytes a)
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_usize : Array Std.U8 8#usize → Result Std.Usize :=
+def rust_primitives.arithmetic.from_be_bytes_usize : Array Std.U8 8#usize → RustM Std.Usize :=
   fun a => ok ⟨(BitVec.fromBEBytes (a.val.map U8.bv)).setWidth _⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_usize : Array Std.U8 8#usize → Result Std.Usize :=
+def rust_primitives.arithmetic.from_le_bytes_usize : Array Std.U8 8#usize → RustM Std.Usize :=
   fun a => ok ⟨(BitVec.fromLEBytes (a.val.map U8.bv)).setWidth _⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_i8 : Array Std.U8 1#usize → Result Std.I8 :=
+def rust_primitives.arithmetic.from_be_bytes_i8 : Array Std.U8 1#usize → RustM Std.I8 :=
   fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_i8 : Array Std.U8 1#usize → Result Std.I8 :=
+def rust_primitives.arithmetic.from_le_bytes_i8 : Array Std.U8 1#usize → RustM Std.I8 :=
   fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_i16 : Array Std.U8 2#usize → Result Std.I16 :=
+def rust_primitives.arithmetic.from_be_bytes_i16 : Array Std.U8 2#usize → RustM Std.I16 :=
   fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_i16 : Array Std.U8 2#usize → Result Std.I16 :=
+def rust_primitives.arithmetic.from_le_bytes_i16 : Array Std.U8 2#usize → RustM Std.I16 :=
   fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_i32 : Array Std.U8 4#usize → Result Std.I32 :=
+def rust_primitives.arithmetic.from_be_bytes_i32 : Array Std.U8 4#usize → RustM Std.I32 :=
   fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_i32 : Array Std.U8 4#usize → Result Std.I32 :=
+def rust_primitives.arithmetic.from_le_bytes_i32 : Array Std.U8 4#usize → RustM Std.I32 :=
   fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_i64 : Array Std.U8 8#usize → Result Std.I64 :=
+def rust_primitives.arithmetic.from_be_bytes_i64 : Array Std.U8 8#usize → RustM Std.I64 :=
   fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_i64 : Array Std.U8 8#usize → Result Std.I64 :=
+def rust_primitives.arithmetic.from_le_bytes_i64 : Array Std.U8 8#usize → RustM Std.I64 :=
   fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_i128 : Array Std.U8 16#usize → Result Std.I128 :=
+def rust_primitives.arithmetic.from_be_bytes_i128 : Array Std.U8 16#usize → RustM Std.I128 :=
   fun a => ok ⟨ (BitVec.fromBEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_i128 : Array Std.U8 16#usize → Result Std.I128 :=
+def rust_primitives.arithmetic.from_le_bytes_i128 : Array Std.U8 16#usize → RustM Std.I128 :=
   fun a => ok ⟨ (BitVec.fromLEBytes (List.map U8.bv a.val)).cast (by simp) ⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_be_bytes_isize : Array Std.U8 8#usize → Result Std.Isize :=
+def rust_primitives.arithmetic.from_be_bytes_isize : Array Std.U8 8#usize → RustM Std.Isize :=
   fun a => ok ⟨(BitVec.fromBEBytes (a.val.map U8.bv)).setWidth _⟩
 
 @[spec]
-def rust_primitives.arithmetic.from_le_bytes_isize : Array Std.U8 8#usize → Result Std.Isize :=
+def rust_primitives.arithmetic.from_le_bytes_isize : Array Std.U8 8#usize → RustM Std.Isize :=
   fun a => ok ⟨(BitVec.fromLEBytes (a.val.map U8.bv)).setWidth _⟩
 
 def ucount_ones {ty : UScalarTy} (x : UScalar ty) : Std.U32 :=
@@ -637,574 +637,574 @@ def icount_ones {ty : IScalarTy} (x : IScalar ty) : Std.U32 :=
   ⟨x.bv.cpop.setWidth 32⟩
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_u8 : Std.U8 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_u8 : Std.U8 → RustM Std.U32 :=
   fun x => ok (ucount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_u16 : Std.U16 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_u16 : Std.U16 → RustM Std.U32 :=
   fun x => ok (ucount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_u32 : Std.U32 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_u32 : Std.U32 → RustM Std.U32 :=
   fun x => ok (ucount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_u64 : Std.U64 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_u64 : Std.U64 → RustM Std.U32 :=
   fun x => ok (ucount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_u128 : Std.U128 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_u128 : Std.U128 → RustM Std.U32 :=
   fun x => ok (ucount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_usize : Std.Usize → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_usize : Std.Usize → RustM Std.U32 :=
   fun x => ok (ucount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_i8 : Std.I8 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_i8 : Std.I8 → RustM Std.U32 :=
   fun x => ok (icount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_i16 : Std.I16 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_i16 : Std.I16 → RustM Std.U32 :=
   fun x => ok (icount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_i32 : Std.I32 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_i32 : Std.I32 → RustM Std.U32 :=
   fun x => ok (icount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_i64 : Std.I64 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_i64 : Std.I64 → RustM Std.U32 :=
   fun x => ok (icount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_i128 : Std.I128 → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_i128 : Std.I128 → RustM Std.U32 :=
   fun x => ok (icount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.count_ones_isize : Std.Isize → Result Std.U32 :=
+def rust_primitives.arithmetic.count_ones_isize : Std.Isize → RustM Std.U32 :=
   fun x => ok (icount_ones x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_u8 : Std.U8 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_u8 : Std.U8 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.U8.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_u16 : Std.U16 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_u16 : Std.U16 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.U16.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_u32 : Std.U32 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_u32 : Std.U32 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.U32.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_u64 : Std.U64 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_u64 : Std.U64 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.U64.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_u128 : Std.U128 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_u128 : Std.U128 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.U128.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_usize : Std.Usize → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_usize : Std.Usize → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.Usize.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_i8 : Std.I8 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_i8 : Std.I8 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.I8.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_i16 : Std.I16 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_i16 : Std.I16 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.I16.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_i32 : Std.I32 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_i32 : Std.I32 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.I32.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_i64 : Std.I64 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_i64 : Std.I64 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.I64.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_i128 : Std.I128 → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_i128 : Std.I128 → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.I128.leading_zeros x)
 
 @[spec]
-def rust_primitives.arithmetic.leading_zeros_isize : Std.Isize → Result Std.U32 :=
+def rust_primitives.arithmetic.leading_zeros_isize : Std.Isize → RustM Std.U32 :=
   fun x => ok (Aeneas.Std.core.num.Isize.leading_zeros x)
 
-@[spec] def uilog2 {ty : UScalarTy} (x : UScalar ty) : Result Std.U32 :=
+@[spec] def uilog2 {ty : UScalarTy} (x : UScalar ty) : RustM Std.U32 :=
   if x.val = 0 then fail .panic
   else ok ⟨BitVec.ofNat 32 (Nat.log2 x.val)⟩
 
-@[spec] def iilog2 {ty : IScalarTy} (x : IScalar ty) : Result Std.U32 :=
+@[spec] def iilog2 {ty : IScalarTy} (x : IScalar ty) : RustM Std.U32 :=
   if x.val ≤ 0 then fail .panic
   else ok ⟨BitVec.ofNat 32 (Nat.log2 x.val.toNat)⟩
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_u8 : Std.U8 → Result Std.U32 := uilog2
+def rust_primitives.arithmetic.ilog2_u8 : Std.U8 → RustM Std.U32 := uilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_u16 : Std.U16 → Result Std.U32 := uilog2
+def rust_primitives.arithmetic.ilog2_u16 : Std.U16 → RustM Std.U32 := uilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_u32 : Std.U32 → Result Std.U32 := uilog2
+def rust_primitives.arithmetic.ilog2_u32 : Std.U32 → RustM Std.U32 := uilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_u64 : Std.U64 → Result Std.U32 := uilog2
+def rust_primitives.arithmetic.ilog2_u64 : Std.U64 → RustM Std.U32 := uilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_u128 : Std.U128 → Result Std.U32 := uilog2
+def rust_primitives.arithmetic.ilog2_u128 : Std.U128 → RustM Std.U32 := uilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_usize : Std.Usize → Result Std.U32 := uilog2
+def rust_primitives.arithmetic.ilog2_usize : Std.Usize → RustM Std.U32 := uilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_i8 : Std.I8 → Result Std.U32 := iilog2
+def rust_primitives.arithmetic.ilog2_i8 : Std.I8 → RustM Std.U32 := iilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_i16 : Std.I16 → Result Std.U32 := iilog2
+def rust_primitives.arithmetic.ilog2_i16 : Std.I16 → RustM Std.U32 := iilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_i32 : Std.I32 → Result Std.U32 := iilog2
+def rust_primitives.arithmetic.ilog2_i32 : Std.I32 → RustM Std.U32 := iilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_i64 : Std.I64 → Result Std.U32 := iilog2
+def rust_primitives.arithmetic.ilog2_i64 : Std.I64 → RustM Std.U32 := iilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_i128 : Std.I128 → Result Std.U32 := iilog2
+def rust_primitives.arithmetic.ilog2_i128 : Std.I128 → RustM Std.U32 := iilog2
 
 @[spec]
-def rust_primitives.arithmetic.ilog2_isize : Std.Isize → Result Std.U32 := iilog2
+def rust_primitives.arithmetic.ilog2_isize : Std.Isize → RustM Std.U32 := iilog2
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_u8 : Std.U8 → Result (Array Std.U8 1#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_u8 : Std.U8 → RustM (Array Std.U8 1#usize) :=
   fun x => ok (Std.core.num.U8.to_be_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_u16 : Std.U16 → Result (Array Std.U8 2#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_u16 : Std.U16 → RustM (Array Std.U8 2#usize) :=
   fun x => ok (Std.core.num.U16.to_be_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_u32 : Std.U32 → Result (Array Std.U8 4#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_u32 : Std.U32 → RustM (Array Std.U8 4#usize) :=
   fun x => ok (Std.core.num.U32.to_be_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_u64 : Std.U64 → Result (Array Std.U8 8#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_u64 : Std.U64 → RustM (Array Std.U8 8#usize) :=
   fun x => ok (Std.core.num.U64.to_be_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_u128 : Std.U128 → Result (Array Std.U8 16#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_u128 : Std.U128 → RustM (Array Std.U8 16#usize) :=
   fun x => ok (Std.core.num.U128.to_be_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_usize : Std.Usize → Result (Array Std.U8 8#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_usize : Std.Usize → RustM (Array Std.U8 8#usize) :=
   fun x => ok ⟨ (x.bv.setWidth 64).toBEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_i8 : Std.I8 → Result (Array Std.U8 1#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_i8 : Std.I8 → RustM (Array Std.U8 1#usize) :=
   fun x => ok ⟨ x.bv.toBEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_i16 : Std.I16 → Result (Array Std.U8 2#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_i16 : Std.I16 → RustM (Array Std.U8 2#usize) :=
   fun x => ok ⟨ x.bv.toBEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_i32 : Std.I32 → Result (Array Std.U8 4#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_i32 : Std.I32 → RustM (Array Std.U8 4#usize) :=
   fun x => ok ⟨ x.bv.toBEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_i64 : Std.I64 → Result (Array Std.U8 8#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_i64 : Std.I64 → RustM (Array Std.U8 8#usize) :=
   fun x => ok ⟨ x.bv.toBEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_i128 : Std.I128 → Result (Array Std.U8 16#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_i128 : Std.I128 → RustM (Array Std.U8 16#usize) :=
   fun x => ok ⟨ x.bv.toBEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_be_bytes_isize : Std.Isize → Result (Array Std.U8 8#usize) :=
+def rust_primitives.arithmetic.to_be_bytes_isize : Std.Isize → RustM (Array Std.U8 8#usize) :=
   fun x => ok ⟨ (x.bv.setWidth 64).toBEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_u8 : Std.U8 → Result (Array Std.U8 1#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_u8 : Std.U8 → RustM (Array Std.U8 1#usize) :=
   fun x => ok (Std.core.num.U8.to_le_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_u16 : Std.U16 → Result (Array Std.U8 2#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_u16 : Std.U16 → RustM (Array Std.U8 2#usize) :=
   fun x => ok (Std.core.num.U16.to_le_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_u32 : Std.U32 → Result (Array Std.U8 4#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_u32 : Std.U32 → RustM (Array Std.U8 4#usize) :=
   fun x => ok (Std.core.num.U32.to_le_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_u64 : Std.U64 → Result (Array Std.U8 8#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_u64 : Std.U64 → RustM (Array Std.U8 8#usize) :=
   fun x => ok (Std.core.num.U64.to_le_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_u128 : Std.U128 → Result (Array Std.U8 16#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_u128 : Std.U128 → RustM (Array Std.U8 16#usize) :=
   fun x => ok (Std.core.num.U128.to_le_bytes x)
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_usize : Std.Usize → Result (Array Std.U8 8#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_usize : Std.Usize → RustM (Array Std.U8 8#usize) :=
   fun x => ok ⟨ (x.bv.setWidth 64).toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_i8 : Std.I8 → Result (Array Std.U8 1#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_i8 : Std.I8 → RustM (Array Std.U8 1#usize) :=
   fun x => ok ⟨ x.bv.toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_i16 : Std.I16 → Result (Array Std.U8 2#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_i16 : Std.I16 → RustM (Array Std.U8 2#usize) :=
   fun x => ok ⟨ x.bv.toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_i32 : Std.I32 → Result (Array Std.U8 4#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_i32 : Std.I32 → RustM (Array Std.U8 4#usize) :=
   fun x => ok ⟨ x.bv.toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_i64 : Std.I64 → Result (Array Std.U8 8#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_i64 : Std.I64 → RustM (Array Std.U8 8#usize) :=
   fun x => ok ⟨ x.bv.toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_i128 : Std.I128 → Result (Array Std.U8 16#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_i128 : Std.I128 → RustM (Array Std.U8 16#usize) :=
   fun x => ok ⟨ x.bv.toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 @[spec]
-def rust_primitives.arithmetic.to_le_bytes_isize : Std.Isize → Result (Array Std.U8 8#usize) :=
+def rust_primitives.arithmetic.to_le_bytes_isize : Std.Isize → RustM (Array Std.U8 8#usize) :=
   fun x => ok ⟨ (x.bv.setWidth 64).toLEBytes.map UScalar.mk, by grind [BitVec.toBEBytes_length] ⟩
 
 -- Rust's `abs` panics on `MIN`, where negation overflows. Spelled as an explicit
 -- guard rather than via `tryMk`: `grind` cannot see through the latter's
 -- dependent `if`, which makes downstream specs unprovable.
-def iabs {ty : IScalarTy} (x : IScalar ty) : Result (IScalar ty) :=
-  if x.val = IScalar.min ty then fail .integerOverflow
+def iabs {ty : IScalarTy} (x : IScalar ty) : RustM (IScalar ty) :=
+  if x.val = IScalar.min ty then fail .panic
   else if x.val < 0 then ok ⟨BitVec.ofInt _ (-x.val)⟩
   else ok x
 
 @[spec]
-def rust_primitives.arithmetic.abs_i8 : Std.I8 → Result Std.I8 :=
+def rust_primitives.arithmetic.abs_i8 : Std.I8 → RustM Std.I8 :=
   iabs
 
 @[spec]
-def rust_primitives.arithmetic.abs_i16 : Std.I16 → Result Std.I16 :=
+def rust_primitives.arithmetic.abs_i16 : Std.I16 → RustM Std.I16 :=
   iabs
 
 @[spec]
-def rust_primitives.arithmetic.abs_i32 : Std.I32 → Result Std.I32 :=
+def rust_primitives.arithmetic.abs_i32 : Std.I32 → RustM Std.I32 :=
   iabs
 
 @[spec]
-def rust_primitives.arithmetic.abs_i64 : Std.I64 → Result Std.I64 :=
+def rust_primitives.arithmetic.abs_i64 : Std.I64 → RustM Std.I64 :=
   iabs
 
 @[spec]
-def rust_primitives.arithmetic.abs_i128 : Std.I128 → Result Std.I128 :=
+def rust_primitives.arithmetic.abs_i128 : Std.I128 → RustM Std.I128 :=
   iabs
 
 @[spec]
-def rust_primitives.arithmetic.abs_isize : Std.Isize → Result Std.Isize :=
+def rust_primitives.arithmetic.abs_isize : Std.Isize → RustM Std.Isize :=
   iabs
 
 @[spec]
-def rust_primitives.arithmetic.SIZE_BITS : Result Std.U32 :=
+def rust_primitives.arithmetic.SIZE_BITS : RustM Std.U32 :=
   ok Std.core.num.Usize.BITS
 
 @[spec]
-def rust_primitives.arithmetic.USIZE_MAX : Result Std.Usize :=
+def rust_primitives.arithmetic.USIZE_MAX : RustM Std.Usize :=
   ok Std.core.num.Usize.MAX
 
 @[spec]
-def rust_primitives.arithmetic.ISIZE_MAX : Result Std.Isize :=
+def rust_primitives.arithmetic.ISIZE_MAX : RustM Std.Isize :=
   ok Std.core.num.Isize.MAX
 
 @[spec]
-def rust_primitives.arithmetic.ISIZE_MIN : Result Std.Isize :=
+def rust_primitives.arithmetic.ISIZE_MIN : RustM Std.Isize :=
   ok Std.core.num.Isize.MIN
 
 @[spec]
-def alloc.string.String.new : Result String := ok ""
+def alloc.string.String.new : RustM String := ok ""
 
 @[spec]
 def rust_primitives.sequence.seq_empty
-  (T : Type) : Result (rust_primitives.sequence.Seq T) := ok (Slice.new T)
+  (T : Type) : RustM (rust_primitives.sequence.Seq T) := ok (Slice.new T)
 
 @[spec]
 def rust_primitives.sequence.seq_from_boxed_slice
-  {T : Type} : Slice T → Result (rust_primitives.sequence.Seq T) := fun s => ok s
+  {T : Type} : Slice T → RustM (rust_primitives.sequence.Seq T) := fun s => ok s
 
 @[spec]
 def rust_primitives.sequence.seq_to_slice
-  {T : Type} : rust_primitives.sequence.Seq T → Result (Slice T) := fun s => ok s
+  {T : Type} : rust_primitives.sequence.Seq T → RustM (Slice T) := fun s => ok s
 
 @[spec]
 def rust_primitives.sequence.seq_to_slice_mut
   {T : Type} :
   rust_primitives.sequence.Seq T →
-    Result ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
+    RustM ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
   fun s => ok (s, fun s' => s')
 
 @[spec]
 def rust_primitives.sequence.seq_concat
   {T : Type} :
-  rust_primitives.sequence.Seq T → rust_primitives.sequence.Seq T → Result
+  rust_primitives.sequence.Seq T → rust_primitives.sequence.Seq T → RustM
     ((rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T)) :=
   fun s1 s2 =>
     let combined := s1.val ++ s2.val
     if h : combined.length ≤ Usize.max then ok (⟨combined, h⟩, Slice.new T)
-    else fail .maximumSizeExceeded
+    else fail .panic
 
 -- Appends `src`'s elements *cloned*.
 @[spec]
 def rust_primitives.sequence.seq_extend
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
-  rust_primitives.sequence.Seq T → Slice T → Result
+  rust_primitives.sequence.Seq T → Slice T → RustM
     (rust_primitives.sequence.Seq T) := fun s src =>
   match src.val.mapM corecloneCloneInst.clone with
   | ok cloned =>
     let combined := s.val ++ cloned
     if h : combined.length ≤ Usize.max then ok ⟨combined, h⟩
-    else fail .maximumSizeExceeded
+    else fail .panic
   | fail e => fail e
   | div => div
 
 @[spec]
 def rust_primitives.sequence.seq_push
   {T : Type} :
-  rust_primitives.sequence.Seq T → T → Result (rust_primitives.sequence.Seq T) :=
+  rust_primitives.sequence.Seq T → T → RustM (rust_primitives.sequence.Seq T) :=
   fun s x =>
     let extended := s.val ++ [x]
     if h : extended.length ≤ Usize.max then ok ⟨extended, h⟩
-    else fail .maximumSizeExceeded
+    else fail .panic
 
 -- std clones `x` for all but the last element, which is `x` itself moved in.
 @[spec]
 def rust_primitives.sequence.seq_create
   {T : Type} (corecloneCloneInst : core.clone.Clone T) :
-  T → Std.Usize → Result (rust_primitives.sequence.Seq T) := fun x n =>
+  T → Std.Usize → RustM (rust_primitives.sequence.Seq T) := fun x n =>
   if n.val = 0 then ok (Slice.new T)
   else
     match (List.replicate (n.val - 1) x).mapM corecloneCloneInst.clone with
     | ok cloned =>
       let combined := cloned ++ [x]
       if h : combined.length ≤ Usize.max then ok ⟨combined, h⟩
-      else fail .maximumSizeExceeded
+      else fail .panic
     | fail e => fail e
     | div => div
 
 @[spec]
 def rust_primitives.sequence.seq_drain
   {T : Type} :
-  rust_primitives.sequence.Seq T → Std.Usize → Std.Usize → Result
+  rust_primitives.sequence.Seq T → Std.Usize → Std.Usize → RustM
     ((rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T)) :=
   fun s start «end» =>
     if h : start.val ≤ «end».val ∧ «end».val ≤ s.length then
       let drained := (s.val.drop start.val).take («end».val - start.val)
       let remaining := s.val.take start.val ++ s.val.drop «end».val
       ok (⟨drained, by grind⟩, ⟨remaining, by grind⟩)
-    else fail .arrayOutOfBounds
+    else fail .panic
 
 @[spec]
 def rust_primitives.sequence.seq_index
-  {T : Type} : rust_primitives.sequence.Seq T → Std.Usize → Result T :=
+  {T : Type} : rust_primitives.sequence.Seq T → Std.Usize → RustM T :=
   Slice.index_usize
 
-@[spec] def rust_primitives.arithmetic.wrapping_add_i8 (x y : I8) : Result I8 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_i8 (x y : I8) : RustM I8 :=
   .ok (Aeneas.Std.I8.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_i16 (x y : I16) : Result I16 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_i16 (x y : I16) : RustM I16 :=
   .ok (Aeneas.Std.I16.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_i32 (x y : I32) : Result I32 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_i32 (x y : I32) : RustM I32 :=
   .ok (Aeneas.Std.I32.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_i64 (x y : I64) : Result I64 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_i64 (x y : I64) : RustM I64 :=
   .ok (Aeneas.Std.I64.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_i128 (x y : I128) : Result I128 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_i128 (x y : I128) : RustM I128 :=
   .ok (Aeneas.Std.I128.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_isize (x y : Isize) : Result Isize :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_isize (x y : Isize) : RustM Isize :=
   .ok (Aeneas.Std.Isize.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_u8 (x y : U8) : Result U8 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_u8 (x y : U8) : RustM U8 :=
   .ok (Aeneas.Std.U8.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_u16 (x y : U16) : Result U16 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_u16 (x y : U16) : RustM U16 :=
   .ok (Aeneas.Std.U16.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_u32 (x y : U32) : Result U32 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_u32 (x y : U32) : RustM U32 :=
   .ok (Aeneas.Std.U32.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_u64 (x y : U64) : Result U64 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_u64 (x y : U64) : RustM U64 :=
   .ok (Aeneas.Std.U64.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_u128 (x y : U128) : Result U128 :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_u128 (x y : U128) : RustM U128 :=
   .ok (Aeneas.Std.U128.wrapping_add x y)
-@[spec] def rust_primitives.arithmetic.wrapping_add_usize (x y : Usize) : Result Usize :=
+@[spec] def rust_primitives.arithmetic.wrapping_add_usize (x y : Usize) : RustM Usize :=
   .ok (Aeneas.Std.Usize.wrapping_add x y)
 
-@[spec] def rust_primitives.arithmetic.wrapping_sub_i8 (x y : I8) : Result I8 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_i8 (x y : I8) : RustM I8 :=
   .ok (Aeneas.Std.I8.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_i16 (x y : I16) : Result I16 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_i16 (x y : I16) : RustM I16 :=
   .ok (Aeneas.Std.I16.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_i32 (x y : I32) : Result I32 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_i32 (x y : I32) : RustM I32 :=
   .ok (Aeneas.Std.I32.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_i64 (x y : I64) : Result I64 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_i64 (x y : I64) : RustM I64 :=
   .ok (Aeneas.Std.I64.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_i128 (x y : I128) : Result I128 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_i128 (x y : I128) : RustM I128 :=
   .ok (Aeneas.Std.I128.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_isize (x y : Isize) : Result Isize :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_isize (x y : Isize) : RustM Isize :=
   .ok (Aeneas.Std.Isize.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_u8 (x y : U8) : Result U8 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_u8 (x y : U8) : RustM U8 :=
   .ok (Aeneas.Std.U8.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_u16 (x y : U16) : Result U16 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_u16 (x y : U16) : RustM U16 :=
   .ok (Aeneas.Std.U16.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_u32 (x y : U32) : Result U32 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_u32 (x y : U32) : RustM U32 :=
   .ok (Aeneas.Std.U32.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_u64 (x y : U64) : Result U64 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_u64 (x y : U64) : RustM U64 :=
   .ok (Aeneas.Std.U64.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_u128 (x y : U128) : Result U128 :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_u128 (x y : U128) : RustM U128 :=
   .ok (Aeneas.Std.U128.wrapping_sub x y)
-@[spec] def rust_primitives.arithmetic.wrapping_sub_usize (x y : Usize) : Result Usize :=
+@[spec] def rust_primitives.arithmetic.wrapping_sub_usize (x y : Usize) : RustM Usize :=
   .ok (Aeneas.Std.Usize.wrapping_sub x y)
 
-@[spec] def rust_primitives.arithmetic.wrapping_mul_i8 (x y : I8) : Result I8 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_i8 (x y : I8) : RustM I8 :=
   .ok (Aeneas.Std.I8.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_i16 (x y : I16) : Result I16 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_i16 (x y : I16) : RustM I16 :=
   .ok (Aeneas.Std.I16.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_i32 (x y : I32) : Result I32 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_i32 (x y : I32) : RustM I32 :=
   .ok (Aeneas.Std.I32.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_i64 (x y : I64) : Result I64 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_i64 (x y : I64) : RustM I64 :=
   .ok (Aeneas.Std.I64.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_i128 (x y : I128) : Result I128 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_i128 (x y : I128) : RustM I128 :=
   .ok (Aeneas.Std.I128.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_isize (x y : Isize) : Result Isize :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_isize (x y : Isize) : RustM Isize :=
   .ok (Aeneas.Std.Isize.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_u8 (x y : U8) : Result U8 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_u8 (x y : U8) : RustM U8 :=
   .ok (Aeneas.Std.U8.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_u16 (x y : U16) : Result U16 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_u16 (x y : U16) : RustM U16 :=
   .ok (Aeneas.Std.U16.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_u32 (x y : U32) : Result U32 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_u32 (x y : U32) : RustM U32 :=
   .ok (Aeneas.Std.U32.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_u64 (x y : U64) : Result U64 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_u64 (x y : U64) : RustM U64 :=
   .ok (Aeneas.Std.U64.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_u128 (x y : U128) : Result U128 :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_u128 (x y : U128) : RustM U128 :=
   .ok (Aeneas.Std.U128.wrapping_mul x y)
-@[spec] def rust_primitives.arithmetic.wrapping_mul_usize (x y : Usize) : Result Usize :=
+@[spec] def rust_primitives.arithmetic.wrapping_mul_usize (x y : Usize) : RustM Usize :=
   .ok (Aeneas.Std.Usize.wrapping_mul x y)
 
-@[spec] def rust_primitives.arithmetic.saturating_add_i8 (x y : I8) : Result I8 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_i8 (x y : I8) : RustM I8 :=
   .ok (IScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_i16 (x y : I16) : Result I16 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_i16 (x y : I16) : RustM I16 :=
   .ok (IScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_i32 (x y : I32) : Result I32 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_i32 (x y : I32) : RustM I32 :=
   .ok (IScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_i64 (x y : I64) : Result I64 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_i64 (x y : I64) : RustM I64 :=
   .ok (IScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_i128 (x y : I128) : Result I128 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_i128 (x y : I128) : RustM I128 :=
   .ok (IScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_isize (x y : Isize) : Result Isize :=
+@[spec] def rust_primitives.arithmetic.saturating_add_isize (x y : Isize) : RustM Isize :=
   .ok (IScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_u8 (x y : U8) : Result U8 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_u8 (x y : U8) : RustM U8 :=
   .ok (UScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_u16 (x y : U16) : Result U16 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_u16 (x y : U16) : RustM U16 :=
   .ok (UScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_u32 (x y : U32) : Result U32 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_u32 (x y : U32) : RustM U32 :=
   .ok (UScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_u64 (x y : U64) : Result U64 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_u64 (x y : U64) : RustM U64 :=
   .ok (UScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_u128 (x y : U128) : Result U128 :=
+@[spec] def rust_primitives.arithmetic.saturating_add_u128 (x y : U128) : RustM U128 :=
   .ok (UScalar.saturating_add x y)
-@[spec] def rust_primitives.arithmetic.saturating_add_usize (x y : Usize) : Result Usize :=
+@[spec] def rust_primitives.arithmetic.saturating_add_usize (x y : Usize) : RustM Usize :=
   .ok (UScalar.saturating_add x y)
 
-@[spec] def rust_primitives.arithmetic.saturating_sub_i8 (x y : I8) : Result I8 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_i8 (x y : I8) : RustM I8 :=
   .ok (IScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_i16 (x y : I16) : Result I16 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_i16 (x y : I16) : RustM I16 :=
   .ok (IScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_i32 (x y : I32) : Result I32 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_i32 (x y : I32) : RustM I32 :=
   .ok (IScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_i64 (x y : I64) : Result I64 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_i64 (x y : I64) : RustM I64 :=
   .ok (IScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_i128 (x y : I128) : Result I128 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_i128 (x y : I128) : RustM I128 :=
   .ok (IScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_isize (x y : Isize) : Result Isize :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_isize (x y : Isize) : RustM Isize :=
   .ok (IScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_u8 (x y : U8) : Result U8 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_u8 (x y : U8) : RustM U8 :=
   .ok (UScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_u16 (x y : U16) : Result U16 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_u16 (x y : U16) : RustM U16 :=
   .ok (UScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_u32 (x y : U32) : Result U32 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_u32 (x y : U32) : RustM U32 :=
   .ok (UScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_u64 (x y : U64) : Result U64 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_u64 (x y : U64) : RustM U64 :=
   .ok (UScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_u128 (x y : U128) : Result U128 :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_u128 (x y : U128) : RustM U128 :=
   .ok (UScalar.saturating_sub x y)
-@[spec] def rust_primitives.arithmetic.saturating_sub_usize (x y : Usize) : Result Usize :=
+@[spec] def rust_primitives.arithmetic.saturating_sub_usize (x y : Usize) : RustM Usize :=
   .ok (UScalar.saturating_sub x y)
 
-@[spec] def rust_primitives.arithmetic.overflowing_add_i8 (x y : I8) : Result (I8 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_i8 (x y : I8) : RustM (I8 × Bool) :=
   .ok (IScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_i16 (x y : I16) : Result (I16 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_i16 (x y : I16) : RustM (I16 × Bool) :=
   .ok (IScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_i32 (x y : I32) : Result (I32 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_i32 (x y : I32) : RustM (I32 × Bool) :=
   .ok (IScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_i64 (x y : I64) : Result (I64 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_i64 (x y : I64) : RustM (I64 × Bool) :=
   .ok (IScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_i128 (x y : I128) : Result (I128 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_i128 (x y : I128) : RustM (I128 × Bool) :=
   .ok (IScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_isize (x y : Isize) : Result (Isize × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_isize (x y : Isize) : RustM (Isize × Bool) :=
   .ok (IScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_u8 (x y : U8) : Result (U8 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_u8 (x y : U8) : RustM (U8 × Bool) :=
   .ok (UScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_u16 (x y : U16) : Result (U16 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_u16 (x y : U16) : RustM (U16 × Bool) :=
   .ok (UScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_u32 (x y : U32) : Result (U32 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_u32 (x y : U32) : RustM (U32 × Bool) :=
   .ok (UScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_u64 (x y : U64) : Result (U64 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_u64 (x y : U64) : RustM (U64 × Bool) :=
   .ok (UScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_u128 (x y : U128) : Result (U128 × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_u128 (x y : U128) : RustM (U128 × Bool) :=
   .ok (UScalar.overflowing_add x y)
-@[spec] def rust_primitives.arithmetic.overflowing_add_usize (x y : Usize) : Result (Usize × Bool) :=
+@[spec] def rust_primitives.arithmetic.overflowing_add_usize (x y : Usize) : RustM (Usize × Bool) :=
   .ok (UScalar.overflowing_add x y)
 
-@[spec] def rust_primitives.arithmetic.rotate_right_i8 (x : I8) (n : U32) : Result I8 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_i8 (x : I8) (n : U32) : RustM I8 :=
   .ok (IScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_i16 (x : I16) (n : U32) : Result I16 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_i16 (x : I16) (n : U32) : RustM I16 :=
   .ok (IScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_i32 (x : I32) (n : U32) : Result I32 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_i32 (x : I32) (n : U32) : RustM I32 :=
   .ok (IScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_i64 (x : I64) (n : U32) : Result I64 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_i64 (x : I64) (n : U32) : RustM I64 :=
   .ok (IScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_i128 (x : I128) (n : U32) : Result I128 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_i128 (x : I128) (n : U32) : RustM I128 :=
   .ok (IScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_isize (x : Isize) (n : U32) : Result Isize :=
+@[spec] def rust_primitives.arithmetic.rotate_right_isize (x : Isize) (n : U32) : RustM Isize :=
   .ok (IScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u8 (x : U8) (n : U32) : Result U8 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_u8 (x : U8) (n : U32) : RustM U8 :=
   .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u16 (x : U16) (n : U32) : Result U16 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_u16 (x : U16) (n : U32) : RustM U16 :=
   .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u32 (x : U32) (n : U32) : Result U32 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_u32 (x : U32) (n : U32) : RustM U32 :=
   .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u64 (x : U64) (n : U32) : Result U64 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_u64 (x : U64) (n : U32) : RustM U64 :=
   .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u128 (x : U128) (n : U32) : Result U128 :=
+@[spec] def rust_primitives.arithmetic.rotate_right_u128 (x : U128) (n : U32) : RustM U128 :=
   .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_usize (x : Usize) (n : U32) : Result Usize :=
+@[spec] def rust_primitives.arithmetic.rotate_right_usize (x : Usize) (n : U32) : RustM Usize :=
   .ok (UScalar.rotate_right x n)
 
-@[spec] def rust_primitives.arithmetic.rotate_left_i8 (x : I8) (n : U32) : Result I8 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_i8 (x : I8) (n : U32) : RustM I8 :=
   .ok (IScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_i16 (x : I16) (n : U32) : Result I16 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_i16 (x : I16) (n : U32) : RustM I16 :=
   .ok (IScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_i32 (x : I32) (n : U32) : Result I32 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_i32 (x : I32) (n : U32) : RustM I32 :=
   .ok (IScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_i64 (x : I64) (n : U32) : Result I64 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_i64 (x : I64) (n : U32) : RustM I64 :=
   .ok (IScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_i128 (x : I128) (n : U32) : Result I128 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_i128 (x : I128) (n : U32) : RustM I128 :=
   .ok (IScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_isize (x : Isize) (n : U32) : Result Isize :=
+@[spec] def rust_primitives.arithmetic.rotate_left_isize (x : Isize) (n : U32) : RustM Isize :=
   .ok (IScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u8 (x : U8) (n : U32) : Result U8 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_u8 (x : U8) (n : U32) : RustM U8 :=
   .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u16 (x : U16) (n : U32) : Result U16 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_u16 (x : U16) (n : U32) : RustM U16 :=
   .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u32 (x : U32) (n : U32) : Result U32 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_u32 (x : U32) (n : U32) : RustM U32 :=
   .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u64 (x : U64) (n : U32) : Result U64 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_u64 (x : U64) (n : U32) : RustM U64 :=
   .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u128 (x : U128) (n : U32) : Result U128 :=
+@[spec] def rust_primitives.arithmetic.rotate_left_u128 (x : U128) (n : U32) : RustM U128 :=
   .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_usize (x : Usize) (n : U32) : Result Usize :=
+@[spec] def rust_primitives.arithmetic.rotate_left_usize (x : Usize) (n : U32) : RustM Usize :=
   .ok (UScalar.rotate_left x n)
 
 end CoreModels
