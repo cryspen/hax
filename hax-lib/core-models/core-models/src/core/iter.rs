@@ -4443,6 +4443,23 @@ mod tests {
                 check!(u8 u16 u32 usize i8 i16 i32 isize);
             }
 
+            // Likewise for `next_back`, which `range_double_ended!` implements at
+            // every width: one instantiation per type, none left unexercised.
+            #[test]
+            fn test_range_next_back_every_width(a in any::<u8>(), b in any::<u8>()) {
+                macro_rules! check {
+                    ($($t:ty)*) => { $({
+                        let (a, b) = (a as $t, b as $t);
+                        let mut model = crate::ops::range::Range { start: a, end: b };
+                        let mut std_range = a..b;
+                        prop_assert_eq!(model.next_back(), std_range.next_back().inject());
+                        // And once more, so an emptied range answers too.
+                        prop_assert_eq!(model.next_back(), std_range.next_back().inject());
+                    })* };
+                }
+                check!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
+            }
+
             #[test]
             fn test_range_len_unsigned(a in any::<u32>(), b in any::<u32>()) {
                 prop_assert_eq!(
