@@ -2838,6 +2838,13 @@ mod tests {
                         #[test]
                         fn [<test_ $t _checked_mul>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assert_eq!(super::$t::checked_mul(x.inject(), y.inject()), x.checked_mul(y).inject());
+                            // At the narrow widths two random operands almost
+                            // always overflow, so a product that fits is
+                            // multiplied out every run as well.
+                            prop_assert_eq!(
+                                super::$t::checked_mul((1 as $t).inject(), y.inject()),
+                                (1 as $t).checked_mul(y).inject()
+                            );
                         }
 
                         #[test]
@@ -3107,12 +3114,17 @@ mod tests {
                             prop_assert_eq!(super::$t::overflowing_rem_euclid(mx, my), x.overflowing_rem_euclid(y));
                         }
 
-                        // Total, so no guard at all. `y == 0` is where all four
-                        // answer `None`, so it is one of the divisors every run
-                        // rather than left to the draw.
+                        // Total, so no guard at all. The two inputs that decide
+                        // the guards are generated every run rather than drawn:
+                        // `y == 0`, and `(MIN, !0)` — `!0` being `-1` on the
+                        // signed widths, where `MIN / -1` is the other `None`.
                         #[test]
                         fn [<test_ $t _checked_division_family>](x in any::<$t>(), y in any::<$t>()) {
-                            for y in [0 as $t, y] {
+                            for (x, y) in [
+                                (x, 0 as $t),
+                                (x, y),
+                                (<$t>::MIN, !(0 as $t)),
+                            ] {
                             let (mx, my) = (x.inject(), y.inject());
                             prop_assert_eq!(super::$t::checked_div_euclid(mx, my), x.checked_div_euclid(y).inject());
                             prop_assert_eq!(super::$t::checked_rem_euclid(mx, my), x.checked_rem_euclid(y).inject());
