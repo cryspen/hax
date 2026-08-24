@@ -1129,6 +1129,12 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 }
                 /// See [`std::collections::BTreeMap::append`]: on a shared key
                 /// the value from `other` wins.
+                // Excluded from coverage: the loop runs `other.len()` times and
+                // removes one element per step, so the guard that justifies the
+                // `seq_remove` is always true. It cannot be dropped — a `while`
+                // loop is what hax's `FunctionalizeLoops` cannot translate — and
+                // its false arm is therefore unreachable.
+                #[cfg_attr(coverage_nightly, coverage(off))]
                 fn append(&mut self, other: &mut BTreeMap<K, V, A>)
                 where
                     K: Ord,
@@ -1751,6 +1757,10 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 }
                 /// See [`std::collections::BTreeSet::append`]: elements from
                 /// `other` win over equal ones already in `self`.
+                // Excluded from coverage for the same reason as
+                // `BTreeMap::append`: the guard that justifies the `seq_remove`
+                // is always true, and it cannot be dropped.
+                #[cfg_attr(coverage_nightly, coverage(off))]
                 fn append(&mut self, other: &mut BTreeSet<T, A>)
                 where
                     T: Ord,
