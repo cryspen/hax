@@ -221,7 +221,7 @@ subDir = "backends/lean"
 
 [[require]]
 name = "hax"
-git = {{ url = "https://github.com/cryspen/hax-lean" }}
+git = "https://github.com/cryspen/hax-lean"
 rev = "{hax_rev}"
 "#
         ),
