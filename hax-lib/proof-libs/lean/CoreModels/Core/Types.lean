@@ -545,7 +545,7 @@ structure ops.try_trait.FromResidual (Self : Type) (R : Type) where
   from_residual : R → Result Self
 
 /-- [core_models::iter::adapters::map_windows::MapWindows]
-    Source: 'core-models/src/core/iter.rs', lines 3158:8-3162:9
+    Source: 'core-models/src/core/iter.rs', lines 3163:8-3167:9
     Visibility: public -/
 structure iter.adapters.map_windows.MapWindows (I : Type) (F : Type)
   (Clause0_Item : Type) (N : Std.Usize) where
@@ -840,7 +840,7 @@ structure iter.traits.marker.TrustedLen (Self : Type) (Self_Clause0_Item :
   iteratorIteratorInst : iter.traits.iterator.Iterator Self Self_Clause0_Item
 
 /-- Trait declaration: [core_models::iter::range::Step]
-    Source: 'core-models/src/core/iter.rs', lines 3573:4-3593:5
+    Source: 'core-models/src/core/iter.rs', lines 3587:4-3607:5
     Visibility: public -/
 structure iter.range.Step (Self : Type) where
   cloneCloneInst : clone.Clone Self
@@ -868,71 +868,71 @@ structure iter.traits.collect.ExtendMethods (Self : Type) (A : Type) where
   extend_reserve : Self → Std.Usize → Result Self
 
 /-- [core_models::iter::adapters::array_chunks::{impl core_models::iter::traits::iterator::Iterator<[Clause0_Item; N]> for core_models::iter::adapters::array_chunks::ArrayChunks<I, Clause0_Item, N>}::next::closure]
-    Source: 'core-models/src/core/iter.rs', lines 3144:43-3144:73 -/
+    Source: 'core-models/src/core/iter.rs', lines 3149:43-3149:73 -/
 @[reducible]
 def iter.adapters.array_chunks.IteratorArrayChunksArray.next.closure (I : Type)
   (Clause0_Item : Type) (N : Std.Usize) :=
   rust_primitives.sequence.Seq Clause0_Item
 
 /-- [core_models::iter::adapters::map_windows::{impl core_models::iter::traits::iterator::Iterator<R> for core_models::iter::adapters::map_windows::MapWindows<I, F, Clause0_Item, N>}::next::closure]
-    Source: 'core-models/src/core/iter.rs', lines 3196:43-3196:81 -/
+    Source: 'core-models/src/core/iter.rs', lines 3205:43-3205:81 -/
 @[reducible]
 def iter.adapters.map_windows.IteratorMapWindowsR.next.closure (I : Type) (R :
   Type) (F : Type) (Clause0_Item : Type) (N : Std.Usize) :=
   rust_primitives.sequence.Seq Clause0_Item
 
 /-- [core_models::iter::adapters::by_ref_sized::ByRefSized]
-    Source: 'core-models/src/core/iter.rs', lines 3211:8-3211:52
+    Source: 'core-models/src/core/iter.rs', lines 3220:8-3220:52
     Visibility: public -/
 @[reducible]
 def iter.adapters.by_ref_sized.ByRefSized (I : Type) := I
 
 /-- [core_models::iter::sources::empty::Empty]
-    Source: 'core-models/src/core/iter.rs', lines 3256:8-3256:36
+    Source: 'core-models/src/core/iter.rs', lines 3265:8-3265:36
     Visibility: public -/
 @[reducible]
 def iter.sources.empty.Empty (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::iter::sources::once::Once]
-    Source: 'core-models/src/core/iter.rs', lines 3295:8-3295:35
+    Source: 'core-models/src/core/iter.rs', lines 3304:8-3304:35
     Visibility: public -/
 @[reducible]
 def iter.sources.once.Once (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::iter::sources::once_with::OnceWith]
-    Source: 'core-models/src/core/iter.rs', lines 3342:8-3342:39
+    Source: 'core-models/src/core/iter.rs', lines 3351:8-3351:39
     Visibility: public -/
 @[reducible]
 def iter.sources.once_with.OnceWith (F : Type) :=
   rust_primitives.sequence.Seq F
 
 /-- [core_models::iter::sources::repeat::Repeat]
-    Source: 'core-models/src/core/iter.rs', lines 3372:8-3374:9
+    Source: 'core-models/src/core/iter.rs', lines 3381:8-3383:9
     Visibility: public -/
 structure iter.sources.repeat.Repeat (A : Type) where
   element : A
 
 /-- [core_models::iter::sources::repeat_n::RepeatN]
-    Source: 'core-models/src/core/iter.rs', lines 3407:8-3410:9
+    Source: 'core-models/src/core/iter.rs', lines 3416:8-3419:9
     Visibility: public -/
 structure iter.sources.repeat_n.RepeatN (A : Type) where
   count : Std.Usize
   element : A
 
 /-- [core_models::iter::sources::repeat_with::RepeatWith]
-    Source: 'core-models/src/core/iter.rs', lines 3455:8-3457:9
+    Source: 'core-models/src/core/iter.rs', lines 3464:8-3466:9
     Visibility: public -/
 structure iter.sources.repeat_with.RepeatWith (F : Type) where
   repeater : F
 
 /-- [core_models::iter::sources::from_fn::FromFn]
-    Source: 'core-models/src/core/iter.rs', lines 3481:8-3481:32
+    Source: 'core-models/src/core/iter.rs', lines 3490:8-3490:32
     Visibility: public -/
 @[reducible]
 def iter.sources.from_fn.FromFn (F : Type) := F
 
 /-- [core_models::iter::sources::successors::Successors]
-    Source: 'core-models/src/core/iter.rs', lines 3509:8-3512:9
+    Source: 'core-models/src/core/iter.rs', lines 3518:8-3521:9
     Visibility: public -/
 structure iter.sources.successors.Successors (T : Type) (F : Type) where
   next : rust_primitives.sequence.Seq T
