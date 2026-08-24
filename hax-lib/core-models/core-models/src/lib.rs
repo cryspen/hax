@@ -58,14 +58,11 @@
         one_sided_range,
         range_bounds_is_empty,
         range_into_bounds,
-        signed_bigint_helpers,
         step_trait,
         uint_bit_width,
         unchecked_neg,
         unchecked_shifts,
-        unsigned_bigint_helpers,
         utf16_extra,
-        widening_mul,
         wrapping_int_impl,
         wrapping_next_power_of_two
     )

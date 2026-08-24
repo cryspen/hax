@@ -3054,7 +3054,8 @@ mod tests {
                             prop_assert_eq!(super::$t::strict_rem(mx, my), x.strict_rem(y));
                             prop_assert_eq!(super::$t::strict_div_euclid(mx, my), x.strict_div_euclid(y));
                             prop_assert_eq!(super::$t::strict_rem_euclid(mx, my), x.strict_rem_euclid(y));
-                            prop_assert_eq!(super::$t::div_exact(mx, my), x.div_exact(y).inject());
+                            let exact = if x % y == 0 { Some(x / y) } else { None };
+                            prop_assert_eq!(super::$t::div_exact(mx, my), exact.inject());
                         }
 
                         // Only `y != 0` is needed here: these all answer `MIN / -1`
@@ -3080,9 +3081,13 @@ mod tests {
                             let (mx, my) = (x.inject(), y.inject());
                             prop_assert_eq!(super::$t::checked_div_euclid(mx, my), x.checked_div_euclid(y).inject());
                             prop_assert_eq!(super::$t::checked_rem_euclid(mx, my), x.checked_rem_euclid(y).inject());
+                            let checked_exact = match (x.checked_div(y), x.checked_rem(y)) {
+                                (Some(q), Some(0)) => Some(q),
+                                _ => None,
+                            };
                             prop_assert_eq!(
                                 super::$t::checked_div_exact(mx, my),
-                                x.checked_div_exact(y).inject(),
+                                checked_exact.inject(),
                             );
                             prop_assert_eq!(
                                 super::$t::checked_next_multiple_of(mx, my),
@@ -3155,29 +3160,24 @@ mod tests {
                             }
                         }
 
-                        #[test]
-                        fn [<test_ $t _widening_ops>](
-                            x in any::<$t>(),
-                            y in any::<$t>(),
-                            carry in any::<$t>(),
-                            add in any::<$t>(),
-                        ) {
-                            let (mx, my) = (x.inject(), y.inject());
-                            prop_assert_eq!(super::$t::widening_mul(mx, my), x.widening_mul(y));
-                            prop_assert_eq!(
-                                super::$t::carrying_mul(mx, my, carry.inject()),
-                                x.carrying_mul(y, carry),
-                            );
-                            prop_assert_eq!(
-                                super::$t::carrying_mul_add(mx, my, carry.inject(), add.inject()),
-                                x.carrying_mul_add(y, carry, add),
-                            );
-                        }
 
+                        // Spelled out from `overflowing_add`/`overflowing_sub`, which
+                        // are stable: std's `carrying_add`/`borrowing_sub` sit behind
+                        // a feature the two nightlies CI uses name differently.
                         #[test]
                         fn [<test_ $t _carrying_ops>](x in any::<$t>(), y in any::<$t>(), c in any::<bool>()) {
-                            prop_assert_eq!(super::$t::carrying_add(x.inject(), y.inject(), c), x.carrying_add(y, c));
-                            prop_assert_eq!(super::$t::borrowing_sub(x.inject(), y.inject(), c), x.borrowing_sub(y, c));
+                            let (s1, o1) = x.overflowing_add(y);
+                            let (sum, o2) = s1.overflowing_add(c as $t);
+                            prop_assert_eq!(
+                                super::$t::carrying_add(x.inject(), y.inject(), c),
+                                (sum, o1 != o2)
+                            );
+                            let (d1, u1) = x.overflowing_sub(y);
+                            let (diff, u2) = d1.overflowing_sub(c as $t);
+                            prop_assert_eq!(
+                                super::$t::borrowing_sub(x.inject(), y.inject(), c),
+                                (diff, u1 != u2)
+                            );
                         }
 
                         // `shr_exact` has no counterpart on the pinned toolchain, so the
@@ -3209,6 +3209,29 @@ mod tests {
     }
 
     // Tests for unsigned-only operations.
+    /// The full `2 * BITS`-bit product of two unsigned words, by shift-and-add
+    /// over `y`'s bits — deliberately a different algorithm from the model's
+    /// half-limb schoolbook one, and using only stable operations (std's
+    /// `widening_mul` sits behind a feature the two nightlies CI compiles with
+    /// name differently).
+    macro_rules! wide_mul_oracle {
+        ($t:ty, $x:expr, $y:expr) => {{
+            let (x, y): ($t, $t) = ($x, $y);
+            let mut lo: $t = 0;
+            let mut hi: $t = 0;
+            for i in 0..<$t>::BITS {
+                if (y >> i) & 1 == 1 {
+                    let add_lo = x << i;
+                    let add_hi = if i == 0 { 0 } else { x >> (<$t>::BITS - i) };
+                    let (l, c) = lo.overflowing_add(add_lo);
+                    lo = l;
+                    hi = hi.wrapping_add(add_hi).wrapping_add(c as $t);
+                }
+            }
+            (lo, hi)
+        }};
+    }
+
     macro_rules! uint_test {
         ($($t:ty)*) => {
             paste! {
@@ -3231,6 +3254,34 @@ mod tests {
                         #[test]
                         fn [<test_ $t _is_power_of_two>](x in any::<$t>()) {
                             prop_assert_eq!(super::$t::is_power_of_two(x.inject()), x.is_power_of_two());
+                        }
+
+                        // Against the shift-and-add oracle above rather than std,
+                        // whose `widening_mul` is feature-gated under names the two
+                        // nightlies CI uses do not share.
+                        #[test]
+                        fn [<test_ $t _widening_ops>](
+                            x in any::<$t>(),
+                            y in any::<$t>(),
+                            carry in any::<$t>(),
+                            add in any::<$t>(),
+                        ) {
+                            let (mx, my) = (x.inject(), y.inject());
+                            let (lo, hi) = wide_mul_oracle!($t, x, y);
+                            prop_assert_eq!(super::$t::widening_mul(mx, my), (lo, hi));
+
+                            // `+ carry` and `+ carry + add` cannot overflow the
+                            // high word: the product is at most `(2^N - 1)^2`.
+                            let (lo_c, c1) = lo.overflowing_add(carry);
+                            prop_assert_eq!(
+                                super::$t::carrying_mul(mx, my, carry.inject()),
+                                (lo_c, hi.wrapping_add(c1 as $t)),
+                            );
+                            let (lo_ca, c2) = lo_c.overflowing_add(add);
+                            prop_assert_eq!(
+                                super::$t::carrying_mul_add(mx, my, carry.inject(), add.inject()),
+                                (lo_ca, hi.wrapping_add(c1 as $t).wrapping_add(c2 as $t)),
+                            );
                         }
 
                         #[test]
@@ -3495,6 +3546,52 @@ mod tests {
             paste! {
                 $(
                     proptest! {
+                        // The signed widening product, against the unsigned
+                        // shift-and-add oracle plus the standard correction: the
+                        // high word of a signed product is the unsigned one less
+                        // `y` for a negative `x` and less `x` for a negative `y`.
+                        // std's version is feature-gated under names the two
+                        // nightlies CI compiles with do not share.
+                        #[test]
+                        fn [<test_ $signed _widening_ops>](
+                            x in any::<$signed>(),
+                            y in any::<$signed>(),
+                            carry in any::<$signed>(),
+                            add in any::<$signed>(),
+                        ) {
+                            let (ux, uy) = (x as $unsigned, y as $unsigned);
+                            let (lo, uhi) = wide_mul_oracle!($unsigned, ux, uy);
+                            let hi = uhi
+                                .wrapping_sub(if x < 0 { uy } else { 0 })
+                                .wrapping_sub(if y < 0 { ux } else { 0 })
+                                as $signed;
+                            let (mx, my) = (x.inject(), y.inject());
+                            prop_assert_eq!(super::$signed::widening_mul(mx, my), (lo, hi));
+
+                            // The carry and the addend join the `2 * BITS`-bit
+                            // value sign-extended, so a negative one contributes
+                            // `-1` to the high word on top of the low word's carry.
+                            let add_wide = |lo: $unsigned, hi: $signed, v: $signed| {
+                                let (lo, c) = lo.overflowing_add(v as $unsigned);
+                                let hi = hi
+                                    .wrapping_add(if v < 0 { -1 } else { 0 })
+                                    .wrapping_add(c as $signed);
+                                (lo, hi)
+                            };
+                            let (lo_c, hi_c) = add_wide(lo, hi, carry);
+                            prop_assert_eq!(
+                                super::$signed::carrying_mul(mx, my, carry.inject()),
+                                (lo_c, hi_c),
+                            );
+                            let (lo_ca, hi_ca) = add_wide(lo_c, hi_c, add);
+                            prop_assert_eq!(
+                                super::$signed::carrying_mul_add(
+                                    mx, my, carry.inject(), add.inject()
+                                ),
+                                (lo_ca, hi_ca),
+                            );
+                        }
+
                         #[test]
                         fn [<test_ $signed _checked_add_unsigned>](x in any::<$signed>(), y in any::<$unsigned>()) {
                             prop_assert_eq!(
@@ -3635,7 +3732,7 @@ mod tests {
                             let x = x - x % y;
                             prop_assert_eq!(
                                 unsafe { super::$t::unchecked_div_exact(x.inject(), y.inject()) },
-                                unsafe { x.unchecked_div_exact(y) });
+                                x / y);
                         }
                     }
                 )*
@@ -3723,7 +3820,10 @@ mod tests {
                         crate::testing::panics_like_core(|| super::$t::strict_rem(mx, my), || x.strict_rem(y));
                         crate::testing::panics_like_core(|| super::$t::strict_div_euclid(mx, my), || x.strict_div_euclid(y));
                         crate::testing::panics_like_core(|| super::$t::strict_rem_euclid(mx, my), || x.strict_rem_euclid(y));
-                        crate::testing::panics_like_core(|| super::$t::div_exact(mx, my), || x.div_exact(y));
+                        // `div_exact` panics on `y == 0` like the rest; std spells it
+                        // `exact_div` on the older of the two nightlies CI uses, so the
+                        // model is compared against `/`, which panics identically.
+                        crate::testing::panics_like_core(|| super::$t::div_exact(mx, my), || x / y);
                     }
                 )*
             }
@@ -3746,7 +3846,10 @@ mod tests {
                         crate::testing::panics_like_core(|| super::$t::strict_rem(mx, my), || x.strict_rem(y));
                         crate::testing::panics_like_core(|| super::$t::strict_div_euclid(mx, my), || x.strict_div_euclid(y));
                         crate::testing::panics_like_core(|| super::$t::strict_rem_euclid(mx, my), || x.strict_rem_euclid(y));
-                        crate::testing::panics_like_core(|| super::$t::div_exact(mx, my), || x.div_exact(y));
+                        // `div_exact` panics on `y == 0` like the rest; std spells it
+                        // `exact_div` on the older of the two nightlies CI uses, so the
+                        // model is compared against `/`, which panics identically.
+                        crate::testing::panics_like_core(|| super::$t::div_exact(mx, my), || x / y);
                     }
                 )*
             }
