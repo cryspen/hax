@@ -32,47 +32,6 @@
 // int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
 
 // likely_unlikely/cold_path: same, for the `hint` proptests.
-        #![cfg_attr(,
-        )],
-        // The slice proptests compare against still-unstable `[T]` methods.,
-        // `coverage_nightly`, which is set exactly by that newer job.,
-        // `signed_bigint_helpers`/`unsigned_bigint_helpers`/`widening_mul` on the newer,
-        // error, so the comparison against std is requested only under,
-        // iter_advance_by / exact_size_is_empty / rev_into_inner: same, for the,
-        // one the llvm-cov job passes explicitly. An unknown feature name is a hard,
-        // std's widening/carrying multiplication sits behind `bigint_helper_methods` on,
-        // still-unstable `core::iter` methods the `iter` proptests compare against.,
-        // the toolchain `rust-toolchain.toml` pins and behind,
-        all(test, coverage_nightly),
-        feature(signed_bigint_helpers, unsigned_bigint_helpers, widening_mul),
-// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
-// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
-// proptests compare against them.
-// `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
-// from `cargo hax`.
-// likely_unlikely/cold_path: same, for the `hint` proptests.
-// hasher_prefixfree_extras: same, for `Hasher::{write_length_prefix, write_str}`.
-// cmp_minmax: same, for `cmp::minmax{,_by,_by_key}`.
-// array_into_iter_constructors: `core::array::IntoIter::empty` is still
-// unstable, and a proptest compares against it.
-// mem_copy_fn / drop_guard: same, for `core::mem::{copy, DropGuard}`.
-// The `bound_*` / `control_flow_*` / `range_*` / `one_sided_range` features let
-// the `ops` proptests call the still-unstable std counterparts of the range and
-// `ControlFlow` items the model provides.
-// The proptests compare the model against std counterparts that are still
-// unstable: `div_ceil`/`div_floor`/`next_multiple_of` (int_roundings),
-// `exact_div` (exact_div, which is what the pinned toolchain calls the method
-// rustdoc now names `div_exact`), and `unchecked_neg`.
-// The slice proptests compare against still-unstable `[T]` methods.
-
-// iter_advance_by / exact_size_is_empty / rev_into_inner: same, for the
-// still-unstable `core::iter` methods the `iter` proptests compare against.
-// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
-// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
-// proptests compare against them.
-// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
-// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
-// proptests compare against them.
 #![cfg_attr(
     test,
     feature(
@@ -88,7 +47,6 @@
         drop_guard,
         exact_div,
         exact_size_is_empty,
-
         formatting_options,
         funnel_shifts,
         hasher_prefixfree_extras,
@@ -97,41 +55,6 @@
         int_roundings,
         is_ascii_octdigit,
         isolate_most_least_significant_one,
-        iter_advance_by,
-        likely_unlikely,
-        mem_copy_fn,
-        nonzero_bitwise,
-        nonzero_ops,
-        one_sided_range,
-        range_bounds_is_empty,
-        range_into_bounds,
-        rev_into_inner,
-        slice_pattern,
-        slice_split_once,
-        slice_swap_unchecked,
-        split_as_slice,
-        step_trait,
-        strip_circumfix,
-        trim_prefix_suffix,
-        uint_bit_width,
-        unchecked_neg,
-        unchecked_shifts,
-        utf16_extra,
-        wrapping_int_impl,
-        wrapping_next_power_of_two
-    )
-
-// formatting_options / int_format_into: `core::fmt::{FormattingOptions, Sign,
-// DebugAsHex, NumBuffer, NumBufferTrait}` are still unstable, and the `fmt`
-// proptests compare against them.
-#![cfg_attr(
-    test,
-    feature(step_trait, int_roundings, formatting_options, int_format_into)
-        iter_advance_by,
-        exact_size_is_empty,
-        formatting_options,
-        int_format_into,
-        int_roundings,
         iter_advance_by,
         iter_array_chunks,
         iter_collect_into,
@@ -158,6 +81,7 @@
         split_as_slice,
         step_trait,
         strip_circumfix,
+        test,
         trim_prefix_suffix,
         try_find,
         uint_bit_width,
