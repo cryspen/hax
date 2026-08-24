@@ -2998,6 +2998,13 @@ mod tests {
                         #[test]
                         fn [<test_ $t _checked_neg>](x in any::<$t>()) {
                             prop_assert_eq!(super::$t::checked_neg(x.inject()), x.checked_neg().inject());
+                            // Zero is the one input with a `Some` answer for the
+                            // unsigned widths, so it is checked every run rather
+                            // than left to the draw.
+                            prop_assert_eq!(
+                                super::$t::checked_neg((0 as $t).inject()),
+                                (0 as $t).checked_neg().inject()
+                            );
                         }
 
                         #[test]
@@ -3059,10 +3066,35 @@ mod tests {
                         }
 
                         // Only `y != 0` is needed here: these all answer `MIN / -1`
-                        // without panicking.
+                        // without panicking. That pair is generated explicitly —
+                        // it is the one input where `saturating_div` saturates and
+                        // `overflowing_*` report overflow.
                         #[test]
-                        fn [<test_ $t _wrapping_division_family>](x in any::<$t>(), y in any::<$t>()) {
+                        fn [<test_ $t _wrapping_division_family>](
+                            x in any::<$t>(),
+                            y in any::<$t>(),
+                        ) {
                             prop_assume!(y != 0);
+                            // `MIN / !0` every run: `!0` is `-1` on the signed
+                            // widths, where that is the only overflowing division
+                            // (and harmless on the unsigned ones, where it is
+                            // `MAX`).
+                            {
+                                let (ex, ey) = (<$t>::MIN, !(0 as $t));
+                                let (emx, emy) = (ex.inject(), ey.inject());
+                                prop_assert_eq!(
+                                    super::$t::saturating_div(emx, emy),
+                                    ex.saturating_div(ey)
+                                );
+                                prop_assert_eq!(
+                                    super::$t::wrapping_div(emx, emy),
+                                    ex.wrapping_div(ey)
+                                );
+                                prop_assert_eq!(
+                                    super::$t::overflowing_div(emx, emy),
+                                    ex.overflowing_div(ey)
+                                );
+                            }
                             let (mx, my) = (x.inject(), y.inject());
                             prop_assert_eq!(super::$t::wrapping_div(mx, my), x.wrapping_div(y));
                             prop_assert_eq!(super::$t::wrapping_rem(mx, my), x.wrapping_rem(y));
@@ -3075,9 +3107,12 @@ mod tests {
                             prop_assert_eq!(super::$t::overflowing_rem_euclid(mx, my), x.overflowing_rem_euclid(y));
                         }
 
-                        // Total, so no guard at all.
+                        // Total, so no guard at all. `y == 0` is where all four
+                        // answer `None`, so it is one of the divisors every run
+                        // rather than left to the draw.
                         #[test]
                         fn [<test_ $t _checked_division_family>](x in any::<$t>(), y in any::<$t>()) {
+                            for y in [0 as $t, y] {
                             let (mx, my) = (x.inject(), y.inject());
                             prop_assert_eq!(super::$t::checked_div_euclid(mx, my), x.checked_div_euclid(y).inject());
                             prop_assert_eq!(super::$t::checked_rem_euclid(mx, my), x.checked_rem_euclid(y).inject());
@@ -3093,6 +3128,7 @@ mod tests {
                                 super::$t::checked_next_multiple_of(mx, my),
                                 x.checked_next_multiple_of(y).inject(),
                             );
+                            }
                         }
 
                         #[test]
@@ -3482,6 +3518,9 @@ mod tests {
 
                         #[test]
                         fn [<test_ $t _abs_family>](x in any::<$t>()) {
+                            // `MIN` every run: it is where each of these overflows,
+                            // saturates or answers `None`.
+                            for x in [<$t>::MIN, x] {
                             let mx = x.inject();
                             prop_assert_eq!(super::$t::wrapping_abs(mx), x.wrapping_abs());
                             prop_assert_eq!(super::$t::overflowing_abs(mx), x.overflowing_abs());
@@ -3490,6 +3529,7 @@ mod tests {
                             prop_assert_eq!(super::$t::unsigned_abs(mx), x.unsigned_abs());
                             prop_assert_eq!(super::$t::saturating_neg(mx), x.saturating_neg());
                             prop_assert_eq!(super::$t::cast_unsigned(mx), x.cast_unsigned());
+                            }
                         }
 
                         #[test]
@@ -4368,6 +4408,9 @@ mod tests {
                     proptest! {
                         #[test]
                         fn [<test_nonzero_ $t _signed>](x in any::<$t>()) {
+                            // `MIN` every run: `checked_abs`/`checked_neg` answer
+                            // `None` only there.
+                            for x in [<$t>::MIN, x] {
                             let x = if x == 0 { 1 } else { x };
                             let (m, s) = (super::NonZero(x), std::num::NonZero::new(x).unwrap());
                             prop_assert_eq!(m.highest_one(), s.highest_one());
@@ -4385,6 +4428,7 @@ mod tests {
                             prop_assert_eq!(m.cast_unsigned(), s.cast_unsigned().inject());
                             if x != $t::MIN {
                                 prop_assert_eq!(m.abs(), s.abs().inject());
+                            }
                             }
                         }
                     }
