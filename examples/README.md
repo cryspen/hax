@@ -8,7 +8,9 @@ the generated files live in `<EXAMPLE>/proofs/<scenario>/<backend>/`.
 
 ## Lean
 
-For the Lean backend, we have three examples: `barrett`, `sha3`, and `loop_equivalence`.
+For the Lean backend, we have four examples: `barrett`, `sha3`, `loop_equivalence`,
+and `adc`. The `lean_tutorial` example accompanies the
+[Lean tutorial](../docs/manual/lean/tutorial/index.md).
 
 ### Barrett reduction
 
