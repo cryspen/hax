@@ -121,10 +121,10 @@ extract this body", and most opaque items have real, testable bodies.
 ### Mutation testing
 
 Coverage says a line ran, never that a test checked its result. `make mutants`
-mutates the model and expects the suite to notice; `core_models_mutants.yml`
-runs it nightly, and `make mutants-genuine` keeps only the survivors that
-matter. It cannot see `fn`s inside a `macro_rules!` body, which is most of
-`num/`.
+mutates the model and expects the suite to notice; `make mutants-genuine` keeps
+only the survivors that matter. A sweep is hours per cfg, so
+`core_models_mutants.yml` shards it across runners and runs weekly. It cannot
+see `fn`s inside a `macro_rules!` body, which is most of `num/`.
 
 Silence an expected survivor with `#[cfg_attr(test, mutants::skip)]` on the
 function, or with a per-mutant regex in `.cargo/mutants.toml` when that

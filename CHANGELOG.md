@@ -66,7 +66,7 @@ Changes to hax-lib:
  - Extract the core models to Lean with `cargo hax into lean` instead of calling charon and aeneas directly, so they use the tool versions hax pins. CI no longer builds its own charon/aeneas
  - Retarget the core models' `cfg(hax)` items at `cfg(hax_backend_fstar)`: they are the F* models, and every backend now compiles with `cfg(hax)`
  - Implement the `panic!()`-bodied `core` models through `rust_primitives` and test them against real Rust, marking them `charon::opaque` so Lean drops their panicking definitions; fix `String::pop` (it indexed the already-truncated string) and `std::f64::powf` (#2160)
- - Gate PRs on 100% test coverage of the model crates (`make test-coverage-check`), and add nightly mutation testing of the models
+ - Gate PRs on 100% test coverage of the model crates (`make test-coverage-check`), and add scheduled mutation testing of the models
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
