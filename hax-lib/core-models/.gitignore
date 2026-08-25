@@ -56,5 +56,6 @@ __pycache__/
 
 # cargo-mutants output.
 mutants.out/
+mutants.out.old/
 mutants-fstar/
 mutants-genuine.txt

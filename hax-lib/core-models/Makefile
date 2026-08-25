@@ -352,9 +352,12 @@ test-coverage-check: coverage-runs coverage-exclusions
 # tell us. Complements the target above; blind to macro-generated code, since
 # cargo-mutants cannot see `fn`s inside a `macro_rules!` body.
 #
-# `--in-place` mutates this checkout instead of a temp copy: the copy cannot
-# resolve our `hax-lib = { path = ".." }` dependency, which escapes the copied
-# workspace root. It needs a clean working tree and rules out `-j`.
+# `--in-place` mutates this checkout instead of a temp copy. It needs a clean
+# working tree and rules out `-j`, so `MUTANTS_JOBS` > 1 switches to copies:
+# cargo-mutants puts them under TMPDIR, and pointing that at the real `hax-lib/`
+# is what makes the copies' `hax-lib = { path = ".." }` resolve -- `..` is the
+# copy's parent, and hax-lib in turn inherits from the workspace root above it.
+# `--copy-target false` stops each copy duplicating target/ (4.5G apiece).
 #
 # Silence a mutant that cannot be killed with `#[cfg_attr(test, mutants::skip)]`
 # on the function (needs the `mutants` dev-dependency in that crate).
@@ -362,13 +365,21 @@ test-coverage-check: coverage-runs coverage-exclusions
 
 MUTANTS_FLAGS ?=
 MUTANTS_RUSTFLAGS ?=
+MUTANTS_JOBS ?= 1
+
+ifeq ($(MUTANTS_JOBS),1)
+MUTANTS_MODE = --in-place
+else
+MUTANTS_MODE = --jobs $(MUTANTS_JOBS) --copy-target false
+export TMPDIR = $(abspath ..)
+endif
 
 # `--test-workspace` because a model's mutants are usually killed by *another*
 # crate's tests: with cargo-mutants' default (only the mutated package's own
 # tests) 43 of `rust_primitives`' mutants survive spuriously.
 mutants:
 	RUSTFLAGS="$(MUTANTS_RUSTFLAGS)" \
-	    cargo mutants --in-place --test-workspace true $(MUTANTS_FLAGS)
+	    cargo mutants $(MUTANTS_MODE) --test-workspace true $(MUTANTS_FLAGS)
 
 # The same sweep under the other cfg. Model variants gated on
 # cfg(hax_backend_fstar) are not built by the default sweep, so their mutants are
