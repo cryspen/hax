@@ -3,7 +3,7 @@
  "packages":
  [{"type": "path",
    "scope": "",
-   "name": "Hax",
+   "name": "hax",
    "manifestFile": "lake-manifest.json",
    "inherited": false,
    "dir": "../../../../hax-lib/proof-libs/lean",
