@@ -4589,6 +4589,13 @@ mod tests {
                     ExactSizeIterator::len(&super::super::sources::once::once(x)),
                     std::iter::once(x).len()
                 );
+                // ... and again once the element has been taken: the check
+                // above holds for a `len` that always answers `1`.
+                let mut model = super::super::sources::once::once(x);
+                let mut std_once = std::iter::once(x);
+                let _ = Iterator::next(&mut model);
+                let _ = std_once.next();
+                prop_assert_eq!(ExactSizeIterator::len(&model), std_once.len());
             }
 
             #[test]
