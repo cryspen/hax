@@ -67,7 +67,6 @@ pub fn binary_for(platform: &str) -> Vec<u8> {
     match platform {
         "linux-x86_64" => elf(0x3E),
         "linux-aarch64" => elf(0xB7),
-        "macos-x86_64" => macho(0x0100_0007),
         "macos-aarch64" => macho(0x0100_000C),
         other => panic!("no executable fixture for platform {other}"),
     }

@@ -26,14 +26,12 @@ jobs:
       # oldest, glibc being backward compatible, so the 22.04 images cover the
       # newer ones and both architectures are held to that floor; on macOS the
       # newest, since what refuses a binary there is the code-signing policy,
-      # which Apple only tightens. `macos-15-intel` is pinned for want of a
-      # floating Intel label, not for its version.
+      # which Apple only tightens.
       matrix:
         os:
           - ubuntu-22.04     # linux-x86_64
           - ubuntu-22.04-arm # linux-aarch64
           - macos-latest     # macos-aarch64
-          - macos-15-intel   # macos-x86_64
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
