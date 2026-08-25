@@ -36,18 +36,19 @@ def square (x : Std.U8) : RustM Std.U8 := do
 To type-check the extraction, run
 ```
 cd proofs/lean
+lake exe cache get
 lake build
 ```
+The `lake exe cache get` step downloads prebuilt files for
+[mathlib](https://github.com/leanprover-community/mathlib4), a dependency
+of the generated project. Without it, `lake build` compiles mathlib from
+source, which takes much longer.
 The first time you run this, it might take a while to download dependencies.
 Ultimately, the type checking succeeds. If you have used the F* backend before,
 this might come as a surprise because the function can panic when `x` is so large that the
 multiplication causes an integer overflow.
 In Lean, our translation is wrapped in a monad called `RustM` that allows us
 to model functions that panic.
-
-In the output of `lake build`, you will see a couple of warnings
-of the form `warning: Aeneas/...`. You can safely ignore them.
-We hope to get rid of these soon.
 
 ## Specifying panic-freedom
 
@@ -105,7 +106,7 @@ Let's type-check all of this:
 ```
 lake build
 ```
-Again, this succeeds. But besides the Aeneas warnings, we get another warning:
+Again, this succeeds. But this time, we get a warning:
 ```
 warning: HaxTutorial/Verification/ProofObligations.lean:25:8: declaration uses `sorry`
 ```
@@ -132,7 +133,7 @@ error: HaxTutorial/Verification/ProofObligations.lean:28:12: `grind` failed
 case grind
 x : U8
 h : U8.max < ↑x * ↑x
-h_1 : ¬(ExceptConds.false.1 { down := panic }).down
+h_1 : ¬(ExceptConds.false.1 { down := Error.panic }).down
 ⊢ False
 ```
 The error is hard to read, but what Lean is trying to tell us is that it failed to prove
