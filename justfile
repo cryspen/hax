@@ -112,7 +112,7 @@ test-tools-cli:
   cargo build -q -p cargo-hax --bin cargo-hax
   # `examples/` is its own workspace, so the binary is invoked by path.
   HAX="$PWD/target/debug/cargo-hax"
-  cd examples/chacha20
+  cd examples/barrett
   "$HAX" tools show
   "$HAX" tools install
   "$HAX" tools list --installed

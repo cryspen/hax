@@ -52,7 +52,7 @@ jobs:
             cli/cargo-hax/src/tools \
             hax-types \
             justfile \
-            examples/chacha20 \
+            examples/barrett \
             .github/workflows/tools_end_to_end.yml
           then
             echo relevant=true >> "$GITHUB_OUTPUT"
