@@ -3,11 +3,17 @@ name: Tool management end-to-end
 # Installs the managed tools from their real artifacts and runs them, natively
 # on every supported platform.
 #
-# One runner per platform, each downloading real artifacts, so it runs before
-# a merge lands rather than on every push, plus nightly: the artifacts live
+# One runner per platform, each downloading real artifacts, so it runs where
+# the outcome can change rather than on every push: on a pull request touching
+# tool management, before a merge lands, and nightly, since the artifacts live
 # upstream and can change under an entry that was correct when written.
+#
+# The paths gate is a job rather than a trigger filter: a required check that
+# a filtered trigger never reports would block every other pull request from
+# merging, while a skipped job reports and passes.
 
 on:
+  pull_request:
   merge_group:
   schedule:
     - cron: '41 5 * * *'
@@ -18,7 +24,45 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Whether this run can change the outcome: on a pull request, only one
+  # touching tool management can; every other event runs unconditionally.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      relevant: ${{ steps.diff.outputs.relevant }}
+    steps:
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          # The merge commit and both of its parents, for the diff against
+          # the base branch.
+          fetch-depth: 2
+      - id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+        # `git diff --quiet` exits non-zero both on a match and on an error,
+        # so a failing diff marks the change relevant rather than skipping
+        # the check.
+        run: |
+          if [ "$EVENT" != pull_request ] || ! git diff --quiet HEAD^1 HEAD -- \
+            cli/cargo-hax/tools-manifest.toml \
+            cli/cargo-hax/defaults.toml \
+            cli/cargo-hax/src/cargo_hax.rs \
+            cli/cargo-hax/src/tools.rs \
+            cli/cargo-hax/src/tools \
+            hax-types \
+            justfile \
+            examples/barrett \
+            .github/workflows/tools_end_to_end.yml
+          then
+            echo relevant=true >> "$GITHUB_OUTPUT"
+          else
+            echo relevant=false >> "$GITHUB_OUTPUT"
+          fi
+
   install-and-run:
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true'
     strategy:
       fail-fast: false
       # One runner per platform key, since the platform key selects the
@@ -48,3 +92,21 @@ jobs:
 
       - name: Walk the documented setup flow in a project
         run: just test-tools-cli
+
+  # The status check to require on `main`: one context, named after nothing that
+  # moves, where the matrix leg names follow the runner images. Requiring it is
+  # a repository setting; without that, a failure here does not stop a merge.
+  # The matrix must have succeeded, or been skipped because the change is not
+  # relevant; anything else, including a cancelled or unexplained skip, fails.
+  install-and-run-result:
+    if: always()
+    needs: [changes, install-and-run]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the results
+        env:
+          RELEVANT: ${{ needs.changes.outputs.relevant }}
+          RESULT: ${{ needs.install-and-run.result }}
+        run: |
+          echo "$RELEVANT $RESULT"
+          [ "$RESULT" = success ] || { [ "$RESULT" = skipped ] && [ "$RELEVANT" = false ]; }

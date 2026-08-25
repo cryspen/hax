@@ -57,9 +57,43 @@ fn default_tools_install_and_run_on_this_platform() {
         for executable in tool_executables(tool) {
             let path = cache::executable_path(&dir, executable)
                 .unwrap_or_else(|e| panic!("{tool} {version}: {e}"));
-            assert_runs(&path);
+            if runs_on_its_own(executable) {
+                assert_runs(&path);
+            } else {
+                assert_executable(&path);
+            }
         }
     }
+}
+
+/// Whether the system can be asked to run an executable on its own.
+///
+/// `charon-driver` cannot: it links against the `librustc_driver` shared
+/// library of the toolchain it was built with, which the archive does not
+/// ship, so only `charon` can load it, through that toolchain. On Linux the
+/// dynamic loader reports the missing library through an ordinary exit,
+/// which `assert_runs` accepts, so spawning it still catches a file built
+/// for another platform; macOS kills it by signal, indistinguishable from a
+/// refused binary, so there being present and executable is all that can be
+/// asked of it.
+fn runs_on_its_own(executable: &str) -> bool {
+    executable != "charon-driver" || cfg!(not(target_os = "macos"))
+}
+
+/// Assert a file carries an execute bit, for executables that cannot be
+/// held to actually running.
+fn assert_executable(path: &Path) {
+    use std::os::unix::fs::PermissionsExt;
+
+    let mode = std::fs::metadata(path)
+        .unwrap_or_else(|e| panic!("could not stat {}: {e}", path.display()))
+        .permissions()
+        .mode();
+    assert!(
+        mode & 0o111 != 0,
+        "{} is not executable (mode {mode:o})",
+        path.display()
+    );
 }
 
 /// Assert the operating system can load and run an executable.
@@ -117,5 +151,21 @@ mod tests {
         let path = dir.path().join("charon");
         std::fs::write(&path, "not an executable").unwrap();
         assert_runs(&path);
+    }
+
+    /// `assert_executable` accepts a file with an execute bit.
+    #[test]
+    fn assert_executable_accepts_a_system_executable() {
+        assert_executable(Path::new("/bin/sh"));
+    }
+
+    /// And rejects a file without one.
+    #[test]
+    #[should_panic(expected = "is not executable")]
+    fn assert_executable_rejects_a_plain_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("charon-driver");
+        std::fs::write(&path, "not an executable").unwrap();
+        assert_executable(&path);
     }
 }
