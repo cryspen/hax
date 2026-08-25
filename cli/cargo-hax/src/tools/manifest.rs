@@ -75,12 +75,7 @@ pub fn embedded() -> Manifest {
 /// The platforms hax publishes pre-built tool artifacts for, as the keys
 /// the manifest uses. A platform outside this set installs nothing: it
 /// resolves to the escape hatch of a user-provided binary.
-pub const SUPPORTED_PLATFORMS: &[&str] = &[
-    "linux-x86_64",
-    "linux-aarch64",
-    "macos-x86_64",
-    "macos-aarch64",
-];
+pub const SUPPORTED_PLATFORMS: &[&str] = &["linux-x86_64", "linux-aarch64", "macos-aarch64"];
 
 /// The platform key of the running binary, derived from its compile-time
 /// target: `<os>-<arch>` with `os` in `linux`/`macos` and `arch` in
@@ -243,8 +238,9 @@ mod tests {
     /// platform and silently fall through to the unverified path.
     #[test]
     fn platform_key_of_a_supported_target_is_a_manifest_key() {
-        let supported_target = cfg!(any(target_os = "linux", target_os = "macos"))
-            && cfg!(any(target_arch = "x86_64", target_arch = "aarch64"));
+        let supported_target = (cfg!(target_os = "linux")
+            && cfg!(any(target_arch = "x86_64", target_arch = "aarch64")))
+            || (cfg!(target_os = "macos") && cfg!(target_arch = "aarch64"));
         if supported_target {
             let key = platform_key();
             assert!(
@@ -256,7 +252,7 @@ mod tests {
 
     /// Manifest lookups must key on the platform they are given, for each
     /// supported platform rather than only the host's. The fixture is
-    /// host-independent, so every runner exercises all four keys.
+    /// host-independent, so every runner exercises every key.
     #[test]
     fn lookups_select_the_entry_of_each_supported_platform() {
         let entries = SUPPORTED_PLATFORMS

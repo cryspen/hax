@@ -26,7 +26,7 @@ Note:
 
 ## Installation
 
-hax is supported on Linux and macOS, on both `x86_64` and `aarch64`. Windows is not supported; use [WSL](https://learn.microsoft.com/windows/wsl/) there.
+hax is supported on Linux (`x86_64` and `aarch64`) and macOS (`aarch64`). Windows is not supported; use [WSL](https://learn.microsoft.com/windows/wsl/) there.
 
 ### Manual installation
 

@@ -5,7 +5,7 @@
 //! file, an archive's layout can move out from under `entry_points`, and an
 //! artifact can be published under the wrong platform's name. None of that is
 //! visible without fetching the artifact, so the tests that fetch one are
-//! `#[ignore]`d and left to CI. They cover all four supported platforms from
+//! `#[ignore]`d and left to CI. They cover every supported platform from
 //! whichever one runs them: downloading, hashing and reading an archive are
 //! platform-independent. Whether a binary *runs* is left to the tests that
 //! install and run the real artifacts natively.
@@ -235,6 +235,9 @@ fn binary_platform(path: &Path) -> Result<Option<String>, String> {
     if u32::from_le_bytes([header[0], header[1], header[2], header[3]]) == 0xFEED_FACF {
         return Ok(
             match u32::from_le_bytes([header[4], header[5], header[6], header[7]]) {
+                // Intel Macs are unsupported, but recognizing the type lets
+                // an x86_64 binary published under the aarch64 key be
+                // reported as a mismatch rather than pass unrecognized.
                 0x0100_0007 => Some("macos-x86_64".to_string()),
                 0x0100_000C => Some("macos-aarch64".to_string()),
                 _ => None,
