@@ -93,12 +93,36 @@ fun rust_primitives__hax__cast_op(bitstring): bitstring [data].
 fun rust_primitives__hax__logical_op_and(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__logical_op_or(bitstring, bitstring): bitstring [data].
 
-(* `+ 1` / `- 1` on a small concrete literal reduces over the declared
-   constants `nat_0 .. nat_16`, so loop/epoch counters progress (`nat_1`,
-   `nat_2`, ...) for queries to name and order. Only `± 1` reduces; any
-   other operand — a larger literal, or byte arithmetic on opaque blobs — falls
-   through to an opaque `[data]` term. The bound (16) covers every counter that
-   climbs concretely under the bounded loop model (LOOP_BOUND = 3). *)
+(* `nat2native` / `native2nat`: bridge the opaque `nat_0 .. nat_16` constants to
+   ProVerif's built-in `nat` and back. Both are PARTIAL — an operand outside
+   `0 .. 16` (a larger literal, or an opaque byte blob) does not convert, so a
+   caller can fall back to an opaque symbol; a larger value never reaches the
+   unary `nat`, so it cannot overflow. These are only used by the *opt-in*
+   `nat_*` operators at the end of this block; the canonical `machine_int__*`
+   operators keep the opaque / `± 1` model, so a model that does not call the
+   `nat_*` versions pays nothing for the bridge. *)
+letfun nat2native(x: bitstring) =
+  let (= nat_0) = x in 0 else let (= nat_1) = x in 1 else let (= nat_2) = x in 2
+  else let (= nat_3) = x in 3 else let (= nat_4) = x in 4 else let (= nat_5) = x in 5
+  else let (= nat_6) = x in 6 else let (= nat_7) = x in 7 else let (= nat_8) = x in 8
+  else let (= nat_9) = x in 9 else let (= nat_10) = x in 10 else let (= nat_11) = x in 11
+  else let (= nat_12) = x in 12 else let (= nat_13) = x in 13 else let (= nat_14) = x in 14
+  else let (= nat_15) = x in 15 else let (= nat_16) = x in 16.
+letfun native2nat(n: nat) =
+  if n = 0 then nat_0 else if n = 1 then nat_1 else if n = 2 then nat_2
+  else if n = 3 then nat_3 else if n = 4 then nat_4 else if n = 5 then nat_5
+  else if n = 6 then nat_6 else if n = 7 then nat_7 else if n = 8 then nat_8
+  else if n = 9 then nat_9 else if n = 10 then nat_10 else if n = 11 then nat_11
+  else if n = 12 then nat_12 else if n = 13 then nat_13 else if n = 14 then nat_14
+  else if n = 15 then nat_15 else if n = 16 then nat_16 else construct_fail().
+
+(* Canonical arithmetic (what the extracted code calls). `+ 1` / `- 1` on a
+   small concrete literal reduces over the declared constants `nat_0 .. nat_16`,
+   so loop/epoch counters progress (`nat_1`, `nat_2`, ...) for queries to name.
+   Only `± 1` reduces; any other operand falls through to an opaque `[data]`
+   term. The bound (16) covers every counter that climbs concretely under the
+   bounded loop model (LOOP_BOUND = 3). For general small arithmetic use the
+   opt-in `nat_add` / `nat_sub` below. *)
 fun rust_primitives__hax__machine_int__add_opaque(bitstring, bitstring): bitstring [data].
 letfun rust_primitives__hax__machine_int__add(a: bitstring, b: bitstring) =
   let (= nat_1) = b in
@@ -147,17 +171,83 @@ fun rust_primitives__hax__machine_int__rem(bitstring, bitstring): bitstring [dat
 (* Integer (in)equality is *structural* equality on the symbolic terms, like
    `PartialEq::eq` below. Without this, `eq(x, x)` stays an opaque term that
    never reduces to `True()`, so every `if a == b` / `assert_eq!(a, b)` /
-   `find(|e| e.id == id)` mis-fires (e.g. a prefix check that always "fails").
-   The ordering comparisons (`lt`/`le`/`gt`/`ge`) and arithmetic stay opaque —
-   the model carries no integer arithmetic. *)
+   `find(|e| e.id == id)` mis-fires (e.g. a prefix check that always "fails"). *)
 letfun rust_primitives__hax__machine_int__eq(a: bitstring, b: bitstring) =
   let (= a) = b in True() else False().
 letfun rust_primitives__hax__machine_int__ne(a: bitstring, b: bitstring) =
   let (= a) = b in False() else True().
+(* Canonical ordering is opaque — the model carries no integer ordering. For a
+   concrete comparison of two small constants use the opt-in `nat_lt` etc. *)
 fun rust_primitives__hax__machine_int__lt(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__le(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__gt(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__ge(bitstring, bitstring): bitstring [data].
+
+(* Opt-in reductive small-integer layer. Each evaluates concretely when both
+   operands are constants in `nat_0 .. nat_16` and otherwise falls back to the
+   canonical `machine_int__*` operator above (opaque, or `± 1` for add/sub). A
+   model that needs a concrete epoch/counter comparison or a general small add
+   (e.g. `cep < max_epoch()`) calls these by name in its handwritten
+   process/queries; the extracted code keeps using `machine_int__*`, so no other
+   model is affected and none pays for the bridge. `nat` has no `x + y` (only
+   `x + <literal>`), so `nat_add` / `nat_sub` match the second operand to a
+   literal `k`. *)
+letfun nat_add(a: bitstring, b: bitstring) =
+  let r =
+    ( let (= nat_0)  = b in a
+      else let (= nat_1)  = b in native2nat(nat2native(a) + 1)
+      else let (= nat_2)  = b in native2nat(nat2native(a) + 2)
+      else let (= nat_3)  = b in native2nat(nat2native(a) + 3)
+      else let (= nat_4)  = b in native2nat(nat2native(a) + 4)
+      else let (= nat_5)  = b in native2nat(nat2native(a) + 5)
+      else let (= nat_6)  = b in native2nat(nat2native(a) + 6)
+      else let (= nat_7)  = b in native2nat(nat2native(a) + 7)
+      else let (= nat_8)  = b in native2nat(nat2native(a) + 8)
+      else let (= nat_9)  = b in native2nat(nat2native(a) + 9)
+      else let (= nat_10) = b in native2nat(nat2native(a) + 10)
+      else let (= nat_11) = b in native2nat(nat2native(a) + 11)
+      else let (= nat_12) = b in native2nat(nat2native(a) + 12)
+      else let (= nat_13) = b in native2nat(nat2native(a) + 13)
+      else let (= nat_14) = b in native2nat(nat2native(a) + 14)
+      else let (= nat_15) = b in native2nat(nat2native(a) + 15)
+      else let (= nat_16) = b in native2nat(nat2native(a) + 16) ) in r
+  else rust_primitives__hax__machine_int__add(a, b).
+letfun nat_sub(a: bitstring, b: bitstring) =
+  let r =
+    ( let (= nat_0)  = b in a
+      else let (= nat_1)  = b in native2nat(nat2native(a) - 1)
+      else let (= nat_2)  = b in native2nat(nat2native(a) - 2)
+      else let (= nat_3)  = b in native2nat(nat2native(a) - 3)
+      else let (= nat_4)  = b in native2nat(nat2native(a) - 4)
+      else let (= nat_5)  = b in native2nat(nat2native(a) - 5)
+      else let (= nat_6)  = b in native2nat(nat2native(a) - 6)
+      else let (= nat_7)  = b in native2nat(nat2native(a) - 7)
+      else let (= nat_8)  = b in native2nat(nat2native(a) - 8)
+      else let (= nat_9)  = b in native2nat(nat2native(a) - 9)
+      else let (= nat_10) = b in native2nat(nat2native(a) - 10)
+      else let (= nat_11) = b in native2nat(nat2native(a) - 11)
+      else let (= nat_12) = b in native2nat(nat2native(a) - 12)
+      else let (= nat_13) = b in native2nat(nat2native(a) - 13)
+      else let (= nat_14) = b in native2nat(nat2native(a) - 14)
+      else let (= nat_15) = b in native2nat(nat2native(a) - 15)
+      else let (= nat_16) = b in native2nat(nat2native(a) - 16) ) in r
+  else rust_primitives__hax__machine_int__sub(a, b).
+letfun nat_lt(a: bitstring, b: bitstring) =
+  let r = (let x = nat2native(a) in let y = nat2native(b) in
+             if x < y then True() else False()) in r
+  else rust_primitives__hax__machine_int__lt(a, b).
+letfun nat_le(a: bitstring, b: bitstring) =
+  let r = (let x = nat2native(a) in let y = nat2native(b) in
+             if x <= y then True() else False()) in r
+  else rust_primitives__hax__machine_int__le(a, b).
+letfun nat_gt(a: bitstring, b: bitstring) =
+  let r = (let x = nat2native(a) in let y = nat2native(b) in
+             if x > y then True() else False()) in r
+  else rust_primitives__hax__machine_int__gt(a, b).
+letfun nat_ge(a: bitstring, b: bitstring) =
+  let r = (let x = nat2native(a) in let y = nat2native(b) in
+             if x >= y then True() else False()) in r
+  else rust_primitives__hax__machine_int__ge(a, b).
 fun rust_primitives__hax__machine_int__shl(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__shr(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__bitxor(bitstring, bitstring): bitstring [data].
