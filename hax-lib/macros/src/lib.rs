@@ -132,8 +132,8 @@ passthrough_attributes! {
     /// pub struct BoundedU64<const MIN: u64, const MAX: u64>(u64);
     /// ```
     ///
-    /// This macro will generate an implementation of the [`Deref`] trait
-    /// and of the [`hax_lib::Refinement`] type. Those two traits are
+    /// This macro will generate an implementation of the [`Deref`](core::ops::Deref)
+    /// trait and of the `hax_lib::Refinement` trait. Those two traits are
     /// the only interface to this newtype: one is allowed only to
     /// construct or destruct refined type via those smart constructors
     /// and destructors, ensuring the abstraction.
@@ -185,7 +185,8 @@ attribute_macros! {
     }
 
     /// Allows to add SMT patterns to a lemma.
-    /// For more informations about SMT patterns, please take a look here: https://fstar-lang.org/tutorial/book/under_the_hood/uth_smt.html#designing-a-library-with-smt-patterns.
+    /// For more informations about SMT patterns, please take a look here:
+    /// <https://fstar-lang.org/tutorial/book/under_the_hood/uth_smt.html#designing-a-library-with-smt-patterns>.
     fn fstar_smt_pat(attr, item) {
         let phi: syn::Expr = parse_macro_input!(attr);
         let item: FnLike = parse_macro_input!(item);
@@ -425,7 +426,7 @@ pub fn lemma(attr: TokenStream, item: TokenStream) -> TokenStream {
     }
 }
 
-/// Enable the following attrubutes in the annotated item and sub-items.
+/// Enable the following attributes in the annotated item and sub-items.
 ///
 /// ### `refine` (on a field in a struct)
 /// Refine a type with a logical formula.
@@ -515,7 +516,7 @@ pub fn int(payload: TokenStream) -> TokenStream {
 ///
 /// Note that loop invariants are unstable (this will be handled in a
 /// better way in the future, see
-/// https://github.com/hacspec/hax/issues/858) and only supported on
+/// <https://github.com/hacspec/hax/issues/858>) and only supported on
 /// specific `for` loops with specific iterators:
 ///
 ///  - `for i in start..end {...}`
@@ -596,8 +597,8 @@ pub fn trait_fn_decoration(attr: TokenStream, item: TokenStream) -> TokenStream 
 /// Defines the item-level quoting attributes of a backend: `<BACKEND>_before`
 /// and `<BACKEND>_after`.
 macro_rules! item_quoting_proc_macros {
-    ($backend:ident, $($name:ident),*) => {$(
-        #[doc = concat!("This macro inlines verbatim ", stringify!($backend)," code before a Rust item.")]
+    ($backend:ident, $(($name:ident, $position:literal)),*) => {$(
+        #[doc = concat!("This macro inlines verbatim ", stringify!($backend), " code ", $position, " a Rust item.")]
         ///
         /// This macro takes a string literal containing backend
         /// code. Just as backend expression macros, this literal can
@@ -677,7 +678,7 @@ macro_rules! quoting_proc_macros {
             { let _ = payload; dummy::unsafe_expr() }
         }
 
-        item_quoting_proc_macros!($backend, $before, $after);
+        item_quoting_proc_macros!($backend, ($before, "before"), ($after, "after"));
 
         #[doc = concat!("Replaces a Rust item with some verbatim ", stringify!($backend)," code.")]
         #[proc_macro_attribute]

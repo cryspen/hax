@@ -58,7 +58,9 @@ impl parse::Parse for ImplFnDecoration {
             },
             None => Err(Error::new(
                 path_span,
-                "Expected `::hax_lib::<KIND>`, `hax_lib::<KIND>` or `<KIND>` with `KIND` in {DECORATION_KINDS:?}",
+                format!(
+                    "Expected `::hax_lib::<KIND>`, `hax_lib::<KIND>` or `<KIND>` with `KIND` in {DECORATION_KINDS:?}"
+                ),
             ))?,
         };
 

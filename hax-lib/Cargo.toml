@@ -28,4 +28,4 @@ unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)'] }
 # `--cfg hax` also has to reach rustc: otherwise Cargo does not see the `hax`
 # cfg and leaves the `[target.'cfg(hax)'.dependencies]` unresolved.
 rustc-args = ["--cfg", "hax"]
-rustdoc-args = ["--cfg", "doc_cfg", "--cfg", "hax"]
+rustdoc-args = ["--cfg", "hax"]
