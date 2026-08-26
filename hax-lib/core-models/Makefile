@@ -241,7 +241,6 @@ FSTAR_HANDWRITTEN = \
     Core_models.Num.Niche_types.fsti \
     Core_models.Num.Overflow_spec.fst \
     Core_models.Ops.Index.IndexMut.fst \
-    Core_models.Str.fsti \
     Core_models.Time.fsti \
     Core_models.TypeClassPlaceHolder.fst \
     Rand.Distr.Distribution.fsti \
