@@ -1122,31 +1122,31 @@ structure ops.range.OneSidedRange (Self : Type) (T : Type) where
   bound : Self → Result (ops.range.OneSidedRangeBound × T)
 
 /-- [core_models::option::Iter]
-    Source: 'core-models/src/core/option.rs', lines 663:0-663:39
+    Source: 'core-models/src/core/option.rs', lines 659:0-659:39
     Visibility: public -/
 @[reducible]
 def option.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::option::IntoIter]
-    Source: 'core-models/src/core/option.rs', lines 700:0-700:35
+    Source: 'core-models/src/core/option.rs', lines 695:0-695:35
     Visibility: public -/
 @[reducible]
 def option.IntoIter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::option::OptionFlatten]
-    Source: 'core-models/src/core/option.rs', lines 727:0-727:43
+    Source: 'core-models/src/core/option.rs', lines 722:0-722:43
     Visibility: public -/
 @[reducible]
 def option.OptionFlatten (A : Type) := option.Option A
 
 /-- [core_models::result::Iter]
-    Source: 'core-models/src/core/result.rs', lines 486:0-486:39
+    Source: 'core-models/src/core/result.rs', lines 484:0-484:39
     Visibility: public -/
 @[reducible]
 def result.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::result::IntoIter]
-    Source: 'core-models/src/core/result.rs', lines 523:0-523:35
+    Source: 'core-models/src/core/result.rs', lines 520:0-520:35
     Visibility: public -/
 @[reducible]
 def result.IntoIter (T : Type) := rust_primitives.sequence.Seq T

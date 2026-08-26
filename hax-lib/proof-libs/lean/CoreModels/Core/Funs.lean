@@ -13192,7 +13192,7 @@ def option.Option.and
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::unwrap_unchecked]:
-    Source: 'core-models/src/core/option.rs', lines 290:4-295:5
+    Source: 'core-models/src/core/option.rs', lines 288:4-293:5
     Visibility: public -/
 def option.Option.unwrap_unchecked
   {T : Type} (self : option.Option T) : Result T := do
@@ -13201,7 +13201,7 @@ def option.Option.unwrap_unchecked
   | option.Option.None => panicking.internal.panic T
 
 /-- [core_models::option::{core_models::option::Option<T>}::iter]:
-    Source: 'core-models/src/core/option.rs', lines 298:4-303:5
+    Source: 'core-models/src/core/option.rs', lines 296:4-301:5
     Visibility: public -/
 def option.Option.iter
   {T : Type} (self : option.Option T) : Result (option.Iter T) := do
@@ -13212,7 +13212,7 @@ def option.Option.iter
                           ok s
 
 /-- [core_models::option::{core_models::option::Option<T>}::zip_with]:
-    Source: 'core-models/src/core/option.rs', lines 439:4-447:5
+    Source: 'core-models/src/core/option.rs', lines 435:4-443:5
     Visibility: public -/
 def option.Option.zip_with
   {T : Type} {U : Type} {F : Type} {R : Type} (coreopsfunctionFnOnceFPairRInst
@@ -13230,7 +13230,7 @@ def option.Option.zip_with
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<core_models::option::Option<T>>}::flatten]:
-    Source: 'core-models/src/core/option.rs', lines 474:4-479:5
+    Source: 'core-models/src/core/option.rs', lines 470:4-475:5
     Visibility: public -/
 def option.OptionOption.flatten
   {T : Type} (self : option.Option (option.Option T)) :
@@ -13241,14 +13241,14 @@ def option.OptionOption.flatten
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}::default]:
-    Source: 'core-models/src/core/option.rs', lines 485:4-487:5
+    Source: 'core-models/src/core/option.rs', lines 481:4-483:5
     Visibility: public -/
 def option.Option.Insts.CoreDefaultDefault.default
   (T : Type) : Result (option.Option T) := do
   ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 483:0-488:1 -/
+    Source: 'core-models/src/core/option.rs', lines 479:0-484:1 -/
 @[reducible]
 def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
   (option.Option T) := {
@@ -13256,7 +13256,7 @@ def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
 }
 
 /-- [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}::clone]:
-    Source: 'core-models/src/core/option.rs', lines 493:4-498:5
+    Source: 'core-models/src/core/option.rs', lines 489:4-494:5
     Visibility: public -/
 def option.Option.Insts.CoreCloneClone.clone
   {T : Type} (cloneCloneInst : clone.Clone T) (self : option.Option T) :
@@ -13269,7 +13269,7 @@ def option.Option.Insts.CoreCloneClone.clone
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 492:0-499:1 -/
+    Source: 'core-models/src/core/option.rs', lines 488:0-495:1 -/
 @[reducible]
 def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
   clone.Clone T) : clone.Clone (option.Option T) := {
@@ -13277,7 +13277,7 @@ def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
 }
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::eq]:
-    Source: 'core-models/src/core/option.rs', lines 507:4-513:5
+    Source: 'core-models/src/core/option.rs', lines 503:4-509:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.eq
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -13295,7 +13295,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.eq
     | option.Option.None => ok true
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::ne]:
-    Source: 'core-models/src/core/option.rs', lines 504:4-506:5
+    Source: 'core-models/src/core/option.rs', lines 500:4-502:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.ne
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -13308,7 +13308,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 502:0-514:1 -/
+    Source: 'core-models/src/core/option.rs', lines 498:0-510:1 -/
 @[reducible]
 def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
   (cmpPartialEqInst : cmp.PartialEq T T) : cmp.PartialEq (option.Option T)
@@ -13318,7 +13318,7 @@ def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
 }
 
 /-- [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::branch]:
-    Source: 'core-models/src/core/option.rs', lines 528:4-533:5
+    Source: 'core-models/src/core/option.rs', lines 524:4-529:5
     Visibility: public -/
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
   {T : Type} (self : option.Option T) :
@@ -13330,14 +13330,14 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
     ok (ops.control_flow.ControlFlow.Break option.Option.None)
 
 /-- [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_output]:
-    Source: 'core-models/src/core/option.rs', lines 524:4-526:5
+    Source: 'core-models/src/core/option.rs', lines 520:4-522:5
     Visibility: public -/
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.from_output
   {T : Type} (output : T) : Result (option.Option T) := do
   ok (option.Option.Some output)
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 520:0-534:1 -/
+    Source: 'core-models/src/core/option.rs', lines 516:0-530:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
   : ops.try_trait.Try (option.Option T) T (option.Option convert.Infallible)
@@ -13349,7 +13349,7 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
 }
 
 /-- [core_models::option::{core_models::option::Option<core_models::result::Result<T, E>>}::transpose]:
-    Source: 'core-models/src/core/option.rs', lines 539:4-545:5
+    Source: 'core-models/src/core/option.rs', lines 535:4-541:5
     Visibility: public -/
 def option.OptionResult.transpose
   {T : Type} {E : Type} (self : option.Option (result.Result T E)) :
@@ -13363,7 +13363,7 @@ def option.OptionResult.transpose
   | option.Option.None => ok (result.Result.Ok option.Option.None)
 
 /-- [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_residual]:
-    Source: 'core-models/src/core/option.rs', lines 556:4-561:5
+    Source: 'core-models/src/core/option.rs', lines 552:4-557:5
     Visibility: public -/
 def
   option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible.from_residual
@@ -13375,7 +13375,7 @@ def
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 552:0-562:1 -/
+    Source: 'core-models/src/core/option.rs', lines 548:0-558:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible (T
   : Type) : ops.try_trait.FromResidual (option.Option T) (option.Option
@@ -13386,7 +13386,7 @@ def option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible (T
 }
 
 /-- [core_models::option::{core_models::option::Option<(T, U)>}::unzip]:
-    Source: 'core-models/src/core/option.rs', lines 567:4-572:5
+    Source: 'core-models/src/core/option.rs', lines 563:4-568:5
     Visibility: public -/
 def option.OptionPair.unzip
   {T : Type} {U : Type} (self : option.Option (T × U)) :
@@ -13399,7 +13399,7 @@ def option.OptionPair.unzip
   | option.Option.None => ok (option.Option.None, option.Option.None)
 
 /-- [core_models::option::{core_models::option::Option<&'_0 T>}::cloned]:
-    Source: 'core-models/src/core/option.rs', lines 581:4-586:5
+    Source: 'core-models/src/core/option.rs', lines 577:4-582:5
     Visibility: public -/
 def option.OptionShared0T.cloned
   {T : Type} (cloneCloneInst : clone.Clone T) (self : option.Option T) :
@@ -13412,7 +13412,7 @@ def option.OptionShared0T.cloned
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<&'_0 T>}::copied]:
-    Source: 'core-models/src/core/option.rs', lines 609:4-614:5
+    Source: 'core-models/src/core/option.rs', lines 605:4-610:5
     Visibility: public -/
 def option.OptionShared0T.copied
   {T : Type} (markerCopyInst : marker.Copy T) (self : option.Option T) :
@@ -13425,7 +13425,7 @@ def option.OptionShared0T.copied
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::option::Iter<'a, T>}::next]:
-    Source: 'core-models/src/core/option.rs', lines 668:4-674:5
+    Source: 'core-models/src/core/option.rs', lines 664:4-670:5
     Visibility: public -/
 def option.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} (self : option.Iter T) :
@@ -13439,7 +13439,7 @@ def option.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
     ok (option.Option.Some t, s)
 
 /-- Trait implementation: [core_models::option::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::option::Iter<'a, T>}]
-    Source: 'core-models/src/core/option.rs', lines 666:0-675:1 -/
+    Source: 'core-models/src/core/option.rs', lines 662:0-671:1 -/
 @[reducible]
 def option.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T : Type)
   : iter.traits.iterator.Iterator (option.Iter T) T := {
@@ -13447,7 +13447,7 @@ def option.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T : Type)
 }
 
 /-- [core_models::option::{impl core_models::iter::traits::iterator::Iterator<T> for core_models::option::IntoIter<T>}::next]:
-    Source: 'core-models/src/core/option.rs', lines 705:4-711:5
+    Source: 'core-models/src/core/option.rs', lines 700:4-706:5
     Visibility: public -/
 def option.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} (self : option.IntoIter T) :
@@ -13461,7 +13461,7 @@ def option.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
     ok (option.Option.Some t, s)
 
 /-- Trait implementation: [core_models::option::{impl core_models::iter::traits::iterator::Iterator<T> for core_models::option::IntoIter<T>}]
-    Source: 'core-models/src/core/option.rs', lines 703:0-712:1 -/
+    Source: 'core-models/src/core/option.rs', lines 698:0-707:1 -/
 @[reducible]
 def option.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
   iter.traits.iterator.Iterator (option.IntoIter T) T := {
@@ -13469,7 +13469,7 @@ def option.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
 }
 
 /-- [core_models::option::{impl core_models::iter::traits::collect::IntoIterator<T, core_models::option::IntoIter<T>> for core_models::option::Option<T>}::into_iter]:
-    Source: 'core-models/src/core/option.rs', lines 718:4-723:5
+    Source: 'core-models/src/core/option.rs', lines 713:4-718:5
     Visibility: public -/
 def
   option.Option.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
@@ -13481,7 +13481,7 @@ def
                           ok s
 
 /-- Trait implementation: [core_models::option::{impl core_models::iter::traits::collect::IntoIterator<T, core_models::option::IntoIter<T>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 715:0-724:1 -/
+    Source: 'core-models/src/core/option.rs', lines 710:0-719:1 -/
 @[reducible]
 def option.Option.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T :
   Type) : iter.traits.collect.IntoIterator (option.Option T) T (option.IntoIter
@@ -13491,7 +13491,7 @@ def option.Option.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T :
 }
 
 /-- [core_models::option::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::option::OptionFlatten<A>}::next]:
-    Source: 'core-models/src/core/option.rs', lines 737:4-742:5
+    Source: 'core-models/src/core/option.rs', lines 732:4-737:5
     Visibility: public -/
 def option.OptionFlatten.Insts.CoreIterTraitsIteratorIterator.next
   {A : Type} {Clause0_Item : Type} (itertraitsiteratorIteratorInst :
@@ -13506,7 +13506,7 @@ def option.OptionFlatten.Insts.CoreIterTraitsIteratorIterator.next
   | option.Option.None => ok (option.Option.None, option.Option.None)
 
 /-- Trait implementation: [core_models::option::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::option::OptionFlatten<A>}]
-    Source: 'core-models/src/core/option.rs', lines 733:0-743:1 -/
+    Source: 'core-models/src/core/option.rs', lines 728:0-738:1 -/
 @[reducible]
 def option.OptionFlatten.Insts.CoreIterTraitsIteratorIterator {A : Type}
   {Clause0_Item : Type} (itertraitsiteratorIteratorInst :
@@ -13559,7 +13559,7 @@ def result.Result.is_err_and
   | core.result.Result.Err e => coreopsfunctionFnOnceFTupleEBoolInst.call_once f e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or_else]:
-    Source: 'core-models/src/core/result.rs', lines 106:4-111:5
+    Source: 'core-models/src/core/result.rs', lines 105:4-110:5
     Visibility: public -/
 def result.Result.unwrap_or_else
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleETInst :
@@ -13571,7 +13571,7 @@ def result.Result.unwrap_or_else
   | core.result.Result.Err e => coreopsfunctionFnOnceFTupleETInst.call_once op e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or_default]:
-    Source: 'core-models/src/core/result.rs', lines 114:4-122:5
+    Source: 'core-models/src/core/result.rs', lines 113:4-121:5
     Visibility: public -/
 def result.Result.unwrap_or_default
   {T : Type} {E : Type} (defaultDefaultInst : default.Default T)
@@ -13583,7 +13583,7 @@ def result.Result.unwrap_or_default
   | core.result.Result.Err _ => defaultDefaultInst.default
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map]:
-    Source: 'core-models/src/core/result.rs', lines 125:4-133:5
+    Source: 'core-models/src/core/result.rs', lines 124:4-132:5
     Visibility: public -/
 def result.Result.map
   {T : Type} {E : Type} {U : Type} {F : Type}
@@ -13598,7 +13598,7 @@ def result.Result.map
   | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map_or]:
-    Source: 'core-models/src/core/result.rs', lines 136:4-144:5
+    Source: 'core-models/src/core/result.rs', lines 135:4-143:5
     Visibility: public -/
 def result.Result.map_or
   {T : Type} {E : Type} {U : Type} {F : Type}
@@ -13611,7 +13611,7 @@ def result.Result.map_or
   | core.result.Result.Err _ => Aeneas.Std.Result.ok default
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map_or_else]:
-    Source: 'core-models/src/core/result.rs', lines 147:4-156:5
+    Source: 'core-models/src/core/result.rs', lines 146:4-155:5
     Visibility: public -/
 def result.Result.map_or_else
   {T : Type} {E : Type} {U : Type} {D : Type} {F : Type}
@@ -13626,7 +13626,7 @@ def result.Result.map_or_else
     coreopsfunctionFnOnceDTupleEUInst.call_once default e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::inspect]:
-    Source: 'core-models/src/core/result.rs', lines 172:4-177:5
+    Source: 'core-models/src/core/result.rs', lines 171:4-176:5
     Visibility: public -/
 def result.Result.inspect
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedTTupleInst
@@ -13640,7 +13640,7 @@ def result.Result.inspect
   | core.result.Result.Err _ => Aeneas.Std.Result.ok self
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::inspect_err]:
-    Source: 'core-models/src/core/result.rs', lines 180:4-185:5
+    Source: 'core-models/src/core/result.rs', lines 179:4-184:5
     Visibility: public -/
 def result.Result.inspect_err
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedETupleInst
@@ -13654,7 +13654,7 @@ def result.Result.inspect_err
     Aeneas.Std.Result.ok self
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::and]:
-    Source: 'core-models/src/core/result.rs', lines 206:4-211:5
+    Source: 'core-models/src/core/result.rs', lines 205:4-210:5
     Visibility: public -/
 def result.Result.and
   {T : Type} {E : Type} {U : Type} (self : result.Result T E)
@@ -13666,7 +13666,7 @@ def result.Result.and
   | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::and_then]:
-    Source: 'core-models/src/core/result.rs', lines 214:4-222:5
+    Source: 'core-models/src/core/result.rs', lines 213:4-221:5
     Visibility: public -/
 def result.Result.and_then
   {T : Type} {E : Type} {U : Type} {F : Type}
@@ -13679,7 +13679,7 @@ def result.Result.and_then
   | core.result.Result.Err e => Aeneas.Std.Result.ok (result.Result.Err e)
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::or]:
-    Source: 'core-models/src/core/result.rs', lines 225:4-230:5
+    Source: 'core-models/src/core/result.rs', lines 224:4-229:5
     Visibility: public -/
 def result.Result.or
   {T : Type} {E : Type} {F : Type} (self : result.Result T E)
@@ -13691,7 +13691,7 @@ def result.Result.or
   | core.result.Result.Err _ => Aeneas.Std.Result.ok res
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::or_else]:
-    Source: 'core-models/src/core/result.rs', lines 233:4-238:5
+    Source: 'core-models/src/core/result.rs', lines 232:4-237:5
     Visibility: public -/
 def result.Result.or_else
   {T : Type} {E : Type} {F : Type} {O : Type}
@@ -13705,7 +13705,7 @@ def result.Result.or_else
     coreopsfunctionFnOnceOTupleEResultInst.call_once op e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or]:
-    Source: 'core-models/src/core/result.rs', lines 241:4-246:5
+    Source: 'core-models/src/core/result.rs', lines 240:4-245:5
     Visibility: public -/
 def result.Result.unwrap_or
   {T : Type} {E : Type} (self : result.Result T E) (default : T) :
@@ -13716,7 +13716,7 @@ def result.Result.unwrap_or
   | core.result.Result.Err _ => Aeneas.Std.Result.ok default
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map_err]:
-    Source: 'core-models/src/core/result.rs', lines 248:4-256:5
+    Source: 'core-models/src/core/result.rs', lines 247:4-255:5
     Visibility: public -/
 def result.Result.map_err
   {T : Type} {E : Type} {F : Type} {O : Type}
@@ -13731,7 +13731,7 @@ def result.Result.map_err
     Aeneas.Std.Result.ok (result.Result.Err t)
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_unchecked]:
-    Source: 'core-models/src/core/result.rs', lines 268:4-273:5
+    Source: 'core-models/src/core/result.rs', lines 267:4-272:5
     Visibility: public -/
 def result.Result.unwrap_unchecked
   {T : Type} {E : Type} (self : result.Result T E) : Aeneas.Std.Result T := do
@@ -13740,7 +13740,7 @@ def result.Result.unwrap_unchecked
   | core.result.Result.Err _ => panicking.internal.panic T
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_err_unchecked]:
-    Source: 'core-models/src/core/result.rs', lines 279:4-284:5
+    Source: 'core-models/src/core/result.rs', lines 278:4-283:5
     Visibility: public -/
 def result.Result.unwrap_err_unchecked
   {T : Type} {E : Type} (self : result.Result T E) : Aeneas.Std.Result E := do
@@ -13749,7 +13749,7 @@ def result.Result.unwrap_err_unchecked
   | core.result.Result.Err e => Aeneas.Std.Result.ok e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::iter]:
-    Source: 'core-models/src/core/result.rs', lines 287:4-292:5
+    Source: 'core-models/src/core/result.rs', lines 286:4-291:5
     Visibility: public -/
 def result.Result.iter
   {T : Type} {E : Type} (self : result.Result T E) :
@@ -13762,7 +13762,7 @@ def result.Result.iter
                                 Aeneas.Std.Result.ok s
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::expect]:
-    Source: 'core-models/src/core/result.rs', lines 314:4-322:5
+    Source: 'core-models/src/core/result.rs', lines 312:4-320:5
     Visibility: public -/
 def result.Result.expect
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug E) (self : result.Result T E)
@@ -13774,7 +13774,7 @@ def result.Result.expect
   | core.result.Result.Err _ => panicking.internal.panic T
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap]:
-    Source: 'core-models/src/core/result.rs', lines 326:4-334:5
+    Source: 'core-models/src/core/result.rs', lines 324:4-332:5
     Visibility: public -/
 def result.Result.unwrap
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug E) (self : result.Result T E)
@@ -13786,7 +13786,7 @@ def result.Result.unwrap
   | core.result.Result.Err _ => panicking.internal.panic T
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::expect_err]:
-    Source: 'core-models/src/core/result.rs', lines 338:4-346:5
+    Source: 'core-models/src/core/result.rs', lines 336:4-344:5
     Visibility: public -/
 def result.Result.expect_err
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (self : result.Result T E)
@@ -13798,7 +13798,7 @@ def result.Result.expect_err
   | core.result.Result.Err e => Aeneas.Std.Result.ok e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_err]:
-    Source: 'core-models/src/core/result.rs', lines 350:4-358:5
+    Source: 'core-models/src/core/result.rs', lines 348:4-356:5
     Visibility: public -/
 def result.Result.unwrap_err
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (self : result.Result T E)
@@ -13810,7 +13810,7 @@ def result.Result.unwrap_err
   | core.result.Result.Err e => Aeneas.Std.Result.ok e
 
 /-- [core_models::result::{core_models::result::Result<&'_0 T, E>}::cloned]:
-    Source: 'core-models/src/core/result.rs', lines 365:4-370:5
+    Source: 'core-models/src/core/result.rs', lines 363:4-368:5
     Visibility: public -/
 def result.ResultShared0TE.cloned
   {T : Type} {E : Type} (cloneCloneInst : clone.Clone T)
@@ -13824,7 +13824,7 @@ def result.ResultShared0TE.cloned
   | core.result.Result.Err _ => Aeneas.Std.Result.ok self
 
 /-- [core_models::result::{impl core_models::iter::traits::collect::FromIterator<core_models::result::Result<A, E>> for core_models::result::Result<V, E>}::from_iter]:
-    Source: 'core-models/src/core/result.rs', lines 413:4-415:5
+    Source: 'core-models/src/core/result.rs', lines 411:4-413:5
     Visibility: public -/
 def
   result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
@@ -13841,7 +13841,7 @@ def
   Aeneas.Std.Result.ok (result.Result.Ok t)
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::collect::FromIterator<core_models::result::Result<A, E>> for core_models::result::Result<V, E>}]
-    Source: 'core-models/src/core/result.rs', lines 410:0-416:1 -/
+    Source: 'core-models/src/core/result.rs', lines 408:0-414:1 -/
 @[reducible]
 def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult {A :
   Type} (E : Type) {V : Type} (itertraitscollectFromIteratorInst :
@@ -13855,7 +13855,7 @@ def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult {A :
 }
 
 /-- [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}::branch]:
-    Source: 'core-models/src/core/result.rs', lines 429:4-434:5
+    Source: 'core-models/src/core/result.rs', lines 427:4-432:5
     Visibility: public -/
 def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
   {T : Type} {E : Type} (self : result.Result T E) :
@@ -13867,7 +13867,7 @@ def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
     Aeneas.Std.Result.ok (ops.control_flow.ControlFlow.Break (result.Result.Err e))
 
 /-- [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}::from_output]:
-    Source: 'core-models/src/core/result.rs', lines 424:4-426:5
+    Source: 'core-models/src/core/result.rs', lines 422:4-424:5
     Visibility: public -/
 def
   result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.from_output
@@ -13875,7 +13875,7 @@ def
   Aeneas.Std.Result.ok (result.Result.Ok output)
 
 /-- Trait implementation: [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 419:0-435:1 -/
+    Source: 'core-models/src/core/result.rs', lines 417:0-433:1 -/
 @[reducible]
 def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE (T : Type)
   (E : Type) : ops.try_trait.Try (result.Result T E) T (result.Result
@@ -13888,7 +13888,7 @@ def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE (T : Type)
 }
 
 /-- [core_models::result::{core_models::result::Result<core_models::option::Option<T>, E>}::transpose]:
-    Source: 'core-models/src/core/result.rs', lines 441:4-447:5
+    Source: 'core-models/src/core/result.rs', lines 439:4-445:5
     Visibility: public -/
 def result.ResultOptionE.transpose
   {T : Type} {E : Type} (self : result.Result (option.Option T) E) :
@@ -13902,7 +13902,7 @@ def result.ResultOptionE.transpose
   | core.result.Result.Err e => Aeneas.Std.Result.ok (option.Option.Some (result.Result.Err e))
 
 /-- [core_models::result::{impl core_models::cmp::PartialEq<core_models::result::Result<T, E>> for core_models::result::Result<T, E>}::eq]:
-    Source: 'core-models/src/core/result.rs', lines 457:4-463:5
+    Source: 'core-models/src/core/result.rs', lines 455:4-461:5
     Visibility: public -/
 def result.Result.Insts.CoreCmpPartialEqResult.eq
   {T : Type} {E : Type} (cmpPartialEqInst : cmp.PartialEq T T)
@@ -13921,7 +13921,7 @@ def result.Result.Insts.CoreCmpPartialEqResult.eq
     | core.result.Result.Err b => cmpPartialEqInst1.eq a b
 
 /-- Trait implementation: [core_models::result::{impl core_models::cmp::PartialEq<core_models::result::Result<T, E>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 454:0-464:1 -/
+    Source: 'core-models/src/core/result.rs', lines 452:0-462:1 -/
 @[reducible]
 impl_def result.Result.Insts.CoreCmpPartialEqResult {T : Type} {E :
   Type} (cmpPartialEqInst : cmp.PartialEq T T) (cmpPartialEqInst1 :
@@ -13935,7 +13935,7 @@ impl_def result.Result.Insts.CoreCmpPartialEqResult {T : Type} {E :
 }
 
 /-- [core_models::result::{impl core_models::ops::try_trait::FromResidual<core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, F>}::from_residual]:
-    Source: 'core-models/src/core/result.rs', lines 474:4-479:5
+    Source: 'core-models/src/core/result.rs', lines 472:4-477:5
     Visibility: public -/
 def
   result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE.from_residual
@@ -13950,7 +13950,7 @@ def
     Aeneas.Std.Result.ok (result.Result.Err t)
 
 /-- Trait implementation: [core_models::result::{impl core_models::ops::try_trait::FromResidual<core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, F>}]
-    Source: 'core-models/src/core/result.rs', lines 471:0-480:1 -/
+    Source: 'core-models/src/core/result.rs', lines 469:0-478:1 -/
 @[reducible]
 def result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE (T
   : Type) {E : Type} {F : Type} (convertFromInst : convert.From F E) :
@@ -13962,7 +13962,7 @@ def result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE (T
 }
 
 /-- [core_models::result::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::result::Iter<'a, T>}::next]:
-    Source: 'core-models/src/core/result.rs', lines 491:4-497:5
+    Source: 'core-models/src/core/result.rs', lines 489:4-495:5
     Visibility: public -/
 def result.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} (self : result.Iter T) :
@@ -13976,7 +13976,7 @@ def result.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
     Aeneas.Std.Result.ok (option.Option.Some t, s)
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::result::Iter<'a, T>}]
-    Source: 'core-models/src/core/result.rs', lines 489:0-498:1 -/
+    Source: 'core-models/src/core/result.rs', lines 487:0-496:1 -/
 @[reducible]
 def result.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T : Type)
   : iter.traits.iterator.Iterator (result.Iter T) T := {
@@ -13984,7 +13984,7 @@ def result.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T : Type)
 }
 
 /-- [core_models::result::{impl core_models::iter::traits::iterator::Iterator<T> for core_models::result::IntoIter<T>}::next]:
-    Source: 'core-models/src/core/result.rs', lines 528:4-534:5
+    Source: 'core-models/src/core/result.rs', lines 525:4-531:5
     Visibility: public -/
 def result.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} (self : result.IntoIter T) :
@@ -13998,7 +13998,7 @@ def result.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
     Aeneas.Std.Result.ok (option.Option.Some t, s)
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::iterator::Iterator<T> for core_models::result::IntoIter<T>}]
-    Source: 'core-models/src/core/result.rs', lines 526:0-535:1 -/
+    Source: 'core-models/src/core/result.rs', lines 523:0-532:1 -/
 @[reducible]
 def result.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
   iter.traits.iterator.Iterator (result.IntoIter T) T := {
@@ -14006,7 +14006,7 @@ def result.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
 }
 
 /-- [core_models::result::{impl core_models::iter::traits::collect::IntoIterator<T, core_models::result::IntoIter<T>> for core_models::result::Result<T, E>}::into_iter]:
-    Source: 'core-models/src/core/result.rs', lines 541:4-546:5
+    Source: 'core-models/src/core/result.rs', lines 538:4-543:5
     Visibility: public -/
 def
   result.Result.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
@@ -14020,7 +14020,7 @@ def
                                 Aeneas.Std.Result.ok s
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::collect::IntoIterator<T, core_models::result::IntoIter<T>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 538:0-547:1 -/
+    Source: 'core-models/src/core/result.rs', lines 535:0-544:1 -/
 @[reducible]
 def result.Result.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T :
   Type) (E : Type) : iter.traits.collect.IntoIterator (result.Result T E) T

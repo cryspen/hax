@@ -53,7 +53,6 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_mut`]
-    #[cfg_attr(charon, aeneas::exclude)]
     #[hax_lib::exclude]
     pub fn as_mut(&mut self) -> Result<&mut T, &mut E> {
         match *self {
@@ -293,7 +292,6 @@ impl<T, E> Result<T, E> {
 
     /// See [`std::result::Result::iter_mut`]
     // `&mut` returns are unsupported in the F* backend.
-    #[cfg_attr(charon, aeneas::exclude)]
     #[hax_lib::exclude]
     pub fn iter_mut(&mut self) -> IterMut<'_, T> {
         match self {
@@ -506,7 +504,6 @@ impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
 pub struct IterMut<'a, T>(pub Seq<&'a mut T>);
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
 #[hax_lib::exclude]
 impl<'a, T> crate::iter::traits::iterator::Iterator for IterMut<'a, T> {
     type Item = &'a mut T;

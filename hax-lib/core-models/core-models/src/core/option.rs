@@ -245,7 +245,6 @@ impl<T> Option<T> {
     /// See [`std::option::Option::as_mut`]
     // `&mut` returns are unsupported in the F* backend; excluded from aeneas like
     // `Result::as_mut`.
-    #[cfg_attr(charon, aeneas::exclude)]
     #[hax_lib::exclude]
     pub fn as_mut(&mut self) -> Option<&mut T> {
         match *self {
@@ -268,7 +267,6 @@ impl<T> Option<T> {
 
     /// See [`std::option::Option::as_mut_slice`]
     // See `as_slice`, plus the `&mut` return that F* cannot express.
-    #[cfg_attr(charon, aeneas::exclude)]
     #[hax_lib::exclude]
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         match self {
@@ -304,7 +302,6 @@ impl<T> Option<T> {
 
     /// See [`std::option::Option::iter_mut`]
     // See `as_mut` for the exclusions.
-    #[cfg_attr(charon, aeneas::exclude)]
     #[hax_lib::exclude]
     pub fn iter_mut(&mut self) -> IterMut<'_, T> {
         match self {
@@ -421,7 +418,6 @@ impl<T> Option<T> {
     // thing that distinguishes `take_if` from `filter`. See `insert` for the
     // aeneas exclusion.
     #[hax_lib::exclude]
-    #[cfg_attr(charon, aeneas::exclude)]
     pub fn take_if<P: FnOnce(&mut T) -> bool>(self, predicate: P) -> (Option<T>, Option<T>) {
         match self {
             Some(mut x) => {
@@ -683,7 +679,6 @@ impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
 pub struct IterMut<'a, T>(pub Seq<&'a mut T>);
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
 #[hax_lib::exclude]
 impl<'a, T> crate::iter::traits::iterator::Iterator for IterMut<'a, T> {
     type Item = &'a mut T;
