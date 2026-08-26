@@ -459,6 +459,27 @@ cargo hax into proverif
 # →  proofs/proverif/extraction/lib.pvl
 ```
 
+### Scoping extraction with `-i`
+
+hax computes item reachability from the `-i` include clauses
+(`engine/lib/dependencies.ml`): `+NAME` includes an item together with
+its transitive dependencies, `-NAME` excludes an item, and `+:NAME`
+keeps only its signature. With **no** `-i`, every item defaults to
+*included*, so nothing is pruned — every function in the crate becomes a
+root and is emitted into `lib.pvl`. To get dead-code elimination (so the
+model holds only the protocol under study), narrow `-i` to the entry
+points and let transitivity pull in the rest:
+
+```bash
+cargo hax into -i '-** +your_crate::protocol::**' proverif
+```
+
+One gap to be aware of: the dependency graph is built over the **source**
+call graph, *before* a `proverif::replace_body` rewrites a body. A helper
+that the original body called stays a transitive dependency and is
+emitted even when the replacement body no longer references it. Prune
+such a helper with an explicit `-NAME` if it is unwanted in the model.
+
 To run the snapshot tests (requires a full local hax toolchain):
 
 ```bash
