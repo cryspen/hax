@@ -35,6 +35,10 @@ jobs:
         nix develop .#ci-examples --command bash -c \
           "elan default \$(cat hax-lib/proof-libs/lean/lean-toolchain) && lake build --dir hax-lib/proof-libs/lean && just test -b lean"
 
+    - name: Verify ProVerif tests
+      run: |
+        nix develop .#ci-examples --command just test -b proverif
+
     - name: Try to extract Rust By Examples
       run: |
         nix build .#rust-by-example-hax-extraction -L
