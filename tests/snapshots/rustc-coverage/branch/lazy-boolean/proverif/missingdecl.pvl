@@ -9,4 +9,5 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__branch__lazy_boolean__branch_and, new_tests__rustc_coverage__branch__lazy_boolean__branch_or, new_tests__rustc_coverage__branch__lazy_boolean__chain, new_tests__rustc_coverage__branch__lazy_boolean__nested_mixed *)
 fun core__hint__black_box(bitstring): bitstring.

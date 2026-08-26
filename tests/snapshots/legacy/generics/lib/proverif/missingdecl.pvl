@@ -9,6 +9,9 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__generics__lib__g *)
 fun core__iter__traits__iterator__Iterator__max(bitstring): bitstring.
+(* referenced by: new_tests__legacy__generics__lib__call_g *)
 const nat_42: bitstring.
+(* referenced by: new_tests__legacy__generics__lib__call_g *)
 const nat_49: bitstring.

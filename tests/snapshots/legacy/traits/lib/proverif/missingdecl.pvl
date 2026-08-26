@@ -9,17 +9,30 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_1, new_tests__legacy__traits__lib__for_clauses__issue_495__original_function_from_495 *)
 fun core__iter__traits__iterator__Iterator__filter(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__closure_impl_expr_fngen *)
 fun core__iter__traits__iterator__Iterator__map(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__use_impl_trait *)
 (* result destructured as: rust_primitives__hax__Tuple2__Tuple2(_, _) *)
 fun core__iter__traits__iterator__Iterator__next(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__Impl__function_of_super_trait *)
 fun core__num__Impl_2__abs(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__Impl_1__N *)
 const nat_32: bitstring.
+(* referenced by: new_tests__legacy__traits__lib__Impl_2__method *)
 fun new_tests__legacy__traits__lib__Bar__bar(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__f *)
 fun new_tests__legacy__traits__lib__Foo__assoc_f(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__f *)
 fun new_tests__legacy__traits__lib__Foo__method_f(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__g *)
 fun new_tests__legacy__traits__lib__SuperTrait__function_of_super_trait(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__for_clauses__u_f *)
 fun new_tests__legacy__traits__lib__for_clauses__Foo__to_t(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__associated_function_caller *)
 fun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Trait__associated_function(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__method_caller *)
 fun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Trait__method(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__unconstrainted_types_issue_677__twice *)
 fun new_tests__legacy__traits__lib__unconstrainted_types_issue_677__PolyOp__op(bitstring, bitstring): bitstring.

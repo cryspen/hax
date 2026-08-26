@@ -9,20 +9,37 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__ne_bad, new_tests__rustc_coverage__bad_counter_ids__ne_bad_message, new_tests__rustc_coverage__bad_counter_ids__ne_good, new_tests__rustc_coverage__bad_counter_ids__ne_good_message *)
 const core__panicking__AssertKind__Ne: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__eq_good *)
 const string_lit__a_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__main *)
 const string_lit__assertion_x20failed_x3a_x20std_x3a_x3apanic_x3a_x3acatch_unwind_x28eq_bad_message_x29_x2eis_err_x28_x29: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__main *)
 const string_lit__assertion_x20failed_x3a_x20std_x3a_x3apanic_x3a_x3acatch_unwind_x28eq_bad_x29_x2eis_err_x28_x29: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__main *)
 const string_lit__assertion_x20failed_x3a_x20std_x3a_x3apanic_x3a_x3acatch_unwind_x28ne_bad_message_x29_x2eis_err_x28_x29: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__main *)
 const string_lit__assertion_x20failed_x3a_x20std_x3a_x3apanic_x3a_x3acatch_unwind_x28ne_bad_x29_x2eis_err_x28_x29: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__eq_good_message *)
 const string_lit__b_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__ne_good *)
 const string_lit__c_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__ne_good_message *)
 const string_lit__d_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__eq_bad *)
 const string_lit__e_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__eq_bad_message *)
 const string_lit__f_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__ne_bad *)
 const string_lit__g_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__ne_bad_message *)
 const string_lit__h_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__eq_good_message *)
 const string_lit__message_x20b: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__ne_good_message *)
 const string_lit__message_x20d: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__eq_bad_message *)
 const string_lit__message_x20f: bitstring.
+(* referenced by: new_tests__rustc_coverage__bad_counter_ids__ne_bad_message *)
 const string_lit__message_x20h: bitstring.

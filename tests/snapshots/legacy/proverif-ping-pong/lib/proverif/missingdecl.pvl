@@ -9,6 +9,9 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__proverif_ping_pong__lib__a__read_pong, new_tests__legacy__proverif_ping_pong__lib__b__read_ping, new_tests__legacy__proverif_ping_pong__lib__b__read_ping_alt *)
 const hax_lib_protocol__ProtocolError__InvalidMessage: bitstring.
+(* referenced by: new_tests__legacy__proverif_ping_pong__lib__a__init_a *)
 const hax_lib_protocol__ProtocolError__InvalidPrologue: bitstring.
+(* referenced by: new_tests__legacy__proverif_ping_pong__lib__b__read_ping_alt *)
 const nat_42: bitstring.

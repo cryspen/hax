@@ -9,5 +9,7 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_OFF, new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_ON, new_tests__rustc_coverage__coverage_attr_closure__contains_closures_off, new_tests__rustc_coverage__coverage_attr_closure__contains_closures_on *)
 const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_OFF, new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_ON, new_tests__rustc_coverage__coverage_attr_closure__contains_closures_off, new_tests__rustc_coverage__coverage_attr_closure__contains_closures_on *)
 const string_lit__empty: bitstring.

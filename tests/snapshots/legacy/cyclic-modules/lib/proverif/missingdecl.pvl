@@ -9,4 +9,5 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__cyclic_modules__lib__variant_constructor_a__Impl__test *)
 fun core__option__Impl__map(bitstring, bitstring): bitstring.

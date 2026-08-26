@@ -9,6 +9,9 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__assert__might_fail_assert *)
 const string_lit___x3f_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__assert__might_fail_assert *)
 const string_lit__does_x201_x20_x2b_x201_x20_x3d_x20: bitstring.
+(* referenced by: new_tests__rustc_coverage__assert__might_fail_assert *)
 const string_lit__the_x20argument_x20was_x20wrong: bitstring.

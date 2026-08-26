@@ -9,5 +9,7 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__closure_bug__main *)
 fun core__ops__function__Fn__call(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__closure_bug__main *)
 fun std__env__args(bitstring): bitstring.
