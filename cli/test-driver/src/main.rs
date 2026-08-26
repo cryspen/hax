@@ -234,6 +234,7 @@ impl BackendTestContext {
         let output = match self.backend {
             BackendName::Fstar => run_fstar(true, dir).await?,
             BackendName::Lean => run_lean(dir).await?,
+            BackendName::ProVerif => run_proverif(dir).await?,
             _ => unreachable!(),
         };
         if output.error_code != 0 {
