@@ -2805,6 +2805,8 @@ impl Backend for ProVerifBackend {
         let (accessors, consts) = collect_accessors_and_consts(&modules, &printer);
         printer.field_accessors = accessors;
         printer.opaque_consts = consts;
+        // Result shapes at destructuring call sites, for the missingdecl hints.
+        let result_shapes = collect_result_shapes(&modules, &printer);
         // Render the body, harvesting per-item source-span anchors as we go so
         // we can emit a v3 source map alongside `lib.pvl`. `render_with_span_
         // positions` produces text byte-identical to `printer.print(..)` (the
@@ -2831,7 +2833,7 @@ impl Backend for ProVerifBackend {
         // The auto-declared externals go to a SEPARATE `missingdecl.pvl`
         // diagnostic file rather than being silently inlined into lib.pvl,
         // so the unsound stubs are visible and auditable (goal: empty).
-        let missingdecl = self.format_external_decls(&referenced, &contents);
+        let missingdecl = self.format_external_decls(&referenced, &result_shapes, &contents);
         // The body is prepended with `HEADER`, so shift the harvested generated
         // line numbers down by the preamble's line count before building the map.
         let header_lines = HEADER.matches('\n').count();
@@ -2994,6 +2996,97 @@ fn collect_accessors_and_consts(
     (accessors, consts)
 }
 
+/// The constructor skeleton of a pattern: each `Construct` becomes
+/// `Name(<inner>, ...)` and every binder, wildcard, or constant becomes `_`.
+/// `Tuple2(a, Tuple2(b, c))` yields `Tuple2(_, Tuple2(_, _))`.
+fn shape_of_pat(pat: &Pat, printer: &ProVerifPrinter) -> String {
+    match &*pat.kind {
+        PatKind::Construct {
+            constructor,
+            fields,
+            ..
+        } => {
+            let name = printer.render_id(constructor);
+            if fields.is_empty() {
+                format!("{name}()")
+            } else {
+                let inner: Vec<String> =
+                    fields.iter().map(|(_, p)| shape_of_pat(p, printer)).collect();
+                format!("{name}({})", inner.join(", "))
+            }
+        }
+        PatKind::Ascription { pat, .. } => shape_of_pat(pat, printer),
+        _ => "_".to_string(),
+    }
+}
+
+/// Rendered name of a call's head, when the call applies a `GlobalId`.
+fn app_head_name(e: &Expr, printer: &ProVerifPrinter) -> Option<String> {
+    if let ExprKind::App { head, .. } = &*e.kind {
+        if let ExprKind::GlobalId(g) = &*head.kind {
+            return Some(printer.render_id(g));
+        }
+    }
+    None
+}
+
+/// For each function whose result is destructured at a call site (`let PAT =
+/// f(..)` or `match f(..)`), collect the constructor skeletons of those
+/// patterns. Recorded against a symbol declared in `missingdecl.pvl`, this is
+/// the result shape a hand-written definition must produce. Trivial `_`
+/// destructures carry no information and are dropped.
+fn collect_result_shapes(
+    modules: &[Module],
+    printer: &ProVerifPrinter,
+) -> HashMap<String, Vec<String>> {
+    #[derive(Default)]
+    struct Collector<'a> {
+        printer: Option<&'a ProVerifPrinter>,
+        shapes: HashMap<String, HashSet<String>>,
+    }
+    impl Collector<'_> {
+        fn record(&mut self, callee: &Expr, pat: &Pat) {
+            let printer = self.printer.unwrap();
+            if let Some(name) = app_head_name(callee, printer) {
+                let shape = shape_of_pat(pat, printer);
+                if shape != "_" {
+                    self.shapes.entry(name).or_default().insert(shape);
+                }
+            }
+        }
+    }
+    impl AstVisitor for Collector<'_> {
+        fn enter_expr_kind(&mut self, kind: &ExprKind) {
+            match kind {
+                ExprKind::Let { lhs, rhs, .. } => self.record(rhs, lhs),
+                ExprKind::Match { scrutinee, arms } => {
+                    for arm in arms {
+                        self.record(scrutinee, &arm.pat);
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    let mut v = Collector {
+        printer: Some(printer),
+        shapes: HashMap::new(),
+    };
+    for module in modules {
+        for item in &module.items {
+            v.visit_item(item);
+        }
+    }
+    v.shapes
+        .into_iter()
+        .map(|(name, set)| {
+            let mut shapes: Vec<String> = set.into_iter().collect();
+            shapes.sort();
+            (name, shapes)
+        })
+        .collect()
+}
+
 /// Compute the set of functions that sit in a call-graph cycle — i.e. that
 /// are self- or mutually-recursive. ProVerif `letfun`s cannot recurse, so
 /// the item printer opacifies these to uninterpreted `fun`s.
@@ -3128,6 +3221,7 @@ impl ProVerifBackend {
     fn format_external_decls(
         &self,
         referenced: &HashMap<String, RefInfo>,
+        result_shapes: &HashMap<String, Vec<String>>,
         rendered: &str,
     ) -> String {
         let mut defined: HashSet<String> = HashSet::new();
@@ -3164,6 +3258,11 @@ impl ProVerifBackend {
         keys.sort();
         for name in keys {
             let info = &referenced[&name];
+            // Record the result shape a hand-written or imported definition must
+            // produce, taken from how call sites destructure this symbol.
+            if let Some(shapes) = result_shapes.get(&name) {
+                decls.push(format!("(* result destructured as: {} *)", shapes.join("; ")));
+            }
             if info.arity == 0 {
                 decls.push(format!("const {name}: bitstring."));
             } else {

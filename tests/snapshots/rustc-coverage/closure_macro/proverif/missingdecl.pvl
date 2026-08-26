@@ -10,6 +10,7 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 fun alloc__string__Impl__len(bitstring): bitstring.
+(* result destructured as: core__result__Result__Err(_); core__result__Result__Ok(_) *)
 fun core__result__Impl__or_else(bitstring, bitstring): bitstring.
 fun core__str__Impl__len(bitstring): bitstring.
 const string_lit__Error_x20loading_x20configs_x3a_x20: bitstring.
