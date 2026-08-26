@@ -19,9 +19,9 @@
   definition that was silently stubbed out.
 *)
 
-(* src: src/rustc-coverage/inline.rs:32 new_tests__rustc_coverage__inline__length *)
+(* src: src/rustc-coverage/inline.rs:33 new_tests__rustc_coverage__inline__length *)
 letfun new_tests__rustc_coverage__inline__length(xs: bitstring) = core__slice__Impl__len(xs).
-(* src: src/rustc-coverage/inline.rs:37 new_tests__rustc_coverage__inline__swap *)
+(* src: src/rustc-coverage/inline.rs:38 new_tests__rustc_coverage__inline__swap *)
 letfun new_tests__rustc_coverage__inline__swap(xs: bitstring, i: bitstring, j: bitstring) =
   rust_primitives__hax__monomorphized_update_at__update_at_usize(
     rust_primitives__hax__monomorphized_update_at__update_at_usize(
@@ -32,7 +32,7 @@ letfun new_tests__rustc_coverage__inline__swap(xs: bitstring, i: bitstring, j: b
     j,
     core__ops__index__Index__index(xs, i)
   ).
-(* src: src/rustc-coverage/inline.rs:44 new_tests__rustc_coverage__inline__display *)
+(* src: src/rustc-coverage/inline.rs:45 new_tests__rustc_coverage__inline__display *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__inline__display(xs: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -73,52 +73,12 @@ letfun new_tests__rustc_coverage__inline__display(xs: bitstring) =
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/inline.rs:52 new_tests__rustc_coverage__inline__error *)
+(* src: src/rustc-coverage/inline.rs:53 new_tests__rustc_coverage__inline__error *)
 letfun new_tests__rustc_coverage__inline__error(wildcard: bitstring) = bitstring_err().
-(* src: src/rustc-coverage/inline.rs:17 new_tests__rustc_coverage__inline__permutate *)
-letfun new_tests__rustc_coverage__inline__permutate(xs: bitstring, k: bitstring) =
-  let n = new_tests__rustc_coverage__inline__length(xs) in
-  let xs_5 = (let (=True()) = rust_primitives__hax__machine_int__eq(k, n)
-    in (let wildcard: bitstring = new_tests__rustc_coverage__inline__display(xs) in
-    xs)
-    else (let (=True()) = rust_primitives__hax__machine_int__lt(k, n)
-      in ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-        core__ops__range__Range__Range(k, n)
-      )) in let bl__acc0 = (xs) in 
-      let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let xs_1 = bl__acc0 in
-      let bl__acc1 = (new_tests__rustc_coverage__inline__swap(
-        new_tests__rustc_coverage__inline__permutate(
-          new_tests__rustc_coverage__inline__swap(xs_1, i, k),
-          rust_primitives__hax__machine_int__add(k, nat_lit(1))
-        ),
-        i,
-        k
-      )) in
-      let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let xs_1 = bl__acc1 in
-      let bl__acc2 = (new_tests__rustc_coverage__inline__swap(
-        new_tests__rustc_coverage__inline__permutate(
-          new_tests__rustc_coverage__inline__swap(xs_1, i, k),
-          rust_primitives__hax__machine_int__add(k, nat_lit(1))
-        ),
-        i,
-        k
-      )) in
-      let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let xs_1 = bl__acc2 in
-      let bl__acc3 = (new_tests__rustc_coverage__inline__swap(
-        new_tests__rustc_coverage__inline__permutate(
-          new_tests__rustc_coverage__inline__swap(xs_1, i, k),
-          rust_primitives__hax__machine_int__add(k, nat_lit(1))
-        ),
-        i,
-        k
-      )) in
-      let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)))
-      else (let wildcard: bitstring = new_tests__rustc_coverage__inline__error(
-        rust_primitives__hax__Tuple0__Tuple0
-      ) in
-      xs))) in
-  xs_5.
-(* src: src/rustc-coverage/inline.rs:12 new_tests__rustc_coverage__inline__permutations *)
+(* src: src/rustc-coverage/inline.rs:18 new_tests__rustc_coverage__inline__permutate *)
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__rustc_coverage__inline__permutate(bitstring, bitstring): bitstring.
+(* src: src/rustc-coverage/inline.rs:13 new_tests__rustc_coverage__inline__permutations *)
 letfun new_tests__rustc_coverage__inline__permutations(xs: bitstring) =
   let ys_1 = alloc__slice__Impl__to_vec(
     new_tests__rustc_coverage__inline__permutate(
@@ -127,7 +87,7 @@ letfun new_tests__rustc_coverage__inline__permutations(xs: bitstring) =
     )
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/inline.rs:7 new_tests__rustc_coverage__inline__main *)
+(* src: src/rustc-coverage/inline.rs:8 new_tests__rustc_coverage__inline__main *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__inline__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__inline__permutations(

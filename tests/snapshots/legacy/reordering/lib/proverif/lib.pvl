@@ -19,49 +19,49 @@
   definition that was silently stubbed out.
 *)
 
-(* src: src/legacy/reordering/lib.rs:31 new_tests__legacy__reordering__lib__mut_rec__g *)
-letfun new_tests__legacy__reordering__lib__mut_rec__g(wildcard: bitstring) =
-  new_tests__legacy__reordering__lib__mut_rec__f(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/reordering/lib.rs:23 new_tests__legacy__reordering__lib__mut_rec__f *)
-letfun new_tests__legacy__reordering__lib__mut_rec__f(wildcard: bitstring) =
-  new_tests__legacy__reordering__lib__mut_rec__g(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/reordering/lib.rs:27 new_tests__legacy__reordering__lib__mut_rec__f_2 *)
+(* src: src/legacy/reordering/lib.rs:32 new_tests__legacy__reordering__lib__mut_rec__g *)
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__legacy__reordering__lib__mut_rec__g(bitstring): bitstring.
+(* src: src/legacy/reordering/lib.rs:24 new_tests__legacy__reordering__lib__mut_rec__f *)
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__legacy__reordering__lib__mut_rec__f(bitstring): bitstring.
+(* src: src/legacy/reordering/lib.rs:28 new_tests__legacy__reordering__lib__mut_rec__f_2 *)
 letfun new_tests__legacy__reordering__lib__mut_rec__f_2(wildcard: bitstring) =
   new_tests__legacy__reordering__lib__mut_rec__f(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/reordering/lib.rs:43 new_tests__legacy__reordering__lib__independent_cycles__c *)
-letfun new_tests__legacy__reordering__lib__independent_cycles__c(wildcard: bitstring) =
-  new_tests__legacy__reordering__lib__independent_cycles__a(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/reordering/lib.rs:37 new_tests__legacy__reordering__lib__independent_cycles__a *)
-letfun new_tests__legacy__reordering__lib__independent_cycles__a(wildcard: bitstring) =
-  new_tests__legacy__reordering__lib__independent_cycles__c(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/reordering/lib.rs:46 new_tests__legacy__reordering__lib__independent_cycles__d *)
-letfun new_tests__legacy__reordering__lib__independent_cycles__d(wildcard: bitstring) =
-  new_tests__legacy__reordering__lib__independent_cycles__b(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/reordering/lib.rs:40 new_tests__legacy__reordering__lib__independent_cycles__b *)
-letfun new_tests__legacy__reordering__lib__independent_cycles__b(wildcard: bitstring) =
-  new_tests__legacy__reordering__lib__independent_cycles__d(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/reordering/lib.rs:4 new_tests__legacy__reordering__lib__no_dependency_1 *)
+(* src: src/legacy/reordering/lib.rs:44 new_tests__legacy__reordering__lib__independent_cycles__c *)
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__legacy__reordering__lib__independent_cycles__c(bitstring): bitstring.
+(* src: src/legacy/reordering/lib.rs:38 new_tests__legacy__reordering__lib__independent_cycles__a *)
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__legacy__reordering__lib__independent_cycles__a(bitstring): bitstring.
+(* src: src/legacy/reordering/lib.rs:47 new_tests__legacy__reordering__lib__independent_cycles__d *)
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__legacy__reordering__lib__independent_cycles__d(bitstring): bitstring.
+(* src: src/legacy/reordering/lib.rs:41 new_tests__legacy__reordering__lib__independent_cycles__b *)
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__legacy__reordering__lib__independent_cycles__b(bitstring): bitstring.
+(* src: src/legacy/reordering/lib.rs:5 new_tests__legacy__reordering__lib__no_dependency_1 *)
 letfun new_tests__legacy__reordering__lib__no_dependency_1(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/reordering/lib.rs:10 new_tests__legacy__reordering__lib__no_dependency_2 *)
+(* src: src/legacy/reordering/lib.rs:11 new_tests__legacy__reordering__lib__no_dependency_2 *)
 letfun new_tests__legacy__reordering__lib__no_dependency_2(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/reordering/lib.rs:17 new_tests__legacy__reordering__lib__Foo *)
+(* src: src/legacy/reordering/lib.rs:18 new_tests__legacy__reordering__lib__Foo *)
 fun new_tests__legacy__reordering__lib__Foo__A(): bitstring [data].
 fun new_tests__legacy__reordering__lib__Foo__B(): bitstring [data].
-(* src: src/legacy/reordering/lib.rs:12 new_tests__legacy__reordering__lib__f *)
+(* src: src/legacy/reordering/lib.rs:13 new_tests__legacy__reordering__lib__f *)
 letfun new_tests__legacy__reordering__lib__f(wildcard: bitstring) =
   new_tests__legacy__reordering__lib__Foo__A().
-(* src: src/legacy/reordering/lib.rs:16 new_tests__legacy__reordering__lib__Bar *)
+(* src: src/legacy/reordering/lib.rs:17 new_tests__legacy__reordering__lib__Bar *)
 fun new_tests__legacy__reordering__lib__Bar__Bar(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__reordering__lib__Bar__Bar__0(
     new_tests__legacy__reordering__lib__Bar__Bar(v_0)
   ) = v_0.
-(* src: src/legacy/reordering/lib.rs:6 new_tests__legacy__reordering__lib__g *)
+(* src: src/legacy/reordering/lib.rs:7 new_tests__legacy__reordering__lib__g *)
 letfun new_tests__legacy__reordering__lib__g(wildcard: bitstring) =
   new_tests__legacy__reordering__lib__Bar__Bar(new_tests__legacy__reordering__lib__f(nat_lit(32))).
-(* src: src/legacy/reordering/lib.rs:17 new_tests__legacy__reordering__lib__Foo_cast_to_repr *)
+(* src: src/legacy/reordering/lib.rs:18 new_tests__legacy__reordering__lib__Foo_cast_to_repr *)
 letfun new_tests__legacy__reordering__lib__Foo_cast_to_repr(x: bitstring) =
   let new_tests__legacy__reordering__lib__Foo__A() = x in nat_lit(0)
   else let new_tests__legacy__reordering__lib__Foo__B() = x in nat_lit(1)

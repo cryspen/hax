@@ -19,11 +19,6 @@
   definition that was silently stubbed out.
 *)
 
-(* src: src/legacy/recursion/lib.rs:4 new_tests__legacy__recursion__lib__f *)
-letfun new_tests__legacy__recursion__lib__f(n: bitstring) =
-  let (=True()) = rust_primitives__hax__machine_int__eq(n, nat_lit(0))
-    in nat_lit(0)
-    else rust_primitives__hax__machine_int__add(
-      n,
-      new_tests__legacy__recursion__lib__f(rust_primitives__hax__machine_int__sub(n, nat_lit(1)))
-    ).
+(* src: src/legacy/recursion/lib.rs:5 new_tests__legacy__recursion__lib__f *)
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__legacy__recursion__lib__f(bitstring): bitstring.
