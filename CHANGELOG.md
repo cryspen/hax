@@ -54,6 +54,7 @@ Changes to hax-lib:
    `wrapping_neg`, and `PartialEq::ne`. Moved `Vec::resize` into the
    `impl<T: Clone>` block and relaxed `Vec::remove`'s postcondition to
    `len' <= len` (#2157)
+ - Add specs for Lean rust primitives (#2146)
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
