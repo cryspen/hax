@@ -48,9 +48,12 @@ ALLOC_CHARON_EXCLUDES = \
     --exclude '{impl core::iter::traits::collect::FromIterator<_> for alloc_models::collections::vec_deque::VecDeque<_, _>}::*' \
     --exclude 'alloc_models::slice::_::sort_by'
 
-# Items whose Rust body cannot model std, but whose *signature* we still want
-# downstream (unlike `--exclude`, `--opaque` keeps the declaration and drops the
-# body, so aeneas emits an uninterpreted function instead of a wrong one).
+# Items whose Rust body cannot model std. `--opaque` keeps charon's signature
+# and drops the body, so aeneas emits the declaration into
+# `FunsExternal_Template.lean` -- which `patch_alloc()` deletes and nothing
+# re-adds. The items are therefore absent from the committed Lean tree, and a
+# crate that calls them will not elaborate; what this buys over `--exclude` is
+# that no *wrong* body is extracted.
 #   - `Vec::drain` ignores its range argument: `RangeBounds` is not modelled.
 #   - `fmt::format` returns the empty string: `fmt::Arguments` is not modelled.
 ALLOC_CHARON_OPAQUE = \

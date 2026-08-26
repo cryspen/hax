@@ -21,7 +21,8 @@
 //! `u8`/`i8` are swept exhaustively: small enough to evaluate inside a `#guard`,
 //! wide enough to cover every sign, carry and overflow boundary. The wider types
 //! share the same Lean definitions (all are generic over the scalar type), so a
-//! bug at 8 bits is a bug everywhere.
+//! bug at 8 bits is a bug everywhere -- except for byte order, which one byte
+//! cannot distinguish, so `to_be_bytes`/`to_le_bytes` get 16-bit probes too.
 
 use rust_lean_test_macro::rust_lean_test;
 
@@ -30,6 +31,9 @@ use rust_lean_test_macro::rust_lean_test;
 /// and overflow edges without the cost of a full 65536-case product.
 const U8_PROBES: [u8; 6] = [0, 1, 2, 127, 128, 255];
 const I8_PROBES: [i8; 7] = [0, 1, -1, 127, -128, 42, -42];
+/// Byte-order probes. Deliberately 16 bits: at one byte big and little endian
+/// agree, so an 8-bit sweep cannot tell them apart.
+const U16_PROBES: [u16; 7] = [0, 1, 255, 256, 4660, 65280, 65535];
 
 // ----- helpers: references built without `rust_primitives::arithmetic` -------
 
@@ -52,6 +56,26 @@ fn to_u8(v: u32) -> u8 {
 fn to_i8(v: u32) -> i8 {
     let m = v % 256;
     if m > 127 { (m as u8) as i8 } else { m as i8 }
+}
+
+/// `x`'s bit pattern widened to `u32` (0..=65535).
+fn u16_bits(x: u16) -> u32 {
+    x as u32
+}
+
+/// `x`'s two's-complement bit pattern as `u32` (0..=65535).
+fn i16_bits(x: i16) -> u32 {
+    (x as u16) as u32
+}
+
+/// Reduce a `u32` bit pattern back to `i16` (two's complement).
+fn to_i16(v: u32) -> i16 {
+    let m = v % 65536;
+    if m > 32767 {
+        (m as u16) as i16
+    } else {
+        m as i16
+    }
 }
 
 /// Exact value of an `i8`, widened.
@@ -532,6 +556,44 @@ pub fn test_u8_pow_exhaustive() -> bool {
     ok
 }
 
+/// The signed counterpart. `ioverflowing_pow` is a distinct Lean definition
+/// with a two-sided bound, so the `u8` sweep above says nothing about it.
+#[rust_lean_test]
+pub fn test_i8_pow_exhaustive() -> bool {
+    let mut ok = true;
+    for i in 0..256usize {
+        for e in 0..9usize {
+            let x = to_i8(i as u32);
+            let exp = e as u32;
+            // Reference: repeated multiplication, tracking exactness separately.
+            let mut wrapped: u32 = 1;
+            let mut exact: i32 = 1;
+            let mut over = false;
+            let mut k = 0usize;
+            while k < e {
+                wrapped = (wrapped * i8_bits(x)) % 256;
+                // Stop tracking the exact value once it has left the range; both
+                // ends matter here, unlike the unsigned case.
+                if !over {
+                    exact = exact * i8_val(x);
+                    if exact > 127 || exact < -128 {
+                        over = true;
+                    }
+                }
+                k += 1;
+            }
+            let (r, o) = x.overflowing_pow(exp);
+            if !(r == to_i8(wrapped) && o == over) {
+                ok = false;
+            }
+            if !over && x.pow(exp) != to_i8(wrapped) {
+                ok = false;
+            }
+        }
+    }
+    ok
+}
+
 // ----- byte conversions ------------------------------------------------------
 
 #[rust_lean_test]
@@ -559,6 +621,46 @@ pub fn test_i8_byte_conversions_exhaustive() -> bool {
             ok = false;
         }
         if i8::from_be_bytes([b]) != x || i8::from_le_bytes([b]) != x {
+            ok = false;
+        }
+    }
+    ok
+}
+
+#[rust_lean_test]
+pub fn test_u16_byte_order() -> bool {
+    let mut ok = true;
+    for j in 0..7usize {
+        let x = U16_PROBES[j];
+        let hi = to_u8(u16_bits(x) / 256);
+        let lo = to_u8(u16_bits(x) % 256);
+        if x.to_be_bytes()[0] != hi || x.to_be_bytes()[1] != lo {
+            ok = false;
+        }
+        if x.to_le_bytes()[0] != lo || x.to_le_bytes()[1] != hi {
+            ok = false;
+        }
+        if u16::from_be_bytes([hi, lo]) != x || u16::from_le_bytes([lo, hi]) != x {
+            ok = false;
+        }
+    }
+    ok
+}
+
+#[rust_lean_test]
+pub fn test_i16_byte_order() -> bool {
+    let mut ok = true;
+    for j in 0..7usize {
+        let x = to_i16(u16_bits(U16_PROBES[j]));
+        let hi = to_u8(i16_bits(x) / 256);
+        let lo = to_u8(i16_bits(x) % 256);
+        if x.to_be_bytes()[0] != hi || x.to_be_bytes()[1] != lo {
+            ok = false;
+        }
+        if x.to_le_bytes()[0] != lo || x.to_le_bytes()[1] != hi {
+            ok = false;
+        }
+        if i16::from_be_bytes([hi, lo]) != x || i16::from_le_bytes([lo, hi]) != x {
             ok = false;
         }
     }
