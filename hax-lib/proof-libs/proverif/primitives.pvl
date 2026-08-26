@@ -1,9 +1,9 @@
 (*****************************************************************)
 (*  hax — ProVerif primitives library                            *)
 (*****************************************************************)
-(* Anything that used to live in the per-extraction `lib.pvl`     *)
-(* preamble is here instead. Loading this file via `-lib` gives   *)
-(* the extracted file everything it needs to typecheck:           *)
+(* This file supplies what the extracted `lib.pvl` references but *)
+(* does not define. Loading it via `-lib` lets the extracted file *)
+(* typecheck:                                                     *)
 (*                                                                *)
 (*   - `channel c.` — the public attacker channel.                *)
 (*   - `construct_fail` / `empty` — fail/default helpers.         *)
@@ -14,8 +14,8 @@
 (*   - `rust_primitives::*`, `core::num`/`ops`/`cmp`/`slice`      *)
 (*     trait roots, `hax_lib::*` helpers, the tuple constructors. *)
 (*                                                                *)
-(* `core_models::*` symbols are out of scope here; they'll        *)
-(* migrate upstream as `#[proverif_replace]` annotations.         *)
+(* `core_models::*` symbols are out of scope here; a using crate  *)
+(* supplies them via `#[proverif_replace]` annotations.           *)
 (*                                                                *)
 (* Use:                                                           *)
 (*   proverif -lib primitives.pvl lib.pvl                         *)
@@ -95,9 +95,8 @@ fun rust_primitives__hax__logical_op_or(bitstring, bitstring): bitstring [data].
 
 (* `+ 1` / `- 1` on a small concrete literal reduces over the declared
    constants `nat_0 .. nat_16`, so loop/epoch counters progress (`nat_1`,
-   `nat_2`, ...) for queries to name and order. Only `± 1` reduces (the sole
-   arithmetic that was concrete under the old unary `nat` model); any other
-   operand — a larger literal, or byte arithmetic on opaque blobs — falls
+   `nat_2`, ...) for queries to name and order. Only `± 1` reduces; any
+   other operand — a larger literal, or byte arithmetic on opaque blobs — falls
    through to an opaque `[data]` term. The bound (16) covers every counter that
    climbs concretely under the bounded loop model (LOOP_BOUND = 3). *)
 fun rust_primitives__hax__machine_int__add_opaque(bitstring, bitstring): bitstring [data].
@@ -182,16 +181,15 @@ fun rust_primitives__hax__int__from_machine(bitstring): bitstring [data].
 fun rust_primitives__hax__int__into_machine(bitstring): bitstring [data].
 
 (*** rust_primitives::arithmetic / slice / sequence — non-auto-decl ***)
-(* The ~251 per-int-width arithmetic ops and most slice / sequence  *)
-(* primitives are opaque `fun NAME(...): bitstring [data].` shapes,  *)
-(* shape-identical to what the auto-decl pass synthesises, and have *)
-(* `#[cfg_attr(hax_backend_proverif, hax_lib::pv_constructor)]` on   *)
-(* their Rust source. They've been removed from this file.           *)
-(* What stays below is the small set that is *not* shape-equivalent  *)
-(* to auto-decl: identity letfuns that collapse otherwise-distinct  *)
-(* collection wrappers (so equality fires across `&v[..]` vs        *)
-(* `v.as_slice()`), the `*SIZE_*` consts, and synthesised names      *)
-(* (`neg`, `slice_index_range`, `hax::repeat`) with no Rust source. *)
+(* Only the primitives whose shape is *not* the opaque                *)
+(* `fun NAME(...): bitstring [data].` that the auto-decl pass would   *)
+(* synthesise live here: identity letfuns that collapse               *)
+(* otherwise-distinct collection wrappers (so equality fires across   *)
+(* `&v[..]` vs `v.as_slice()`), the `*SIZE_*` consts, and synthesised *)
+(* names (`neg`, `slice_index_range`, `hax::repeat`) with no Rust     *)
+(* source. Shape-equivalent opaque ops carry                          *)
+(* `#[cfg_attr(hax_backend_proverif, hax_lib::pv_constructor)]` in    *)
+(* their Rust source.                                                 *)
 
 const rust_primitives__arithmetic__ISIZE_MAX: bitstring.
 const rust_primitives__arithmetic__ISIZE_MIN: bitstring.
@@ -338,10 +336,9 @@ letfun hax_lib__prop__constructors__from_bool(b: bitstring) = b.
 letfun hax_lib__assume(p: bitstring) = p.
 
 (*****************************************************************)
-(*  std prelude — formerly synthesised by the auto-decl pass as  *)
-(*  invertible `[data]`. Made explicit here with real semantics  *)
-(*  (or honest opaque stubs) so `missingdecl.pvl` stays a signal  *)
-(*  and the one-way shapes are not silently destructurable.       *)
+(*  std prelude — explicit declarations with real semantics      *)
+(*  (or honest opaque stubs) so `missingdecl.pvl` stays a signal *)
+(*  and the one-way shapes are not silently destructurable.      *)
 (*****************************************************************)
 
 (*** Tuple field projectors `t.0` .. `t.5` (over the [data] tuple ctors) ***)
@@ -505,8 +502,7 @@ letfun core__slice__Impl__copy_from_slice(self: bitstring, src: bitstring) = src
 letfun core__slice__Impl__clone_from_slice(self: bitstring, src: bitstring) = src.
 
 (*****************************************************************)
-(*  More std prelude, surfaced once minos (not just mandrake) is  *)
-(*  composed in. Same conventions: ADT variants are `[data]`,     *)
+(*  More std prelude. Same conventions: ADT variants are `[data]`, *)
 (*  Result/Option methods follow the transparent/structural model *)
 (*  above, byte<->int conversions are identity, and the remaining  *)
 (*  Vec/slice ops are Seq stubs (workstream 2).                    *)

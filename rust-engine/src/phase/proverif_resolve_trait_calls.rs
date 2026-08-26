@@ -1,12 +1,10 @@
 //! ProVerif-backend phase: resolve trait-method calls to concrete impl methods.
 //!
 //! ProVerif is first-order and has no traits: every call must name a concrete
-//! function. The other backends (F\*, Lean) keep trait methods abstract and rely
-//! on the target language's typeclass mechanism, so the engine never
-//! monomorphizes a user trait call. For ProVerif that leaves call sites such as
-//! `self.sk.add_prefix(p)` (where `self.sk: Bytes`) rendered as the *trait*
-//! method name `Prefix__add_prefix`, which the auto-decl pass then turns into an
-//! opaque (and unsound) function — even though the concrete impl method
+//! function. A user trait call otherwise reaches the printer rendered as the
+//! *trait* method name — e.g. `self.sk.add_prefix(p)` (where `self.sk: Bytes`)
+//! as `Prefix__add_prefix`, which the auto-decl pass then turns into an opaque
+//! (and unsound) function, even though the concrete impl method
 //! (`Impl_1__add_prefix`) was extracted right next to it.
 //!
 //! Inherent methods (`Vec::push`, `slice::iter`, …) carry their concrete id as

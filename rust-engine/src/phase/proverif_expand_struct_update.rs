@@ -8,7 +8,7 @@
 //!
 //!  - `S { f: x, ..base }` from source — `base: Some(..)`, `constructor` is the
 //!    variant id;
-//!  - `self.f = x` mutation through `&mut self`, which the legacy
+//!  - `self.f = x` mutation through `&mut self`, which the
 //!    `TrivializeAssignLhs` phase rewrites to
 //!    `self = Construct { constructor = <type id>, fields = [(f, x)],
 //!    base = Some(self) }` — `base: Some(..)`, `constructor` is the *type* id,
@@ -20,9 +20,7 @@
 //!    *declaration* order (from `variant.arguments`). When the two orders
 //!    differ, every `new`-built value is field-scrambled relative to how it is
 //!    later read — an unsound model that still type-checks (everything is
-//!    `bitstring`). The legacy OCaml `reorder_fields` phase is meant to canon-
-//!    icalize this, but does not reliably reach these expression `Construct`
-//!    nodes here, so this phase enforces declaration order as the final pass.
+//!    `bitstring`). This phase enforces declaration order as the final pass.
 //!
 //! For the `base: Some(..)` shapes the printer would otherwise (a) render only
 //! the explicitly-set fields, silently dropping the base, and (b) for the

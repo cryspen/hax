@@ -56,8 +56,7 @@ struct Shared {
 /// crate's extraction surface, so the inliner has nothing to collect.
 ///
 /// TODO: link this to the real `rust-core-models` bodies (a single source of
-/// truth) instead of reconstructing them here. See the discussion in the
-/// ProVerif backend notes.
+/// truth) instead of reconstructing them here.
 fn builtin_combinator_models() -> Vec<(GlobalId, Vec<Param>, Expr)> {
     let unit_ty = || TyKind::unit().promote();
     // A by-value binder `name`, returning both its `LocalId` (for the body to

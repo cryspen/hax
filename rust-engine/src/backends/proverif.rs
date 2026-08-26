@@ -1,26 +1,12 @@
 //! The ProVerif backend.
 //!
-//! This is a port of the legacy OCaml printer at
-//! `engine/backends/proverif/proverif_backend.ml` to the rust-engine
-//! "Rust backend" architecture. The OCaml side now only declares the
-//! `InputLanguage` feature set and applies the phase pipeline; all printing
-//! happens in this file.
-//!
-//! Stage 1 is strict parity with the legacy OCaml output: the same `lib.pvl`
-//! file, the same constructor scheme, the same baked-in 14-line preamble.
-//! Feature extensions land in Stage 2.
-//!
-//! Method-by-method mapping to the legacy OCaml printer
-//! (`engine/backends/proverif/proverif_backend.ml`):
-//!
-//! | OCaml | Rust |
-//! |---|---|
-//! | `ty` (732-758), `ty_bool` (340), `ty_int` (341) | [`fn ty`](ProVerifPrinter::ty) |
-//! | `pat'` (279-338) | [`fn pat`](ProVerifPrinter::pat) |
-//! | `expr'` (374-476), `expr_app` (357-372), `expr` (703-730) | [`fn expr`](ProVerifPrinter::expr) |
-//! | `item_unwrapped` (480-642) — Fn / Type / Quote | [`fn item`](ProVerifPrinter::item) |
-//! | `concrete_ident'` (653-660) | flattened by `RenderView::separator = "__"` |
-//! | Preamble (811-832) | the [`HEADER`] string constant |
+//! Prints the hax AST to a single ProVerif `lib.pvl` library file under a
+//! uniform-bitstring model: every Rust type collapses to `bitstring`, so the
+//! output keeps the term structure (constructors, function calls, control
+//! flow) while scalar values become opaque symbolic terms. Names referenced
+//! but not defined here are declared by the shipped `primitives.pvl` /
+//! `cryptolib.pvl` libraries, or listed in a companion `missingdecl.pvl`
+//! diagnostic. The preamble is the [`HEADER`] string constant.
 
 use std::cmp::Reverse;
 use std::collections::{BinaryHeap, HashMap, HashSet};
@@ -35,8 +21,7 @@ use camino::Utf8PathBuf;
 use hax_lib_macros_types::AttrPayload;
 use hax_types::engine_api::{File, SourceMap};
 
-/// Constructor IDs used by the ProVerif special-cases. Mirror the OCaml
-/// `Global_ident.eq_name`-style equality tests.
+/// Constructor IDs used by the ProVerif special-cases.
 mod names {
     pub use crate::names::core::clone::Clone::clone;
     pub use crate::names::core::convert::Into::into;
@@ -59,9 +44,8 @@ pub struct ProVerifPrinter {
     /// item's `GenericParamKind::Const` so that references to const
     /// generics (`fn f<const N: usize>(x: [T; N]) -> ...` writing `N`
     /// in the body) survive into a parseable output. ProVerif has no
-    /// generic-parameter notion; after Stage 2.0 the surrounding type
-    /// collapses to `bitstring` anyway, so the runtime value is
-    /// symbolically irrelevant.
+    /// generic-parameter notion; the surrounding type collapses to
+    /// `bitstring`, so the runtime value is symbolically irrelevant.
     erased_const_generics: HashSet<LocalId>,
     /// Rendered-name → maximum arity observed at any *use* site (harvested by
     /// [`collect_references`]). A nullary item (a Rust `const`/`static`, or an
@@ -97,10 +81,9 @@ const PRIMITIVES_PVL: &str = include_str!("../../../hax-lib/proof-libs/proverif/
 
 /// Preamble baked into every `lib.pvl` file.
 ///
-/// Stage 2.0 collapses every Rust type to ProVerif `bitstring`. Booleans
-/// become `True()`/`False()` data constructors and integer literals are
-/// modeled as opaque per-value constants `nat_N` so they land in the same
-/// universe.
+/// Every Rust type collapses to ProVerif `bitstring`. Booleans become
+/// `True()`/`False()` data constructors and integer literals are modeled as
+/// opaque per-value constants `nat_N` so they land in the same universe.
 const HEADER: &str = "\
 (*
   Run with:
@@ -142,8 +125,7 @@ impl RenderView for ProVerifPrinter {
     fn reserved_keywords() -> &'static HashSet<String> {
         static SET: OnceLock<HashSet<String>> = OnceLock::new();
         SET.get_or_init(|| {
-            // Mirrors `ProVerifNamePolicy.reserved_words` in
-            // `engine/backends/proverif/proverif_backend.ml:102-104`.
+            // ProVerif's reserved keywords.
             [
                 "among",
                 "axiom",
@@ -212,8 +194,7 @@ impl RenderView for ProVerifPrinter {
         })
     }
 
-    /// The legacy OCaml backend flattens namespaces with `__` (see
-    /// `proverif_backend.ml:653-660`).
+    /// Namespaces are flattened with `__`.
     fn separator(&self) -> &str {
         "__"
     }
@@ -232,10 +213,10 @@ impl RenderView for ProVerifPrinter {
     ///
     /// A ProVerif identifier is `[A-Za-z0-9_]+` (with the leading-`_` and
     /// keyword caveats handled below). We therefore map *every* character
-    /// outside that class to `_`. This subsumes the historical
-    /// ` `/`<`/`>` cases and additionally rescues identifiers ProVerif's
-    /// lexer would reject outright: Rust raw-identifier markers
-    /// (`r#unsized`) and non-ASCII names (`申し訳ございません`).
+    /// outside that class to `_`. This covers spaces and `<`/`>`, and also
+    /// rescues identifiers ProVerif's lexer would reject outright: Rust
+    /// raw-identifier markers (`r#unsized`) and non-ASCII names
+    /// (`申し訳ございません`).
     fn escape(id: &str) -> String {
         let id: String = id
             .chars()
@@ -266,8 +247,7 @@ impl Printer for ProVerifPrinter {
 }
 
 impl ProVerifPrinter {
-    /// Returns the joined identifier used by ProVerif declarations. Mirrors
-    /// `print#concrete_ident` in the legacy printer.
+    /// Returns the joined identifier used by ProVerif declarations.
     fn render_id(&self, id: &GlobalId) -> String {
         self.render_string(&id.view())
     }
@@ -279,14 +259,9 @@ impl ProVerifPrinter {
     /// `ExprKind::App` whose head is the `GlobalId` of the field, which
     /// renders to e.g. `bertie__tls13crypto__Algorithms__Algorithms__psk_mode`.
     /// Therefore the destructor's name needs to be that same string, so
-    /// the call site resolves to a real function.
-    ///
-    /// The legacy OCaml printer named the destructor
-    /// `accessor_<base>__<field>` and emitted a separate field-projection
-    /// rewrite in the printer to call that. The new uniform-bitstring
-    /// printer just uses the field's rendered identifier directly, which
-    /// is what the auto-decl pass would otherwise declare as an opaque
-    /// `fun [data].` for the same call site.
+    /// the call site resolves to a real function — the field's rendered
+    /// identifier, which is what the auto-decl pass would otherwise declare
+    /// as an opaque `fun [data].` for the same call site.
     fn accessor_name(&self, _base: &str, field: &GlobalId) -> String {
         self.render_id(field)
     }
@@ -524,8 +499,7 @@ const _: () = {
             }
         }
 
-        /// Print one match-arm as an `if-let` chain piece. Mirrors
-        /// `match_arm` (`proverif_backend.ml:229-247`).
+        /// Print one match-arm as an `if-let` chain piece.
         ///
         /// For failable arms we wrap the body in `( ... )` so that a
         /// subsequent `else N` in the enclosing Match chain binds to *this*
@@ -819,9 +793,8 @@ const _: () = {
         }
 
         /// Print the `fun ... [data].` declaration and the matching `reduc`
-        /// lines that recover each field. Mirrors `fun_and_reduc` inside
-        /// `item_unwrapped`. Stage 2.0: every constructor returns `bitstring`
-        /// because the surface type collapses uniformly.
+        /// lines that recover each field. Every constructor returns
+        /// `bitstring` because the surface type collapses uniformly.
         fn fun_and_reduc<A: 'static + Clone>(
             &self,
             base_name: &GlobalId,
@@ -935,9 +908,8 @@ const _: () = {
             if self.erased_const_generics.contains(local_id) {
                 return docs!["bitstring_default()"];
             }
-            // Mirrors the OCaml `local_ident` override: strip `impl ...`
-            // wrappers and replace spaces/`+` with `_` so the result is a
-            // valid ProVerif identifier.
+            // Strip `impl ...` wrappers and replace spaces/`+` with `_` so
+            // the result is a valid ProVerif identifier.
             let name = &local_id.0.to_string();
             let rendered = if let Some(rest) = name.strip_prefix("impl ") {
                 let rest = rest.replace([' ', '+'], "_");
@@ -982,8 +954,8 @@ const _: () = {
         }
 
         fn primitive_ty(&self, _primitive_ty: &PrimitiveTy) -> DocBuilder<A> {
-            // Stage 2.0 uniform-bitstring: every Rust scalar collapses to
-            // ProVerif `bitstring`. Booleans/ints/etc. are encoded via the
+            // Uniform-bitstring: every Rust scalar collapses to ProVerif
+            // `bitstring`. Booleans/ints/etc. are encoded via the
             // `True()`/`False()`/`nat_N` constructors declared in the
             // preamble.
             docs!["bitstring"]
@@ -1002,11 +974,11 @@ const _: () = {
         }
 
         fn ty(&self, ty: &Ty) -> DocBuilder<A> {
-            // Stage 2.0/2.1 uniform-bitstring: every type renders as
-            // `bitstring`. `Param(_)` survives — Specialize doesn't
-            // monomorphize generic *functions*, only specific named
-            // arithmetic/conversion calls — but a `Param` in output position
-            // is meaningless to ProVerif, so we still flatten to `bitstring`.
+            // Uniform-bitstring: every type renders as `bitstring`.
+            // `Param(_)` survives — Specialize doesn't monomorphize generic
+            // *functions*, only specific named arithmetic/conversion calls —
+            // but a `Param` in output position is meaningless to ProVerif, so
+            // we still flatten to `bitstring`.
             match ty.kind() {
                 TyKind::Ref { .. } => unreachable_by_invariant!(Drop_references),
                 TyKind::RawPointer => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
@@ -1017,7 +989,6 @@ const _: () = {
         }
 
         fn pat(&self, pat: &Pat) -> DocBuilder<A> {
-            // Mirrors `print#pat'` (`proverif_backend.ml:279-338`).
             match &*pat.kind {
                 PatKind::Wild => docs!["wildcard: bitstring"],
                 PatKind::Constant { lit } => docs!["=", lit].parens(),
@@ -1045,9 +1016,8 @@ const _: () = {
                     is_record: _,
                     is_struct: _,
                 } if *constructor == names::OptionSome => {
-                    // After Stage 2.0 every payload is already a `bitstring`,
-                    // so there is no `_to_bitstring`/`_from_bitstring` to
-                    // unwrap.
+                    // Every payload is already a `bitstring`, so the inner
+                    // pattern is rendered directly.
                     if let Some((_, inner)) = fields.first() {
                         docs!["Some", docs![inner].parens()]
                     } else {
@@ -1060,7 +1030,7 @@ const _: () = {
                     is_record: _,
                     is_struct: _,
                 } if *constructor == names::ResultOk => {
-                    // `Ok(inner)` is replaced by its contents (lines 318-327).
+                    // `Ok(inner)` is replaced by its contents.
                     if let Some((_, inner)) = fields.first() {
                         docs![inner]
                     } else {
@@ -1074,12 +1044,10 @@ const _: () = {
                     is_struct: _,
                 } => {
                     // Every field is rendered (as a wildcard binder for `_`), so a
-                    // multi-field pattern always keeps the constructor's arity. An
-                    // earlier "all fields wild -> emit no args" placeholder produced
-                    // `Constructor()` (0 args), which ProVerif rejects on any
-                    // multi-field constructor (e.g. a `(_, _)` tuple catch-all ->
-                    // `Tuple2()`); emitting `Tuple2(wildcard, wildcard)` is the
-                    // correct always-matching form.
+                    // multi-field pattern always keeps the constructor's arity.
+                    // ProVerif rejects a 0-arg `Constructor()` on a multi-field
+                    // constructor (e.g. a `(_, _)` tuple catch-all), so a full
+                    // `Tuple2(wildcard, wildcard)` is the always-matching form.
                     let args = if fields.is_empty() {
                         nil!()
                     } else {
@@ -1147,14 +1115,12 @@ const _: () = {
         }
 
         fn expr(&self, expr: &Expr) -> DocBuilder<A> {
-            // Mirrors `print#expr` (703-730), `print#expr'` (374-476), and
-            // `print#expr_app` (357-372).
             match &*expr.kind {
-                // ===== outer `expr` overrides (lines 703-730) =====
+                // ===== into / never_to_any =====
                 ExprKind::App { head, args, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::into) =>
                 {
-                    // After Stage 2.0 the surface type of every value is
-                    // `bitstring`, so `Into::into` is a no-op.
+                    // The surface type of every value is `bitstring`, so
+                    // `Into::into` is a no-op.
                     args.first().map(|a| docs![a]).unwrap_or(nil!())
                 }
                 ExprKind::App { head, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::never_to_any) =>
@@ -1162,7 +1128,7 @@ const _: () = {
                     docs!["bitstring_err()"]
                 }
 
-                // ===== Result-typed expressions (lines 712-730) =====
+                // ===== Result Ok / Err =====
                 ExprKind::Construct {
                     constructor,
                     fields,
@@ -1178,12 +1144,12 @@ const _: () = {
                     docs!["bitstring_err()"]
                 }
 
-                // ===== expr' (lines 374-476) =====
+                // ===== passthroughs, logical ops, cast =====
                 ExprKind::App { head, args, .. }
                     if matches!(&*head.kind, ExprKind::GlobalId(g)
                         if *g == names::clone || *g == names::unsize || *g == names::deref) =>
                 {
-                    // Identity passthrough (lines 386-405).
+                    // Identity passthrough.
                     args.first().map(|a| docs![a]).unwrap_or(nil!())
                 }
                 ExprKind::App { head, args, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::logical_op_and) =>
@@ -1200,11 +1166,11 @@ const _: () = {
                 }
                 ExprKind::App { head, args, .. } if matches!(&*head.kind, ExprKind::GlobalId(g) if *g == names::cast_op) =>
                 {
-                    // Cast → just the inner argument (line 401).
+                    // Cast → just the inner argument.
                     args.first().map(|a| docs![a]).unwrap_or(nil!())
                 }
 
-                // ===== Construct: Some / None / generic (lines 429-449) =====
+                // ===== Construct: Some / None / generic =====
                 ExprKind::Construct { constructor, .. } if *constructor == names::OptionNone => {
                     docs!["None()"]
                 }
@@ -1226,7 +1192,6 @@ const _: () = {
                     is_struct: _,
                     base: _,
                 } => {
-                    // Mirrors `doc_construct_inductive` (lines 662-678).
                     if fields.is_empty() {
                         docs![constructor, "()"]
                     } else if *is_record {
@@ -1238,7 +1203,7 @@ const _: () = {
                     }
                 }
 
-                // ===== Match → if-let chain (lines 450-456) =====
+                // ===== Match → if-let chain =====
                 //
                 // ProVerif evaluates `letfun` bodies eagerly, so any
                 // destructure that can fail must have an `else` clause —
@@ -1330,12 +1295,12 @@ const _: () = {
                     }
                 }
 
-                // ===== If / Let (lines 457-475) =====
+                // ===== If / Let =====
                 //
-                // Stage 2.0: ProVerif's `if`/`then`/`else` requires a
-                // `bool`-typed condition, but after the uniform-bitstring
-                // collapse every condition is `bitstring`. Rewrite using
-                // ProVerif's pattern-match let:
+                // ProVerif's `if`/`then`/`else` requires a `bool`-typed
+                // condition, but under the uniform-bitstring collapse every
+                // condition is `bitstring`. Rewrite using ProVerif's
+                // pattern-match let:
                 //
                 //   let (=True()) = cond in then_ else else_
                 //
@@ -1415,7 +1380,7 @@ const _: () = {
                     }
                 }
 
-                // ===== expr_app fallback (357-372) =====
+                // ===== application fallback =====
                 ExprKind::App { head, args, .. } => {
                     // Render a `GlobalId` head as the bare name (an application
                     // head is always applied, so it bypasses the higher-order
@@ -1536,8 +1501,7 @@ const _: () = {
         }
 
         fn param(&self, param: &Param) -> DocBuilder<A> {
-            // Mirrors the `print#param` invocations sprinkled in
-            // `item_unwrapped`: each parameter is `name: ty`.
+            // Each parameter is `name: ty`.
             let name = match &*param.pat.kind {
                 PatKind::Wild => text!("wildcard"),
                 PatKind::Binding {
@@ -1568,7 +1532,6 @@ const _: () = {
         }
 
         fn item(&self, item: &Item) -> DocBuilder<A> {
-            // Mirrors `print#item_unwrapped` (`proverif_backend.ml:480-642`).
             let attrs = &item.meta.attributes;
             let as_constructor = item
                 .meta
@@ -1623,10 +1586,10 @@ const _: () = {
                     name, body, params, ..
                 } => {
                     if params.is_empty() {
-                        // Empty-param `fn`s are Rust consts. After Stage 2.0
-                        // every value lives in `bitstring`. A const that some
-                        // call site applies (an invoked const closure) is
-                        // declared as an opaque `fun` of that arity instead.
+                        // Empty-param `fn`s are Rust consts; every value lives
+                        // in `bitstring`. A const that some call site applies
+                        // (an invoked const closure) is declared as an opaque
+                        // `fun` of that arity instead.
                         self.const_or_applied_fun(&self.render_id(name))
                     } else if as_constructor || is_erased {
                         // `#[hax::proverif::constructor]` *and* `#[hax_lib::opaque]`
@@ -1677,7 +1640,7 @@ const _: () = {
                         // letfuns. Reject with a diagnostic and opacify.
                         self.recursive_opaque_fun(&self.render_id(name), params, item.meta.span)
                     } else {
-                        // Regular letfun (lines 560-588).
+                        // Regular letfun.
                         let comment = if as_handwritten {
                             docs!["(* REPLACE by handwritten model *)", hardline!()]
                         } else {
@@ -1707,11 +1670,10 @@ const _: () = {
                     is_struct,
                     ..
                 } => {
-                    // Stage 2.0: emit only the `[data]` constructor and the
-                    // per-field `reduc` accessors. The legacy type/converter/
-                    // default/err cluster is replaced by the universal
-                    // `bitstring_default`/`bitstring_err`/`Some`/`None` in the
-                    // preamble.
+                    // Emit only the `[data]` constructor and the per-field
+                    // `reduc` accessors. The universal `bitstring_default`/
+                    // `bitstring_err`/`Some`/`None` in the preamble cover the
+                    // rest.
                     if is_erased {
                         return nil!();
                     }
@@ -1734,9 +1696,9 @@ const _: () = {
                 ItemKind::TyAlias { .. } => nil!(),
                 ItemKind::Trait { .. } => nil!(),
                 ItemKind::Impl { items, .. } => {
-                    // Stage 2.1: render an impl block by flattening its
-                    // items into top-level letfuns / consts. Specialize
-                    // gave each impl item a unique flattened GlobalId
+                    // Render an impl block by flattening its items into
+                    // top-level letfuns / consts. Specialize gives each impl
+                    // item a unique flattened GlobalId
                     // (`<self_ty>__<trait>__<method>` for trait impls,
                     // `<self_ty>__<method>` for inherent impls), so we can
                     // emit them as ordinary items at the file level.
@@ -1864,9 +1826,9 @@ const _: () = {
         }
 
         fn impl_item(&self, impl_item: &ImplItem) -> DocBuilder<A> {
-            // Stage 2.1: render each impl item as a flat top-level
-            // declaration. `Specialize` produces a unique `GlobalId` per
-            // (impl, item) pair, so `impl_item.ident` already carries the
+            // Render each impl item as a flat top-level declaration.
+            // `Specialize` produces a unique `GlobalId` per (impl, item) pair,
+            // so `impl_item.ident` already carries the
             // `<self_ty>__<trait>__<method>` flattened name we want.
             let name = self.render_id(&impl_item.ident);
             // Leading Rust doc comments on the method/const → ProVerif comments
@@ -2676,15 +2638,13 @@ pub struct ProVerifBackend;
 impl Backend for ProVerifBackend {
     type Printer = ProVerifPrinter;
 
-    /// Single-file output (`lib.pvl`) — matches the legacy OCaml backend's
-    /// behaviour (see `proverif_backend.ml:868-881`).
+    /// Single-file output (`lib.pvl`).
     fn module_path(&self, _module: &Module) -> Utf8PathBuf {
         Utf8PathBuf::from("lib.pvl")
     }
 
-    /// The phase pipeline. Stage 2.1 inserts `Specialize` between
-    /// `TransformHaxLibInline` and the rest — same shape Lean / F\* use —
-    /// so trait method calls are monomorphized into concrete
+    /// The phase pipeline. `Specialize` runs between `TransformHaxLibInline`
+    /// and the rest so trait method calls are monomorphized into concrete
     /// `<self_ty>__<trait>__<method>` letfun calls before the printer runs.
     fn phases(&self) -> Vec<PhaseKind> {
         use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
@@ -2702,9 +2662,9 @@ impl Backend for ProVerifBackend {
             DropReferences.into(),
             TrivializeAssignLhs.into(),
             HoistSideEffects.into(),
-            // Expand or-patterns (`A | B => e`) into one arm per constructor,
-            // like the F* and Lean backends — ProVerif has no or-patterns, and
-            // without this the printer hits them and emits a HAX0001 error.
+            // Expand or-patterns (`A | B => e`) into one arm per constructor.
+            // ProVerif has no or-patterns; without this the printer hits them
+            // and emits a HAX0001 error.
             HoistDisjunctivePatterns.into(),
             SimplifyMatchReturn.into(),
             // `LocalMutation` must run *before* the control-flow phases below.
@@ -2712,14 +2672,13 @@ impl Backend for ProVerifBackend {
             // `Break` / `Continue` nodes (`LoopState`), and
             // `DropReturnBreakContinue` needs that state to encode `break` /
             // `continue` into the `ControlFlow` enum. Ordered after them, those
-            // nodes instead survive into `dexpr'` and raise the HAX0002
+            // nodes instead survive to the printer and raise the HAX0002
             // "Return/Break/Continue are expected to be gone as this point"
-            // fatal. Both the F* pipeline and the legacy OCaml ProVerif backend
-            // run it directly after `SimplifyMatchReturn`.
+            // fatal.
             LocalMutation.into(),
             // Functionalize early-exit control flow (`return`/`break`/`continue`)
-            // into if/match, like the F* backend — otherwise `if c { ...; return }`
-            // / `let-else { ...; return }` reach the printer as unsupported
+            // into if/match; otherwise `if c { ...; return }` / `let-else
+            // { ...; return }` reach the printer as unsupported
             // `ExprKind::Return`.
             RewriteControlFlow.into(),
             DropReturnBreakContinue.into(),
@@ -2736,15 +2695,15 @@ impl Backend for ProVerifBackend {
     }
 
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        // Stage 2.2: `#[hax_lib::pv_inline]` β-substitution. Two phases
-        // sharing a state: first collects inlinable items, then rewrites
-        // call sites and marks the originals late-skip.
+        // `#[hax_lib::pv_inline]` β-substitution. Two phases sharing a state:
+        // first collects inlinable items, then rewrites call sites and marks
+        // the originals late-skip.
         use crate::resugarings::pv_inline_resugarings;
         pv_inline_resugarings()
     }
 
     /// Collapse every module into a single bag of items so the printer emits
-    /// one `lib.pvl` file. Matches `proverif_backend.ml:868-881`.
+    /// one `lib.pvl` file.
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
         if items.is_empty() {
             return vec![];
@@ -3341,12 +3300,11 @@ fn sanitize_string_literal(s: &str) -> String {
 /// `letfun` / `const` *and* `reduc forall ...; NAME(...) = ...`
 /// declarations. This matters: several field/tuple projectors (e.g.
 /// `rust_primitives__hax__Tuple1__Tuple1__0`) are defined in
-/// `primitives.pvl` *only* by a `reduc` equation, with no `fun` head. A
-/// previous bespoke scan here saw only `fun`/`const`/`letfun`, so it
-/// missed those accessors, classified them as undefined externals, and
-/// re-declared them into `missingdecl.pvl` — which then collides with the
-/// real `primitives.pvl` definition (`identifier ... already defined`)
-/// as soon as both are `-lib`'d together.
+/// `primitives.pvl` *only* by a `reduc` equation, with no `fun` head.
+/// Recognising them keeps the auto-decl pass from re-declaring them into
+/// `missingdecl.pvl`, which would collide with the real `primitives.pvl`
+/// definition (`identifier ... already defined`) once both are `-lib`'d
+/// together.
 fn primitives_pvl_names() -> Vec<String> {
     static NAMES: OnceLock<Vec<String>> = OnceLock::new();
     NAMES
