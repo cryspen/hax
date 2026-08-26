@@ -1,11 +1,9 @@
 //! @fail(tc): lean(1)
 //! @fail(extraction): lean(HAX0001, HAX0001, HAX0001)
 //! @fail(tc): fstar(47)
-// ProVerif rejections are declared at module level: the raw-pointer field of
-// `Foo` and the unsafe/raw-pointer body of `f` are attributed inconsistently
-// between the offending item and the crate root under `-i` interface-only
-// extraction, so a per-item directive is flaky. Aggregate: `f` (4), `Foo` (1),
-// and the recursive `padlen` (1) opacified to an uninterpreted function.
+// Under `-i` extraction the raw-pointer rejections for `f` and `Foo` attach to
+// either the item or the crate root, so ProVerif rejections are counted at
+// module level: `f` (4), `Foo` (1), and the recursive `padlen` (1).
 //! @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008)
 
 #![allow(dead_code)]
