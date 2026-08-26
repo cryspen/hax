@@ -7,12 +7,6 @@ pub struct TryFromSliceError;
 // F*-only: `charon::exclude` would drop this dummy type while its `impl`
 // blocks still reference it (see f32.rs).
 #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
-// Dummy type to allow impls. The name has to be `Array`, not `array`: aeneas
-// translates real core's `[T; N]` inherent impls to `core.array.Array.*`, and
-// that name is what makes those calls land on the definitions below. (So the
-// coverage tool, which keys these methods `array::*` after the primitive, needs
-// an alias rather than a rename here.)
-#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 struct Array<T, const N: usize>([T; N]);
 
 // Array impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)

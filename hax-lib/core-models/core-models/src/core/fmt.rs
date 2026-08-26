@@ -31,10 +31,6 @@ pub trait Debug {
 }
 
 /// See [`std::fmt::Arguments`]
-//
-// The field is a placeholder — the model does not track format arguments. It is
-// `pub` only so that other modules' tests can build one to pass to the
-// `Arguments`-taking functions in `crate::panicking`.
 pub struct Arguments<'a>(pub &'a ());
 
 impl<T> Debug for T {
