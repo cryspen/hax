@@ -212,34 +212,39 @@ impl RenderView for ProVerifPrinter {
     ///    lone `_` is a wildcard, and `_` + anything is a syntax error),
     ///  - clash with one of the reserved keywords (`channel`, `let`, …).
     ///
-    /// Strategy: replace illegal characters with `_`, then collapse the
-    /// leading-underscore problem by prepending a stable letter `u`, then
-    /// handle keyword clashes with a `_kw` *suffix* (a prefix would just
-    /// re-introduce the leading-underscore problem).
+    /// Strategy: replace each illegal byte with `_xHH` (its two-hex value),
+    /// then collapse the leading-underscore problem by prepending a stable
+    /// letter `u`, then handle keyword clashes with a `_kw` *suffix* (a
+    /// prefix would just re-introduce the leading-underscore problem).
     ///
     /// A ProVerif identifier is `[A-Za-z0-9_]+` (with the leading-`_` and
-    /// keyword caveats handled below). We therefore map *every* character
-    /// outside that class to `_`. This covers spaces and `<`/`>`, and also
-    /// rescues identifiers ProVerif's lexer would reject outright: Rust
-    /// raw-identifier markers (`r#unsized`) and non-ASCII names
-    /// (`申し訳ございません`).
+    /// keyword caveats handled below). Every byte outside that class becomes
+    /// `_xHH`, so the mapping is injective — two distinct names never collapse
+    /// to the same escaped form (as they would if every illegal byte mapped to
+    /// a bare `_`). This covers spaces and `<`/`>`, and also rescues
+    /// identifiers ProVerif's lexer would reject outright: Rust raw-identifier
+    /// markers (`r#unsized`) and non-ASCII names (`申し訳ございません`).
     fn escape(id: &str) -> String {
-        let id: String = id
-            .chars()
-            .map(|c| if c.is_ascii_alphanumeric() || c == '_' { c } else { '_' })
-            .collect();
-        if id.is_empty() {
+        let mut escaped = String::with_capacity(id.len());
+        for b in id.bytes() {
+            if b.is_ascii_alphanumeric() || b == b'_' {
+                escaped.push(b as char);
+            } else {
+                escaped.push_str(&format!("_x{b:02x}"));
+            }
+        }
+        if escaped.is_empty() {
             return "_ERROR_EMPTY_ID_".to_string();
         }
-        let id = if id.starts_with('_') {
-            format!("u{id}")
+        let escaped = if escaped.starts_with('_') {
+            format!("u{escaped}")
         } else {
-            id
+            escaped
         };
-        if Self::is_reserved_keyword(&id) {
-            format!("{id}_kw")
+        if Self::is_reserved_keyword(&escaped) {
+            format!("{escaped}_kw")
         } else {
-            id
+            escaped
         }
     }
 }
