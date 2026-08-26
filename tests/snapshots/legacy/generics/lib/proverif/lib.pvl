@@ -45,7 +45,8 @@ letfun new_tests__legacy__generics__lib__defaults_generics__f(wildcard: bitstrin
 (* src: src/legacy/generics/lib.rs:81 new_tests__legacy__generics__lib__assoc_const_param__Test *)
 fun new_tests__legacy__generics__lib__assoc_const_param__Test__Test(): bitstring [data].
 (* src: src/legacy/generics/lib.rs:84 new_tests__legacy__generics__lib__assoc_const_param__Impl__A *)
-const new_tests__legacy__generics__lib__assoc_const_param__Impl__A: bitstring.
+(* nullary const applied as a function *)
+fun new_tests__legacy__generics__lib__assoc_const_param__Impl__A(bitstring): bitstring.
 (* src: src/legacy/generics/lib.rs:87 new_tests__legacy__generics__lib__assoc_const_param__test *)
 letfun new_tests__legacy__generics__lib__assoc_const_param__test(wildcard: bitstring) =
   new_tests__legacy__generics__lib__assoc_const_param__Impl__A(nat_lit(1)).
