@@ -307,7 +307,9 @@ mod tests {
         }
     }
 
-    /// `IntoIter` is lazy; draining it is what observes it.
+    /// The elements a model iterator still yields. `Iterator::collect` is the
+    /// std-side counterpart; the model's `collect` needs a `FromIterator`
+    /// instance, which no `core` type provides for a growable collection.
     fn drain<I: ModelIterator>(mut it: I) -> Vec<I::Item> {
         let mut out = Vec::new();
         while let ModelOption::Some(x) = it.next() {
@@ -511,6 +513,20 @@ mod tests {
 
         #[cfg(not(hax_backend_fstar))]
         #[test]
+        fn test_into_iter_as_mut_slice(arr in any::<[u8; 4]>(), taken in 0usize..=4, v in any::<u8>()) {
+            let mut model = super::iter::IntoIter::new(arr.inject());
+            let mut std_it = arr.into_iter();
+            for _ in 0..taken {
+                model.next();
+                std_it.next();
+            }
+            model.as_mut_slice().fill(v);
+            std_it.as_mut_slice().fill(v);
+            prop_assert_eq!(model.as_mut_slice(), std_it.as_mut_slice());
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
         fn test_model_index_range(arr in any::<[u8; 8]>(), start in 0usize..8, len in 0usize..8) {
             let end = (start + len).min(8);
             let m = arr.inject();
@@ -553,20 +569,6 @@ mod tests {
         fn test_model_index_usize(arr in any::<[u8; 4]>(), idx in 0usize..4) {
             let m = arr.inject();
             prop_assert_eq!(crate::ops::index::Index::index(&m, idx), &arr[idx]);
-        }
-
-        #[cfg(not(hax_backend_fstar))]
-        #[test]
-        fn test_into_iter_as_mut_slice(arr in any::<[u8; 4]>(), taken in 0usize..=4, v in any::<u8>()) {
-            let mut model = super::iter::IntoIter::new(arr.inject());
-            let mut std_it = arr.into_iter();
-            for _ in 0..taken {
-                model.next();
-                std_it.next();
-            }
-            model.as_mut_slice().fill(v);
-            std_it.as_mut_slice().fill(v);
-            prop_assert_eq!(drain(model), std_it.collect::<Vec<_>>());
         }
     }
 
