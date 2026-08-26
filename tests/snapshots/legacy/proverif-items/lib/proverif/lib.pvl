@@ -1,0 +1,47 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
+
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
+
+(* src: src/legacy/proverif-items/lib.rs:8 new_tests__legacy__proverif_items__lib__Point *)
+fun new_tests__legacy__proverif_items__lib__Point__Point(bitstring, bitstring): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_items__lib__Point__Point__x(
+    new_tests__legacy__proverif_items__lib__Point__Point(v_0, v_1)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_items__lib__Point__Point__y(
+    new_tests__legacy__proverif_items__lib__Point__Point(v_0, v_1)
+  ) = v_1.
+(* src: src/legacy/proverif-items/lib.rs:13 new_tests__legacy__proverif_items__lib__make *)
+letfun new_tests__legacy__proverif_items__lib__make(x: bitstring, y: bitstring) =
+  new_tests__legacy__proverif_items__lib__Point__Point(x, y).
+(* src: src/legacy/proverif-items/lib.rs:17 new_tests__legacy__proverif_items__lib__get_x *)
+letfun new_tests__legacy__proverif_items__lib__get_x(p: bitstring) =
+  new_tests__legacy__proverif_items__lib__Point__Point__x(p).
+(* src: src/legacy/proverif-items/lib.rs:21 new_tests__legacy__proverif_items__lib__Counter *)
+fun new_tests__legacy__proverif_items__lib__Counter__Counter(): bitstring [data].
+(* src: src/legacy/proverif-items/lib.rs:32 new_tests__legacy__proverif_items__lib__Impl__BASE *)
+const new_tests__legacy__proverif_items__lib__Impl__BASE: bitstring.
+(* src: src/legacy/proverif-items/lib.rs:28 new_tests__legacy__proverif_items__lib__Impl__inner *)
+letfun new_tests__legacy__proverif_items__lib__Impl__inner(self: bitstring) =
+  new_tests__legacy__proverif_items__lib__Impl__BASE.
+(* src: src/legacy/proverif-items/lib.rs:24 new_tests__legacy__proverif_items__lib__Impl__outer *)
+letfun new_tests__legacy__proverif_items__lib__Impl__outer(self: bitstring) =
+  new_tests__legacy__proverif_items__lib__Impl__inner(self).
