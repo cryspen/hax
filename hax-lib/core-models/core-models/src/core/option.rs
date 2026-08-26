@@ -572,11 +572,11 @@ impl<T, U> Option<(T, U)> {
     }
 }
 
-/// Mirrors the shape of `Result::cloned`: std's version lives on `Option<&T>`,
-/// but the model's `Clone::clone` consumes `self`, so a `&T` cannot be cloned.
+// The lifetime is anonymous on purpose: hax builds the impl's name out of it, so
+// a named `'a` gives `OptionSharedAT` while a call extracted against real core's
+// `Option::<&T>::cloned` looks for `OptionShared0T`.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
-impl<T: Clone> Option<T> {
+impl<T: Clone> Option<&'_ T> {
     /// See [`std::option::Option::cloned`]
     pub fn cloned(self) -> Option<T> {
         match self {
@@ -601,15 +601,14 @@ impl<'a, T> Option<&'a T> {
     }
 }
 
-/// `Copy` here is `core`'s, not the model's: reading `*x` out of a `&T` is a
-/// language operation, which the model's `marker::Copy` cannot license.
+// The model has no primitive copy, so `copied` goes through `Clone`
+// (`marker::Copy: clone::Clone`), as `ops::Bound::copied` does.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
-impl<'a, T: Copy> Option<&'a T> {
+impl<T: crate::marker::Copy> Option<&'_ T> {
     /// See [`std::option::Option::copied`]
     pub fn copied(self) -> Option<T> {
         match self {
-            Some(x) => Some(*x),
+            Some(x) => Some(x.clone()),
             None => None,
         }
     }
@@ -1159,7 +1158,11 @@ mod tests {
 
         #[test]
         fn test_cloned(x in any::<Option<u8>>()) {
-            prop_assert!(x.clone().inject().cloned() == x.as_ref().cloned().inject());
+            let model: super::Option<&u8> = match &x {
+                Some(v) => super::Some(v),
+                None => super::None,
+            };
+            prop_assert!(model.cloned() == x.as_ref().cloned().inject());
         }
 
         #[test]

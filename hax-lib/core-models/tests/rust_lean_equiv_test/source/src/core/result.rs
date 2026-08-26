@@ -255,11 +255,10 @@ pub fn test_or_err_err() -> bool {
 
 // ----- cloned ----------------------------------------------------------------
 
-// TODO(result-cloned-shape): the model's `cloned` takes `self` and returns
-// `Result<T, E>` (an identity over our clone-by-value `Clone`). Std's
-// `Result::cloned` lives on `Result<&T, E>` and is unstable, so calling
-// `.cloned()` directly from the Rust side does not type-check on stable.
-// Revisit when references/shared semantics get a typed test surface.
+// The model's `cloned` has real core's shape (`Result<&T, E> -> Result<T, E>`),
+// but std's is unstable, so calling `.cloned()` from the Rust half does not
+// type-check on stable. The model side is covered by the proptest block in
+// `core-models/src/core/result.rs`.
 
 // ----- transpose -------------------------------------------------------------
 

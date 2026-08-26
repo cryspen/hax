@@ -133,13 +133,10 @@ pub unsafe fn transmute<Src, Dst>(src: Src) -> Dst {
 }
 
 /// See [`std::mem::copy`]
-// The bound is Rust's `core::marker::Copy`, not the model's `marker::Copy`: the
-// body dereferences a shared reference, which the model cannot express
-// (`clone::Clone::clone` consumes its argument). Extraction maps the bound back
-// onto the model's `marker::Copy`, as it already does for
-// `convert::TryFrom<&[T]> for [T; N]`.
-pub fn copy<T: core::marker::Copy>(x: &T) -> T {
-    *x
+// The model has no primitive copy, so this goes through `Clone`
+// (`marker::Copy: clone::Clone`), as `option::Option::copied` does.
+pub fn copy<T: crate::marker::Copy>(x: &T) -> T {
+    crate::clone::Clone::clone(x)
 }
 
 /// See [`std::mem::conjure_zst`]
@@ -184,7 +181,7 @@ mod manually_drop {
         /// See [`std::mem::ManuallyDrop::take`]
         // Signature only: real core reads the value out through a raw pointer,
         // leaving the slot logically moved out. The model has no raw pointers,
-        // and `clone::Clone::clone` consumes its argument, so there is no way to
+        // and no bound on `T` to rebuild the value from, so there is no way to
         // produce a `T` from `&mut ManuallyDrop<T>`.
         // Excluded from coverage: that placeholder body is all there is to run.
         #[cfg_attr(coverage_nightly, coverage(off))]

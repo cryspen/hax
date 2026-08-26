@@ -358,9 +358,9 @@ impl<T, E> Result<T, E> {
     }
 }
 
+// Anonymous lifetime for the reason given on `option::Option::cloned`.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
-impl<T: Clone, E> Result<T, E> {
+impl<T: Clone, E> Result<&'_ T, E> {
     /// See [`std::result::Result::cloned`]
     pub fn cloned(self) -> Result<T, E> {
         match self {
@@ -779,10 +779,15 @@ mod tests {
             prop_assert!(x.clone().inject().or_else(f_model) == x.or_else(f_std).inject());
         }
 
+        // std's `Result::cloned` is unstable, so the expectation is spelled out:
+        // cloning the `&u8` in the `Ok` arm gives that `u8` back.
         #[test]
         fn test_cloned(x in any::<Result<u8, u8>>()) {
-            // In our model, clone is identity, so cloned should be equivalent to identity
-            prop_assert!(x.clone().inject().cloned() == x.clone().inject());
+            let model: super::Result<&u8, u8> = match &x {
+                Ok(t) => super::Result::Ok(t),
+                Err(e) => super::Result::Err(*e),
+            };
+            prop_assert!(model.cloned() == x.inject());
         }
 
         #[test]

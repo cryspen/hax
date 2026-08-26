@@ -507,13 +507,17 @@ pub mod range {
         }
     }
 
-    // The model's `Clone::clone` consumes `self` (see `crate::clone`), so
-    // `cloned`/`copied` cannot start from a `Bound<&T>` the way real core does;
-    // they take a `Bound<T>` instead. Same deviation as `Result::cloned`.
-    #[cfg_attr(charon, aeneas::exclude)]
-    impl<T: crate::clone::Clone> Bound<T> {
+    // Anonymous lifetime for the reason given on `option::Option::cloned`.
+    impl<T: crate::clone::Clone> Bound<&'_ T> {
         /// See [`std::ops::Bound::cloned`]
-        pub fn cloned(self) -> Bound<T> {
+        // The bound is repeated on the method because real core repeats it too
+        // (as `T: [const] Clone`, since its `cloned` is a `const fn`), and a
+        // caller passes one dictionary per clause: with a single clause here,
+        // a call extracted against real core's two does not typecheck.
+        pub fn cloned(self) -> Bound<T>
+        where
+            T: crate::clone::Clone,
+        {
             match self {
                 Bound::Included(x) => Bound::Included(x.clone()),
                 Bound::Excluded(x) => Bound::Excluded(x.clone()),
@@ -522,10 +526,9 @@ pub mod range {
         }
     }
 
-    // Same deviation, plus: the model has no primitive copy, so `copied` goes
-    // through `Clone` (`marker::Copy: clone::Clone`).
-    #[cfg_attr(charon, aeneas::exclude)]
-    impl<T: crate::marker::Copy> Bound<T> {
+    // The model has no primitive copy, so `copied` goes through `Clone`
+    // (`marker::Copy: clone::Clone`).
+    impl<T: crate::marker::Copy> Bound<&'_ T> {
         /// See [`std::ops::Bound::copied`]
         pub fn copied(self) -> Bound<T> {
             match self {
@@ -1310,10 +1313,8 @@ mod tests {
 
         #[test]
         fn test_bound_cloned_u8(which in 0u8..3, x in any::<u8>()) {
-            // The model's `cloned` takes a `Bound<T>` rather than a
-            // `Bound<&T>` (see the deviation noted on the impl).
             prop_assert_eq!(
-                model_bound!(which, x).cloned(),
+                model_bound!(which, &x).cloned(),
                 std_bound!(which, &x).cloned().inject()
             );
         }
@@ -1321,7 +1322,7 @@ mod tests {
         #[test]
         fn test_bound_copied(which in 0u8..3, x in any::<u8>()) {
             prop_assert_eq!(
-                model_bound!(which, x).copied(),
+                model_bound!(which, &x).copied(),
                 std_bound!(which, &x).copied().inject()
             );
         }
@@ -1333,7 +1334,7 @@ mod tests {
         fn test_bound_cloned_applies_the_dictionary(which in 0u8..3, x in any::<u8>()) {
             let source = Bumped(x);
             prop_assert_eq!(
-                model_bound!(which, Bumped(x)).cloned(),
+                model_bound!(which, &source).cloned(),
                 std_bound!(which, &source).cloned().inject()
             );
         }

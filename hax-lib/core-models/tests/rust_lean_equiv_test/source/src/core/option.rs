@@ -848,20 +848,26 @@ mod views {
         drop(o);
         assert_eq!(v, u8::MAX);
     }
+}
 
-    #[test]
-    fn test_cloned_some() {
-        let v: u8 = 7;
-        let o: Option<&u8> = Some(&v);
-        assert_eq!(o.cloned(), Some(7u8));
-    }
+// ----- cloned / copied -------------------------------------------------------
 
-    #[test]
-    fn test_copied_some_and_none() {
-        let v: u8 = u8::MAX;
-        assert_eq!(Some(&v).copied(), Some(u8::MAX));
-        assert_eq!(None::<&u8>.copied(), None);
-    }
+#[rust_lean_test]
+pub fn test_cloned_some() -> bool {
+    let v: u8 = 7;
+    let o: Option<&u8> = Some(&v);
+    o.cloned() == Some(7u8)
+}
+
+#[rust_lean_test]
+pub fn test_copied_some() -> bool {
+    let v: u8 = u8::MAX;
+    Some(&v).copied() == Some(u8::MAX)
+}
+
+#[rust_lean_test]
+pub fn test_copied_none() -> bool {
+    None::<&u8>.copied() == None
 }
 
 // ----- insert / get_or_insert* / replace / take_if (not extracted) -----------

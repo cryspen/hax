@@ -229,20 +229,15 @@ pub fn test_bound_as_ref_unbounded() -> bool {
 // }
 
 // ----- Bound::cloned ---------------------------------------------------------
-//
-// TODO(clone-by-value): the model's `Clone::clone` consumes `self`, so its
-// `cloned` maps `Bound<T> -> Bound<T>` instead of real core's
-// `Bound<&T> -> Bound<T>`; the impl is hidden from Aeneas, so the extraction of
-// a call to it has no Lean definition to land on.
-//
-// #[rust_lean_test]
-// pub fn test_bound_cloned_included() -> bool {
-//     let x: u8 = 7;
-//     match Bound::Included(&x).cloned() {
-//         Bound::Included(v) => v == 7u8,
-//         _ => false,
-//     }
-// }
+
+#[rust_lean_test]
+pub fn test_bound_cloned_included() -> bool {
+    let x: u8 = 7;
+    match Bound::Included(&x).cloned() {
+        Bound::Included(v) => v == 7u8,
+        _ => false,
+    }
+}
 
 // =============================================================================
 // RangeBounds::start_bound / end_bound
