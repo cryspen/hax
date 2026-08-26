@@ -1,4 +1,4 @@
-//! @fail(tc): fstar(2), lean(1)
+//! @fail(tc): fstar(2), lean(1), proverif(2)
 #![feature(test)]
 //@ edition: 2021
 //@ compile-flags: --test
