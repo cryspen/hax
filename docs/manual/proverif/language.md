@@ -17,27 +17,30 @@ rust-engine architecture.
 
 ## At a glance
 
-Every crate produces a single `lib.pvl` file. The file opens with a
-fixed ~26-line preamble — one channel `c`, a `construct_fail` sink,
-the `Some`/`None`/`True`/`False` constructors, `bitstring_default`/
-`bitstring_err` / `bool_default` / `bool_err` letfuns, `nat_lit` for
-integer literals, and opaque `logical_and`/`logical_or` symbols —
-followed by one declaration per Rust item. The type model is
-deliberately uniform:
+Every crate produces a `lib.pvl` model file and a companion
+`missingdecl.pvl` diagnostic. `lib.pvl` opens with a short comment
+header and then holds one declaration per Rust item. The shared symbols
+it builds on — the public channel `c`, a `construct_fail` sink,
+`bitstring_default`/`bitstring_err`/`bool_default`/`bool_err`, the
+`Some`/`None`/`True`/`False` constructors, the small integer constants
+`nat_0 .. nat_16`, and opaque `logical_and`/`logical_or` — are declared
+in the `primitives.pvl` library that ships with hax and is passed with
+`-lib`. The type model is deliberately uniform:
 
 - **Every Rust type collapses to ProVerif `bitstring`.** Integers,
   booleans, strings, tuples, vectors, arrays, slices, references,
   associated types, type parameters — they all share one ProVerif
   surface type.
 - **Booleans** become the data constructors `True()` and `False()`
-  declared in the preamble (`bool` is not used as a ProVerif type).
-- **Integer literals** are wrapped in `nat_lit(N)` (negative literals
-  spell as `nat_lit(0 - N)`).
+  declared in `primitives.pvl` (`bool` is not used as a ProVerif type).
+- **Integer literals** each become their own opaque constant `nat_N`
+  (`nat_neg_N` when negative); `nat_0 .. nat_16` are declared in
+  `primitives.pvl` and larger values land in `missingdecl.pvl`.
 - Each user-defined `struct`/`enum` gets one `fun ... : bitstring
   [data].` constructor per variant, plus per-field `reduc forall ...;`
   accessor lines. No more per-type `type`, `_to_bitstring`/
   `_from_bitstring` converters, `_default_value` const, or
-  `_default`/`_err` letfun cluster — the preamble provides universal
+  `_default`/`_err` letfun cluster — `primitives.pvl` provides universal
   `bitstring_default`/`bitstring_err`.
 
 That uniformity is by design: a ProVerif model wants symbolic crypto
@@ -92,7 +95,7 @@ ty            ::= "bool"                              ; → bitstring
                 | "Vec<" ty ">"                       ; → bitstring
                 | "&str" | "String" | "char"          ; → bitstring
                 | "f32" | "f64"                       ; → bitstring (floats lossy)
-                | "Option<" ty ">"                    ; → bitstring (Some/None in preamble)
+                | "Option<" ty ">"                    ; → bitstring (Some/None in primitives.pvl)
                 | "Result<" ty "," ty ">"             ; → bitstring (Ok→inner, Err→bitstring_err())
                 | path-ty "<" ty,* ">"                ; → bitstring (no per-type `type` decl)
                 | "&" ty | "&mut" ty                  ; (dropped)
@@ -156,7 +159,10 @@ pat           ::= "_"                                   ; → wildcard: bitstrin
 
 ## Output shape
 
-### The preamble (~26 lines, verbatim)
+### The shipped `primitives.pvl` library
+
+`lib.pvl` builds on the symbols below, declared in the `primitives.pvl`
+library that ships with hax and is `-lib`'d in:
 
 ```proverif
 channel c.
@@ -177,18 +183,23 @@ fun False(): bitstring [data].
 letfun bool_default() = False().
 letfun bool_err() = let x = construct_fail() in False().
 
-fun nat_lit(nat): bitstring.
+const nat_0: bitstring.
+const nat_1: bitstring.
+(* ... through nat_16 ... *)
 
 fun logical_and(bitstring, bitstring): bitstring.
 fun logical_or(bitstring, bitstring): bitstring.
 ```
 
-`nat_lit` is the only place ProVerif's built-in `nat` shows up — it's
-the constructor that lifts integer literals into the universal
-`bitstring` universe so they can sit next to crypto terms in the same
-type. `True()`/`False()` play the same role for booleans, and
-`logical_and`/`logical_or` are declared opaque (no equations) — Rust
-short-circuit `&&`/`||` is treated as an uninterpreted operator.
+Integer literals never use ProVerif's built-in unary `nat` (which
+overflows on large constants); each literal is its own opaque constant
+`nat_N` sitting directly in the `bitstring` universe next to crypto
+terms. `primitives.pvl` declares `nat_0 .. nat_16` so that `+ 1` / `- 1`
+reduces over them (small loop and epoch counters progress); any larger
+literal is auto-declared in `missingdecl.pvl`. `True()`/`False()` play
+the same lifting role for booleans, and `logical_and`/`logical_or` are
+declared opaque (no equations) — Rust short-circuit `&&`/`||` is treated
+as an uninterpreted operator.
 
 ### Per-Rust-item rendering
 
@@ -342,8 +353,9 @@ Trying these will stop extraction with a diagnostic:
 - `+`, `-`, `*`, `/`, `<`, `==`, `<<`, `&`, … on integers render as
   opaque function symbols (`core__ops__arith__Add__add(x, y)` etc.)
   over `bitstring`. No algebraic equations are declared.
-- All integer types (and integer literals via `nat_lit`) collapse to
-  `bitstring`; widths and overflow semantics are erased.
+- All integer types collapse to `bitstring`, and each integer literal
+  is its own opaque `nat_N` constant; widths and overflow semantics are
+  erased.
 - Tuples `(a, b)` collapse to `bitstring`, with no projection or
   destructuring.
 - `[u8; N]`, `&[u8]`, `Vec<u8>` all collapse to `bitstring`; no
@@ -383,10 +395,11 @@ the resulting `Result<T, E>` collapses to its `Ok` type, with every
 distinguishes `InvalidMessage` from `InvalidMac` for security-relevance
 reasoning loses that distinction symbolically.
 
-**Numeric reasoning.** Every integer is a `bitstring` lifted by
-`nat_lit(...)`. `+ - * /` over them is an opaque function symbol with
-no axioms. A constraint like "this nonce must monotonically increment"
-cannot be expressed.
+**Numeric reasoning.** Every integer is a `bitstring`, and each literal
+is an opaque `nat_N` constant. `+ - * /` over them is an opaque function
+symbol with no axioms (only `+ 1` / `- 1` on the small `nat_0 .. nat_16`
+constants reduces). A constraint like "this nonce must monotonically
+increment" cannot be expressed.
 
 ## <a name="stage-2-priorities"></a>What the upcoming protocol DSL must address
 
@@ -458,7 +471,8 @@ HAX_PROVERIF_SNAPSHOT_RUN=1 \
 | Claim | File |
 |---|---|
 | Printer (per-AST-node rendering) | [`rust-engine/src/backends/proverif.rs`](https://github.com/cryspen/hax/blob/main/rust-engine/src/backends/proverif.rs) |
-| Preamble (the ~26 lines above) | [`rust-engine/src/backends/proverif.rs` `HEADER`](https://github.com/cryspen/hax/blob/main/rust-engine/src/backends/proverif.rs) |
+| `lib.pvl` comment header | [`rust-engine/src/backends/proverif.rs` `HEADER`](https://github.com/cryspen/hax/blob/main/rust-engine/src/backends/proverif.rs) |
+| Shipped library (the declarations above) | [`hax-lib/proof-libs/proverif/primitives.pvl`](https://github.com/cryspen/hax/blob/main/hax-lib/proof-libs/proverif/primitives.pvl) |
 | `fn ty`, `fn pat`, `fn expr`, `fn item` | [`rust-engine/src/backends/proverif.rs`](https://github.com/cryspen/hax/blob/main/rust-engine/src/backends/proverif.rs) |
 | Phase pipeline | [`rust-engine/src/backends/proverif.rs` `fn phases`](https://github.com/cryspen/hax/blob/main/rust-engine/src/backends/proverif.rs) |
 | Feature gate, rejected features | [`engine/backends/proverif/proverif_backend.ml:5-19,40-65`](https://github.com/cryspen/hax/blob/main/engine/backends/proverif/proverif_backend.ml) |
