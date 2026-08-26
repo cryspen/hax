@@ -31,6 +31,7 @@ Changes to cargo-hax:
  - Resolve aeneas and charon from the version manifest instead of `PATH`; use a `path` entry in `hax.toml` to point at a local build
  - Check that the `hax-lib` version in scope matches the `cargo-hax` version before processing
  - Add `cargo hax tools remove <tool>@<version>` and `cargo hax tools clean` to delete a cached tool version or the whole tool cache
+ - Add `cargo hax tools pin` to write version pins into `hax.toml`, either this release's defaults or a single `<name>@<version>` entry
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)

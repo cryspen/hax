@@ -212,6 +212,13 @@ aeneas = "nightly-2026.07.01"
 charon = "nightly-2026.07.01"
 ```
 
+Or let `cargo hax tools pin` write them for you:
+
+```bash
+cargo hax tools pin                            # pin this release's defaults
+cargo hax tools pin charon@nightly-2026.07.01  # set one entry
+```
+
 You can also build or install `aeneas` and `charon` yourself (e.g. from source) and point to them with a `path` entry in `hax.toml` (e.g. `charon = { path = "vendor/bin/charon" }`).
 
 See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in the manual for the full reference (`cargo hax tools`, the `hax.toml` schema, resolution order, and the `hax-lib` compatibility check).
