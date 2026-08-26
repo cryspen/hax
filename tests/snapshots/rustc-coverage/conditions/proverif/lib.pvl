@@ -2,20 +2,18 @@
   Run with:
     proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-  The `primitives.pvl` library ships with hax and supplies
-  everything the extracted file references that isn't defined
-  below: the public channel `c`, the `construct_fail` sink,
-  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
-  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
-  function the extraction surface needs.
+  primitives.pvl ships with hax and declares the symbols this file
+  uses but does not define: the public channel c, the construct_fail
+  sink, bitstring_default and bitstring_err, the Some/None and
+  True/False constructors, the nat_N literal constants, logical_and
+  and logical_or, and the rust_primitives, core, and hax_lib opaque
+  functions.
 
-  Any symbol this file references but does NOT define, and that is
-  not in `primitives.pvl`, is listed in the companion
-  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
-  model: each entry is a symbol to define — by hand or by another
-  crate's extraction — or to deliberately leave abstract as an
-  ideal-functionality boundary, where a permanent residue is correct.
+  A symbol this file uses that is defined neither here nor in
+  primitives.pvl is listed in missingdecl.pvl, a diagnostic that is
+  not part of the model. Define each such symbol — by hand or from
+  another crate's extraction — or leave it abstract as an
+  ideal-functionality boundary.
 *)
 
 (* src: src/rustc-coverage/conditions.rs:10 new_tests__rustc_coverage__conditions__main__B *)
