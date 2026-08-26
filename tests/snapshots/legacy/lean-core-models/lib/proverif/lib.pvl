@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -36,28 +36,28 @@ reduc forall v_0: bitstring;
   ) = v_0.
 (* src: src/legacy/lean-core-models/result.rs:16 new_tests__legacy__lean_core_models__lib__result__tests *)
 letfun new_tests__legacy__lean_core_models__lib__result__tests(wildcard: bitstring) =
-  let v1 = nat_lit(1) in
+  let v1 = nat_1 in
   let v2 = bitstring_err() in
   let f = (bitstring_err() (* Closures not supported in ProVerif *)) in
   let v5 = core__result__Impl__map(
-    nat_lit(1),
+    nat_1,
     bitstring_err() (* Closures not supported in ProVerif *)
   ) in
-  let v6 = core__result__Impl__map_or(nat_lit(1), nat_lit(9), f) in
+  let v6 = core__result__Impl__map_or(nat_1, nat_9, f) in
   let v7 = core__result__Impl__map_or_else(
-    nat_lit(1),
+    nat_1,
     bitstring_err() (* Closures not supported in ProVerif *),
     f
   ) in
-  let v8 = nat_lit(0) in
+  let v8 = nat_0 in
   let v9 = core__result__Impl__is_ok(v1) in
   let v10 = core__result__Impl__is_err(v1) in
   let v11 = core__result__Impl__and_then(
     v1,
     bitstring_err() (* Closures not supported in ProVerif *)
   ) in
-  let v12 = core__result__Impl__unwrap(nat_lit(0)) in
-  let v13 = core__result__Impl__expect(nat_lit(0), string_lit__Should_x20be_x20Ok) in
+  let v12 = core__result__Impl__unwrap(nat_0) in
+  let v13 = core__result__Impl__expect(nat_0, string_lit__Should_x20be_x20Ok) in
   let hoist2 = core__result__Impl__map(v1, f) in
     let hoist1 = v2 in rust_primitives__hax__machine_int__add(hoist2, hoist1).
 
@@ -86,10 +86,10 @@ reduc forall v_0: bitstring;
   ) = v_0.
 (* src: src/legacy/lean-core-models/option.rs:14 new_tests__legacy__lean_core_models__lib__option__Impl__default *)
 letfun new_tests__legacy__lean_core_models__lib__option__Impl__default(wildcard: bitstring) =
-  new_tests__legacy__lean_core_models__lib__option__S__S(nat_lit(42)).
+  new_tests__legacy__lean_core_models__lib__option__S__S(nat_42).
 (* src: src/legacy/lean-core-models/option.rs:19 new_tests__legacy__lean_core_models__lib__option__test *)
 letfun new_tests__legacy__lean_core_models__lib__option__test(wildcard: bitstring) =
-  let o1 = Some(nat_lit(4)) in
+  let o1 = Some(nat_4) in
   let o2 = None() in
   let o3 = core__option__Impl__is_some_and(
     o1,
@@ -99,33 +99,32 @@ letfun new_tests__legacy__lean_core_models__lib__option__test(wildcard: bitstrin
     o1,
     bitstring_err() (* Closures not supported in ProVerif *)
   ) in
-  let o4 = core__option__Impl__unwrap(Some(nat_lit(0))) in
-  let o5 = core__option__Impl__unwrap_or(Some(nat_lit(0)), nat_lit(9)) in
+  let o4 = core__option__Impl__unwrap(Some(nat_0)) in
+  let o5 = core__option__Impl__unwrap_or(Some(nat_0), nat_9) in
   let o6 = core__option__Impl__unwrap_or_else(
-    Some(nat_lit(0)),
+    Some(nat_0),
     bitstring_err() (* Closures not supported in ProVerif *)
   ) in
   let o7 = core__option__Impl__unwrap_or_default(None()) in
-  let o8 = (let Some(x_2) = Some(nat_lit(0)) in
-    Some(rust_primitives__hax__machine_int__add(x_2, nat_lit(1)))
-  else let None() = Some(nat_lit(0)) in None()
+  let o8 = (let Some(x_2) = Some(nat_0) in Some(rust_primitives__hax__machine_int__add(x_2, nat_1))
+  else let None() = Some(nat_0) in None()
   else bitstring_err()) in
   let o9 = core__option__Impl__map_or(
-    Some(nat_lit(1)),
-    nat_lit(9),
+    Some(nat_1),
+    nat_9,
     bitstring_err() (* Closures not supported in ProVerif *)
   ) in
   let o10 = core__option__Impl__map_or_else(
-    Some(nat_lit(2)),
+    Some(nat_2),
     bitstring_err() (* Closures not supported in ProVerif *),
     bitstring_err() (* Closures not supported in ProVerif *)
   ) in
   let o11 = core__option__Impl__ok_or(
-    Some(nat_lit(3)),
-    new_tests__legacy__lean_core_models__lib__option__E__C(nat_lit(0))
+    Some(nat_3),
+    new_tests__legacy__lean_core_models__lib__option__E__C(nat_0)
   ) in
   let o12 = core__option__Impl__ok_or_else(
-    Some(nat_lit(1)),
+    Some(nat_1),
     bitstring_err() (* Closures not supported in ProVerif *)
   ) in
   let o13 = core__option__Impl__and_then(
@@ -136,12 +135,12 @@ letfun new_tests__legacy__lean_core_models__lib__option__test(wildcard: bitstrin
     wildcard: bitstring,
     out_kw: bitstring
   ) = core__option__Impl__take(
-    Some(new_tests__legacy__lean_core_models__lib__option__S__S(nat_lit(9)))
+    Some(new_tests__legacy__lean_core_models__lib__option__S__S(nat_9))
   ) in (let o14 = out_kw in
-  let o15 = core__option__Impl__is_some(Some(nat_lit(1))) in
-  let o16 = core__option__Impl__is_none(Some(nat_lit(2))) in
-  let o17 = core__option__Impl__expect(Some(nat_lit(3)), string_lit__Should_x20be_x20Some) in
-  let o18 = core__option__Impl__unwrap(Some(nat_lit(4))) in
+  let o15 = core__option__Impl__is_some(Some(nat_1)) in
+  let o16 = core__option__Impl__is_none(Some(nat_2)) in
+  let o17 = core__option__Impl__expect(Some(nat_3), string_lit__Should_x20be_x20Some) in
+  let o18 = core__option__Impl__unwrap(Some(nat_4)) in
   rust_primitives__hax__Tuple0__Tuple0) else bitstring_err().
 (* src: src/legacy/lean-core-models/default.rs:7 new_tests__legacy__lean_core_models__lib__default__structs__S *)
 fun new_tests__legacy__lean_core_models__lib__default__structs__S__S(bitstring): bitstring [data].
@@ -152,7 +151,7 @@ reduc forall v_0: bitstring;
 (* src: src/legacy/lean-core-models/default.rs:12 new_tests__legacy__lean_core_models__lib__default__structs__Impl__default *)
 letfun new_tests__legacy__lean_core_models__lib__default__structs__Impl__default(
   wildcard: bitstring
-) = new_tests__legacy__lean_core_models__lib__default__structs__S__S(nat_lit(0)).
+) = new_tests__legacy__lean_core_models__lib__default__structs__S__S(nat_0).
 (* src: src/legacy/lean-core-models/default.rs:17 new_tests__legacy__lean_core_models__lib__default__structs__test *)
 letfun new_tests__legacy__lean_core_models__lib__default__structs__test(wildcard: bitstring) =
   new_tests__legacy__lean_core_models__lib__default__structs__Impl__default(
@@ -183,16 +182,11 @@ letfun new_tests__legacy__lean_core_models__lib__function__test(wildcard: bitstr
   let f_2_tuple = (bitstring_err() (* Closures not supported in ProVerif *)) in
   rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(
-      core__ops__function__Fn__call(f_1, rust_primitives__hax__Tuple1__Tuple1(nat_lit(0))),
-      core__ops__function__Fn__call(
-        f_2,
-        rust_primitives__hax__Tuple2__Tuple2(nat_lit(1), nat_lit(2))
-      )
+      core__ops__function__Fn__call(f_1, rust_primitives__hax__Tuple1__Tuple1(nat_0)),
+      core__ops__function__Fn__call(f_2, rust_primitives__hax__Tuple2__Tuple2(nat_1, nat_2))
     ),
     core__ops__function__Fn__call(
       f_2_tuple,
-      rust_primitives__hax__Tuple1__Tuple1(
-        rust_primitives__hax__Tuple2__Tuple2(nat_lit(1), nat_lit(2))
-      )
+      rust_primitives__hax__Tuple1__Tuple1(rust_primitives__hax__Tuple2__Tuple2(nat_1, nat_2))
     )
   ).

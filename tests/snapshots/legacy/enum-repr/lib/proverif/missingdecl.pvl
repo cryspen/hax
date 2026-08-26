@@ -9,5 +9,4 @@
 (* nature (one-way fun / data constructor / letfun) is unknown.  *)
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
-(* (none — every referenced symbol is defined in lib.pvl, *)
-(* primitives.pvl, or a -lib'd dependency.)               *)
+const nat_30: bitstring.

@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -26,7 +26,7 @@
 fun new_tests__legacy__proverif_noise__lib__noise_crypto__Error__CryptoError(): bitstring [data].
 (* src: src/legacy/proverif-noise/noise_crypto.rs:8 new_tests__legacy__proverif_noise__lib__noise_crypto__Error_cast_to_repr *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__Error_cast_to_repr(x: bitstring) =
-  let new_tests__legacy__proverif_noise__lib__noise_crypto__Error__CryptoError() = x in nat_lit(0)
+  let new_tests__legacy__proverif_noise__lib__noise_crypto__Error__CryptoError() = x in nat_0
   else bitstring_err().
 (* src: src/legacy/proverif-noise/noise_crypto.rs:13 new_tests__legacy__proverif_noise__lib__noise_crypto__KeyPair *)
 (*  Section 4.1 and 12.1: Diffie-Hellman Functions for Curve25519 *)
@@ -79,7 +79,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt(
     ),
     hax_lib_protocol__crypto__Impl_5__from_bytes(
       alloc__vec__Impl_2__extend_from_slice(
-        alloc__vec__from_elem(nat_lit(0), nat_lit(4)),
+        alloc__vec__from_elem(nat_0, nat_4),
         core__num__Impl_9__to_le_bytes(counter)
       )
     ),
@@ -93,10 +93,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt(
   aad: bitstring,
   cipher: bitstring
 ) =
-  let cipher_len = rust_primitives__hax__machine_int__sub(
-    core__slice__Impl__len(cipher),
-    nat_lit(16)
-  ) in
+  let cipher_len = rust_primitives__hax__machine_int__sub(core__slice__Impl__len(cipher), nat_16) in
   hax_lib_protocol__crypto__aead_decrypt(
     hax_lib_protocol__crypto__Impl_4__from_bytes(
       hax_lib_protocol__crypto__AEADAlgorithm__Chacha20Poly1305(),
@@ -104,12 +101,12 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt(
     ),
     hax_lib_protocol__crypto__Impl_5__from_bytes(
       alloc__vec__Impl_2__extend_from_slice(
-        alloc__vec__from_elem(nat_lit(0), nat_lit(4)),
+        alloc__vec__from_elem(nat_0, nat_4),
         core__num__Impl_9__to_le_bytes(counter)
       )
     ),
     aad,
-    core__ops__index__Index__index(cipher, core__ops__range__Range__Range(nat_lit(0), cipher_len)),
+    core__ops__index__Index__index(cipher, core__ops__range__Range__Range(nat_0, cipher_len)),
     hax_lib_protocol__crypto__Impl_6__from_bytes(
       core__ops__index__Index__index(
         cipher,
@@ -121,9 +118,9 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt(
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__rekey(key: bitstring) =
   new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt(
     key,
-    nat_lit(18446744073709551615),
+    nat_18446744073709551615,
     alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0),
-    rust_primitives__hax__repeat(nat_lit(0), nat_lit(32))
+    rust_primitives__hax__repeat(nat_0, nat_32)
   ).
 (* src: src/legacy/proverif-noise/noise_crypto.rs:72 new_tests__legacy__proverif_noise__lib__noise_crypto__HASHLEN *)
 (*  Section 4.3 and 12.5: Hash functions for SHA-256 *)
@@ -157,7 +154,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf1(key: bitstrin
   new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(
     new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash(key, ikm),
     alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0),
-    nat_lit(1)
+    nat_1
   ).
 (* src: src/legacy/proverif-noise/noise_crypto.rs:95 new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf2 *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf2(key: bitstring, ikm: bitstring) =
@@ -165,11 +162,11 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf2(key: bitstrin
   let k1 = new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(
     secret_kw,
     alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0),
-    nat_lit(1)
+    nat_1
   ) in
   rust_primitives__hax__Tuple2__Tuple2(
     k1,
-    new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_lit(2))
+    new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_2)
   ).
 (* src: src/legacy/proverif-noise/noise_crypto.rs:102 new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf3 *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf3(key: bitstring, ikm: bitstring) =
@@ -177,12 +174,12 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf3(key: bitstrin
   let k1 = new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(
     secret_kw,
     alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0),
-    nat_lit(1)
+    nat_1
   ) in
   rust_primitives__hax__Tuple3__Tuple3(
     k1,
-    new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_lit(2)),
-    new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_lit(3))
+    new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_2),
+    new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_3)
   ).
 (* src: src/legacy/proverif-noise/noise_lib.rs:9 new_tests__legacy__proverif_noise__lib__noise_lib__CipherState *)
 (*  This module defines the generic Noise processing rules *)
@@ -220,7 +217,7 @@ reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
 (* src: src/legacy/proverif-noise/noise_lib.rs:22 new_tests__legacy__proverif_noise__lib__noise_lib__initialize_key *)
 (*  5.1: The CipherState Object *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__initialize_key(key: bitstring) =
-  new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(key, nat_lit(0)).
+  new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(key, nat_0).
 (* src: src/legacy/proverif-noise/noise_lib.rs:26 new_tests__legacy__proverif_noise__lib__noise_lib__has_key *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__has_key(cs: bitstring) =
   core__option__Impl__is_some(
@@ -246,13 +243,13 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_with_ad(
   let new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(
     k: bitstring,
     n: bitstring
-  ) = cs in (let (=True()) = rust_primitives__hax__machine_int__eq(n, nat_lit(18446744073709551615))
+  ) = cs in (let (=True()) = rust_primitives__hax__machine_int__eq(n, nat_18446744073709551615)
     in bitstring_err()
     else (let Some(k_1) = k in
       rust_primitives__hax__Tuple2__Tuple2(
         new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(
           Some(k_1),
-          rust_primitives__hax__machine_int__add(n, nat_lit(1))
+          rust_primitives__hax__machine_int__add(n, nat_1)
         ),
         new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt(k_1, n, ad, plaintext)
       )
@@ -272,7 +269,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_with_ad(
   let new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(
     k: bitstring,
     n: bitstring
-  ) = cs in (let (=True()) = rust_primitives__hax__machine_int__eq(n, nat_lit(18446744073709551615))
+  ) = cs in (let (=True()) = rust_primitives__hax__machine_int__eq(n, nat_18446744073709551615)
     in bitstring_err()
     else (let Some(k_1) = k in
       (let plain = new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt(
@@ -284,7 +281,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_with_ad(
         rust_primitives__hax__Tuple2__Tuple2(
           new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(
             Some(k_1),
-            rust_primitives__hax__machine_int__add(n, nat_lit(1))
+            rust_primitives__hax__machine_int__add(n, nat_1)
           ),
           plain
         ))
@@ -319,8 +316,8 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__initialize_symmetric(
     )
     in alloc__slice__Impl__concat(
       rust_primitives__hax__array_cons(protocol_name, rust_primitives__hax__array_cons(alloc__vec__from_elem(
-        nat_lit(0),
-        rust_primitives__hax__machine_int__sub(nat_lit(32), pnlen)
+        nat_0,
+        rust_primitives__hax__machine_int__sub(nat_32, pnlen)
       ), rust_primitives__hax__array_nil()))
     )
     else new_tests__legacy__proverif_noise__lib__noise_crypto__hash(protocol_name)) in
@@ -347,9 +344,9 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__mix_key(
     input_key_material
   ) in (let temp_k_2 = (let (=True()) = rust_primitives__hax__machine_int__eq(
       new_tests__legacy__proverif_noise__lib__noise_crypto__HASHLEN,
-      nat_lit(64)
+      nat_64
     )
-    in alloc__vec__Impl_1__truncate(temp_k, nat_lit(32))
+    in alloc__vec__Impl_1__truncate(temp_k, nat_32)
     else temp_k) in
   new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState__SymmetricState(
     new_tests__legacy__proverif_noise__lib__noise_lib__initialize_key(Some(temp_k_2)),
@@ -391,9 +388,9 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash(
     input_key_material
   ) in (let temp_k_2 = (let (=True()) = rust_primitives__hax__machine_int__eq(
       new_tests__legacy__proverif_noise__lib__noise_crypto__HASHLEN,
-      nat_lit(64)
+      nat_64
     )
-    in alloc__vec__Impl_1__truncate(temp_k, nat_lit(32))
+    in alloc__vec__Impl_1__truncate(temp_k, nat_32)
     else temp_k) in
   new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState__SymmetricState(
     new_tests__legacy__proverif_noise__lib__noise_lib__initialize_key(Some(temp_k_2)),
@@ -474,11 +471,11 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__split(st: bitstring) =
     temp_k2_2: bitstring
   ) = (let (=True()) = rust_primitives__hax__machine_int__eq(
       new_tests__legacy__proverif_noise__lib__noise_crypto__HASHLEN,
-      nat_lit(64)
+      nat_64
     )
     in rust_primitives__hax__Tuple2__Tuple2(
-      alloc__vec__Impl_1__truncate(temp_k1, nat_lit(32)),
-      alloc__vec__Impl_1__truncate(temp_k2, nat_lit(32))
+      alloc__vec__Impl_1__truncate(temp_k1, nat_32),
+      alloc__vec__Impl_1__truncate(temp_k2, nat_32)
     )
     else rust_primitives__hax__Tuple2__Tuple2(
       temp_k1,
@@ -823,7 +820,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message1(
   ) = hs in (let re = core__ops__index__Index__index(
     ciphertext,
     core__ops__range__Range__Range(
-      nat_lit(0),
+      nat_0,
       new_tests__legacy__proverif_noise__lib__noise_crypto__DHLEN
     )
   ) in
@@ -919,7 +916,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message2(
   ) = hs in (let re = core__ops__index__Index__index(
     ciphertext,
     core__ops__range__Range__Range(
-      nat_lit(0),
+      nat_0,
       new_tests__legacy__proverif_noise__lib__noise_crypto__DHLEN
     )
   ) in

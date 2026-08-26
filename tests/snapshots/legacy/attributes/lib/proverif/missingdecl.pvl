@@ -23,6 +23,12 @@ fun hax_lib__prop__constructors__forall_kw(bitstring): bitstring.
 fun hax_lib__prop__constructors__implies(bitstring, bitstring): bitstring.
 fun hax_lib__prop__constructors__not_kw(bitstring): bitstring.
 fun hax_lib__prop__constructors__or_kw(bitstring, bitstring): bitstring.
+const nat_127: bitstring.
+const nat_23: bitstring.
+const nat_300: bitstring.
+const nat_88: bitstring.
+const nat_90000: bitstring.
+const nat_99: bitstring.
 fun new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__TraitWithRequiresAndEnsures__method(bitstring, bitstring): bitstring.
 fun rust_primitives__hax__monomorphized_update_at__update_at_usize(bitstring, bitstring, bitstring): bitstring.
 fun rust_primitives__hax__update_at(bitstring, bitstring, bitstring): bitstring.

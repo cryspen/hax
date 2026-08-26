@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -44,8 +44,8 @@ letfun new_tests__rustc_coverage__drop_trait__Impl__drop(self: bitstring) =
   self.
 (* src: src/rustc-coverage/drop_trait.rs:16 new_tests__rustc_coverage__drop_trait__main *)
 letfun new_tests__rustc_coverage__drop_trait__main(wildcard: bitstring) =
-  let u_firecracker = new_tests__rustc_coverage__drop_trait__Firework__Firework(nat_lit(1)) in
-  let u_tnt = new_tests__rustc_coverage__drop_trait__Firework__Firework(nat_lit(100)) in
+  let u_firecracker = new_tests__rustc_coverage__drop_trait__Firework__Firework(nat_1) in
+  let u_tnt = new_tests__rustc_coverage__drop_trait__Firework__Firework(nat_100) in
   let (=True()) = True()
     in (let wildcard: bitstring = std__io__stdio__u_print(
       core__fmt__rt__Impl_1__new_const(
@@ -55,6 +55,6 @@ letfun new_tests__rustc_coverage__drop_trait__main(wildcard: bitstring) =
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     bitstring_err())
     else (let wildcard: bitstring = new_tests__rustc_coverage__drop_trait__Firework__Firework(
-      nat_lit(1000)
+      nat_1000
     ) in
     rust_primitives__hax__Tuple0__Tuple0()).

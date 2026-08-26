@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -28,7 +28,7 @@ reduc forall v_0: bitstring;
 (* src: src/legacy/mut-ref-functionalization/lib.rs:10 new_tests__legacy__mut_ref_functionalization__lib__foo *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__foo(lhs: bitstring, rhs: bitstring) =
   let lhs_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+    core__ops__range__Range__Range(nat_0, nat_1)
   )) in let bl__acc0 = (lhs) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let lhs_1 = bl__acc0 in
   let bl__acc1 = (new_tests__legacy__mut_ref_functionalization__lib__S__S(
@@ -91,7 +91,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__Impl__update(
   new_tests__legacy__mut_ref_functionalization__lib__S__S(
     rust_primitives__hax__monomorphized_update_at__update_at_usize(
       new_tests__legacy__mut_ref_functionalization__lib__S__S__b(self),
-      nat_lit(0),
+      nat_0,
       x
     )
   ).
@@ -101,7 +101,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__index_mutation(
   a: bitstring
 ) =
   let v = alloc__slice__Impl__into_vec(
-    rust_primitives__hax__array_cons(nat_lit(1), rust_primitives__hax__array_nil())
+    rust_primitives__hax__array_cons(nat_1, rust_primitives__hax__array_nil())
   ) in
   let v_2 = alloc__slice__Impl__to_vec(
     rust_primitives__hax__monomorphized_update_at__update_at_usize(
@@ -114,8 +114,8 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__index_mutation(
           )
         )
       ),
-      nat_lit(1),
-      nat_lit(3)
+      nat_1,
+      nat_3
     )
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
@@ -123,17 +123,17 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__index_mutation(
 letfun new_tests__legacy__mut_ref_functionalization__lib__index_mutation_unsize(x: bitstring) =
   let x_1 = rust_primitives__hax__monomorphized_update_at__update_at_range(
     x,
-    core__ops__range__Range__Range(nat_lit(4), nat_lit(5)),
+    core__ops__range__Range__Range(nat_4, nat_5),
     core__slice__Impl__copy_from_slice(
-      core__ops__index__Index__index(x, core__ops__range__Range__Range(nat_lit(4), nat_lit(5))),
-      rust_primitives__hax__array_cons(nat_lit(1), rust_primitives__hax__array_cons(nat_lit(2), rust_primitives__hax__array_nil()))
+      core__ops__index__Index__index(x, core__ops__range__Range__Range(nat_4, nat_5)),
+      rust_primitives__hax__array_cons(nat_1, rust_primitives__hax__array_cons(nat_2, rust_primitives__hax__array_nil()))
     )
   ) in
-  nat_lit(42).
+  nat_42.
 (* src: src/legacy/mut-ref-functionalization/lib.rs:35 new_tests__legacy__mut_ref_functionalization__lib__build_vec *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__build_vec(wildcard: bitstring) =
   alloc__slice__Impl__into_vec(
-    rust_primitives__hax__array_cons(nat_lit(1), rust_primitives__hax__array_cons(nat_lit(2), rust_primitives__hax__array_cons(nat_lit(3), rust_primitives__hax__array_nil())))
+    rust_primitives__hax__array_cons(nat_1, rust_primitives__hax__array_cons(nat_2, rust_primitives__hax__array_cons(nat_3, rust_primitives__hax__array_nil())))
   ).
 (* src: src/legacy/mut-ref-functionalization/lib.rs:39 new_tests__legacy__mut_ref_functionalization__lib__test_append *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__test_append(wildcard: bitstring) =
@@ -143,7 +143,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__test_append(wildcard: 
   ) = alloc__vec__Impl_1__append(
     alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0),
     alloc__slice__Impl__into_vec(
-      rust_primitives__hax__array_cons(nat_lit(1), rust_primitives__hax__array_cons(nat_lit(2), rust_primitives__hax__array_cons(nat_lit(3), rust_primitives__hax__array_nil())))
+      rust_primitives__hax__array_cons(nat_1, rust_primitives__hax__array_cons(nat_2, rust_primitives__hax__array_cons(nat_3, rust_primitives__hax__array_nil())))
     )
   ) in (let vec2_1 = tmp1 in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
@@ -164,18 +164,18 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__f(wildcard: bitstring)
               alloc__vec__Impl_1__push(
                 alloc__vec__Impl_1__push(
                   alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0),
-                  nat_lit(1)
+                  nat_1
                 ),
-                nat_lit(2)
+                nat_2
               )
             ),
-            nat_lit(0),
-            nat_lit(1)
+            nat_0,
+            nat_1
           )
         )
       ),
-      nat_lit(0),
-      nat_lit(1)
+      nat_0,
+      nat_1
     )
   ).
 (* src: src/legacy/mut-ref-functionalization/lib.rs:60 new_tests__legacy__mut_ref_functionalization__lib__Foo *)
@@ -200,7 +200,7 @@ reduc forall v_0: bitstring, v_1: bitstring;
 (* src: src/legacy/mut-ref-functionalization/lib.rs:68 new_tests__legacy__mut_ref_functionalization__lib__g *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__g(x: bitstring) =
   let x_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (x) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let x_2 = bl__acc0 in
   let bl__acc1 = (new_tests__legacy__mut_ref_functionalization__lib__Pair__Pair(
@@ -233,8 +233,8 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__g(x: bitstring) =
         alloc__vec__Impl_1__as_slice(
           new_tests__legacy__mut_ref_functionalization__lib__Pair__Pair__a(x_3)
         ),
-        nat_lit(0),
-        nat_lit(1)
+        nat_0,
+        nat_1
       )
     ),
     new_tests__legacy__mut_ref_functionalization__lib__Pair__Pair__b(x_3)
@@ -250,8 +250,8 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__g(x: bitstring) =
                 new_tests__legacy__mut_ref_functionalization__lib__Pair__Pair__b(x_4)
               )
             ),
-            nat_lit(0),
-            nat_lit(1)
+            nat_0,
+            nat_1
           )
         )
       )
@@ -259,7 +259,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__g(x: bitstring) =
   ).
 (* src: src/legacy/mut-ref-functionalization/lib.rs:78 new_tests__legacy__mut_ref_functionalization__lib__h *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__h(x: bitstring) =
-  rust_primitives__hax__machine_int__add(x, nat_lit(10)).
+  rust_primitives__hax__machine_int__add(x, nat_10).
 (* src: src/legacy/mut-ref-functionalization/lib.rs:82 new_tests__legacy__mut_ref_functionalization__lib__Bar *)
 fun new_tests__legacy__mut_ref_functionalization__lib__Bar__Bar(
   bitstring,
@@ -304,7 +304,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__j(x: bitstring) =
     x
   ) in rust_primitives__hax__Tuple2__Tuple2(
     tmp0,
-    rust_primitives__hax__machine_int__add(out1, nat_lit(123))
+    rust_primitives__hax__machine_int__add(out1, nat_123)
   ) else bitstring_err().
 (* src: src/legacy/mut-ref-functionalization/lib.rs:98 new_tests__legacy__mut_ref_functionalization__lib__k *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__k(
@@ -313,22 +313,22 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__k(
   arg_1_wild: bitstring,
   arg_3_wild2: bitstring
 ) =
-  let arg_1_wild2 = core__ops__index__Index__index(vec, nat_lit(1)) in
+  let arg_1_wild2 = core__ops__index__Index__index(vec, nat_1) in
   rust_primitives__hax__Tuple4__Tuple4(
     alloc__slice__Impl__to_vec(
       rust_primitives__hax__monomorphized_update_at__update_at_usize(
         alloc__vec__Impl_1__as_slice(vec),
-        nat_lit(0),
+        nat_0,
         rust_primitives__hax__machine_int__add(
           rust_primitives__hax__machine_int__add(
             rust_primitives__hax__machine_int__add(
               rust_primitives__hax__machine_int__add(
                 arg_1_wild,
-                core__ops__index__Index__index(vec, nat_lit(2))
+                core__ops__index__Index__index(vec, nat_2)
               ),
-              core__ops__index__Index__index(vec, nat_lit(3))
+              core__ops__index__Index__index(vec, nat_3)
             ),
-            core__ops__index__Index__index(vec, nat_lit(4))
+            core__ops__index__Index__index(vec, nat_4)
           ),
           arg_1_wild
         )
@@ -336,7 +336,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__k(
     ),
     arg_1_wild3,
     arg_3_wild2,
-    nat_lit(12345)
+    nat_12345
   ).
 
 (* src: src/legacy/mut-ref-functionalization/lib.rs:117 new_tests__legacy__mut_ref_functionalization__lib__Impl_1__z *)
@@ -345,6 +345,6 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__Impl_1__z(self: bitstr
 letfun new_tests__legacy__mut_ref_functionalization__lib__array(x: bitstring) =
   rust_primitives__hax__monomorphized_update_at__update_at_usize(
     x,
-    nat_lit(1),
-    core__ops__index__Index__index(x, nat_lit(2))
+    nat_1,
+    core__ops__index__Index__index(x, nat_2)
   ).

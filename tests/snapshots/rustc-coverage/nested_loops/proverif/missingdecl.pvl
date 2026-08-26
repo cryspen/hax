@@ -9,4 +9,8 @@
 (* nature (one-way fun / data constructor / letfun) is unknown.  *)
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
+const nat_100: bitstring.
+const nat_30: bitstring.
+const nat_50: bitstring.
+const nat_90: bitstring.
 fun std__env__args(bitstring): bitstring.

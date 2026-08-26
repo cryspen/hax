@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -21,13 +21,13 @@
 
 (* src: src/rustc-coverage/if.rs:5 new_tests__rustc_coverage__if__main *)
 letfun new_tests__rustc_coverage__if__main(wildcard: bitstring) =
-  let countdown = nat_lit(0) in
+  let countdown = nat_0 in
   let (=True()) = rust_primitives__hax__machine_int__eq(
       core__iter__traits__exact_size__ExactSizeIterator__len(
         std__env__args(rust_primitives__hax__Tuple0__Tuple0)
       ),
-      nat_lit(1)
+      nat_1
     )
-    in (let countdown_1 = nat_lit(10) in
+    in (let countdown_1 = nat_10 in
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0.

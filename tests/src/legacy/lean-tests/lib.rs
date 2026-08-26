@@ -1,6 +1,13 @@
 //! @fail(extraction): proverif(HAX0008)
 //! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001, HAX0001)
 //! @fail(tc): lean(1)
+// This grab-bag exercises constructs ProVerif cannot model even after the
+// integer-literal fix removed its unary-`nat` stack overflow: notably an
+// as-pattern with destructuring (`pair @ (a, b)`), whose inner bindings have no
+// first-order ProVerif encoding — the same construct the other backends reject
+// (`fstar`/`ssprove`/`coq` are `@off`, `lean` is `@fail(tc)`). The generated
+// model still parses up to that item; baseline the ProVerif parse gate here.
+//! @fail(tc): proverif(2)
 //! @off: ssprove, fstar, coq
 #![allow(dead_code)]
 #![allow(unused_variables)]

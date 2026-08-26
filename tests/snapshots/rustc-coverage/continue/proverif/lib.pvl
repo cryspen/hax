@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -26,112 +26,112 @@ letfun new_tests__rustc_coverage__continue__main(wildcard: bitstring) =
     core__iter__traits__exact_size__ExactSizeIterator__len(
       std__env__args(rust_primitives__hax__Tuple0__Tuple0)
     ),
-    nat_lit(1)
+    nat_1
   ) in
   let x_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__ops__range__Range__Range(nat_0, nat_10)
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_1 = bl__acc0 in
   let bl__acc1 = (let (=True()) = is_true in x_1
-  else let x_2 = nat_lit(1) in
-  nat_lit(3)) in
+  else let x_2 = nat_1 in
+  nat_3) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_1 = bl__acc1 in
   let bl__acc2 = (let (=True()) = is_true in x_1
-  else let x_2 = nat_lit(1) in
-  nat_lit(3)) in
+  else let x_2 = nat_1 in
+  nat_3) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_1 = bl__acc2 in
   let bl__acc3 = (let (=True()) = is_true in x_1
-  else let x_2 = nat_lit(1) in
-  nat_lit(3)) in
+  else let x_2 = nat_1 in
+  nat_3) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let x_6 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    core__ops__range__Range__Range(nat_0, nat_10)
   )) in let bl__acc0 = (x_3) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_4 = bl__acc0 in
   let bl__acc1 = (let (=False()) = is_true in
-    (let x_5 = nat_lit(1) in
-    nat_lit(3))
+    (let x_5 = nat_1 in
+    nat_3)
   else x_4) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_4 = bl__acc1 in
   let bl__acc2 = (let (=False()) = is_true in
-    (let x_5 = nat_lit(1) in
-    nat_lit(3))
+    (let x_5 = nat_1 in
+    nat_3)
   else x_4) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_4 = bl__acc2 in
   let bl__acc3 = (let (=False()) = is_true in
-    (let x_5 = nat_lit(1) in
-    nat_lit(3))
+    (let x_5 = nat_1 in
+    nat_3)
   else x_4) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let x_9 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    core__ops__range__Range__Range(nat_0, nat_10)
   )) in let bl__acc0 = (x_6) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_7 = bl__acc0 in
   let bl__acc1 = (let (=True()) = is_true in
-    (let x_8 = nat_lit(1) in
-    nat_lit(3))
+    (let x_8 = nat_1 in
+    nat_3)
   else x_7) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_7 = bl__acc1 in
   let bl__acc2 = (let (=True()) = is_true in
-    (let x_8 = nat_lit(1) in
-    nat_lit(3))
+    (let x_8 = nat_1 in
+    nat_3)
   else x_7) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_7 = bl__acc2 in
   let bl__acc3 = (let (=True()) = is_true in
-    (let x_8 = nat_lit(1) in
-    nat_lit(3))
+    (let x_8 = nat_1 in
+    nat_3)
   else x_7) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let x_11 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    core__ops__range__Range__Range(nat_0, nat_10)
   )) in let bl__acc0 = (x_9) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_10 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = is_true in x_10 else nat_lit(3)) in
+  let bl__acc1 = (let (=True()) = is_true in x_10 else nat_3) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_10 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = is_true in x_10 else nat_lit(3)) in
+  let bl__acc2 = (let (=True()) = is_true in x_10 else nat_3) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_10 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = is_true in x_10 else nat_lit(3)) in
+  let bl__acc3 = (let (=True()) = is_true in x_10 else nat_3) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let x_16 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    core__ops__range__Range__Range(nat_0, nat_10)
   )) in let bl__acc0 = (x_11) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_12 = bl__acc0 in
-  let bl__acc1 = (let x_14 = (let (=False()) = is_true in nat_lit(1)
+  let bl__acc1 = (let x_14 = (let (=False()) = is_true in nat_1
   else let wildcard: bitstring = x_12 in
   x_12) in
-  nat_lit(3)) in
+  nat_3) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_12 = bl__acc1 in
-  let bl__acc2 = (let x_14 = (let (=False()) = is_true in nat_lit(1)
+  let bl__acc2 = (let x_14 = (let (=False()) = is_true in nat_1
   else let wildcard: bitstring = x_12 in
   x_12) in
-  nat_lit(3)) in
+  nat_3) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_12 = bl__acc2 in
-  let bl__acc3 = (let x_14 = (let (=False()) = is_true in nat_lit(1)
+  let bl__acc3 = (let x_14 = (let (=False()) = is_true in nat_1
   else let wildcard: bitstring = x_12 in
   x_12) in
-  nat_lit(3)) in
+  nat_3) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let x_19 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+    core__ops__range__Range__Range(nat_0, nat_10)
   )) in let bl__acc0 = (x_16) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let x_17 = bl__acc0 in
   let bl__acc1 = (let (=False()) = is_true in
-    (let x_18 = nat_lit(1) in
-    core__ops__control_flow__ControlFlow__Continue(nat_lit(3)))
+    (let x_18 = nat_1 in
+    core__ops__control_flow__ControlFlow__Continue(nat_3))
   else core__ops__control_flow__ControlFlow__Break(
     rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, x_17)
   )) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let x_17 = bl__acc1 in
   let bl__acc2 = (let (=False()) = is_true in
-    (let x_18 = nat_lit(1) in
-    core__ops__control_flow__ControlFlow__Continue(nat_lit(3)))
+    (let x_18 = nat_1 in
+    core__ops__control_flow__ControlFlow__Continue(nat_3))
   else core__ops__control_flow__ControlFlow__Break(
     rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, x_17)
   )) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq3) = bl__seq2 in (let x_17 = bl__acc2 in
   let bl__acc3 = (let (=False()) = is_true in
-    (let x_18 = nat_lit(1) in
-    core__ops__control_flow__ControlFlow__Continue(nat_lit(3)))
+    (let x_18 = nat_1 in
+    core__ops__control_flow__ControlFlow__Continue(nat_3))
   else core__ops__control_flow__ControlFlow__Break(
     rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, x_17)
   )) in

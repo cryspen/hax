@@ -22,6 +22,10 @@ fun hax_lib__int__Impl_59__to_i64(bitstring): bitstring.
 fun hax_lib__int__Impl_61__to_i128(bitstring): bitstring.
 fun hax_lib__int__Impl_63__to_isize(bitstring): bitstring.
 fun hax_lib__int__Impl_7__u_unsafe_from_str(bitstring): bitstring.
+const nat_123: bitstring.
+const nat_22222222222222222222: bitstring.
+const nat_42: bitstring.
+const nat_neg_42: bitstring.
 const string_lit__340282366920938463463374607431768211455000: bitstring.
 const string_lit___x1b_x5b0m: bitstring.
 const string_lit___x2d340282366920938463463374607431768211455000: bitstring.

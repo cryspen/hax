@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -60,9 +60,9 @@ reduc forall v_0: bitstring;
   ) = v_0.
 (* src: src/legacy/reordering/lib.rs:7 new_tests__legacy__reordering__lib__g *)
 letfun new_tests__legacy__reordering__lib__g(wildcard: bitstring) =
-  new_tests__legacy__reordering__lib__Bar__Bar(new_tests__legacy__reordering__lib__f(nat_lit(32))).
+  new_tests__legacy__reordering__lib__Bar__Bar(new_tests__legacy__reordering__lib__f(nat_32)).
 (* src: src/legacy/reordering/lib.rs:18 new_tests__legacy__reordering__lib__Foo_cast_to_repr *)
 letfun new_tests__legacy__reordering__lib__Foo_cast_to_repr(x: bitstring) =
-  let new_tests__legacy__reordering__lib__Foo__A() = x in nat_lit(0)
-  else let new_tests__legacy__reordering__lib__Foo__B() = x in nat_lit(1)
+  let new_tests__legacy__reordering__lib__Foo__A() = x in nat_0
+  else let new_tests__legacy__reordering__lib__Foo__B() = x in nat_1
   else bitstring_err().

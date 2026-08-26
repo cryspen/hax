@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -32,6 +32,6 @@ letfun new_tests__legacy__slices__lib__sized(x: bitstring) =
   new_tests__legacy__slices__lib__r_unsized(
     rust_primitives__hax__array_cons(core__ops__index__Index__index(
       x,
-      nat_lit(0)
+      nat_0
     ), rust_primitives__hax__array_nil())
   ).

@@ -9,7 +9,7 @@
 (*   - `construct_fail` / `empty` — fail/default helpers.         *)
 (*   - `Some`/`None` (`Option_err`) — `Option<T>` constructors.   *)
 (*   - `True`/`False` (`bool_default`/`bool_err`) — booleans.     *)
-(*   - `nat_lit` — encode `usize`/`uN`/`iN` literals.             *)
+(*   - `nat_0 .. nat_16` — small `usize`/`uN`/`iN` literals.      *)
 (*   - `logical_and`/`logical_or` — opaque `&&`/`||`.            *)
 (*   - `rust_primitives::*`, `core::num`/`ops`/`cmp`/`slice`      *)
 (*     trait roots, `hax_lib::*` helpers, the tuple constructors. *)
@@ -43,8 +43,32 @@ fun False(): bitstring [data].
 letfun bool_default() = False().
 letfun bool_err() = let x = construct_fail() in False().
 
-(*** Integer literal lifting ***)
-fun nat_lit(nat): bitstring [data].
+(*** Integer literals — one opaque constant per literal value ***)
+(* ProVerif's `nat` is unary (Peano), so a large literal (`u32::MAX`,       *)
+(* `u64::MAX`, a 20-digit constant) overflows its front-end. Instead every  *)
+(* integer literal `N` is its own opaque constant `nat_N` (`nat_neg_N` when *)
+(* negative), exactly like string/char/float literals. The small values     *)
+(* `nat_0 .. nat_16` are declared here so `+ 1` / `- 1` can reduce over them *)
+(* (see `machine_int__add`/`sub` below) and the head/tail index and         *)
+(* insert/remove-at-0 rules can name them; any larger literal is            *)
+(* auto-declared in `missingdecl.pvl`. Distinct literals stay distinct.      *)
+const nat_0: bitstring.
+const nat_1: bitstring.
+const nat_2: bitstring.
+const nat_3: bitstring.
+const nat_4: bitstring.
+const nat_5: bitstring.
+const nat_6: bitstring.
+const nat_7: bitstring.
+const nat_8: bitstring.
+const nat_9: bitstring.
+const nat_10: bitstring.
+const nat_11: bitstring.
+const nat_12: bitstring.
+const nat_13: bitstring.
+const nat_14: bitstring.
+const nat_15: bitstring.
+const nat_16: bitstring.
 
 (*** Opaque short-circuit operators ***)
 fun logical_and(bitstring, bitstring): bitstring.
@@ -69,17 +93,55 @@ fun rust_primitives__hax__cast_op(bitstring): bitstring [data].
 fun rust_primitives__hax__logical_op_and(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__logical_op_or(bitstring, bitstring): bitstring [data].
 
-(* `+ 1` on a `nat_lit` reduces concretely (`nat_lit(x) + nat_lit(1) = nat_lit(x+1)`)
-   so loop/epoch counters become `nat_lit(1)`, `nat_lit(2)`, ... that queries can
-   name and order (ProVerif `nat` supports only `x + constant`). Any other operands
-   (byte arithmetic on opaque blobs) fall through to an opaque `[data]` term. *)
+(* `+ 1` / `- 1` on a small concrete literal reduces over the declared
+   constants `nat_0 .. nat_16`, so loop/epoch counters progress (`nat_1`,
+   `nat_2`, ...) for queries to name and order. Only `± 1` reduces (the sole
+   arithmetic that was concrete under the old unary `nat` model); any other
+   operand — a larger literal, or byte arithmetic on opaque blobs — falls
+   through to an opaque `[data]` term. The bound (16) covers every counter that
+   climbs concretely under the bounded loop model (LOOP_BOUND = 3). *)
 fun rust_primitives__hax__machine_int__add_opaque(bitstring, bitstring): bitstring [data].
 letfun rust_primitives__hax__machine_int__add(a: bitstring, b: bitstring) =
-  let nat_lit(x) = a in
-    (let nat_lit(1) = b in nat_lit(x + 1)
+  let (= nat_1) = b in
+    (let (= nat_0)  = a in nat_1
+     else let (= nat_1)  = a in nat_2
+     else let (= nat_2)  = a in nat_3
+     else let (= nat_3)  = a in nat_4
+     else let (= nat_4)  = a in nat_5
+     else let (= nat_5)  = a in nat_6
+     else let (= nat_6)  = a in nat_7
+     else let (= nat_7)  = a in nat_8
+     else let (= nat_8)  = a in nat_9
+     else let (= nat_9)  = a in nat_10
+     else let (= nat_10) = a in nat_11
+     else let (= nat_11) = a in nat_12
+     else let (= nat_12) = a in nat_13
+     else let (= nat_13) = a in nat_14
+     else let (= nat_14) = a in nat_15
+     else let (= nat_15) = a in nat_16
      else rust_primitives__hax__machine_int__add_opaque(a, b))
   else rust_primitives__hax__machine_int__add_opaque(a, b).
-fun rust_primitives__hax__machine_int__sub(bitstring, bitstring): bitstring [data].
+fun rust_primitives__hax__machine_int__sub_opaque(bitstring, bitstring): bitstring [data].
+letfun rust_primitives__hax__machine_int__sub(a: bitstring, b: bitstring) =
+  let (= nat_1) = b in
+    (let (= nat_1)  = a in nat_0
+     else let (= nat_2)  = a in nat_1
+     else let (= nat_3)  = a in nat_2
+     else let (= nat_4)  = a in nat_3
+     else let (= nat_5)  = a in nat_4
+     else let (= nat_6)  = a in nat_5
+     else let (= nat_7)  = a in nat_6
+     else let (= nat_8)  = a in nat_7
+     else let (= nat_9)  = a in nat_8
+     else let (= nat_10) = a in nat_9
+     else let (= nat_11) = a in nat_10
+     else let (= nat_12) = a in nat_11
+     else let (= nat_13) = a in nat_12
+     else let (= nat_14) = a in nat_13
+     else let (= nat_15) = a in nat_14
+     else let (= nat_16) = a in nat_15
+     else rust_primitives__hax__machine_int__sub_opaque(a, b))
+  else rust_primitives__hax__machine_int__sub_opaque(a, b).
 fun rust_primitives__hax__machine_int__mul(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__div(bitstring, bitstring): bitstring [data].
 fun rust_primitives__hax__machine_int__rem(bitstring, bitstring): bitstring [data].
@@ -427,9 +489,9 @@ fun core__slice__Impl__last(bitstring): bitstring.
 (* `s[0]` -> head, `s[1..]` -> tail; other indices / opaque (byte-buffer)      *)
 (* operands fall back to an opaque accessor. *)
 letfun core__ops__index__Index__index(s: bitstring, pos: bitstring) =
-  let (= nat_lit(0)) = pos in
+  let (= nat_0) = pos in
     (let rust_primitives__hax__array_cons(x, r) = s in x else array_index_opaque(s, pos))
-  else let (= core__ops__range__RangeFrom__RangeFrom(nat_lit(1))) = pos in
+  else let (= core__ops__range__RangeFrom__RangeFrom(nat_1)) = pos in
     (let rust_primitives__hax__array_cons(x, r) = s in r else array_index_opaque(s, pos))
   (* Fixed-offset split of a two-part concatenation: `s[..n]` -> first part,
      `s[n..]` -> second part (the offset itself is abstracted away). *)
@@ -491,11 +553,11 @@ fun core__iter__traits__exact_size__ExactSizeIterator__len(bitstring): bitstring
 (*** at position 0, so they must cancel; other positions stay opaque.          ***)
 letfun alloc__vec__Impl__with_capacity(n: bitstring) = rust_primitives__hax__array_nil().
 letfun alloc__vec__Impl_1__insert_kw(s: bitstring, pos: bitstring, x: bitstring) =
-  let (= nat_lit(0)) = pos in rust_primitives__hax__array_cons(x, s)
+  let (= nat_0) = pos in rust_primitives__hax__array_cons(x, s)
   else array_insert_opaque(s, pos, x).
 (* `Vec::remove(&mut self, i) -> T` is functionalized to `(self_without_i, removed_i)`. *)
 letfun alloc__vec__Impl_1__remove(s: bitstring, pos: bitstring) =
-  let (= nat_lit(0)) = pos in
+  let (= nat_0) = pos in
     (let rust_primitives__hax__array_cons(x, r) = s in
        rust_primitives__hax__Tuple2__Tuple2(r, x)
      else rust_primitives__hax__Tuple2__Tuple2(array_remove_rest(s, pos), array_index_opaque(s, pos)))

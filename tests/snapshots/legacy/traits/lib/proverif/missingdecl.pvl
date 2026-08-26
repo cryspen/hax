@@ -13,6 +13,7 @@ fun core__iter__traits__iterator__Iterator__filter(bitstring, bitstring): bitstr
 fun core__iter__traits__iterator__Iterator__map(bitstring, bitstring): bitstring.
 fun core__iter__traits__iterator__Iterator__next(bitstring): bitstring.
 fun core__num__Impl_2__abs(bitstring): bitstring.
+const nat_32: bitstring.
 fun new_tests__legacy__traits__lib__Bar__bar(bitstring): bitstring.
 fun new_tests__legacy__traits__lib__Foo__assoc_f(bitstring): bitstring.
 fun new_tests__legacy__traits__lib__Foo__method_f(bitstring): bitstring.

@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -51,27 +51,27 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     core__iter__traits__exact_size__ExactSizeIterator__len(
       std__env__args(rust_primitives__hax__Tuple0__Tuple0)
     ),
-    nat_lit(1)
+    nat_1
   ) in
-  let bar = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)) in
+  let bar = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1) in
   let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
     left_val: bitstring,
     right_val: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
     bar,
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val, right_val))
       in bitstring_err()
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
-  let baz = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)) in
+  let baz = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0) in
   let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
     left_val_1: bitstring,
     right_val_1: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
     baz,
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_1, right_val_1)
       in bitstring_err()
@@ -83,7 +83,7 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
       rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
         rust_primitives__hax__Tuple1__Tuple1__0(
           rust_primitives__hax__Tuple1__Tuple1(
-            new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+            new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
           )
         )
       ), rust_primitives__hax__array_nil())
@@ -112,8 +112,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_2: bitstring,
     right_val_2: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val_2, right_val_2))
       in bitstring_err()
@@ -123,8 +123,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_3: bitstring,
     right_val_3: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_3, right_val_3)
       in bitstring_err()
@@ -134,20 +134,20 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_4: bitstring,
     right_val_4: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(2)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(2))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_2),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_2)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val_4, right_val_4))
       in bitstring_err()
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
-  let bar_1 = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)) in
+  let bar_1 = new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0) in
   let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
     left_val_5: bitstring,
     right_val_5: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
     bar_1,
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_5, right_val_5)
       in bitstring_err()
@@ -157,8 +157,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_6: bitstring,
     right_val_6: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(4))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_4)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_6, right_val_6)
       in bitstring_err()
@@ -168,8 +168,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_7: bitstring,
     right_val_7: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val_7, right_val_7))
       in bitstring_err()
@@ -190,7 +190,7 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
       rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
         rust_primitives__hax__Tuple1__Tuple1__0(
           rust_primitives__hax__Tuple1__Tuple1(
-            new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+            new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
           )
         )
       ), rust_primitives__hax__array_nil())
@@ -201,8 +201,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_8: bitstring,
     right_val_8: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_5)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_8, right_val_8)
       in bitstring_err()
@@ -212,8 +212,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_9: bitstring,
     right_val_9: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_5)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_9, right_val_9)
       in bitstring_err()
@@ -223,14 +223,14 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     core__iter__traits__exact_size__ExactSizeIterator__len(
       std__env__args(rust_primitives__hax__Tuple0__Tuple0)
     ),
-    nat_lit(1)
+    nat_1
   ) in
   let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
     left_val_10: bitstring,
     right_val_10: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(
         core__cmp__PartialEq__eq(left_val_10, right_val_10)
@@ -242,8 +242,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_11: bitstring,
     right_val_11: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_11, right_val_11)
       in bitstring_err()
@@ -253,8 +253,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_12: bitstring,
     right_val_12: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(2)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(2))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_2),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_2)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(
         core__cmp__PartialEq__eq(left_val_12, right_val_12)
@@ -266,8 +266,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_13: bitstring,
     right_val_13: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_13, right_val_13)
       in bitstring_err()
@@ -278,8 +278,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
       left_val_14: bitstring,
       right_val_14: bitstring
     ) = rust_primitives__hax__Tuple2__Tuple2(
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(4))
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0),
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_4)
     ) in
       (let (=True()) = core__cmp__PartialEq__eq(left_val_14, right_val_14)
         in bitstring_err()
@@ -290,8 +290,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
       left_val_15: bitstring,
       right_val_15: bitstring
     ) = rust_primitives__hax__Tuple2__Tuple2(
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3),
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3)
     ) in
       (let (=True()) = core__ops__bit__Not__not_kw(
           core__cmp__PartialEq__eq(left_val_15, right_val_15)
@@ -305,8 +305,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
       left_val_16: bitstring,
       right_val_16: bitstring
     ) = rust_primitives__hax__Tuple2__Tuple2(
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)),
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(4))
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0),
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_4)
     ) in
       (let (=True()) = core__cmp__PartialEq__eq(left_val_16, right_val_16)
         in bitstring_err()
@@ -317,8 +317,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
       left_val_17: bitstring,
       right_val_17: bitstring
     ) = rust_primitives__hax__Tuple2__Tuple2(
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3),
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3)
     ) in
       (let (=True()) = core__ops__bit__Not__not_kw(
           core__cmp__PartialEq__eq(left_val_17, right_val_17)
@@ -332,9 +332,9 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     right_val_18: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
     let (=True()) = is_true_1
-      in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0))
-      else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+      in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0)
+      else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_5)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_18, right_val_18)
       in bitstring_err()
@@ -344,10 +344,10 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_19: bitstring,
     right_val_19: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_5),
     let (=True()) = is_true_1
-      in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0))
-      else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))
+      in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0)
+      else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_19, right_val_19)
       in bitstring_err()
@@ -362,8 +362,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
         left_val_20: bitstring,
         right_val_20: bitstring
       ) = rust_primitives__hax__Tuple2__Tuple2(
-        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
-        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3),
+        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3)
       ) in
         (let (=True()) = core__ops__bit__Not__not_kw(
             core__cmp__PartialEq__eq(left_val_20, right_val_20)
@@ -371,22 +371,22 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
           in bitstring_err()
           else rust_primitives__hax__Tuple0__Tuple0)
       else bitstring_err()) in
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0)))
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0))
       else (let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
         left_val_21: bitstring,
         right_val_21: bitstring
       ) = rust_primitives__hax__Tuple2__Tuple2(
         let (=True()) = is_true_1
-          in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(0))
-          else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
-        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+          in new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_0)
+          else new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1),
+        new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_5)
       ) in
         (let (=True()) = core__cmp__PartialEq__eq(left_val_21, right_val_21)
           in bitstring_err()
           else rust_primitives__hax__Tuple0__Tuple0)
       else bitstring_err()) in
-      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1))),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(5))
+      new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1)),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_5)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_22, right_val_22)
       in bitstring_err()
@@ -396,8 +396,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_23: bitstring,
     right_val_23: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(1)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_1),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(
         core__cmp__PartialEq__eq(left_val_23, right_val_23)
@@ -409,8 +409,8 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
     left_val_24: bitstring,
     right_val_24: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3)),
-    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_lit(3))
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3),
+    new_tests__rustc_coverage__issue_84561__Foo__Foo(nat_3)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(
         core__cmp__PartialEq__eq(left_val_24, right_val_24)
@@ -441,7 +441,7 @@ letfun new_tests__rustc_coverage__issue_84561__test1(wildcard: bitstring) =
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0) in
-  let wildcard: bitstring = nat_lit(0) in
+  let wildcard: bitstring = nat_0 in
   let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
     in (let wildcard: bitstring = std__io__stdio__u_print(
       core__fmt__rt__Impl_1__new_const(

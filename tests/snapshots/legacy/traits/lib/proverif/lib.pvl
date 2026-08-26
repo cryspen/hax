@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -197,7 +197,7 @@ letfun new_tests__legacy__traits__lib__closure_impl_expr_fngen(it: bitstring, f:
 fun new_tests__legacy__traits__lib__Error__Fail(): bitstring [data].
 (* src: src/legacy/traits/lib.rs:75 new_tests__legacy__traits__lib__Error_cast_to_repr *)
 letfun new_tests__legacy__traits__lib__Error_cast_to_repr(x: bitstring) =
-  let new_tests__legacy__traits__lib__Error__Fail() = x in nat_lit(0)
+  let new_tests__legacy__traits__lib__Error__Fail() = x in nat_0
   else bitstring_err().
 (* src: src/legacy/traits/lib.rs:81 new_tests__legacy__traits__lib__Impl_3__for_application_callback *)
 letfun new_tests__legacy__traits__lib__Impl_3__for_application_callback(wildcard: bitstring) =
@@ -272,7 +272,7 @@ letfun new_tests__legacy__traits__lib__for_clauses__issue_495__original_function
 ) =
   let u_indices = core__iter__traits__iterator__Iterator__collect(
     core__iter__traits__iterator__Iterator__filter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(5)),
+      core__ops__range__Range__Range(nat_0, nat_5),
       bitstring_err() (* Closures not supported in ProVerif *)
     )
   ) in
@@ -281,7 +281,7 @@ letfun new_tests__legacy__traits__lib__for_clauses__issue_495__original_function
 letfun new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_1(list: bitstring) =
   core__iter__traits__iterator__Iterator__collect(
     core__iter__traits__iterator__Iterator__filter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(5)),
+      core__ops__range__Range__Range(nat_0, nat_5),
       bitstring_err() (* Closures not supported in ProVerif *)
     )
   ).

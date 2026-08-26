@@ -10,6 +10,7 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 const char_lit___x00: bitstring.
+const char_lit__a: bitstring.
 fun core__ops__bit__BitAnd__bitand(bitstring, bitstring): bitstring.
 fun core__ops__bit__BitOr__bitor(bitstring, bitstring): bitstring.
 fun core__ops__bit__BitXor__bitxor(bitstring, bitstring): bitstring.
@@ -17,6 +18,25 @@ fun core__ops__function__Fn__call(bitstring, bitstring): bitstring.
 const float_lit__0_x2e9: bitstring.
 const float_lit__1_x2e0: bitstring.
 const float_lit__5_x2e0: bitstring.
+const nat_128: bitstring.
+const nat_19: bitstring.
+const nat_200: bitstring.
+const nat_21: bitstring.
+const nat_2121: bitstring.
+const nat_23: bitstring.
+const nat_255: bitstring.
+const nat_256: bitstring.
+const nat_32: bitstring.
+const nat_41: bitstring.
+const nat_42: bitstring.
+const nat_4294967295: bitstring.
+const nat_43: bitstring.
+const nat_5678: bitstring.
+const nat_89: bitstring.
+const nat_890: bitstring.
+const nat_neg_1: bitstring.
+const nat_neg_128: bitstring.
+const nat_neg_42: bitstring.
 fun new_tests__legacy__lean_tests__lib__associated_types__basic__Iterable__first(bitstring): bitstring.
 fun new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__Pair__first(bitstring): bitstring.
 fun new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__Pair__second(bitstring): bitstring.
@@ -29,6 +49,7 @@ fun new_tests__legacy__lean_tests__lib__traits__trait_level_args__T1__f1(bitstri
 fun new_tests__legacy__lean_tests__lib__traits__trait_level_args__T1__f2(bitstring, bitstring): bitstring.
 fun new_tests__legacy__lean_tests__lib__traits__trait_level_args__T1__f3(bitstring, bitstring, bitstring): bitstring.
 fun rust_primitives__hax__machine_int__not_kw(bitstring): bitstring.
+const string_lit__Hello: bitstring.
 const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201: bitstring.
 const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201_x20_x26_x26_x20b_x20_x3d_x3d_x202: bitstring.
 const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201_x20_x26_x26_x20b_x20_x3d_x3d_x202_x20_x26_x26_x20c_x20_x3d_x3d_x203_x20_x26_x26_x20d_x20_x3d_x3d_x204: bitstring.

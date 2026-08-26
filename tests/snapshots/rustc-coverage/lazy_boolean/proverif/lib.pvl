@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -25,22 +25,22 @@ letfun new_tests__rustc_coverage__lazy_boolean__main(wildcard: bitstring) =
     core__iter__traits__exact_size__ExactSizeIterator__len(
       std__env__args(rust_primitives__hax__Tuple0__Tuple0)
     ),
-    nat_lit(1)
+    nat_1
   ) in
   let rust_primitives__hax__Tuple3__Tuple3(
     a: bitstring,
     b: bitstring,
     c: bitstring
   ) = rust_primitives__hax__Tuple3__Tuple3(
-    nat_lit(0),
-    nat_lit(0),
-    nat_lit(0)
+    nat_0,
+    nat_0,
+    nat_0
   ) in (let rust_primitives__hax__Tuple3__Tuple3(
     a_2: bitstring,
     b_2: bitstring,
     c_2: bitstring
   ) = (let (=True()) = is_true
-    in rust_primitives__hax__Tuple3__Tuple3(nat_lit(1), nat_lit(10), nat_lit(100))
+    in rust_primitives__hax__Tuple3__Tuple3(nat_1, nat_10, nat_100)
     else rust_primitives__hax__Tuple3__Tuple3(a, b, c)) in (let somebool = logical_or(
     rust_primitives__hax__machine_int__lt(a_2, b_2),
     rust_primitives__hax__machine_int__lt(b_2, c_2)
@@ -57,20 +57,18 @@ letfun new_tests__rustc_coverage__lazy_boolean__main(wildcard: bitstring) =
     rust_primitives__hax__machine_int__lt(b_2, a_2),
     rust_primitives__hax__machine_int__lt(b_2, c_2)
   ) in
-  let a_4 = (let (=True()) = core__ops__bit__Not__not_kw(is_true) in nat_lit(2) else a_2) in
+  let a_4 = (let (=True()) = core__ops__bit__Not__not_kw(is_true) in nat_2 else a_2) in
   let rust_primitives__hax__Tuple2__Tuple2(
     b_4: bitstring,
     c_4: bitstring
   ) = (let (=True()) = is_true
-    in rust_primitives__hax__Tuple2__Tuple2(nat_lit(30), c_2)
+    in rust_primitives__hax__Tuple2__Tuple2(nat_30, c_2)
     else rust_primitives__hax__Tuple2__Tuple2(
       b_2,
-      nat_lit(400)
-    )) in (let a_6 = (let (=True()) = core__ops__bit__Not__not_kw(is_true)
-    in nat_lit(2)
-    else a_4) in
+      nat_400
+    )) in (let a_6 = (let (=True()) = core__ops__bit__Not__not_kw(is_true) in nat_2 else a_4) in
   let (=True()) = is_true
-    in (let b_5 = nat_lit(30) in
+    in (let b_5 = nat_30 in
     rust_primitives__hax__Tuple0__Tuple0)
-    else (let c_5 = nat_lit(400) in
+    else (let c_5 = nat_400 in
     rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err()) else bitstring_err()) else bitstring_err().

@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -21,23 +21,23 @@
 
 (* src: src/rustc-coverage/fn_sig_into_try.rs:10 new_tests__rustc_coverage__fn_sig_into_try__a *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__a(wildcard: bitstring) =
-  let wildcard: bitstring = Some(nat_lit(7)) in
-  Some(nat_lit(0)).
+  let wildcard: bitstring = Some(nat_7) in
+  Some(nat_0).
 (* src: src/rustc-coverage/fn_sig_into_try.rs:17 new_tests__rustc_coverage__fn_sig_into_try__b *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__b(wildcard: bitstring) =
-  let Some(wildcard: bitstring) = Some(nat_lit(7)) in Some(nat_lit(0))
-  else let None() = Some(nat_lit(7)) in None()
+  let Some(wildcard: bitstring) = Some(nat_7) in Some(nat_0)
+  else let None() = Some(nat_7) in None()
   else bitstring_err().
 (* src: src/rustc-coverage/fn_sig_into_try.rs:24 new_tests__rustc_coverage__fn_sig_into_try__c *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__c(wildcard: bitstring) =
-  let Some(wildcard: bitstring) = Some(nat_lit(7)) in Some(nat_lit(0))
-  else let None() = Some(nat_lit(7)) in None()
+  let Some(wildcard: bitstring) = Some(nat_7) in Some(nat_0)
+  else let None() = Some(nat_7) in None()
   else bitstring_err().
 (* src: src/rustc-coverage/fn_sig_into_try.rs:31 new_tests__rustc_coverage__fn_sig_into_try__d *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__d(wildcard: bitstring) =
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0() in
-  let Some(wildcard: bitstring) = Some(nat_lit(7)) in Some(nat_lit(0))
-  else let None() = Some(nat_lit(7)) in None()
+  let Some(wildcard: bitstring) = Some(nat_7) in Some(nat_0)
+  else let None() = Some(nat_7) in None()
   else bitstring_err().
 (* src: src/rustc-coverage/fn_sig_into_try.rs:40 new_tests__rustc_coverage__fn_sig_into_try__main *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__main(wildcard: bitstring) =

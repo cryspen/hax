@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -57,7 +57,7 @@ letfun new_tests__rustc_coverage__if_not__if_not(cond: bitstring) =
 (* src: src/rustc-coverage/if_not.rs:32 new_tests__rustc_coverage__if_not__main *)
 letfun new_tests__rustc_coverage__if_not__main(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(8))
+    core__ops__range__Range__Range(nat_0, nat_8)
   )) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (new_tests__rustc_coverage__if_not__if_not(
     core__hint__black_box(True())
@@ -71,7 +71,7 @@ letfun new_tests__rustc_coverage__if_not__main(wildcard: bitstring) =
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(4))
+      core__ops__range__Range__Range(nat_0, nat_4)
     )) in 
     let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (new_tests__rustc_coverage__if_not__if_not(
       core__hint__black_box(False())

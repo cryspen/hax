@@ -22,7 +22,8 @@
 //! | `concrete_ident'` (653-660) | flattened by `RenderView::separator = "__"` |
 //! | Preamble (811-832) | the [`HEADER`] string constant |
 
-use std::collections::{HashMap, HashSet};
+use std::cmp::Reverse;
+use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::sync::OnceLock;
 
 use super::prelude::*;
@@ -70,6 +71,13 @@ pub struct ProVerifPrinter {
     /// (constants take no arguments). Such an item is declared as an opaque
     /// `fun` of the observed arity instead.
     applied_arities: HashMap<String, usize>,
+    /// Rendered-name → application arity for every name that appears as a call
+    /// head (`f(..)`, including the zero-argument `f()`). A nullary item
+    /// (a `const`) that is *applied* — even as `AC()` — must be declared as a
+    /// `fun` of this arity, because ProVerif cannot apply a constant. Distinct
+    /// from [`Self::applied_arities`], which also counts constructor uses (for
+    /// the higher-order check) and so cannot see a zero-argument application.
+    applied_fn_arities: HashMap<String, usize>,
     /// Rendered names of functions that sit in a call-graph cycle (self- or
     /// mutually-recursive). ProVerif `letfun`s are non-recursive, so such a
     /// function cannot be printed as a `letfun`; it is *rejected* with a
@@ -91,7 +99,8 @@ const PRIMITIVES_PVL: &str = include_str!("../../../hax-lib/proof-libs/proverif/
 ///
 /// Stage 2.0 collapses every Rust type to ProVerif `bitstring`. Booleans
 /// become `True()`/`False()` data constructors and integer literals are
-/// wrapped in `nat_lit(N)` so they land in the same universe.
+/// modeled as opaque per-value constants `nat_N` so they land in the same
+/// universe.
 const HEADER: &str = "\
 (*
   Run with:
@@ -101,7 +110,7 @@ const HEADER: &str = "\
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -358,19 +367,25 @@ const _: () = {
         /// const indexed by a const-generic (`A::<1>`) — a `const` cannot be
         /// applied, so declare it as an opaque `fun` of the observed arity.
         fn const_or_applied_fun<A: 'static + Clone>(&self, rendered_name: &str) -> DocBuilder<A> {
-            match self.applied_arities.get(rendered_name).copied() {
-                Some(arity) if arity > 0 => {
-                    let arg_types = comma_sep!((0..arity).map(|_| docs!["bitstring"]));
+            match self.applied_fn_arities.get(rendered_name).copied() {
+                Some(arity) => {
+                    // Applied somewhere — declare a `fun` of that arity. A
+                    // zero-argument application (`AC()`) yields `fun AC(): ...`.
+                    let params: DocBuilder<A> = if arity == 0 {
+                        docs!["()"]
+                    } else {
+                        paren_doc!(comma_sep!((0..arity).map(|_| docs!["bitstring"])))
+                    };
                     docs![
                         "(* nullary const applied as a function *)",
                         hardline!(),
                         "fun ",
                         rendered_name.to_string(),
-                        paren_doc!(arg_types),
+                        params,
                         ": bitstring."
                     ]
                 }
-                _ => docs!["const ", rendered_name.to_string(), ": bitstring."],
+                None => docs!["const ", rendered_name.to_string(), ": bitstring."],
             }
         }
 
@@ -941,16 +956,7 @@ const _: () = {
                 Literal::Bool(false) => "False()".to_string(),
                 Literal::Int {
                     value, negative, ..
-                } => {
-                    // ProVerif's `nat` is unsigned; spell negative literals as
-                    // `nat_lit(0 - N)` (the only way to coax a negative term
-                    // into the universal bitstring encoding).
-                    if *negative {
-                        format!("nat_lit(0 - {value})")
-                    } else {
-                        format!("nat_lit({value})")
-                    }
-                }
+                } => nat_lit_const(value.as_ref(), *negative),
                 Literal::Float {
                     value, negative, ..
                 } => {
@@ -968,7 +974,7 @@ const _: () = {
         fn primitive_ty(&self, _primitive_ty: &PrimitiveTy) -> DocBuilder<A> {
             // Stage 2.0 uniform-bitstring: every Rust scalar collapses to
             // ProVerif `bitstring`. Booleans/ints/etc. are encoded via the
-            // `True()`/`False()`/`nat_lit(...)` constructors declared in the
+            // `True()`/`False()`/`nat_N` constructors declared in the
             // preamble.
             docs!["bitstring"]
         }
@@ -1706,7 +1712,14 @@ const _: () = {
                     // (`<self_ty>__<trait>__<method>` for trait impls,
                     // `<self_ty>__<method>` for inherent impls), so we can
                     // emit them as ordinary items at the file level.
-                    intersperse!(items.iter().map(|i| docs![i]), hardline!())
+                    //
+                    // ProVerif needs every symbol declared before use, but Rust
+                    // methods within an impl may reference each other (or an
+                    // associated const) in any source order. Topologically sort
+                    // the flattened items so each is emitted after the siblings
+                    // it depends on.
+                    let ordered = topo_sort_impl_items(items, self);
+                    intersperse!(ordered.into_iter().map(|i| docs![i]), hardline!())
                 }
                 ItemKind::Alias { .. } => nil!(),
                 ItemKind::Use { .. } | ItemKind::RustModule => nil!(),
@@ -2760,6 +2773,9 @@ impl Backend for ProVerifBackend {
             if info.arity > 0 {
                 printer.applied_arities.insert(name.clone(), info.arity);
             }
+            if info.applied {
+                printer.applied_fn_arities.insert(name.clone(), info.arity);
+            }
         }
         // Identify functions in a call-graph cycle (self- or mutually-recursive)
         // so the item printer can opacify them — ProVerif has no recursive
@@ -2835,6 +2851,75 @@ fn collect_erased_const_generics(item: &Item, out: &mut HashSet<LocalId>) {
             }
         }
     }
+}
+
+/// Order an impl's flattened items so that every referenced sibling is
+/// declared before its user. ProVerif is single-pass — a `letfun`/`fun`/`const`
+/// must be declared before it is named — but Rust methods within an impl may
+/// call each other (or read an associated const) in any source order.
+///
+/// This is a *stable* topological sort (Kahn's algorithm always emitting the
+/// ready item with the smallest source index), so items keep their source
+/// order except where a dependency genuinely forces a move — the minimal
+/// disruption to the generated file. Recursive cycles never become ready (they
+/// depend on each other); their members are opacified to dependency-free
+/// `fun`s, so we emit the leftovers last in source order.
+fn topo_sort_impl_items<'a>(
+    items: &'a [ImplItem],
+    printer: &ProVerifPrinter,
+) -> Vec<&'a ImplItem> {
+    let n = items.len();
+    let mut name_to_idx: HashMap<String, usize> = HashMap::new();
+    for (i, ii) in items.iter().enumerate() {
+        name_to_idx.insert(printer.render_id(&ii.ident), i);
+    }
+    // `pending[i]` = number of siblings item `i` references that are not yet
+    // emitted; `users[j]` = items that reference sibling `j`.
+    let mut pending = vec![0usize; n];
+    let mut users: Vec<Vec<usize>> = vec![Vec::new(); n];
+    for (i, ii) in items.iter().enumerate() {
+        let mut v = ExternRefCollector::default();
+        if let ImplItemKind::Fn { body, .. } = &ii.kind {
+            v.visit_expr(body);
+        }
+        let mut callees: Vec<usize> = v
+            .calls
+            .iter()
+            .filter_map(|r| name_to_idx.get(&printer.render_id(&r.id)).copied())
+            .filter(|&j| j != i)
+            .collect();
+        callees.sort_unstable();
+        callees.dedup();
+        pending[i] = callees.len();
+        for j in callees {
+            users[j].push(i);
+        }
+    }
+
+    // Kahn's algorithm with a min-index priority queue: among all items whose
+    // dependencies are already emitted, always take the earliest in source
+    // order.
+    let mut ready: BinaryHeap<Reverse<usize>> =
+        (0..n).filter(|&i| pending[i] == 0).map(Reverse).collect();
+    let mut emitted = vec![false; n];
+    let mut order = Vec::with_capacity(n);
+    while let Some(Reverse(i)) = ready.pop() {
+        emitted[i] = true;
+        order.push(i);
+        for &k in &users[i] {
+            pending[k] -= 1;
+            if pending[k] == 0 {
+                ready.push(Reverse(k));
+            }
+        }
+    }
+    // Cyclic leftovers (opacified recursion) in source order.
+    for i in 0..n {
+        if !emitted[i] {
+            order.push(i);
+        }
+    }
+    order.into_iter().map(|i| &items[i]).collect()
 }
 
 /// Compute the set of functions that sit in a call-graph cycle — i.e. that
@@ -2916,6 +3001,8 @@ fn collect_recursive_fns(modules: &[Module], printer: &ProVerifPrinter) -> HashS
 struct RefInfo {
     arity: usize,
     is_constructor: bool,
+    /// The symbol is applied somewhere (`f(..)`, possibly `f()`).
+    applied: bool,
 }
 
 /// Walk every `Module` and produce a `name → RefInfo` map of every
@@ -2936,14 +3023,17 @@ fn collect_references(
                 let info = referenced.entry(name).or_insert(RefInfo {
                     arity: 0,
                     is_constructor: false,
+                    applied: false,
                 });
                 info.arity = info.arity.max(r.arity);
                 info.is_constructor |= r.is_constructor;
+                info.applied |= r.applied;
             }
             for name in v.lit_consts {
                 referenced.entry(name).or_insert(RefInfo {
                     arity: 0,
                     is_constructor: false,
+                    applied: false,
                 });
             }
         }
@@ -2981,7 +3071,6 @@ impl ProVerifBackend {
             "False",
             "bool_default",
             "bool_err",
-            "nat_lit",
             "logical_and",
             "logical_or",
         ] {
@@ -3160,6 +3249,45 @@ fn extract_call_head(text: &str) -> Option<String> {
     (!name.is_empty()).then(|| name.to_string())
 }
 
+/// Name of the opaque constant standing for an integer literal. ProVerif's
+/// `nat` is unary (Peano), so a large literal such as `u64::MAX` overflows its
+/// front-end; instead every literal is its own declared constant `nat_<value>`
+/// (`nat_neg_<value>` when negative). Small values `nat_0 .. nat_16` are
+/// declared in `primitives.pvl` (where `+ 1` / `- 1` reduces over them);
+/// larger ones are auto-declared in `missingdecl.pvl`, exactly like string,
+/// char, and float literals. `value` is already a decimal digit string.
+fn nat_lit_const(value: &str, negative: bool) -> String {
+    if negative {
+        format!("nat_neg_{value}")
+    } else {
+        format!("nat_{value}")
+    }
+}
+
+/// Name of the opaque constant standing for a literal, or `None` for booleans
+/// (which are always the declared `True()`/`False()` constructors). Must agree
+/// with what `fn literal` renders, so a use in *pattern* position (`let (= C)
+/// = ..`) declares the same constant an expression use would.
+fn lit_const_name(lit: &Literal) -> Option<String> {
+    match lit {
+        Literal::Int {
+            value, negative, ..
+        } => Some(nat_lit_const(value.as_ref(), *negative)),
+        Literal::String(s) => Some(format!("string_lit__{}", sanitize_string_literal(s.as_ref()))),
+        Literal::Char(c) => Some(format!("char_lit__{}", sanitize_string_literal(&c.to_string()))),
+        Literal::Float {
+            value, negative, ..
+        } => {
+            let sign = if *negative { "neg_" } else { "" };
+            Some(format!(
+                "float_lit__{sign}{}",
+                sanitize_string_literal(value.as_ref())
+            ))
+        }
+        Literal::Bool(_) => None,
+    }
+}
+
 /// Turn a string / char / float-literal value into a valid ProVerif
 /// identifier suffix. Replaces every non-`[A-Za-z0-9_]` byte with
 /// `_xHH` (two-hex), so the mapping is injective (distinct literals →
@@ -3217,14 +3345,19 @@ struct Ref {
     id: GlobalId,
     arity: usize,
     is_constructor: bool,
+    /// The symbol appears as the head of an `App` (a call `f(..)`), even with
+    /// zero arguments (`f()`). Such a use requires a `fun`/`letfun`
+    /// declaration: a `const` cannot be applied, not even as `f()`.
+    applied: bool,
 }
 
 impl ExternRefCollector {
-    fn push(&mut self, id: GlobalId, arity: usize, is_constructor: bool) {
+    fn push(&mut self, id: GlobalId, arity: usize, is_constructor: bool, applied: bool) {
         self.calls.push(Ref {
             id,
             arity,
             is_constructor,
+            applied,
         });
     }
 }
@@ -3234,51 +3367,45 @@ impl AstVisitor for ExternRefCollector {
         match kind {
             ExprKind::App { head, args, .. } => {
                 if let ExprKind::GlobalId(g) = &*head.kind {
-                    self.push(*g, args.len(), false);
+                    self.push(*g, args.len(), false, true);
                 }
             }
             ExprKind::GlobalId(g) => {
-                self.push(*g, 0, false);
+                self.push(*g, 0, false, false);
             }
             ExprKind::Construct {
                 constructor,
                 fields,
                 ..
             } => {
-                self.push(*constructor, fields.len(), true);
+                self.push(*constructor, fields.len(), true, false);
             }
-            ExprKind::Literal(Literal::String(symbol)) => {
-                self.lit_consts.push(format!(
-                    "string_lit__{}",
-                    sanitize_string_literal(symbol.as_ref())
-                ));
-            }
-            ExprKind::Literal(Literal::Char(c)) => {
-                self.lit_consts.push(format!(
-                    "char_lit__{}",
-                    sanitize_string_literal(&c.to_string())
-                ));
-            }
-            ExprKind::Literal(Literal::Float {
-                value, negative, ..
-            }) => {
-                let sign = if *negative { "neg_" } else { "" };
-                self.lit_consts.push(format!(
-                    "float_lit__{sign}{}",
-                    sanitize_string_literal(value.as_ref())
-                ));
+            ExprKind::Literal(lit) => {
+                if let Some(name) = lit_const_name(lit) {
+                    self.lit_consts.push(name);
+                }
             }
             _ => {}
         }
     }
     fn enter_pat_kind(&mut self, kind: &PatKind) {
-        if let PatKind::Construct {
-            constructor,
-            fields,
-            ..
-        } = kind
-        {
-            self.push(*constructor, fields.len(), true);
+        match kind {
+            PatKind::Construct {
+                constructor,
+                fields,
+                ..
+            } => {
+                self.push(*constructor, fields.len(), true, false);
+            }
+            // A `let (= C) = ..` constant pattern references the same opaque
+            // literal constant an expression would, so it needs the same
+            // declaration.
+            PatKind::Constant { lit } => {
+                if let Some(name) = lit_const_name(lit) {
+                    self.lit_consts.push(name);
+                }
+            }
+            _ => {}
         }
     }
 }

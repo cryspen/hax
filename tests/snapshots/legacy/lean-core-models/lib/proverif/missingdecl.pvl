@@ -25,5 +25,6 @@ fun core__option__Impl__unwrap_or_else(bitstring, bitstring): bitstring.
 fun core__result__Impl__and_then(bitstring, bitstring): bitstring.
 fun core__result__Impl__map_or(bitstring, bitstring, bitstring): bitstring.
 fun core__result__Impl__map_or_else(bitstring, bitstring, bitstring): bitstring.
+const nat_42: bitstring.
 const string_lit__Should_x20be_x20Ok: bitstring.
 const string_lit__Should_x20be_x20Some: bitstring.

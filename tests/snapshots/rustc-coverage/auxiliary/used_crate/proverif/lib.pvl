@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -94,32 +94,32 @@ letfun new_tests__rustc_coverage__auxiliary__used_crate__unused_generic_function
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/auxiliary/used_crate.rs:45 new_tests__rustc_coverage__auxiliary__used_crate__unused_function *)
 letfun new_tests__rustc_coverage__auxiliary__used_crate__unused_function(wildcard: bitstring) =
-  let countdown = nat_lit(2) in
+  let countdown = nat_2 in
   let (=True()) = core__ops__bit__Not__not_kw(
       rust_primitives__hax__machine_int__eq(
         core__iter__traits__exact_size__ExactSizeIterator__len(
           std__env__args(rust_primitives__hax__Tuple0__Tuple0)
         ),
-        nat_lit(1)
+        nat_1
       )
     )
-    in (let countdown_1 = nat_lit(20) in
+    in (let countdown_1 = nat_20 in
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/auxiliary/used_crate.rs:54 new_tests__rustc_coverage__auxiliary__used_crate__unused_private_function *)
 letfun new_tests__rustc_coverage__auxiliary__used_crate__unused_private_function(
   wildcard: bitstring
 ) =
-  let countdown = nat_lit(2) in
+  let countdown = nat_2 in
   let (=True()) = core__ops__bit__Not__not_kw(
       rust_primitives__hax__machine_int__eq(
         core__iter__traits__exact_size__ExactSizeIterator__len(
           std__env__args(rust_primitives__hax__Tuple0__Tuple0)
         ),
-        nat_lit(1)
+        nat_1
       )
     )
-    in (let countdown_1 = nat_lit(20) in
+    in (let countdown_1 = nat_20 in
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/auxiliary/used_crate.rs:62 new_tests__rustc_coverage__auxiliary__used_crate__use_this_lib_crate *)
@@ -132,7 +132,7 @@ letfun new_tests__rustc_coverage__auxiliary__used_crate__use_this_lib_crate(wild
   ) in
   let wildcard: bitstring = new_tests__rustc_coverage__auxiliary__used_crate__used_only_from_this_lib_crate_generic_function(
     alloc__slice__Impl__into_vec(
-      rust_primitives__hax__array_cons(nat_lit(5), rust_primitives__hax__array_cons(nat_lit(6), rust_primitives__hax__array_cons(nat_lit(7), rust_primitives__hax__array_cons(nat_lit(8), rust_primitives__hax__array_nil()))))
+      rust_primitives__hax__array_cons(nat_5, rust_primitives__hax__array_cons(nat_6, rust_primitives__hax__array_cons(nat_7, rust_primitives__hax__array_cons(nat_8, rust_primitives__hax__array_nil()))))
     )
   ) in
   let wildcard: bitstring = new_tests__rustc_coverage__auxiliary__used_crate__used_only_from_this_lib_crate_generic_function(
@@ -145,10 +145,10 @@ letfun new_tests__rustc_coverage__auxiliary__used_crate__used_function(wildcard:
       core__iter__traits__exact_size__ExactSizeIterator__len(
         std__env__args(rust_primitives__hax__Tuple0__Tuple0)
       ),
-      nat_lit(1)
+      nat_1
     )
-    in nat_lit(10)
-    else nat_lit(0)) in
+    in nat_10
+    else nat_0) in
   let wildcard: bitstring = new_tests__rustc_coverage__auxiliary__used_crate__use_this_lib_crate(
     rust_primitives__hax__Tuple0__Tuple0
   ) in

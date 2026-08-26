@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -41,7 +41,7 @@ letfun new_tests__legacy__proverif_generics__lib__Impl_1__fresh(b: bitstring) =
   new_tests__legacy__proverif_generics__lib__Token__Token(b).
 (* src: src/legacy/proverif-generics/lib.rs:39 new_tests__legacy__proverif_generics__lib__make_token *)
 letfun new_tests__legacy__proverif_generics__lib__make_token(wildcard: bitstring) =
-  new_tests__legacy__proverif_generics__lib__Impl_1__fresh(nat_lit(42)).
+  new_tests__legacy__proverif_generics__lib__Impl_1__fresh(nat_42).
 (* src: src/legacy/proverif-generics/lib.rs:44 new_tests__legacy__proverif_generics__lib__pass_through *)
 letfun new_tests__legacy__proverif_generics__lib__pass_through(t: bitstring) =
   new_tests__legacy__proverif_generics__lib__id(t).

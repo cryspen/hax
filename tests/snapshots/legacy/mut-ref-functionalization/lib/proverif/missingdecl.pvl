@@ -10,5 +10,8 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 fun core__slice__Impl__swap(bitstring, bitstring, bitstring): bitstring.
+const nat_123: bitstring.
+const nat_12345: bitstring.
+const nat_42: bitstring.
 fun rust_primitives__hax__monomorphized_update_at__update_at_range(bitstring, bitstring, bitstring): bitstring.
 fun rust_primitives__hax__monomorphized_update_at__update_at_usize(bitstring, bitstring, bitstring): bitstring.

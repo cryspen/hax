@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -83,7 +83,7 @@ letfun new_tests__rustc_coverage__inline__permutations(xs: bitstring) =
   let ys_1 = alloc__slice__Impl__to_vec(
     new_tests__rustc_coverage__inline__permutate(
       alloc__vec__Impl_1__as_slice(alloc__borrow__ToOwned__to_owned(xs)),
-      nat_lit(0)
+      nat_0
     )
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
