@@ -22,7 +22,8 @@
 (* src: src/rustc-coverage/unreachable.rs:17 new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE *)
 (*  @fail(extraction): ssprove(HAX0008), coq(HAX0008) *)
 (*  @fail(extraction): proverif(HAX0008) *)
-const new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE: bitstring.
+(* nullary const applied as a function *)
+fun new_tests__rustc_coverage__unreachable__UNREACHABLE_CLOSURE(bitstring): bitstring.
 (* src: src/rustc-coverage/unreachable.rs:21 new_tests__rustc_coverage__unreachable__unreachable_function *)
 (*  @fail(extraction): coq(HAX0008), ssprove(HAX0008) *)
 (*  @fail(extraction): proverif(HAX0008) *)

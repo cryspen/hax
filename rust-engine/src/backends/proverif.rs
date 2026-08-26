@@ -62,6 +62,14 @@ pub struct ProVerifPrinter {
     /// collapses to `bitstring` anyway, so the runtime value is
     /// symbolically irrelevant.
     erased_const_generics: HashSet<LocalId>,
+    /// Rendered-name → maximum arity observed at any *use* site (harvested by
+    /// [`collect_references`]). A nullary item (a Rust `const`/`static`, or an
+    /// associated const) that some call site *applies* with one or more
+    /// arguments — a const closure that is invoked, or an associated const
+    /// indexed by a const-generic — cannot be spelled as a ProVerif `const`
+    /// (constants take no arguments). Such an item is declared as an opaque
+    /// `fun` of the observed arity instead.
+    applied_arities: HashMap<String, usize>,
 }
 
 /// Bundled `primitives.pvl` — declarations for the stable hax extraction
@@ -335,6 +343,29 @@ const _: () = {
                 },
             );
             docs!["bitstring_err()", " (* ", message.to_string(), " *)"]
+        }
+
+        /// Declaration for a nullary item (a Rust `const`/`static`, or an
+        /// associated const). Normally a ProVerif `const NAME: bitstring.`, but
+        /// if some call site *applies* the name with one or more arguments — a
+        /// const closure that is invoked (`(NO_BLOCK)()`), or an associated
+        /// const indexed by a const-generic (`A::<1>`) — a `const` cannot be
+        /// applied, so declare it as an opaque `fun` of the observed arity.
+        fn const_or_applied_fun<A: 'static + Clone>(&self, rendered_name: &str) -> DocBuilder<A> {
+            match self.applied_arities.get(rendered_name).copied() {
+                Some(arity) if arity > 0 => {
+                    let arg_types = comma_sep!((0..arity).map(|_| docs!["bitstring"]));
+                    docs![
+                        "(* nullary const applied as a function *)",
+                        hardline!(),
+                        "fun ",
+                        rendered_name.to_string(),
+                        paren_doc!(arg_types),
+                        ": bitstring."
+                    ]
+                }
+                _ => docs!["const ", rendered_name.to_string(), ": bitstring."],
+            }
         }
 
         /// A "trivial" binder is one whose rendered pattern is just `x`
@@ -1488,8 +1519,10 @@ const _: () = {
                 } => {
                     if params.is_empty() {
                         // Empty-param `fn`s are Rust consts. After Stage 2.0
-                        // every value lives in `bitstring`.
-                        docs!["const ", name, ": bitstring."]
+                        // every value lives in `bitstring`. A const that some
+                        // call site applies (an invoked const closure) is
+                        // declared as an opaque `fun` of that arity instead.
+                        self.const_or_applied_fun(&self.render_id(name))
                     } else if as_constructor || is_erased {
                         // `#[hax::proverif::constructor]` *and* `#[hax_lib::opaque]`
                         // both render as a free `[data]` constructor — symbolically
@@ -1736,7 +1769,7 @@ const _: () = {
                 ImplItemKind::Type { .. } => nil!(),
                 ImplItemKind::Fn { body, params } => {
                     if params.is_empty() {
-                        docs!["const ", name, ": bitstring."]
+                        self.const_or_applied_fun(&name)
                     } else if matches!(
                         &*body.kind,
                         ExprKind::App { head, .. }
@@ -1771,8 +1804,10 @@ const _: () = {
                 ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body: _ }) => {
                     // Associated constants land as opaque `bitstring`. Users
                     // who care about the value can override with a verbatim
-                    // `proverif_replace!` body.
-                    docs!["const ", name, ": bitstring."]
+                    // `proverif_replace!` body. An assoc const indexed by a
+                    // const-generic is *applied* at its use site, so it is
+                    // declared as an opaque `fun` of that arity instead.
+                    self.const_or_applied_fun(&name)
                 }
                 ImplItemKind::Error(err) => docs![err],
             };
@@ -2638,6 +2673,15 @@ impl Backend for ProVerifBackend {
         // Collect every `GlobalId` referenced in expression / pattern
         // position from the AST.
         let referenced = collect_references(&modules, &mut printer);
+        // Record the max applied-arity per name so a nullary item that is
+        // *applied* somewhere (a const closure that is invoked, or an assoc
+        // const indexed by a const-generic) can be declared as an opaque `fun`
+        // rather than a `const` — ProVerif constants cannot take arguments.
+        for (name, info) in &referenced {
+            if info.arity > 0 {
+                printer.applied_arities.insert(name.clone(), info.arity);
+            }
+        }
         // Render the body, harvesting per-item source-span anchors as we go so
         // we can emit a v3 source map alongside `lib.pvl`. `render_with_span_
         // positions` produces text byte-identical to `printer.print(..)` (the

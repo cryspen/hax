@@ -20,9 +20,11 @@
 *)
 
 (* src: src/rustc-coverage/macro_in_closure.rs:8 new_tests__rustc_coverage__macro_in_closure__NO_BLOCK *)
-const new_tests__rustc_coverage__macro_in_closure__NO_BLOCK: bitstring.
+(* nullary const applied as a function *)
+fun new_tests__rustc_coverage__macro_in_closure__NO_BLOCK(bitstring): bitstring.
 (* src: src/rustc-coverage/macro_in_closure.rs:10 new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK *)
-const new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK: bitstring.
+(* nullary const applied as a function *)
+fun new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK(bitstring): bitstring.
 (* src: src/rustc-coverage/macro_in_closure.rs:15 new_tests__rustc_coverage__macro_in_closure__main *)
 letfun new_tests__rustc_coverage__macro_in_closure__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__macro_in_closure__NO_BLOCK(
