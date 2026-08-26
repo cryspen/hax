@@ -107,10 +107,9 @@ const HEADER: &str = "\
   Any symbol this file references but does NOT define, and that is
   not in `primitives.pvl`, is listed in the companion
   `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
-  model: each entry must be supplied by hand or by another crate's
-  extraction (e.g. a separately-extracted dependency). The goal is
-  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
-  definition that was silently stubbed out.
+  model: each entry is a symbol to define — by hand or by another
+  crate's extraction — or to deliberately leave abstract as an
+  ideal-functionality boundary, where a permanent residue is correct.
 *)
 
 ";
@@ -3294,11 +3293,11 @@ impl ProVerifBackend {
              (*                                                               *)\n\
              (* DIAGNOSTIC, not part of the model. Each symbol below is       *)\n\
              (* referenced by lib.pvl but has no definition (and is not in    *)\n\
-             (* primitives.pvl). Supply a real one by hand, or by extracting  *)\n\
-             (* the crate that owns it (e.g. a separately-extracted           *)\n\
-             (* dependency). Declared WITHOUT `[data]` because the real       *)\n\
-             (* nature (one-way fun / data constructor / letfun) is unknown.  *)\n\
-             (* GOAL: this file is EMPTY.                                     *)\n\
+             (* primitives.pvl). Define it — by hand or by extracting the     *)\n\
+             (* crate that owns it — or deliberately leave it abstract, as an *)\n\
+             (* ideal-functionality boundary; a permanent residue can be      *)\n\
+             (* correct. Declared WITHOUT `[data]` because the real nature    *)\n\
+             (* (one-way fun / data constructor / letfun) is unknown.         *)\n\
              (*****************************************************************)\n\
              {body}\n"
         )
