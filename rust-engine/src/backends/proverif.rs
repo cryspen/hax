@@ -1163,6 +1163,15 @@ const _: () = {
                 // (they're dynamically unreachable and ProVerif's grammar
                 // can't express an `else` after such a `let`). Truncate
                 // the arm list there.
+                // A match with no arms (uninhabited scrutinee: `match never {}`,
+                // or the discriminant cast of a variant-less enum) destructures
+                // nothing and is dynamically unreachable. ProVerif cannot spell an
+                // empty `let`-chain — the arms would render to nothing, leaving a
+                // bare `else bitstring_err()` (a syntax error) — so model the point
+                // directly as the error sink.
+                ExprKind::Match { arms, .. } if arms.is_empty() => {
+                    docs!["bitstring_err()"]
+                }
                 ExprKind::Match { scrutinee, arms } => {
                     let arm_always_matches = |arm: &Arm| -> bool {
                         matches!(*arm.pat.kind, PatKind::Wild) || Self::is_trivial_binder(&arm.pat)
@@ -1402,6 +1411,14 @@ const _: () = {
                     sub_pat: None,
                 } => docs![var],
                 PatKind::Binding { var, .. } => docs![var],
+                // A unit-typed parameter (`_: ()`) — or any other nullary
+                // constructor pattern — reaches the printer as a `Construct`
+                // with no fields, which `fn pat` renders as the constructor
+                // application `Tuple0__Tuple0()`. That is not a legal binder in
+                // a ProVerif `letfun` header (parameters must be `name: ty`).
+                // The unit value carries nothing to destructure, so bind a fresh
+                // variable instead.
+                PatKind::Construct { fields, .. } if fields.is_empty() => text!("wildcard"),
                 _ => docs![&param.pat],
             };
             docs![name, ": ", &param.ty]
