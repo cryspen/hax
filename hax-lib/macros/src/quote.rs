@@ -195,15 +195,13 @@ pub(super) fn retarget_on_inherent_impl(
                 .to_compile_error(),
             );
         }
-        None => {
-            return Some(
-                syn::Error::new(
-                    span,
-                    "hax: this `impl` block is empty, there is no item to attach this annotation to.",
-                )
-                .to_compile_error(),
+        None => return Some(
+            syn::Error::new(
+                span,
+                "hax: this `impl` block is empty, there is no item to attach this annotation to.",
             )
-        }
+            .to_compile_error(),
+        ),
     };
     attrs.push(parse_quote! {#attr});
     Some(quote! {#item_impl})

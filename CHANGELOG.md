@@ -56,6 +56,8 @@ Changes to hax-lib:
    `impl<T: Clone>` block and relaxed `Vec::remove`'s postcondition to
    `len' <= len` (#2157)
  - Add specs for Lean rust primitives (#2146)
+ - Restore the documentation of the proc-macros, which was missing on docs.rs and in builds without `--cfg hax` (#1759)
+ - Fix the docs.rs build of `hax-lib`: its `docs.rs` metadata table was misspelled, and `--cfg hax` has to reach rustc too so that the `cfg(hax)` dependencies resolve (#2087)
 
 Changes to the Lean backend:
 - Hoist methods to allow (mutual) recursion between methods and associated items of the same impl (cryspen/hax-evit/163)
