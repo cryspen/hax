@@ -23,12 +23,12 @@ const new_tests__legacy__slices__lib__VERSION: bitstring.
 (* src: src/legacy/slices/lib.rs:11 new_tests__legacy__slices__lib__do_something *)
 letfun new_tests__legacy__slices__lib__do_something(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/slices/lib.rs:17 new_tests__legacy__slices__lib__r_unsized *)
-letfun new_tests__legacy__slices__lib__r_unsized(wildcard: bitstring) =
+(* src: src/legacy/slices/lib.rs:17 new_tests__legacy__slices__lib__r_x23unsized *)
+letfun new_tests__legacy__slices__lib__r_x23unsized(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/legacy/slices/lib.rs:13 new_tests__legacy__slices__lib__sized *)
 letfun new_tests__legacy__slices__lib__sized(x: bitstring) =
-  new_tests__legacy__slices__lib__r_unsized(
+  new_tests__legacy__slices__lib__r_x23unsized(
     rust_primitives__hax__array_cons(core__ops__index__Index__index(
       x,
       nat_0

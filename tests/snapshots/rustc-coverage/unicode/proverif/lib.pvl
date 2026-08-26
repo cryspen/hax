@@ -18,11 +18,12 @@
   ideal-functionality boundary, where a permanent residue is correct.
 *)
 
-(* src: src/rustc-coverage/unicode.rs:27 new_tests__rustc_coverage__unicode__u_________ *)
-letfun new_tests__rustc_coverage__unicode__u_________(wildcard: bitstring) =
-  core__hint__black_box(False()).
-(* src: src/rustc-coverage/unicode.rs:33 new_tests__rustc_coverage__unicode__u__ *)
-letfun new_tests__rustc_coverage__unicode__u__(wildcard: bitstring) =
+(* src: src/rustc-coverage/unicode.rs:27 new_tests__rustc_coverage__unicode__u_xe7_x94_xb3_xe3_x81_x97_xe8_xa8_xb3_xe3_x81_x94_xe3_x81_x96_xe3_x81_x84_xe3_x81_xbe_xe3_x81_x9b_xe3_x82_x93 *)
+letfun new_tests__rustc_coverage__unicode__u_xe7_x94_xb3_xe3_x81_x97_xe8_xa8_xb3_xe3_x81_x94_xe3_x81_x96_xe3_x81_x84_xe3_x81_xbe_xe3_x81_x9b_xe3_x82_x93(
+  wildcard: bitstring
+) = core__hint__black_box(False()).
+(* src: src/rustc-coverage/unicode.rs:33 new_tests__rustc_coverage__unicode__u_xe3_x82_xb5_xe3_x83_x93 *)
+letfun new_tests__rustc_coverage__unicode__u_xe3_x82_xb5_xe3_x83_x93(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/unicode.rs:17 new_tests__rustc_coverage__unicode__main *)
 (*  @fail(extraction): ssprove(HAX0001) *)
@@ -30,13 +31,17 @@ letfun new_tests__rustc_coverage__unicode__main(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Impl_7__new_kw(char_lit___xd0_x90, char_lit___xd0_xaf)
   )) in 
-  let rust_primitives__hax__array_cons(u__, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
-  let rust_primitives__hax__array_cons(u__, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
-  let rust_primitives__hax__array_cons(u__, bl__seq3) = bl__seq2 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(u__xc4_xb0, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(u__xc4_xb0, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
+  let rust_primitives__hax__array_cons(u__xc4_xb0, bl__seq3) = bl__seq2 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
   let wildcard: bitstring = (let (=True()) = logical_and(
-      new_tests__rustc_coverage__unicode__u_________(rust_primitives__hax__Tuple0__Tuple0),
-      new_tests__rustc_coverage__unicode__u_________(rust_primitives__hax__Tuple0__Tuple0)
+      new_tests__rustc_coverage__unicode__u_xe7_x94_xb3_xe3_x81_x97_xe8_xa8_xb3_xe3_x81_x94_xe3_x81_x96_xe3_x81_x84_xe3_x81_xbe_xe3_x81_x9b_xe3_x82_x93(
+        rust_primitives__hax__Tuple0__Tuple0
+      ),
+      new_tests__rustc_coverage__unicode__u_xe7_x94_xb3_xe3_x81_x97_xe8_xa8_xb3_xe3_x81_x94_xe3_x81_x96_xe3_x81_x84_xe3_x81_xbe_xe3_x81_x9b_xe3_x82_x93(
+        rust_primitives__hax__Tuple0__Tuple0
+      )
     )
     in (let wildcard: bitstring = std__io__stdio__u_print(
       core__fmt__rt__Impl_1__new_const(
@@ -46,10 +51,10 @@ letfun new_tests__rustc_coverage__unicode__main(wildcard: bitstring) =
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0) in
-  let wildcard: bitstring = new_tests__rustc_coverage__unicode__u__(
+  let wildcard: bitstring = new_tests__rustc_coverage__unicode__u_xe3_x82_xb5_xe3_x83_x93(
     rust_primitives__hax__Tuple0__Tuple0
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/unicode.rs:33 new_tests__rustc_coverage__unicode__u_ *)
-letfun new_tests__rustc_coverage__unicode__u_(wildcard: bitstring) =
+(* src: src/rustc-coverage/unicode.rs:33 new_tests__rustc_coverage__unicode__u_xe4_xbb_x96 *)
+letfun new_tests__rustc_coverage__unicode__u_xe4_xbb_x96(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
