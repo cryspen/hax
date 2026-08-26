@@ -739,8 +739,8 @@ pub mod vec {
     where
         I: std::slice::SliceIndex<[T]>,
     {
-        // F*-only, as for the slice `IndexMut` this delegates to.
-        #[cfg_attr(hax_backend_fstar, hax_lib::requires(self.get(i).is_some()))]
+        // Kept out of the Lean lane, as for the slice `IndexMut` it delegates to.
+        #[cfg_attr(not(charon), hax_lib::requires(self.get(i).is_some()))]
         fn index_mut(&mut self, i: I) -> &mut I::Output {
             std::ops::IndexMut::index_mut(seq_to_slice_mut(&mut self.0), i)
         }

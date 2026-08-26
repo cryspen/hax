@@ -644,9 +644,9 @@ pub mod index {
         // the `None` arm would have to produce the `&mut` return, which aeneas
         // lowers to a `(value, write-back)` pair and cannot synthesise from a
         // divergent `panic`. The precondition mirrors `Index::index`.
-        // F*-only: routed through hax's spec channel, this precondition makes
-        // aeneas fail with an internal `Invalid_argument`.
-        #[cfg_attr(hax_backend_fstar, hax_lib::requires(i.get(self).is_some()))]
+        // Kept out of the Lean lane: routed through hax's spec channel, this
+        // precondition makes aeneas fail with an internal `Invalid_argument`.
+        #[cfg_attr(not(charon), hax_lib::requires(i.get(self).is_some()))]
         fn index_mut(&mut self, i: I) -> &mut I::Output {
             i.get_unchecked_mut(self)
         }

@@ -127,6 +127,8 @@ GENERATED_LEAN = Funs.lean Types.lean \
                  FunsExternal_Template.lean TypesExternal_Template.lean
 
 patch:
+	@test -d $(EXTRACT_DIR)/CoreModels/Core -a -d $(EXTRACT_DIR)/CoreModels/Alloc \
+	    || { echo "no extraction in $(EXTRACT_DIR): run 'make extract' first"; exit 1; }
 	mkdir -p $(LEAN_DIR)/CoreModels/Core $(LEAN_DIR)/CoreModels/Alloc
 	cd $(EXTRACT_DIR)/CoreModels/Core && \
 	    cp $(GENERATED_LEAN) $(abspath $(LEAN_DIR))/CoreModels/Core/
