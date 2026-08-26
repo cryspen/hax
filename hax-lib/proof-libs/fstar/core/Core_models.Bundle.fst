@@ -41,7 +41,13 @@ let repeat
       (v_N: usize)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
       (v_val: v_T)
-    : t_Array v_T v_N = Rust_primitives.Slice.array_repeat #v_T v_N v_val
+    : t_Array v_T v_N =
+  Rust_primitives.Slice.array_from_fn #v_T
+    v_N
+    #(usize -> v_T)
+    (fun temp_0_ ->
+        let _:usize = temp_0_ in
+        Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve v_val <: v_T)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) usize =
@@ -2701,6 +2707,7 @@ let impl__map
 let impl_1__cloned
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Clone.t_Clone v_T)
       (self: t_Bound v_T)
     : t_Bound v_T =
   match self <: t_Bound v_T with
@@ -3604,7 +3611,8 @@ let impl_10__copied
       (self: t_Option v_T)
     : t_Option v_T =
   match self <: t_Option v_T with
-  | Option_Some x -> Option_Some x <: t_Option v_T
+  | Option_Some x ->
+    Option_Some (Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x) <: t_Option v_T
   | Option_None  -> Option_None <: t_Option v_T
 
 /// See [`std::option::Option::flatten_ref`]

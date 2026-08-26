@@ -28,15 +28,26 @@ def array.TryFromSliceError := Unit
 
 /-
 /-- [core_models::array::Array]
-    Source: 'core-models/src/core/array.rs', lines 16:0-16:40 -/
+    Source: 'core-models/src/core/array.rs', lines 10:0-10:40 -/
 @[reducible]
 def array.Array (T : Type) (N : Std.Usize) := Array T N
 -/
 
 /-- [core_models::array::{core_models::array::Array<T, N>}::each_ref::closure]
-    Source: 'core-models/src/core/array.rs', lines 69:22-69:43 -/
+    Source: 'core-models/src/core/array.rs', lines 63:22-63:43 -/
 @[reducible]
 def array.Array.each_ref.closure (T : Type) (N : Std.Usize) := Array T N
+
+/-- Trait declaration: [core_models::clone::Clone]
+    Source: 'core-models/src/core/clone.rs', lines 19:0-22:1
+    Visibility: public -/
+structure clone.Clone (Self : Type) where
+  clone : Self → Result Self
+
+/-- [core_models::array::repeat::closure]
+    Source: 'core-models/src/core/array.rs', lines 90:18-90:54 -/
+@[reducible]
+def array.repeat.closure (T : Type) (N : Std.Usize) := T
 
 /-- Trait declaration: [core_models::iter::traits::collect::IntoIterator]
     Source: 'core-models/src/core/iter.rs', lines 379:8-388:9
@@ -46,7 +57,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → Result Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 209:4-209:55
+    Source: 'core-models/src/core/array.rs', lines 205:4-205:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -58,11 +69,10 @@ def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
 structure ops.index.Index (Self : Type) (Idx : Type) (Self_Output : Type) where
   index : Self → Idx → Result Self_Output
 
-/-- Trait declaration: [core_models::clone::Clone]
-    Source: 'core-models/src/core/clone.rs', lines 13:0-16:1
-    Visibility: public -/
-structure clone.Clone (Self : Type) where
-  clone : Self → Result Self
+/-- [core_models::array::{impl core_models::clone::Clone for [T; N]}::clone::closure]
+    Source: 'core-models/src/core/array.rs', lines 175:22-175:74 -/
+@[reducible]
+def array.CloneArray.clone.closure (T : Type) (N : Std.Usize) := Array T N
 
 /-- Trait declaration: [core_models::cmp::PartialEq]
     Source: 'core-models/src/core/cmp.rs', lines 6:0-24:1
@@ -98,13 +108,13 @@ structure borrow.BorrowMut (Self : Type) (Borrowed : Type) where
   borrow_mut : Self → Result (Borrowed × (Borrowed → Self))
 
 /-- Trait declaration: [core_models::clone::TrivialClone]
-    Source: 'core-models/src/core/clone.rs', lines 30:0-30:32
+    Source: 'core-models/src/core/clone.rs', lines 38:0-38:32
     Visibility: public -/
 structure clone.TrivialClone (Self : Type) where
   CloneInst : clone.Clone Self
 
 /-- Trait declaration: [core_models::clone::UseCloned]
-    Source: 'core-models/src/core/clone.rs', lines 33:0-33:29
+    Source: 'core-models/src/core/clone.rs', lines 41:0-41:29
     Visibility: public -/
 structure clone.UseCloned (Self : Type) where
   CloneInst : clone.Clone Self
@@ -272,30 +282,30 @@ structure error.ErrorDefaults (Self : Type) where
   description : Self → Result Str
 
 /-- [core_models::f32::f32]
-    Source: 'core-models/src/core/f32.rs', lines 29:0-29:11 -/
+    Source: 'core-models/src/core/f32.rs', lines 6:0-6:11 -/
 @[reducible]
 def f32.f32 := Unit
 
 /-- [core_models::fmt::Arguments]
-    Source: 'core-models/src/core/fmt.rs', lines 38:0-38:37
+    Source: 'core-models/src/core/fmt.rs', lines 34:0-34:37
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 101:4-108:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 97:4-104:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 110:4-112:5
+    Source: 'core-models/src/core/fmt.rs', lines 106:4-108:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 191:4-195:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 187:4-191:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -303,7 +313,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 197:4-202:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 193:4-198:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -311,7 +321,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 204:4-204:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 200:4-200:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
@@ -658,19 +668,19 @@ def marker.PhantomContravariantLifetime := marker.PhantomContravariant Unit
 def marker.PhantomInvariantLifetime := marker.PhantomInvariant Unit
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
-    Source: 'core-models/src/core/mem.rs', lines 168:4-170:5
+    Source: 'core-models/src/core/mem.rs', lines 165:4-167:5
     Visibility: public -/
 structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
 
 /-- [core_models::mem::maybe_dangling::MaybeDangling]
-    Source: 'core-models/src/core/mem.rs', lines 209:4-209:43
+    Source: 'core-models/src/core/mem.rs', lines 206:4-206:43
     Visibility: public -/
 @[reducible]
 def mem.maybe_dangling.MaybeDangling (P : Type) := P
 
 /-- [core_models::mem::drop_guard::DropGuard]
-    Source: 'core-models/src/core/mem.rs', lines 250:4-256:5
+    Source: 'core-models/src/core/mem.rs', lines 247:4-253:5
     Visibility: public -/
 structure mem.drop_guard.DropGuard (T : Type) (F : Type) where
   inner : T
@@ -1065,14 +1075,14 @@ inductive ops.range.Bound (T : Type) where
 | Unbounded : ops.range.Bound T
 
 /-- Trait declaration: [core_models::ops::range::RangeBounds]
-    Source: 'core-models/src/core/ops.rs', lines 544:4-551:5
+    Source: 'core-models/src/core/ops.rs', lines 547:4-554:5
     Visibility: public -/
 structure ops.range.RangeBounds (Self : Type) (T : Type) where
   start_bound : Self → Result (ops.range.Bound T)
   end_bound : Self → Result (ops.range.Bound T)
 
 /-- Trait declaration: [core_models::ops::range::RangeBoundsDefaults]
-    Source: 'core-models/src/core/ops.rs', lines 557:4-569:5 -/
+    Source: 'core-models/src/core/ops.rs', lines 560:4-572:5 -/
 structure ops.range.RangeBoundsDefaults (Self : Type) (T : Type) where
   RangeBoundsInst : ops.range.RangeBounds Self T
   contains : forall {U : Type} (cmpPartialOrdInst : cmp.PartialOrd T U)
@@ -1081,14 +1091,14 @@ structure ops.range.RangeBoundsDefaults (Self : Type) (T : Type) where
     Bool
 
 /-- Trait declaration: [core_models::ops::range::IntoBounds]
-    Source: 'core-models/src/core/ops.rs', lines 590:4-594:5
+    Source: 'core-models/src/core/ops.rs', lines 593:4-597:5
     Visibility: public -/
 structure ops.range.IntoBounds (Self : Type) (T : Type) where
   RangeBoundsInst : ops.range.RangeBounds Self T
   into_bounds : Self → Result ((ops.range.Bound T) × (ops.range.Bound T))
 
 /-- Trait declaration: [core_models::ops::range::IntoBoundsDefaults]
-    Source: 'core-models/src/core/ops.rs', lines 599:4-605:5 -/
+    Source: 'core-models/src/core/ops.rs', lines 602:4-608:5 -/
 structure ops.range.IntoBoundsDefaults (Self : Type) (T : Type) where
   IntoBoundsInst : ops.range.IntoBounds Self T
   intersect : forall {R : Type} (IntoBoundsInst1 : ops.range.IntoBounds R T)
@@ -1096,7 +1106,7 @@ structure ops.range.IntoBoundsDefaults (Self : Type) (T : Type) where
     (ops.range.Bound T))
 
 /-- [core_models::ops::range::OneSidedRangeBound]
-    Source: 'core-models/src/core/ops.rs', lines 618:4-625:5
+    Source: 'core-models/src/core/ops.rs', lines 621:4-628:5
     Visibility: public -/
 @[discriminant isize]
 inductive ops.range.OneSidedRangeBound where
@@ -1105,26 +1115,26 @@ inductive ops.range.OneSidedRangeBound where
 | EndInclusive : ops.range.OneSidedRangeBound
 
 /-- Trait declaration: [core_models::ops::range::OneSidedRange]
-    Source: 'core-models/src/core/ops.rs', lines 629:4-633:5
+    Source: 'core-models/src/core/ops.rs', lines 632:4-636:5
     Visibility: public -/
 structure ops.range.OneSidedRange (Self : Type) (T : Type) where
   RangeBoundsInst : ops.range.RangeBounds Self T
   bound : Self → Result (ops.range.OneSidedRangeBound × T)
 
 /-- [core_models::option::Iter]
-    Source: 'core-models/src/core/option.rs', lines 664:0-664:39
+    Source: 'core-models/src/core/option.rs', lines 663:0-663:39
     Visibility: public -/
 @[reducible]
 def option.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::option::IntoIter]
-    Source: 'core-models/src/core/option.rs', lines 701:0-701:35
+    Source: 'core-models/src/core/option.rs', lines 700:0-700:35
     Visibility: public -/
 @[reducible]
 def option.IntoIter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::option::OptionFlatten]
-    Source: 'core-models/src/core/option.rs', lines 728:0-728:43
+    Source: 'core-models/src/core/option.rs', lines 727:0-727:43
     Visibility: public -/
 @[reducible]
 def option.OptionFlatten (A : Type) := option.Option A

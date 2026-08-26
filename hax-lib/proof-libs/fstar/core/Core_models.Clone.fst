@@ -10,7 +10,7 @@ class t_Clone self = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl (#v_T: Type0) : t_Clone v_T =
+let clone_identity (#v_T: Type0) : t_Clone v_T =
   {
     f_clone_pre = (fun (self: v_T) -> true);
     f_clone_post = (fun (self: v_T) (out: v_T) -> true);
@@ -34,7 +34,9 @@ class t_UseCloned (v_Self: Type0) = {
 let _ = fun (v_Self:Type0) {|i: t_UseCloned v_Self|} -> i._super_i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1 (#v_T: Type0) : t_TrivialClone v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Clone v_T)
+    : t_TrivialClone v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2 (#v_T: Type0) : t_UseCloned v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Clone v_T)
+    : t_UseCloned v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }
