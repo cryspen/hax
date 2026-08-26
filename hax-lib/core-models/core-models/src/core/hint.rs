@@ -1,29 +1,29 @@
 /// See [`std::hint::black_box`]
-#[hax_lib::ensures(|res| fstar!("$res == $dummy"))]
+#[cfg_attr(hax_backend_fstar, hax_lib::ensures(|res| fstar!("$res == $dummy")))]
 pub fn black_box<T>(dummy: T) -> T {
     dummy
 }
 
 /// See [`std::hint::must_use`]
-#[hax_lib::ensures(|res| fstar!("$res == $value"))]
+#[cfg_attr(hax_backend_fstar, hax_lib::ensures(|res| fstar!("$res == $value")))]
 pub fn must_use<T>(value: T) -> T {
     value
 }
 
 /// See [`std::hint::likely`]
-#[hax_lib::ensures(|res| fstar!("$res == $b"))]
+#[cfg_attr(hax_backend_fstar, hax_lib::ensures(|res| fstar!("$res == $b")))]
 pub const fn likely(b: bool) -> bool {
     b
 }
 
 /// See [`std::hint::unlikely`]
-#[hax_lib::ensures(|res| fstar!("$res == $b"))]
+#[cfg_attr(hax_backend_fstar, hax_lib::ensures(|res| fstar!("$res == $b")))]
 pub const fn unlikely(b: bool) -> bool {
     b
 }
 
 /// See [`std::hint::select_unpredictable`]
-#[hax_lib::ensures(|res| fstar!("$res == (if $condition then $true_val else $false_val)"))]
+#[cfg_attr(hax_backend_fstar, hax_lib::ensures(|res| fstar!("$res == (if $condition then $true_val else $false_val)")))]
 pub fn select_unpredictable<T>(condition: bool, true_val: T, false_val: T) -> T {
     if condition { true_val } else { false_val }
 }
