@@ -3262,9 +3262,11 @@ impl ProVerifBackend {
             if let Some(shapes) = result_shapes.get(&name) {
                 decls.push(format!("(* result destructured as: {} *)", shapes.join("; ")));
             }
-            if info.arity == 0 {
+            if info.arity == 0 && !info.applied {
                 decls.push(format!("const {name}: bitstring."));
             } else {
+                // An external applied at a call site (even as `NAME()`) needs a
+                // `fun`, not a `const` — a constant cannot be applied.
                 let args = std::iter::repeat_n("bitstring", info.arity)
                     .collect::<Vec<_>>()
                     .join(", ");
