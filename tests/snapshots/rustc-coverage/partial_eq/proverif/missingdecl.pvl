@@ -10,9 +10,6 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 fun core__cmp__PartialOrd__lt(bitstring, bitstring): bitstring.
-fun rust_primitives__hax__Tuple3__Tuple3__0(bitstring): bitstring.
-fun rust_primitives__hax__Tuple3__Tuple3__1(bitstring): bitstring.
-fun rust_primitives__hax__Tuple3__Tuple3__2(bitstring): bitstring.
 const string_lit___x0a: bitstring.
 const string_lit___x20_x3c_x20: bitstring.
 const string_lit___x20_x3d_x20: bitstring.

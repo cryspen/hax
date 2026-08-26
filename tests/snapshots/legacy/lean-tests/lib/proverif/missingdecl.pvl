@@ -28,8 +28,6 @@ fun new_tests__legacy__lean_tests__lib__traits__default__Easy__dft(bitstring): b
 fun new_tests__legacy__lean_tests__lib__traits__trait_level_args__T1__f1(bitstring): bitstring.
 fun new_tests__legacy__lean_tests__lib__traits__trait_level_args__T1__f2(bitstring, bitstring): bitstring.
 fun new_tests__legacy__lean_tests__lib__traits__trait_level_args__T1__f3(bitstring, bitstring, bitstring): bitstring.
-fun rust_primitives__hax__Tuple2__Tuple2__0(bitstring): bitstring.
-fun rust_primitives__hax__Tuple2__Tuple2__1(bitstring): bitstring.
 fun rust_primitives__hax__machine_int__not_kw(bitstring): bitstring.
 const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201: bitstring.
 const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201_x20_x26_x26_x20b_x20_x3d_x3d_x202: bitstring.

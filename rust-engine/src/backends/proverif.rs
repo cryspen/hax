@@ -206,8 +206,18 @@ impl RenderView for ProVerifPrinter {
     /// leading-underscore problem by prepending a stable letter `u`, then
     /// handle keyword clashes with a `_kw` *suffix* (a prefix would just
     /// re-introduce the leading-underscore problem).
+    ///
+    /// A ProVerif identifier is `[A-Za-z0-9_]+` (with the leading-`_` and
+    /// keyword caveats handled below). We therefore map *every* character
+    /// outside that class to `_`. This subsumes the historical
+    /// ` `/`<`/`>` cases and additionally rescues identifiers ProVerif's
+    /// lexer would reject outright: Rust raw-identifier markers
+    /// (`r#unsized`) and non-ASCII names (`申し訳ございません`).
     fn escape(id: &str) -> String {
-        let id = id.replace([' ', '<', '>'], "_");
+        let id: String = id
+            .chars()
+            .map(|c| if c.is_ascii_alphanumeric() || c == '_' { c } else { '_' })
+            .collect();
         if id.is_empty() {
             return "_ERROR_EMPTY_ID_".to_string();
         }
@@ -2953,35 +2963,22 @@ fn sanitize_string_literal(s: &str) -> String {
     out
 }
 
-/// Parse `PRIMITIVES_PVL` once and return the set of `fun NAME(...)`,
-/// `const NAME: ...`, and `reduc forall ...; accessor_NAME(...)` declarations.
-/// We use a simple regex-free scan: any token at the start of a line
-/// after `fun` / `const` / `letfun` (before its `(` or `:` separator).
+/// Parse `PRIMITIVES_PVL` once and return every declared name.
+///
+/// Delegates to [`scan_declared_names`], which recognises `fun` /
+/// `letfun` / `const` *and* `reduc forall ...; NAME(...) = ...`
+/// declarations. This matters: several field/tuple projectors (e.g.
+/// `rust_primitives__hax__Tuple1__Tuple1__0`) are defined in
+/// `primitives.pvl` *only* by a `reduc` equation, with no `fun` head. A
+/// previous bespoke scan here saw only `fun`/`const`/`letfun`, so it
+/// missed those accessors, classified them as undefined externals, and
+/// re-declared them into `missingdecl.pvl` — which then collides with the
+/// real `primitives.pvl` definition (`identifier ... already defined`)
+/// as soon as both are `-lib`'d together.
 fn primitives_pvl_names() -> Vec<String> {
     static NAMES: OnceLock<Vec<String>> = OnceLock::new();
     NAMES
-        .get_or_init(|| {
-            let mut out: Vec<String> = Vec::new();
-            for line in PRIMITIVES_PVL.lines() {
-                let line = line.trim_start();
-                let head = if let Some(rest) = line.strip_prefix("fun ") {
-                    rest
-                } else if let Some(rest) = line.strip_prefix("const ") {
-                    rest
-                } else if let Some(rest) = line.strip_prefix("letfun ") {
-                    rest
-                } else {
-                    continue;
-                };
-                // Identifier ends at first `(`, `:`, ` `, or end-of-line.
-                let end = head.find(['(', ':', ' ']).unwrap_or(head.len());
-                let name = head[..end].trim();
-                if !name.is_empty() {
-                    out.push(name.to_string());
-                }
-            }
-            out
-        })
+        .get_or_init(|| scan_declared_names(PRIMITIVES_PVL))
         .clone()
 }
 

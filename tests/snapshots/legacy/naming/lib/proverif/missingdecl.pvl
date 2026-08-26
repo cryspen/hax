@@ -10,8 +10,6 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 const new_tests__legacy__naming__lib__FooTrait__ASSOCIATED_CONSTANT: bitstring.
-fun rust_primitives__hax__Tuple2__Tuple2__0(bitstring): bitstring.
-fun rust_primitives__hax__Tuple2__Tuple2__1(bitstring): bitstring.
 const string_lit___x0a: bitstring.
 const string_lit___x5b: bitstring.
 const string_lit___x5d_x20a_x3d: bitstring.

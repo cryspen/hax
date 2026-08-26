@@ -12,7 +12,6 @@
 const char_lit__a: bitstring.
 const char_lit__b: bitstring.
 const char_lit__c: bitstring.
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring.
 fun rust_primitives__hax__monomorphized_update_at__update_at_usize(bitstring, bitstring, bitstring): bitstring.
 const string_lit___x0a: bitstring.
 const string_lit__empty: bitstring.

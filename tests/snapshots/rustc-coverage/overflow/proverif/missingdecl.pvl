@@ -10,9 +10,6 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 const core__num__Impl_8__MAX: bitstring.
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring.
-fun rust_primitives__hax__Tuple2__Tuple2__0(bitstring): bitstring.
-fun rust_primitives__hax__Tuple2__Tuple2__1(bitstring): bitstring.
 const string_lit__Result_x3a_x20: bitstring.
 const string_lit___x0a: bitstring.
 const string_lit___x20_x2b_x20: bitstring.

@@ -12,7 +12,6 @@
 fun alloc__string__Impl__len(bitstring): bitstring.
 fun core__result__Impl__or_else(bitstring, bitstring): bitstring.
 fun core__str__Impl__len(bitstring): bitstring.
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring.
 const string_lit__Error_x20loading_x20configs_x3a_x20: bitstring.
 const string_lit__Starting_x20service_x0a: bitstring.
 const string_lit___x0a: bitstring.

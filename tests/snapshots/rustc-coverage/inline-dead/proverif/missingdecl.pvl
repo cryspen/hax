@@ -10,7 +10,6 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 fun core__ops__function__Fn__call(bitstring, bitstring): bitstring.
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring.
 const string_lit___x0a: bitstring.
 const string_lit__assertion_x20failed_x3a_x20x: bitstring.
 const string_lit__empty: bitstring.
