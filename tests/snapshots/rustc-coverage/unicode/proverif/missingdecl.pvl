@@ -9,8 +9,13 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__unicode__main *)
 const char_lit___xd0_x90: bitstring.
+(* referenced by: new_tests__rustc_coverage__unicode__main *)
 const char_lit___xd0_xaf: bitstring.
+(* referenced by: new_tests__rustc_coverage__unicode__u_________ *)
 fun core__hint__black_box(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__unicode__main *)
 fun core__ops__range__Impl_7__new_kw(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__unicode__main *)
 const string_lit__true_x0a: bitstring.

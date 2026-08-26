@@ -9,4 +9,5 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__proverif_generics__lib__make_token *)
 const nat_42: bitstring.

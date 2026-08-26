@@ -9,5 +9,7 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__proverif_integers__lib__big *)
 const nat_18446744073709551615: bitstring.
+(* referenced by: new_tests__legacy__proverif_integers__lib__negative *)
 const nat_neg_5: bitstring.

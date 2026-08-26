@@ -9,11 +9,19 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__overflow__might_overflow *)
 const core__num__Impl_8__MAX: bitstring.
+(* referenced by: new_tests__rustc_coverage__overflow__main *)
 const string_lit__Result_x3a_x20: bitstring.
+(* referenced by: new_tests__rustc_coverage__overflow__main *)
 const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__overflow__might_overflow *)
 const string_lit___x20_x2b_x20: bitstring.
+(* referenced by: new_tests__rustc_coverage__overflow__might_overflow *)
 const string_lit___x20overflow_x3f_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__overflow__might_overflow *)
 const string_lit__continuing_x20after_x20overflow_x20check_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__overflow__might_overflow *)
 const string_lit__does_x20: bitstring.
+(* referenced by: new_tests__rustc_coverage__overflow__might_overflow *)
 const string_lit__this_x20will_x20probably_x20overflow_x0a: bitstring.

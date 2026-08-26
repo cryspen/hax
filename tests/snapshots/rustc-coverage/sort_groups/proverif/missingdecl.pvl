@@ -9,8 +9,13 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__sort_groups__generic_fn *)
 fun core__any__type_name(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__sort_groups__main *)
 fun core__hint__black_box(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__sort_groups__main *)
 fun std__env__args(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__sort_groups__generic_fn *)
 const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__sort_groups__generic_fn *)
 const string_lit__empty: bitstring.

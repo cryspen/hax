@@ -9,4 +9,5 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__macro_in_closure__NO_BLOCK, new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK *)
 const string_lit__hello_x0a: bitstring.

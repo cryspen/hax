@@ -9,4 +9,5 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__closure_unit_return__explicit_unit, new_tests__rustc_coverage__closure_unit_return__implicit_unit *)
 fun core__mem__drop(bitstring): bitstring.

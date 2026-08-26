@@ -9,5 +9,7 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__assert_ne__main *)
 fun core__hint__black_box(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__assert_ne__main *)
 const core__panicking__AssertKind__Ne: bitstring.

@@ -9,4 +9,5 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__unreachable__main *)
 fun core__hint__black_box(bitstring): bitstring.

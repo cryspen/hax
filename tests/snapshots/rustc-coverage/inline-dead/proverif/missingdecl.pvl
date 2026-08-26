@@ -9,8 +9,13 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__inline_dead__main *)
 fun core__ops__function__Fn__call(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__inline_dead__dead *)
 const nat_42: bitstring.
+(* referenced by: new_tests__rustc_coverage__inline_dead__main *)
 const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__inline_dead__main *)
 const string_lit__assertion_x20failed_x3a_x20x: bitstring.
+(* referenced by: new_tests__rustc_coverage__inline_dead__main *)
 const string_lit__empty: bitstring.

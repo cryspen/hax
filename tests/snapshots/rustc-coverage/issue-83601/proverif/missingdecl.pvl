@@ -9,6 +9,9 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__issue_83601__main *)
 const core__panicking__AssertKind__Ne: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_83601__main *)
 const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_83601__main *)
 const string_lit__empty: bitstring.

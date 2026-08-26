@@ -9,9 +9,15 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__mut_ref_functionalization__lib__f, new_tests__legacy__mut_ref_functionalization__lib__g *)
 fun core__slice__Impl__swap(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__mut_ref_functionalization__lib__j *)
 const nat_123: bitstring.
+(* referenced by: new_tests__legacy__mut_ref_functionalization__lib__k *)
 const nat_12345: bitstring.
+(* referenced by: new_tests__legacy__mut_ref_functionalization__lib__index_mutation_unsize *)
 const nat_42: bitstring.
+(* referenced by: new_tests__legacy__mut_ref_functionalization__lib__index_mutation, new_tests__legacy__mut_ref_functionalization__lib__index_mutation_unsize *)
 fun rust_primitives__hax__monomorphized_update_at__update_at_range(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__mut_ref_functionalization__lib__Impl__update, new_tests__legacy__mut_ref_functionalization__lib__array, new_tests__legacy__mut_ref_functionalization__lib__foo, new_tests__legacy__mut_ref_functionalization__lib__index_mutation, new_tests__legacy__mut_ref_functionalization__lib__k *)
 fun rust_primitives__hax__monomorphized_update_at__update_at_usize(bitstring, bitstring, bitstring): bitstring.

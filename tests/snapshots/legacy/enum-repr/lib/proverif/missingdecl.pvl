@@ -9,4 +9,5 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__enum_repr__lib__ImplicitReprs__E__AnonConst *)
 const nat_30: bitstring.

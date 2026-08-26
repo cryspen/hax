@@ -9,20 +9,35 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__side_effects__lib__options *)
 fun core__num__Impl_6__wrapping_add(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__add3, new_tests__legacy__side_effects__lib__early_returns, new_tests__legacy__side_effects__lib__local_mutation, new_tests__legacy__side_effects__lib__question_mark *)
 fun core__num__Impl_8__wrapping_add(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__local_mutation *)
 fun core__num__Impl_8__wrapping_sub(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__issue_1083__f *)
 fun core__ops__try_trait__FromResidual__from_residual(bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__issue_1083__f *)
 (* result destructured as: core__ops__control_flow__ControlFlow__Break(_); core__ops__control_flow__ControlFlow__Continue(_) *)
 fun core__ops__try_trait__Try__branch(bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__issue_1299__Impl_1__from *)
 (* result destructured as: core__result__Result__Err(_); core__result__Result__Ok(_) *)
 fun core__option__Impl__ok_or(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__early_returns, new_tests__legacy__side_effects__lib__local_mutation, new_tests__legacy__side_effects__lib__monad_lifting *)
 const nat_123: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__simplifiable_question_mark *)
 const nat_20: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__early_returns *)
 const nat_30: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__issue_1300__fun_kw *)
 const nat_32: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__early_returns *)
 const nat_34: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__question_mark *)
 const nat_40: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__question_mark *)
 const nat_90: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__assign_non_trivial_lhs *)
 fun rust_primitives__hax__Tuple2(bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__assign_non_trivial_lhs *)
 fun rust_primitives__hax__monomorphized_update_at__update_at_usize(bitstring, bitstring, bitstring): bitstring.

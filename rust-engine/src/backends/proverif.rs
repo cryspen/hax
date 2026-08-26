@@ -2806,6 +2806,8 @@ impl Backend for ProVerifBackend {
         printer.opaque_consts = consts;
         // Result shapes at destructuring call sites, for the missingdecl hints.
         let result_shapes = collect_result_shapes(&modules, &printer);
+        // The items referring to each symbol, for the missingdecl provenance.
+        let reference_sources = collect_reference_sources(&modules, &printer);
         // Render the body, harvesting per-item source-span anchors as we go so
         // we can emit a v3 source map alongside `lib.pvl`. `render_with_span_
         // positions` produces text byte-identical to `printer.print(..)` (the
@@ -2832,7 +2834,8 @@ impl Backend for ProVerifBackend {
         // The auto-declared externals go to a SEPARATE `missingdecl.pvl`
         // diagnostic file rather than being silently inlined into lib.pvl,
         // so the unsound stubs are visible and auditable (goal: empty).
-        let missingdecl = self.format_external_decls(&referenced, &result_shapes, &contents);
+        let missingdecl =
+            self.format_external_decls(&referenced, &result_shapes, &reference_sources, &contents);
         // The body is prepended with `HEADER`, so shift the harvested generated
         // line numbers down by the preamble's line count before building the map.
         let header_lines = HEADER.matches('\n').count();
@@ -3205,6 +3208,60 @@ fn collect_references(
     referenced
 }
 
+/// Invert [`collect_references`]: map each referenced name to the emitted
+/// items whose body refers to it. Used to annotate `missingdecl.pvl` with the
+/// provenance of each undefined external. References are attributed to the
+/// item the printer emits: a top-level function or type by its own name, an
+/// impl by each of its methods (each a separate `letfun`).
+fn collect_reference_sources(
+    modules: &[Module],
+    printer: &ProVerifPrinter,
+) -> HashMap<String, Vec<String>> {
+    fn record(
+        sources: &mut HashMap<String, HashSet<String>>,
+        printer: &ProVerifPrinter,
+        source: &str,
+        v: ExternRefCollector,
+    ) {
+        for r in v.calls {
+            sources
+                .entry(printer.render_id(&r.id))
+                .or_default()
+                .insert(source.to_string());
+        }
+        for name in v.lit_consts {
+            sources.entry(name).or_default().insert(source.to_string());
+        }
+    }
+
+    let mut sources: HashMap<String, HashSet<String>> = HashMap::new();
+    for module in modules {
+        for item in &module.items {
+            if let ItemKind::Impl { items, .. } = item.kind() {
+                for ii in items {
+                    if let ImplItemKind::Fn { body, .. } = &ii.kind {
+                        let mut v = ExternRefCollector::default();
+                        v.visit_expr(body);
+                        record(&mut sources, printer, &printer.render_id(&ii.ident), v);
+                    }
+                }
+            } else {
+                let mut v = ExternRefCollector::default();
+                v.visit_item(item);
+                record(&mut sources, printer, &printer.render_id(&item.ident), v);
+            }
+        }
+    }
+    sources
+        .into_iter()
+        .map(|(name, set)| {
+            let mut items: Vec<String> = set.into_iter().collect();
+            items.sort();
+            (name, items)
+        })
+        .collect()
+}
+
 impl ProVerifBackend {
     /// Emit the auto-declared-externals block for the file.
     ///
@@ -3221,6 +3278,7 @@ impl ProVerifBackend {
         &self,
         referenced: &HashMap<String, RefInfo>,
         result_shapes: &HashMap<String, Vec<String>>,
+        reference_sources: &HashMap<String, Vec<String>>,
         rendered: &str,
     ) -> String {
         let mut defined: HashSet<String> = HashSet::new();
@@ -3257,6 +3315,11 @@ impl ProVerifBackend {
         keys.sort();
         for name in keys {
             let info = &referenced[&name];
+            // Record which emitted items refer to this external, so a reader can
+            // locate the call sites a hand-written definition has to satisfy.
+            if let Some(items) = reference_sources.get(&name) {
+                decls.push(format!("(* referenced by: {} *)", items.join(", ")));
+            }
             // Record the result shape a hand-written or imported definition must
             // produce, taken from how call sites destructure this symbol.
             if let Some(shapes) = result_shapes.get(&name) {

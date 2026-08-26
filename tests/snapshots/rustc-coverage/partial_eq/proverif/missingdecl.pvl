@@ -9,8 +9,13 @@
 (* correct. Declared WITHOUT `[data]` because the real nature    *)
 (* (one-way fun / data constructor / letfun) is unknown.         *)
 (*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__partial_eq__main *)
 fun core__cmp__PartialOrd__lt(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__partial_eq__main *)
 const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__partial_eq__main *)
 const string_lit___x20_x3c_x20: bitstring.
+(* referenced by: new_tests__rustc_coverage__partial_eq__main *)
 const string_lit___x20_x3d_x20: bitstring.
+(* referenced by: new_tests__rustc_coverage__partial_eq__main *)
 const string_lit__empty: bitstring.
