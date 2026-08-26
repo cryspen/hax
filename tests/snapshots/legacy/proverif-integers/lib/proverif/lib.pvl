@@ -1,0 +1,40 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
+
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry must be supplied by hand or by another crate's
+  extraction (e.g. a separately-extracted dependency). The goal is
+  for `missingdecl.pvl` to be EMPTY — anything in it is a reachable
+  definition that was silently stubbed out.
+*)
+
+(* src: src/legacy/proverif-integers/lib.rs:8 new_tests__legacy__proverif_integers__lib__small *)
+letfun new_tests__legacy__proverif_integers__lib__small(wildcard: bitstring) = nat_3.
+(* src: src/legacy/proverif-integers/lib.rs:12 new_tests__legacy__proverif_integers__lib__big *)
+letfun new_tests__legacy__proverif_integers__lib__big(wildcard: bitstring) =
+  nat_18446744073709551615.
+(* src: src/legacy/proverif-integers/lib.rs:16 new_tests__legacy__proverif_integers__lib__negative *)
+letfun new_tests__legacy__proverif_integers__lib__negative(wildcard: bitstring) = nat_neg_5.
+(* src: src/legacy/proverif-integers/lib.rs:20 new_tests__legacy__proverif_integers__lib__increment *)
+letfun new_tests__legacy__proverif_integers__lib__increment(n: bitstring) =
+  rust_primitives__hax__machine_int__add(n, nat_1).
+(* src: src/legacy/proverif-integers/lib.rs:24 new_tests__legacy__proverif_integers__lib__decrement *)
+letfun new_tests__legacy__proverif_integers__lib__decrement(n: bitstring) =
+  rust_primitives__hax__machine_int__sub(n, nat_1).
+(* src: src/legacy/proverif-integers/lib.rs:28 new_tests__legacy__proverif_integers__lib__opaque_sum *)
+letfun new_tests__legacy__proverif_integers__lib__opaque_sum(a: bitstring, b: bitstring) =
+  rust_primitives__hax__machine_int__add(a, b).
+(* src: src/legacy/proverif-integers/lib.rs:32 new_tests__legacy__proverif_integers__lib__head *)
+letfun new_tests__legacy__proverif_integers__lib__head(xs: bitstring) =
+  core__ops__index__Index__index(xs, nat_0).
