@@ -125,12 +125,8 @@ impl Diagnostics {
         Self(map)
     }
 
-    /// Removes a diagnostic from Self if the diagnostic is for the item
-    /// `item_id` (or below), and if the diagnostic is tagged with an error that
-    /// matches `error_code`.
-    /// Returns `Some(_)` if a matching diagnostic was found.
-    /// Removes (and returns) a diagnostic that matches the provided item and
-    /// error code, if present.
+    /// Removes and returns a diagnostic for `item_id` (or one of its
+    /// descendants) that is tagged with `error_code`, if one is present.
     pub fn remove(&mut self, item_id: &DefId, error_code: &ErrorCode) -> Option<Diagnostic> {
         if let Some(diags) = self.0.get_mut(error_code)
             && let Some((i, diag)) = diags
