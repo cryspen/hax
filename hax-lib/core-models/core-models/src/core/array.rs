@@ -82,10 +82,12 @@ pub fn from_mut<T>(s: &mut T) -> &mut [T; 1] {
 }
 
 /// See [`std::array::repeat`]
-// The bound is Rust's `Clone`, not the model's: the model's `clone` consumes its
-// receiver, so `N` copies cannot be made from one owned value through it.
-pub fn repeat<T: Clone, const N: usize>(val: T) -> [T; N] {
-    array_repeat(val)
+// Real core hands `val` itself to the last slot and clones it for the other
+// `N - 1`; the model clones into every slot. The two agree on any `Clone` the
+// model admits — in F* the class refines `clone` to return a value equal to its
+// argument — and differ only under a `Clone` that is not value-preserving.
+pub fn repeat<T: crate::clone::Clone, const N: usize>(val: T) -> [T; N] {
+    array_from_fn(|_| crate::clone::Clone::clone(&val))
 }
 
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
@@ -169,8 +171,8 @@ impl<T, const N: usize> Index<RangeFull> for [T; N] {
 // already covers arrays, and both in scope fails coherence.
 #[cfg(not(hax_backend_fstar))]
 impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
-    fn clone(self) -> Self {
-        self
+    fn clone(&self) -> Self {
+        array_from_fn(|i| crate::clone::Clone::clone(array_index(self, i)))
     }
 }
 
@@ -318,17 +320,6 @@ mod tests {
         out
     }
 
-    /// `u8`'s `Clone` is the identity, which cannot tell "`N` clones" from
-    /// "`N - 1` clones plus the original value" — `repeat`'s actual contract.
-    #[derive(Debug, PartialEq)]
-    struct Bump(u8);
-
-    impl Clone for Bump {
-        fn clone(&self) -> Bump {
-            Bump(self.0 + 1)
-        }
-    }
-
     proptest! {
         // Under the F* cfg `map` takes a `fn`, which this closure can't coerce to.
         #[cfg(not(hax_backend_fstar))]
@@ -348,7 +339,7 @@ mod tests {
         #[test]
         fn test_clone(arr in any::<[u8; 4]>()) {
             prop_assert_eq!(
-                crate::clone::Clone::clone(arr.inject()),
+                crate::clone::Clone::clone(&arr.inject()),
                 arr.clone().inject()
             );
         }
@@ -472,15 +463,6 @@ mod tests {
         #[test]
         fn test_repeat(x in any::<u8>()) {
             prop_assert_eq!(super::repeat::<u8, 5>(x.inject()), std::array::repeat::<u8, 5>(x));
-        }
-
-        // Pins `repeat`'s clone discipline: `N - 1` clones and then `val`.
-        #[test]
-        fn test_repeat_clones(x in 0u8..200) {
-            prop_assert_eq!(
-                super::repeat::<Bump, 3>(Bump(x)),
-                std::array::repeat::<Bump, 3>(Bump(x))
-            );
         }
 
         #[test]

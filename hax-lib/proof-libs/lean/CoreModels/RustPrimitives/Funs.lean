@@ -270,24 +270,6 @@ def rust_primitives.slice.array_from_mut
   T → Result ((Array T 1#usize) × (Array T 1#usize → T)) :=
   fun x => ok (Array.repeat 1#usize x, fun a => a.val.headD x)
 
-/-- [rust_primitives::slice::array_repeat]: like `core::array::repeat`, the last
-    element is `val` itself and the other `N - 1` are clones, so `clone`'s
-    effects are observable and cannot be skipped. -/
-@[rust_fun "rust_primitives::slice::array_repeat"]
-def rust_primitives.slice.array_repeat
-  {T : Type} (N : Std.Usize) (corecloneCloneInst : core.clone.Clone T) :
-  T → Result (Array T N) := fun x =>
-  if hz : N.val = 0 then ok ⟨[], by simp only [List.length_nil]; omega⟩
-  else
-    match h : (List.replicate (N.val - 1) x).mapM corecloneCloneInst.clone with
-    | ok cloned => ok ⟨cloned ++ [x], by
-        have hl := List.mapM_Result_length h
-        simp only [List.length_replicate] at hl
-        simp only [List.length_append, List.length_cons, List.length_nil]
-        omega⟩
-    | fail e => fail e
-    | div => div
-
 /-- [rust_primitives::sequence::seq_from_slice]:
     Source: 'rust_primitives/src/lib.rs', lines 51:4-51:48
     Name pattern: [rust_primitives::sequence::seq_from_slice]

@@ -490,7 +490,7 @@ impl<T> Default for Option<T> {
 #[cfg(not(hax_backend_fstar))]
 #[hax_lib::attributes]
 impl<T: super::clone::Clone> super::clone::Clone for Option<T> {
-    fn clone(self) -> Self {
+    fn clone(&self) -> Self {
         match self {
             Self::Some(arg0) => Self::Some(arg0.clone()),
             Self::None => Self::None,
@@ -1297,11 +1297,13 @@ mod tests {
             ));
         }
 
+        // Same `cfg` as the impl it exercises: under the F* cfg `Clone` is a
+        // blanket identity impl, and `Option` has no impl of its own.
+        #[cfg(not(hax_backend_fstar))]
         #[test]
         fn test_option_clone(x in any::<Option<u8>>()) {
-            // `core_models`' `Clone::clone` takes `self` by value.
             prop_assert_eq!(
-                <super::Option<u8> as crate::clone::Clone>::clone(x.inject()),
+                <super::Option<u8> as crate::clone::Clone>::clone(&x.inject()),
                 x.clone().inject()
             );
         }

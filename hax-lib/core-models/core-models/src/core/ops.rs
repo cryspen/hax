@@ -1269,7 +1269,7 @@ mod tests {
 
     #[cfg(not(hax_backend_fstar))]
     impl crate::clone::Clone for Bumped {
-        fn clone(self) -> Bumped {
+        fn clone(&self) -> Bumped {
             Bumped(self.0.wrapping_add(1))
         }
     }

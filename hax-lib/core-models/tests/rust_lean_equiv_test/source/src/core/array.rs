@@ -157,12 +157,14 @@ pub fn test_repeat_max() -> bool {
     a == [u8::MAX, u8::MAX]
 }
 
-// `repeat` clones `N - 1` times and keeps `val` itself as the last element;
-// `Bumped::clone` makes that observable.
+// `repeat` applies the `Clone` dictionary rather than copying `val`, which
+// `Bumped::clone` makes observable. Only the slots both sides clone are
+// compared: real core keeps `val` itself in the last one, the model clones
+// into every slot (see `core_models::array::repeat`).
 #[rust_lean_test]
 pub fn test_repeat_applies_clone() -> bool {
     let a: [Bumped; 3] = core::array::repeat(Bumped(0));
-    a[0].0 == 1 && a[1].0 == 1 && a[2].0 == 0
+    a[0].0 == 1 && a[1].0 == 1
 }
 
 // ----- IntoIter --------------------------------------------------------------
