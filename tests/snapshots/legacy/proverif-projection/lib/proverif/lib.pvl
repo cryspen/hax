@@ -1,0 +1,36 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
+
+  The `primitives.pvl` library ships with hax and supplies
+  everything the extracted file references that isn't defined
+  below: the public channel `c`, the `construct_fail` sink,
+  `bitstring_default`/`bitstring_err`, the `Some`/`None`/
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
+  every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
+  function the extraction surface needs.
+
+  Any symbol this file references but does NOT define, and that is
+  not in `primitives.pvl`, is listed in the companion
+  `missingdecl.pvl`. That file is a DIAGNOSTIC, not part of the
+  model: each entry is a symbol to define — by hand or by another
+  crate's extraction — or to deliberately leave abstract as an
+  ideal-functionality boundary, where a permanent residue is correct.
+*)
+
+(* src: src/legacy/proverif-projection/lib.rs:8 new_tests__legacy__proverif_projection__lib__Tag *)
+fun new_tests__legacy__proverif_projection__lib__Tag__Tag(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_projection__lib__Tag__Tag__0(
+    new_tests__legacy__proverif_projection__lib__Tag__Tag(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-projection/lib.rs:11 new_tests__legacy__proverif_projection__lib__Impl__DEFAULT *)
+const new_tests__legacy__proverif_projection__lib__Impl__DEFAULT: bitstring.
+(* src: src/legacy/proverif-projection/lib.rs:14 new_tests__legacy__proverif_projection__lib__dead_projection *)
+letfun new_tests__legacy__proverif_projection__lib__dead_projection(wildcard: bitstring) =
+  new_tests__legacy__proverif_projection__lib__Tag__Tag__0(
+    new_tests__legacy__proverif_projection__lib__Impl__DEFAULT
+  ).
+(* src: src/legacy/proverif-projection/lib.rs:18 new_tests__legacy__proverif_projection__lib__live_projection *)
+letfun new_tests__legacy__proverif_projection__lib__live_projection(t: bitstring) =
+  new_tests__legacy__proverif_projection__lib__Tag__Tag__0(t).
