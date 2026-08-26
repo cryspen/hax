@@ -68,6 +68,13 @@ pub struct ProVerifPrinter {
     /// diagnostic and *opacified* to an uninterpreted `fun` so its callers
     /// stay well-formed. Computed up-front by [`collect_recursive_fns`].
     recursive_fns: HashSet<String>,
+    /// Rendered names of field-projection accessors — the `reduc` destructors
+    /// emitted for struct/enum fields, which reduce only on their constructor.
+    field_accessors: HashSet<String>,
+    /// Rendered names of items that render as an opaque `const` (a value with
+    /// no constructor). A field accessor applied to one of these can never
+    /// reduce, so the projection is dead; that pairing is diagnosed.
+    opaque_consts: HashSet<String>,
 }
 
 /// Bundled `primitives.pvl` — declarations for the stable hax extraction
@@ -1381,6 +1388,31 @@ const _: () = {
                 }
 
                 // ===== application fallback =====
+                // A field-projection accessor applied to an opaque constant can
+                // never reduce — the constant has no constructor — so the
+                // projection, and the letfun containing it, are dead. Flag it;
+                // the call still renders so the shape is visible.
+                ExprKind::App { head, args, .. }
+                    if args.len() == 1
+                        && matches!(&*head.kind, ExprKind::GlobalId(g)
+                            if self.field_accessors.contains(&self.render_id(g)))
+                        && matches!(&*args[0].kind, ExprKind::GlobalId(a)
+                            if self.opaque_consts.contains(&self.render_id(a))) =>
+                {
+                    <Self as PrettyAst<A>>::emit_diagnostic(
+                        self,
+                        hax_types::diagnostics::Kind::ExplicitRejection {
+                            reason: "field projection applied to an opaque constant cannot reduce"
+                                .into(),
+                            issue_id: None,
+                        },
+                    );
+                    let head_doc = match &*head.kind {
+                        ExprKind::GlobalId(g) => docs![g],
+                        _ => docs![head],
+                    };
+                    docs![head_doc, paren_list!(args.iter().map(|a| docs![a]))]
+                }
                 ExprKind::App { head, args, .. } => {
                     // Render a `GlobalId` head as the bare name (an application
                     // head is always applied, so it bypasses the higher-order
@@ -2768,6 +2800,11 @@ impl Backend for ProVerifBackend {
         // so the item printer can opacify them — ProVerif has no recursive
         // letfuns.
         printer.recursive_fns = collect_recursive_fns(&modules, &printer);
+        // Collect field-projection accessors and opaque constants so the item
+        // printer can flag a projection that can never reduce.
+        let (accessors, consts) = collect_accessors_and_consts(&modules, &printer);
+        printer.field_accessors = accessors;
+        printer.opaque_consts = consts;
         // Render the body, harvesting per-item source-span anchors as we go so
         // we can emit a v3 source map alongside `lib.pvl`. `render_with_span_
         // positions` produces text byte-identical to `printer.print(..)` (the
@@ -2907,6 +2944,54 @@ fn topo_sort_impl_items<'a>(
         }
     }
     order.into_iter().map(|i| &items[i]).collect()
+}
+
+/// Collect the rendered names of field-projection accessors (the `reduc`
+/// destructors emitted per struct/enum field) and of items that render as an
+/// opaque `const`. Applying an accessor to an opaque constant can never reduce,
+/// which the item printer diagnoses.
+fn collect_accessors_and_consts(
+    modules: &[Module],
+    printer: &ProVerifPrinter,
+) -> (HashSet<String>, HashSet<String>) {
+    let mut accessors = HashSet::new();
+    let mut consts = HashSet::new();
+    let is_const = |name: &str| !printer.applied_fn_arities.contains_key(name);
+    for module in modules {
+        for item in &module.items {
+            match item.kind() {
+                ItemKind::Type { variants, .. } => {
+                    for v in variants {
+                        for (field, _, _) in &v.arguments {
+                            accessors.insert(printer.render_id(field));
+                        }
+                    }
+                }
+                ItemKind::Fn { name, params, .. } if params.is_empty() => {
+                    let rendered = printer.render_id(name);
+                    if is_const(&rendered) {
+                        consts.insert(rendered);
+                    }
+                }
+                ItemKind::Impl { items, .. } => {
+                    for ii in items {
+                        let name = printer.render_id(&ii.ident);
+                        let is_nullary_fn =
+                            matches!(&ii.kind, ImplItemKind::Fn { params, .. } if params.is_empty());
+                        let is_assoc_const = matches!(
+                            &ii.kind,
+                            ImplItemKind::Resugared(ResugaredImplItemKind::Constant { .. })
+                        );
+                        if (is_nullary_fn || is_assoc_const) && is_const(&name) {
+                            consts.insert(name);
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    (accessors, consts)
 }
 
 /// Compute the set of functions that sit in a call-graph cycle — i.e. that
