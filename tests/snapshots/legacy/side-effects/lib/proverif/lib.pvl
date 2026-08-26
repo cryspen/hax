@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -88,16 +88,16 @@ letfun new_tests__legacy__side_effects__lib__add3(x: bitstring, y: bitstring, z:
 (* src: src/legacy/side-effects/lib.rs:12 new_tests__legacy__side_effects__lib__local_mutation *)
 (*  Exercise local mutation with control flow and loops *)
 letfun new_tests__legacy__side_effects__lib__local_mutation(x: bitstring) =
-  let y = nat_lit(0) in
-  let x_1 = core__num__Impl_8__wrapping_add(x, nat_lit(1)) in
-  let (=True()) = rust_primitives__hax__machine_int__gt(x_1, nat_lit(3))
-    in (let x_2 = core__num__Impl_8__wrapping_sub(x_1, nat_lit(3)) in
+  let y = nat_0 in
+  let x_1 = core__num__Impl_8__wrapping_add(x, nat_1) in
+  let (=True()) = rust_primitives__hax__machine_int__gt(x_1, nat_3)
+    in (let x_2 = core__num__Impl_8__wrapping_sub(x_1, nat_3) in
     let y_2 = core__num__Impl_8__wrapping_add(
-      rust_primitives__hax__machine_int__div(x_2, nat_lit(2)),
-      nat_lit(2)
+      rust_primitives__hax__machine_int__div(x_2, nat_2),
+      nat_2
     ) in
     let hoist4 = core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      core__ops__range__Range__Range(nat_0, nat_10)
     ) in
     let y_4 = ((let bl__seq0 = (hoist4) in let bl__acc0 = (y_2) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let y_3 = bl__acc0 in
@@ -111,48 +111,48 @@ letfun new_tests__legacy__side_effects__lib__local_mutation(x: bitstring) =
     else (let rust_primitives__hax__Tuple2__Tuple2(
       rust_primitives__hax__Tuple2__Tuple2(x_4: bitstring, y_6: bitstring),
       hoist7: bitstring
-    ) = (let (=nat_lit(12)) = x_1 in
+    ) = (let (=nat_12) = x_1 in
       rust_primitives__hax__Tuple2__Tuple2(
         rust_primitives__hax__Tuple2__Tuple2(x_1, core__num__Impl_8__wrapping_add(x_1, y)),
-        nat_lit(3)
+        nat_3
       )
-    else let (=nat_lit(13)) = x_1 in
-      (let x_3 = core__num__Impl_8__wrapping_add(x_1, nat_lit(1)) in
+    else let (=nat_13) = x_1 in
+      (let x_3 = core__num__Impl_8__wrapping_add(x_1, nat_1) in
       rust_primitives__hax__Tuple2__Tuple2(
         rust_primitives__hax__Tuple2__Tuple2(x_3, y),
         new_tests__legacy__side_effects__lib__add3(
           x_1,
-          core__num__Impl_8__wrapping_add(nat_lit(123), x_3),
+          core__num__Impl_8__wrapping_add(nat_123, x_3),
           x_3
         )
       ))
     else rust_primitives__hax__Tuple2__Tuple2(
       rust_primitives__hax__Tuple2__Tuple2(x_1, y),
-      nat_lit(0)
+      nat_0
     )) in core__num__Impl_8__wrapping_add(hoist7, y_6) else bitstring_err()).
 (* src: src/legacy/side-effects/lib.rs:49 new_tests__legacy__side_effects__lib__early_returns *)
 (*  Exercise early returns with control flow and loops *)
 letfun new_tests__legacy__side_effects__lib__early_returns(x: bitstring) =
-  let (=True()) = rust_primitives__hax__machine_int__gt(x, nat_lit(3))
-    in nat_lit(0)
-    else (let (=True()) = rust_primitives__hax__machine_int__gt(x, nat_lit(30))
-      in (let (=True()) = True() in nat_lit(34)
+  let (=True()) = rust_primitives__hax__machine_int__gt(x, nat_3)
+    in nat_0
+    else (let (=True()) = rust_primitives__hax__machine_int__gt(x, nat_30)
+      in (let (=True()) = True() in nat_34
       else let rust_primitives__hax__Tuple2__Tuple2(
         x_1: bitstring,
         hoist11: bitstring
-      ) = rust_primitives__hax__Tuple2__Tuple2(x, nat_lit(3)) in core__num__Impl_8__wrapping_add(
-        core__num__Impl_8__wrapping_add(nat_lit(123), hoist11),
+      ) = rust_primitives__hax__Tuple2__Tuple2(x, nat_3) in core__num__Impl_8__wrapping_add(
+        core__num__Impl_8__wrapping_add(nat_123, hoist11),
         x_1
       ) else bitstring_err())
-      else (let x_2 = rust_primitives__hax__machine_int__add(x, nat_lit(9)) in
+      else (let x_2 = rust_primitives__hax__machine_int__add(x, nat_9) in
       let rust_primitives__hax__Tuple2__Tuple2(
         x_3: bitstring,
         hoist11_1: bitstring
       ) = rust_primitives__hax__Tuple2__Tuple2(
         x_2,
-        rust_primitives__hax__machine_int__add(x_2, nat_lit(1))
+        rust_primitives__hax__machine_int__add(x_2, nat_1)
       ) in core__num__Impl_8__wrapping_add(
-        core__num__Impl_8__wrapping_add(nat_lit(123), hoist11_1),
+        core__num__Impl_8__wrapping_add(nat_123, hoist11_1),
         x_3
       ) else bitstring_err())).
 (* src: src/legacy/side-effects/lib.rs:69 new_tests__legacy__side_effects__lib__simplifiable_return *)
@@ -161,12 +161,12 @@ letfun new_tests__legacy__side_effects__lib__simplifiable_return(
   c2: bitstring,
   c3: bitstring
 ) =
-  let x = nat_lit(0) in
+  let x = nat_0 in
   let (=True()) = c1
     in (let (=True()) = c2
-      in (let x_1 = rust_primitives__hax__machine_int__add(x, nat_lit(10)) in
-      let (=True()) = c3 in nat_lit(1) else rust_primitives__hax__machine_int__add(x_1, nat_lit(1)))
-      else rust_primitives__hax__machine_int__add(x, nat_lit(1)))
+      in (let x_1 = rust_primitives__hax__machine_int__add(x, nat_10) in
+      let (=True()) = c3 in nat_1 else rust_primitives__hax__machine_int__add(x_1, nat_1))
+      else rust_primitives__hax__machine_int__add(x, nat_1))
     else x.
 (* src: src/legacy/side-effects/lib.rs:83 new_tests__legacy__side_effects__lib__simplifiable_question_mark *)
 letfun new_tests__legacy__side_effects__lib__simplifiable_question_mark(
@@ -176,16 +176,16 @@ letfun new_tests__legacy__side_effects__lib__simplifiable_question_mark(
   let (=True()) = c
     in (let Some(hoist16) = x in
       Some(rust_primitives__hax__machine_int__add(
-        rust_primitives__hax__machine_int__add(hoist16, nat_lit(10)),
-        nat_lit(20)
+        rust_primitives__hax__machine_int__add(hoist16, nat_10),
+        nat_20
       ))
     else let None() = x in None()
     else bitstring_err())
-    else Some(rust_primitives__hax__machine_int__add(nat_lit(0), nat_lit(20))).
+    else Some(rust_primitives__hax__machine_int__add(nat_0, nat_20)).
 (* src: src/legacy/side-effects/lib.rs:90 new_tests__legacy__side_effects__lib__direct_result_question_mark *)
 (*  Question mark without error coercion *)
 letfun new_tests__legacy__side_effects__lib__direct_result_question_mark(y: bitstring) =
-  let wildcard: bitstring = y in nat_lit(0).
+  let wildcard: bitstring = y in nat_0.
 (* src: src/legacy/side-effects/lib.rs:96 new_tests__legacy__side_effects__lib__direct_result_question_mark_coercion *)
 (*  Question mark with an error coercion *)
 letfun new_tests__legacy__side_effects__lib__direct_result_question_mark_coercion(y: bitstring) =
@@ -194,10 +194,10 @@ letfun new_tests__legacy__side_effects__lib__direct_result_question_mark_coercio
 (*  Test question mark on `Option`s with some control flow *)
 letfun new_tests__legacy__side_effects__lib__options(x: bitstring, y: bitstring, z: bitstring) =
   let Some(hoist21) = x in
-    (let (=True()) = rust_primitives__hax__machine_int__gt(hoist21, nat_lit(10))
+    (let (=True()) = rust_primitives__hax__machine_int__gt(hoist21, nat_10)
       in (let Some(hoist23) = x in
-        (let Some(hoist29) = Some(core__num__Impl_6__wrapping_add(hoist23, nat_lit(3))) in
-          (let (=nat_lit(3)) = hoist29 in
+        (let Some(hoist29) = Some(core__num__Impl_6__wrapping_add(hoist23, nat_3)) in
+          (let (=nat_3) = hoist29 in
             (let Some(some) = None() in
               (let Some(hoist30) = x in
                 (let hoist32 = core__num__Impl_6__wrapping_add(some, hoist30) in
@@ -208,15 +208,12 @@ letfun new_tests__legacy__side_effects__lib__options(x: bitstring, y: bitstring,
               else bitstring_err())
             else let None() = None() in None()
             else bitstring_err())
-          else let (=nat_lit(4)) = hoist29 in
+          else let (=nat_4) = hoist29 in
             (let Some(hoist18) = z in
-              (let hoist20 = (let (=True()) = rust_primitives__hax__machine_int__gt(
-                  hoist18,
-                  nat_lit(4)
-                )
-                in nat_lit(0)
-                else nat_lit(3)) in
-              let v_1 = rust_primitives__hax__machine_int__add(nat_lit(4), hoist20) in
+              (let hoist20 = (let (=True()) = rust_primitives__hax__machine_int__gt(hoist18, nat_4)
+                in nat_0
+                else nat_3) in
+              let v_1 = rust_primitives__hax__machine_int__add(nat_4, hoist20) in
               let Some(hoist30_1) = x in
                 (let hoist32_1 = core__num__Impl_6__wrapping_add(v_1, hoist30_1) in
                 let Some(hoist31_1) = y in
@@ -228,20 +225,20 @@ letfun new_tests__legacy__side_effects__lib__options(x: bitstring, y: bitstring,
             else let None() = z in None()
             else bitstring_err())
           else let Some(hoist30_2) = x in
-            (let hoist32_2 = core__num__Impl_6__wrapping_add(nat_lit(12), hoist30_2) in
+            (let hoist32_2 = core__num__Impl_6__wrapping_add(nat_12, hoist30_2) in
             let Some(hoist31_2) = y in Some(core__num__Impl_6__wrapping_add(hoist32_2, hoist31_2))
             else let None() = y in None()
             else bitstring_err())
           else let None() = x in None()
           else bitstring_err())
-        else let None() = Some(core__num__Impl_6__wrapping_add(hoist23, nat_lit(3))) in None()
+        else let None() = Some(core__num__Impl_6__wrapping_add(hoist23, nat_3)) in None()
         else bitstring_err())
       else let None() = x in None()
       else bitstring_err())
       else (let Some(hoist26) = x in
         (let Some(hoist25) = y in
           (let Some(hoist29_1) = Some(core__num__Impl_6__wrapping_add(hoist26, hoist25)) in
-            (let (=nat_lit(3)) = hoist29_1 in
+            (let (=nat_3) = hoist29_1 in
               (let Some(some_1) = None() in
                 (let Some(hoist30_3) = x in
                   (let hoist32_3 = core__num__Impl_6__wrapping_add(some_1, hoist30_3) in
@@ -253,15 +250,15 @@ letfun new_tests__legacy__side_effects__lib__options(x: bitstring, y: bitstring,
                 else bitstring_err())
               else let None() = None() in None()
               else bitstring_err())
-            else let (=nat_lit(4)) = hoist29_1 in
+            else let (=nat_4) = hoist29_1 in
               (let Some(hoist18_1) = z in
                 (let hoist20_1 = (let (=True()) = rust_primitives__hax__machine_int__gt(
                     hoist18_1,
-                    nat_lit(4)
+                    nat_4
                   )
-                  in nat_lit(0)
-                  else nat_lit(3)) in
-                let v_4 = rust_primitives__hax__machine_int__add(nat_lit(4), hoist20_1) in
+                  in nat_0
+                  else nat_3) in
+                let v_4 = rust_primitives__hax__machine_int__add(nat_4, hoist20_1) in
                 let Some(hoist30_4) = x in
                   (let hoist32_4 = core__num__Impl_6__wrapping_add(v_4, hoist30_4) in
                   let Some(hoist31_4) = y in
@@ -273,7 +270,7 @@ letfun new_tests__legacy__side_effects__lib__options(x: bitstring, y: bitstring,
               else let None() = z in None()
               else bitstring_err())
             else let Some(hoist30_5) = x in
-              (let hoist32_5 = core__num__Impl_6__wrapping_add(nat_lit(12), hoist30_5) in
+              (let hoist32_5 = core__num__Impl_6__wrapping_add(nat_12, hoist30_5) in
               let Some(hoist31_5) = y in Some(core__num__Impl_6__wrapping_add(hoist32_5, hoist31_5))
               else let None() = y in None()
               else bitstring_err())
@@ -290,16 +287,13 @@ letfun new_tests__legacy__side_effects__lib__options(x: bitstring, y: bitstring,
 (* src: src/legacy/side-effects/lib.rs:115 new_tests__legacy__side_effects__lib__question_mark *)
 (*  Test question mark on `Result`s with local mutation *)
 letfun new_tests__legacy__side_effects__lib__question_mark(x: bitstring) =
-  let (=True()) = rust_primitives__hax__machine_int__gt(x, nat_lit(40))
-    in (let x_1 = core__num__Impl_8__wrapping_add(x, nat_lit(3)) in
-    let x_2 = core__num__Impl_8__wrapping_add(
-      x_1,
-      core__num__Impl_8__wrapping_add(x_1, nat_lit(0))
-    ) in
-    let (=True()) = rust_primitives__hax__machine_int__gt(x_2, nat_lit(90))
-      in (let ok = bitstring_err() in core__num__Impl_8__wrapping_add(nat_lit(3), x_2))
-      else core__num__Impl_8__wrapping_add(nat_lit(3), x_2))
-    else core__num__Impl_8__wrapping_add(nat_lit(3), x).
+  let (=True()) = rust_primitives__hax__machine_int__gt(x, nat_40)
+    in (let x_1 = core__num__Impl_8__wrapping_add(x, nat_3) in
+    let x_2 = core__num__Impl_8__wrapping_add(x_1, core__num__Impl_8__wrapping_add(x_1, nat_0)) in
+    let (=True()) = rust_primitives__hax__machine_int__gt(x_2, nat_90)
+      in (let ok = bitstring_err() in core__num__Impl_8__wrapping_add(nat_3, x_2))
+      else core__num__Impl_8__wrapping_add(nat_3, x_2))
+    else core__num__Impl_8__wrapping_add(nat_3, x).
 (* src: src/legacy/side-effects/lib.rs:130 new_tests__legacy__side_effects__lib__A *)
 fun new_tests__legacy__side_effects__lib__A__A(): bitstring [data].
 (* src: src/legacy/side-effects/lib.rs:131 new_tests__legacy__side_effects__lib__B *)
@@ -307,7 +301,7 @@ fun new_tests__legacy__side_effects__lib__B__B(): bitstring [data].
 (* src: src/legacy/side-effects/lib.rs:134 new_tests__legacy__side_effects__lib__monad_lifting *)
 (*  Combine `?` and early return *)
 letfun new_tests__legacy__side_effects__lib__monad_lifting(x: bitstring) =
-  let (=True()) = rust_primitives__hax__machine_int__gt(x, nat_lit(123))
+  let (=True()) = rust_primitives__hax__machine_int__gt(x, nat_123)
     in (let hoist35 = bitstring_err() in hoist35)
     else new_tests__legacy__side_effects__lib__A__A().
 (* src: src/legacy/side-effects/lib.rs:142 new_tests__legacy__side_effects__lib__Bar *)
@@ -379,7 +373,7 @@ letfun new_tests__legacy__side_effects__lib__assign_non_trivial_lhs(foo: bitstri
               new_tests__legacy__side_effects__lib__Foo__Foo__bar(foo_2)
             )
           ),
-          nat_lit(3),
+          nat_3,
           rust_primitives__hax__Tuple2(True())
         )
       )
@@ -390,13 +384,13 @@ letfun new_tests__legacy__side_effects__lib__assign_non_trivial_lhs(foo: bitstri
     new_tests__legacy__side_effects__lib__Foo__Foo__y(foo_3),
     rust_primitives__hax__monomorphized_update_at__update_at_usize(
       new_tests__legacy__side_effects__lib__Foo__Foo__z(foo_3),
-      nat_lit(3),
+      nat_3,
       new_tests__legacy__side_effects__lib__Bar__Bar(
         True(),
         new_tests__legacy__side_effects__lib__Bar__Bar__b(
           core__ops__index__Index__index(
             new_tests__legacy__side_effects__lib__Foo__Foo__z(foo_3),
-            nat_lit(3)
+            nat_3
           )
         )
       )
@@ -413,14 +407,14 @@ letfun new_tests__legacy__side_effects__lib__assign_non_trivial_lhs(foo: bitstri
               new_tests__legacy__side_effects__lib__Foo__Foo__y(foo_4)
             )
           ),
-          nat_lit(3),
+          nat_3,
           new_tests__legacy__side_effects__lib__Bar__Bar(
             new_tests__legacy__side_effects__lib__Bar__Bar__a(
               core__ops__index__Index__index(
                 rust_primitives__hax__Tuple2__Tuple2__1(
                   new_tests__legacy__side_effects__lib__Foo__Foo__y(foo_4)
                 ),
-                nat_lit(3)
+                nat_3
               )
             ),
             rust_primitives__hax__Tuple2(
@@ -431,11 +425,11 @@ letfun new_tests__legacy__side_effects__lib__assign_non_trivial_lhs(foo: bitstri
                       rust_primitives__hax__Tuple2__Tuple2__1(
                         new_tests__legacy__side_effects__lib__Foo__Foo__y(foo_4)
                       ),
-                      nat_lit(3)
+                      nat_3
                     )
                   )
                 ),
-                nat_lit(5),
+                nat_5,
                 rust_primitives__hax__Tuple2(True())
               )
             )
@@ -449,23 +443,23 @@ letfun new_tests__legacy__side_effects__lib__assign_non_trivial_lhs(foo: bitstri
 (* src: src/legacy/side-effects/lib.rs:199 new_tests__legacy__side_effects__lib__issue_1300__fun_kw *)
 letfun new_tests__legacy__side_effects__lib__issue_1300__fun_kw(wildcard: bitstring) =
   let val = (let bl__seq0 = (core__slice__Impl__iter(
-    rust_primitives__hax__repeat(nat_lit(0), nat_lit(5))
+    rust_primitives__hax__repeat(nat_0, nat_5)
   )) in let bl__acc0 = (rust_primitives__hax__array_nil()) in 
   let rust_primitives__hax__array_cons(prev, bl__seq1) = bl__seq0 in (let u__map_acc = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__array_cons(
-    let hoist45 = rust_primitives__hax__repeat(nat_lit(0), nat_lit(32)) in
+    let hoist45 = rust_primitives__hax__repeat(nat_0, nat_32) in
       rust_primitives__hax__Tuple2__Tuple2(prev, hoist45),
     u__map_acc
   )) in
   let rust_primitives__hax__array_cons(prev, bl__seq2) = bl__seq1 in (let u__map_acc = bl__acc1 in
   let bl__acc2 = (rust_primitives__hax__array_cons(
-    let hoist45 = rust_primitives__hax__repeat(nat_lit(0), nat_lit(32)) in
+    let hoist45 = rust_primitives__hax__repeat(nat_0, nat_32) in
       rust_primitives__hax__Tuple2__Tuple2(prev, hoist45),
     u__map_acc
   )) in
   let rust_primitives__hax__array_cons(prev, bl__seq3) = bl__seq2 in (let u__map_acc = bl__acc2 in
   let bl__acc3 = (rust_primitives__hax__array_cons(
-    let hoist45 = rust_primitives__hax__repeat(nat_lit(0), nat_lit(32)) in
+    let hoist45 = rust_primitives__hax__repeat(nat_0, nat_32) in
       rust_primitives__hax__Tuple2__Tuple2(prev, hoist45),
     u__map_acc
   )) in

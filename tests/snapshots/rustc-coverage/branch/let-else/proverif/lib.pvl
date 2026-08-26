@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -26,7 +26,7 @@ letfun new_tests__rustc_coverage__branch__let_else__say(message: bitstring) =
 (* src: src/rustc-coverage/branch/let-else.rs:13 new_tests__rustc_coverage__branch__let_else__let_else *)
 letfun new_tests__rustc_coverage__branch__let_else__let_else(value: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+    core__ops__range__Range__Range(nat_0, nat_1)
   )) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in

@@ -11,3 +11,4 @@
 (*****************************************************************)
 const hax_lib_protocol__ProtocolError__InvalidMessage: bitstring.
 const hax_lib_protocol__ProtocolError__InvalidPrologue: bitstring.
+const nat_42: bitstring.

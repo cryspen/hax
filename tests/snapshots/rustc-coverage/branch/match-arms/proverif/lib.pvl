@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -50,7 +50,7 @@ letfun new_tests__rustc_coverage__branch__match_arms__consume(x: bitstring) =
 (* src: src/rustc-coverage/branch/match-arms.rs:25 new_tests__rustc_coverage__branch__match_arms__match_arms *)
 letfun new_tests__rustc_coverage__branch__match_arms__match_arms(value: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+    core__ops__range__Range__Range(nat_0, nat_1)
   )) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
@@ -66,12 +66,12 @@ letfun new_tests__rustc_coverage__branch__match_arms__match_arms(value: bitstrin
   else let new_tests__rustc_coverage__branch__match_arms__Enum__A(a: bitstring) = value in
     new_tests__rustc_coverage__branch__match_arms__consume(a)
   else bitstring_err()) in
-  let wildcard: bitstring = new_tests__rustc_coverage__branch__match_arms__consume(nat_lit(0)) in
+  let wildcard: bitstring = new_tests__rustc_coverage__branch__match_arms__consume(nat_0) in
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/branch/match-arms.rs:38 new_tests__rustc_coverage__branch__match_arms__or_patterns *)
 letfun new_tests__rustc_coverage__branch__match_arms__or_patterns(value: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+    core__ops__range__Range__Range(nat_0, nat_1)
   )) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
@@ -87,12 +87,12 @@ letfun new_tests__rustc_coverage__branch__match_arms__or_patterns(value: bitstri
   else let new_tests__rustc_coverage__branch__match_arms__Enum__A(y: bitstring) = value in
     new_tests__rustc_coverage__branch__match_arms__consume(y)
   else bitstring_err()) in
-  let wildcard: bitstring = new_tests__rustc_coverage__branch__match_arms__consume(nat_lit(0)) in
+  let wildcard: bitstring = new_tests__rustc_coverage__branch__match_arms__consume(nat_0) in
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/branch/match-arms.rs:49 new_tests__rustc_coverage__branch__match_arms__guards *)
 letfun new_tests__rustc_coverage__branch__match_arms__guards(value: bitstring, cond: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+    core__ops__range__Range__Range(nat_0, nat_1)
   )) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
@@ -107,8 +107,8 @@ letfun new_tests__rustc_coverage__branch__match_arms__guards(value: bitstring, c
     new_tests__rustc_coverage__branch__match_arms__consume(b)
   else let new_tests__rustc_coverage__branch__match_arms__Enum__A(a: bitstring) = value in
     new_tests__rustc_coverage__branch__match_arms__consume(a)
-  else new_tests__rustc_coverage__branch__match_arms__consume(nat_lit(0))) in
-  let wildcard: bitstring = new_tests__rustc_coverage__branch__match_arms__consume(nat_lit(0)) in
+  else new_tests__rustc_coverage__branch__match_arms__consume(nat_0)) in
+  let wildcard: bitstring = new_tests__rustc_coverage__branch__match_arms__consume(nat_0) in
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/branch/match-arms.rs:71 new_tests__rustc_coverage__branch__match_arms__main__call_everything *)
 letfun new_tests__rustc_coverage__branch__match_arms__main__call_everything(e: bitstring) =
@@ -136,10 +136,10 @@ letfun new_tests__rustc_coverage__branch__match_arms__main__call_everything(e: b
 (* src: src/rustc-coverage/branch/match-arms.rs:69 new_tests__rustc_coverage__branch__match_arms__main *)
 letfun new_tests__rustc_coverage__branch__match_arms__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__branch__match_arms__main__call_everything(
-    new_tests__rustc_coverage__branch__match_arms__Enum__A(nat_lit(0))
+    new_tests__rustc_coverage__branch__match_arms__Enum__A(nat_0)
   ) in
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(2))
+    core__ops__range__Range__Range(nat_0, nat_2)
   )) in 
   let rust_primitives__hax__array_cons(b, bl__seq1) = bl__seq0 in (let wildcard = (new_tests__rustc_coverage__branch__match_arms__main__call_everything(
     new_tests__rustc_coverage__branch__match_arms__Enum__B(b)
@@ -152,7 +152,7 @@ letfun new_tests__rustc_coverage__branch__match_arms__main(wildcard: bitstring) 
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(4))
+    core__ops__range__Range__Range(nat_0, nat_4)
   )) in 
   let rust_primitives__hax__array_cons(c, bl__seq1) = bl__seq0 in (let wildcard = (new_tests__rustc_coverage__branch__match_arms__main__call_everything(
     new_tests__rustc_coverage__branch__match_arms__Enum__C(c)
@@ -166,7 +166,7 @@ letfun new_tests__rustc_coverage__branch__match_arms__main(wildcard: bitstring) 
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(8))
+      core__ops__range__Range__Range(nat_0, nat_8)
     )) in 
     let rust_primitives__hax__array_cons(d, bl__seq1) = bl__seq0 in (let wildcard = (new_tests__rustc_coverage__branch__match_arms__main__call_everything(
       new_tests__rustc_coverage__branch__match_arms__Enum__D(d)

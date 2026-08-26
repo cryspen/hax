@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -52,18 +52,18 @@ letfun new_tests__legacy__naming__lib__ambiguous_names__debug(label: bitstring, 
 (*  `f` stacks mutliple let bindings declaring different `a`s. *)
 letfun new_tests__legacy__naming__lib__ambiguous_names__f(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(
-    nat_lit(3),
-    nat_lit(306)
+    nat_3,
+    nat_306
   ) in
   let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(
-    nat_lit(2),
-    nat_lit(205)
+    nat_2,
+    nat_205
   ) in
   let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(
-    nat_lit(1),
-    nat_lit(104)
+    nat_1,
+    nat_104
   ) in
-  new_tests__legacy__naming__lib__ambiguous_names__debug(nat_lit(4), nat_lit(123)).
+  new_tests__legacy__naming__lib__ambiguous_names__debug(nat_4, nat_123).
 (* src: src/legacy/naming/lib.rs:153 new_tests__legacy__naming__lib__ambiguous_names__f_expand *)
 (*  `f` is expanded into `f_expand` below, while the execution of `f` gives: *)
 (* *)
@@ -74,23 +74,14 @@ letfun new_tests__legacy__naming__lib__ambiguous_names__f(wildcard: bitstring) =
 (*   [last] a=123 *)
 (*  ``` *)
 letfun new_tests__legacy__naming__lib__ambiguous_names__f_expand(wildcard: bitstring) =
-  let a = nat_lit(104) in
-  let a_1 = nat_lit(205) in
-  let a_2 = nat_lit(306) in
-  let a_3 = nat_lit(123) in
-  let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(
-    nat_lit(3),
-    a_3
-  ) in
-  let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(
-    nat_lit(2),
-    a_3
-  ) in
-  let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(
-    nat_lit(1),
-    a_3
-  ) in
-  new_tests__legacy__naming__lib__ambiguous_names__debug(nat_lit(0), a_3).
+  let a = nat_104 in
+  let a_1 = nat_205 in
+  let a_2 = nat_306 in
+  let a_3 = nat_123 in
+  let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(nat_3, a_3) in
+  let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(nat_2, a_3) in
+  let wildcard: bitstring = new_tests__legacy__naming__lib__ambiguous_names__debug(nat_1, a_3) in
+  new_tests__legacy__naming__lib__ambiguous_names__debug(nat_0, a_3).
 (* src: src/legacy/naming/lib.rs:9 new_tests__legacy__naming__lib__Foo *)
 fun new_tests__legacy__naming__lib__Foo__A(): bitstring [data].
 fun new_tests__legacy__naming__lib__Foo__B(bitstring): bitstring [data].
@@ -111,9 +102,9 @@ reduc forall v_0: bitstring;
 fun new_tests__legacy__naming__lib__X__X(): bitstring [data].
 (* src: src/legacy/naming/lib.rs:25 new_tests__legacy__naming__lib__mk_c *)
 letfun new_tests__legacy__naming__lib__mk_c(wildcard: bitstring) =
-  let wildcard: bitstring = new_tests__legacy__naming__lib__Foo__B(nat_lit(3)) in
+  let wildcard: bitstring = new_tests__legacy__naming__lib__Foo__B(nat_3) in
   let wildcard: bitstring = new_tests__legacy__naming__lib__X__X() in
-  new_tests__legacy__naming__lib__C__C(nat_lit(3)).
+  new_tests__legacy__naming__lib__C__C(nat_3).
 (* src: src/legacy/naming/lib.rs:32 new_tests__legacy__naming__lib__Impl__f *)
 letfun new_tests__legacy__naming__lib__Impl__f(self: bitstring) =
   new_tests__legacy__naming__lib__Foo__A().
@@ -130,7 +121,7 @@ reduc forall v_0: bitstring;
 letfun new_tests__legacy__naming__lib__f__g(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/legacy/naming/lib.rs:49 new_tests__legacy__naming__lib__f__g__Impl__g *)
-letfun new_tests__legacy__naming__lib__f__g__Impl__g(self: bitstring) = nat_lit(0).
+letfun new_tests__legacy__naming__lib__f__g__Impl__g(self: bitstring) = nat_0.
 (* src: src/legacy/naming/lib.rs:50 new_tests__legacy__naming__lib__f__g__Impl__g__Foo *)
 fun new_tests__legacy__naming__lib__f__g__Impl__g__Foo__A(): bitstring [data].
 fun new_tests__legacy__naming__lib__f__g__Impl__g__Foo__B(bitstring): bitstring [data].
@@ -139,7 +130,7 @@ reduc forall v_0: bitstring;
     new_tests__legacy__naming__lib__f__g__Impl__g__Foo__B(v_0)
   ) = v_0.
 (* src: src/legacy/naming/lib.rs:58 new_tests__legacy__naming__lib__f__g__Impl_1__g *)
-letfun new_tests__legacy__naming__lib__f__g__Impl_1__g(self: bitstring) = nat_lit(1).
+letfun new_tests__legacy__naming__lib__f__g__Impl_1__g(self: bitstring) = nat_1.
 (* src: src/legacy/naming/lib.rs:46 new_tests__legacy__naming__lib__f *)
 letfun new_tests__legacy__naming__lib__f(x: bitstring) =
   new_tests__legacy__naming__lib__f__g__Impl_1__g(

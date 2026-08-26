@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -22,8 +22,8 @@
 (* src: src/legacy/loops/lib.rs:37 new_tests__legacy__loops__lib__for_loops__range1 *)
 letfun new_tests__legacy__loops__lib__for_loops__range1(wildcard: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(15))
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__ops__range__Range__Range(nat_0, nat_15)
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(acc_1, i)) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
@@ -35,25 +35,22 @@ letfun new_tests__legacy__loops__lib__for_loops__range1(wildcard: bitstring) =
 (* src: src/legacy/loops/lib.rs:45 new_tests__legacy__loops__lib__for_loops__range2 *)
 letfun new_tests__legacy__loops__lib__for_loops__range2(n: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(
-      nat_lit(0),
-      rust_primitives__hax__machine_int__add(n, nat_lit(10))
-    )
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__ops__range__Range__Range(nat_0, rust_primitives__hax__machine_int__add(n, nat_10))
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
   let bl__acc2 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let acc_1 = bl__acc2 in
   let bl__acc3 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
@@ -61,49 +58,49 @@ letfun new_tests__legacy__loops__lib__for_loops__range2(n: bitstring) =
 letfun new_tests__legacy__loops__lib__for_loops__composed_range(n: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__chain(
-      core__ops__range__Range__Range(nat_lit(0), n),
+      core__ops__range__Range__Range(nat_0, n),
       core__ops__range__Range__Range(
-        rust_primitives__hax__machine_int__add(n, nat_lit(10)),
-        rust_primitives__hax__machine_int__add(n, nat_lit(50))
+        rust_primitives__hax__machine_int__add(n, nat_10),
+        rust_primitives__hax__machine_int__add(n, nat_50)
       )
     )
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
   let bl__acc2 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let acc_1 = bl__acc2 in
   let bl__acc3 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
 (* src: src/legacy/loops/lib.rs:61 new_tests__legacy__loops__lib__for_loops__rev_range *)
 letfun new_tests__legacy__loops__lib__for_loops__rev_range(n: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_lit(0), n))
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_0, n))
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
   let bl__acc2 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let acc_1 = bl__acc2 in
   let bl__acc3 = (rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(acc_1, i),
-    nat_lit(1)
+    nat_1
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
@@ -112,11 +109,11 @@ letfun new_tests__legacy__loops__lib__for_loops__chunks(arr: bitstring) =
   let chunks = core__slice__Impl__chunks_exact(arr, bitstring_default()) in
   let acc_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     chunks
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(chunk, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
   let bl__acc1 = (let mean_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     chunk
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(item, bl__seq1) = bl__seq0 in (let mean_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(mean_1, item)) in
   let rust_primitives__hax__array_cons(item, bl__seq2) = bl__seq1 in (let mean_1 = bl__acc1 in
@@ -131,7 +128,7 @@ letfun new_tests__legacy__loops__lib__for_loops__chunks(arr: bitstring) =
   let rust_primitives__hax__array_cons(chunk, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
   let bl__acc2 = (let mean_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     chunk
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(item, bl__seq1) = bl__seq0 in (let mean_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(mean_1, item)) in
   let rust_primitives__hax__array_cons(item, bl__seq2) = bl__seq1 in (let mean_1 = bl__acc1 in
@@ -146,7 +143,7 @@ letfun new_tests__legacy__loops__lib__for_loops__chunks(arr: bitstring) =
   let rust_primitives__hax__array_cons(chunk, bl__seq3) = bl__seq2 in (let acc_1 = bl__acc2 in
   let bl__acc3 = (let mean_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     chunk
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(item, bl__seq1) = bl__seq0 in (let mean_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(mean_1, item)) in
   let rust_primitives__hax__array_cons(item, bl__seq2) = bl__seq1 in (let mean_1 = bl__acc1 in
@@ -174,7 +171,7 @@ letfun new_tests__legacy__loops__lib__for_loops__chunks(arr: bitstring) =
 letfun new_tests__legacy__loops__lib__for_loops__iterator(arr: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__slice__Impl__iter(arr)
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(item, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(acc_1, item)) in
   let rust_primitives__hax__array_cons(item, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
@@ -188,17 +185,17 @@ letfun new_tests__legacy__loops__lib__for_loops__iterator(arr: bitstring) =
 letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   let acc_5 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__slice__Impl__iter(arr)
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(item, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
   let bl__acc1 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_lit(0), item))
+    core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_0, item))
   )) in let bl__acc0 = (acc_1) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_2 = bl__acc0 in
-  let bl__acc1 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc1 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -236,11 +233,11 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let acc_2 = bl__acc1 in
-  let bl__acc2 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc2 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -278,11 +275,11 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let acc_2 = bl__acc2 in
-  let bl__acc3 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc3 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -322,14 +319,14 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(item, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
   let bl__acc2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_lit(0), item))
+    core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_0, item))
   )) in let bl__acc0 = (acc_1) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_2 = bl__acc0 in
-  let bl__acc1 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc1 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -367,11 +364,11 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let acc_2 = bl__acc1 in
-  let bl__acc2 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc2 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -409,11 +406,11 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let acc_2 = bl__acc2 in
-  let bl__acc3 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc3 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -453,14 +450,14 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(item, bl__seq3) = bl__seq2 in (let acc_1 = bl__acc2 in
   let bl__acc3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_lit(0), item))
+    core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_0, item))
   )) in let bl__acc0 = (acc_1) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_2 = bl__acc0 in
-  let bl__acc1 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc1 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -498,11 +495,11 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let acc_2 = bl__acc1 in
-  let bl__acc2 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc2 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -540,11 +537,11 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let acc_2 = bl__acc2 in
-  let bl__acc3 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_lit(1)) in
+  let bl__acc3 = (let acc_3 = rust_primitives__hax__machine_int__add(acc_2, nat_1) in
   (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__zip(
       core__slice__Impl__iter(arr),
-      core__ops__range__Range__Range(nat_lit(4), i)
+      core__ops__range__Range__Range(nat_4, i)
     )
   )) in let bl__acc0 = (acc_3) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let acc_4 = bl__acc0 in
@@ -588,7 +585,7 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
 letfun new_tests__legacy__loops__lib__for_loops__pattern(arr: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     arr
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(rust_primitives__hax__Tuple2__Tuple2(
     x: bitstring,
     y: bitstring
@@ -618,8 +615,8 @@ letfun new_tests__legacy__loops__lib__for_loops__pattern(arr: bitstring) =
 (* src: src/legacy/loops/lib.rs:115 new_tests__legacy__loops__lib__for_loops__enumerate_chunks *)
 letfun new_tests__legacy__loops__lib__for_loops__enumerate_chunks(arr: bitstring) =
   let acc_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__iter__traits__iterator__Iterator__enumerate(core__slice__Impl__chunks(arr, nat_lit(4)))
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__iter__traits__iterator__Iterator__enumerate(core__slice__Impl__chunks(arr, nat_4))
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(rust_primitives__hax__Tuple2__Tuple2(
     i: bitstring,
     chunk: bitstring
@@ -720,13 +717,13 @@ letfun new_tests__legacy__loops__lib__for_loops__enumerate_chunks(arr: bitstring
   acc_3.
 (* src: src/legacy/loops/lib.rs:125 new_tests__legacy__loops__lib__for_loops__bool_returning *)
 letfun new_tests__legacy__loops__lib__for_loops__bool_returning(x: bitstring) =
-  rust_primitives__hax__machine_int__lt(x, nat_lit(10)).
+  rust_primitives__hax__machine_int__lt(x, nat_10).
 (* src: src/legacy/loops/lib.rs:129 new_tests__legacy__loops__lib__for_loops__f *)
 letfun new_tests__legacy__loops__lib__for_loops__f(wildcard: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
-    )) in let bl__acc0 = (nat_lit(0)) in 
+      core__ops__range__Range__Range(nat_1, nat_10)
+    )) in let bl__acc0 = (nat_0) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
     let bl__acc1 = (let wildcard: bitstring = new_tests__legacy__loops__lib__for_loops__bool_returning(
       i
@@ -749,10 +746,10 @@ letfun new_tests__legacy__loops__lib__for_loops__f(wildcard: bitstring) =
 (*  @fail(extraction): coq(HAX0001), ssprove(HAX0001) *)
 letfun new_tests__legacy__loops__lib__control_flow__double_sum(wildcard: bitstring) =
   let sum_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__ops__range__Range__Range(nat_1, nat_10)
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let sum_1 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_1)
     )
@@ -760,7 +757,7 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum(wildcard: bitstri
       rust_primitives__hax__machine_int__add(sum_1, i)
     )) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let sum_1 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_1)
     )
@@ -768,7 +765,7 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum(wildcard: bitstri
       rust_primitives__hax__machine_int__add(sum_1, i)
     )) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let sum_1 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_1)
     )
@@ -776,7 +773,7 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum(wildcard: bitstri
       rust_primitives__hax__machine_int__add(sum_1, i)
     )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
-  rust_primitives__hax__machine_int__mul(sum_2, nat_lit(2)).
+  rust_primitives__hax__machine_int__mul(sum_2, nat_2).
 (* src: src/legacy/loops/lib.rs:183 new_tests__legacy__loops__lib__control_flow__double_sum2 *)
 (*  @fail(extraction): coq(HAX0001), ssprove(HAX0001) *)
 letfun new_tests__legacy__loops__lib__control_flow__double_sum2(wildcard: bitstring) =
@@ -784,13 +781,13 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2(wildcard: bitstr
     sum_3: bitstring,
     sum2_2: bitstring
   ) = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
-  )) in let bl__acc0 = (rust_primitives__hax__Tuple2__Tuple2(nat_lit(0), nat_lit(0))) in 
+    core__ops__range__Range__Range(nat_1, nat_10)
+  )) in let bl__acc0 = (rust_primitives__hax__Tuple2__Tuple2(nat_0, nat_0)) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let rust_primitives__hax__Tuple2__Tuple2(
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(
         rust_primitives__hax__Tuple0__Tuple0,
@@ -807,7 +804,7 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2(wildcard: bitstr
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(
         rust_primitives__hax__Tuple0__Tuple0,
@@ -824,7 +821,7 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2(wildcard: bitstr
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(
         rust_primitives__hax__Tuple0__Tuple0,
@@ -847,27 +844,27 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum_return(v: bitstri
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     v
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let sum_1 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_1, i)
     )) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let sum_1 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_1, i)
     )) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let sum_1 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_1, i)
@@ -878,33 +875,33 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum_return(v: bitstri
     sum_2: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     v
-  )) in let bl__acc0 = (nat_lit(0)) in 
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let sum_1 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_1, i)
     )) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let sum_1 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_1, i)
     )) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let sum_1 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_1, i)
     )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
-    rust_primitives__hax__machine_int__mul(sum_2, nat_lit(2))
+    rust_primitives__hax__machine_int__mul(sum_2, nat_2)
   else bitstring_err().
 (* src: src/legacy/loops/lib.rs:206 new_tests__legacy__loops__lib__control_flow__double_sum2_return *)
 letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstring) =
@@ -912,14 +909,14 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstr
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     v
-  )) in let bl__acc0 = (rust_primitives__hax__Tuple2__Tuple2(nat_lit(0), nat_lit(0))) in 
+  )) in let bl__acc0 = (rust_primitives__hax__Tuple2__Tuple2(nat_0, nat_0)) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let rust_primitives__hax__Tuple2__Tuple2(
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__Tuple2__Tuple2(
@@ -931,9 +928,9 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstr
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__Tuple2__Tuple2(
@@ -945,9 +942,9 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstr
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__Tuple2__Tuple2(
@@ -961,14 +958,14 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstr
     rust_primitives__hax__Tuple2__Tuple2(sum_3: bitstring, sum2_2: bitstring)
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     v
-  )) in let bl__acc0 = (rust_primitives__hax__Tuple2__Tuple2(nat_lit(0), nat_lit(0))) in 
+  )) in let bl__acc0 = (rust_primitives__hax__Tuple2__Tuple2(nat_0, nat_0)) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let rust_primitives__hax__Tuple2__Tuple2(
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__Tuple2__Tuple2(
@@ -980,9 +977,9 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstr
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__Tuple2__Tuple2(
@@ -994,9 +991,9 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstr
     sum_1: bitstring,
     sum2_1: bitstring
   ) = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__Tuple2__Tuple2(
@@ -1023,13 +1020,13 @@ letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: 
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(
-      nat_lit(0),
+      nat_0,
       alloc__vec__Impl_1__len(new_tests__legacy__loops__lib__control_flow__M__M__m(self))
     )
   )) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let wildcard = (let (=True()) = rust_primitives__hax__machine_int__gt(
       i,
-      nat_lit(5)
+      nat_5
     )
     in core__ops__control_flow__ControlFlow__Break(
       core__ops__control_flow__ControlFlow__Break(None())
@@ -1037,7 +1034,7 @@ letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: 
     else core__ops__control_flow__ControlFlow__Continue(rust_primitives__hax__Tuple0__Tuple0)) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let wildcard = (let (=True()) = rust_primitives__hax__machine_int__gt(
       i,
-      nat_lit(5)
+      nat_5
     )
     in core__ops__control_flow__ControlFlow__Break(
       core__ops__control_flow__ControlFlow__Break(None())
@@ -1045,7 +1042,7 @@ letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: 
     else core__ops__control_flow__ControlFlow__Continue(rust_primitives__hax__Tuple0__Tuple0)) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let wildcard = (let (=True()) = rust_primitives__hax__machine_int__gt(
       i,
-      nat_lit(5)
+      nat_5
     )
     in core__ops__control_flow__ControlFlow__Break(
       core__ops__control_flow__ControlFlow__Break(None())
@@ -1057,13 +1054,13 @@ letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: 
     wildcard: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(
-      nat_lit(0),
+      nat_0,
       alloc__vec__Impl_1__len(new_tests__legacy__loops__lib__control_flow__M__M__m(self))
     )
   )) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let wildcard = (let (=True()) = rust_primitives__hax__machine_int__gt(
       i,
-      nat_lit(5)
+      nat_5
     )
     in core__ops__control_flow__ControlFlow__Break(
       core__ops__control_flow__ControlFlow__Break(None())
@@ -1071,7 +1068,7 @@ letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: 
     else core__ops__control_flow__ControlFlow__Continue(rust_primitives__hax__Tuple0__Tuple0)) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let wildcard = (let (=True()) = rust_primitives__hax__machine_int__gt(
       i,
-      nat_lit(5)
+      nat_5
     )
     in core__ops__control_flow__ControlFlow__Break(
       core__ops__control_flow__ControlFlow__Break(None())
@@ -1079,7 +1076,7 @@ letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: 
     else core__ops__control_flow__ControlFlow__Continue(rust_primitives__hax__Tuple0__Tuple0)) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let wildcard = (let (=True()) = rust_primitives__hax__machine_int__gt(
       i,
-      nat_lit(5)
+      nat_5
     )
     in core__ops__control_flow__ControlFlow__Break(
       core__ops__control_flow__ControlFlow__Break(None())
@@ -1092,14 +1089,14 @@ letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: 
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001) *)
 letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) =
   let sum_4 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__ops__range__Range__Range(nat_1, nat_10)
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let sum_1 = bl__acc0 in
   let bl__acc1 = (let sum_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1107,7 +1104,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1115,7 +1112,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1126,10 +1123,10 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
   rust_primitives__hax__machine_int__add(sum_3, i)) in
   let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let sum_1 = bl__acc1 in
   let bl__acc2 = (let sum_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1137,7 +1134,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1145,7 +1142,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1156,10 +1153,10 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
   rust_primitives__hax__machine_int__add(sum_3, i)) in
   let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let sum_1 = bl__acc2 in
   let bl__acc3 = (let sum_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1167,7 +1164,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1175,7 +1172,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
       rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, sum_2)
     )
@@ -1185,40 +1182,40 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   rust_primitives__hax__machine_int__add(sum_3, i)) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
-  rust_primitives__hax__machine_int__mul(sum_4, nat_lit(2)).
+  rust_primitives__hax__machine_int__mul(sum_4, nat_2).
 (* src: src/legacy/loops/lib.rs:262 new_tests__legacy__loops__lib__control_flow__nested_return *)
 letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bitstring) =
   let core__ops__control_flow__ControlFlow__Break(
     ret_1: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__ops__range__Range__Range(nat_1, nat_10)
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let sum_1 = bl__acc0 in
   let bl__acc1 = (let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1228,28 +1225,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   else let core__ops__control_flow__ControlFlow__Continue(
     sum_3: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1261,28 +1258,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   let bl__acc2 = (let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1292,28 +1289,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   else let core__ops__control_flow__ControlFlow__Continue(
     sum_3: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1325,28 +1322,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   let bl__acc3 = (let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1356,28 +1353,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   else let core__ops__control_flow__ControlFlow__Continue(
     sum_3: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1390,34 +1387,34 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   else let core__ops__control_flow__ControlFlow__Continue(
     sum_4: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
-  )) in let bl__acc0 = (nat_lit(0)) in 
+    core__ops__range__Range__Range(nat_1, nat_10)
+  )) in let bl__acc0 = (nat_0) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let sum_1 = bl__acc0 in
   let bl__acc1 = (let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1427,28 +1424,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   else let core__ops__control_flow__ControlFlow__Continue(
     sum_3: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1460,28 +1457,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   let bl__acc2 = (let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1491,28 +1488,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   else let core__ops__control_flow__ControlFlow__Continue(
     sum_3: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1524,28 +1521,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   let bl__acc3 = (let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1555,28 +1552,28 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   else let core__ops__control_flow__ControlFlow__Continue(
     sum_3: bitstring
   ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(1), nat_lit(10))
+    core__ops__range__Range__Range(nat_1, nat_10)
   )) in let bl__acc0 = (sum_1) in 
   let rust_primitives__hax__array_cons(j, bl__seq1) = bl__seq0 in (let sum_2 = bl__acc0 in
-  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq2) = bl__seq1 in (let sum_2 = bl__acc1 in
-  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
     )) in
   let rust_primitives__hax__array_cons(j, bl__seq3) = bl__seq2 in (let sum_2 = bl__acc2 in
-  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_lit(0))
+  let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__lt(j, nat_0)
     in core__ops__control_flow__ControlFlow__Break(
-      core__ops__control_flow__ControlFlow__Break(nat_lit(0))
+      core__ops__control_flow__ControlFlow__Break(nat_0)
     )
     else core__ops__control_flow__ControlFlow__Continue(
       rust_primitives__hax__machine_int__add(sum_2, j)
@@ -1585,7 +1582,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
     core__ops__control_flow__ControlFlow__Continue(rust_primitives__hax__machine_int__add(sum_3, i))
   else bitstring_err()) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
-    rust_primitives__hax__machine_int__mul(sum_4, nat_lit(2))
+    rust_primitives__hax__machine_int__mul(sum_4, nat_2)
   else bitstring_err().
 (* src: src/legacy/loops/lib.rs:277 new_tests__legacy__loops__lib__control_flow__continue_only *)
 (*  @fail(extraction): ssprove(HAX0008), coq(HAX0008) *)
@@ -1593,17 +1590,17 @@ letfun new_tests__legacy__loops__lib__control_flow__continue_only(x: bitstring) 
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
       x
-    )) in let bl__acc0 = (nat_lit(1)) in 
+    )) in let bl__acc0 = (nat_1) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let product_1 = bl__acc0 in
-    let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_lit(0))
+    let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_0)
       in product_1
       else core__ops__arith__MulAssign__mul_assign(product_1, i)) in
     let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let product_1 = bl__acc1 in
-    let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_lit(0))
+    let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_0)
       in product_1
       else core__ops__arith__MulAssign__mul_assign(product_1, i)) in
     let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let product_1 = bl__acc2 in
-    let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_lit(0))
+    let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_0)
       in product_1
       else core__ops__arith__MulAssign__mul_assign(product_1, i)) in
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
@@ -1615,11 +1612,11 @@ letfun new_tests__legacy__loops__lib__control_flow__continue_and_break(x: bitstr
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
       x
-    )) in let bl__acc0 = (nat_lit(1)) in 
+    )) in let bl__acc0 = (nat_1) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let product_1 = bl__acc0 in
-    let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_lit(0))
+    let bl__acc1 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_0)
       in core__ops__control_flow__ControlFlow__Continue(product_1)
-      else (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+      else (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
         in core__ops__control_flow__ControlFlow__Break(
           rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, product_1)
         )
@@ -1627,9 +1624,9 @@ letfun new_tests__legacy__loops__lib__control_flow__continue_and_break(x: bitstr
           core__ops__arith__MulAssign__mul_assign(product_1, i)
         ))) in
     let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let product_1 = bl__acc1 in
-    let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_lit(0))
+    let bl__acc2 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_0)
       in core__ops__control_flow__ControlFlow__Continue(product_1)
-      else (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+      else (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
         in core__ops__control_flow__ControlFlow__Break(
           rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, product_1)
         )
@@ -1637,9 +1634,9 @@ letfun new_tests__legacy__loops__lib__control_flow__continue_and_break(x: bitstr
           core__ops__arith__MulAssign__mul_assign(product_1, i)
         ))) in
     let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let product_1 = bl__acc2 in
-    let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_lit(0))
+    let bl__acc3 = (let (=True()) = rust_primitives__hax__machine_int__eq(i, nat_0)
       in core__ops__control_flow__ControlFlow__Continue(product_1)
-      else (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_lit(0))
+      else (let (=True()) = rust_primitives__hax__machine_int__lt(i, nat_0)
         in core__ops__control_flow__ControlFlow__Break(
           rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, product_1)
         )
@@ -1653,29 +1650,29 @@ letfun new_tests__legacy__loops__lib__control_flow__continue_and_break(x: bitstr
 (*  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001) *)
 letfun new_tests__legacy__loops__lib__while_loops__f(wildcard: bitstring) =
   let x_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in
-  rust_primitives__hax__machine_int__add(x_3, nat_lit(12)).
+  rust_primitives__hax__machine_int__add(x_3, nat_12).
 (* src: src/legacy/loops/lib.rs:148 new_tests__legacy__loops__lib__while_loops__while_invariant_decr *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__legacy__loops__lib__while_loops__while_invariant_decr(wildcard: bitstring) =
   let x_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in
-  rust_primitives__hax__machine_int__add(x_3, nat_lit(12)).
+  rust_primitives__hax__machine_int__add(x_3, nat_12).
 (* src: src/legacy/loops/lib.rs:158 new_tests__legacy__loops__lib__while_loops__while_invariant_decr_rev *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__legacy__loops__lib__while_loops__while_invariant_decr_rev(wildcard: bitstring) =
   let x_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in
-  rust_primitives__hax__machine_int__add(x_3, nat_lit(12)).
+  rust_primitives__hax__machine_int__add(x_3, nat_12).
 (* src: src/legacy/loops/lib.rs:6 new_tests__legacy__loops__lib__recognized_loops__range *)
 letfun new_tests__legacy__loops__lib__recognized_loops__range(wildcard: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
-    )) in let bl__acc0 = (nat_lit(0)) in 
+      core__ops__range__Range__Range(nat_0, nat_10)
+    )) in let bl__acc0 = (nat_0) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let count_1 = bl__acc0 in
-    let bl__acc1 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(1))) in
+    let bl__acc1 = (rust_primitives__hax__machine_int__add(count_1, nat_1)) in
     let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let count_1 = bl__acc1 in
-    let bl__acc2 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(1))) in
+    let bl__acc2 = (rust_primitives__hax__machine_int__add(count_1, nat_1)) in
     let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let count_1 = bl__acc2 in
-    let bl__acc3 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(1))) in
+    let bl__acc3 = (rust_primitives__hax__machine_int__add(count_1, nat_1)) in
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
@@ -1684,16 +1681,16 @@ letfun new_tests__legacy__loops__lib__recognized_loops__range_step_by(wildcard: 
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
       core__iter__traits__iterator__Iterator__step_by(
-        core__ops__range__Range__Range(nat_lit(0), nat_lit(10)),
-        nat_lit(2)
+        core__ops__range__Range__Range(nat_0, nat_10),
+        nat_2
       )
-    )) in let bl__acc0 = (nat_lit(0)) in 
+    )) in let bl__acc0 = (nat_0) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let count_1 = bl__acc0 in
-    let bl__acc1 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(1))) in
+    let bl__acc1 = (rust_primitives__hax__machine_int__add(count_1, nat_1)) in
     let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let count_1 = bl__acc1 in
-    let bl__acc2 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(1))) in
+    let bl__acc2 = (rust_primitives__hax__machine_int__add(count_1, nat_1)) in
     let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let count_1 = bl__acc2 in
-    let bl__acc3 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(1))) in
+    let bl__acc3 = (rust_primitives__hax__machine_int__add(count_1, nat_1)) in
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
@@ -1704,13 +1701,13 @@ letfun new_tests__legacy__loops__lib__recognized_loops__enumerated_slice(slice: 
       core__iter__traits__iterator__Iterator__enumerate(
         core__iter__traits__collect__IntoIterator__into_iter(slice)
       )
-    )) in let bl__acc0 = (nat_lit(0)) in 
+    )) in let bl__acc0 = (nat_0) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let count_1 = bl__acc0 in
-    let bl__acc1 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(2))) in
+    let bl__acc1 = (rust_primitives__hax__machine_int__add(count_1, nat_2)) in
     let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let count_1 = bl__acc1 in
-    let bl__acc2 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(2))) in
+    let bl__acc2 = (rust_primitives__hax__machine_int__add(count_1, nat_2)) in
     let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let count_1 = bl__acc2 in
-    let bl__acc3 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(2))) in
+    let bl__acc3 = (rust_primitives__hax__machine_int__add(count_1, nat_2)) in
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
@@ -1719,22 +1716,22 @@ letfun new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
       core__iter__traits__iterator__Iterator__enumerate(
-        core__slice__Impl__chunks_exact(slice, nat_lit(3))
+        core__slice__Impl__chunks_exact(slice, nat_3)
       )
-    )) in let bl__acc0 = (nat_lit(0)) in 
+    )) in let bl__acc0 = (nat_0) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let count_1 = bl__acc0 in
-    let bl__acc1 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(3))) in
+    let bl__acc1 = (rust_primitives__hax__machine_int__add(count_1, nat_3)) in
     let rust_primitives__hax__array_cons(i, bl__seq2) = bl__seq1 in (let count_1 = bl__acc1 in
-    let bl__acc2 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(3))) in
+    let bl__acc2 = (rust_primitives__hax__machine_int__add(count_1, nat_3)) in
     let rust_primitives__hax__array_cons(i, bl__seq3) = bl__seq2 in (let count_1 = bl__acc2 in
-    let bl__acc3 = (rust_primitives__hax__machine_int__add(count_1, nat_lit(3))) in
+    let bl__acc3 = (rust_primitives__hax__machine_int__add(count_1, nat_3)) in
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
 (* src: src/legacy/loops/lib.rs:303 new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping *)
 letfun new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping(array: bitstring) =
   let array_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), core__slice__Impl__len(array))
+    core__ops__range__Range__Range(nat_0, core__slice__Impl__len(array))
   )) in let bl__acc0 = (array) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let array_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__monomorphized_update_at__update_at_usize(array_1, i, i)) in
@@ -1751,7 +1748,7 @@ letfun new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping_2(array:
     result: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), core__slice__Impl__len(array))
+      core__ops__range__Range__Range(nat_0, core__slice__Impl__len(array))
     )) in let bl__acc0 = (array) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let array_1 = bl__acc0 in
     let bl__acc1 = (rust_primitives__hax__monomorphized_update_at__update_at_usize(

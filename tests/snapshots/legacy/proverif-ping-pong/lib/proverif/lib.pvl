@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -87,13 +87,10 @@ reduc forall v_0: bitstring;
   ) = v_0.
 (* src: src/legacy/proverif-ping-pong/a.rs:19 new_tests__legacy__proverif_ping_pong__lib__a__init_a *)
 letfun new_tests__legacy__proverif_ping_pong__lib__a__init_a(prologue: bitstring) =
-  let (=True()) = rust_primitives__hax__machine_int__lt(
-      alloc__vec__Impl_1__len(prologue),
-      nat_lit(1)
-    )
+  let (=True()) = rust_primitives__hax__machine_int__lt(alloc__vec__Impl_1__len(prologue), nat_1)
     in bitstring_err()
     else new_tests__legacy__proverif_ping_pong__lib__a__A0__A0(
-      core__ops__index__Index__index(prologue, nat_lit(0))
+      core__ops__index__Index__index(prologue, nat_0)
     ).
 (* src: src/legacy/proverif-ping-pong/a.rs:50 new_tests__legacy__proverif_ping_pong__lib__a__write_ping *)
 letfun new_tests__legacy__proverif_ping_pong__lib__a__write_ping(state: bitstring) =

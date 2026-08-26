@@ -10,5 +10,6 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 fun core__result__Impl__expect_err(bitstring, bitstring): bitstring.
+const nat_57: bitstring.
 const string_lit__call_x20should_x20fail: bitstring.
 const string_lit__test1_x20should_x20fail: bitstring.

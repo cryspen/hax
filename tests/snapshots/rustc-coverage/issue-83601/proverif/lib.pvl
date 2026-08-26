@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -32,25 +32,25 @@ reduc forall v_0: bitstring;
 (* src: src/rustc-coverage/issue-83601.rs:8 new_tests__rustc_coverage__issue_83601__main *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__issue_83601__main(wildcard: bitstring) =
-  let bar = new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_lit(1)) in
+  let bar = new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_1) in
   let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
     left_val: bitstring,
     right_val: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
     bar,
-    new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_lit(1))
+    new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__ops__bit__Not__not_kw(core__cmp__PartialEq__eq(left_val, right_val))
       in bitstring_err()
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
-  let baz = new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_lit(0)) in
+  let baz = new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_0) in
   let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
     left_val_1: bitstring,
     right_val_1: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
     baz,
-    new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_lit(1))
+    new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val_1, right_val_1)
       in bitstring_err()
@@ -62,7 +62,7 @@ letfun new_tests__rustc_coverage__issue_83601__main(wildcard: bitstring) =
       rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
         rust_primitives__hax__Tuple1__Tuple1__0(
           rust_primitives__hax__Tuple1__Tuple1(
-            new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_lit(1))
+            new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_1)
           )
         )
       ), rust_primitives__hax__array_nil())

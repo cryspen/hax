@@ -12,6 +12,7 @@
 const float_lit__100_x2e1: bitstring.
 const float_lit__200_x2e1: bitstring.
 const float_lit__300_x2e3: bitstring.
+const nat_1000: bitstring.
 const string_lit__BOOM_x20times_x20: bitstring.
 const string_lit__Exiting_x20with_x20error_x2e_x2e_x2e_x0a: bitstring.
 const string_lit___x21_x21_x21_x0a: bitstring.

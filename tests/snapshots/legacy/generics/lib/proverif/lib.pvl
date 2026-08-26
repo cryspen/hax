@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -49,15 +49,15 @@ fun new_tests__legacy__generics__lib__assoc_const_param__Test__Test(): bitstring
 fun new_tests__legacy__generics__lib__assoc_const_param__Impl__A(bitstring): bitstring.
 (* src: src/legacy/generics/lib.rs:87 new_tests__legacy__generics__lib__assoc_const_param__test *)
 letfun new_tests__legacy__generics__lib__assoc_const_param__test(wildcard: bitstring) =
-  new_tests__legacy__generics__lib__assoc_const_param__Impl__A(nat_lit(1)).
+  new_tests__legacy__generics__lib__assoc_const_param__Impl__A(nat_1).
 (* src: src/legacy/generics/lib.rs:6 new_tests__legacy__generics__lib__dup *)
 letfun new_tests__legacy__generics__lib__dup(x: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(x, x).
 (* src: src/legacy/generics/lib.rs:10 new_tests__legacy__generics__lib__foo *)
 letfun new_tests__legacy__generics__lib__foo(arr: bitstring) =
-  let acc = rust_primitives__hax__machine_int__add(bitstring_default(), nat_lit(9)) in
+  let acc = rust_primitives__hax__machine_int__add(bitstring_default(), nat_9) in
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), bitstring_default())
+    core__ops__range__Range__Range(nat_0, bitstring_default())
   )) in let bl__acc0 = (acc) in 
   let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
   let bl__acc1 = (rust_primitives__hax__machine_int__add(
@@ -87,10 +87,7 @@ letfun new_tests__legacy__generics__lib__f(x: bitstring) =
   ).
 (* src: src/legacy/generics/lib.rs:22 new_tests__legacy__generics__lib__call_f *)
 letfun new_tests__legacy__generics__lib__call_f(wildcard: bitstring) =
-  rust_primitives__hax__machine_int__add(
-    new_tests__legacy__generics__lib__f(nat_lit(3)),
-    nat_lit(3)
-  ).
+  rust_primitives__hax__machine_int__add(new_tests__legacy__generics__lib__f(nat_3), nat_3).
 (* src: src/legacy/generics/lib.rs:32 new_tests__legacy__generics__lib__g *)
 letfun new_tests__legacy__generics__lib__g(arr: bitstring) =
   rust_primitives__hax__machine_int__add(
@@ -106,9 +103,9 @@ letfun new_tests__legacy__generics__lib__g(arr: bitstring) =
 letfun new_tests__legacy__generics__lib__call_g(wildcard: bitstring) =
   rust_primitives__hax__machine_int__add(
     new_tests__legacy__generics__lib__g(
-      rust_primitives__hax__array_cons(nat_lit(42), rust_primitives__hax__array_cons(nat_lit(3), rust_primitives__hax__array_cons(nat_lit(49), rust_primitives__hax__array_nil())))
+      rust_primitives__hax__array_cons(nat_42, rust_primitives__hax__array_cons(nat_3, rust_primitives__hax__array_cons(nat_49, rust_primitives__hax__array_nil())))
     ),
-    nat_lit(3)
+    nat_3
   ).
 
 (* src: src/legacy/generics/lib.rs:41 new_tests__legacy__generics__lib__Impl__const_add *)

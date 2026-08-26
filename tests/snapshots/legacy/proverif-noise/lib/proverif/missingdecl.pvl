@@ -27,3 +27,31 @@ fun hax_lib_protocol__crypto__dh_scalar_multiply(bitstring, bitstring, bitstring
 fun hax_lib_protocol__crypto__dh_scalar_multiply_base(bitstring, bitstring): bitstring.
 fun hax_lib_protocol__crypto__hash(bitstring, bitstring): bitstring.
 fun hax_lib_protocol__crypto__hmac(bitstring, bitstring, bitstring): bitstring.
+const nat_101: bitstring.
+const nat_104: bitstring.
+const nat_105: bitstring.
+const nat_107: bitstring.
+const nat_108: bitstring.
+const nat_111: bitstring.
+const nat_112: bitstring.
+const nat_115: bitstring.
+const nat_121: bitstring.
+const nat_18446744073709551615: bitstring.
+const nat_32: bitstring.
+const nat_36: bitstring.
+const nat_48: bitstring.
+const nat_49: bitstring.
+const nat_50: bitstring.
+const nat_53: bitstring.
+const nat_54: bitstring.
+const nat_57: bitstring.
+const nat_64: bitstring.
+const nat_65: bitstring.
+const nat_67: bitstring.
+const nat_72: bitstring.
+const nat_75: bitstring.
+const nat_78: bitstring.
+const nat_80: bitstring.
+const nat_83: bitstring.
+const nat_95: bitstring.
+const nat_97: bitstring.

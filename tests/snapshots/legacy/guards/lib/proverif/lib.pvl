@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -21,28 +21,28 @@
 
 (* src: src/legacy/guards/lib.rs:5 new_tests__legacy__guards__lib__if_let_guard *)
 letfun new_tests__legacy__guards__lib__if_let_guard(x: bitstring) =
-  let None() = x in nat_lit(0)
+  let None() = x in nat_0
   else let Some(v) = x in y
   else let Some(core__result__Result__Err(y_1: bitstring)) = x in y_1
-  else nat_lit(1).
+  else nat_1.
 (* src: src/legacy/guards/lib.rs:14 new_tests__legacy__guards__lib__equivalent *)
 letfun new_tests__legacy__guards__lib__equivalent(x: bitstring) =
-  let None() = x in nat_lit(0)
+  let None() = x in nat_0
   else let Some(y_1) = let Some(v) = x in (let y = v in Some(y))
   else None() in y_1
   else let None() = let Some(v) = x in (let y = v in Some(y))
   else None() in
     (let Some(core__result__Result__Err(y_2: bitstring)) = x in y_2
-    else nat_lit(1))
+    else nat_1)
   else bitstring_err().
 (* src: src/legacy/guards/lib.rs:33 new_tests__legacy__guards__lib__multiple_guards *)
 letfun new_tests__legacy__guards__lib__multiple_guards(x: bitstring) =
-  let None() = x in nat_lit(0)
-  else let Some(v) = x in nat_lit(0)
+  let None() = x in nat_0
+  else let Some(v) = x in nat_0
   else let Some(v_1) = x in y
   else let Some(core__result__Result__Err(y_1: bitstring)) = x in y_1
-  else nat_lit(1).
+  else nat_1.
 (* src: src/legacy/guards/lib.rs:43 new_tests__legacy__guards__lib__if_guard *)
 letfun new_tests__legacy__guards__lib__if_guard(x: bitstring) =
   let Some(v) = x in v
-  else nat_lit(0).
+  else nat_0.

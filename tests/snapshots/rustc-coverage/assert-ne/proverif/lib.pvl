@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -34,10 +34,10 @@ letfun new_tests__rustc_coverage__assert_ne__main(wildcard: bitstring) =
     left_val: bitstring,
     right_val: bitstring
   ) = rust_primitives__hax__Tuple2__Tuple2(
-    core__hint__black_box(new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_lit(5))),
+    core__hint__black_box(new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_5)),
     let (=True()) = core__hint__black_box(False())
-      in new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_lit(0))
-      else new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_lit(1))
+      in new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_0)
+      else new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_1)
   ) in
     (let (=True()) = core__cmp__PartialEq__eq(left_val, right_val)
       in bitstring_err()

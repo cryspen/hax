@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -65,12 +65,12 @@ reduc forall v_0: bitstring;
 (* src: src/legacy/cli/interface-only/lib.rs:78 new_tests__legacy__cli__interface_only__lib__Impl_3__from *)
 letfun new_tests__legacy__cli__interface_only__lib__Impl_3__from(wildcard: bitstring) =
   new_tests__legacy__cli__interface_only__lib__Param__Param(
-    rust_primitives__hax__repeat(nat_lit(0), bitstring_default())
+    rust_primitives__hax__repeat(nat_0, bitstring_default())
   ).
 (* src: src/legacy/cli/interface-only/lib.rs:83 new_tests__legacy__cli__interface_only__lib__f_generic *)
 letfun new_tests__legacy__cli__interface_only__lib__f_generic(u_x: bitstring) =
   new_tests__legacy__cli__interface_only__lib__Param__Param(
-    rust_primitives__hax__repeat(nat_lit(0), bitstring_default())
+    rust_primitives__hax__repeat(nat_0, bitstring_default())
   ).
 
 (*  Impls with associated types are not erased *)

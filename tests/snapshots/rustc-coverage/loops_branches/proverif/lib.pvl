@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -41,7 +41,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl__fmt(self: bitstring, f: 
       let core__ops__control_flow__ControlFlow__Break(
         ret: bitstring
       ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-        core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+        core__ops__range__Range__Range(nat_0, nat_10)
       )) in let bl__acc0 = (f_1) in 
       let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let f_2 = bl__acc0 in
       let bl__acc1 = (let (=True()) = True()
@@ -129,7 +129,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl__fmt(self: bitstring, f: 
       else let core__ops__control_flow__ControlFlow__Continue(
         f_5: bitstring
       ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-        core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+        core__ops__range__Range__Range(nat_0, nat_10)
       )) in let bl__acc0 = (f_1) in 
       let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let f_2 = bl__acc0 in
       let bl__acc1 = (let (=True()) = True()
@@ -218,7 +218,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl__fmt(self: bitstring, f: 
     else (let core__ops__control_flow__ControlFlow__Break(
       ret_1: bitstring
     ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      core__ops__range__Range__Range(nat_0, nat_10)
     )) in let bl__acc0 = (f) in 
     let rust_primitives__hax__array_cons(i_1, bl__seq1) = bl__seq0 in (let f_6 = bl__acc0 in
     let bl__acc1 = (let (=True()) = True()
@@ -306,7 +306,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl__fmt(self: bitstring, f: 
     else let core__ops__control_flow__ControlFlow__Continue(
       f_9: bitstring
     ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      core__ops__range__Range__Range(nat_0, nat_10)
     )) in let bl__acc0 = (f) in 
     let rust_primitives__hax__array_cons(i_1, bl__seq1) = bl__seq0 in (let f_6 = bl__acc0 in
     let bl__acc1 = (let (=True()) = True()
@@ -401,7 +401,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl_1__fmt(self: bitstring, f
     in (let core__ops__control_flow__ControlFlow__Break(
       ret: bitstring
     ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      core__ops__range__Range__Range(nat_0, nat_10)
     )) in let bl__acc0 = (f) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let f_1 = bl__acc0 in
     let bl__acc1 = (let (=True()) = False()
@@ -489,7 +489,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl_1__fmt(self: bitstring, f
     else let core__ops__control_flow__ControlFlow__Continue(
       f_4: bitstring
     ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-      core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+      core__ops__range__Range__Range(nat_0, nat_10)
     )) in let bl__acc0 = (f) in 
     let rust_primitives__hax__array_cons(i, bl__seq1) = bl__seq0 in (let f_1 = bl__acc0 in
     let bl__acc1 = (let (=True()) = False()
@@ -591,7 +591,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl_1__fmt(self: bitstring, f
       let core__ops__control_flow__ControlFlow__Break(
         ret_1: bitstring
       ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-        core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+        core__ops__range__Range__Range(nat_0, nat_10)
       )) in let bl__acc0 = (f_5) in 
       let rust_primitives__hax__array_cons(i_1, bl__seq1) = bl__seq0 in (let f_6 = bl__acc0 in
       let bl__acc1 = (let (=True()) = False()
@@ -679,7 +679,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl_1__fmt(self: bitstring, f
       else let core__ops__control_flow__ControlFlow__Continue(
         f_9: bitstring
       ) = (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-        core__ops__range__Range__Range(nat_lit(0), nat_lit(10))
+        core__ops__range__Range__Range(nat_0, nat_10)
       )) in let bl__acc0 = (f_5) in 
       let rust_primitives__hax__array_cons(i_1, bl__seq1) = bl__seq0 in (let f_6 = bl__acc0 in
       let bl__acc1 = (let (=True()) = False()

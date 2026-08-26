@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -22,10 +22,7 @@
 (* src: src/rustc-coverage/overflow.rs:8 new_tests__rustc_coverage__overflow__might_overflow *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__overflow__might_overflow(to_add: bitstring) =
-  let wildcard: bitstring = (let (=True()) = rust_primitives__hax__machine_int__gt(
-      to_add,
-      nat_lit(5)
-    )
+  let wildcard: bitstring = (let (=True()) = rust_primitives__hax__machine_int__gt(to_add, nat_5)
     in (let wildcard: bitstring = std__io__stdio__u_print(
       core__fmt__rt__Impl_1__new_const(
         rust_primitives__hax__array_cons(string_lit__this_x20will_x20probably_x20overflow_x0a, rust_primitives__hax__array_nil())
@@ -34,7 +31,7 @@ letfun new_tests__rustc_coverage__overflow__might_overflow(to_add: bitstring) =
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0) in
-  let add_to = rust_primitives__hax__machine_int__sub(core__num__Impl_8__MAX, nat_lit(5)) in
+  let add_to = rust_primitives__hax__machine_int__sub(core__num__Impl_8__MAX, nat_5) in
   let args = rust_primitives__hax__Tuple2__Tuple2(add_to, to_add) in
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_v1(

@@ -15,5 +15,12 @@ fun core__num__Impl_8__wrapping_sub(bitstring, bitstring): bitstring.
 fun core__ops__try_trait__FromResidual__from_residual(bitstring): bitstring.
 fun core__ops__try_trait__Try__branch(bitstring): bitstring.
 fun core__option__Impl__ok_or(bitstring, bitstring): bitstring.
+const nat_123: bitstring.
+const nat_20: bitstring.
+const nat_30: bitstring.
+const nat_32: bitstring.
+const nat_34: bitstring.
+const nat_40: bitstring.
+const nat_90: bitstring.
 fun rust_primitives__hax__Tuple2(bitstring): bitstring.
 fun rust_primitives__hax__monomorphized_update_at__update_at_usize(bitstring, bitstring, bitstring): bitstring.

@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -27,8 +27,8 @@ fun new_tests__legacy__cyclic_modules__lib__rec__T__t1(): bitstring [data].
 fun new_tests__legacy__cyclic_modules__lib__rec__T__t2(): bitstring [data].
 (* src: src/legacy/cyclic-modules/lib.rs:63 new_tests__legacy__cyclic_modules__lib__rec__T_cast_to_repr *)
 letfun new_tests__legacy__cyclic_modules__lib__rec__T_cast_to_repr(x: bitstring) =
-  let new_tests__legacy__cyclic_modules__lib__rec__T__t1() = x in nat_lit(0)
-  else let new_tests__legacy__cyclic_modules__lib__rec__T__t2() = x in nat_lit(1)
+  let new_tests__legacy__cyclic_modules__lib__rec__T__t1() = x in nat_0
+  else let new_tests__legacy__cyclic_modules__lib__rec__T__t2() = x in nat_1
   else bitstring_err().
 (* src: src/legacy/cyclic-modules/lib.rs:79 new_tests__legacy__cyclic_modules__lib__rec__hf *)
 (* recursion unsupported: opacified to an uninterpreted function *)
@@ -96,7 +96,7 @@ letfun new_tests__legacy__cyclic_modules__lib__variant_constructor_a__Impl__test
   ).
 (* src: src/legacy/cyclic-modules/lib.rs:168 new_tests__legacy__cyclic_modules__lib__variant_constructor_b__h *)
 letfun new_tests__legacy__cyclic_modules__lib__variant_constructor_b__h(wildcard: bitstring) =
-  new_tests__legacy__cyclic_modules__lib__variant_constructor_a__Context__A(nat_lit(1)).
+  new_tests__legacy__cyclic_modules__lib__variant_constructor_a__Context__A(nat_1).
 (* src: src/legacy/cyclic-modules/lib.rs:158 new_tests__legacy__cyclic_modules__lib__variant_constructor_a__f *)
 letfun new_tests__legacy__cyclic_modules__lib__variant_constructor_a__f(wildcard: bitstring) =
   new_tests__legacy__cyclic_modules__lib__variant_constructor_b__h(
@@ -112,7 +112,7 @@ reduc forall v_0: bitstring;
   ) = v_0.
 (* src: src/legacy/cyclic-modules/lib.rs:21 new_tests__legacy__cyclic_modules__lib__typ_b__T1_cast_to_repr *)
 letfun new_tests__legacy__cyclic_modules__lib__typ_b__T1_cast_to_repr(x: bitstring) =
-  let new_tests__legacy__cyclic_modules__lib__typ_b__T1__T1() = x in nat_lit(0)
+  let new_tests__legacy__cyclic_modules__lib__typ_b__T1__T1() = x in nat_0
   else bitstring_err().
 (* src: src/legacy/cyclic-modules/lib.rs:24 new_tests__legacy__cyclic_modules__lib__typ_b__T2 *)
 fun new_tests__legacy__cyclic_modules__lib__typ_b__T2__T2(bitstring): bitstring [data].

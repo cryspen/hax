@@ -6,7 +6,7 @@
   everything the extracted file references that isn't defined
   below: the public channel `c`, the `construct_fail` sink,
   `bitstring_default`/`bitstring_err`, the `Some`/`None`/
-  `True`/`False`/`nat_lit` constructors, `logical_and`/`or`, and
+  `True`/`False` constructors, `nat_N` literal consts, `logical_and`/`or`, and
   every `rust_primitives::*` / `core::*` / `hax_lib::*` opaque
   function the extraction surface needs.
 
@@ -28,7 +28,7 @@ letfun new_tests__rustc_coverage__branch__match_trivial__Uninhabited_cast_to_rep
 fun new_tests__rustc_coverage__branch__match_trivial__Trivial__Value(): bitstring [data].
 (* src: src/rustc-coverage/branch/match-trivial.rs:19 new_tests__rustc_coverage__branch__match_trivial__Trivial_cast_to_repr *)
 letfun new_tests__rustc_coverage__branch__match_trivial__Trivial_cast_to_repr(x: bitstring) =
-  let new_tests__rustc_coverage__branch__match_trivial__Trivial__Value() = x in nat_lit(0)
+  let new_tests__rustc_coverage__branch__match_trivial__Trivial__Value() = x in nat_0
   else bitstring_err().
 (* src: src/rustc-coverage/branch/match-trivial.rs:42 new_tests__rustc_coverage__branch__match_trivial__consume *)
 letfun new_tests__rustc_coverage__branch__match_trivial__consume(x: bitstring) =
@@ -37,7 +37,7 @@ letfun new_tests__rustc_coverage__branch__match_trivial__consume(x: bitstring) =
 (* src: src/rustc-coverage/branch/match-trivial.rs:23 new_tests__rustc_coverage__branch__match_trivial__u_uninhabited *)
 letfun new_tests__rustc_coverage__branch__match_trivial__u_uninhabited(x: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+    core__ops__range__Range__Range(nat_0, nat_1)
   )) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
@@ -48,7 +48,7 @@ letfun new_tests__rustc_coverage__branch__match_trivial__u_uninhabited(x: bitstr
 (* src: src/rustc-coverage/branch/match-trivial.rs:31 new_tests__rustc_coverage__branch__match_trivial__trivial *)
 letfun new_tests__rustc_coverage__branch__match_trivial__trivial(x: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
-    core__ops__range__Range__Range(nat_lit(0), nat_lit(1))
+    core__ops__range__Range__Range(nat_0, nat_1)
   )) in 
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq1) = bl__seq0 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
   let rust_primitives__hax__array_cons(wildcard: bitstring, bl__seq2) = bl__seq1 in (let wildcard = (rust_primitives__hax__Tuple0__Tuple0) in
