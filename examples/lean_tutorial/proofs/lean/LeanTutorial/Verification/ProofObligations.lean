@@ -1,5 +1,4 @@
-import LeanTutorial.Extraction.Funs
-import LeanTutorial.Extraction.Specs
+import LeanTutorial.Extraction
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc

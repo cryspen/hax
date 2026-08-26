@@ -1,2 +1,2 @@
-import Barrett.Extraction.Funs
-import Barrett.Proofs.Proofs
+import Barrett.Extraction
+import Barrett.Verification.ProofObligations

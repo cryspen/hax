@@ -1,2 +1,2 @@
-import Adc.Extraction.Funs
-import Adc.Proofs.Proofs
+import Adc.Extraction
+import Adc.Verification.ProofObligations

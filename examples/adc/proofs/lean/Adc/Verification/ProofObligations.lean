@@ -1,5 +1,4 @@
-import Adc.Extraction.Funs
-import Adc.Extraction.Specs
+import Adc.Extraction
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc

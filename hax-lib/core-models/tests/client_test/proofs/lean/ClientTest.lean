@@ -1,2 +1,2 @@
-import ClientTest.Extraction.Funs
-import ClientTest.Extraction.Specs
+import ClientTest.Extraction
+-- import ClientTest.Verification.ProofObligations

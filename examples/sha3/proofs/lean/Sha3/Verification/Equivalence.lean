@@ -1,4 +1,4 @@
-import Sha3.Extraction.Funs
+import Sha3.Extraction
 import Hax
 
 namespace sha3

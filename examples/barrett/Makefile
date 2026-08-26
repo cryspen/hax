@@ -21,5 +21,5 @@ clean:
 	rm -f proofs/fstar/extraction/.depend
 	rm -f proofs/fstar/extraction/*.fst
 	rm -f proofs/rust/extraction/*.rs
-	-find proofs/lean/Barrett/Extraction -type f ! -name FunsExternal.lean -delete
+	-rm -rf proofs/lean/Barrett/Extraction
 	-cd proofs/lean && lake clean

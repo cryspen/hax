@@ -6,5 +6,5 @@ defaultTargets = ["Barrett"]
 name = "Barrett"
 
 [[require]]
-name = "Hax"
+name = "hax"
 path = "../../../../hax-lib/proof-libs/lean"

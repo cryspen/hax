@@ -32,6 +32,7 @@ Changes to cargo-hax:
  - Check that the `hax-lib` version in scope matches the `cargo-hax` version before processing
  - Add `cargo hax tools remove <tool>@<version>` and `cargo hax tools clean` to delete a cached tool version or the whole tool cache
  - Add `cargo hax tools pin` to write version pins into `hax.toml`, either this release's defaults or a single `<name>@<version>` entry
+ - `cargo hax into lean` generates a complete, buildable Lean package by default: project files, a root module, and a `Verification/` folder for handwritten proofs, created only when missing; stale files in `Extraction/` are removed and the root module's imports are checked on every run. Disable with a top-level `project-files = false` in `hax.toml` (#2142)
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)

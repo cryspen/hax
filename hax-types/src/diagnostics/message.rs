@@ -269,6 +269,18 @@ pub enum HaxMessage {
         changes: Vec<PinChange>,
         skipped: Vec<String>,
     } = 27,
+    /// A file the root module of a generated Lean package should import
+    /// exists, but the root module does not import it.
+    RootModuleMissingImport {
+        path: PathBuf,
+        import: String,
+    } = 28,
+    /// The root module of a generated Lean package imports an extraction
+    /// file that no longer exists.
+    RootModuleStaleImport {
+        path: PathBuf,
+        import: String,
+    } = 29,
 }
 
 impl HaxMessage {
@@ -288,6 +300,18 @@ impl HaxMessage {
 const ENGINE_BINARY_NAME: &str = "hax-engine";
 
 use annotate_snippets::{Level, Renderer};
+
+/// Render a warning with a `help` footer, the shape most warnings share.
+fn warn_with_help(renderer: &Renderer, title: &str, remedy: &str) -> String {
+    format!(
+        "{}",
+        renderer.render(
+            Level::Warning
+                .title(title)
+                .footer(Level::Help.title(remedy))
+        )
+    )
+}
 
 /// Make a path relative to the current directory for display, if possible.
 fn relative_to_cwd(path: PathBuf) -> PathBuf {
@@ -517,15 +541,31 @@ impl HaxMessage {
                     "hax: {} pins {name} {found}; the current configuration expects {expected}",
                     path.display()
                 );
-                let remedy = "update the pin, or delete the file and re-run with --lakefile to regenerate it";
-                format!(
-                    "{}",
-                    renderer.render(
-                        Level::Warning
-                            .title(&title)
-                            .footer(Level::Help.title(remedy))
-                    )
-                )
+                let remedy = "update the pin, or delete the file and re-run to regenerate it";
+                warn_with_help(&renderer, &title, remedy)
+            }
+            Self::RootModuleMissingImport { path, import } => {
+                let path = relative_to_cwd(path);
+                let title = format!(
+                    "hax: {} does not import {import}, so `lake build` will not \
+                     check that file",
+                    path.display()
+                );
+                let remedy = format!(
+                    "add `import {import}`, or comment it out (`-- import {import}`) \
+                     to silence this warning"
+                );
+                warn_with_help(&renderer, &title, &remedy)
+            }
+            Self::RootModuleStaleImport { path, import } => {
+                let path = relative_to_cwd(path);
+                let title = format!(
+                    "hax: {} imports {import}, but the extraction no longer \
+                     produces that file",
+                    path.display()
+                );
+                let remedy = "remove or comment out the import line";
+                warn_with_help(&renderer, &title, remedy)
             }
             Self::UnverifiedInstall { tool, version, url } => {
                 let title = format!(
@@ -564,14 +604,7 @@ impl HaxMessage {
                     "run `cargo hax tools install {tool}@{version} --force` to \
                      re-download and verify it once a checksum ships"
                 );
-                format!(
-                    "{}",
-                    renderer.render(
-                        Level::Warning
-                            .title(&title)
-                            .footer(Level::Help.title(&remedy))
-                    )
-                )
+                warn_with_help(&renderer, &title, &remedy)
             }
             Self::ToolsShow {
                 tools,

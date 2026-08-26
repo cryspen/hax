@@ -38,6 +38,9 @@ tests/rust_lean_equiv_test/source/proofs/lean/RustLeanTests/LeanTests.lean
 # Lake's resolver state is regenerated from `lakefile.toml`.
 tests/client_test/proofs/lean/lake-manifest.json
 tests/rust_lean_equiv_test/source/proofs/lean/lake-manifest.json
+# hax generates a `.gitignore` inside each Lean package on every run.
+tests/client_test/proofs/lean/.gitignore
+tests/rust_lean_equiv_test/source/proofs/lean/.gitignore
 
 # Editor / OS / agent
 .DS_Store

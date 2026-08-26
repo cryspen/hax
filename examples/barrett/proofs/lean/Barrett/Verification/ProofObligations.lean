@@ -1,5 +1,4 @@
-import Barrett.Extraction.Funs
-import Barrett.Extraction.Specs
+import Barrett.Extraction
 import Barrett.Proofs.MissingSpecs
 import Hax
 open CoreModels Aeneas
