@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0008)
 //! @fail(tc): fstar(2), lean(1)
 //@ compile-flags: -Zinline-mir
 

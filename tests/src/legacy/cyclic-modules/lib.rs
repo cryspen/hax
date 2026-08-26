@@ -1,3 +1,5 @@
+//! @fail(extraction): proverif(HAX0001)
+//! @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008)
 //! @fail(tc): lean(1)
 mod typ_a {
     pub enum TRec {

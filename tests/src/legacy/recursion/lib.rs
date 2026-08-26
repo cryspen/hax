@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0008)
 //! @fail(tc): lean(1)
 #![allow(dead_code)]
 

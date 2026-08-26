@@ -70,6 +70,12 @@ pub struct ProVerifPrinter {
     /// (constants take no arguments). Such an item is declared as an opaque
     /// `fun` of the observed arity instead.
     applied_arities: HashMap<String, usize>,
+    /// Rendered names of functions that sit in a call-graph cycle (self- or
+    /// mutually-recursive). ProVerif `letfun`s are non-recursive, so such a
+    /// function cannot be printed as a `letfun`; it is *rejected* with a
+    /// diagnostic and *opacified* to an uninterpreted `fun` so its callers
+    /// stay well-formed. Computed up-front by [`collect_recursive_fns`].
+    recursive_fns: HashSet<String>,
 }
 
 /// Bundled `primitives.pvl` — declarations for the stable hax extraction
@@ -366,6 +372,47 @@ const _: () = {
                 }
                 _ => docs!["const ", rendered_name.to_string(), ": bitstring."],
             }
+        }
+
+        /// Opaque `fun` declaration for a function ProVerif cannot express
+        /// because it sits in a call-graph cycle (self- or mutually-recursive):
+        /// ProVerif letfuns are non-recursive. Per the modelling decision, the
+        /// item is *rejected* with a diagnostic and *opacified* to an
+        /// uninterpreted function, so callers stay well-formed. This is sound
+        /// as an over-approximation — an uninterpreted function subsumes every
+        /// concrete one — and the security-relevant (crypto) boundary treats
+        /// such computation opaquely regardless.
+        fn recursive_opaque_fun<A: 'static + Clone>(
+            &self,
+            rendered_name: &str,
+            params: &[Param],
+            span: Span,
+        ) -> DocBuilder<A> {
+            // Emit the rejection against the item's *explicit* span (not the
+            // printer's contextual span, which is not reliably the enclosing
+            // item during item-position rendering) so the test harness
+            // attributes it to this function deterministically.
+            use crate::ast::diagnostics::{Context, DiagnosticInfo};
+            DiagnosticInfo {
+                context: Context::Printer(<Self as PrettyAst<A>>::NAME.to_string()),
+                span,
+                kind: hax_types::diagnostics::Kind::ExplicitRejection {
+                    reason: "ProVerif has no recursive functions; this function is in a \
+                             call-graph cycle and was opacified to an uninterpreted function"
+                        .into(),
+                    issue_id: None,
+                },
+            }
+            .emit();
+            let arg_types = comma_sep!(params.iter().map(|p| docs![&p.ty]));
+            docs![
+                "(* recursion unsupported: opacified to an uninterpreted function *)",
+                hardline!(),
+                "fun ",
+                rendered_name.to_string(),
+                paren_doc!(arg_types),
+                ": bitstring."
+            ]
         }
 
         /// A "trivial" binder is one whose rendered pattern is just `x`
@@ -1336,7 +1383,13 @@ const _: () = {
 
                 // ===== expr_app fallback (357-372) =====
                 ExprKind::App { head, args, .. } => {
-                    let head_doc = docs![head];
+                    // Render a `GlobalId` head as the bare name (an application
+                    // head is always applied, so it bypasses the higher-order
+                    // check on value-position `GlobalId`s below).
+                    let head_doc = match &*head.kind {
+                        ExprKind::GlobalId(g) => docs![g],
+                        _ => docs![head],
+                    };
                     if args.is_empty() {
                         docs![head_doc, "()"]
                     } else {
@@ -1345,6 +1398,24 @@ const _: () = {
                 }
 
                 ExprKind::Literal(literal) => docs![literal],
+                // A bare `GlobalId` in value position that names a function or
+                // constructor expecting arguments (e.g. `x.map(Self::A)` passes
+                // the constructor `A`) is a first-class function reference.
+                // ProVerif is first-order and cannot pass an unapplied symbol
+                // that expects arguments, so reject and collapse to the error
+                // sink. A nullary value/const (arity 0 everywhere) is unaffected.
+                ExprKind::GlobalId(g)
+                    if self
+                        .applied_arities
+                        .get(&self.render_id(g))
+                        .copied()
+                        .unwrap_or(0)
+                        >= 1 =>
+                {
+                    self.expr_error_placeholder(
+                        "higher-order reference to a function or constructor",
+                    )
+                }
                 ExprKind::GlobalId(g) => docs![g],
                 ExprKind::LocalId(local_id) => docs![local_id],
                 ExprKind::Ascription { e, ty: _ } => docs![e],
@@ -1567,6 +1638,10 @@ const _: () = {
                             paren_doc!(arg_types),
                             ": bitstring."
                         ]
+                    } else if self.recursive_fns.contains(&self.render_id(name)) {
+                        // Self- or mutually-recursive: ProVerif has no recursive
+                        // letfuns. Reject with a diagnostic and opacify.
+                        self.recursive_opaque_fun(&self.render_id(name), params, item.meta.span)
                     } else {
                         // Regular letfun (lines 560-588).
                         let comment = if as_handwritten {
@@ -1789,6 +1864,10 @@ const _: () = {
                             paren_doc!(arg_types),
                             ": bitstring."
                         ]
+                    } else if self.recursive_fns.contains(&name) {
+                        // Self- or mutually-recursive: ProVerif has no recursive
+                        // letfuns. Reject with a diagnostic and opacify.
+                        self.recursive_opaque_fun(&name, params, impl_item.meta.span)
                     } else {
                         let params_doc = comma_sep!(params.iter().map(|p| docs![p]));
                         docs![
@@ -2682,6 +2761,10 @@ impl Backend for ProVerifBackend {
                 printer.applied_arities.insert(name.clone(), info.arity);
             }
         }
+        // Identify functions in a call-graph cycle (self- or mutually-recursive)
+        // so the item printer can opacify them — ProVerif has no recursive
+        // letfuns.
+        printer.recursive_fns = collect_recursive_fns(&modules, &printer);
         // Render the body, harvesting per-item source-span anchors as we go so
         // we can emit a v3 source map alongside `lib.pvl`. `render_with_span_
         // positions` produces text byte-identical to `printer.print(..)` (the
@@ -2752,6 +2835,78 @@ fn collect_erased_const_generics(item: &Item, out: &mut HashSet<LocalId>) {
             }
         }
     }
+}
+
+/// Compute the set of functions that sit in a call-graph cycle — i.e. that
+/// are self- or mutually-recursive. ProVerif `letfun`s cannot recurse, so
+/// the item printer opacifies these to uninterpreted `fun`s.
+///
+/// Nodes are every function *item* in the module (top-level `Fn`s and impl
+/// methods with at least one parameter — a nullary `fn` is a `const` and
+/// cannot recurse). Edges are the `GlobalId`s a body references, restricted
+/// to other function nodes. A node is recursive iff it can reach itself.
+fn collect_recursive_fns(modules: &[Module], printer: &ProVerifPrinter) -> HashSet<String> {
+    let mut defined: HashSet<String> = HashSet::new();
+    let mut edges: HashMap<String, HashSet<String>> = HashMap::new();
+
+    let mut add_fn = |name: String, body: &Expr| {
+        let mut v = ExternRefCollector::default();
+        v.visit_expr(body);
+        let out: HashSet<String> = v.calls.iter().map(|r| printer.render_id(&r.id)).collect();
+        defined.insert(name.clone());
+        edges.insert(name, out);
+    };
+
+    for module in modules {
+        for item in &module.items {
+            match item.kind() {
+                ItemKind::Fn {
+                    name, body, params, ..
+                } if !params.is_empty() => add_fn(printer.render_id(name), body),
+                ItemKind::Impl { items, .. } => {
+                    for ii in items {
+                        if let ImplItemKind::Fn { body, params } = &ii.kind {
+                            if !params.is_empty() {
+                                add_fn(printer.render_id(&ii.ident), body);
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    // A node is recursive iff it can reach itself through ≥1 edge, following
+    // only edges into other defined function nodes.
+    let reaches_self = |start: &str| -> bool {
+        let mut stack: Vec<String> = edges
+            .get(start)
+            .into_iter()
+            .flatten()
+            .filter(|s| defined.contains(*s))
+            .cloned()
+            .collect();
+        let mut seen: HashSet<String> = HashSet::new();
+        while let Some(n) = stack.pop() {
+            if n == start {
+                return true;
+            }
+            if !seen.insert(n.clone()) {
+                continue;
+            }
+            if let Some(succs) = edges.get(&n) {
+                for s in succs {
+                    if defined.contains(s) {
+                        stack.push(s.clone());
+                    }
+                }
+            }
+        }
+        false
+    };
+
+    defined.iter().filter(|n| reaches_self(n)).cloned().collect()
 }
 
 /// Per-reference info kept while scanning the AST. Tracks max-observed

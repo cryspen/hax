@@ -627,15 +627,8 @@ letfun new_tests__legacy__lean_tests__lib__specs__fn_without_args(wildcard: bits
 letfun new_tests__legacy__lean_tests__lib__specs__custom_pure_proofs(x: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/legacy/lean-tests/recursion.rs:1 new_tests__legacy__lean_tests__lib__recursion__factorial *)
-letfun new_tests__legacy__lean_tests__lib__recursion__factorial(n: bitstring) =
-  let (=True()) = rust_primitives__hax__machine_int__eq(n, nat_lit(0))
-    in nat_lit(1)
-    else rust_primitives__hax__machine_int__mul(
-      n,
-      new_tests__legacy__lean_tests__lib__recursion__factorial(
-        rust_primitives__hax__machine_int__sub(n, nat_lit(1))
-      )
-    ).
+(* recursion unsupported: opacified to an uninterpreted function *)
+fun new_tests__legacy__lean_tests__lib__recursion__factorial(bitstring): bitstring.
 (* src: src/legacy/lean-tests/opaque.rs:2 new_tests__legacy__lean_tests__lib__opaque__an_opaque_fn *)
 (* opaque *)
 fun new_tests__legacy__lean_tests__lib__opaque__an_opaque_fn(bitstring): bitstring [data].
@@ -1693,17 +1686,17 @@ letfun new_tests__legacy__lean_tests__lib__array__g(x: bitstring) =
     rust_primitives__hax__repeat(nat_lit(0), nat_lit(10))
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/lean-tests/lib.rs:27 new_tests__legacy__lean_tests__lib__FORTYTWO *)
+(* src: src/legacy/lean-tests/lib.rs:28 new_tests__legacy__lean_tests__lib__FORTYTWO *)
 const new_tests__legacy__lean_tests__lib__FORTYTWO: bitstring.
-(* src: src/legacy/lean-tests/lib.rs:28 new_tests__legacy__lean_tests__lib__MINUS_FORTYTWO *)
+(* src: src/legacy/lean-tests/lib.rs:29 new_tests__legacy__lean_tests__lib__MINUS_FORTYTWO *)
 const new_tests__legacy__lean_tests__lib__MINUS_FORTYTWO: bitstring.
-(* src: src/legacy/lean-tests/lib.rs:30 new_tests__legacy__lean_tests__lib__returns42 *)
+(* src: src/legacy/lean-tests/lib.rs:31 new_tests__legacy__lean_tests__lib__returns42 *)
 letfun new_tests__legacy__lean_tests__lib__returns42(wildcard: bitstring) =
   new_tests__legacy__lean_tests__lib__FORTYTWO.
-(* src: src/legacy/lean-tests/lib.rs:34 new_tests__legacy__lean_tests__lib__add_two_numbers *)
+(* src: src/legacy/lean-tests/lib.rs:35 new_tests__legacy__lean_tests__lib__add_two_numbers *)
 letfun new_tests__legacy__lean_tests__lib__add_two_numbers(x: bitstring, y: bitstring) =
   rust_primitives__hax__machine_int__add(x, y).
-(* src: src/legacy/lean-tests/lib.rs:38 new_tests__legacy__lean_tests__lib__letBinding *)
+(* src: src/legacy/lean-tests/lib.rs:39 new_tests__legacy__lean_tests__lib__letBinding *)
 letfun new_tests__legacy__lean_tests__lib__letBinding(x: bitstring, y: bitstring) =
   let useless = rust_primitives__hax__Tuple0__Tuple0() in
   rust_primitives__hax__machine_int__add(
@@ -1713,7 +1706,7 @@ letfun new_tests__legacy__lean_tests__lib__letBinding(x: bitstring, y: bitstring
     ),
     nat_lit(1)
   ).
-(* src: src/legacy/lean-tests/lib.rs:45 new_tests__legacy__lean_tests__lib__closure *)
+(* src: src/legacy/lean-tests/lib.rs:46 new_tests__legacy__lean_tests__lib__closure *)
 letfun new_tests__legacy__lean_tests__lib__closure(wildcard: bitstring) =
   let x = nat_lit(41) in
   let f1 = (bitstring_err() (* Closures not supported in ProVerif *)) in
@@ -1722,15 +1715,15 @@ letfun new_tests__legacy__lean_tests__lib__closure(wildcard: bitstring) =
     core__ops__function__Fn__call(f1, rust_primitives__hax__Tuple1__Tuple1(nat_lit(1))),
     core__ops__function__Fn__call(f2, rust_primitives__hax__Tuple2__Tuple2(nat_lit(2), nat_lit(3)))
   ).
-(* src: src/legacy/lean-tests/lib.rs:55 new_tests__legacy__lean_tests__lib__test_before_verbatime_single_line *)
+(* src: src/legacy/lean-tests/lib.rs:56 new_tests__legacy__lean_tests__lib__test_before_verbatime_single_line *)
 letfun new_tests__legacy__lean_tests__lib__test_before_verbatime_single_line(x: bitstring) =
   nat_lit(42).
-(* src: src/legacy/lean-tests/lib.rs:65 new_tests__legacy__lean_tests__lib__test_before_verbatim_multi_line *)
+(* src: src/legacy/lean-tests/lib.rs:66 new_tests__legacy__lean_tests__lib__test_before_verbatim_multi_line *)
 letfun new_tests__legacy__lean_tests__lib__test_before_verbatim_multi_line(x: bitstring) =
   nat_lit(32).
-(* src: src/legacy/lean-tests/lib.rs:69 new_tests__legacy__lean_tests__lib__NULL_CHAR *)
+(* src: src/legacy/lean-tests/lib.rs:70 new_tests__legacy__lean_tests__lib__NULL_CHAR *)
 const new_tests__legacy__lean_tests__lib__NULL_CHAR: bitstring.
-(* src: src/legacy/lean-tests/lib.rs:72 new_tests__legacy__lean_tests__lib__string_escapes *)
+(* src: src/legacy/lean-tests/lib.rs:73 new_tests__legacy__lean_tests__lib__string_escapes *)
 (*  Test string literals with escape sequences *)
 letfun new_tests__legacy__lean_tests__lib__string_escapes(wildcard: bitstring) =
   let u_empty = string_lit__empty in

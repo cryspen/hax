@@ -1,6 +1,12 @@
 //! @fail(tc): lean(1)
 //! @fail(extraction): lean(HAX0001, HAX0001, HAX0001)
 //! @fail(tc): fstar(47)
+// ProVerif rejections are declared at module level: the raw-pointer field of
+// `Foo` and the unsafe/raw-pointer body of `f` are attributed inconsistently
+// between the offending item and the crate root under `-i` interface-only
+// extraction, so a per-item directive is flaky. Aggregate: `f` (4), `Foo` (1),
+// and the recursive `padlen` (1) opacified to an uninterpreted function.
+//! @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008)
 
 #![allow(dead_code)]
 
@@ -14,7 +20,6 @@
 #[hax_lib::ensures(|r| r[0] > x)]
 /// @fail(extraction): ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
 /// @fail(extraction): lean(HAX0008, HAX0008, HAX0008, HAX0008)
-/// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008)
 fn f(x: u8) -> [u8; 4] {
     let y = x as *const i8;
 
@@ -30,7 +35,6 @@ fn f(x: u8) -> [u8; 4] {
 /// need to exclude it with `-i '-*::Foo'`.
 /// @fail(extraction): fstar(HAX0008), coq(HAX0008), ssprove(HAX0008)
 /// @fail(extraction): lean(HAX0008)
-/// @fail(extraction): proverif(HAX0008)
 struct Foo {
     unsupported_field: *const u8,
 }
