@@ -100,13 +100,13 @@ letfun new_tests__rustc_coverage__branch__match_arms__guards(value: bitstring, c
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
   let wildcard: bitstring = (let new_tests__rustc_coverage__branch__match_arms__Enum__D(
     d: bitstring
-  ) = value in new_tests__rustc_coverage__branch__match_arms__consume(d)
+  ) = value in bitstring_err()
   else let new_tests__rustc_coverage__branch__match_arms__Enum__C(c: bitstring) = value in
-    new_tests__rustc_coverage__branch__match_arms__consume(c)
+    bitstring_err()
   else let new_tests__rustc_coverage__branch__match_arms__Enum__B(b: bitstring) = value in
-    new_tests__rustc_coverage__branch__match_arms__consume(b)
+    bitstring_err()
   else let new_tests__rustc_coverage__branch__match_arms__Enum__A(a: bitstring) = value in
-    new_tests__rustc_coverage__branch__match_arms__consume(a)
+    bitstring_err()
   else new_tests__rustc_coverage__branch__match_arms__consume(nat_0)) in
   let wildcard: bitstring = new_tests__rustc_coverage__branch__match_arms__consume(nat_0) in
   rust_primitives__hax__Tuple0__Tuple0.

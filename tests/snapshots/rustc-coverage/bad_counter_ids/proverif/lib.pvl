@@ -205,24 +205,8 @@ letfun new_tests__rustc_coverage__bad_counter_ids__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__bad_counter_ids__ne_good_message(
     rust_primitives__hax__Tuple0__Tuple0
   ) in
-  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
-      bitstring_err() (* error node *)
-    )
-    in bitstring_err()
-    else rust_primitives__hax__Tuple0__Tuple0) in
-  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
-      bitstring_err() (* error node *)
-    )
-    in bitstring_err()
-    else rust_primitives__hax__Tuple0__Tuple0) in
-  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
-      bitstring_err() (* error node *)
-    )
-    in bitstring_err()
-    else rust_primitives__hax__Tuple0__Tuple0) in
-  let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(
-      bitstring_err() (* error node *)
-    )
-    in bitstring_err()
-    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   rust_primitives__hax__Tuple0__Tuple0.

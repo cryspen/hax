@@ -43,17 +43,7 @@ letfun new_tests__rustc_coverage__branch__if_let__if_let(input: bitstring) =
 (*  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001) *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__branch__if_let__if_let_chain(a: bitstring, b: bitstring) =
-  let wildcard: bitstring = (let (=True()) = logical_and(
-      bitstring_err() (* error node *),
-      bitstring_err() (* error node *)
-    )
-    in (let wildcard: bitstring = new_tests__rustc_coverage__branch__if_let__say(x) in
-    let wildcard: bitstring = new_tests__rustc_coverage__branch__if_let__say(y) in
-    rust_primitives__hax__Tuple0__Tuple0)
-    else (let wildcard: bitstring = new_tests__rustc_coverage__branch__if_let__say(
-      string_lit__not_x20both
-    ) in
-    rust_primitives__hax__Tuple0__Tuple0)) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   let wildcard: bitstring = new_tests__rustc_coverage__branch__if_let__say(string_lit__done) in
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/branch/if-let.rs:44 new_tests__rustc_coverage__branch__if_let__main *)

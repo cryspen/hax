@@ -540,7 +540,15 @@ const _: () = {
             arm: &Arm,
             is_last: bool,
         ) -> DocBuilder<A> {
+            // An `if let` match guard (`pat if let Ok(y) = v => body`) has no
+            // first-order ProVerif encoding: the guard's binding (`y`) is
+            // dropped, leaving `body` referencing an unbound variable. Collapse
+            // a guarded arm's result to the error sink so the model still
+            // parses — the arm is honestly a value we cannot compute. The
+            // pattern is still destructured so the arm chain stays well-formed.
+            let guarded = arm.guard.is_some();
             match &*arm.pat.kind {
+                PatKind::Wild if guarded => docs!["bitstring_err()"],
                 PatKind::Wild => docs![&arm.body],
                 // A `Result::Err` arm collapses to a bare `bitstring_err()` only
                 // when it is the final (fallback) arm of the chain — there it
@@ -551,7 +559,7 @@ const _: () = {
                 // the arm body (here `false`) would be discarded. So we fall
                 // through and render it as an ordinary destructuring arm.
                 PatKind::Construct { constructor, .. }
-                    if is_last && *constructor == names::ResultErr =>
+                    if is_last && *constructor == names::ResultErr && !guarded =>
                 {
                     docs!["bitstring_err()"]
                 }
@@ -560,7 +568,9 @@ const _: () = {
                         PatKind::Constant { lit } => docs!["=", lit].parens(),
                         _ => docs![&arm.pat],
                     };
-                    let body = if Self::is_trivial_binder(&arm.pat) {
+                    let body = if guarded {
+                        docs!["bitstring_err()"]
+                    } else if Self::is_trivial_binder(&arm.pat) {
                         docs![&arm.body]
                     } else {
                         self.paren_unless_atomic(&arm.body)
@@ -1258,7 +1268,12 @@ const _: () = {
                 }
                 ExprKind::Match { scrutinee, arms } => {
                     let arm_always_matches = |arm: &Arm| -> bool {
-                        matches!(*arm.pat.kind, PatKind::Wild) || Self::is_trivial_binder(&arm.pat)
+                        // A guarded arm may fail its guard, so it never
+                        // unconditionally matches (its guard collapses to the
+                        // error sink but the following arms stay reachable).
+                        arm.guard.is_none()
+                            && (matches!(*arm.pat.kind, PatKind::Wild)
+                                || Self::is_trivial_binder(&arm.pat))
                     };
                     let arm_is_result_err = |arm: &Arm| -> bool {
                         matches!(
@@ -1326,6 +1341,19 @@ const _: () = {
                 //
                 // ProVerif treats a failing `let` pattern as taking the
                 // `else` branch, exactly matching Rust's `if cond then ... else ...`.
+                // An `if let` chain (`if let Some(x) = a && let Some(y) = b`)
+                // has no first-order ProVerif encoding: the binding tests become
+                // `Error` nodes and their bindings (`x`, `y`) are lost, yet the
+                // then-branch still references them. When the condition contains
+                // an `Error` node the whole `if` is unmodelable, so collapse it
+                // to the error sink rather than emit a body over unbound
+                // variables. (The `Error` nodes already carry their own
+                // diagnostics.)
+                ExprKind::If { condition, .. }
+                    if ExternRefCollector::expr_has_error(condition) =>
+                {
+                    docs!["bitstring_err()", " (* unsupported if-let chain *)"]
+                }
                 ExprKind::If {
                     condition,
                     then,
@@ -3359,6 +3387,31 @@ impl ExternRefCollector {
             is_constructor,
             applied,
         });
+    }
+}
+
+/// Detects whether an expression subtree contains an `Error` node (a fragment
+/// the frontend or an earlier phase could not translate, rendered as
+/// `bitstring_err()`).
+#[derive(Default)]
+struct ErrorNodeFinder {
+    found: bool,
+}
+
+impl AstVisitor for ErrorNodeFinder {
+    fn enter_expr_kind(&mut self, kind: &ExprKind) {
+        if matches!(kind, ExprKind::Error(_)) {
+            self.found = true;
+        }
+    }
+}
+
+impl ExternRefCollector {
+    /// True if `e` contains an `Error` node anywhere.
+    fn expr_has_error(e: &Expr) -> bool {
+        let mut f = ErrorNodeFinder::default();
+        f.visit_expr(e);
+        f.found
     }
 }
 

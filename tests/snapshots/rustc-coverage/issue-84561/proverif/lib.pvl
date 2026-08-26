@@ -423,45 +423,13 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
 (*  @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008) *)
 (*  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0002) *)
 letfun new_tests__rustc_coverage__issue_84561__test1(wildcard: bitstring) =
-  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
-    in (let wildcard: bitstring = std__io__stdio__u_print(
-      core__fmt__rt__Impl_1__new_const(
-        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
-      )
-    ) in
-    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
-    rust_primitives__hax__Tuple0__Tuple0)
-    else rust_primitives__hax__Tuple0__Tuple0) in
-  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
-    in (let wildcard: bitstring = std__io__stdio__u_print(
-      core__fmt__rt__Impl_1__new_const(
-        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
-      )
-    ) in
-    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
-    rust_primitives__hax__Tuple0__Tuple0)
-    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   let wildcard: bitstring = nat_0 in
-  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
-    in (let wildcard: bitstring = std__io__stdio__u_print(
-      core__fmt__rt__Impl_1__new_const(
-        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
-      )
-    ) in
-    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
-    rust_primitives__hax__Tuple0__Tuple0)
-    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   let wildcard: bitstring = (bitstring_err() (* error node *)) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
-  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
-    in (let wildcard: bitstring = std__io__stdio__u_print(
-      core__fmt__rt__Impl_1__new_const(
-        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
-      )
-    ) in
-    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
-    rust_primitives__hax__Tuple0__Tuple0)
-    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/issue-84561.rs:174 new_tests__rustc_coverage__issue_84561__test2__call_print *)
 (*  @fail(extraction): ssprove(HAX0001) *)
@@ -483,15 +451,7 @@ letfun new_tests__rustc_coverage__issue_84561__test2(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__issue_84561__test2__call_print(
     string_lit__called_x20from_x20call_debug_x3a_x20
   ) in
-  let wildcard: bitstring = (let (=True()) = bitstring_err() (* error node *)
-    in (let wildcard: bitstring = std__io__stdio__u_print(
-      core__fmt__rt__Impl_1__new_const(
-        rust_primitives__hax__array_cons(string_lit__debug_x20is_x20enabled_x0a, rust_primitives__hax__array_nil())
-      )
-    ) in
-    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
-    rust_primitives__hax__Tuple0__Tuple0)
-    else rust_primitives__hax__Tuple0__Tuple0) in
+  let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   rust_primitives__hax__Tuple0__Tuple0.
 (* src: src/rustc-coverage/issue-84561.rs:189 new_tests__rustc_coverage__issue_84561__main *)
 letfun new_tests__rustc_coverage__issue_84561__main(wildcard: bitstring) =

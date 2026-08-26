@@ -22,7 +22,7 @@
 (* src: src/legacy/guards/lib.rs:5 new_tests__legacy__guards__lib__if_let_guard *)
 letfun new_tests__legacy__guards__lib__if_let_guard(x: bitstring) =
   let None() = x in nat_0
-  else let Some(v) = x in y
+  else let Some(v) = x in bitstring_err()
   else let Some(core__result__Result__Err(y_1: bitstring)) = x in y_1
   else nat_1.
 (* src: src/legacy/guards/lib.rs:14 new_tests__legacy__guards__lib__equivalent *)
@@ -38,11 +38,11 @@ letfun new_tests__legacy__guards__lib__equivalent(x: bitstring) =
 (* src: src/legacy/guards/lib.rs:33 new_tests__legacy__guards__lib__multiple_guards *)
 letfun new_tests__legacy__guards__lib__multiple_guards(x: bitstring) =
   let None() = x in nat_0
-  else let Some(v) = x in nat_0
-  else let Some(v_1) = x in y
+  else let Some(v) = x in bitstring_err()
+  else let Some(v_1) = x in bitstring_err()
   else let Some(core__result__Result__Err(y_1: bitstring)) = x in y_1
   else nat_1.
 (* src: src/legacy/guards/lib.rs:43 new_tests__legacy__guards__lib__if_guard *)
 letfun new_tests__legacy__guards__lib__if_guard(x: bitstring) =
-  let Some(v) = x in v
+  let Some(v) = x in bitstring_err()
   else nat_0.
