@@ -23,8 +23,7 @@
 
 (* src: src/rustc-coverage/branch/match-trivial.rs:18 new_tests__rustc_coverage__branch__match_trivial__Uninhabited_cast_to_repr *)
 letfun new_tests__rustc_coverage__branch__match_trivial__Uninhabited_cast_to_repr(x: bitstring) =
-  
-  else bitstring_err().
+  bitstring_err().
 (* src: src/rustc-coverage/branch/match-trivial.rs:19 new_tests__rustc_coverage__branch__match_trivial__Trivial *)
 fun new_tests__rustc_coverage__branch__match_trivial__Trivial__Value(): bitstring [data].
 (* src: src/rustc-coverage/branch/match-trivial.rs:19 new_tests__rustc_coverage__branch__match_trivial__Trivial_cast_to_repr *)

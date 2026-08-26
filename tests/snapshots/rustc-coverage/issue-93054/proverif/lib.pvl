@@ -22,9 +22,7 @@
 (* src: src/rustc-coverage/issue-93054.rs:9 new_tests__rustc_coverage__issue_93054__Never *)
 
 (* src: src/rustc-coverage/issue-93054.rs:9 new_tests__rustc_coverage__issue_93054__Never_cast_to_repr *)
-letfun new_tests__rustc_coverage__issue_93054__Never_cast_to_repr(x: bitstring) =
-  
-  else bitstring_err().
+letfun new_tests__rustc_coverage__issue_93054__Never_cast_to_repr(x: bitstring) = bitstring_err().
 (* src: src/rustc-coverage/issue-93054.rs:17 new_tests__rustc_coverage__issue_93054__Impl__bar *)
 letfun new_tests__rustc_coverage__issue_93054__Impl__bar(self: bitstring) = bitstring_err().
 (* src: src/rustc-coverage/issue-93054.rs:24 new_tests__rustc_coverage__issue_93054__foo2 *)
