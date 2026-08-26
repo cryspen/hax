@@ -13,7 +13,9 @@ fun core__num__Impl_6__wrapping_add(bitstring, bitstring): bitstring.
 fun core__num__Impl_8__wrapping_add(bitstring, bitstring): bitstring.
 fun core__num__Impl_8__wrapping_sub(bitstring, bitstring): bitstring.
 fun core__ops__try_trait__FromResidual__from_residual(bitstring): bitstring.
+(* result destructured as: core__ops__control_flow__ControlFlow__Break(_); core__ops__control_flow__ControlFlow__Continue(_) *)
 fun core__ops__try_trait__Try__branch(bitstring): bitstring.
+(* result destructured as: core__result__Result__Err(_); core__result__Result__Ok(_) *)
 fun core__option__Impl__ok_or(bitstring, bitstring): bitstring.
 const nat_123: bitstring.
 const nat_20: bitstring.
