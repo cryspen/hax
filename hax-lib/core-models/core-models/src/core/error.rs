@@ -14,7 +14,7 @@ trait ErrorDefaults {
 // Hidden from Aeneas: it cannot translate a body that returns a `&'static str`
 // ("There should be no bottoms in the value") and would emit a `sorry`. The F*
 // extraction of this module is interface-only, so it keeps only the signature.
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<T: Error> ErrorDefaults for T {
     fn description(&self) -> &str {
         "description() is deprecated; use Display"

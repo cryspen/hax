@@ -5,7 +5,7 @@
 //! `error::ErrorDefaults` companion trait — Aeneas resolves the call to
 //! `core_models::error::Error::description`, which does not exist, so a
 //! `#[rust_lean_test]` here would break the Lean build with an unknown
-//! constant. The blanket impl is `aeneas::exclude`d on top of that, because
+//! constant. The blanket impl is `hax_lib::exclude`d on top of that, because
 //! Aeneas cannot translate a body returning a `&'static str`.
 
 #[cfg(test)]

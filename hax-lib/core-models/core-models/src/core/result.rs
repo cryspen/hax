@@ -16,7 +16,7 @@ use rust_primitives::sequence::{Seq, seq_empty, seq_len, seq_one, seq_remove};
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::is_ok`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn is_ok(&self) -> bool {
         matches!(*self, Ok(_))
     }
@@ -30,7 +30,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::is_err`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn is_err(&self) -> bool {
         !self.is_ok()
     }
@@ -44,7 +44,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_ref`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub const fn as_ref(&self) -> Result<&T, &E> {
         match *self {
             Ok(ref t) => Ok(t),
@@ -155,7 +155,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or_default`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn map_or_default<U, F>(self, f: F) -> U
     where
         F: FnOnce(T) -> U,
@@ -184,7 +184,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::ok`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn ok(self) -> Option<T> {
         match self {
             Ok(x) => Option::Some(x),
@@ -193,7 +193,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::err`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn err(self) -> Option<E> {
         match self {
             Ok(_) => Option::None,
@@ -370,7 +370,7 @@ impl<T: Clone, E> Result<&'_ T, E> {
 
 #[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<T, E> Result<Option<T>, E> {
     /// See [`std::result::Result::transpose`]
     pub fn transpose(self) -> Option<Result<T, E>> {
@@ -383,7 +383,7 @@ impl<T, E> Result<Option<T>, E> {
 }
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<T, E> Result<Result<T, E>, E> {
     /// See [`std::result::Result::flatten`]
     pub fn flatten(self) -> Result<T, E> {
@@ -497,7 +497,7 @@ impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
 
 /// See [`std::result::IterMut`]
 // `&mut` returns are unsupported in the F* backend.
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 // F*-only: `charon::exclude` would drop this dummy type while its `impl`
 // blocks still reference it (see f32.rs).
 #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
@@ -547,7 +547,7 @@ impl<T, E> crate::iter::traits::collect::IntoIterator for Result<T, E> {
 /// `&T`, so the impl is specialised to `Result<&T, E>` — the same set of self
 /// types, without needing the bound.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<'a, T, E> Result<&'a T, E> {
     /// See [`std::result::Result::as_deref`]
     pub fn as_deref(&self) -> Result<&T, &E> {
@@ -561,7 +561,7 @@ impl<'a, T, E> Result<&'a T, E> {
 /// Std bounds `as_deref_mut` by `T: DerefMut`; see `as_deref` above for why the
 /// model specialises the self type instead.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<'a, T, E> Result<&'a mut T, E> {
     /// See [`std::result::Result::as_deref_mut`]
     // `&mut` returns are unsupported in the F* backend.
@@ -577,7 +577,7 @@ impl<'a, T, E> Result<&'a mut T, E> {
 /// `Copy` here is `core`'s, not the model's: reading `*t` out of a `&T` is a
 /// language operation, which the model's `marker::Copy` cannot license.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<'a, T: Copy, E> Result<&'a T, E> {
     /// See [`std::result::Result::copied`]
     pub fn copied(self) -> Result<T, E> {
@@ -593,7 +593,7 @@ impl<'a, T: Copy, E> Result<&'a T, E> {
 /// unstable and the model's `convert::Infallible` is a unit struct — hence
 /// inhabited — so the arm survives and needs the usual panic guard.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<T> Result<T, crate::convert::Infallible> {
     /// See [`std::result::Result::into_ok`]
     #[hax_lib::requires(self.is_ok())]
@@ -607,7 +607,7 @@ impl<T> Result<T, crate::convert::Infallible> {
 
 /// See the note on `into_ok`.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<E> Result<crate::convert::Infallible, E> {
     /// See [`std::result::Result::into_err`]
     #[hax_lib::requires(self.is_err())]

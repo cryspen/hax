@@ -525,7 +525,7 @@ mod iterators {
 
 // ----- as_deref / as_deref_mut / copied (not extracted) ----------------------
 
-// Rust-only: like `as_ref`/`as_mut`/`cloned`, these are `aeneas::exclude`d in the
+// Rust-only: like `as_ref`/`as_mut`/`cloned`, these are `hax_lib::exclude`d in the
 // model, so no extracted Lean definition exists to guard against.
 #[cfg(test)]
 mod deref_and_copy {

@@ -780,7 +780,7 @@ mod iterators {
 
 // ----- as_mut / as_slice / as_mut_slice (not extracted) ----------------------
 
-// Rust-only: like `Result::as_mut`, these are `aeneas::exclude`d in the model
+// Rust-only: like `Result::as_mut`, these are `hax_lib::exclude`d in the model
 // (`as_slice`/`as_mut_slice` additionally need a `&T -> &[T]` primitive neither
 // backend has), so no extracted Lean definition exists to guard against.
 #[cfg(test)]
@@ -873,7 +873,7 @@ pub fn test_copied_none() -> bool {
 // ----- insert / get_or_insert* / replace / take_if (not extracted) -----------
 
 // Rust-only: the model's versions are pure (they return the updated option
-// rather than mutating through `&mut self`), so they are `aeneas::exclude`d —
+// rather than mutating through `&mut self`), so they are `hax_lib::exclude`d —
 // an extracted definition would not match a std call site. Same reason `take`
 // sits in `CHARON_EXCLUDES`.
 #[cfg(test)]

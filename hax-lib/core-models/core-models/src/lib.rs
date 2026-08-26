@@ -53,8 +53,6 @@
         step_trait
     )
 )]
-// `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
-// from `cargo hax`.
 // likely_unlikely/cold_path: same, for the `hint` proptests.
 
 // hasher_prefixfree_extras: same, for `Hasher::{write_length_prefix, write_str}`.
@@ -68,7 +66,6 @@
 // The `bound_*` / `control_flow_*` / `range_*` / `one_sided_range` features let
 // the `ops` proptests call the still-unstable std counterparts of the range and
 // `ControlFlow` items the model provides.
-#![cfg_attr(charon, register_tool(aeneas))]
 
 #[path = "core/array.rs"]
 pub mod array;

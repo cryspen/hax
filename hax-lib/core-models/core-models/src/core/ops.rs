@@ -908,7 +908,7 @@ pub mod range {
     // Aeneas names these `RangeInclusive.start` / `RangeInclusive.«end»`, which
     // are already taken by the extracted structure's field projections, so the
     // Lean side keeps using the fields directly and only F* gets the accessors.
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     impl<Idx> RangeInclusive<Idx> {
         /// See [`std::ops::RangeInclusive::start`]
         pub fn start(&self) -> &Idx {

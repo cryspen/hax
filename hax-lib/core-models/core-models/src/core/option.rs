@@ -257,7 +257,7 @@ impl<T> Option<T> {
     // opaque: viewing a `&T` as a one-element slice needs a primitive neither
     // backend has, so only the Rust body (which the proptest checks) is real.
     #[hax_lib::opaque]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn as_slice(&self) -> &[T] {
         match self {
             Some(x) => core::slice::from_ref(x),
@@ -316,9 +316,9 @@ impl<T> Option<T> {
     /// `OptionFlatten<A>`. The model omits the associated-type constraint (as
     /// `FromIterator::from_iter` does) and relies on the blanket
     /// `IntoIterator for I: Iterator`, under which `A` is `T` itself.
-    // aeneas::exclude: `A` is pinned to `T` here, so the extracted signature would
+    // hax_lib::exclude: `A` is pinned to `T` here, so the extracted signature would
     // not match a std call site.
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn into_flat_iter(self) -> OptionFlatten<T> {
         OptionFlatten(self)
     }
@@ -328,10 +328,10 @@ impl<T> Option<T> {
     /// Std takes `&mut self` and returns a `&mut` to the inserted value. The
     /// model returns the updated option instead — the same information, since
     /// the value std points at is the one this option now holds.
-    // aeneas::exclude: the model's signature is pure where std's mutates through
+    // hax_lib::exclude: the model's signature is pure where std's mutates through
     // `&mut self`, so an extracted definition would not match a std call site (as
     // for `take`, which the Makefile excludes for the same reason).
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn insert(self, value: T) -> Option<T> {
         Some(value)
     }
@@ -341,7 +341,7 @@ impl<T> Option<T> {
     /// Returns the updated option; see `insert` for why that replaces std's
     /// `&mut T`.
     // See `insert` for the exclusion.
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn get_or_insert(self, value: T) -> Option<T> {
         match self {
             Some(x) => Some(x),
@@ -353,7 +353,7 @@ impl<T> Option<T> {
     ///
     /// Returns the updated option; see `insert`.
     // See `insert` for the exclusion.
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn get_or_insert_with<F: FnOnce() -> T>(self, f: F) -> Option<T> {
         match self {
             Some(x) => Some(x),
@@ -365,7 +365,7 @@ impl<T> Option<T> {
     ///
     /// Returns the updated option; see `insert`.
     // See `insert` for the exclusion.
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn get_or_insert_default(self) -> Option<T>
     where
         T: Default,
@@ -385,7 +385,7 @@ impl<T> Option<T> {
     // through the `FnOnce::Output` projection, which it will not do. See
     // `insert` for the aeneas exclusion.
     #[hax_lib::opaque]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn get_or_try_insert_with<E, F: FnOnce() -> Result<T, E>>(
         self,
         f: F,
@@ -404,7 +404,7 @@ impl<T> Option<T> {
     /// Like `take`, the Rust interface is wrong here but good after extraction:
     /// the model returns `(new self, old value)` instead of mutating in place.
     // See `insert` for the exclusion.
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn replace(self, value: T) -> (Option<T>, Option<T>) {
         (Some(value), self)
     }
@@ -447,9 +447,9 @@ impl<T> Option<T> {
     /// Std bounds the two payloads by `Into<R>`; the model's `convert::Into` is
     /// private (it is derived from `From` by a blanket impl), so the bound is
     /// spelled on `From` here.
-    // aeneas::exclude: the `From` bounds make the dictionaries differ from std's
+    // hax_lib::exclude: the `From` bounds make the dictionaries differ from std's
     // `Into` ones, so the extracted signature would not match a std call site.
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn reduce<U, R, F>(self, other: Option<U>, f: F) -> Option<R>
     where
         R: crate::convert::From<T> + crate::convert::From<U>,
@@ -586,7 +586,7 @@ impl<T: Clone> Option<&'_ T> {
 /// `&T`, so the impl is specialised to `Option<&T>` — the same set of self
 /// types, without needing the bound.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<'a, T> Option<&'a T> {
     /// See [`std::option::Option::as_deref`]
     pub fn as_deref(&self) -> Option<&T> {
@@ -613,7 +613,7 @@ impl<T: crate::marker::Copy> Option<&'_ T> {
 /// Std bounds `as_deref_mut` by `T: DerefMut`; see `as_deref` above for why the
 /// model specialises the self type instead.
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<'a, T> Option<&'a mut T> {
     /// See [`std::option::Option::as_deref_mut`]
     // See `as_mut` for the exclusions.
@@ -627,7 +627,7 @@ impl<'a, T> Option<&'a mut T> {
 }
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<'a, T> Option<&'a Option<T>> {
     /// See [`std::option::Option::flatten_ref`]
     pub fn flatten_ref(self) -> Option<&'a T> {
@@ -639,7 +639,7 @@ impl<'a, T> Option<&'a Option<T>> {
 }
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<'a, T> Option<&'a mut Option<T>> {
     /// See [`std::option::Option::flatten_mut`]
     // See `as_mut` for the exclusions.
@@ -672,7 +672,7 @@ impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
 
 /// See [`std::option::IterMut`]
 // See `Option::as_mut` for the exclusions.
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 // F*-only: `charon::exclude` would drop this dummy type while its `impl`
 // blocks still reference it (see f32.rs).
 #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
