@@ -9,7 +9,6 @@
 (* nature (one-way fun / data constructor / letfun) is unknown.  *)
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring.
 const string_lit___x3f_x0a: bitstring.
 const string_lit__does_x201_x20_x2b_x201_x20_x3d_x20: bitstring.
 const string_lit__the_x20argument_x20was_x20wrong: bitstring.

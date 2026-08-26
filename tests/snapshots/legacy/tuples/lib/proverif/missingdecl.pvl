@@ -9,4 +9,5 @@
 (* nature (one-way fun / data constructor / letfun) is unknown.  *)
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring.
+(* (none — every referenced symbol is defined in lib.pvl, *)
+(* primitives.pvl, or a -lib'd dependency.)               *)

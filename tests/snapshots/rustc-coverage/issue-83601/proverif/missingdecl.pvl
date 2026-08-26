@@ -10,6 +10,5 @@
 (* GOAL: this file is EMPTY.                                     *)
 (*****************************************************************)
 const core__panicking__AssertKind__Ne: bitstring.
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring.
 const string_lit___x0a: bitstring.
 const string_lit__empty: bitstring.

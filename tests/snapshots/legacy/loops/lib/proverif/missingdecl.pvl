@@ -17,6 +17,4 @@ fun core__ops__arith__MulAssign__mul_assign(bitstring, bitstring): bitstring.
 fun core__slice__Impl__chunks(bitstring, bitstring): bitstring.
 fun core__slice__Impl__chunks_exact(bitstring, bitstring): bitstring.
 fun core__slice__iter__Impl_88__remainder(bitstring): bitstring.
-fun rust_primitives__hax__Tuple2__Tuple2__0(bitstring): bitstring.
-fun rust_primitives__hax__Tuple2__Tuple2__1(bitstring): bitstring.
 fun rust_primitives__hax__monomorphized_update_at__update_at_usize(bitstring, bitstring, bitstring): bitstring.

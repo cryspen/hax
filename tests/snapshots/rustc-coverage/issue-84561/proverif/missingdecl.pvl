@@ -11,7 +11,6 @@
 (*****************************************************************)
 fun core__fmt__Impl_11__write_fmt(bitstring, bitstring): bitstring.
 const core__panicking__AssertKind__Ne: bitstring.
-fun rust_primitives__hax__Tuple1__Tuple1__0(bitstring): bitstring.
 fun std__env__args(bitstring): bitstring.
 const string_lit___x0a: bitstring.
 const string_lit__called_x20from_x20call_debug_x3a_x20: bitstring.
