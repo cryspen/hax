@@ -58,7 +58,9 @@ letfun new_tests__legacy__proverif_ping_pong__lib__b__read_ping_alt(
   msg: bitstring
 ) =
   let new_tests__legacy__proverif_ping_pong__lib__Message__Ping(received: bitstring) = msg in
-    bitstring_err()
+    (let (=True()) = rust_primitives__hax__machine_int__eq(received, nat_42) in
+      new_tests__legacy__proverif_ping_pong__lib__b__B1alt__B1alt()
+    else bitstring_err())
   else bitstring_err().
 (* src: src/legacy/proverif-ping-pong/b.rs:89 new_tests__legacy__proverif_ping_pong__lib__b__write_pong *)
 letfun new_tests__legacy__proverif_ping_pong__lib__b__write_pong(state: bitstring) =
