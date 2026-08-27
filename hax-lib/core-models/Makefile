@@ -80,8 +80,12 @@ CHARON_EXCLUDES = \
     --exclude 'core_models::option::_::take'
 
 # 1. Run charon + Aeneas, writing the Lean files into $(EXTRACT_DIR)/CoreModels/Core/.
+# `HAX_CORE_MODELS_EXTRACTION_MODE=on` is what lets the library be named
+# `CoreModels`: hax reserves that module root, since every package it generates
+# has one, and unlocks it only for the models' own extraction.
 extract: alloc-extract
-	cd $(CORE_MODELS_DIR) && RUSTFLAGS=$(RUSTFLAGS) $(HAX) into \
+	cd $(CORE_MODELS_DIR) && RUSTFLAGS=$(RUSTFLAGS) \
+	    HAX_CORE_MODELS_EXTRACTION_MODE=on $(HAX) into \
 	    --output-dir $(abspath $(EXTRACT_DIR)) lean \
 	    --charon-args="$(CHARON_EXCLUDES)" \
 	    --aeneas-args="-subdir CoreModels/Core $(AENEAS_ARGS)"

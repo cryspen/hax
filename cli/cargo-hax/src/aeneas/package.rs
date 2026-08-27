@@ -32,6 +32,10 @@ const HAX_LEAN_LIB_REPO: &str = "https://github.com/cryspen/hax-lean";
 /// extracted assumption modules import). A library named like one of them
 /// fails inside `lake` in a confusing way, so the collision is caught up
 /// front.
+/// The module root the models themselves extract to, and the only reserved one
+/// `HAX_CORE_MODELS_EXTRACTION_MODE` unlocks.
+const CORE_MODELS_ROOT: &str = "CoreModels";
+
 const RESERVED_MODULE_ROOTS: &[&str] = &[
     "Lean",
     "Init",
@@ -39,9 +43,18 @@ const RESERVED_MODULE_ROOTS: &[&str] = &[
     "Lake",
     "Aeneas",
     "Hax",
-    "CoreModels",
+    CORE_MODELS_ROOT,
     "Tests",
 ];
+
+/// Whether this is the models' own extraction, marked by
+/// `HAX_CORE_MODELS_EXTRACTION_MODE=on` as the engine-based backends already
+/// read it. Development-only: that extraction is driven by the models'
+/// Makefile, which owns the package layout, so the reserved-root check has
+/// nothing left to protect.
+pub fn core_models_extraction_mode() -> bool {
+    std::env::var("HAX_CORE_MODELS_EXTRACTION_MODE").is_ok_and(|value| value == "on")
+}
 
 /// The resolved versions a generated Lean project pins: the aeneas rev
 /// (matching the aeneas binary, so the proof library matches the
@@ -59,7 +72,11 @@ pub struct LakefilePins {
 /// does not yield) that does not collide with a module root present in
 /// every package. `origin` names where the candidate came from, for the
 /// error message.
-pub fn validate_lib_name(lib_name: &str, origin: &str) -> Result<(), String> {
+pub fn validate_lib_name(
+    lib_name: &str,
+    origin: &str,
+    core_models_extraction: bool,
+) -> Result<(), String> {
     let mut chars = lib_name.chars();
     let legal = chars.next().is_some_and(|c| c.is_ascii_alphabetic())
         && chars.all(|c| c.is_ascii_alphanumeric() || c == '_');
@@ -70,7 +87,10 @@ pub fn validate_lib_name(lib_name: &str, origin: &str) -> Result<(), String> {
              determines the library name"
         ));
     }
-    if RESERVED_MODULE_ROOTS.contains(&lib_name) {
+    // The models' own extraction may name its library `CoreModels`; every other
+    // reserved root stays reserved, whatever the environment says.
+    let unlocked = core_models_extraction && lib_name == CORE_MODELS_ROOT;
+    if RESERVED_MODULE_ROOTS.contains(&lib_name) && !unlocked {
         return Err(format!(
             "`{lib_name}` ({origin}) collides with a module root present in every \
              generated Lean package, so it cannot name the Lean library; extract \
@@ -979,16 +999,33 @@ mod tests {
 
     #[test]
     fn lib_names_are_validated() {
-        validate_lib_name("MyCrate", "derived from `my-crate`").unwrap();
-        validate_lib_name("A2b_c", "derived from `a2b_c`").unwrap();
+        validate_lib_name("MyCrate", "derived from `my-crate`", false).unwrap();
+        validate_lib_name("A2b_c", "derived from `a2b_c`", false).unwrap();
         for name in ["2fast", "", "My.Crate", "My Crate", "_Under"] {
-            let err = validate_lib_name(name, "derived").unwrap_err();
+            let err = validate_lib_name(name, "derived", false).unwrap_err();
             assert!(err.contains("not a legal Lean identifier"), "{name}: {err}");
         }
         for name in RESERVED_MODULE_ROOTS {
-            let err = validate_lib_name(name, "derived").unwrap_err();
+            let err = validate_lib_name(name, "derived", false).unwrap_err();
             assert!(err.contains("module root"), "{name}: {err}");
         }
+    }
+
+    #[test]
+    fn core_models_extraction_unlocks_only_its_own_root() {
+        validate_lib_name(CORE_MODELS_ROOT, "derived", true).unwrap();
+        validate_lib_name(CORE_MODELS_ROOT, "derived", false).unwrap_err();
+        // The escape hatch is not a blanket one, and it does not make an
+        // illegal identifier legal.
+        for name in RESERVED_MODULE_ROOTS
+            .iter()
+            .filter(|name| **name != CORE_MODELS_ROOT)
+        {
+            let err = validate_lib_name(name, "derived", true).unwrap_err();
+            assert!(err.contains("module root"), "{name}: {err}");
+        }
+        let err = validate_lib_name("2fast", "derived", true).unwrap_err();
+        assert!(err.contains("not a legal Lean identifier"), "{err}");
     }
 
     #[test]

@@ -272,7 +272,9 @@ pub fn run(
             return true;
         }
     };
-    if let Err(message) = package::validate_lib_name(&lib_name, &origin) {
+    if let Err(message) =
+        package::validate_lib_name(&lib_name, &origin, package::core_models_extraction_mode())
+    {
         HaxMessage::GenericError { message }.report(message_format, None);
         return true;
     }
