@@ -33,6 +33,15 @@ pub mod iter {
     /// See [`std::slice::Iter`]
     pub struct Iter<'a, T>(pub Seq<&'a T>);
 
+    /// See [`std::slice::IterMut`]
+    ///
+    /// Holds the mutable references themselves, which is the only shape that
+    /// compiles without `unsafe`: real `core`'s `IterMut` hands out an
+    /// `&'a mut T` derived from `&mut self`, which safe Rust cannot express.
+    // `&mut` returns are unsupported in the F* backend.
+    #[cfg(not(hax_backend_fstar))]
+    pub struct IterMut<'a, T>(pub Seq<&'a mut T>);
+
     impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
         type Item = &'a T;
         fn next(&mut self) -> Option<Self::Item> {
@@ -56,6 +65,25 @@ pub mod iter {
                 Option::None
             } else {
                 let res = seq_remove(&mut self.0, n - 1);
+                   Option::Some(res)
+            }
+        }
+    }
+    
+    /// `Iterator` for [`IterMut`]. `next` yields an `&'a mut T`, so hax gives
+    /// it a write-back return and the result no longer fits `Iterator`'s `next`
+    /// field — which is exactly what Aeneas does for
+    /// `core::slice::iter::{Iterator<IterMut<'a, @T>, &'a mut @T>}::next`
+    /// (a standalone function, with no `Iterator` instance). `patch_lean.py`
+    /// therefore drops the generated instance record and keeps the `next`.
+    #[cfg(not(hax_backend_fstar))]
+    impl<'a, T> crate::iter::traits::iterator::Iterator for IterMut<'a, T> {
+        type Item = &'a mut T;
+        fn next(&mut self) -> Option<Self::Item> {
+            if seq_len(&self.0) == 0 {
+                Option::None
+            } else {
+                let res = seq_remove_mut(&mut self.0, 0);
                 Option::Some(res)
             }
         }
@@ -67,11 +95,6 @@ pub mod iter {
             seq_len(&self.0)
         }
     }
-
-    // `iter_mut`/`IterMut` are not an `impl Iterator`: a `&mut`-yielding `next`
-    // needs a 3-tuple with a write-back, not the trait's 2-tuple. Aeneas.Std
-    // supplies a specialised `next` on an opaque type instead; that has to be
-    // hand-written Lean, not a Rust impl. Deferred.
 
     impl<'a, T> crate::iter::traits::iterator::Iterator for Chunks<'a, T> {
         type Item = &'a [T];
@@ -176,6 +199,19 @@ impl<T> Slice<T> {
     #[hax_lib::requires(mid <= Slice::len(s))]
     fn split_at(s: &[T], mid: usize) -> (&[T], &[T]) {
         rust_primitives::slice::slice_split_at(s, mid)
+    }
+    /// See [`std::slice::split_at_mut`]
+    // `&mut` returns are unsupported in the F* backend.
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(mid <= Slice::len(s))]
+    fn split_at_mut(s: &mut [T], mid: usize) -> (&mut [T], &mut [T]) {
+        rust_primitives::slice::slice_split_at_mut(s, mid)
+    }
+    /// See [`std::slice::iter_mut`]
+    // `&mut` returns are unsupported in the F* backend.
+    #[cfg(not(hax_backend_fstar))]
+    fn iter_mut(s: &mut [T]) -> iter::IterMut<'_, T> {
+        iter::IterMut(rust_primitives::sequence::seq_from_slice_mut(s))
     }
     /// See [`std::slice::split_at_checked`]
     fn split_at_checked(s: &[T], mid: usize) -> Option<(&[T], &[T])> {
@@ -493,6 +529,17 @@ pub mod index {
         /// See [`std::slice::SliceIndex::get_unchecked_mut`]. In-bounds precondition per impl.
         #[cfg(not(hax_backend_fstar))]
         fn get_unchecked_mut(self, slice: &mut T) -> &mut Self::Output;
+
+        /// See [`std::slice::SliceIndex::index_mut`]. The `&mut` counterpart of
+        /// `index`, and — as there — the same in-bounds projection as
+        /// `get_unchecked_mut`, with the precondition stated per impl.
+        //
+        // Declared last rather than next to `index`, which is where real core
+        // has it: the extracted structure lists its fields in declaration
+        // order, and moving `index` would reorder every published
+        // `core.slice.index.SliceIndex` literal.
+        #[cfg(not(hax_backend_fstar))]
+        fn index_mut(self, slice: &mut T) -> &mut Self::Output;
     }
 
     #[hax_lib::attributes]
@@ -527,6 +574,11 @@ pub mod index {
         fn get_unchecked_mut(self, slice: &mut [T]) -> &mut T {
             slice_index_mut(slice, self)
         }
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::requires(self < slice_length(slice))]
+        fn index_mut(self, slice: &mut [T]) -> &mut T {
+            slice_index_mut(slice, self)
+        }
     }
 
     #[hax_lib::attributes]
@@ -548,6 +600,10 @@ pub mod index {
         }
         #[cfg(not(hax_backend_fstar))]
         fn get_unchecked_mut(self, slice: &mut [T]) -> &mut [T] {
+            slice
+        }
+        #[cfg(not(hax_backend_fstar))]
+        fn index_mut(self, slice: &mut [T]) -> &mut [T] {
             slice
         }
     }
@@ -586,6 +642,12 @@ pub mod index {
             let len = slice_length(slice);
             slice_slice_mut(slice, self.start, len)
         }
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::requires(self.start <= slice_length(slice))]
+        fn index_mut(self, slice: &mut [T]) -> &mut [T] {
+            let len = slice_length(slice);
+            slice_slice_mut(slice, self.start, len)
+        }
     }
     #[hax_lib::attributes]
     #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
@@ -619,6 +681,11 @@ pub mod index {
         fn get_unchecked_mut(self, slice: &mut [T]) -> &mut [T] {
             slice_slice_mut(slice, 0, self.end)
         }
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::requires(self.end <= slice_length(slice))]
+        fn index_mut(self, slice: &mut [T]) -> &mut [T] {
+            slice_slice_mut(slice, 0, self.end)
+        }
     }
     #[hax_lib::attributes]
     #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
@@ -650,6 +717,11 @@ pub mod index {
         #[cfg(not(hax_backend_fstar))]
         #[hax_lib::requires(self.start <= self.end && self.end <= slice_length(slice))]
         fn get_unchecked_mut(self, slice: &mut [T]) -> &mut [T] {
+            slice_slice_mut(slice, self.start, self.end)
+        }
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::requires(self.start <= self.end && self.end <= slice_length(slice))]
+        fn index_mut(self, slice: &mut [T]) -> &mut [T] {
             slice_slice_mut(slice, self.start, self.end)
         }
     }
@@ -866,6 +938,62 @@ mod tests {
             prop_assert_eq!(Slice::is_empty(&slice[..]), slice.is_empty());
         }
 
+        // ----- SliceIndex::index_mut, one per self type ------------------
+        //
+        // Against std's `IndexMut` on the slice, which is what `index_mut`
+        // implements; std's `SliceIndex::index_mut` is not callable directly.
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_slice_index_index_mut_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4, v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            *crate::slice::SliceIndex::index_mut(idx, &mut model[..]) = v;
+            std_slice[idx] = v;
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_slice_index_index_mut_range_from(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..=8, v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            crate::slice::SliceIndex::index_mut(crate::ops::range::RangeFrom { start }, &mut model[..]).fill(v);
+            std_slice[start..].fill(v);
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_slice_index_index_mut_range_to(slice in prop::collection::vec(any::<u8>(), 8..=8), end in 0usize..=8, v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            crate::slice::SliceIndex::index_mut(crate::ops::range::RangeTo { end }, &mut model[..]).fill(v);
+            std_slice[..end].fill(v);
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_slice_index_index_mut_range_full(slice in prop::collection::vec(any::<u8>(), 0..=8), v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            crate::slice::SliceIndex::index_mut(crate::ops::range::RangeFull, &mut model[..]).fill(v);
+            std_slice[..].fill(v);
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_slice_index_index_mut_range(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..8, len in 0usize..8, v in any::<u8>()) {
+            let end = (start + len).min(8);
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            crate::slice::SliceIndex::index_mut(crate::ops::range::Range { start, end }, &mut model[..]).fill(v);
+            std_slice[start..end].fill(v);
+            prop_assert_eq!(model, std_slice);
+        }
+
         #[test]
         fn test_contains(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
             prop_assert_eq!(Slice::contains(&slice[..], &v), slice.contains(&v));
@@ -875,6 +1003,51 @@ mod tests {
         fn test_split_at(slice in prop::collection::vec(any::<u8>(), 1..=10)) {
             let mid = slice.len() / 2;
             prop_assert_eq!(Slice::split_at(&slice[..], mid), slice.split_at(mid));
+        }
+
+        // The `&mut` items below have no F* model: `&mut` returns are
+        // unsupported there.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_split_at_mut(slice in prop::collection::vec(any::<u8>(), 1..=10), v in any::<u8>()) {
+            let mid = slice.len() / 2;
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            {
+                let (a, b) = Slice::split_at_mut(&mut model[..], mid);
+                a.fill(v);
+                b.fill(v.wrapping_add(1));
+            }
+            {
+                let (a, b) = std_slice.split_at_mut(mid);
+                a.fill(v);
+                b.fill(v.wrapping_add(1));
+            }
+            prop_assert_eq!(model, std_slice);
+        }
+
+        // `iter_mut` yields the elements in order, and a write through a
+        // yielded reference lands in the slice -- both against std's.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_iter_mut(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
+            use crate::iter::traits::iterator::Iterator as ModelIterator;
+
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            {
+                let mut it = Slice::iter_mut(&mut model[..]);
+                let mut seen = std::vec::Vec::new();
+                while let crate::option::Option::Some(r) = it.next() {
+                    seen.push(*r);
+                    *r = v;
+                }
+                prop_assert_eq!(seen, slice.clone());
+            }
+            for r in std_slice.iter_mut() {
+                *r = v;
+            }
+            prop_assert_eq!(model, std_slice);
         }
 
         #[test]
