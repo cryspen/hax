@@ -33,17 +33,34 @@ All crates start with the `hax-` prefix, except `cargo-hax` (the entrypoint to t
 
 Non-published crates set two flags in their `Cargo.toml`: `publish = false` makes cargo itself refuse to publish the crate, and `package.metadata.release.release = false` keeps it out of every `cargo release` step. These are `hax-engine-names` and `hax-engine-names-extract` (used only by the OCaml build of the engine), `hax-lib-protocol` and `hax-lib-protocol-macros`, and `test-driver` (runs only the repository's test suite).
 
-## Binaries
-
-Pushing the release's `cargo-hax-v*` tag runs the `release` workflow, which attaches a `cargo-hax` binary per supported platform to the GitHub release it creates at that tag. `cargo binstall cargo-hax` downloads those, at the names `package.metadata.binstall` in `cli/cargo-hax/Cargo.toml` declares, so both the archives and the published manifest have to be in place for a version to be binstallable. The `binstall` workflow verifies that pairing at the end of every `release` run; a manual dispatch re-checks a released version at any time.
-
 ## Procedure
 
-1. Start the `Release PR` workflow with the bump level (`gh workflow run release_pr.yml -f level=patch`, or the "Run workflow" button under Actions). Adding `-f rc=true` targets a release candidate of the bumped version instead: `0.4.0-rc.1` for `minor` from `0.3.x`, or the next candidate when the current version already is one. The workflow runs the version bump on a runner, pushes it as a `release/vX.Y.Z` branch, and ends with a prefilled link in its run summary; open the version-bump PR through that link. The PR is opened by you rather than by the workflow so that its CI checks run (a PR opened with the workflow token raises no events). The bump is `cargo release LEVEL --workspace --no-publish --no-tag --no-push --execute` (still the way to bump to an explicit version, locally on a branch, with `cargo install cargo-release` if needed; keep pre-release identifiers lowercase, like `0.4.0-rc.1`, as the version replacements only match lowercase): it bumps the version of every crate of the workspace and the versions in `engine/dune-project` and `engine/hax-engine.opam`, and renames the `[Unreleased]` section of `CHANGELOG.md` to the target version. On a pre-release version (e.g. `0.4.0-rc.1`) the changelog is left untouched, so the `[Unreleased]` section stays in place for the eventual stable release. It does not publish anything.
-2. Work through the pre-merge checklist in the PR's description.
-3. Review and merge the PR.
-4. The merge starts the `publish` workflow on `main`, pinned to the PR's merge commit: neither commits that land on `main` while the run waits for approval nor a stale release PR merged out of order change what a queued release publishes. A version bump that reached `main` some other way, or a run that failed partway, can be dispatched by hand: `gh workflow run publish.yml -f sha=<commit>`, where the commit is the one carrying the bump (for a rerun, the same one as before, so the tags land on the commit the crates were published from). The run starts once a second maintainer approves it. It publishes every releasable crate at its current version, pushes the release tags, and starts the `release` workflow on the `cargo-hax-v*` tag. A repeated run skips crates that are published already, which also completes a run whose 30-minute trusted-publishing token expired mid-publish.
-5. The `release` workflow attaches a `cargo-hax` archive per platform to the GitHub release at the `cargo-hax-v*` tag, then installs the released version with `cargo binstall` on every platform. A failed run files an issue; it, or a run that never started, can be restarted with `gh workflow run release.yml --ref cargo-hax-vX.Y.Z`. The tag must be the ref: a dispatch on any other ref is recognized as not being a release and skipped.
+1. Start the `Release PR` workflow with the bump level: `gh workflow run release_pr.yml -f level=patch` (or `minor`/`major`; add `-f rc=true` for a release candidate), or the "Run workflow" button under Actions.
+2. Open the version-bump PR through the prefilled link in the workflow's run summary.
+3. Work through the pre-merge checklist in the PR's description, then review and merge the PR.
+4. Have a maintainer other than yourself approve the `publish` run the merge queued, under Actions.
+
+The rest runs unattended: the crates are published, the release tags pushed, the `cargo-hax` binaries attached to the GitHub release, and the released version installed with `cargo binstall` as a check. A failed release run files an issue with recovery instructions.
+
+## Details
+
+### The version bump
+
+The `Release PR` workflow runs the version bump on a runner and pushes it as a `release/vX.Y.Z` branch. The PR is opened by you rather than by the workflow so that its CI checks run (a PR opened with the workflow token raises no events). The bump is `cargo release LEVEL --workspace --no-publish --no-tag --no-push --execute`: it bumps the version of every crate of the workspace and the versions in `engine/dune-project` and `engine/hax-engine.opam`, and renames the `[Unreleased]` section of `CHANGELOG.md` to the target version. It does not publish anything.
+
+### Release candidates
+
+With `rc=true` the workflow targets a release candidate of the bumped version: `0.4.0-rc.1` for `minor` from `0.3.x`, or the next candidate when the current version already is one. On a pre-release version the changelog is left untouched, so the `[Unreleased]` section stays in place for the eventual stable release. A `patch` bump without `rc` finalizes a candidate: `0.4.0-rc.1` becomes `0.4.0`, and the changelog rotates then.
+
+### The publish run
+
+The merge starts the `publish` workflow on `main`, pinned to the PR's merge commit: neither commits that land on `main` while the run waits for approval nor a stale release PR merged out of order change what a queued release publishes. A version bump that reached `main` some other way, or a run that failed partway, can be dispatched by hand: `gh workflow run publish.yml -f sha=<commit>`, where the commit is the one carrying the bump (for a rerun, the same one as before, so the tags land on the commit the crates were published from). It publishes every releasable crate at its current version, pushes the release tags, and starts the `release` workflow on the `cargo-hax-v*` tag. A repeated run skips crates that are published already, which also completes a run whose 30-minute trusted-publishing token expired mid-publish.
+
+### The release run
+
+The `release` workflow attaches a `cargo-hax` archive per platform to the GitHub release it creates at the `cargo-hax-v*` tag. `cargo binstall cargo-hax` downloads those, at the names `package.metadata.binstall` in `cli/cargo-hax/Cargo.toml` declares, so both the archives and the published manifest have to be in place for a version to be binstallable. The `binstall` workflow verifies that pairing at the end of every `release` run; a manual dispatch re-checks a released version at any time. A failed run files an issue; it, or a run that never started, can be restarted with `gh workflow run release.yml --ref cargo-hax-vX.Y.Z`. The tag must be the ref: a dispatch on any other ref is recognized as not being a release and skipped.
+
+### Trusted publishing
 
 The `publish` workflow authenticates with [trusted publishing](https://crates.io/docs/trusted-publishing): every published crate lists repository `cryspen/hax`, workflow `publish.yml` and environment `crates-io` as a trusted publisher in its crates.io settings. A crate's first version cannot be published that way: publish it with a token once, then add the trusted publisher.
 
