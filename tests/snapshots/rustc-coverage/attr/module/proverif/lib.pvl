@@ -16,27 +16,27 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/attr/module.rs:21 new_tests__rustc_coverage__attr__module__on__inherit *)
+(* src: src/rustc-coverage/attr/module.rs:21:4-21:19 new_tests__rustc_coverage__attr__module__on__inherit *)
 letfun new_tests__rustc_coverage__attr__module__on__inherit(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/attr/module.rs:24 new_tests__rustc_coverage__attr__module__on__on *)
+(* src: src/rustc-coverage/attr/module.rs:24:4-24:14 new_tests__rustc_coverage__attr__module__on__on *)
 letfun new_tests__rustc_coverage__attr__module__on__on(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/attr/module.rs:27 new_tests__rustc_coverage__attr__module__on__off *)
+(* src: src/rustc-coverage/attr/module.rs:27:4-27:15 new_tests__rustc_coverage__attr__module__on__off *)
 letfun new_tests__rustc_coverage__attr__module__on__off(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/attr/module.rs:10 new_tests__rustc_coverage__attr__module__off__inherit *)
+(* src: src/rustc-coverage/attr/module.rs:10:4-10:19 new_tests__rustc_coverage__attr__module__off__inherit *)
 letfun new_tests__rustc_coverage__attr__module__off__inherit(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/attr/module.rs:13 new_tests__rustc_coverage__attr__module__off__on *)
+(* src: src/rustc-coverage/attr/module.rs:13:4-13:14 new_tests__rustc_coverage__attr__module__off__on *)
 letfun new_tests__rustc_coverage__attr__module__off__on(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/attr/module.rs:16 new_tests__rustc_coverage__attr__module__off__off *)
+(* src: src/rustc-coverage/attr/module.rs:16:4-16:15 new_tests__rustc_coverage__attr__module__off__off *)
 letfun new_tests__rustc_coverage__attr__module__off__off(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/attr/module.rs:33 new_tests__rustc_coverage__attr__module__nested_a__nested_b__inner *)
+(* src: src/rustc-coverage/attr/module.rs:33:8-33:21 new_tests__rustc_coverage__attr__module__nested_a__nested_b__inner *)
 letfun new_tests__rustc_coverage__attr__module__nested_a__nested_b__inner(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/attr/module.rs:38 new_tests__rustc_coverage__attr__module__main *)
+(* src: src/rustc-coverage/attr/module.rs:38:0-38:12 new_tests__rustc_coverage__attr__module__main *)
 letfun new_tests__rustc_coverage__attr__module__main(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.

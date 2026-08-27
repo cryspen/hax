@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/assert.rs:7 new_tests__rustc_coverage__assert__might_fail_assert *)
+(* src: src/rustc-coverage/assert.rs:7:0-10:1 new_tests__rustc_coverage__assert__might_fail_assert *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__assert__might_fail_assert(one_plus_one: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
@@ -42,7 +42,7 @@ letfun new_tests__rustc_coverage__assert__might_fail_assert(one_plus_one: bitstr
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/assert.rs:13 new_tests__rustc_coverage__assert__main *)
+(* src: src/rustc-coverage/assert.rs:13:0-24:1 new_tests__rustc_coverage__assert__main *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__assert__main(wildcard: bitstring) =
   let countdown_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in

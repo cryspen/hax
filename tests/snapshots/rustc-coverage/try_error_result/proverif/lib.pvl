@@ -16,10 +16,10 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/try_error_result.rs:6 new_tests__rustc_coverage__try_error_result__call *)
+(* src: src/rustc-coverage/try_error_result.rs:6:0-12:1 new_tests__rustc_coverage__try_error_result__call *)
 letfun new_tests__rustc_coverage__try_error_result__call(return_error: bitstring) =
   let (=True()) = return_error in bitstring_err() else rust_primitives__hax__Tuple0__Tuple0().
-(* src: src/rustc-coverage/try_error_result.rs:14 new_tests__rustc_coverage__try_error_result__test1 *)
+(* src: src/rustc-coverage/try_error_result.rs:14:0-38:1 new_tests__rustc_coverage__try_error_result__test1 *)
 letfun new_tests__rustc_coverage__try_error_result__test1(wildcard: bitstring) =
   let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
@@ -84,11 +84,11 @@ letfun new_tests__rustc_coverage__try_error_result__test1(wildcard: bitstring) =
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
     rust_primitives__hax__Tuple0__Tuple0()
   else bitstring_err().
-(* src: src/rustc-coverage/try_error_result.rs:40 new_tests__rustc_coverage__try_error_result__Thing1 *)
+(* src: src/rustc-coverage/try_error_result.rs:40:0-40:14 new_tests__rustc_coverage__try_error_result__Thing1 *)
 fun new_tests__rustc_coverage__try_error_result__Thing1__Thing1(): bitstring [data].
-(* src: src/rustc-coverage/try_error_result.rs:51 new_tests__rustc_coverage__try_error_result__Thing2 *)
+(* src: src/rustc-coverage/try_error_result.rs:51:0-51:14 new_tests__rustc_coverage__try_error_result__Thing2 *)
 fun new_tests__rustc_coverage__try_error_result__Thing2__Thing2(): bitstring [data].
-(* src: src/rustc-coverage/try_error_result.rs:42 new_tests__rustc_coverage__try_error_result__Impl__get_thing_2 *)
+(* src: src/rustc-coverage/try_error_result.rs:42:4-48:5 new_tests__rustc_coverage__try_error_result__Impl__get_thing_2 *)
 letfun new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
   self: bitstring,
   return_error: bitstring
@@ -96,12 +96,12 @@ letfun new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
   let (=True()) = return_error
     in bitstring_err()
     else new_tests__rustc_coverage__try_error_result__Thing2__Thing2().
-(* src: src/rustc-coverage/try_error_result.rs:53 new_tests__rustc_coverage__try_error_result__Impl_1__call *)
+(* src: src/rustc-coverage/try_error_result.rs:53:4-59:5 new_tests__rustc_coverage__try_error_result__Impl_1__call *)
 letfun new_tests__rustc_coverage__try_error_result__Impl_1__call(
   self: bitstring,
   return_error: bitstring
 ) = let (=True()) = return_error in bitstring_err() else nat_57.
-(* src: src/rustc-coverage/try_error_result.rs:62 new_tests__rustc_coverage__try_error_result__test2 *)
+(* src: src/rustc-coverage/try_error_result.rs:62:0-112:1 new_tests__rustc_coverage__try_error_result__test2 *)
 letfun new_tests__rustc_coverage__try_error_result__test2(wildcard: bitstring) =
   let thing1 = new_tests__rustc_coverage__try_error_result__Thing1__Thing1() in
   let core__ops__control_flow__ControlFlow__Break(
@@ -731,7 +731,7 @@ letfun new_tests__rustc_coverage__try_error_result__test2(wildcard: bitstring) =
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
     rust_primitives__hax__Tuple0__Tuple0()
   else bitstring_err().
-(* src: src/rustc-coverage/try_error_result.rs:114 new_tests__rustc_coverage__try_error_result__main *)
+(* src: src/rustc-coverage/try_error_result.rs:114:0-120:1 new_tests__rustc_coverage__try_error_result__main *)
 letfun new_tests__rustc_coverage__try_error_result__main(wildcard: bitstring) =
   let wildcard: bitstring = core__result__Impl__expect_err(
     new_tests__rustc_coverage__try_error_result__test1(rust_primitives__hax__Tuple0__Tuple0),

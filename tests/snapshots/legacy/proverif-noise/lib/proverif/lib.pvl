@@ -16,16 +16,16 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/proverif-noise/noise_crypto.rs:8 new_tests__legacy__proverif_noise__lib__noise_crypto__Error *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:8:0-10:1 new_tests__legacy__proverif_noise__lib__noise_crypto__Error *)
 (*  This file formalizes the Crypto Functions from the Noise Specification *)
 (*  Section 4: Crypto Functions *)
 (*  https://noiseprotocol.org/noise.html#crypto-functions *)
 fun new_tests__legacy__proverif_noise__lib__noise_crypto__Error__CryptoError(): bitstring [data].
-(* src: src/legacy/proverif-noise/noise_crypto.rs:8 new_tests__legacy__proverif_noise__lib__noise_crypto__Error_cast_to_repr *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:8:0-10:1 new_tests__legacy__proverif_noise__lib__noise_crypto__Error_cast_to_repr *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__Error_cast_to_repr(x: bitstring) =
   let new_tests__legacy__proverif_noise__lib__noise_crypto__Error__CryptoError() = x in nat_0
   else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_crypto.rs:13 new_tests__legacy__proverif_noise__lib__noise_crypto__KeyPair *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:13:0-16:1 new_tests__legacy__proverif_noise__lib__noise_crypto__KeyPair *)
 (*  Section 4.1 and 12.1: Diffie-Hellman Functions for Curve25519 *)
 fun new_tests__legacy__proverif_noise__lib__noise_crypto__KeyPair__KeyPair(
   bitstring,
@@ -39,9 +39,9 @@ reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__proverif_noise__lib__noise_crypto__KeyPair__KeyPair__public_key(
     new_tests__legacy__proverif_noise__lib__noise_crypto__KeyPair__KeyPair(v_0, v_1)
   ) = v_1.
-(* src: src/legacy/proverif-noise/noise_crypto.rs:18 new_tests__legacy__proverif_noise__lib__noise_crypto__DHLEN *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:18:0-18:28 new_tests__legacy__proverif_noise__lib__noise_crypto__DHLEN *)
 const new_tests__legacy__proverif_noise__lib__noise_crypto__DHLEN: bitstring.
-(* src: src/legacy/proverif-noise/noise_crypto.rs:20 new_tests__legacy__proverif_noise__lib__noise_crypto__generate_keypair *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:20:0-27:1 new_tests__legacy__proverif_noise__lib__noise_crypto__generate_keypair *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__generate_keypair(sk: bitstring) =
   let sk_1 = hax_lib_protocol__crypto__Impl__from_bytes(sk) in
   new_tests__legacy__proverif_noise__lib__noise_crypto__KeyPair__KeyPair(
@@ -51,14 +51,14 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__generate_keypair(sk
       sk_1
     )
   ).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:29 new_tests__legacy__proverif_noise__lib__noise_crypto__dh *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:29:0-33:1 new_tests__legacy__proverif_noise__lib__noise_crypto__dh *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__dh(sk: bitstring, pk: bitstring) =
   hax_lib_protocol__crypto__dh_scalar_multiply(
     hax_lib_protocol__crypto__DHGroup__X25519(),
     new_tests__legacy__proverif_noise__lib__noise_crypto__KeyPair__KeyPair__private_key(sk),
     hax_lib_protocol__crypto__Impl_1__from_bytes(pk)
   ).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:37 new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:37:0-48:1 new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt *)
 (*  Section 4.2 and 12.3: Cipher functions for ChaCha20-Poly1305 *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt(
   key: bitstring,
@@ -83,7 +83,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt(
     aad,
     plain
   ) in alloc__vec__Impl_2__extend_from_slice(cipher, tag) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_crypto.rs:50 new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:50:0-64:1 new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt(
   key: bitstring,
   counter: bitstring,
@@ -111,7 +111,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt(
       )
     )
   ).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:66 new_tests__legacy__proverif_noise__lib__noise_crypto__rekey *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:66:0-68:1 new_tests__legacy__proverif_noise__lib__noise_crypto__rekey *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__rekey(key: bitstring) =
   new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt(
     key,
@@ -119,20 +119,20 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__rekey(key: bitstrin
     alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0),
     rust_primitives__hax__repeat(nat_0, nat_32)
   ).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:72 new_tests__legacy__proverif_noise__lib__noise_crypto__HASHLEN *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:72:0-72:30 new_tests__legacy__proverif_noise__lib__noise_crypto__HASHLEN *)
 (*  Section 4.3 and 12.5: Hash functions for SHA-256 *)
 const new_tests__legacy__proverif_noise__lib__noise_crypto__HASHLEN: bitstring.
-(* src: src/legacy/proverif-noise/noise_crypto.rs:73 new_tests__legacy__proverif_noise__lib__noise_crypto__BLOCKLEN *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:73:0-73:31 new_tests__legacy__proverif_noise__lib__noise_crypto__BLOCKLEN *)
 const new_tests__legacy__proverif_noise__lib__noise_crypto__BLOCKLEN: bitstring.
-(* src: src/legacy/proverif-noise/noise_crypto.rs:75 new_tests__legacy__proverif_noise__lib__noise_crypto__hash *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:75:0-77:1 new_tests__legacy__proverif_noise__lib__noise_crypto__hash *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hash(input: bitstring) =
   hax_lib_protocol__crypto__hash(hax_lib_protocol__crypto__HashAlgorithm__Sha256(), input).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:79 new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:79:0-81:1 new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash(
   key: bitstring,
   input: bitstring
 ) = hax_lib_protocol__crypto__hmac(hax_lib_protocol__crypto__HMACAlgorithm__Sha256(), key, input).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:86 new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:86:0-88:1 new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next *)
 (*  HKDF spec as per Noise *)
 (*  Alternative would be to directly use HKDF *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(
@@ -146,14 +146,14 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(
       rust_primitives__hax__array_cons(prev, rust_primitives__hax__array_cons(rust_primitives__hax__array_cons(counter, rust_primitives__hax__array_nil()), rust_primitives__hax__array_nil()))
     )
   ).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:90 new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf1 *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:90:0-93:1 new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf1 *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf1(key: bitstring, ikm: bitstring) =
   new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(
     new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash(key, ikm),
     alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0),
     nat_1
   ).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:95 new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf2 *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:95:0-100:1 new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf2 *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf2(key: bitstring, ikm: bitstring) =
   let secret_kw = new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash(key, ikm) in
   let k1 = new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(
@@ -165,7 +165,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf2(key: bitstrin
     k1,
     new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_2)
   ).
-(* src: src/legacy/proverif-noise/noise_crypto.rs:102 new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf3 *)
+(* src: src/legacy/proverif-noise/noise_crypto.rs:102:0-108:1 new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf3 *)
 letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf3(key: bitstring, ikm: bitstring) =
   let secret_kw = new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash(key, ikm) in
   let k1 = new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(
@@ -178,7 +178,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_crypto__hkdf3(key: bitstrin
     new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_2),
     new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next(secret_kw, k1, nat_3)
   ).
-(* src: src/legacy/proverif-noise/noise_lib.rs:9 new_tests__legacy__proverif_noise__lib__noise_lib__CipherState *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:9:0-12:1 new_tests__legacy__proverif_noise__lib__noise_lib__CipherState *)
 (*  This module defines the generic Noise processing rules *)
 (*  Section 5: https://noiseprotocol.org/noise.html#processing-rules *)
 fun new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(
@@ -193,7 +193,7 @@ reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState__n(
     new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(v_0, v_1)
   ) = v_1.
-(* src: src/legacy/proverif-noise/noise_lib.rs:14 new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:14:0-18:1 new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState *)
 fun new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState__SymmetricState(
   bitstring,
   bitstring,
@@ -211,16 +211,16 @@ reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
   new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState__SymmetricState__h(
     new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState__SymmetricState(v_0, v_1, v_2)
   ) = v_2.
-(* src: src/legacy/proverif-noise/noise_lib.rs:22 new_tests__legacy__proverif_noise__lib__noise_lib__initialize_key *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:22:0-24:1 new_tests__legacy__proverif_noise__lib__noise_lib__initialize_key *)
 (*  5.1: The CipherState Object *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__initialize_key(key: bitstring) =
   new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(key, nat_0).
-(* src: src/legacy/proverif-noise/noise_lib.rs:26 new_tests__legacy__proverif_noise__lib__noise_lib__has_key *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:26:0-28:1 new_tests__legacy__proverif_noise__lib__noise_lib__has_key *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__has_key(cs: bitstring) =
   core__option__Impl__is_some(
     new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState__k(cs)
   ).
-(* src: src/legacy/proverif-noise/noise_lib.rs:31 new_tests__legacy__proverif_noise__lib__noise_lib__set_nonce *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:31:0-34:1 new_tests__legacy__proverif_noise__lib__noise_lib__set_nonce *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__set_nonce(cs: bitstring, n: bitstring) =
   let new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(
@@ -230,7 +230,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__set_nonce(cs: bitstrin
     k,
     n
   ) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:37 new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_with_ad *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:37:0-60:1 new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_with_ad *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_with_ad(
   cs: bitstring,
@@ -256,7 +256,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_with_ad(
         alloc__slice__Impl__to_vec(plaintext)
       )
     else bitstring_err())) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:63 new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_with_ad *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:63:0-86:1 new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_with_ad *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_with_ad(
   cs: bitstring,
@@ -288,7 +288,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_with_ad(
         alloc__slice__Impl__to_vec(ciphertext)
       )
     else bitstring_err())) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:89 new_tests__legacy__proverif_noise__lib__noise_lib__rekey *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:89:0-98:1 new_tests__legacy__proverif_noise__lib__noise_lib__rekey *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__rekey(cs: bitstring) =
   let new_tests__legacy__proverif_noise__lib__noise_lib__CipherState__CipherState(
@@ -301,7 +301,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__rekey(cs: bitstring) =
     )
   else let None() = k in bitstring_err()
   else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:102 new_tests__legacy__proverif_noise__lib__noise_lib__initialize_symmetric *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:102:0-115:1 new_tests__legacy__proverif_noise__lib__noise_lib__initialize_symmetric *)
 (*  5.2: The SymmetricState Object *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__initialize_symmetric(
   protocol_name: bitstring
@@ -323,7 +323,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__initialize_symmetric(
     hv,
     hv
   ).
-(* src: src/legacy/proverif-noise/noise_lib.rs:118 new_tests__legacy__proverif_noise__lib__noise_lib__mix_key *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:118:0-129:1 new_tests__legacy__proverif_noise__lib__noise_lib__mix_key *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__mix_key(
   st: bitstring,
@@ -350,7 +350,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__mix_key(
     ck_1,
     h
   )) else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:132 new_tests__legacy__proverif_noise__lib__noise_lib__mix_hash *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:132:0-139:1 new_tests__legacy__proverif_noise__lib__noise_lib__mix_hash *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__mix_hash(st: bitstring, data: bitstring) =
   let new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState__SymmetricState(
@@ -366,7 +366,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__mix_hash(st: bitstring
       )
     )
   ) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:142 new_tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:142:0-156:1 new_tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash(
   st: bitstring,
@@ -396,7 +396,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash(
       alloc__vec__Impl_2__extend_from_slice(h, temp_h)
     )
   )) else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:165 new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_and_hash *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:165:0-181:1 new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_and_hash *)
 (*  Unclear if we need a special function for psk or we can reuse mix_key_and_hash above *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_and_hash(
   st: bitstring,
@@ -426,7 +426,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_and_hash(
       ciphertext
     )
   else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:183 new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_and_hash *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:183:0-199:1 new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_and_hash *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_and_hash(
   st: bitstring,
   ciphertext: bitstring
@@ -455,7 +455,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_and_hash(
       plaintext
     )
   else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_lib.rs:201 new_tests__legacy__proverif_noise__lib__noise_lib__split *)
+(* src: src/legacy/proverif-noise/noise_lib.rs:201:0-212:1 new_tests__legacy__proverif_noise__lib__noise_lib__split *)
 letfun new_tests__legacy__proverif_noise__lib__noise_lib__split(st: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
     temp_k1: bitstring,
@@ -482,7 +482,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_lib__split(st: bitstring) =
     new_tests__legacy__proverif_noise__lib__noise_lib__initialize_key(Some(temp_k2_2)),
     new_tests__legacy__proverif_noise__lib__noise_lib__SymmetricState__SymmetricState__h(st)
   ) else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:6 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateI0 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:6:0-12:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateI0 *)
 fun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateI0__HandshakeStateI0(
   bitstring,
   bitstring,
@@ -540,7 +540,7 @@ reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring, v_3: bitstring, v_4
       v_4
     )
   ) = v_4.
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:14 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateI1 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:14:0-18:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateI1 *)
 fun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateI1__HandshakeStateI1(
   bitstring,
   bitstring,
@@ -570,7 +570,7 @@ reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
       v_2
     )
   ) = v_2.
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:20 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateR0 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:20:0-26:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateR0 *)
 fun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateR0__HandshakeStateR0(
   bitstring,
   bitstring,
@@ -628,7 +628,7 @@ reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring, v_3: bitstring, v_4
       v_4
     )
   ) = v_4.
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:28 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateR1 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:28:0-33:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateR1 *)
 fun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__HandshakeStateR1__HandshakeStateR1(
   bitstring,
   bitstring,
@@ -671,7 +671,7 @@ reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring, v_3: bitstring;
       v_3
     )
   ) = v_3.
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:35 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Transport *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:35:0-39:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Transport *)
 fun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Transport__Transport(
   bitstring,
   bitstring,
@@ -689,7 +689,7 @@ reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
   new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Transport__Transport__handshake_hash(
     new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Transport__Transport(v_0, v_1, v_2)
   ) = v_2.
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:41 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__ProtocolName *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:41:0-41:30 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__ProtocolName *)
 fun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__ProtocolName__ProtocolName(
   bitstring
 ): bitstring [data].
@@ -697,9 +697,9 @@ reduc forall v_0: bitstring;
   new_tests__legacy__proverif_noise__lib__noise_kkpsk0__ProtocolName__ProtocolName__0(
     new_tests__legacy__proverif_noise__lib__noise_kkpsk0__ProtocolName__ProtocolName(v_0)
   ) = v_0.
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:43 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:43:0-47:3 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
 const new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256: bitstring.
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:53 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_initiator *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:53:0-71:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_initiator *)
 (*   KKpsk0: *)
 (*     -> s *)
 (*     <- s *)
@@ -731,7 +731,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_initiato
     e,
     alloc__slice__Impl__to_vec(rs)
   ).
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:73 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_responder *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:73:0-91:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_responder *)
 letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_responder(
   prologue: bitstring,
   psk: bitstring,
@@ -759,7 +759,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_responde
     e,
     alloc__slice__Impl__to_vec(rs)
   ).
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:97 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_message1 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:97:0-112:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_message1 *)
 (*   KKpsk0: *)
 (*     ... *)
 (*     -> psk, e, es, ss *)
@@ -802,7 +802,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_message1(
       ciphertext
     )
   else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:115 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message1 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:115:0-137:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message1 *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message1(
   hs: bitstring,
@@ -856,7 +856,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message1(
       plaintext
     )
   else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:143 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_message2 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:143:0-159:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_message2 *)
 (*   KKpsk0: *)
 (*     ... *)
 (*      <- e, ee, se *)
@@ -900,7 +900,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_message2(
       ciphertext
     ) else bitstring_err())
   else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:162 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message2 *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:162:0-183:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message2 *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message2(
   hs: bitstring,
@@ -950,7 +950,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message2(
       plaintext
     ) else bitstring_err())
   else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:189 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_transport *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:189:0-206:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_transport *)
 (*   KKpsk0: *)
 (*     -> *)
 (*     <- *)
@@ -977,7 +977,7 @@ letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__write_transport(
       ciphertext
     )
   else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:209 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_transport *)
+(* src: src/legacy/proverif-noise/noise_kkpsk0.rs:209:0-226:1 new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_transport *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__proverif_noise__lib__noise_kkpsk0__read_transport(
   tx: bitstring,

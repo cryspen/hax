@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/proverif-items/lib.rs:8 new_tests__legacy__proverif_items__lib__Point *)
+(* src: src/legacy/proverif-items/lib.rs:8:0-11:1 new_tests__legacy__proverif_items__lib__Point *)
 fun new_tests__legacy__proverif_items__lib__Point__Point(bitstring, bitstring): bitstring [data].
 reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__proverif_items__lib__Point__Point__x(
@@ -26,19 +26,19 @@ reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__proverif_items__lib__Point__Point__y(
     new_tests__legacy__proverif_items__lib__Point__Point(v_0, v_1)
   ) = v_1.
-(* src: src/legacy/proverif-items/lib.rs:13 new_tests__legacy__proverif_items__lib__make *)
+(* src: src/legacy/proverif-items/lib.rs:13:0-15:1 new_tests__legacy__proverif_items__lib__make *)
 letfun new_tests__legacy__proverif_items__lib__make(x: bitstring, y: bitstring) =
   new_tests__legacy__proverif_items__lib__Point__Point(x, y).
-(* src: src/legacy/proverif-items/lib.rs:17 new_tests__legacy__proverif_items__lib__get_x *)
+(* src: src/legacy/proverif-items/lib.rs:17:0-19:1 new_tests__legacy__proverif_items__lib__get_x *)
 letfun new_tests__legacy__proverif_items__lib__get_x(p: bitstring) =
   new_tests__legacy__proverif_items__lib__Point__Point__x(p).
-(* src: src/legacy/proverif-items/lib.rs:21 new_tests__legacy__proverif_items__lib__Counter *)
+(* src: src/legacy/proverif-items/lib.rs:21:0-21:15 new_tests__legacy__proverif_items__lib__Counter *)
 fun new_tests__legacy__proverif_items__lib__Counter__Counter(): bitstring [data].
-(* src: src/legacy/proverif-items/lib.rs:32 new_tests__legacy__proverif_items__lib__Impl__BASE *)
+(* src: src/legacy/proverif-items/lib.rs:32:4-32:24 new_tests__legacy__proverif_items__lib__Impl__BASE *)
 const new_tests__legacy__proverif_items__lib__Impl__BASE: bitstring.
-(* src: src/legacy/proverif-items/lib.rs:28 new_tests__legacy__proverif_items__lib__Impl__inner *)
+(* src: src/legacy/proverif-items/lib.rs:28:4-30:5 new_tests__legacy__proverif_items__lib__Impl__inner *)
 letfun new_tests__legacy__proverif_items__lib__Impl__inner(self: bitstring) =
   new_tests__legacy__proverif_items__lib__Impl__BASE.
-(* src: src/legacy/proverif-items/lib.rs:24 new_tests__legacy__proverif_items__lib__Impl__outer *)
+(* src: src/legacy/proverif-items/lib.rs:24:4-26:5 new_tests__legacy__proverif_items__lib__Impl__outer *)
 letfun new_tests__legacy__proverif_items__lib__Impl__outer(self: bitstring) =
   new_tests__legacy__proverif_items__lib__Impl__inner(self).

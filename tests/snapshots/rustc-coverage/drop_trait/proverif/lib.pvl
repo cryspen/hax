@@ -16,14 +16,14 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/drop_trait.rs:5 new_tests__rustc_coverage__drop_trait__Firework *)
+(* src: src/rustc-coverage/drop_trait.rs:5:0-7:1 new_tests__rustc_coverage__drop_trait__Firework *)
 fun new_tests__rustc_coverage__drop_trait__Firework__Firework(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__rustc_coverage__drop_trait__Firework__Firework__strength(
     new_tests__rustc_coverage__drop_trait__Firework__Firework(v_0)
   ) = v_0.
 (*  @fail(extraction): ssprove(HAX0001) *)
-(* src: src/rustc-coverage/drop_trait.rs:11 new_tests__rustc_coverage__drop_trait__Impl__drop *)
+(* src: src/rustc-coverage/drop_trait.rs:11:4-13:5 new_tests__rustc_coverage__drop_trait__Impl__drop *)
 letfun new_tests__rustc_coverage__drop_trait__Impl__drop(self: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_v1(
@@ -39,7 +39,7 @@ letfun new_tests__rustc_coverage__drop_trait__Impl__drop(self: bitstring) =
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   self.
-(* src: src/rustc-coverage/drop_trait.rs:16 new_tests__rustc_coverage__drop_trait__main *)
+(* src: src/rustc-coverage/drop_trait.rs:16:0-29:1 new_tests__rustc_coverage__drop_trait__main *)
 letfun new_tests__rustc_coverage__drop_trait__main(wildcard: bitstring) =
   let u_firecracker = new_tests__rustc_coverage__drop_trait__Firework__Firework(nat_1) in
   let u_tnt = new_tests__rustc_coverage__drop_trait__Firework__Firework(nat_100) in

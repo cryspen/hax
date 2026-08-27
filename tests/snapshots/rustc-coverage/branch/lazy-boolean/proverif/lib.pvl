@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/branch/lazy-boolean.rs:20 new_tests__rustc_coverage__branch__lazy_boolean__branch_and *)
+(* src: src/rustc-coverage/branch/lazy-boolean.rs:20:0-26:1 new_tests__rustc_coverage__branch__lazy_boolean__branch_and *)
 letfun new_tests__rustc_coverage__branch__lazy_boolean__branch_and(a: bitstring, b: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -27,7 +27,7 @@ letfun new_tests__rustc_coverage__branch__lazy_boolean__branch_and(a: bitstring,
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
   let wildcard: bitstring = core__hint__black_box(logical_and(a, b)) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/lazy-boolean.rs:28 new_tests__rustc_coverage__branch__lazy_boolean__branch_or *)
+(* src: src/rustc-coverage/branch/lazy-boolean.rs:28:0-34:1 new_tests__rustc_coverage__branch__lazy_boolean__branch_or *)
 letfun new_tests__rustc_coverage__branch__lazy_boolean__branch_or(a: bitstring, b: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -38,7 +38,7 @@ letfun new_tests__rustc_coverage__branch__lazy_boolean__branch_or(a: bitstring, 
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0))) in
   let wildcard: bitstring = core__hint__black_box(logical_or(a, b)) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/lazy-boolean.rs:37 new_tests__rustc_coverage__branch__lazy_boolean__chain *)
+(* src: src/rustc-coverage/branch/lazy-boolean.rs:37:0-47:1 new_tests__rustc_coverage__branch__lazy_boolean__chain *)
 letfun new_tests__rustc_coverage__branch__lazy_boolean__chain(x: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -72,7 +72,7 @@ letfun new_tests__rustc_coverage__branch__lazy_boolean__chain(x: bitstring) =
     )
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/lazy-boolean.rs:50 new_tests__rustc_coverage__branch__lazy_boolean__nested_mixed *)
+(* src: src/rustc-coverage/branch/lazy-boolean.rs:50:0-60:1 new_tests__rustc_coverage__branch__lazy_boolean__nested_mixed *)
 letfun new_tests__rustc_coverage__branch__lazy_boolean__nested_mixed(x: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -106,7 +106,7 @@ letfun new_tests__rustc_coverage__branch__lazy_boolean__nested_mixed(x: bitstrin
     )
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/lazy-boolean.rs:63 new_tests__rustc_coverage__branch__lazy_boolean__main *)
+(* src: src/rustc-coverage/branch/lazy-boolean.rs:63:0-81:1 new_tests__rustc_coverage__branch__lazy_boolean__main *)
 letfun new_tests__rustc_coverage__branch__lazy_boolean__main(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     rust_primitives__hax__array_cons(False(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_nil())))))

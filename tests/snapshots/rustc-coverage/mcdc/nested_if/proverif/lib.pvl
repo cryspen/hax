@@ -16,11 +16,11 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/mcdc/nested_if.rs:80 new_tests__rustc_coverage__mcdc__nested_if__say *)
+(* src: src/rustc-coverage/mcdc/nested_if.rs:80:0-82:1 new_tests__rustc_coverage__mcdc__nested_if__say *)
 letfun new_tests__rustc_coverage__mcdc__nested_if__say(message: bitstring) =
   let wildcard: bitstring = core__hint__black_box(message) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/mcdc/nested_if.rs:7 new_tests__rustc_coverage__mcdc__nested_if__nested_if_in_condition *)
+(* src: src/rustc-coverage/mcdc/nested_if.rs:7:0-13:1 new_tests__rustc_coverage__mcdc__nested_if__nested_if_in_condition *)
 letfun new_tests__rustc_coverage__mcdc__nested_if__nested_if_in_condition(
   a: bitstring,
   b: bitstring,
@@ -35,7 +35,7 @@ letfun new_tests__rustc_coverage__mcdc__nested_if__nested_if_in_condition(
       string_lit__no
     ) in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/mcdc/nested_if.rs:15 new_tests__rustc_coverage__mcdc__nested_if__doubly_nested_if_in_condition *)
+(* src: src/rustc-coverage/mcdc/nested_if.rs:15:0-25:1 new_tests__rustc_coverage__mcdc__nested_if__doubly_nested_if_in_condition *)
 letfun new_tests__rustc_coverage__mcdc__nested_if__doubly_nested_if_in_condition(
   a: bitstring,
   b: bitstring,
@@ -56,7 +56,7 @@ letfun new_tests__rustc_coverage__mcdc__nested_if__doubly_nested_if_in_condition
       string_lit__no
     ) in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/mcdc/nested_if.rs:27 new_tests__rustc_coverage__mcdc__nested_if__nested_single_condition_decision *)
+(* src: src/rustc-coverage/mcdc/nested_if.rs:27:0-36:1 new_tests__rustc_coverage__mcdc__nested_if__nested_single_condition_decision *)
 letfun new_tests__rustc_coverage__mcdc__nested_if__nested_single_condition_decision(
   a: bitstring,
   b: bitstring
@@ -70,7 +70,7 @@ letfun new_tests__rustc_coverage__mcdc__nested_if__nested_single_condition_decis
       string_lit__no
     ) in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/mcdc/nested_if.rs:38 new_tests__rustc_coverage__mcdc__nested_if__nested_in_then_block_in_condition *)
+(* src: src/rustc-coverage/mcdc/nested_if.rs:38:0-52:1 new_tests__rustc_coverage__mcdc__nested_if__nested_in_then_block_in_condition *)
 letfun new_tests__rustc_coverage__mcdc__nested_if__nested_in_then_block_in_condition(
   a: bitstring,
   b: bitstring,
@@ -92,7 +92,7 @@ letfun new_tests__rustc_coverage__mcdc__nested_if__nested_in_then_block_in_condi
       string_lit__no
     ) in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/mcdc/nested_if.rs:55 new_tests__rustc_coverage__mcdc__nested_if__main *)
+(* src: src/rustc-coverage/mcdc/nested_if.rs:55:0-77:1 new_tests__rustc_coverage__mcdc__nested_if__main *)
 letfun new_tests__rustc_coverage__mcdc__nested_if__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__mcdc__nested_if__nested_if_in_condition(
     True(),

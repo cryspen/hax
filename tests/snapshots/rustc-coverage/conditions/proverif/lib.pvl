@@ -16,9 +16,9 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/conditions.rs:10 new_tests__rustc_coverage__conditions__main__B *)
+(* src: src/rustc-coverage/conditions.rs:10:4-10:23 new_tests__rustc_coverage__conditions__main__B *)
 const new_tests__rustc_coverage__conditions__main__B: bitstring.
-(* src: src/rustc-coverage/conditions.rs:4 new_tests__rustc_coverage__conditions__main *)
+(* src: src/rustc-coverage/conditions.rs:4:0-88:1 new_tests__rustc_coverage__conditions__main *)
 letfun new_tests__rustc_coverage__conditions__main(wildcard: bitstring) =
   let countdown_2 = (let (=True()) = True() in nat_10 else nat_0) in
   let (=True()) = rust_primitives__hax__machine_int__gt(countdown_2, nat_7)

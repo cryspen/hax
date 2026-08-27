@@ -16,8 +16,8 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/nested-derefs/lib.rs:1 new_tests__legacy__nested_derefs__lib__f *)
+(* src: src/legacy/nested-derefs/lib.rs:1:0-3:1 new_tests__legacy__nested_derefs__lib__f *)
 letfun new_tests__legacy__nested_derefs__lib__f(x: bitstring) = x.
-(* src: src/legacy/nested-derefs/lib.rs:4 new_tests__legacy__nested_derefs__lib__g *)
+(* src: src/legacy/nested-derefs/lib.rs:4:0-6:1 new_tests__legacy__nested_derefs__lib__g *)
 letfun new_tests__legacy__nested_derefs__lib__g(x: bitstring) =
   new_tests__legacy__nested_derefs__lib__f(x).

@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/no_cov_crate.rs:41 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner *)
+(* src: src/rustc-coverage/no_cov_crate.rs:41:8-47:9 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner(
   is_true: bitstring
 ) =
@@ -35,7 +35,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__i
     ) in
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/no_cov_crate.rs:40 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered *)
+(* src: src/rustc-coverage/no_cov_crate.rs:40:4-50:5 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered(is_true: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -47,7 +47,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered(is
     is_true
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:57 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered *)
+(* src: src/rustc-coverage/no_cov_crate.rs:57:8-63:9 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered(
   is_true: bitstring
 ) =
@@ -66,7 +66,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_cov
     ) in
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/no_cov_crate.rs:52 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer *)
+(* src: src/rustc-coverage/no_cov_crate.rs:52:4-64:5 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer(is_true: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -78,7 +78,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer(is_true: bitst
     is_true
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:70 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner *)
+(* src: src/rustc-coverage/no_cov_crate.rs:70:8-76:9 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner(
   is_true: bitstring
 ) =
@@ -97,7 +97,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__
     ) in
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/no_cov_crate.rs:66 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered *)
+(* src: src/rustc-coverage/no_cov_crate.rs:66:4-77:5 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered(is_true: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -109,7 +109,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered(i
     is_true
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:8 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1 *)
+(* src: src/rustc-coverage/no_cov_crate.rs:8:0-10:1 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1 *)
 letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -118,7 +118,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1(wildcard: 
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:12 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2 *)
+(* src: src/rustc-coverage/no_cov_crate.rs:12:0-15:1 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2 *)
 letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -127,7 +127,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2(wildcard: 
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:19 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_not_called *)
+(* src: src/rustc-coverage/no_cov_crate.rs:19:0-21:1 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_not_called *)
 letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_not_called(
   wildcard: bitstring
 ) =
@@ -138,7 +138,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_not_called(
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:23 new_tests__rustc_coverage__no_cov_crate__add_coverage_1 *)
+(* src: src/rustc-coverage/no_cov_crate.rs:23:0-25:1 new_tests__rustc_coverage__no_cov_crate__add_coverage_1 *)
 letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_1(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -147,7 +147,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_1(wildcard: bitstri
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:27 new_tests__rustc_coverage__no_cov_crate__add_coverage_2 *)
+(* src: src/rustc-coverage/no_cov_crate.rs:27:0-29:1 new_tests__rustc_coverage__no_cov_crate__add_coverage_2 *)
 letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_2(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -156,7 +156,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_2(wildcard: bitstri
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:32 new_tests__rustc_coverage__no_cov_crate__add_coverage_not_called *)
+(* src: src/rustc-coverage/no_cov_crate.rs:32:0-34:1 new_tests__rustc_coverage__no_cov_crate__add_coverage_not_called *)
 letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_not_called(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -165,7 +165,7 @@ letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_not_called(wildcard
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/no_cov_crate.rs:80 new_tests__rustc_coverage__no_cov_crate__main *)
+(* src: src/rustc-coverage/no_cov_crate.rs:80:0-91:1 new_tests__rustc_coverage__no_cov_crate__main *)
 letfun new_tests__rustc_coverage__no_cov_crate__main(wildcard: bitstring) =
   let is_true = rust_primitives__hax__machine_int__eq(
     core__iter__traits__exact_size__ExactSizeIterator__len(

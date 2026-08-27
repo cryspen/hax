@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/tight_inf_loop.rs:3 new_tests__rustc_coverage__tight_inf_loop__main *)
+(* src: src/rustc-coverage/tight_inf_loop.rs:3:0-7:1 new_tests__rustc_coverage__tight_inf_loop__main *)
 (*  @fail(extraction): lean(HAX0001), coq(HAX0001), fstar(HAX0001) *)
 letfun new_tests__rustc_coverage__tight_inf_loop__main(wildcard: bitstring) =
   let (=True()) = False() in bitstring_err() else rust_primitives__hax__Tuple0__Tuple0.

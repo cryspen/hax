@@ -18,28 +18,28 @@
 
 
 
-(* src: src/legacy/attribute-opaque/lib.rs:17 new_tests__legacy__attribute_opaque__lib__f_generic *)
+(* src: src/legacy/attribute-opaque/lib.rs:17:0-19:1 new_tests__legacy__attribute_opaque__lib__f_generic *)
 (* opaque *)
 fun new_tests__legacy__attribute_opaque__lib__f_generic(bitstring): bitstring [data].
-(* src: src/legacy/attribute-opaque/lib.rs:22 new_tests__legacy__attribute_opaque__lib__f *)
+(* src: src/legacy/attribute-opaque/lib.rs:22:0-24:1 new_tests__legacy__attribute_opaque__lib__f *)
 (* opaque *)
 fun new_tests__legacy__attribute_opaque__lib__f(bitstring, bitstring): bitstring [data].
-(* src: src/legacy/attribute-opaque/lib.rs:29 new_tests__legacy__attribute_opaque__lib__f_pre_post *)
+(* src: src/legacy/attribute-opaque/lib.rs:29:0-31:1 new_tests__legacy__attribute_opaque__lib__f_pre_post *)
 (* opaque *)
 fun new_tests__legacy__attribute_opaque__lib__f_pre_post(bitstring, bitstring): bitstring [data].
 
 
 
 
-(* src: src/legacy/attribute-opaque/lib.rs:74 new_tests__legacy__attribute_opaque__lib__C *)
+(* src: src/legacy/attribute-opaque/lib.rs:74:0-74:20 new_tests__legacy__attribute_opaque__lib__C *)
 const new_tests__legacy__attribute_opaque__lib__C: bitstring.
-(* src: src/legacy/attribute-opaque/lib.rs:76 new_tests__legacy__attribute_opaque__lib__S1 *)
+(* src: src/legacy/attribute-opaque/lib.rs:76:0-76:12 new_tests__legacy__attribute_opaque__lib__S1 *)
 fun new_tests__legacy__attribute_opaque__lib__S1__S1(): bitstring [data].
-(* src: src/legacy/attribute-opaque/lib.rs:80 new_tests__legacy__attribute_opaque__lib__Impl__f_s1 *)
+(* src: src/legacy/attribute-opaque/lib.rs:80:4-80:16 new_tests__legacy__attribute_opaque__lib__Impl__f_s1 *)
 (* opaque *)
 fun new_tests__legacy__attribute_opaque__lib__Impl__f_s1(bitstring): bitstring [data].
-(* src: src/legacy/attribute-opaque/lib.rs:83 new_tests__legacy__attribute_opaque__lib__S2 *)
+(* src: src/legacy/attribute-opaque/lib.rs:83:0-83:12 new_tests__legacy__attribute_opaque__lib__S2 *)
 fun new_tests__legacy__attribute_opaque__lib__S2__S2(): bitstring [data].
-(* src: src/legacy/attribute-opaque/lib.rs:87 new_tests__legacy__attribute_opaque__lib__Impl_3__f_s2 *)
+(* src: src/legacy/attribute-opaque/lib.rs:87:4-87:16 new_tests__legacy__attribute_opaque__lib__Impl_3__f_s2 *)
 (* opaque *)
 fun new_tests__legacy__attribute_opaque__lib__Impl_3__f_s2(bitstring): bitstring [data].

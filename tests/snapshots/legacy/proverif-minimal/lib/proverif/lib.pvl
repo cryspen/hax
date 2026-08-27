@@ -16,6 +16,6 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/proverif-minimal/lib.rs:1 new_tests__legacy__proverif_minimal__lib__add *)
+(* src: src/legacy/proverif-minimal/lib.rs:1:0-3:1 new_tests__legacy__proverif_minimal__lib__add *)
 letfun new_tests__legacy__proverif_minimal__lib__add(left: bitstring, right: bitstring) =
   rust_primitives__hax__machine_int__add(left, right).

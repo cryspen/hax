@@ -16,14 +16,14 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/enum-struct-variant/lib.rs:5 new_tests__legacy__enum_struct_variant__lib__Money *)
+(* src: src/legacy/enum-struct-variant/lib.rs:5:0-7:1 new_tests__legacy__enum_struct_variant__lib__Money *)
 fun new_tests__legacy__enum_struct_variant__lib__Money__Money(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__enum_struct_variant__lib__Money__Money__value(
     new_tests__legacy__enum_struct_variant__lib__Money__Money(v_0)
   ) = v_0.
 
-(* src: src/legacy/enum-struct-variant/lib.rs:10 new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant *)
+(* src: src/legacy/enum-struct-variant/lib.rs:10:0-12:1 new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant *)
 fun new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds(
   bitstring
 ): bitstring [data].

@@ -16,15 +16,15 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/auxiliary/inline_always_with_dead_code.rs:7 new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__foo__called *)
+(* src: src/rustc-coverage/auxiliary/inline_always_with_dead_code.rs:7:4-7:22 new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__foo__called *)
 letfun new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__foo__called(
   wildcard: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/auxiliary/inline_always_with_dead_code.rs:9 new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__foo__uncalled *)
+(* src: src/rustc-coverage/auxiliary/inline_always_with_dead_code.rs:9:4-9:20 new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__foo__uncalled *)
 letfun new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__foo__uncalled(
   wildcard: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/auxiliary/inline_always_with_dead_code.rs:19 new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__baz__call_me *)
+(* src: src/rustc-coverage/auxiliary/inline_always_with_dead_code.rs:19:4-21:5 new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__baz__call_me *)
 letfun new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__baz__call_me(
   wildcard: bitstring
 ) =
@@ -32,7 +32,7 @@ letfun new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__baz__
     rust_primitives__hax__Tuple0__Tuple0
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/auxiliary/inline_always_with_dead_code.rs:13 new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__bar__call_me *)
+(* src: src/rustc-coverage/auxiliary/inline_always_with_dead_code.rs:13:4-15:5 new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__bar__call_me *)
 letfun new_tests__rustc_coverage__auxiliary__inline_always_with_dead_code__bar__call_me(
   wildcard: bitstring
 ) =

@@ -16,11 +16,11 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/branch/if.rs:65 new_tests__rustc_coverage__branch__if__say *)
+(* src: src/rustc-coverage/branch/if.rs:65:0-67:1 new_tests__rustc_coverage__branch__if__say *)
 letfun new_tests__rustc_coverage__branch__if__say(message: bitstring) =
   let wildcard: bitstring = core__hint__black_box(message) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/if.rs:13 new_tests__rustc_coverage__branch__if__branch_not *)
+(* src: src/rustc-coverage/branch/if.rs:13:0-28:1 new_tests__rustc_coverage__branch__if__branch_not *)
 letfun new_tests__rustc_coverage__branch__if__branch_not(a: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -54,7 +54,7 @@ letfun new_tests__rustc_coverage__branch__if__branch_not(a: bitstring) =
     ) in
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/if.rs:30 new_tests__rustc_coverage__branch__if__branch_not_as *)
+(* src: src/rustc-coverage/branch/if.rs:30:0-42:1 new_tests__rustc_coverage__branch__if__branch_not_as *)
 letfun new_tests__rustc_coverage__branch__if__branch_not_as(a: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -85,7 +85,7 @@ letfun new_tests__rustc_coverage__branch__if__branch_not_as(a: bitstring) =
     ) in
     rust_primitives__hax__Tuple0__Tuple0)
     else rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/if.rs:44 new_tests__rustc_coverage__branch__if__branch_and *)
+(* src: src/rustc-coverage/branch/if.rs:44:0-52:1 new_tests__rustc_coverage__branch__if__branch_and *)
 letfun new_tests__rustc_coverage__branch__if__branch_and(a: bitstring, b: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -101,7 +101,7 @@ letfun new_tests__rustc_coverage__branch__if__branch_and(a: bitstring, b: bitstr
       string_lit__not_x20both
     ) in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/branch/if.rs:54 new_tests__rustc_coverage__branch__if__branch_or *)
+(* src: src/rustc-coverage/branch/if.rs:54:0-62:1 new_tests__rustc_coverage__branch__if__branch_or *)
 letfun new_tests__rustc_coverage__branch__if__branch_or(a: bitstring, b: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -117,7 +117,7 @@ letfun new_tests__rustc_coverage__branch__if__branch_or(a: bitstring, b: bitstri
       string_lit__neither
     ) in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/branch/if.rs:70 new_tests__rustc_coverage__branch__if__main *)
+(* src: src/rustc-coverage/branch/if.rs:70:0-82:1 new_tests__rustc_coverage__branch__if__main *)
 letfun new_tests__rustc_coverage__branch__if__main(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     rust_primitives__hax__array_cons(False(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_cons(True(), rust_primitives__hax__array_nil())))

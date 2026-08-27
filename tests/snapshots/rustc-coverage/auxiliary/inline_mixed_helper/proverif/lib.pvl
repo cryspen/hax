@@ -16,13 +16,13 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:5 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__inline_me *)
+(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:5:0-5:21 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__inline_me *)
 letfun new_tests__rustc_coverage__auxiliary__inline_mixed_helper__inline_me(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:8 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__no_inlining_please *)
+(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:8:0-8:30 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__no_inlining_please *)
 letfun new_tests__rustc_coverage__auxiliary__inline_mixed_helper__no_inlining_please(
   wildcard: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:10 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__generic *)
+(* src: src/rustc-coverage/auxiliary/inline_mixed_helper.rs:10:0-10:22 new_tests__rustc_coverage__auxiliary__inline_mixed_helper__generic *)
 letfun new_tests__rustc_coverage__auxiliary__inline_mixed_helper__generic(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.

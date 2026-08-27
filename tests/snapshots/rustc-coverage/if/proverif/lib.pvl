@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/if.rs:5 new_tests__rustc_coverage__if__main *)
+(* src: src/rustc-coverage/if.rs:5:0-30:1 new_tests__rustc_coverage__if__main *)
 letfun new_tests__rustc_coverage__if__main(wildcard: bitstring) =
   let countdown = nat_0 in
   let (=True()) = rust_primitives__hax__machine_int__eq(

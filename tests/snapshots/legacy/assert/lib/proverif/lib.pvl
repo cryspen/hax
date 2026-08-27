@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/assert/lib.rs:4 new_tests__legacy__assert__lib__asserts *)
+(* src: src/legacy/assert/lib.rs:4:0-11:1 new_tests__legacy__assert__lib__asserts *)
 letfun new_tests__legacy__assert__lib__asserts(wildcard: bitstring) =
   let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(True())
     in bitstring_err()

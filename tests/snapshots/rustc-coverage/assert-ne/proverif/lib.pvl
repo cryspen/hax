@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/assert-ne.rs:7 new_tests__rustc_coverage__assert_ne__Foo *)
+(* src: src/rustc-coverage/assert-ne.rs:7:0-7:16 new_tests__rustc_coverage__assert_ne__Foo *)
 fun new_tests__rustc_coverage__assert_ne__Foo__Foo(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__rustc_coverage__assert_ne__Foo__Foo__0(
@@ -25,7 +25,7 @@ reduc forall v_0: bitstring;
 
 
 
-(* src: src/rustc-coverage/assert-ne.rs:9 new_tests__rustc_coverage__assert_ne__main *)
+(* src: src/rustc-coverage/assert-ne.rs:9:0-19:1 new_tests__rustc_coverage__assert_ne__main *)
 letfun new_tests__rustc_coverage__assert_ne__main(wildcard: bitstring) =
   let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
     left_val: bitstring,

@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/issue-83601.rs:5 new_tests__rustc_coverage__issue_83601__Foo *)
+(* src: src/rustc-coverage/issue-83601.rs:5:0-5:16 new_tests__rustc_coverage__issue_83601__Foo *)
 fun new_tests__rustc_coverage__issue_83601__Foo__Foo(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__rustc_coverage__issue_83601__Foo__Foo__0(
@@ -26,7 +26,7 @@ reduc forall v_0: bitstring;
 
 
 
-(* src: src/rustc-coverage/issue-83601.rs:8 new_tests__rustc_coverage__issue_83601__main *)
+(* src: src/rustc-coverage/issue-83601.rs:8:0-16:1 new_tests__rustc_coverage__issue_83601__main *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__issue_83601__main(wildcard: bitstring) =
   let bar = new_tests__rustc_coverage__issue_83601__Foo__Foo(nat_1) in

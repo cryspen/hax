@@ -16,11 +16,11 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/branch/if-let.rs:39 new_tests__rustc_coverage__branch__if_let__say *)
+(* src: src/rustc-coverage/branch/if-let.rs:39:0-41:1 new_tests__rustc_coverage__branch__if_let__say *)
 letfun new_tests__rustc_coverage__branch__if_let__say(message: bitstring) =
   let wildcard: bitstring = core__hint__black_box(message) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/if-let.rs:13 new_tests__rustc_coverage__branch__if_let__if_let *)
+(* src: src/rustc-coverage/branch/if-let.rs:13:0-22:1 new_tests__rustc_coverage__branch__if_let__if_let *)
 letfun new_tests__rustc_coverage__branch__if_let__if_let(input: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -36,14 +36,14 @@ letfun new_tests__rustc_coverage__branch__if_let__if_let(input: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0) in
   let wildcard: bitstring = new_tests__rustc_coverage__branch__if_let__say(string_lit__done) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/if-let.rs:26 new_tests__rustc_coverage__branch__if_let__if_let_chain *)
+(* src: src/rustc-coverage/branch/if-let.rs:26:0-36:1 new_tests__rustc_coverage__branch__if_let__if_let_chain *)
 (*  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001) *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__branch__if_let__if_let_chain(a: bitstring, b: bitstring) =
   let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   let wildcard: bitstring = new_tests__rustc_coverage__branch__if_let__say(string_lit__done) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/if-let.rs:44 new_tests__rustc_coverage__branch__if_let__main *)
+(* src: src/rustc-coverage/branch/if-let.rs:44:0-59:1 new_tests__rustc_coverage__branch__if_let__main *)
 letfun new_tests__rustc_coverage__branch__if_let__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__branch__if_let__if_let(
     Some(string_lit__x)

@@ -16,27 +16,27 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/fn_sig_into_try.rs:10 new_tests__rustc_coverage__fn_sig_into_try__a *)
+(* src: src/rustc-coverage/fn_sig_into_try.rs:10:0-15:1 new_tests__rustc_coverage__fn_sig_into_try__a *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__a(wildcard: bitstring) =
   let wildcard: bitstring = Some(nat_7) in
   Some(nat_0).
-(* src: src/rustc-coverage/fn_sig_into_try.rs:17 new_tests__rustc_coverage__fn_sig_into_try__b *)
+(* src: src/rustc-coverage/fn_sig_into_try.rs:17:0-22:1 new_tests__rustc_coverage__fn_sig_into_try__b *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__b(wildcard: bitstring) =
   let Some(wildcard: bitstring) = Some(nat_7) in Some(nat_0)
   else let None() = Some(nat_7) in None()
   else bitstring_err().
-(* src: src/rustc-coverage/fn_sig_into_try.rs:24 new_tests__rustc_coverage__fn_sig_into_try__c *)
+(* src: src/rustc-coverage/fn_sig_into_try.rs:24:0-29:1 new_tests__rustc_coverage__fn_sig_into_try__c *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__c(wildcard: bitstring) =
   let Some(wildcard: bitstring) = Some(nat_7) in Some(nat_0)
   else let None() = Some(nat_7) in None()
   else bitstring_err().
-(* src: src/rustc-coverage/fn_sig_into_try.rs:31 new_tests__rustc_coverage__fn_sig_into_try__d *)
+(* src: src/rustc-coverage/fn_sig_into_try.rs:31:0-37:1 new_tests__rustc_coverage__fn_sig_into_try__d *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__d(wildcard: bitstring) =
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0() in
   let Some(wildcard: bitstring) = Some(nat_7) in Some(nat_0)
   else let None() = Some(nat_7) in None()
   else bitstring_err().
-(* src: src/rustc-coverage/fn_sig_into_try.rs:40 new_tests__rustc_coverage__fn_sig_into_try__main *)
+(* src: src/rustc-coverage/fn_sig_into_try.rs:40:0-45:1 new_tests__rustc_coverage__fn_sig_into_try__main *)
 letfun new_tests__rustc_coverage__fn_sig_into_try__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__fn_sig_into_try__a(
     rust_primitives__hax__Tuple0__Tuple0

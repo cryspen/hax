@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/color.rs:10 new_tests__rustc_coverage__color__main *)
+(* src: src/rustc-coverage/color.rs:10:0-12:1 new_tests__rustc_coverage__color__main *)
 letfun new_tests__rustc_coverage__color__main(wildcard: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(

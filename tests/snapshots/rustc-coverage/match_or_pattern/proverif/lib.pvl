@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/match_or_pattern.rs:2 new_tests__rustc_coverage__match_or_pattern__main *)
+(* src: src/rustc-coverage/match_or_pattern.rs:2:0-44:1 new_tests__rustc_coverage__match_or_pattern__main *)
 letfun new_tests__rustc_coverage__match_or_pattern__main(wildcard: bitstring) =
   let is_true = rust_primitives__hax__machine_int__eq(
     core__iter__traits__exact_size__ExactSizeIterator__len(

@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/issue-84561.rs:6 new_tests__rustc_coverage__issue_84561__Foo *)
+(* src: src/rustc-coverage/issue-84561.rs:6:0-6:16 new_tests__rustc_coverage__issue_84561__Foo *)
 fun new_tests__rustc_coverage__issue_84561__Foo__Foo(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__rustc_coverage__issue_84561__Foo__Foo__0(
@@ -25,7 +25,7 @@ reduc forall v_0: bitstring;
 
 
 
-(* src: src/rustc-coverage/issue-84561.rs:140 new_tests__rustc_coverage__issue_84561__Impl__fmt *)
+(* src: src/rustc-coverage/issue-84561.rs:140:4-143:5 new_tests__rustc_coverage__issue_84561__Impl__fmt *)
 letfun new_tests__rustc_coverage__issue_84561__Impl__fmt(self: bitstring, f: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
     tmp0: bitstring,
@@ -41,7 +41,7 @@ letfun new_tests__rustc_coverage__issue_84561__Impl__fmt(self: bitstring, f: bit
       f_1,
       rust_primitives__hax__Tuple0__Tuple0()
     )) else bitstring_err().
-(* src: src/rustc-coverage/issue-84561.rs:10 new_tests__rustc_coverage__issue_84561__test3 *)
+(* src: src/rustc-coverage/issue-84561.rs:10:0-137:1 new_tests__rustc_coverage__issue_84561__test3 *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
   let is_true = rust_primitives__hax__machine_int__eq(
@@ -416,7 +416,7 @@ letfun new_tests__rustc_coverage__issue_84561__test3(wildcard: bitstring) =
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/issue-84561.rs:160 new_tests__rustc_coverage__issue_84561__test1 *)
+(* src: src/rustc-coverage/issue-84561.rs:160:0-169:1 new_tests__rustc_coverage__issue_84561__test1 *)
 (*  @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008) *)
 (*  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0002) *)
 letfun new_tests__rustc_coverage__issue_84561__test1(wildcard: bitstring) =
@@ -428,7 +428,7 @@ letfun new_tests__rustc_coverage__issue_84561__test1(wildcard: bitstring) =
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/issue-84561.rs:174 new_tests__rustc_coverage__issue_84561__test2__call_print *)
+(* src: src/rustc-coverage/issue-84561.rs:174:8-176:9 new_tests__rustc_coverage__issue_84561__test2__call_print *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__issue_84561__test2__call_print(s: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
@@ -441,7 +441,7 @@ letfun new_tests__rustc_coverage__issue_84561__test2__call_print(s: bitstring) =
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/issue-84561.rs:185 new_tests__rustc_coverage__issue_84561__test2 *)
+(* src: src/rustc-coverage/issue-84561.rs:185:0-187:1 new_tests__rustc_coverage__issue_84561__test2 *)
 (*  @fail(extraction): ssprove(HAX0008), coq(HAX0008), lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008) *)
 (*  @fail(extraction): proverif(HAX0008) *)
 letfun new_tests__rustc_coverage__issue_84561__test2(wildcard: bitstring) =
@@ -450,7 +450,7 @@ letfun new_tests__rustc_coverage__issue_84561__test2(wildcard: bitstring) =
   ) in
   let wildcard: bitstring = (bitstring_err() (* unsupported if-let chain *)) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/issue-84561.rs:189 new_tests__rustc_coverage__issue_84561__main *)
+(* src: src/rustc-coverage/issue-84561.rs:189:0-193:1 new_tests__rustc_coverage__issue_84561__main *)
 letfun new_tests__rustc_coverage__issue_84561__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__issue_84561__test1(
     rust_primitives__hax__Tuple0__Tuple0

@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/tuples/lib.rs:4 new_tests__legacy__tuples__lib__project_tuple1 *)
+(* src: src/legacy/tuples/lib.rs:4:0-7:1 new_tests__legacy__tuples__lib__project_tuple1 *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__tuples__lib__project_tuple1(wildcard: bitstring) =
   rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(nat_3)).

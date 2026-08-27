@@ -16,13 +16,13 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/proverif-basic-structs/lib.rs:2 new_tests__legacy__proverif_basic_structs__lib__Ainitial *)
+(* src: src/legacy/proverif-basic-structs/lib.rs:2:0-4:1 new_tests__legacy__proverif_basic_structs__lib__Ainitial *)
 fun new_tests__legacy__proverif_basic_structs__lib__Ainitial__Ainitial(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__proverif_basic_structs__lib__Ainitial__Ainitial__x(
     new_tests__legacy__proverif_basic_structs__lib__Ainitial__Ainitial(v_0)
   ) = v_0.
-(* src: src/legacy/proverif-basic-structs/lib.rs:7 new_tests__legacy__proverif_basic_structs__lib__A *)
+(* src: src/legacy/proverif-basic-structs/lib.rs:7:0-10:1 new_tests__legacy__proverif_basic_structs__lib__A *)
 fun new_tests__legacy__proverif_basic_structs__lib__A__A(bitstring, bitstring): bitstring [data].
 reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__proverif_basic_structs__lib__A__A__one(
@@ -32,7 +32,7 @@ reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__proverif_basic_structs__lib__A__A__two(
     new_tests__legacy__proverif_basic_structs__lib__A__A(v_0, v_1)
   ) = v_1.
-(* src: src/legacy/proverif-basic-structs/lib.rs:13 new_tests__legacy__proverif_basic_structs__lib__B *)
+(* src: src/legacy/proverif-basic-structs/lib.rs:13:0-13:16 new_tests__legacy__proverif_basic_structs__lib__B *)
 fun new_tests__legacy__proverif_basic_structs__lib__B__B(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__proverif_basic_structs__lib__B__B__0(

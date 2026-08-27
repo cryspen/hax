@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/branch/guard.rs:13 new_tests__rustc_coverage__branch__guard__branch_match_guard *)
+(* src: src/rustc-coverage/branch/guard.rs:13:0-30:1 new_tests__rustc_coverage__branch__guard__branch_match_guard *)
 letfun new_tests__rustc_coverage__branch__guard__branch_match_guard(x: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -97,7 +97,7 @@ letfun new_tests__rustc_coverage__branch__guard__branch_match_guard(x: bitstring
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/guard.rs:33 new_tests__rustc_coverage__branch__guard__main *)
+(* src: src/rustc-coverage/branch/guard.rs:33:0-38:1 new_tests__rustc_coverage__branch__guard__main *)
 letfun new_tests__rustc_coverage__branch__guard__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__branch__guard__branch_match_guard(
     Some(nat_0)

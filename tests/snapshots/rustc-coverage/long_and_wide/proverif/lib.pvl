@@ -16,17 +16,17 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/long_and_wide.rs:14 new_tests__rustc_coverage__long_and_wide__wide_function *)
+(* src: src/rustc-coverage/long_and_wide.rs:14:0-14:138 new_tests__rustc_coverage__long_and_wide__wide_function *)
 letfun new_tests__rustc_coverage__long_and_wide__wide_function(wildcard: bitstring) =
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0() in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/long_and_wide.rs:16 new_tests__rustc_coverage__long_and_wide__long_function *)
+(* src: src/rustc-coverage/long_and_wide.rs:16:0-148:1 new_tests__rustc_coverage__long_and_wide__long_function *)
 letfun new_tests__rustc_coverage__long_and_wide__long_function(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/long_and_wide.rs:150 new_tests__rustc_coverage__long_and_wide__far_function *)
+(* src: src/rustc-coverage/long_and_wide.rs:150:0-150:20 new_tests__rustc_coverage__long_and_wide__far_function *)
 letfun new_tests__rustc_coverage__long_and_wide__far_function(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/long_and_wide.rs:7 new_tests__rustc_coverage__long_and_wide__main *)
+(* src: src/rustc-coverage/long_and_wide.rs:7:0-11:1 new_tests__rustc_coverage__long_and_wide__main *)
 letfun new_tests__rustc_coverage__long_and_wide__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__long_and_wide__wide_function(
     rust_primitives__hax__Tuple0__Tuple0

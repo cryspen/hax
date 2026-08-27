@@ -16,11 +16,11 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/branch/let-else.rs:25 new_tests__rustc_coverage__branch__let_else__say *)
+(* src: src/rustc-coverage/branch/let-else.rs:25:0-27:1 new_tests__rustc_coverage__branch__let_else__say *)
 letfun new_tests__rustc_coverage__branch__let_else__say(message: bitstring) =
   let wildcard: bitstring = core__hint__black_box(message) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/let-else.rs:13 new_tests__rustc_coverage__branch__let_else__let_else *)
+(* src: src/rustc-coverage/branch/let-else.rs:13:0-22:1 new_tests__rustc_coverage__branch__let_else__let_else *)
 letfun new_tests__rustc_coverage__branch__let_else__let_else(value: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -36,7 +36,7 @@ letfun new_tests__rustc_coverage__branch__let_else__let_else(value: bitstring) =
     string_lit__none
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/branch/let-else.rs:30 new_tests__rustc_coverage__branch__let_else__main *)
+(* src: src/rustc-coverage/branch/let-else.rs:30:0-34:1 new_tests__rustc_coverage__branch__let_else__main *)
 letfun new_tests__rustc_coverage__branch__let_else__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__branch__let_else__let_else(
     Some(string_lit__x)

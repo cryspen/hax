@@ -16,10 +16,10 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/no_spans.rs:23 new_tests__rustc_coverage__no_spans__affected_function *)
+(* src: src/rustc-coverage/no_spans.rs:23:8-23:38 new_tests__rustc_coverage__no_spans__affected_function *)
 letfun new_tests__rustc_coverage__no_spans__affected_function(wildcard: bitstring) =
   bitstring_err() (* Closures not supported in ProVerif *).
-(* src: src/rustc-coverage/no_spans.rs:17 new_tests__rustc_coverage__no_spans__main *)
+(* src: src/rustc-coverage/no_spans.rs:17:0-19:1 new_tests__rustc_coverage__no_spans__main *)
 letfun new_tests__rustc_coverage__no_spans__main(wildcard: bitstring) =
   let wildcard: bitstring = core__ops__function__Fn__call(
     new_tests__rustc_coverage__no_spans__affected_function(rust_primitives__hax__Tuple0__Tuple0),

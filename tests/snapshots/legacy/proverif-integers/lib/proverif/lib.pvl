@@ -16,22 +16,22 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/proverif-integers/lib.rs:8 new_tests__legacy__proverif_integers__lib__small *)
+(* src: src/legacy/proverif-integers/lib.rs:8:0-10:1 new_tests__legacy__proverif_integers__lib__small *)
 letfun new_tests__legacy__proverif_integers__lib__small(wildcard: bitstring) = nat_3.
-(* src: src/legacy/proverif-integers/lib.rs:12 new_tests__legacy__proverif_integers__lib__big *)
+(* src: src/legacy/proverif-integers/lib.rs:12:0-14:1 new_tests__legacy__proverif_integers__lib__big *)
 letfun new_tests__legacy__proverif_integers__lib__big(wildcard: bitstring) =
   nat_18446744073709551615.
-(* src: src/legacy/proverif-integers/lib.rs:16 new_tests__legacy__proverif_integers__lib__negative *)
+(* src: src/legacy/proverif-integers/lib.rs:16:0-18:1 new_tests__legacy__proverif_integers__lib__negative *)
 letfun new_tests__legacy__proverif_integers__lib__negative(wildcard: bitstring) = nat_neg_5.
-(* src: src/legacy/proverif-integers/lib.rs:20 new_tests__legacy__proverif_integers__lib__increment *)
+(* src: src/legacy/proverif-integers/lib.rs:20:0-22:1 new_tests__legacy__proverif_integers__lib__increment *)
 letfun new_tests__legacy__proverif_integers__lib__increment(n: bitstring) =
   rust_primitives__hax__machine_int__add(n, nat_1).
-(* src: src/legacy/proverif-integers/lib.rs:24 new_tests__legacy__proverif_integers__lib__decrement *)
+(* src: src/legacy/proverif-integers/lib.rs:24:0-26:1 new_tests__legacy__proverif_integers__lib__decrement *)
 letfun new_tests__legacy__proverif_integers__lib__decrement(n: bitstring) =
   rust_primitives__hax__machine_int__sub(n, nat_1).
-(* src: src/legacy/proverif-integers/lib.rs:28 new_tests__legacy__proverif_integers__lib__opaque_sum *)
+(* src: src/legacy/proverif-integers/lib.rs:28:0-30:1 new_tests__legacy__proverif_integers__lib__opaque_sum *)
 letfun new_tests__legacy__proverif_integers__lib__opaque_sum(a: bitstring, b: bitstring) =
   rust_primitives__hax__machine_int__add(a, b).
-(* src: src/legacy/proverif-integers/lib.rs:32 new_tests__legacy__proverif_integers__lib__head *)
+(* src: src/legacy/proverif-integers/lib.rs:32:0-34:1 new_tests__legacy__proverif_integers__lib__head *)
 letfun new_tests__legacy__proverif_integers__lib__head(xs: bitstring) =
   core__ops__index__Index__index(xs, nat_0).

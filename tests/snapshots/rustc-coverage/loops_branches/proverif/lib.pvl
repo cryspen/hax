@@ -16,10 +16,10 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/loops_branches.rs:8 new_tests__rustc_coverage__loops_branches__DebugTest *)
+(* src: src/rustc-coverage/loops_branches.rs:8:0-8:17 new_tests__rustc_coverage__loops_branches__DebugTest *)
 fun new_tests__rustc_coverage__loops_branches__DebugTest__DebugTest(): bitstring [data].
 (*  @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001) *)
-(* src: src/rustc-coverage/loops_branches.rs:12 new_tests__rustc_coverage__loops_branches__Impl__fmt *)
+(* src: src/rustc-coverage/loops_branches.rs:12:4-31:5 new_tests__rustc_coverage__loops_branches__Impl__fmt *)
 letfun new_tests__rustc_coverage__loops_branches__Impl__fmt(self: bitstring, f: bitstring) =
   let (=True()) = True()
     in (let wildcard: bitstring = (let (=True()) = False()
@@ -389,10 +389,10 @@ letfun new_tests__rustc_coverage__loops_branches__Impl__fmt(self: bitstring, f: 
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
       rust_primitives__hax__Tuple2__Tuple2(f_9, rust_primitives__hax__Tuple0__Tuple0())
     else bitstring_err()).
-(* src: src/rustc-coverage/loops_branches.rs:34 new_tests__rustc_coverage__loops_branches__DisplayTest *)
+(* src: src/rustc-coverage/loops_branches.rs:34:0-34:19 new_tests__rustc_coverage__loops_branches__DisplayTest *)
 fun new_tests__rustc_coverage__loops_branches__DisplayTest__DisplayTest(): bitstring [data].
 (*  @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001) *)
-(* src: src/rustc-coverage/loops_branches.rs:38 new_tests__rustc_coverage__loops_branches__Impl_1__fmt *)
+(* src: src/rustc-coverage/loops_branches.rs:38:4-56:5 new_tests__rustc_coverage__loops_branches__Impl_1__fmt *)
 letfun new_tests__rustc_coverage__loops_branches__Impl_1__fmt(self: bitstring, f: bitstring) =
   let (=True()) = False()
     in (let core__ops__control_flow__ControlFlow__Break(
@@ -762,7 +762,7 @@ letfun new_tests__rustc_coverage__loops_branches__Impl_1__fmt(self: bitstring, f
       let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
         rust_primitives__hax__Tuple2__Tuple2(f_9, rust_primitives__hax__Tuple0__Tuple0())
       else bitstring_err()) else bitstring_err()).
-(* src: src/rustc-coverage/loops_branches.rs:60 new_tests__rustc_coverage__loops_branches__main *)
+(* src: src/rustc-coverage/loops_branches.rs:60:0-65:1 new_tests__rustc_coverage__loops_branches__main *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__loops_branches__main(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(

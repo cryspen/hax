@@ -16,6 +16,6 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/test_harness.rs:7 new_tests__rustc_coverage__test_harness__unused *)
+(* src: src/rustc-coverage/test_harness.rs:7:0-7:14 new_tests__rustc_coverage__test_harness__unused *)
 letfun new_tests__rustc_coverage__test_harness__unused(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
