@@ -40,9 +40,9 @@ verification tool's logic) has three advantages:
   multiple downstream backends — currently hax-F\* and hax-Lean — instead
   of each tool maintaining its own shadow `core`.
 
-CI verifies that the *committed* extracted Lean files in
-`../proof-libs/lean/CoreModels/{Funs,Types,…}.lean` match what a fresh extraction produces
-against the pinned toolchain. That means a downstream Lean consumer can
+CI verifies that the *committed* extracted Lean files under
+`../proof-libs/lean/CoreModels/{Core,Alloc}/` match what a fresh extraction
+produces against the pinned toolchain. That means a downstream Lean consumer can
 just `lake update` this repo without installing the Rust toolchain.
 
 ## Coverage
@@ -127,6 +127,7 @@ To run just one test surface in isolation:
 ```sh
 make -C tests/client_test            # smoke-test extraction
 make -C tests/rust_lean_equiv_test   # rust↔lean equivalence
+make -C tests/rust_lean_equiv_test check-skipped   # skipped tests still fail?
 ```
 
 ## Testing
@@ -160,6 +161,23 @@ answer." Disagreements show up as a failed `#guard` (Lean side knows
 the truth) or a failed `cargo test` assertion (Rust side knows the
 truth) — same code, different oracle.
 
+### Skipping the Lean half
+
+`#[rust_lean_test(skip_lean = "why")]` keeps the Rust half running but emits
+no `#guard`. Use it when the extraction elaborates and simply disagrees — a
+model bug, or a blocker in a dependency.
+
+Skips are tracked, not forgotten: the guards go to `SkippedTests.lean`, which
+nothing imports, and `make -C tests/rust_lean_equiv_test check-skipped`
+elaborates that file on purpose. Every guard in it is *expected to fail*; one
+that passes means the blocker is gone, so the target fails and names the test.
+CI runs it, which is what stops a skip list from silently going stale.
+
+A test whose extraction does not *elaborate* (an unknown constant, an arity
+mismatch) breaks the Lean build whether or not a `#guard` refers to it, so
+`skip_lean` cannot help there — comment those out, with a `TODO` naming the
+blocker.
+
 ### Adding a new item to the model
 
 When you add an item to `core-models/src/core/foo.rs` (or `alloc/src/...`):
@@ -190,10 +208,17 @@ equivalence test exercises Aeneas's translation of the same item.
 - **Closures**: tests that rely on `|x| ...` (e.g. `map`,
   `and_then`, `unwrap_or_else`) currently extract poorly. Comment
   them out with `// TODO(closure-extraction): ...`.
+- **Only `u8` is not enough**: `u8`'s model `Clone`/`PartialEq` are total
+  identity functions, so a model that takes a trait dictionary and never
+  applies it looks correct at that type. Where a method's behaviour depends
+  on `T`'s `Clone`/`PartialEq`, reach for `helpers::Bumped` — its `clone` is
+  not the identity and its `eq` panics on `u8::MAX`. That is what caught the
+  dropped dictionaries in `RustPrimitives/Funs.lean`.
 - **Excluded items**: things listed in `CHARON_EXCLUDES` /
   `ALLOC_CHARON_EXCLUDES` (`core::mem::swap`, `core::slice::index::*`,
   most `Vec` indexing, `BinaryHeap`, …) come from hand-written Lean
-  definitions in `../proof-libs/lean/CoreModels/{Funs,Types}External.lean`. Their
+  definitions in `../proof-libs/lean/CoreModels/Core/Funs{Prologue,Epilogue}.lean`
+  and `../proof-libs/lean/CoreModels/RustPrimitives/Funs.lean`. Their
   equivalence tests live in the same file as the rest of the items
   in the same module (e.g. `core::mem::swap` tests live in
   `source/src/core/mem.rs`) — flagged with a section header noting
@@ -222,7 +247,8 @@ PRs welcome. Please:
   a section header like
   `// ----- foo (manually defined in Lean, not extracted) -----` so a
   reader knows the Lean side is hitting a hand-written definition in
-  `../proof-libs/lean/CoreModels/FunsExternal.lean` rather than the extraction.
+  `../proof-libs/lean/CoreModels/Core/FunsPrologue.lean` (or `FunsEpilogue.lean`,
+  or `RustPrimitives/Funs.lean`) rather than the extraction.
 
 ## License
 

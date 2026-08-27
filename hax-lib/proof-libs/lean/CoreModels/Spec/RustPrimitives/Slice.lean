@@ -135,17 +135,79 @@ theorem rust_primitives.slice.array_map_go_spec {T U F : Type}
     intro i hi
     rcases i with _ | i <;> simp_all
 
+/-- The fold underlying `array_map`, equationally: with a closure that leaves its
+state alone the fold succeeds and builds `acc` followed by the pointwise images. -/
+private theorem foldlM_map_ok {T U F : Type}
+    (inst : core.ops.function.FnMut F T U) (f : F) :
+    ∀ (l : List T) (acc : List U),
+    (∀ x ∈ l, ∃ y, inst.call_mut f x = ok y ∧ y.2 = f) →
+    ∃ res : List U × F,
+      l.foldlM (fun (s : List U × F) (x : T) => do
+          let r ← inst.call_mut s.2 x
+          ok (s.1 ++ [r.1], r.2)) (acc, f) = ok res ∧
+      res.2 = f ∧ res.1.length = acc.length + l.length ∧
+      (∀ j, j < acc.length → res.1[j]? = acc[j]?) ∧
+      (∀ i, (hi : i < l.length) →
+        ∃ y, inst.call_mut f l[i] = ok y ∧ res.1[acc.length + i]? = some y.1) := by
+  intro l
+  induction l with
+  | nil =>
+    intro acc _
+    exact ⟨(acc, f), rfl, rfl, by simp, fun j _ => rfl, fun i hi => absurd hi (by simp)⟩
+  | cons x xs ih =>
+    intro acc hpure
+    obtain ⟨y, hy, hyf⟩ := hpure x (by simp)
+    obtain ⟨v, f'⟩ := y
+    simp only at hyf
+    rw [hyf] at hy
+    obtain ⟨res, hres, hres2, hlen, hpre, hpt⟩ :=
+      ih (acc ++ [v]) (fun z hz => hpure z (by simp [hz]))
+    refine ⟨res, ?_, hres2, ?_, ?_, ?_⟩
+    · simp only [List.foldlM_cons, hy, bind_tc_ok]
+      exact hres
+    · simp at hlen ⊢
+      omega
+    · intro j hj
+      rw [hpre j (by simp; omega), List.getElem?_append_left hj]
+    · intro i hi
+      rcases i with _ | i
+      · refine ⟨(v, f), by simpa using hy, ?_⟩
+        have h := hpre acc.length (by simp)
+        simpa using h
+      · obtain ⟨y', hy', hidx⟩ := hpt i (by simpa using hi)
+        refine ⟨y', by simpa using hy', ?_⟩
+        have hshift : acc.length + (i + 1) = (acc ++ [v]).length + i := by simp; omega
+        rw [hshift]; exact hidx
+
 @[spec]
 theorem rust_primitives.slice.array_map_spec {T U F : Type} {N : Std.Usize}
-    (inst : core.ops.function.Fn F T U) (a : Array T N) (f : F)
-    (hok : ∀ x ∈ a.val, ⦃ ⌜ True ⌝ ⦄ inst.call f x ⦃ ⇓ _ => ⌜ True ⌝ ⦄) :
+    (inst : core.ops.function.FnMut F T U) (a : Array T N) (f : F)
+    (hpure : ∀ x ∈ a.val, ⦃ ⌜ True ⌝ ⦄ inst.call_mut f x ⦃ ⇓ r => ⌜ r.2 = f ⌝ ⦄) :
     ⦃ ⌜ True ⌝ ⦄
     rust_primitives.slice.array_map inst a f
     ⦃ ⇓ b => ⌜ ∀ i, (hi : i < N.val) →
-                ⦃ ⌜ True ⌝ ⦄ inst.call f (a.val[i]'(by have := a.property; omega))
-                  ⦃ ⇓ y => ⌜ y = b.val[i]'(by have := b.property; omega) ⌝ ⦄ ⌝ ⦄ := by
+                ⦃ ⌜ True ⌝ ⦄ inst.call_mut f (a.val[i]'(by have := a.property; omega))
+                  ⦃ ⇓ y => ⌜ y.1 = b.val[i]'(by have := b.property; omega) ⌝ ⦄ ⌝ ⦄ := by
   have ha := a.property
-  mvcgen [rust_primitives.slice.array_map, hok]
-    <;> grind
+  have hpure' : ∀ x ∈ a.val, ∃ y, inst.call_mut f x = ok y ∧ y.2 = f :=
+    fun x hx => WP.triple_iff_exists_ok.1 (hpure x hx)
+  obtain ⟨res, hres, _, hlen, _, hpt⟩ := foldlM_map_ok inst f a.val [] hpure'
+  simp only [List.length_nil, Nat.zero_add] at hlen hpt
+  rw [WP.triple_iff_exists_ok]
+  refine ⟨⟨res.1, by omega⟩, ?_, ?_⟩
+  · simp only [rust_primitives.slice.array_map]
+    split <;> rename_i h <;> rw [hres] at h
+    · simp at h
+    · simp at h
+    · simp only [Result.ok.injEq] at h
+      subst h
+      rfl
+  · intro i hi
+    obtain ⟨y, hy, hidx⟩ := hpt i (by omega)
+    rw [WP.triple_iff_exists_ok]
+    refine ⟨y, hy, ?_⟩
+    have hlt : i < res.1.length := by omega
+    rw [List.getElem?_eq_getElem hlt] at hidx
+    exact (Option.some.inj hidx).symm
 
 end CoreModels

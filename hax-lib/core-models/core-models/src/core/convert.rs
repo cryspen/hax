@@ -342,15 +342,17 @@ mod tests {
         #[test]
         fn test_try_from_slice_to_array_success(arr in any::<[u8; 4]>()) {
             prop_assert_eq!(
-                <[u8; 4] as super::TryFrom<&[u8]>>::try_from(arr.as_slice()).unwrap(),
-                arr
+                <[u8; 4] as super::TryFrom<&[u8]>>::try_from(arr.as_slice()).ok(),
+                <[u8; 4] as core::convert::TryFrom<&[u8]>>::try_from(arr.as_slice()).ok().inject()
             );
         }
 
         #[test]
         fn test_try_from_slice_to_array_length_mismatch(arr in any::<[u8; 3]>()) {
-            let result = <[u8; 4] as super::TryFrom<&[u8]>>::try_from(arr.as_slice());
-            prop_assert!(result.is_err());
+            prop_assert_eq!(
+                <[u8; 4] as super::TryFrom<&[u8]>>::try_from(arr.as_slice()).ok(),
+                <[u8; 4] as core::convert::TryFrom<&[u8]>>::try_from(arr.as_slice()).ok().inject()
+            );
         }
     }
 }

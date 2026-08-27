@@ -56,6 +56,25 @@ abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
 abbrev option.Option.Insts.CoreOpsTry_traitTry.branch :=
   @option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
 
+/-! ## Scalar Debug instances
+
+`Result::{unwrap, expect}` carry std's `E: Debug` bound, so extracted call sites
+pass a per-type dictionary. The model only has the blanket `impl<T> Debug for T`
+(a concrete `impl Debug for u8` would overlap it), so name the instances here. -/
+
+abbrev U8.Insts.CoreFmtDebug    : fmt.Debug Aeneas.Std.U8    := fmt.Debug.Blanket _
+abbrev U16.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.U16   := fmt.Debug.Blanket _
+abbrev U32.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.U32   := fmt.Debug.Blanket _
+abbrev U64.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.U64   := fmt.Debug.Blanket _
+abbrev U128.Insts.CoreFmtDebug  : fmt.Debug Aeneas.Std.U128  := fmt.Debug.Blanket _
+abbrev Usize.Insts.CoreFmtDebug : fmt.Debug Aeneas.Std.Usize := fmt.Debug.Blanket _
+abbrev I8.Insts.CoreFmtDebug    : fmt.Debug Aeneas.Std.I8    := fmt.Debug.Blanket _
+abbrev I16.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.I16   := fmt.Debug.Blanket _
+abbrev I32.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.I32   := fmt.Debug.Blanket _
+abbrev I64.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.I64   := fmt.Debug.Blanket _
+abbrev I128.Insts.CoreFmtDebug  : fmt.Debug Aeneas.Std.I128  := fmt.Debug.Blanket _
+abbrev Isize.Insts.CoreFmtDebug : fmt.Debug Aeneas.Std.Isize := fmt.Debug.Blanket _
+
 end core
 
 namespace alloc
