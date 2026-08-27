@@ -378,6 +378,77 @@ def comment_out_num_bounds(text: str) -> str:
             for t in types for b in ("MIN", "MAX")]
     return comment_out_blocks(text, subs, trailer="provided by CoreModels.Core.FunsPrologue")
 
+def add_provided_method_defaults(text: str) -> str:
+    """Give the two provided trait methods a Lean-level default.
+
+    `core_models::clone::Clone::clone_from` and
+    `core_models::cmp::Eq::assert_receiver_is_total_eq` have default bodies in
+    Rust, and hax emits those bodies as the `@[trait_default]` functions
+    `clone.Clone.clone_from.default` /
+    `cmp.Eq.assert_receiver_is_total_eq.default`. Aeneas fills the field in for
+    every instance it generates *inside the same crate*, but omits it when it
+    builds an instance of an out-of-crate trait -- which is every
+    `#[derive(Clone)]`/`#[derive(Eq)]` in the `alloc` model, every hand-written
+    instance in `FunsPrologue.lean`/`HaxLib/`, and, crucially, every
+    `#[derive]`/`impl` in a *downstream* crate, which runs no patch script of
+    its own. Without a default in the structure those instances fail with
+    "Fields missing".
+
+    Aeneas's own `Aeneas/Std/Core/{Core,Cmp}.lean` declares the same two fields
+    with the same defaults, so this only brings the generated declaration in
+    line with it.
+    """
+    text = replace(
+        "Clone.clone_from default",
+        text,
+        "  clone_from : Self → Self → Result Self\n",
+        "  clone_from : Self → Self → Result Self := fun _ => clone\n",
+    )
+    return replace(
+        "Eq.assert_receiver_is_total_eq default",
+        text,
+        "  assert_receiver_is_total_eq : Self → Result Unit\n",
+        "  assert_receiver_is_total_eq : Self → Result Unit := fun _ => ok ()\n",
+    )
+
+
+def drop_itermut_iterator_instance(text: str) -> str:
+    """Drop the generated `Iterator` *instance* for `slice::iter::IterMut`.
+
+    `IterMut::next` yields an `&'a mut T`, so hax gives it a write-back and the
+    extracted function has type
+    `Self -> Result ((Option T) x Self x (Self -> Option T -> Self))` -- exactly
+    the shape Aeneas gives
+    `core::slice::iter::{Iterator<IterMut<'a, @T>, &'a mut @T>}::next`. That does
+    not fit `Iterator`'s `next` field, so the instance record aeneas emits next
+    to it is ill-typed. Aeneas's own library has the same asymmetry: the `next`
+    function exists, the `Iterator` instance does not.
+
+    Only the record is dropped -- hence the exact ident match rather than
+    `comment_out_blocks`, whose containment mode would take the `::next`
+    function with it. That function is what a client referencing
+    `core::slice::iter::{Iterator<IterMut<...>, &mut _>}::next` resolves to.
+    """
+    target = (
+        "core_models::slice::iter::{impl "
+        "core_models::iter::traits::iterator::Iterator<&'a mut T> for "
+        "core_models::slice::iter::IterMut<'a, T>}"
+    )
+    trailer = (
+        "IterMut::next has a write-back return, which no Iterator instance "
+        "can hold (Aeneas has no such instance either)"
+    )
+
+    def fn(ident: str, block_lines: list[str]) -> str | None:
+        if ident != target:
+            return None
+        _record("drop IterMut Iterator instance", 1)
+        return "/-\n" + "\n".join(block_lines) + "\n-/  -- " + trailer
+
+    _MATCHES.setdefault("drop IterMut Iterator instance", 0)
+    return transform_blocks(text, fn)
+
+
 def comment_out_types(text: str) -> str:
     """
     Some type declarations in Types.lean are commented out: most are provided
@@ -652,6 +723,7 @@ def main() -> int:
             text = fix_result_match(text)
             text = rename_iter_param(text)
             text = qualify_result_monad_impls(text)
+            text = drop_itermut_iterator_instance(text)
             # The `StepBy` iterator monomorphises onto the concrete `Usize`
             # `Step` instance, which Aeneas emits *later* in the file. Hoist
             # the adapter past it so the reference resolves.
@@ -661,6 +733,7 @@ def main() -> int:
                 end_marker="end CoreModels.core",
             )
         if path == types_path:
+            text = add_provided_method_defaults(text)
             text = comment_out_types(text)
         write(path, text)
         print(f"patched {CORE_DIR}.")
