@@ -10,6 +10,7 @@
 #![allow(dead_code)]
 
 pub mod hax_lib;
+pub mod trait_impls;
 
 // ----- Option ---------------------------------------------------------------
 
