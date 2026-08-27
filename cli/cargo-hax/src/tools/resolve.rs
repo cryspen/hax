@@ -154,6 +154,7 @@ mod tests {
                 ("charon".to_string(), "default-charon".to_string()),
             ]),
             versions: BTreeMap::from([("lean".to_string(), "default-lean".to_string())]),
+            scenario_defaults: BTreeMap::new(),
         }
     }
 

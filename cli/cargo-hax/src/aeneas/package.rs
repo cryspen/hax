@@ -36,7 +36,7 @@ const HAX_LEAN_LIB_REPO: &str = "https://github.com/cryspen/hax-lean";
 /// `HAX_CORE_MODELS_EXTRACTION_MODE` unlocks.
 const CORE_MODELS_ROOT: &str = "CoreModels";
 
-const RESERVED_MODULE_ROOTS: &[&str] = &[
+pub(crate) const RESERVED_MODULE_ROOTS: &[&str] = &[
     "Lean",
     "Init",
     "Std",
@@ -137,7 +137,7 @@ subDir = "backends/lean"
 
 [[require]]
 name = "hax"
-git = {{ url = "{hax_lean_git}" }}
+git = "{hax_lean_git}"
 rev = {hax_lean_rev}
 "#
     )
@@ -822,10 +822,7 @@ mod tests {
             .unwrap()
             .iter()
             .map(|require| {
-                let git = match &require["git"] {
-                    toml::Value::String(url) => url.clone(),
-                    table => table["url"].as_str().unwrap().to_string(),
-                };
+                let git = require["git"].as_str().unwrap().to_string();
                 (
                     require["name"].as_str().unwrap().to_string(),
                     git,

@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 use hax_types::cli_options::MessageFormat;
 use hax_types::diagnostics::message::HaxMessage;
 
-use super::config::{self, HaxToml};
+use super::config::{self, HaxToml, ScenarioEntry};
 
 /// The `-C <cargo-args> ;` arguments discovery must honor: they go to the
 /// `cargo check` invocation that drives the frontend, so they decide which
@@ -22,15 +22,20 @@ struct CargoArgs {
     /// `--manifest-path`, verbatim (Cargo resolves a relative value
     /// against the invocation directory, and so does `cargo metadata`).
     manifest_path: Option<String>,
-    /// Whether the invocation selects packages itself (`-p`, `--workspace`,
-    /// …). *Which* ones is Cargo's answer to give: `cargo metadata` takes no
-    /// selection, and reconstructing Cargo's package-spec semantics here
-    /// would only approximate them.
-    selects_packages: bool,
-    /// Valueless arguments `cargo metadata` accepts too, forwarded so that
-    /// discovery cannot contradict the build: `--offline` must not reach the
-    /// network, `--locked`/`--frozen` must not rewrite `Cargo.lock`, and
-    /// dropping default features can drop the `hax-lib` dependency.
+    /// The `-p`/`--package` values, verbatim. A value that names a
+    /// workspace member lets the `hax-lib` gate check exactly the selected
+    /// crates; any other spec form (paths, globs, `name@version`) is
+    /// Cargo's to interpret and only marks the selection.
+    package_specs: Vec<String>,
+    /// Whether the invocation selects packages beyond plain `-p` values
+    /// (`--workspace`, `--all`, `--exclude`). *Which* ones is Cargo's
+    /// answer to give: `cargo metadata` takes no selection, and
+    /// reconstructing Cargo's semantics here would only approximate them.
+    broad_selection: bool,
+    /// Arguments `cargo metadata` accepts too, forwarded so that discovery
+    /// cannot contradict the build: `--offline` must not reach the network,
+    /// `--locked`/`--frozen` must not rewrite `Cargo.lock`, and the feature
+    /// selection can add or drop the `hax-lib` dependency.
     metadata_args: Vec<String>,
 }
 
@@ -43,7 +48,7 @@ impl CargoArgs {
             "--all-features",
             "--no-default-features",
         ];
-        const SELECTION: &[&str] = &["-p", "--package", "--exclude", "--workspace", "--all"];
+        const BROAD_SELECTION: &[&str] = &["--exclude", "--workspace", "--all"];
         let mut args = Self::default();
         let mut flags = flags.iter();
         while let Some(flag) = flags.next() {
@@ -57,13 +62,32 @@ impl CargoArgs {
                 args.manifest_path = flags.next().cloned();
             } else if let Some(path) = flag.strip_prefix("--manifest-path=") {
                 args.manifest_path = Some(path.to_string());
-            } else if SELECTION.contains(&name) || flag.starts_with("-p") {
-                args.selects_packages = true;
+            } else if flag == "-p" || flag == "--package" {
+                if let Some(spec) = flags.next() {
+                    args.package_specs.push(spec.clone());
+                }
+            } else if let Some(spec) = flag.strip_prefix("--package=") {
+                args.package_specs.push(spec.to_string());
+            } else if let Some(spec) = flag.strip_prefix("-p") {
+                args.package_specs
+                    .push(spec.strip_prefix('=').unwrap_or(spec).to_string());
+            } else if BROAD_SELECTION.contains(&name) {
+                args.broad_selection = true;
+            } else if flag == "--features" || flag == "-F" {
+                if let Some(value) = flags.next() {
+                    args.metadata_args.extend([flag.clone(), value.clone()]);
+                }
+            } else if name == "--features" || (flag.starts_with("-F") && flag.len() > 2) {
+                args.metadata_args.push(flag.clone());
             } else if FORWARDED.contains(&name) {
                 args.metadata_args.push(flag.clone());
             }
         }
         args
+    }
+
+    fn selects_packages(&self) -> bool {
+        self.broad_selection || !self.package_specs.is_empty()
     }
 }
 
@@ -120,8 +144,11 @@ pub struct ProjectContext {
     pub root_package: Option<RootPackage>,
     /// Whether the invocation selects the packages to process itself, so
     /// that `root_package` is not what it processes. See
-    /// [`CargoArgs::selects_packages`].
+    /// [`CargoArgs::broad_selection`].
     pub selects_packages: bool,
+    /// The plain `-p`/`--package` values of the invocation, when they are
+    /// its only form of package selection; empty otherwise.
+    pub package_specs: Vec<String>,
 }
 
 /// The package the current invocation processes.
@@ -139,6 +166,149 @@ impl ProjectContext {
             .iter()
             .find(|member| member.root == dir)
             .and_then(|member| member.config.as_ref())
+    }
+
+    /// The member names, joined for error messages.
+    pub fn member_names(&self) -> String {
+        self.members
+            .iter()
+            .map(|m| m.name.as_str())
+            .collect::<Vec<_>>()
+            .join(", ")
+    }
+}
+
+/// One scenario in scope, resolved to the member it extracts.
+#[derive(Debug, Clone)]
+pub struct ScopedScenario {
+    pub entry: ScenarioEntry,
+    /// The name of the member the scenario extracts.
+    pub package: String,
+    pub package_root: PathBuf,
+    /// The `hax.toml` declaring the scenario, for messages.
+    pub defined_in: PathBuf,
+}
+
+impl ProjectContext {
+    /// Every scenario of the workspace, resolved to the member it
+    /// extracts, regardless of the invocation directory: checks that must
+    /// see scenarios a narrowed run filters out (output-directory
+    /// collisions) run on this set. [`Self::in_invocation_scope`] narrows
+    /// it to the invocation's scope.
+    ///
+    /// A member-level scenario extracts that member; its `package`, if
+    /// given, must match. A workspace-level scenario requires `package`
+    /// when the workspace has more than one member, and `package` must
+    /// name a member. A member-level scenario shadows a same-named
+    /// workspace-level one, with a warning; shadowed scenarios are
+    /// excluded from every scope.
+    pub fn all_scenarios(
+        &self,
+        message_format: MessageFormat,
+    ) -> Result<Vec<ScopedScenario>, String> {
+        let mut scope = Vec::new();
+        for member in &self.members {
+            let Some(config) = &member.config else {
+                continue;
+            };
+            for entry in config.scenarios.values() {
+                if let Some(package) = &entry.package
+                    && package != &member.name
+                {
+                    return Err(format!(
+                        "{}: scenario `{}` declares `package = \"{package}\"`, but a \
+                         member-level scenario extracts the member declaring it \
+                         (`{}`); drop the key or move the scenario to the \
+                         workspace `hax.toml`",
+                        config.path.display(),
+                        entry.name,
+                        member.name
+                    ));
+                }
+                scope.push(ScopedScenario {
+                    entry: entry.clone(),
+                    package: member.name.clone(),
+                    package_root: member.root.clone(),
+                    defined_in: config.path.clone(),
+                });
+            }
+        }
+
+        if let Some(config) = &self.workspace_config {
+            for entry in config.scenarios.values() {
+                // A member-level scenario shadows a same-named
+                // workspace-level one, consistent with the tool version
+                // resolution order.
+                if let Some(shadowing) = scope.iter().find(|s| s.entry.name == entry.name) {
+                    HaxMessage::GenericWarning {
+                        message: format!(
+                            "scenario `{}` in {} is shadowed by the scenario of \
+                             the same name in {}",
+                            entry.name,
+                            config.path.display(),
+                            shadowing.defined_in.display()
+                        ),
+                    }
+                    .report(message_format, None);
+                    continue;
+                }
+                let member = match &entry.package {
+                    Some(package) => self
+                        .members
+                        .iter()
+                        .find(|m| &m.name == package)
+                        .ok_or_else(|| {
+                            format!(
+                                "{}: scenario `{}` declares `package = \"{package}\"`, \
+                                 which names no workspace member; the members are: {}",
+                                config.path.display(),
+                                entry.name,
+                                self.member_names()
+                            )
+                        })?,
+                    None => match &self.members[..] {
+                        [member] => member,
+                        _ => {
+                            return Err(format!(
+                                "{}: scenario `{}` needs a `package` key: the \
+                                 workspace has more than one member ({})",
+                                config.path.display(),
+                                entry.name,
+                                self.member_names()
+                            ));
+                        }
+                    },
+                };
+                scope.push(ScopedScenario {
+                    entry: entry.clone(),
+                    package: member.name.clone(),
+                    package_root: member.root.clone(),
+                    defined_in: config.path.clone(),
+                });
+            }
+        }
+
+        Ok(scope)
+    }
+
+    /// Whether a scenario extracting `package` is in scope for this
+    /// invocation: from the workspace root every scenario is; from inside a
+    /// member crate (other than the crate rooted at the workspace root)
+    /// only the scenarios extracting that member.
+    pub fn in_invocation_scope(&self, package: &str) -> bool {
+        self.workspace_scope()
+            || self
+                .root_package
+                .as_ref()
+                .is_some_and(|root| root.name == package)
+    }
+
+    /// Whether this invocation sees the whole workspace's scenarios, which
+    /// is what the orphan-directory check needs to be meaningful.
+    pub fn workspace_scope(&self) -> bool {
+        self.root_package
+            .as_ref()
+            .is_none_or(|package| package.dir == self.workspace_root)
     }
 }
 
@@ -222,7 +392,12 @@ impl ProjectContext {
             workspace_config,
             members,
             root_package,
-            selects_packages: cargo_args.selects_packages,
+            selects_packages: cargo_args.selects_packages(),
+            package_specs: if cargo_args.broad_selection {
+                Vec::new()
+            } else {
+                cargo_args.package_specs
+            },
         };
         ctx.warn_member_overrides(message_format);
         ctx.warn_stray_files(message_format);
@@ -371,7 +546,7 @@ mod tests {
         ] {
             let args = parse(&flags);
             assert_eq!(args.manifest_path.as_deref(), Some("../a/Cargo.toml"));
-            assert!(!args.selects_packages);
+            assert!(!args.selects_packages());
         }
     }
 
@@ -386,12 +561,28 @@ mod tests {
             vec!["--all"],
             vec!["--workspace", "--exclude", "legacy"],
         ] {
-            assert!(parse(&flags).selects_packages, "{flags:?}");
+            assert!(parse(&flags).selects_packages(), "{flags:?}");
         }
         // Arguments past a bare `--` are rustc's, and no other Cargo
         // argument selects packages.
-        assert!(!parse(&["--", "-p", "app"]).selects_packages);
-        assert!(!parse(&["--release", "--profile", "test"]).selects_packages);
+        assert!(!parse(&["--", "-p", "app"]).selects_packages());
+        assert!(!parse(&["--release", "--profile", "test"]).selects_packages());
+    }
+
+    #[test]
+    fn plain_package_specs_are_recorded() {
+        for flags in [
+            vec!["-p", "app"],
+            vec!["-papp"],
+            vec!["-p=app"],
+            vec!["--package=app"],
+            vec!["--package", "app"],
+        ] {
+            assert_eq!(parse(&flags).package_specs, ["app"], "{flags:?}");
+        }
+        let args = parse(&["--workspace", "-p", "app"]);
+        assert!(args.broad_selection);
+        assert_eq!(args.package_specs, ["app"]);
     }
 
     #[test]
@@ -404,5 +595,17 @@ mod tests {
             "/tmp/x",
         ]);
         assert_eq!(args.metadata_args, ["--offline", "--no-default-features"]);
+    }
+
+    #[test]
+    fn the_feature_selection_is_forwarded_with_its_values() {
+        let args = parse(&["--features", "fast,net", "--release"]);
+        assert_eq!(args.metadata_args, ["--features", "fast,net"]);
+        assert_eq!(
+            parse(&["--features=fast"]).metadata_args,
+            ["--features=fast"]
+        );
+        assert_eq!(parse(&["-F", "fast"]).metadata_args, ["-F", "fast"]);
+        assert_eq!(parse(&["-Ffast"]).metadata_args, ["-Ffast"]);
     }
 }

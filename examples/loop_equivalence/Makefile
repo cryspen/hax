@@ -1,11 +1,11 @@
 .PHONY: lean clean
 lean:
-	cargo hax into lean
-	(cd proofs/lean && \
+	cargo hax extract loop-equivalence
+	(cd proofs/loop-equivalence/lean && \
    elan default v4.31.0 && \
    lake exe cache get && \
    lake build)
 
 clean:
-	-rm -rf proofs/lean/LoopEquivalence/Extraction
-	-cd proofs/lean && lake clean
+	-rm -rf proofs/loop-equivalence/lean/LoopEquivalence/Extraction
+	-cd proofs/loop-equivalence/lean && lake clean
