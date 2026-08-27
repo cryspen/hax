@@ -323,8 +323,11 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             where
                 I: IntoIterator<Item = T>,
             {
-                // Dummy (opaque)
-                VecDeque(seq_empty(), std::marker::PhantomData)
+                let mut res = VecDeque(seq_empty(), std::marker::PhantomData);
+                for el in iter {
+                    res.push_back(el)
+                }
+                res
             }
         }
 
@@ -382,11 +385,15 @@ let update_at_usize (#v_T #v_A: Type0)
                     prop_assert_eq!(collected, std_deque.into_iter().collect::<std::vec::Vec<u8>>());
                 }
 
-                // `from_iter` is a dummy: it drops the elements.
                 #[test]
-                fn test_from_iter_is_a_dummy(elements in prop::collection::vec(any::<u8>(), 0..20)) {
-                    let model: Model<u8> = elements.into_iter().collect();
-                    prop_assert_eq!(model.len(), 0);
+                fn test_from_iter(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let model: Model<u8> = elements.clone().into_iter().collect();
+                    let std_deque: std::collections::VecDeque<u8> =
+                        elements.into_iter().collect();
+                    prop_assert_eq!(model.len(), std_deque.len());
+                    for i in 0..std_deque.len() {
+                        prop_assert_eq!(model[i], std_deque[i]);
+                    }
                 }
 
                 #[test]
