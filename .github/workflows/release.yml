@@ -138,6 +138,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.tag.outputs.tag }}
+          prerelease: ${{ contains(needs.tag.outputs.version, '-') }}
           files: ${{ env.ARCHIVE }}
 
   # Installs the release the way every user's `cargo binstall` does, once the
@@ -156,7 +157,7 @@ jobs:
   # a duplicate. A dispatch on a ref that is not a release tag skips every
   # job and files nothing.
   notify-failure:
-    needs: [tag, release-js, release, release-cargo-hax, binstall]
+    needs: [tag, release-cargo-hax, binstall]
     if: failure()
     runs-on: ubuntu-latest
     permissions:

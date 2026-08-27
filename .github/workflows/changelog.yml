@@ -16,9 +16,19 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const body = context.payload.pull_request.body || "";
+            const pr = context.payload.pull_request;
+            const body = pr.body || "";
             core.debug(body);
-            if (body.includes('[skip changelog]')) {
+            // Release PRs rotate the changelog themselves, except for a
+            // pre-release bump, which leaves `[Unreleased]` in place for the
+            // eventual stable release (see PUBLISHING.md), so they never need
+            // an entry of their own.
+            const release = pr.head.repo.full_name === context.payload.repository.full_name
+              && pr.head.ref.startsWith('release/');
+            if (release) {
+              core.notice("Skipping changelog check for a release branch.");
+              core.setOutput("skip", "true");
+            } else if (body.includes('[skip changelog]')) {
               core.notice("Skipping changelog check because [skip changelog] was found in PR body.");
               core.setOutput("skip", "true");
             } else {
