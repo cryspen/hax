@@ -68,6 +68,49 @@ mod boxed {
         }
     }
 
+    // The trait impls below are what makes a `Box<T>` usable as a `T`
+    // downstream. Extraction erases `Box`, so each one is the identity on the
+    // payload -- which is the shape Aeneas's Lean library gives them too. They
+    // are kept after the inherent impl block, whose `impl__new` name carries no
+    // disambiguator and so is unaffected.
+
+    /// See [`std::ops::Deref`] for `Box<T>`
+    impl<T> core::ops::Deref for Box<T> {
+        type Target = T;
+        fn deref(&self) -> &T {
+            &self.0
+        }
+    }
+
+    // `DerefMut for Box<T>` is NOT here: `core_models::ops::deref` has no
+    // `DerefMut` trait on this branch (it arrives with the `cov-core-small`
+    // series), so there is nothing for the impl to implement. It belongs with
+    // that series.
+
+    /// See [`std::clone::Clone`] for `Box<T>`
+    impl<T: Clone> Clone for Box<T> {
+        fn clone(&self) -> Box<T> {
+            Box(self.0.clone())
+        }
+    }
+
+    /// See [`std::cmp::PartialEq`] for `Box<T>`
+    //
+    // Lean-only. hax renders `self.0 == other.0` as F*'s primitive `=.` rather
+    // than as a call through the `PartialEq` dictionary, and that demands
+    // `T: eqtype`, which a `Type0` parameter is not ("Expected type
+    // Prims.eqtype got type Type0").
+    #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+    impl<T: PartialEq<U>, U> PartialEq<Box<U>> for Box<T> {
+        #[cfg(not(hax_backend_fstar))]
+        fn ne(&self, other: &Box<U>) -> bool {
+            self.eq(other) == false
+        }
+        fn eq(&self, other: &Box<U>) -> bool {
+            self.0 == other.0
+        }
+    }
+
     #[cfg(test)]
     mod tests {
         use proptest::prelude::*;
@@ -76,6 +119,40 @@ mod boxed {
             #[test]
             fn test_new_is_identity(x in any::<u8>()) {
                 prop_assert_eq!(super::Box::<u8>::new(x), x);
+            }
+
+            // The trait impls, each against the same operation on std's `Box`.
+            #[test]
+            fn test_deref(x in any::<u8>()) {
+                prop_assert_eq!(
+                    *core::ops::Deref::deref(&super::Box(x)),
+                    *core::ops::Deref::deref(&std::boxed::Box::new(x))
+                );
+            }
+
+            #[test]
+            fn test_clone(x in any::<u8>()) {
+                prop_assert_eq!(
+                    super::Box(x).clone().0,
+                    *std::boxed::Box::new(x).clone()
+                );
+            }
+
+            #[test]
+            fn test_eq(x in 0u8..4, y in 0u8..4) {
+                prop_assert_eq!(
+                    super::Box(x) == super::Box(y),
+                    std::boxed::Box::new(x) == std::boxed::Box::new(y)
+                );
+            }
+
+            #[cfg(not(hax_backend_fstar))]
+            #[test]
+            fn test_ne(x in 0u8..4, y in 0u8..4) {
+                prop_assert_eq!(
+                    super::Box(x) != super::Box(y),
+                    std::boxed::Box::new(x) != std::boxed::Box::new(y)
+                );
             }
         }
     }
@@ -942,6 +1019,13 @@ pub mod vec {
     impl<T> core::ops::DerefMut for Vec<T> {
         fn deref_mut(&mut self) -> &mut [T] {
             self.as_mut_slice()
+        }
+    }
+    
+    /// See [`std::convert::From`] `<[T; N]>` for `Vec<T>`
+    impl<T, const N: usize> From<[T; N]> for Vec<T> {
+        fn from(a: [T; N]) -> Vec<T> {
+            Vec(seq_from_array(a))
         }
     }
 
