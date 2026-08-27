@@ -96,6 +96,20 @@ hax-lib-macros-types = { workspace = true, features = ["schemars"], optional = t
 version_check = "0.9"
 toml = "0.8"
 
+# Where `cargo binstall cargo-hax` looks for a pre-built binary. The templates it
+# would try by default assume a `v{version}` tag, which this repository does not
+# use; `{ target }` is a target triple, so the release assets are named after one,
+# and they hold the binary at the archive root. The archives carry `cargo-hax`
+# alone: `hax-export-json-schemas` needs a feature, which makes it optional here.
+#
+# `cargo binstall` reads this from the manifest published to crates.io, so a
+# version is binstallable only if it was published with these keys and its
+# release carries the assets they name.
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/cargo-hax-v{ version }/cargo-hax-{ target }.tar.zst"
+pkg-fmt = "tzstd"
+bin-dir = "{ bin }{ binary-ext }"
+
 [package.metadata.release]
 pre-release-hook = [
     "dune",
