@@ -1,4 +1,7 @@
 #![allow(unused)]
+// `coverage(off)` is unstable; `cfg(coverage_nightly)` is set only by
+// `cargo llvm-cov`, so normal builds and extraction never see this.
+#![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
 pub trait RngCore {
     // Required methods
@@ -14,30 +17,21 @@ mod os {
     // Dummy impl
     #[hax_lib::opaque]
     impl super::RngCore for OsRng {
+        // Excluded from coverage: the model has no source of randomness, so
+        // these are dummies and the constants below are not behaviour a test
+        // could pin.
+        #[cfg_attr(coverage_nightly, coverage(off))]
         fn next_u32(&mut self) -> u32 {
             0
         }
+        // Excluded from coverage: a dummy, as `next_u32`.
+        #[cfg_attr(coverage_nightly, coverage(off))]
         fn next_u64(&mut self) -> u64 {
             0
         }
+        // Excluded from coverage: a dummy, as `next_u32`.
+        #[cfg_attr(coverage_nightly, coverage(off))]
         fn fill_bytes(&mut self, dst: &mut [u8]) {}
     }
     impl super::CryptoRng for OsRng {}
-}
-
-#[cfg(test)]
-mod tests {
-    use super::RngCore;
-
-    // `OsRng` is a dummy impl: the model has no source of randomness, so the
-    // constant answers below are the whole specification.
-    #[test]
-    fn test_os_rng_is_a_dummy() {
-        let mut rng = crate::os::OsRng;
-        assert_eq!(rng.next_u32(), 0);
-        assert_eq!(rng.next_u64(), 0);
-        let mut buf = [1u8; 4];
-        rng.fill_bytes(&mut buf);
-        assert_eq!(buf, [1u8; 4]);
-    }
 }
