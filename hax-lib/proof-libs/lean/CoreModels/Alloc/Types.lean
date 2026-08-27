@@ -7,7 +7,7 @@ import CoreModels.RustPrimitives.Types
 -- (alloc-side externals live in parent CoreModels.RustPrimitives)
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Result ControlFlow Error
+open RustM ControlFlow Error
 open Std.Do
 set_option linter.dupNamespace false
 set_option linter.hashCommand false
@@ -41,7 +41,7 @@ def borrow.Cow (T : Type) := T
     Source: 'src/lib.rs', lines 37:4-39:5
     Visibility: public -/
 structure borrow.ToOwned (Self : Type) where
-  to_owned : Self → Result Self
+  to_owned : Self → RustM Self
 
 /-- [alloc::boxed::Box]
     Source: 'src/lib.rs', lines 48:4-48:29

@@ -15,8 +15,8 @@ abbrev inst := U64.Insts.Sha3ImplementationKeccakItem1
 open Std.Do Std core in
 private theorem allM_zip_beq :
     ∀ (xs ys : List U64), xs.length = ys.length →
-    List.allM (fun ((x, y) : U64 × U64) => (Result.ok (x == y) : Result Bool))
-      (List.zip xs ys) = Result.ok (xs == ys) := by
+    List.allM (fun ((x, y) : U64 × U64) => (RustM.ok (x == y) : RustM Bool))
+      (List.zip xs ys) = RustM.ok (xs == ys) := by
   intro xs
   induction xs with
   | nil =>
@@ -71,8 +71,8 @@ private theorem list_eq_of_pointwise {α} [Inhabited α] [DecidableEq α] (xs ys
       simp [h0, ih']
 
 private theorem add_one_usize (j : Usize) (h : j.val + 1 ≤ Usize.max) :
-    ∃ k : Usize, (j + 1#usize : Result Usize) = .ok k ∧ k.val = j.val + 1 := by
-  have hSpec : (j + 1#usize : Result Usize) ⦃ k => k.val = j.val + 1#usize.val ⦄ := by
+    ∃ k : Usize, (j + 1#usize : RustM Usize) = .ok k ∧ k.val = j.val + 1 := by
+  have hSpec : (j + 1#usize : RustM Usize) ⦃ k => k.val = j.val + 1#usize.val ⦄ := by
     apply UScalar.add_spec.step_spec
     scalar_tac
   obtain ⟨k, hk, hkVal⟩ := Aeneas.Std.WP.spec_imp_exists hSpec
@@ -102,20 +102,20 @@ private theorem eq_loop_correct {N : Usize} (a0 a1 : Array U64 N) (i : Usize)
     show Aeneas.Std.WP.spec (do
       let t1 ← rust_primitives.slice.array_index a1 j
       let b ← core.U64.Insts.CoreCmpPartialEqU64.eq a0.val[j.val]! t1
-      if b then let i1 ← j + 1#usize; Result.ok (ControlFlow.cont i1)
-      else Result.ok (ControlFlow.done false)) _
+      if b then let i1 ← j + 1#usize; RustM.ok (ControlFlow.cont i1)
+      else RustM.ok (ControlFlow.done false)) _
     rw [array_index_U64_eq a1 j hjLt]
     show Aeneas.Std.WP.spec (do
       let b ← core.U64.Insts.CoreCmpPartialEqU64.eq a0.val[j.val]! a1.val[j.val]!
-      if b then let i1 ← j + 1#usize; Result.ok (ControlFlow.cont i1)
-      else Result.ok (ControlFlow.done false)) _
+      if b then let i1 ← j + 1#usize; RustM.ok (ControlFlow.cont i1)
+      else RustM.ok (ControlFlow.done false)) _
     have hcmp : core.U64.Insts.CoreCmpPartialEqU64.eq a0.val[j.val]! a1.val[j.val]!
         = .ok (a0.val[j.val]! == a1.val[j.val]!) := rfl
     rw [hcmp]
     show Aeneas.Std.WP.spec
       (if (a0.val[j.val]! == a1.val[j.val]!)
-       then (do let i1 ← j + 1#usize; Result.ok (ControlFlow.cont i1))
-       else Result.ok (ControlFlow.done false)) _
+       then (do let i1 ← j + 1#usize; RustM.ok (ControlFlow.cont i1))
+       else RustM.ok (ControlFlow.done false)) _
     have hj1Bound : j.val + 1 ≤ Usize.max := by
       have hN := N.hBounds
       have : N.val ≤ Usize.max := by scalar_tac
@@ -172,7 +172,7 @@ theorem array.equality.PartialEqArray.eq_spec {N : Usize} (a0 : Array U64 N) (a1
     apply eq_loop_correct a0 a1 0#usize (by simp) (fun k hk => by simp at hk)
   obtain ⟨b, hx, hb⟩ := Aeneas.Std.WP.spec_imp_exists hSpec
   rw [hx]
-  apply Result.ok_spec
+  apply RustM.ok_spec
   rw [hb]; exact h
 
 attribute [local spec] uncurry
@@ -292,7 +292,7 @@ theorem specification_iota_spec (st i) :
 When running `mvcgen` on a program, we need spec lemmas for all contained functions. For the
 specification functions and for the implementation `rho`, we do not want to provide actual
 pre- and postconditions. We want to abstract over whatever these functions are doing. For that
-purpose, we can use `core.Result.toPure_spec` to encapsulate their definitions and keep them
+purpose, we can use `core.RustM.toPure_spec` to encapsulate their definitions and keep them
 opaque to mvcgen. It produces spec lemmas such as:
 ```
 ⦃⌜True⌝⦄ rho st t ⦃ ⇓r => ⌜r = (rho st t).toPure⌝ ⦄
@@ -302,27 +302,27 @@ stuck at `rho` while putting some useful information into the verification condi
 
 -/
 
--- Some `Inhabited` instances are currently required for `core.Result.toPure_spec`
+-- Some `Inhabited` instances are currently required for `core.RustM.toPure_spec`
 instance : Inhabited (KeccakState Std.U64 1#usize) := ⟨{st := ⟨List.replicate 25 0#u64, by simp⟩}⟩
 instance [Inhabited α] : Inhabited (Std.Array α n) := ⟨⟨List.replicate n.val default, by simp⟩⟩
 
 @[spec]
-def rho_spec' {st} {t} := Std.Result.toPure_spec (KeccakState.rho inst st t) (rho_spec st)
+def rho_spec' {st} {t} := Std.RustM.toPure_spec (KeccakState.rho inst st t) (rho_spec st)
 
 @[spec]
-def specification_theta_spec' {st} := Std.Result.toPure_spec (specification.theta st) (specification_theta_spec st)
+def specification_theta_spec' {st} := Std.RustM.toPure_spec (specification.theta st) (specification_theta_spec st)
 
 @[spec]
-def specification_rho_spec' {st} := Std.Result.toPure_spec (specification.rho st) (specification_rho_spec st)
+def specification_rho_spec' {st} := Std.RustM.toPure_spec (specification.rho st) (specification_rho_spec st)
 
 @[spec]
-def specification_pi_spec' {st} := Std.Result.toPure_spec (specification.pi st) (specification_pi_spec st)
+def specification_pi_spec' {st} := Std.RustM.toPure_spec (specification.pi st) (specification_pi_spec st)
 
 @[spec]
-def specification_chi_spec' {st} := Std.Result.toPure_spec (specification.chi st) (specification_chi_spec st)
+def specification_chi_spec' {st} := Std.RustM.toPure_spec (specification.chi st) (specification_chi_spec st)
 
 @[spec]
-def specification_iota_spec' {st i} := Std.Result.toPure_spec (specification.iota st i) (specification_iota_spec st i)
+def specification_iota_spec' {st i} := Std.RustM.toPure_spec (specification.iota st i) (specification_iota_spec st i)
 
 
 /- ### Equivalence proof

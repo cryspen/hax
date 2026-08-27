@@ -14,7 +14,7 @@ Since it's automatically generated, we cannot move this material there.
 
 namespace CoreModels.core
 
-open Aeneas.Std Result
+open Aeneas.Std RustM
 
 /-! ## Scalar PartialEq / PartialOrd instances -/
 
@@ -39,13 +39,13 @@ def Bool.Insts.CoreCmpPartialEqBool    : cmp.PartialEq Bool  Bool  := { eq := fu
 
 def Pair.Insts.CoreCmpPartialEqPair.eq {A B C D : Type}
     (PartialEqInst : cmp.PartialEq A C) (PartialEqInst1 : cmp.PartialEq B D) :
-    A × B → C × D → Result Bool := fun (a, b) (c, d) => do
+    A × B → C × D → RustM Bool := fun (a, b) (c, d) => do
   let eqFst ← PartialEqInst.eq a c
   if eqFst then PartialEqInst1.eq b d else ok false
 
 def Pair.Insts.CoreCmpPartialEqPair.ne {A B C D : Type}
     (PartialEqInst : cmp.PartialEq A C) (PartialEqInst1 : cmp.PartialEq B D) :
-    A × B → C × D → Result Bool := fun p q => do
+    A × B → C × D → RustM Bool := fun p q => do
   let eq ← Pair.Insts.CoreCmpPartialEqPair.eq PartialEqInst PartialEqInst1 p q
   ok (!eq)
 
@@ -73,7 +73,7 @@ def mkUPartialOrd {ty} : cmp.PartialOrd (UScalar ty) (UScalar ty) := {
 /-- The `Iterator::next` implementation for `core::ops::range::Range<A>`,
     parameterised over the `Step` dictionary. -/
 def IteratorRange.next {A : Type} (StepInst : iter.range.Step A) :
-    ops.range.Range A → Aeneas.Std.Result ((Option A) × ops.range.Range A) := fun range => do
+    ops.range.Range A → Aeneas.Std.RustM ((Option A) × ops.range.Range A) := fun range => do
   let cmp ← StepInst.corecmpPartialOrdInst.partial_cmp range.start range.«end»
   let isLess : Bool := match cmp with
     | Option.some o => match o with
@@ -163,7 +163,7 @@ abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next :=
     exhaustion advances `start` one step at a time until it reaches `end`, which
     is what `Step::steps_between` reports (`0` when `start > end`). -/
 def ops.range.Range.Insts.CoreIterTraitsIteratorIterator.count {A : Type}
-    (StepInst : iter.range.Step A) (range : ops.range.Range A) : Result Usize := do
+    (StepInst : iter.range.Step A) (range : ops.range.Range A) : RustM Usize := do
   let (steps, _) ← StepInst.steps_between range.start range.«end»
   ok steps
 
@@ -174,7 +174,7 @@ def ops.range.Range.Insts.CoreIterTraitsIteratorIterator.count {A : Type}
 @[rust_fun "core::cmp::impls::{core::cmp::PartialOrd<&'1 @A, &'0 @B>}::lt"]
 def Shared1A.Insts.CoreCmpPartialOrdShared0B.lt
   {A : Type} {B : Type} (PartialOrdInst : cmp.PartialOrd A B) :
-  A → B → Result Bool := fun a b => do
+  A → B → RustM Bool := fun a b => do
   let o ← PartialOrdInst.partial_cmp a b
   match o with
   | some cmp.Ordering.Less => ok true
@@ -187,7 +187,7 @@ def Shared1A.Insts.CoreCmpPartialOrdShared0B.lt
 @[rust_fun "core::cmp::impls::{core::cmp::PartialOrd<&'1 @A, &'0 @B>}::gt"]
 def Shared1A.Insts.CoreCmpPartialOrdShared0B.gt
   {A : Type} {B : Type} (PartialOrdInst : cmp.PartialOrd A B) :
-  A → B → Result Bool := fun a b => do
+  A → B → RustM Bool := fun a b => do
   let o ← PartialOrdInst.partial_cmp a b
   match o with
   | some cmp.Ordering.Greater => ok true
@@ -197,24 +197,24 @@ def Shared1A.Insts.CoreCmpPartialOrdShared0B.gt
 /-! ## Option -/
 
 def option.Option.unwrap_or :=
-  fun {T} x y => Aeneas.Std.Result.ok (@Aeneas.Std.core.option.Option.unwrap_or T x y)
+  fun {T} x y => Aeneas.Std.RustM.ok (@Aeneas.Std.core.option.Option.unwrap_or T x y)
 
 def option.Option.is_some :=
-  fun {T} x => Aeneas.Std.Result.ok (@Aeneas.Std.core.option.Option.is_some T x)
+  fun {T} x => Aeneas.Std.RustM.ok (@Aeneas.Std.core.option.Option.is_some T x)
 
 def option.Option.is_none :=
-  fun {T} x => Aeneas.Std.Result.ok (@Aeneas.Std.core.option.Option.is_none T x)
+  fun {T} x => Aeneas.Std.RustM.ok (@Aeneas.Std.core.option.Option.is_none T x)
 
 def option.Option.take :=
-  fun {T} x => Aeneas.Std.Result.ok (@Aeneas.Std.core.option.Option.take T x)
+  fun {T} x => Aeneas.Std.RustM.ok (@Aeneas.Std.core.option.Option.take T x)
 
 /-! ## Mem -/
 
 def mem.swap :=
-  fun {T} x y => Aeneas.Std.Result.ok (@Aeneas.Std.core.mem.swap T x y)
+  fun {T} x y => Aeneas.Std.RustM.ok (@Aeneas.Std.core.mem.swap T x y)
 
 def mem.replace :=
-  fun {T} x y => Aeneas.Std.Result.ok (@Aeneas.Std.core.mem.replace T x y)
+  fun {T} x y => Aeneas.Std.RustM.ok (@Aeneas.Std.core.mem.replace T x y)
 
 /-! ## Redirects to Aeneas's library -/
 

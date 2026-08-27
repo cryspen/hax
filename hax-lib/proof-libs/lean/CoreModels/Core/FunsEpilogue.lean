@@ -81,7 +81,7 @@ irrelevant to the model, hence `_`-prefixed). -/
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.map
   {T O F : Type} (_FnMutInst : core.ops.function.FnMut F T O) :
   vec.into_iter.IntoIter T → F →
-  Aeneas.Std.Result (core.iter.adapters.map.Map (vec.into_iter.IntoIter T) F) :=
+  Aeneas.Std.RustM (core.iter.adapters.map.Map (vec.into_iter.IntoIter T) F) :=
   fun it f => .ok { iter := it, f := f }
 
 /-! ## `FromIterator<T>` for `VecDeque<T, Global>`
@@ -101,7 +101,7 @@ contents of a `VecDeque::from_iter` result. -/
 opaque collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter
   (T : Type) : {T_1 Clause0_Item Clause0_IntoIter : Type} →
   core.iter.traits.collect.IntoIterator T_1 Clause0_Item Clause0_IntoIter →
-  T_1 → Aeneas.Std.Result (VecDeque T alloc.Global)
+  T_1 → Aeneas.Std.RustM (VecDeque T alloc.Global)
 
 def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator
   (T : Type) :
@@ -125,12 +125,12 @@ noncomputable section
 @[rust_fun "alloc::slice::{[@T]}::to_vec"]
 def slice.Slice.to_vec
   {T : Type} (cloneInst : core.clone.Clone T) (s : Aeneas.Std.Slice T) :
-  Aeneas.Std.Result (vec.Vec T) :=
+  Aeneas.Std.RustM (vec.Vec T) :=
   slice.Dummy.to_vec cloneInst s
 
 @[rust_fun "alloc::slice::{alloc::boxed::Box<[@T], @A>}::into_vec"]
 def slice.Slice.into_vec
-  {T : Type} (s : Aeneas.Std.Slice T) : Aeneas.Std.Result (vec.Vec T) :=
+  {T : Type} (s : Aeneas.Std.Slice T) : Aeneas.Std.RustM (vec.Vec T) :=
   slice.Dummy.into_vec s
 
 end

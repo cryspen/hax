@@ -113,6 +113,33 @@ def fix_fail_panic(text: str) -> str:
     does not resolve to `Error.panic` as it should."""
     return replace("fix_fail_panic", text, "  fail panic\n", "  fail Error.panic\n")
 
+def escape_keyword_binders(text: str) -> str:
+    """Escape binder names that are Lean keywords, e.g. `(end : Std.U8)`.
+
+    Aeneas registers a bare name that collides with a Lean keyword under its
+    French-quoted spelling (`«end»`), and prints every *use* that way — but the
+    binder that introduces it is printed raw, which does not parse. Rather than
+    carry a copy of Aeneas's keyword list, we read the answer off the file: a
+    name Aeneas spells `«x»` anywhere is a name it considers keyword-escaped,
+    so any binder introducing that same `x` unescaped is the unescaped half of
+    the same name and gets quoted to match.
+
+    A no-op once Aeneas escapes binders too, so it can stay until then.
+    """
+    escaped = set(re.findall(r"«(\w+)»", text))
+    if not escaped:
+        return text
+    alt = "|".join(re.escape(name) for name in sorted(escaped))
+    # Binder positions only: `(x :`, `{x :`, `⦃x :`, and record fields `{ x :`.
+    # `:=` is excluded so that record *literals* (`{ start := ... }`) and
+    # definitions are left alone.
+    return re.sub(
+        rf"([({{⦃]\s*)({alt})(\s*:(?!=))",
+        lambda m: f"{m.group(1)}«{m.group(2)}»{m.group(3)}",
+        text,
+    )
+
+
 def rename_namespace(text: str) -> str:
     """
     The extracted Rust-crate is called `core-models`, extracted as `core_models` by Aeneas.
@@ -315,27 +342,23 @@ def drop_intoiterator_iterator_inst(text: str) -> str:
     return transform_blocks(text, fn)
 
 
-# Standalone `Result` / `ok` tokens, i.e. NOT already part of a dotted path
-# such as `result.Result`, `Aeneas.Std.Result`, or `result.Result.ok`.
-_BARE_RESULT_RE = re.compile(r"(?<![\w.])Result\b")
+# Standalone `ok` tokens, i.e. NOT already part of a dotted path such as
+# `result.Result.ok` or `Aeneas.Std.RustM.ok`.
 _BARE_OK_RE = re.compile(r"(?<![\w.])ok\b")
 
 
 def qualify_result_monad_impls(text: str) -> str:
-    """Fully qualify the Aeneas error monad inside any trait impl whose `Self`
-    is `Result<_, _>` (e.g. the `Try` impl's `from_output` / `«branch»`, and
-    the `FromIterator<Result<_, _>>` impl's `from_iter`).
+    """Fully qualify the Aeneas error monad's `ok` inside any trait impl whose
+    `Self` is `Result<_, _>` (e.g. the `Try` impl's `from_output` / `«branch»`,
+    and the `FromIterator<Result<_, _>>` impl's `from_iter`).
 
     Those defs are emitted into the `result.Result.*` namespace. Inside that
-    namespace the bare names `Result` and `ok` resolve to *our* `result.Result`
-    inductive (from `TypesPrologue.lean`) and `result.Result.ok` projection,
-    not to Aeneas's `Aeneas.Std.Result` / `Aeneas.Std.Result.ok`, so the
-    generated bodies fail to elaborate with `type expected, got Result ...`.
+    namespace the bare name `ok` resolves to *our* `result.Result.ok`
+    projection rather than to Aeneas's `Aeneas.Std.RustM.ok`, so the generated
+    bodies fail to elaborate.
 
-    `TypesPrologue.lean` dodges the exact same clash by hand by spelling out
-    `Aeneas.Std.Result`. We apply that convention here: in every block of an
-    impl `for ... result::Result`, rewrite each *standalone* `Result` ->
-    `Aeneas.Std.Result` and `ok` -> `Aeneas.Std.Result.ok` (dotted paths like
+    In every block of an impl `for ... result::Result`, rewrite each
+    *standalone* `ok` -> `Aeneas.Std.RustM.ok` (dotted paths like
     `result.Result.Ok` are left untouched). The doc-comment header is
     preserved verbatim. The match keys on the un-renamed Rust path in the doc
     header (`core_models` survives `rename_namespace`, which only rewrites
@@ -346,7 +369,7 @@ def qualify_result_monad_impls(text: str) -> str:
         # core_models::result::Result<...>`) and *inherent* methods on
         # `Result` (`{core_models::result::Result<...>}::method`, e.g.
         # `unwrap_or` / `map_err`) — both land in the `result.Result.*`
-        # namespace and hit the same bare-`Result` monad clash.
+        # namespace and hit the same bare-`ok` monad clash.
         if "for core_models::result::Result" not in ident \
                 and "{core_models::result::Result<" not in ident:
             return None
@@ -358,8 +381,7 @@ def qualify_result_monad_impls(text: str) -> str:
         doc_end += 1
         head = block_lines[:doc_end]
         body = "\n".join(block_lines[doc_end:])
-        body = _BARE_RESULT_RE.sub("Aeneas.Std.Result", body)
-        body = _BARE_OK_RE.sub("Aeneas.Std.Result.ok", body)
+        body = _BARE_OK_RE.sub("Aeneas.Std.RustM.ok", body)
         _record("qualify_result_monad_impls", 1)
         return "\n".join(head) + ("\n" + body if body else "")
 
@@ -374,7 +396,7 @@ def desugar_pure_num_bound_binds(text: str) -> str:
         let i ← num.Isize.MIN
         let i ← num.U64.MAX
 
-    because in the original Aeneas extraction those bounds are `Result <T>`
+    because in the original Aeneas extraction those bounds are `RustM <T>`
     (computed via `rust_primitives.arithmetic.<X>_{MIN,MAX}`). Our
     `Aeneas.Primitives` provides them as PURE values, so the call sites must
     use `:=` instead of `←`. Rewrite all such bind occurrences.
@@ -666,6 +688,7 @@ def main() -> int:
         text = rewrite_imports_and_opens(text)
         text = rename_namespace(text)
         text = rewrite_phantom_data(text)
+        text = escape_keyword_binders(text)
         if path == funs_path:
             text = fix_fail_panic(text)
             text = add_funs_prologue_import(text)
@@ -729,6 +752,7 @@ def patch_alloc() -> None:
         text = rewrite_alloc_imports(text)
         text = fix_fail_panic(text)
         text = rewrite_phantom_data(text)
+        text = escape_keyword_binders(text)
         if path == funs:
             text = rename_iter_param(text)
             text = drop_intoiterator_iterator_inst(text)

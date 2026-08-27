@@ -19,25 +19,25 @@ namespace Hax
 
 /-- A `for i in s..e` loop carrying its invariant as a marker.
 
-The argument `body : ι → β → Result β` takes the current index and accumulator and
+The argument `body : ι → β → RustM β` takes the current index and accumulator and
 returns the new accumulator; `stepInst` is the `Step` dictionary of the index type `ι`.
 The iterator and `ControlFlow` plumbing live entirely inside this definition. The first
 argument `_inv` is a marker read off by the `for_loop_with_invariant` tactic and by
 spec lemmas; it has no computational role. -/
 def forLoopWithInvariant {ι β : Type} (stepInst : core.iter.range.Step ι)
-    (_inv : ι → β → Result Prop)
-    (body : ι → β → Result β)
+    (_inv : ι → β → RustM Prop)
+    (body : ι → β → RustM β)
     (rng : core.ops.range.Range ι) (init : β) :
-    Result β :=
+    RustM β :=
   loop (fun x : core.ops.range.Range ι × β => do
     let (o, r) ←
       core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
         stepInst x.1
     match o with
-    | core.option.Option.None => Result.ok (ControlFlow.done x.2)
+    | core.option.Option.None => RustM.ok (ControlFlow.done x.2)
     | core.option.Option.Some i => do
         let acc' ← body i x.2
-        Result.ok (ControlFlow.cont (r, acc'))) (rng, init)
+        RustM.ok (ControlFlow.cont (r, acc'))) (rng, init)
 
 /-! ## Body-extraction helpers (shared between the conv and regular tactics) -/
 
@@ -58,9 +58,9 @@ for a `for i in s..e` Rust loop:
 Bind.bind (next StepUsize x.1) <|
   Function.uncurry fun o iter1 =>
     <match>.match_1 _motive o
-      (fun _ : Unit => Result.ok (ControlFlow.done x.2))
+      (fun _ : Unit => RustM.ok (ControlFlow.done x.2))
       fun i => Bind.bind userBody fun acc' =>
-        Result.ok (ControlFlow.cont (iter1, acc'))
+        RustM.ok (ControlFlow.cont (iter1, acc'))
 ```
 Returns `(userBody, stepDict)` with the match-bound index substituted by `jFvar`,
 where `stepDict` is the `Step` dictionary taken from the loop's `next` call. -/
@@ -144,12 +144,12 @@ private def buildForLoopWithInvariant
   mkAppM ``Hax.forLoopWithInvariant #[stepDict, inv, stepLambda, iter, init]
 
 /-- Elaborate the user-supplied invariant against the expected type
-`ι → β → Result Prop`, where `β` is the element type taken from `init` and the index
+`ι → β → RustM Prop`, where `β` is the element type taken from `init` and the index
 type `ι` is recovered from the iterator's type `core.ops.range.Range ι`. -/
 private def elabInvariant (iter init : Expr) (invStx : Term) : TacticM Expr := do
   let elemTy ← inferType init
   let ι ← indexTypeOfIter iter
-  let resultProp ← mkAppM ``Aeneas.Std.Result #[mkSort .zero]
+  let resultProp ← mkAppM ``Aeneas.Std.RustM #[mkSort .zero]
   let invType :=
     Expr.forallE `i ι (Expr.forallE `r elemTy resultProp .default) .default
   let inv ← Term.elabTermEnsuringType invStx invType

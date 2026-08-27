@@ -8,7 +8,7 @@ set_option pp.mvars false
 
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Result
+open RustM
 open Std.Do
 open Std.Tactic
 
@@ -16,7 +16,7 @@ namespace Hax.Tests
 
 /-! ## Basic functionality -/
 
-private def wrapped (x : U32) : Result U32 := ok x
+private def wrapped (x : U32) : RustM U32 := ok x
 
 @[local spec]
 private theorem wrapped_spec (x : U32) :
@@ -33,7 +33,7 @@ end Hax.Tests
 
 /-! ## Reporting missing `@[spec]` lemmas -/
 
-private opaque unspecced : U32 → Result U32
+private opaque unspecced : U32 → RustM U32
 
 /--
 error: Tactic `hax_mvcgen` failed: Failed to process hypothesis h. Usually this error is due to missing specs for functions contained in the program. This is likely because unspecced is missing a @[spec] lemma.

@@ -6,11 +6,11 @@ set_option autoImplicit true
 
 open Lean Std.Do Elab Parser Tactic Meta Aeneas Std
 
-theorem Triple.of_pure_postcondition {f : Result α} (h : ⦃⌜True⌝⦄ f ⦃PostCond.noThrow fun _ => ⌜p⌝⦄) : p := by
+theorem Triple.of_pure_postcondition {f : RustM α} (h : ⦃⌜True⌝⦄ f ⦃PostCond.noThrow fun _ => ⌜p⌝⦄) : p := by
   match f with
   | .ok _ | .fail _ | .div => simp [Triple, WP.wp, PredTrans.apply] at h <;> exact h
 
-theorem triple_in_hypothesis {f : Result α} {Q : α → Assertion _} (p : Prop)
+theorem triple_in_hypothesis {f : RustM α} {Q : α → Assertion _} (p : Prop)
     (h : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓ r => Q r ⦄)
     (hp : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓? r => Q r → ⌜ p ⌝ ⦄) :
     p := by

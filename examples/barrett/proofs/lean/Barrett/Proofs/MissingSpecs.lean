@@ -1,7 +1,7 @@
 -- Missing core model specs, to upstream
 import Aeneas
 import Barrett.Extraction
-open Aeneas Aeneas.Std Result ControlFlow Error
+open Aeneas Aeneas.Std RustM ControlFlow Error
 open Std.Do Aeneas barrett CoreModels
 set_option mvcgen.warning false
 

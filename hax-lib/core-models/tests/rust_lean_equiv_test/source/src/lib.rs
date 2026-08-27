@@ -12,7 +12,7 @@
 //!   for these attributes and emits a `#guard <qualified-name> == .ok true`
 //!   per test into `lean/RustLeanTests/LeanTests.lean`, so the Lean build
 //!   fails if Aeneas's translation of the function does not also evaluate
-//!   to `Result.ok true`.
+//!   to `RustM.ok true`.
 //!
 //! Agreement between the two sides is the actual property under test:
 //! the Lean translation of our `core_models` library must match Rust

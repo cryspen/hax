@@ -5,29 +5,29 @@ import Hax.MissingLean
 namespace Aeneas.Std
 open Std.Do
 
-abbrev Result.holds (x : Result Prop) : Prop := ⦃ ⌜ True ⌝ ⦄ x ⦃ ⇓ p => ⌜ p ⌝ ⦄
+abbrev RustM.holds (x : RustM Prop) : Prop := ⦃ ⌜ True ⌝ ⦄ x ⦃ ⇓ p => ⌜ p ⌝ ⦄
 
 @[spec]
-theorem Result.ok_spec {α : Type} {a : α} {Q} (hQ : (Q.1 a).down) :
-  ⦃ ⌜ True ⌝ ⦄ Result.ok a ⦃ Q ⦄ := by simpa [Triple]
+theorem RustM.ok_spec {α : Type} {a : α} {Q} (hQ : (Q.1 a).down) :
+  ⦃ ⌜ True ⌝ ⦄ RustM.ok a ⦃ Q ⦄ := by simpa [Triple]
 
 @[spec]
-theorem Result.fail_spec {α : Type} {e : Error} {Q} (hQ : (Q.2.1 (.up e)).down) :
-  ⦃ ⌜ True ⌝ ⦄ (Result.fail e : Result α) ⦃ Q ⦄ := by simpa [Triple]
+theorem RustM.fail_spec {α : Type} {e : Error} {Q} (hQ : (Q.2.1 (.up e)).down) :
+  ⦃ ⌜ True ⌝ ⦄ (RustM.fail e : RustM α) ⦃ Q ⦄ := by simpa [Triple]
 
-theorem Result.deterministic (f : Result α) [Inhabited α]:
+theorem RustM.deterministic (f : RustM α) [Inhabited α]:
     ∃ a, ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓?r =>  ⌜ r = a ⌝ ⦄ := by
   match f with
   | .ok a | .fail _ | .div => simp [Triple, WP.wp, PredTrans.apply]
 
-noncomputable def Result.toPure (f : Result α) [Inhabited α] : α :=
+noncomputable def RustM.toPure (f : RustM α) [Inhabited α] : α :=
   f.deterministic.choose
 
-noncomputable def Result.toPure_spec_mayThrow (f : Result α) [Inhabited α] :
+noncomputable def RustM.toPure_spec_mayThrow (f : RustM α) [Inhabited α] :
     ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓?r =>  ⌜ r = f.toPure ⌝ ⦄ :=
   f.deterministic.choose_spec
 
-noncomputable def Result.toPure_spec (f : Result α) [Inhabited α]
+noncomputable def RustM.toPure_spec (f : RustM α) [Inhabited α]
     (h : ⦃ P ⦄ f ⦃ Q ⦄) :
     ⦃ P ⦄ f ⦃ (fun r =>  ⌜ r = f.toPure ⌝, Q.2) ⦄ := by
   have := h.and f (toPure_spec_mayThrow f)
@@ -40,7 +40,7 @@ end Aeneas.Std
 
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Result ControlFlow Error
+open RustM ControlFlow Error
 open Std.Do
 
 namespace Hax
@@ -53,23 +53,23 @@ here until they can be upstreamed. -/
 
 section loop_range_helpers
 
-abbrev ResultPS := PostShape.except Error (PostShape.except PUnit PostShape.pure)
+abbrev RustMPS := PostShape.except Error (PostShape.except PUnit PostShape.pure)
 
 variable {α : Type}
 
-theorem triple_noThrow_elim {x : Result α} {Q : α → Assertion ResultPS}
+theorem triple_noThrow_elim {x : RustM α} {Q : α → Assertion RustMPS}
     (h : ⦃ ⌜ True ⌝ ⦄ x ⦃ PostCond.noThrow Q ⦄) {v : α} (hv : x = ok v) :
     (Q v).down := by
   subst hv; simpa [Triple, WP.wp, PredTrans.apply] using h
 
-theorem triple_noThrow_exists_ok {x : Result α} {Q : α → Assertion ResultPS}
+theorem triple_noThrow_exists_ok {x : RustM α} {Q : α → Assertion RustMPS}
     (h : ⦃ ⌜ True ⌝ ⦄ x ⦃ PostCond.noThrow Q ⦄) : ∃ v, x = ok v := by
   match x, h with
   | .ok v, _ => exact ⟨v, rfl⟩
   | .fail e, h => exact absurd h (by simp [Triple, WP.wp, PredTrans.apply])
   | .div, h => exact absurd h (by simp [Triple, WP.wp, PredTrans.apply])
 
-theorem triple_of_ok {x : Result α} {v : α} {P : α → Prop}
+theorem triple_of_ok {x : RustM α} {v : α} {P : α → Prop}
     (hx : x = ok v) (hp : P v) :
     (⦃ ⌜ True ⌝ ⦄ x ⦃ ⇓ r => ⌜ P r ⌝ ⦄) := by
   subst hx; simp [Triple, WP.wp, hp, PredTrans.apply]
@@ -79,8 +79,8 @@ end loop_range_helpers
 /-- Loop-over-range spec, signed index type; induction on `(e.val - start.val).toNat`. -/
 theorem loop_range_spec {ty : IScalarTy} {β : Type}
     (body : (core.ops.range.Range (IScalar ty) × β) →
-      Result (ControlFlow (core.ops.range.Range (IScalar ty) × β) β))
-    (init : β) (s e : IScalar ty) (inv : IScalar ty → β → Result Prop)
+      RustM (ControlFlow (core.ops.range.Range (IScalar ty) × β) β))
+    (init : β) (s e : IScalar ty) (inv : IScalar ty → β → RustM Prop)
     (h_le : s.val ≤ e.val)
     (h_init : (inv s init).holds)
     (h_step : ∀ acc (i : IScalar ty), s.val ≤ i.val → i.val ≤ e.val →
@@ -137,8 +137,8 @@ set_option maxHeartbeats 2000000 in
 /-- Loop-over-range spec, unsigned `Usize` index type; induction on `e.val - start.val`. -/
 theorem loop_range_spec_unsigned {β : Type}
     (body : (core.ops.range.Range Usize × β) →
-      Result (ControlFlow (core.ops.range.Range Usize × β) β))
-    (init : β) (s e : Usize) (inv : Usize → β → Result Prop)
+      RustM (ControlFlow (core.ops.range.Range Usize × β) β))
+    (init : β) (s e : Usize) (inv : Usize → β → RustM Prop)
     (h_le : s.val ≤ e.val)
     (h_init : (inv s init).holds)
     (h_step : ∀ acc (i : Usize), s.val ≤ i.val → i.val ≤ e.val →

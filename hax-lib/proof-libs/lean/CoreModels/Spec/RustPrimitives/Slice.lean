@@ -6,7 +6,7 @@ namespace CoreModels
 
 open Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Std.Do WP Result
+open Std.Do WP RustM
 
 set_option mvcgen.warning false
 
@@ -199,7 +199,7 @@ theorem rust_primitives.slice.array_map_spec {T U F : Type} {N : Std.Usize}
     split <;> rename_i h <;> rw [hres] at h
     · simp at h
     · simp at h
-    · simp only [Result.ok.injEq] at h
+    · simp only [RustM.ok.injEq] at h
       subst h
       rfl
   · intro i hi
