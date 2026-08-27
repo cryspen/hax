@@ -278,11 +278,6 @@ impl ProVerifPrinter {
 
 #[prepend_associated_functions_with(install_pretty_helpers!(self: Self))]
 const _: () = {
-    macro_rules! emit_error {
-        ($($tt:tt)*) => {
-            disambiguated_todo!($($tt)*)
-        };
-    }
     macro_rules! line {
         ($($tt:tt)*) => {
             disambiguated_line!($($tt)*)
@@ -1864,7 +1859,9 @@ const _: () = {
         }
 
         fn guard(&self, _guard: &Guard) -> DocBuilder<A> {
-            emit_error!("ProVerif backend does not support match guards")
+            // Guards are emitted via `render_arm_chain` (called from `expr`'s
+            // `Match` branch); the bare default is unused.
+            nil!()
         }
 
         fn dyn_trait_goal(&self, _: &DynTraitGoal) -> DocBuilder<A> {
