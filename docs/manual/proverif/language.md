@@ -128,7 +128,7 @@ expr          ::= literal
   ;   rust_primitives::hax::never_to_any() → bitstring_err()
 
 arm           ::= pat "=>" expr ("," | )                ; "if pat = scrutinee in body" joined with `else`
-                | pat "if" guard "=>" expr              ; (rejected: match guards)
+                | pat "if" guard "=>" expr              ; guard → nested `let lhs = rhs in body else <next-arm>`
 
 pat           ::= "_"                                   ; → wildcard: bitstring
                 | local-id                              ; → local-id
@@ -139,7 +139,7 @@ pat           ::= "_"                                   ; → wildcard: bitstrin
                 | "Ok("   pat ")"                       ; → just inner (Result unwrapped)
                 | constructor "(" pat,* ")"
                 | constructor "{" field-pat,* "}"
-                | pat "|" pat                           ; (rejected: or-patterns)
+                | pat "|" pat                           ; split into one arm per alternative
                 | "[" pat,* "]"                         ; (rejected: array patterns)
 ```
 
@@ -147,8 +147,9 @@ pat           ::= "_"                                   ; → wildcard: bitstrin
 
 - `path` segments are joined with `__` (e.g. `mycrate__a__write_ping`).
   ProVerif reserved keywords are escaped with a leading underscore.
-- `name @ pat`, or-patterns, array patterns, and match guards exist in
-  Rust but the hax feature gate rejects them (`engine/backends/proverif/proverif_backend.ml:53-65`).
+- `name @ pat` and array patterns exist in Rust but are not accepted.
+  Or-patterns are split into one arm per alternative; a match guard
+  (`pat if cond`) is tested inside the arm's destructure.
 - `&T`, `&mut T`, blocks `{ ... }`, mutable locals, and lifetime
   annotations all *parse* but are erased by phases (`Drop_references`,
   `Drop_blocks`, `Local_mutation`); their information is lost.
@@ -254,7 +255,7 @@ that still mentions: `loop` / `for_loop` / `while_loop` /
 `mutable_variable` / `mutable_reference` / `mutable_pointer` /
 `reference` / `raw_pointer`, `as_pattern`, `nontrivial_lhs` /
 `arbitrary_lhs`, `lifetime`, `monadic_action` / `monadic_binding`,
-`fold_like_loop`, `block`, `dyn`, `match_guard`, `trait_item_default`,
+`fold_like_loop`, `block`, `dyn`, `trait_item_default`,
 `unsafe` (`engine/backends/proverif/proverif_backend.ml:40-65`).
 
 ## Attribute & macro surface
@@ -336,9 +337,7 @@ Trying these will stop extraction with a diagnostic:
 - Closures (`|x| ...`, `move ||`)
 - `unsafe` blocks
 - `dyn Trait`
-- Match guards (`Some(v) if v > 0 =>`)
 - As-patterns (`Foo(x @ Some(_))`)
-- Or-patterns (`Foo | Bar => ...`)
 - Trait item defaults (methods with default impls)
 
 ### Soft drops — transformed away silently, information lost
