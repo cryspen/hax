@@ -302,9 +302,22 @@ mod deref {
     }
 }
 
-mod drop {
+pub mod drop {
     /// See [`std::ops::Drop`]
-    trait Drop {
+    pub trait Drop {
+        /// See [`std::ops::Drop::drop`]
+        ///
+        /// Required in real `core`; a *provided* method here, with the
+        /// do-nothing body a pure model of destruction has anyway, so that the
+        /// extracted trait carries the `drop.default` entry Aeneas's
+        /// `core.ops.drop.Drop` has. Any impl still overrides it.
+        ///
+        /// The F* backend keeps it required: it rejects trait-item defaults
+        /// outright (`reject_TraitItemDefault`), and its Rust pretty-printer
+        /// emits `fn f_drop((self: Self))` on the way, which does not parse.
+        #[cfg(not(hax_backend_fstar))]
+        fn drop(&mut self) {}
+        #[cfg(hax_backend_fstar)]
         fn drop(&mut self);
     }
 }
@@ -455,5 +468,19 @@ mod tests {
                 *core::ops::Deref::deref(&r)
             );
         }
+    }
+
+    /// `Drop::drop`'s provided body. Real `core` has no default there (the
+    /// method is required), so there is nothing to compare against: all the
+    /// model's body does is leave the receiver alone.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_drop_default() {
+        struct Guard(u8);
+        impl crate::ops::drop::Drop for Guard {}
+
+        let mut g = Guard(7);
+        crate::ops::drop::Drop::drop(&mut g);
+        assert_eq!(g.0, 7);
     }
 }

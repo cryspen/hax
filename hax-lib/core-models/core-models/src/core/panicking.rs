@@ -18,6 +18,18 @@ pub fn panic_fmt(_fmt: super::fmt::Arguments) -> ! {
     panic!()
 }
 
+/// `core::panicking::AssertKind` — which of `assert_eq!` / `assert_ne!` /
+/// `assert_matches!` failed. Carried by the `assert_failed` shims; the model
+/// has no use for it beyond giving a client's mention of it a name.
+pub enum AssertKind {
+    /// `core::panicking::AssertKind::Eq`
+    Eq,
+    /// `core::panicking::AssertKind::Ne`
+    Ne,
+    /// `core::panicking::AssertKind::Match`
+    Match,
+}
+
 pub mod internal {
     // This module is used to break a dependency cycle (other core modules have
     // panics and this brings a dependency on core::fmt that we need to avoid)
