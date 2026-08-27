@@ -94,13 +94,11 @@ Both extracted libraries live outside this crate and are committed:
 ### Prerequisites
 
 - Rust toolchain pinned by `rust-toolchain.toml`.
-- For the Lean pipeline: `charon` and `aeneas` on `PATH` (the upstream nix
-  flakes are the recommended build path; CI uses
-  `nix build github:AeneasVerif/{charon,aeneas}`). Override the Makefile
-  lookup with `make CHARON=/path/to/charon AENEAS=/path/to/aeneas`.
+- `cargo hax` on `PATH` (`./setup.sh` at the root of this repository installs
+  it). Override with `make HAX=/path/to/cargo-hax`. Both pipelines go through
+  it; `cargo hax into lean` downloads the `charon` and `aeneas` versions hax
+  pins (`cargo hax tools show`), so neither has to be on `PATH`.
 - For the Lean pipeline: [`elan`](https://github.com/leanprover/elan).
-- For the F\* pipeline: `cargo hax` on `PATH` (`./setup.sh` at the root of
-  this repository installs it). Override with `make HAX=/path/to/cargo-hax`.
 
 ### Targets
 

@@ -1,7 +1,9 @@
 use crate::result::Result;
 
 // Dummy type to allow impls
-#[hax_lib::exclude]
+// F*-only: `charon::exclude` would drop this dummy type while its `impl`
+// blocks still reference it (see f32.rs).
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 struct Slice<T>([T]);
 
 pub mod iter {
@@ -85,7 +87,7 @@ pub mod iter {
     }
     // opaque: F* cannot prove slice bounds (1 <= length) in the else branch
     // This needs the invariant that size > 0
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     impl<'a, T> crate::iter::traits::iterator::Iterator for Windows<'a, T> {
         type Item = &'a [T];
         fn next(&mut self) -> Option<Self::Item> {
@@ -160,7 +162,7 @@ impl<T> Slice<T> {
         Self::len(s) == 0
     }
     /// See [`std::slice::contains`]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn contains(s: &[T], v: &T) -> bool
     where
         T: PartialEq,
@@ -168,7 +170,7 @@ impl<T> Slice<T> {
         rust_primitives::slice::slice_contains(s, v)
     }
     /// See [`std::slice::copy_within`]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
     where
         T: Copy,
@@ -176,7 +178,7 @@ impl<T> Slice<T> {
         todo!()
     }
     /// See [`std::slice::binary_search`]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
     where
         T: crate::cmp::Ord,
@@ -191,7 +193,7 @@ impl<T> Slice<T> {
     // opaque for F*: the generic precondition isn't provable here (the concrete
     // `SliceIndex` impls verify).
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-    #[hax_lib::requires(index.get(s).is_some())]
+    #[cfg_attr(not(charon), hax_lib::requires(index.get(s).is_some()))]
     fn get_unchecked<I: SliceIndex<[T]>>(s: &[T], index: I) -> &<I as SliceIndex<[T]>>::Output {
         index.get_unchecked(s)
     }
@@ -206,7 +208,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::get_unchecked_mut`]
     #[cfg(not(hax_backend_fstar))]
-    #[hax_lib::requires(index.get(s).is_some())]
+    #[cfg_attr(not(charon), hax_lib::requires(index.get(s).is_some()))]
     fn get_unchecked_mut<I: SliceIndex<[T]>>(
         s: &mut [T],
         index: I,
@@ -252,7 +254,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::fill`]
     // opaque: for-loop + indexed mutation causes F* dependency cycle through Rust_primitives.Hax
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn fill(s: &mut [T], value: T)
     where
         T: Clone,
@@ -269,7 +271,7 @@ impl<T> Slice<T> {
     // reference to `eq`.
     /// See [`std::slice::starts_with`]
     #[cfg(hax_backend_fstar)]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn starts_with(s: &[T], needle: &[T]) -> bool
     where
         T: PartialEq,
@@ -279,7 +281,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::ends_with`]
     #[cfg(hax_backend_fstar)]
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn ends_with(s: &[T], needle: &[T]) -> bool
     where
         T: PartialEq,
@@ -380,7 +382,7 @@ impl<T: crate::cmp::Ord> crate::cmp::Ord for [T] {
 impl<T> Slice<T> {
     /// See [`std::slice::starts_with`]
     // opaque: slice equality requires eqtype in F*, but T is extracted as Type0
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn starts_with(s: &[T], needle: &[T]) -> bool
     where
         T: PartialEq,
@@ -390,7 +392,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::ends_with`]
     // opaque: slice equality requires eqtype in F*, but T is extracted as Type0
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn ends_with(s: &[T], needle: &[T]) -> bool
     where
         T: PartialEq,
@@ -619,7 +621,7 @@ pub mod index {
         I: SliceIndex<[T]>,
     {
         type Output = I::Output;
-        #[hax_lib::requires(i.get(self).is_some())]
+        #[cfg_attr(not(charon), hax_lib::requires(i.get(self).is_some()))]
         fn index(&self, i: I) -> &I::Output {
             match i.get(self) {
                 Option::Some(r) => r,
@@ -642,7 +644,9 @@ pub mod index {
         // the `None` arm would have to produce the `&mut` return, which aeneas
         // lowers to a `(value, write-back)` pair and cannot synthesise from a
         // divergent `panic`. The precondition mirrors `Index::index`.
-        #[hax_lib::requires(i.get(self).is_some())]
+        // Kept out of the Lean lane: routed through hax's spec channel, this
+        // precondition makes aeneas fail with an internal `Invalid_argument`.
+        #[cfg_attr(not(charon), hax_lib::requires(i.get(self).is_some()))]
         fn index_mut(&mut self, i: I) -> &mut I::Output {
             i.get_unchecked_mut(self)
         }

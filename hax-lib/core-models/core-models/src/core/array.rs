@@ -4,7 +4,9 @@ use rust_primitives::{sequence::*, slice::*};
 pub struct TryFromSliceError;
 
 // Dummy type to allow impls
-#[hax_lib::exclude]
+// F*-only: `charon::exclude` would drop this dummy type while its `impl`
+// blocks still reference it (see f32.rs).
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 struct Array<T, const N: usize>([T; N]);
 
 // Array impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)
@@ -138,9 +140,9 @@ impl<T, const N: usize> Index<RangeFull> for [T; N] {
     }
 }
 
-// Also `not(hax_backend_fstar)`: that model's blanket `impl<T> Clone for T`
+// Not for `hax_backend_fstar`: that model's blanket `impl<T> Clone for T`
 // already covers arrays, and both in scope fails coherence.
-#[cfg(all(not(hax), not(hax_backend_fstar)))]
+#[cfg(not(hax_backend_fstar))]
 impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
     fn clone(self) -> Self {
         self

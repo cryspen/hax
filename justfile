@@ -49,10 +49,6 @@ expand *FLAGS:
     | ocamlformat --impl - \
     | just _pager
 
-# Regenerate core models
-core-models-extract:
-  cd hax-lib/core-models && ./hax.sh extract
-
 # Run core models tests
 core-models-test:
   cargo test --manifest-path hax-lib/core-models/Cargo.toml --workspace

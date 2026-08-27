@@ -1,5 +1,5 @@
 mod converts {
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     fn from_utf8(s: &[u8]) -> crate::result::Result<&str, super::error::Utf8Error> {
         panic!()
     }
@@ -20,7 +20,7 @@ mod traits {
         fn from_str(s: &str) -> crate::result::Result<Self, Self::Err>;
     }
 
-    #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
     impl FromStr for u64 {
         type Err = u64;

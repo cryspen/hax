@@ -15,7 +15,8 @@ pub trait StructuralPartialEq {}
 impl<T> Send for T {}
 impl<T> Sync for T {}
 impl<T> Sized for T {}
-#[cfg(hax)]
+// The F* model; the other backends use the per-integer impls below.
+#[cfg(hax_backend_fstar)]
 impl<T: Clone> Copy for T {}
 
 macro_rules! copy_impl_for_int {
@@ -26,7 +27,7 @@ macro_rules! copy_impl_for_int {
     };
 }
 
-#[cfg(not(hax))]
+#[cfg(not(hax_backend_fstar))]
 copy_impl_for_int!(
     core::primitive::u8,
     core::primitive::u16,
