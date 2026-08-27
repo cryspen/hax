@@ -50,10 +50,13 @@
    },
    {
     "module": "alloc",
-    "covered": 0,
+    "covered": 2,
     "total": 37,
     "in_scope": false,
-    "covered_items": [],
+    "covered_items": [
+     "Layout",
+     "LayoutError"
+    ],
     "missing_items": [
      "AllocError",
      "Allocator",
@@ -69,7 +72,6 @@
      "GlobalAlloc::alloc_zeroed",
      "GlobalAlloc::dealloc",
      "GlobalAlloc::realloc",
-     "Layout",
      "Layout::adjust_alignment_to",
      "Layout::align",
      "Layout::align_to",
@@ -90,8 +92,7 @@
      "Layout::repeat",
      "Layout::repeat_packed",
      "Layout::size",
-     "LayoutErr",
-     "LayoutError"
+     "LayoutErr"
     ]
    },
    {
@@ -13899,15 +13900,15 @@
    },
    {
     "module": "clone",
-    "covered": 2,
+    "covered": 3,
     "total": 7,
     "in_scope": true,
     "covered_items": [
      "Clone",
-     "Clone::clone"
+     "Clone::clone",
+     "Clone::clone_from"
     ],
     "missing_items": [
-     "Clone::clone_from",
      "CloneToUninit",
      "CloneToUninit::clone_to_uninit",
      "TrivialClone",
@@ -17644,19 +17645,20 @@
    },
    {
     "module": "panic",
-    "covered": 0,
+    "covered": 2,
     "total": 17,
     "in_scope": false,
-    "covered_items": [],
+    "covered_items": [
+     "Location",
+     "PanicInfo"
+    ],
     "missing_items": [
      "AssertUnwindSafe",
-     "Location",
      "Location::caller",
      "Location::column",
      "Location::file",
      "Location::file_as_c_str",
      "Location::line",
-     "PanicInfo",
      "PanicInfo::can_unwind",
      "PanicInfo::location",
      "PanicInfo::message",
@@ -17724,12 +17726,13 @@
    },
    {
     "module": "pin",
-    "covered": 0,
+    "covered": 1,
     "total": 27,
     "in_scope": true,
-    "covered_items": [],
+    "covered_items": [
+     "Pin"
+    ],
     "missing_items": [
-     "Pin",
      "Pin::as_deref_mut",
      "Pin::as_mut",
      "Pin::as_ref",
@@ -17771,12 +17774,13 @@
    },
    {
     "module": "ptr",
-    "covered": 0,
+    "covered": 1,
     "total": 191,
     "in_scope": true,
-    "covered_items": [],
+    "covered_items": [
+     "Alignment"
+    ],
     "missing_items": [
-     "Alignment",
      "Alignment::MIN",
      "Alignment::as_nonzero",
      "Alignment::as_usize",
@@ -18408,13 +18412,14 @@
    },
    {
     "module": "slice",
-    "covered": 11,
+    "covered": 13,
     "total": 205,
     "in_scope": true,
     "covered_items": [
      "Chunks",
      "ChunksExact",
      "Iter",
+     "IterMut",
      "SliceIndex",
      "SliceIndex::Output",
      "SliceIndex::get",
@@ -18422,6 +18427,7 @@
      "SliceIndex::get_unchecked",
      "SliceIndex::get_unchecked_mut",
      "SliceIndex::index",
+     "SliceIndex::index_mut",
      "Windows"
     ],
     "missing_items": [
@@ -18438,7 +18444,6 @@
      "GetDisjointMutIndex::is_in_bounds",
      "GetDisjointMutIndex::is_overlapping",
      "Iter::as_slice",
-     "IterMut",
      "IterMut::as_mut_slice",
      "IterMut::as_slice",
      "IterMut::into_slice",
@@ -18452,7 +18457,6 @@
      "RSplitMut",
      "RSplitN",
      "RSplitNMut",
-     "SliceIndex::index_mut",
      "SlicePattern",
      "SlicePattern::Item",
      "SlicePattern::as_slice",
@@ -18793,16 +18797,18 @@
    },
    {
     "module": "sync",
-    "covered": 0,
+    "covered": 2,
     "total": 326,
     "in_scope": false,
-    "covered_items": [],
+    "covered_items": [
+     "AtomicBool",
+     "AtomicU32"
+    ],
     "missing_items": [
      "ATOMIC_BOOL_INIT",
      "ATOMIC_ISIZE_INIT",
      "ATOMIC_USIZE_INIT",
      "Atomic",
-     "AtomicBool",
      "AtomicBool::as_ptr",
      "AtomicBool::compare_and_swap",
      "AtomicBool::compare_exchange",
@@ -19009,7 +19015,6 @@
      "AtomicU16::swap",
      "AtomicU16::try_update",
      "AtomicU16::update",
-     "AtomicU32",
      "AtomicU32::as_ptr",
      "AtomicU32::compare_and_swap",
      "AtomicU32::compare_exchange",

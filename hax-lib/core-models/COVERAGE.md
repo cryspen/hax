@@ -8,7 +8,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 
 ## `core`
 
-**Targeted coverage: 764/3888 items (20%) across 35 modules — 21 have at least a partial model.**
+**Targeted coverage: 769/3888 items (20%) across 35 modules — 23 have at least a partial model.**
 
 | module | covered | total | coverage |
 |---|--:|--:|---|
@@ -19,7 +19,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `borrow` | 2 | 4 | 50% |
 | `cell` | 0 | 81 | 0% |
 | `char` | 0 | 67 | 0% |
-| `clone` | 2 | 7 | 29% |
+| `clone` | 3 | 7 | 43% |
 | `cmp` | 25 | 35 | 71% |
 | `convert` | 13 | 17 | 76% |
 | `default` | 2 | 2 | 100% |
@@ -40,16 +40,16 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `ops` | 88 | 151 | 58% |
 | `option` | 27 | 57 | 47% |
 | `panicking` | 2 | 31 | 6% |
-| `pin` | 0 | 27 | 0% |
+| `pin` | 1 | 27 | 4% |
 | `profiling` | 0 | 2 | 0% |
-| `ptr` | 0 | 191 | 0% |
+| `ptr` | 1 | 191 | 1% |
 | `range` | 0 | 19 | 0% |
 | `result` | 30 | 42 | 71% |
-| `slice` | 11 | 205 | 5% |
+| `slice` | 13 | 205 | 6% |
 | `str` | 6 | 160 | 4% |
-| **subtotal** | **764** | **3888** | **20%** |
+| **subtotal** | **769** | **3888** | **20%** |
 
-<details><summary>Non-targeted modules: 20 modules, 1/14842 items</summary>
+<details><summary>Non-targeted modules: 20 modules, 7/14842 items</summary>
 
 `alloc`, `arch`, `async_iter`, `autodiff`, `bstr`, `contracts`, `ffi`, `future`, `intrinsics`, `io`, `net`, `os`, `panic`, `pat`, `random`, `simd`, `sync`, `task`, `time`, `unsafe_binder`
 </details>
