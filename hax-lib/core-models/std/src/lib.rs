@@ -227,12 +227,30 @@ mod io {
         #[hax_lib::opaque]
         fn e_print(args: core::fmt::Arguments) {}
 
+        /// See [`std::io::stdio::_print`], what `print!`/`println!` expand to.
+        /// Like `e_print` above, the model prints nothing.
+        //
+        // `hax_lib::exclude`d on the F* lane: hax renders a leading underscore
+        // as `e_`, so `_print` and `e_print` would both be emitted as `e_print`
+        // and the module would carry two declarations of the same name. The
+        // `std` model is extracted to F* only, so on this branch the item is a
+        // Rust-level model with no backend counterpart; it exists for the
+        // clients that mention it and for the coverage count.
+        #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+        #[hax_lib::opaque]
+        fn _print(args: core::fmt::Arguments) {}
+
         #[cfg(test)]
         mod tests {
             use proptest::prelude::*;
 
             proptest! {
                 // The model prints nothing; all there is to check is that it runs.
+                #[test]
+                fn test_print(x in any::<u8>()) {
+                    super::_print(format_args!("{x}"));
+                }
+
                 #[test]
                 fn test_e_print(x in any::<u8>()) {
                     super::e_print(format_args!("{x}"));
