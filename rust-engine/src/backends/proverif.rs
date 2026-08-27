@@ -415,9 +415,8 @@ const _: () = {
         }
 
         /// A "trivial" binder is one whose rendered pattern is just `x`
-        /// (or `_`) — i.e., a pattern that cannot fail at runtime. ProVerif
-        /// rejects `else` on these, and they never need a fallback because
-        /// they always match.
+        /// (or `_`) — an irrefutable pattern that always matches, so it needs
+        /// no `else` fallback.
         ///
         /// We mirror the special cases in `pat`: `ResultOk(inner)` and
         /// `Ascription` are transparent (they just render their inner pat),
@@ -508,64 +507,124 @@ const _: () = {
             }
         }
 
-        /// Print one match-arm as an `if-let` chain piece.
+        /// Render a pattern in `let`-binder position: a constant matches by
+        /// equality (`(=lit)`), any other pattern binds structurally. Used
+        /// for both a match arm's pattern and an `if let` guard's left-hand
+        /// side, where a literal means "match this value", not "bind a var".
+        fn let_pat<A: 'static + Clone>(&self, pat: &Pat) -> DocBuilder<A> {
+            match &*pat.kind {
+                PatKind::Constant { lit } => docs!["=", lit].parens(),
+                _ => docs![pat],
+            }
+        }
+
+        /// Render an (already or-pattern-expanded and truncated) arm list as a
+        /// ProVerif `let … in … else …` chain.
         ///
-        /// For failable arms we wrap the body in `( ... )` so that a
-        /// subsequent `else N` in the enclosing Match chain binds to *this*
-        /// arm's `let`, not to some inner destructure inside `body`.
-        /// Arms whose rendered pattern is a trivial binder (e.g. `Ok(th)`
-        /// → `th`) never fail, so we omit the parens (which would let a
-        /// subsequent `else` attach to this `let` — and ProVerif rejects
-        /// `else` on a simple-binder let).
-        fn match_arm<A: 'static + Clone>(
+        /// The chain is built right-to-left so each arm closes over its
+        /// *continuation*: the code reached when the arm yields no value. That
+        /// happens when the arm's pattern does not destructure the scrutinee
+        /// or, for a guarded arm, when its guard does not hold. Both fall
+        /// through to the same continuation, so a guarded arm with a
+        /// non-wildcard pattern embeds the continuation twice — one `else` for
+        /// the guard, one for the pattern. When no arm matches, the chain
+        /// bottoms out in `bitstring_err()`.
+        ///
+        /// A failable arm's body is wrapped in `( … )` so the `else` after it
+        /// binds to *this* arm's `let`, not to an inner destructure in the
+        /// body. An unguarded arm whose pattern is a trivial binder (e.g.
+        /// `Ok(th)` → `th`) always matches, so it ends the chain with no
+        /// `else`.
+        fn render_arm_chain<A: 'static + Clone>(
             &self,
             scrutinee: &Expr,
-            arm: &Arm,
-            is_last: bool,
+            arms: &[&Arm],
         ) -> DocBuilder<A> {
-            // An `if let` match guard (`pat if let Ok(y) = v => body`) has no
-            // first-order ProVerif encoding: the guard's binding (`y`) is
-            // dropped, leaving `body` referencing an unbound variable. Collapse
-            // a guarded arm's result to the error sink so the model still
-            // parses — the arm is honestly a value we cannot compute. The
-            // pattern is still destructured so the arm chain stays well-formed.
-            let guarded = arm.guard.is_some();
+            let Some((arm, rest)) = arms.split_first() else {
+                return docs!["bitstring_err()"];
+            };
+
+            // A guard (`pat if <cond>`, or `pat if let <lhs> = <rhs>`) is
+            // normalized to `let <lhs> = <rhs>`: a boolean or equality
+            // condition has `lhs = (=True())` and `rhs` the condition term; a
+            // real `if let` binds its own pattern. Test the guard inside the
+            // arm's destructure and, on guard failure, fall through to `rest`
+            // exactly as a failed destructure does.
+            if let Some(guard) = &arm.guard {
+                let GuardKind::IfLet { lhs, rhs } = &guard.kind;
+                let guard_test: DocBuilder<A> = docs![
+                    "let ",
+                    self.let_pat(lhs),
+                    " = ",
+                    self.paren_unless_atomic(rhs),
+                    " in",
+                    docs![line!(), self.paren_unless_atomic(&arm.body)]
+                        .nest(INDENT)
+                        .group(),
+                    hardline!(),
+                    "else ",
+                    self.render_arm_chain(scrutinee, rest)
+                ];
+                // A wildcard arm pattern always destructures, so test the guard
+                // directly. Otherwise destructure the scrutinee first, wrapping
+                // the guard test in `( … )` so its own `else` stays attached to
+                // it, and fall through to `rest` when the pattern does not match.
+                return if matches!(*arm.pat.kind, PatKind::Wild) {
+                    guard_test
+                } else {
+                    docs![
+                        "let ",
+                        self.let_pat(&arm.pat),
+                        " = ",
+                        docs![scrutinee],
+                        " in",
+                        docs![line!(), guard_test.parens()].nest(INDENT).group(),
+                        hardline!(),
+                        "else ",
+                        self.render_arm_chain(scrutinee, rest)
+                    ]
+                };
+            }
+
             match &*arm.pat.kind {
-                PatKind::Wild if guarded => docs!["bitstring_err()"],
+                // A bare wildcard is the fallback: its body runs unconditionally.
                 PatKind::Wild => docs![&arm.body],
-                // A `Result::Err` arm collapses to a bare `bitstring_err()` only
-                // when it is the final (fallback) arm of the chain — there it
-                // stands in for "no further arm matched -> fail". When such an
-                // arm is NOT last (e.g. `match r { Err(_) => false, Ok(x) => .. }`)
-                // a bare `bitstring_err()` is wrong twice over: the following
-                // `else` has no `let` to bind to (a ProVerif syntax error), and
-                // the arm body (here `false`) would be discarded. So we fall
-                // through and render it as an ordinary destructuring arm.
+                // A trailing `Result::Err` arm stands in for "nothing matched":
+                // the chain has already exhausted the real arms, so it is the
+                // error sink. (A non-final `Err` arm falls through below and is
+                // rendered as an ordinary destructuring arm, since its body is
+                // reachable and a following `else` needs a `let` to bind to.)
                 PatKind::Construct { constructor, .. }
-                    if is_last && *constructor == names::ResultErr && !guarded =>
+                    if rest.is_empty() && *constructor == names::ResultErr =>
                 {
                     docs!["bitstring_err()"]
                 }
                 _ => {
-                    let pat: DocBuilder<A> = match &*arm.pat.kind {
-                        PatKind::Constant { lit } => docs!["=", lit].parens(),
-                        _ => docs![&arm.pat],
-                    };
-                    let body = if guarded {
-                        docs!["bitstring_err()"]
-                    } else if Self::is_trivial_binder(&arm.pat) {
-                        docs![&arm.body]
+                    let pat = self.let_pat(&arm.pat);
+                    if Self::is_trivial_binder(&arm.pat) {
+                        let body = docs![&arm.body];
+                        docs![
+                            "let ",
+                            pat,
+                            " = ",
+                            docs![scrutinee],
+                            " in",
+                            docs![line!(), body].nest(INDENT).group()
+                        ]
                     } else {
-                        self.paren_unless_atomic(&arm.body)
-                    };
-                    docs![
-                        "let ",
-                        pat,
-                        " = ",
-                        docs![scrutinee],
-                        " in",
-                        docs![line!(), body].nest(INDENT).group()
-                    ]
+                        let body = self.paren_unless_atomic(&arm.body);
+                        docs![
+                            "let ",
+                            pat,
+                            " = ",
+                            docs![scrutinee],
+                            " in",
+                            docs![line!(), body].nest(INDENT).group(),
+                            hardline!(),
+                            "else ",
+                            self.render_arm_chain(scrutinee, rest)
+                        ]
+                    }
                 }
             }
         }
@@ -1217,20 +1276,12 @@ const _: () = {
                 // ProVerif evaluates `letfun` bodies eagerly, so any
                 // destructure that can fail must have an `else` clause —
                 // otherwise the whole letfun call aborts, even from arms
-                // that weren't taken. We therefore append a trailing
-                // `else bitstring_err()` to the arm chain unless the last
-                // arm itself already provides a fallback:
-                //   - `PatKind::Wild` — the arm body is the fallback;
-                //   - trivial binder (e.g. `Ok(x)` which strips to `x`) —
-                //     the arm always succeeds, and ProVerif rejects `else`
-                //     on a simple-binder `let` anyway;
-                //   - `Result::Err(_)` — `match_arm` collapses this to
-                //     `bitstring_err()` directly, which is itself a fallback.
+                // that weren't taken. The arms are split on or-patterns and
+                // truncated at the first arm that always matches, then
+                // `render_arm_chain` builds the `let … in … else …` chain,
+                // threading each arm's fall-through continuation and ending
+                // in `bitstring_err()` when nothing matches.
                 //
-                // For (1) and (2), the arm absorbs all subsequent arms
-                // (they're dynamically unreachable and ProVerif's grammar
-                // can't express an `else` after such a `let`). Truncate
-                // the arm list there.
                 // A match with no arms (uninhabited scrutinee: `match never {}`,
                 // or the discriminant cast of a variant-less enum) destructures
                 // nothing and is dynamically unreachable. ProVerif cannot spell an
@@ -1243,18 +1294,12 @@ const _: () = {
                 ExprKind::Match { scrutinee, arms } => {
                     let arm_always_matches = |arm: &Arm| -> bool {
                         // A guarded arm may fail its guard, so it never
-                        // unconditionally matches (its guard collapses to the
-                        // error sink but the following arms stay reachable).
+                        // unconditionally matches: its guard is tested inside
+                        // the arm and the following arms stay reachable on
+                        // guard failure.
                         arm.guard.is_none()
                             && (matches!(*arm.pat.kind, PatKind::Wild)
                                 || Self::is_trivial_binder(&arm.pat))
-                    };
-                    let arm_is_result_err = |arm: &Arm| -> bool {
-                        matches!(
-                            &*arm.pat.kind,
-                            PatKind::Construct { constructor, .. }
-                                if *constructor == names::ResultErr
-                        )
                     };
                     // ProVerif has no or-patterns. After
                     // `HoistDisjunctivePatterns` the alternatives sit at the top
@@ -1277,8 +1322,8 @@ const _: () = {
                             _ => vec![arm.clone()],
                         })
                         .collect();
-                    // Take arms up to and including the first one that
-                    // always matches.
+                    // Take arms up to and including the first one that always
+                    // matches; later arms are dynamically unreachable.
                     let mut truncated: Vec<&Arm> = Vec::new();
                     for arm in expanded.iter() {
                         truncated.push(arm);
@@ -1286,22 +1331,7 @@ const _: () = {
                             break;
                         }
                     }
-                    let n_truncated = truncated.len();
-                    let pieces: Vec<DocBuilder<A>> = truncated
-                        .iter()
-                        .enumerate()
-                        .map(|(i, arm)| self.match_arm(scrutinee, arm, i + 1 == n_truncated))
-                        .collect();
-                    let chain = intersperse!(pieces, docs![hardline!(), "else "]);
-                    let last_provides_fallback = truncated
-                        .last()
-                        .map(|arm| arm_always_matches(arm) || arm_is_result_err(arm))
-                        .unwrap_or(false);
-                    if last_provides_fallback {
-                        chain
-                    } else {
-                        docs![chain, hardline!(), "else bitstring_err()"]
-                    }
+                    self.render_arm_chain(scrutinee, &truncated)
                 }
 
                 // ===== If / Let =====
@@ -1356,15 +1386,13 @@ const _: () = {
                     .group(),
                 },
                 //
-                // For a non-trivial (i.e., failable) pattern, ProVerif's
-                // eager-evaluation semantics require an `else` clause —
-                // otherwise a destructure that fails aborts the entire
-                // letfun call (even if it's nested inside an unreached
-                // Match arm). Wrap the body in parens so any `else` chain
-                // *inside* `body` doesn't accidentally rebind to this
-                // outer `let`. Trivial binders (`let x = e`) never fail
-                // and ProVerif rejects an `else` clause on them, so we
-                // emit them as-is.
+                // A failable (refutable) pattern requires an `else` clause:
+                // ProVerif evaluates letfun bodies eagerly, so a destructure
+                // that fails aborts the entire letfun call (even when nested
+                // inside an unreached Match arm) unless an `else` catches it.
+                // Wrap the body in parens so any `else` chain *inside* `body`
+                // doesn't rebind to this outer `let`. A trivial (irrefutable)
+                // binder (`let x = e`) always matches, so it takes no `else`.
                 ExprKind::Let { lhs, rhs, body } => {
                     if Self::is_trivial_binder(lhs) {
                         docs![
@@ -1529,8 +1557,8 @@ const _: () = {
         }
 
         fn arm(&self, _arm: &Arm) -> DocBuilder<A> {
-            // Arms are emitted via `match_arm` (called from `expr`'s `Match`
-            // branch); the bare default is unused.
+            // Arms are emitted via `render_arm_chain` (called from `expr`'s
+            // `Match` branch); the bare default is unused.
             nil!()
         }
 

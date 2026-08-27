@@ -33,8 +33,63 @@ letfun new_tests__rustc_coverage__branch__guard__branch_match_guard(x: bitstring
     ) in
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0)
-  else let Some(x_1) = x in bitstring_err()
-  else let Some(x_2) = x in bitstring_err()
+  else let Some(x_1) = x in
+    (let (=True()) = rust_primitives__hax__machine_int__eq(
+      rust_primitives__hax__machine_int__rem(x_1, nat_2),
+      nat_0
+    ) in
+      (let wildcard: bitstring = std__io__stdio__u_print(
+        core__fmt__rt__Impl_1__new_const(
+          rust_primitives__hax__array_cons(string_lit__is_x20nonzero_x20and_x20even_x0a, rust_primitives__hax__array_nil())
+        )
+      ) in
+      let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+      rust_primitives__hax__Tuple0__Tuple0)
+    else let Some(x_2) = x in
+      (let (=True()) = rust_primitives__hax__machine_int__eq(
+        rust_primitives__hax__machine_int__rem(x_2, nat_3),
+        nat_0
+      ) in
+        (let wildcard: bitstring = std__io__stdio__u_print(
+          core__fmt__rt__Impl_1__new_const(
+            rust_primitives__hax__array_cons(string_lit__is_x20nonzero_x20and_x20odd_x2c_x20but_x20divisible_x20by_x203_x0a, rust_primitives__hax__array_nil())
+          )
+        ) in
+        let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+        rust_primitives__hax__Tuple0__Tuple0)
+      else let wildcard: bitstring = std__io__stdio__u_print(
+        core__fmt__rt__Impl_1__new_const(
+          rust_primitives__hax__array_cons(string_lit__something_x20else_x0a, rust_primitives__hax__array_nil())
+        )
+      ) in
+      let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+      rust_primitives__hax__Tuple0__Tuple0)
+    else let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__something_x20else_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+  else let Some(x_2) = x in
+    (let (=True()) = rust_primitives__hax__machine_int__eq(
+      rust_primitives__hax__machine_int__rem(x_2, nat_3),
+      nat_0
+    ) in
+      (let wildcard: bitstring = std__io__stdio__u_print(
+        core__fmt__rt__Impl_1__new_const(
+          rust_primitives__hax__array_cons(string_lit__is_x20nonzero_x20and_x20odd_x2c_x20but_x20divisible_x20by_x203_x0a, rust_primitives__hax__array_nil())
+        )
+      ) in
+      let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+      rust_primitives__hax__Tuple0__Tuple0)
+    else let wildcard: bitstring = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__something_x20else_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
   else let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
       rust_primitives__hax__array_cons(string_lit__something_x20else_x0a, rust_primitives__hax__array_nil())
