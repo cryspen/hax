@@ -83,19 +83,6 @@ def Result.is_err {T E : Type} (r : Result T E) : Aeneas.Std.RustM Bool :=
   | Result.Err _ => Aeneas.Std.RustM.ok true
 end result
 
-/-! ## `core::slice::IterMut` — mutable-element slice iterator
-
-Modelled as Aeneas.Std does (`SliceIter.lean`): an opaque `{slice, index}`, NOT an
-`Iterator` instance — a `&mut`-yielding iterator's `next` must return a 3-tuple
-`(Option T) × Self × back-prop-fn` (the yielded `&mut T`'s write-back), which the
-`Iterator` trait's 2-tuple `next` can't hold. Its specialised `next` (in the
-epilogue) is what a downstream extraction calls directly. -/
-namespace slice.iter
-structure IterMut (T : Type) where
-  slice : Slice T
-  i : Nat := 0
-end slice.iter
-
 end CoreModels.core
 
 /-! ## Hax lib -/

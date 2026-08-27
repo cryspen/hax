@@ -30,7 +30,7 @@ def rust_primitives.slice.slice_split_at
 @[rust_fun "rust_primitives::slice::slice_split_at_mut"]
 def rust_primitives.slice.slice_split_at_mut
   {T : Type} : Slice T → Std.Usize →
-  Result (((Slice T) × (Slice T)) × (((Slice T) × (Slice T)) → Slice T)) :=
+  RustM (((Slice T) × (Slice T)) × (((Slice T) × (Slice T)) → Slice T)) :=
   Aeneas.Std.core.slice.Slice.split_at_mut
 
 /-- Recursive helper function for `slice_contains` -/
@@ -230,7 +230,7 @@ def rust_primitives.sequence.seq_from_slice
 @[rust_fun "rust_primitives::sequence::seq_from_slice_mut"]
 def rust_primitives.sequence.seq_from_slice_mut
   {T : Type} :
-  Slice T → Result ((rust_primitives.sequence.Seq T) ×
+  Slice T → RustM ((rust_primitives.sequence.Seq T) ×
     ((rust_primitives.sequence.Seq T) → Slice T)) :=
   fun s => ok (s, fun s' => s')
 
@@ -251,7 +251,7 @@ def rust_primitives.sequence.seq_from_slice_mut
 @[rust_fun "rust_primitives::sequence::seq_remove_mut"]
 def rust_primitives.sequence.seq_remove_mut
   {T : Type} :
-  rust_primitives.sequence.Seq T → Std.Usize → Result (T ×
+  rust_primitives.sequence.Seq T → Std.Usize → RustM (T ×
     (rust_primitives.sequence.Seq T) ×
     ((rust_primitives.sequence.Seq T) → T →
       (rust_primitives.sequence.Seq T))) := fun s i =>
@@ -270,7 +270,7 @@ def rust_primitives.sequence.seq_remove_mut
           omega⟩
       else s'
     ok (x, rest, back)
-  else fail .arrayOutOfBounds
+  else fail .panic
 
 @[spec]
 def rust_primitives.sequence.seq_from_array

@@ -401,14 +401,14 @@ def add_provided_method_defaults(text: str) -> str:
     text = replace(
         "Clone.clone_from default",
         text,
-        "  clone_from : Self → Self → Result Self\n",
-        "  clone_from : Self → Self → Result Self := fun _ => clone\n",
+        "  clone_from : Self → Self → RustM Self\n",
+        "  clone_from : Self → Self → RustM Self := fun _ => clone\n",
     )
     return replace(
         "Eq.assert_receiver_is_total_eq default",
         text,
-        "  assert_receiver_is_total_eq : Self → Result Unit\n",
-        "  assert_receiver_is_total_eq : Self → Result Unit := fun _ => ok ()\n",
+        "  assert_receiver_is_total_eq : Self → RustM Unit\n",
+        "  assert_receiver_is_total_eq : Self → RustM Unit := fun _ => ok ()\n",
     )
 
 

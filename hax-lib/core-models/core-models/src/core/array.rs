@@ -270,28 +270,6 @@ impl<T, const N: usize> crate::convert::AsRef<[T]> for [T; N] {
     }
 }
 
-/// See [`std::ops::IndexMut`] for `[T; N]`, mirroring the `Index` impl above
-/// and std's `impl<T, I, const N: usize> IndexMut<I> for [T; N] where [T]:
-/// IndexMut<I>`.
-// `&mut` returns are unsupported in the F* backend.
-#[cfg(not(hax_backend_fstar))]
-#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
-#[hax_lib::attributes]
-impl<T, I, const N: usize> crate::ops::index::IndexMut<I> for [T; N]
-where
-    I: crate::slice::SliceIndex<[T]>,
-    [T]: Index<I>,
-    [T; N]: crate::ops::index::Index<I, Output = <I as crate::slice::SliceIndex<[T]>>::Output>,
-{
-    // Through `SliceIndex::get_unchecked_mut` rather than the slice's own
-    // `IndexMut`: routing the `&mut` array through a second `IndexMut`
-    // dictionary makes aeneas fail with "new value doesn't have the same type
-    // as its destination".
-    fn index_mut(&mut self, i: I) -> &mut Self::Output {
-        i.get_unchecked_mut(array_as_mut_slice(self))
-    }
-}
-
 /// See [`std::convert::TryFrom`] `<&mut [T]>` for `[T; N]`
 ///
 /// Real `core`'s companion to the `TryFrom<&[T]>` impl in `crate::convert`:
