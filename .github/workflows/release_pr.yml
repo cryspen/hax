@@ -1,0 +1,176 @@
+name: Release PR
+
+# The release PR lifecycle: a manual dispatch (with the bump level and an
+# optional release-candidate flag as inputs) runs the `cargo release` version
+# bump, pushes it as a `release/v<version>`
+# branch, and hands the dispatcher a prefilled link to open the PR; merging
+# such a PR starts the `publish` workflow, whose `crates-io` environment
+# still requires a maintainer's approval before anything is published.
+#
+# Only branches with the `release/` prefix, from this repository, queue a
+# publish on merge, so an unrelated change to the version numbers on `main`
+# never does.
+
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        description: Version bump level
+        type: choice
+        required: true
+        options:
+          - patch
+          - minor
+          - major
+      rc:
+        description: Bump to a release candidate of the target version
+        type: boolean
+        default: false
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  # The version bump of the release procedure (PUBLISHING.md), run on a
+  # runner instead of a maintainer's machine.
+  bump:
+    if: >-
+      github.repository == 'cryspen/hax' &&
+      github.event_name == 'workflow_dispatch'
+    # One bump at a time. Kept off the `start-publish` job: a pending release
+    # run sharing a group could be evicted by an unrelated PR closing.
+    concurrency:
+      group: ${{ github.workflow }}-bump
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: read
+    env:
+      # The bump builds nothing, so the pinned nightly that
+      # `rust-toolchain.toml` would select is not needed.
+      RUSTUP_TOOLCHAIN: stable
+    steps:
+      # Failing here, rather than skipping the job on the ref, makes a
+      # dispatch from the wrong ref visible instead of a silent green run.
+      - name: Require a dispatch on main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::dispatch this workflow on main, not $GITHUB_REF_NAME"
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - uses: cargo-bins/cargo-binstall@v1.21.1
+      - run: cargo binstall --no-confirm cargo-release@1.1.4
+
+      # `cargo release` commits the bump, which needs a committer identity.
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # On a branch first: the checkout leaves a detached HEAD, which
+      # `cargo release` refuses. The branch gets its release name once the
+      # bumped version is known.
+      #
+      # `cargo release` has no level for "bump, then pre-release": its `rc`
+      # level only counts up from the current version. For a release candidate
+      # the target version is computed here and passed explicitly: the level
+      # applied to the current version with `-rc.1` appended, or the next
+      # candidate when the current version already is one of the target.
+      - name: Bump the versions
+        env:
+          LEVEL: ${{ inputs.level }}
+          RC: ${{ inputs.rc }}
+        run: |
+          set -o pipefail
+          git checkout -b release
+          target="$LEVEL"
+          if [ "$RC" = 'true' ]; then
+            current="$(cargo metadata --format-version 1 --no-deps \
+              | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
+            target="$(jq -rn --arg v "$current" --arg level "$LEVEL" '
+              ($v | capture("^(?<x>\\d+)\\.(?<y>\\d+)\\.(?<z>\\d+)(-rc\\.(?<n>\\d+))?$")?
+                 // error("unsupported version: \($v)")) as $c
+              | ($c.x | tonumber) as $x
+              | ($c.y | tonumber) as $y
+              | ($c.z | tonumber) as $z
+              | (if $level == "major" then [$x + 1, 0, 0]
+                 elif $level == "minor" then [$x, $y + 1, 0]
+                 # A patch bump of a candidate targets the version the
+                 # candidate precedes, like `cargo release patch` would.
+                 elif $c.n == null then [$x, $y, $z + 1]
+                 else [$x, $y, $z]
+                 end) as $base
+              | ($base | map(tostring) | join(".")) as $b
+              | if $c.n != null and $base == [$x, $y, $z]
+                then "\($b)-rc.\(($c.n | tonumber) + 1)"
+                else "\($b)-rc.1"
+                end')"
+          fi
+          cargo release "$target" --workspace \
+            --no-publish --no-tag --no-push --execute --no-confirm
+
+      # The dispatcher opens the PR through the summary link, so the opened
+      # event comes from a person and the PR's CI checks start; a PR opened
+      # with the workflow token would raise no events. Force-push makes a
+      # repeated dispatch converge on one branch instead of failing on the
+      # leftovers of an interrupted run; an open PR for the branch stops the
+      # push, so commits added to a PR under review are never discarded.
+      - name: Push the branch and link the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_BODY: |
+            Version-bump PR for the next release, prepared by the `Release PR` workflow. Merging it starts the `publish` workflow, which waits in the `crates-io` environment for a maintainer's approval.
+
+            Before merging:
+
+            - [ ] Check that the default tool versions in [`cli/cargo-hax/defaults.toml`](${{ github.server_url }}/${{ github.repository }}/blob/__BRANCH__/cli/cargo-hax/defaults.toml) are the ones this release should ship.
+        run: |
+          set -o pipefail
+          version="$(cargo metadata --format-version 1 --no-deps \
+            | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
+          branch="release/v$version"
+          git branch -m "$branch"
+          open_pr="$(gh pr list -R "$GITHUB_REPOSITORY" --head "$branch" \
+            --state open --json number --jq '.[].number' | head -n 1)"
+          if [ -n "$open_pr" ]; then
+            echo "::error::PR #$open_pr for $branch is open;" \
+              "close it before dispatching a new bump"
+            exit 1
+          fi
+          git push --force origin "$branch"
+          title="$(jq -rn --arg s "chore: release v$version" '$s | @uri')"
+          body="$(jq -rn --arg s "${PR_BODY//__BRANCH__/$branch}" '$s | @uri')"
+          {
+            echo "### Release v$version"
+            echo
+            echo "[Open the release PR]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/main...$branch?quick_pull=1&title=$title&body=$body) to continue; the release stalls without it."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # Queues the publish once a release PR merges. The head-repository check
+  # keeps a fork branch that happens to be named `release/...` from counting
+  # as a release.
+  start-publish:
+    if: >-
+      github.repository == 'cryspen/hax' &&
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      # The merge commit pins the publish to the state the PR merged, so
+      # commits landing on `main` before the run is approved stay out of the
+      # release.
+      - name: Start the publish workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          gh workflow run publish.yml --ref main -R "$GITHUB_REPOSITORY" \
+            -f sha="$SHA"

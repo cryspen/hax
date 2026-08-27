@@ -1,0 +1,117 @@
+name: Publish to crates.io
+
+# Publishes every releasable crate of the workspace at its current version:
+# what `cargo release --workspace --execute` on a `main` checkout does, run
+# here so that publishing needs no crates.io token on any machine. The job
+# authenticates with crates.io trusted publishing.
+#
+# Started by the `Release PR` workflow when the version-bump PR merges, or
+# dispatched by hand on `main`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: >-
+          The `main` commit to release, normally the release PR's merge
+          commit. Dispatch the workflow on `main`; any other ref is skipped.
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'cryspen/hax' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Requires an approval by a second maintainer and is restricted to `main`;
+    # crates.io only issues tokens to runs inside it (see PUBLISHING.md).
+    environment: crates-io
+    permissions:
+      id-token: write # the trusted-publishing token exchange
+      contents: write # pushing the release tags
+      actions: write # starting the release workflow
+
+    # Publishing packages the sources without building them (`--no-verify`
+    # below), so the pinned nightly that `rust-toolchain.toml` would select
+    # is not needed.
+    env:
+      RUSTUP_TOOLCHAIN: stable
+
+    steps:
+      # Full history, so that the tags of earlier releases are known and a
+      # repeated run does not try to create them again.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Pins the run to the commit the release PR merged, so commits that land
+      # on `main` while the run waits for its approval stay out of the release,
+      # and a repeated dispatch tags the same commit the crates were published
+      # from. Only an ancestor of `main` is accepted, keeping the environment's
+      # main-only rule intact. Recreating `main` at the commit, rather than a
+      # detached checkout, is for `cargo release`, which refuses the latter.
+      - name: Check out the release commit
+        env:
+          SHA: ${{ inputs.sha }}
+        run: |
+          git merge-base --is-ancestor "$SHA" origin/main
+          git checkout -B main "$SHA"
+
+      - uses: cargo-bins/cargo-binstall@v1.21.1
+      - run: cargo binstall --no-confirm cargo-release@1.1.4
+
+      # `cargo release` tags the release, which needs a committer identity.
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+
+      # The publish step alone: unlike the one-shot `cargo release`, it
+      # skips crates that are published already, so dispatching the workflow
+      # again completes a run that failed partway; with every crate published
+      # (a rerun that failed later), it exits with "no packages selected",
+      # treated as success. `--no-verify`: the verification builds would
+      # outlive the 30-minute trusted-publishing token, and the commit being
+      # published is built and tested by its PR's CI.
+      - name: Publish the workspace
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: |
+          set -o pipefail
+          cargo release publish --workspace --execute --no-confirm \
+            --no-verify 2>&1 | tee "$RUNNER_TEMP/publish.log" \
+            || grep -q "no packages selected" "$RUNNER_TEMP/publish.log"
+
+      # With every tag created already (a rerun that failed after the tags
+      # were pushed), `cargo release` exits with "no packages selected";
+      # treated as success, like in the publish step, so the run proceeds.
+      - name: Tag the release
+        run: |
+          set -o pipefail
+          cargo release tag --workspace --execute --no-confirm \
+            2>&1 | tee "$RUNNER_TEMP/tag.log" \
+            || grep -q "no packages selected" "$RUNNER_TEMP/tag.log"
+
+      # Only the tags: `cargo release push` would also push the branch, which
+      # is rejected as a non-fast-forward when the run is pinned to a merge
+      # commit that `main` has since moved past. Tags that exist on both sides
+      # already are a no-op.
+      - name: Push the tags
+        run: git push origin --tags
+
+      # Started by dispatch: the tag push above, made with the repository
+      # token, raises no push events.
+      - name: Start the release workflow on the tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          version="$(cargo metadata --format-version 1 --no-deps \
+            | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
+          gh workflow run release.yml --ref "cargo-hax-v$version"
