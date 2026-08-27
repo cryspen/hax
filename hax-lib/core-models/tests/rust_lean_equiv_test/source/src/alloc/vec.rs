@@ -237,34 +237,68 @@ pub fn test_vec_swap_remove_only_element() -> bool {
 
 #[rust_lean_test]
 pub fn test_vec_swap_remove_back() -> bool {
-    // Swap-removing the last element behaves like `pop` (modulo the
-    // option). Our model body is `seq_remove(self, n)`, which is the same
-    // ordered removal — so we observe it as a plain remove.
+    // Removing the last element: no swap happens, so this behaves like `pop`.
     let mut v: Vec<u8> = Vec::new();
     v.push(1);
     v.push(2);
     v.push(3);
     let x = v.swap_remove(2);
-    x == 3 && v.len() == 2
+    x == 3 && v.len() == 2 && v[0] == 1 && v[1] == 2
 }
 
-// ----- truncate / resize / clear (stubbed in Lean) ---------------------------
+#[rust_lean_test]
+pub fn test_vec_swap_remove_front_moves_last() -> bool {
+    // The case that distinguishes `swap_remove` from `remove`: the last
+    // element takes the removed slot rather than everything shifting down.
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+    v.push(4);
+    let x = v.swap_remove(0);
+    x == 1 && v.len() == 3 && v[0] == 4 && v[1] == 2 && v[2] == 3
+}
 
-#[rust_lean_test(
-    skip_lean = "Vec::truncate is `#[hax_lib::opaque]`; the extracted Lean body is `ok self`, a no-op"
-)]
+#[rust_lean_test]
+pub fn test_vec_swap_remove_middle() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+    let x = v.swap_remove(1);
+    x == 2 && v.len() == 2 && v[0] == 1 && v[1] == 3
+}
+
+// ----- truncate / resize / clear ---------------------------------------------
+
+#[rust_lean_test]
 pub fn test_vec_truncate_shortens() -> bool {
     let mut v: Vec<u8> = Vec::new();
     v.push(1);
     v.push(2);
     v.push(3);
     v.truncate(1);
-    v.len() == 1
+    v.len() == 1 && v[0] == 1
 }
 
-#[rust_lean_test(
-    skip_lean = "Vec::clear is `#[hax_lib::opaque]`; the extracted Lean body is `ok self`, a no-op"
-)]
+#[rust_lean_test]
+pub fn test_vec_truncate_longer_is_noop() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.truncate(5);
+    v.len() == 2 && v[0] == 1 && v[1] == 2
+}
+
+#[rust_lean_test]
+pub fn test_vec_truncate_zero_empties() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.truncate(0);
+    v.is_empty()
+}
+
+#[rust_lean_test]
 pub fn test_vec_clear_empties() -> bool {
     let mut v: Vec<u8> = Vec::new();
     v.push(1);
@@ -273,20 +307,36 @@ pub fn test_vec_clear_empties() -> bool {
     v.is_empty()
 }
 
-#[rust_lean_test(
-    skip_lean = "Vec::resize is `#[hax_lib::opaque]`; the extracted Lean body is `ok self`, a no-op"
-)]
+#[rust_lean_test]
 pub fn test_vec_resize_grows() -> bool {
     let mut v: Vec<u8> = Vec::new();
     v.push(1);
     v.resize(3, 7);
-    v.len() == 3
+    v.len() == 3 && v[0] == 1 && v[1] == 7 && v[2] == 7
+}
+
+#[rust_lean_test]
+pub fn test_vec_resize_shrinks() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.push(2);
+    v.push(3);
+    v.resize(1, 0);
+    v.len() == 1 && v[0] == 1
+}
+
+#[rust_lean_test]
+pub fn test_vec_resize_same_len_is_noop() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    v.resize(1, 9);
+    v.len() == 1 && v[0] == 1
 }
 
 // ----- drain (iterator) ------------------------------------------------------
 
-// TODO(vec-iter-extraction): Vec::drain returns an iterator we don't have
-// a stable way to drive in extracted Lean yet.
+// Vec::drain ignores its `RangeBounds` argument, so it is `--opaque` for charon
+// (see the Makefile) and has no Lean body to test against.
 
 // ----- closure-using methods (excluded) --------------------------------------
 
@@ -311,6 +361,19 @@ pub fn test_vec_push_pop() -> bool {
 
 // ----- PartialEq / Clone / IntoIterator on Vec (branch additions) ------------
 // These exercise the extracted `eq_loop` / `clone_loop` / `IntoIter::next`.
+
+#[rust_lean_test]
+pub fn test_vec_eq_short_circuits() -> bool {
+    // `Bumped::eq` panics on `u8::MAX`. std stops at the first mismatch, so the
+    // second pair is never compared; a non-short-circuiting model would panic.
+    let mut a: Vec<Bumped> = Vec::new();
+    a.push(Bumped(1));
+    a.push(Bumped(255));
+    let mut b: Vec<Bumped> = Vec::new();
+    b.push(Bumped(2));
+    b.push(Bumped(255));
+    (a == b) == false
+}
 
 #[rust_lean_test]
 pub fn test_vec_eq_same() -> bool {

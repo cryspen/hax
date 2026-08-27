@@ -48,9 +48,21 @@ ALLOC_CHARON_EXCLUDES = \
     --exclude '{impl core::iter::traits::collect::FromIterator<_> for alloc_models::collections::vec_deque::VecDeque<_, _>}::*' \
     --exclude 'alloc_models::slice::_::sort_by'
 
+# Items whose Rust body cannot model std. `--opaque` keeps charon's signature
+# and drops the body, so aeneas emits the declaration into
+# `FunsExternal_Template.lean` -- which `patch_alloc()` deletes and nothing
+# re-adds. The items are therefore absent from the committed Lean tree, and a
+# crate that calls them will not elaborate; what this buys over `--exclude` is
+# that no *wrong* body is extracted.
+#   - `Vec::drain` ignores its range argument: `RangeBounds` is not modelled.
+#   - `fmt::format` returns the empty string: `fmt::Arguments` is not modelled.
+ALLOC_CHARON_OPAQUE = \
+    --opaque 'alloc_models::vec::_::drain' \
+    --opaque 'alloc_models::fmt::format'
+
 .PHONY: all extract patch lean build clean clean-generated tests \
         tests-clean alloc-stage alloc-extract alloc-clean \
-        coverage fstar fstar-clean fstar-core-models fstar-std fstar-alloc \
+        coverage fstar fstar-clean fstar-prune fstar-core-models fstar-std fstar-alloc \
         fstar-rand-core
 
 all: lean fstar coverage
@@ -119,7 +131,7 @@ alloc-stage: $(ALLOC_STAGE_DIR)/Cargo.toml
 alloc-extract: $(ALLOC_STAGE_DIR)/Cargo.toml
 	cd $(ALLOC_STAGE_DIR) && RUSTFLAGS=$(RUSTFLAGS) $(HAX) into \
 	    --output-dir $(abspath $(EXTRACT_DIR)) lean \
-	    --charon-args="$(ALLOC_CHARON_EXCLUDES)" \
+	    --charon-args="$(ALLOC_CHARON_EXCLUDES) $(ALLOC_CHARON_OPAQUE)" \
 	    --aeneas-args="-subdir CoreModels/Alloc $(AENEAS_ARGS)"
 
 # 2. Move generated files into $(LEAN_DIR)/CoreModels/ and apply our patches
@@ -203,7 +215,54 @@ fstar-rand-core:
 	    into fstar --interfaces '+!**'
 	cp rand_core/proofs/fstar/extraction/*.fst* $(FSTAR_DIR)
 
-fstar: fstar-core-models fstar-std fstar-alloc fstar-rand-core
+# Hand-written F* modules living alongside the extraction in $(FSTAR_DIR).
+# Everything else there is generated, so `make fstar` deletes the rest before
+# reinstalling: a module the extraction stops producing then disappears from the
+# tree instead of lingering forever (`git status` shows the deletion, and CI's
+# "committed extraction must match" check catches it). Without this, a stale
+# module keeps type-checking as part of `ROOTS` and nothing ever notices.
+FSTAR_HANDWRITTEN = \
+    Core_models.Core_arch.Arm_shared.Neon.fsti \
+    Core_models.Core_arch.fsti \
+    Core_models.Core_arch.X86_64_.Sse2.fsti \
+    Core_models.Core_arch.X86.fsti \
+    Core_models.Core_arch.X86.Pclmulqdq.fsti \
+    Core_models.Core_arch.X86.Sse2.fsti \
+    Core_models.fst \
+    Core_models.Iter.Adapters.Rev.fsti \
+    Core_models.Iter.Sources.Repeat_with.fsti \
+    Core_models.Iter.Traits.fst \
+    Core_models.Mem.Maybe_uninit.fsti \
+    Core_models.Mem.Transmutability.fsti \
+    Core_models.Num.Checked_mul_spec.fst \
+    Core_models.Num.Niche_types.fsti \
+    Core_models.Num.Overflow_spec.fst \
+    Core_models.Ops.Index.IndexMut.fst \
+    Core_models.Str.fsti \
+    Core_models.Time.fsti \
+    Core_models.TypeClassPlaceHolder.fst \
+    Rand.Distr.Distribution.fsti \
+    Rand.Distributions.Distribution.fsti \
+    Rand.Distributions.Integer.fsti \
+    Rand.Distr.Integer.fsti \
+    Rand.Rng.fsti
+
+# Delete every generated module so the reinstall below cannot leave a stale one.
+fstar-prune:
+	@cd $(FSTAR_DIR) && for f in *.fst *.fsti; do \
+	    [ -e "$$f" ] || continue; \
+	    case " $(FSTAR_HANDWRITTEN) " in \
+	        *" $$f "*) ;; \
+	        *) rm -f "$$f" ;; \
+	    esac; \
+	done
+
+# Prune first, then reinstall. Recursive make rather than a prerequisite list so
+# the ordering holds under `-j`; the per-crate targets stay prune-free so they
+# remain usable on their own.
+fstar:
+	$(MAKE) fstar-prune
+	$(MAKE) fstar-core-models fstar-std fstar-alloc fstar-rand-core
 
 fstar-clean:
 	rm -rf $(foreach c,$(FSTAR_CRATES),$(c)/proofs)

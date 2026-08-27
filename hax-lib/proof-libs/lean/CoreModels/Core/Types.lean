@@ -499,73 +499,73 @@ structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
 
 /-- [core_models::num::u8]
-    Source: 'core-models/src/core/num/mod.rs', lines 522:0-522:14
+    Source: 'core-models/src/core/num/mod.rs', lines 523:0-523:14
     Visibility: public -/
 @[reducible]
 def num.u8 := Unit
 
 /-- [core_models::num::u16]
-    Source: 'core-models/src/core/num/mod.rs', lines 525:0-525:15
+    Source: 'core-models/src/core/num/mod.rs', lines 526:0-526:15
     Visibility: public -/
 @[reducible]
 def num.u16 := Unit
 
 /-- [core_models::num::u32]
-    Source: 'core-models/src/core/num/mod.rs', lines 528:0-528:15
+    Source: 'core-models/src/core/num/mod.rs', lines 529:0-529:15
     Visibility: public -/
 @[reducible]
 def num.u32 := Unit
 
 /-- [core_models::num::u64]
-    Source: 'core-models/src/core/num/mod.rs', lines 531:0-531:15
+    Source: 'core-models/src/core/num/mod.rs', lines 532:0-532:15
     Visibility: public -/
 @[reducible]
 def num.u64 := Unit
 
 /-- [core_models::num::u128]
-    Source: 'core-models/src/core/num/mod.rs', lines 534:0-534:16
+    Source: 'core-models/src/core/num/mod.rs', lines 535:0-535:16
     Visibility: public -/
 @[reducible]
 def num.u128 := Unit
 
 /-- [core_models::num::usize]
-    Source: 'core-models/src/core/num/mod.rs', lines 537:0-537:17
+    Source: 'core-models/src/core/num/mod.rs', lines 538:0-538:17
     Visibility: public -/
 @[reducible]
 def num.usize := Unit
 
 /-- [core_models::num::i8]
-    Source: 'core-models/src/core/num/mod.rs', lines 540:0-540:14
+    Source: 'core-models/src/core/num/mod.rs', lines 541:0-541:14
     Visibility: public -/
 @[reducible]
 def num.i8 := Unit
 
 /-- [core_models::num::i16]
-    Source: 'core-models/src/core/num/mod.rs', lines 543:0-543:15
+    Source: 'core-models/src/core/num/mod.rs', lines 544:0-544:15
     Visibility: public -/
 @[reducible]
 def num.i16 := Unit
 
 /-- [core_models::num::i32]
-    Source: 'core-models/src/core/num/mod.rs', lines 546:0-546:15
+    Source: 'core-models/src/core/num/mod.rs', lines 547:0-547:15
     Visibility: public -/
 @[reducible]
 def num.i32 := Unit
 
 /-- [core_models::num::i64]
-    Source: 'core-models/src/core/num/mod.rs', lines 549:0-549:15
+    Source: 'core-models/src/core/num/mod.rs', lines 550:0-550:15
     Visibility: public -/
 @[reducible]
 def num.i64 := Unit
 
 /-- [core_models::num::i128]
-    Source: 'core-models/src/core/num/mod.rs', lines 552:0-552:16
+    Source: 'core-models/src/core/num/mod.rs', lines 553:0-553:16
     Visibility: public -/
 @[reducible]
 def num.i128 := Unit
 
 /-- [core_models::num::isize]
-    Source: 'core-models/src/core/num/mod.rs', lines 555:0-555:17
+    Source: 'core-models/src/core/num/mod.rs', lines 556:0-556:17
     Visibility: public -/
 @[reducible]
 def num.isize := Unit
