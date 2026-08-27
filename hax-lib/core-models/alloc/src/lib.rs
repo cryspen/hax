@@ -504,8 +504,6 @@ mod string {
             // Char count, not `str::len`: the primitives below index by char.
             let l = str_len(self.0);
             if l > 0 {
-                // Read the last char before truncating: afterwards `l - 1` is
-                // out of bounds.
                 let c = str_index(self.0, l - 1);
                 *self = String(str_sub(self.0, 0, l - 1));
                 Some(c)

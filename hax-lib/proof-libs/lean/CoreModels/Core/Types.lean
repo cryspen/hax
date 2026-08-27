@@ -481,19 +481,19 @@ def marker.PhantomData (T : Type) := T
 -/  -- replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
-    Source: 'core-models/src/core/mem.rs', lines 129:4-131:5
+    Source: 'core-models/src/core/mem.rs', lines 130:4-132:5
     Visibility: public -/
 structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
 
 /-- [core_models::num::error::IntErrorKind]
-    Source: 'core-models/src/core/num/error.rs', lines 33:0-33:24
+    Source: 'core-models/src/core/num/error.rs', lines 35:0-35:24
     Visibility: public -/
 @[reducible]
 def num.error.IntErrorKind := Unit
 
 /-- [core_models::num::error::ParseIntError]
-    Source: 'core-models/src/core/num/error.rs', lines 18:0-20:1
+    Source: 'core-models/src/core/num/error.rs', lines 19:0-21:1
     Visibility: public -/
 structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
@@ -854,18 +854,18 @@ structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
     T))
 
 /-- [core_models::str::error::Utf8Error]
-    Source: 'core-models/src/core/str.rs', lines 43:4-43:25
+    Source: 'core-models/src/core/str.rs', lines 40:4-40:25
     Visibility: public -/
 @[reducible]
 def str.error.Utf8Error := Unit
 
 /-- [core_models::str::iter::Split]
-    Source: 'core-models/src/core/str.rs', lines 47:4-47:23 -/
+    Source: 'core-models/src/core/str.rs', lines 53:4-53:23 -/
 @[reducible]
 def str.iter.Split (T : Type) := T
 
 /-- Trait declaration: [core_models::str::traits::FromStr]
-    Source: 'core-models/src/core/str.rs', lines 51:4-54:5 -/
+    Source: 'core-models/src/core/str.rs', lines 57:4-60:5 -/
 structure str.traits.FromStr (Self : Type) (Self_Err : Type) where
   from_str : Str → Result (result.Result Self Self_Err)
 

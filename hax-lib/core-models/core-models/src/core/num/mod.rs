@@ -903,11 +903,10 @@ mod tests {
                             s in prop_oneof!["[0-9]{1,2}", "[0-9a-zA-Z+-]{0,12}", ".*"],
                             radix in 2u32..=36,
                         ) {
-                            let std_result = $t::from_str_radix(&s, radix);
-                            match super::$t::from_str_radix(&s, radix) {
-                                crate::result::Result::Ok(v) => prop_assert_eq!(Ok(v), std_result),
-                                crate::result::Result::Err(_) => prop_assert!(std_result.is_err()),
-                            }
+                            prop_assert_eq!(
+                                super::$t::from_str_radix(&s, radix),
+                                $t::from_str_radix(&s, radix).inject()
+                            );
                         }
 
                         #[test]

@@ -84,9 +84,6 @@ pub mod mem {
     pub fn swap<T>(x: &mut T, y: &mut T) {
         core::mem::swap(x, y)
     }
-    pub fn replace<T>(dest: &mut T, src: T) -> T {
-        core::mem::replace(dest, src)
-    }
     pub unsafe fn zeroed<T>() -> T {
         unsafe { core::mem::zeroed() }
     }
@@ -134,9 +131,6 @@ pub mod sequence {
     }
     pub fn seq_push<T>(s1: &mut Seq<T>, v: T) {
         s1.0.push(v)
-    }
-    pub fn seq_one<T>(x: T) -> Seq<T> {
-        Seq(vec![x])
     }
     pub fn seq_create<T: Clone>(x: T, n: usize) -> Seq<T> {
         Seq(vec![x; n])
@@ -322,8 +316,8 @@ pub mod arithmetic {
 }
 
 // `array_slice` is only reached through the F* variant of `core_models::array`'s
-// `Index` impls, and `seq_one`/`str_sub`/`str_index` have no model caller at
-// all, so they are checked here directly.
+// `Index` impls, and `str_sub`/`str_index` only through `alloc`'s `String`, so
+// they are checked here directly.
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
@@ -362,13 +356,6 @@ mod tests {
         fn test_array_map(a in any::<[u8; 4]>(), table in any::<[u8; 256]>()) {
             let f = |x: u8| table[x as usize];
             prop_assert_eq!(super::slice::array_map(a, f), a.map(f));
-        }
-
-        #[test]
-        fn test_seq_one(x in any::<u8>()) {
-            let s = super::sequence::seq_one(x);
-            prop_assert_eq!(super::sequence::seq_len(&s), 1);
-            prop_assert_eq!(super::sequence::seq_to_slice(&s), &[x][..]);
         }
 
         #[test]

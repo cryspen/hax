@@ -11,17 +11,16 @@ mod converts {
 
     #[cfg(test)]
     mod tests {
-        use crate::result::Result;
+        use crate::testing::Inject;
         use proptest::prelude::*;
 
         proptest! {
             #[test]
             fn test_from_utf8(bytes in prop::collection::vec(any::<u8>(), 0..20)) {
-                let std_result = std::str::from_utf8(&bytes);
-                match super::from_utf8(&bytes) {
-                    Result::Ok(s) => prop_assert_eq!(Ok(s), std_result),
-                    Result::Err(_) => prop_assert!(std_result.is_err()),
-                }
+                prop_assert_eq!(
+                    super::from_utf8(&bytes),
+                    std::str::from_utf8(&bytes).inject()
+                );
             }
 
             // Random bytes are rarely valid UTF-8; go through a real `String` to
@@ -29,10 +28,7 @@ mod converts {
             #[test]
             fn test_from_utf8_valid(text in ".*") {
                 let bytes = text.as_bytes();
-                match super::from_utf8(bytes) {
-                    Result::Ok(s) => prop_assert_eq!(s, text.as_str()),
-                    Result::Err(_) => prop_assert!(false, "valid UTF-8 rejected"),
-                }
+                prop_assert_eq!(super::from_utf8(bytes), std::str::from_utf8(bytes).inject());
             }
         }
     }
@@ -40,7 +36,17 @@ mod converts {
 
 mod error {
     /// See [`std::str::Utf8Error`]
+    #[cfg_attr(test, derive(PartialEq, Debug))]
     pub struct Utf8Error;
+
+    /// The model's error carries no position, so every std one maps here.
+    #[cfg(test)]
+    impl crate::testing::Inject for std::str::Utf8Error {
+        type Model = Utf8Error;
+        fn inject(&self) -> Self::Model {
+            Utf8Error
+        }
+    }
 }
 
 mod iter {

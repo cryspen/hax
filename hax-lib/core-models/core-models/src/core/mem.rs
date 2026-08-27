@@ -81,8 +81,9 @@ pub fn swap<T>(x: &mut T, y: &mut T) {
 
 /// See [`std::mem::replace`]
 #[hax_lib::opaque]
-pub fn replace<T>(dest: &mut T, src: T) -> T {
-    rust_primitives::mem::replace(dest, src)
+pub fn replace<T>(dest: &mut T, mut src: T) -> T {
+    swap(dest, &mut src);
+    src
 }
 
 /// See [`std::mem::drop`]

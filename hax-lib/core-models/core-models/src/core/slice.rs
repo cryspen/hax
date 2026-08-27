@@ -179,7 +179,7 @@ impl<T> Slice<T> {
     where
         T: Copy,
     {
-        todo!()
+        panic!()
     }
     /// See [`std::slice::binary_search`]
     // F*-only: the equivalence tests call this, so Lean needs the body; it is

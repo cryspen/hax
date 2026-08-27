@@ -15,6 +15,7 @@ impl crate::cmp::PartialEq<TryFromIntError> for TryFromIntError {
 }
 
 /// See [`std::num::ParseIntError`]
+#[cfg_attr(test, derive(PartialEq, Debug))]
 pub struct ParseIntError {
     pub(super) kind: IntErrorKind,
 }
@@ -30,7 +31,17 @@ pub struct ParseIntError {
 } */
 
 /// See [`std::num::IntErrorKind`]
+#[cfg_attr(test, derive(PartialEq, Debug))]
 pub struct IntErrorKind;
+
+/// The model's kind carries no payload, so every std error maps here.
+#[cfg(test)]
+impl crate::testing::Inject for std::num::ParseIntError {
+    type Model = ParseIntError;
+    fn inject(&self) -> Self::Model {
+        ParseIntError { kind: IntErrorKind }
+    }
+}
 
 // The `PartialEq` impl above is aeneas/lean-only.
 #[cfg(all(test, not(hax_backend_fstar)))]

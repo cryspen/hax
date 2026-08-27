@@ -7112,7 +7112,7 @@ def Isize.Insts.CoreMarkerCopy : marker.Copy Std.Isize := {
 }
 
 /-- [core_models::mem::drop]:
-    Source: 'core-models/src/core/mem.rs', lines 90:0-90:24
+    Source: 'core-models/src/core/mem.rs', lines 91:0-91:24
     Visibility: public -/
 def mem.drop {T : Type} (_x : T) : Result Unit := do
   ok ()
@@ -12679,13 +12679,13 @@ def Slice.Insts.CoreCmpPartialEqArray {T : Type} {U : Type} (N :
 }
 
 /-- [core_models::str::traits::{impl core_models::str::traits::FromStr<u64> for u64}::from_str]:
-    Source: 'core-models/src/core/str.rs', lines 64:8-66:9 -/
+    Source: 'core-models/src/core/str.rs', lines 70:8-72:9 -/
 def U64.Insts.CoreStrTraitsFromStrU64.from_str
   (s : Str) : Result (result.Result Std.U64 Std.U64) := do
   fail Error.panic
 
 /-- Trait implementation: [core_models::str::traits::{impl core_models::str::traits::FromStr<u64> for u64}]
-    Source: 'core-models/src/core/str.rs', lines 58:4-67:5 -/
+    Source: 'core-models/src/core/str.rs', lines 64:4-73:5 -/
 @[reducible]
 def U64.Insts.CoreStrTraitsFromStrU64 : str.traits.FromStr Std.U64
   Std.U64 := {
