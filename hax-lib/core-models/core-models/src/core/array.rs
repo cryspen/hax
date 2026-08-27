@@ -10,30 +10,54 @@ pub struct TryFromSliceError;
 struct Array<T, const N: usize>([T; N]);
 
 // Array impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
+#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
 
+#[hax_lib::attributes]
 impl<T, const N: usize> Array<T, N> {
     /// See [`std::array::map`]
     // `FnMut` (not `Fn`) matches `std::array::map`'s bound; aeneas synthesises the
@@ -72,6 +96,7 @@ pub fn from_fn<T, const N: usize, F: FnMut(usize) -> T>(f: F) -> [T; N] {
 }
 
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+#[hax_lib::attributes]
 impl<T, const N: usize> crate::iter::traits::collect::IntoIterator for [T; N] {
     type Item = T;
     type IntoIter = iter::IntoIter<T, N>;
@@ -165,9 +190,17 @@ impl<T, const N: usize> Index<RangeFull> for [T; N] {
 // Not for `hax_backend_fstar`: that model's blanket `impl<T> Clone for T`
 // already covers arrays, and both in scope fails coherence.
 #[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
 impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
     fn clone(self) -> Self {
         self
+    }
+    // Real `core` overrides `clone_from` for arrays (it clones element-wise into
+    // the existing storage instead of allocating a new array). With `clone` the
+    // identity here, overwriting the receiver with the source is that same
+    // element-wise clone.
+    fn clone_from(self, source: Self) -> Self {
+        source
     }
 }
 
@@ -175,6 +208,7 @@ pub mod equality {
     use rust_primitives::slice::array_index;
 
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    #[hax_lib::attributes]
     impl<T: crate::cmp::PartialEq<U>, U, const N: usize> crate::cmp::PartialEq<[U; N]> for [T; N] {
         #[cfg(not(hax_backend_fstar))]
         fn ne(&self, other: &[U; N]) -> bool {
@@ -189,6 +223,94 @@ pub mod equality {
                 i += 1;
             }
             true
+        }
+    }
+}
+
+// The items below are appended at the end of the module. hax's F* disambiguator
+// numbers a module's *annotated* impls top-to-bottom, and every impl above is
+// annotated, so appending here leaves the published `impl_NN` names untouched.
+
+/// See [`std::default::Default`] for `[T; N]`
+///
+/// Real `core` spells this out as 33 monomorphic impls (`[T; 0]` … `[T; 32]`),
+/// the `[T; 0]` one without the `T: Default` bound. Rust coherence rules out
+/// providing both that impl and the const-generic one below, so the model keeps
+/// only the const-generic form, which covers `N = 0` as well.
+#[hax_lib::attributes]
+impl<T: crate::default::Default, const N: usize> crate::default::Default for [T; N] {
+    fn default() -> [T; N] {
+        array_from_fn(|_i| <T as crate::default::Default>::default())
+    }
+}
+
+/// See [`std::fmt::Debug`] for `[T; N]`
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T: crate::fmt::Debug, const N: usize> crate::fmt::Debug for [T; N] {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
+/// See [`std::fmt::Debug`] for [`TryFromSliceError`]
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl crate::fmt::Debug for TryFromSliceError {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
+/// See [`std::convert::AsRef`] for `[T; N]`
+#[hax_lib::attributes]
+impl<T, const N: usize> crate::convert::AsRef<[T]> for [T; N] {
+    fn as_ref(&self) -> &[T] {
+        array_as_slice(self)
+    }
+}
+
+/// See [`std::ops::IndexMut`] for `[T; N]`, mirroring the `Index` impl above
+/// and std's `impl<T, I, const N: usize> IndexMut<I> for [T; N] where [T]:
+/// IndexMut<I>`.
+// `&mut` returns are unsupported in the F* backend.
+#[cfg(not(hax_backend_fstar))]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+#[hax_lib::attributes]
+impl<T, I, const N: usize> crate::ops::index::IndexMut<I> for [T; N]
+where
+    I: crate::slice::SliceIndex<[T]>,
+    [T]: Index<I>,
+    [T; N]: crate::ops::index::Index<I, Output = <I as crate::slice::SliceIndex<[T]>>::Output>,
+{
+    // Through `SliceIndex::get_unchecked_mut` rather than the slice's own
+    // `IndexMut`: routing the `&mut` array through a second `IndexMut`
+    // dictionary makes aeneas fail with "new value doesn't have the same type
+    // as its destination".
+    fn index_mut(&mut self, i: I) -> &mut Self::Output {
+        i.get_unchecked_mut(array_as_mut_slice(self))
+    }
+}
+
+/// See [`std::convert::TryFrom`] `<&mut [T]>` for `[T; N]`
+///
+/// Real `core`'s companion to the `TryFrom<&[T]>` impl in `crate::convert`:
+/// same length check, `&mut` receiver.
+//
+// Lean-only. The `&mut` receiver makes hax add a write-back return, so the
+// extracted `try_from` has type `Slice T -> Result (Result (Array T N) _ x
+// Slice T)`, which does not fit `convert::TryFrom`'s field; and `&mut`
+// arguments have no F* model here anyway.
+#[cfg(not(hax_backend_fstar))]
+#[cfg_attr(charon, aeneas::exclude)]
+#[hax_lib::attributes]
+impl<T: Copy, const N: usize> crate::convert::TryFrom<&mut [T]> for [T; N] {
+    type Error = TryFromSliceError;
+    fn try_from(s: &mut [T]) -> crate::result::Result<[T; N], TryFromSliceError> {
+        if slice_length(s) == N {
+            crate::result::Result::Ok(array_from_fn(|i| *slice_index(s, i)))
+        } else {
+            crate::result::Result::Err(TryFromSliceError)
         }
     }
 }
@@ -223,6 +345,67 @@ mod tests {
     }
 
     use proptest::prelude::*;
+
+    #[test]
+    fn test_array_default() {
+        assert_eq!(
+            <[u8; 4] as crate::default::Default>::default(),
+            <[u8; 4] as std::default::Default>::default()
+        );
+        assert_eq!(
+            <[u8; 0] as crate::default::Default>::default(),
+            <[u8; 0] as std::default::Default>::default()
+        );
+    }
+
+    /// `Debug` for arrays and for `TryFromSliceError` render nothing, like every
+    /// other `Debug` in the model.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_array_debug() {
+        let mut f = crate::fmt::Formatter;
+        assert!(crate::fmt::Debug::fmt(&[1u8, 2, 3], &mut f).is_ok());
+        assert!(crate::fmt::Debug::fmt(&super::TryFromSliceError, &mut f).is_ok());
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    proptest! {
+        // `clone_from` overwrites the receiver with a clone of the source, like
+        // std's array-specific override.
+        #[test]
+        fn test_array_clone_from(a in any::<[u8; 3]>(), b in any::<[u8; 3]>()) {
+            let mut std_dst = a;
+            std::clone::Clone::clone_from(&mut std_dst, &b);
+            prop_assert_eq!(crate::clone::Clone::clone_from(a, b), std_dst);
+        }
+
+        #[test]
+        fn test_array_as_ref(a in any::<[u8; 3]>()) {
+            prop_assert_eq!(
+                crate::convert::AsRef::<[u8]>::as_ref(&a),
+                std::convert::AsRef::<[u8]>::as_ref(&a)
+            );
+        }
+
+        #[test]
+        fn test_array_index_mut(a in any::<[u8; 3]>(), i in 0usize..3, v in any::<u8>()) {
+            let mut model = a;
+            let mut std_ = a;
+            *crate::ops::index::IndexMut::index_mut(&mut model, i) = v;
+            *std::ops::IndexMut::index_mut(&mut std_, i) = v;
+            prop_assert_eq!(model, std_);
+        }
+
+        #[test]
+        fn test_try_from_mut_slice_to_array(v in prop::collection::vec(any::<u8>(), 0..=6)) {
+            let mut model = v.clone();
+            let mut std_ = v;
+            prop_assert_eq!(
+                <[u8; 4] as crate::convert::TryFrom<&mut [u8]>>::try_from(&mut model[..]).ok(),
+                <[u8; 4] as std::convert::TryFrom<&mut [u8]>>::try_from(&mut std_[..]).ok().inject()
+            );
+        }
+    }
 
     // Equal arrays are the case `ne` inverts, so reach that case explicitly.
     #[cfg(not(hax_backend_fstar))]

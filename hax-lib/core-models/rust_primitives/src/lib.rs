@@ -4,6 +4,15 @@ pub mod slice {
     pub fn slice_length<T>(s: &[T]) -> usize {
         s.len()
     }
+    /// `&mut` counterpart of `slice_split_at`. Not built under
+    /// `hax_backend_fstar`: `&mut` returns are unsupported in the F* backend,
+    /// so its only caller (`core_models::slice::Slice::split_at_mut`) is not
+    /// either, and there is no hand-written F* model for it.
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(mid <= slice_length(s))]
+    pub fn slice_split_at_mut<T>(s: &mut [T], mid: usize) -> (&mut [T], &mut [T]) {
+        s.split_at_mut(mid)
+    }
     #[hax_lib::requires(mid <= slice_length(s))]
     pub fn slice_split_at<T>(s: &[T], mid: usize) -> (&[T], &[T]) {
         s.split_at(mid)
@@ -111,6 +120,13 @@ pub mod sequence {
     pub fn seq_empty<T>() -> Seq<T> {
         Seq(Vec::new())
     }
+    /// `&mut` counterpart of `seq_from_slice`, backing
+    /// `core_models::slice::Slice::iter_mut`. Lean-only, as every `&mut`
+    /// producer here is.
+    #[cfg(not(hax_backend_fstar))]
+    pub fn seq_from_slice_mut<T>(s: &mut [T]) -> Seq<&mut T> {
+        Seq(s.iter_mut().collect())
+    }
     pub fn seq_from_slice<T>(s: &[T]) -> Seq<&T> {
         Seq(s.iter().collect())
     }
@@ -146,6 +162,17 @@ pub mod sequence {
     }
     pub fn seq_drain<T>(s: &mut Seq<T>, b: usize, e: usize) -> Seq<T> {
         Seq(s.0.drain(b..e).collect())
+    }
+    /// `seq_remove` for a sequence of *mutable* references, backing
+    /// `core_models::slice::iter::IterMut::next`.
+    ///
+    /// A separate name rather than a `&mut`-returning overload of `seq_remove`:
+    /// the element type is itself an `&mut`, so hax gives the *element* a
+    /// write-back too and the extracted signature grows a third component that
+    /// the `Seq<&T>` callers of `seq_remove` must not have.
+    #[cfg(not(hax_backend_fstar))]
+    pub fn seq_remove_mut<'a, T>(s: &mut Seq<&'a mut T>, n: usize) -> &'a mut T {
+        s.0.remove(n)
     }
     pub fn seq_remove<T>(s: &mut Seq<T>, n: usize) -> T {
         s.0.remove(n)
