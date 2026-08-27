@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use common::{make_archive, platform, serve, sha256_hex, write_crate};
+use common::{cargo_hax, make_archive, output_of, platform, serve, sha256_hex, write_crate};
 
 /// A test environment: manifest file, cache dir, and helpers to run the
 /// binary with the right overrides.
@@ -31,19 +31,14 @@ impl Env {
     }
 
     fn command(&self, args: &[&str], current_dir: Option<&Path>) -> Command {
-        let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-        cmd.args(args)
-            .env("HAX_TOOLS_MANIFEST", self.dir.path().join("manifest.toml"))
-            .env("XDG_CACHE_HOME", self.cache())
-            .current_dir(current_dir.unwrap_or(self.dir.path()));
+        let mut cmd = common::command(&cargo_hax(), args, current_dir.unwrap_or(self.dir.path()));
+        cmd.env("HAX_TOOLS_MANIFEST", self.dir.path().join("manifest.toml"))
+            .env("XDG_CACHE_HOME", self.cache());
         cmd
     }
 
     fn run(&self, args: &[&str]) -> (String, bool) {
-        let output = self.command(args, None).output().unwrap();
-        let stdout = String::from_utf8_lossy(&output.stdout).into_owned();
-        let stderr = String::from_utf8_lossy(&output.stderr).into_owned();
-        (format!("{stdout}{stderr}"), output.status.success())
+        output_of(&mut self.command(args, None))
     }
 
     fn version_dir(&self, tool: &str, version: &str) -> PathBuf {
@@ -471,16 +466,8 @@ entry_points = {{ aeneas = "aeneas" }}
     )
     .unwrap();
 
-    let output = env
-        .command(&["tools", "install"], Some(project.path()))
-        .output()
-        .unwrap();
-    let all = format!(
-        "{}{}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr)
-    );
-    assert!(output.status.success(), "{all}");
+    let (all, success) = output_of(&mut env.command(&["tools", "install"], Some(project.path())));
+    assert!(success, "{all}");
     // Union: both charon versions and the default aeneas.
     assert!(env.version_dir("charon", "v1").is_dir(), "{all}");
     assert!(env.version_dir("charon", "v2").is_dir(), "{all}");

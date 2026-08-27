@@ -2,9 +2,12 @@
 //! resolution order, and the associated warnings, exercised through the
 //! real binary on a temporary Cargo workspace.
 
+mod common;
+
 use std::fs;
 use std::path::Path;
-use std::process::Command;
+
+use common::{cargo_hax, command, output_of};
 
 fn write(path: &Path, contents: &str) {
     fs::create_dir_all(path.parent().unwrap()).unwrap();
@@ -54,21 +57,14 @@ charon = "nightly-8888.01.01"
     dir
 }
 
-fn run_tools_show(current_dir: &Path) -> (String, String, bool) {
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(["tools", "show"]).current_dir(current_dir);
-    let output = cmd.output().expect("could not run cargo-hax");
-    (
-        String::from_utf8_lossy(&output.stdout).into_owned(),
-        String::from_utf8_lossy(&output.stderr).into_owned(),
-        output.status.success(),
-    )
+fn run_tools_show(current_dir: &Path) -> (String, bool) {
+    output_of(&mut command(&cargo_hax(), &["tools", "show"], current_dir))
 }
 
 #[test]
 fn show_reports_pins_defaults_and_member_overrides() {
     let dir = fixture_workspace();
-    let (stdout, _stderr, success) = run_tools_show(dir.path());
+    let (stdout, success) = run_tools_show(dir.path());
     assert!(success, "tools show failed: {stdout}");
 
     // Workspace pin, with its source.
@@ -97,7 +93,7 @@ fn path_entry_is_reported_with_its_source() {
 aeneas = { path = "vendor/aeneas" }
 "#,
     );
-    let (stdout, _, success) = run_tools_show(dir.path());
+    let (stdout, success) = run_tools_show(dir.path());
     assert!(success);
     assert!(
         stdout.contains(
@@ -114,21 +110,24 @@ aeneas = { path = "vendor/aeneas" }
 #[test]
 fn stray_hax_toml_is_warned_about() {
     let dir = fixture_workspace();
-    let (stdout, _, success) = run_tools_show(&dir.path().join("sub/deeper"));
+    let (stdout, success) = run_tools_show(&dir.path().join("sub/deeper"));
     assert!(success, "{stdout}");
     assert!(stdout.contains("has no effect and is ignored"), "{stdout}");
     // Invoking from the workspace root itself does not warn.
-    let (stdout, _, _) = run_tools_show(dir.path());
+    let (stdout, _) = run_tools_show(dir.path());
     assert!(!stdout.contains("has no effect"), "{stdout}");
 }
 
 #[test]
 fn json_message_format_emits_structured_output() {
     let dir = fixture_workspace();
-    let mut cmd = Command::new(env!("CARGO_BIN_EXE_cargo-hax"));
-    cmd.args(["--message-format", "json", "tools", "show"])
-        .current_dir(dir.path());
-    let output = cmd.output().unwrap();
+    let output = command(
+        &cargo_hax(),
+        &["--message-format", "json", "tools", "show"],
+        dir.path(),
+    )
+    .output()
+    .unwrap();
     assert!(output.status.success());
     let stdout = String::from_utf8_lossy(&output.stdout);
     // Every line, the report included, is one `HaxMessage`: a consumer needs
@@ -157,7 +156,7 @@ fn malformed_hax_toml_is_a_hard_error() {
 charon = { version = "x", path = "y" }
 "#,
     );
-    let (stdout, _, success) = run_tools_show(dir.path());
+    let (stdout, success) = run_tools_show(dir.path());
     assert!(!success);
     assert!(stdout.contains("both `version` and `path`"), "{stdout}");
 }
@@ -165,7 +164,7 @@ charon = { version = "x", path = "y" }
 #[test]
 fn outside_a_cargo_project_fails_with_a_clear_error() {
     let dir = tempfile::tempdir().unwrap();
-    let (stdout, _, success) = run_tools_show(dir.path());
+    let (stdout, success) = run_tools_show(dir.path());
     assert!(!success);
     assert!(
         stdout.contains("must be run inside a") || stdout.contains("cargo metadata"),

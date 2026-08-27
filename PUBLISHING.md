@@ -25,7 +25,7 @@ and `examples`):
 4. `hax-types` (`hax-types`)
 5. `cargo-hax` (binaries) (`cli/cargo-hax`)
    - `cargo-hax`
-   - `hax-export-json-schemas`
+   - `hax-export-json-schemas` (only with `--features legacy-engine`)
 
 - `hax-driver` (`cli/driver`)
 - `test-driver` (`cli/test-driver`)

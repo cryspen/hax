@@ -34,6 +34,7 @@ Changes to cargo-hax:
  - Add `cargo hax tools pin` to write version pins into `hax.toml`, either this release's defaults or a single `<name>@<version>` entry
  - `cargo hax into lean` generates a complete, buildable Lean package by default: project files, a root module, and a `Verification/` folder for handwritten proofs, created only when missing; stale files in `Extraction/` are removed and the root module's imports are checked on every run. Disable with a top-level `project-files = false` in `hax.toml` (#2142)
  - Compile with `cfg(hax)` in the `lean` backend, as the engine-based backends do. Without it `hax-lib` was its dummy implementation, and `loop_invariant!` expanded to code that did not type-check
+ - Make `cargo install cargo-hax` build on any recent toolchain, so that the `lean` backend can be installed on its own and pinned per project with `cargo-run-bin`; the JSON schema exporter the OCaml engine's build consumes moved behind the new `legacy-engine` feature
 
 Changes to hax-lib:
  - Basis of core model testing infrastructure (cryspen/hax-evit/160, cryspen/hax-evit/164)
