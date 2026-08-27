@@ -127,7 +127,7 @@ jobs:
 
             Before merging:
 
-            - [ ] Check that the default tool versions in `cli/cargo-hax/defaults.toml` are correct and that `cli/cargo-hax/tools-manifest.toml` lists them with checksums for every supported platform.
+            - [ ] Check that the default tool versions in [`cli/cargo-hax/defaults.toml`](${{ github.server_url }}/${{ github.repository }}/blob/__BRANCH__/cli/cargo-hax/defaults.toml) are the ones this release should ship.
         run: |
           set -o pipefail
           version="$(cargo metadata --format-version 1 --no-deps \
@@ -143,7 +143,7 @@ jobs:
           fi
           git push --force origin "$branch"
           title="$(jq -rn --arg s "chore: release v$version" '$s | @uri')"
-          body="$(jq -rn --arg s "$PR_BODY" '$s | @uri')"
+          body="$(jq -rn --arg s "${PR_BODY//__BRANCH__/$branch}" '$s | @uri')"
           {
             echo "### Release v$version"
             echo
