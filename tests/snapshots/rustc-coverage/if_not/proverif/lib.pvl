@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/if_not.rs:6 new_tests__rustc_coverage__if_not__if_not *)
+(* src: src/rustc-coverage/if_not.rs:6:0-29:1 new_tests__rustc_coverage__if_not__if_not *)
 letfun new_tests__rustc_coverage__if_not__if_not(cond: bitstring) =
   let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(cond)
     in (let wildcard: bitstring = std__io__stdio__u_print(
@@ -51,7 +51,7 @@ letfun new_tests__rustc_coverage__if_not__if_not(cond: bitstring) =
     ) in
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/if_not.rs:32 new_tests__rustc_coverage__if_not__main *)
+(* src: src/rustc-coverage/if_not.rs:32:0-39:1 new_tests__rustc_coverage__if_not__main *)
 letfun new_tests__rustc_coverage__if_not__main(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_8)

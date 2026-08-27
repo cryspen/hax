@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/simple_match.rs:7 new_tests__rustc_coverage__simple_match__main *)
+(* src: src/rustc-coverage/simple_match.rs:7:0-47:1 new_tests__rustc_coverage__simple_match__main *)
 (*  @fail(extraction): fstar(HAX0001), lean(HAX0001), ssprove(HAX0001), coq(HAX0001) *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__rustc_coverage__simple_match__main(wildcard: bitstring) =

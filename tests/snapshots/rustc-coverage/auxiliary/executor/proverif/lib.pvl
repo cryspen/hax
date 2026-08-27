@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/auxiliary/executor.rs:13 new_tests__rustc_coverage__auxiliary__executor__block_on *)
+(* src: src/rustc-coverage/auxiliary/executor.rs:13:0-22:1 new_tests__rustc_coverage__auxiliary__executor__block_on *)
 (*  Dummy "executor" that just repeatedly polls a future until it's ready. *)
 (*  @fail(extraction): fstar(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003), ssprove(HAX0003, HAX0003, HAX0003, HAX0003, HAX0008), coq(HAX0008, HAX0003, HAX0003, HAX0003, HAX0003), lean(HAX0003, HAX0003, HAX0003, HAX0003, HAX0003) *)
 (*  @fail(extraction): proverif(HAX0008, HAX0003, HAX0003, HAX0003, HAX0003) *)

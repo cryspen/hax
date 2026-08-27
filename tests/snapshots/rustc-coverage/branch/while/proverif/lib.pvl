@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/branch/while.rs:15 new_tests__rustc_coverage__branch__while__while_cond *)
+(* src: src/rustc-coverage/branch/while.rs:15:0-22:1 new_tests__rustc_coverage__branch__while__while_cond *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__branch__while__while_cond(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -30,7 +30,7 @@ letfun new_tests__rustc_coverage__branch__while__while_cond(wildcard: bitstring)
     bitstring_err() (* Loops not supported in ProVerif *),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/rustc-coverage/branch/while.rs:25 new_tests__rustc_coverage__branch__while__while_cond_not *)
+(* src: src/rustc-coverage/branch/while.rs:25:0-32:1 new_tests__rustc_coverage__branch__while__while_cond_not *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__branch__while__while_cond_not(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -44,7 +44,7 @@ letfun new_tests__rustc_coverage__branch__while__while_cond_not(wildcard: bitstr
     bitstring_err() (* Loops not supported in ProVerif *),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/rustc-coverage/branch/while.rs:35 new_tests__rustc_coverage__branch__while__while_op_and *)
+(* src: src/rustc-coverage/branch/while.rs:35:0-44:1 new_tests__rustc_coverage__branch__while__while_op_and *)
 (*  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__branch__while__while_op_and(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -58,7 +58,7 @@ letfun new_tests__rustc_coverage__branch__while__while_op_and(wildcard: bitstrin
     bitstring_err() (* Loops not supported in ProVerif *),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/rustc-coverage/branch/while.rs:47 new_tests__rustc_coverage__branch__while__while_op_or *)
+(* src: src/rustc-coverage/branch/while.rs:47:0-56:1 new_tests__rustc_coverage__branch__while__while_op_or *)
 (*  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__branch__while__while_op_or(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -72,7 +72,7 @@ letfun new_tests__rustc_coverage__branch__while__while_op_or(wildcard: bitstring
     bitstring_err() (* Loops not supported in ProVerif *),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/rustc-coverage/branch/while.rs:59 new_tests__rustc_coverage__branch__while__main *)
+(* src: src/rustc-coverage/branch/while.rs:59:0-64:1 new_tests__rustc_coverage__branch__while__main *)
 letfun new_tests__rustc_coverage__branch__while__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__branch__while__while_cond(
     rust_primitives__hax__Tuple0__Tuple0

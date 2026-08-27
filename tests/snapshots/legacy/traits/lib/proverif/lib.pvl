@@ -17,37 +17,37 @@
 *)
 
 
-(* src: src/legacy/traits/lib.rs:170 new_tests__legacy__traits__lib__implicit_dependencies_issue_667__define_type__MyType *)
+(* src: src/legacy/traits/lib.rs:170:8-170:26 new_tests__legacy__traits__lib__implicit_dependencies_issue_667__define_type__MyType *)
 fun new_tests__legacy__traits__lib__implicit_dependencies_issue_667__define_type__MyType__MyType(
 
 ): bitstring [data].
 
-(* src: src/legacy/traits/lib.rs:134 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Plus *)
+(* src: src/legacy/traits/lib.rs:134:4-134:16 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Plus *)
 fun new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Plus__Plus(): bitstring [data].
-(* src: src/legacy/traits/lib.rs:136 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Impl__op *)
+(* src: src/legacy/traits/lib.rs:136:8-138:9 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Impl__op *)
 letfun new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Impl__op(
   x: bitstring,
   y: bitstring
 ) = rust_primitives__hax__machine_int__add(x, y).
-(* src: src/legacy/traits/lib.rs:141 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Times *)
+(* src: src/legacy/traits/lib.rs:141:4-141:17 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Times *)
 fun new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Times__Times(
 
 ): bitstring [data].
-(* src: src/legacy/traits/lib.rs:143 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Impl_1__op *)
+(* src: src/legacy/traits/lib.rs:143:8-145:9 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Impl_1__op *)
 letfun new_tests__legacy__traits__lib__unconstrainted_types_issue_677__Impl_1__op(
   x: bitstring,
   y: bitstring
 ) = rust_primitives__hax__machine_int__mul(x, y).
-(* src: src/legacy/traits/lib.rs:148 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__twice *)
+(* src: src/legacy/traits/lib.rs:148:4-150:5 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__twice *)
 letfun new_tests__legacy__traits__lib__unconstrainted_types_issue_677__twice(x: bitstring) =
   new_tests__legacy__traits__lib__unconstrainted_types_issue_677__PolyOp__op(x, x).
-(* src: src/legacy/traits/lib.rs:152 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__both *)
+(* src: src/legacy/traits/lib.rs:152:4-154:5 new_tests__legacy__traits__lib__unconstrainted_types_issue_677__both *)
 letfun new_tests__legacy__traits__lib__unconstrainted_types_issue_677__both(x: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     new_tests__legacy__traits__lib__unconstrainted_types_issue_677__twice(x),
     new_tests__legacy__traits__lib__unconstrainted_types_issue_677__twice(x)
   ).
-(* src: src/legacy/traits/lib.rs:270 new_tests__legacy__traits__lib__type_alias_bounds_issue_707__StructWithGenericBounds *)
+(* src: src/legacy/traits/lib.rs:270:4-270:48 new_tests__legacy__traits__lib__type_alias_bounds_issue_707__StructWithGenericBounds *)
 fun new_tests__legacy__traits__lib__type_alias_bounds_issue_707__StructWithGenericBounds__StructWithGenericBounds(
   bitstring
 ): bitstring [data].
@@ -61,19 +61,19 @@ reduc forall v_0: bitstring;
 
 
 
-(* src: src/legacy/traits/lib.rs:187 new_tests__legacy__traits__lib__interlaced_consts_types__Bar *)
+(* src: src/legacy/traits/lib.rs:187:4-187:68 new_tests__legacy__traits__lib__interlaced_consts_types__Bar *)
 fun new_tests__legacy__traits__lib__interlaced_consts_types__Bar__Bar(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__traits__lib__interlaced_consts_types__Bar__Bar__0(
     new_tests__legacy__traits__lib__interlaced_consts_types__Bar__Bar(v_0)
   ) = v_0.
 
-(* src: src/legacy/traits/lib.rs:194 new_tests__legacy__traits__lib__interlaced_consts_types__Impl__fun_kw *)
+(* src: src/legacy/traits/lib.rs:194:8-194:97 new_tests__legacy__traits__lib__interlaced_consts_types__Impl__fun_kw *)
 letfun new_tests__legacy__traits__lib__interlaced_consts_types__Impl__fun_kw(
   x: bitstring,
   y: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/traits/lib.rs:200 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Type *)
+(* src: src/legacy/traits/lib.rs:200:4-202:5 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Type *)
 fun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Type__Type(
   bitstring
 ): bitstring [data].
@@ -82,19 +82,19 @@ reduc forall v_0: bitstring;
     new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Type__Type(v_0)
   ) = v_0.
 
-(* src: src/legacy/traits/lib.rs:218 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Impl__method *)
+(* src: src/legacy/traits/lib.rs:218:8-223:9 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Impl__method *)
 letfun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Impl__method(
   self: bitstring,
   value_TypeArg: bitstring,
   value_Type: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/traits/lib.rs:224 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Impl__associated_function *)
+(* src: src/legacy/traits/lib.rs:224:8-229:9 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Impl__associated_function *)
 letfun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__Impl__associated_function(
   u_self: bitstring,
   value_TypeArg: bitstring,
   value_Type: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/traits/lib.rs:236 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__method_caller *)
+(* src: src/legacy/traits/lib.rs:236:4-248:5 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__method_caller *)
 letfun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__method_caller(
   x: bitstring,
   value_TypeArg: bitstring,
@@ -106,7 +106,7 @@ letfun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__me
     value_Type
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/traits/lib.rs:250 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__associated_function_caller *)
+(* src: src/legacy/traits/lib.rs:250:4-266:5 new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__associated_function_caller *)
 letfun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__associated_function_caller(
   x: bitstring,
   value_TypeArg: bitstring,
@@ -119,11 +119,11 @@ letfun new_tests__legacy__traits__lib__implicit_explicit_calling_conventions__as
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
 
-(* src: src/legacy/traits/lib.rs:174 new_tests__legacy__traits__lib__implicit_dependencies_issue_667__impl_type__Impl__my_method *)
+(* src: src/legacy/traits/lib.rs:174:12-174:33 new_tests__legacy__traits__lib__implicit_dependencies_issue_667__impl_type__Impl__my_method *)
 letfun new_tests__legacy__traits__lib__implicit_dependencies_issue_667__impl_type__Impl__my_method(
   self: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/traits/lib.rs:319 new_tests__legacy__traits__lib__implement_arithmetic_trait__Wrapped *)
+(* src: src/legacy/traits/lib.rs:319:4-319:24 new_tests__legacy__traits__lib__implement_arithmetic_trait__Wrapped *)
 fun new_tests__legacy__traits__lib__implement_arithmetic_trait__Wrapped__Wrapped(
   bitstring
 ): bitstring [data].
@@ -132,7 +132,7 @@ reduc forall v_0: bitstring;
     new_tests__legacy__traits__lib__implement_arithmetic_trait__Wrapped__Wrapped(v_0)
   ) = v_0.
 
-(* src: src/legacy/traits/lib.rs:323 new_tests__legacy__traits__lib__implement_arithmetic_trait__Impl__add *)
+(* src: src/legacy/traits/lib.rs:323:8-325:9 new_tests__legacy__traits__lib__implement_arithmetic_trait__Impl__add *)
 letfun new_tests__legacy__traits__lib__implement_arithmetic_trait__Impl__add(
   self: bitstring,
   rhs: bitstring
@@ -143,7 +143,7 @@ letfun new_tests__legacy__traits__lib__implement_arithmetic_trait__Impl__add(
       new_tests__legacy__traits__lib__implement_arithmetic_trait__Wrapped__Wrapped__0(rhs)
     )
   ).
-(* src: src/legacy/traits/lib.rs:328 new_tests__legacy__traits__lib__implement_arithmetic_trait__test *)
+(* src: src/legacy/traits/lib.rs:328:4-330:5 new_tests__legacy__traits__lib__implement_arithmetic_trait__test *)
 letfun new_tests__legacy__traits__lib__implement_arithmetic_trait__test(
   x: bitstring,
   y: bitstring
@@ -155,7 +155,7 @@ letfun new_tests__legacy__traits__lib__implement_arithmetic_trait__test(
 (*  @fail(extraction): lean(HAX0001) *)
 
 
-(* src: src/legacy/traits/lib.rs:102 new_tests__legacy__traits__lib__for_clauses__u_f *)
+(* src: src/legacy/traits/lib.rs:102:4-104:5 new_tests__legacy__traits__lib__for_clauses__u_f *)
 letfun new_tests__legacy__traits__lib__for_clauses__u_f(x: bitstring) =
   let wildcard: bitstring = new_tests__legacy__traits__lib__for_clauses__Foo__to_t(x) in
   rust_primitives__hax__Tuple0__Tuple0.
@@ -165,16 +165,16 @@ letfun new_tests__legacy__traits__lib__for_clauses__u_f(x: bitstring) =
 
 
 
-(* src: src/legacy/traits/lib.rs:22 new_tests__legacy__traits__lib__Impl__function_of_super_trait *)
+(* src: src/legacy/traits/lib.rs:22:4-24:5 new_tests__legacy__traits__lib__Impl__function_of_super_trait *)
 letfun new_tests__legacy__traits__lib__Impl__function_of_super_trait(self: bitstring) =
   core__num__Impl_2__abs(self).
-(* src: src/legacy/traits/lib.rs:48 new_tests__legacy__traits__lib__Struct *)
+(* src: src/legacy/traits/lib.rs:48:0-48:14 new_tests__legacy__traits__lib__Struct *)
 fun new_tests__legacy__traits__lib__Struct__Struct(): bitstring [data].
 
-(* src: src/legacy/traits/lib.rs:55 new_tests__legacy__traits__lib__Impl_2__method *)
+(* src: src/legacy/traits/lib.rs:55:4-57:5 new_tests__legacy__traits__lib__Impl_2__method *)
 letfun new_tests__legacy__traits__lib__Impl_2__method(x: bitstring) =
   new_tests__legacy__traits__lib__Bar__bar(x).
-(* src: src/legacy/traits/lib.rs:60 new_tests__legacy__traits__lib__closure_impl_expr *)
+(* src: src/legacy/traits/lib.rs:60:0-62:1 new_tests__legacy__traits__lib__closure_impl_expr *)
 letfun new_tests__legacy__traits__lib__closure_impl_expr(it: bitstring) =
   (let bl__seq0 = (it) in let bl__acc0 = (rust_primitives__hax__array_nil()) in 
   let rust_primitives__hax__array_cons(x, bl__seq1) = bl__seq0 in (let u__map_acc = bl__acc0 in
@@ -184,25 +184,25 @@ letfun new_tests__legacy__traits__lib__closure_impl_expr(it: bitstring) =
   let rust_primitives__hax__array_cons(x, bl__seq3) = bl__seq2 in (let u__map_acc = bl__acc2 in
   let bl__acc3 = (rust_primitives__hax__array_cons(x, u__map_acc)) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)).
-(* src: src/legacy/traits/lib.rs:65 new_tests__legacy__traits__lib__closure_impl_expr_fngen *)
+(* src: src/legacy/traits/lib.rs:65:0-67:1 new_tests__legacy__traits__lib__closure_impl_expr_fngen *)
 (*  @fail(extraction): lean(HAX0001) *)
 letfun new_tests__legacy__traits__lib__closure_impl_expr_fngen(it: bitstring, f: bitstring) =
   core__iter__traits__iterator__Iterator__collect(
     core__iter__traits__iterator__Iterator__map(it, f)
   ).
-(* src: src/legacy/traits/lib.rs:75 new_tests__legacy__traits__lib__Error *)
+(* src: src/legacy/traits/lib.rs:75:0-77:1 new_tests__legacy__traits__lib__Error *)
 fun new_tests__legacy__traits__lib__Error__Fail(): bitstring [data].
-(* src: src/legacy/traits/lib.rs:75 new_tests__legacy__traits__lib__Error_cast_to_repr *)
+(* src: src/legacy/traits/lib.rs:75:0-77:1 new_tests__legacy__traits__lib__Error_cast_to_repr *)
 letfun new_tests__legacy__traits__lib__Error_cast_to_repr(x: bitstring) =
   let new_tests__legacy__traits__lib__Error__Fail() = x in nat_0
   else bitstring_err().
-(* src: src/legacy/traits/lib.rs:81 new_tests__legacy__traits__lib__Impl_3__for_application_callback *)
+(* src: src/legacy/traits/lib.rs:81:4-83:5 new_tests__legacy__traits__lib__Impl_3__for_application_callback *)
 letfun new_tests__legacy__traits__lib__Impl_3__for_application_callback(wildcard: bitstring) =
   bitstring_err() (* Closures not supported in ProVerif *).
-(* src: src/legacy/traits/lib.rs:87 new_tests__legacy__traits__lib__iter_option *)
+(* src: src/legacy/traits/lib.rs:87:0-89:1 new_tests__legacy__traits__lib__iter_option *)
 letfun new_tests__legacy__traits__lib__iter_option(x: bitstring) =
   core__iter__traits__collect__IntoIterator__into_iter(core__option__Impl__as_ref(x)).
-(* src: src/legacy/traits/lib.rs:92 new_tests__legacy__traits__lib__use_impl_trait *)
+(* src: src/legacy/traits/lib.rs:92:0-95:1 new_tests__legacy__traits__lib__use_impl_trait *)
 letfun new_tests__legacy__traits__lib__use_impl_trait(wildcard: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
     tmp0: bitstring,
@@ -214,25 +214,25 @@ letfun new_tests__legacy__traits__lib__use_impl_trait(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0) else bitstring_err().
 
 
-(* src: src/legacy/traits/lib.rs:39 new_tests__legacy__traits__lib__f *)
+(* src: src/legacy/traits/lib.rs:39:0-42:1 new_tests__legacy__traits__lib__f *)
 letfun new_tests__legacy__traits__lib__f(x: bitstring) =
   let wildcard: bitstring = new_tests__legacy__traits__lib__Foo__assoc_f(
     rust_primitives__hax__Tuple0__Tuple0
   ) in
   new_tests__legacy__traits__lib__Foo__method_f(x).
-(* src: src/legacy/traits/lib.rs:44 new_tests__legacy__traits__lib__g *)
+(* src: src/legacy/traits/lib.rs:44:0-46:1 new_tests__legacy__traits__lib__g *)
 letfun new_tests__legacy__traits__lib__g(x: bitstring) =
   new_tests__legacy__traits__lib__SuperTrait__function_of_super_trait(x).
 
-(* src: src/legacy/traits/lib.rs:29 new_tests__legacy__traits__lib__Impl_1__N *)
+(* src: src/legacy/traits/lib.rs:29:4-29:24 new_tests__legacy__traits__lib__Impl_1__N *)
 const new_tests__legacy__traits__lib__Impl_1__N: bitstring.
-(* src: src/legacy/traits/lib.rs:30 new_tests__legacy__traits__lib__Impl_1__assoc_f *)
+(* src: src/legacy/traits/lib.rs:30:4-32:5 new_tests__legacy__traits__lib__Impl_1__assoc_f *)
 letfun new_tests__legacy__traits__lib__Impl_1__assoc_f(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0().
-(* src: src/legacy/traits/lib.rs:33 new_tests__legacy__traits__lib__Impl_1__method_f *)
+(* src: src/legacy/traits/lib.rs:33:4-35:5 new_tests__legacy__traits__lib__Impl_1__method_f *)
 letfun new_tests__legacy__traits__lib__Impl_1__method_f(self: bitstring) =
   new_tests__legacy__traits__lib__Impl_1__assoc_f(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/traits/lib.rs:36 new_tests__legacy__traits__lib__Impl_1__assoc_type *)
+(* src: src/legacy/traits/lib.rs:36:4-36:46 new_tests__legacy__traits__lib__Impl_1__assoc_type *)
 letfun new_tests__legacy__traits__lib__Impl_1__assoc_type(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
 
@@ -256,14 +256,14 @@ letfun new_tests__legacy__traits__lib__Impl_1__assoc_type(wildcard: bitstring) =
 
 
 
-(* src: src/legacy/traits/lib.rs:359 new_tests__legacy__traits__lib__typenum_perf__u_f *)
+(* src: src/legacy/traits/lib.rs:359:4-359:30 new_tests__legacy__traits__lib__typenum_perf__u_f *)
 letfun new_tests__legacy__traits__lib__typenum_perf__u_f(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/traits/lib.rs:178 new_tests__legacy__traits__lib__implicit_dependencies_issue_667__use_type__some_function *)
+(* src: src/legacy/traits/lib.rs:178:8-181:9 new_tests__legacy__traits__lib__implicit_dependencies_issue_667__use_type__some_function *)
 letfun new_tests__legacy__traits__lib__implicit_dependencies_issue_667__use_type__some_function(
   x: bitstring
 ) = new_tests__legacy__traits__lib__implicit_dependencies_issue_667__impl_type__Impl__my_method(x).
-(* src: src/legacy/traits/lib.rs:111 new_tests__legacy__traits__lib__for_clauses__issue_495__original_function_from_495 *)
+(* src: src/legacy/traits/lib.rs:111:8-113:9 new_tests__legacy__traits__lib__for_clauses__issue_495__original_function_from_495 *)
 letfun new_tests__legacy__traits__lib__for_clauses__issue_495__original_function_from_495(
   list: bitstring
 ) =
@@ -274,7 +274,7 @@ letfun new_tests__legacy__traits__lib__for_clauses__issue_495__original_function
     )
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/traits/lib.rs:115 new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_1 *)
+(* src: src/legacy/traits/lib.rs:115:8-117:9 new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_1 *)
 letfun new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_1(list: bitstring) =
   core__iter__traits__iterator__Iterator__collect(
     core__iter__traits__iterator__Iterator__filter(
@@ -282,7 +282,7 @@ letfun new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_1(list:
       bitstring_err() (* Closures not supported in ProVerif *)
     )
   ).
-(* src: src/legacy/traits/lib.rs:118 new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_2 *)
+(* src: src/legacy/traits/lib.rs:118:8-120:9 new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_2 *)
 letfun new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_2(it: bitstring) =
   let u_indices = core__iter__traits__iterator__Iterator__collect(it) in
   rust_primitives__hax__Tuple0__Tuple0.

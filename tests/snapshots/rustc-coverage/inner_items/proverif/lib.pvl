@@ -16,9 +16,9 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/inner_items.rs:17 new_tests__rustc_coverage__inner_items__main__in_mod__IN_MOD_CONST *)
+(* src: src/rustc-coverage/inner_items.rs:17:8-17:39 new_tests__rustc_coverage__inner_items__main__in_mod__IN_MOD_CONST *)
 const new_tests__rustc_coverage__inner_items__main__in_mod__IN_MOD_CONST: bitstring.
-(* src: src/rustc-coverage/inner_items.rs:21 new_tests__rustc_coverage__inner_items__main__in_func *)
+(* src: src/rustc-coverage/inner_items.rs:21:4-25:5 new_tests__rustc_coverage__inner_items__main__in_func *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__inner_items__main__in_func(a: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
@@ -32,17 +32,17 @@ letfun new_tests__rustc_coverage__inner_items__main__in_func(a: bitstring) =
     )
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/inner_items.rs:27 new_tests__rustc_coverage__inner_items__main__InStruct *)
+(* src: src/rustc-coverage/inner_items.rs:27:4-29:5 new_tests__rustc_coverage__inner_items__main__InStruct *)
 fun new_tests__rustc_coverage__inner_items__main__InStruct__InStruct(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__rustc_coverage__inner_items__main__InStruct__InStruct__in_struct_field(
     new_tests__rustc_coverage__inner_items__main__InStruct__InStruct(v_0)
   ) = v_0.
-(* src: src/rustc-coverage/inner_items.rs:31 new_tests__rustc_coverage__inner_items__main__IN_CONST *)
+(* src: src/rustc-coverage/inner_items.rs:31:4-31:31 new_tests__rustc_coverage__inner_items__main__IN_CONST *)
 const new_tests__rustc_coverage__inner_items__main__IN_CONST: bitstring.
 
 
-(* src: src/rustc-coverage/inner_items.rs:44 new_tests__rustc_coverage__inner_items__main__Impl__trait_func *)
+(* src: src/rustc-coverage/inner_items.rs:44:8-47:9 new_tests__rustc_coverage__inner_items__main__Impl__trait_func *)
 letfun new_tests__rustc_coverage__inner_items__main__Impl__trait_func(
   self: bitstring,
   incr: bitstring
@@ -57,7 +57,7 @@ letfun new_tests__rustc_coverage__inner_items__main__Impl__trait_func(
     new_tests__rustc_coverage__inner_items__main__InStruct__InStruct__in_struct_field(self_1)
   ) in
   self_1.
-(* src: src/rustc-coverage/inner_items.rs:5 new_tests__rustc_coverage__inner_items__main *)
+(* src: src/rustc-coverage/inner_items.rs:5:0-61:1 new_tests__rustc_coverage__inner_items__main *)
 letfun new_tests__rustc_coverage__inner_items__main(wildcard: bitstring) =
   let is_true = rust_primitives__hax__machine_int__eq(
     core__iter__traits__exact_size__ExactSizeIterator__len(

@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/guards/lib.rs:5 new_tests__legacy__guards__lib__if_let_guard *)
+(* src: src/legacy/guards/lib.rs:5:0-12:1 new_tests__legacy__guards__lib__if_let_guard *)
 letfun new_tests__legacy__guards__lib__if_let_guard(x: bitstring) =
   let None() = x in nat_0
   else let Some(v) = x in
@@ -25,7 +25,7 @@ letfun new_tests__legacy__guards__lib__if_let_guard(x: bitstring) =
     else nat_1)
   else let Some(core__result__Result__Err(y_1: bitstring)) = x in y_1
   else nat_1.
-(* src: src/legacy/guards/lib.rs:14 new_tests__legacy__guards__lib__equivalent *)
+(* src: src/legacy/guards/lib.rs:14:0-31:1 new_tests__legacy__guards__lib__equivalent *)
 letfun new_tests__legacy__guards__lib__equivalent(x: bitstring) =
   let None() = x in nat_0
   else let Some(y_1) = let Some(v) = x in (let y = v in Some(y))
@@ -35,7 +35,7 @@ letfun new_tests__legacy__guards__lib__equivalent(x: bitstring) =
     (let Some(core__result__Result__Err(y_2: bitstring)) = x in y_2
     else nat_1)
   else bitstring_err().
-(* src: src/legacy/guards/lib.rs:33 new_tests__legacy__guards__lib__multiple_guards *)
+(* src: src/legacy/guards/lib.rs:33:0-41:1 new_tests__legacy__guards__lib__multiple_guards *)
 letfun new_tests__legacy__guards__lib__multiple_guards(x: bitstring) =
   let None() = x in nat_0
   else let Some(v) = x in
@@ -52,7 +52,7 @@ letfun new_tests__legacy__guards__lib__multiple_guards(x: bitstring) =
     else nat_1)
   else let Some(core__result__Result__Err(y_1: bitstring)) = x in y_1
   else nat_1.
-(* src: src/legacy/guards/lib.rs:43 new_tests__legacy__guards__lib__if_guard *)
+(* src: src/legacy/guards/lib.rs:43:0-48:1 new_tests__legacy__guards__lib__if_guard *)
 letfun new_tests__legacy__guards__lib__if_guard(x: bitstring) =
   let Some(v) = x in
     (let (=True()) = rust_primitives__hax__machine_int__gt(v, nat_0) in v

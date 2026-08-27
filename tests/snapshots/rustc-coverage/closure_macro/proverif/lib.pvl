@@ -16,10 +16,10 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/closure_macro.rs:31 new_tests__rustc_coverage__closure_macro__load_configuration_files *)
+(* src: src/rustc-coverage/closure_macro.rs:31:0-33:1 new_tests__rustc_coverage__closure_macro__load_configuration_files *)
 letfun new_tests__rustc_coverage__closure_macro__load_configuration_files(wildcard: bitstring) =
   core__convert__From__from(string_lit__config).
-(* src: src/rustc-coverage/closure_macro.rs:36 new_tests__rustc_coverage__closure_macro__main *)
+(* src: src/rustc-coverage/closure_macro.rs:36:0-43:1 new_tests__rustc_coverage__closure_macro__main *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__closure_macro__main(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(

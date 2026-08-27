@@ -16,6 +16,6 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/recursion/lib.rs:5 new_tests__legacy__recursion__lib__f *)
+(* src: src/legacy/recursion/lib.rs:5:0-11:1 new_tests__legacy__recursion__lib__f *)
 (* recursion unsupported: opacified to an uninterpreted function *)
 fun new_tests__legacy__recursion__lib__f(bitstring): bitstring.

@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/branch/generics.rs:7 new_tests__rustc_coverage__branch__generics__print_size *)
+(* src: src/rustc-coverage/branch/generics.rs:7:0-13:1 new_tests__rustc_coverage__branch__generics__print_size *)
 letfun new_tests__rustc_coverage__branch__generics__print_size(wildcard: bitstring) =
   let (=True()) = rust_primitives__hax__machine_int__gt(
       core__mem__size_of(rust_primitives__hax__Tuple0__Tuple0),
@@ -36,7 +36,7 @@ letfun new_tests__rustc_coverage__branch__generics__print_size(wildcard: bitstri
     ) in
     let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
     rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/rustc-coverage/branch/generics.rs:16 new_tests__rustc_coverage__branch__generics__main *)
+(* src: src/rustc-coverage/branch/generics.rs:16:0-20:1 new_tests__rustc_coverage__branch__generics__main *)
 letfun new_tests__rustc_coverage__branch__generics__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__branch__generics__print_size(
     rust_primitives__hax__Tuple0__Tuple0

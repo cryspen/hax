@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/while_early_ret.rs:8 new_tests__rustc_coverage__while_early_ret__main *)
+(* src: src/rustc-coverage/while_early_ret.rs:8:0-40:1 new_tests__rustc_coverage__while_early_ret__main *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__while_early_ret__main(wildcard: bitstring) =
   let core__ops__control_flow__ControlFlow__Break(

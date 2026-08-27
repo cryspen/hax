@@ -16,11 +16,11 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/let-else/lib.rs:3 new_tests__legacy__let_else__lib__let_else *)
+(* src: src/legacy/let-else/lib.rs:3:0-6:1 new_tests__legacy__let_else__lib__let_else *)
 letfun new_tests__legacy__let_else__lib__let_else(opt: bitstring) =
   let Some(x) = opt in True()
   else False().
-(* src: src/legacy/let-else/lib.rs:8 new_tests__legacy__let_else__lib__let_else_different_type *)
+(* src: src/legacy/let-else/lib.rs:8:0-13:1 new_tests__legacy__let_else__lib__let_else_different_type *)
 letfun new_tests__legacy__let_else__lib__let_else_different_type(opt: bitstring) =
   let Some(x) = opt in
     new_tests__legacy__let_else__lib__let_else(

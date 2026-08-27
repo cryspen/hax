@@ -16,15 +16,15 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/slices/lib.rs:7 new_tests__legacy__slices__lib__VERSION *)
+(* src: src/legacy/slices/lib.rs:7:0-7:29 new_tests__legacy__slices__lib__VERSION *)
 const new_tests__legacy__slices__lib__VERSION: bitstring.
-(* src: src/legacy/slices/lib.rs:11 new_tests__legacy__slices__lib__do_something *)
+(* src: src/legacy/slices/lib.rs:11:0-11:32 new_tests__legacy__slices__lib__do_something *)
 letfun new_tests__legacy__slices__lib__do_something(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/slices/lib.rs:17 new_tests__legacy__slices__lib__r_x23unsized *)
+(* src: src/legacy/slices/lib.rs:17:0-17:35 new_tests__legacy__slices__lib__r_x23unsized *)
 letfun new_tests__legacy__slices__lib__r_x23unsized(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/slices/lib.rs:13 new_tests__legacy__slices__lib__sized *)
+(* src: src/legacy/slices/lib.rs:13:0-15:1 new_tests__legacy__slices__lib__sized *)
 letfun new_tests__legacy__slices__lib__sized(x: bitstring) =
   new_tests__legacy__slices__lib__r_x23unsized(
     rust_primitives__hax__array_cons(core__ops__index__Index__index(

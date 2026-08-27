@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/branch/no-mir-spans.rs:19 new_tests__rustc_coverage__branch__no_mir_spans__while_cond *)
+(* src: src/rustc-coverage/branch/no-mir-spans.rs:19:0-26:1 new_tests__rustc_coverage__branch__no_mir_spans__while_cond *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__branch__no_mir_spans__while_cond(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -30,7 +30,7 @@ letfun new_tests__rustc_coverage__branch__no_mir_spans__while_cond(wildcard: bit
     bitstring_err() (* Loops not supported in ProVerif *),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/rustc-coverage/branch/no-mir-spans.rs:29 new_tests__rustc_coverage__branch__no_mir_spans__while_cond_not *)
+(* src: src/rustc-coverage/branch/no-mir-spans.rs:29:0-36:1 new_tests__rustc_coverage__branch__no_mir_spans__while_cond_not *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__branch__no_mir_spans__while_cond_not(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -44,7 +44,7 @@ letfun new_tests__rustc_coverage__branch__no_mir_spans__while_cond_not(wildcard:
     bitstring_err() (* Loops not supported in ProVerif *),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/rustc-coverage/branch/no-mir-spans.rs:39 new_tests__rustc_coverage__branch__no_mir_spans__while_op_and *)
+(* src: src/rustc-coverage/branch/no-mir-spans.rs:39:0-48:1 new_tests__rustc_coverage__branch__no_mir_spans__while_op_and *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__branch__no_mir_spans__while_op_and(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -58,7 +58,7 @@ letfun new_tests__rustc_coverage__branch__no_mir_spans__while_op_and(wildcard: b
     bitstring_err() (* Loops not supported in ProVerif *),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/rustc-coverage/branch/no-mir-spans.rs:51 new_tests__rustc_coverage__branch__no_mir_spans__while_op_or *)
+(* src: src/rustc-coverage/branch/no-mir-spans.rs:51:0-60:1 new_tests__rustc_coverage__branch__no_mir_spans__while_op_or *)
 (*  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__branch__no_mir_spans__while_op_or(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -72,7 +72,7 @@ letfun new_tests__rustc_coverage__branch__no_mir_spans__while_op_or(wildcard: bi
     bitstring_err() (* Loops not supported in ProVerif *),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/rustc-coverage/branch/no-mir-spans.rs:63 new_tests__rustc_coverage__branch__no_mir_spans__main *)
+(* src: src/rustc-coverage/branch/no-mir-spans.rs:63:0-68:1 new_tests__rustc_coverage__branch__no_mir_spans__main *)
 letfun new_tests__rustc_coverage__branch__no_mir_spans__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__branch__no_mir_spans__while_cond(
     rust_primitives__hax__Tuple0__Tuple0

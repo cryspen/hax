@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/proverif-fn-to-letfun/lib.rs:1 new_tests__legacy__proverif_fn_to_letfun__lib__A *)
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:1:0-4:1 new_tests__legacy__proverif_fn_to_letfun__lib__A *)
 fun new_tests__legacy__proverif_fn_to_letfun__lib__A__A(bitstring, bitstring): bitstring [data].
 reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__proverif_fn_to_letfun__lib__A__A__x(
@@ -26,17 +26,17 @@ reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__proverif_fn_to_letfun__lib__A__A__y(
     new_tests__legacy__proverif_fn_to_letfun__lib__A__A(v_0, v_1)
   ) = v_1.
-(* src: src/legacy/proverif-fn-to-letfun/lib.rs:5 new_tests__legacy__proverif_fn_to_letfun__lib__B *)
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:5:0-7:1 new_tests__legacy__proverif_fn_to_letfun__lib__B *)
 fun new_tests__legacy__proverif_fn_to_letfun__lib__B__B(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__proverif_fn_to_letfun__lib__B__B__b(
     new_tests__legacy__proverif_fn_to_letfun__lib__B__B(v_0)
   ) = v_0.
-(* src: src/legacy/proverif-fn-to-letfun/lib.rs:9 new_tests__legacy__proverif_fn_to_letfun__lib__some_function *)
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:9:0-11:1 new_tests__legacy__proverif_fn_to_letfun__lib__some_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__some_function(wildcard: bitstring) = True().
-(* src: src/legacy/proverif-fn-to-letfun/lib.rs:13 new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function *)
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:13:0-15:1 new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(b: bitstring) = nat_5.
-(* src: src/legacy/proverif-fn-to-letfun/lib.rs:17 new_tests__legacy__proverif_fn_to_letfun__lib__longer_function *)
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:17:0-22:1 new_tests__legacy__proverif_fn_to_letfun__lib__longer_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__longer_function(x: bitstring) =
   let d = new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(
     new_tests__legacy__proverif_fn_to_letfun__lib__some_function(
@@ -44,7 +44,7 @@ letfun new_tests__legacy__proverif_fn_to_letfun__lib__longer_function(x: bitstri
     )
   ) in
   new_tests__legacy__proverif_fn_to_letfun__lib__A__A(nat_12, nat_9).
-(* src: src/legacy/proverif-fn-to-letfun/lib.rs:24 new_tests__legacy__proverif_fn_to_letfun__lib__another_longer_function *)
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:24:0-29:1 new_tests__legacy__proverif_fn_to_letfun__lib__another_longer_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__another_longer_function(wildcard: bitstring) =
   let d = new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(
     new_tests__legacy__proverif_fn_to_letfun__lib__some_function(
@@ -52,7 +52,7 @@ letfun new_tests__legacy__proverif_fn_to_letfun__lib__another_longer_function(wi
     )
   ) in
   new_tests__legacy__proverif_fn_to_letfun__lib__B__B(False()).
-(* src: src/legacy/proverif-fn-to-letfun/lib.rs:31 new_tests__legacy__proverif_fn_to_letfun__lib__void_function *)
+(* src: src/legacy/proverif-fn-to-letfun/lib.rs:31:0-34:1 new_tests__legacy__proverif_fn_to_letfun__lib__void_function *)
 letfun new_tests__legacy__proverif_fn_to_letfun__lib__void_function(wildcard: bitstring) =
   let d = new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(
     new_tests__legacy__proverif_fn_to_letfun__lib__some_function(

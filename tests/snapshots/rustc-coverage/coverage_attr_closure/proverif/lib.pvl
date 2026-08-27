@@ -16,19 +16,19 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/coverage_attr_closure.rs:7 new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_ON *)
+(* src: src/rustc-coverage/coverage_attr_closure.rs:7:0-10:2 new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_ON *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 const new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_ON: bitstring.
-(* src: src/rustc-coverage/coverage_attr_closure.rs:12 new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_OFF *)
+(* src: src/rustc-coverage/coverage_attr_closure.rs:12:0-15:2 new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_OFF *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 const new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_OFF: bitstring.
-(* src: src/rustc-coverage/coverage_attr_closure.rs:19 new_tests__rustc_coverage__coverage_attr_closure__contains_closures_on *)
+(* src: src/rustc-coverage/coverage_attr_closure.rs:19:0-28:1 new_tests__rustc_coverage__coverage_attr_closure__contains_closures_on *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__coverage_attr_closure__contains_closures_on(wildcard: bitstring) =
   let u_local_closure_on = (bitstring_err() (* Closures not supported in ProVerif *)) in
   let u_local_closure_off = (bitstring_err() (* Closures not supported in ProVerif *)) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/coverage_attr_closure.rs:32 new_tests__rustc_coverage__coverage_attr_closure__contains_closures_off *)
+(* src: src/rustc-coverage/coverage_attr_closure.rs:32:0-41:1 new_tests__rustc_coverage__coverage_attr_closure__contains_closures_off *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__coverage_attr_closure__contains_closures_off(
   wildcard: bitstring
@@ -36,7 +36,7 @@ letfun new_tests__rustc_coverage__coverage_attr_closure__contains_closures_off(
   let u_local_closure_on = (bitstring_err() (* Closures not supported in ProVerif *)) in
   let u_local_closure_off = (bitstring_err() (* Closures not supported in ProVerif *)) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/coverage_attr_closure.rs:44 new_tests__rustc_coverage__coverage_attr_closure__main *)
+(* src: src/rustc-coverage/coverage_attr_closure.rs:44:0-47:1 new_tests__rustc_coverage__coverage_attr_closure__main *)
 letfun new_tests__rustc_coverage__coverage_attr_closure__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__coverage_attr_closure__contains_closures_on(
     rust_primitives__hax__Tuple0__Tuple0

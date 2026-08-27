@@ -16,6 +16,6 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/ignore_map.rs:3 new_tests__rustc_coverage__ignore_map__main *)
+(* src: src/rustc-coverage/ignore_map.rs:3:0-3:12 new_tests__rustc_coverage__ignore_map__main *)
 letfun new_tests__rustc_coverage__ignore_map__main(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.

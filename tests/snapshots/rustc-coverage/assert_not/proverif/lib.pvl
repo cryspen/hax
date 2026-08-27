@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/assert_not.rs:7 new_tests__rustc_coverage__assert_not__main *)
+(* src: src/rustc-coverage/assert_not.rs:7:0-12:1 new_tests__rustc_coverage__assert_not__main *)
 letfun new_tests__rustc_coverage__assert_not__main(wildcard: bitstring) =
   let wildcard: bitstring = (let (=True()) = core__ops__bit__Not__not_kw(True())
     in bitstring_err()

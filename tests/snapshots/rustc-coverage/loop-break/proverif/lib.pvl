@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/loop-break.rs:5 new_tests__rustc_coverage__loop_break__main *)
+(* src: src/rustc-coverage/loop-break.rs:5:0-11:1 new_tests__rustc_coverage__loop_break__main *)
 (*  @fail(extraction): lean(HAX0001), fstar(HAX0001), coq(HAX0001, HAX0001), ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__loop_break__main(wildcard: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(

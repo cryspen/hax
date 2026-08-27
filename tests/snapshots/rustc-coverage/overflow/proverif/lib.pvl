@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/overflow.rs:8 new_tests__rustc_coverage__overflow__might_overflow *)
+(* src: src/rustc-coverage/overflow.rs:8:0-17:1 new_tests__rustc_coverage__overflow__might_overflow *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__overflow__might_overflow(to_add: bitstring) =
   let wildcard: bitstring = (let (=True()) = rust_primitives__hax__machine_int__gt(to_add, nat_5)
@@ -48,7 +48,7 @@ letfun new_tests__rustc_coverage__overflow__might_overflow(to_add: bitstring) =
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__machine_int__add(to_add, add_to).
-(* src: src/rustc-coverage/overflow.rs:20 new_tests__rustc_coverage__overflow__main *)
+(* src: src/rustc-coverage/overflow.rs:20:0-33:1 new_tests__rustc_coverage__overflow__main *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__overflow__main(wildcard: bitstring) =
   let countdown_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in

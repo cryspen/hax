@@ -16,17 +16,17 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/closure_unit_return.rs:8 new_tests__rustc_coverage__closure_unit_return__explicit_unit *)
+(* src: src/rustc-coverage/closure_unit_return.rs:8:0-15:1 new_tests__rustc_coverage__closure_unit_return__explicit_unit *)
 letfun new_tests__rustc_coverage__closure_unit_return__explicit_unit(wildcard: bitstring) =
   let closure = (bitstring_err() (* Closures not supported in ProVerif *)) in
   let wildcard: bitstring = core__mem__drop(closure) in
   rust_primitives__hax__Tuple0__Tuple0().
-(* src: src/rustc-coverage/closure_unit_return.rs:17 new_tests__rustc_coverage__closure_unit_return__implicit_unit *)
+(* src: src/rustc-coverage/closure_unit_return.rs:17:0-24:1 new_tests__rustc_coverage__closure_unit_return__implicit_unit *)
 letfun new_tests__rustc_coverage__closure_unit_return__implicit_unit(wildcard: bitstring) =
   let closure = (bitstring_err() (* Closures not supported in ProVerif *)) in
   let wildcard: bitstring = core__mem__drop(closure) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/closure_unit_return.rs:27 new_tests__rustc_coverage__closure_unit_return__main *)
+(* src: src/rustc-coverage/closure_unit_return.rs:27:0-30:1 new_tests__rustc_coverage__closure_unit_return__main *)
 letfun new_tests__rustc_coverage__closure_unit_return__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__closure_unit_return__explicit_unit(
     rust_primitives__hax__Tuple0__Tuple0

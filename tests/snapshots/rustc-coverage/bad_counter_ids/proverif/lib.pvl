@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/bad_counter_ids.rs:17 new_tests__rustc_coverage__bad_counter_ids__Foo *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:17:0-17:16 new_tests__rustc_coverage__bad_counter_ids__Foo *)
 fun new_tests__rustc_coverage__bad_counter_ids__Foo__Foo(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__rustc_coverage__bad_counter_ids__Foo__Foo__0(
@@ -26,7 +26,7 @@ reduc forall v_0: bitstring;
 
 
 
-(* src: src/rustc-coverage/bad_counter_ids.rs:19 new_tests__rustc_coverage__bad_counter_ids__eq_good *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:19:0-22:1 new_tests__rustc_coverage__bad_counter_ids__eq_good *)
 letfun new_tests__rustc_coverage__bad_counter_ids__eq_good(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -46,7 +46,7 @@ letfun new_tests__rustc_coverage__bad_counter_ids__eq_good(wildcard: bitstring) 
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:24 new_tests__rustc_coverage__bad_counter_ids__eq_good_message *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:24:0-27:1 new_tests__rustc_coverage__bad_counter_ids__eq_good_message *)
 letfun new_tests__rustc_coverage__bad_counter_ids__eq_good_message(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -66,7 +66,7 @@ letfun new_tests__rustc_coverage__bad_counter_ids__eq_good_message(wildcard: bit
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:29 new_tests__rustc_coverage__bad_counter_ids__ne_good *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:29:0-32:1 new_tests__rustc_coverage__bad_counter_ids__ne_good *)
 letfun new_tests__rustc_coverage__bad_counter_ids__ne_good(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -86,7 +86,7 @@ letfun new_tests__rustc_coverage__bad_counter_ids__ne_good(wildcard: bitstring) 
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:34 new_tests__rustc_coverage__bad_counter_ids__ne_good_message *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:34:0-37:1 new_tests__rustc_coverage__bad_counter_ids__ne_good_message *)
 letfun new_tests__rustc_coverage__bad_counter_ids__ne_good_message(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -106,7 +106,7 @@ letfun new_tests__rustc_coverage__bad_counter_ids__ne_good_message(wildcard: bit
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:39 new_tests__rustc_coverage__bad_counter_ids__eq_bad *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:39:0-42:1 new_tests__rustc_coverage__bad_counter_ids__eq_bad *)
 letfun new_tests__rustc_coverage__bad_counter_ids__eq_bad(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -126,7 +126,7 @@ letfun new_tests__rustc_coverage__bad_counter_ids__eq_bad(wildcard: bitstring) =
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:44 new_tests__rustc_coverage__bad_counter_ids__eq_bad_message *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:44:0-47:1 new_tests__rustc_coverage__bad_counter_ids__eq_bad_message *)
 letfun new_tests__rustc_coverage__bad_counter_ids__eq_bad_message(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -146,7 +146,7 @@ letfun new_tests__rustc_coverage__bad_counter_ids__eq_bad_message(wildcard: bits
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:49 new_tests__rustc_coverage__bad_counter_ids__ne_bad *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:49:0-52:1 new_tests__rustc_coverage__bad_counter_ids__ne_bad *)
 letfun new_tests__rustc_coverage__bad_counter_ids__ne_bad(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -166,7 +166,7 @@ letfun new_tests__rustc_coverage__bad_counter_ids__ne_bad(wildcard: bitstring) =
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:54 new_tests__rustc_coverage__bad_counter_ids__ne_bad_message *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:54:0-57:1 new_tests__rustc_coverage__bad_counter_ids__ne_bad_message *)
 letfun new_tests__rustc_coverage__bad_counter_ids__ne_bad_message(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -186,7 +186,7 @@ letfun new_tests__rustc_coverage__bad_counter_ids__ne_bad_message(wildcard: bits
       else rust_primitives__hax__Tuple0__Tuple0)
   else bitstring_err()) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/bad_counter_ids.rs:62 new_tests__rustc_coverage__bad_counter_ids__main *)
+(* src: src/rustc-coverage/bad_counter_ids.rs:62:0-72:1 new_tests__rustc_coverage__bad_counter_ids__main *)
 (*  @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008) *)
 (*  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008) *)
 letfun new_tests__rustc_coverage__bad_counter_ids__main(wildcard: bitstring) =

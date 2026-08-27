@@ -17,6 +17,6 @@
 *)
 
 
-(* src: src/legacy/dyn/lib.rs:12 new_tests__legacy__dyn__lib__Impl__stringify *)
+(* src: src/legacy/dyn/lib.rs:12:4-14:5 new_tests__legacy__dyn__lib__Impl__stringify *)
 letfun new_tests__legacy__dyn__lib__Impl__stringify(self: bitstring) =
   alloc__string__ToString__to_string(self).

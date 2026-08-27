@@ -16,20 +16,20 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/holes.rs:11 new_tests__rustc_coverage__holes__main *)
+(* src: src/rustc-coverage/holes.rs:11:0-103:1 new_tests__rustc_coverage__holes__main *)
 (*  @fail(extraction): coq(HAX0001), lean(HAX0001), ssprove(HAX0001), fstar(HAX0001) *)
 (*  @fail(tc): lean(1) *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__rustc_coverage__holes__main(wildcard: bitstring) =
   bitstring_err() (* error node *).
-(* src: src/rustc-coverage/holes.rs:14 new_tests__rustc_coverage__holes__main__MY_STATIC *)
+(* src: src/rustc-coverage/holes.rs:14:4-14:30 new_tests__rustc_coverage__holes__main__MY_STATIC *)
 const new_tests__rustc_coverage__holes__main__MY_STATIC: bitstring.
-(* src: src/rustc-coverage/holes.rs:18 new_tests__rustc_coverage__holes__main__MY_CONST *)
+(* src: src/rustc-coverage/holes.rs:18:4-18:28 new_tests__rustc_coverage__holes__main__MY_CONST *)
 const new_tests__rustc_coverage__holes__main__MY_CONST: bitstring.
-(* src: src/rustc-coverage/holes.rs:34 new_tests__rustc_coverage__holes__main__u_unused_fn *)
+(* src: src/rustc-coverage/holes.rs:34:4-34:22 new_tests__rustc_coverage__holes__main__u_unused_fn *)
 letfun new_tests__rustc_coverage__holes__main__u_unused_fn(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/holes.rs:38 new_tests__rustc_coverage__holes__main__MyStruct *)
+(* src: src/rustc-coverage/holes.rs:38:4-41:5 new_tests__rustc_coverage__holes__main__MyStruct *)
 fun new_tests__rustc_coverage__holes__main__MyStruct__MyStruct(
   bitstring,
   bitstring
@@ -42,7 +42,7 @@ reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__rustc_coverage__holes__main__MyStruct__MyStruct__u_y(
     new_tests__rustc_coverage__holes__main__MyStruct__MyStruct(v_0, v_1)
   ) = v_1.
-(* src: src/rustc-coverage/holes.rs:46 new_tests__rustc_coverage__holes__main__Impl__u_method *)
+(* src: src/rustc-coverage/holes.rs:46:8-46:28 new_tests__rustc_coverage__holes__main__Impl__u_method *)
 letfun new_tests__rustc_coverage__holes__main__Impl__u_method(self: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
 

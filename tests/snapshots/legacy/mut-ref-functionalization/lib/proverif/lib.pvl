@@ -16,13 +16,13 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/mut-ref-functionalization/lib.rs:6 new_tests__legacy__mut_ref_functionalization__lib__S *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:6:0-8:1 new_tests__legacy__mut_ref_functionalization__lib__S *)
 fun new_tests__legacy__mut_ref_functionalization__lib__S__S(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__mut_ref_functionalization__lib__S__S__b(
     new_tests__legacy__mut_ref_functionalization__lib__S__S(v_0)
   ) = v_0.
-(* src: src/legacy/mut-ref-functionalization/lib.rs:10 new_tests__legacy__mut_ref_functionalization__lib__foo *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:10:0-16:1 new_tests__legacy__mut_ref_functionalization__lib__foo *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__foo(lhs: bitstring, rhs: bitstring) =
   let lhs_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_1)
@@ -80,7 +80,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__foo(lhs: bitstring, rh
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   lhs_2.
-(* src: src/legacy/mut-ref-functionalization/lib.rs:19 new_tests__legacy__mut_ref_functionalization__lib__Impl__update *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:19:4-21:5 new_tests__legacy__mut_ref_functionalization__lib__Impl__update *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__Impl__update(
   self: bitstring,
   x: bitstring
@@ -92,7 +92,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__Impl__update(
       x
     )
   ).
-(* src: src/legacy/mut-ref-functionalization/lib.rs:24 new_tests__legacy__mut_ref_functionalization__lib__index_mutation *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:24:0-28:1 new_tests__legacy__mut_ref_functionalization__lib__index_mutation *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__index_mutation(
   x: bitstring,
   a: bitstring
@@ -116,7 +116,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__index_mutation(
     )
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/mut-ref-functionalization/lib.rs:30 new_tests__legacy__mut_ref_functionalization__lib__index_mutation_unsize *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:30:0-33:1 new_tests__legacy__mut_ref_functionalization__lib__index_mutation_unsize *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__index_mutation_unsize(x: bitstring) =
   let x_1 = rust_primitives__hax__monomorphized_update_at__update_at_range(
     x,
@@ -127,12 +127,12 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__index_mutation_unsize(
     )
   ) in
   nat_42.
-(* src: src/legacy/mut-ref-functionalization/lib.rs:35 new_tests__legacy__mut_ref_functionalization__lib__build_vec *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:35:0-37:1 new_tests__legacy__mut_ref_functionalization__lib__build_vec *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__build_vec(wildcard: bitstring) =
   alloc__slice__Impl__into_vec(
     rust_primitives__hax__array_cons(nat_1, rust_primitives__hax__array_cons(nat_2, rust_primitives__hax__array_cons(nat_3, rust_primitives__hax__array_nil())))
   ).
-(* src: src/legacy/mut-ref-functionalization/lib.rs:39 new_tests__legacy__mut_ref_functionalization__lib__test_append *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:39:0-45:1 new_tests__legacy__mut_ref_functionalization__lib__test_append *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__test_append(wildcard: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
     tmp0: bitstring,
@@ -150,7 +150,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__test_append(wildcard: 
       rust_primitives__hax__Tuple0__Tuple0
     )
   )) else bitstring_err().
-(* src: src/legacy/mut-ref-functionalization/lib.rs:47 new_tests__legacy__mut_ref_functionalization__lib__f *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:47:0-58:1 new_tests__legacy__mut_ref_functionalization__lib__f *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__f(wildcard: bitstring) =
   alloc__slice__Impl__to_vec(
     core__slice__Impl__swap(
@@ -175,13 +175,13 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__f(wildcard: bitstring)
       nat_1
     )
   ).
-(* src: src/legacy/mut-ref-functionalization/lib.rs:60 new_tests__legacy__mut_ref_functionalization__lib__Foo *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:60:0-62:1 new_tests__legacy__mut_ref_functionalization__lib__Foo *)
 fun new_tests__legacy__mut_ref_functionalization__lib__Foo__Foo(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__mut_ref_functionalization__lib__Foo__Foo__field(
     new_tests__legacy__mut_ref_functionalization__lib__Foo__Foo(v_0)
   ) = v_0.
-(* src: src/legacy/mut-ref-functionalization/lib.rs:63 new_tests__legacy__mut_ref_functionalization__lib__Pair *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:63:0-66:1 new_tests__legacy__mut_ref_functionalization__lib__Pair *)
 fun new_tests__legacy__mut_ref_functionalization__lib__Pair__Pair(
   bitstring,
   bitstring
@@ -194,7 +194,7 @@ reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__mut_ref_functionalization__lib__Pair__Pair__b(
     new_tests__legacy__mut_ref_functionalization__lib__Pair__Pair(v_0, v_1)
   ) = v_1.
-(* src: src/legacy/mut-ref-functionalization/lib.rs:68 new_tests__legacy__mut_ref_functionalization__lib__g *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:68:0-76:1 new_tests__legacy__mut_ref_functionalization__lib__g *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__g(x: bitstring) =
   let x_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_1, nat_10)
@@ -254,10 +254,10 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__g(x: bitstring) =
       )
     )
   ).
-(* src: src/legacy/mut-ref-functionalization/lib.rs:78 new_tests__legacy__mut_ref_functionalization__lib__h *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:78:0-80:1 new_tests__legacy__mut_ref_functionalization__lib__h *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__h(x: bitstring) =
   rust_primitives__hax__machine_int__add(x, nat_10).
-(* src: src/legacy/mut-ref-functionalization/lib.rs:82 new_tests__legacy__mut_ref_functionalization__lib__Bar *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:82:0-85:1 new_tests__legacy__mut_ref_functionalization__lib__Bar *)
 fun new_tests__legacy__mut_ref_functionalization__lib__Bar__Bar(
   bitstring,
   bitstring
@@ -270,7 +270,7 @@ reduc forall v_0: bitstring, v_1: bitstring;
   new_tests__legacy__mut_ref_functionalization__lib__Bar__Bar__b(
     new_tests__legacy__mut_ref_functionalization__lib__Bar__Bar(v_0, v_1)
   ) = v_1.
-(* src: src/legacy/mut-ref-functionalization/lib.rs:87 new_tests__legacy__mut_ref_functionalization__lib__i *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:87:0-91:1 new_tests__legacy__mut_ref_functionalization__lib__i *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__i(bar: bitstring) =
   let bar_1 = new_tests__legacy__mut_ref_functionalization__lib__Bar__Bar(
     new_tests__legacy__mut_ref_functionalization__lib__Bar__Bar__a(bar),
@@ -292,7 +292,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__i(bar: bitstring) =
       new_tests__legacy__mut_ref_functionalization__lib__Bar__Bar__b(bar_2)
     )
   ).
-(* src: src/legacy/mut-ref-functionalization/lib.rs:93 new_tests__legacy__mut_ref_functionalization__lib__j *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:93:0-96:1 new_tests__legacy__mut_ref_functionalization__lib__j *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__j(x: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
     tmp0: bitstring,
@@ -303,7 +303,7 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__j(x: bitstring) =
     tmp0,
     rust_primitives__hax__machine_int__add(out1, nat_123)
   ) else bitstring_err().
-(* src: src/legacy/mut-ref-functionalization/lib.rs:98 new_tests__legacy__mut_ref_functionalization__lib__k *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:98:0-111:1 new_tests__legacy__mut_ref_functionalization__lib__k *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__k(
   vec: bitstring,
   arg_1_wild3: bitstring,
@@ -336,9 +336,9 @@ letfun new_tests__legacy__mut_ref_functionalization__lib__k(
     nat_12345
   ).
 
-(* src: src/legacy/mut-ref-functionalization/lib.rs:117 new_tests__legacy__mut_ref_functionalization__lib__Impl_1__z *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:117:4-117:22 new_tests__legacy__mut_ref_functionalization__lib__Impl_1__z *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__Impl_1__z(self: bitstring) = self.
-(* src: src/legacy/mut-ref-functionalization/lib.rs:120 new_tests__legacy__mut_ref_functionalization__lib__array *)
+(* src: src/legacy/mut-ref-functionalization/lib.rs:120:0-122:1 new_tests__legacy__mut_ref_functionalization__lib__array *)
 letfun new_tests__legacy__mut_ref_functionalization__lib__array(x: bitstring) =
   rust_primitives__hax__monomorphized_update_at__update_at_usize(
     x,

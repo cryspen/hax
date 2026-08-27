@@ -17,9 +17,9 @@
 *)
 
 
-(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:17 new_tests__rustc_coverage__attr__trait_impl_inherit__S *)
+(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:17:0-17:9 new_tests__rustc_coverage__attr__trait_impl_inherit__S *)
 fun new_tests__rustc_coverage__attr__trait_impl_inherit__S__S(): bitstring [data].
-(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:20 new_tests__rustc_coverage__attr__trait_impl_inherit__Impl__f *)
+(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:20:4-22:5 new_tests__rustc_coverage__attr__trait_impl_inherit__Impl__f *)
 letfun new_tests__rustc_coverage__attr__trait_impl_inherit__Impl__f(self: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(
@@ -28,7 +28,7 @@ letfun new_tests__rustc_coverage__attr__trait_impl_inherit__Impl__f(self: bitstr
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:26 new_tests__rustc_coverage__attr__trait_impl_inherit__main *)
+(* src: src/rustc-coverage/attr/trait-impl-inherit.rs:26:0-28:1 new_tests__rustc_coverage__attr__trait_impl_inherit__main *)
 letfun new_tests__rustc_coverage__attr__trait_impl_inherit__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__attr__trait_impl_inherit__Impl__f(
     new_tests__rustc_coverage__attr__trait_impl_inherit__S__S()

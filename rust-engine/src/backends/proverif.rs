@@ -794,20 +794,26 @@ const _: () = {
             }
         }
 
-        /// Emit a source-provenance comment `(* src: file:line name *)` above a
+        /// Emit a source-provenance comment
+        /// `(* src: file:lo_line:lo_col-hi_line:hi_col name *)` above a
         /// generated declaration, tying the ProVerif output back to the Rust
         /// definition it came from (the side-by-side / explainability anchor).
-        /// Only emitted for items carrying a real source span — phase-synthesized
-        /// nodes (`Span::dummy()`, no on-disk file) get nothing.
+        /// The full span keeps items traceable even after the declaration order
+        /// is topologically sorted. Only emitted for items carrying a real
+        /// source span — phase-synthesized nodes (`Span::dummy()`, no on-disk
+        /// file) get nothing.
         fn src_comment<A: 'static + Clone>(&self, span: Span, name: &GlobalId) -> DocBuilder<A> {
             if let Some(fs) = span.as_frontend_spans().first()
                 && let Some(path) = fs.filename.to_path()
             {
                 return docs![
                     format!(
-                        "(* src: {}:{} {} *)",
+                        "(* src: {}:{}:{}-{}:{} {} *)",
                         path.display(),
                         fs.lo.line,
+                        fs.lo.col,
+                        fs.hi.line,
+                        fs.hi.col,
                         self.render_id(name)
                     ),
                     hardline!()

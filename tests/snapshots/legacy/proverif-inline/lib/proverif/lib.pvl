@@ -16,9 +16,9 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/proverif-inline/lib.rs:16 new_tests__legacy__proverif_inline__lib__increment *)
+(* src: src/legacy/proverif-inline/lib.rs:16:0-18:1 new_tests__legacy__proverif_inline__lib__increment *)
 letfun new_tests__legacy__proverif_inline__lib__increment(x: bitstring) = x.
-(* src: src/legacy/proverif-inline/lib.rs:23 new_tests__legacy__proverif_inline__lib__run *)
+(* src: src/legacy/proverif-inline/lib.rs:23:0-25:1 new_tests__legacy__proverif_inline__lib__run *)
 letfun new_tests__legacy__proverif_inline__lib__run(start: bitstring) =
   new_tests__legacy__proverif_inline__lib__increment(
     new_tests__legacy__proverif_inline__lib__increment(start)

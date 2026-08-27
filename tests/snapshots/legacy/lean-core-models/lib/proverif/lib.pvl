@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/lean-core-models/result.rs:6 new_tests__legacy__lean_core_models__lib__result__E1 *)
+(* src: src/legacy/lean-core-models/result.rs:6:0-9:1 new_tests__legacy__lean_core_models__lib__result__E1 *)
 fun new_tests__legacy__lean_core_models__lib__result__E1__C1(): bitstring [data].
 fun new_tests__legacy__lean_core_models__lib__result__E1__C2(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
@@ -24,14 +24,14 @@ reduc forall v_0: bitstring;
     new_tests__legacy__lean_core_models__lib__result__E1__C2(v_0)
   ) = v_0.
 
-(* src: src/legacy/lean-core-models/result.rs:11 new_tests__legacy__lean_core_models__lib__result__E2 *)
+(* src: src/legacy/lean-core-models/result.rs:11:0-14:1 new_tests__legacy__lean_core_models__lib__result__E2 *)
 fun new_tests__legacy__lean_core_models__lib__result__E2__C1(): bitstring [data].
 fun new_tests__legacy__lean_core_models__lib__result__E2__C2(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__lean_core_models__lib__result__E2__C2__0(
     new_tests__legacy__lean_core_models__lib__result__E2__C2(v_0)
   ) = v_0.
-(* src: src/legacy/lean-core-models/result.rs:16 new_tests__legacy__lean_core_models__lib__result__tests *)
+(* src: src/legacy/lean-core-models/result.rs:16:0-43:1 new_tests__legacy__lean_core_models__lib__result__tests *)
 letfun new_tests__legacy__lean_core_models__lib__result__tests(wildcard: bitstring) =
   let v1 = nat_1 in
   let v2 = bitstring_err() in
@@ -58,33 +58,33 @@ letfun new_tests__legacy__lean_core_models__lib__result__tests(wildcard: bitstri
   let hoist2 = core__result__Impl__map(v1, f) in
     let hoist1 = v2 in rust_primitives__hax__machine_int__add(hoist2, hoist1).
 
-(* src: src/legacy/lean-core-models/phantom.rs:9 new_tests__legacy__lean_core_models__lib__phantom__Bar *)
+(* src: src/legacy/lean-core-models/phantom.rs:9:0-11:1 new_tests__legacy__lean_core_models__lib__phantom__Bar *)
 fun new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar__u_phantom(
     new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar(v_0)
   ) = v_0.
-(* src: src/legacy/lean-core-models/phantom.rs:14 new_tests__legacy__lean_core_models__lib__phantom__Impl__new_kw *)
+(* src: src/legacy/lean-core-models/phantom.rs:14:4-16:5 new_tests__legacy__lean_core_models__lib__phantom__Impl__new_kw *)
 letfun new_tests__legacy__lean_core_models__lib__phantom__Impl__new_kw(wildcard: bitstring) =
   new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar(
     core__marker__PhantomData__PhantomData()
   ).
-(* src: src/legacy/lean-core-models/option.rs:5 new_tests__legacy__lean_core_models__lib__option__S *)
+(* src: src/legacy/lean-core-models/option.rs:5:0-7:1 new_tests__legacy__lean_core_models__lib__option__S *)
 fun new_tests__legacy__lean_core_models__lib__option__S__S(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__lean_core_models__lib__option__S__S__f1(
     new_tests__legacy__lean_core_models__lib__option__S__S(v_0)
   ) = v_0.
-(* src: src/legacy/lean-core-models/option.rs:9 new_tests__legacy__lean_core_models__lib__option__E *)
+(* src: src/legacy/lean-core-models/option.rs:9:0-11:1 new_tests__legacy__lean_core_models__lib__option__E *)
 fun new_tests__legacy__lean_core_models__lib__option__E__C(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__lean_core_models__lib__option__E__C__0(
     new_tests__legacy__lean_core_models__lib__option__E__C(v_0)
   ) = v_0.
-(* src: src/legacy/lean-core-models/option.rs:14 new_tests__legacy__lean_core_models__lib__option__Impl__default *)
+(* src: src/legacy/lean-core-models/option.rs:14:4-16:5 new_tests__legacy__lean_core_models__lib__option__Impl__default *)
 letfun new_tests__legacy__lean_core_models__lib__option__Impl__default(wildcard: bitstring) =
   new_tests__legacy__lean_core_models__lib__option__S__S(nat_42).
-(* src: src/legacy/lean-core-models/option.rs:19 new_tests__legacy__lean_core_models__lib__option__test *)
+(* src: src/legacy/lean-core-models/option.rs:19:0-48:1 new_tests__legacy__lean_core_models__lib__option__test *)
 letfun new_tests__legacy__lean_core_models__lib__option__test(wildcard: bitstring) =
   let o1 = Some(nat_4) in
   let o2 = None() in
@@ -139,22 +139,22 @@ letfun new_tests__legacy__lean_core_models__lib__option__test(wildcard: bitstrin
   let o17 = core__option__Impl__expect(Some(nat_3), string_lit__Should_x20be_x20Some) in
   let o18 = core__option__Impl__unwrap(Some(nat_4)) in
   rust_primitives__hax__Tuple0__Tuple0) else bitstring_err().
-(* src: src/legacy/lean-core-models/default.rs:7 new_tests__legacy__lean_core_models__lib__default__structs__S *)
+(* src: src/legacy/lean-core-models/default.rs:7:4-9:5 new_tests__legacy__lean_core_models__lib__default__structs__S *)
 fun new_tests__legacy__lean_core_models__lib__default__structs__S__S(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__lean_core_models__lib__default__structs__S__S__f1(
     new_tests__legacy__lean_core_models__lib__default__structs__S__S(v_0)
   ) = v_0.
-(* src: src/legacy/lean-core-models/default.rs:12 new_tests__legacy__lean_core_models__lib__default__structs__Impl__default *)
+(* src: src/legacy/lean-core-models/default.rs:12:8-14:9 new_tests__legacy__lean_core_models__lib__default__structs__Impl__default *)
 letfun new_tests__legacy__lean_core_models__lib__default__structs__Impl__default(
   wildcard: bitstring
 ) = new_tests__legacy__lean_core_models__lib__default__structs__S__S(nat_0).
-(* src: src/legacy/lean-core-models/default.rs:17 new_tests__legacy__lean_core_models__lib__default__structs__test *)
+(* src: src/legacy/lean-core-models/default.rs:17:4-19:5 new_tests__legacy__lean_core_models__lib__default__structs__test *)
 letfun new_tests__legacy__lean_core_models__lib__default__structs__test(wildcard: bitstring) =
   new_tests__legacy__lean_core_models__lib__default__structs__Impl__default(
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/legacy/lean-core-models/default.rs:24 new_tests__legacy__lean_core_models__lib__default__enums__E *)
+(* src: src/legacy/lean-core-models/default.rs:24:4-27:5 new_tests__legacy__lean_core_models__lib__default__enums__E *)
 fun new_tests__legacy__lean_core_models__lib__default__enums__E__C1(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__lean_core_models__lib__default__enums__E__C1__0(
@@ -165,14 +165,14 @@ reduc forall v_0: bitstring;
   new_tests__legacy__lean_core_models__lib__default__enums__E__C2__0(
     new_tests__legacy__lean_core_models__lib__default__enums__E__C2(v_0)
   ) = v_0.
-(* src: src/legacy/lean-core-models/default.rs:30 new_tests__legacy__lean_core_models__lib__default__enums__Impl__default *)
+(* src: src/legacy/lean-core-models/default.rs:30:8-32:9 new_tests__legacy__lean_core_models__lib__default__enums__Impl__default *)
 letfun new_tests__legacy__lean_core_models__lib__default__enums__Impl__default(
   wildcard: bitstring
 ) =
   new_tests__legacy__lean_core_models__lib__default__enums__E__C2(
     core__default__Default__default(rust_primitives__hax__Tuple0__Tuple0)
   ).
-(* src: src/legacy/lean-core-models/function.rs:4 new_tests__legacy__lean_core_models__lib__function__test *)
+(* src: src/legacy/lean-core-models/function.rs:4:0-9:1 new_tests__legacy__lean_core_models__lib__function__test *)
 letfun new_tests__legacy__lean_core_models__lib__function__test(wildcard: bitstring) =
   let f_1 = (bitstring_err() (* Closures not supported in ProVerif *)) in
   let f_2 = (bitstring_err() (* Closures not supported in ProVerif *)) in

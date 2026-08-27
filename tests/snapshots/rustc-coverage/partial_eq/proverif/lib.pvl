@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/partial_eq.rs:6 new_tests__rustc_coverage__partial_eq__Version *)
+(* src: src/rustc-coverage/partial_eq.rs:6:0-10:1 new_tests__rustc_coverage__partial_eq__Version *)
 fun new_tests__rustc_coverage__partial_eq__Version__Version(
   bitstring,
   bitstring,
@@ -41,13 +41,13 @@ reduc forall v_0: bitstring, v_1: bitstring, v_2: bitstring;
 
 
 
-(* src: src/rustc-coverage/partial_eq.rs:13 new_tests__rustc_coverage__partial_eq__Impl__new_kw *)
+(* src: src/rustc-coverage/partial_eq.rs:13:4-19:5 new_tests__rustc_coverage__partial_eq__Impl__new_kw *)
 letfun new_tests__rustc_coverage__partial_eq__Impl__new_kw(
   major: bitstring,
   minor: bitstring,
   patch: bitstring
 ) = new_tests__rustc_coverage__partial_eq__Version__Version(major, minor, patch).
-(* src: src/rustc-coverage/partial_eq.rs:23 new_tests__rustc_coverage__partial_eq__main *)
+(* src: src/rustc-coverage/partial_eq.rs:23:0-33:1 new_tests__rustc_coverage__partial_eq__main *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__partial_eq__main(wildcard: bitstring) =
   let version_3_2_1 = new_tests__rustc_coverage__partial_eq__Impl__new_kw(nat_3, nat_2, nat_1) in

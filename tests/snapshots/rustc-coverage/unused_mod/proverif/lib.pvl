@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/auxiliary/unused_mod_helper.rs:2 new_tests__rustc_coverage__unused_mod__unused_module__never_called_function *)
+(* src: src/rustc-coverage/auxiliary/unused_mod_helper.rs:2:0-4:1 new_tests__rustc_coverage__unused_mod__unused_module__never_called_function *)
 letfun new_tests__rustc_coverage__unused_mod__unused_module__never_called_function(
   wildcard: bitstring
 ) =
@@ -27,7 +27,7 @@ letfun new_tests__rustc_coverage__unused_mod__unused_module__never_called_functi
   ) in
   let wildcard: bitstring = rust_primitives__hax__Tuple0__Tuple0 in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/unused_mod.rs:5 new_tests__rustc_coverage__unused_mod__main *)
+(* src: src/rustc-coverage/unused_mod.rs:5:0-7:1 new_tests__rustc_coverage__unused_mod__main *)
 letfun new_tests__rustc_coverage__unused_mod__main(wildcard: bitstring) =
   let wildcard: bitstring = std__io__stdio__u_print(
     core__fmt__rt__Impl_1__new_const(

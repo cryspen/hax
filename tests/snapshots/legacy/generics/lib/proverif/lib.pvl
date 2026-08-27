@@ -16,19 +16,19 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/generics/lib.rs:60 new_tests__legacy__generics__lib__impl_generics__Test *)
+(* src: src/legacy/generics/lib.rs:60:4-60:18 new_tests__legacy__generics__lib__impl_generics__Test *)
 fun new_tests__legacy__generics__lib__impl_generics__Test__Test(): bitstring [data].
-(* src: src/legacy/generics/lib.rs:63 new_tests__legacy__generics__lib__impl_generics__Impl__set_ciphersuites *)
+(* src: src/legacy/generics/lib.rs:63:8-68:9 new_tests__legacy__generics__lib__impl_generics__Impl__set_ciphersuites *)
 letfun new_tests__legacy__generics__lib__impl_generics__Impl__set_ciphersuites(
   self: bitstring,
   ciphers: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0().
-(* src: src/legacy/generics/lib.rs:70 new_tests__legacy__generics__lib__impl_generics__Impl__set_alpn_protocols *)
+(* src: src/legacy/generics/lib.rs:70:8-75:9 new_tests__legacy__generics__lib__impl_generics__Impl__set_alpn_protocols *)
 letfun new_tests__legacy__generics__lib__impl_generics__Impl__set_alpn_protocols(
   self: bitstring,
   u_protocols: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0().
-(* src: src/legacy/generics/lib.rs:54 new_tests__legacy__generics__lib__defaults_generics__Defaults *)
+(* src: src/legacy/generics/lib.rs:54:4-54:56 new_tests__legacy__generics__lib__defaults_generics__Defaults *)
 fun new_tests__legacy__generics__lib__defaults_generics__Defaults__Defaults(
   bitstring
 ): bitstring [data].
@@ -36,21 +36,21 @@ reduc forall v_0: bitstring;
   new_tests__legacy__generics__lib__defaults_generics__Defaults__Defaults__0(
     new_tests__legacy__generics__lib__defaults_generics__Defaults__Defaults(v_0)
   ) = v_0.
-(* src: src/legacy/generics/lib.rs:55 new_tests__legacy__generics__lib__defaults_generics__f *)
+(* src: src/legacy/generics/lib.rs:55:4-55:24 new_tests__legacy__generics__lib__defaults_generics__f *)
 letfun new_tests__legacy__generics__lib__defaults_generics__f(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/legacy/generics/lib.rs:81 new_tests__legacy__generics__lib__assoc_const_param__Test *)
+(* src: src/legacy/generics/lib.rs:81:4-81:34 new_tests__legacy__generics__lib__assoc_const_param__Test *)
 fun new_tests__legacy__generics__lib__assoc_const_param__Test__Test(): bitstring [data].
-(* src: src/legacy/generics/lib.rs:84 new_tests__legacy__generics__lib__assoc_const_param__Impl__A *)
+(* src: src/legacy/generics/lib.rs:84:8-84:31 new_tests__legacy__generics__lib__assoc_const_param__Impl__A *)
 (* nullary const applied as a function *)
 fun new_tests__legacy__generics__lib__assoc_const_param__Impl__A(bitstring): bitstring.
-(* src: src/legacy/generics/lib.rs:87 new_tests__legacy__generics__lib__assoc_const_param__test *)
+(* src: src/legacy/generics/lib.rs:87:4-89:5 new_tests__legacy__generics__lib__assoc_const_param__test *)
 letfun new_tests__legacy__generics__lib__assoc_const_param__test(wildcard: bitstring) =
   new_tests__legacy__generics__lib__assoc_const_param__Impl__A(nat_1).
-(* src: src/legacy/generics/lib.rs:6 new_tests__legacy__generics__lib__dup *)
+(* src: src/legacy/generics/lib.rs:6:0-8:1 new_tests__legacy__generics__lib__dup *)
 letfun new_tests__legacy__generics__lib__dup(x: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(x, x).
-(* src: src/legacy/generics/lib.rs:10 new_tests__legacy__generics__lib__foo *)
+(* src: src/legacy/generics/lib.rs:10:0-16:1 new_tests__legacy__generics__lib__foo *)
 letfun new_tests__legacy__generics__lib__foo(arr: bitstring) =
   let acc = rust_primitives__hax__machine_int__add(bitstring_default(), nat_9) in
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -73,19 +73,19 @@ letfun new_tests__legacy__generics__lib__foo(arr: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
-(* src: src/legacy/generics/lib.rs:18 new_tests__legacy__generics__lib__repeat *)
+(* src: src/legacy/generics/lib.rs:18:0-20:1 new_tests__legacy__generics__lib__repeat *)
 letfun new_tests__legacy__generics__lib__repeat(x: bitstring) =
   rust_primitives__hax__repeat(x, bitstring_default()).
-(* src: src/legacy/generics/lib.rs:25 new_tests__legacy__generics__lib__f *)
+(* src: src/legacy/generics/lib.rs:25:0-27:1 new_tests__legacy__generics__lib__f *)
 letfun new_tests__legacy__generics__lib__f(x: bitstring) =
   rust_primitives__hax__machine_int__add(
     rust_primitives__hax__machine_int__add(bitstring_default(), bitstring_default()),
     x
   ).
-(* src: src/legacy/generics/lib.rs:22 new_tests__legacy__generics__lib__call_f *)
+(* src: src/legacy/generics/lib.rs:22:0-24:1 new_tests__legacy__generics__lib__call_f *)
 letfun new_tests__legacy__generics__lib__call_f(wildcard: bitstring) =
   rust_primitives__hax__machine_int__add(new_tests__legacy__generics__lib__f(nat_3), nat_3).
-(* src: src/legacy/generics/lib.rs:32 new_tests__legacy__generics__lib__g *)
+(* src: src/legacy/generics/lib.rs:32:0-34:1 new_tests__legacy__generics__lib__g *)
 letfun new_tests__legacy__generics__lib__g(arr: bitstring) =
   rust_primitives__hax__machine_int__add(
     core__option__Impl__unwrap_or(
@@ -96,7 +96,7 @@ letfun new_tests__legacy__generics__lib__g(arr: bitstring) =
     ),
     bitstring_default()
   ).
-(* src: src/legacy/generics/lib.rs:29 new_tests__legacy__generics__lib__call_g *)
+(* src: src/legacy/generics/lib.rs:29:0-31:1 new_tests__legacy__generics__lib__call_g *)
 letfun new_tests__legacy__generics__lib__call_g(wildcard: bitstring) =
   rust_primitives__hax__machine_int__add(
     new_tests__legacy__generics__lib__g(
@@ -105,11 +105,11 @@ letfun new_tests__legacy__generics__lib__call_g(wildcard: bitstring) =
     nat_3
   ).
 
-(* src: src/legacy/generics/lib.rs:41 new_tests__legacy__generics__lib__Impl__const_add *)
+(* src: src/legacy/generics/lib.rs:41:4-43:5 new_tests__legacy__generics__lib__Impl__const_add *)
 letfun new_tests__legacy__generics__lib__Impl__const_add(self: bitstring) =
   rust_primitives__hax__machine_int__add(self, bitstring_default()).
-(* src: src/legacy/generics/lib.rs:46 new_tests__legacy__generics__lib__Bar *)
+(* src: src/legacy/generics/lib.rs:46:0-46:11 new_tests__legacy__generics__lib__Bar *)
 fun new_tests__legacy__generics__lib__Bar__Bar(): bitstring [data].
-(* src: src/legacy/generics/lib.rs:49 new_tests__legacy__generics__lib__Impl_1__inherent_impl_generics *)
+(* src: src/legacy/generics/lib.rs:49:4-49:62 new_tests__legacy__generics__lib__Impl_1__inherent_impl_generics *)
 letfun new_tests__legacy__generics__lib__Impl_1__inherent_impl_generics(x: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.

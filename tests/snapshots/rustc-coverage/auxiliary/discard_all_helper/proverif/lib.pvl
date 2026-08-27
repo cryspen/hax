@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/auxiliary/discard_all_helper.rs:6 new_tests__rustc_coverage__auxiliary__discard_all_helper__external_function *)
+(* src: src/rustc-coverage/auxiliary/discard_all_helper.rs:6:0-6:29 new_tests__rustc_coverage__auxiliary__discard_all_helper__external_function *)
 letfun new_tests__rustc_coverage__auxiliary__discard_all_helper__external_function(
   wildcard: bitstring
 ) = rust_primitives__hax__Tuple0__Tuple0.

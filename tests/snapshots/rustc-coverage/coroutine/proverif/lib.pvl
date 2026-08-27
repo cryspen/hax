@@ -16,10 +16,10 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/coroutine.rs:12 new_tests__rustc_coverage__coroutine__get_u32 *)
+(* src: src/rustc-coverage/coroutine.rs:12:0-18:1 new_tests__rustc_coverage__coroutine__get_u32 *)
 letfun new_tests__rustc_coverage__coroutine__get_u32(val: bitstring) =
   let (=True()) = val in nat_1 else bitstring_err().
-(* src: src/rustc-coverage/coroutine.rs:22 new_tests__rustc_coverage__coroutine__main *)
+(* src: src/rustc-coverage/coroutine.rs:22:0-38:1 new_tests__rustc_coverage__coroutine__main *)
 (*  @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001), lean(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001), fstar(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001) *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001) *)
 letfun new_tests__rustc_coverage__coroutine__main(wildcard: bitstring) =

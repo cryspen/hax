@@ -16,27 +16,27 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/pattern-or/lib.rs:3 new_tests__legacy__pattern_or__lib__E *)
+(* src: src/legacy/pattern-or/lib.rs:3:0-6:1 new_tests__legacy__pattern_or__lib__E *)
 fun new_tests__legacy__pattern_or__lib__E__A(): bitstring [data].
 fun new_tests__legacy__pattern_or__lib__E__B(): bitstring [data].
-(* src: src/legacy/pattern-or/lib.rs:3 new_tests__legacy__pattern_or__lib__E_cast_to_repr *)
+(* src: src/legacy/pattern-or/lib.rs:3:0-6:1 new_tests__legacy__pattern_or__lib__E_cast_to_repr *)
 letfun new_tests__legacy__pattern_or__lib__E_cast_to_repr(x: bitstring) =
   let new_tests__legacy__pattern_or__lib__E__A() = x in nat_0
   else let new_tests__legacy__pattern_or__lib__E__B() = x in nat_1
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:8 new_tests__legacy__pattern_or__lib__bar *)
+(* src: src/legacy/pattern-or/lib.rs:8:0-12:1 new_tests__legacy__pattern_or__lib__bar *)
 letfun new_tests__legacy__pattern_or__lib__bar(x: bitstring) =
   let new_tests__legacy__pattern_or__lib__E__A() = x in rust_primitives__hax__Tuple0__Tuple0()
   else let new_tests__legacy__pattern_or__lib__E__B() = x in rust_primitives__hax__Tuple0__Tuple0()
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:13 new_tests__legacy__pattern_or__lib__nested *)
+(* src: src/legacy/pattern-or/lib.rs:13:0-19:1 new_tests__legacy__pattern_or__lib__nested *)
 letfun new_tests__legacy__pattern_or__lib__nested(x: bitstring) =
   let Some((=nat_1)) = x in nat_1
   else let Some((=nat_2)) = x in nat_1
   else let Some(x_1) = x in x_1
   else let None() = x in nat_0
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:21 new_tests__legacy__pattern_or__lib__deep *)
+(* src: src/legacy/pattern-or/lib.rs:21:0-26:1 new_tests__legacy__pattern_or__lib__deep *)
 letfun new_tests__legacy__pattern_or__lib__deep(x: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2((=nat_1), Some((=nat_3))) = x in nat_0
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_1), Some((=nat_4))) = x in nat_0
@@ -44,7 +44,7 @@ letfun new_tests__legacy__pattern_or__lib__deep(x: bitstring) =
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_2), Some((=nat_4))) = x in nat_0
   else let rust_primitives__hax__Tuple2__Tuple2(x_1: bitstring, wildcard: bitstring) = x in x_1
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:28 new_tests__legacy__pattern_or__lib__equivalent *)
+(* src: src/legacy/pattern-or/lib.rs:28:0-33:1 new_tests__legacy__pattern_or__lib__equivalent *)
 letfun new_tests__legacy__pattern_or__lib__equivalent(x: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2((=nat_1), Some((=nat_3))) = x in nat_0
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_1), Some((=nat_4))) = x in nat_0
@@ -52,7 +52,7 @@ letfun new_tests__legacy__pattern_or__lib__equivalent(x: bitstring) =
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_2), Some((=nat_4))) = x in nat_0
   else let rust_primitives__hax__Tuple2__Tuple2(x_1: bitstring, wildcard: bitstring) = x in x_1
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:35 new_tests__legacy__pattern_or__lib__deep_capture *)
+(* src: src/legacy/pattern-or/lib.rs:35:0-40:1 new_tests__legacy__pattern_or__lib__deep_capture *)
 letfun new_tests__legacy__pattern_or__lib__deep_capture(x: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2((=nat_1), x_1: bitstring) = x in x_1
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_2), x_1: bitstring) = x in x_1

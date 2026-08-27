@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/if-let/lib.rs:3 new_tests__legacy__if_let__lib__fun_with_if_let *)
+(* src: src/legacy/if-let/lib.rs:3:0-10:1 new_tests__legacy__if_let__lib__fun_with_if_let *)
 letfun new_tests__legacy__if_let__lib__fun_with_if_let(wildcard: bitstring) =
   let Some(x_1) = Some(nat_5) in x_1
   else nat_7.

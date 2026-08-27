@@ -16,29 +16,29 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/proverif-match/lib.rs:7 new_tests__legacy__proverif_match__lib__Direction *)
+(* src: src/legacy/proverif-match/lib.rs:7:0-10:1 new_tests__legacy__proverif_match__lib__Direction *)
 fun new_tests__legacy__proverif_match__lib__Direction__North(): bitstring [data].
 fun new_tests__legacy__proverif_match__lib__Direction__South(): bitstring [data].
-(* src: src/legacy/proverif-match/lib.rs:7 new_tests__legacy__proverif_match__lib__Direction_cast_to_repr *)
+(* src: src/legacy/proverif-match/lib.rs:7:0-10:1 new_tests__legacy__proverif_match__lib__Direction_cast_to_repr *)
 letfun new_tests__legacy__proverif_match__lib__Direction_cast_to_repr(x: bitstring) =
   let new_tests__legacy__proverif_match__lib__Direction__North() = x in nat_0
   else let new_tests__legacy__proverif_match__lib__Direction__South() = x in nat_1
   else bitstring_err().
-(* src: src/legacy/proverif-match/lib.rs:12 new_tests__legacy__proverif_match__lib__opposite *)
+(* src: src/legacy/proverif-match/lib.rs:12:0-17:1 new_tests__legacy__proverif_match__lib__opposite *)
 letfun new_tests__legacy__proverif_match__lib__opposite(d: bitstring) =
   let new_tests__legacy__proverif_match__lib__Direction__North() = d in
     new_tests__legacy__proverif_match__lib__Direction__South()
   else let new_tests__legacy__proverif_match__lib__Direction__South() = d in
     new_tests__legacy__proverif_match__lib__Direction__North()
   else bitstring_err().
-(* src: src/legacy/proverif-match/lib.rs:19 new_tests__legacy__proverif_match__lib__or_zero *)
+(* src: src/legacy/proverif-match/lib.rs:19:0-24:1 new_tests__legacy__proverif_match__lib__or_zero *)
 letfun new_tests__legacy__proverif_match__lib__or_zero(x: bitstring) =
   let Some(v) = x in v
   else let None() = x in nat_0
   else bitstring_err().
-(* src: src/legacy/proverif-match/lib.rs:26 new_tests__legacy__proverif_match__lib__Void *)
+(* src: src/legacy/proverif-match/lib.rs:26:0-26:12 new_tests__legacy__proverif_match__lib__Void *)
 
-(* src: src/legacy/proverif-match/lib.rs:26 new_tests__legacy__proverif_match__lib__Void_cast_to_repr *)
+(* src: src/legacy/proverif-match/lib.rs:26:0-26:12 new_tests__legacy__proverif_match__lib__Void_cast_to_repr *)
 letfun new_tests__legacy__proverif_match__lib__Void_cast_to_repr(x: bitstring) = bitstring_err().
-(* src: src/legacy/proverif-match/lib.rs:28 new_tests__legacy__proverif_match__lib__absurd *)
+(* src: src/legacy/proverif-match/lib.rs:28:0-30:1 new_tests__legacy__proverif_match__lib__absurd *)
 letfun new_tests__legacy__proverif_match__lib__absurd(v: bitstring) = bitstring_err().

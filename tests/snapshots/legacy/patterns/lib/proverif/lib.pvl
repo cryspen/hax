@@ -16,19 +16,19 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/patterns/lib.rs:3 new_tests__legacy__patterns__lib__Other *)
+(* src: src/legacy/patterns/lib.rs:3:0-3:26 new_tests__legacy__patterns__lib__Other *)
 fun new_tests__legacy__patterns__lib__Other__Other(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__patterns__lib__Other__Other__0(
     new_tests__legacy__patterns__lib__Other__Other(v_0)
   ) = v_0.
-(* src: src/legacy/patterns/lib.rs:5 new_tests__legacy__patterns__lib__Test *)
+(* src: src/legacy/patterns/lib.rs:5:0-7:1 new_tests__legacy__patterns__lib__Test *)
 fun new_tests__legacy__patterns__lib__Test__C1(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__patterns__lib__Test__C1__0(
     new_tests__legacy__patterns__lib__Test__C1(v_0)
   ) = v_0.
-(* src: src/legacy/patterns/lib.rs:10 new_tests__legacy__patterns__lib__Impl__test *)
+(* src: src/legacy/patterns/lib.rs:10:4-14:5 new_tests__legacy__patterns__lib__Impl__test *)
 letfun new_tests__legacy__patterns__lib__Impl__test(self: bitstring) =
   let new_tests__legacy__patterns__lib__Test__C1(c: bitstring) = self in
     new_tests__legacy__patterns__lib__Other__Other__0(c)

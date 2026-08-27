@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/if_else.rs:5 new_tests__rustc_coverage__if_else__main *)
+(* src: src/rustc-coverage/if_else.rs:5:0-42:1 new_tests__rustc_coverage__if_else__main *)
 letfun new_tests__rustc_coverage__if_else__main(wildcard: bitstring) =
   let is_true = rust_primitives__hax__machine_int__eq(
     core__iter__traits__exact_size__ExactSizeIterator__len(

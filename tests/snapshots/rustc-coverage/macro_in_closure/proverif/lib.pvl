@@ -16,13 +16,13 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/macro_in_closure.rs:8 new_tests__rustc_coverage__macro_in_closure__NO_BLOCK *)
+(* src: src/rustc-coverage/macro_in_closure.rs:8:0-8:45 new_tests__rustc_coverage__macro_in_closure__NO_BLOCK *)
 (* nullary const applied as a function *)
 fun new_tests__rustc_coverage__macro_in_closure__NO_BLOCK(bitstring): bitstring.
-(* src: src/rustc-coverage/macro_in_closure.rs:10 new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK *)
+(* src: src/rustc-coverage/macro_in_closure.rs:10:0-12:2 new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK *)
 (* nullary const applied as a function *)
 fun new_tests__rustc_coverage__macro_in_closure__WITH_BLOCK(bitstring): bitstring.
-(* src: src/rustc-coverage/macro_in_closure.rs:15 new_tests__rustc_coverage__macro_in_closure__main *)
+(* src: src/rustc-coverage/macro_in_closure.rs:15:0-18:1 new_tests__rustc_coverage__macro_in_closure__main *)
 letfun new_tests__rustc_coverage__macro_in_closure__main(wildcard: bitstring) =
   let wildcard: bitstring = new_tests__rustc_coverage__macro_in_closure__NO_BLOCK(
     rust_primitives__hax__Tuple0__Tuple0

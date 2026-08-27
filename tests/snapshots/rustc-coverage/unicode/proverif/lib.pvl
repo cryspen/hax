@@ -16,14 +16,14 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/rustc-coverage/unicode.rs:27 new_tests__rustc_coverage__unicode__u_xe7_x94_xb3_xe3_x81_x97_xe8_xa8_xb3_xe3_x81_x94_xe3_x81_x96_xe3_x81_x84_xe3_x81_xbe_xe3_x81_x9b_xe3_x82_x93 *)
+(* src: src/rustc-coverage/unicode.rs:27:0-29:1 new_tests__rustc_coverage__unicode__u_xe7_x94_xb3_xe3_x81_x97_xe8_xa8_xb3_xe3_x81_x94_xe3_x81_x96_xe3_x81_x84_xe3_x81_xbe_xe3_x81_x9b_xe3_x82_x93 *)
 letfun new_tests__rustc_coverage__unicode__u_xe7_x94_xb3_xe3_x81_x97_xe8_xa8_xb3_xe3_x81_x94_xe3_x81_x96_xe3_x81_x84_xe3_x81_xbe_xe3_x81_x9b_xe3_x82_x93(
   wildcard: bitstring
 ) = core__hint__black_box(False()).
-(* src: src/rustc-coverage/unicode.rs:33 new_tests__rustc_coverage__unicode__u_xe3_x82_xb5_xe3_x83_x93 *)
+(* src: src/rustc-coverage/unicode.rs:33:8-33:21 new_tests__rustc_coverage__unicode__u_xe3_x82_xb5_xe3_x83_x93 *)
 letfun new_tests__rustc_coverage__unicode__u_xe3_x82_xb5_xe3_x83_x93(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/unicode.rs:17 new_tests__rustc_coverage__unicode__main *)
+(* src: src/rustc-coverage/unicode.rs:17:0-25:1 new_tests__rustc_coverage__unicode__main *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__unicode__main(wildcard: bitstring) =
   let wildcard: bitstring = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -53,6 +53,6 @@ letfun new_tests__rustc_coverage__unicode__main(wildcard: bitstring) =
     rust_primitives__hax__Tuple0__Tuple0
   ) in
   rust_primitives__hax__Tuple0__Tuple0.
-(* src: src/rustc-coverage/unicode.rs:33 new_tests__rustc_coverage__unicode__u_xe4_xbb_x96 *)
+(* src: src/rustc-coverage/unicode.rs:33:22-33:33 new_tests__rustc_coverage__unicode__u_xe4_xbb_x96 *)
 letfun new_tests__rustc_coverage__unicode__u_xe4_xbb_x96(wildcard: bitstring) =
   rust_primitives__hax__Tuple0__Tuple0.

@@ -16,7 +16,7 @@
   ideal-functionality boundary.
 *)
 
-(* src: src/legacy/loops/lib.rs:37 new_tests__legacy__loops__lib__for_loops__range1 *)
+(* src: src/legacy/loops/lib.rs:37:4-43:5 new_tests__legacy__loops__lib__for_loops__range1 *)
 letfun new_tests__legacy__loops__lib__for_loops__range1(wildcard: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, nat_15)
@@ -29,7 +29,7 @@ letfun new_tests__legacy__loops__lib__for_loops__range1(wildcard: bitstring) =
   let bl__acc3 = (rust_primitives__hax__machine_int__add(acc_1, i)) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
-(* src: src/legacy/loops/lib.rs:45 new_tests__legacy__loops__lib__for_loops__range2 *)
+(* src: src/legacy/loops/lib.rs:45:4-51:5 new_tests__legacy__loops__lib__for_loops__range2 *)
 letfun new_tests__legacy__loops__lib__for_loops__range2(n: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, rust_primitives__hax__machine_int__add(n, nat_10))
@@ -51,7 +51,7 @@ letfun new_tests__legacy__loops__lib__for_loops__range2(n: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
-(* src: src/legacy/loops/lib.rs:53 new_tests__legacy__loops__lib__for_loops__composed_range *)
+(* src: src/legacy/loops/lib.rs:53:4-59:5 new_tests__legacy__loops__lib__for_loops__composed_range *)
 letfun new_tests__legacy__loops__lib__for_loops__composed_range(n: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__chain(
@@ -79,7 +79,7 @@ letfun new_tests__legacy__loops__lib__for_loops__composed_range(n: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
-(* src: src/legacy/loops/lib.rs:61 new_tests__legacy__loops__lib__for_loops__rev_range *)
+(* src: src/legacy/loops/lib.rs:61:4-67:5 new_tests__legacy__loops__lib__for_loops__rev_range *)
 letfun new_tests__legacy__loops__lib__for_loops__rev_range(n: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__rev(core__ops__range__Range__Range(nat_0, n))
@@ -101,7 +101,7 @@ letfun new_tests__legacy__loops__lib__for_loops__rev_range(n: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
-(* src: src/legacy/loops/lib.rs:69 new_tests__legacy__loops__lib__for_loops__chunks *)
+(* src: src/legacy/loops/lib.rs:69:4-83:5 new_tests__legacy__loops__lib__for_loops__chunks *)
 letfun new_tests__legacy__loops__lib__for_loops__chunks(arr: bitstring) =
   let chunks = core__slice__Impl__chunks_exact(arr, bitstring_default()) in
   let acc_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -164,7 +164,7 @@ letfun new_tests__legacy__loops__lib__for_loops__chunks(arr: bitstring) =
   let bl__acc3 = (rust_primitives__hax__machine_int__sub(acc_4, item_1)) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_5.
-(* src: src/legacy/loops/lib.rs:85 new_tests__legacy__loops__lib__for_loops__iterator *)
+(* src: src/legacy/loops/lib.rs:85:4-91:5 new_tests__legacy__loops__lib__for_loops__iterator *)
 letfun new_tests__legacy__loops__lib__for_loops__iterator(arr: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__slice__Impl__iter(arr)
@@ -177,7 +177,7 @@ letfun new_tests__legacy__loops__lib__for_loops__iterator(arr: bitstring) =
   let bl__acc3 = (rust_primitives__hax__machine_int__add(acc_1, item)) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
-(* src: src/legacy/loops/lib.rs:94 new_tests__legacy__loops__lib__for_loops__nested *)
+(* src: src/legacy/loops/lib.rs:94:4-105:5 new_tests__legacy__loops__lib__for_loops__nested *)
 (*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   let acc_5 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -578,7 +578,7 @@ letfun new_tests__legacy__loops__lib__for_loops__nested(arr: bitstring) =
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_5.
-(* src: src/legacy/loops/lib.rs:107 new_tests__legacy__loops__lib__for_loops__pattern *)
+(* src: src/legacy/loops/lib.rs:107:4-113:5 new_tests__legacy__loops__lib__for_loops__pattern *)
 letfun new_tests__legacy__loops__lib__for_loops__pattern(arr: bitstring) =
   let acc_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     arr
@@ -609,7 +609,7 @@ letfun new_tests__legacy__loops__lib__for_loops__pattern(arr: bitstring) =
   )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_2.
-(* src: src/legacy/loops/lib.rs:115 new_tests__legacy__loops__lib__for_loops__enumerate_chunks *)
+(* src: src/legacy/loops/lib.rs:115:4-123:5 new_tests__legacy__loops__lib__for_loops__enumerate_chunks *)
 letfun new_tests__legacy__loops__lib__for_loops__enumerate_chunks(arr: bitstring) =
   let acc_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__iter__traits__iterator__Iterator__enumerate(core__slice__Impl__chunks(arr, nat_4))
@@ -712,10 +712,10 @@ letfun new_tests__legacy__loops__lib__for_loops__enumerate_chunks(arr: bitstring
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   acc_3.
-(* src: src/legacy/loops/lib.rs:125 new_tests__legacy__loops__lib__for_loops__bool_returning *)
+(* src: src/legacy/loops/lib.rs:125:4-127:5 new_tests__legacy__loops__lib__for_loops__bool_returning *)
 letfun new_tests__legacy__loops__lib__for_loops__bool_returning(x: bitstring) =
   rust_primitives__hax__machine_int__lt(x, nat_10).
-(* src: src/legacy/loops/lib.rs:129 new_tests__legacy__loops__lib__for_loops__f *)
+(* src: src/legacy/loops/lib.rs:129:4-135:5 new_tests__legacy__loops__lib__for_loops__f *)
 letfun new_tests__legacy__loops__lib__for_loops__f(wildcard: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -739,7 +739,7 @@ letfun new_tests__legacy__loops__lib__for_loops__f(wildcard: bitstring) =
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/legacy/loops/lib.rs:171 new_tests__legacy__loops__lib__control_flow__double_sum *)
+(* src: src/legacy/loops/lib.rs:171:4-181:5 new_tests__legacy__loops__lib__control_flow__double_sum *)
 (*  @fail(extraction): coq(HAX0001), ssprove(HAX0001) *)
 letfun new_tests__legacy__loops__lib__control_flow__double_sum(wildcard: bitstring) =
   let sum_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -771,7 +771,7 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum(wildcard: bitstri
     )) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   rust_primitives__hax__machine_int__mul(sum_2, nat_2).
-(* src: src/legacy/loops/lib.rs:183 new_tests__legacy__loops__lib__control_flow__double_sum2 *)
+(* src: src/legacy/loops/lib.rs:183:4-194:5 new_tests__legacy__loops__lib__control_flow__double_sum2 *)
 (*  @fail(extraction): coq(HAX0001), ssprove(HAX0001) *)
 letfun new_tests__legacy__loops__lib__control_flow__double_sum2(wildcard: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
@@ -835,7 +835,7 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2(wildcard: bitstr
     sum_3,
     sum2_2
   ) else bitstring_err().
-(* src: src/legacy/loops/lib.rs:195 new_tests__legacy__loops__lib__control_flow__double_sum_return *)
+(* src: src/legacy/loops/lib.rs:195:4-205:5 new_tests__legacy__loops__lib__control_flow__double_sum_return *)
 letfun new_tests__legacy__loops__lib__control_flow__double_sum_return(v: bitstring) =
   let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
@@ -900,7 +900,7 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum_return(v: bitstri
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
     rust_primitives__hax__machine_int__mul(sum_2, nat_2)
   else bitstring_err().
-(* src: src/legacy/loops/lib.rs:206 new_tests__legacy__loops__lib__control_flow__double_sum2_return *)
+(* src: src/legacy/loops/lib.rs:206:4-217:5 new_tests__legacy__loops__lib__control_flow__double_sum2_return *)
 letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstring) =
   let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
@@ -1001,17 +1001,17 @@ letfun new_tests__legacy__loops__lib__control_flow__double_sum2_return(v: bitstr
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
     rust_primitives__hax__machine_int__add(sum_3, sum2_2)
   else bitstring_err().
-(* src: src/legacy/loops/lib.rs:219 new_tests__legacy__loops__lib__control_flow__bigger_power_2 *)
+(* src: src/legacy/loops/lib.rs:219:4-232:5 new_tests__legacy__loops__lib__control_flow__bigger_power_2 *)
 (*  @fail(extraction): coq(HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001) *)
 letfun new_tests__legacy__loops__lib__control_flow__bigger_power_2(x: bitstring) =
   bitstring_err() (* Loops not supported in ProVerif *).
-(* src: src/legacy/loops/lib.rs:233 new_tests__legacy__loops__lib__control_flow__M *)
+(* src: src/legacy/loops/lib.rs:233:4-235:5 new_tests__legacy__loops__lib__control_flow__M *)
 fun new_tests__legacy__loops__lib__control_flow__M__M(bitstring): bitstring [data].
 reduc forall v_0: bitstring;
   new_tests__legacy__loops__lib__control_flow__M__M__m(
     new_tests__legacy__loops__lib__control_flow__M__M(v_0)
   ) = v_0.
-(* src: src/legacy/loops/lib.rs:238 new_tests__legacy__loops__lib__control_flow__Impl__decoded_message *)
+(* src: src/legacy/loops/lib.rs:238:8-245:9 new_tests__legacy__loops__lib__control_flow__Impl__decoded_message *)
 letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: bitstring) =
   let core__ops__control_flow__ControlFlow__Break(
     ret: bitstring
@@ -1082,7 +1082,7 @@ letfun new_tests__legacy__loops__lib__control_flow__Impl__decoded_message(self: 
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) else (rust_primitives__hax__Tuple0__Tuple0)) in
     Some(new_tests__legacy__loops__lib__control_flow__M__M__m(self))
   else bitstring_err().
-(* src: src/legacy/loops/lib.rs:248 new_tests__legacy__loops__lib__control_flow__nested *)
+(* src: src/legacy/loops/lib.rs:248:4-261:5 new_tests__legacy__loops__lib__control_flow__nested *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001) *)
 letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) =
   let sum_4 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -1180,7 +1180,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested(wildcard: bitstring) 
   rust_primitives__hax__machine_int__add(sum_3, i)) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   rust_primitives__hax__machine_int__mul(sum_4, nat_2).
-(* src: src/legacy/loops/lib.rs:262 new_tests__legacy__loops__lib__control_flow__nested_return *)
+(* src: src/legacy/loops/lib.rs:262:4-275:5 new_tests__legacy__loops__lib__control_flow__nested_return *)
 letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bitstring) =
   let core__ops__control_flow__ControlFlow__Break(
     ret_1: bitstring
@@ -1581,7 +1581,7 @@ letfun new_tests__legacy__loops__lib__control_flow__nested_return(wildcard: bits
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)) in
     rust_primitives__hax__machine_int__mul(sum_4, nat_2)
   else bitstring_err().
-(* src: src/legacy/loops/lib.rs:277 new_tests__legacy__loops__lib__control_flow__continue_only *)
+(* src: src/legacy/loops/lib.rs:277:4-285:5 new_tests__legacy__loops__lib__control_flow__continue_only *)
 (*  @fail(extraction): ssprove(HAX0008), coq(HAX0008) *)
 letfun new_tests__legacy__loops__lib__control_flow__continue_only(x: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
@@ -1603,7 +1603,7 @@ letfun new_tests__legacy__loops__lib__control_flow__continue_only(x: bitstring) 
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/legacy/loops/lib.rs:287 new_tests__legacy__loops__lib__control_flow__continue_and_break *)
+(* src: src/legacy/loops/lib.rs:287:4-298:5 new_tests__legacy__loops__lib__control_flow__continue_and_break *)
 (*  @fail(extraction): ssprove(HAX0001, HAX0008), coq(HAX0008, HAX0001) *)
 letfun new_tests__legacy__loops__lib__control_flow__continue_and_break(x: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
@@ -1643,22 +1643,22 @@ letfun new_tests__legacy__loops__lib__control_flow__continue_and_break(x: bitstr
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/legacy/loops/lib.rs:140 new_tests__legacy__loops__lib__while_loops__f *)
+(* src: src/legacy/loops/lib.rs:140:4-146:5 new_tests__legacy__loops__lib__while_loops__f *)
 (*  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001) *)
 letfun new_tests__legacy__loops__lib__while_loops__f(wildcard: bitstring) =
   let x_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in
   rust_primitives__hax__machine_int__add(x_3, nat_12).
-(* src: src/legacy/loops/lib.rs:148 new_tests__legacy__loops__lib__while_loops__while_invariant_decr *)
+(* src: src/legacy/loops/lib.rs:148:4-156:5 new_tests__legacy__loops__lib__while_loops__while_invariant_decr *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__legacy__loops__lib__while_loops__while_invariant_decr(wildcard: bitstring) =
   let x_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in
   rust_primitives__hax__machine_int__add(x_3, nat_12).
-(* src: src/legacy/loops/lib.rs:158 new_tests__legacy__loops__lib__while_loops__while_invariant_decr_rev *)
+(* src: src/legacy/loops/lib.rs:158:4-166:5 new_tests__legacy__loops__lib__while_loops__while_invariant_decr_rev *)
 (*  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001) *)
 letfun new_tests__legacy__loops__lib__while_loops__while_invariant_decr_rev(wildcard: bitstring) =
   let x_3 = (bitstring_err() (* Loops not supported in ProVerif *)) in
   rust_primitives__hax__machine_int__add(x_3, nat_12).
-(* src: src/legacy/loops/lib.rs:6 new_tests__legacy__loops__lib__recognized_loops__range *)
+(* src: src/legacy/loops/lib.rs:6:4-12:5 new_tests__legacy__loops__lib__recognized_loops__range *)
 letfun new_tests__legacy__loops__lib__recognized_loops__range(wildcard: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -1673,7 +1673,7 @@ letfun new_tests__legacy__loops__lib__recognized_loops__range(wildcard: bitstrin
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/legacy/loops/lib.rs:13 new_tests__legacy__loops__lib__recognized_loops__range_step_by *)
+(* src: src/legacy/loops/lib.rs:13:4-19:5 new_tests__legacy__loops__lib__recognized_loops__range_step_by *)
 letfun new_tests__legacy__loops__lib__recognized_loops__range_step_by(wildcard: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -1691,7 +1691,7 @@ letfun new_tests__legacy__loops__lib__recognized_loops__range_step_by(wildcard: 
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/legacy/loops/lib.rs:20 new_tests__legacy__loops__lib__recognized_loops__enumerated_slice *)
+(* src: src/legacy/loops/lib.rs:20:4-26:5 new_tests__legacy__loops__lib__recognized_loops__enumerated_slice *)
 letfun new_tests__legacy__loops__lib__recognized_loops__enumerated_slice(slice: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -1708,7 +1708,7 @@ letfun new_tests__legacy__loops__lib__recognized_loops__enumerated_slice(slice: 
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/legacy/loops/lib.rs:27 new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice *)
+(* src: src/legacy/loops/lib.rs:27:4-33:5 new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice *)
 letfun new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice(slice: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
@@ -1725,7 +1725,7 @@ letfun new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice
     let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0)),
     rust_primitives__hax__Tuple0__Tuple0
   ).
-(* src: src/legacy/loops/lib.rs:303 new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping *)
+(* src: src/legacy/loops/lib.rs:303:4-307:5 new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping *)
 letfun new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping(array: bitstring) =
   let array_2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
     core__ops__range__Range__Range(nat_0, core__slice__Impl__len(array))
@@ -1738,7 +1738,7 @@ letfun new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping(array: b
   let bl__acc3 = (rust_primitives__hax__monomorphized_update_at__update_at_usize(array_1, i, i)) in
   let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in bitstring_err() else (bl__acc3)) else (bl__acc2)) else (bl__acc1)) else (bl__acc0))) in
   array_2.
-(* src: src/legacy/loops/lib.rs:310 new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping_2 *)
+(* src: src/legacy/loops/lib.rs:310:4-314:5 new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping_2 *)
 letfun new_tests__legacy__loops__lib__and_mut_side_effect_loop__looping_2(array: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
     array_2: bitstring,
