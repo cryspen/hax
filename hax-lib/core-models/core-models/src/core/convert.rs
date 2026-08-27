@@ -236,6 +236,26 @@ int_try_from_i_to_u! {
     u8  u16 u32 u64 u128 usize u8  u16 u32 u64 u128 usize u8  u16 u32 u64 u128 usize u8  u16 u32 u64 u128 usize u8   u16  u32  u64  u128 usize u8    u16   u32   u64   u128  usize,
 }
 
+// `From<bool>` for every integer type, which real `core` provides in
+// `convert::num` (`false` maps to 0, `true` to 1). Appended at the end of the
+// module: hax's F* disambiguator numbers the module's impls top-to-bottom, so
+// new impls at the end leave the published `Core_models.Convert.impl_NN` names
+// of every `From`/`TryFrom` instance above untouched.
+macro_rules! int_from_bool {
+    ($($To_t: ident)*) => {
+        $(
+            #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+            impl From<core::primitive::bool> for $To_t {
+                fn from(x: core::primitive::bool) -> $To_t {
+                    if x { 1 } else { 0 }
+                }
+            }
+        )*
+    }
+}
+
+int_from_bool! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+
 #[cfg(test)]
 mod tests {
     use crate::testing::Inject;
@@ -263,6 +283,26 @@ mod tests {
             );
         }
     }
+
+    macro_rules! from_bool_test {
+        ($($To_t: ident)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_from_bool_to_ $To_t>](x in any::<bool>()) {
+                            prop_assert_eq!(
+                                <$To_t as super::From<bool>>::from(x),
+                                <$To_t as core::convert::From<bool>>::from(x)
+                            );
+                        }
+                    }
+                )*
+            }
+        }
+    }
+
+    from_bool_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
 
     macro_rules! int_from_test {
             (
