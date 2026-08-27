@@ -91,13 +91,35 @@ fn check_cfg_flags() -> String {
         .join(" ")
 }
 
+/// The `cfg` names that make `anodized`'s `#[spec(..)]` emit `hax_lib`
+/// annotations (`anodized_hax`) and drop the `__anodized_fn_*` items it emits
+/// for rustc to type-check the specification against (`anodized_discard_specs`).
+/// `anodized` reads them when its proc-macro crate is compiled.
+const ANODIZED_CFG_NAMES: &[&str] = &["anodized_hax", "anodized_discard_specs"];
+
+/// Sets the `anodized` cfg names, and declares them so that reading one with
+/// `#[cfg(..)]` does not warn.
+pub fn anodized_flags() -> String {
+    ANODIZED_CFG_NAMES
+        .iter()
+        .map(|name| format!("--cfg {name} --check-cfg cfg({name})"))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 /// We set `cfg(hax)` so that client crates can include dependencies
 /// or cfg-gate pieces of code. Moreover, we use `--check-cfg` to
 /// suppress warnings about all cfg-names that hax uses.
 const RUSTFLAGS: &str = "RUSTFLAGS";
 pub fn rustflags() -> String {
     let rustflags = std::env::var(RUSTFLAGS).unwrap_or("".into());
-    [rustflags, "--cfg hax".into(), check_cfg_flags()].join(" ")
+    [
+        rustflags,
+        "--cfg hax".into(),
+        check_cfg_flags(),
+        anodized_flags(),
+    ]
+    .join(" ")
 }
 
 /// Find an external binary: check the given env var, then `PATH`.
