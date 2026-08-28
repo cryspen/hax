@@ -36,7 +36,7 @@ If you want to extract a function
 extract nothing but `my_function`:
 
 ```bash
-cargo hax into --charon-args="--start-from your_crate::some_module::my_function" lean
+cargo hax into lean --charon-args="--start-from your_crate::some_module::my_function"
 ```
 
 This command will extract `my_function`, along with all its dependencies (other functions, type definitions, etc.) from your crate.
