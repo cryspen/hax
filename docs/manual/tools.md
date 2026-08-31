@@ -4,7 +4,7 @@ weight: 100
 
 # Tool versions and proof scenarios
 
-Some hax backends rely on external tools. The `lean` backend (`cargo hax into lean`) runs the [aeneas](https://github.com/AeneasVerif/aeneas) pipeline, which needs the `aeneas` and `charon` binaries. hax manages these binaries for you: it knows which versions a project needs, downloads pre-built binaries on demand, verifies them against a manifest shipped with the release, and caches them so later runs reuse them.
+Some hax backends rely on external tools. The `lean` backend (`cargo hax into lean`) runs the [Aeneas](https://github.com/AeneasVerif/aeneas) pipeline, which needs the `aeneas` and `charon` binaries. hax manages these binaries for you: it knows which versions a project needs, downloads pre-built binaries on demand, verifies them against a manifest shipped with the release, and caches them so later runs reuse them.
 
 This page covers the `cargo hax tools` subcommands, the `hax.toml` file that pins versions per project, how a version is resolved, how to point hax at a locally built binary instead, and the proof scenarios that store complete extraction configurations in `hax.toml` (see [Proof scenarios](#proof-scenarios)).
 
@@ -228,7 +228,7 @@ Item selection is unified across backends:
 - `opaque`: extract signature-only.
 - `default-opaques`: whether the built-in opaque set applies (default `true`).
 
-In this version, these keys work for the Lean backend only, where they compile to charon's `--start-from`, `--exclude`, and `--opaque` flags and use charon's name-pattern language (paths, `::*`, `{impl Trait for Type}` with `_` wildcards). For the other backends, `select-clauses` takes raw `-i` clauses until the unified keys cover them. Prefer `opaque` over `exclude` unless removal is intended: charon's `--exclude` is not reachability-aware, and an excluded item that is still referenced makes aeneas fail.
+In this version, these keys work for the Lean backend only, where they compile to Charon's `--start-from`, `--exclude`, and `--opaque` flags and use Charon's name-pattern language (paths, `::*`, `{impl Trait for Type}` with `_` wildcards). For the other backends, `select-clauses` takes raw `-i` clauses until the unified keys cover them. Prefer `opaque` over `exclude` unless removal is intended: Charon's `--exclude` is not reachability-aware, and an excluded item that is still referenced makes Aeneas fail.
 
 Backend-specific keys:
 
@@ -259,7 +259,7 @@ cargo hax extract -p openmls   # restrict the scope to one package; combines wit
 cargo hax extract --dry-run    # print resolved invocations without running them
 ```
 
-`extract` also takes the shared diagnostics options of `into` (`-v`, `--message-format`), but not `-C ... ;`: a scenario's cargo invocation is derived from its own keys. For hermetic runs, `extract` takes cargo's `--locked`, `--frozen`, and `--offline` flags directly and applies them to every cargo invocation of the run: project discovery, the frontend's `cargo check`, and the build charon drives.
+`extract` also takes the shared diagnostics options of `into` (`-v`, `--message-format`), but not `-C ... ;`: a scenario's cargo invocation is derived from its own keys. For hermetic runs, `extract` takes cargo's `--locked`, `--frozen`, and `--offline` flags directly and applies them to every cargo invocation of the run: project discovery, the frontend's `cargo check`, and the build Charon drives.
 
 An empty scope and a name matching no scenario are errors, so a missing or mis-located `hax.toml` fails loudly in CI. Scenarios run sequentially; a failing scenario does not abort the run, failures are collected into a summary and produce a non-zero exit code. Note that scenarios differing in `features` or `env` invalidate each other's build caches in the shared target directory.
 

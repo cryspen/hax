@@ -66,7 +66,7 @@ The package contains:
 
 - `<PkgName>/Extraction/`, and the `<PkgName>/Extraction.lean` module importing it: the extracted modules. Both are owned by hax and rewritten on every extraction, so edits there are lost.
 - `<PkgName>/Verification/`: your handwritten proofs; hax never touches this folder.
-- `<PkgName>/Assumptions/`: models of the external definitions the crate uses, if any. hax seeds each file there once, from the template aeneas generates, and never modifies it afterwards.
+- `<PkgName>/Assumptions/`: models of the external definitions the crate uses, if any. hax seeds each file there once, from the template Aeneas generates, and never modifies it afterwards.
 - a `lakefile.toml` and `lean-toolchain` pinned to the versions matching the extraction, and a root module importing the extraction and the proofs. These are created only when missing, so it is safe to re-run after editing them.
 
 The root module is yours after its creation; since the extraction is reached through the single import of `<PkgName>.Extraction`, it never needs an update when the extracted files change, and hax only warns when one of its imports is missing or stale, see [the root module check](../tools.md#the-lean-root-module-check). A commented-out import (`-- import ...`) silences those warnings for a module, and for `Verification/ProofObligations.lean` it also stops hax from recreating the stub; extraction files are regenerated and `Assumptions/` files re-seeded regardless.

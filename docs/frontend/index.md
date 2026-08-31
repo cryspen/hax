@@ -1,6 +1,6 @@
 # Frontend
 
-hax is a tool designed to facilitate the formal verification of Rust programs. It enables the translation of Rust crates into formal languages like Lean, F* or Coq. Once translated, these formal representations allow to write formal proofs about the behavior and correctness of their Rust code.
+hax is a tool designed to facilitate the formal verification of Rust programs. It enables the translation of Rust crates into formal languages like Lean, F* or Rocq. Once translated, these formal representations allow to write formal proofs about the behavior and correctness of their Rust code.
 
 ## User flow
 
