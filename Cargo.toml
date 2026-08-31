@@ -87,3 +87,4 @@ hax-rust-engine-macros = { path = "rust-engine/macros", version = "=0.4.0-rc.1" 
 
 [workspace.metadata.release]
 owners = ["github:cryspen:tools"]
+pre-release-commit-message = "chore: release v{{version}}"
