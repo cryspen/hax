@@ -474,16 +474,18 @@ pub fn test_range_to_inclusive_contains_above() -> bool {
 // RangeInclusive::new / into_inner / contains / is_empty
 // =============================================================================
 
+// `lo`/`hi`, not `start`/`end`: `end` is a Lean keyword, and aeneas escapes it
+// only at the use site, leaving the binder unparseable.
 #[rust_lean_test]
 pub fn test_range_inclusive_new_into_inner() -> bool {
-    let (start, end) = RangeInclusive::new(3u8, 5u8).into_inner();
-    start == 3u8 && end == 5u8
+    let (lo, hi) = RangeInclusive::new(3u8, 5u8).into_inner();
+    lo == 3u8 && hi == 5u8
 }
 
 #[rust_lean_test]
 pub fn test_range_inclusive_into_inner_edges() -> bool {
-    let (start, end) = (0u8..=u8::MAX).into_inner();
-    start == 0u8 && end == u8::MAX
+    let (lo, hi) = (0u8..=u8::MAX).into_inner();
+    lo == 0u8 && hi == u8::MAX
 }
 
 #[rust_lean_test]

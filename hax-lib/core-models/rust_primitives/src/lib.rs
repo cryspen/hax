@@ -155,6 +155,11 @@ pub mod sequence {
     pub fn seq_push<T>(s1: &mut Seq<T>, v: T) {
         s1.0.push(v)
     }
+    // Re-added for `option`/`result`'s iterators: `Option::iter` and
+    // `Result::iter` yield a sequence of exactly the value they hold.
+    pub fn seq_one<T>(x: T) -> Seq<T> {
+        Seq(vec![x])
+    }
     pub fn seq_create<T: Clone>(x: T, n: usize) -> Seq<T> {
         Seq(vec![x; n])
     }

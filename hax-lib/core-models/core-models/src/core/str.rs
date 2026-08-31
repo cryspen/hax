@@ -183,16 +183,18 @@ impl str {
         str_sub_bytes(s, start, n)
     }
     /// See [`std::primitive::str::trim_ascii_end`]
+    // `last`, not `end`: `end` is a Lean keyword, and aeneas escapes it to
+    // `«end»` for every copy the loop makes, which collide.
     fn trim_ascii_end(s: &core::primitive::str) -> &core::primitive::str {
         let bytes = Self::as_bytes(s);
         let n = slice_length(bytes);
-        let mut end = 0;
+        let mut last = 0;
         for i in 0..n {
             if !is_ascii_whitespace_byte(*slice_index(bytes, i)) {
-                end = i + 1;
+                last = i + 1;
             }
         }
-        str_sub_bytes(s, 0, end)
+        str_sub_bytes(s, 0, last)
     }
     /// See [`std::primitive::str::trim_ascii`]
     fn trim_ascii(s: &core::primitive::str) -> &core::primitive::str {
@@ -310,6 +312,21 @@ pub mod error {
             match self.error_len {
                 Option::Some(len) => Option::Some(len as usize),
                 Option::None => Option::None,
+            }
+        }
+    }
+
+    /// std's error reports the same position and length the model records.
+    #[cfg(test)]
+    impl crate::testing::Inject for std::str::Utf8Error {
+        type Model = Utf8Error;
+        fn inject(&self) -> Self::Model {
+            Utf8Error {
+                valid_up_to: self.valid_up_to(),
+                error_len: match self.error_len() {
+                    ::core::option::Option::Some(len) => Option::Some(len as u8),
+                    ::core::option::Option::None => Option::None,
+                },
             }
         }
     }
