@@ -7,6 +7,8 @@ val t_ArgumentType:eqtype
 
 type t_Argument = { f_ty:t_ArgumentType }
 
+val placeholder: Prims.unit -> Prims.Pure t_ArgumentType Prims.l_True (fun _ -> Prims.l_True)
+
 val impl__new_display (#v_T: Type0) (x: v_T)
     : Prims.Pure t_Argument Prims.l_True (fun _ -> Prims.l_True)
 

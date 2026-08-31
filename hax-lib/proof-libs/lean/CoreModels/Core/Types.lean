@@ -259,7 +259,7 @@ structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 146:4-150:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 187:4-191:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -267,7 +267,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 152:4-157:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 193:4-198:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -275,7 +275,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 159:4-159:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 200:4-200:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
@@ -479,91 +479,91 @@ def marker.PhantomData (T : Type) := T
 -/  -- replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
-    Source: 'core-models/src/core/mem.rs', lines 118:4-120:5
+    Source: 'core-models/src/core/mem.rs', lines 130:4-132:5
     Visibility: public -/
 structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
 
 /-- [core_models::num::error::IntErrorKind]
-    Source: 'core-models/src/core/num/error.rs', lines 33:0-33:24
+    Source: 'core-models/src/core/num/error.rs', lines 35:0-35:24
     Visibility: public -/
 @[reducible]
 def num.error.IntErrorKind := Unit
 
 /-- [core_models::num::error::ParseIntError]
-    Source: 'core-models/src/core/num/error.rs', lines 18:0-20:1
+    Source: 'core-models/src/core/num/error.rs', lines 19:0-21:1
     Visibility: public -/
 structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
 
 /-- [core_models::num::u8]
-    Source: 'core-models/src/core/num/mod.rs', lines 523:0-523:14
+    Source: 'core-models/src/core/num/mod.rs', lines 539:0-539:14
     Visibility: public -/
 @[reducible]
 def num.u8 := Unit
 
 /-- [core_models::num::u16]
-    Source: 'core-models/src/core/num/mod.rs', lines 526:0-526:15
+    Source: 'core-models/src/core/num/mod.rs', lines 542:0-542:15
     Visibility: public -/
 @[reducible]
 def num.u16 := Unit
 
 /-- [core_models::num::u32]
-    Source: 'core-models/src/core/num/mod.rs', lines 529:0-529:15
+    Source: 'core-models/src/core/num/mod.rs', lines 545:0-545:15
     Visibility: public -/
 @[reducible]
 def num.u32 := Unit
 
 /-- [core_models::num::u64]
-    Source: 'core-models/src/core/num/mod.rs', lines 532:0-532:15
+    Source: 'core-models/src/core/num/mod.rs', lines 548:0-548:15
     Visibility: public -/
 @[reducible]
 def num.u64 := Unit
 
 /-- [core_models::num::u128]
-    Source: 'core-models/src/core/num/mod.rs', lines 535:0-535:16
+    Source: 'core-models/src/core/num/mod.rs', lines 551:0-551:16
     Visibility: public -/
 @[reducible]
 def num.u128 := Unit
 
 /-- [core_models::num::usize]
-    Source: 'core-models/src/core/num/mod.rs', lines 538:0-538:17
+    Source: 'core-models/src/core/num/mod.rs', lines 554:0-554:17
     Visibility: public -/
 @[reducible]
 def num.usize := Unit
 
 /-- [core_models::num::i8]
-    Source: 'core-models/src/core/num/mod.rs', lines 541:0-541:14
+    Source: 'core-models/src/core/num/mod.rs', lines 557:0-557:14
     Visibility: public -/
 @[reducible]
 def num.i8 := Unit
 
 /-- [core_models::num::i16]
-    Source: 'core-models/src/core/num/mod.rs', lines 544:0-544:15
+    Source: 'core-models/src/core/num/mod.rs', lines 560:0-560:15
     Visibility: public -/
 @[reducible]
 def num.i16 := Unit
 
 /-- [core_models::num::i32]
-    Source: 'core-models/src/core/num/mod.rs', lines 547:0-547:15
+    Source: 'core-models/src/core/num/mod.rs', lines 563:0-563:15
     Visibility: public -/
 @[reducible]
 def num.i32 := Unit
 
 /-- [core_models::num::i64]
-    Source: 'core-models/src/core/num/mod.rs', lines 550:0-550:15
+    Source: 'core-models/src/core/num/mod.rs', lines 566:0-566:15
     Visibility: public -/
 @[reducible]
 def num.i64 := Unit
 
 /-- [core_models::num::i128]
-    Source: 'core-models/src/core/num/mod.rs', lines 553:0-553:16
+    Source: 'core-models/src/core/num/mod.rs', lines 569:0-569:16
     Visibility: public -/
 @[reducible]
 def num.i128 := Unit
 
 /-- [core_models::num::isize]
-    Source: 'core-models/src/core/num/mod.rs', lines 556:0-556:17
+    Source: 'core-models/src/core/num/mod.rs', lines 572:0-572:17
     Visibility: public -/
 @[reducible]
 def num.isize := Unit
@@ -839,7 +839,7 @@ structure slice.iter.Windows (T : Type) where
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 430:4-450:5
+    Source: 'core-models/src/core/slice.rs', lines 446:4-466:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
@@ -851,18 +851,18 @@ structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   get_unchecked_mut : Self → T → RustM (Self_Output × (Self_Output → T))
 
 /-- [core_models::str::error::Utf8Error]
-    Source: 'core-models/src/core/str.rs', lines 10:4-10:25
+    Source: 'core-models/src/core/str.rs', lines 40:4-40:25
     Visibility: public -/
 @[reducible]
 def str.error.Utf8Error := Unit
 
 /-- [core_models::str::iter::Split]
-    Source: 'core-models/src/core/str.rs', lines 14:4-14:23 -/
+    Source: 'core-models/src/core/str.rs', lines 53:4-53:23 -/
 @[reducible]
 def str.iter.Split (T : Type) := T
 
 /-- Trait declaration: [core_models::str::traits::FromStr]
-    Source: 'core-models/src/core/str.rs', lines 18:4-21:5 -/
+    Source: 'core-models/src/core/str.rs', lines 57:4-60:5 -/
 structure str.traits.FromStr (Self : Type) (Self_Err : Type) where
   from_str : Str → RustM (result.Result Self Self_Err)
 

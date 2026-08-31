@@ -108,11 +108,6 @@ def rewrite_imports_and_opens(text: str) -> str:
     return text
 
 
-def fix_fail_panic(text: str) -> str:
-    """In the definition of a Lean `item` called `panic`, the name `panic`
-    does not resolve to `Error.panic` as it should."""
-    return replace("fix_fail_panic", text, "  fail panic\n", "  fail Error.panic\n")
-
 def escape_keyword_binders(text: str) -> str:
     """Escape binder names that are Lean keywords, e.g. `(end : Std.U8)`.
 
@@ -139,6 +134,10 @@ def escape_keyword_binders(text: str) -> str:
         text,
     )
 
+def fix_fail_panic(text: str) -> str:
+    """In the definition of a Lean `item` called `panic`, the name `panic`
+    does not resolve to `Error.panic` as it should."""
+    return replace("fix_fail_panic", text, "  fail panic\n", "  fail Error.panic\n")
 
 def rename_namespace(text: str) -> str:
     """

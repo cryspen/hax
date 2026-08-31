@@ -202,6 +202,46 @@ mod tests {
 
     use proptest::prelude::*;
 
+    // Under the F* cfg `map` takes a `fn` pointer plus a phantom `F: FnOnce<..>`
+    // parameter (the backend types the function through it). Nothing in the model
+    // implements that trait, so the test supplies a witness.
+    #[cfg(hax_backend_fstar)]
+    mod fstar_map {
+        use crate::testing::Inject;
+        use proptest::prelude::*;
+
+        fn triple(x: u8) -> u8 {
+            x.wrapping_mul(3)
+        }
+
+        struct Triple;
+
+        impl crate::ops::function::FnOnce<u8> for Triple {
+            type Output = u8;
+            fn call_once(&self, args: u8) -> u8 {
+                triple(args)
+            }
+        }
+
+        proptest! {
+            #[test]
+            fn test_map(arr in any::<[u8; 4]>()) {
+                prop_assert_eq!(
+                    super::super::Array::<u8, 4>::map::<Triple, u8>(arr.inject(), triple),
+                    arr.map(triple)
+                );
+            }
+
+            #[test]
+            fn test_witness_call_once(x in any::<u8>()) {
+                prop_assert_eq!(
+                    crate::ops::function::FnOnce::call_once(&Triple, x),
+                    triple(x)
+                );
+            }
+        }
+    }
+
     proptest! {
         // Under the F* cfg `map` takes a `fn`, which this closure can't coerce to.
         #[cfg(not(hax_backend_fstar))]
@@ -281,6 +321,84 @@ mod tests {
             let ma = a.inject();
             let mb = b.inject();
             prop_assert_eq!(crate::cmp::PartialEq::eq(&ma, &mb), a == b);
+        }
+
+        // Two independent arrays are essentially never equal, so the `true` exit
+        // of the comparison loop needs a reflexive case.
+        #[test]
+        fn test_eq_reflexive(a in any::<[u8; 4]>()) {
+            let ma = a.inject();
+            prop_assert_eq!(crate::cmp::PartialEq::eq(&ma, &ma), a == a);
+        }
+
+        #[test]
+        fn test_into_iter(arr in any::<[u8; 4]>()) {
+            let mut it = crate::iter::traits::collect::IntoIterator::into_iter(arr.inject());
+            let mut collected = std::vec::Vec::new();
+            while let crate::option::Option::Some(x) =
+                crate::iter::traits::iterator::Iterator::next(&mut it)
+            {
+                collected.push(x);
+            }
+            prop_assert_eq!(collected, arr.into_iter().collect::<std::vec::Vec<u8>>());
+        }
+
+        // `arr[idx]` above resolves to std's indexing; these spell out the
+        // model's `Index` impls for `[T; N]`.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_model_index_usize(arr in any::<[u8; 4]>(), idx in 0usize..4) {
+            let m = arr.inject();
+            prop_assert_eq!(
+                <[u8; 4] as crate::ops::index::Index<usize>>::index(&m, idx),
+                &arr[idx]
+            );
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_model_index_range(arr in any::<[u8; 8]>(), start in 0usize..8, len in 0usize..8) {
+            let end = (start + len).min(8);
+            let m = arr.inject();
+            prop_assert_eq!(
+                <[u8; 8] as crate::ops::index::Index<crate::ops::range::Range<usize>>>::index(
+                    &m,
+                    crate::ops::range::Range { start, end }
+                ),
+                &arr[start..end]
+            );
+        }
+
+        // The F* variant has one `Index` impl per range kind, all going through
+        // `rust_primitives::slice::array_slice`.
+        #[cfg(hax_backend_fstar)]
+        #[test]
+        fn test_model_index_range(arr in any::<[u8; 8]>(), start in 0usize..8, len in 0usize..8) {
+            let end = (start + len).min(8);
+            let m = arr.inject();
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&m, crate::ops::range::Range { start, end }),
+                &arr[start..end]
+            );
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&m, crate::ops::range::RangeTo { end }),
+                &arr[..end]
+            );
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&m, crate::ops::range::RangeFrom { start }),
+                &arr[start..]
+            );
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&m, crate::ops::range::RangeFull),
+                &arr[..]
+            );
+        }
+
+        #[cfg(hax_backend_fstar)]
+        #[test]
+        fn test_model_index_usize(arr in any::<[u8; 4]>(), idx in 0usize..4) {
+            let m = arr.inject();
+            prop_assert_eq!(crate::ops::index::Index::index(&m, idx), &arr[idx]);
         }
     }
 }

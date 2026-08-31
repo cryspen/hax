@@ -153,12 +153,20 @@ macro_rules! uint_impl {
                 paste! { [<ilog2_ $Name>](x) }
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[hax_lib::opaque]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
             ) -> Result<$Self, error::ParseIntError> {
-                crate::panicking::internal::panic()
+                let (parsed, value) = paste! { [<from_str_radix_ $Name>](src, radix) };
+                if parsed {
+                    Result::Ok(value)
+                } else {
+                    // The model's `ParseIntError` carries no distinguishable kind.
+                    Result::Err(error::ParseIntError {
+                        kind: error::IntErrorKind,
+                    })
+                }
             }
             /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -417,12 +425,20 @@ macro_rules! iint_impl {
                 paste! { [<ilog2_ $Name>](x) }
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[hax_lib::opaque]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
             ) -> Result<$Self, error::ParseIntError> {
-                crate::panicking::internal::panic()
+                let (parsed, value) = paste! { [<from_str_radix_ $Name>](src, radix) };
+                if parsed {
+                    Result::Ok(value)
+                } else {
+                    // The model's `ParseIntError` carries no distinguishable kind.
+                    Result::Err(error::ParseIntError {
+                        kind: error::IntErrorKind,
+                    })
+                }
             }
             /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -864,6 +880,35 @@ mod tests {
                             prop_assert_eq!(super::$t::checked_rem(x.inject(), y.inject()), x.checked_rem(y).inject());
                         }
 
+                        // `y` is fixed at zero: a full-range `y` almost never hits
+                        // the divide-by-zero arm for the wider types.
+                        #[test]
+                        fn [<test_ $t _checked_div_by_zero>](x in any::<$t>()) {
+                            prop_assert_eq!(
+                                super::$t::checked_div(x.inject(), (0 as $t).inject()),
+                                x.checked_div(0).inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _checked_rem_by_zero>](x in any::<$t>()) {
+                            prop_assert_eq!(
+                                super::$t::checked_rem(x.inject(), (0 as $t).inject()),
+                                x.checked_rem(0).inject());
+                        }
+
+                        // Three generators: short digits mostly parse, the wider
+                        // alphabet overflows or fails per radix, `.*` is junk.
+                        #[test]
+                        fn [<test_ $t _from_str_radix>](
+                            s in prop_oneof!["[0-9]{1,2}", "[0-9a-zA-Z+-]{0,12}", ".*"],
+                            radix in 2u32..=36,
+                        ) {
+                            prop_assert_eq!(
+                                super::$t::from_str_radix(&s, radix),
+                                $t::from_str_radix(&s, radix).inject()
+                            );
+                        }
+
                         #[test]
                         fn [<test_ $t _div_ceil>](x in any::<$t>(), y in any::<$t>()) {
                             // skip inputs where div_ceil panics (same cases as checked_div == None)
@@ -906,6 +951,15 @@ mod tests {
                         fn [<test_ $t _is_multiple_of>](x in any::<$t>(), y in any::<$t>()) {
                             prop_assert_eq!(super::$t::is_multiple_of(x.inject(), y.inject()), x.is_multiple_of(y));
                         }
+
+                        // Zero divides only zero; `y` is pinned so the arm is
+                        // always taken, and `x` covers both answers.
+                        #[test]
+                        fn [<test_ $t _is_multiple_of_zero>](x in prop_oneof![Just(0 as $t), any::<$t>()]) {
+                            prop_assert_eq!(
+                                super::$t::is_multiple_of(x.inject(), (0 as $t).inject()),
+                                x.is_multiple_of(0));
+                        }
                     }
                 )*
             }
@@ -939,8 +993,26 @@ mod tests {
                             }
                         }
 
+                        // `x` is pinned to `MIN` so that the `y == -1` half of the
+                        // `checked_div`/`checked_rem` overflow guard is reached.
                         #[test]
-                        fn [<test_ $t _signum>](x in any::<$t>()) {
+                        fn [<test_ $t _checked_div_at_min>](y in prop_oneof![Just(-1 as $t), any::<$t>()]) {
+                            prop_assert_eq!(
+                                super::$t::checked_div(<$t>::MIN.inject(), y.inject()),
+                                <$t>::MIN.checked_div(y).inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _checked_rem_at_min>](y in prop_oneof![Just(-1 as $t), any::<$t>()]) {
+                            prop_assert_eq!(
+                                super::$t::checked_rem(<$t>::MIN.inject(), y.inject()),
+                                <$t>::MIN.checked_rem(y).inject());
+                        }
+
+                        // `0` is biased in: the zero arm is otherwise out of reach
+                        // for the wider types.
+                        #[test]
+                        fn [<test_ $t _signum>](x in prop_oneof![Just(0 as $t), any::<$t>()]) {
                             prop_assert_eq!(super::$t::signum(x.inject()), x.signum());
                         }
                     }

@@ -20,8 +20,6 @@ let seq_extend #t (s1: t_Seq t) (s2: t_Seq t {(Seq.length s1) + (Seq.length s2) 
 
 let seq_push #t (s: t_Seq t {Seq.length s < max_usize}) (x: t): t_Seq t = Seq.append s (Seq.create 1 x)
 
-let seq_one #t (x: t): t_Seq t = Seq.create 1 x
-
 let seq_create #t (x: t) (n: usize): t_Seq t = Seq.create (v n) x
 
 let seq_len #t (s: t_Seq t): usize = mk_usize (Seq.length s)
