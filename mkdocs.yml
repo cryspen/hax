@@ -23,30 +23,14 @@ theme:
     - navigation.indexes
   icon:
     repo: fontawesome/brands/github
-    tag:
-      draft: material/sticker-outline
-      accepted: material/sticker-check-outline
-      proposed: material/sticker-plus-outline
-      deprecated: material/sticker-minus-outline
-      superseded: material/sticker-alert-outline
-      rejected: material/sticker-remove-outline
 extra_javascript:
   - javascripts/hax_playground.js
   - javascripts/ansi_up.js
   - javascripts/fstar.js
   - javascripts/lz-string.js
 extra_css:
-  - stylesheets/tags-colors.css
   - stylesheets/hax_playground.css
   - stylesheets/logo.css
-extra:
-  tags:
-    Draft: draft
-    Accepted: accepted
-    Proposed: proposed
-    Superseded: superseded
-    Deprecated: deprecated
-    Rejected: rejected
 markdown_extensions:
   - attr_list
   - tables
@@ -82,5 +66,3 @@ plugins:
   - blog
   - awesome-nav
   - mkdocs-nav-weight
-  - tags:
-      tags_file: RFCs/index.md
