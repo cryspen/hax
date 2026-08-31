@@ -19,7 +19,7 @@ This library mirrors the internal types of the Rust compiler (`rustc`) that cons
 
 ### `hax-driver` Binary
 
-`hax-driver` is a custom Rust compiler driver that behaves like `rustc` but performs additional tasks:
+`hax-driver` (crate name; the binary is called `driver-hax-frontend-exporter`) is a custom Rust compiler driver that behaves like `rustc` but performs additional tasks:
 
 1. **Item Enumeration:** Lists all items in a crate.
 2. **AST Transformation:** Applies `sinto` on each item to generate the hax-ified AST.
@@ -31,15 +31,15 @@ This library mirrors the internal types of the Rust compiler (`rustc`) that cons
 
 **Workflow:**
 
-1. **Custom Build Execution:** Runs `cargo build`, instructing Cargo to use `hax-driver` instead of `rustc`.
-2. **Multiple Compiler Invocations:** `cargo build` invokes `hax-driver` multiple times with various options.
+1. **Custom Build Execution:** Runs `cargo check`, instructing Cargo to use `hax-driver` instead of `rustc`.
+2. **Multiple Compiler Invocations:** `cargo check` invokes `hax-driver` multiple times with various options.
 3. **Inter-Process Communication:** `hax-driver` communicates with `cargo-hax` via `stderr` using JSON lines.
 4. **Metadata Generation:** Produces `haxmeta` files containing the transformed ASTs.
 5. **Engine Invocation (Optional):** If requested, runs the engine, passing options and `haxmeta` information via `stdin` serialized as JSON.
 6. **Interactive Communication:** Engages in interactive communication with the engine.
 7. **User Reporting:** Outputs results and diagnostics to the user.
 
-## The Engine (OCaml - [documentation](/engine/docs/hax-engine/index.html))
+## The Engine (OCaml)
 
 The engine processes the transformed ASTs and options provided via JSON input from `stdin`. It performs several key functions to convert the hax-ified Rust code into the target backend language.
 
