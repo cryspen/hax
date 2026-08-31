@@ -72,12 +72,32 @@ fn rust_log_style() -> String {
     })
 }
 
+/// The `cfg` names that hax uses: `hax`, `hax_backend_<name>`, and the hax_lib-internal
+/// `hax_compilation`.
+pub fn hax_cfg_names() -> impl Iterator<Item = String> {
+    ["hax".to_string(), "hax_compilation".to_string()]
+        .into_iter()
+        .chain(
+            BackendName::iter()
+                .map(|backend| format!("hax_backend_{}", backend.to_string().replace('-', "_"))),
+        )
+}
+
+/// `--check-cfg` declarations for the cfg names that hax uses.
+fn check_cfg_flags() -> String {
+    hax_cfg_names()
+        .map(|name| format!("--check-cfg cfg({name})"))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 /// We set `cfg(hax)` so that client crates can include dependencies
-/// or cfg-gate pieces of code.
+/// or cfg-gate pieces of code. Moreover, we use `--check-cfg` to
+/// suppress warnings about all cfg-names that hax uses.
 const RUSTFLAGS: &str = "RUSTFLAGS";
 pub fn rustflags() -> String {
     let rustflags = std::env::var(RUSTFLAGS).unwrap_or("".into());
-    [rustflags, "--cfg hax".into()].join(" ")
+    [rustflags, "--cfg hax".into(), check_cfg_flags()].join(" ")
 }
 
 /// Find an external binary: check the given env var, then `PATH`.
