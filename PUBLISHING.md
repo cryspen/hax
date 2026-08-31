@@ -6,7 +6,7 @@ The OCaml engine is a single package, `hax-engine`, with a binary and a number o
 
 ## Rust
 
-All crates start with the `hax-` prefix, except `cargo-hax` (the entrypoint to the cargo `hax` subcommand). The published crates, in dependency order:
+All published crates start with the `hax-` prefix, except `cargo-hax` (the entrypoint to the cargo `hax` subcommand). The published crates, in dependency order:
 
 **cargo-hax**
 
@@ -26,6 +26,8 @@ All crates start with the `hax-` prefix, except `cargo-hax` (the entrypoint to t
 
 `cargo-hax` accepts only the `hax-lib` of its own version, so every `cargo-hax` release must publish a matching `hax-lib`, even for changes that only touch the binary.
 
+`hax-adt-into` is not listed as a workspace member in the root `Cargo.toml`; it is part of the workspace anyway, as a path dependency of `hax-frontend-exporter`, and is released with it.
+
 **Rust engine**
 
 1. `hax-rust-engine-macros` (`rust-engine/macros`)
@@ -33,12 +35,14 @@ All crates start with the `hax-` prefix, except `cargo-hax` (the entrypoint to t
 
 Non-published crates set two flags in their `Cargo.toml`: `publish = false` makes cargo itself refuse to publish the crate, and `package.metadata.release.release = false` keeps it out of every `cargo release` step. These are `hax-engine-names` and `hax-engine-names-extract` (used only by the OCaml build of the engine), `hax-lib-protocol` and `hax-lib-protocol-macros`, and `test-driver` (runs only the repository's test suite).
 
+The directories the root `Cargo.toml` excludes from the workspace (currently `tests` and `hax-lib/core-models`) need no flags: `cargo release --workspace` never touches them. The `hax-lib/core-models` workspace is versioned independently of the hax version and is not published.
+
 ## Procedure
 
 1. Start the `Release PR` workflow with the bump level: `gh workflow run release_pr.yml -f level=patch` (or `minor`/`major`; add `-f rc=true` for a release candidate), or the "Run workflow" button under Actions.
 2. Open the version-bump PR through the prefilled link in the workflow's run summary.
 3. Work through the pre-merge checklist in the PR's description, then review and merge the PR.
-4. Have a maintainer other than yourself approve the `publish` run the merge queued, under Actions.
+4. Have a maintainer other than yourself approve, under Actions, the `publish` run that the merge queued.
 
 The rest runs unattended: the crates are published, the release tags pushed, the `cargo-hax` binaries attached to the GitHub release, and the released version installed with `cargo binstall` as a check. A failed release run files an issue with recovery instructions.
 
