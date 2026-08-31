@@ -214,62 +214,6 @@ Quicklinks:
  - [🔨 Rejected rust we want to support](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+-label%3Awontfix%2Cwontfix-v1);
  - [💭 Rejected rust we don't plan to support in v1](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1).
 
-## Hacking on hax
-The documentation of the internal crate of hax and its engine can be
-found [here for the engine](https://hax.cryspen.com/engine/index.html)
-and [here for the frontend](https://hax.cryspen.com/frontend/index.html).
-
-### Edit the sources (Nix)
-
-Just clone & `cd` into the repo, then run `nix develop .`.
-You can also just use [direnv](https://github.com/nix-community/nix-direnv), with [editor integration](https://github.com/direnv/direnv/wiki#editor-integration).
-
-The flake provides several dev shells:
-
-| Shell | Purpose |
-|-------|---------|
-| `nix develop .` | Hacking on hax itself: the toolchain to build the Rust CLI, the frontend and the OCaml engine. Provides no backend verifier. |
-| `nix develop .#fstar` | The above plus F\*, for the F\* backend and the F\* proof libraries. Used by CI to check the proof libraries. |
-| `nix develop .#examples` | The above plus ProVerif and Lean (through `elan`), for running `examples/` against a hax you build yourself. |
-| `nix develop .#ci-examples` | Running `examples/` against a hax built by the flake, rather than one you build from source. Used by CI. |
-
-The first three shells give you the toolchain to build hax, not a `cargo-hax` binary: run `just build` first (see [below](#compiling-formatting-and-more)).
-
-In any Nix command from the *Installation* section, replace `github:cryspen/hax` by `./some-dir` to compile a local checkout of hax that lives in `./some-dir`.
-
-### Structure of this repository
-
-- `frontend/`: Rust library that hooks into the Rust compiler and
-  extracts its internal typed abstract syntax tree
-  [**THIR**](https://rustc-dev-guide.rust-lang.org/thir.html) as JSON.
-- `engine/`: the simplification and elaboration engine that translates programs
-  from the Rust language to various backends (see `engine/backends/`). Written
-  in OCaml.
-- `rust-engine/`: an on-going rewrite of our engine from OCaml to Rust.
-- `cli/`: the `cargo hax` subcommand and the custom rustc drivers it
-  uses to run the frontend.
-- `hax-lib/`: helper crate providing hax-specific macros (e.g.
-  `requires`, `ensures`) for annotating Rust programs.
-- `hax-types/`: types shared between the frontend, the CLI, and the engine.
-- `proof-libs/`: a symlink to `hax-lib/proof-libs/`, the per-backend
-  proof libraries that the extracted code builds against.
-- `examples/`: examples showing what hax can do.
-- `tests/`: integration tests.
-- `docs/`: sources of the [hax website](https://hax.cryspen.com/),
-  including the manual and the blog.
-
-### Compiling, formatting, and more
-We use the [`just` command runner](https://just.systems/). If you use
-Nix, the dev shell provides it automatically, if you don't use Nix,
-please [install `just`](https://just.systems/man/en/packages.html) on
-your system.
-
-Anywhere within the repository, you can build and install in PATH (1)
-the Rust parts with `just rust`, (2) the OCaml parts with `just ocaml`
-or (3) both with `just build`. More commands (e.g. `just fmt` to
-format) are available, please run `just` or `just --list` to get all
-the commands.
-
 ## Publications & Other material
 
 * [📕 Tech report](https://hal.inria.fr/hal-03176482)
@@ -285,7 +229,7 @@ the commands.
 
 ## Contributing
 
-Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/cryspen/hax/discussions), or file an [issue](https://github.com/cryspen/hax/issues) to discuss your contribution. The contribution guidelines are described in [CONTRIBUTING.md](./CONTRIBUTING.md).
+Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/cryspen/hax/discussions), or file an [issue](https://github.com/cryspen/hax/issues) to discuss your contribution. The contribution guidelines are described in [CONTRIBUTING.md](./CONTRIBUTING.md), including the [development setup](./CONTRIBUTING.md#development), the structure of the repository, and the build commands.
 
 
 [chat-link]: https://hacspec.zulipchat.com
