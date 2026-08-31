@@ -156,7 +156,7 @@ that the multiplication doesn't overflow.
 Note that Rust also provides `wrapping_mul`, a non-panicking variant
 of the multiplication on `u8` that wraps when the result is bigger
 than `255`. Replacing the common multiplication with `wrapping_mul` in
-`square` would fix the panic, but then, `square(256)` returns zero.
+`square` would fix the panic, but then, `square(16)` returns zero.
 Semantically, this is not what one would expect from `square`.
 
 Our problem is that our function `square` is well-defined only when
