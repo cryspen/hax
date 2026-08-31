@@ -22,7 +22,8 @@ For a practical guide on using hax, please refer to the [manual](../manual/index
 
 ## High-Level Architecture of hax {#high-level-arch}
 
-hax consists of five main components, as illustrated in the diagram below, with
+This section gives a finer-grained view of the pipeline described in the
+[architecture chapter](../dev/architecture.md): five main components, as illustrated in the diagram below, with
 each numbered step directly corresponding to its labeled section in the diagram:
 
 1. The **frontend** handles the extraction and export of given [Rust

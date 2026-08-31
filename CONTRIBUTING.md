@@ -76,6 +76,20 @@ The most important commands:
 
 Run `just` or `just --list` to list all commands.
 
+### Documentation
+
+`mkdocs.yml` at the repository root configures the [mkdocs-material](https://squidfunk.github.io/mkdocs-material) site built from `docs/`.
+
+`just docs` serves the site locally with live reload (it runs `mkdocs serve`). It requires mkdocs and the plugins:
+
+```bash
+pip install mkdocs-material mkdocs-glightbox mkdocs-nav-weight mkdocs-awesome-nav
+```
+
+Alternatively, `nix run .#serve-docs` builds the site with Nix and serves the result, without any Python setup (but also without live reload).
+
+The [`pymdownx.snippets`](https://facelessuser.github.io/pymdown-extensions/extensions/snippets/) extension can include files from anywhere in the repository, resolved relative to the repository root. For example, `--8<-- "README.md:subcommands"` on its own line includes the part of `README.md` between the `<!-- --8<-- [start:subcommands] -->` and `<!-- --8<-- [end:subcommands] -->` markers. Prefer such named sections over the line-range form (`--8<-- "README.md:107:114"`), which silently includes the wrong content when the target file's lines shift.
+
 ## Pull Requests
 
 We use the GitHub-based PR workflow.
