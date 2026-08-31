@@ -98,8 +98,16 @@ proptest! {
         }
     }
 
+    // `use_last` reaches the `n == len - 1` arm, which returns the popped
+    // element directly; a uniform index hits it about once every `len` cases,
+    // so leaving it to chance makes the arm's coverage flaky.
     #[test]
-    fn test_swap_remove(v in prop::collection::vec(any::<u8>(), 1..50), idx in 0usize..50) {
+    fn test_swap_remove(
+        v in prop::collection::vec(any::<u8>(), 1..50),
+        idx in 0usize..50,
+        use_last in any::<bool>(),
+    ) {
+        let idx = if use_last { v.len() - 1 } else { idx };
         if idx < v.len() {
             let mut model = v.inject();
             let mut std_v = v.clone();
