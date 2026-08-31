@@ -63,7 +63,12 @@ jobs:
       # from the working tree: it would fail on any change that spans `hax-types`
       # and `cargo-hax`, and between a version bump and the release that follows
       # it. The install step already builds the working tree.
+      #
+      # Skipped on release PRs: the tarball's lockfile resolves the sibling
+      # crates from crates.io at the bumped version, which is only published
+      # once the PR merges.
       - name: Check the published tarball
+        if: "!startsWith(github.head_ref, 'release/')"
         run: |
           cargo package --locked --no-verify -p cargo-hax
           tar --extract --directory "$RUNNER_TEMP" \
