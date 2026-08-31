@@ -4161,8 +4161,8 @@ def fmt.Formatter.write_str
     Source: 'core-models/src/core/fmt.rs', lines 27:4-34:5
     Visibility: public -/
 def fmt.Formatter.debug_struct_field1_finish
-  {T1 : Type} (DebugInst : fmt.Debug T1) (self : fmt.Formatter) (name : Str)
-  (name1 : Str) (value1 : T1) :
+  {T1 : Type} (DebugInst : fmt.Debug T1) (self : fmt.Formatter)
+  (struct_name : Str) (name1 : Str) (value1 : T1) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
   ok (result.Result.Ok (), self)
@@ -4172,7 +4172,7 @@ def fmt.Formatter.debug_struct_field1_finish
     Visibility: public -/
 def fmt.Formatter.debug_struct_field2_finish
   {T1 : Type} {T2 : Type} (DebugInst : fmt.Debug T1) (DebugInst1 : fmt.Debug
-  T2) (self : fmt.Formatter) (name : Str) (name1 : Str) (value1 : T1)
+  T2) (self : fmt.Formatter) (struct_name : Str) (name1 : Str) (value1 : T1)
   (name2 : Str) (value2 : T2) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
@@ -4183,9 +4183,9 @@ def fmt.Formatter.debug_struct_field2_finish
     Visibility: public -/
 def fmt.Formatter.debug_struct_field3_finish
   {T1 : Type} {T2 : Type} {T3 : Type} (DebugInst : fmt.Debug T1) (DebugInst1 :
-  fmt.Debug T2) (DebugInst2 : fmt.Debug T3) (self : fmt.Formatter) (name : Str)
-  (name1 : Str) (value1 : T1) (name2 : Str) (value2 : T2) (name3 : Str)
-  (value3 : T3) :
+  fmt.Debug T2) (DebugInst2 : fmt.Debug T3) (self : fmt.Formatter)
+  (struct_name : Str) (name1 : Str) (value1 : T1) (name2 : Str) (value2 : T2)
+  (name3 : Str) (value3 : T3) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
   ok (result.Result.Ok (), self)
@@ -4196,9 +4196,9 @@ def fmt.Formatter.debug_struct_field3_finish
 def fmt.Formatter.debug_struct_field4_finish
   {T1 : Type} {T2 : Type} {T3 : Type} {T4 : Type} (DebugInst : fmt.Debug T1)
   (DebugInst1 : fmt.Debug T2) (DebugInst2 : fmt.Debug T3) (DebugInst3 :
-  fmt.Debug T4) (self : fmt.Formatter) (name : Str) (name1 : Str) (value1 : T1)
-  (name2 : Str) (value2 : T2) (name3 : Str) (value3 : T3) (name4 : Str)
-  (value4 : T4) :
+  fmt.Debug T4) (self : fmt.Formatter) (struct_name : Str) (name1 : Str)
+  (value1 : T1) (name2 : Str) (value2 : T2) (name3 : Str) (value3 : T3)
+  (name4 : Str) (value4 : T4) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
   ok (result.Result.Ok (), self)
@@ -4210,9 +4210,9 @@ def fmt.Formatter.debug_struct_field5_finish
   {T1 : Type} {T2 : Type} {T3 : Type} {T4 : Type} {T5 : Type} (DebugInst :
   fmt.Debug T1) (DebugInst1 : fmt.Debug T2) (DebugInst2 : fmt.Debug T3)
   (DebugInst3 : fmt.Debug T4) (DebugInst4 : fmt.Debug T5)
-  (self : fmt.Formatter) (name : Str) (name1 : Str) (value1 : T1) (name2 : Str)
-  (value2 : T2) (name3 : Str) (value3 : T3) (name4 : Str) (value4 : T4)
-  (name5 : Str) (value5 : T5) :
+  (self : fmt.Formatter) (struct_name : Str) (name1 : Str) (value1 : T1)
+  (name2 : Str) (value2 : T2) (name3 : Str) (value3 : T3) (name4 : Str)
+  (value4 : T4) (name5 : Str) (value5 : T5) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
   ok (result.Result.Ok (), self)
@@ -4221,8 +4221,8 @@ def fmt.Formatter.debug_struct_field5_finish
     Source: 'core-models/src/core/fmt.rs', lines 100:4-112:5
     Visibility: public -/
 def fmt.Formatter.debug_struct_fields_finish
-  {T : Type} (DebugInst : fmt.Debug T) (self : fmt.Formatter) (name : Str)
-  (names : Slice Str) (values : Slice T) :
+  {T : Type} (DebugInst : fmt.Debug T) (self : fmt.Formatter)
+  (struct_name : Str) (names : Slice Str) (values : Slice T) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
   let i ← rust_primitives.slice.slice_length names
@@ -4236,8 +4236,8 @@ def fmt.Formatter.debug_struct_fields_finish
     Source: 'core-models/src/core/fmt.rs', lines 115:4-117:5
     Visibility: public -/
 def fmt.Formatter.debug_tuple_field1_finish
-  {T1 : Type} (DebugInst : fmt.Debug T1) (self : fmt.Formatter) (name : Str)
-  (value1 : T1) :
+  {T1 : Type} (DebugInst : fmt.Debug T1) (self : fmt.Formatter)
+  (struct_name : Str) (value1 : T1) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
   ok (result.Result.Ok (), self)

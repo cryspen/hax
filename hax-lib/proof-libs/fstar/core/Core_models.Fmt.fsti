@@ -44,7 +44,7 @@ val impl_Formatter__debug_struct_field1_finish
       (#v_T1: Type0)
       {| i0: t_Debug v_T1 |}
       (self: t_Formatter)
-      (name name1: string)
+      (struct_name name1: string)
       (value1: v_T1)
     : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
       Prims.l_True
@@ -56,7 +56,7 @@ val impl_Formatter__debug_struct_field2_finish
       {| i0: t_Debug v_T1 |}
       {| i1: t_Debug v_T2 |}
       (self: t_Formatter)
-      (name name1: string)
+      (struct_name name1: string)
       (value1: v_T1)
       (name2: string)
       (value2: v_T2)
@@ -71,7 +71,7 @@ val impl_Formatter__debug_struct_field3_finish
       {| i1: t_Debug v_T2 |}
       {| i2: t_Debug v_T3 |}
       (self: t_Formatter)
-      (name name1: string)
+      (struct_name name1: string)
       (value1: v_T1)
       (name2: string)
       (value2: v_T2)
@@ -89,7 +89,7 @@ val impl_Formatter__debug_struct_field4_finish
       {| i2: t_Debug v_T3 |}
       {| i3: t_Debug v_T4 |}
       (self: t_Formatter)
-      (name name1: string)
+      (struct_name name1: string)
       (value1: v_T1)
       (name2: string)
       (value2: v_T2)
@@ -110,7 +110,7 @@ val impl_Formatter__debug_struct_field5_finish
       {| i3: t_Debug v_T4 |}
       {| i4: t_Debug v_T5 |}
       (self: t_Formatter)
-      (name name1: string)
+      (struct_name name1: string)
       (value1: v_T1)
       (name2: string)
       (value2: v_T2)
@@ -131,7 +131,7 @@ val impl_Formatter__debug_struct_fields_finish
       (#v_T: Type0)
       {| i0: t_Debug v_T |}
       (self: t_Formatter)
-      (name: string)
+      (struct_name: string)
       (names: t_Slice string)
       (values: t_Slice v_T)
     : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
@@ -143,7 +143,7 @@ val impl_Formatter__debug_tuple_field1_finish
       (#v_T1: Type0)
       {| i0: t_Debug v_T1 |}
       (self: t_Formatter)
-      (name: string)
+      (struct_name: string)
       (value1: v_T1)
     : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
       Prims.l_True

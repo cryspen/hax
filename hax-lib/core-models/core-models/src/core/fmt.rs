@@ -26,7 +26,7 @@ impl Formatter {
     /// See [`std::fmt::Formatter::debug_struct_field1_finish`]
     pub fn debug_struct_field1_finish<T1: Debug>(
         &mut self,
-        name: &str,
+        struct_name: &str,
         name1: &str,
         value1: &T1,
     ) -> Result {
@@ -36,7 +36,7 @@ impl Formatter {
     /// See [`std::fmt::Formatter::debug_struct_field2_finish`]
     pub fn debug_struct_field2_finish<T1: Debug, T2: Debug>(
         &mut self,
-        name: &str,
+        struct_name: &str,
         name1: &str,
         value1: &T1,
         name2: &str,
@@ -48,7 +48,7 @@ impl Formatter {
     /// See [`std::fmt::Formatter::debug_struct_field3_finish`]
     pub fn debug_struct_field3_finish<T1: Debug, T2: Debug, T3: Debug>(
         &mut self,
-        name: &str,
+        struct_name: &str,
         name1: &str,
         value1: &T1,
         name2: &str,
@@ -62,7 +62,7 @@ impl Formatter {
     /// See [`std::fmt::Formatter::debug_struct_field4_finish`]
     pub fn debug_struct_field4_finish<T1: Debug, T2: Debug, T3: Debug, T4: Debug>(
         &mut self,
-        name: &str,
+        struct_name: &str,
         name1: &str,
         value1: &T1,
         name2: &str,
@@ -78,7 +78,7 @@ impl Formatter {
     /// See [`std::fmt::Formatter::debug_struct_field5_finish`]
     pub fn debug_struct_field5_finish<T1: Debug, T2: Debug, T3: Debug, T4: Debug, T5: Debug>(
         &mut self,
-        name: &str,
+        struct_name: &str,
         name1: &str,
         value1: &T1,
         name2: &str,
@@ -99,7 +99,7 @@ impl Formatter {
     /// keeps that panic, since it is the only observable behaviour left.
     pub fn debug_struct_fields_finish<T: Debug>(
         &mut self,
-        name: &str,
+        struct_name: &str,
         names: &[&str],
         values: &[&T],
     ) -> Result {
@@ -112,7 +112,7 @@ impl Formatter {
     }
 
     /// See [`std::fmt::Formatter::debug_tuple_field1_finish`]
-    pub fn debug_tuple_field1_finish<T1: Debug>(&mut self, name: &str, value1: &T1) -> Result {
+    pub fn debug_tuple_field1_finish<T1: Debug>(&mut self, struct_name: &str, value1: &T1) -> Result {
         Result::Ok(())
     }
 }

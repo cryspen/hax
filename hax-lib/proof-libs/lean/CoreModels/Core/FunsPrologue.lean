@@ -124,7 +124,8 @@ scalar (e.g. `<[T]>::cmp`, sorting, `BinaryHeap`) references an undefined
 `<int>.Insts.CoreCmpOrd`. -/
 
 def mkUOrd {ty} : cmp.Ord (UScalar ty) := {
-  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) } }
+  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+              assert_receiver_is_total_eq := fun _ => ok () }
   PartialOrdInst := mkUPartialOrd
   cmp := fun x y =>
     ok (match compare x.val y.val with
@@ -134,7 +135,8 @@ def mkUOrd {ty} : cmp.Ord (UScalar ty) := {
 }
 
 def mkIOrd {ty} : cmp.Ord (IScalar ty) := {
-  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) } }
+  EqInst := { PartialEqInst := { eq := fun x y => ok (x == y), ne := fun x y => ok (x != y) }
+              assert_receiver_is_total_eq := fun _ => ok () }
   PartialOrdInst := mkIPartialOrd
   cmp := fun x y =>
     ok (match compare x.val y.val with
@@ -293,6 +295,9 @@ def Shared0T.Insts.CoreCloneClone.clone {T : Type} : T → RustM T := ok
 
 def Shared0T.Insts.CoreCloneClone (T : Type) : clone.Clone T := {
   clone := Shared0T.Insts.CoreCloneClone.clone
+  -- `Clone` gained a `clone_from` provided method (see `clone.rs`); cloning a
+  -- shared reference is the identity, so overwriting is just the source.
+  clone_from := fun _ source => ok source
 }
 
 /-! ## Option -/

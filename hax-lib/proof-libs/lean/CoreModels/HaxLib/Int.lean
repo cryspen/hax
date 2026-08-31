@@ -86,7 +86,8 @@ macro_rules
 
 /-- `Ord` for `Int` (from the `#[derive(Ord)]` on `hax_lib::int::Int`). -/
 @[spec] def int.Int.Insts.CoreCmpOrd : cmp.Ord int.Int :=
-  { EqInst := { PartialEqInst := int.Int.Insts.CoreCmpPartialEqInt }
+  { EqInst := { PartialEqInst := int.Int.Insts.CoreCmpPartialEqInt
+                assert_receiver_is_total_eq := fun _ => ok () }
     PartialOrdInst := int.Int.Insts.CoreCmpPartialOrdInt
     cmp := fun a b =>
       ok (match compare a b with
