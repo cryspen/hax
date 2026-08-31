@@ -1,23 +1,22 @@
-# Extract the same `#[spec(..)]` annotations through two backends, to check
-# that `anodized`'s cfg flags reach both pipelines: F* gets them through
-# `RUSTFLAGS`, while Lean goes through charon, which compiles proc-macro
-# crates -- `anodized-macros` among them -- with `host.rustflags` instead.
+# Two scenarios over the same annotations: F* gets `anodized`'s cfg flags
+# through `RUSTFLAGS`, Lean through charon's `host.rustflags`.
 .PHONY: default fstar lean clean
 
 default: fstar lean
 
 fstar:
-	make -C proofs/fstar/extraction
+	cargo hax extract anodized-fstar
+	make -C proofs/anodized/fstar/extraction
 
 lean:
-	cargo hax into lean
-	(cd proofs/lean && \
+	cargo hax extract anodized
+	(cd proofs/anodized/lean && \
 		elan default $$(cat lean-toolchain) && \
 		lake exe cache get && \
 		lake build)
 
 clean:
-	rm -f proofs/fstar/extraction/.depend
-	rm -f proofs/fstar/extraction/*.fst
-	-rm -rf proofs/lean/AnodizedExample/Extraction
-	-cd proofs/lean && lake clean
+	rm -f proofs/anodized/fstar/extraction/.depend
+	rm -f proofs/anodized/fstar/extraction/*.fst
+	-rm -rf proofs/anodized/lean/Anodized/Extraction
+	-cd proofs/anodized/lean && lake clean

@@ -1,2 +1,0 @@
-import AnodizedExample.Extraction
-import AnodizedExample.Verification.ProofObligations
