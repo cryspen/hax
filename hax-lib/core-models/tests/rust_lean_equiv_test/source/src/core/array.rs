@@ -22,6 +22,45 @@ pub fn test_index_range_to_full() -> bool {
     a[..8] == [1, 2, 3, 4, 5, 6, 7, 8]
 }
 
+// ----- IndexMut --------------------------------------------------------------
+//
+// The write-back offsets of `<[T; N] as IndexMut<I>>::index_mut` (cryspen/hax#2174).
+
+#[rust_lean_test]
+pub fn test_index_mut_range_middle() -> bool {
+    let mut a: [u8; 8] = [0; 8];
+    a[2..5].copy_from_slice(&[7, 8, 9]);
+    a == [0, 0, 7, 8, 9, 0, 0, 0]
+}
+
+#[rust_lean_test]
+pub fn test_index_mut_range_from() -> bool {
+    let mut a: [u8; 4] = [1, 2, 3, 4];
+    a[2..].copy_from_slice(&[9, 9]);
+    a == [1, 2, 9, 9]
+}
+
+#[rust_lean_test]
+pub fn test_index_mut_range_to() -> bool {
+    let mut a: [u8; 4] = [1, 2, 3, 4];
+    a[..2].copy_from_slice(&[9, 9]);
+    a == [9, 9, 3, 4]
+}
+
+#[rust_lean_test]
+pub fn test_index_mut_range_full_reverse() -> bool {
+    let mut a: [u8; 4] = [1, 2, 3, 4];
+    a[..].reverse();
+    a == [4, 3, 2, 1]
+}
+
+#[rust_lean_test]
+pub fn test_index_mut_range_empty_is_noop() -> bool {
+    let mut a: [u8; 4] = [1, 2, 3, 4];
+    a[2..2].copy_from_slice(&[]);
+    a == [1, 2, 3, 4]
+}
+
 // ----- PartialEq -------------------------------------------------------------
 
 #[rust_lean_test]

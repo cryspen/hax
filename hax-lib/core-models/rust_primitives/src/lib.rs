@@ -52,6 +52,10 @@ pub mod slice {
     pub fn array_as_slice<T, const N: usize>(s: &[T; N]) -> &[T] {
         &s[..]
     }
+    // Lean-only: the F* models lower indexed assignment to `Array.update`.
+    pub fn array_as_mut_slice<T, const N: usize>(s: &mut [T; N]) -> &mut [T] {
+        &mut s[..]
+    }
     pub fn array_slice<T, const N: usize>(a: &[T; N], b: usize, e: usize) -> &[T] {
         &a[b..e]
     }
@@ -365,6 +369,15 @@ mod tests {
             let mut s = super::sequence::seq_create(x, 1);
             super::sequence::seq_to_slice_mut(&mut s)[0] = y;
             prop_assert_eq!(super::sequence::seq_to_slice(&s), &[y][..]);
+        }
+
+        #[test]
+        fn test_array_as_mut_slice(a in any::<[u8; 4]>(), i in 0usize..4, x in any::<u8>()) {
+            let mut model = a;
+            super::slice::array_as_mut_slice(&mut model)[i] = x;
+            let mut expected = a;
+            expected[i] = x;
+            prop_assert_eq!(model, expected);
         }
 
         #[test]

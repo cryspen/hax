@@ -183,6 +183,14 @@ def rust_primitives.slice.array_as_slice
   {T : Type} {N : Std.Usize} : Array T N → RustM (Slice T) :=
   fun a => ok (Array.to_slice a)
 
+/-- [rust_primitives::slice::array_as_mut_slice]: `&mut a[..]` as a slice plus
+    its write-back. -/
+@[spec]
+def rust_primitives.slice.array_as_mut_slice
+  {T : Type} {N : Std.Usize} :
+  Array T N → RustM ((Slice T) × (Slice T → Array T N)) :=
+  fun a => ok (Array.to_slice_mut a)
+
 @[spec]
 def rust_primitives.slice.array_slice
   {T : Type} {N : Std.Usize} :

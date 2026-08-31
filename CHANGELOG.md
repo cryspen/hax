@@ -54,6 +54,9 @@ Changes to the hax-lib crate:
 
 Changes to core models:
  - Improve core models library (#2049, #2157, #2077, #2160)
+ - Model `IndexMut` for `[T; N]`, so writing through an array range
+   (`arr[a..b].copy_from_slice(src)`) extracts instead of referring to a nonexistent
+   `core.Array.Insts.CoreOpsIndexIndexMut.index_mut` (#2174)
  - Add core model testing infrastructure
 
 Changes to the F* backend and library:

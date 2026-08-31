@@ -52,6 +52,12 @@ impl<T, const N: usize> Array<T, N> {
     pub fn as_slice(s: &[T; N]) -> &[T] {
         array_as_slice(s)
     }
+    /// See [`std::array::as_mut_slice`]
+    // Lean-only, like the `IndexMut` impl below that consumes it.
+    #[cfg(not(hax_backend_fstar))]
+    pub fn as_mut_slice(s: &mut [T; N]) -> &mut [T] {
+        array_as_mut_slice(s)
+    }
     /// See [`std::array::each_ref`]
     pub fn each_ref(s: &[T; N]) -> [&T; N] {
         array_from_fn(|i| array_index(s, i))
@@ -87,6 +93,20 @@ where
     type Output = <[T] as Index<I>>::Output;
     fn index(&self, i: I) -> &Self::Output {
         self.as_slice().index(i)
+    }
+}
+
+/// Mirrors the `Index<I>` impl above; without it, writing through a range does
+/// not extract (cryspen/hax#2174). Lean-only, like the slice impl it delegates to.
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+impl<T, I, const N: usize> crate::ops::index::IndexMut<I> for [T; N]
+where
+    [T]: crate::ops::index::IndexMut<I>,
+{
+    fn index_mut(&mut self, i: I) -> &mut Self::Output {
+        <[T] as crate::ops::index::IndexMut<I>>::index_mut(Array::as_mut_slice(self), i)
     }
 }
 
@@ -289,6 +309,16 @@ mod tests {
             );
         }
 
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_as_mut_slice(arr in any::<[u8; 4]>(), idx in 0usize..4, x in any::<u8>()) {
+            let mut model_arr = arr.inject();
+            super::Array::<u8, 4>::as_mut_slice(&mut model_arr)[idx] = x;
+            let mut expected = arr;
+            expected[idx] = x;
+            prop_assert_eq!(model_arr, expected.inject());
+        }
+
         #[test]
         fn test_index_usize(arr in any::<[u8; 4]>(), idx in 0usize..4) {
             let model_arr = arr.inject();
@@ -381,6 +411,26 @@ mod tests {
                 ),
                 &arr[start..end]
             );
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_model_index_mut_range(
+            arr in any::<[u8; 8]>(),
+            start in 0usize..8,
+            len in 0usize..8,
+            fill in any::<u8>(),
+        ) {
+            let end = (start + len).min(8);
+            let mut m = arr.inject();
+            <[u8; 8] as crate::ops::index::IndexMut<crate::ops::range::Range<usize>>>::index_mut(
+                &mut m,
+                crate::ops::range::Range { start, end },
+            )
+            .fill(fill);
+            let mut expected = arr;
+            expected[start..end].fill(fill);
+            prop_assert_eq!(m, expected.inject());
         }
 
         // The F* variant has one `Index` impl per range kind, all going through
