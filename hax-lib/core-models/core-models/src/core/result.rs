@@ -352,18 +352,21 @@ impl<T, E> Result<Result<T, E>, E> {
 /// an iterator of `Result`s into a `Result` of a collection, short-circuiting
 /// on the first `Err`.
 ///
-/// Opaque: our `FromIterator::from_iter` signature deliberately omits the
-/// `Item = ...` bound (to avoid the associated-type constraint), so the
-/// short-circuiting body cannot be written in terms of the iterator's items;
-/// the behaviour is axiomatised. The body below exists only to typecheck —
-/// it delegates to `V`'s own `from_iter`.
-#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+/// Opaque: the real short-circuiting shunt (collect the `Ok`s, stop at the
+/// first `Err`) needs to accumulate items, which `core` has no collection for.
+/// So the behaviour is axiomatised — this impl exists so `collect::<Result<_,
+/// _>>()` still *resolves* (it is NOT stubbed away); the body below only has to
+/// typecheck under the `Item = Result<A, E>` bound and is never extracted.
+#[hax_lib::opaque]
 #[hax_lib::attributes]
 impl<A, E, V: crate::iter::traits::collect::FromIterator<A>>
     crate::iter::traits::collect::FromIterator<Result<A, E>> for Result<V, E>
 {
-    fn from_iter<T: crate::iter::traits::collect::IntoIterator>(iter: T) -> Result<V, E> {
-        Ok(<V as crate::iter::traits::collect::FromIterator<A>>::from_iter(iter))
+    fn from_iter<T: crate::iter::traits::collect::IntoIterator<Item = Result<A, E>>>(
+        iter: T,
+    ) -> Result<V, E> {
+        let _ = iter;
+        unimplemented!()
     }
 }
 

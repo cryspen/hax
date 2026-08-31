@@ -780,6 +780,12 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
+        // Returns `&mut [T]`, which the F* backend cannot model (HAX0003/HAX0010,
+        // hacspec/hax#420). Only the `cfg(not(hax_backend_fstar))` `Vec` block gets
+        // it, and only `DerefMut for Vec` (same gating) uses it.
+        pub fn as_mut_slice(&mut self) -> &mut [T] {
+            seq_to_slice_mut(&mut self.0)
+        }
         // These are opaque for F* only: a bare `#[hax_lib::opaque]` is invisible to
         // charon, so aeneas extracts the body regardless and it must model std.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -926,6 +932,16 @@ pub mod vec {
 
         fn deref(&self) -> &[T] {
             self.as_slice()
+        }
+    }
+
+    // Excluded from the F* backend to match `core::ops::DerefMut`, which is not
+    // extracted there (HAX0003, hacspec/hax#420); aeneas/lean/native keep it.
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::attributes]
+    impl<T> core::ops::DerefMut for Vec<T> {
+        fn deref_mut(&mut self) -> &mut [T] {
+            self.as_mut_slice()
         }
     }
 

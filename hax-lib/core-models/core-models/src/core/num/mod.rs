@@ -629,7 +629,11 @@ uint_impl! {
     core::primitive::usize,
     usize,
     USIZE_MAX,
-    SIZE_BITS,
+    // `usize::BITS` as a plain literal (= SIZE_BITS, the 64-bit model width) rather
+    // than the `rust_primitives::SIZE_BITS` const-ref: a const-ref extracts to a
+    // `Result U32`, but aeneas inlines associated consts as plain values at use sites
+    // (`usize::BITS - x`), matching the fixed-width `u32::BITS : U32`. Value-identical.
+    64,
     SIZE_BYTES,
 }
 
@@ -689,7 +693,9 @@ iint_impl! {
     isize,
     ISIZE_MAX,
     ISIZE_MIN,
-    SIZE_BITS,
+    // Plain literal (= SIZE_BITS) so `isize::BITS` extracts to a plain `U32`; see the
+    // usize note above.
+    64,
     SIZE_BYTES,
 }
 

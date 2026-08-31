@@ -49,6 +49,17 @@ impl<T> Option<T> {
         }
     }
 
+    /// See [`std::option::Option::as_mut`]
+    // The `ref mut` binding trips hax's `&mut` restriction (HAX0003, hacspec/hax#420),
+    // so this is excluded from the F* backend; aeneas/lean/native keep it.
+    #[cfg(not(hax_backend_fstar))]
+    pub fn as_mut(&mut self) -> Option<&mut T> {
+        match *self {
+            Some(ref mut x) => Some(x),
+            None => None,
+        }
+    }
+
     /// See [`std::option::Option::expect`]
     #[cfg_attr(not(charon), hax_lib::requires(self.is_some()))]
     pub fn expect(self, _msg: &str) -> T {

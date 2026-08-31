@@ -346,3 +346,271 @@ pub fn box_new(x: u32) -> Box<u32> {
 pub fn box_deref(b: &Box<u8>) -> u8 {
     **b
 }
+
+// ----- Iterator provided methods (shim canary) ------------------------------
+//
+// Canary for the hand-written `Iterator` provided-method shims in
+// `CoreModels/Core/FunsEpilogue.lean`. Those shims are matched by NAME and
+// SIGNATURE against what aeneas emits at the call site, so the Rust-level
+// differential tests in `core-models/src/core/iter.rs` cannot check them —
+// only extracting a client crate and elaborating the result can. There is one
+// function per shim so that a missing or mis-signed shim names itself in the
+// Lean error.
+//
+// Receivers are varied deliberately. `Range<usize>` and a slice `Iter` are
+// CONCRETE, where aeneas may emit a per-impl specialisation; the `poly_*`
+// functions are GENERIC, where it must emit the dictionary-passing
+// `Iterator::<m>.default` form. Both shapes have to resolve, and a shim that
+// covers one does not necessarily cover the other.
+
+// --- eager consumers, concrete receiver ---
+
+pub fn iter_fold(n: usize) -> usize {
+    (0..n).fold(0usize, |acc, x| acc.wrapping_add(x))
+}
+
+pub fn iter_count(n: usize) -> usize {
+    (0..n).count()
+}
+
+pub fn iter_last(n: usize) -> Option<usize> {
+    (0..n).last()
+}
+
+pub fn iter_all(n: usize) -> bool {
+    (0..n).all(|x| x < n)
+}
+
+pub fn iter_any(n: usize) -> bool {
+    (0..n).any(|x| x == 3)
+}
+
+pub fn iter_find(n: usize) -> Option<usize> {
+    (0..n).find(|x| *x > 2)
+}
+
+pub fn iter_find_map(n: usize) -> Option<usize> {
+    (0..n).find_map(|x| if x > 2 { Some(x) } else { None })
+}
+
+pub fn iter_position(n: usize) -> Option<usize> {
+    (0..n).position(|x| x > 2)
+}
+
+pub fn iter_reduce(n: usize) -> Option<usize> {
+    (0..n).reduce(|a, b| a.wrapping_add(b))
+}
+
+pub fn iter_min(n: usize) -> Option<usize> {
+    (0..n).min()
+}
+
+pub fn iter_max(n: usize) -> Option<usize> {
+    (0..n).max()
+}
+
+// PARKED — aeneas emits an inconsistent `FnMut` instance for a unit-returning
+// closure: `call_mut : closure -> Usize -> Result closure`, where its own
+// `FnMut` record expects `Result (Unit x closure)`. Nothing the model can fix.
+
+//   pub fn iter_for_each(n: usize) {
+//       (0..n).for_each(|_x| {})
+//   }
+
+// `nth` is not yet shimmed: its helper `iter_nth` is `hax_lib::exclude`d for a
+// Lean forward reference to `core.Usize.Insts.CoreIterRangeStep`. Enable once
+// the helper is emitted from `FunsPrologue.lean`.
+//
+//   pub fn iter_nth(n: usize) -> Option<usize> { (0..n).nth(2) }
+
+// --- lazy adapters, concrete receiver; each terminated by a shimmed consumer ---
+
+pub fn iter_map(n: usize) -> usize {
+    (0..n).map(|x| x.wrapping_mul(2)).fold(0usize, |a, b| a.wrapping_add(b))
+}
+
+pub fn iter_enumerate(n: usize) -> usize {
+    (0..n).enumerate().fold(0usize, |a, (i, _x)| a.wrapping_add(i))
+}
+
+pub fn iter_step_by(n: usize) -> usize {
+    (0..n).step_by(2).count()
+}
+
+pub fn iter_take(n: usize) -> usize {
+    (0..n).take(3).count()
+}
+
+pub fn iter_skip(n: usize) -> usize {
+    (0..n).skip(3).count()
+}
+
+pub fn iter_filter(n: usize) -> usize {
+    (0..n).filter(|x| *x > 2).count()
+}
+
+pub fn iter_filter_map(n: usize) -> usize {
+    (0..n).filter_map(|x| if x > 2 { Some(x) } else { None }).count()
+}
+
+pub fn iter_take_while(n: usize) -> usize {
+    (0..n).take_while(|x| *x < 5).count()
+}
+
+pub fn iter_skip_while(n: usize) -> usize {
+    (0..n).skip_while(|x| *x < 5).count()
+}
+
+pub fn iter_map_while(n: usize) -> usize {
+    (0..n).map_while(|x| if x < 5 { Some(x) } else { None }).count()
+}
+
+// PARKED — same unit-returning-closure `FnMut` inconsistency as `iter_for_each`.
+
+//   pub fn iter_inspect(n: usize) -> usize {
+//       (0..n).inspect(|_x| {}).count()
+//   }
+
+pub fn iter_fuse(n: usize) -> usize {
+    (0..n).fuse().count()
+}
+
+pub fn iter_zip(n: usize, m: usize) -> usize {
+    (0..n).zip(0..m).count()
+}
+
+pub fn iter_chain(n: usize, m: usize) -> usize {
+    (0..n).chain(0..m).count()
+}
+
+// PARKED — needs a Rust-side reshape of the adapter structs; it is NOT fixable
+// in the Lean shim the way `zip`/`chain` were. std's bounds are
+// `flat_map<U: IntoIterator, F: FnMut(Self::Item) -> U>` and
+// `flatten where Self::Item: IntoIterator`, so the closure (resp. the item)
+// yields a COLLECTION while the adapter must store an ITERATOR. Our
+// `FlatMap<I, U, F>` holds `Option<U>` and its generated `::new` therefore
+// demands `FnMut F Item U` with `U` the stored iterator — which only unifies
+// with the dictionary's `IntoIter` for the blanket `IntoIterator for I: Iterator`
+// case, and not for a real collection such as `Vec`. Verified empirically:
+// giving the shims an `IntoIterator` dictionary fails with
+// `FnMut F Clause0_Item U` vs `FnMut F Clause0_Item IntoIter`.
+//
+// The fix is to index the structs by the iterator while keeping the closure's
+// output the collection:
+//     pub struct FlatMap<I, U: IntoIterator, F> { it: I, f: F, current: Option<U::IntoIter> }
+// with `next` applying `into_iter` to `(self.f)(x)`, and likewise for
+// `Flatten<I> where I::Item: IntoIterator`. If that trips the F* lane it can be
+// made Lean-only with `hax_lib::exclude` under the F* cfg.
+//
+//   pub fn iter_flat_map(n: usize) -> usize {
+//       (0..n).flat_map(|i| 0..i).count()
+//   }
+//
+//   pub fn iter_flatten(n: usize) -> usize {
+//       (0..n).map(|i| 0..i).flatten().count()
+//   }
+
+pub fn iter_collect_vec(n: usize) -> Vec<usize> {
+    (0..n).collect()
+}
+
+pub fn iter_map_collect_vec(n: usize) -> Vec<usize> {
+    (0..n).map(|x| x.wrapping_mul(2)).collect()
+}
+
+// --- `rev` / `DoubleEndedIterator` ---
+//
+// `rev` needs `DoubleEndedIterator` for the whole receiver prefix. The model
+// has `next_back` for `Range`, slice `Iter` and `Enumerate<I: DE + ES>`, so
+// these three chains are in scope; `Map`/`Filter`/`StepBy` have no `next_back`
+// yet, so `.map(f).rev()` is deliberately absent.
+
+pub fn iter_rev_range(n: usize) -> usize {
+    (0..n).rev().count()
+}
+
+pub fn iter_rev_slice(x: &[u8]) -> usize {
+    x.iter().rev().count()
+}
+
+
+// PARKED — `DoubleEndedIterator for Enumerate<I>` needs both `ExactSizeIterator`
+// and `DoubleEndedIterator`, and BOTH bound orders fail: std's order breaks
+// extraction (`Enumerate<I>` reaches `Iterator` by two parent paths), the other
+// order hands the dictionaries to this call site in the wrong positions. See the
+// note on the impl in `core-models/src/core/iter.rs`.
+
+//   pub fn iter_rev_enumerate(x: &[u8]) -> usize {
+//       x.iter().enumerate().rev().count()
+//   }
+
+
+// --- slice `Iter` as receiver (a different concrete instance) ---
+
+pub fn slice_iter_count(x: &[u8]) -> usize {
+    x.iter().count()
+}
+
+pub fn slice_iter_fold(x: &[u8]) -> u8 {
+    x.iter().fold(0u8, |a, b| a.wrapping_add(*b))
+}
+
+pub fn slice_iter_map_count(x: &[u8]) -> usize {
+    x.iter().map(|b| b.wrapping_add(1)).count()
+}
+
+// --- generic receivers: force the dictionary-passing `.default` form ---
+
+// PARKED — a GENERIC receiver makes aeneas emit a record-field projection
+// (`dict.count`), which needs the provided methods to be fields of the
+// `Iterator` structure. They are deliberately not, so that `Iterator` stays free
+// of the IntoIterator/DoubleEndedIterator cycles. Generic-over-iterator client
+// code is therefore unsupported for now.
+
+//   pub fn poly_count<I: Iterator>(it: I) -> usize {
+//       it.count()
+//   }
+
+// PARKED — generic receiver; see `poly_count` above.
+
+//   pub fn poly_fold<I: Iterator<Item = usize>>(it: I) -> usize {
+//       it.fold(0usize, |a, x| a.wrapping_add(x))
+//   }
+
+// PARKED — generic receiver; see `poly_count` above.
+
+//   pub fn poly_map_count<I: Iterator<Item = usize>>(it: I) -> usize {
+//       it.map(|x| x.wrapping_mul(2)).count()
+//   }
+
+// PARKED — generic receiver; see `poly_count` above.
+
+//   pub fn poly_filter_count<I: Iterator<Item = usize>>(it: I) -> usize {
+//       it.filter(|x| *x > 2).count()
+//   }
+
+// PARKED — generic receiver; see `poly_count` above.
+
+//   pub fn poly_enumerate_fold<I: Iterator<Item = usize>>(it: I) -> usize {
+//       it.enumerate().fold(0usize, |a, (i, _x)| a.wrapping_add(i))
+//   }
+
+// PARKED — generic receiver; see `poly_count` above.
+
+//   pub fn poly_take_count<I: Iterator>(it: I, k: usize) -> usize {
+//       it.take(k).count()
+//   }
+
+// PARKED — generic receiver; see `poly_count` above.
+
+//   pub fn poly_collect_vec<I: Iterator<Item = usize>>(it: I) -> Vec<usize> {
+//       it.collect()
+//   }
+
+// Passing a COLLECTION (not an iterator) to `zip`/`chain`/`flat_map` needs the
+// faithful `U: IntoIterator` bound. The model currently weakens it to
+// `U: Iterator`, so these do not resolve yet; they are the acceptance test for
+// restoring the bound.
+//
+//   pub fn iter_zip_slice(x: &[u8], y: &[u8]) -> usize { x.iter().zip(y).count() }
+//   pub fn iter_chain_slice(x: &[u8], y: &[u8]) -> usize { x.iter().chain(y).count() }
