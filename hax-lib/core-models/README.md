@@ -100,6 +100,36 @@ approximate, periodically-refreshed snapshot — not a CI-enforced invariant,
 because the model's rustdoc (via `hax-lib` proc macros) isn't bit-reproducible
 across machines.
 
+### Test coverage
+
+`make test-coverage` runs the Rust test suite under `cargo llvm-cov` and prints
+the model lines nobody exercises. `make test-coverage-check` is the gate CI runs
+on every PR.
+
+Exclude an item no test can exercise, with a comment saying why (the gate
+enforces that the comment is there):
+
+```rust
+// no observable behaviour to test: hax drops the body, layout is not modelled
+#[cfg_attr(coverage_nightly, coverage(off))]
+pub fn size_of<T>() -> usize {
+```
+
+Note that `#[hax_lib::opaque]` is *not* such a marker — it only means "do not
+extract this body", and most opaque items have real, testable bodies.
+
+### Mutation testing
+
+Coverage says a line ran, never that a test checked its result. `make mutants`
+mutates the model and expects the suite to notice; `make mutants-genuine` keeps
+only the survivors that matter. A sweep is hours per cfg, so
+`core_models_mutants.yml` shards it across runners and runs weekly. It cannot
+see `fn`s inside a `macro_rules!` body, which is most of `num/`.
+
+Silence an expected survivor with `#[cfg_attr(test, mutants::skip)]` on the
+function, or with a per-mutant regex in `.cargo/mutants.toml` when that
+function's other mutants are worth keeping.
+
 ## Repository layout
 
 ```
@@ -150,6 +180,10 @@ Both extracted libraries live outside this crate and are committed:
 make lean           # extract Rust → Lean, patch, build the Aeneas library
 make fstar          # extract Rust → F*, copy into ../proof-libs/fstar/core
 make tests          # full test suite (both client_test/ and rust_lean_equiv_test/)
+
+make test-coverage       # what model code the test suite misses
+make test-coverage-check # the CI gate: 100% or fail
+make mutants             # mutation testing (slow; needs a clean tree)
 
 make clean          # remove all generated Lean + F* + LLBC, keep hand-written
 ```

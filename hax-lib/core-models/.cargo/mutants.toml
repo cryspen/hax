@@ -1,0 +1,32 @@
+# Mutants that no test can kill because they are *equivalent*: the mutated model
+# behaves exactly like the original. Excluded per mutant rather than with
+# `#[cfg_attr(test, mutants::skip)]`, which would take the whole function and
+# stop testing the ~57 mutants in these functions that are caught today.
+#
+# Regexes match the names `cargo mutants --list` prints. Deliberately not
+# line-anchored, so they survive edits above them.
+exclude_re = [
+    # `if remaining < chunk_size` decides between yielding the remainder and
+    # `split_at(chunk_size)`; at remaining == chunk_size both yield the same
+    # chunk and leave the slice empty.
+    "replace < with <= in .*for Chunks<.*::next",
+
+    # `let l = if self.len() < other.len() { self.len() } else { other.len() }`
+    # is a minimum: at equal lengths both arms give the same value. (Also
+    # covers the lexicographic tie-break below it, which is caught today.)
+    "replace < with <= in .*::partial_cmp",
+    "replace < with <= in .*Ord for .*::cmp",
+
+    # `if n < l { seq_drain(n, l) }`: at n == l the mutant drains an empty
+    # range, which is a no-op.
+    "replace < with <= in vec::Vec<.*>::truncate",
+
+    # `if new_size < l` likewise: at new_size == l the mutant drains an empty
+    # range, and the original's grow loop does not run either. (Also covers the
+    # `while i < new_size` grow loop, which is caught today.)
+    "replace < with <= in vec::Vec<.*>::resize",
+
+    # `self.0[i] > *max` makes the *first* maximal element win; `>=` makes the
+    # last one win. Both return an `Ord`-equal element and leave an equal heap.
+    "replace > with >= in collections::binary_heap::BinaryHeap<.*>::(pop|peek)",
+]

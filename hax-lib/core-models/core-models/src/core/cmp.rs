@@ -322,6 +322,21 @@ mod tests {
     use proptest::prelude::*;
 
     proptest! {
+        // Ints don't override `ne`, so this exercises the trait's default.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_partial_eq_ne_default(x in 0u8..4, y in 0u8..4) {
+            prop_assert_eq!(PartialEq::ne(&x.inject(), &y.inject()), x != y);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_reverse_ne(x in 0u8..4, y in 0u8..4) {
+            let a = std::cmp::Reverse(x);
+            let b = std::cmp::Reverse(y);
+            prop_assert_eq!(PartialEq::ne(&a.inject(), &b.inject()), a != b);
+        }
+
         #[test]
         fn test_ordering_is_eq(x in any::<u8>(), y in any::<u8>()) {
             let model_ord = <u8 as Ord>::cmp(&x.inject(), &y.inject());

@@ -62,7 +62,10 @@ ALLOC_CHARON_OPAQUE = \
 
 .PHONY: all extract patch lean build clean clean-generated tests \
         tests-clean alloc-stage alloc-extract alloc-clean \
-        coverage fstar fstar-clean fstar-prune fstar-core-models fstar-std fstar-alloc \
+        coverage test-coverage test-coverage-check coverage-runs \
+        coverage-exclusions \
+        mutants mutants-fstar mutants-genuine \
+        fstar fstar-clean fstar-prune fstar-core-models fstar-std fstar-alloc \
         fstar-rand-core
 
 all: lean fstar coverage
@@ -286,3 +289,114 @@ tests-clean:
 # Regenerate COVERAGE.md + tools/core-coverage/coverage.json.
 coverage:
 	./tools/core-coverage/gen.sh
+
+# -----------------------------------------------------------------------------
+# Test coverage: how much of the model crates our own Rust test suite runs.
+# (llvm-cov based; unrelated to the `coverage` target above, which measures how
+# much of real core/alloc we model at all.)
+#
+# The target is 100% on all three metrics. Items that cannot be exercised by a
+# test are marked `#[cfg_attr(coverage_nightly, coverage(off))]` at the item, so
+# there is no threshold to tune and no baseline file to keep in sync.
+# -----------------------------------------------------------------------------
+
+COV_TOOLCHAIN ?= nightly-2026-02-07
+LLVM_COV = cargo +$(COV_TOOLCHAIN) llvm-cov
+COV_PKGS = -p core-models -p alloc -p std -p rand_core@0.1.0 -p rust_primitives
+# `testing.rs` is the differential-test harness, not a model.
+COV_FILTER = --ignore-filename-regex 'core-models/src/testing\.rs'
+# Pinned so the number of proptest cases (hence which regions get reached) does
+# not drift between runs.
+COV_ENV = PROPTEST_CASES=256
+# RUSTFLAGS= overrides the repo-root `.cargo/config.toml`, which forces
+# `--cfg hax`.
+COV_RUN = $(COV_ENV) RUSTFLAGS= $(LLVM_COV) --no-report
+# Second configuration: `array.rs` and `alloc/src/lib.rs` carry
+# cfg(hax_backend_fstar)-exclusive model variants the default run never builds.
+COV_RUN_FSTAR = $(COV_ENV) RUSTFLAGS="--cfg hax_backend_fstar" $(LLVM_COV) --no-report
+
+# Both configurations, accumulated into one profile.
+coverage-runs:
+	$(LLVM_COV) clean --workspace
+	$(COV_RUN) $(COV_PKGS)
+	$(COV_RUN_FSTAR) -p core-models -p alloc
+
+# What is still untested, as a file:line list.
+test-coverage: coverage-runs
+	$(LLVM_COV) report --show-missing-lines $(COV_FILTER)
+
+# Every `coverage(off)` must say why the item cannot be exercised. Without this,
+# an item that is merely *broken* can be excluded instead of tested, which is
+# how `String::pop` sat panicking on every non-empty string.
+coverage-exclusions:
+	@awk '\
+	  /^[ \t]*\/\/[^\/]/ { cmt=1; next } \
+	  /coverage\(off\)/ { if (!cmt) { print FILENAME ":" FNR; bad=1 } next } \
+	  /^[ \t]*#\[/ { next } \
+	  /^[ \t]*\/\/\// { next } \
+	  { cmt=0 } \
+	  END { exit bad }' \
+	  $$(find core-models/src alloc/src std/src rust_primitives/src rand_core/src -name '*.rs') \
+	  || { echo "::error::each #[cfg_attr(coverage_nightly, coverage(off))] above needs a preceding // comment saying why the item cannot be exercised by a test"; exit 1; }
+	@echo "coverage exclusions: all justified"
+
+# The CI gate. Prints the missing file:line list on failure, so the author sees
+# exactly what to test.
+test-coverage-check: coverage-runs coverage-exclusions
+	@$(LLVM_COV) report --show-missing-lines $(COV_FILTER) \
+	    --fail-under-lines 100 --fail-under-functions 100 --fail-under-regions 100 \
+	  || { echo "::error::model code above is not covered by the test suite: add a test, or mark the item #[cfg_attr(coverage_nightly, coverage(off))] if it cannot be exercised"; exit 1; }
+
+# -----------------------------------------------------------------------------
+# Mutation testing: whether the tests *assert* anything, which coverage cannot
+# tell us. Complements the target above; blind to macro-generated code, since
+# cargo-mutants cannot see `fn`s inside a `macro_rules!` body.
+#
+# `--in-place` mutates this checkout instead of a temp copy. It needs a clean
+# working tree and rules out `-j`, so `MUTANTS_JOBS` > 1 switches to copies:
+# cargo-mutants puts them under TMPDIR, and pointing that at the real `hax-lib/`
+# is what makes the copies' `hax-lib = { path = ".." }` resolve -- `..` is the
+# copy's parent, and hax-lib in turn inherits from the workspace root above it.
+# `--copy-target false` stops each copy duplicating target/ (4.5G apiece).
+#
+# Silence a mutant that cannot be killed with `#[cfg_attr(test, mutants::skip)]`
+# on the function (needs the `mutants` dev-dependency in that crate).
+# -----------------------------------------------------------------------------
+
+MUTANTS_FLAGS ?=
+MUTANTS_RUSTFLAGS ?=
+MUTANTS_JOBS ?= 1
+
+ifeq ($(MUTANTS_JOBS),1)
+MUTANTS_MODE = --in-place
+else
+MUTANTS_MODE = --jobs $(MUTANTS_JOBS) --copy-target false
+export TMPDIR = $(abspath ..)
+endif
+
+# `--test-workspace` because a model's mutants are usually killed by *another*
+# crate's tests: with cargo-mutants' default (only the mutated package's own
+# tests) 43 of `rust_primitives`' mutants survive spuriously.
+mutants:
+	RUSTFLAGS="$(MUTANTS_RUSTFLAGS)" \
+	    cargo mutants $(MUTANTS_MODE) --test-workspace true $(MUTANTS_FLAGS)
+
+# The same sweep under the other cfg. Model variants gated on
+# cfg(hax_backend_fstar) are not built by the default sweep, so their mutants are
+# never compiled and every one of them looks like a survivor (62 of alloc's 79).
+mutants-fstar:
+	$(MAKE) mutants MUTANTS_RUSTFLAGS="--cfg hax_backend_fstar" \
+	    MUTANTS_FLAGS="--output mutants-fstar $(MUTANTS_FLAGS)"
+
+# A mutant only counts if it survived in a cfg that builds it, so the genuine
+# survivors are the ones both sweeps missed.
+mutants-genuine:
+	@sort mutants.out/missed.txt > mutants.out/missed.sorted
+	@sort mutants-fstar/mutants.out/missed.txt \
+	    > mutants-fstar/mutants.out/missed.sorted
+	@comm -12 mutants.out/missed.sorted mutants-fstar/mutants.out/missed.sorted \
+	    > mutants-genuine.txt
+	@cat mutants-genuine.txt
+	@test ! -s mutants-genuine.txt || { \
+	    echo "::error::mutants above survived in every configuration that builds them: strengthen the test, or mark the function #[cfg_attr(test, mutants::skip)]"; \
+	    exit 1; }

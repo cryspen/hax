@@ -1,0 +1,96 @@
+
+*** alloc/src/lib.rs:42:13: replace borrow::<impl ToOwned for T>::to_owned -> Self with Default::default()
+
+*** mutation diff:
+--- alloc/src/lib.rs
++++ replace borrow::<impl ToOwned for T>::to_owned -> Self with Default::default()
+@@ -34,17 +34,17 @@
+ mod borrow {
+     struct Cow<T>(T);
+ 
+     pub trait ToOwned {
+         fn to_owned(self) -> Self;
+     }
+     impl<T> ToOwned for T {
+         fn to_owned(self) -> Self {
+-            self
++            Default::default() /* ~ changed by cargo-mutants ~ */
+         }
+     }
+ 
+     #[cfg(test)]
+     mod tests {
+         use proptest::prelude::*;
+ 
+         proptest! {
+
+
+*** /home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/cargo test --no-run --verbose --workspace
+       Fresh unicode-ident v1.0.24
+       Fresh cfg-if v1.0.4
+       Fresh proc-macro2 v1.0.106
+       Fresh libc v0.2.186
+       Fresh quote v1.0.45
+       Fresh syn v2.0.117
+       Fresh getrandom v0.3.4
+       Fresh hax-lib-macros v0.3.7 (/home/maxime/cryspen/hax-wt/coverage/hax-lib/macros)
+       Fresh rand_core v0.9.5
+       Fresh linux-raw-sys v0.12.1
+       Fresh bitflags v2.11.1
+       Fresh hax-lib v0.3.7 (/home/maxime/cryspen/hax-wt/coverage/hax-lib)
+       Fresh autocfg v1.5.0
+       Fresh zerocopy v0.8.48
+       Fresh rustix v1.1.4
+       Fresh getrandom v0.4.2
+       Fresh fastrand v2.4.1
+       Fresh once_cell v1.21.4
+       Fresh pastey v0.1.1
+       Fresh ppv-lite86 v0.2.21
+       Fresh tempfile v3.27.0
+       Fresh wait-timeout v0.2.1
+       Fresh quick-error v1.2.3
+       Fresh fnv v1.0.7
+       Fresh bit-vec v0.8.0
+       Fresh rusty-fork v0.3.1
+       Fresh num-traits v0.2.19
+       Fresh rand_chacha v0.9.0
+       Fresh bit-set v0.8.0
+       Fresh rand v0.9.4
+       Fresh rand_xorshift v0.4.0
+       Fresh unarray v0.1.4
+       Fresh regex-syntax v0.8.10
+       Fresh proptest v1.11.0
+   Compiling mutants v0.0.3
+   Compiling pastey v0.2.2
+       Dirty alloc v0.1.0 (/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/alloc): the file `alloc/src/lib.rs` has changed (1787649985.969793341s, 9s after last build at 1787649976.439198721s)
+   Compiling alloc v0.1.0 (/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/alloc)
+   Compiling rand_core v0.1.0 (/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/rand_core)
+     Running `/home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/rustc --crate-name mutants --edition=2018 /home/maxime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/mutants-0.0.3/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type proc-macro --emit=dep-info,link -C prefer-dynamic -C embed-bitcode=no --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=5336976f3bfeaea2 -C extra-filename=-39617061bb3eacd1 --out-dir /home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps -L dependency=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps --extern proc_macro --cap-lints allow`
+     Running `/home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/rustc --crate-name pastey --edition=2018 /home/maxime/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pastey-0.2.2/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type proc-macro --emit=dep-info,link -C prefer-dynamic -C embed-bitcode=no --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=d8c6647dcb7bc825 -C extra-filename=-1f41b416b76466c4 --out-dir /home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps -L dependency=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps --extern proc_macro --cap-lints allow`
+     Running `/home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/rustc --crate-name alloc --edition=2024 alloc/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 --warn=unexpected_cfgs --check-cfg 'cfg(hax)' --check-cfg 'cfg(hax_compilation)' --check-cfg 'cfg(hax_backend_fstar)' --check-cfg 'cfg(hax_backend_legacy_lean)' --check-cfg 'cfg(coverage)' --check-cfg 'cfg(coverage_nightly)' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=33ce5de25f126275 -C extra-filename=-223122227244c185 --out-dir /home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps -C incremental=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/incremental -L dependency=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps --extern hax_lib=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/libhax_lib-34417f7ee10356c6.rmeta --extern rust_primitives=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/librust_primitives-72db358b25bf56cc.rmeta`
+     Running `/home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/rustc --crate-name alloc --edition=2024 alloc/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --warn=unexpected_cfgs --check-cfg 'cfg(hax)' --check-cfg 'cfg(hax_compilation)' --check-cfg 'cfg(hax_backend_fstar)' --check-cfg 'cfg(hax_backend_legacy_lean)' --check-cfg 'cfg(coverage)' --check-cfg 'cfg(coverage_nightly)' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=594594065ee163a1 -C extra-filename=-3e612afdcefd4acf --out-dir /home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps -C incremental=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/incremental -L dependency=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps --extern hax_lib=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/libhax_lib-34417f7ee10356c6.rlib --extern proptest=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/libproptest-4d05612c9562f4c4.rlib --extern rust_primitives=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/librust_primitives-72db358b25bf56cc.rlib`
+     Running `/home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/rustc --crate-name rand_core --edition=2024 rand_core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 --warn=unexpected_cfgs --check-cfg 'cfg(hax)' --check-cfg 'cfg(hax_compilation)' --check-cfg 'cfg(hax_backend_fstar)' --check-cfg 'cfg(hax_backend_lean)' --check-cfg 'cfg(coverage)' --check-cfg 'cfg(coverage_nightly)' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=761abfb0ec012a34 -C extra-filename=-9940f9d634e47080 --out-dir /home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps -C incremental=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/incremental -L dependency=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps --extern hax_lib=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/libhax_lib-34417f7ee10356c6.rmeta`
+error[E0277]: the trait bound `T: Default` is not satisfied
+  --> alloc/src/lib.rs:42:13
+   |
+42 |             Default::default() /* ~ changed by cargo-mutants ~ */
+   |             ^^^^^^^^^^^^^^^^^^ the trait `Default` is not implemented for `T`
+   |
+help: consider restricting type parameter `T` with trait `Default`
+   |
+40 |     impl<T: std::default::Default> ToOwned for T {
+   |           +++++++++++++++++++++++
+
+     Running `/home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/rustc --crate-name rand_core --edition=2024 rand_core/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --warn=unexpected_cfgs --check-cfg 'cfg(hax)' --check-cfg 'cfg(hax_compilation)' --check-cfg 'cfg(hax_backend_fstar)' --check-cfg 'cfg(hax_backend_lean)' --check-cfg 'cfg(coverage)' --check-cfg 'cfg(coverage_nightly)' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=91c68a36e232fb31 -C extra-filename=-b247094ebed4bbd6 --out-dir /home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps -C incremental=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/incremental -L dependency=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps --extern hax_lib=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/libhax_lib-34417f7ee10356c6.rlib`
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `alloc` (lib) due to 1 previous error
+
+Caused by:
+  process didn't exit successfully: `/home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/rustc --crate-name alloc --edition=2024 alloc/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 --warn=unexpected_cfgs --check-cfg 'cfg(hax)' --check-cfg 'cfg(hax_compilation)' --check-cfg 'cfg(hax_backend_fstar)' --check-cfg 'cfg(hax_backend_legacy_lean)' --check-cfg 'cfg(coverage)' --check-cfg 'cfg(coverage_nightly)' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=33ce5de25f126275 -C extra-filename=-223122227244c185 --out-dir /home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps -C incremental=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/incremental -L dependency=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps --extern hax_lib=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/libhax_lib-34417f7ee10356c6.rmeta --extern rust_primitives=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/librust_primitives-72db358b25bf56cc.rmeta` (exit status: 1)
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `alloc` (lib test) due to 1 previous error
+
+Caused by:
+  process didn't exit successfully: `/home/maxime/.rustup/toolchains/nightly-2025-11-08-x86_64-unknown-linux-gnu/bin/rustc --crate-name alloc --edition=2024 alloc/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --warn=unexpected_cfgs --check-cfg 'cfg(hax)' --check-cfg 'cfg(hax_compilation)' --check-cfg 'cfg(hax_backend_fstar)' --check-cfg 'cfg(hax_backend_legacy_lean)' --check-cfg 'cfg(coverage)' --check-cfg 'cfg(coverage_nightly)' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=594594065ee163a1 -C extra-filename=-3e612afdcefd4acf --out-dir /home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps -C incremental=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/incremental -L dependency=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps --extern hax_lib=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/libhax_lib-34417f7ee10356c6.rlib --extern proptest=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/libproptest-4d05612c9562f4c4.rlib --extern rust_primitives=/home/maxime/cryspen/hax-wt/coverage/hax-lib/cargo-mutants-core-models-BAq5jm.tmp/target/debug/deps/librust_primitives-72db358b25bf56cc.rlib` (exit status: 1)
+
+*** result: Failure(101)

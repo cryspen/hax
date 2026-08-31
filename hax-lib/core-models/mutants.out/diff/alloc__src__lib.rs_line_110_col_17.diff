@@ -1,0 +1,21 @@
+--- alloc/src/lib.rs
++++ replace collections::binary_heap::BinaryHeap<T, A>::push with ()
+@@ -102,17 +102,17 @@
+             fn new() -> BinaryHeap<T, A> {
+                 BinaryHeap(
+                     crate::vec::from_seq(rust_primitives::sequence::seq_empty()),
+                     std::marker::PhantomData::<A>,
+                 )
+             }
+             #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
+             fn push(&mut self, v: T) {
+-                self.0.push(v)
++                () /* ~ changed by cargo-mutants ~ */
+             }
+             #[hax_lib::ensures(|res| (self.len() > 0) == res.is_some())]
+             fn pop(&mut self) -> Option<T> {
+                 let mut max: Option<&T> = None;
+                 let mut index = 0;
+                 for i in 0..self.len() {
+                     hax_lib::loop_invariant!(|i: usize| (i > 0) == max.is_some());
+                     if max.is_none_or(|max| self.0[i] > *max) {

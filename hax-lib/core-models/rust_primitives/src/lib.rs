@@ -63,6 +63,8 @@ pub mod slice {
 /// Layout and value-moving primitives backing `core_models::mem`. `core_models`
 /// must not call `core` itself, so every `mem` model delegates here.
 pub mod mem {
+    // mutants::skip: forgetting has no observable effect, so the empty body is an equivalent mutant.
+    #[cfg_attr(test, mutants::skip)]
     pub fn forget<T>(t: T) {
         core::mem::forget(t)
     }
@@ -356,6 +358,13 @@ mod tests {
         fn test_array_map(a in any::<[u8; 4]>(), table in any::<[u8; 256]>()) {
             let f = |x: u8| table[x as usize];
             prop_assert_eq!(super::slice::array_map(a, f), a.map(f));
+        }
+
+        #[test]
+        fn test_seq_to_slice_mut(x in any::<u8>(), y in any::<u8>()) {
+            let mut s = super::sequence::seq_create(x, 1);
+            super::sequence::seq_to_slice_mut(&mut s)[0] = y;
+            prop_assert_eq!(super::sequence::seq_to_slice(&s), &[y][..]);
         }
 
         #[test]

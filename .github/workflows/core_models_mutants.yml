@@ -1,0 +1,115 @@
+name: core-models mutants
+
+# Mutation testing of the core/alloc models: does the test suite notice when a
+# model's behaviour changes? Coverage (the `test-coverage` job in
+# core_models.yml) only proves the code ran.
+#
+# 890 mutants at ~50s each is ~10h per cfg serially, and still hours with the
+# `MUTANTS_JOBS` parallelism below, so the sweep is sharded across runners and
+# runs weekly.
+#
+# Not run per-PR: an in-diff sweep on a model PR is routinely 500+ mutants,
+# which no amount of within-job parallelism fits into a PR-sized window.
+#
+# `schedule:` only fires from the default branch, so none of this runs until
+# this file is on main.
+
+on:
+  schedule:
+    - cron: '0 3 * * 0'
+  workflow_dispatch:
+
+env:
+  RUST_TOOLCHAIN: nightly-2026-02-07
+  # Must match the length of the `shard` matrix below.
+  SHARDS: 16
+  # One mutant build uses under half of a 4-vCPU runner (183% of 400%), so
+  # cargo-mutants can run two at once. Each needs its own target dir, so raising
+  # this costs ~4.5G of runner disk per job -- watch the `df` either side of the
+  # sweep. Shard count can come down once a real run shows the per-shard time.
+  MUTANTS_JOBS: 2
+
+defaults:
+  run:
+    working-directory: hax-lib/core-models
+
+jobs:
+  sweep:
+    name: mutants (${{ matrix.cfg }} cfg, shard ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both cfgs are needed: a model variant gated on cfg(hax_backend_fstar)
+        # is not built by the default sweep, so its mutants never compile and
+        # every one of them looks like a survivor (62 of alloc's 79). The two
+        # sweeps are intersected in `report` below.
+        cfg: [default, fstar]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+    env:
+      OUT: ${{ matrix.cfg == 'fstar' && 'mutants-fstar/mutants.out' || 'mutants.out' }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN }}
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants
+
+      # Survivors are judged by the `report` job below, so a sweep that finds
+      # some is not itself a failure. cargo-mutants' exit codes are
+      # undocumented, so completion is asserted on the summary line instead: a
+      # sweep that never ran must not pass silently.
+      - run: |
+          df -h / | tail -1
+          make ${{ matrix.cfg == 'fstar' && 'mutants-fstar' || 'mutants' }} \
+              MUTANTS_JOBS=$MUTANTS_JOBS \
+              MUTANTS_FLAGS="--shard ${{ matrix.shard }}/$SHARDS" 2>&1 \
+            | tee sweep.log || true
+          df -h / | tail -1
+
+      - run: |
+          grep -qE '[0-9]+ mutants tested' sweep.log || {
+            echo "::error::the mutants sweep did not complete"; tail -40 sweep.log; exit 1; }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: missed-${{ matrix.cfg }}-${{ matrix.shard }}
+          path: hax-lib/core-models/${{ env.OUT }}/missed.txt
+
+  report:
+    name: survivors common to both cfgs
+    needs: sweep
+    if: always() && needs.sweep.result != 'skipped'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: missed-*
+          path: hax-lib/core-models/shards
+
+      # One survivor set per cfg, at the paths `mutants-genuine` reads.
+      - run: |
+          for cfg in default fstar; do
+            case $cfg in
+              default) out=mutants.out ;;
+              fstar)   out=mutants-fstar/mutants.out ;;
+            esac
+            mkdir -p "$out"
+            cat shards/missed-$cfg-*/missed.txt 2>/dev/null | sort -u > "$out/missed.txt"
+            echo "$cfg: $(wc -l < $out/missed.txt) missed"
+          done
+
+      # Reporting only: a mutant that only some proptest inputs kill is missed
+      # or caught depending on the seed, so this set is not stable enough to
+      # block on. Each one is still worth fixing (make the rare case certain,
+      # the way `test_eq_reflexive` does).
+      - run: make mutants-genuine
+        continue-on-error: true
