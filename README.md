@@ -96,8 +96,7 @@ Here are some resources for learning more about hax:
  - [Manual](https://hax.cryspen.com/manual/index.html) (work in progress)
     + Quick start: [Lean](https://hax.cryspen.com/manual/lean/quick_start/), [F*](https://hax.cryspen.com/manual/fstar/quick_start/)
     + Tutorial: [Lean](https://hax.cryspen.com/manual/lean/tutorial/), [F*](https://hax.cryspen.com/manual/fstar/tutorial/)
- - [Examples](./examples/): the [examples directory](./examples/) contains
-   a set of examples that show what hax can do for you.
+ - [Examples](./examples/): a set of examples that show what hax can do for you.
  - Other [specifications](https://github.com/hacspec/specs) of cryptographic protocols.
 
 Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub Discussion](https://github.com/cryspen/hax/discussions). For bugs, file an [Issue](https://github.com/cryspen/hax/issues).
@@ -108,7 +107,9 @@ hax is a cargo subcommand.
 The command `cargo hax` accepts the following subcommands:
 
  * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND`.
+ * **`extract`** (`cargo hax extract [NAME...]`): run the proof scenarios declared in `hax.toml`; without names, every scenario in scope runs. See [Proof scenarios](https://hax.cryspen.com/manual/tools/#proof-scenarios) in the manual.
  * **`json`** (`cargo hax json`): extract the typed AST of your crate as a JSON file.
+ * **`tools`** (`cargo hax tools SUBCOMMAND`): manage the external tools hax depends on (e.g. Charon and Aeneas). See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in the manual.
 
 ### Backends
 
@@ -205,7 +206,7 @@ Inside the container, hax is invoked as `cargo-hax` instead of `cargo hax`.
 
 ## Supported Subset of the Rust Language
 
-hax intends to support full Rust, with the one exception, promoting a functional style: mutable references (aka `&mut T`) on return types or when aliasing (see https://github.com/cryspen/hax/issues/420) are forbidden.
+hax intends to support full Rust, with one exception that promotes a functional style: mutable references (aka `&mut T`) are forbidden on return types and when aliasing (see https://github.com/cryspen/hax/issues/420).
 
 Each unsupported Rust feature is documented as an issue labeled [`unsupported-rust`](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust). When the issue is labeled [`wontfix-v1`](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1), that means we don't plan on supporting that feature soon.
 
@@ -284,7 +285,7 @@ the commands.
 
 ## Contributing
 
-Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/cryspen/hax/discussions), or file an [issue](https://github.com/cryspen/hax/issues) to discuss your contribution.
+Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/cryspen/hax/discussions), or file an [issue](https://github.com/cryspen/hax/issues) to discuss your contribution. The contribution guidelines are described in [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 
 [chat-link]: https://hacspec.zulipchat.com
