@@ -8,30 +8,31 @@ let f1 (x: u8) : Prims.Pure Prims.unit (requires x >. mk_u8 0) (fun _ -> Prims.l
 /// Reference for comparison
 let f2 (x: u8) : Prims.Pure Prims.unit (requires x >. mk_u8 0) (fun _ -> Prims.l_True) = ()
 
-let f3 (_: Prims.unit)
+let f3 (x: u8)
     : Prims.Pure u8
       Prims.l_True
       (ensures
         fun output ->
           let output:u8 = output in
-          output =. mk_u8 1) = mk_u8 1
+          output =. x) = x
 
-let f4 (_: Prims.unit)
+let f4 (x: u8)
     : Prims.Pure u8
       Prims.l_True
       (ensures
         fun res ->
           let res:u8 = res in
-          res =. mk_u8 1) = mk_u8 1
+          res =. x) = x
 
-/// Reference for comparison
-let f5 (_: Prims.unit)
+/// Reference for comparison. `hax_lib::ensures` binds the result by value,
+/// where `anodized` binds it by reference.
+let f5 (x: u8)
     : Prims.Pure u8
       Prims.l_True
       (ensures
         fun res ->
           let res:u8 = res in
-          res =. mk_u8 1) = mk_u8 1
+          res =. x) = x
 
 let f6 (x: u8)
     : Prims.Pure u8

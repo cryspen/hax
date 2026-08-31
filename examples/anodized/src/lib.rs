@@ -10,19 +10,23 @@ fn f1(x: u8) {}
 #[hax_lib::requires(x > 0)]
 fn f2(x: u8) {}
 
-#[spec(ensures: *output == 1)]
-fn f3() -> u8 {
-    1
+// The argument is only there to work around cryspen/hax#2177: the Lean backend
+// drops the postcondition of a function that takes none. Remove once fixed.
+
+#[spec(ensures: *output == x)]
+fn f3(x: u8) -> u8 {
+    x
 }
-#[spec(ensures: |res| *res == 1)]
-fn f4() -> u8 {
-    1
+#[spec(ensures: |res| *res == x)]
+fn f4(x: u8) -> u8 {
+    x
 }
 
-/// Reference for comparison
-#[spec(ensures: |res| *res == 1)] 
-fn f5() -> u8 {
-    1
+/// Reference for comparison: `hax_lib::ensures` binds the result by value,
+/// `anodized` by reference.
+#[hax_lib::ensures(|res| res == x)]
+fn f5(x: u8) -> u8 {
+    x
 }
 
 
