@@ -42,6 +42,31 @@ let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
     fun (self: t_Array v_T v_N) (i: usize) -> Rust_primitives.Slice.array_index #v_T v_N self i
   }
 
+/// See [`std::default::Default`] for `[T; N]`
+/// Real `core` spells this out as 33 monomorphic impls (`[T; 0]` … `[T; 32]`),
+/// the `[T; 0]` one without the `T: Default` bound. Rust coherence rules out
+/// providing both that impl and the const-generic one below, so the model keeps
+/// only the const-generic form, which covers `N = 0` as well.
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_30
+      (#v_T: Type0)
+      (v_N: usize)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Default.t_Default v_T)
+    : Core_models.Default.t_Default (t_Array v_T v_N) =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: t_Array v_T v_N) -> true);
+    f_default
+    =
+    fun (_: Prims.unit) ->
+      Rust_primitives.Slice.array_from_fn #v_T
+        v_N
+        #(usize -> v_T)
+        (fun e_i ->
+            let e_i:usize = e_i in
+            Core_models.Default.f_default #v_T #FStar.Tactics.Typeclasses.solve () <: v_T)
+  }
+
 type t_IntoIter (v_T: Type0) (v_N: usize) =
   | IntoIter : Rust_primitives.Sequence.t_Seq v_T -> t_IntoIter v_T v_N
 
@@ -2384,7 +2409,7 @@ let impl_18__from__num: Core_models.Default.t_Default u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_19__from__num: Core_models.Default.t_Default u16 =
+let impl_19: Core_models.Default.t_Default u16 =
   {
     f_default_pre = (fun (_: Prims.unit) -> true);
     f_default_post = (fun (_: Prims.unit) (out: u16) -> true);
@@ -2416,7 +2441,7 @@ let impl_22__from__num: Core_models.Default.t_Default u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_23__from__num: Core_models.Default.t_Default usize =
+let impl_23: Core_models.Default.t_Default usize =
   {
     f_default_pre = (fun (_: Prims.unit) -> true);
     f_default_post = (fun (_: Prims.unit) (out: usize) -> true);
@@ -3768,6 +3793,15 @@ class t_AsRef (v_Self: Type0) (v_T: Type0) = {
   f_as_ref:x0: v_Self -> Prims.Pure v_T (f_as_ref_pre x0) (fun result -> f_as_ref_post x0 result)
 }
 
+/// See [`std::convert::AsRef`] for `[T; N]`
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_31 (#v_T: Type0) (v_N: usize) : t_AsRef (t_Array v_T v_N) (t_Slice v_T) =
+  {
+    f_as_ref_pre = (fun (self: t_Array v_T v_N) -> true);
+    f_as_ref_post = (fun (self: t_Array v_T v_N) (out: t_Slice v_T) -> true);
+    f_as_ref = fun (self: t_Array v_T v_N) -> Rust_primitives.Slice.array_as_slice #v_T v_N self
+  }
+
 /// See [`std::cmp::Eq`]
 class t_Eq (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_PartialEq v_Self v_Self
@@ -3807,7 +3841,7 @@ let impl_4 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Eq v_T
     : t_Eq (t_Reverse v_T) = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_6: t_PartialEq u8 u8 =
+let impl_8: t_PartialEq u8 u8 =
   {
     f_eq_pre = (fun (self: u8) (other: u8) -> true);
     f_eq_post = (fun (self: u8) (other: u8) (out: bool) -> true);
@@ -3815,10 +3849,10 @@ let impl_6: t_PartialEq u8 u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_7: t_Eq u8 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_9: t_Eq u8 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_8: t_PartialEq i8 i8 =
+let impl_12: t_PartialEq i8 i8 =
   {
     f_eq_pre = (fun (self: i8) (other: i8) -> true);
     f_eq_post = (fun (self: i8) (other: i8) (out: bool) -> true);
@@ -3826,10 +3860,10 @@ let impl_8: t_PartialEq i8 i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_9: t_Eq i8 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_13: t_Eq i8 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_10: t_PartialEq u16 u16 =
+let impl_16: t_PartialEq u16 u16 =
   {
     f_eq_pre = (fun (self: u16) (other: u16) -> true);
     f_eq_post = (fun (self: u16) (other: u16) (out: bool) -> true);
@@ -3837,10 +3871,10 @@ let impl_10: t_PartialEq u16 u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_11: t_Eq u16 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_17: t_Eq u16 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_12: t_PartialEq i16 i16 =
+let impl_20: t_PartialEq i16 i16 =
   {
     f_eq_pre = (fun (self: i16) (other: i16) -> true);
     f_eq_post = (fun (self: i16) (other: i16) (out: bool) -> true);
@@ -3848,10 +3882,10 @@ let impl_12: t_PartialEq i16 i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_13: t_Eq i16 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_21: t_Eq i16 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_14: t_PartialEq u32 u32 =
+let impl_24__from__cmp: t_PartialEq u32 u32 =
   {
     f_eq_pre = (fun (self: u32) (other: u32) -> true);
     f_eq_post = (fun (self: u32) (other: u32) (out: bool) -> true);
@@ -3859,10 +3893,10 @@ let impl_14: t_PartialEq u32 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_15: t_Eq u32 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_25__from__cmp: t_Eq u32 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_16: t_PartialEq i32 i32 =
+let impl_28__from__cmp: t_PartialEq i32 i32 =
   {
     f_eq_pre = (fun (self: i32) (other: i32) -> true);
     f_eq_post = (fun (self: i32) (other: i32) (out: bool) -> true);
@@ -3870,10 +3904,10 @@ let impl_16: t_PartialEq i32 i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_17: t_Eq i32 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_29__from__cmp: t_Eq i32 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_18: t_PartialEq u64 u64 =
+let impl_32: t_PartialEq u64 u64 =
   {
     f_eq_pre = (fun (self: u64) (other: u64) -> true);
     f_eq_post = (fun (self: u64) (other: u64) (out: bool) -> true);
@@ -3881,10 +3915,10 @@ let impl_18: t_PartialEq u64 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_19: t_Eq u64 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_33: t_Eq u64 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_20: t_PartialEq i64 i64 =
+let impl_36: t_PartialEq i64 i64 =
   {
     f_eq_pre = (fun (self: i64) (other: i64) -> true);
     f_eq_post = (fun (self: i64) (other: i64) (out: bool) -> true);
@@ -3892,10 +3926,10 @@ let impl_20: t_PartialEq i64 i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_21: t_Eq i64 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_37: t_Eq i64 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_22: t_PartialEq u128 u128 =
+let impl_40: t_PartialEq u128 u128 =
   {
     f_eq_pre = (fun (self: u128) (other: u128) -> true);
     f_eq_post = (fun (self: u128) (other: u128) (out: bool) -> true);
@@ -3903,10 +3937,10 @@ let impl_22: t_PartialEq u128 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_23: t_Eq u128 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_41: t_Eq u128 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_24__from__cmp: t_PartialEq i128 i128 =
+let impl_44: t_PartialEq i128 i128 =
   {
     f_eq_pre = (fun (self: i128) (other: i128) -> true);
     f_eq_post = (fun (self: i128) (other: i128) (out: bool) -> true);
@@ -3914,10 +3948,10 @@ let impl_24__from__cmp: t_PartialEq i128 i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_25__from__cmp: t_Eq i128 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_45: t_Eq i128 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_26__from__cmp: t_PartialEq usize usize =
+let impl_48: t_PartialEq usize usize =
   {
     f_eq_pre = (fun (self: usize) (other: usize) -> true);
     f_eq_post = (fun (self: usize) (other: usize) (out: bool) -> true);
@@ -3925,10 +3959,10 @@ let impl_26__from__cmp: t_PartialEq usize usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_27__from__cmp: t_Eq usize = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_49: t_Eq usize = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_28__from__cmp: t_PartialEq isize isize =
+let impl_52: t_PartialEq isize isize =
   {
     f_eq_pre = (fun (self: isize) (other: isize) -> true);
     f_eq_post = (fun (self: isize) (other: isize) (out: bool) -> true);
@@ -3936,7 +3970,20 @@ let impl_28__from__cmp: t_PartialEq isize isize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_29__from__cmp: t_Eq isize = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+let impl_53: t_Eq isize = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+
+/// See [`std::cmp::PartialEq`] for `()`
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_55: t_PartialEq Prims.unit Prims.unit =
+  {
+    f_eq_pre = (fun (self: Prims.unit) (other: Prims.unit) -> true);
+    f_eq_post = (fun (self: Prims.unit) (other: Prims.unit) (out: bool) -> true);
+    f_eq = fun (self: Prims.unit) (other: Prims.unit) -> true
+  }
+
+/// See [`std::cmp::Eq`] for `()`
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_56: t_Eq Prims.unit = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl__from__convert
@@ -3974,7 +4021,7 @@ let impl_6__from__convert: t_From u16 u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_7__from__convert: t_From u32 u8 =
+let impl_7: t_From u32 u8 =
   {
     f_from_pre = (fun (x: u8) -> true);
     f_from_post = (fun (x: u8) (out: u32) -> true);
@@ -4006,7 +4053,7 @@ let impl_10__from__convert: t_From u64 u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_11__from__convert: t_From u64 u32 =
+let impl_11: t_From u64 u32 =
   {
     f_from_pre = (fun (x: u32) -> true);
     f_from_post = (fun (x: u32) (out: u64) -> true);
@@ -4038,7 +4085,7 @@ let impl_14__from__convert: t_From u128 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_15__from__convert: t_From u128 u64 =
+let impl_15: t_From u128 u64 =
   {
     f_from_pre = (fun (x: u64) -> true);
     f_from_post = (fun (x: u64) (out: u128) -> true);
@@ -4166,7 +4213,7 @@ let impl_30__from__convert: t_From i16 u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_31: t_From i32 u8 =
+let impl_31__from__convert: t_From i32 u8 =
   {
     f_from_pre = (fun (x: u8) -> true);
     f_from_post = (fun (x: u8) (out: i32) -> true);
@@ -4182,7 +4229,7 @@ let impl_32__from__convert: t_From i64 u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_33: t_From i128 u8 =
+let impl_33__from__convert: t_From i128 u8 =
   {
     f_from_pre = (fun (x: u8) -> true);
     f_from_post = (fun (x: u8) (out: i128) -> true);
@@ -4214,7 +4261,7 @@ let impl_36__from__convert: t_From i64 u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_37: t_From i128 u16 =
+let impl_37__from__convert: t_From i128 u16 =
   {
     f_from_pre = (fun (x: u16) -> true);
     f_from_post = (fun (x: u16) (out: i128) -> true);
@@ -4243,6 +4290,102 @@ let impl_40__from__convert: t_From i128 u64 =
     f_from_pre = (fun (x: u64) -> true);
     f_from_post = (fun (x: u64) (out: i128) -> true);
     f_from = fun (x: u64) -> cast (x <: u64) <: i128
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_133: t_From u8 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: u8) -> true);
+    f_from = fun (x: bool) -> if x then mk_u8 1 else mk_u8 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_134: t_From u16 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: u16) -> true);
+    f_from = fun (x: bool) -> if x then mk_u16 1 else mk_u16 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_135: t_From u32 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: u32) -> true);
+    f_from = fun (x: bool) -> if x then mk_u32 1 else mk_u32 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_136: t_From u64 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: u64) -> true);
+    f_from = fun (x: bool) -> if x then mk_u64 1 else mk_u64 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_137: t_From u128 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: u128) -> true);
+    f_from = fun (x: bool) -> if x then mk_u128 1 else mk_u128 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_138: t_From usize bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: usize) -> true);
+    f_from = fun (x: bool) -> if x then mk_usize 1 else mk_usize 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_139: t_From i8 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: i8) -> true);
+    f_from = fun (x: bool) -> if x then mk_i8 1 else mk_i8 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_140: t_From i16 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: i16) -> true);
+    f_from = fun (x: bool) -> if x then mk_i16 1 else mk_i16 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_141: t_From i32 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: i32) -> true);
+    f_from = fun (x: bool) -> if x then mk_i32 1 else mk_i32 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_142: t_From i64 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: i64) -> true);
+    f_from = fun (x: bool) -> if x then mk_i64 1 else mk_i64 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_143: t_From i128 bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: i128) -> true);
+    f_from = fun (x: bool) -> if x then mk_i128 1 else mk_i128 0
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_144: t_From isize bool =
+  {
+    f_from_pre = (fun (x: bool) -> true);
+    f_from_post = (fun (x: bool) (out: isize) -> true);
+    f_from = fun (x: bool) -> if x then mk_isize 1 else mk_isize 0
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -4362,7 +4505,7 @@ let impl_2 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_30: t_PartialOrd u8 u8 =
+let impl_6: t_PartialOrd u8 u8 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u8) (other: u8) -> true);
@@ -4386,7 +4529,7 @@ let impl_30: t_PartialOrd u8 u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_32: t_PartialOrd i8 i8 =
+let impl_10: t_PartialOrd i8 i8 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i8) (other: i8) -> true);
@@ -4410,7 +4553,7 @@ let impl_32: t_PartialOrd i8 i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_34: t_PartialOrd u16 u16 =
+let impl_14: t_PartialOrd u16 u16 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u16) (other: u16) -> true);
@@ -4434,7 +4577,7 @@ let impl_34: t_PartialOrd u16 u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_36: t_PartialOrd i16 i16 =
+let impl_18: t_PartialOrd i16 i16 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i16) (other: i16) -> true);
@@ -4458,7 +4601,7 @@ let impl_36: t_PartialOrd i16 i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_38: t_PartialOrd u32 u32 =
+let impl_22: t_PartialOrd u32 u32 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u32) (other: u32) -> true);
@@ -4482,7 +4625,7 @@ let impl_38: t_PartialOrd u32 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_40: t_PartialOrd i32 i32 =
+let impl_26__from__cmp: t_PartialOrd i32 i32 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i32) (other: i32) -> true);
@@ -4506,7 +4649,7 @@ let impl_40: t_PartialOrd i32 i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_42: t_PartialOrd u64 u64 =
+let impl_30__from__cmp: t_PartialOrd u64 u64 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u64) (other: u64) -> true);
@@ -4530,7 +4673,7 @@ let impl_42: t_PartialOrd u64 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_44: t_PartialOrd i64 i64 =
+let impl_34: t_PartialOrd i64 i64 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i64) (other: i64) -> true);
@@ -4554,7 +4697,7 @@ let impl_44: t_PartialOrd i64 i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_46: t_PartialOrd u128 u128 =
+let impl_38: t_PartialOrd u128 u128 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u128) (other: u128) -> true);
@@ -4578,7 +4721,7 @@ let impl_46: t_PartialOrd u128 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_48: t_PartialOrd i128 i128 =
+let impl_42: t_PartialOrd i128 i128 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i128) (other: i128) -> true);
@@ -4602,7 +4745,7 @@ let impl_48: t_PartialOrd i128 i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_50: t_PartialOrd usize usize =
+let impl_46: t_PartialOrd usize usize =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: usize) (other: usize) -> true);
@@ -4626,7 +4769,7 @@ let impl_50: t_PartialOrd usize usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_52: t_PartialOrd isize isize =
+let impl_50: t_PartialOrd isize isize =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: isize) (other: isize) -> true);
@@ -4647,6 +4790,21 @@ let impl_52: t_PartialOrd isize isize =
         if self >. other
         then Option_Some (Ordering_Greater <: t_Ordering) <: t_Option t_Ordering
         else Option_Some (Ordering_Equal <: t_Ordering) <: t_Option t_Ordering
+  }
+
+/// See [`std::cmp::PartialOrd`] for `()`
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_57: t_PartialOrd Prims.unit Prims.unit =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_partial_cmp_pre = (fun (self: Prims.unit) (other: Prims.unit) -> true);
+    f_partial_cmp_post
+    =
+    (fun (self: Prims.unit) (other: Prims.unit) (out: t_Option t_Ordering) -> true);
+    f_partial_cmp
+    =
+    fun (self: Prims.unit) (other: Prims.unit) ->
+      Option_Some (Ordering_Equal <: t_Ordering) <: t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -4709,7 +4867,7 @@ let impl_3__from__convert
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_41: t_TryFrom u8 u16 =
+let impl_41__from__convert: t_TryFrom u8 u16 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u16) -> true);
@@ -4798,7 +4956,7 @@ let impl_44__from__convert: t_TryFrom u8 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_45: t_TryFrom u16 u64 =
+let impl_45__from__convert: t_TryFrom u16 u64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u64) -> true);
@@ -4891,7 +5049,7 @@ let impl_48__from__convert: t_TryFrom u8 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_49: t_TryFrom u16 u128 =
+let impl_49__from__convert: t_TryFrom u16 u128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u128) -> true);
@@ -4985,7 +5143,7 @@ let impl_52__from__convert: t_TryFrom usize u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_53: t_TryFrom u8 usize =
+let impl_53__from__convert: t_TryFrom u8 usize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: usize) -> true);
@@ -5031,7 +5189,7 @@ let impl_54: t_TryFrom u16 usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_55: t_TryFrom u32 usize =
+let impl_55__from__convert: t_TryFrom u32 usize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: usize) -> true);
@@ -5054,7 +5212,7 @@ let impl_55: t_TryFrom u32 usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_56: t_TryFrom u64 usize =
+let impl_56__from__convert: t_TryFrom u64 usize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: usize) -> true);
@@ -5077,7 +5235,7 @@ let impl_56: t_TryFrom u64 usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_57: t_TryFrom i8 i16 =
+let impl_57__from__convert: t_TryFrom i8 i16 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i16) -> true);
@@ -7753,7 +7911,7 @@ let impl_5__from__cmp (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_31__from__cmp: t_Ord u8 =
+let impl_7__from__cmp: t_Ord u8 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7774,7 +7932,7 @@ let impl_31__from__cmp: t_Ord u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_33__from__cmp: t_Ord i8 =
+let impl_11__from__cmp: t_Ord i8 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7795,7 +7953,7 @@ let impl_33__from__cmp: t_Ord i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_35__from__cmp: t_Ord u16 =
+let impl_15__from__cmp: t_Ord u16 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7816,7 +7974,7 @@ let impl_35__from__cmp: t_Ord u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_37__from__cmp: t_Ord i16 =
+let impl_19__from__cmp: t_Ord i16 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7837,7 +7995,7 @@ let impl_37__from__cmp: t_Ord i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_39__from__cmp: t_Ord u32 =
+let impl_23__from__cmp: t_Ord u32 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7858,7 +8016,7 @@ let impl_39__from__cmp: t_Ord u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_41__from__cmp: t_Ord i32 =
+let impl_27__from__cmp: t_Ord i32 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7879,7 +8037,7 @@ let impl_41__from__cmp: t_Ord i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_43__from__cmp: t_Ord u64 =
+let impl_31__from__cmp: t_Ord u64 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7900,7 +8058,7 @@ let impl_43__from__cmp: t_Ord u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_45__from__cmp: t_Ord i64 =
+let impl_35__from__cmp: t_Ord i64 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7921,7 +8079,7 @@ let impl_45__from__cmp: t_Ord i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_47__from__cmp: t_Ord u128 =
+let impl_39__from__cmp: t_Ord u128 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7942,7 +8100,7 @@ let impl_47__from__cmp: t_Ord u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_49__from__cmp: t_Ord i128 =
+let impl_43__from__cmp: t_Ord i128 =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7963,7 +8121,7 @@ let impl_49__from__cmp: t_Ord i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_51__from__cmp: t_Ord usize =
+let impl_47__from__cmp: t_Ord usize =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -7984,7 +8142,7 @@ let impl_51__from__cmp: t_Ord usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_53__from__cmp: t_Ord isize =
+let impl_51__from__cmp: t_Ord isize =
   {
     _super_i0 = FStar.Tactics.Typeclasses.solve;
     _super_i1 = FStar.Tactics.Typeclasses.solve;
@@ -8024,6 +8182,17 @@ let clamp
     match f_cmp #v_T #FStar.Tactics.Typeclasses.solve value max <: t_Ordering with
     | Ordering_Greater  -> max
     | _ -> value
+
+/// See [`std::cmp::Ord`] for `()`
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_58__from__cmp: t_Ord Prims.unit =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
+    f_cmp_pre = (fun (self: Prims.unit) (other: Prims.unit) -> true);
+    f_cmp_post = (fun (self: Prims.unit) (other: Prims.unit) (out: t_Ordering) -> true);
+    f_cmp = fun (self: Prims.unit) (other: Prims.unit) -> Ordering_Equal <: t_Ordering
+  }
 
 assume
 val iter_min': #v_I: Type0 -> {| i0: t_Iterator v_I |} -> {| i1: t_Ord i0.f_Item |} -> iter: v_I

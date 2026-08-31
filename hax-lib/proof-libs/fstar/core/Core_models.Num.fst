@@ -965,7 +965,7 @@ include Core_models.Bundle {impl_17__wrapping_neg as impl_isize__wrapping_neg}
 
 include Core_models.Bundle {impl_18__from__num as impl_18}
 
-include Core_models.Bundle {impl_19__from__num as impl_19}
+include Core_models.Bundle {impl_19 as impl_19}
 
 include Core_models.Bundle {impl_20__from__num as impl_20}
 
@@ -973,7 +973,7 @@ include Core_models.Bundle {impl_21__from__num as impl_21}
 
 include Core_models.Bundle {impl_22__from__num as impl_22}
 
-include Core_models.Bundle {impl_23__from__num as impl_23}
+include Core_models.Bundle {impl_23 as impl_23}
 
 include Core_models.Bundle {impl_24__from__num as impl_24}
 

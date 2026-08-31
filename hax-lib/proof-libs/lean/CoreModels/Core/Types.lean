@@ -353,19 +353,19 @@ def f32.f32 := Unit
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 296:4-303:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 303:4-310:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 305:4-307:5
+    Source: 'core-models/src/core/fmt.rs', lines 312:4-314:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 386:4-390:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 393:4-397:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -373,7 +373,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 392:4-397:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 399:4-404:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -381,7 +381,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 399:4-399:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 406:4-406:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 

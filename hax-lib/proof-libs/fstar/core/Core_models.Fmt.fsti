@@ -39,6 +39,116 @@ class t_Debug (v_Self: Type0) = {
         (fun result -> f_dbg_fmt_post x0 x1 result)
 }
 
+/// See [`std::fmt::Formatter::debug_struct_field1_finish`]
+val impl_Formatter__debug_struct_field1_finish
+      (#v_T1: Type0)
+      {| i0: t_Debug v_T1 |}
+      (self: t_Formatter)
+      (name name1: string)
+      (value1: v_T1)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// See [`std::fmt::Formatter::debug_struct_field2_finish`]
+val impl_Formatter__debug_struct_field2_finish
+      (#v_T1 #v_T2: Type0)
+      {| i0: t_Debug v_T1 |}
+      {| i1: t_Debug v_T2 |}
+      (self: t_Formatter)
+      (name name1: string)
+      (value1: v_T1)
+      (name2: string)
+      (value2: v_T2)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// See [`std::fmt::Formatter::debug_struct_field3_finish`]
+val impl_Formatter__debug_struct_field3_finish
+      (#v_T1 #v_T2 #v_T3: Type0)
+      {| i0: t_Debug v_T1 |}
+      {| i1: t_Debug v_T2 |}
+      {| i2: t_Debug v_T3 |}
+      (self: t_Formatter)
+      (name name1: string)
+      (value1: v_T1)
+      (name2: string)
+      (value2: v_T2)
+      (name3: string)
+      (value3: v_T3)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// See [`std::fmt::Formatter::debug_struct_field4_finish`]
+val impl_Formatter__debug_struct_field4_finish
+      (#v_T1 #v_T2 #v_T3 #v_T4: Type0)
+      {| i0: t_Debug v_T1 |}
+      {| i1: t_Debug v_T2 |}
+      {| i2: t_Debug v_T3 |}
+      {| i3: t_Debug v_T4 |}
+      (self: t_Formatter)
+      (name name1: string)
+      (value1: v_T1)
+      (name2: string)
+      (value2: v_T2)
+      (name3: string)
+      (value3: v_T3)
+      (name4: string)
+      (value4: v_T4)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// See [`std::fmt::Formatter::debug_struct_field5_finish`]
+val impl_Formatter__debug_struct_field5_finish
+      (#v_T1 #v_T2 #v_T3 #v_T4 #v_T5: Type0)
+      {| i0: t_Debug v_T1 |}
+      {| i1: t_Debug v_T2 |}
+      {| i2: t_Debug v_T3 |}
+      {| i3: t_Debug v_T4 |}
+      {| i4: t_Debug v_T5 |}
+      (self: t_Formatter)
+      (name name1: string)
+      (value1: v_T1)
+      (name2: string)
+      (value2: v_T2)
+      (name3: string)
+      (value3: v_T3)
+      (name4: string)
+      (value4: v_T4)
+      (name5: string)
+      (value5: v_T5)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// See [`std::fmt::Formatter::debug_struct_fields_finish`]
+/// Real `core` asserts that the two slices have the same length; the model
+/// keeps that panic, since it is the only observable behaviour left.
+val impl_Formatter__debug_struct_fields_finish
+      (#v_T: Type0)
+      {| i0: t_Debug v_T |}
+      (self: t_Formatter)
+      (name: string)
+      (names: t_Slice string)
+      (values: t_Slice v_T)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
+/// See [`std::fmt::Formatter::debug_tuple_field1_finish`]
+val impl_Formatter__debug_tuple_field1_finish
+      (#v_T1: Type0)
+      {| i0: t_Debug v_T1 |}
+      (self: t_Formatter)
+      (name: string)
+      (value1: v_T1)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
+
 /// See [`std::fmt::Arguments`]
 type t_Arguments = | Arguments : Prims.unit -> t_Arguments
 

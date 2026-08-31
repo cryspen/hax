@@ -279,6 +279,13 @@ impl<'a> Arguments<'a> {
     /// no bottoms in the value" on a body that builds one. The Lean counterpart
     /// is hand-written in
     /// `../proof-libs/lean/CoreModels/Core/FunsPrologue.lean`.
+    ///
+    /// `hax_lib::exclude`d on the F* lane: this is the only thing in `fmt` that
+    /// mentions `fmt::rt`, and `fmt::rt` already mentions `fmt`, so its presence
+    /// closes a module cycle and hax collapses the whole of `Core_models.Fmt`
+    /// (and `Core_models.Fmt.Rt`) into one `Core_models.Fmt.Bundle` module,
+    /// renaming two published modules.
+    #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     #[cfg_attr(charon, aeneas::exclude)]
     fn new<const N: usize, const M: usize>(
         template: &'a [core::primitive::u8; N],
