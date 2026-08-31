@@ -105,7 +105,7 @@ Our custom export logic extends this by generating additional artifacts:
   serialization of the
   [`HaxMeta`](https://hax.cryspen.com/frontend/docs/hax_types/driver_api/struct.HaxMeta.html)
   type.
-- **Diagnostic messages**: sent to standard output and used to communicate
+- **Diagnostic messages**: sent to standard error and used to communicate
   specifically with `cargo hax`. Those messages are JSON serializations of the
   [`HaxDriverMessage`](https://hax.cryspen.com/frontend/docs/hax_types/driver_api/enum.HaxDriverMessage.html)
   type.

@@ -5,13 +5,15 @@
 //! # Example:
 //!
 //! ```rust
-//! use hax_lib::*;
+//! #[hax_lib::requires(hax_lib::Prop::from(x.len() == y.len()) & hax_lib::forall(
+//!     |i: usize| hax_lib::implies(
+//!         i < x.len(),
+//!         x[i] as u64 + y[i] as u64 <= u32::MAX as u64
+//!     )
+//! ))]
+//! #[hax_lib::ensures(|result| result.len() == x.len())]
 //! fn sum(x: Vec<u32>, y: Vec<u32>) -> Vec<u32> {
-//!   hax_lib::assume!(x.len() == y.len());
-//!   hax_lib::assert!(x.len() >= 0);
-//!   hax_lib::assert_prop!(forall(|i: usize| implies(i < x.len(), x[i] < 4242)));
-//!   hax_lib::debug_assert!(exists(|i: usize| implies(i < x.len(), x[i] > 123)));
-//!   x.into_iter().zip(y.into_iter()).map(|(x, y)| x + y).collect()
+//!     x.into_iter().zip(y).map(|(x, y)| x + y).collect()
 //! }
 //! ```
 
