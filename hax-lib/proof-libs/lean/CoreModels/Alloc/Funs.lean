@@ -10,7 +10,7 @@ import CoreModels.Core.Funs
 -- (alloc-side externals live in parent CoreModels.RustPrimitives)
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Result ControlFlow Error
+open RustM ControlFlow Error
 open Std.Do
 set_option linter.dupNamespace false
 set_option linter.hashCommand false
@@ -28,7 +28,7 @@ namespace CoreModels.alloc
     Source: 'src/lib.rs', lines 49:13-49:18
     Visibility: public -/
 def alloc.Global.Insts.CoreCloneClone.clone
-  (self : alloc.Global) : Result alloc.Global := do
+  (self : alloc.Global) : RustM alloc.Global := do
   ok ()
 
 /-- Trait implementation: [alloc::alloc::{impl core::clone::Clone for alloc::alloc::Global}]
@@ -50,7 +50,7 @@ def alloc.Global.Insts.AllocAllocAllocator : alloc.Allocator
     Visibility: public -/
 def borrow.ToOwned.Blanket.to_owned
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : T) :
-  Result T
+  RustM T
   := do
   corecloneCloneInst.clone self
 
@@ -68,7 +68,7 @@ def borrow.ToOwned.Blanket {T : Type} (corecloneCloneInst : core.clone.Clone T)
 def borrow.Cow.is_borrowed
   {B : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned B
   Clause0_Owned) (c : borrow.Cow B Clause0_Owned) :
-  Result Bool
+  RustM Bool
   := do
   match c with
   | borrow.Cow.Borrowed _ => ok true
@@ -80,7 +80,7 @@ def borrow.Cow.is_borrowed
 def borrow.Cow.is_owned
   {B : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned B
   Clause0_Owned) (c : borrow.Cow B Clause0_Owned) :
-  Result Bool
+  RustM Bool
   := do
   match c with
   | borrow.Cow.Borrowed _ => ok false
@@ -92,7 +92,7 @@ def borrow.Cow.is_owned
 def borrow.Cow.into_owned
   {B : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned B
   Clause0_Owned) (self : borrow.Cow B Clause0_Owned) :
-  Result Clause0_Owned
+  RustM Clause0_Owned
   := do
   match self with
   | borrow.Cow.Borrowed b => ToOwnedInst.to_owned b
@@ -104,7 +104,7 @@ def borrow.Cow.into_owned
 def borrow.Cow.to_mut
   {B : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned B
   Clause0_Owned) (self : borrow.Cow B Clause0_Owned) :
-  Result Clause0_Owned
+  RustM Clause0_Owned
   := do
   borrow.Cow.into_owned ToOwnedInst self
 
@@ -114,7 +114,7 @@ def borrow.Cow.to_mut
 def borrow.ToOwnedDefaults.Blanket.clone_into
   {T : Type} {Clause0_Owned : Type} (ToOwnedInst : borrow.ToOwned T
   Clause0_Owned) (self : T) (target : Clause0_Owned) :
-  Result Clause0_Owned
+  RustM Clause0_Owned
   := do
   ToOwnedInst.to_owned self
 
@@ -130,18 +130,17 @@ def borrow.ToOwnedDefaults.Blanket {T : Type} {Clause0_Owned : Type}
 
 /-- [alloc::boxed::{alloc::boxed::Box<T>}::new]:
     Source: 'src/lib.rs', lines 212:8-214:9 -/
-def boxed.Box.new {T : Type} (v : T) : Result T := do
+def boxed.Box.new {T : Type} (v : T) : RustM T := do
   ok v
 
 /-- [alloc::boxed::{alloc::boxed::Box<T>}::new_in]:
     Source: 'src/lib.rs', lines 220:8-222:9 -/
-def boxed.Box.new_in
-  {T : Type} {A : Type} (x : T) (_alloc : A) : Result T := do
+def boxed.Box.new_in {T : Type} {A : Type} (x : T) (_alloc : A) : RustM T := do
   ok x
 
 /-- [alloc::boxed::{alloc::boxed::Box<T>}::into_inner]:
     Source: 'src/lib.rs', lines 225:8-227:9 -/
-def boxed.Box.into_inner {T : Type} (boxed : T) : Result T := do
+def boxed.Box.into_inner {T : Type} (boxed : T) : RustM T := do
   ok boxed
 
 /-- [alloc::boxed::{alloc::boxed::Box<T>}::map]:
@@ -149,13 +148,13 @@ def boxed.Box.into_inner {T : Type} (boxed : T) : Result T := do
 def boxed.Box.map
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
   core.ops.function.FnOnce F T U) (this : T) (f : F) :
-  Result U
+  RustM U
   := do
   coreopsfunctionFnOnceFTupleTUInst.call_once f this
 
 /-- [alloc::boxed::{alloc::boxed::Box<T>}::into_boxed_slice]:
     Source: 'src/lib.rs', lines 238:8-240:9 -/
-def boxed.Box.into_boxed_slice {T : Type} (boxed : T) : Result (Slice T) := do
+def boxed.Box.into_boxed_slice {T : Type} (boxed : T) : RustM (Slice T) := do
   ok (Std.Array.to_slice (Array.make 1#usize [ boxed ] : Array T 1#usize))
 
 /-- [alloc::collections::{impl core::clone::Clone for alloc::collections::TryReserveErrorKind}::clone]:
@@ -163,7 +162,7 @@ def boxed.Box.into_boxed_slice {T : Type} (boxed : T) : Result (Slice T) := do
     Visibility: public -/
 def collections.TryReserveErrorKind.Insts.CoreCloneClone.clone
   (self : collections.TryReserveErrorKind) :
-  Result collections.TryReserveErrorKind
+  RustM collections.TryReserveErrorKind
   := do
   match self with
   | collections.TryReserveErrorKind.CapacityOverflow =>
@@ -184,7 +183,7 @@ def collections.TryReserveErrorKind.Insts.CoreCloneClone : core.clone.Clone
     Visibility: public -/
 def collections.TryReserveError.Insts.CoreCloneClone.clone
   (self : collections.TryReserveError) :
-  Result collections.TryReserveError
+  RustM collections.TryReserveError
   := do
   let trek ← collections.TryReserveErrorKind.Insts.CoreCloneClone.clone self
   ok trek
@@ -201,7 +200,7 @@ def collections.TryReserveError.Insts.CoreCloneClone : core.clone.Clone
     Source: 'src/lib.rs', lines 317:8-319:9 -/
 def collections.TryReserveError.kind
   (self : collections.TryReserveError) :
-  Result collections.TryReserveErrorKind
+  RustM collections.TryReserveErrorKind
   := do
   collections.TryReserveErrorKind.Insts.CoreCloneClone.clone self
 
@@ -213,7 +212,7 @@ def collections.btree.seq_lower_bound_loop.body
   (s : rust_primitives.sequence.Seq T) (key : T)
   (iter_ : core.ops.range.Range Std.Usize) (pos : Std.Usize) (eq : Bool)
   (done1 : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
     Bool) (Std.Usize × Bool))
   := do
   let (o, iter1) ←
@@ -241,7 +240,7 @@ def collections.btree.seq_lower_bound_loop
   {T : Type} (corecmpOrdInst : core.cmp.Ord T)
   (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
   (key : T) (pos : Std.Usize) (eq : Bool) (done1 : Bool) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   loop
     (fun (iter1, pos1, eq1, done2) =>
@@ -254,7 +253,7 @@ def collections.btree.seq_lower_bound_loop
 def collections.btree.seq_lower_bound
   {T : Type} (corecmpOrdInst : core.cmp.Ord T)
   (s : rust_primitives.sequence.Seq T) (key : T) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   let l ← rust_primitives.sequence.seq_len s
   collections.btree.seq_lower_bound_loop corecmpOrdInst
@@ -268,7 +267,7 @@ def collections.btree.seq_lower_bound_borrowed_loop.body
   (corecmpOrdInst : core.cmp.Ord Q) (s : rust_primitives.sequence.Seq T)
   (key : Q) (iter_ : core.ops.range.Range Std.Usize) (pos : Std.Usize)
   (eq : Bool) (done1 : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
     Bool) (Std.Usize × Bool))
   := do
   let (o, iter1) ←
@@ -298,7 +297,7 @@ def collections.btree.seq_lower_bound_borrowed_loop
   (corecmpOrdInst : core.cmp.Ord Q) (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq T) (key : Q) (pos : Std.Usize) (eq : Bool)
   (done1 : Bool) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   loop
     (fun (iter1, pos1, eq1, done2) =>
@@ -312,7 +311,7 @@ def collections.btree.seq_lower_bound_borrowed
   {T : Type} {Q : Type} (coreborrowBorrowInst : core.borrow.Borrow T Q)
   (corecmpOrdInst : core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
   (s : rust_primitives.sequence.Seq T) (key : Q) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   let l ← rust_primitives.sequence.seq_len s
   collections.btree.seq_lower_bound_borrowed_loop coreborrowBorrowInst
@@ -326,7 +325,7 @@ def collections.btree.seq_lower_bound_key_loop.body
   (s : rust_primitives.sequence.Seq (K × V)) (key : K)
   (iter_ : core.ops.range.Range Std.Usize) (pos : Std.Usize) (eq : Bool)
   (done1 : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
     Bool) (Std.Usize × Bool))
   := do
   let (o, iter1) ←
@@ -355,7 +354,7 @@ def collections.btree.seq_lower_bound_key_loop
   (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq (K × V)) (key : K) (pos : Std.Usize)
   (eq : Bool) (done1 : Bool) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   loop
     (fun (iter1, pos1, eq1, done2) =>
@@ -368,7 +367,7 @@ def collections.btree.seq_lower_bound_key_loop
 def collections.btree.seq_lower_bound_key
   {K : Type} {V : Type} (corecmpOrdInst : core.cmp.Ord K)
   (s : rust_primitives.sequence.Seq (K × V)) (key : K) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   let l ← rust_primitives.sequence.seq_len s
   collections.btree.seq_lower_bound_key_loop corecmpOrdInst
@@ -383,7 +382,7 @@ def collections.btree.seq_lower_bound_key_borrowed_loop.body
   (s : rust_primitives.sequence.Seq (K × V)) (key : Q)
   (iter_ : core.ops.range.Range Std.Usize) (pos : Std.Usize) (eq : Bool)
   (done1 : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Std.Usize × Bool ×
     Bool) (Std.Usize × Bool))
   := do
   let (o, iter1) ←
@@ -413,7 +412,7 @@ def collections.btree.seq_lower_bound_key_borrowed_loop
   Q) (corecmpOrdInst : core.cmp.Ord Q) (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq (K × V)) (key : Q) (pos : Std.Usize)
   (eq : Bool) (done1 : Bool) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   loop
     (fun (iter1, pos1, eq1, done2) =>
@@ -427,7 +426,7 @@ def collections.btree.seq_lower_bound_key_borrowed
   {K : Type} {V : Type} {Q : Type} (coreborrowBorrowInst : core.borrow.Borrow K
   Q) (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
   (s : rust_primitives.sequence.Seq (K × V)) (key : Q) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   let l ← rust_primitives.sequence.seq_len s
   collections.btree.seq_lower_bound_key_borrowed_loop coreborrowBorrowInst
@@ -438,7 +437,7 @@ def collections.btree.seq_lower_bound_key_borrowed
 def collections.btree.seq_insert
   {T : Type} (s : rust_primitives.sequence.Seq T) (index : Std.Usize)
   (value : T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   let l ← rust_primitives.sequence.seq_len s
   let (right, s1) ← rust_primitives.sequence.seq_drain s index l
@@ -452,7 +451,7 @@ def collections.btree.seq_insert
 def
   collections.btree.map.Iter.Insts.CoreIterTraitsIteratorIteratorPairSharedAKSharedAV.next
   {K : Type} {V : Type} (self : collections.btree.map.Iter K V) :
-  Result ((core.option.Option (K × V)) × (collections.btree.map.Iter K V))
+  RustM ((core.option.Option (K × V)) × (collections.btree.map.Iter K V))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
@@ -478,7 +477,7 @@ def
 def
   collections.btree.map.Keys.Insts.CoreIterTraitsIteratorIteratorSharedAK.next
   {K : Type} {V : Type} (self : collections.btree.map.Keys K V) :
-  Result ((core.option.Option K) × (collections.btree.map.Keys K V))
+  RustM ((core.option.Option K) × (collections.btree.map.Keys K V))
   := do
   let (s, _) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -504,7 +503,7 @@ def collections.btree.map.Keys.Insts.CoreIterTraitsIteratorIteratorSharedAK (K
 def
   collections.btree.map.Values.Insts.CoreIterTraitsIteratorIteratorSharedAV.next
   {K : Type} {V : Type} (self : collections.btree.map.Values K V) :
-  Result ((core.option.Option V) × (collections.btree.map.Values K V))
+  RustM ((core.option.Option V) × (collections.btree.map.Values K V))
   := do
   let (s, _) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -530,7 +529,7 @@ def collections.btree.map.Values.Insts.CoreIterTraitsIteratorIteratorSharedAV
 def collections.btree.map.IntoKeys.Insts.CoreIterTraitsIteratorIterator.next
   {K : Type} {V : Type} {A : Type}
   (self : collections.btree.map.IntoKeys K V A) :
-  Result ((core.option.Option K) × (collections.btree.map.IntoKeys K V A))
+  RustM ((core.option.Option K) × (collections.btree.map.IntoKeys K V A))
   := do
   let (s, pd) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -556,7 +555,7 @@ def collections.btree.map.IntoKeys.Insts.CoreIterTraitsIteratorIterator (K :
 def collections.btree.map.IntoValues.Insts.CoreIterTraitsIteratorIterator.next
   {K : Type} {V : Type} {A : Type}
   (self : collections.btree.map.IntoValues K V A) :
-  Result ((core.option.Option V) × (collections.btree.map.IntoValues K V A))
+  RustM ((core.option.Option V) × (collections.btree.map.IntoValues K V A))
   := do
   let (s, pd) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -580,7 +579,7 @@ def collections.btree.map.IntoValues.Insts.CoreIterTraitsIteratorIterator (K :
     Source: 'src/lib.rs', lines 964:16-966:17 -/
 def collections.btree.map.BTreeMapKVGlobal.new
   (K : Type) (V : Type) :
-  Result (collections.btree.map.BTreeMap K V alloc.Global)
+  RustM (collections.btree.map.BTreeMap K V alloc.Global)
   := do
   let s ← rust_primitives.sequence.seq_empty (K × V)
   ok (s, core.marker.PhantomData.mk)
@@ -590,7 +589,7 @@ def collections.btree.map.BTreeMapKVGlobal.new
 def collections.btree.map.BTreeMap.clear
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result (collections.btree.map.BTreeMap K V A)
+  RustM (collections.btree.map.BTreeMap K V A)
   := do
   let s ← rust_primitives.sequence.seq_empty (K × V)
   let (_, pd) := self
@@ -601,7 +600,7 @@ def collections.btree.map.BTreeMap.clear
 def collections.btree.map.BTreeMap.new_in
   (K : Type) (V : Type) {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (_alloc : A) :
-  Result (collections.btree.map.BTreeMap K V A)
+  RustM (collections.btree.map.BTreeMap K V A)
   := do
   let s ← rust_primitives.sequence.seq_empty (K × V)
   ok (s, core.marker.PhantomData.mk)
@@ -613,7 +612,7 @@ def collections.btree.map.BTreeMap.get
   core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
   (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.map.BTreeMap K V A) (key : Q) :
-  Result (core.option.Option V)
+  RustM (core.option.Option V)
   := do
   let (s, _) := self
   let (i, b) ←
@@ -632,7 +631,7 @@ def collections.btree.map.BTreeMap.get_key_value
   core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
   (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.map.BTreeMap K V A) (k : Q) :
-  Result (core.option.Option (K × V))
+  RustM (core.option.Option (K × V))
   := do
   let (s, _) := self
   let (i, b) ←
@@ -651,7 +650,7 @@ def collections.btree.map.BTreeMap.get_mut
   core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
   (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.map.BTreeMap K V A) (key : Q) :
-  Result ((core.option.Option V) × (core.option.Option V →
+  RustM ((core.option.Option V) × (core.option.Option V →
     collections.btree.map.BTreeMap K V A))
   := do
   let (s, pd) := self
@@ -680,7 +679,7 @@ def collections.btree.map.BTreeMap.contains_key
   core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
   (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.map.BTreeMap K V A) (key : Q) :
-  Result Bool
+  RustM Bool
   := do
   let (s, _) := self
   let (_, b) ←
@@ -694,7 +693,7 @@ def collections.btree.map.BTreeMap.first_key_value
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord K)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result (core.option.Option (K × V))
+  RustM (core.option.Option (K × V))
   := do
   let (s, _) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -710,7 +709,7 @@ def collections.btree.map.BTreeMap.last_key_value
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord K)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result (core.option.Option (K × V))
+  RustM (core.option.Option (K × V))
   := do
   let (s, _) := self
   let l ← rust_primitives.sequence.seq_len s
@@ -727,7 +726,7 @@ def collections.btree.map.BTreeMap.pop_first
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord K)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
+  RustM ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
     A))
   := do
   let (s, pd) := self
@@ -744,7 +743,7 @@ def collections.btree.map.BTreeMap.pop_last
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord K)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
+  RustM ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
     A))
   := do
   let (s, pd) := self
@@ -762,7 +761,7 @@ def collections.btree.map.BTreeMap.insert
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord K)
   (self : collections.btree.map.BTreeMap K V A) (key : K) (value : V) :
-  Result ((core.option.Option V) × (collections.btree.map.BTreeMap K V A))
+  RustM ((core.option.Option V) × (collections.btree.map.BTreeMap K V A))
   := do
   let (s, pd) := self
   let (i, b) ← collections.btree.seq_lower_bound_key corecmpOrdInst s key
@@ -782,7 +781,7 @@ def collections.btree.map.BTreeMap.remove
   core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
   (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.map.BTreeMap K V A) (key : Q) :
-  Result ((core.option.Option V) × (collections.btree.map.BTreeMap K V A))
+  RustM ((core.option.Option V) × (collections.btree.map.BTreeMap K V A))
   := do
   let (s, pd) := self
   let (i, b) ←
@@ -801,7 +800,7 @@ def collections.btree.map.BTreeMap.remove_entry
   core.clone.Clone A) (coreborrowBorrowInst : core.borrow.Borrow K Q)
   (corecmpOrdInst : core.cmp.Ord K) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.map.BTreeMap K V A) (key : Q) :
-  Result ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
+  RustM ((core.option.Option (K × V)) × (collections.btree.map.BTreeMap K V
     A))
   := do
   let (s, pd) := self
@@ -822,7 +821,7 @@ def collections.btree.map.BTreeMap.append_loop.body
   (corecmpOrdInst : core.cmp.Ord K) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.btree.map.BTreeMap K V A)
   (s : rust_primitives.sequence.Seq (K × V)) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (collections.btree.map.BTreeMap K V A) × (rust_primitives.sequence.Seq (K
     × V))) ((collections.btree.map.BTreeMap K V A) ×
     (rust_primitives.sequence.Seq (K × V))))
@@ -851,7 +850,7 @@ def collections.btree.map.BTreeMap.append_loop
   (corecmpOrdInst : core.cmp.Ord K) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.btree.map.BTreeMap K V A)
   (s : rust_primitives.sequence.Seq (K × V)) :
-  Result ((collections.btree.map.BTreeMap K V A) ×
+  RustM ((collections.btree.map.BTreeMap K V A) ×
     (rust_primitives.sequence.Seq (K × V)))
   := do
   loop
@@ -866,7 +865,7 @@ def collections.btree.map.BTreeMap.append
   (corecmpOrdInst : core.cmp.Ord K) (corecloneCloneInst1 : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A)
   (other : collections.btree.map.BTreeMap K V A) :
-  Result ((collections.btree.map.BTreeMap K V A) ×
+  RustM ((collections.btree.map.BTreeMap K V A) ×
     (collections.btree.map.BTreeMap K V A))
   := do
   let (s, pd) := other
@@ -884,7 +883,7 @@ def collections.btree.map.BTreeMap.split_off
   core.borrow.Borrow K Q) (corecmpOrdInst1 : core.cmp.Ord K)
   (corecloneCloneInst1 : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) (key : Q) :
-  Result ((collections.btree.map.BTreeMap K V A) ×
+  RustM ((collections.btree.map.BTreeMap K V A) ×
     (collections.btree.map.BTreeMap K V A))
   := do
   let (s, pd) := self
@@ -900,7 +899,7 @@ def collections.btree.map.BTreeMap.split_off
 def collections.btree.map.BTreeMap.into_keys
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result (collections.btree.map.IntoKeys K V A)
+  RustM (collections.btree.map.IntoKeys K V A)
   := do
   let (s, _) := self
   ok (s, core.marker.PhantomData.mk)
@@ -910,7 +909,7 @@ def collections.btree.map.BTreeMap.into_keys
 def collections.btree.map.BTreeMap.into_values
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result (collections.btree.map.IntoValues K V A)
+  RustM (collections.btree.map.IntoValues K V A)
   := do
   let (s, _) := self
   ok (s, core.marker.PhantomData.mk)
@@ -920,7 +919,7 @@ def collections.btree.map.BTreeMap.into_values
 def collections.btree.map.BTreeMap.len
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result Std.Usize
+  RustM Std.Usize
   := do
   let (s, _) := self
   rust_primitives.sequence.seq_len s
@@ -930,7 +929,7 @@ def collections.btree.map.BTreeMap.len
 def collections.btree.map.BTreeMap.is_empty
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result Bool
+  RustM Bool
   := do
   let (s, _) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -941,7 +940,7 @@ def collections.btree.map.BTreeMap.is_empty
 def collections.btree.map.BTreeMap.iter
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result (collections.btree.map.Iter K V)
+  RustM (collections.btree.map.Iter K V)
   := do
   let (s, _) := self
   let s1 ← rust_primitives.sequence.seq_to_slice s
@@ -955,7 +954,7 @@ def collections.btree.map.BTreeMap.keys_loop.body
   {K : Type} {V : Type} (s : rust_primitives.sequence.Seq (K × V))
   (iter_ : core.ops.range.Range Std.Usize)
   (out : rust_primitives.sequence.Seq K) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq K)) (rust_primitives.sequence.Seq K))
   := do
   let (o, iter1) ←
@@ -975,7 +974,7 @@ def collections.btree.map.BTreeMap.keys_loop
   {K : Type} {V : Type} (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq (K × V))
   (out : rust_primitives.sequence.Seq K) :
-  Result (rust_primitives.sequence.Seq K)
+  RustM (rust_primitives.sequence.Seq K)
   := do
   loop
     (fun (iter1, out1) => collections.btree.map.BTreeMap.keys_loop.body s iter1
@@ -987,7 +986,7 @@ def collections.btree.map.BTreeMap.keys_loop
 def collections.btree.map.BTreeMap.keys
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result (collections.btree.map.Keys K V)
+  RustM (collections.btree.map.Keys K V)
   := do
   let out ← rust_primitives.sequence.seq_empty K
   let (s, _) := self
@@ -1004,7 +1003,7 @@ def collections.btree.map.BTreeMap.values_loop.body
   {K : Type} {V : Type} (s : rust_primitives.sequence.Seq (K × V))
   (iter_ : core.ops.range.Range Std.Usize)
   (out : rust_primitives.sequence.Seq V) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq V)) (rust_primitives.sequence.Seq V))
   := do
   let (o, iter1) ←
@@ -1024,7 +1023,7 @@ def collections.btree.map.BTreeMap.values_loop
   {K : Type} {V : Type} (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq (K × V))
   (out : rust_primitives.sequence.Seq V) :
-  Result (rust_primitives.sequence.Seq V)
+  RustM (rust_primitives.sequence.Seq V)
   := do
   loop
     (fun (iter1, out1) => collections.btree.map.BTreeMap.values_loop.body s
@@ -1036,7 +1035,7 @@ def collections.btree.map.BTreeMap.values_loop
 def collections.btree.map.BTreeMap.values
   {K : Type} {V : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.map.BTreeMap K V A) :
-  Result (collections.btree.map.Values K V)
+  RustM (collections.btree.map.Values K V)
   := do
   let out ← rust_primitives.sequence.seq_empty V
   let (s, _) := self
@@ -1052,7 +1051,7 @@ def collections.btree.map.BTreeMap.values
 def
   collections.btree.set.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} (self : collections.btree.set.Iter T) :
-  Result ((core.option.Option T) × (collections.btree.set.Iter T))
+  RustM ((core.option.Option T) × (collections.btree.set.Iter T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
@@ -1077,7 +1076,7 @@ def collections.btree.set.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T
 def
   collections.btree.set.Difference.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} {A : Type} (self : collections.btree.set.Difference T A) :
-  Result ((core.option.Option T) × (collections.btree.set.Difference T A))
+  RustM ((core.option.Option T) × (collections.btree.set.Difference T A))
   := do
   let (s, pd) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -1104,7 +1103,7 @@ def
 def
   collections.btree.set.Intersection.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} {A : Type} (self : collections.btree.set.Intersection T A) :
-  Result ((core.option.Option T) × (collections.btree.set.Intersection T A))
+  RustM ((core.option.Option T) × (collections.btree.set.Intersection T A))
   := do
   let (s, pd) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -1131,7 +1130,7 @@ def
 def
   collections.btree.set.Union.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} (self : collections.btree.set.Union T) :
-  Result ((core.option.Option T) × (collections.btree.set.Union T))
+  RustM ((core.option.Option T) × (collections.btree.set.Union T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
@@ -1156,7 +1155,7 @@ def collections.btree.set.Union.Insts.CoreIterTraitsIteratorIteratorSharedAT (T
 def
   collections.btree.set.SymmetricDifference.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} (self : collections.btree.set.SymmetricDifference T) :
-  Result ((core.option.Option T) × (collections.btree.set.SymmetricDifference
+  RustM ((core.option.Option T) × (collections.btree.set.SymmetricDifference
     T))
   := do
   let i ← rust_primitives.sequence.seq_len self
@@ -1180,7 +1179,7 @@ def
 /-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, alloc::alloc::Global>}::new]:
     Source: 'src/lib.rs', lines 1586:16-1588:17 -/
 def collections.btree.set.BTreeSetTGlobal.new
-  (T : Type) : Result (collections.btree.set.BTreeSet T alloc.Global) := do
+  (T : Type) : RustM (collections.btree.set.BTreeSet T alloc.Global) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok (s, core.marker.PhantomData.mk)
 
@@ -1189,7 +1188,7 @@ def collections.btree.set.BTreeSetTGlobal.new
 def collections.btree.set.BTreeSet.new_in
   (T : Type) {A : Type} (corecloneCloneInst : core.clone.Clone A) (_alloc : A)
   :
-  Result (collections.btree.set.BTreeSet T A)
+  RustM (collections.btree.set.BTreeSet T A)
   := do
   let s ← rust_primitives.sequence.seq_empty T
   ok (s, core.marker.PhantomData.mk)
@@ -1199,7 +1198,7 @@ def collections.btree.set.BTreeSet.new_in
 def collections.btree.set.BTreeSet.len
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.set.BTreeSet T A) :
-  Result Std.Usize
+  RustM Std.Usize
   := do
   let (s, _) := self
   rust_primitives.sequence.seq_len s
@@ -1209,7 +1208,7 @@ def collections.btree.set.BTreeSet.len
 def collections.btree.set.BTreeSet.is_empty
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.set.BTreeSet T A) :
-  Result Bool
+  RustM Bool
   := do
   let (s, _) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -1221,7 +1220,7 @@ def collections.btree.set.BTreeSet.clear
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecloneCloneInst1 : core.clone.Clone A)
   (self : collections.btree.set.BTreeSet T A) :
-  Result (collections.btree.set.BTreeSet T A)
+  RustM (collections.btree.set.BTreeSet T A)
   := do
   let s ← rust_primitives.sequence.seq_empty T
   let (_, pd) := self
@@ -1233,7 +1232,7 @@ def collections.btree.set.BTreeSet.first
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   :
-  Result (core.option.Option T)
+  RustM (core.option.Option T)
   := do
   let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
   if i = 0#usize
@@ -1249,7 +1248,7 @@ def collections.btree.set.BTreeSet.last
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   :
-  Result (core.option.Option T)
+  RustM (core.option.Option T)
   := do
   let l ← collections.btree.set.BTreeSet.len corecloneCloneInst self
   if l = 0#usize
@@ -1266,7 +1265,7 @@ def collections.btree.set.BTreeSet.pop_first
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   :
-  Result ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
+  RustM ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
   := do
   let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
   if i = 0#usize
@@ -1282,7 +1281,7 @@ def collections.btree.set.BTreeSet.pop_last
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   :
-  Result ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
+  RustM ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
   := do
   let l ← collections.btree.set.BTreeSet.len corecloneCloneInst self
   if l = 0#usize
@@ -1299,7 +1298,7 @@ def collections.btree.set.BTreeSet.insert
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (value : T) :
-  Result (Bool × (collections.btree.set.BTreeSet T A))
+  RustM (Bool × (collections.btree.set.BTreeSet T A))
   := do
   let (s, pd) := self
   let (i, b) ← collections.btree.seq_lower_bound corecmpOrdInst s value
@@ -1314,7 +1313,7 @@ def collections.btree.set.BTreeSet.replace
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (value : T) :
-  Result ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
+  RustM ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
   := do
   let (s, pd) := self
   let (i, b) ← collections.btree.seq_lower_bound corecmpOrdInst s value
@@ -1334,7 +1333,7 @@ def collections.btree.set.BTreeSet.contains
   (coreborrowBorrowInst : core.borrow.Borrow T Q) (corecmpOrdInst :
   core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.set.BTreeSet T A) (value : Q) :
-  Result Bool
+  RustM Bool
   := do
   let (s, _) := self
   let (_, b) ←
@@ -1349,7 +1348,7 @@ def collections.btree.set.BTreeSet.get
   (coreborrowBorrowInst : core.borrow.Borrow T Q) (corecmpOrdInst :
   core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.set.BTreeSet T A) (value : Q) :
-  Result (core.option.Option T)
+  RustM (core.option.Option T)
   := do
   let (s, _) := self
   let (i, b) ←
@@ -1368,7 +1367,7 @@ def collections.btree.set.BTreeSet.remove
   (coreborrowBorrowInst : core.borrow.Borrow T Q) (corecmpOrdInst :
   core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.set.BTreeSet T A) (value : Q) :
-  Result (Bool × (collections.btree.set.BTreeSet T A))
+  RustM (Bool × (collections.btree.set.BTreeSet T A))
   := do
   let (s, pd) := self
   let (i, b) ←
@@ -1387,7 +1386,7 @@ def collections.btree.set.BTreeSet.take
   (coreborrowBorrowInst : core.borrow.Borrow T Q) (corecmpOrdInst :
   core.cmp.Ord T) (corecmpOrdInst1 : core.cmp.Ord Q)
   (self : collections.btree.set.BTreeSet T A) (value : Q) :
-  Result ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
+  RustM ((core.option.Option T) × (collections.btree.set.BTreeSet T A))
   := do
   let (s, pd) := self
   let (i, b) ←
@@ -1406,7 +1405,7 @@ def collections.btree.set.BTreeSet.split_off
   (corecmpOrdInst : core.cmp.Ord Q) (coreborrowBorrowInst : core.borrow.Borrow
   T Q) (corecmpOrdInst1 : core.cmp.Ord T) (corecloneCloneInst1 :
   core.clone.Clone A) (self : collections.btree.set.BTreeSet T A) (value : Q) :
-  Result ((collections.btree.set.BTreeSet T A) ×
+  RustM ((collections.btree.set.BTreeSet T A) ×
     (collections.btree.set.BTreeSet T A))
   := do
   let l ← collections.btree.set.BTreeSet.len corecloneCloneInst self
@@ -1425,7 +1424,7 @@ def collections.btree.set.BTreeSet.append_loop.body
   (corecmpOrdInst : core.cmp.Ord T) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (collections.btree.set.BTreeSet T A) × (collections.btree.set.BTreeSet T
     A)) ((collections.btree.set.BTreeSet T A) ×
     (collections.btree.set.BTreeSet T A)))
@@ -1455,7 +1454,7 @@ def collections.btree.set.BTreeSet.append_loop
   (corecmpOrdInst : core.cmp.Ord T) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result ((collections.btree.set.BTreeSet T A) ×
+  RustM ((collections.btree.set.BTreeSet T A) ×
     (collections.btree.set.BTreeSet T A))
   := do
   loop
@@ -1471,7 +1470,7 @@ def collections.btree.set.BTreeSet.append
   (corecmpOrdInst : core.cmp.Ord T) (corecloneCloneInst1 : core.clone.Clone A)
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result ((collections.btree.set.BTreeSet T A) ×
+  RustM ((collections.btree.set.BTreeSet T A) ×
     (collections.btree.set.BTreeSet T A))
   := do
   let l ← collections.btree.set.BTreeSet.len corecloneCloneInst other
@@ -1486,7 +1485,7 @@ def collections.btree.set.BTreeSet.retain_loop.body
   core.ops.function.FnMut F T Bool) (l : Std.Usize)
   (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.btree.set.BTreeSet T A) (f : F) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (collections.btree.set.BTreeSet T A) × F) (collections.btree.set.BTreeSet
     T A))
   := do
@@ -1514,7 +1513,7 @@ def collections.btree.set.BTreeSet.retain_loop
   {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleSharedTBoolInst :
   core.ops.function.FnMut F T Bool) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.btree.set.BTreeSet T A) (f : F) (l : Std.Usize) :
-  Result (collections.btree.set.BTreeSet T A)
+  RustM (collections.btree.set.BTreeSet T A)
   := do
   loop
     (fun (iter1, self1, f1) => collections.btree.set.BTreeSet.retain_loop.body
@@ -1528,7 +1527,7 @@ def collections.btree.set.BTreeSet.retain
   (corecmpOrdInst : core.cmp.Ord T) (coreopsfunctionFnMutFTupleShared0TBoolInst
   : core.ops.function.FnMut F T Bool)
   (self : collections.btree.set.BTreeSet T A) (f : F) :
-  Result (collections.btree.set.BTreeSet T A)
+  RustM (collections.btree.set.BTreeSet T A)
   := do
   let l ← collections.btree.set.BTreeSet.len corecloneCloneInst self
   collections.btree.set.BTreeSet.retain_loop
@@ -1540,7 +1539,7 @@ def collections.btree.set.BTreeSet.retain
 def collections.btree.set.BTreeSet.iter
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (self : collections.btree.set.BTreeSet T A) :
-  Result (collections.btree.set.Iter T)
+  RustM (collections.btree.set.Iter T)
   := do
   let (s, _) := self
   let s1 ← rust_primitives.sequence.seq_to_slice s
@@ -1555,7 +1554,7 @@ def collections.btree.set.BTreeSet.is_subset_loop.body
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A)
   (iter_ : core.ops.range.Range Std.Usize) (res : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
   := do
   let (o, iter1) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
@@ -1579,7 +1578,7 @@ def collections.btree.set.BTreeSet.is_subset_loop
   (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) (res : Bool) :
-  Result Bool
+  RustM Bool
   := do
   loop
     (fun (iter1, res1) => collections.btree.set.BTreeSet.is_subset_loop.body
@@ -1592,7 +1591,7 @@ def collections.btree.set.BTreeSet.is_subset
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result Bool
+  RustM Bool
   := do
   let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
   collections.btree.set.BTreeSet.is_subset_loop corecmpOrdInst
@@ -1604,7 +1603,7 @@ def collections.btree.set.BTreeSet.is_superset
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result Bool
+  RustM Bool
   := do
   collections.btree.set.BTreeSet.is_subset corecloneCloneInst corecmpOrdInst
     other self
@@ -1617,7 +1616,7 @@ def collections.btree.set.BTreeSet.is_disjoint_loop.body
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A)
   (iter_ : core.ops.range.Range Std.Usize) (res : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
   := do
   let (o, iter1) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
@@ -1641,7 +1640,7 @@ def collections.btree.set.BTreeSet.is_disjoint_loop
   (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) (res : Bool) :
-  Result Bool
+  RustM Bool
   := do
   loop
     (fun (iter1, res1) => collections.btree.set.BTreeSet.is_disjoint_loop.body
@@ -1654,7 +1653,7 @@ def collections.btree.set.BTreeSet.is_disjoint
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result Bool
+  RustM Bool
   := do
   let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
   collections.btree.set.BTreeSet.is_disjoint_loop corecmpOrdInst
@@ -1669,7 +1668,7 @@ def collections.btree.set.BTreeSet.difference_loop.body
   (other : collections.btree.set.BTreeSet T A)
   (iter_ : core.ops.range.Range Std.Usize)
   (out : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
   := do
   let (o, iter1) ←
@@ -1697,7 +1696,7 @@ def collections.btree.set.BTreeSet.difference_loop
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A)
   (out : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, out1) => collections.btree.set.BTreeSet.difference_loop.body
@@ -1710,7 +1709,7 @@ def collections.btree.set.BTreeSet.difference
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result (collections.btree.set.Difference T A)
+  RustM (collections.btree.set.Difference T A)
   := do
   let out ← rust_primitives.sequence.seq_empty T
   let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
@@ -1728,7 +1727,7 @@ def collections.btree.set.BTreeSet.intersection_loop.body
   (other : collections.btree.set.BTreeSet T A)
   (iter_ : core.ops.range.Range Std.Usize)
   (out : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
   := do
   let (o, iter1) ←
@@ -1756,7 +1755,7 @@ def collections.btree.set.BTreeSet.intersection_loop
   (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A)
   (out : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, out1) => collections.btree.set.BTreeSet.intersection_loop.body
@@ -1769,7 +1768,7 @@ def collections.btree.set.BTreeSet.intersection
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result (collections.btree.set.Intersection T A)
+  RustM (collections.btree.set.Intersection T A)
   := do
   let out ← rust_primitives.sequence.seq_empty T
   let i ← collections.btree.set.BTreeSet.len corecloneCloneInst self
@@ -1786,7 +1785,7 @@ def collections.btree.set.BTreeSet.union_loop.body
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A)
   (out : rust_primitives.sequence.Seq T) (i : Std.Usize) (j : Std.Usize) :
-  Result (ControlFlow ((rust_primitives.sequence.Seq T) × Std.Usize ×
+  RustM (ControlFlow ((rust_primitives.sequence.Seq T) × Std.Usize ×
     Std.Usize) (rust_primitives.sequence.Seq T))
   := do
   let i1 ← collections.btree.set.BTreeSet.len corecloneCloneInst self
@@ -1885,7 +1884,7 @@ def collections.btree.set.BTreeSet.union_loop
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A)
   (out : rust_primitives.sequence.Seq T) (i : Std.Usize) (j : Std.Usize) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (out1, i1, j1) => collections.btree.set.BTreeSet.union_loop.body
@@ -1898,7 +1897,7 @@ def collections.btree.set.BTreeSet.union
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result (collections.btree.set.Union T)
+  RustM (collections.btree.set.Union T)
   := do
   let out ← rust_primitives.sequence.seq_empty T
   let out1 ←
@@ -1914,7 +1913,7 @@ def collections.btree.set.BTreeSet.symmetric_difference_loop.body
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A)
   (out : rust_primitives.sequence.Seq T) (i : Std.Usize) (j : Std.Usize) :
-  Result (ControlFlow ((rust_primitives.sequence.Seq T) × Std.Usize ×
+  RustM (ControlFlow ((rust_primitives.sequence.Seq T) × Std.Usize ×
     Std.Usize) (rust_primitives.sequence.Seq T))
   := do
   let i1 ← collections.btree.set.BTreeSet.len corecloneCloneInst self
@@ -2011,7 +2010,7 @@ def collections.btree.set.BTreeSet.symmetric_difference_loop
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A)
   (out : rust_primitives.sequence.Seq T) (i : Std.Usize) (j : Std.Usize) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (out1, i1, j1) =>
@@ -2025,7 +2024,7 @@ def collections.btree.set.BTreeSet.symmetric_difference
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
   (corecmpOrdInst : core.cmp.Ord T) (self : collections.btree.set.BTreeSet T A)
   (other : collections.btree.set.BTreeSet T A) :
-  Result (collections.btree.set.SymmetricDifference T)
+  RustM (collections.btree.set.SymmetricDifference T)
   := do
   let out ← rust_primitives.sequence.seq_empty T
   let out1 ←
@@ -2036,7 +2035,7 @@ def collections.btree.set.BTreeSet.symmetric_difference
 /-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, alloc::alloc::Global>}::new]:
     Source: 'src/lib.rs', lines 2214:12-2216:13 -/
 def collections.linked_list.LinkedListTGlobal.new
-  (T : Type) : Result (collections.linked_list.LinkedList T alloc.Global) := do
+  (T : Type) : RustM (collections.linked_list.LinkedList T alloc.Global) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok (s, core.marker.PhantomData.mk)
 
@@ -2044,7 +2043,7 @@ def collections.linked_list.LinkedListTGlobal.new
     Source: 'src/lib.rs', lines 2232:12-2234:13 -/
 def collections.linked_list.LinkedList.len
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result Std.Usize
+  RustM Std.Usize
   := do
   let (s, _) := self
   rust_primitives.sequence.seq_len s
@@ -2054,7 +2053,7 @@ def collections.linked_list.LinkedList.len
 def collections.linked_list.LinkedListTGlobal.append
   {T : Type} (self : collections.linked_list.LinkedList T alloc.Global)
   (other : collections.linked_list.LinkedList T alloc.Global) :
-  Result ((collections.linked_list.LinkedList T alloc.Global) ×
+  RustM ((collections.linked_list.LinkedList T alloc.Global) ×
     (collections.linked_list.LinkedList T alloc.Global))
   := do
   let (s, pd) := self
@@ -2067,7 +2066,7 @@ def collections.linked_list.LinkedListTGlobal.append
     Source: 'src/lib.rs', lines 2228:12-2230:13 -/
 def collections.linked_list.LinkedList.new_in
   (T : Type) {A : Type} (_alloc : A) :
-  Result (collections.linked_list.LinkedList T A)
+  RustM (collections.linked_list.LinkedList T A)
   := do
   let s ← rust_primitives.sequence.seq_empty T
   ok (s, core.marker.PhantomData.mk)
@@ -2076,7 +2075,7 @@ def collections.linked_list.LinkedList.new_in
     Source: 'src/lib.rs', lines 2236:12-2238:13 -/
 def collections.linked_list.LinkedList.is_empty
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result Bool
+  RustM Bool
   := do
   let (s, _) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -2086,7 +2085,7 @@ def collections.linked_list.LinkedList.is_empty
     Source: 'src/lib.rs', lines 2240:12-2242:13 -/
 def collections.linked_list.LinkedList.clear
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result (collections.linked_list.LinkedList T A)
+  RustM (collections.linked_list.LinkedList T A)
   := do
   let s ← rust_primitives.sequence.seq_empty T
   let (_, pd) := self
@@ -2096,7 +2095,7 @@ def collections.linked_list.LinkedList.clear
     Source: 'src/lib.rs', lines 2244:12-2250:13 -/
 def collections.linked_list.LinkedList.front
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result (core.option.Option T)
+  RustM (core.option.Option T)
   := do
   let i ← collections.linked_list.LinkedList.len self
   if i = 0#usize
@@ -2110,7 +2109,7 @@ def collections.linked_list.LinkedList.front
     Source: 'src/lib.rs', lines 2252:12-2259:13 -/
 def collections.linked_list.LinkedList.back
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result (core.option.Option T)
+  RustM (core.option.Option T)
   := do
   let l ← collections.linked_list.LinkedList.len self
   if l = 0#usize
@@ -2125,7 +2124,7 @@ def collections.linked_list.LinkedList.back
     Source: 'src/lib.rs', lines 2263:12-2269:13 -/
 def collections.linked_list.LinkedList.front_mut
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result ((core.option.Option T) × (core.option.Option T →
+  RustM ((core.option.Option T) × (core.option.Option T →
     collections.linked_list.LinkedList T A))
   := do
   let i ← collections.linked_list.LinkedList.len self
@@ -2149,7 +2148,7 @@ def collections.linked_list.LinkedList.front_mut
     Source: 'src/lib.rs', lines 2272:12-2279:13 -/
 def collections.linked_list.LinkedList.back_mut
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result ((core.option.Option T) × (core.option.Option T →
+  RustM ((core.option.Option T) × (core.option.Option T →
     collections.linked_list.LinkedList T A))
   := do
   let l ← collections.linked_list.LinkedList.len self
@@ -2174,7 +2173,7 @@ def collections.linked_list.LinkedList.back_mut
 def collections.linked_list.LinkedList.push_front
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
   (elt : T) :
-  Result (collections.linked_list.LinkedList T A)
+  RustM (collections.linked_list.LinkedList T A)
   := do
   let (s, pd) := self
   let l ← rust_primitives.sequence.seq_len s
@@ -2188,7 +2187,7 @@ def collections.linked_list.LinkedList.push_front
 def collections.linked_list.LinkedList.push_front_mut
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
   (elt : T) :
-  Result (T × (T → collections.linked_list.LinkedList T A))
+  RustM (T × (T → collections.linked_list.LinkedList T A))
   := do
   let self1 ← collections.linked_list.LinkedList.push_front self elt
   let (s, pd) := self1
@@ -2203,7 +2202,7 @@ def collections.linked_list.LinkedList.push_front_mut
 def collections.linked_list.LinkedList.push_back
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
   (elt : T) :
-  Result (collections.linked_list.LinkedList T A)
+  RustM (collections.linked_list.LinkedList T A)
   := do
   let (s, pd) := self
   let s1 ← rust_primitives.sequence.seq_push s elt
@@ -2214,7 +2213,7 @@ def collections.linked_list.LinkedList.push_back
 def collections.linked_list.LinkedList.push_back_mut
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
   (elt : T) :
-  Result (T × (T → collections.linked_list.LinkedList T A))
+  RustM (T × (T → collections.linked_list.LinkedList T A))
   := do
   let self1 ← collections.linked_list.LinkedList.push_back self elt
   let l ← collections.linked_list.LinkedList.len self1
@@ -2229,7 +2228,7 @@ def collections.linked_list.LinkedList.push_back_mut
     Source: 'src/lib.rs', lines 2309:12-2315:13 -/
 def collections.linked_list.LinkedList.pop_front
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result ((core.option.Option T) × (collections.linked_list.LinkedList T A))
+  RustM ((core.option.Option T) × (collections.linked_list.LinkedList T A))
   := do
   let i ← collections.linked_list.LinkedList.len self
   if i = 0#usize
@@ -2243,7 +2242,7 @@ def collections.linked_list.LinkedList.pop_front
     Source: 'src/lib.rs', lines 2317:12-2324:13 -/
 def collections.linked_list.LinkedList.pop_back
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result ((core.option.Option T) × (collections.linked_list.LinkedList T A))
+  RustM ((core.option.Option T) × (collections.linked_list.LinkedList T A))
   := do
   let l ← collections.linked_list.LinkedList.len self
   if l = 0#usize
@@ -2258,24 +2257,24 @@ def collections.linked_list.LinkedList.pop_back
     Source: 'src/lib.rs', lines 2327:12-2333:13 -/
 def collections.linked_list.LinkedList.split_off
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
-  (self : collections.linked_list.LinkedList T A) (at1 : Std.Usize) :
-  Result ((collections.linked_list.LinkedList T A) ×
+  (self : collections.linked_list.LinkedList T A) («at» : Std.Usize) :
+  RustM ((collections.linked_list.LinkedList T A) ×
     (collections.linked_list.LinkedList T A))
   := do
   let l ← collections.linked_list.LinkedList.len self
   let (s, pd) := self
-  let (s1, s2) ← rust_primitives.sequence.seq_drain s at1 l
+  let (s1, s2) ← rust_primitives.sequence.seq_drain s «at» l
   ok ((s1, core.marker.PhantomData.mk), (s2, pd))
 
 /-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::remove]:
     Source: 'src/lib.rs', lines 2338:12-2340:13 -/
 def collections.linked_list.LinkedList.remove
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A)
-  (at1 : Std.Usize) :
-  Result (T × (collections.linked_list.LinkedList T A))
+  («at» : Std.Usize) :
+  RustM (T × (collections.linked_list.LinkedList T A))
   := do
   let (s, pd) := self
-  let (t, s1) ← rust_primitives.sequence.seq_remove s at1
+  let (t, s1) ← rust_primitives.sequence.seq_remove s «at»
   ok (t, (s1, pd))
 
 /-- [alloc::collections::linked_list::{alloc::collections::linked_list::LinkedList<T, A>}::contains]: loop body 0:
@@ -2285,7 +2284,7 @@ def collections.linked_list.LinkedList.contains_loop.body
   {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
   (self : collections.linked_list.LinkedList T A) (x : T)
   (iter_ : core.ops.range.Range Std.Usize) (found : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
   := do
   let (o, iter1) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
@@ -2307,7 +2306,7 @@ def collections.linked_list.LinkedList.contains_loop
   {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
   (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.linked_list.LinkedList T A) (x : T) (found : Bool) :
-  Result Bool
+  RustM Bool
   := do
   loop
     (fun (iter1, found1) =>
@@ -2320,7 +2319,7 @@ def collections.linked_list.LinkedList.contains_loop
 def collections.linked_list.LinkedList.contains
   {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
   (self : collections.linked_list.LinkedList T A) (x : T) :
-  Result Bool
+  RustM Bool
   := do
   let i ← collections.linked_list.LinkedList.len self
   collections.linked_list.LinkedList.contains_loop corecmpPartialEqInst
@@ -2330,7 +2329,7 @@ def collections.linked_list.LinkedList.contains
     Source: 'src/lib.rs', lines 2360:12-2362:13 -/
 def collections.linked_list.LinkedList.iter
   {T : Type} {A : Type} (self : collections.linked_list.LinkedList T A) :
-  Result (collections.linked_list.Iter T)
+  RustM (collections.linked_list.Iter T)
   := do
   let (s, _) := self
   let s1 ← rust_primitives.sequence.seq_to_slice s
@@ -2343,7 +2342,7 @@ def collections.linked_list.LinkedList.iter
 def
   collections.linked_list.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} (self : collections.linked_list.Iter T) :
-  Result ((core.option.Option T) × (collections.linked_list.Iter T))
+  RustM ((core.option.Option T) × (collections.linked_list.Iter T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
@@ -2367,7 +2366,7 @@ def collections.linked_list.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT
 def collections.vec_deque.seq_insert
   {T : Type} (s : rust_primitives.sequence.Seq T) (index : Std.Usize)
   (value : T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   let l ← rust_primitives.sequence.seq_len s
   let (right, s1) ← rust_primitives.sequence.seq_drain s index l
@@ -2378,7 +2377,7 @@ def collections.vec_deque.seq_insert
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, alloc::alloc::Global>}::new]:
     Source: 'src/lib.rs', lines 2650:12-2652:13 -/
 def collections.vec_deque.VecDequeTGlobal.new
-  (T : Type) : Result (collections.vec_deque.VecDeque T alloc.Global) := do
+  (T : Type) : RustM (collections.vec_deque.VecDeque T alloc.Global) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok (s, core.marker.PhantomData.mk)
 
@@ -2386,7 +2385,7 @@ def collections.vec_deque.VecDequeTGlobal.new
     Source: 'src/lib.rs', lines 2654:12-2656:13 -/
 def collections.vec_deque.VecDequeTGlobal.with_capacity
   (T : Type) (_capacity : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T alloc.Global)
+  RustM (collections.vec_deque.VecDeque T alloc.Global)
   := do
   collections.vec_deque.VecDequeTGlobal.new T
 
@@ -2394,7 +2393,7 @@ def collections.vec_deque.VecDequeTGlobal.with_capacity
     Source: 'src/lib.rs', lines 2660:12-2664:13 -/
 def collections.vec_deque.VecDequeTGlobal.try_with_capacity
   (T : Type) (_capacity : Std.Usize) :
-  Result (core.result.Result (collections.vec_deque.VecDeque T alloc.Global)
+  RustM (core.result.Result (collections.vec_deque.VecDeque T alloc.Global)
     collections.TryReserveError)
   := do
   let vd ← collections.vec_deque.VecDequeTGlobal.new T
@@ -2404,7 +2403,7 @@ def collections.vec_deque.VecDequeTGlobal.try_with_capacity
     Source: 'src/lib.rs', lines 2670:12-2672:13 -/
 def collections.vec_deque.VecDeque.new_in
   (T : Type) {A : Type} (_alloc : A) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let s ← rust_primitives.sequence.seq_empty T
   ok (s, core.marker.PhantomData.mk)
@@ -2413,7 +2412,7 @@ def collections.vec_deque.VecDeque.new_in
     Source: 'src/lib.rs', lines 2674:12-2676:13 -/
 def collections.vec_deque.VecDeque.with_capacity_in
   (T : Type) {A : Type} (_capacity : Std.Usize) (alloc : A) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   collections.vec_deque.VecDeque.new_in T alloc
 
@@ -2421,7 +2420,7 @@ def collections.vec_deque.VecDeque.with_capacity_in
     Source: 'src/lib.rs', lines 2678:12-2680:13 -/
 def collections.vec_deque.VecDeque.len
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result Std.Usize
+  RustM Std.Usize
   := do
   let (s, _) := self
   rust_primitives.sequence.seq_len s
@@ -2430,7 +2429,7 @@ def collections.vec_deque.VecDeque.len
     Source: 'src/lib.rs', lines 2682:12-2684:13 -/
 def collections.vec_deque.VecDeque.is_empty
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result Bool
+  RustM Bool
   := do
   let (s, _) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -2441,7 +2440,7 @@ def collections.vec_deque.VecDeque.is_empty
 def collections.vec_deque.VecDeque.get
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (index : Std.Usize) :
-  Result (core.option.Option T)
+  RustM (core.option.Option T)
   := do
   let i ← collections.vec_deque.VecDeque.len self
   if index < i
@@ -2455,7 +2454,7 @@ def collections.vec_deque.VecDeque.get
     Source: 'src/lib.rs', lines 2694:12-2696:13 -/
 def collections.vec_deque.VecDeque.front
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result (core.option.Option T)
+  RustM (core.option.Option T)
   := do
   collections.vec_deque.VecDeque.get self 0#usize
 
@@ -2463,7 +2462,7 @@ def collections.vec_deque.VecDeque.front
     Source: 'src/lib.rs', lines 2698:12-2704:13 -/
 def collections.vec_deque.VecDeque.back
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result (core.option.Option T)
+  RustM (core.option.Option T)
   := do
   let i ← collections.vec_deque.VecDeque.len self
   if i = 0#usize
@@ -2476,7 +2475,7 @@ def collections.vec_deque.VecDeque.back
 def collections.vec_deque.VecDeque.get_mut
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (index : Std.Usize) :
-  Result ((core.option.Option T) × (core.option.Option T →
+  RustM ((core.option.Option T) × (core.option.Option T →
     collections.vec_deque.VecDeque T A))
   := do
   let i ← collections.vec_deque.VecDeque.len self
@@ -2500,7 +2499,7 @@ def collections.vec_deque.VecDeque.get_mut
     Source: 'src/lib.rs', lines 2721:12-2723:13 -/
 def collections.vec_deque.VecDeque.front_mut
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result ((core.option.Option T) × (core.option.Option T →
+  RustM ((core.option.Option T) × (core.option.Option T →
     collections.vec_deque.VecDeque T A))
   := do
   collections.vec_deque.VecDeque.get_mut self 0#usize
@@ -2509,7 +2508,7 @@ def collections.vec_deque.VecDeque.front_mut
     Source: 'src/lib.rs', lines 2726:12-2729:13 -/
 def collections.vec_deque.VecDeque.back_mut
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result ((core.option.Option T) × (core.option.Option T →
+  RustM ((core.option.Option T) × (core.option.Option T →
     collections.vec_deque.VecDeque T A))
   := do
   let l ← collections.vec_deque.VecDeque.len self
@@ -2523,7 +2522,7 @@ def collections.vec_deque.VecDeque.back_mut
     Source: 'src/lib.rs', lines 2734:12-2736:13 -/
 def collections.vec_deque.VecDeque.make_contiguous
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result ((Slice T) × (Slice T → collections.vec_deque.VecDeque T A))
+  RustM ((Slice T) × (Slice T → collections.vec_deque.VecDeque T A))
   := do
   let (s, pd) := self
   let (s1, seq_to_slice_mut_back) ←
@@ -2537,7 +2536,7 @@ def collections.vec_deque.VecDeque.make_contiguous
 def collections.vec_deque.VecDeque.insert_mut
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (index : Std.Usize) (value : T) :
-  Result (T × (T → collections.vec_deque.VecDeque T A))
+  RustM (T × (T → collections.vec_deque.VecDeque T A))
   := do
   let (s, pd) := self
   let s1 ← collections.vec_deque.seq_insert s index value
@@ -2552,7 +2551,7 @@ def collections.vec_deque.VecDeque.insert_mut
 def collections.vec_deque.VecDeque.push_front
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) (value : T)
   :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let (s, pd) := self
   let s1 ← collections.vec_deque.seq_insert s 0#usize value
@@ -2563,7 +2562,7 @@ def collections.vec_deque.VecDeque.push_front
 def collections.vec_deque.VecDeque.push_front_mut
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) (value : T)
   :
-  Result (T × (T → collections.vec_deque.VecDeque T A))
+  RustM (T × (T → collections.vec_deque.VecDeque T A))
   := do
   let self1 ← collections.vec_deque.VecDeque.push_front self value
   let (s, pd) := self1
@@ -2577,7 +2576,7 @@ def collections.vec_deque.VecDeque.push_front_mut
     Source: 'src/lib.rs', lines 2768:12-2770:13 -/
 def collections.vec_deque.VecDeque.push_back
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) (x : T) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let (s, pd) := self
   let s1 ← rust_primitives.sequence.seq_push s x
@@ -2588,7 +2587,7 @@ def collections.vec_deque.VecDeque.push_back
 def collections.vec_deque.VecDeque.push_back_mut
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) (value : T)
   :
-  Result (T × (T → collections.vec_deque.VecDeque T A))
+  RustM (T × (T → collections.vec_deque.VecDeque T A))
   := do
   let self1 ← collections.vec_deque.VecDeque.push_back self value
   let l ← collections.vec_deque.VecDeque.len self1
@@ -2603,7 +2602,7 @@ def collections.vec_deque.VecDeque.push_back_mut
     Source: 'src/lib.rs', lines 2777:12-2783:13 -/
 def collections.vec_deque.VecDeque.pop_front
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  RustM ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
   := do
   let i ← collections.vec_deque.VecDeque.len self
   if i = 0#usize
@@ -2617,7 +2616,7 @@ def collections.vec_deque.VecDeque.pop_front
     Source: 'src/lib.rs', lines 2785:12-2792:13 -/
 def collections.vec_deque.VecDeque.pop_back
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  RustM ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
   := do
   let l ← collections.vec_deque.VecDeque.len self
   if l = 0#usize
@@ -2633,7 +2632,7 @@ def collections.vec_deque.VecDeque.pop_back
 def collections.vec_deque.VecDeque.swap
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (i : Std.Usize) (j : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   if i != j
   then
@@ -2656,7 +2655,7 @@ def collections.vec_deque.VecDeque.swap
 def collections.vec_deque.VecDeque.insert
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (index : Std.Usize) (value : T) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let (s, pd) := self
   let s1 ← collections.vec_deque.seq_insert s index value
@@ -2667,7 +2666,7 @@ def collections.vec_deque.VecDeque.insert
 def collections.vec_deque.VecDeque.remove
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (index : Std.Usize) :
-  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  RustM ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
   := do
   let i ← collections.vec_deque.VecDeque.len self
   if index < i
@@ -2682,7 +2681,7 @@ def collections.vec_deque.VecDeque.remove
 def collections.vec_deque.VecDeque.swap_remove_front
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (index : Std.Usize) :
-  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  RustM ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
   := do
   let i ← collections.vec_deque.VecDeque.len self
   if index < i
@@ -2696,7 +2695,7 @@ def collections.vec_deque.VecDeque.swap_remove_front
 def collections.vec_deque.VecDeque.swap_remove_back
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (index : Std.Usize) :
-  Result ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
+  RustM ((core.option.Option T) × (collections.vec_deque.VecDeque T A))
   := do
   let l ← collections.vec_deque.VecDeque.len self
   if index < l
@@ -2710,7 +2709,7 @@ def collections.vec_deque.VecDeque.swap_remove_back
     Source: 'src/lib.rs', lines 2838:12-2840:13 -/
 def collections.vec_deque.VecDeque.clear
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let s ← rust_primitives.sequence.seq_empty T
   let (_, pd) := self
@@ -2721,7 +2720,7 @@ def collections.vec_deque.VecDeque.clear
 def collections.vec_deque.VecDeque.truncate
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (len : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let l ← collections.vec_deque.VecDeque.len self
   if len < l
@@ -2736,7 +2735,7 @@ def collections.vec_deque.VecDeque.truncate
 def collections.vec_deque.VecDeque.truncate_front
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (len : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let l ← collections.vec_deque.VecDeque.len self
   if len < l
@@ -2751,13 +2750,13 @@ def collections.vec_deque.VecDeque.truncate_front
     Source: 'src/lib.rs', lines 2864:12-2870:13 -/
 def collections.vec_deque.VecDeque.split_off
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone A)
-  (self : collections.vec_deque.VecDeque T A) (at1 : Std.Usize) :
-  Result ((collections.vec_deque.VecDeque T A) ×
+  (self : collections.vec_deque.VecDeque T A) («at» : Std.Usize) :
+  RustM ((collections.vec_deque.VecDeque T A) ×
     (collections.vec_deque.VecDeque T A))
   := do
   let l ← collections.vec_deque.VecDeque.len self
   let (s, pd) := self
-  let (s1, s2) ← rust_primitives.sequence.seq_drain s at1 l
+  let (s1, s2) ← rust_primitives.sequence.seq_drain s «at» l
   ok ((s1, core.marker.PhantomData.mk), (s2, pd))
 
 /-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::append]:
@@ -2765,7 +2764,7 @@ def collections.vec_deque.VecDeque.split_off
 def collections.vec_deque.VecDeque.append
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (other : collections.vec_deque.VecDeque T A) :
-  Result ((collections.vec_deque.VecDeque T A) ×
+  RustM ((collections.vec_deque.VecDeque T A) ×
     (collections.vec_deque.VecDeque T A))
   := do
   let (s, pd) := self
@@ -2779,7 +2778,7 @@ def collections.vec_deque.VecDeque.append
 def collections.vec_deque.VecDeque.rotate_left
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (n : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let (s, pd) := self
   let (head, s1) ← rust_primitives.sequence.seq_drain s 0#usize n
@@ -2791,7 +2790,7 @@ def collections.vec_deque.VecDeque.rotate_left
 def collections.vec_deque.VecDeque.rotate_right
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (n : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let l ← collections.vec_deque.VecDeque.len self
   let i ← l - n
@@ -2804,7 +2803,7 @@ def collections.vec_deque.VecDeque.contains_loop.body
   {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
   (self : collections.vec_deque.VecDeque T A) (x : T)
   (iter_ : core.ops.range.Range Std.Usize) (found : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
   := do
   let (o, iter1) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
@@ -2826,7 +2825,7 @@ def collections.vec_deque.VecDeque.contains_loop
   {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
   (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (x : T) (found : Bool) :
-  Result Bool
+  RustM Bool
   := do
   loop
     (fun (iter1, found1) => collections.vec_deque.VecDeque.contains_loop.body
@@ -2838,7 +2837,7 @@ def collections.vec_deque.VecDeque.contains_loop
 def collections.vec_deque.VecDeque.contains
   {T : Type} {A : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
   (self : collections.vec_deque.VecDeque T A) (x : T) :
-  Result Bool
+  RustM Bool
   := do
   let i ← collections.vec_deque.VecDeque.len self
   collections.vec_deque.VecDeque.contains_loop corecmpPartialEqInst
@@ -2848,7 +2847,7 @@ def collections.vec_deque.VecDeque.contains
     Source: 'src/lib.rs', lines 2914:12-2920:13 -/
 def collections.vec_deque.VecDeque.as_slices
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result ((Slice T) × (Slice T))
+  RustM ((Slice T) × (Slice T))
   := do
   let (s, _) := self
   let s1 ← rust_primitives.sequence.seq_to_slice s
@@ -2860,7 +2859,7 @@ def collections.vec_deque.VecDeque.as_slices
     Source: 'src/lib.rs', lines 2922:12-2924:13 -/
 def collections.vec_deque.VecDeque.iter
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result (collections.vec_deque.iter.Iter T)
+  RustM (collections.vec_deque.iter.Iter T)
   := do
   let (s, _) := self
   let s1 ← rust_primitives.sequence.seq_to_slice s
@@ -2872,7 +2871,7 @@ def collections.vec_deque.VecDeque.iter
 def collections.vec_deque.VecDeque.reserve
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (_additional : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   ok self
 
@@ -2881,7 +2880,7 @@ def collections.vec_deque.VecDeque.reserve
 def collections.vec_deque.VecDeque.reserve_exact
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (_additional : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   ok self
 
@@ -2889,7 +2888,7 @@ def collections.vec_deque.VecDeque.reserve_exact
     Source: 'src/lib.rs', lines 2931:12-2931:42 -/
 def collections.vec_deque.VecDeque.shrink_to_fit
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   ok self
 
@@ -2898,7 +2897,7 @@ def collections.vec_deque.VecDeque.shrink_to_fit
 def collections.vec_deque.VecDeque.shrink_to
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (_min_capacity : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   ok self
 
@@ -2907,7 +2906,7 @@ def collections.vec_deque.VecDeque.shrink_to
 def collections.vec_deque.VecDeque.try_reserve
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (_additional : Std.Usize) :
-  Result ((core.result.Result Unit collections.TryReserveError) ×
+  RustM ((core.result.Result Unit collections.TryReserveError) ×
     (collections.vec_deque.VecDeque T A))
   := do
   ok (core.result.Result.Ok (), self)
@@ -2917,7 +2916,7 @@ def collections.vec_deque.VecDeque.try_reserve
 def collections.vec_deque.VecDeque.try_reserve_exact
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (_additional : Std.Usize) :
-  Result ((core.result.Result Unit collections.TryReserveError) ×
+  RustM ((core.result.Result Unit collections.TryReserveError) ×
     (collections.vec_deque.VecDeque T A))
   := do
   ok (core.result.Result.Ok (), self)
@@ -2930,7 +2929,7 @@ def collections.vec_deque.VecDeque.retain_loop.body
   core.ops.function.FnMut F T Bool) (l : Std.Usize)
   (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (f : F) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (collections.vec_deque.VecDeque T A) × F) (collections.vec_deque.VecDeque
     T A))
   := do
@@ -2958,7 +2957,7 @@ def collections.vec_deque.VecDeque.retain_loop
   {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleSharedTBoolInst :
   core.ops.function.FnMut F T Bool) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (f : F) (l : Std.Usize) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   loop
     (fun (iter1, self1, f1) => collections.vec_deque.VecDeque.retain_loop.body
@@ -2971,7 +2970,7 @@ def collections.vec_deque.VecDeque.retain
   {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleShared0TBoolInst
   : core.ops.function.FnMut F T Bool)
   (self : collections.vec_deque.VecDeque T A) (f : F) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let l ← collections.vec_deque.VecDeque.len self
   collections.vec_deque.VecDeque.retain_loop
@@ -2985,7 +2984,7 @@ def collections.vec_deque.VecDeque.resize_with_loop.body
   {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleTInst :
   core.ops.function.FnMut F Unit T) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (generator : F) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (collections.vec_deque.VecDeque T A) × F) (collections.vec_deque.VecDeque
     T A))
   := do
@@ -3008,7 +3007,7 @@ def collections.vec_deque.VecDeque.resize_with_loop
   {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleTInst :
   core.ops.function.FnMut F Unit T) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (generator : F) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   loop
     (fun (iter1, self1, generator1) =>
@@ -3022,7 +3021,7 @@ def collections.vec_deque.VecDeque.resize_with
   {T : Type} {A : Type} {F : Type} (coreopsfunctionFnMutFTupleTInst :
   core.ops.function.FnMut F Unit T) (self : collections.vec_deque.VecDeque T A)
   (new_len : Std.Usize) (generator : F) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let l ← collections.vec_deque.VecDeque.len self
   if new_len > l
@@ -3042,7 +3041,7 @@ def collections.vec_deque.VecDeque.binary_search_by_loop.body
   core.cmp.Ordering) (self : collections.vec_deque.VecDeque T A)
   (iter_ : core.ops.range.Range Std.Usize) (f : F) (pos : Std.Usize) (eq : Bool)
   (done1 : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × F × Std.Usize ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × F × Std.Usize ×
     Bool × Bool) (Std.Usize × Bool))
   := do
   let (o, iter1) ←
@@ -3072,7 +3071,7 @@ def collections.vec_deque.VecDeque.binary_search_by_loop
   core.cmp.Ordering) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (f : F) (pos : Std.Usize)
   (eq : Bool) (done1 : Bool) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   loop
     (fun (iter1, f1, pos1, eq1, done2) =>
@@ -3087,7 +3086,7 @@ def collections.vec_deque.VecDeque.binary_search_by
   {T : Type} {A : Type} {F : Type}
   (coreopsfunctionFnMutFTupleShared0TOrderingInst : core.ops.function.FnMut F T
   core.cmp.Ordering) (self : collections.vec_deque.VecDeque T A) (f : F) :
-  Result (core.result.Result Std.Usize Std.Usize)
+  RustM (core.result.Result Std.Usize Std.Usize)
   := do
   let pos ← collections.vec_deque.VecDeque.len self
   let (pos1, eq) ←
@@ -3105,7 +3104,7 @@ def
   {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
   (c : collections.vec_deque.VecDeque.binary_search.closure T A)
   (tupled_args : T) :
-  Result (core.cmp.Ordering ×
+  RustM (core.cmp.Ordering ×
     (collections.vec_deque.VecDeque.binary_search.closure T A))
   := do
   let o ← corecmpOrdInst.cmp tupled_args c
@@ -3117,7 +3116,7 @@ def
   collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnOnceTupleSharedTOrdering.call_once
   {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
   (c : collections.vec_deque.VecDeque.binary_search.closure T A) (t : T) :
-  Result core.cmp.Ordering
+  RustM core.cmp.Ordering
   := do
   let (o, _) ←
     collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnMutTupleSharedTOrdering.call_mut
@@ -3159,7 +3158,7 @@ def
 def collections.vec_deque.VecDeque.binary_search
   {T : Type} {A : Type} (corecmpOrdInst : core.cmp.Ord T)
   (self : collections.vec_deque.VecDeque T A) (x : T) :
-  Result (core.result.Result Std.Usize Std.Usize)
+  RustM (core.result.Result Std.Usize Std.Usize)
   := do
   collections.vec_deque.VecDeque.binary_search_by
     (collections.vec_deque.VecDeque.binary_search.closure.Insts.CoreOpsFunctionFnMutTupleSharedTOrdering
@@ -3174,7 +3173,7 @@ def collections.vec_deque.VecDeque.binary_search_by_key_loop.body
   (corecmpOrdInst : core.cmp.Ord B) (self : collections.vec_deque.VecDeque T A)
   (b : B) (iter_ : core.ops.range.Range Std.Usize) (f : F) (pos : Std.Usize)
   (eq : Bool) (done1 : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × F × Std.Usize ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × F × Std.Usize ×
     Bool × Bool) (Std.Usize × Bool))
   := do
   let (o, iter1) ←
@@ -3204,7 +3203,7 @@ def collections.vec_deque.VecDeque.binary_search_by_key_loop
   (corecmpOrdInst : core.cmp.Ord B) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (b : B) (f : F) (pos : Std.Usize)
   (eq : Bool) (done1 : Bool) :
-  Result (Std.Usize × Bool)
+  RustM (Std.Usize × Bool)
   := do
   loop
     (fun (iter1, f1, pos1, eq1, done2) =>
@@ -3220,7 +3219,7 @@ def collections.vec_deque.VecDeque.binary_search_by_key
   (coreopsfunctionFnMutFTupleShared0TBInst : core.ops.function.FnMut F T B)
   (corecmpOrdInst : core.cmp.Ord B) (self : collections.vec_deque.VecDeque T A)
   (b : B) (f : F) :
-  Result (core.result.Result Std.Usize Std.Usize)
+  RustM (core.result.Result Std.Usize Std.Usize)
   := do
   let pos ← collections.vec_deque.VecDeque.len self
   let (pos1, eq) ←
@@ -3239,7 +3238,7 @@ def collections.vec_deque.VecDeque.partition_point_loop.body
   core.ops.function.FnMut P T Bool) (self : collections.vec_deque.VecDeque T A)
   (iter_ : core.ops.range.Range Std.Usize) (pred : P) (pos : Std.Usize)
   (done1 : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × P × Std.Usize ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × P × Std.Usize ×
     Bool) Std.Usize)
   := do
   let (o, iter1) ←
@@ -3267,7 +3266,7 @@ def collections.vec_deque.VecDeque.partition_point_loop
   core.ops.function.FnMut P T Bool) (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (pred : P) (pos : Std.Usize)
   (done1 : Bool) :
-  Result Std.Usize
+  RustM Std.Usize
   := do
   loop
     (fun (iter1, pred1, pos1, done2) =>
@@ -3281,7 +3280,7 @@ def collections.vec_deque.VecDeque.partition_point
   {T : Type} {A : Type} {P : Type} (coreopsfunctionFnMutPTupleShared0TBoolInst
   : core.ops.function.FnMut P T Bool)
   (self : collections.vec_deque.VecDeque T A) (pred : P) :
-  Result Std.Usize
+  RustM Std.Usize
   := do
   let pos ← collections.vec_deque.VecDeque.len self
   collections.vec_deque.VecDeque.partition_point_loop
@@ -3295,7 +3294,7 @@ def collections.vec_deque.VecDeque.resize_loop.body
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone T) (value : T)
   (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (collections.vec_deque.VecDeque T A)) (collections.vec_deque.VecDeque T A))
   := do
   let (o, iter1) ←
@@ -3316,7 +3315,7 @@ def collections.vec_deque.VecDeque.resize_loop
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone T)
   (iter_ : core.ops.range.Range Std.Usize)
   (self : collections.vec_deque.VecDeque T A) (value : T) :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   loop
     (fun (iter1, self1) => collections.vec_deque.VecDeque.resize_loop.body
@@ -3329,7 +3328,7 @@ def collections.vec_deque.VecDeque.resize
   {T : Type} {A : Type} (corecloneCloneInst : core.clone.Clone T)
   (self : collections.vec_deque.VecDeque T A) (new_len : Std.Usize) (value : T)
   :
-  Result (collections.vec_deque.VecDeque T A)
+  RustM (collections.vec_deque.VecDeque T A)
   := do
   let l ← collections.vec_deque.VecDeque.len self
   if new_len > l
@@ -3345,7 +3344,7 @@ def collections.vec_deque.VecDeque.resize
 def
   collections.vec_deque.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
   {T : Type} (self : collections.vec_deque.iter.Iter T) :
-  Result ((core.option.Option T) × (collections.vec_deque.iter.Iter T))
+  RustM ((core.option.Option T) × (collections.vec_deque.iter.Iter T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
@@ -3371,7 +3370,7 @@ def
 def collections.vec_deque.VecDeque.Insts.CoreOpsIndexIndexUsizeT.index
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A)
   (i : Std.Usize) :
-  Result T
+  RustM T
   := do
   let (s, _) := self
   rust_primitives.sequence.seq_index s i
@@ -3391,7 +3390,7 @@ def collections.vec_deque.VecDeque.Insts.CoreOpsIndexIndexUsizeT (T : Type) (A
 def
   collections.vec_deque.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} {A : Type} (self : collections.vec_deque.into_iter.IntoIter T A) :
-  Result ((core.option.Option T) × (collections.vec_deque.into_iter.IntoIter T
+  RustM ((core.option.Option T) × (collections.vec_deque.into_iter.IntoIter T
     A))
   := do
   let (s, pd) := self
@@ -3419,7 +3418,7 @@ def
 def
   collections.vec_deque.VecDeque.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
   {T : Type} {A : Type} (self : collections.vec_deque.VecDeque T A) :
-  Result (collections.vec_deque.into_iter.IntoIter T A)
+  RustM (collections.vec_deque.into_iter.IntoIter T A)
   := do
   let (s, _) := self
   ok (s, core.marker.PhantomData.mk)
@@ -3437,35 +3436,35 @@ def
 }
 
 /-- [alloc::vec::from_seq]:
-    Source: 'src/lib.rs', lines 4579:4-4581:5 -/
+    Source: 'src/lib.rs', lines 4584:4-4586:5 -/
 def vec.from_seq
-  {T : Type} (s : rust_primitives.sequence.Seq T) : Result (vec.Vec T) := do
+  {T : Type} (s : rust_primitives.sequence.Seq T) : RustM (vec.Vec T) := do
   ok s
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::to_vec]:
-    Source: 'src/lib.rs', lines 3855:8-3862:9 -/
+    Source: 'src/lib.rs', lines 3862:8-3869:9 -/
 def slice.Dummy.to_vec
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (s : Slice T) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let seq ← rust_primitives.sequence.seq_empty T
   let seq1 ← rust_primitives.sequence.seq_extend corecloneCloneInst seq s
   vec.from_seq seq1
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::into_vec]:
-    Source: 'src/lib.rs', lines 3864:8-3866:9 -/
-def slice.Dummy.into_vec {T : Type} (s : Slice T) : Result (vec.Vec T) := do
+    Source: 'src/lib.rs', lines 3871:8-3873:9 -/
+def slice.Dummy.into_vec {T : Type} (s : Slice T) : RustM (vec.Vec T) := do
   let s1 ← rust_primitives.sequence.seq_from_boxed_slice s
   vec.from_seq s1
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]: loop body 0:
-    Source: 'src/lib.rs', lines 3879:12-3882:13 -/
+    Source: 'src/lib.rs', lines 3886:12-3889:13 -/
 @[rust_loop_body]
 def slice.Dummy.concat_loop.body
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
   (coreborrowBorrowTSliceInst : core.borrow.Borrow T (Slice Item))
   (s : Slice T) (out : rust_primitives.sequence.Seq Item) (i : Std.Usize) :
-  Result (ControlFlow ((rust_primitives.sequence.Seq Item) × Std.Usize)
+  RustM (ControlFlow ((rust_primitives.sequence.Seq Item) × Std.Usize)
     (rust_primitives.sequence.Seq Item))
   := do
   let i1 ← rust_primitives.slice.slice_length s
@@ -3479,13 +3478,13 @@ def slice.Dummy.concat_loop.body
   else ok (done out)
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]: loop 0:
-    Source: 'src/lib.rs', lines 3879:12-3882:13 -/
+    Source: 'src/lib.rs', lines 3886:12-3889:13 -/
 @[rust_loop]
 def slice.Dummy.concat_loop
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
   (coreborrowBorrowTSliceInst : core.borrow.Borrow T (Slice Item))
   (s : Slice T) (out : rust_primitives.sequence.Seq Item) (i : Std.Usize) :
-  Result (rust_primitives.sequence.Seq Item)
+  RustM (rust_primitives.sequence.Seq Item)
   := do
   loop
     (fun (out1, i1) => slice.Dummy.concat_loop.body corecloneCloneInst
@@ -3493,12 +3492,12 @@ def slice.Dummy.concat_loop
     (out, i)
 
 /-- [alloc::slice::{alloc::slice::Dummy<T>}::concat]:
-    Source: 'src/lib.rs', lines 3873:8-3884:9 -/
+    Source: 'src/lib.rs', lines 3880:8-3891:9 -/
 def slice.Dummy.concat
   {T : Type} {Item : Type} (corecloneCloneInst : core.clone.Clone Item)
   (coreborrowBorrowTSliceInst : core.borrow.Borrow T (Slice Item))
   (s : Slice T) :
-  Result (vec.Vec Item)
+  RustM (vec.Vec Item)
   := do
   let out ← rust_primitives.sequence.seq_empty Item
   let out1 ←
@@ -3507,27 +3506,27 @@ def slice.Dummy.concat
   vec.from_seq out1
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::as_slice]:
-    Source: 'src/lib.rs', lines 4709:8-4711:9
+    Source: 'src/lib.rs', lines 4714:8-4716:9
     Visibility: public -/
-def vec.Vec.as_slice {T : Type} (self : vec.Vec T) : Result (Slice T) := do
+def vec.Vec.as_slice {T : Type} (self : vec.Vec T) : RustM (Slice T) := do
   rust_primitives.sequence.seq_to_slice self
 
 /-- [alloc::vec::{impl core::ops::deref::Deref<[T]> for alloc::vec::Vec<T>}::deref]:
-    Source: 'src/lib.rs', lines 5168:8-5170:9
+    Source: 'src/lib.rs', lines 5173:8-5175:9
     Visibility: public -/
 def vec.Vec.Insts.CoreOpsDerefDerefSlice.deref
-  {T : Type} (self : vec.Vec T) : Result (Slice T) := do
+  {T : Type} (self : vec.Vec T) : RustM (Slice T) := do
   vec.Vec.as_slice self
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]: loop body 0:
-    Source: 'src/lib.rs', lines 4586:12-4588:13
+    Source: 'src/lib.rs', lines 4591:12-4593:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.Insts.CoreCloneClone.clone_loop.body
   {T : Type} (corecloneCloneInst : core.clone.Clone T)
   (iter_ : core.slice.iter.Iter T) (new_vec : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.slice.iter.Iter T) ×
-    (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
+  RustM (ControlFlow ((core.slice.iter.Iter T) × (rust_primitives.sequence.Seq
+    T)) (rust_primitives.sequence.Seq T))
   := do
   let (o, iter1) ←
     core.slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next iter_
@@ -3539,13 +3538,13 @@ def vec.Vec.Insts.CoreCloneClone.clone_loop.body
     ok (cont (iter1, new_vec1))
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]: loop 0:
-    Source: 'src/lib.rs', lines 4586:12-4588:13
+    Source: 'src/lib.rs', lines 4591:12-4593:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.Insts.CoreCloneClone.clone_loop
   {T : Type} (corecloneCloneInst : core.clone.Clone T)
   (iter_ : core.slice.iter.Iter T) (new_vec : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, new_vec1) => vec.Vec.Insts.CoreCloneClone.clone_loop.body
@@ -3553,11 +3552,11 @@ def vec.Vec.Insts.CoreCloneClone.clone_loop
     (iter_, new_vec)
 
 /-- [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}::clone]:
-    Source: 'src/lib.rs', lines 4584:8-4590:9
+    Source: 'src/lib.rs', lines 4589:8-4595:9
     Visibility: public -/
 def vec.Vec.Insts.CoreCloneClone.clone
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let new_vec ← rust_primitives.sequence.seq_empty T
   let s ← vec.Vec.Insts.CoreOpsDerefDerefSlice.deref self
@@ -3567,7 +3566,7 @@ def vec.Vec.Insts.CoreCloneClone.clone
   ok new_vec1
 
 /-- Trait implementation: [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 4583:4-4591:5 -/
+    Source: 'src/lib.rs', lines 4588:4-4596:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
   core.clone.Clone T) : core.clone.Clone (vec.Vec T) := {
@@ -3575,34 +3574,34 @@ def vec.Vec.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
 }
 
 /-- [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}::index]:
-    Source: 'src/lib.rs', lines 5143:8-5145:9
+    Source: 'src/lib.rs', lines 5148:8-5150:9
     Visibility: public -/
 def vec.Vec.Insts.CoreOpsIndexIndex.index
   {T : Type} {I : Type} {Clause0_Output : Type}
   (coresliceindexSliceIndexISliceClause0_OutputInst :
   core.slice.index.SliceIndex I (Slice T) Clause0_Output) (self : vec.Vec T)
   (i : I) :
-  Result Clause0_Output
+  RustM Clause0_Output
   := do
   let s ← vec.Vec.Insts.CoreOpsDerefDerefSlice.deref self
   core.Slice.Insts.CoreOpsIndexIndex.index
     coresliceindexSliceIndexISliceClause0_OutputInst s i
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::len]:
-    Source: 'src/lib.rs', lines 4683:8-4685:9
+    Source: 'src/lib.rs', lines 4688:8-4690:9
     Visibility: public -/
-def vec.Vec.len {T : Type} (self : vec.Vec T) : Result Std.Usize := do
+def vec.Vec.len {T : Type} (self : vec.Vec T) : RustM Std.Usize := do
   rust_primitives.sequence.seq_len self
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]: loop body 0:
-    Source: 'src/lib.rs', lines 1:0-4612:17
+    Source: 'src/lib.rs', lines 1:0-4617:17
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop.body
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
   (self : vec.Vec T) (other : vec.Vec U)
   (iter_ : core.ops.range.Range Std.Usize) (res : Bool) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
   := do
   let (o, iter1) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
@@ -3625,14 +3624,14 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop.body
     else ok (cont (iter1, false))
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]: loop 0:
-    Source: 'src/lib.rs', lines 1:0-4612:17
+    Source: 'src/lib.rs', lines 1:0-4617:17
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
   (iter_ : core.ops.range.Range Std.Usize) (self : vec.Vec T)
   (other : vec.Vec U) (res : Bool) :
-  Result Bool
+  RustM Bool
   := do
   loop
     (fun (iter1, res1) => vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop.body
@@ -3640,12 +3639,12 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq_loop
     (iter_, res)
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::eq]:
-    Source: 'src/lib.rs', lines 4600:8-4615:9
+    Source: 'src/lib.rs', lines 4605:8-4620:9
     Visibility: public -/
 def vec.Vec.Insts.CoreCmpPartialEqVec.eq
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
   (self : vec.Vec T) (other : vec.Vec U) :
-  Result Bool
+  RustM Bool
   := do
   let i ← vec.Vec.len self
   let i1 ← vec.Vec.len other
@@ -3656,19 +3655,19 @@ def vec.Vec.Insts.CoreCmpPartialEqVec.eq
   else ok false
 
 /-- [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}::ne]:
-    Source: 'src/lib.rs', lines 4597:8-4599:9
+    Source: 'src/lib.rs', lines 4602:8-4604:9
     Visibility: public -/
 def vec.Vec.Insts.CoreCmpPartialEqVec.ne
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
   (self : vec.Vec T) (other : vec.Vec U) :
-  Result Bool
+  RustM Bool
   := do
   let b ←
     vec.Vec.Insts.CoreCmpPartialEqVec.eq corecmpPartialEqInst self other
   ok (b = false)
 
 /-- Trait implementation: [alloc::vec::{impl core::cmp::PartialEq<alloc::vec::Vec<U>> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 4592:4-4616:5 -/
+    Source: 'src/lib.rs', lines 4597:4-4621:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreCmpPartialEqVec {T : Type} {U : Type}
   (corecmpPartialEqInst : core.cmp.PartialEq T U) : core.cmp.PartialEq (vec.Vec
@@ -3678,11 +3677,11 @@ def vec.Vec.Insts.CoreCmpPartialEqVec {T : Type} {U : Type}
 }
 
 /-- [alloc::vec::into_iter::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::into_iter::IntoIter<T>}::next]:
-    Source: 'src/lib.rs', lines 4627:12-4633:13
+    Source: 'src/lib.rs', lines 4632:12-4638:13
     Visibility: public -/
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} (self : vec.into_iter.IntoIter T) :
-  Result ((core.option.Option T) × (vec.into_iter.IntoIter T))
+  RustM ((core.option.Option T) × (vec.into_iter.IntoIter T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
@@ -3692,7 +3691,7 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.next
     ok (core.option.Option.Some t, s)
 
 /-- Trait implementation: [alloc::vec::into_iter::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::into_iter::IntoIter<T>}]
-    Source: 'src/lib.rs', lines 4625:8-4634:9 -/
+    Source: 'src/lib.rs', lines 4630:8-4639:9 -/
 @[reducible]
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
   core.iter.traits.iterator.Iterator (vec.into_iter.IntoIter T) T := {
@@ -3700,18 +3699,18 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator (T : Type) :
 }
 
 /-- [alloc::vec::into_iter::{alloc::vec::into_iter::IntoIter<T>}::as_slice]:
-    Source: 'src/lib.rs', lines 4638:12-4640:13
+    Source: 'src/lib.rs', lines 4643:12-4645:13
     Visibility: public -/
 def vec.into_iter.IntoIter.as_slice
-  {T : Type} (self : vec.into_iter.IntoIter T) : Result (Slice T) := do
+  {T : Type} (self : vec.into_iter.IntoIter T) : RustM (Slice T) := do
   rust_primitives.sequence.seq_to_slice self
 
 /-- [alloc::vec::into_iter::{alloc::vec::into_iter::IntoIter<T>}::as_mut_slice]:
-    Source: 'src/lib.rs', lines 4642:12-4644:13
+    Source: 'src/lib.rs', lines 4647:12-4649:13
     Visibility: public -/
 def vec.into_iter.IntoIter.as_mut_slice
   {T : Type} (self : vec.into_iter.IntoIter T) :
-  Result ((Slice T) × (Slice T → vec.into_iter.IntoIter T))
+  RustM ((Slice T) × (Slice T → vec.into_iter.IntoIter T))
   := do
   let (s, seq_to_slice_mut_back) ←
     rust_primitives.sequence.seq_to_slice_mut self
@@ -3720,21 +3719,21 @@ def vec.into_iter.IntoIter.as_mut_slice
   ok (s, back)
 
 /-- [alloc::vec::into_iter::{alloc::vec::into_iter::IntoIter<T>}::allocator]:
-    Source: 'src/lib.rs', lines 4646:12-4648:13
+    Source: 'src/lib.rs', lines 4651:12-4653:13
     Visibility: public -/
 def vec.into_iter.IntoIter.allocator
-  {T : Type} (self : vec.into_iter.IntoIter T) : Result alloc.Global := do
+  {T : Type} (self : vec.into_iter.IntoIter T) : RustM alloc.Global := do
   ok ()
 
 /-- [alloc::vec::{impl core::iter::traits::collect::IntoIterator<T, alloc::vec::into_iter::IntoIter<T>> for alloc::vec::Vec<T>}::into_iter]:
-    Source: 'src/lib.rs', lines 4655:8-4657:9
+    Source: 'src/lib.rs', lines 4660:8-4662:9
     Visibility: public -/
 def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter.into_iter
-  {T : Type} (self : vec.Vec T) : Result (vec.into_iter.IntoIter T) := do
+  {T : Type} (self : vec.Vec T) : RustM (vec.into_iter.IntoIter T) := do
   ok self
 
 /-- Trait implementation: [alloc::vec::{impl core::iter::traits::collect::IntoIterator<T, alloc::vec::into_iter::IntoIter<T>> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 4652:4-4658:5 -/
+    Source: 'src/lib.rs', lines 4657:4-4663:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) :
   core.iter.traits.collect.IntoIterator (vec.Vec T) T (vec.into_iter.IntoIter
@@ -3744,38 +3743,37 @@ def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type) :
 }
 
 /-- [alloc::vec::from_elem]:
-    Source: 'src/lib.rs', lines 4660:4-4662:5 -/
+    Source: 'src/lib.rs', lines 4665:4-4667:5 -/
 def vec.from_elem
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (item : T)
   (len : Std.Usize) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let s ← rust_primitives.sequence.seq_create corecloneCloneInst item len
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::new]:
-    Source: 'src/lib.rs', lines 4666:8-4668:9
+    Source: 'src/lib.rs', lines 4671:8-4673:9
     Visibility: public -/
-def vec.Vec.new (T : Type) : Result (vec.Vec T) := do
+def vec.Vec.new (T : Type) : RustM (vec.Vec T) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::with_capacity]:
-    Source: 'src/lib.rs', lines 4669:8-4671:9
+    Source: 'src/lib.rs', lines 4674:8-4676:9
     Visibility: public -/
-def vec.Vec.with_capacity
-  (T : Type) (_c : Std.Usize) : Result (vec.Vec T) := do
+def vec.Vec.with_capacity (T : Type) (_c : Std.Usize) : RustM (vec.Vec T) := do
   vec.Vec.new T
 
 /-- [alloc::vec::{impl core::default::Default for alloc::vec::Vec<T>}::default]:
-    Source: 'src/lib.rs', lines 4676:8-4678:9
+    Source: 'src/lib.rs', lines 4681:8-4683:9
     Visibility: public -/
 def vec.Vec.Insts.CoreDefaultDefault.default
-  (T : Type) : Result (vec.Vec T) := do
+  (T : Type) : RustM (vec.Vec T) := do
   vec.Vec.new T
 
 /-- Trait implementation: [alloc::vec::{impl core::default::Default for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 4675:4-4679:5 -/
+    Source: 'src/lib.rs', lines 4680:4-4684:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreDefaultDefault (T : Type) : core.default.Default (vec.Vec
   T) := {
@@ -3783,19 +3781,19 @@ def vec.Vec.Insts.CoreDefaultDefault (T : Type) : core.default.Default (vec.Vec
 }
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::push]:
-    Source: 'src/lib.rs', lines 4687:8-4689:9
+    Source: 'src/lib.rs', lines 4692:8-4694:9
     Visibility: public -/
 def vec.Vec.push
-  {T : Type} (self : vec.Vec T) (x : T) : Result (vec.Vec T) := do
+  {T : Type} (self : vec.Vec T) (x : T) : RustM (vec.Vec T) := do
   let s ← rust_primitives.sequence.seq_push self x
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::pop]:
-    Source: 'src/lib.rs', lines 4690:8-4698:9
+    Source: 'src/lib.rs', lines 4695:8-4703:9
     Visibility: public -/
 def vec.Vec.pop
   {T : Type} (self : vec.Vec T) :
-  Result ((core.option.Option T) × (vec.Vec T))
+  RustM ((core.option.Option T) × (vec.Vec T))
   := do
   let l ← rust_primitives.sequence.seq_len self
   if l > 0#usize
@@ -3806,18 +3804,18 @@ def vec.Vec.pop
   else ok (core.option.Option.None, self)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::is_empty]:
-    Source: 'src/lib.rs', lines 4699:8-4701:9
+    Source: 'src/lib.rs', lines 4704:8-4706:9
     Visibility: public -/
-def vec.Vec.is_empty {T : Type} (self : vec.Vec T) : Result Bool := do
+def vec.Vec.is_empty {T : Type} (self : vec.Vec T) : RustM Bool := do
   let i ← rust_primitives.sequence.seq_len self
   ok (i = 0#usize)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::insert]:
-    Source: 'src/lib.rs', lines 4703:8-4708:9
+    Source: 'src/lib.rs', lines 4708:8-4713:9
     Visibility: public -/
 def vec.Vec.insert
   {T : Type} (self : vec.Vec T) (index : Std.Usize) (element : T) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let l ← rust_primitives.sequence.seq_len self
   let (right, s) ← rust_primitives.sequence.seq_drain self index l
@@ -3826,10 +3824,10 @@ def vec.Vec.insert
   ok s2
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::truncate]:
-    Source: 'src/lib.rs', lines 4715:8-4720:9
+    Source: 'src/lib.rs', lines 4720:8-4725:9
     Visibility: public -/
 def vec.Vec.truncate
-  {T : Type} (self : vec.Vec T) (n : Std.Usize) : Result (vec.Vec T) := do
+  {T : Type} (self : vec.Vec T) (n : Std.Usize) : RustM (vec.Vec T) := do
   let l ← rust_primitives.sequence.seq_len self
   if n < l
   then let (_, s) ← rust_primitives.sequence.seq_drain self n l
@@ -3837,11 +3835,11 @@ def vec.Vec.truncate
   else ok self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::swap_remove]:
-    Source: 'src/lib.rs', lines 4723:8-4733:9
+    Source: 'src/lib.rs', lines 4728:8-4738:9
     Visibility: public -/
 def vec.Vec.swap_remove
   {T : Type} (self : vec.Vec T) (n : Std.Usize) :
-  Result (T × (vec.Vec T))
+  RustM (T × (vec.Vec T))
   := do
   let l ← rust_primitives.sequence.seq_len self
   let i ← l - 1#usize
@@ -3854,150 +3852,147 @@ def vec.Vec.swap_remove
     ok (removed, self1)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::remove]:
-    Source: 'src/lib.rs', lines 4740:8-4742:9
+    Source: 'src/lib.rs', lines 4745:8-4747:9
     Visibility: public -/
 def vec.Vec.remove
   {T : Type} (self : vec.Vec T) (index : Std.Usize) :
-  Result (T × (vec.Vec T))
+  RustM (T × (vec.Vec T))
   := do
   let (t, s) ← rust_primitives.sequence.seq_remove self index
   ok (t, s)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::clear]:
-    Source: 'src/lib.rs', lines 4744:8-4746:9
+    Source: 'src/lib.rs', lines 4749:8-4751:9
     Visibility: public -/
-def vec.Vec.clear {T : Type} (self : vec.Vec T) : Result (vec.Vec T) := do
+def vec.Vec.clear {T : Type} (self : vec.Vec T) : RustM (vec.Vec T) := do
   let s ← rust_primitives.sequence.seq_empty T
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::append]:
-    Source: 'src/lib.rs', lines 4748:8-4751:9
+    Source: 'src/lib.rs', lines 4753:8-4756:9
     Visibility: public -/
 def vec.Vec.append
   {T : Type} (self : vec.Vec T) (other : vec.Vec T) :
-  Result ((vec.Vec T) × (vec.Vec T))
+  RustM ((vec.Vec T) × (vec.Vec T))
   := do
   let (s, _) ← rust_primitives.sequence.seq_concat self other
   let s1 ← rust_primitives.sequence.seq_empty T
   ok (s, s1)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::split_off]:
-    Source: 'src/lib.rs', lines 4755:8-4758:9
+    Source: 'src/lib.rs', lines 4760:8-4763:9
     Visibility: public -/
 def vec.Vec.split_off
-  {T : Type} (self : vec.Vec T) (at1 : Std.Usize) :
-  Result ((vec.Vec T) × (vec.Vec T))
+  {T : Type} (self : vec.Vec T) («at» : Std.Usize) :
+  RustM ((vec.Vec T) × (vec.Vec T))
   := do
   let l ← rust_primitives.sequence.seq_len self
-  let (s, s1) ← rust_primitives.sequence.seq_drain self at1 l
+  let (s, s1) ← rust_primitives.sequence.seq_drain self «at» l
   ok (s, s1)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::capacity]:
-    Source: 'src/lib.rs', lines 4777:8-4779:9
+    Source: 'src/lib.rs', lines 4782:8-4784:9
     Visibility: public -/
-def vec.Vec.capacity {T : Type} (self : vec.Vec T) : Result Std.Usize := do
+def vec.Vec.capacity {T : Type} (self : vec.Vec T) : RustM Std.Usize := do
   rust_primitives.sequence.seq_len self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::reserve]:
-    Source: 'src/lib.rs', lines 4782:8-4782:56
+    Source: 'src/lib.rs', lines 4787:8-4787:56
     Visibility: public -/
 def vec.Vec.reserve
   {T : Type} (self : vec.Vec T) (_additional : Std.Usize) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   ok self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::reserve_exact]:
-    Source: 'src/lib.rs', lines 4784:8-4784:62
+    Source: 'src/lib.rs', lines 4789:8-4789:62
     Visibility: public -/
 def vec.Vec.reserve_exact
   {T : Type} (self : vec.Vec T) (_additional : Std.Usize) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   ok self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::shrink_to_fit]:
-    Source: 'src/lib.rs', lines 4786:8-4786:42
+    Source: 'src/lib.rs', lines 4791:8-4791:42
     Visibility: public -/
 def vec.Vec.shrink_to_fit
-  {T : Type} (self : vec.Vec T) : Result (vec.Vec T) := do
+  {T : Type} (self : vec.Vec T) : RustM (vec.Vec T) := do
   ok self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::shrink_to]:
-    Source: 'src/lib.rs', lines 4788:8-4788:60
+    Source: 'src/lib.rs', lines 4793:8-4793:60
     Visibility: public -/
 def vec.Vec.shrink_to
   {T : Type} (self : vec.Vec T) (_min_capacity : Std.Usize) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   ok self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::try_reserve]:
-    Source: 'src/lib.rs', lines 4790:8-4795:9
+    Source: 'src/lib.rs', lines 4795:8-4800:9
     Visibility: public -/
 def vec.Vec.try_reserve
   {T : Type} (self : vec.Vec T) (_additional : Std.Usize) :
-  Result ((core.result.Result Unit collections.TryReserveError) × (vec.Vec T))
+  RustM ((core.result.Result Unit collections.TryReserveError) × (vec.Vec T))
   := do
   ok (core.result.Result.Ok (), self)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::try_reserve_exact]:
-    Source: 'src/lib.rs', lines 4797:8-4802:9
+    Source: 'src/lib.rs', lines 4802:8-4807:9
     Visibility: public -/
 def vec.Vec.try_reserve_exact
   {T : Type} (self : vec.Vec T) (_additional : Std.Usize) :
-  Result ((core.result.Result Unit collections.TryReserveError) × (vec.Vec T))
+  RustM ((core.result.Result Unit collections.TryReserveError) × (vec.Vec T))
   := do
   ok (core.result.Result.Ok (), self)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::try_with_capacity]:
-    Source: 'src/lib.rs', lines 4804:8-4808:9
+    Source: 'src/lib.rs', lines 4809:8-4813:9
     Visibility: public -/
 def vec.Vec.try_with_capacity
   (T : Type) (_capacity : Std.Usize) :
-  Result (core.result.Result (vec.Vec T) collections.TryReserveError)
+  RustM (core.result.Result (vec.Vec T) collections.TryReserveError)
   := do
   let v ← vec.Vec.new T
   ok (core.result.Result.Ok v)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::new_in]:
-    Source: 'src/lib.rs', lines 4816:8-4818:9
+    Source: 'src/lib.rs', lines 4821:8-4823:9
     Visibility: public -/
-def vec.Vec.new_in
-  (T : Type) {A : Type} (_alloc : A) : Result (vec.Vec T) := do
+def vec.Vec.new_in (T : Type) {A : Type} (_alloc : A) : RustM (vec.Vec T) := do
   vec.Vec.new T
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::with_capacity_in]:
-    Source: 'src/lib.rs', lines 4820:8-4822:9
+    Source: 'src/lib.rs', lines 4825:8-4827:9
     Visibility: public -/
 def vec.Vec.with_capacity_in
-  (T : Type) {A : Type} (_c : Std.Usize) (_alloc : A) :
-  Result (vec.Vec T)
-  := do
+  (T : Type) {A : Type} (_c : Std.Usize) (_alloc : A) : RustM (vec.Vec T) := do
   vec.Vec.new T
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::try_with_capacity_in]:
-    Source: 'src/lib.rs', lines 4824:8-4829:9
+    Source: 'src/lib.rs', lines 4829:8-4834:9
     Visibility: public -/
 def vec.Vec.try_with_capacity_in
   (T : Type) {A : Type} (_c : Std.Usize) (_alloc : A) :
-  Result (core.result.Result (vec.Vec T) collections.TryReserveError)
+  RustM (core.result.Result (vec.Vec T) collections.TryReserveError)
   := do
   let v ← vec.Vec.new T
   ok (core.result.Result.Ok v)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::allocator]:
-    Source: 'src/lib.rs', lines 4837:8-4839:9
+    Source: 'src/lib.rs', lines 4842:8-4844:9
     Visibility: public -/
-def vec.Vec.allocator {T : Type} (self : vec.Vec T) : Result alloc.Global := do
+def vec.Vec.allocator {T : Type} (self : vec.Vec T) : RustM alloc.Global := do
   ok ()
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::as_mut_slice]:
-    Source: 'src/lib.rs', lines 4841:8-4843:9
+    Source: 'src/lib.rs', lines 4846:8-4848:9
     Visibility: public -/
 def vec.Vec.as_mut_slice
   {T : Type} (self : vec.Vec T) :
-  Result ((Slice T) × (Slice T → vec.Vec T))
+  RustM ((Slice T) × (Slice T → vec.Vec T))
   := do
   let (s, seq_to_slice_mut_back) ←
     rust_primitives.sequence.seq_to_slice_mut self
@@ -4006,18 +4001,18 @@ def vec.Vec.as_mut_slice
   ok (s, back)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::into_boxed_slice]:
-    Source: 'src/lib.rs', lines 4845:8-4847:9
+    Source: 'src/lib.rs', lines 4850:8-4852:9
     Visibility: public -/
 def vec.Vec.into_boxed_slice
-  {T : Type} (self : vec.Vec T) : Result (Slice T) := do
+  {T : Type} (self : vec.Vec T) : RustM (Slice T) := do
   rust_primitives.sequence.seq_into_boxed_slice self
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::try_remove]:
-    Source: 'src/lib.rs', lines 4849:8-4855:9
+    Source: 'src/lib.rs', lines 4854:8-4860:9
     Visibility: public -/
 def vec.Vec.try_remove
   {T : Type} (self : vec.Vec T) (index : Std.Usize) :
-  Result ((core.option.Option T) × (vec.Vec T))
+  RustM ((core.option.Option T) × (vec.Vec T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if index < i
@@ -4027,11 +4022,11 @@ def vec.Vec.try_remove
   else ok (core.option.Option.None, self)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::insert_mut]:
-    Source: 'src/lib.rs', lines 4858:8-4861:9
+    Source: 'src/lib.rs', lines 4863:8-4866:9
     Visibility: public -/
 def vec.Vec.insert_mut
   {T : Type} (self : vec.Vec T) (index : Std.Usize) (element : T) :
-  Result (T × (T → vec.Vec T))
+  RustM (T × (T → vec.Vec T))
   := do
   let self1 ← vec.Vec.insert self index element
   let (t, seq_index_mut_back) ←
@@ -4041,11 +4036,11 @@ def vec.Vec.insert_mut
   ok (t, back)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::push_mut]:
-    Source: 'src/lib.rs', lines 4864:8-4868:9
+    Source: 'src/lib.rs', lines 4869:8-4873:9
     Visibility: public -/
 def vec.Vec.push_mut
   {T : Type} (self : vec.Vec T) (value : T) :
-  Result (T × (T → vec.Vec T))
+  RustM (T × (T → vec.Vec T))
   := do
   let s ← rust_primitives.sequence.seq_push self value
   let l ← rust_primitives.sequence.seq_len s
@@ -4056,12 +4051,12 @@ def vec.Vec.push_mut
   ok (t, back)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::pop_if]:
-    Source: 'src/lib.rs', lines 4870:8-4879:9
+    Source: 'src/lib.rs', lines 4875:8-4884:9
     Visibility: public -/
 def vec.Vec.pop_if
   {T : Type} {F : Type} (coreopsfunctionFnFTupleShared0TBoolInst :
   core.ops.function.Fn F T Bool) (self : vec.Vec T) (predicate : F) :
-  Result ((core.option.Option T) × (vec.Vec T))
+  RustM ((core.option.Option T) × (vec.Vec T))
   := do
   let l ← rust_primitives.sequence.seq_len self
   if l = 0#usize
@@ -4077,14 +4072,14 @@ def vec.Vec.pop_if
     else ok (core.option.Option.None, self)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::resize_with]: loop body 0:
-    Source: 'src/lib.rs', lines 4884:16-4886:17
+    Source: 'src/lib.rs', lines 4889:16-4891:17
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.resize_with_loop.body
   {T : Type} {F : Type} (coreopsfunctionFnFTupleTInst : core.ops.function.Fn F
   Unit T) (f : F) (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
   := do
   let (o, iter1) ←
@@ -4098,14 +4093,14 @@ def vec.Vec.resize_with_loop.body
     ok (cont (iter1, s1))
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::resize_with]: loop 0:
-    Source: 'src/lib.rs', lines 4884:16-4886:17
+    Source: 'src/lib.rs', lines 4889:16-4891:17
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.resize_with_loop
   {T : Type} {F : Type} (coreopsfunctionFnFTupleTInst : core.ops.function.Fn F
   Unit T) (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq T) (f : F) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, s1) => vec.Vec.resize_with_loop.body
@@ -4113,12 +4108,12 @@ def vec.Vec.resize_with_loop
     (iter_, s)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::resize_with]:
-    Source: 'src/lib.rs', lines 4881:8-4890:9
+    Source: 'src/lib.rs', lines 4886:8-4895:9
     Visibility: public -/
 def vec.Vec.resize_with
   {T : Type} {F : Type} (coreopsfunctionFnFTupleTInst : core.ops.function.Fn F
   Unit T) (self : vec.Vec T) (new_len : Std.Usize) (f : F) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let l ← rust_primitives.sequence.seq_len self
   if new_len > l
@@ -4132,7 +4127,7 @@ def vec.Vec.resize_with
        ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::retain]: loop body 0:
-    Source: 'src/lib.rs', lines 4895:12-4900:13
+    Source: 'src/lib.rs', lines 4900:12-4905:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.retain_loop.body
@@ -4140,7 +4135,7 @@ def vec.Vec.retain_loop.body
   core.ops.function.Fn F T Bool) (f : F)
   (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
   (rest : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
     (rust_primitives.sequence.Seq T))
   := do
@@ -4159,7 +4154,7 @@ def vec.Vec.retain_loop.body
     else ok (cont (iter1, s, rest1))
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::retain]: loop 0:
-    Source: 'src/lib.rs', lines 4895:12-4900:13
+    Source: 'src/lib.rs', lines 4900:12-4905:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.retain_loop
@@ -4167,7 +4162,7 @@ def vec.Vec.retain_loop
   core.ops.function.Fn F T Bool) (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq T) (f : F)
   (rest : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, s1, rest1) => vec.Vec.retain_loop.body
@@ -4175,12 +4170,12 @@ def vec.Vec.retain_loop
     (iter_, s, rest)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::retain]:
-    Source: 'src/lib.rs', lines 4892:8-4901:9
+    Source: 'src/lib.rs', lines 4897:8-4906:9
     Visibility: public -/
 def vec.Vec.retain
   {T : Type} {F : Type} (coreopsfunctionFnFTupleShared0TBoolInst :
   core.ops.function.Fn F T Bool) (self : vec.Vec T) (f : F) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let l ← rust_primitives.sequence.seq_len self
   let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
@@ -4190,17 +4185,17 @@ def vec.Vec.retain
   ok s1
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::retain_mut]:
-    Source: 'src/lib.rs', lines 4908:8-4910:9
+    Source: 'src/lib.rs', lines 4913:8-4915:9
     Visibility: public -/
 def vec.Vec.retain_mut
   {T : Type} {F : Type} (coreopsfunctionFnFTupleShared0TBoolInst :
   core.ops.function.Fn F T Bool) (self : vec.Vec T) (f : F) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   vec.Vec.retain coreopsfunctionFnFTupleShared0TBoolInst self f
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::from_fn]: loop body 0:
-    Source: 'src/lib.rs', lines 4916:12-4918:13
+    Source: 'src/lib.rs', lines 4921:12-4923:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.from_fn_loop.body
@@ -4208,7 +4203,7 @@ def vec.Vec.from_fn_loop.body
   core.ops.function.Fn F Std.Usize T) (f : F)
   (iter_ : core.ops.range.Range Std.Usize)
   (out : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
   := do
   let (o, iter1) ←
@@ -4222,14 +4217,14 @@ def vec.Vec.from_fn_loop.body
     ok (cont (iter1, out1))
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::from_fn]: loop 0:
-    Source: 'src/lib.rs', lines 4916:12-4918:13
+    Source: 'src/lib.rs', lines 4921:12-4923:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.from_fn_loop
   {T : Type} {F : Type} (coreopsfunctionFnFTupleUsizeTInst :
   core.ops.function.Fn F Std.Usize T) (iter_ : core.ops.range.Range Std.Usize)
   (f : F) (out : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, out1) => vec.Vec.from_fn_loop.body
@@ -4237,12 +4232,12 @@ def vec.Vec.from_fn_loop
     (iter_, out)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::from_fn]:
-    Source: 'src/lib.rs', lines 4914:8-4920:9
+    Source: 'src/lib.rs', lines 4919:8-4925:9
     Visibility: public -/
 def vec.Vec.from_fn
   {T : Type} {F : Type} (coreopsfunctionFnFTupleUsizeTInst :
   core.ops.function.Fn F Std.Usize T) (n : Std.Usize) (f : F) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let out ← rust_primitives.sequence.seq_empty T
   let out1 ←
@@ -4251,7 +4246,7 @@ def vec.Vec.from_fn
   ok out1
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extract_if]: loop body 0:
-    Source: 'src/lib.rs', lines 4935:12-4942:13
+    Source: 'src/lib.rs', lines 4940:12-4947:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.extract_if_loop.body
@@ -4260,7 +4255,7 @@ def vec.Vec.extract_if_loop.body
   (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
   (rest : rust_primitives.sequence.Seq T)
   (extracted : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T) ×
     (rust_primitives.sequence.Seq T)) ((rust_primitives.sequence.Seq T) ×
     (rust_primitives.sequence.Seq T)))
@@ -4282,7 +4277,7 @@ def vec.Vec.extract_if_loop.body
       ok (cont (iter1, s1, rest1, extracted))
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extract_if]: loop 0:
-    Source: 'src/lib.rs', lines 4935:12-4942:13
+    Source: 'src/lib.rs', lines 4940:12-4947:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.extract_if_loop
@@ -4291,7 +4286,7 @@ def vec.Vec.extract_if_loop
   (s : rust_primitives.sequence.Seq T) (filter : F)
   (rest : rust_primitives.sequence.Seq T)
   (extracted : rust_primitives.sequence.Seq T) :
-  Result ((rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
+  RustM ((rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
   := do
   loop
     (fun (iter1, s1, rest1, extracted1) => vec.Vec.extract_if_loop.body
@@ -4299,12 +4294,12 @@ def vec.Vec.extract_if_loop
     (iter_, s, rest, extracted)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extract_if]:
-    Source: 'src/lib.rs', lines 4927:8-4944:9
+    Source: 'src/lib.rs', lines 4932:8-4949:9
     Visibility: public -/
 def vec.Vec.extract_if
   {T : Type} {F : Type} {R : Type} (coreopsfunctionFnFTupleShared0TBoolInst :
   core.ops.function.Fn F T Bool) (self : vec.Vec T) (_range : R) (filter : F) :
-  Result ((vec.extract_if.ExtractIf T) × (vec.Vec T))
+  RustM ((vec.extract_if.ExtractIf T) × (vec.Vec T))
   := do
   let l ← rust_primitives.sequence.seq_len self
   let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
@@ -4315,11 +4310,11 @@ def vec.Vec.extract_if
   ok (extracted1, s1)
 
 /-- [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}::next]:
-    Source: 'src/lib.rs', lines 4951:12-4958:13
+    Source: 'src/lib.rs', lines 4956:12-4963:13
     Visibility: public -/
 def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} {A : Type} (self : vec.drain.Drain T A) :
-  Result ((core.option.Option T) × (vec.drain.Drain T A))
+  RustM ((core.option.Option T) × (vec.drain.Drain T A))
   := do
   let (s, pd) := self
   let i ← rust_primitives.sequence.seq_len s
@@ -4330,7 +4325,7 @@ def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator.next
     ok (core.option.Option.Some res, (s1, pd))
 
 /-- Trait implementation: [alloc::vec::drain::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::drain::Drain<T, A>}]
-    Source: 'src/lib.rs', lines 4949:8-4959:9 -/
+    Source: 'src/lib.rs', lines 4954:8-4964:9 -/
 @[reducible]
 def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator (T : Type) (A : Type)
   : core.iter.traits.iterator.Iterator (vec.drain.Drain T A) T := {
@@ -4338,28 +4333,26 @@ def vec.drain.Drain.Insts.CoreIterTraitsIteratorIterator (T : Type) (A : Type)
 }
 
 /-- [alloc::vec::drain::{alloc::vec::drain::Drain<T, A>}::as_slice]:
-    Source: 'src/lib.rs', lines 4962:12-4964:13
+    Source: 'src/lib.rs', lines 4967:12-4969:13
     Visibility: public -/
 def vec.drain.Drain.as_slice
-  {T : Type} {A : Type} (self : vec.drain.Drain T A) : Result (Slice T) := do
+  {T : Type} {A : Type} (self : vec.drain.Drain T A) : RustM (Slice T) := do
   let (s, _) := self
   rust_primitives.sequence.seq_to_slice s
 
 /-- [alloc::vec::drain::{alloc::vec::drain::Drain<T, alloc::alloc::Global>}::allocator]:
-    Source: 'src/lib.rs', lines 4970:12-4972:13
+    Source: 'src/lib.rs', lines 4975:12-4977:13
     Visibility: public -/
 def vec.drain.DrainTGlobal.allocator
-  {T : Type} (self : vec.drain.Drain T alloc.Global) :
-  Result alloc.Global
-  := do
+  {T : Type} (self : vec.drain.Drain T alloc.Global) : RustM alloc.Global := do
   ok ()
 
 /-- [alloc::vec::extract_if::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::extract_if::ExtractIf<T>}::next]:
-    Source: 'src/lib.rs', lines 4983:12-4989:13
+    Source: 'src/lib.rs', lines 4988:12-4994:13
     Visibility: public -/
 def vec.extract_if.ExtractIf.Insts.CoreIterTraitsIteratorIterator.next
   {T : Type} (self : vec.extract_if.ExtractIf T) :
-  Result ((core.option.Option T) × (vec.extract_if.ExtractIf T))
+  RustM ((core.option.Option T) × (vec.extract_if.ExtractIf T))
   := do
   let i ← rust_primitives.sequence.seq_len self
   if i = 0#usize
@@ -4369,7 +4362,7 @@ def vec.extract_if.ExtractIf.Insts.CoreIterTraitsIteratorIterator.next
     ok (core.option.Option.Some t, s)
 
 /-- Trait implementation: [alloc::vec::extract_if::{impl core::iter::traits::iterator::Iterator<T> for alloc::vec::extract_if::ExtractIf<T>}]
-    Source: 'src/lib.rs', lines 4981:8-4990:9 -/
+    Source: 'src/lib.rs', lines 4986:8-4995:9 -/
 @[reducible]
 def vec.extract_if.ExtractIf.Insts.CoreIterTraitsIteratorIterator (T : Type) :
   core.iter.traits.iterator.Iterator (vec.extract_if.ExtractIf T) T := {
@@ -4377,21 +4370,21 @@ def vec.extract_if.ExtractIf.Insts.CoreIterTraitsIteratorIterator (T : Type) :
 }
 
 /-- [alloc::vec::extract_if::{alloc::vec::extract_if::ExtractIf<T>}::allocator]:
-    Source: 'src/lib.rs', lines 4993:12-4995:13
+    Source: 'src/lib.rs', lines 4998:12-5000:13
     Visibility: public -/
 def vec.extract_if.ExtractIf.allocator
-  {T : Type} (self : vec.extract_if.ExtractIf T) : Result alloc.Global := do
+  {T : Type} (self : vec.extract_if.ExtractIf T) : RustM alloc.Global := do
   ok ()
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup]: loop body 0:
-    Source: 'src/lib.rs', lines 5005:12-5021:13
+    Source: 'src/lib.rs', lines 5010:12-5026:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.dedup_loop.body
   {T : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
   (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
   (rest : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
     (rust_primitives.sequence.Seq T))
   := do
@@ -4418,14 +4411,14 @@ def vec.Vec.dedup_loop.body
       ok (cont (iter1, s1, rest1))
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup]: loop 0:
-    Source: 'src/lib.rs', lines 5005:12-5021:13
+    Source: 'src/lib.rs', lines 5010:12-5026:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.dedup_loop
   {T : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T)
   (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
   (rest : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, s1, rest1) => vec.Vec.dedup_loop.body corecmpPartialEqInst
@@ -4433,12 +4426,12 @@ def vec.Vec.dedup_loop
     (iter_, s, rest)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup]:
-    Source: 'src/lib.rs', lines 5002:8-5022:9
+    Source: 'src/lib.rs', lines 5007:8-5027:9
     Visibility: public -/
 def vec.Vec.dedup
   {T : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T) (self : vec.Vec T)
   :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let l ← rust_primitives.sequence.seq_len self
   let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
@@ -4448,7 +4441,7 @@ def vec.Vec.dedup
   ok s1
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by]: loop body 0:
-    Source: 'src/lib.rs', lines 5036:12-5048:13
+    Source: 'src/lib.rs', lines 5041:12-5053:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.dedup_by_loop.body
@@ -4456,7 +4449,7 @@ def vec.Vec.dedup_by_loop.body
   core.ops.function.Fn F (T × T) Bool) (same_bucket : F)
   (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
   (rest : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
     (rust_primitives.sequence.Seq T))
   := do
@@ -4483,7 +4476,7 @@ def vec.Vec.dedup_by_loop.body
       ok (cont (iter1, s1, rest1))
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by]: loop 0:
-    Source: 'src/lib.rs', lines 5036:12-5048:13
+    Source: 'src/lib.rs', lines 5041:12-5053:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.dedup_by_loop
@@ -4491,7 +4484,7 @@ def vec.Vec.dedup_by_loop
   core.ops.function.Fn F (T × T) Bool) (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq T) (same_bucket : F)
   (rest : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, s1, rest1) => vec.Vec.dedup_by_loop.body
@@ -4499,12 +4492,12 @@ def vec.Vec.dedup_by_loop
     (iter_, s, rest)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by]:
-    Source: 'src/lib.rs', lines 5033:8-5049:9
+    Source: 'src/lib.rs', lines 5038:8-5054:9
     Visibility: public -/
 def vec.Vec.dedup_by
   {T : Type} {F : Type} (coreopsfunctionFnFPairShared0TSharedTBoolInst :
   core.ops.function.Fn F (T × T) Bool) (self : vec.Vec T) (same_bucket : F) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let l ← rust_primitives.sequence.seq_len self
   let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
@@ -4514,7 +4507,7 @@ def vec.Vec.dedup_by
   ok s1
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by_key]: loop body 0:
-    Source: 'src/lib.rs', lines 5056:12-5068:13
+    Source: 'src/lib.rs', lines 5061:12-5073:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.dedup_by_key_loop.body
@@ -4523,7 +4516,7 @@ def vec.Vec.dedup_by_key_loop.body
   (key : F) (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq T) (rest : rust_primitives.sequence.Seq T)
   :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T))
     (rust_primitives.sequence.Seq T))
   := do
@@ -4552,7 +4545,7 @@ def vec.Vec.dedup_by_key_loop.body
       ok (cont (iter1, s1, rest1))
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by_key]: loop 0:
-    Source: 'src/lib.rs', lines 5056:12-5068:13
+    Source: 'src/lib.rs', lines 5061:12-5073:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.dedup_by_key_loop
@@ -4560,7 +4553,7 @@ def vec.Vec.dedup_by_key_loop
   K) (coreopsfunctionFnFTupleSharedTKInst : core.ops.function.Fn F T K)
   (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
   (key : F) (rest : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, s1, rest1) => vec.Vec.dedup_by_key_loop.body
@@ -4569,13 +4562,13 @@ def vec.Vec.dedup_by_key_loop
     (iter_, s, rest)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::dedup_by_key]:
-    Source: 'src/lib.rs', lines 5053:8-5069:9
+    Source: 'src/lib.rs', lines 5058:8-5074:9
     Visibility: public -/
 def vec.Vec.dedup_by_key
   {T : Type} {K : Type} {F : Type} (corecmpPartialEqInst : core.cmp.PartialEq K
   K) (coreopsfunctionFnFTupleShared0TKInst : core.ops.function.Fn F T K)
   (self : vec.Vec T) (key : F) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let l ← rust_primitives.sequence.seq_len self
   let (rest, s) ← rust_primitives.sequence.seq_drain self 0#usize l
@@ -4586,14 +4579,14 @@ def vec.Vec.dedup_by_key
   ok s1
 
 /-- [alloc::vec::{alloc::vec::Vec<[T; N]>}::into_flattened]: loop body 0:
-    Source: 'src/lib.rs', lines 5078:12-5081:13
+    Source: 'src/lib.rs', lines 5083:12-5086:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.VecArray.into_flattened_loop.body
   {T : Type} {N : Std.Usize} (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq (Array T N))
   (out : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq (Array T N)) × (rust_primitives.sequence.Seq
     T)) (rust_primitives.sequence.Seq T))
   := do
@@ -4609,14 +4602,14 @@ def vec.VecArray.into_flattened_loop.body
     ok (cont (iter1, s1, out1))
 
 /-- [alloc::vec::{alloc::vec::Vec<[T; N]>}::into_flattened]: loop 0:
-    Source: 'src/lib.rs', lines 5078:12-5081:13
+    Source: 'src/lib.rs', lines 5083:12-5086:13
     Visibility: public -/
 @[rust_loop]
 def vec.VecArray.into_flattened_loop
   {T : Type} {N : Std.Usize} (iter_ : core.ops.range.Range Std.Usize)
   (s : rust_primitives.sequence.Seq (Array T N))
   (out : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, s1, out1) => vec.VecArray.into_flattened_loop.body iter1 s1
@@ -4624,11 +4617,11 @@ def vec.VecArray.into_flattened_loop
     (iter_, s, out)
 
 /-- [alloc::vec::{alloc::vec::Vec<[T; N]>}::into_flattened]:
-    Source: 'src/lib.rs', lines 5075:8-5083:9
+    Source: 'src/lib.rs', lines 5080:8-5088:9
     Visibility: public -/
 def vec.VecArray.into_flattened
   {T : Type} {N : Std.Usize} (self : vec.Vec (Array T N)) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let n ← rust_primitives.sequence.seq_len self
   let out ← rust_primitives.sequence.seq_empty T
@@ -4638,22 +4631,22 @@ def vec.VecArray.into_flattened
   ok out1
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_slice]:
-    Source: 'src/lib.rs', lines 5093:8-5095:9 -/
+    Source: 'src/lib.rs', lines 5098:8-5100:9 -/
 def vec.Vec.extend_from_slice
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
   (other : Slice T) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let s ← rust_primitives.sequence.seq_extend corecloneCloneInst self other
   ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::resize]:
-    Source: 'src/lib.rs', lines 5100:8-5108:9
+    Source: 'src/lib.rs', lines 5105:8-5113:9
     Visibility: public -/
 def vec.Vec.resize
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : vec.Vec T)
   (new_size : Std.Usize) (value : T) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let l ← rust_primitives.sequence.seq_len self
   if new_size > l
@@ -4667,14 +4660,14 @@ def vec.Vec.resize
        ok s
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_within]: loop body 0:
-    Source: 'src/lib.rs', lines 5117:12-5119:13
+    Source: 'src/lib.rs', lines 5122:12-5124:13
     Visibility: public -/
 @[rust_loop_body]
 def vec.Vec.extend_from_within_loop.body
   {T : Type} (corecloneCloneInst : core.clone.Clone T)
   (s : rust_primitives.sequence.Seq T) (iter_ : core.ops.range.Range Std.Usize)
   (copy : rust_primitives.sequence.Seq T) :
-  Result (ControlFlow ((core.ops.range.Range Std.Usize) ×
+  RustM (ControlFlow ((core.ops.range.Range Std.Usize) ×
     (rust_primitives.sequence.Seq T)) (rust_primitives.sequence.Seq T))
   := do
   let (o, iter1) ←
@@ -4689,14 +4682,14 @@ def vec.Vec.extend_from_within_loop.body
     ok (cont (iter1, copy1))
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_within]: loop 0:
-    Source: 'src/lib.rs', lines 5117:12-5119:13
+    Source: 'src/lib.rs', lines 5122:12-5124:13
     Visibility: public -/
 @[rust_loop]
 def vec.Vec.extend_from_within_loop
   {T : Type} (corecloneCloneInst : core.clone.Clone T)
   (iter_ : core.ops.range.Range Std.Usize) (s : rust_primitives.sequence.Seq T)
   (copy : rust_primitives.sequence.Seq T) :
-  Result (rust_primitives.sequence.Seq T)
+  RustM (rust_primitives.sequence.Seq T)
   := do
   loop
     (fun (iter1, copy1) => vec.Vec.extend_from_within_loop.body
@@ -4704,12 +4697,12 @@ def vec.Vec.extend_from_within_loop
     (iter_, copy)
 
 /-- [alloc::vec::{alloc::vec::Vec<T>}::extend_from_within]:
-    Source: 'src/lib.rs', lines 5114:8-5121:9
+    Source: 'src/lib.rs', lines 5119:8-5126:9
     Visibility: public -/
 def vec.Vec.extend_from_within
   {T : Type} {R : Type} (corecloneCloneInst : core.clone.Clone T)
   (self : vec.Vec T) (_src : R) :
-  Result (vec.Vec T)
+  RustM (vec.Vec T)
   := do
   let l ← rust_primitives.sequence.seq_len self
   let copy ← rust_primitives.sequence.seq_empty T
@@ -4720,7 +4713,7 @@ def vec.Vec.extend_from_within
   ok s
 
 /-- Trait implementation: [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 5137:4-5146:5 -/
+    Source: 'src/lib.rs', lines 5142:4-5151:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output :
   Type} (coresliceindexSliceIndexISliceClause0_OutputInst :
@@ -4731,14 +4724,14 @@ def vec.Vec.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output :
 }
 
 /-- [alloc::vec::{impl core::ops::index::IndexMut<I, Clause0_Output> for alloc::vec::Vec<T>}::index_mut]:
-    Source: 'src/lib.rs', lines 5159:8-5161:9
+    Source: 'src/lib.rs', lines 5164:8-5166:9
     Visibility: public -/
 def vec.Vec.Insts.CoreOpsIndexIndexMut.index_mut
   {T : Type} {I : Type} {Clause0_Output : Type}
   (coresliceindexSliceIndexISliceClause0_OutputInst :
   core.slice.index.SliceIndex I (Slice T) Clause0_Output) (self : vec.Vec T)
   (i : I) :
-  Result (Clause0_Output × (Clause0_Output → vec.Vec T))
+  RustM (Clause0_Output × (Clause0_Output → vec.Vec T))
   := do
   let (s, seq_to_slice_mut_back) ←
     rust_primitives.sequence.seq_to_slice_mut self
@@ -4752,7 +4745,7 @@ def vec.Vec.Insts.CoreOpsIndexIndexMut.index_mut
   ok (t, back)
 
 /-- Trait implementation: [alloc::vec::{impl core::ops::index::IndexMut<I, Clause0_Output> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 5153:4-5162:5 -/
+    Source: 'src/lib.rs', lines 5158:4-5167:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreOpsIndexIndexMut {T : Type} {I : Type} {Clause0_Output :
   Type} (coresliceindexSliceIndexISliceClause0_OutputInst :
@@ -4765,7 +4758,7 @@ def vec.Vec.Insts.CoreOpsIndexIndexMut {T : Type} {I : Type} {Clause0_Output :
 }
 
 /-- Trait implementation: [alloc::vec::{impl core::ops::deref::Deref<[T]> for alloc::vec::Vec<T>}]
-    Source: 'src/lib.rs', lines 5165:4-5171:5 -/
+    Source: 'src/lib.rs', lines 5170:4-5176:5 -/
 @[reducible]
 def vec.Vec.Insts.CoreOpsDerefDerefSlice (T : Type) : core.ops.deref.Deref
   (vec.Vec T) (Slice T) := {

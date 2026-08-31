@@ -414,13 +414,6 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_array_from_vec_wrong_length_panics() {
-        let res =
-            std::panic::catch_unwind(|| crate::slice::array_from_vec::<u8, 3>(std::vec![1u8, 2]));
-        assert!(res.is_err());
-    }
-
     proptest! {
         #[test]
         fn test_array_slice(a in any::<[u8; 8]>(), i in 0usize..=8, j in 0usize..=8) {

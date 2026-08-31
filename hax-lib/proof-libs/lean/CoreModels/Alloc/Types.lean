@@ -7,7 +7,7 @@ import CoreModels.RustPrimitives.Types
 -- (alloc-side externals live in parent CoreModels.RustPrimitives)
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
-open Result ControlFlow Error
+open RustM ControlFlow Error
 open Std.Do
 set_option linter.dupNamespace false
 set_option linter.hashCommand false
@@ -36,7 +36,7 @@ def alloc.Global := Unit
     Source: 'src/lib.rs', lines 64:4-70:5
     Visibility: public -/
 structure borrow.ToOwned (Self : Type) (Self_Owned : Type) where
-  to_owned : Self → Result Self_Owned
+  to_owned : Self → RustM Self_Owned
 
 /-- [alloc::borrow::Cow]
     Source: 'src/lib.rs', lines 87:4-90:5
@@ -52,7 +52,7 @@ inductive borrow.Cow (B : Type) (Clause0_Owned : Type) where
 structure borrow.ToOwnedDefaults (Self : Type) (Self_Clause0_Owned : Type)
   where
   ToOwnedInst : borrow.ToOwned Self Self_Clause0_Owned
-  clone_into : Self → Self_Clause0_Owned → Result Self_Clause0_Owned
+  clone_into : Self → Self_Clause0_Owned → RustM Self_Clause0_Owned
 
 /-- [alloc::boxed::Box]
     Source: 'src/lib.rs', lines 209:4-209:29
@@ -193,30 +193,30 @@ def collections.vec_deque.into_iter.IntoIter (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::slice::Dummy]
-    Source: 'src/lib.rs', lines 3849:4-3849:23 -/
+    Source: 'src/lib.rs', lines 3856:4-3856:23 -/
 @[reducible]
 def slice.Dummy (T : Type) := T
 
 /-- [alloc::vec::Vec]
-    Source: 'src/lib.rs', lines 4574:4-4574:34
+    Source: 'src/lib.rs', lines 4579:4-4579:34
     Visibility: public -/
 @[reducible]
 def vec.Vec (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 4624:8-4624:43
+    Source: 'src/lib.rs', lines 4629:8-4629:43
     Visibility: public -/
 @[reducible]
 def vec.into_iter.IntoIter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::drain::Drain]
-    Source: 'src/lib.rs', lines 4948:8-4948:76
+    Source: 'src/lib.rs', lines 4953:8-4953:76
     Visibility: public -/
 def vec.drain.Drain (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::vec::extract_if::ExtractIf]
-    Source: 'src/lib.rs', lines 4980:8-4980:44
+    Source: 'src/lib.rs', lines 4985:8-4985:44
     Visibility: public -/
 @[reducible]
 def vec.extract_if.ExtractIf (T : Type) := rust_primitives.sequence.Seq T
