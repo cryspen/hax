@@ -26,6 +26,29 @@ const CHARON_RESERVED_FLAGS: &[&str] = &["--dest-file"];
 // Aeneas flags that trigger a warning when passed by the user.
 const AENEAS_WARN_FLAGS: &[&str] = &["-backend", "-dest", "-subdir", "-split-files"];
 
+/// The provided methods the `CoreModels` structures declare as fields. Charon
+/// drops a provided method the crate never calls, and aeneas then emits the
+/// trait impl without that field, which Lean rejects (#2172); naming them as
+/// translation roots keeps them. Must match the structures' fields exactly:
+/// these are the only nine methods the model crates give a default body.
+const CHARON_DEFAULT_METHOD_ROOTS: &[&str] = &[
+    "core::cmp::PartialEq::ne",
+    "core::cmp::PartialOrd::lt",
+    "core::cmp::PartialOrd::le",
+    "core::cmp::PartialOrd::gt",
+    "core::cmp::PartialOrd::ge",
+    // Only a crate with its own `impl Step` reaches these.
+    "core::iter::range::Step::forward",
+    "core::iter::range::Step::forward_unchecked",
+    "core::iter::range::Step::backward",
+    "core::iter::range::Step::backward_unchecked",
+];
+
+fn picks_roots(args: &[String]) -> bool {
+    args.iter()
+        .any(|arg| arg == "--start-from" || arg.starts_with("--start-from="))
+}
+
 /// Shell-split a user-supplied extra-args string, reporting a fatal error on
 /// unmatched quotes. Returns an empty vector if `s` is `None`.
 fn shell_split(s: Option<&str>, who: &str, message_format: MessageFormat) -> Vec<String> {
@@ -470,6 +493,14 @@ pub fn run(
         "--rustc-arg=--cfg=hax_compilation",
         "--rustc-arg=--cfg=hax_backend_lean",
     ]);
+    // Naming a root suppresses charon's implicit `crate` one, so restore it
+    // unless the caller picked its own roots.
+    if !picks_roots(&selection_flags) && !picks_roots(&user_charon_args) {
+        charon_cmd.args(["--start-from", "crate"]);
+    }
+    for root in CHARON_DEFAULT_METHOD_ROOTS {
+        charon_cmd.args(["--start-from", root]);
+    }
     // User-supplied charon flags go before the `--` cargo separator.
     charon_cmd.args(&selection_flags);
     charon_cmd.args(&user_charon_args);
