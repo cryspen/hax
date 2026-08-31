@@ -101,6 +101,16 @@ add-tool-version tool version:
 test-tools-install:
   cargo test -p cargo-hax --bin cargo-hax -- --ignored host_install
 
+# Extract an example to Lean with the managed tools: a full charon and aeneas run, beyond the launch checks of `test-tools-install`. Reaches the network, and installs into the tool cache.
+test-tools-extract:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cargo build -q -p cargo-hax --bin cargo-hax
+  # `examples/` is its own workspace, so the binary is invoked by path.
+  HAX="$PWD/target/debug/cargo-hax"
+  cd examples/barrett
+  "$HAX" into lean
+
 # Walk the documented tool setup flow from inside an example project, the way a user would: resolution, the `hax-lib` check, and the install of what the project resolves to. Reaches the network.
 test-tools-cli:
   #!/usr/bin/env bash

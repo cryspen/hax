@@ -91,6 +91,12 @@ jobs:
       - name: Walk the documented setup flow in a project
         run: just test-tools-cli
 
+      # A full extraction, beyond launching the tools: an artifact can start
+      # and still fail once it runs for real, so each platform extracts an
+      # example end to end.
+      - name: Extract an example to Lean
+        run: just test-tools-extract
+
   # The status check to require on `main`: one context, named after nothing that
   # moves, where the matrix leg names follow the runner images. Requiring it is
   # a repository setting; without that, a failure here does not stop a merge.
