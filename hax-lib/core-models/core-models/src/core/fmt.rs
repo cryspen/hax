@@ -174,12 +174,15 @@ impl Formatter {
     }
 
     /// See [`std::fmt::Formatter::debug_struct`]
-    pub fn debug_struct(&mut self, name: &str) -> DebugStruct {
+    // `label`, not real core's `name`: `name` is a Lean token, so aeneas cannot
+    // emit it as a binder.
+    pub fn debug_struct(&mut self, label: &str) -> DebugStruct {
         DebugStruct
     }
 
     /// See [`std::fmt::Formatter::debug_tuple`]
-    pub fn debug_tuple(&mut self, name: &str) -> DebugTuple {
+    // `label` for the reason given on `debug_struct`.
+    pub fn debug_tuple(&mut self, label: &str) -> DebugTuple {
         DebugTuple
     }
 
@@ -290,7 +293,7 @@ impl<'a> Arguments<'a> {
     }
 
     /// See [`std::fmt::Arguments::from_str`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn from_str(s: &'static str) -> Arguments<'a> {
         Arguments(Option::Some(s), std::marker::PhantomData)
     }
@@ -300,7 +303,7 @@ impl<'a> Arguments<'a> {
     // arm — real `core`'s "has placeholders" case, which this model cannot
     // represent — is unconstructible.
     #[cfg_attr(coverage_nightly, coverage(off))]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(charon, hax_lib::exclude)]
     pub fn as_str(&self) -> Option<&'static str> {
         match &self.0 {
             Option::Some(s) => Option::Some(*s),
@@ -582,7 +585,7 @@ pub trait Write {
 /// `rust_primitives::string::str_of_char`, and the Lean side provides none of
 /// the string primitives (`alloc::string` is excluded there for the same
 /// reason).
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 pub trait WriteDefaults {
     /// See [`std::fmt::Write::write_char`]
     fn write_char(&mut self, c: char) -> Result;
@@ -590,7 +593,7 @@ pub trait WriteDefaults {
     fn write_fmt(&mut self, args: Arguments) -> Result;
 }
 
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<W: Write> WriteDefaults for W {
     fn write_char(&mut self, c: char) -> Result {
         self.write_str(rust_primitives::string::str_of_char(c))
@@ -614,7 +617,7 @@ impl Write for Formatter {
 // Excluded from coverage: as for `Arguments::as_str`, the `None` arm cannot be
 // reached — no constructor produces a placeholder-carrying `Arguments`.
 #[cfg_attr(coverage_nightly, coverage(off))]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 pub fn write<W: Write>(output: &mut W, args: Arguments) -> Result {
     match args.as_str() {
         Option::Some(s) => output.write_str(s),
@@ -726,15 +729,17 @@ pub struct DebugStruct;
 impl DebugStruct {
     /// See [`std::fmt::DebugStruct::field`]
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
-    pub fn field<T: Debug>(&mut self, name: &str, value: &T) -> &mut Self {
+    // `label` for the reason given on `Formatter::debug_struct`.
+    pub fn field<T: Debug>(&mut self, label: &str, value: &T) -> &mut Self {
         self
     }
 
     /// See [`std::fmt::DebugStruct::field_with`]
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+    // `label` for the reason given on `Formatter::debug_struct`.
     pub fn field_with<F: FnOnce(&mut Formatter) -> Result>(
         &mut self,
-        name: &str,
+        label: &str,
         value_fmt: F,
     ) -> &mut Self {
         self
@@ -987,7 +992,7 @@ pub fn from_fn<F: Fn(&mut Formatter) -> Result>(f: F) -> FromFn<F> {
 // extractions; `from_fn` and `FromFn` itself stay, and `from_fn` is dropped from
 // F* only because its `Fn` bound mentions `&mut Formatter`.
 #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(charon, hax_lib::exclude)]
 impl<F: Fn(&mut Formatter) -> Result> Display for FromFn<F> {
     fn fmt(&self, f: &mut Formatter) -> Result {
         (self.0)(f)

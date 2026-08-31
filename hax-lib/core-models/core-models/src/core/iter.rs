@@ -590,7 +590,7 @@ pub mod traits {
         // its type checker ("new value doesn't have the same type as its
         // destination"). Nothing outside the (also excluded) `IteratorMethods`
         // blanket impl refers to this helper.
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         fn iter_rposition<I: ExactSizeIterator + DoubleEndedIterator, P: Fn(I::Item) -> bool>(
             iter: &mut I,
             predicate: P,
@@ -1753,7 +1753,7 @@ pub mod traits {
         }
 
         #[hax_lib::attributes]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         // `<I as Iterator>::Item` rather than `Self::Item`: `Item` reaches this
         // impl through `DoubleEndedIterator`'s supertrait, which hax cannot
         // qualify on its own (cryspen/hax#2089).
@@ -1819,7 +1819,7 @@ pub mod traits {
 
         #[cfg(not(hax_backend_fstar))]
         #[hax_lib::attributes]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         impl<I: ExactSizeIterator> ExactSizeIteratorMethods for I {
             fn is_empty(&self) -> bool {
                 self.len() == 0
@@ -1881,7 +1881,7 @@ pub mod traits {
         }
 
         #[hax_lib::attributes]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         // opaque for F*: `extend_one` feeds `extend` a `Once<A>`, and F* cannot
         // reduce that iterator's `Item` to `A` while its instance is still an
         // unresolved `solve`.
@@ -2222,7 +2222,7 @@ pub mod adapters {
         #[hax_lib::attributes]
         // opaque for the same reason as the `Iterator` impl above.
         #[hax_lib::opaque]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         impl<I: super::super::traits::double_ended::DoubleEndedIterator, P: Fn(&I::Item) -> bool>
             super::super::traits::double_ended::DoubleEndedIterator for Filter<I, P>
         {
@@ -2720,7 +2720,7 @@ pub mod adapters {
         // Out of the Lean extraction for the same reason it is out of the F* one:
         // the model's `Fn` has no way to hand a mutated `&mut St` back, so
         // Aeneas's translation of the call does not typecheck.
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         impl<I: Iterator, St, B, F: Fn(&mut St, I::Item) -> Option<B>> Iterator for Scan<I, St, F> {
             type Item = B;
             fn next(&mut self) -> Option<B> {
@@ -2922,7 +2922,7 @@ pub mod adapters {
         // way to hand the mutated element back, so Aeneas's translation of the
         // call does not typecheck either.
         #[cfg(not(hax_backend_fstar))]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         #[hax_lib::attributes]
         impl<I: Iterator> Peekable<I> {
             /// See [`std::iter::Peekable::next_if_map_mut`]
@@ -3219,7 +3219,7 @@ pub mod adapters {
         /// See [`std::iter::ByRefSized`]
         pub struct ByRefSized<'a, I>(pub &'a mut I);
         #[hax_lib::attributes]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         impl<'a, I: Iterator> Iterator for ByRefSized<'a, I> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
@@ -3227,14 +3227,14 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         impl<'a, I: DoubleEndedIterator> DoubleEndedIterator for ByRefSized<'a, I> {
             fn next_back(&mut self) -> Option<I::Item> {
                 self.0.next_back()
             }
         }
         #[hax_lib::attributes]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         impl<'a, I: ExactSizeIterator> ExactSizeIterator for ByRefSized<'a, I> {
             fn len(&self) -> usize {
                 ExactSizeIterator::len(self.0)

@@ -1619,14 +1619,16 @@ pub mod ascii {
         /// See [`std::slice::trim_ascii_end`]
         // opaque for F*: see `is_ascii`.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        // `last`, not `end`: `end` is a Lean keyword, and aeneas escapes it to
+        // `«end»` for every copy the loop makes, which collide.
         pub(super) fn trim_ascii_end(s: &[u8]) -> &[u8] {
-            let mut end = 0;
+            let mut last = 0;
             for i in 0..slice_length(s) {
                 if !is_ascii_whitespace_byte(*slice_index(s, i)) {
-                    end = i + 1;
+                    last = i + 1;
                 }
             }
-            slice_slice(s, 0, end)
+            slice_slice(s, 0, last)
         }
         /// See [`std::slice::trim_ascii`]
         pub(super) fn trim_ascii(s: &[u8]) -> &[u8] {

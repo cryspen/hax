@@ -665,7 +665,7 @@ val impl_UpperExp_for_isize:t_UpperExp isize
 type t_DebugStruct = | DebugStruct : t_DebugStruct
 
 /// See [`std::fmt::Formatter::debug_struct`]
-val impl_Formatter__debug_struct (self: t_Formatter) (name: string)
+val impl_Formatter__debug_struct (self: t_Formatter) (label: string)
     : Prims.Pure (t_Formatter & t_DebugStruct) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::fmt::DebugStruct::finish_non_exhaustive`]
@@ -684,7 +684,7 @@ val impl_DebugStruct__finish (self: t_DebugStruct)
 type t_DebugTuple = | DebugTuple : t_DebugTuple
 
 /// See [`std::fmt::Formatter::debug_tuple`]
-val impl_Formatter__debug_tuple (self: t_Formatter) (name: string)
+val impl_Formatter__debug_tuple (self: t_Formatter) (label: string)
     : Prims.Pure (t_Formatter & t_DebugTuple) Prims.l_True (fun _ -> Prims.l_True)
 
 /// See [`std::fmt::DebugTuple::finish_non_exhaustive`]

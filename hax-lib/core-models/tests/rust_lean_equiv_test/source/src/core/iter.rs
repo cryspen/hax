@@ -382,7 +382,7 @@ mod ends {
 // `core::iter::{empty, once, repeat, …}` build an iterator, but *observing* one
 // needs either `Iterator::next` or an `IteratorMethods` method. The Lean side has
 // neither for these types: the blanket `impl IteratorMethods for I` is
-// `aeneas::exclude`d (see the note further down), and the only hand-written Lean
+// `hax_lib::exclude`d (see the note further down), and the only hand-written Lean
 // iterator definitions in `CoreModels/Core/FunsPrologue.lean` are for
 // `ops::range::Range`. So these observations are pinned on the Rust side only.
 #[cfg(test)]
