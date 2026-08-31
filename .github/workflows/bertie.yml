@@ -25,10 +25,34 @@ jobs:
         with:
           path: hax
 
-      - uses: DeterminateSystems/nix-installer-action@main
+      # Bertie pins the published `hax-lib`, which `cargo-hax` only accepts
+      # at its own release version: between a version bump and the release
+      # that publishes it, the extraction cannot run, so it is skipped
+      # instead of failing the merge queue.
+      - name: Check the `hax-lib` version Bertie pins
+        id: haxlib
+        run: |
+          set -o pipefail
+          binary="$(cargo metadata --format-version 1 --no-deps \
+            --manifest-path hax/Cargo.toml \
+            | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
+          found="$(awk -F '"' '/^name = "hax-lib"$/ { getline; print $2 }' \
+            Cargo.lock)"
+          if [ "${binary%%-*}" = "${found%%-*}" ]; then
+            echo "compatible=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "compatible=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::skipping the extraction: cargo-hax $binary" \
+              "requires hax-lib ${binary%%-*}, but Bertie pins hax-lib $found"
+          fi
+
+      - if: steps.haxlib.outputs.compatible == 'true'
+        uses: DeterminateSystems/nix-installer-action@main
       - name: ⤵ Install hax
+        if: steps.haxlib.outputs.compatible == 'true'
         run: |
           nix profile install ./hax
 
       - name: 🏃 Extract fstar
+        if: steps.haxlib.outputs.compatible == 'true'
         run: ./hax-driver.py extract-fstar
