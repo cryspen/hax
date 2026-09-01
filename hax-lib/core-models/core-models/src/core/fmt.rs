@@ -31,7 +31,7 @@ pub trait Debug {
 }
 
 /// See [`std::fmt::Arguments`]
-pub struct Arguments<'a>(&'a ());
+pub struct Arguments<'a>(pub &'a ());
 
 impl<T> Debug for T {
     #[cfg(not(hax_backend_fstar))]

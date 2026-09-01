@@ -4,8 +4,19 @@
 //! exercises `Clone for u8` — the identity clone. We extend the same
 //! observation to a handful of other integer widths so each `clone_impl`
 //! macro instantiation gets hit on at least one corner value.
+//!
+//! `TrivialClone` has no equivalence tests: it does not exist in the `core`
+//! of the toolchain this crate is built with (it landed later), so no call
+//! site can reach it. `UseCloned` does exist, behind the `ergonomic_clones`
+//! feature gate enabled in `lib.rs`.
 
 use rust_lean_test_macro::rust_lean_test;
+
+/// Both markers are empty, so the only observation available at a call site is
+/// that the bound resolves and the value survives the clone unchanged.
+fn clone_through_use_cloned<T: core::clone::UseCloned>(x: T) -> T {
+    x.clone()
+}
 
 // ----- u8 --------------------------------------------------------------------
 
@@ -157,4 +168,36 @@ pub fn test_clone_bool_true() -> bool {
 pub fn test_clone_bool_false() -> bool {
     let x: bool = false;
     x.clone() == x
+}
+
+// ----- UseCloned -------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_use_cloned_u8_zero() -> bool {
+    clone_through_use_cloned(0u8) == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_use_cloned_u8_max() -> bool {
+    clone_through_use_cloned(u8::MAX) == u8::MAX
+}
+
+#[rust_lean_test]
+pub fn test_use_cloned_u32_max() -> bool {
+    clone_through_use_cloned(u32::MAX) == u32::MAX
+}
+
+#[rust_lean_test]
+pub fn test_use_cloned_i8_min() -> bool {
+    clone_through_use_cloned(i8::MIN) == i8::MIN
+}
+
+#[rust_lean_test]
+pub fn test_use_cloned_i32_neg_one() -> bool {
+    clone_through_use_cloned(-1i32) == -1i32
+}
+
+#[rust_lean_test]
+pub fn test_use_cloned_bool_false() -> bool {
+    clone_through_use_cloned(false) == false
 }

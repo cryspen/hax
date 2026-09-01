@@ -94,6 +94,15 @@ impl<T> AsRef<[T]> for [T] {
     }
 }
 
+/// See [`std::convert::AsMut`]
+// Excluded from F*: hax rejects a `&mut` return (`HAX0003`/`HAX0010`), the same
+// reason `Result::as_mut` is excluded. Aeneas handles it, so Lean keeps it.
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+pub trait AsMut<T: ?Sized> {
+    /// See [`std::convert::AsMut::as_mut`]
+    fn as_mut(&mut self) -> &mut T;
+}
+
 macro_rules! int_from {
     (
         $($From_t: ident)*,
@@ -236,6 +245,22 @@ int_try_from_i_to_u! {
     u8  u16 u32 u64 u128 usize u8  u16 u32 u64 u128 usize u8  u16 u32 u64 u128 usize u8  u16 u32 u64 u128 usize u8   u16  u32  u64  u128 usize u8    u16   u32   u64   u128  usize,
 }
 
+// The two items below sit at the end of the module on purpose: hax numbers a
+// module's items positionally (`Core_models.Convert.impl_N`), so inserting them
+// next to `AsRef` above renumbers every `From`/`TryFrom` instance.
+
+#[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+impl<T> AsMut<[T]> for [T] {
+    fn as_mut(&mut self) -> &mut [T] {
+        self
+    }
+}
+
+/// See [`std::convert::identity`]
+pub const fn identity<T>(x: T) -> T {
+    x
+}
+
 #[cfg(test)]
 mod tests {
     use crate::testing::Inject;
@@ -261,6 +286,30 @@ mod tests {
                 super::AsRef::<[u8]>::as_ref(s),
                 core::convert::AsRef::<[u8]>::as_ref(s)
             );
+        }
+
+        // Model's `AsMut<[u8]>` vs std's: same projection, and a write through
+        // the returned reference must land in the original slice.
+        #[test]
+        fn test_as_mut_slice_identity(v in prop::collection::vec(any::<u8>(), 0..=8), x in any::<u8>()) {
+            let mut model = v.clone();
+            let mut std_ = v;
+            prop_assert_eq!(
+                super::AsMut::<[u8]>::as_mut(&mut model[..]),
+                core::convert::AsMut::<[u8]>::as_mut(&mut std_[..])
+            );
+            if let Some(first) = super::AsMut::<[u8]>::as_mut(&mut model[..]).first_mut() {
+                *first = x;
+            }
+            if let Some(first) = core::convert::AsMut::<[u8]>::as_mut(&mut std_[..]).first_mut() {
+                *first = x;
+            }
+            prop_assert_eq!(model, std_);
+        }
+
+        #[test]
+        fn test_identity(x in any::<u8>()) {
+            prop_assert_eq!(super::identity(x.inject()), core::convert::identity(x));
         }
     }
 

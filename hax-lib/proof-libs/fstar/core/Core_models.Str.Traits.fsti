@@ -15,3 +15,6 @@ class t_FromStr (v_Self: Type0) = {
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl:t_FromStr u64
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_FromStr_for_bool:t_FromStr bool

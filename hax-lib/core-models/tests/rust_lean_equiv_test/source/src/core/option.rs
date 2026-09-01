@@ -610,3 +610,368 @@ pub fn test_option_eq_some_none() -> bool {
 pub fn test_option_eq_none_some() -> bool {
     (none_u8() == Some(5u8)) == false
 }
+
+// ----- and -------------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_and_some_some() -> bool {
+    Some(0u8).and(Some(7u8)).unwrap_or(99) == 7
+}
+
+#[rust_lean_test]
+pub fn test_and_some_some_max() -> bool {
+    Some(u8::MAX).and(Some(0u8)).unwrap_or(99) == 0
+}
+
+#[rust_lean_test]
+pub fn test_and_some_none() -> bool {
+    Some(0u8).and(none_u8()).is_none()
+}
+
+#[rust_lean_test]
+pub fn test_and_none_some() -> bool {
+    none_u8().and(Some(7u8)).is_none()
+}
+
+#[rust_lean_test]
+pub fn test_and_none_none() -> bool {
+    none_u8().and(none_u8()).is_none()
+}
+
+// ----- unwrap_unchecked ------------------------------------------------------
+// Only the `Some` case is pinned: std's version is undefined behaviour on
+// `None`, so there is no agreed answer to compare.
+
+#[rust_lean_test]
+pub fn test_unwrap_unchecked_some_zero() -> bool {
+    unsafe { Some(0u8).unwrap_unchecked() == 0 }
+}
+
+#[rust_lean_test]
+pub fn test_unwrap_unchecked_some_max() -> bool {
+    unsafe { Some(u8::MAX).unwrap_unchecked() == u8::MAX }
+}
+
+#[rust_lean_test]
+pub fn test_unwrap_unchecked_some_mid() -> bool {
+    unsafe { Some(7u8).unwrap_unchecked() == 7 }
+}
+
+// ----- unzip -----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_unzip_some_zero() -> bool {
+    let (a, b) = Some((0u8, 0u8)).unzip();
+    a.unwrap_or(99) == 0 && b.unwrap_or(99) == 0
+}
+
+#[rust_lean_test]
+pub fn test_unzip_some_edges() -> bool {
+    let (a, b) = Some((u8::MAX, 0u8)).unzip();
+    a.unwrap_or(0) == u8::MAX && b.unwrap_or(99) == 0
+}
+
+#[rust_lean_test]
+pub fn test_unzip_none() -> bool {
+    let (a, b) = crate::helpers::none_pair_u8().unzip();
+    a.is_none() && b.is_none()
+}
+
+// ----- transpose -------------------------------------------------------------
+
+// Typed via the return type: `Some(Ok(0))` alone leaves both `Result` params
+// unpinned, which Aeneas cannot print.
+fn some_ok_u8(v: u8) -> Option<Result<u8, u8>> {
+    Some(Ok(v))
+}
+fn some_err_u8(e: u8) -> Option<Result<u8, u8>> {
+    Some(Err(e))
+}
+fn none_result_u8() -> Option<Result<u8, u8>> {
+    let mut x: Option<Result<u8, u8>> = Some(Ok(0));
+    x.take();
+    x
+}
+
+#[rust_lean_test]
+pub fn test_transpose_some_ok_zero() -> bool {
+    match some_ok_u8(0).transpose() {
+        Ok(o) => o.unwrap_or(99) == 0,
+        Err(_) => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_transpose_some_ok_max() -> bool {
+    match some_ok_u8(u8::MAX).transpose() {
+        Ok(o) => o.unwrap_or(0) == u8::MAX,
+        Err(_) => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_transpose_some_err() -> bool {
+    match some_err_u8(3).transpose() {
+        Ok(_) => false,
+        Err(e) => e == 3,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_transpose_none() -> bool {
+    match none_result_u8().transpose() {
+        Ok(o) => o.is_none(),
+        Err(_) => false,
+    }
+}
+
+// ----- iter / iter_mut / into_iter -------------------------------------------
+
+// Rust-only: observing an iterator goes through the `IteratorMethods` surface,
+// which does not translate (see `core::iter`).
+#[cfg(test)]
+mod iterators {
+    #[test]
+    fn test_iter_some_yields_the_value() {
+        let o: Option<u8> = Some(7);
+        assert_eq!(o.iter().copied().collect::<Vec<u8>>(), vec![7]);
+    }
+
+    #[test]
+    fn test_iter_some_zero() {
+        let o: Option<u8> = Some(0);
+        assert_eq!(o.iter().copied().collect::<Vec<u8>>(), vec![0]);
+    }
+
+    #[test]
+    fn test_iter_none_is_empty() {
+        let o: Option<u8> = None;
+        assert!(o.iter().next().is_none());
+    }
+
+    #[test]
+    fn test_iter_mut_mutates_some() {
+        let mut o: Option<u8> = Some(u8::MAX - 1);
+        for v in o.iter_mut() {
+            *v += 1;
+        }
+        assert_eq!(o, Some(u8::MAX));
+    }
+
+    #[test]
+    fn test_iter_mut_none_is_empty() {
+        let mut o: Option<u8> = None;
+        assert!(o.iter_mut().next().is_none());
+        assert_eq!(o, None);
+    }
+
+    #[test]
+    fn test_into_iter_some() {
+        let o: Option<u8> = Some(0);
+        assert_eq!(o.into_iter().collect::<Vec<u8>>(), vec![0]);
+    }
+
+    #[test]
+    fn test_into_iter_none() {
+        let o: Option<u8> = None;
+        assert_eq!(o.into_iter().collect::<Vec<u8>>(), Vec::<u8>::new());
+    }
+}
+
+// ----- as_mut / as_slice / as_mut_slice (not extracted) ----------------------
+
+// Rust-only: like `Result::as_mut`, these are `hax_lib::exclude`d in the model
+// (`as_slice`/`as_mut_slice` additionally need a `&T -> &[T]` primitive neither
+// backend has), so no extracted Lean definition exists to guard against.
+#[cfg(test)]
+mod views {
+    #[test]
+    fn test_as_mut_some_mutates() {
+        let mut o: Option<u8> = Some(0);
+        if let Some(v) = o.as_mut() {
+            *v = u8::MAX;
+        }
+        assert_eq!(o, Some(u8::MAX));
+    }
+
+    #[test]
+    fn test_as_mut_none() {
+        let mut o: Option<u8> = None;
+        assert!(o.as_mut().is_none());
+    }
+
+    #[test]
+    fn test_as_slice_some() {
+        let o: Option<u8> = Some(7);
+        assert_eq!(o.as_slice(), &[7u8]);
+    }
+
+    #[test]
+    fn test_as_slice_none() {
+        let o: Option<u8> = None;
+        assert_eq!(o.as_slice(), &[] as &[u8]);
+    }
+
+    #[test]
+    fn test_as_mut_slice_some() {
+        let mut o: Option<u8> = Some(0);
+        o.as_mut_slice()[0] = u8::MAX;
+        assert_eq!(o, Some(u8::MAX));
+    }
+
+    #[test]
+    fn test_as_mut_slice_none() {
+        let mut o: Option<u8> = None;
+        assert!(o.as_mut_slice().is_empty());
+    }
+
+    #[test]
+    fn test_as_deref_some() {
+        let v: u8 = 7;
+        let o: Option<&u8> = Some(&v);
+        assert_eq!(o.as_deref(), Some(&7u8));
+    }
+
+    #[test]
+    fn test_as_deref_none() {
+        let o: Option<&u8> = None;
+        assert!(o.as_deref().is_none());
+    }
+
+    #[test]
+    fn test_as_deref_mut_some_mutates_through() {
+        let mut v: u8 = 0;
+        let mut o: Option<&mut u8> = Some(&mut v);
+        if let Some(inner) = o.as_deref_mut() {
+            *inner = u8::MAX;
+        }
+        drop(o);
+        assert_eq!(v, u8::MAX);
+    }
+}
+
+// ----- cloned / copied -------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_cloned_some() -> bool {
+    let v: u8 = 7;
+    let o: Option<&u8> = Some(&v);
+    o.cloned() == Some(7u8)
+}
+
+#[rust_lean_test]
+pub fn test_copied_some() -> bool {
+    let v: u8 = u8::MAX;
+    Some(&v).copied() == Some(u8::MAX)
+}
+
+#[rust_lean_test]
+pub fn test_copied_none() -> bool {
+    None::<&u8>.copied() == None
+}
+
+// ----- insert / get_or_insert* / replace / take_if (not extracted) -----------
+
+// Rust-only: the model's versions are pure (they return the updated option
+// rather than mutating through `&mut self`), so they are `hax_lib::exclude`d —
+// an extracted definition would not match a std call site. Same reason `take`
+// sits in `CHARON_EXCLUDES`.
+#[cfg(test)]
+mod insertion {
+    #[test]
+    fn test_insert_over_none() {
+        let mut o: Option<u8> = None;
+        assert_eq!(*o.insert(7), 7);
+        assert_eq!(o, Some(7));
+    }
+
+    #[test]
+    fn test_insert_over_some_replaces() {
+        let mut o: Option<u8> = Some(0);
+        assert_eq!(*o.insert(u8::MAX), u8::MAX);
+        assert_eq!(o, Some(u8::MAX));
+    }
+
+    #[test]
+    fn test_get_or_insert_keeps_some() {
+        let mut o: Option<u8> = Some(0);
+        assert_eq!(*o.get_or_insert(u8::MAX), 0);
+        assert_eq!(o, Some(0));
+    }
+
+    #[test]
+    fn test_get_or_insert_fills_none() {
+        let mut o: Option<u8> = None;
+        assert_eq!(*o.get_or_insert(u8::MAX), u8::MAX);
+        assert_eq!(o, Some(u8::MAX));
+    }
+
+    #[test]
+    fn test_get_or_insert_with_fills_none() {
+        let mut o: Option<u8> = None;
+        assert_eq!(*o.get_or_insert_with(|| 7), 7);
+        assert_eq!(o, Some(7));
+    }
+
+    #[test]
+    fn test_get_or_insert_default_fills_none() {
+        let mut o: Option<u8> = None;
+        assert_eq!(*o.get_or_insert_default(), 0);
+        assert_eq!(o, Some(0));
+    }
+
+    #[test]
+    fn test_replace_some_returns_old() {
+        let mut o: Option<u8> = Some(0);
+        assert_eq!(o.replace(u8::MAX), Some(0));
+        assert_eq!(o, Some(u8::MAX));
+    }
+
+    #[test]
+    fn test_replace_none_returns_none() {
+        let mut o: Option<u8> = None;
+        assert_eq!(o.replace(7), None);
+        assert_eq!(o, Some(7));
+    }
+
+    #[test]
+    fn test_take_if_true_takes() {
+        let mut o: Option<u8> = Some(7);
+        assert_eq!(o.take_if(|v| *v == 7), Some(7));
+        assert_eq!(o, None);
+    }
+
+    // A predicate that mutates and answers `false` must leave the mutation behind.
+    #[test]
+    fn test_take_if_false_keeps_the_mutation() {
+        let mut o: Option<u8> = Some(0);
+        assert_eq!(
+            o.take_if(|v| {
+                *v = u8::MAX;
+                false
+            }),
+            None
+        );
+        assert_eq!(o, Some(u8::MAX));
+    }
+
+    #[test]
+    fn test_take_if_none() {
+        let mut o: Option<u8> = None;
+        assert_eq!(o.take_if(|_| true), None);
+    }
+}
+
+// ----- flatten_ref / flatten_mut / into_flat_iter / zip_with / reduce --------
+// ----- get_or_try_insert_with -----------------------------------------------
+
+// No callable std counterpart: all six are unstable in std (`option_reduce`,
+// `option_zip`, `option_reference_flattening`, `option_into_flat_iter`,
+// `option_get_or_try_insert_with`), so the equivalence tests cannot construct
+// the observation from the std side. Their behaviour is pinned by the proptests
+// in `core-models/src/core/option.rs`.
+
+// ----- as_pin_ref / as_pin_mut ----------------------------------------------
+
+// Not modeled: both take `self: Pin<&Self>`, and the model has no `core::pin`
+// (the `pin` module is at 0% coverage). See COVERAGE.md.

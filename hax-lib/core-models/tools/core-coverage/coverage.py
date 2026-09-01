@@ -47,6 +47,41 @@ PRIM_BUCKET = {
     "pointer": "ptr", "reference": "ptr",
 }
 
+# Owners the model has to spell differently from real core, mapped back to the
+# name real core uses. Two reasons the model deviates:
+#
+#  - methods on a primitive need a stand-in type to hang off, since Rust forbids
+#    inherent impls on primitives. `num` names its stand-ins after the primitive
+#    (`pub struct u8;`), but `slice`/`array` use `Slice`/`Array`.
+#  - trait *default* methods are unsupported by hax, so the model moves them
+#    into a companion trait (`IteratorMethods` for `Iterator`, `Neq` and
+#    `PartialOrdDefaults` for `PartialEq`/`PartialOrd`) and blanket-impls it.
+#
+# Both are naming workarounds, not gaps: without this the report would call
+# `slice::len` and `Iterator::map` unmodeled while the model provides them.
+MODEL_OWNER_ALIASES = {
+    # primitive stand-ins
+    "Slice": "slice",
+    "Array": "array",
+    # companion traits carrying the real trait's default methods
+    "IteratorMethods": "Iterator",
+    "DoubleEndedIteratorMethods": "DoubleEndedIterator",
+    "ExactSizeIteratorMethods": "ExactSizeIterator",
+    "ExtendMethods": "Extend",
+    "Neq": "PartialEq",
+    "PartialOrdDefaults": "PartialOrd",
+    "OrdDefaults": "Ord",
+    "RangeBoundsDefaults": "RangeBounds",
+    "IntoBoundsDefaults": "IntoBounds",
+    "ToOwnedDefaults": "ToOwned",
+    "ErrorDefaults": "Error",
+    "WriteDefaults": "Write",
+}
+
+# Companion-trait methods the model also had to rename (`!=` is `ne` in core but
+# `neq` in the model, where `ne` would collide with nothing but reads worse).
+MODEL_METHOD_ALIASES = {("Neq", "neq"): "ne"}
+
 # Modules that a pure-Rust verification model of core/alloc is not trying to
 # provide (platform/runtime/compiler surface). Reported separately, not in the
 # headline. Edit this to re-scope the report.
@@ -165,8 +200,30 @@ def collect(doc) -> dict[str, set[str]]:
     return out
 
 
+def apply_model_aliases(mods: dict[str, set[str]]) -> dict[str, set[str]]:
+    """Add, for every aliased model key, the key real core uses for it.
+
+    Additive: the original key stays, so an alias can never remove coverage.
+    """
+    out = {}
+    for mod, keys in mods.items():
+        aliased = set(keys)
+        for key in keys:
+            owner, _, method = key.partition("::")
+            alias = MODEL_OWNER_ALIASES.get(owner)
+            if alias is None:
+                continue
+            if method:
+                method = MODEL_METHOD_ALIASES.get((owner, method), method)
+                aliased.add(f"{alias}::{method}")
+            else:
+                aliased.add(alias)
+        out[mod] = aliased
+    return out
+
+
 def crate_report(den_doc, num_doc, out_of_scope: set[str]) -> dict:
-    den, num = collect(den_doc), collect(num_doc)
+    den, num = collect(den_doc), apply_model_aliases(collect(num_doc))
     mods = []
     for mod in sorted(den):
         covered = sorted(den[mod] & num.get(mod, set()))

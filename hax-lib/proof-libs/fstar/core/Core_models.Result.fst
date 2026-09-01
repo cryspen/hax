@@ -47,7 +47,7 @@ include Core_models.Bundle {impl__ok as impl__ok}
 
 include Core_models.Bundle {impl__err as impl__err}
 
-include Core_models.Bundle {impl__and as impl__and}
+include Core_models.Bundle {impl__and__from__result as impl__and}
 
 include Core_models.Bundle {impl__and_then__from__result as impl__and_then}
 
@@ -59,7 +59,13 @@ include Core_models.Bundle {impl__unwrap_or__from__result as impl__unwrap_or}
 
 include Core_models.Bundle {impl__map_err as impl__map_err}
 
-include Core_models.Bundle {impl_1__cloned as impl_1__cloned}
+include Core_models.Bundle {impl__unwrap_unchecked__from__result as impl__unwrap_unchecked}
+
+include Core_models.Bundle {impl__unwrap_err_unchecked as impl__unwrap_err_unchecked}
+
+include Core_models.Bundle {impl__iter__from__result as impl__iter}
+
+include Core_models.Bundle {impl_1__cloned__from__result as impl_1__cloned}
 
 include Core_models.Bundle {impl_2__transpose as impl_2__transpose}
 
@@ -70,3 +76,25 @@ include Core_models.Bundle {impl_4__from__result as impl_4}
 include Core_models.Bundle {impl_5__from__result as impl_5}
 
 include Core_models.Bundle {impl_6__from__result as impl_6}
+
+include Core_models.Bundle {t_Iter__from__result as t_Iter}
+
+include Core_models.Bundle {Iter__from__result as Iter}
+
+include Core_models.Bundle {impl_7__from__result as impl_7}
+
+include Core_models.Bundle {t_IntoIter__from__result as t_IntoIter}
+
+include Core_models.Bundle {IntoIter__from__result as IntoIter}
+
+include Core_models.Bundle {impl_9__from__result as impl_9}
+
+include Core_models.Bundle {impl_10__from__result as impl_10}
+
+include Core_models.Bundle {impl_11__as_deref as impl_11__as_deref}
+
+include Core_models.Bundle {impl_13__copied as impl_13__copied}
+
+include Core_models.Bundle {impl_14__into_ok as impl_14__into_ok}
+
+include Core_models.Bundle {impl_15__into_err as impl_15__into_err}

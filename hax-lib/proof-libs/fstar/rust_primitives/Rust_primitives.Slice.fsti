@@ -20,3 +20,9 @@ let array_slice (#t: Type) (l: usize) (s: t_Array t l) = slice_slice s
 val array_from_fn (#t: Type) (len: usize) (#ft: Type) (f: (x: usize {x <. len}) -> t): 
   Pure (t_Array t len) (requires True) (ensures (fun a -> forall i. Seq.index a i == f (sz i)))
 let array_index (#t: Type) (l: usize) (s: t_Array t l) (i: usize {i <. length s}): t = Seq.index s (v i)
+// Kept in this module (rather than written as an array literal in the model) so
+// that `Core_models` does not reach `Rust_primitives.Hax.array_of_list`, which
+// would make hax's bundle and `Rust_primitives.Hax` mutually dependent.
+let array_pair (#t: Type) (x y: t): t_Array t (mk_usize 2) =
+  Rust_primitives.Arrays.createi (mk_usize 2) (fun i -> if i =. mk_usize 0 then x else y)
+let array_from_ref (#t: Type) (x: t): t_Array t (mk_usize 1) = Seq.create 1 x

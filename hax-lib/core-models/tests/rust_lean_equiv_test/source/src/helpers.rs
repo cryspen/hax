@@ -13,6 +13,8 @@
 //! Add a new `none_<T>` when you exercise an `Option<T>` for which one
 //! doesn't already exist.
 
+use core::ops::{Bound, ControlFlow};
+
 macro_rules! none_helper {
     ($name:ident, $t:ty, $default:expr) => {
         pub fn $name() -> Option<$t> {
@@ -34,6 +36,31 @@ none_helper!(none_i32, i32, 0);
 none_helper!(none_i64, i64, 0);
 none_helper!(none_isize, isize, 0);
 none_helper!(none_bool, bool, false);
+none_helper!(none_pair_u8, (u8, u8), (0, 0));
+
+/// Same problem, one step further out: `ControlFlow<B, C>` has two type
+/// parameters and each constructor mentions only one, so the extraction of a
+/// bare `ControlFlow::Break(0u8)` leaves the *other* parameter polymorphic and
+/// Lean cannot infer it ("don't know how to synthesize implicit argument `C`").
+/// Building the value behind a fully concrete signature pins both.
+pub fn control_flow_break_u8(b: u8) -> ControlFlow<u8, u8> {
+    ControlFlow::Break(b)
+}
+
+/// See [`control_flow_break_u8`].
+pub fn control_flow_continue_u8(c: u8) -> ControlFlow<u8, u8> {
+    ControlFlow::Continue(c)
+}
+
+/// `Bound::Unbounded` mentions no `T` at all, so it needs the same treatment.
+/// Routing through `none_u8` is what pins `T`: the `Included` arm makes the
+/// match `Bound<u8>`, while the value actually returned is `Unbounded`.
+pub fn bound_unbounded_u8() -> Bound<u8> {
+    match none_u8() {
+        Some(x) => Bound::Included(x),
+        None => Bound::Unbounded,
+    }
+}
 
 /// `u8`'s model `Clone`/`PartialEq` are total identities, so a model that drops
 /// a trait dictionary looks correct at that type. `Bumped` makes it observable:

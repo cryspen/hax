@@ -170,7 +170,7 @@ pub mod traits {
 
         // opaque: for-loop generates Rust_primitives.Hax.Folds, causing F* dependency cycle
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        #[cfg_attr(charon, aeneas::exclude)] // forward reference in lean (`core.Usize.Insts.CoreIterRangeStep`)
+        #[cfg_attr(charon, hax_lib::exclude)] // forward reference in lean (`core.Usize.Insts.CoreIterRangeStep`)
         fn iter_nth<I: Iterator>(mut iter: I, n: usize) -> Option<I::Item> {
             for _ in 0..n {
                 if let Option::None = iter.next() {
@@ -251,7 +251,7 @@ pub mod traits {
         }
 
         #[hax_lib::attributes]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         impl<I: Iterator> IteratorMethods for I {
             fn fold<B, F: Fn(B, I::Item) -> B>(self, init: B, f: F) -> B {
                 iter_fold(self, init, f)
@@ -657,7 +657,7 @@ pub mod adapters {
         #[hax_lib::attributes]
         // opaque: loop + Fn output projection not provably bool in F*
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(charon, hax_lib::exclude)]
         impl<I: Iterator, P: Fn(&I::Item) -> bool> Iterator for Filter<I, P> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
@@ -742,7 +742,7 @@ pub mod adapters {
 pub mod range {
     use crate::clone::Clone;
     // // We cannot use core model's PartialOrd because its instances currently have an
-    // // `aeneas::exclude` attribute.
+    // // `hax_lib::exclude` attribute.
     // use crate::cmp::PartialOrd;
     use crate::option::Option;
     use crate::result::Result;
@@ -1423,8 +1423,8 @@ mod tests {
         // Under the F* cfg `crate::clone::Clone` has a blanket impl.
         #[cfg(not(hax_backend_fstar))]
         impl crate::clone::Clone for Wrap {
-            fn clone(self) -> Self {
-                self
+            fn clone(&self) -> Self {
+                *self
             }
         }
 
@@ -1450,7 +1450,7 @@ mod tests {
             #[test]
             fn steps_between(a in any::<u8>(), b in any::<u8>()) {
                 // `Step: Clone` is only a bound, never called by the defaults.
-                prop_assert_eq!(crate::clone::Clone::clone(Wrap(a)), Wrap(a));
+                prop_assert_eq!(crate::clone::Clone::clone(&Wrap(a)), Wrap(a));
                 let (model_lower, model_exact) = <Wrap as ModelStep>::steps_between(&Wrap(a), &Wrap(b));
                 let (std_lower, std_exact) = <u8 as StdStep>::steps_between(&a, &b);
                 prop_assert_eq!(model_lower, std_lower);

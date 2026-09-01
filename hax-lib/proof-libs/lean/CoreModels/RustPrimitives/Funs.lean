@@ -183,6 +183,45 @@ def rust_primitives.slice.array_as_slice
   {T : Type} {N : Std.Usize} : Array T N → RustM (Slice T) :=
   fun a => ok (Array.to_slice a)
 
+-- The whole array viewed as a slice, plus its write-back (the pure encoding of
+-- `&mut a[..]`).
+@[spec]
+def rust_primitives.slice.array_as_slice_mut
+  {T : Type} {N : Std.Usize} :
+  Array T N → RustM ((Slice T) × (Slice T → Array T N)) :=
+  fun a => ok (Array.to_slice_mut a)
+
+-- `&x` seen as a one-element array.
+@[spec]
+def rust_primitives.slice.array_from_ref
+  {T : Type} : T → RustM (Array T 1#usize) :=
+  fun x => ok (Array.repeat 1#usize x)
+
+-- The same, plus the write-back. The array always has length 1, so `headD`'s
+-- fallback is unreachable.
+@[spec]
+def rust_primitives.slice.array_from_mut
+  {T : Type} : T → RustM ((Array T 1#usize) × (Array T 1#usize → T)) :=
+  fun x => ok (Array.repeat 1#usize x, fun a => a.val.headD x)
+
+-- The two-element array `[a, b]`.
+@[spec]
+def rust_primitives.slice.array_pair
+  {T : Type} : T → T → RustM (Array T 2#usize) :=
+  fun a b => ok (Array.make 2#usize [a, b])
+
+-- Aeneas represents `str` as `Slice U8` (`Aeneas.Std.Str`), i.e. already as its
+-- UTF-8 bytes, so taking those bytes is the identity.
+@[spec]
+def rust_primitives.string.str_as_bytes : Str → RustM (Slice Std.U8) :=
+  fun s => ok s
+
+-- Byte-indexed substring; the same projection as `slice_slice`, since `Str` is
+-- a byte slice here. Slicing off a UTF-8 boundary is ruled out by the callers
+-- in `core_models::str`, not by the representation.
+def rust_primitives.string.str_sub_bytes : Str → Std.Usize → Std.Usize → RustM Str :=
+  fun s i j => Slice.subslice s ⟨i, j⟩
+
 @[spec]
 def rust_primitives.slice.array_slice
   {T : Type} {N : Std.Usize} :
@@ -974,6 +1013,13 @@ def rust_primitives.sequence.seq_push
     let extended := s.val ++ [x]
     if h : extended.length ≤ Usize.max then ok ⟨extended, h⟩
     else fail .panic
+
+-- Routed through `seq_push` on the empty slice rather than `⟨[x], _⟩` so the
+-- `1 ≤ Usize.max` side condition is discharged the way every other
+-- length-growing helper here discharges it.
+def rust_primitives.sequence.seq_one
+  {T : Type} : T → RustM (rust_primitives.sequence.Seq T) :=
+  fun x => rust_primitives.sequence.seq_push (Slice.new T) x
 
 -- std clones `x` for all but the last element, which is `x` itself moved in.
 @[spec]

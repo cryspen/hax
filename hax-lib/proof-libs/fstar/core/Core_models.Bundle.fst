@@ -31,6 +31,24 @@ let impl_23__each_ref (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Array 
 
 let from_fn = Rust_primitives.Slice.array_from_fn
 
+/// See [`std::array::from_ref`]
+let from_ref (#v_T: Type0) (s: v_T) : t_Array v_T (mk_usize 1) =
+  Rust_primitives.Slice.array_from_ref #v_T s
+
+/// See [`std::array::repeat`]
+let repeat
+      (#v_T: Type0)
+      (v_N: usize)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (v_val: v_T)
+    : t_Array v_T v_N =
+  Rust_primitives.Slice.array_from_fn #v_T
+    v_N
+    #(usize -> v_T)
+    (fun temp_0_ ->
+        let _:usize = temp_0_ in
+        Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve v_val <: v_T)
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) usize =
   {
@@ -42,6 +60,7 @@ let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
     fun (self: t_Array v_T v_N) (i: usize) -> Rust_primitives.Slice.array_index #v_T v_N self i
   }
 
+/// The elements not yet yielded, in order.
 type t_IntoIter (v_T: Type0) (v_N: usize) =
   | IntoIter : Rust_primitives.Sequence.t_Seq v_T -> t_IntoIter v_T v_N
 
@@ -58,6 +77,18 @@ let impl_24 (#v_T: Type0) (v_N: usize)
     fun (self: t_Array v_T v_N) ->
       IntoIter (Rust_primitives.Sequence.seq_from_array #v_T v_N self) <: t_IntoIter v_T v_N
   }
+
+/// See [`std::array::IntoIter::new`]
+let impl_1__new (#v_T: Type0) (v_N: usize) (arr: t_Array v_T v_N) : t_IntoIter v_T v_N =
+  IntoIter (Rust_primitives.Sequence.seq_from_array #v_T v_N arr) <: t_IntoIter v_T v_N
+
+/// See [`std::array::IntoIter::empty`]
+let impl_1__empty (#v_T: Type0) (v_N: usize) (_: Prims.unit) : t_IntoIter v_T v_N =
+  IntoIter (Rust_primitives.Sequence.seq_empty #v_T ()) <: t_IntoIter v_T v_N
+
+/// See [`std::array::IntoIter::as_slice`]
+let impl_1__as_slice (#v_T: Type0) (v_N: usize) (self: t_IntoIter v_T v_N) : t_Slice v_T =
+  Rust_primitives.Sequence.seq_to_slice #v_T self._0
 
 /// See [`std::cmp::Ordering`]
 type t_Ordering =
@@ -148,8 +179,74 @@ let impl_54__then_with
       (() <: Prims.unit)
   | _ -> self
 
+/// See [`std::cmp::max_by`]
+let max_by
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F (v_T & v_T))
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Ordering})
+      (v1 v2: v_T)
+      (compare: v_F)
+    : v_T =
+  if
+    impl_54__is_lt (Core_models.Ops.Function.f_call_once #v_F
+          #(v_T & v_T)
+          #FStar.Tactics.Typeclasses.solve
+          compare
+          (v2, v1 <: (v_T & v_T))
+        <:
+        t_Ordering)
+  then v1
+  else v2
+
+/// See [`std::cmp::min_by`]
+let min_by
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F (v_T & v_T))
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Ordering})
+      (v1 v2: v_T)
+      (compare: v_F)
+    : v_T =
+  if
+    impl_54__is_lt (Core_models.Ops.Function.f_call_once #v_F
+          #(v_T & v_T)
+          #FStar.Tactics.Typeclasses.solve
+          compare
+          (v2, v1 <: (v_T & v_T))
+        <:
+        t_Ordering)
+  then v2
+  else v1
+
+/// See [`std::cmp::minmax_by`]
+let minmax_by
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F (v_T & v_T))
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Ordering})
+      (v1 v2: v_T)
+      (compare: v_F)
+    : t_Array v_T (mk_usize 2) =
+  if
+    impl_54__is_lt (Core_models.Ops.Function.f_call_once #v_F
+          #(v_T & v_T)
+          #FStar.Tactics.Typeclasses.solve
+          compare
+          (v2, v1 <: (v_T & v_T))
+        <:
+        t_Ordering)
+  then Rust_primitives.Slice.array_pair #v_T v2 v1
+  else Rust_primitives.Slice.array_pair #v_T v1 v2
+
 /// See [`std::convert::Infallible`]
 type t_Infallible = | Infallible : t_Infallible
+
+/// See [`std::convert::identity`]
+let identity (#v_T: Type0) (x: v_T) : v_T = x
 
 /// See [`std::iter::Enumerate`]
 type t_Enumerate (v_I: Type0) = {
@@ -2435,6 +2532,61 @@ let impl_30__from__num: Core_models.Default.t_Default bool =
     f_default = fun (_: Prims.unit) -> false
   }
 
+/// See [`std::ops::ControlFlow`]
+type t_ControlFlow (v_B: Type0) (v_C: Type0) =
+  | ControlFlow_Continue : v_C -> t_ControlFlow v_B v_C
+  | ControlFlow_Break : v_B -> t_ControlFlow v_B v_C
+
+/// See [`std::ops::ControlFlow::is_break`]
+let impl__is_break (#v_B #v_C: Type0) (self: t_ControlFlow v_B v_C) : bool =
+  match self <: t_ControlFlow v_B v_C with
+  | ControlFlow_Break _ -> true
+  | _ -> false
+
+/// See [`std::ops::ControlFlow::is_continue`]
+let impl__is_continue (#v_B #v_C: Type0) (self: t_ControlFlow v_B v_C) : bool =
+  match self <: t_ControlFlow v_B v_C with
+  | ControlFlow_Continue _ -> true
+  | _ -> false
+
+/// See [`std::ops::ControlFlow::map_break`]
+let impl__map_break
+      (#v_B #v_C #v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_B)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
+      (self: t_ControlFlow v_B v_C)
+      (f: v_F)
+    : t_ControlFlow v_T v_C =
+  match self <: t_ControlFlow v_B v_C with
+  | ControlFlow_Continue x -> ControlFlow_Continue x <: t_ControlFlow v_T v_C
+  | ControlFlow_Break x ->
+    ControlFlow_Break
+    (Core_models.Ops.Function.f_call_once #v_F #v_B #FStar.Tactics.Typeclasses.solve f (x <: v_B))
+    <:
+    t_ControlFlow v_T v_C
+
+/// See [`std::ops::ControlFlow::map_continue`]
+let impl__map_continue
+      (#v_B #v_C #v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_C)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
+      (self: t_ControlFlow v_B v_C)
+      (f: v_F)
+    : t_ControlFlow v_B v_T =
+  match self <: t_ControlFlow v_B v_C with
+  | ControlFlow_Continue x ->
+    ControlFlow_Continue
+    (Core_models.Ops.Function.f_call_once #v_F #v_C #FStar.Tactics.Typeclasses.solve f (x <: v_C))
+    <:
+    t_ControlFlow v_B v_T
+  | ControlFlow_Break x -> ControlFlow_Break x <: t_ControlFlow v_B v_T
+
+/// See [`std::ops::ControlFlow::into_value`]
+let impl_1__into_value (#v_T: Type0) (self: t_ControlFlow v_T v_T) : v_T =
+  match self <: t_ControlFlow v_T v_T with
+  | ControlFlow_Continue x -> x
+  | ControlFlow_Break x -> x
+
 /// See [`std::ops::RangeTo`]
 type t_RangeTo (v_T: Type0) = { f_end:v_T }
 
@@ -2504,10 +2656,124 @@ let impl_29 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
   }
 
 /// See [`std::ops::RangeInclusive`]
+/// Real core also carries an `exhausted` flag, set once the range has been
+/// iterated to its end, which makes a drained range report itself empty.
+/// The model does not implement `Iterator` for `RangeInclusive`, so there
+/// is nothing to observe it with; `is_empty`/`end_bound` below behave as if
+/// the flag were always `false`.
 type t_RangeInclusive (v_T: Type0) = {
   f_start:v_T;
   f_end:v_T
 }
+
+/// See [`std::ops::RangeToInclusive`]
+type t_RangeToInclusive (v_T: Type0) = { f_end:v_T }
+
+/// See [`std::ops::Bound`]
+type t_Bound (v_T: Type0) =
+  | Bound_Included : v_T -> t_Bound v_T
+  | Bound_Excluded : v_T -> t_Bound v_T
+  | Bound_Unbounded : t_Bound v_T
+
+/// See [`std::ops::Bound::as_ref`]
+let impl__as_ref (#v_T: Type0) (self: t_Bound v_T) : t_Bound v_T =
+  match self <: t_Bound v_T with
+  | Bound_Included x -> Bound_Included x <: t_Bound v_T
+  | Bound_Excluded x -> Bound_Excluded x <: t_Bound v_T
+  | Bound_Unbounded  -> Bound_Unbounded <: t_Bound v_T
+
+/// See [`std::ops::Bound::map`]
+let impl__map
+      (#v_T #v_U #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
+      (self: t_Bound v_T)
+      (f: v_F)
+    : t_Bound v_U =
+  match self <: t_Bound v_T with
+  | Bound_Included x ->
+    Bound_Included
+    (Core_models.Ops.Function.f_call_once #v_F #v_T #FStar.Tactics.Typeclasses.solve f (x <: v_T))
+    <:
+    t_Bound v_U
+  | Bound_Excluded x ->
+    Bound_Excluded
+    (Core_models.Ops.Function.f_call_once #v_F #v_T #FStar.Tactics.Typeclasses.solve f (x <: v_T))
+    <:
+    t_Bound v_U
+  | Bound_Unbounded  -> Bound_Unbounded <: t_Bound v_U
+
+/// See [`std::ops::Bound::cloned`]
+let impl_1__cloned
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Clone.t_Clone v_T)
+      (self: t_Bound v_T)
+    : t_Bound v_T =
+  match self <: t_Bound v_T with
+  | Bound_Included x ->
+    Bound_Included (Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x)
+    <:
+    t_Bound v_T
+  | Bound_Excluded x ->
+    Bound_Excluded (Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x)
+    <:
+    t_Bound v_T
+  | Bound_Unbounded  -> Bound_Unbounded <: t_Bound v_T
+
+/// See [`std::ops::Bound::copied`]
+let impl_2__copied
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
+      (self: t_Bound v_T)
+    : t_Bound v_T =
+  match self <: t_Bound v_T with
+  | Bound_Included x ->
+    Bound_Included (Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x)
+    <:
+    t_Bound v_T
+  | Bound_Excluded x ->
+    Bound_Excluded (Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x)
+    <:
+    t_Bound v_T
+  | Bound_Unbounded  -> Bound_Unbounded <: t_Bound v_T
+
+/// See [`std::ops::OneSidedRangeBound`]
+type t_OneSidedRangeBound =
+  | OneSidedRangeBound_StartInclusive : t_OneSidedRangeBound
+  | OneSidedRangeBound_End : t_OneSidedRangeBound
+  | OneSidedRangeBound_EndInclusive : t_OneSidedRangeBound
+
+let t_OneSidedRangeBound_cast_to_repr (x: t_OneSidedRangeBound) : isize =
+  match x <: t_OneSidedRangeBound with
+  | OneSidedRangeBound_StartInclusive  -> mk_isize 0
+  | OneSidedRangeBound_End  -> mk_isize 1
+  | OneSidedRangeBound_EndInclusive  -> mk_isize 2
+
+/// See [`std::ops::RangeInclusive::new`]
+let impl_24__new (#v_Idx: Type0) (start v_end: v_Idx) : t_RangeInclusive v_Idx =
+  { f_start = start; f_end = v_end } <: t_RangeInclusive v_Idx
+
+/// See [`std::ops::RangeInclusive::into_inner`]
+let impl_24__into_inner (#v_Idx: Type0) (self: t_RangeInclusive v_Idx) : (v_Idx & v_Idx) =
+  self.f_start, self.f_end <: (v_Idx & v_Idx)
+
+/// See [`std::ops::RangeInclusive::start`]
+let impl_25__start (#v_Idx: Type0) (self: t_RangeInclusive v_Idx) : v_Idx = self.f_start
+
+/// See [`std::ops::RangeInclusive::end`]
+let impl_25__end (#v_Idx: Type0) (self: t_RangeInclusive v_Idx) : v_Idx = self.f_end
+
+/// See [`std::ops::FromResidual`]
+class t_FromResidual (v_Self: Type0) (v_R: Type0) = {
+  f_from_residual_pre:v_R -> Type0;
+  f_from_residual_post:v_R -> v_Self -> Type0;
+  f_from_residual:x0: v_R
+    -> Prims.Pure v_Self (f_from_residual_pre x0) (fun result -> f_from_residual_post x0 result)
+}
+
+/// See [`std::ops::Yeet`]
+type t_Yeet (v_T: Type0) = | Yeet : v_T -> t_Yeet v_T
 
 /// See [`std::option::Option`]
 type t_Option (v_T: Type0) =
@@ -2915,6 +3181,18 @@ let impl_17__checked_rem (x y: isize) : t_Option isize =
   then Option_None <: t_Option isize
   else Option_Some (x %! y) <: t_Option isize
 
+/// See [`std::ops::ControlFlow::break_value`]
+let impl__break_value (#v_B #v_C: Type0) (self: t_ControlFlow v_B v_C) : t_Option v_B =
+  match self <: t_ControlFlow v_B v_C with
+  | ControlFlow_Continue _ -> Option_None <: t_Option v_B
+  | ControlFlow_Break x -> Option_Some x <: t_Option v_B
+
+/// See [`std::ops::ControlFlow::continue_value`]
+let impl__continue_value (#v_B #v_C: Type0) (self: t_ControlFlow v_B v_C) : t_Option v_C =
+  match self <: t_ControlFlow v_B v_C with
+  | ControlFlow_Continue x -> Option_Some x <: t_Option v_C
+  | ControlFlow_Break _ -> Option_None <: t_Option v_C
+
 /// See [`std::option::Option::is_some_and`]
 let impl__is_some_and
       (#v_T #v_F: Type0)
@@ -2942,7 +3220,7 @@ let impl__is_none_or
     Core_models.Ops.Function.f_call_once #v_F #v_T #FStar.Tactics.Typeclasses.solve f (x <: v_T)
 
 /// See [`std::option::Option::as_ref`]
-let impl__as_ref (#v_T: Type0) (self: t_Option v_T) : t_Option v_T =
+let impl__as_ref__from__option (#v_T: Type0) (self: t_Option v_T) : t_Option v_T =
   match self <: t_Option v_T with
   | Option_Some x -> Option_Some x <: t_Option v_T
   | Option_None  -> Option_None <: t_Option v_T
@@ -2983,7 +3261,7 @@ let impl__unwrap_or_default
   | Option_None  -> Core_models.Default.f_default #v_T #FStar.Tactics.Typeclasses.solve ()
 
 /// See [`std::option::Option::map`]
-let impl__map
+let impl__map__from__option
       (#v_T #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
@@ -3143,6 +3421,100 @@ let impl__inspect
   in
   self
 
+/// See [`std::option::Option::and`]
+let impl__and (#v_T #v_U: Type0) (self: t_Option v_T) (optb: t_Option v_U) : t_Option v_U =
+  match self <: t_Option v_T with
+  | Option_Some _ -> optb
+  | Option_None  -> Option_None <: t_Option v_U
+
+/// See [`std::option::Option::as_slice`]
+assume
+val impl__as_slice': #v_T: Type0 -> self: t_Option v_T -> t_Slice v_T
+
+unfold
+let impl__as_slice (#v_T: Type0) = impl__as_slice' #v_T
+
+/// See [`std::option::Option::insert`]
+/// Std takes `&mut self` and returns a `&mut` to the inserted value. The
+/// model returns the updated option instead — the same information, since
+/// the value std points at is the one this option now holds.
+let impl__insert (#v_T: Type0) (self: t_Option v_T) (value: v_T) : t_Option v_T =
+  Option_Some value <: t_Option v_T
+
+/// See [`std::option::Option::get_or_insert`]
+/// Returns the updated option; see `insert` for why that replaces std\'s
+/// `&mut T`.
+let impl__get_or_insert (#v_T: Type0) (self: t_Option v_T) (value: v_T) : t_Option v_T =
+  match self <: t_Option v_T with
+  | Option_Some x -> Option_Some x <: t_Option v_T
+  | Option_None  -> Option_Some value <: t_Option v_T
+
+/// See [`std::option::Option::get_or_insert_with`]
+/// Returns the updated option; see `insert`.
+let impl__get_or_insert_with
+      (#v_T #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F Prims.unit)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
+      (self: t_Option v_T)
+      (f: v_F)
+    : t_Option v_T =
+  match self <: t_Option v_T with
+  | Option_Some x -> Option_Some x <: t_Option v_T
+  | Option_None  ->
+    Option_Some
+    (Core_models.Ops.Function.f_call_once #v_F
+        #Prims.unit
+        #FStar.Tactics.Typeclasses.solve
+        f
+        (() <: Prims.unit))
+    <:
+    t_Option v_T
+
+/// See [`std::option::Option::get_or_insert_default`]
+/// Returns the updated option; see `insert`.
+let impl__get_or_insert_default
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Default.t_Default v_T)
+      (self: t_Option v_T)
+    : t_Option v_T =
+  match self <: t_Option v_T with
+  | Option_Some x -> Option_Some x <: t_Option v_T
+  | Option_None  ->
+    Option_Some (Core_models.Default.f_default #v_T #FStar.Tactics.Typeclasses.solve ())
+    <:
+    t_Option v_T
+
+/// See [`std::option::Option::replace`]
+/// Like `take`, the Rust interface is wrong here but good after extraction:
+/// the model returns `(new self, old value)` instead of mutating in place.
+let impl__replace (#v_T: Type0) (self: t_Option v_T) (value: v_T) : (t_Option v_T & t_Option v_T) =
+  (Option_Some value <: t_Option v_T), self <: (t_Option v_T & t_Option v_T)
+
+/// See [`std::option::Option::zip_with`]
+let impl__zip_with
+      (#v_T #v_U #v_F #v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F (v_T & v_U))
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_R})
+      (self: t_Option v_T)
+      (other: t_Option v_U)
+      (f: v_F)
+    : t_Option v_R =
+  match self, other <: (t_Option v_T & t_Option v_U) with
+  | Option_Some a, Option_Some b ->
+    Option_Some
+    (Core_models.Ops.Function.f_call_once #v_F
+        #(v_T & v_U)
+        #FStar.Tactics.Typeclasses.solve
+        f
+        (a, b <: (v_T & v_U)))
+    <:
+    t_Option v_R
+  | _ -> Option_None <: t_Option v_R
+
 /// See [`std::option::Option::is_some`]
 let impl__is_some (#v_T: Type0) (self: t_Option v_T)
     : Prims.Pure bool
@@ -3173,6 +3545,15 @@ let impl__unwrap (#v_T: Type0) (self: t_Option v_T)
   | Option_Some v_val -> v_val
   | Option_None  -> Core_models.Panicking.Internal.panic #v_T ()
 
+/// See [`std::option::Option::unwrap_unchecked`]
+/// Calling std\'s version on a `None` is undefined behaviour; the `requires`
+/// rules that input out, and the model panics rather than inventing a value.
+let impl__unwrap_unchecked (#v_T: Type0) (self: t_Option v_T)
+    : Prims.Pure v_T (requires impl__is_some #v_T self) (fun _ -> Prims.l_True) =
+  match self <: t_Option v_T with
+  | Option_Some x -> x
+  | Option_None  -> Core_models.Panicking.Internal.panic #v_T ()
+
 /// See [`std::option::Option::flatten`]
 let impl_1__flatten (#v_T: Type0) (self: t_Option (t_Option v_T)) : t_Option v_T =
   match self <: t_Option (t_Option v_T) with
@@ -3187,45 +3568,106 @@ let impl_2__from__option (#v_T: Type0) : Core_models.Default.t_Default (t_Option
     f_default = fun (_: Prims.unit) -> Option_None <: t_Option v_T
   }
 
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4__from__option (#v_T: Type0) : Core_models.Ops.Try_trait.t_Try (t_Option v_T) =
-  {
-    f_Output = v_T;
-    f_Residual = t_Option t_Infallible;
-    f_from_output_pre = (fun (output: v_T) -> true);
-    f_from_output_post = (fun (output: v_T) (out: t_Option v_T) -> true);
-    f_from_output = (fun (output: v_T) -> Option_Some output <: t_Option v_T);
-    f_branch_pre = (fun (self: t_Option v_T) -> true);
-    f_branch_post
-    =
-    (fun
-        (self: t_Option v_T)
-        (out: Core_models.Ops.Control_flow.t_ControlFlow (t_Option t_Infallible) v_T)
-        ->
-        true);
-    f_branch
-    =
-    fun (self: t_Option v_T) ->
-      match self <: t_Option v_T with
-      | Option_Some v ->
-        Core_models.Ops.Control_flow.ControlFlow_Continue v
-        <:
-        Core_models.Ops.Control_flow.t_ControlFlow (t_Option t_Infallible) v_T
-      | Option_None  ->
-        Core_models.Ops.Control_flow.ControlFlow_Break (Option_None <: t_Option t_Infallible)
-        <:
-        Core_models.Ops.Control_flow.t_ControlFlow (t_Option t_Infallible) v_T
-  }
-
 /// The `None` half of `?` on `Option`: rebuild `None` at the target type. The
 /// residual carries `Infallible`, so the `Some` arm is unreachable.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_5': #v_T: Type0
-  -> Core_models.Ops.Try_trait.t_FromResidual (t_Option v_T) (t_Option t_Infallible)
+val impl_6__from__option': #v_T: Type0 -> t_FromResidual (t_Option v_T) (t_Option t_Infallible)
 
 unfold
-let impl_5 (#v_T: Type0) = impl_5' #v_T
+let impl_6__from__option (#v_T: Type0) = impl_6__from__option' #v_T
+
+/// See [`std::option::Option::unzip`]
+let impl_7__unzip (#v_T #v_U: Type0) (self: t_Option (v_T & v_U)) : (t_Option v_T & t_Option v_U) =
+  match self <: t_Option (v_T & v_U) with
+  | Option_Some (a, b) ->
+    (Option_Some a <: t_Option v_T), (Option_Some b <: t_Option v_U)
+    <:
+    (t_Option v_T & t_Option v_U)
+  | Option_None  ->
+    (Option_None <: t_Option v_T), (Option_None <: t_Option v_U) <: (t_Option v_T & t_Option v_U)
+
+/// See [`std::option::Option::cloned`]
+let impl_8__cloned
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (self: t_Option v_T)
+    : t_Option v_T =
+  match self <: t_Option v_T with
+  | Option_Some x ->
+    Option_Some (Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x) <: t_Option v_T
+  | Option_None  -> Option_None <: t_Option v_T
+
+/// See [`std::option::Option::as_deref`]
+let impl_9__as_deref (#v_T: Type0) (self: t_Option v_T) : t_Option v_T =
+  match self <: t_Option v_T with
+  | Option_Some x -> Option_Some x <: t_Option v_T
+  | Option_None  -> Option_None <: t_Option v_T
+
+/// See [`std::option::Option::copied`]
+let impl_10__copied
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
+      (self: t_Option v_T)
+    : t_Option v_T =
+  match self <: t_Option v_T with
+  | Option_Some x ->
+    Option_Some (Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x) <: t_Option v_T
+  | Option_None  -> Option_None <: t_Option v_T
+
+/// See [`std::option::Option::flatten_ref`]
+let impl_12__flatten_ref (#v_T: Type0) (self: t_Option (t_Option v_T)) : t_Option v_T =
+  match self <: t_Option (t_Option v_T) with
+  | Option_Some inner -> impl__as_ref__from__option #v_T inner
+  | Option_None  -> Option_None <: t_Option v_T
+
+/// See [`std::option::Iter`]
+/// An `Option`'s iterators yield at most one element; the payload is a `Seq` so
+/// `next` can be written the same way as the slice/array iterators.
+type t_Iter (v_T: Type0) = | Iter : Rust_primitives.Sequence.t_Seq v_T -> t_Iter v_T
+
+/// See [`std::option::Option::iter`]
+let impl__iter (#v_T: Type0) (self: t_Option v_T) : t_Iter v_T =
+  match self <: t_Option v_T with
+  | Option_Some x -> Iter (Rust_primitives.Sequence.seq_one #v_T x) <: t_Iter v_T
+  | Option_None  -> Iter (Rust_primitives.Sequence.seq_empty #v_T ()) <: t_Iter v_T
+
+/// See [`std::option::IntoIter`]
+type t_IntoIter__from__option (v_T: Type0) =
+  | IntoIter__from__option : Rust_primitives.Sequence.t_Seq v_T -> t_IntoIter__from__option v_T
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_17__from__option (#v_T: Type0)
+    : Core_models.Iter.Traits.Collect.t_IntoIterator (t_Option v_T) =
+  {
+    f_Item = v_T;
+    f_IntoIter = t_IntoIter__from__option v_T;
+    f_into_iter_pre = (fun (self: t_Option v_T) -> true);
+    f_into_iter_post = (fun (self: t_Option v_T) (out: t_IntoIter__from__option v_T) -> true);
+    f_into_iter
+    =
+    fun (self: t_Option v_T) ->
+      match self <: t_Option v_T with
+      | Option_Some x ->
+        IntoIter__from__option (Rust_primitives.Sequence.seq_one #v_T x)
+        <:
+        t_IntoIter__from__option v_T
+      | Option_None  ->
+        IntoIter__from__option (Rust_primitives.Sequence.seq_empty #v_T ())
+        <:
+        t_IntoIter__from__option v_T
+  }
+
+/// See [`std::option::OptionFlatten`]
+type t_OptionFlatten (v_A: Type0) = | OptionFlatten : t_Option v_A -> t_OptionFlatten v_A
+
+/// See [`std::option::Option::into_flat_iter`]
+/// Std bounds this by `T: IntoIterator<IntoIter = A>` and returns
+/// `OptionFlatten<A>`. The model omits the associated-type constraint (as
+/// `FromIterator::from_iter` does) and relies on the blanket
+/// `IntoIterator for I: Iterator`, under which `A` is `T` itself.
+let impl__into_flat_iter (#v_T: Type0) (self: t_Option v_T) : t_OptionFlatten v_T =
+  OptionFlatten self <: t_OptionFlatten v_T
 
 /// See [`std::result::Result`]
 type t_Result (v_T: Type0) (v_E: Type0) =
@@ -3328,6 +3770,18 @@ val impl_17__from_str_radix': src: string -> radix: u32
 unfold
 let impl_17__from_str_radix = impl_17__from_str_radix'
 
+/// See [`std::ops::ControlFlow::break_ok`]
+let impl__break_ok (#v_B #v_C: Type0) (self: t_ControlFlow v_B v_C) : t_Result v_B v_C =
+  match self <: t_ControlFlow v_B v_C with
+  | ControlFlow_Continue c -> Result_Err c <: t_Result v_B v_C
+  | ControlFlow_Break b -> Result_Ok b <: t_Result v_B v_C
+
+/// See [`std::ops::ControlFlow::continue_ok`]
+let impl__continue_ok (#v_B #v_C: Type0) (self: t_ControlFlow v_B v_C) : t_Result v_C v_B =
+  match self <: t_ControlFlow v_B v_C with
+  | ControlFlow_Continue c -> Result_Ok c <: t_Result v_C v_B
+  | ControlFlow_Break b -> Result_Err b <: t_Result v_C v_B
+
 /// See [`std::option::Option::ok_or`]
 let impl__ok_or (#v_T #v_E: Type0) (self: t_Option v_T) (err: v_E) : t_Result v_T v_E =
   match self <: t_Option v_T with
@@ -3355,6 +3809,39 @@ let impl__ok_or_else
         (() <: Prims.unit))
     <:
     t_Result v_T v_E
+
+/// See [`std::option::Option::get_or_try_insert_with`]
+/// Std is generic over any `Try` type through `ops::try_trait::Residual`,
+/// which the model does not have; this is the `Result` instance of that
+/// signature. Returns the updated option, as `insert` does.
+assume
+val impl__get_or_try_insert_with':
+    #v_T: Type0 ->
+    #v_E: Type0 ->
+    #v_F: Type0 ->
+    {| i0: Core_models.Ops.Function.t_FnOnce v_F Prims.unit |} ->
+    #_: unit{i0.Core_models.Ops.Function.f_Output == t_Result v_T v_E} ->
+    self: t_Option v_T ->
+    f: v_F
+  -> t_Result (t_Option v_T) v_E
+
+unfold
+let impl__get_or_try_insert_with
+      (#v_T #v_E #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Ops.Function.t_FnOnce v_F Prims.unit)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Result v_T v_E})
+     = impl__get_or_try_insert_with' #v_T #v_E #v_F #i0 #_
+
+/// See [`std::option::Option::transpose`]
+let impl_5__transpose (#v_T #v_E: Type0) (self: t_Option (t_Result v_T v_E))
+    : t_Result (t_Option v_T) v_E =
+  match self <: t_Option (t_Result v_T v_E) with
+  | Option_Some (Result_Ok x) ->
+    Result_Ok (Option_Some x <: t_Option v_T) <: t_Result (t_Option v_T) v_E
+  | Option_Some (Result_Err e) -> Result_Err e <: t_Result (t_Option v_T) v_E
+  | Option_None  -> Result_Ok (Option_None <: t_Option v_T) <: t_Result (t_Option v_T) v_E
 
 /// See [`std::result::Result::is_ok`]
 let impl__is_ok (#v_T #v_E: Type0) (self: t_Result v_T v_E) : bool =
@@ -3537,7 +4024,7 @@ let impl__err (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Option v_E =
   | Result_Err e -> Option_Some e <: t_Option v_E
 
 /// See [`std::result::Result::and`]
-let impl__and (#v_T #v_E #v_U: Type0) (self: t_Result v_T v_E) (res: t_Result v_U v_E)
+let impl__and__from__result (#v_T #v_E #v_U: Type0) (self: t_Result v_T v_E) (res: t_Result v_U v_E)
     : t_Result v_U v_E =
   match self <: t_Result v_T v_E with
   | Result_Ok _ -> res
@@ -3626,8 +4113,25 @@ let impl__unwrap_err (#v_T #v_E: Type0) (self: t_Result v_T v_E)
   | Result_Ok _ -> Core_models.Panicking.Internal.panic #v_E ()
   | Result_Err e -> e
 
+/// See [`std::result::Result::unwrap_unchecked`]
+/// Calling std\'s version on an `Err` is undefined behaviour; the `requires`
+/// rules that input out, and the model panics rather than inventing a value.
+let impl__unwrap_unchecked__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E)
+    : Prims.Pure v_T (requires impl__is_ok #v_T #v_E self) (fun _ -> Prims.l_True) =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> t
+  | Result_Err _ -> Core_models.Panicking.Internal.panic #v_T ()
+
+/// See [`std::result::Result::unwrap_err_unchecked`]
+/// See `unwrap_unchecked` for why the `Ok` arm panics.
+let impl__unwrap_err_unchecked (#v_T #v_E: Type0) (self: t_Result v_T v_E)
+    : Prims.Pure v_E (requires impl__is_err #v_T #v_E self) (fun _ -> Prims.l_True) =
+  match self <: t_Result v_T v_E with
+  | Result_Ok _ -> Core_models.Panicking.Internal.panic #v_E ()
+  | Result_Err e -> e
+
 /// See [`std::result::Result::cloned`]
-let impl_1__cloned
+let impl_1__cloned__from__result
       (#v_T #v_E: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
       (self: t_Result v_T v_E)
@@ -3679,35 +4183,75 @@ let impl_4__from__result
           Core_models.Iter.Traits.Collect.t_FromIterator v_V v_A)
      = impl_4__from__result' #v_A #v_E #v_V #i0
 
+/// See [`std::result::Iter`]
+/// A `Result`'s iterators yield at most one element; the payload is a `Seq` so
+/// `next` can be written the same way as the slice/array iterators.
+type t_Iter__from__result (v_T: Type0) =
+  | Iter__from__result : Rust_primitives.Sequence.t_Seq v_T -> t_Iter__from__result v_T
+
+/// See [`std::result::Result::iter`]
+let impl__iter__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Iter__from__result v_T =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t ->
+    Iter__from__result (Rust_primitives.Sequence.seq_one #v_T t) <: t_Iter__from__result v_T
+  | Result_Err _ ->
+    Iter__from__result (Rust_primitives.Sequence.seq_empty #v_T ()) <: t_Iter__from__result v_T
+
+/// See [`std::result::IntoIter`]
+type t_IntoIter__from__result (v_T: Type0) =
+  | IntoIter__from__result : Rust_primitives.Sequence.t_Seq v_T -> t_IntoIter__from__result v_T
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5__from__result (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t_Result v_T v_E) =
+let impl_10__from__result (#v_T #v_E: Type0)
+    : Core_models.Iter.Traits.Collect.t_IntoIterator (t_Result v_T v_E) =
   {
-    f_Output = v_T;
-    f_Residual = t_Result t_Infallible v_E;
-    f_from_output_pre = (fun (output: v_T) -> true);
-    f_from_output_post = (fun (output: v_T) (out: t_Result v_T v_E) -> true);
-    f_from_output = (fun (output: v_T) -> Result_Ok output <: t_Result v_T v_E);
-    f_branch_pre = (fun (self: t_Result v_T v_E) -> true);
-    f_branch_post
-    =
-    (fun
-        (self: t_Result v_T v_E)
-        (out: Core_models.Ops.Control_flow.t_ControlFlow (t_Result t_Infallible v_E) v_T)
-        ->
-        true);
-    f_branch
+    f_Item = v_T;
+    f_IntoIter = t_IntoIter__from__result v_T;
+    f_into_iter_pre = (fun (self: t_Result v_T v_E) -> true);
+    f_into_iter_post = (fun (self: t_Result v_T v_E) (out: t_IntoIter__from__result v_T) -> true);
+    f_into_iter
     =
     fun (self: t_Result v_T v_E) ->
       match self <: t_Result v_T v_E with
-      | Result_Ok v ->
-        Core_models.Ops.Control_flow.ControlFlow_Continue v
+      | Result_Ok t ->
+        IntoIter__from__result (Rust_primitives.Sequence.seq_one #v_T t)
         <:
-        Core_models.Ops.Control_flow.t_ControlFlow (t_Result t_Infallible v_E) v_T
-      | Result_Err e ->
-        Core_models.Ops.Control_flow.ControlFlow_Break (Result_Err e <: t_Result t_Infallible v_E)
+        t_IntoIter__from__result v_T
+      | Result_Err _ ->
+        IntoIter__from__result (Rust_primitives.Sequence.seq_empty #v_T ())
         <:
-        Core_models.Ops.Control_flow.t_ControlFlow (t_Result t_Infallible v_E) v_T
+        t_IntoIter__from__result v_T
   }
+
+/// See [`std::result::Result::as_deref`]
+let impl_11__as_deref (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Result v_T v_E =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> Result_Ok t <: t_Result v_T v_E
+  | Result_Err e -> Result_Err e <: t_Result v_T v_E
+
+/// See [`std::result::Result::copied`]
+let impl_13__copied
+      (#v_T #v_E: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
+      (self: t_Result v_T v_E)
+    : t_Result v_T v_E =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> Result_Ok t <: t_Result v_T v_E
+  | Result_Err e -> Result_Err e <: t_Result v_T v_E
+
+/// See [`std::result::Result::into_ok`]
+let impl_14__into_ok (#v_T: Type0) (self: t_Result v_T t_Infallible)
+    : Prims.Pure v_T (requires impl__is_ok #v_T #t_Infallible self) (fun _ -> Prims.l_True) =
+  match self <: t_Result v_T t_Infallible with
+  | Result_Ok t -> t
+  | Result_Err _ -> Core_models.Panicking.Internal.panic #v_T ()
+
+/// See [`std::result::Result::into_err`]
+let impl_15__into_err (#v_E: Type0) (self: t_Result t_Infallible v_E)
+    : Prims.Pure v_E (requires impl__is_err #t_Infallible #v_E self) (fun _ -> Prims.l_True) =
+  match self <: t_Result t_Infallible v_E with
+  | Result_Ok _ -> Core_models.Panicking.Internal.panic #v_E ()
+  | Result_Err e -> e
 
 /// See [`std::cmp::PartialEq`]
 class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
@@ -3743,6 +4287,22 @@ class t_AsRef (v_Self: Type0) (v_T: Type0) = {
   f_as_ref_pre:self_: v_Self -> pred: Type0{true ==> pred};
   f_as_ref_post:v_Self -> v_T -> Type0;
   f_as_ref:x0: v_Self -> Prims.Pure v_T (f_as_ref_pre x0) (fun result -> f_as_ref_post x0 result)
+}
+
+/// See [`std::ops::Try`]
+class t_Try (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Residual:Type0;
+  f_from_output_pre:f_Output -> Type0;
+  f_from_output_post:f_Output -> v_Self -> Type0;
+  f_from_output:x0: f_Output
+    -> Prims.Pure v_Self (f_from_output_pre x0) (fun result -> f_from_output_post x0 result);
+  f_branch_pre:v_Self -> Type0;
+  f_branch_post:v_Self -> t_ControlFlow f_Residual f_Output -> Type0;
+  f_branch:x0: v_Self
+    -> Prims.Pure (t_ControlFlow f_Residual f_Output)
+        (f_branch_pre x0)
+        (fun result -> f_branch_post x0 result)
 }
 
 /// See [`std::cmp::Eq`]
@@ -4222,6 +4782,116 @@ let impl_40__from__convert: t_From i128 u64 =
     f_from = fun (x: u64) -> cast (x <: u64) <: i128
   }
 
+/// See [`std::ops::RangeBounds`]
+class t_RangeBounds (v_Self: Type0) (v_T: Type0) = {
+  f_start_bound_pre:self_: v_Self -> pred: Type0{true ==> pred};
+  f_start_bound_post:v_Self -> t_Bound v_T -> Type0;
+  f_start_bound:x0: v_Self
+    -> Prims.Pure (t_Bound v_T) (f_start_bound_pre x0) (fun result -> f_start_bound_post x0 result);
+  f_end_bound_pre:self_: v_Self -> pred: Type0{true ==> pred};
+  f_end_bound_post:v_Self -> t_Bound v_T -> Type0;
+  f_end_bound:x0: v_Self
+    -> Prims.Pure (t_Bound v_T) (f_end_bound_pre x0) (fun result -> f_end_bound_post x0 result)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_5 (#v_T: Type0) : t_RangeBounds (t_Range v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_Range v_T) -> true);
+    f_start_bound_post = (fun (self: t_Range v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_Range v_T) -> Bound_Included self.f_start <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_Range v_T) -> true);
+    f_end_bound_post = (fun (self: t_Range v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_Range v_T) -> Bound_Excluded self.f_end <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_6__from__range (#v_T: Type0) : t_RangeBounds (t_RangeFrom v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeFrom v_T) -> true);
+    f_start_bound_post = (fun (self: t_RangeFrom v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeFrom v_T) -> Bound_Included self.f_start <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeFrom v_T) -> true);
+    f_end_bound_post = (fun (self: t_RangeFrom v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeFrom v_T) -> Bound_Unbounded <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_7__from__range (#v_T: Type0) : t_RangeBounds (t_RangeTo v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeTo v_T) -> true);
+    f_start_bound_post = (fun (self: t_RangeTo v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeTo v_T) -> Bound_Unbounded <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeTo v_T) -> true);
+    f_end_bound_post = (fun (self: t_RangeTo v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeTo v_T) -> Bound_Excluded self.f_end <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_8__from__range (#v_T: Type0) : t_RangeBounds t_RangeFull v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeFull) -> true);
+    f_start_bound_post = (fun (self: t_RangeFull) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeFull) -> Bound_Unbounded <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeFull) -> true);
+    f_end_bound_post = (fun (self: t_RangeFull) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeFull) -> Bound_Unbounded <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_9__from__range (#v_T: Type0) : t_RangeBounds (t_RangeInclusive v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeInclusive v_T) -> true);
+    f_start_bound_post = (fun (self: t_RangeInclusive v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeInclusive v_T) -> Bound_Included self.f_start <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeInclusive v_T) -> true);
+    f_end_bound_post = (fun (self: t_RangeInclusive v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeInclusive v_T) -> Bound_Included self.f_end <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_10__from__range (#v_T: Type0) : t_RangeBounds (t_RangeToInclusive v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeToInclusive v_T) -> true);
+    f_start_bound_post = (fun (self: t_RangeToInclusive v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeToInclusive v_T) -> Bound_Unbounded <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeToInclusive v_T) -> true);
+    f_end_bound_post = (fun (self: t_RangeToInclusive v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeToInclusive v_T) -> Bound_Included self.f_end <: t_Bound v_T
+  }
+
+/// See [`std::option::Option::reduce`]
+/// Std bounds the two payloads by `Into<R>`; the model\'s `convert::Into` is
+/// private (it is derived from `From` by a blanket impl), so the bound is
+/// spelled on `From` here.
+let impl__reduce
+      (#v_T #v_U #v_R #v_F: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_From v_R v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_From v_R v_U)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i2:
+          Core_models.Ops.Function.t_FnOnce v_F (v_T & v_U))
+      (#_: unit{i2.Core_models.Ops.Function.f_Output == v_R})
+      (self: t_Option v_T)
+      (other: t_Option v_U)
+      (f: v_F)
+    : t_Option v_R =
+  match self, other <: (t_Option v_T & t_Option v_U) with
+  | Option_Some a, Option_Some b ->
+    Option_Some
+    (Core_models.Ops.Function.f_call_once #v_F
+        #(v_T & v_U)
+        #FStar.Tactics.Typeclasses.solve
+        f
+        (a, b <: (v_T & v_U)))
+    <:
+    t_Option v_R
+  | Option_Some a, Option_None  ->
+    Option_Some (f_from #v_R #v_T #FStar.Tactics.Typeclasses.solve a) <: t_Option v_R
+  | Option_None , Option_Some b ->
+    Option_Some (f_from #v_R #v_U #FStar.Tactics.Typeclasses.solve b) <: t_Option v_R
+  | Option_None , Option_None  -> Option_None <: t_Option v_R
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_3__from__option
       (#v_T: Type0)
@@ -4239,13 +4909,59 @@ let impl_3__from__option
       | _ -> false
   }
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_4__from__option (#v_T: Type0) : t_Try (t_Option v_T) =
+  {
+    f_Output = v_T;
+    f_Residual = t_Option t_Infallible;
+    f_from_output_pre = (fun (output: v_T) -> true);
+    f_from_output_post = (fun (output: v_T) (out: t_Option v_T) -> true);
+    f_from_output = (fun (output: v_T) -> Option_Some output <: t_Option v_T);
+    f_branch_pre = (fun (self: t_Option v_T) -> true);
+    f_branch_post
+    =
+    (fun (self: t_Option v_T) (out: t_ControlFlow (t_Option t_Infallible) v_T) -> true);
+    f_branch
+    =
+    fun (self: t_Option v_T) ->
+      match self <: t_Option v_T with
+      | Option_Some v -> ControlFlow_Continue v <: t_ControlFlow (t_Option t_Infallible) v_T
+      | Option_None  ->
+        ControlFlow_Break (Option_None <: t_Option t_Infallible)
+        <:
+        t_ControlFlow (t_Option t_Infallible) v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_5__from__result (#v_T #v_E: Type0) : t_Try (t_Result v_T v_E) =
+  {
+    f_Output = v_T;
+    f_Residual = t_Result t_Infallible v_E;
+    f_from_output_pre = (fun (output: v_T) -> true);
+    f_from_output_post = (fun (output: v_T) (out: t_Result v_T v_E) -> true);
+    f_from_output = (fun (output: v_T) -> Result_Ok output <: t_Result v_T v_E);
+    f_branch_pre = (fun (self: t_Result v_T v_E) -> true);
+    f_branch_post
+    =
+    (fun (self: t_Result v_T v_E) (out: t_ControlFlow (t_Result t_Infallible v_E) v_T) -> true);
+    f_branch
+    =
+    fun (self: t_Result v_T v_E) ->
+      match self <: t_Result v_T v_E with
+      | Result_Ok v -> ControlFlow_Continue v <: t_ControlFlow (t_Result t_Infallible v_E) v_T
+      | Result_Err e ->
+        ControlFlow_Break (Result_Err e <: t_Result t_Infallible v_E)
+        <:
+        t_ControlFlow (t_Result t_Infallible v_E) v_T
+  }
+
 /// The error half of `?`: re-inject the `Err(e)` residual, widening the error
 /// via `From` (mirrors std\'s `impl<T, E, F: From<E>> ... for Result<T, F>`). `Ok`
 /// is unreachable — the residual\'s payload is `Infallible`.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl_6__from__result': #v_T: Type0 -> #v_E: Type0 -> #v_F: Type0 -> {| i0: t_From v_F v_E |}
-  -> Core_models.Ops.Try_trait.t_FromResidual (t_Result v_T v_F) (t_Result t_Infallible v_E)
+  -> t_FromResidual (t_Result v_T v_F) (t_Result t_Infallible v_E)
 
 unfold
 let impl_6__from__result
@@ -4296,6 +5012,40 @@ class t_Iterator (v_Self: Type0) = {
   f_next_post:v_Self -> (v_Self & t_Option f_Item) -> Type0;
   f_next:x0: v_Self
     -> Prims.Pure (v_Self & t_Option f_Item) (f_next_pre x0) (fun result -> f_next_post x0 result)
+}
+
+/// See [`std::ops::IntoBounds`]
+class t_IntoBounds (v_Self: Type0) (v_T: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_RangeBounds v_Self v_T;
+  f_into_bounds_pre:self_: v_Self -> pred: Type0{true ==> pred};
+  f_into_bounds_post:v_Self -> (t_Bound v_T & t_Bound v_T) -> Type0;
+  f_into_bounds:x0: v_Self
+    -> Prims.Pure (t_Bound v_T & t_Bound v_T)
+        (f_into_bounds_pre x0)
+        (fun result -> f_into_bounds_post x0 result)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) (v_T:Type0) {|i: t_IntoBounds v_Self v_T|} -> i._super_i0
+
+/// See [`std::ops::OneSidedRange`]
+class t_OneSidedRange (v_Self: Type0) (v_T: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_RangeBounds v_Self v_T;
+  f_bound_pre:self_: v_Self -> pred: Type0{true ==> pred};
+  f_bound_post:v_Self -> (t_OneSidedRangeBound & v_T) -> Type0;
+  f_bound:x0: v_Self
+    -> Prims.Pure (t_OneSidedRangeBound & v_T)
+        (f_bound_pre x0)
+        (fun result -> f_bound_post x0 result)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) (v_T:Type0) {|i: t_OneSidedRange v_Self v_T|} -> i._super_i0
+
+/// See [`std::ops::Residual`]
+class t_Residual (v_Self: Type0) (v_O: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_TryType:Type0;
+  f_TryType_i0:t_Try f_TryType
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -7170,8 +7920,294 @@ let impl_1 (#v_I: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterat
     f_into_iter = fun (self: v_I) -> self
   }
 
+let is_lt
+      (#v_T #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_U)
+      (a: v_T)
+      (b: v_U)
+    : bool =
+  match f_partial_cmp #v_T #v_U #FStar.Tactics.Typeclasses.solve a b <: t_Option t_Ordering with
+  | Option_Some (Ordering_Less ) -> true
+  | _ -> false
+
+let is_le
+      (#v_T #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_U)
+      (a: v_T)
+      (b: v_U)
+    : bool =
+  match f_partial_cmp #v_T #v_U #FStar.Tactics.Typeclasses.solve a b <: t_Option t_Ordering with
+  | Option_Some (Ordering_Less ) | Option_Some (Ordering_Equal ) -> true
+  | _ -> false
+
+let bounds_contain
+      (#v_T #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_U)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_U v_T)
+      (start v_end: t_Bound v_T)
+      (item: v_U)
+    : bool =
+  let above_start:bool =
+    match start <: t_Bound v_T with
+    | Bound_Included s -> is_le #v_T #v_U s item
+    | Bound_Excluded s -> is_lt #v_T #v_U s item
+    | Bound_Unbounded  -> true
+  in
+  let below_end:bool =
+    match v_end <: t_Bound v_T with
+    | Bound_Included e -> is_le #v_U #v_T item e
+    | Bound_Excluded e -> is_lt #v_U #v_T item e
+    | Bound_Unbounded  -> true
+  in
+  above_start && below_end
+
+let bounds_are_empty
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+      (start v_end: t_Bound v_T)
+    : bool =
+  let non_empty:bool =
+    match start, v_end <: (t_Bound v_T & t_Bound v_T) with
+    | Bound_Unbounded , _ -> true
+    | _, Bound_Unbounded  -> true
+    | Bound_Included s, Bound_Included e -> is_le #v_T #v_T s e
+    | Bound_Included s, Bound_Excluded e -> is_lt #v_T #v_T s e
+    | Bound_Excluded s, Bound_Included e -> is_lt #v_T #v_T s e
+    | Bound_Excluded s, Bound_Excluded e -> is_lt #v_T #v_T s e
+  in
+  non_empty =. false
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl__from__range: t_Iterator (t_Range u8) =
+let impl_11__from__range (#v_T: Type0) : t_IntoBounds (t_Range v_T) v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_into_bounds_pre = (fun (self: t_Range v_T) -> true);
+    f_into_bounds_post = (fun (self: t_Range v_T) (out: (t_Bound v_T & t_Bound v_T)) -> true);
+    f_into_bounds
+    =
+    fun (self: t_Range v_T) ->
+      (Bound_Included self.f_start <: t_Bound v_T), (Bound_Excluded self.f_end <: t_Bound v_T)
+      <:
+      (t_Bound v_T & t_Bound v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_12__from__range (#v_T: Type0) : t_IntoBounds (t_RangeFrom v_T) v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_into_bounds_pre = (fun (self: t_RangeFrom v_T) -> true);
+    f_into_bounds_post = (fun (self: t_RangeFrom v_T) (out: (t_Bound v_T & t_Bound v_T)) -> true);
+    f_into_bounds
+    =
+    fun (self: t_RangeFrom v_T) ->
+      (Bound_Included self.f_start <: t_Bound v_T), (Bound_Unbounded <: t_Bound v_T)
+      <:
+      (t_Bound v_T & t_Bound v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_13__from__range (#v_T: Type0) : t_IntoBounds (t_RangeTo v_T) v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_into_bounds_pre = (fun (self: t_RangeTo v_T) -> true);
+    f_into_bounds_post = (fun (self: t_RangeTo v_T) (out: (t_Bound v_T & t_Bound v_T)) -> true);
+    f_into_bounds
+    =
+    fun (self: t_RangeTo v_T) ->
+      (Bound_Unbounded <: t_Bound v_T), (Bound_Excluded self.f_end <: t_Bound v_T)
+      <:
+      (t_Bound v_T & t_Bound v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_14__from__range (#v_T: Type0) : t_IntoBounds t_RangeFull v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_into_bounds_pre = (fun (self: t_RangeFull) -> true);
+    f_into_bounds_post = (fun (self: t_RangeFull) (out: (t_Bound v_T & t_Bound v_T)) -> true);
+    f_into_bounds
+    =
+    fun (self: t_RangeFull) ->
+      (Bound_Unbounded <: t_Bound v_T), (Bound_Unbounded <: t_Bound v_T)
+      <:
+      (t_Bound v_T & t_Bound v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_15__from__range (#v_T: Type0) : t_IntoBounds (t_RangeInclusive v_T) v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_into_bounds_pre = (fun (self: t_RangeInclusive v_T) -> true);
+    f_into_bounds_post
+    =
+    (fun (self: t_RangeInclusive v_T) (out: (t_Bound v_T & t_Bound v_T)) -> true);
+    f_into_bounds
+    =
+    fun (self: t_RangeInclusive v_T) ->
+      (Bound_Included self.f_start <: t_Bound v_T), (Bound_Included self.f_end <: t_Bound v_T)
+      <:
+      (t_Bound v_T & t_Bound v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_16__from__range (#v_T: Type0) : t_IntoBounds (t_RangeToInclusive v_T) v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_into_bounds_pre = (fun (self: t_RangeToInclusive v_T) -> true);
+    f_into_bounds_post
+    =
+    (fun (self: t_RangeToInclusive v_T) (out: (t_Bound v_T & t_Bound v_T)) -> true);
+    f_into_bounds
+    =
+    fun (self: t_RangeToInclusive v_T) ->
+      (Bound_Unbounded <: t_Bound v_T), (Bound_Included self.f_end <: t_Bound v_T)
+      <:
+      (t_Bound v_T & t_Bound v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_17__from__range (#v_T: Type0) : t_OneSidedRange (t_RangeFrom v_T) v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_bound_pre = (fun (self: t_RangeFrom v_T) -> true);
+    f_bound_post = (fun (self: t_RangeFrom v_T) (out: (t_OneSidedRangeBound & v_T)) -> true);
+    f_bound
+    =
+    fun (self: t_RangeFrom v_T) ->
+      (OneSidedRangeBound_StartInclusive <: t_OneSidedRangeBound), self.f_start
+      <:
+      (t_OneSidedRangeBound & v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_18__from__range (#v_T: Type0) : t_OneSidedRange (t_RangeTo v_T) v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_bound_pre = (fun (self: t_RangeTo v_T) -> true);
+    f_bound_post = (fun (self: t_RangeTo v_T) (out: (t_OneSidedRangeBound & v_T)) -> true);
+    f_bound
+    =
+    fun (self: t_RangeTo v_T) ->
+      (OneSidedRangeBound_End <: t_OneSidedRangeBound), self.f_end <: (t_OneSidedRangeBound & v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_19__from__range (#v_T: Type0) : t_OneSidedRange (t_RangeToInclusive v_T) v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_bound_pre = (fun (self: t_RangeToInclusive v_T) -> true);
+    f_bound_post = (fun (self: t_RangeToInclusive v_T) (out: (t_OneSidedRangeBound & v_T)) -> true);
+    f_bound
+    =
+    fun (self: t_RangeToInclusive v_T) ->
+      (OneSidedRangeBound_EndInclusive <: t_OneSidedRangeBound), self.f_end
+      <:
+      (t_OneSidedRangeBound & v_T)
+  }
+
+/// See [`std::ops::Range::contains`]
+let impl_20__contains
+      (#v_Idx #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_Idx v_Idx)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_Idx v_U)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_PartialOrd v_U v_Idx)
+      (self: t_Range v_Idx)
+      (item: v_U)
+    : bool =
+  bounds_contain #v_Idx
+    #v_U
+    (f_start_bound #(t_Range v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self <: t_Bound v_Idx)
+    (f_end_bound #(t_Range v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self <: t_Bound v_Idx)
+    item
+
+/// See [`std::ops::Range::is_empty`]
+let impl_20__is_empty
+      (#v_Idx: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_Idx v_Idx)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_Idx v_Idx)
+      (self: t_Range v_Idx)
+    : bool = (is_lt #v_Idx #v_Idx self.f_start self.f_end <: bool) =. false
+
+/// See [`std::ops::RangeFrom::contains`]
+let impl_21__contains
+      (#v_Idx #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_Idx v_Idx)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_Idx v_U)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_PartialOrd v_U v_Idx)
+      (self: t_RangeFrom v_Idx)
+      (item: v_U)
+    : bool =
+  bounds_contain #v_Idx
+    #v_U
+    (f_start_bound #(t_RangeFrom v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self
+      <:
+      t_Bound v_Idx)
+    (f_end_bound #(t_RangeFrom v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self <: t_Bound v_Idx)
+    item
+
+/// See [`std::ops::RangeTo::contains`]
+let impl_22__contains
+      (#v_Idx #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_Idx v_Idx)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_Idx v_U)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_PartialOrd v_U v_Idx)
+      (self: t_RangeTo v_Idx)
+      (item: v_U)
+    : bool =
+  bounds_contain #v_Idx
+    #v_U
+    (f_start_bound #(t_RangeTo v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self <: t_Bound v_Idx)
+    (f_end_bound #(t_RangeTo v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self <: t_Bound v_Idx)
+    item
+
+/// See [`std::ops::RangeToInclusive::contains`]
+let impl_23__contains
+      (#v_Idx #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_Idx v_Idx)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_Idx v_U)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_PartialOrd v_U v_Idx)
+      (self: t_RangeToInclusive v_Idx)
+      (item: v_U)
+    : bool =
+  bounds_contain #v_Idx
+    #v_U
+    (f_start_bound #(t_RangeToInclusive v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self
+      <:
+      t_Bound v_Idx)
+    (f_end_bound #(t_RangeToInclusive v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self
+      <:
+      t_Bound v_Idx)
+    item
+
+/// See [`std::ops::RangeInclusive::contains`]
+let impl_26__contains
+      (#v_Idx #v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_Idx v_Idx)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_Idx v_U)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_PartialOrd v_U v_Idx)
+      (self: t_RangeInclusive v_Idx)
+      (item: v_U)
+    : bool =
+  bounds_contain #v_Idx
+    #v_U
+    (f_start_bound #(t_RangeInclusive v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self
+      <:
+      t_Bound v_Idx)
+    (f_end_bound #(t_RangeInclusive v_Idx) #v_Idx #FStar.Tactics.Typeclasses.solve self
+      <:
+      t_Bound v_Idx)
+    item
+
+/// See [`std::ops::RangeInclusive::is_empty`]
+let impl_26__is_empty
+      (#v_Idx: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_Idx v_Idx)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_Idx v_Idx)
+      (self: t_RangeInclusive v_Idx)
+    : bool = (is_le #v_Idx #v_Idx self.f_start self.f_end <: bool) =. false
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_27__from__range: t_Iterator (t_Range u8) =
   {
     f_Item = u8;
     f_next_pre = (fun (self: t_Range u8) -> true);
@@ -7191,7 +8227,7 @@ let impl__from__range: t_Iterator (t_Range u8) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1__from__range: t_Iterator (t_Range u16) =
+let impl_28__from__range: t_Iterator (t_Range u16) =
   {
     f_Item = u16;
     f_next_pre = (fun (self: t_Range u16) -> true);
@@ -7211,7 +8247,7 @@ let impl_1__from__range: t_Iterator (t_Range u16) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2__from__range: t_Iterator (t_Range u32) =
+let impl_29__from__range: t_Iterator (t_Range u32) =
   {
     f_Item = u32;
     f_next_pre = (fun (self: t_Range u32) -> true);
@@ -7231,7 +8267,7 @@ let impl_2__from__range: t_Iterator (t_Range u32) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3__from__range: t_Iterator (t_Range u64) =
+let impl_30__from__range: t_Iterator (t_Range u64) =
   {
     f_Item = u64;
     f_next_pre = (fun (self: t_Range u64) -> true);
@@ -7251,7 +8287,7 @@ let impl_3__from__range: t_Iterator (t_Range u64) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4__from__range: t_Iterator (t_Range u128) =
+let impl_31__from__range: t_Iterator (t_Range u128) =
   {
     f_Item = u128;
     f_next_pre = (fun (self: t_Range u128) -> true);
@@ -7273,7 +8309,7 @@ let impl_4__from__range: t_Iterator (t_Range u128) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5__from__range: t_Iterator (t_Range usize) =
+let impl_32__from__range: t_Iterator (t_Range usize) =
   {
     f_Item = usize;
     f_next_pre = (fun (self: t_Range usize) -> true);
@@ -7295,7 +8331,7 @@ let impl_5__from__range: t_Iterator (t_Range usize) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_6__from__range: t_Iterator (t_Range i8) =
+let impl_33__from__range: t_Iterator (t_Range i8) =
   {
     f_Item = i8;
     f_next_pre = (fun (self: t_Range i8) -> true);
@@ -7315,7 +8351,7 @@ let impl_6__from__range: t_Iterator (t_Range i8) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_7__from__range: t_Iterator (t_Range i16) =
+let impl_34__from__range: t_Iterator (t_Range i16) =
   {
     f_Item = i16;
     f_next_pre = (fun (self: t_Range i16) -> true);
@@ -7335,7 +8371,7 @@ let impl_7__from__range: t_Iterator (t_Range i16) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_8__from__range: t_Iterator (t_Range i32) =
+let impl_35__from__range: t_Iterator (t_Range i32) =
   {
     f_Item = i32;
     f_next_pre = (fun (self: t_Range i32) -> true);
@@ -7355,7 +8391,7 @@ let impl_8__from__range: t_Iterator (t_Range i32) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_9__from__range: t_Iterator (t_Range i64) =
+let impl_36__from__range: t_Iterator (t_Range i64) =
   {
     f_Item = i64;
     f_next_pre = (fun (self: t_Range i64) -> true);
@@ -7375,7 +8411,7 @@ let impl_9__from__range: t_Iterator (t_Range i64) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_10__from__range: t_Iterator (t_Range i128) =
+let impl_37__from__range: t_Iterator (t_Range i128) =
   {
     f_Item = i128;
     f_next_pre = (fun (self: t_Range i128) -> true);
@@ -7397,7 +8433,7 @@ let impl_10__from__range: t_Iterator (t_Range i128) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_11__from__range: t_Iterator (t_Range isize) =
+let impl_38__from__range: t_Iterator (t_Range isize) =
   {
     f_Item = isize;
     f_next_pre = (fun (self: t_Range isize) -> true);
@@ -7416,6 +8452,123 @@ let impl_11__from__range: t_Iterator (t_Range isize) =
           self, (Option_Some res <: t_Option isize) <: (t_Range isize & t_Option isize)
       in
       self, hax_temp_output <: (t_Range isize & t_Option isize)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_14__from__option (#v_T: Type0) : t_Iterator (t_Iter v_T) =
+  {
+    f_Item = v_T;
+    f_next_pre = (fun (self: t_Iter v_T) -> true);
+    f_next_post = (fun (self: t_Iter v_T) (out1: (t_Iter v_T & t_Option v_T)) -> true);
+    f_next
+    =
+    fun (self: t_Iter v_T) ->
+      let (self: t_Iter v_T), (hax_temp_output: t_Option v_T) =
+        if (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) =. mk_usize 0
+        then self, (Option_None <: t_Option v_T) <: (t_Iter v_T & t_Option v_T)
+        else
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+            Rust_primitives.Sequence.seq_remove #v_T self._0 (mk_usize 0)
+          in
+          let self:t_Iter v_T = { self with _0 = tmp0 } <: t_Iter v_T in
+          self, (Option_Some out <: t_Option v_T) <: (t_Iter v_T & t_Option v_T)
+      in
+      self, hax_temp_output <: (t_Iter v_T & t_Option v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_16__from__option (#v_T: Type0) : t_Iterator (t_IntoIter__from__option v_T) =
+  {
+    f_Item = v_T;
+    f_next_pre = (fun (self: t_IntoIter__from__option v_T) -> true);
+    f_next_post
+    =
+    (fun
+        (self: t_IntoIter__from__option v_T)
+        (out1: (t_IntoIter__from__option v_T & t_Option v_T))
+        ->
+        true);
+    f_next
+    =
+    fun (self: t_IntoIter__from__option v_T) ->
+      let (self: t_IntoIter__from__option v_T), (hax_temp_output: t_Option v_T) =
+        if (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) =. mk_usize 0
+        then self, (Option_None <: t_Option v_T) <: (t_IntoIter__from__option v_T & t_Option v_T)
+        else
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+            Rust_primitives.Sequence.seq_remove #v_T self._0 (mk_usize 0)
+          in
+          let self:t_IntoIter__from__option v_T =
+            { self with _0 = tmp0 } <: t_IntoIter__from__option v_T
+          in
+          self, (Option_Some out <: t_Option v_T) <: (t_IntoIter__from__option v_T & t_Option v_T)
+      in
+      self, hax_temp_output <: (t_IntoIter__from__option v_T & t_Option v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_18__from__option': #v_A: Type0 -> {| i0: t_Iterator v_A |}
+  -> t_Iterator (t_OptionFlatten v_A)
+
+unfold
+let impl_18__from__option
+      (#v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_A)
+     = impl_18__from__option' #v_A #i0
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_7__from__result (#v_T: Type0) : t_Iterator (t_Iter__from__result v_T) =
+  {
+    f_Item = v_T;
+    f_next_pre = (fun (self: t_Iter__from__result v_T) -> true);
+    f_next_post
+    =
+    (fun (self: t_Iter__from__result v_T) (out1: (t_Iter__from__result v_T & t_Option v_T)) -> true);
+    f_next
+    =
+    fun (self: t_Iter__from__result v_T) ->
+      let (self: t_Iter__from__result v_T), (hax_temp_output: t_Option v_T) =
+        if (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) =. mk_usize 0
+        then self, (Option_None <: t_Option v_T) <: (t_Iter__from__result v_T & t_Option v_T)
+        else
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+            Rust_primitives.Sequence.seq_remove #v_T self._0 (mk_usize 0)
+          in
+          let self:t_Iter__from__result v_T = { self with _0 = tmp0 } <: t_Iter__from__result v_T in
+          self, (Option_Some out <: t_Option v_T) <: (t_Iter__from__result v_T & t_Option v_T)
+      in
+      self, hax_temp_output <: (t_Iter__from__result v_T & t_Option v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_9__from__result (#v_T: Type0) : t_Iterator (t_IntoIter__from__result v_T) =
+  {
+    f_Item = v_T;
+    f_next_pre = (fun (self: t_IntoIter__from__result v_T) -> true);
+    f_next_post
+    =
+    (fun
+        (self: t_IntoIter__from__result v_T)
+        (out1: (t_IntoIter__from__result v_T & t_Option v_T))
+        ->
+        true);
+    f_next
+    =
+    fun (self: t_IntoIter__from__result v_T) ->
+      let (self: t_IntoIter__from__result v_T), (hax_temp_output: t_Option v_T) =
+        if (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) =. mk_usize 0
+        then self, (Option_None <: t_Option v_T) <: (t_IntoIter__from__result v_T & t_Option v_T)
+        else
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+            Rust_primitives.Sequence.seq_remove #v_T self._0 (mk_usize 0)
+          in
+          let self:t_IntoIter__from__result v_T =
+            { self with _0 = tmp0 } <: t_IntoIter__from__result v_T
+          in
+          self, (Option_Some out <: t_Option v_T) <: (t_IntoIter__from__result v_T & t_Option v_T)
+      in
+      self, hax_temp_output <: (t_IntoIter__from__result v_T & t_Option v_T)
   }
 
 /// See [`std::cmp::Ord`]
@@ -7855,6 +9008,49 @@ let impl_53__from__cmp: t_Ord isize =
       else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering
   }
 
+let max_by_key
+      (#v_T #v_F #v_K: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord v_K)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_K})
+      (v1 v2: v_T)
+      (f: (v_T -> v_K))
+    : v_T =
+  if impl_54__is_lt (f_cmp #v_K #FStar.Tactics.Typeclasses.solve (f v2) (f v1) <: t_Ordering)
+  then v1
+  else v2
+
+let min_by_key
+      (#v_T #v_F #v_K: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord v_K)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_K})
+      (v1 v2: v_T)
+      (f: (v_T -> v_K))
+    : v_T =
+  if impl_54__is_lt (f_cmp #v_K #FStar.Tactics.Typeclasses.solve (f v2) (f v1) <: t_Ordering)
+  then v2
+  else v1
+
+/// See [`std::cmp::minmax`]
+let minmax (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_T) (v1 v2: v_T)
+    : t_Array v_T (mk_usize 2) =
+  if impl_54__is_lt (f_cmp #v_T #FStar.Tactics.Typeclasses.solve v2 v1 <: t_Ordering)
+  then Rust_primitives.Slice.array_pair #v_T v2 v1
+  else Rust_primitives.Slice.array_pair #v_T v1 v2
+
+let minmax_by_key
+      (#v_T #v_F #v_K: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord v_K)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_K})
+      (v1 v2: v_T)
+      (f: (v_T -> v_K))
+    : t_Array v_T (mk_usize 2) =
+  if impl_54__is_lt (f_cmp #v_K #FStar.Tactics.Typeclasses.solve (f v2) (f v1) <: t_Ordering)
+  then Rust_primitives.Slice.array_pair #v_T v2 v1
+  else Rust_primitives.Slice.array_pair #v_T v1 v2
+
 /// See [`std::cmp::clamp`]
 let clamp
       (#v_T: Type0)
@@ -7897,6 +9093,135 @@ let iter_max
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Ord i0.f_Item)
      = iter_max' #v_I #i0 #i1
+
+class t_RangeBoundsDefaults (v_Self: Type0) (v_T: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_RangeBounds v_Self v_T;
+  f_contains_pre:
+      #v_U: Type0 ->
+      {| i1: t_PartialOrd v_T v_U |} ->
+      {| i2: t_PartialOrd v_U v_T |} ->
+      self_: v_Self ->
+      item: v_U
+    -> pred: Type0{true ==> pred};
+  f_contains_post:
+      #v_U: Type0 ->
+      {| i1: t_PartialOrd v_T v_U |} ->
+      {| i2: t_PartialOrd v_U v_T |} ->
+      v_Self ->
+      v_U ->
+      bool
+    -> Type0;
+  f_contains:
+      #v_U: Type0 ->
+      {| i1: t_PartialOrd v_T v_U |} ->
+      {| i2: t_PartialOrd v_U v_T |} ->
+      x0: v_Self ->
+      x1: v_U
+    -> Prims.Pure bool
+        (f_contains_pre #v_U #i1 #i2 x0 x1)
+        (fun result -> f_contains_post #v_U #i1 #i2 x0 x1 result);
+  f_is_empty_pre:{| i1: t_PartialOrd v_T v_T |} -> self_: v_Self -> pred: Type0{true ==> pred};
+  f_is_empty_post:{| i1: t_PartialOrd v_T v_T |} -> v_Self -> bool -> Type0;
+  f_is_empty:{| i1: t_PartialOrd v_T v_T |} -> x0: v_Self
+    -> Prims.Pure bool (f_is_empty_pre #i1 x0) (fun result -> f_is_empty_post #i1 x0 result)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) (v_T:Type0) {|i: t_RangeBoundsDefaults v_Self v_T|} -> i._super_i0
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_3__from__range
+      (#v_T #v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_RangeBounds v_R v_T)
+    : t_RangeBoundsDefaults v_R v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_contains_pre
+    =
+    (fun
+        (#v_U: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_U)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_PartialOrd v_U v_T)
+        (self: v_R)
+        (item: v_U)
+        ->
+        true);
+    f_contains_post
+    =
+    (fun
+        (#v_U: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_U)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_PartialOrd v_U v_T)
+        (self: v_R)
+        (item: v_U)
+        (out: bool)
+        ->
+        true);
+    f_contains
+    =
+    (fun
+        (#v_U: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_U)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_PartialOrd v_U v_T)
+        (self: v_R)
+        (item: v_U)
+        ->
+        bounds_contain #v_T
+          #v_U
+          (f_start_bound #v_R #v_T #FStar.Tactics.Typeclasses.solve self <: t_Bound v_T)
+          (f_end_bound #v_R #v_T #FStar.Tactics.Typeclasses.solve self <: t_Bound v_T)
+          item);
+    f_is_empty_pre
+    =
+    (fun (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T) (self: v_R) -> true);
+    f_is_empty_post
+    =
+    (fun
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
+        (self: v_R)
+        (out: bool)
+        ->
+        true);
+    f_is_empty
+    =
+    fun (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T) (self: v_R) ->
+      bounds_are_empty #v_T
+        (f_start_bound #v_R #v_T #FStar.Tactics.Typeclasses.solve self <: t_Bound v_T)
+        (f_end_bound #v_R #v_T #FStar.Tactics.Typeclasses.solve self <: t_Bound v_T)
+  }
+
+let bounds_intersect
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_T)
+      (a b: (t_Bound v_T & t_Bound v_T))
+    : (t_Bound v_T & t_Bound v_T) =
+  let (a_start: t_Bound v_T), (a_end: t_Bound v_T) = a in
+  let (b_start: t_Bound v_T), (b_end: t_Bound v_T) = b in
+  let start:t_Bound v_T =
+    match a_start, b_start <: (t_Bound v_T & t_Bound v_T) with
+    | Bound_Unbounded , y -> y
+    | x, Bound_Unbounded  -> x
+    | Bound_Included x, Bound_Included y -> Bound_Included (max #v_T x y) <: t_Bound v_T
+    | Bound_Excluded x, Bound_Excluded y -> Bound_Excluded (max #v_T x y) <: t_Bound v_T
+    | Bound_Included i, Bound_Excluded e
+    | Bound_Excluded e, Bound_Included i ->
+      if is_lt #v_T #v_T e i
+      then Bound_Included i <: t_Bound v_T
+      else Bound_Excluded e <: t_Bound v_T
+  in
+  let v_end:t_Bound v_T =
+    match a_end, b_end <: (t_Bound v_T & t_Bound v_T) with
+    | Bound_Unbounded , y -> y
+    | x, Bound_Unbounded  -> x
+    | Bound_Included x, Bound_Included y -> Bound_Included (min #v_T x y) <: t_Bound v_T
+    | Bound_Excluded x, Bound_Excluded y -> Bound_Excluded (min #v_T x y) <: t_Bound v_T
+    | Bound_Included i, Bound_Excluded e
+    | Bound_Excluded e, Bound_Included i ->
+      if is_lt #v_T #v_T i e
+      then Bound_Included i <: t_Bound v_T
+      else Bound_Excluded e <: t_Bound v_T
+  in
+  start, v_end <: (t_Bound v_T & t_Bound v_T)
 
 class t_IteratorMethods (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Iterator v_Self;
@@ -8249,6 +9574,37 @@ class t_IteratorMethods (v_Self: Type0) = {
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let _ = fun (v_Self:Type0) {|i: t_IteratorMethods v_Self|} -> i._super_i0
+
+class t_IntoBoundsDefaults (v_Self: Type0) (v_T: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_IntoBounds v_Self v_T;
+  f_intersect_pre:
+      #v_R: Type0 ->
+      {| i1: t_IntoBounds v_R v_T |} ->
+      {| i2: t_Ord v_T |} ->
+      self_: v_Self ->
+      other: v_R
+    -> pred: Type0{true ==> pred};
+  f_intersect_post:
+      #v_R: Type0 ->
+      {| i1: t_IntoBounds v_R v_T |} ->
+      {| i2: t_Ord v_T |} ->
+      v_Self ->
+      v_R ->
+      (t_Bound v_T & t_Bound v_T)
+    -> Type0;
+  f_intersect:
+      #v_R: Type0 ->
+      {| i1: t_IntoBounds v_R v_T |} ->
+      {| i2: t_Ord v_T |} ->
+      x0: v_Self ->
+      x1: v_R
+    -> Prims.Pure (t_Bound v_T & t_Bound v_T)
+        (f_intersect_pre #v_R #i1 #i2 x0 x1)
+        (fun result -> f_intersect_post #v_R #i1 #i2 x0 x1 result)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) (v_T:Type0) {|i: t_IntoBoundsDefaults v_Self v_T|} -> i._super_i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl__from__iterator
@@ -8754,4 +10110,50 @@ let impl__from__iterator
         #FStar.Tactics.Typeclasses.solve
         #v_I
         self
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_4__from__range
+      (#v_T #v_S: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_IntoBounds v_S v_T)
+    : t_IntoBoundsDefaults v_S v_T =
+  {
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    f_intersect_pre
+    =
+    (fun
+        (#v_R: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_IntoBounds v_R v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_Ord v_T)
+        (self: v_S)
+        (other: v_R)
+        ->
+        true);
+    f_intersect_post
+    =
+    (fun
+        (#v_R: Type0)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_IntoBounds v_R v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_Ord v_T)
+        (self: v_S)
+        (other: v_R)
+        (out: (t_Bound v_T & t_Bound v_T))
+        ->
+        true);
+    f_intersect
+    =
+    fun
+      (#v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_IntoBounds v_R v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: t_Ord v_T)
+      (self: v_S)
+      (other: v_R)
+      ->
+      bounds_intersect #v_T
+        (f_into_bounds #v_S #v_T #FStar.Tactics.Typeclasses.solve self
+          <:
+          (t_Bound v_T & t_Bound v_T))
+        (f_into_bounds #v_R #v_T #FStar.Tactics.Typeclasses.solve other
+          <:
+          (t_Bound v_T & t_Bound v_T))
   }
