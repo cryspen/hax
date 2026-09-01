@@ -22,71 +22,203 @@ set_option maxRecDepth 2048
 namespace CoreModels.alloc
 
 /-- Trait declaration: [alloc::alloc::Allocator]
-    Source: 'src/lib.rs', lines 28:4-28:26
+    Source: 'src/lib.rs', lines 46:4-46:26
     Visibility: public -/
 structure alloc.Allocator (Self : Type) where
 
 /-- [alloc::alloc::Global]
-    Source: 'src/lib.rs', lines 32:4-32:22
+    Source: 'src/lib.rs', lines 50:4-50:22
     Visibility: public -/
 @[reducible]
 def alloc.Global := Unit
 
-/-- [alloc::borrow::Cow]
-    Source: 'src/lib.rs', lines 38:4-38:21 -/
-@[reducible]
-def borrow.Cow (T : Type) := T
-
 /-- Trait declaration: [alloc::borrow::ToOwned]
-    Source: 'src/lib.rs', lines 40:4-42:5
+    Source: 'src/lib.rs', lines 64:4-70:5
     Visibility: public -/
-structure borrow.ToOwned (Self : Type) where
-  to_owned : Self → RustM Self
+structure borrow.ToOwned (Self : Type) (Self_Owned : Type) where
+  to_owned : Self → RustM Self_Owned
+
+/-- [alloc::borrow::Cow]
+    Source: 'src/lib.rs', lines 87:4-90:5
+    Visibility: public -/
+@[discriminant isize]
+inductive borrow.Cow (B : Type) (Clause0_Owned : Type) where
+| Borrowed : B → borrow.Cow B Clause0_Owned
+| Owned : Clause0_Owned → borrow.Cow B Clause0_Owned
+
+/-- Trait declaration: [alloc::borrow::ToOwnedDefaults]
+    Source: 'src/lib.rs', lines 136:4-139:5
+    Visibility: public -/
+structure borrow.ToOwnedDefaults (Self : Type) (Self_Clause0_Owned : Type)
+  where
+  ToOwnedInst : borrow.ToOwned Self Self_Clause0_Owned
+  clone_into : Self → Self_Clause0_Owned → RustM Self_Clause0_Owned
 
 /-- [alloc::boxed::Box]
-    Source: 'src/lib.rs', lines 63:4-63:29
+    Source: 'src/lib.rs', lines 209:4-209:29
     Visibility: public -/
 @[reducible]
 def boxed.Box (T : Type) := T
 
+/-- [alloc::collections::TryReserveErrorKind]
+    Source: 'src/lib.rs', lines 302:4-305:5
+    Visibility: public -/
+@[discriminant isize]
+inductive collections.TryReserveErrorKind where
+| CapacityOverflow : collections.TryReserveErrorKind
+| AllocError : collections.TryReserveErrorKind
+
+/-- [alloc::collections::TryReserveError]
+    Source: 'src/lib.rs', lines 312:4-312:52
+    Visibility: public -/
+@[reducible]
+def collections.TryReserveError := collections.TryReserveErrorKind
+
+/-- [alloc::collections::btree::map::BTreeMap]
+    Source: 'src/lib.rs', lines 870:12-870:74
+    Visibility: public -/
+def collections.btree.map.BTreeMap (K : Type) (V : Type) (A : Type) :=
+  rust_primitives.sequence.Seq (K × V) × core.marker.PhantomData A
+
+/-- [alloc::collections::btree::map::UnorderedKeyError]
+    Source: 'src/lib.rs', lines 876:12-876:41
+    Visibility: public -/
+@[reducible]
+def collections.btree.map.UnorderedKeyError := Unit
+
+/-- [alloc::collections::btree::map::Iter]
+    Source: 'src/lib.rs', lines 879:12-879:59
+    Visibility: public -/
+@[reducible]
+def collections.btree.map.Iter (K : Type) (V : Type) :=
+  rust_primitives.sequence.Seq (K × V)
+
+/-- [alloc::collections::btree::map::Keys]
+    Source: 'src/lib.rs', lines 881:12-881:74
+    Visibility: public -/
+def collections.btree.map.Keys (K : Type) (V : Type) :=
+  rust_primitives.sequence.Seq K × core.marker.PhantomData V
+
+/-- [alloc::collections::btree::map::Values]
+    Source: 'src/lib.rs', lines 883:12-883:76
+    Visibility: public -/
+def collections.btree.map.Values (K : Type) (V : Type) :=
+  rust_primitives.sequence.Seq V × core.marker.PhantomData K
+
+/-- [alloc::collections::btree::map::IntoKeys]
+    Source: 'src/lib.rs', lines 885:12-885:74
+    Visibility: public -/
+def collections.btree.map.IntoKeys (K : Type) (V : Type) (A : Type) :=
+  rust_primitives.sequence.Seq (K × V) × core.marker.PhantomData A
+
+/-- [alloc::collections::btree::map::IntoValues]
+    Source: 'src/lib.rs', lines 887:12-887:76
+    Visibility: public -/
+def collections.btree.map.IntoValues (K : Type) (V : Type) (A : Type) :=
+  rust_primitives.sequence.Seq (K × V) × core.marker.PhantomData A
+
 /-- [alloc::collections::btree::set::BTreeSet]
-    Source: 'src/lib.rs', lines 212:12-212:56 -/
-def collections.btree.set.BTreeSet (T : Type) (U : Type) :=
-  core.option.Option T × core.option.Option U
+    Source: 'src/lib.rs', lines 1503:12-1503:66
+    Visibility: public -/
+def collections.btree.set.BTreeSet (T : Type) (A : Type) :=
+  rust_primitives.sequence.Seq T × core.marker.PhantomData A
+
+/-- [alloc::collections::btree::set::Iter]
+    Source: 'src/lib.rs', lines 1506:12-1506:51
+    Visibility: public -/
+@[reducible]
+def collections.btree.set.Iter (T : Type) := rust_primitives.sequence.Seq T
+
+/-- [alloc::collections::btree::set::Difference]
+    Source: 'src/lib.rs', lines 1508:12-1508:76
+    Visibility: public -/
+def collections.btree.set.Difference (T : Type) (A : Type) :=
+  rust_primitives.sequence.Seq T × core.marker.PhantomData A
+
+/-- [alloc::collections::btree::set::Intersection]
+    Source: 'src/lib.rs', lines 1510:12-1510:78
+    Visibility: public -/
+def collections.btree.set.Intersection (T : Type) (A : Type) :=
+  rust_primitives.sequence.Seq T × core.marker.PhantomData A
+
+/-- [alloc::collections::btree::set::Union]
+    Source: 'src/lib.rs', lines 1512:12-1512:52
+    Visibility: public -/
+@[reducible]
+def collections.btree.set.Union (T : Type) := rust_primitives.sequence.Seq T
+
+/-- [alloc::collections::btree::set::SymmetricDifference]
+    Source: 'src/lib.rs', lines 1514:12-1514:66
+    Visibility: public -/
+@[reducible]
+def collections.btree.set.SymmetricDifference (T : Type) :=
+  rust_primitives.sequence.Seq T
+
+/-- [alloc::collections::linked_list::LinkedList]
+    Source: 'src/lib.rs', lines 2190:8-2190:77
+    Visibility: public -/
+def collections.linked_list.LinkedList (T : Type) (A : Type) :=
+  rust_primitives.sequence.Seq T × core.marker.PhantomData A
+
+/-- [alloc::collections::linked_list::Iter]
+    Source: 'src/lib.rs', lines 2194:8-2194:47
+    Visibility: public -/
+@[reducible]
+def collections.linked_list.Iter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::collections::vec_deque::VecDeque]
-    Source: 'src/lib.rs', lines 240:8-240:75
+    Source: 'src/lib.rs', lines 2618:8-2618:75
     Visibility: public -/
 def collections.vec_deque.VecDeque (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
+/-- [alloc::collections::vec_deque::iter::Iter]
+    Source: 'src/lib.rs', lines 3140:12-3140:51
+    Visibility: public -/
+@[reducible]
+def collections.vec_deque.iter.Iter (T : Type) :=
+  rust_primitives.sequence.Seq T
+
+/-- [alloc::collections::vec_deque::{alloc::collections::vec_deque::VecDeque<T, A>}::binary_search::closure]
+    Source: 'src/lib.rs', lines 3009:38-3009:58 -/
+@[reducible]
+def collections.vec_deque.VecDeque.binary_search.closure (T : Type) (A : Type)
+  :=
+  T
+
 /-- [alloc::collections::vec_deque::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 285:12-285:83
+    Source: 'src/lib.rs', lines 3164:12-3164:83
     Visibility: public -/
 def collections.vec_deque.into_iter.IntoIter (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::slice::Dummy]
-    Source: 'src/lib.rs', lines 444:4-444:23 -/
+    Source: 'src/lib.rs', lines 3856:4-3856:23 -/
 @[reducible]
 def slice.Dummy (T : Type) := T
 
 /-- [alloc::vec::Vec]
-    Source: 'src/lib.rs', lines 660:4-660:34
+    Source: 'src/lib.rs', lines 4579:4-4579:34
     Visibility: public -/
 @[reducible]
 def vec.Vec (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 710:8-710:43
+    Source: 'src/lib.rs', lines 4629:8-4629:43
     Visibility: public -/
 @[reducible]
 def vec.into_iter.IntoIter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::drain::Drain]
-    Source: 'src/lib.rs', lines 844:8-844:76
+    Source: 'src/lib.rs', lines 4953:8-4953:76
     Visibility: public -/
 def vec.drain.Drain (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
+
+/-- [alloc::vec::extract_if::ExtractIf]
+    Source: 'src/lib.rs', lines 4985:8-4985:44
+    Visibility: public -/
+@[reducible]
+def vec.extract_if.ExtractIf (T : Type) := rust_primitives.sequence.Seq T
 
 end CoreModels.alloc
