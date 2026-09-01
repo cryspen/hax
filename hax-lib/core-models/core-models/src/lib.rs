@@ -42,15 +42,29 @@
         cold_path,
         control_flow_into_value,
         control_flow_ok,
+        disjoint_bitor,
         drop_guard,
+        exact_div,
+        funnel_shifts,
         hasher_prefixfree_extras,
+        int_lowest_highest_one,
         int_roundings,
+        is_ascii_octdigit,
+        isolate_most_least_significant_one,
         likely_unlikely,
         mem_copy_fn,
+        nonzero_bitwise,
+        nonzero_ops,
         one_sided_range,
         range_bounds_is_empty,
         range_into_bounds,
-        step_trait
+        step_trait,
+        uint_bit_width,
+        unchecked_neg,
+        unchecked_shifts,
+        utf16_extra,
+        wrapping_int_impl,
+        wrapping_next_power_of_two
     )
 )]
 // likely_unlikely/cold_path: same, for the `hint` proptests.
@@ -66,6 +80,10 @@
 // The `bound_*` / `control_flow_*` / `range_*` / `one_sided_range` features let
 // the `ops` proptests call the still-unstable std counterparts of the range and
 // `ControlFlow` items the model provides.
+// The proptests compare the model against std counterparts that are still
+// unstable: `div_ceil`/`div_floor`/`next_multiple_of` (int_roundings),
+// `exact_div` (exact_div, which is what the pinned toolchain calls the method
+// rustdoc now names `div_exact`), and `unchecked_neg`.
 
 #[path = "core/array.rs"]
 pub mod array;
