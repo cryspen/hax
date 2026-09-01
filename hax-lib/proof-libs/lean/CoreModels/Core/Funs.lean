@@ -4233,7 +4233,7 @@ def fmt.Formatter.debug_struct_fields_finish
   else ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::debug_tuple_field1_finish]:
-    Source: 'core-models/src/core/fmt.rs', lines 115:4-117:5
+    Source: 'core-models/src/core/fmt.rs', lines 115:4-121:5
     Visibility: public -/
 def fmt.Formatter.debug_tuple_field1_finish
   {T1 : Type} (DebugInst : fmt.Debug T1) (self : fmt.Formatter)
@@ -4243,7 +4243,7 @@ def fmt.Formatter.debug_tuple_field1_finish
   ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{impl core_models::fmt::Debug for &'_0 T}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 157:4-159:5
+    Source: 'core-models/src/core/fmt.rs', lines 161:4-163:5
     Visibility: public -/
 def Shared0T.Insts.CoreFmtDebug.fmt
   {T : Type} (DebugInst : fmt.Debug T) (self : T) (f : fmt.Formatter) :
@@ -4252,7 +4252,7 @@ def Shared0T.Insts.CoreFmtDebug.fmt
   DebugInst.fmt self f
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for &'_0 T}]
-    Source: 'core-models/src/core/fmt.rs', lines 156:0-160:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 160:0-164:1 -/
 @[reducible]
 def Shared0T.Insts.CoreFmtDebug {T : Type} (DebugInst : fmt.Debug T) :
   fmt.Debug T := {
@@ -4260,7 +4260,7 @@ def Shared0T.Insts.CoreFmtDebug {T : Type} (DebugInst : fmt.Debug T) :
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Debug for bool}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 165:4-167:5
+    Source: 'core-models/src/core/fmt.rs', lines 169:4-171:5
     Visibility: public -/
 def Bool.Insts.CoreFmtDebug.fmt
   (self : Bool) (f : fmt.Formatter) :
@@ -4269,14 +4269,14 @@ def Bool.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for bool}]
-    Source: 'core-models/src/core/fmt.rs', lines 164:0-168:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 168:0-172:1 -/
 @[reducible]
 def Bool.Insts.CoreFmtDebug : fmt.Debug Bool := {
   fmt := Bool.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Debug for ()}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 173:4-175:5
+    Source: 'core-models/src/core/fmt.rs', lines 177:4-179:5
     Visibility: public -/
 def Tuple.Insts.CoreFmtDebug.fmt
   (_ : Unit) (f : fmt.Formatter) :
@@ -4285,14 +4285,14 @@ def Tuple.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for ()}]
-    Source: 'core-models/src/core/fmt.rs', lines 172:0-176:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 176:0-180:1 -/
 @[reducible]
 def Tuple.Insts.CoreFmtDebug : fmt.Debug Unit := {
   fmt := Tuple.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u8}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def U8.Insts.CoreFmtDebug.fmt
   (self : Std.U8) (f : fmt.Formatter) :
@@ -4301,14 +4301,14 @@ def U8.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u8}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def U8.Insts.CoreFmtDebug : fmt.Debug Std.U8 := {
   fmt := U8.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u16}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def U16.Insts.CoreFmtDebug.fmt
   (self : Std.U16) (f : fmt.Formatter) :
@@ -4317,14 +4317,14 @@ def U16.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u16}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def U16.Insts.CoreFmtDebug : fmt.Debug Std.U16 := {
   fmt := U16.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u32}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def U32.Insts.CoreFmtDebug.fmt
   (self : Std.U32) (f : fmt.Formatter) :
@@ -4333,14 +4333,14 @@ def U32.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u32}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def U32.Insts.CoreFmtDebug : fmt.Debug Std.U32 := {
   fmt := U32.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u64}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def U64.Insts.CoreFmtDebug.fmt
   (self : Std.U64) (f : fmt.Formatter) :
@@ -4349,14 +4349,14 @@ def U64.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u64}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def U64.Insts.CoreFmtDebug : fmt.Debug Std.U64 := {
   fmt := U64.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u128}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def U128.Insts.CoreFmtDebug.fmt
   (self : Std.U128) (f : fmt.Formatter) :
@@ -4365,14 +4365,14 @@ def U128.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u128}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def U128.Insts.CoreFmtDebug : fmt.Debug Std.U128 := {
   fmt := U128.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for usize}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def Usize.Insts.CoreFmtDebug.fmt
   (self : Std.Usize) (f : fmt.Formatter) :
@@ -4381,14 +4381,14 @@ def Usize.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for usize}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def Usize.Insts.CoreFmtDebug : fmt.Debug Std.Usize := {
   fmt := Usize.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i8}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def I8.Insts.CoreFmtDebug.fmt
   (self : Std.I8) (f : fmt.Formatter) :
@@ -4397,14 +4397,14 @@ def I8.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i8}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def I8.Insts.CoreFmtDebug : fmt.Debug Std.I8 := {
   fmt := I8.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i16}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def I16.Insts.CoreFmtDebug.fmt
   (self : Std.I16) (f : fmt.Formatter) :
@@ -4413,14 +4413,14 @@ def I16.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i16}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def I16.Insts.CoreFmtDebug : fmt.Debug Std.I16 := {
   fmt := I16.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i32}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def I32.Insts.CoreFmtDebug.fmt
   (self : Std.I32) (f : fmt.Formatter) :
@@ -4429,14 +4429,14 @@ def I32.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i32}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def I32.Insts.CoreFmtDebug : fmt.Debug Std.I32 := {
   fmt := I32.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i64}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def I64.Insts.CoreFmtDebug.fmt
   (self : Std.I64) (f : fmt.Formatter) :
@@ -4445,14 +4445,14 @@ def I64.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i64}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def I64.Insts.CoreFmtDebug : fmt.Debug Std.I64 := {
   fmt := I64.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i128}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def I128.Insts.CoreFmtDebug.fmt
   (self : Std.I128) (f : fmt.Formatter) :
@@ -4461,14 +4461,14 @@ def I128.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i128}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def I128.Insts.CoreFmtDebug : fmt.Debug Std.I128 := {
   fmt := I128.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for isize}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 189:20-191:21
+    Source: 'core-models/src/core/fmt.rs', lines 193:20-195:21
     Visibility: public -/
 def Isize.Insts.CoreFmtDebug.fmt
   (self : Std.Isize) (f : fmt.Formatter) :
@@ -4477,14 +4477,14 @@ def Isize.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for isize}]
-    Source: 'core-models/src/core/fmt.rs', lines 188:16-192:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 192:16-196:17 -/
 @[reducible]
 def Isize.Insts.CoreFmtDebug : fmt.Debug Std.Isize := {
   fmt := Isize.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u8}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def U8.Insts.CoreFmtDisplay.fmt
   (self : Std.U8) (f : fmt.Formatter) :
@@ -4493,14 +4493,14 @@ def U8.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u8}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def U8.Insts.CoreFmtDisplay : fmt.Display Std.U8 := {
   fmt := U8.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u16}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def U16.Insts.CoreFmtDisplay.fmt
   (self : Std.U16) (f : fmt.Formatter) :
@@ -4509,14 +4509,14 @@ def U16.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u16}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def U16.Insts.CoreFmtDisplay : fmt.Display Std.U16 := {
   fmt := U16.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u32}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def U32.Insts.CoreFmtDisplay.fmt
   (self : Std.U32) (f : fmt.Formatter) :
@@ -4525,14 +4525,14 @@ def U32.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u32}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def U32.Insts.CoreFmtDisplay : fmt.Display Std.U32 := {
   fmt := U32.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u64}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def U64.Insts.CoreFmtDisplay.fmt
   (self : Std.U64) (f : fmt.Formatter) :
@@ -4541,14 +4541,14 @@ def U64.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u64}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def U64.Insts.CoreFmtDisplay : fmt.Display Std.U64 := {
   fmt := U64.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u128}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def U128.Insts.CoreFmtDisplay.fmt
   (self : Std.U128) (f : fmt.Formatter) :
@@ -4557,14 +4557,14 @@ def U128.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u128}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def U128.Insts.CoreFmtDisplay : fmt.Display Std.U128 := {
   fmt := U128.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for usize}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def Usize.Insts.CoreFmtDisplay.fmt
   (self : Std.Usize) (f : fmt.Formatter) :
@@ -4573,14 +4573,14 @@ def Usize.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for usize}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def Usize.Insts.CoreFmtDisplay : fmt.Display Std.Usize := {
   fmt := Usize.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i8}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def I8.Insts.CoreFmtDisplay.fmt
   (self : Std.I8) (f : fmt.Formatter) :
@@ -4589,14 +4589,14 @@ def I8.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i8}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def I8.Insts.CoreFmtDisplay : fmt.Display Std.I8 := {
   fmt := I8.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i16}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def I16.Insts.CoreFmtDisplay.fmt
   (self : Std.I16) (f : fmt.Formatter) :
@@ -4605,14 +4605,14 @@ def I16.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i16}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def I16.Insts.CoreFmtDisplay : fmt.Display Std.I16 := {
   fmt := I16.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i32}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def I32.Insts.CoreFmtDisplay.fmt
   (self : Std.I32) (f : fmt.Formatter) :
@@ -4621,14 +4621,14 @@ def I32.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i32}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def I32.Insts.CoreFmtDisplay : fmt.Display Std.I32 := {
   fmt := I32.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i64}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def I64.Insts.CoreFmtDisplay.fmt
   (self : Std.I64) (f : fmt.Formatter) :
@@ -4637,14 +4637,14 @@ def I64.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i64}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def I64.Insts.CoreFmtDisplay : fmt.Display Std.I64 := {
   fmt := I64.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i128}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def I128.Insts.CoreFmtDisplay.fmt
   (self : Std.I128) (f : fmt.Formatter) :
@@ -4653,14 +4653,14 @@ def I128.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i128}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def I128.Insts.CoreFmtDisplay : fmt.Display Std.I128 := {
   fmt := I128.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for isize}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 219:16-221:17
+    Source: 'core-models/src/core/fmt.rs', lines 223:16-225:17
     Visibility: public -/
 def Isize.Insts.CoreFmtDisplay.fmt
   (self : Std.Isize) (f : fmt.Formatter) :
@@ -4669,14 +4669,14 @@ def Isize.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for isize}]
-    Source: 'core-models/src/core/fmt.rs', lines 218:12-222:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 222:12-226:13 -/
 @[reducible]
 def Isize.Insts.CoreFmtDisplay : fmt.Display Std.Isize := {
   fmt := Isize.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{core_models::fmt::Arguments<'a>}::write_fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 253:4-255:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 257:4-259:5 -/
 def fmt.Arguments.write_fmt
   (f : fmt.Formatter) (args : fmt.Arguments) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
@@ -4684,7 +4684,7 @@ def fmt.Arguments.write_fmt
   ok (result.Result.Ok (), f)
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::none]:
-    Source: 'core-models/src/core/fmt.rs', lines 354:8-356:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 358:8-360:9 -/
 def fmt.rt.Argument.none : RustM (Array fmt.rt.Argument 0#usize) := do
   ok (Std.Array.empty fmt.rt.Argument)
 

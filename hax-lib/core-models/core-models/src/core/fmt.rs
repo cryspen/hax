@@ -112,7 +112,11 @@ impl Formatter {
     }
 
     /// See [`std::fmt::Formatter::debug_tuple_field1_finish`]
-    pub fn debug_tuple_field1_finish<T1: Debug>(&mut self, struct_name: &str, value1: &T1) -> Result {
+    pub fn debug_tuple_field1_finish<T1: Debug>(
+        &mut self,
+        struct_name: &str,
+        value1: &T1,
+    ) -> Result {
         Result::Ok(())
     }
 }

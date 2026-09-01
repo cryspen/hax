@@ -221,7 +221,7 @@ def fmt.Formatter := Unit
 def fmt.Error := Unit
 
 /-- Trait declaration: [core_models::fmt::Debug]
-    Source: 'core-models/src/core/fmt.rs', lines 127:0-133:1
+    Source: 'core-models/src/core/fmt.rs', lines 131:0-137:1
     Visibility: public -/
 structure fmt.Debug (Self : Type) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
@@ -328,7 +328,7 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
 def num.error.TryFromIntError := Unit
 
 /-- Trait declaration: [core_models::fmt::Display]
-    Source: 'core-models/src/core/fmt.rs', lines 121:0-124:1
+    Source: 'core-models/src/core/fmt.rs', lines 125:0-128:1
     Visibility: public -/
 structure fmt.Display (Self : Type) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
@@ -347,25 +347,25 @@ structure error.Error (Self : Type) where
 def f32.f32 := Unit
 
 /-- [core_models::fmt::Arguments]
-    Source: 'core-models/src/core/fmt.rs', lines 136:0-136:33
+    Source: 'core-models/src/core/fmt.rs', lines 140:0-140:33
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 303:4-310:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 307:4-314:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 312:4-314:5
+    Source: 'core-models/src/core/fmt.rs', lines 316:4-318:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 393:4-397:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 397:4-401:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -373,7 +373,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 399:4-404:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 403:4-408:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -381,7 +381,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 406:4-406:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 410:4-410:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
