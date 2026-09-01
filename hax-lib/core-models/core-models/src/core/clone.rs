@@ -14,14 +14,12 @@ pub trait Clone {
     /// See [`std::clone::Clone::clone`]
     fn clone(self) -> Self;
 
-    /// See [`std::clone::Clone::clone_from`]. Provided method, and the reason
-    /// the model has to carry it: the aeneas Lean backend builds a
-    /// `#[derive(Clone)]` instance as `{ clone := …, clone_from := … }`, so an
-    /// instance without the field fails to elaborate.
+    /// See [`std::clone::Clone::clone_from`]. The model must carry it: aeneas
+    /// builds a `#[derive(Clone)]` instance as `{ clone := …, clone_from := … }`,
+    /// so an instance missing the field fails to elaborate.
     ///
-    /// Real `core` writes into `*self`; like `clone` above, the model consumes
-    /// `self` and returns the new value instead (hax turns the `&mut self`
-    /// receiver into exactly that shape anyway).
+    /// Real `core` writes into `*self`; like `clone`, the model consumes `self`
+    /// and returns the new value.
     #[cfg(not(hax_backend_fstar))]
     fn clone_from(self, source: Self) -> Self
     where

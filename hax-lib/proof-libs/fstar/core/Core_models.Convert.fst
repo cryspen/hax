@@ -65,15 +65,15 @@ include Core_models.Bundle {impl_5__from__convert as impl_5}
 
 include Core_models.Bundle {impl_6__from__convert as impl_6}
 
-include Core_models.Bundle {impl_7 as impl_7}
+include Core_models.Bundle {impl_7__from__convert as impl_7}
 
 include Core_models.Bundle {impl_8__from__convert as impl_8}
 
-include Core_models.Bundle {impl_9__from__convert as impl_9}
+include Core_models.Bundle {impl_9 as impl_9}
 
 include Core_models.Bundle {impl_10__from__convert as impl_10}
 
-include Core_models.Bundle {impl_11 as impl_11}
+include Core_models.Bundle {impl_11__from__convert as impl_11}
 
 include Core_models.Bundle {impl_12__from__convert as impl_12}
 
@@ -81,7 +81,7 @@ include Core_models.Bundle {impl_13__from__convert as impl_13}
 
 include Core_models.Bundle {impl_14__from__convert as impl_14}
 
-include Core_models.Bundle {impl_15 as impl_15}
+include Core_models.Bundle {impl_15__from__convert as impl_15}
 
 include Core_models.Bundle {impl_16__from__convert as impl_16}
 
@@ -125,7 +125,7 @@ include Core_models.Bundle {impl_35 as impl_35}
 
 include Core_models.Bundle {impl_36__from__convert as impl_36}
 
-include Core_models.Bundle {impl_37__from__convert as impl_37}
+include Core_models.Bundle {impl_37 as impl_37}
 
 include Core_models.Bundle {impl_38__from__convert as impl_38}
 
@@ -133,7 +133,7 @@ include Core_models.Bundle {impl_39 as impl_39}
 
 include Core_models.Bundle {impl_40__from__convert as impl_40}
 
-include Core_models.Bundle {impl_41__from__convert as impl_41}
+include Core_models.Bundle {impl_41 as impl_41}
 
 include Core_models.Bundle {impl_42__from__convert as impl_42}
 
@@ -141,7 +141,7 @@ include Core_models.Bundle {impl_43 as impl_43}
 
 include Core_models.Bundle {impl_44__from__convert as impl_44}
 
-include Core_models.Bundle {impl_45__from__convert as impl_45}
+include Core_models.Bundle {impl_45 as impl_45}
 
 include Core_models.Bundle {impl_46__from__convert as impl_46}
 
@@ -149,7 +149,7 @@ include Core_models.Bundle {impl_47 as impl_47}
 
 include Core_models.Bundle {impl_48__from__convert as impl_48}
 
-include Core_models.Bundle {impl_49__from__convert as impl_49}
+include Core_models.Bundle {impl_49 as impl_49}
 
 include Core_models.Bundle {impl_50__from__convert as impl_50}
 
@@ -157,15 +157,15 @@ include Core_models.Bundle {impl_51 as impl_51}
 
 include Core_models.Bundle {impl_52__from__convert as impl_52}
 
-include Core_models.Bundle {impl_53__from__convert as impl_53}
+include Core_models.Bundle {impl_53 as impl_53}
 
-include Core_models.Bundle {impl_54 as impl_54}
+include Core_models.Bundle {impl_54__from__convert as impl_54}
 
-include Core_models.Bundle {impl_55__from__convert as impl_55}
+include Core_models.Bundle {impl_55 as impl_55}
 
 include Core_models.Bundle {impl_56__from__convert as impl_56}
 
-include Core_models.Bundle {impl_57__from__convert as impl_57}
+include Core_models.Bundle {impl_57 as impl_57}
 
 include Core_models.Bundle {impl_58 as impl_58}
 

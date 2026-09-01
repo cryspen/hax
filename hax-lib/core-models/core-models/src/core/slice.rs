@@ -533,9 +533,9 @@ pub mod index {
         /// See [`std::slice::SliceIndex::index_mut`]: the `&mut` counterpart of
         /// `index`, same in-bounds projection, precondition per impl.
         //
-        // Declared last, not next to `index` as in real core: fields are
-        // extracted in declaration order, and moving `index` would reorder every
-        // published `SliceIndex` literal.
+        // Declared last, not next to `index` as in real core: fields extract in
+        // declaration order, so moving `index` would reorder every published
+        // `SliceIndex` literal.
         #[cfg(not(hax_backend_fstar))]
         fn index_mut(self, slice: &mut T) -> &mut Self::Output;
     }

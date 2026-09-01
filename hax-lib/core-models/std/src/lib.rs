@@ -230,12 +230,10 @@ mod io {
         /// See [`std::io::stdio::_print`], what `print!`/`println!` expand to.
         /// Like `e_print` above, the model prints nothing.
         //
-        // `hax_lib::exclude`d on the F* lane: hax renders a leading underscore
-        // as `e_`, so `_print` and `e_print` would both be emitted as `e_print`
-        // and the module would carry two declarations of the same name. The
-        // `std` model is extracted to F* only, so on this branch the item is a
-        // Rust-level model with no backend counterpart; it exists for the
-        // clients that mention it and for the coverage count.
+        // Excluded on the F* lane: hax renders a leading underscore as `e_`, so
+        // `_print` and `e_print` would collide. `std` is extracted to F* only,
+        // so this item has no backend counterpart — it exists for the clients
+        // that mention it and for the coverage count.
         #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
         #[hax_lib::opaque]
         fn _print(args: core::fmt::Arguments) {}

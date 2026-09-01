@@ -206,10 +206,9 @@ pub mod equality {
 
 /// See [`std::default::Default`] for `[T; N]`
 ///
-/// Real `core` spells this out as 33 monomorphic impls (`[T; 0]` … `[T; 32]`),
-/// the `[T; 0]` one without the `T: Default` bound. Rust coherence rules out
-/// providing both that impl and the const-generic one below, so the model keeps
-/// only the const-generic form, which covers `N = 0` as well.
+/// Real `core` spells this out as 33 monomorphic impls (`[T; 0]` … `[T; 32]`).
+/// Coherence rules out keeping both those and the const-generic form, which
+/// covers `N = 0` anyway.
 impl<T: crate::default::Default, const N: usize> crate::default::Default for [T; N] {
     fn default() -> [T; N] {
         array_from_fn(|_i| <T as crate::default::Default>::default())
@@ -244,12 +243,10 @@ impl<T, const N: usize> crate::convert::AsRef<[T]> for [T; N] {
 /// Real `core`'s companion to the `TryFrom<&[T]>` impl in `crate::convert`:
 /// same length check, `&mut` receiver.
 //
-// Lean-only. The `&mut` receiver makes hax add a write-back return, so the
-// extracted `try_from` has type `Slice T -> Result (Result (Array T N) _ x
-// Slice T)`, which does not fit `convert::TryFrom`'s field; and `&mut`
-// arguments have no F* model here anyway.
+// Lean-only: the `&mut` write-back makes the extracted `try_from` return an
+// extra `Slice T`, which does not fit `convert::TryFrom`'s field.
 #[cfg(not(hax_backend_fstar))]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T: Copy, const N: usize> crate::convert::TryFrom<&mut [T]> for [T; N] {
     type Error = TryFromSliceError;
     fn try_from(s: &mut [T]) -> crate::result::Result<[T; N], TryFromSliceError> {

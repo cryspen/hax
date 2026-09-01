@@ -166,10 +166,9 @@ pub mod sequence {
     /// `seq_remove` for a sequence of *mutable* references, backing
     /// `core_models::slice::iter::IterMut::next`.
     ///
-    /// A separate name rather than a `&mut`-returning overload of `seq_remove`:
-    /// the element type is itself an `&mut`, so hax gives the *element* a
-    /// write-back too and the extracted signature grows a third component that
-    /// the `Seq<&T>` callers of `seq_remove` must not have.
+    /// Separate from `seq_remove` because the element is itself an `&mut`: hax
+    /// gives it a write-back too, growing the signature by a third component
+    /// that `seq_remove`'s `Seq<&T>` callers must not have.
     #[cfg(not(hax_backend_fstar))]
     pub fn seq_remove_mut<'a, T>(s: &mut Seq<&'a mut T>, n: usize) -> &'a mut T {
         s.0.remove(n)

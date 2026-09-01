@@ -3,8 +3,7 @@
 //! `core::alloc::global::GlobalAlloc` is out of scope: its methods are typed
 //! with raw pointers, which the model does not have.
 //!
-//! Lean-only: the F* extraction drops this module through the `-i` flags on the
-//! `fstar-core-models` target in the Makefile.
+//! Lean-only: F* drops this module via the Makefile's `-i` flags.
 
 /// See [`std::alloc::Layout`]
 pub mod layout {

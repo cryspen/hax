@@ -9,88 +9,42 @@ pub type Result = super::result::Result<(), Error>;
 /// See [`std::fmt::Formatter`]
 pub struct Formatter;
 
+// `Formatter::debug_struct_field{1..5}_finish`: one arity per field count, as
+// real `core` spells them out.
+macro_rules! debug_struct_field_finish {
+    ($( $name:ident : $( ($T:ident, $key:ident, $value:ident) ),+ );+ $(;)?) => {$(
+        #[doc = concat!("See [`std::fmt::Formatter::", stringify!($name), "`]")]
+        pub fn $name<$($T: Debug),+>(
+            &mut self,
+            struct_name: &str,
+            $($key: &str, $value: &$T),+
+        ) -> Result {
+            Result::Ok(())
+        }
+    )+};
+}
+
 impl Formatter {
     pub fn write_str(&mut self, data: &str) -> Result {
         Result::Ok(())
     }
 
-    // The `debug_*_finish` family below is what `#[derive(Debug)]` expands to.
-    // Real `core` routes each one through a `DebugStruct`/`DebugTuple` builder
-    // and renders the fields; the model's `Formatter` renders nothing, so they
-    // all succeed without observing their arguments.
-    //
-    // Real `core` takes the values as `&dyn Debug`; the model takes one generic
-    // reference per field, because `dyn` has no counterpart in the F* proof
-    // libraries.
+    // The `debug_*_finish` family is what `#[derive(Debug)]` expands to. The
+    // model's `Formatter` renders nothing, so they all succeed without reading
+    // their arguments. Real `core` takes the values as `&dyn Debug`; the model
+    // takes one generic reference per field, since `dyn` has no F* counterpart.
 
-    /// See [`std::fmt::Formatter::debug_struct_field1_finish`]
-    pub fn debug_struct_field1_finish<T1: Debug>(
-        &mut self,
-        struct_name: &str,
-        name1: &str,
-        value1: &T1,
-    ) -> Result {
-        Result::Ok(())
-    }
-
-    /// See [`std::fmt::Formatter::debug_struct_field2_finish`]
-    pub fn debug_struct_field2_finish<T1: Debug, T2: Debug>(
-        &mut self,
-        struct_name: &str,
-        name1: &str,
-        value1: &T1,
-        name2: &str,
-        value2: &T2,
-    ) -> Result {
-        Result::Ok(())
-    }
-
-    /// See [`std::fmt::Formatter::debug_struct_field3_finish`]
-    pub fn debug_struct_field3_finish<T1: Debug, T2: Debug, T3: Debug>(
-        &mut self,
-        struct_name: &str,
-        name1: &str,
-        value1: &T1,
-        name2: &str,
-        value2: &T2,
-        name3: &str,
-        value3: &T3,
-    ) -> Result {
-        Result::Ok(())
-    }
-
-    /// See [`std::fmt::Formatter::debug_struct_field4_finish`]
-    pub fn debug_struct_field4_finish<T1: Debug, T2: Debug, T3: Debug, T4: Debug>(
-        &mut self,
-        struct_name: &str,
-        name1: &str,
-        value1: &T1,
-        name2: &str,
-        value2: &T2,
-        name3: &str,
-        value3: &T3,
-        name4: &str,
-        value4: &T4,
-    ) -> Result {
-        Result::Ok(())
-    }
-
-    /// See [`std::fmt::Formatter::debug_struct_field5_finish`]
-    pub fn debug_struct_field5_finish<T1: Debug, T2: Debug, T3: Debug, T4: Debug, T5: Debug>(
-        &mut self,
-        struct_name: &str,
-        name1: &str,
-        value1: &T1,
-        name2: &str,
-        value2: &T2,
-        name3: &str,
-        value3: &T3,
-        name4: &str,
-        value4: &T4,
-        name5: &str,
-        value5: &T5,
-    ) -> Result {
-        Result::Ok(())
+    debug_struct_field_finish! {
+        debug_struct_field1_finish: (T1, name1, value1);
+        debug_struct_field2_finish: (T1, name1, value1), (T2, name2, value2);
+        debug_struct_field3_finish:
+            (T1, name1, value1), (T2, name2, value2), (T3, name3, value3);
+        debug_struct_field4_finish:
+            (T1, name1, value1), (T2, name2, value2), (T3, name3, value3),
+            (T4, name4, value4);
+        debug_struct_field5_finish:
+            (T1, name1, value1), (T2, name2, value2), (T3, name3, value3),
+            (T4, name4, value4), (T5, name5, value5);
     }
 
     /// See [`std::fmt::Formatter::debug_struct_fields_finish`]
@@ -273,13 +227,12 @@ impl<'a> Arguments<'a> {
     /// point. The model's `Arguments` has no payload, so neither argument is
     /// read.
     ///
-    /// Excluded from aeneas like the other `Arguments` constructors ("There
-    /// should be no bottoms in the value"); the Lean is hand-written in
-    /// `FunsPrologue.lean`. Excluded from F* too: it is the only `fmt` item
-    /// mentioning `fmt::rt`, which closes a module cycle and makes hax collapse
-    /// and rename `Core_models.Fmt{,.Rt}`.
+    /// Excluded from Lean like the other `Arguments` constructors ("There
+    /// should be no bottoms in the value"); hand-written in `FunsPrologue.lean`.
+    /// Excluded from F* too: it is the only `fmt` item mentioning `fmt::rt`,
+    /// whose module cycle makes hax rename `Core_models.Fmt{,.Rt}`.
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     fn new<const N: usize, const M: usize>(
         template: &'a [core::primitive::u8; N],
         args: &'a [rt::Argument<'a>; M],

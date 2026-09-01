@@ -25,12 +25,10 @@ where
 /// See [`std::cmp::Eq`]
 pub trait Eq: PartialEq<Self> {
     /// See [`std::cmp::Eq::assert_receiver_is_total_eq`]. `#[derive(Eq)]` calls
-    /// it, so an extracted client needs the model to carry it; real `core`'s
-    /// body is empty too.
+    /// it; the body is empty in real `core` too.
     ///
-    /// NOTE: upstream renamed it to `assert_fields_are_eq` after our nightly
-    /// pins, and Aeneas's Lean already uses the new name — rename both in
-    /// lockstep at the next toolchain bump.
+    /// Renamed upstream to `assert_fields_are_eq` after our nightly pins;
+    /// rename here and in Aeneas's Lean at the next toolchain bump.
     #[cfg(not(hax_backend_fstar))]
     fn assert_receiver_is_total_eq(&self) {}
 }
@@ -92,7 +90,6 @@ trait Neq<Rhs> {
     fn neq(&self, y: &Rhs) -> bool;
 }
 
-#[hax_lib::attributes]
 impl<T: PartialEq<T>> Neq<T> for T {
     fn neq(&self, y: &T) -> bool {
         // Not using negation is a workaround for the F* lib
@@ -124,7 +121,6 @@ trait PartialOrdDefaults<Rhs> {
 }
 
 #[cfg(any(hax_backend_fstar, test))]
-#[hax_lib::attributes]
 impl<T: PartialOrd<T>> PartialOrdDefaults<T> for T {
     fn lt(&self, y: &T) -> bool
     where
@@ -185,14 +181,12 @@ pub fn min<T: Ord>(v1: T, v2: T) -> T {
 /// See [`std::cmp::Reverse`]
 pub struct Reverse<T>(pub T);
 
-#[hax_lib::attributes]
 impl<T: PartialOrd<T>> PartialOrd<Reverse<T>> for Reverse<T> {
     fn partial_cmp(&self, other: &Reverse<T>) -> Option<Ordering> {
         other.0.partial_cmp(&self.0)
     }
 }
 
-#[hax_lib::attributes]
 impl<T: PartialEq<T>> PartialEq<Reverse<T>> for Reverse<T> {
     #[cfg(not(hax_backend_fstar))]
     fn ne(&self, other: &Reverse<T>) -> bool {
@@ -203,10 +197,8 @@ impl<T: PartialEq<T>> PartialEq<Reverse<T>> for Reverse<T> {
     }
 }
 
-#[hax_lib::attributes]
 impl<T: Eq> Eq for Reverse<T> {}
 
-#[hax_lib::attributes]
 impl<T: Ord> Ord for Reverse<T> {
     fn cmp(&self, other: &Reverse<T>) -> Ordering {
         other.0.cmp(&self.0)
@@ -251,7 +243,6 @@ macro_rules! int_impls {
             }
         }
         #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
-        #[hax_lib::attributes]
         #[cfg_attr(charon, aeneas::exclude)]
         impl PartialEq<$t> for $t {
             fn eq(&self, other: &Self) -> bool {
@@ -259,7 +250,6 @@ macro_rules! int_impls {
             }
         }
         #[cfg_attr(charon, aeneas::exclude)]
-        #[hax_lib::attributes]
         #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
         impl Eq for $t {}
     )*)
@@ -334,13 +324,9 @@ pub fn clamp<T: Ord>(value: T, min: T, max: T) -> T {
 }
 
 // `PartialEq`/`Eq`/`PartialOrd`/`Ord` for the unit type, which real `core`
-// spells out in `cmp::impls`. Annotated like every other impl in this module:
-// hax's F* disambiguator numbers *annotated* impls top-to-bottom, so a module
-// whose impls are annotated consistently keeps its published `impl_NN` names
-// when new impls are appended at the end.
+// spells out in `cmp::impls`.
 
 /// See [`std::cmp::PartialEq`] for `()`
-#[hax_lib::attributes]
 impl PartialEq<()> for () {
     fn eq(&self, other: &()) -> bool {
         true
@@ -352,11 +338,9 @@ impl PartialEq<()> for () {
 }
 
 /// See [`std::cmp::Eq`] for `()`
-#[hax_lib::attributes]
 impl Eq for () {}
 
 /// See [`std::cmp::PartialOrd`] for `()`
-#[hax_lib::attributes]
 impl PartialOrd<()> for () {
     fn partial_cmp(&self, other: &()) -> Option<Ordering> {
         Option::Some(Ordering::Equal)
@@ -364,7 +348,6 @@ impl PartialOrd<()> for () {
 }
 
 /// See [`std::cmp::Ord`] for `()`
-#[hax_lib::attributes]
 impl Ord for () {
     fn cmp(&self, other: &()) -> Ordering {
         Ordering::Equal
@@ -700,8 +683,7 @@ mod tests {
         );
     }
 
-    /// `Eq::assert_receiver_is_total_eq` is a no-op in real `core` too, so all
-    /// there is to check is that the provided body runs.
+    /// A no-op in real `core` too: all there is to check is that it runs.
     #[cfg(not(hax_backend_fstar))]
     #[test]
     fn test_assert_receiver_is_total_eq() {

@@ -1,13 +1,9 @@
 //! Trait impls a downstream crate writes for its *own* types.
 //!
-//! Guards one hazard: `Clone` gained a provided `clone_from` and `Eq` an
+//! Guards one hazard: `Clone` gained `clone_from` and `Eq` an
 //! `assert_receiver_is_total_eq`, so both extracted structures carry an extra
-//! field. `core-models`' own Lean gets a default injected by `patch_lean.py`,
-//! but **a client runs no patch script** — so whatever aeneas emits for the
-//! instances below has to elaborate as-is, or the client is stuck.
-//!
-//! `Debug` is absent: aeneas fails with an internal `Unreachable` on any client
-//! signature mentioning `core::fmt::Formatter`.
+//! field. `patch_lean.py` injects a default for our own Lean, but **a client
+//! runs no patch script** — aeneas's output has to elaborate as-is.
 
 #![allow(dead_code)]
 
@@ -76,12 +72,9 @@ impl PartialEq for Manual {
 
 impl Eq for Manual {}
 
-// No client-side `Debug` impl, derived or hand-written: aeneas fails with an
-// internal `Unreachable` on *any* function whose signature mentions
-// `core::fmt::Formatter` (its own library declares that type as an opaque
-// axiom). `#[derive(Debug)]` fails for the same reason one level up, through the
-// `debug_*_finish` call it expands to. Neither has anything to do with the
-// `Clone`/`Eq` field additions this module is guarding.
+// No client-side `Debug` impl: aeneas fails with an internal `Unreachable` on
+// any signature mentioning `core::fmt::Formatter`, which it declares as an
+// opaque axiom. Unrelated to the `Clone`/`Eq` fields this module guards.
 
 pub fn manual_clone(x: &Manual) -> Manual {
     x.clone()

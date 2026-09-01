@@ -68,6 +68,12 @@ Changes to core models:
    (`arr[a..b].copy_from_slice(src)`) extracts instead of referring to a nonexistent
    `core.Array.Insts.CoreOpsIndexIndexMut.index_mut` (#2187, fix #2174)
  - Add core model testing infrastructure
+ - Reach parity with the items Aeneas's Lean library declares as axioms: `fmt`'s
+   `#[derive(Debug)]` builders and per-type `Debug` impls, the missing
+   `core::array` items, `slice::split_at_mut`/`iter_mut`/`SliceIndex::index_mut`,
+   `panicking::AssertKind`, `Drop::drop`'s default, `Clone::clone_from`,
+   `Eq`'s assertion, the unit comparisons, `From<bool>` for the integer types,
+   `Box`'s trait impls, `Vec`'s `From<[T; N]>` and `std::io::stdio::_print` (#2199)
 
 Changes to the F* backend and library:
  - Fix some regressions in the F* proof lib (particularly the `vec_deque` models)

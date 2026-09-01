@@ -97,14 +97,14 @@ inductive ptr.alignment.AlignmentEnum where
 def ptr.alignment.Alignment := ptr.alignment.AlignmentEnum
 
 /-- [core_models::alloc::layout::Layout]
-    Source: 'core-models/src/core/alloc.rs', lines 16:4-19:5
+    Source: 'core-models/src/core/alloc.rs', lines 15:4-18:5
     Visibility: public -/
 structure alloc.layout.Layout where
   size : Std.Usize
   align : ptr.alignment.Alignment
 
 /-- [core_models::alloc::layout::LayoutError]
-    Source: 'core-models/src/core/alloc.rs', lines 22:4-22:27
+    Source: 'core-models/src/core/alloc.rs', lines 21:4-21:27
     Visibility: public -/
 @[reducible]
 def alloc.layout.LayoutError := Unit
@@ -152,7 +152,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → RustM Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 267:4-267:55
+    Source: 'core-models/src/core/array.rs', lines 264:4-264:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -174,7 +174,7 @@ structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
     (Self_Clause0_Output → Self))
 
 /-- Trait declaration: [core_models::clone::Clone]
-    Source: 'core-models/src/core/clone.rs', lines 13:0-32:1
+    Source: 'core-models/src/core/clone.rs', lines 13:0-30:1
     Visibility: public -/
 structure clone.Clone (Self : Type) where
   clone : Self → RustM Self
@@ -194,7 +194,7 @@ structure default.Default (Self : Type) where
   default : RustM Self
 
 /-- [core_models::array::{impl core_models::default::Default for [T; N]}::default::closure]
-    Source: 'core-models/src/core/array.rs', lines 215:22-215:68 -/
+    Source: 'core-models/src/core/array.rs', lines 214:22-214:68 -/
 @[reducible]
 def array.DefaultArray.default.closure (T : Type) (N : Std.Usize) := Unit
 
@@ -221,7 +221,7 @@ def fmt.Formatter := Unit
 def fmt.Error := Unit
 
 /-- Trait declaration: [core_models::fmt::Debug]
-    Source: 'core-models/src/core/fmt.rs', lines 131:0-137:1
+    Source: 'core-models/src/core/fmt.rs', lines 85:0-91:1
     Visibility: public -/
 structure fmt.Debug (Self : Type) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
@@ -239,7 +239,7 @@ structure borrow.Borrow (Self : Type) (Borrowed : Type) where
   borrow : Self → RustM Borrowed
 
 /-- Trait declaration: [core_models::cmp::Eq]
-    Source: 'core-models/src/core/cmp.rs', lines 26:0-36:1
+    Source: 'core-models/src/core/cmp.rs', lines 26:0-34:1
     Visibility: public -/
 structure cmp.Eq (Self : Type) where
   PartialEqInst : cmp.PartialEq Self Self
@@ -247,7 +247,7 @@ structure cmp.Eq (Self : Type) where
 
 /-
 /-- [core_models::cmp::Ordering]
-    Source: 'core-models/src/core/cmp.rs', lines 40:0-47:1
+    Source: 'core-models/src/core/cmp.rs', lines 38:0-45:1
     Visibility: public -/
 @[discriminant isize [-1,0,1]]
 inductive cmp.Ordering where
@@ -257,7 +257,7 @@ inductive cmp.Ordering where
 -/
 
 /-- Trait declaration: [core_models::cmp::PartialOrd]
-    Source: 'core-models/src/core/cmp.rs', lines 51:0-87:1
+    Source: 'core-models/src/core/cmp.rs', lines 49:0-85:1
     Visibility: public -/
 structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   PartialEqInst : cmp.PartialEq Self Rhs
@@ -268,12 +268,12 @@ structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   ge : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Neq]
-    Source: 'core-models/src/core/cmp.rs', lines 90:0-93:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 88:0-91:1 -/
 structure cmp.Neq (Self : Type) (Rhs : Type) where
   neq : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Ord]
-    Source: 'core-models/src/core/cmp.rs', lines 163:0-167:1
+    Source: 'core-models/src/core/cmp.rs', lines 159:0-163:1
     Visibility: public -/
 structure cmp.Ord (Self : Type) where
   EqInst : cmp.Eq Self
@@ -281,7 +281,7 @@ structure cmp.Ord (Self : Type) where
   cmp : Self → Self → RustM cmp.Ordering
 
 /-- [core_models::cmp::Reverse]
-    Source: 'core-models/src/core/cmp.rs', lines 186:0-186:29
+    Source: 'core-models/src/core/cmp.rs', lines 182:0-182:29
     Visibility: public -/
 @[reducible]
 def cmp.Reverse (T : Type) := T
@@ -328,7 +328,7 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
 def num.error.TryFromIntError := Unit
 
 /-- Trait declaration: [core_models::fmt::Display]
-    Source: 'core-models/src/core/fmt.rs', lines 125:0-128:1
+    Source: 'core-models/src/core/fmt.rs', lines 79:0-82:1
     Visibility: public -/
 structure fmt.Display (Self : Type) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
@@ -347,25 +347,25 @@ structure error.Error (Self : Type) where
 def f32.f32 := Unit
 
 /-- [core_models::fmt::Arguments]
-    Source: 'core-models/src/core/fmt.rs', lines 140:0-140:33
+    Source: 'core-models/src/core/fmt.rs', lines 94:0-94:33
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 296:4-303:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 249:4-256:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 305:4-307:5
+    Source: 'core-models/src/core/fmt.rs', lines 258:4-260:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 386:4-390:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 339:4-343:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -373,7 +373,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 392:4-397:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 345:4-350:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -381,7 +381,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 399:4-399:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 352:4-352:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
@@ -1111,13 +1111,13 @@ structure str.traits.FromStr (Self : Type) (Self_Err : Type) where
   from_str : Str → RustM (result.Result Self Self_Err)
 
 /-- [core_models::sync::atomic::AtomicBool]
-    Source: 'core-models/src/core/sync.rs', lines 13:4-15:5
+    Source: 'core-models/src/core/sync.rs', lines 11:4-13:5
     Visibility: public -/
 structure sync.atomic.AtomicBool where
   v : Std.U8
 
 /-- [core_models::sync::atomic::AtomicU32]
-    Source: 'core-models/src/core/sync.rs', lines 18:4-20:5
+    Source: 'core-models/src/core/sync.rs', lines 16:4-18:5
     Visibility: public -/
 structure sync.atomic.AtomicU32 where
   v : Std.U32

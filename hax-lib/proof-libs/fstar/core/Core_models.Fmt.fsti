@@ -39,7 +39,7 @@ class t_Debug (v_Self: Type0) = {
         (fun result -> f_dbg_fmt_post x0 x1 result)
 }
 
-/// See [`std::fmt::Formatter::debug_struct_field1_finish`]
+///See [`std::fmt::Formatter::debug_struct_field1_finish`]
 val impl_Formatter__debug_struct_field1_finish
       (#v_T1: Type0)
       {| i0: t_Debug v_T1 |}
@@ -50,7 +50,7 @@ val impl_Formatter__debug_struct_field1_finish
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// See [`std::fmt::Formatter::debug_struct_field2_finish`]
+///See [`std::fmt::Formatter::debug_struct_field2_finish`]
 val impl_Formatter__debug_struct_field2_finish
       (#v_T1 #v_T2: Type0)
       {| i0: t_Debug v_T1 |}
@@ -64,7 +64,7 @@ val impl_Formatter__debug_struct_field2_finish
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// See [`std::fmt::Formatter::debug_struct_field3_finish`]
+///See [`std::fmt::Formatter::debug_struct_field3_finish`]
 val impl_Formatter__debug_struct_field3_finish
       (#v_T1 #v_T2 #v_T3: Type0)
       {| i0: t_Debug v_T1 |}
@@ -81,7 +81,7 @@ val impl_Formatter__debug_struct_field3_finish
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// See [`std::fmt::Formatter::debug_struct_field4_finish`]
+///See [`std::fmt::Formatter::debug_struct_field4_finish`]
 val impl_Formatter__debug_struct_field4_finish
       (#v_T1 #v_T2 #v_T3 #v_T4: Type0)
       {| i0: t_Debug v_T1 |}
@@ -101,7 +101,7 @@ val impl_Formatter__debug_struct_field4_finish
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// See [`std::fmt::Formatter::debug_struct_field5_finish`]
+///See [`std::fmt::Formatter::debug_struct_field5_finish`]
 val impl_Formatter__debug_struct_field5_finish
       (#v_T1 #v_T2 #v_T3 #v_T4 #v_T5: Type0)
       {| i0: t_Debug v_T1 |}

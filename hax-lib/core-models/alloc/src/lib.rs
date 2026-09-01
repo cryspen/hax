@@ -96,10 +96,8 @@ mod boxed {
 
     /// See [`std::cmp::PartialEq`] for `Box<T>`
     //
-    // Lean-only. hax renders `self.0 == other.0` as F*'s primitive `=.` rather
-    // than as a call through the `PartialEq` dictionary, and that demands
-    // `T: eqtype`, which a `Type0` parameter is not ("Expected type
-    // Prims.eqtype got type Type0").
+    // Lean-only: hax renders `self.0 == other.0` as F*'s primitive `=.`, which
+    // demands `T: eqtype` — a `Type0` parameter is not one.
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     impl<T: PartialEq<U>, U> PartialEq<Box<U>> for Box<T> {
         #[cfg(not(hax_backend_fstar))]
