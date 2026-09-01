@@ -359,6 +359,17 @@ pub mod try_trait {
         type TryType: Try<Output = O, Residual = Self>;
     }
 
+    /// The `Residual` half of `Try` for `Result`: given an output type `T`, the
+    /// `Err(e)` residual reconstitutes as `Result<T, E>`.
+    //
+    // Here rather than beside `Try for Result` in `result.rs`: an extra impl
+    // whose self type is a `Result<..>` renumbers every inherent `Result`
+    // method in the F* extraction (`impl__unwrap` becomes `impl_1__unwrap`),
+    // which breaks every downstream proof that names one.
+    impl<T, E> Residual<T> for crate::result::Result<crate::convert::Infallible, E> {
+        type TryType = crate::result::Result<T, E>;
+    }
+
     /// See [`std::ops::Yeet`]
     pub struct Yeet<T>(pub T);
 }

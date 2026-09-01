@@ -654,3 +654,654 @@ pub fn test_copy_from_slice() -> bool {
     d.copy_from_slice(&src);
     dst == [7, 8, 9]
 }
+
+// ----- split_first / split_last ----------------------------------------------
+
+#[rust_lean_test]
+pub fn test_split_first_empty_none() -> bool {
+    let a: [u8; 0] = [];
+    a.as_slice().split_first().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_split_first_one() -> bool {
+    let a: [u8; 1] = [7];
+    match a.as_slice().split_first() {
+        Some((v, rest)) => *v == 7 && rest.is_empty(),
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_split_first_many() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    match a.as_slice().split_first() {
+        Some((v, rest)) => *v == 1 && rest.len() == 2 && rest[0] == 2,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_split_last_empty_none() -> bool {
+    let a: [u8; 0] = [];
+    a.as_slice().split_last().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_split_last_one() -> bool {
+    let a: [u8; 1] = [7];
+    match a.as_slice().split_last() {
+        Some((v, rest)) => *v == 7 && rest.is_empty(),
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_split_last_many() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    match a.as_slice().split_last() {
+        Some((v, rest)) => *v == 3 && rest.len() == 2 && rest[1] == 2,
+        None => false,
+    }
+}
+
+// ----- split_at_unchecked (in-bounds is the only defined behaviour) ----------
+
+#[rust_lean_test]
+pub fn test_split_at_unchecked_middle() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let (l, r) = unsafe { a.as_slice().split_at_unchecked(2) };
+    l.len() == 2 && r.len() == 2 && l[0] == 1 && r[0] == 3
+}
+
+#[rust_lean_test]
+pub fn test_split_at_unchecked_zero() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let (l, r) = unsafe { a.as_slice().split_at_unchecked(0) };
+    l.is_empty() && r.len() == 4
+}
+
+#[rust_lean_test]
+pub fn test_split_at_unchecked_full() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let (l, r) = unsafe { a.as_slice().split_at_unchecked(4) };
+    l.len() == 4 && r.is_empty()
+}
+
+// ----- swap_unchecked --------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_swap_unchecked_ends() -> bool {
+    let mut a = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    unsafe { s.swap_unchecked(0, 2) };
+    a == [3u8, 2, 1]
+}
+
+#[rust_lean_test]
+pub fn test_swap_unchecked_same_index() -> bool {
+    let mut a = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    unsafe { s.swap_unchecked(1, 1) };
+    a == [1u8, 2, 3]
+}
+
+// ----- rotate_left / rotate_right --------------------------------------------
+
+#[rust_lean_test]
+pub fn test_rotate_left_middle() -> bool {
+    let mut a = [1u8, 2, 3, 4, 5];
+    let s: &mut [u8] = &mut a;
+    s.rotate_left(2);
+    a == [3u8, 4, 5, 1, 2]
+}
+
+#[rust_lean_test]
+pub fn test_rotate_left_zero() -> bool {
+    let mut a = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    s.rotate_left(0);
+    a == [1u8, 2, 3]
+}
+
+#[rust_lean_test]
+pub fn test_rotate_left_full() -> bool {
+    let mut a = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    s.rotate_left(3);
+    a == [1u8, 2, 3]
+}
+
+#[rust_lean_test]
+pub fn test_rotate_right_middle() -> bool {
+    let mut a = [1u8, 2, 3, 4, 5];
+    let s: &mut [u8] = &mut a;
+    s.rotate_right(2);
+    a == [4u8, 5, 1, 2, 3]
+}
+
+#[rust_lean_test]
+pub fn test_rotate_right_empty() -> bool {
+    let mut a: [u8; 0] = [];
+    let s: &mut [u8] = &mut a;
+    s.rotate_right(0);
+    a.is_empty()
+}
+
+// ----- rchunks / rchunks_exact / remainder -----------------------------------
+
+#[rust_lean_test]
+pub fn test_rchunks_first_is_tail() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let mut it = a.as_slice().rchunks(2);
+    match it.next() {
+        Some(c) => {
+            let e: &[u8] = &[4, 5];
+            c == e
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_rchunks_last_is_partial() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let mut it = a.as_slice().rchunks(2);
+    it.next();
+    it.next();
+    match it.next() {
+        Some(c) => {
+            let e: &[u8] = &[1];
+            c == e
+        }
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_rchunks_empty_none() -> bool {
+    let a: [u8; 0] = [];
+    let mut it = a.as_slice().rchunks(2);
+    it.next().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_rchunks_exact_drops_front_remainder() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let mut it = a.as_slice().rchunks_exact(2);
+    it.next();
+    it.next();
+    it.next().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_rchunks_exact_first() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let mut it = a.as_slice().rchunks_exact(2);
+    match it.next() {
+        Some(c) => {
+            let e: &[u8] = &[4, 5];
+            c == e
+        }
+        None => false,
+    }
+}
+
+// `rchunks_exact`'s remainder is at the *front*, `chunks_exact`'s at the back.
+#[rust_lean_test]
+pub fn test_rchunks_exact_remainder() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let e: &[u8] = &[1];
+    a.as_slice().rchunks_exact(2).remainder() == e
+}
+
+#[rust_lean_test]
+pub fn test_rchunks_exact_remainder_empty_when_exact() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    a.as_slice().rchunks_exact(2).remainder().is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_chunks_exact_remainder() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let e: &[u8] = &[5];
+    a.as_slice().chunks_exact(2).remainder() == e
+}
+
+#[rust_lean_test]
+pub fn test_chunks_exact_remainder_empty_when_exact() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    a.as_slice().chunks_exact(2).remainder().is_empty()
+}
+
+// ----- is_sorted -------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_is_sorted_ascending() -> bool {
+    let a: [u8; 4] = [1, 2, 2, 3];
+    a.as_slice().is_sorted()
+}
+
+#[rust_lean_test]
+pub fn test_is_sorted_descending_false() -> bool {
+    let a: [u8; 3] = [3, 2, 1];
+    a.as_slice().is_sorted() == false
+}
+
+#[rust_lean_test]
+pub fn test_is_sorted_empty() -> bool {
+    let a: [u8; 0] = [];
+    a.as_slice().is_sorted()
+}
+
+#[rust_lean_test]
+pub fn test_is_sorted_one() -> bool {
+    let a: [u8; 1] = [7];
+    a.as_slice().is_sorted()
+}
+
+// ----- split_off_first / split_off_last --------------------------------------
+
+#[rust_lean_test]
+pub fn test_split_off_first_some() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let mut s: &[u8] = a.as_slice();
+    match s.split_off_first() {
+        Some(v) => *v == 1 && s.len() == 2 && s[0] == 2,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_split_off_first_empty_none() -> bool {
+    let a: [u8; 0] = [];
+    let mut s: &[u8] = a.as_slice();
+    s.split_off_first().is_none() && s.is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_split_off_last_some() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let mut s: &[u8] = a.as_slice();
+    match s.split_off_last() {
+        Some(v) => *v == 3 && s.len() == 2 && s[1] == 2,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_split_off_last_empty_none() -> bool {
+    let a: [u8; 0] = [];
+    let mut s: &[u8] = a.as_slice();
+    s.split_off_last().is_none() && s.is_empty()
+}
+
+// ----- first_mut / last_mut --------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_first_mut_writes() -> bool {
+    let mut a = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    if let Some(r) = s.first_mut() {
+        *r = 9;
+    }
+    a == [9u8, 2, 3]
+}
+
+#[rust_lean_test]
+pub fn test_first_mut_empty_none() -> bool {
+    let mut a: [u8; 0] = [];
+    let s: &mut [u8] = &mut a;
+    s.first_mut().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_last_mut_writes() -> bool {
+    let mut a = [1u8, 2, 3];
+    let s: &mut [u8] = &mut a;
+    if let Some(r) = s.last_mut() {
+        *r = 9;
+    }
+    a == [1u8, 2, 9]
+}
+
+#[rust_lean_test]
+pub fn test_last_mut_empty_none() -> bool {
+    let mut a: [u8; 0] = [];
+    let s: &mut [u8] = &mut a;
+    s.last_mut().is_none()
+}
+
+// ----- strip_prefix / strip_suffix / trim_prefix / trim_suffix ---------------
+
+#[rust_lean_test]
+pub fn test_strip_prefix_some() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let p: [u8; 2] = [1, 2];
+    match a.as_slice().strip_prefix(p.as_slice()) {
+        Some(rest) => rest.len() == 2 && rest[0] == 3,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_strip_prefix_empty_prefix() -> bool {
+    let a: [u8; 2] = [1, 2];
+    let p: [u8; 0] = [];
+    match a.as_slice().strip_prefix(p.as_slice()) {
+        Some(rest) => rest.len() == 2,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_strip_prefix_none() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let p: [u8; 2] = [2, 3];
+    a.as_slice().strip_prefix(p.as_slice()).is_none()
+}
+
+#[rust_lean_test]
+pub fn test_strip_prefix_whole() -> bool {
+    let a: [u8; 2] = [1, 2];
+    let p: [u8; 2] = [1, 2];
+    match a.as_slice().strip_prefix(p.as_slice()) {
+        Some(rest) => rest.is_empty(),
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_strip_suffix_some() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let p: [u8; 2] = [3, 4];
+    match a.as_slice().strip_suffix(p.as_slice()) {
+        Some(rest) => rest.len() == 2 && rest[0] == 1,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_strip_suffix_none() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let p: [u8; 2] = [1, 2];
+    a.as_slice().strip_suffix(p.as_slice()).is_none()
+}
+
+// `strip_prefix` takes a `SlicePattern`, so an array argument goes through a
+// different impl than a slice one.
+#[rust_lean_test]
+pub fn test_strip_prefix_array_pattern() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let p: [u8; 1] = [1];
+    match a.as_slice().strip_prefix(&p) {
+        Some(rest) => rest.len() == 2,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_trim_prefix_present() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let p: [u8; 1] = [1];
+    a.as_slice().trim_prefix(p.as_slice()).len() == 2
+}
+
+#[rust_lean_test]
+pub fn test_trim_prefix_absent_returns_original() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let p: [u8; 1] = [9];
+    a.as_slice().trim_prefix(p.as_slice()).len() == 3
+}
+
+#[rust_lean_test]
+pub fn test_trim_suffix_present() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let p: [u8; 1] = [3];
+    a.as_slice().trim_suffix(p.as_slice()).len() == 2
+}
+
+#[rust_lean_test]
+pub fn test_trim_suffix_absent_returns_original() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let p: [u8; 1] = [9];
+    a.as_slice().trim_suffix(p.as_slice()).len() == 3
+}
+
+#[rust_lean_test]
+pub fn test_strip_circumfix_both() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let p: [u8; 1] = [1];
+    let q: [u8; 1] = [4];
+    match a.as_slice().strip_circumfix(p.as_slice(), q.as_slice()) {
+        Some(rest) => rest.len() == 2 && rest[0] == 2,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_strip_circumfix_prefix_missing_none() -> bool {
+    let a: [u8; 4] = [1, 2, 3, 4];
+    let p: [u8; 1] = [9];
+    let q: [u8; 1] = [4];
+    a.as_slice()
+        .strip_circumfix(p.as_slice(), q.as_slice())
+        .is_none()
+}
+
+// `Bumped::eq` is not the identity, so this catches a dropped `PartialEq`
+// dictionary in the strip family.
+#[rust_lean_test]
+pub fn test_strip_prefix_uses_partial_eq() -> bool {
+    let a = [Bumped(1), Bumped(2)];
+    let p = [Bumped(1)];
+    match a.as_slice().strip_prefix(p.as_slice()) {
+        Some(rest) => rest.len() == 1,
+        None => false,
+    }
+}
+
+// ----- [u8] ASCII helpers ----------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_is_ascii_true() -> bool {
+    let a: [u8; 3] = [65, 66, 127];
+    a.as_slice().is_ascii()
+}
+
+#[rust_lean_test]
+pub fn test_is_ascii_false() -> bool {
+    let a: [u8; 3] = [65, 128, 67];
+    a.as_slice().is_ascii() == false
+}
+
+#[rust_lean_test]
+pub fn test_is_ascii_empty() -> bool {
+    let a: [u8; 0] = [];
+    a.as_slice().is_ascii()
+}
+
+#[rust_lean_test]
+pub fn test_eq_ignore_ascii_case_true() -> bool {
+    let a: [u8; 3] = [b'A', b'b', b'C'];
+    let b: [u8; 3] = [b'a', b'B', b'c'];
+    a.as_slice().eq_ignore_ascii_case(b.as_slice())
+}
+
+#[rust_lean_test]
+pub fn test_eq_ignore_ascii_case_false() -> bool {
+    let a: [u8; 3] = [b'A', b'b', b'C'];
+    let b: [u8; 3] = [b'a', b'B', b'd'];
+    a.as_slice().eq_ignore_ascii_case(b.as_slice()) == false
+}
+
+#[rust_lean_test]
+pub fn test_eq_ignore_ascii_case_len_mismatch() -> bool {
+    let a: [u8; 2] = [b'a', b'b'];
+    let b: [u8; 3] = [b'a', b'b', b'c'];
+    a.as_slice().eq_ignore_ascii_case(b.as_slice()) == false
+}
+
+#[rust_lean_test]
+pub fn test_trim_ascii_start() -> bool {
+    let a: [u8; 5] = [b' ', b'\t', b'x', b'y', b' '];
+    let e: &[u8] = &[b'x', b'y', b' '];
+    a.as_slice().trim_ascii_start() == e
+}
+
+#[rust_lean_test]
+pub fn test_trim_ascii_end() -> bool {
+    let a: [u8; 5] = [b' ', b'\t', b'x', b'y', b' '];
+    let e: &[u8] = &[b' ', b'\t', b'x', b'y'];
+    a.as_slice().trim_ascii_end() == e
+}
+
+#[rust_lean_test]
+pub fn test_trim_ascii_both() -> bool {
+    let a: [u8; 5] = [b' ', b'\t', b'x', b'y', b' '];
+    let e: &[u8] = &[b'x', b'y'];
+    a.as_slice().trim_ascii() == e
+}
+
+#[rust_lean_test]
+pub fn test_trim_ascii_all_whitespace() -> bool {
+    let a: [u8; 3] = [b' ', b' ', b' '];
+    a.as_slice().trim_ascii().is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_trim_ascii_empty() -> bool {
+    let a: [u8; 0] = [];
+    a.as_slice().trim_ascii().is_empty()
+}
+
+#[rust_lean_test]
+pub fn test_make_ascii_uppercase() -> bool {
+    let mut a = [b'a', b'B', b'!'];
+    let s: &mut [u8] = &mut a;
+    s.make_ascii_uppercase();
+    a == [b'A', b'B', b'!']
+}
+
+#[rust_lean_test]
+pub fn test_make_ascii_lowercase() -> bool {
+    let mut a = [b'a', b'B', b'!'];
+    let s: &mut [u8] = &mut a;
+    s.make_ascii_lowercase();
+    a == [b'a', b'b', b'!']
+}
+
+// ----------------------------------------------------------------------------
+// Predicate-driven items (`split`, `splitn`, `rsplit`, `rsplitn`,
+// `split_inclusive`, `chunk_by`, `split_once`, `rsplit_once`,
+// `binary_search_by`, `binary_search_by_key`, `partition_point`,
+// `is_sorted_by`, `is_sorted_by_key`, `fill_with`) all take a closure at the
+// call site, which the Lean extraction does not handle. They are covered by the
+// proptests in `core-models/src/core/slice.rs`; the Rust-only tests below pin
+// the same observations here.
+// TODO(closure-extraction): turn these into `#[rust_lean_test]`s.
+// ----------------------------------------------------------------------------
+
+#[cfg(test)]
+#[test]
+fn test_split_on_zero() {
+    let a: [u8; 6] = [1, 0, 2, 3, 0, 4];
+    let got: Vec<&[u8]> = a.as_slice().split(|x| *x == 0).collect();
+    assert_eq!(got, vec![&[1u8][..], &[2u8, 3][..], &[4u8][..]]);
+}
+
+#[cfg(test)]
+#[test]
+fn test_split_inclusive_on_zero() {
+    let a: [u8; 4] = [1, 0, 2, 0];
+    let got: Vec<&[u8]> = a.as_slice().split_inclusive(|x| *x == 0).collect();
+    assert_eq!(got, vec![&[1u8, 0][..], &[2u8, 0][..]]);
+}
+
+#[cfg(test)]
+#[test]
+fn test_splitn_limits() {
+    let a: [u8; 5] = [1, 0, 2, 0, 3];
+    let got: Vec<&[u8]> = a.as_slice().splitn(2, |x| *x == 0).collect();
+    assert_eq!(got, vec![&[1u8][..], &[2u8, 0, 3][..]]);
+}
+
+#[cfg(test)]
+#[test]
+fn test_rsplit_reverses() {
+    let a: [u8; 5] = [1, 0, 2, 0, 3];
+    let got: Vec<&[u8]> = a.as_slice().rsplit(|x| *x == 0).collect();
+    assert_eq!(got, vec![&[3u8][..], &[2u8][..], &[1u8][..]]);
+}
+
+#[cfg(test)]
+#[test]
+fn test_rsplitn_limits() {
+    let a: [u8; 5] = [1, 0, 2, 0, 3];
+    let got: Vec<&[u8]> = a.as_slice().rsplitn(2, |x| *x == 0).collect();
+    assert_eq!(got, vec![&[3u8][..], &[1u8, 0, 2][..]]);
+}
+
+#[cfg(test)]
+#[test]
+fn test_chunk_by_runs() {
+    let a: [u8; 6] = [1, 2, 3, 1, 2, 1];
+    let got: Vec<&[u8]> = a.as_slice().chunk_by(|x, y| x <= y).collect();
+    assert_eq!(got, vec![&[1u8, 2, 3][..], &[1u8, 2][..], &[1u8][..]]);
+}
+
+#[cfg(test)]
+#[test]
+fn test_split_once_and_rsplit_once() {
+    let a: [u8; 5] = [1, 0, 2, 0, 3];
+    assert_eq!(
+        a.as_slice().split_once(|x| *x == 0),
+        Some((&[1u8][..], &[2u8, 0, 3][..]))
+    );
+    assert_eq!(
+        a.as_slice().rsplit_once(|x| *x == 0),
+        Some((&[1u8, 0, 2][..], &[3u8][..]))
+    );
+    let b: [u8; 2] = [1, 2];
+    assert_eq!(b.as_slice().split_once(|x| *x == 0), None);
+}
+
+#[cfg(test)]
+#[test]
+fn test_binary_search_by_and_key() {
+    let a: [u8; 4] = [1, 3, 5, 7];
+    assert_eq!(a.as_slice().binary_search_by(|p| p.cmp(&5)), Ok(2));
+    assert_eq!(a.as_slice().binary_search_by(|p| p.cmp(&4)), Err(2));
+    assert_eq!(a.as_slice().binary_search_by_key(&7, |p| *p), Ok(3));
+    let e: [u8; 0] = [];
+    assert_eq!(e.as_slice().binary_search_by(|p| p.cmp(&1)), Err(0));
+}
+
+#[cfg(test)]
+#[test]
+fn test_partition_point_boundaries() {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    assert_eq!(a.as_slice().partition_point(|x| *x < 1), 0);
+    assert_eq!(a.as_slice().partition_point(|x| *x < 3), 2);
+    assert_eq!(a.as_slice().partition_point(|x| *x < 9), 5);
+    let e: [u8; 0] = [];
+    assert_eq!(e.as_slice().partition_point(|x| *x < 3), 0);
+}
+
+#[cfg(test)]
+#[test]
+fn test_is_sorted_by_and_key() {
+    let a: [u8; 3] = [1, 2, 2];
+    assert!(a.as_slice().is_sorted_by(|x, y| x <= y));
+    assert!(!a.as_slice().is_sorted_by(|x, y| x < y));
+    assert!(a.as_slice().is_sorted_by_key(|x| *x));
+}
+
+#[cfg(test)]
+#[test]
+fn test_fill_with() {
+    let mut a: [u8; 3] = [0, 0, 0];
+    let s: &mut [u8] = &mut a;
+    s.fill_with(|| 7);
+    assert_eq!(a, [7, 7, 7]);
+}
