@@ -901,6 +901,11 @@ structure ops.range.RangeInclusive (T : Type) where
   start : T
   «end» : T
 
+/-- [core_models::result::SeqIter]
+    Source: 'core-models/src/core/result.rs', lines 355:0-355:53 -/
+@[reducible]
+def result.SeqIter (A : Type) := rust_primitives.sequence.Seq A
+
 /-
 /-- [core_models::slice::Slice]
     Source: 'core-models/src/core/slice.rs', lines 7:0-7:21 -/

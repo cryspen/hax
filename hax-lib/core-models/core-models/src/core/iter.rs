@@ -1759,25 +1759,35 @@ mod tests {
         // `Result<V, E>: FromIterator<Result<A, E>>` delegates to `V`'s own
         // `from_iter`, which is all its (opaque) body claims to do.
         #[test]
-        // BLOCKED, and this is a design fork worth revisiting.
-        //
-        // `FromIterator::from_iter` now pins `Item = A` (needed so the hand-written
-        // `Vec::from_iter` in `FunsEpilogue.lean` is a real computable fold rather
-        // than an opaque stub — `iter_collect_vec` in `tests/client_test` covers it).
-        // Under that pin the `FromIterator<Result<A, E>> for Result<V, E>` impl can no
-        // longer delegate to `<V as FromIterator<A>>::from_iter`: the iterator's item
-        // is `Result<A, E>`, not `A`. A faithful short-circuiting body needs an
-        // accumulator that `core` has no type for, so the impl is axiomatised and
-        // panics if reached natively.
-        //
-        // The alternative is to drop the `Item = A` pin, which restores this test but
-        // makes `collect::<Vec<_>>()` an opaque stub again. Pick one deliberately.
-        //
-        //  fn test_collect_into_result(v in prop::collection::vec(any::<u8>(), 0..=10)) {
-        //      let it = VecIter::new(v).map(crate::result::Result::<u8, u8>::Ok);
-        //      let collected: crate::result::Result<Consumed, u8> = it.collect();
-        //      prop_assert_eq!(collected, crate::result::Result::Ok(Consumed));
-        //  }
+        #[test]
+        fn test_collect_into_result(v in prop::collection::vec(any::<u8>(), 0..=10)) {
+            let it = VecIter::new(v).map(crate::result::Result::<u8, u8>::Ok);
+            let collected: crate::result::Result<Consumed, u8> = it.collect();
+            prop_assert_eq!(collected, crate::result::Result::Ok(Consumed));
+        }
+
+        /// The `Err` case the previous axiomatised `from_iter` could not model:
+        /// collecting stops at the FIRST `Err` and yields it, and still reaches
+        /// `Ok` when every item is `Ok`. (`VecIter` needs `T: Clone`, and the
+        /// model's `Result` is not `Clone`, so the `Result`s come from a `map`.)
+        #[test]
+        fn test_collect_into_result_err(
+            v in prop::collection::vec(any::<u8>(), 0..=10),
+            bound in any::<u8>(),
+        ) {
+            let expected_err = v.iter().copied().find(|&x| x > bound);
+            let collected: crate::result::Result<Consumed, u8> = VecIter::new(v.clone())
+                .map(|x: u8| if x > bound {
+                    crate::result::Result::Err(x)
+                } else {
+                    crate::result::Result::Ok(x)
+                })
+                .collect();
+            match expected_err {
+                Some(e) => prop_assert_eq!(collected, crate::result::Result::Err(e)),
+                None => prop_assert_eq!(collected, crate::result::Result::Ok(Consumed)),
+            }
+        }
 
         #[test]
         fn test_step_by(v in prop::collection::vec(any::<u8>(), 0..=20), step in 1usize..=5) {

@@ -579,6 +579,68 @@ abbrev iter.adapters.flatten.Flatten.Insts.CoreIterTraitsIteratorIterator.count
       IteratorInst IteratorInst1)
 
 
+/-! ## `FromIterator<Result<A, E>> for Result<V, E>`
+
+The Rust model in `result.rs` is a real short-circuiting fold — it accumulates
+the `Ok`s in a `Seq` and stops at the first `Err` — but extracting its body
+makes aeneas fail with `Could not find: type_var_id` while resolving the
+`IntoIterator::Item` associated type, the same limitation that keeps `Vec`'s
+`FromIterator` hand-written. So the impl is `aeneas::exclude`d and reproduced
+here. This is NOT a stub: it performs the same fold, and `SeqIter` plus its
+`Iterator` instance are generated from the Rust source. -/
+open Aeneas.Std (RustM) in
+def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter_loop
+    {A E IntoIter : Type}
+    (iterInst : iter.traits.iterator.Iterator IntoIter (result.Result A E))
+    (it : IntoIter) (acc : rust_primitives.sequence.Seq A) :
+    RustM ((option.Option E) × (rust_primitives.sequence.Seq A)) := do
+  let (o, it1) ← iterInst.next it
+  match o with
+  | option.Option.None => .ok (option.Option.None, acc)
+  | option.Option.Some (result.Result.Ok a) => do
+    let acc1 ← rust_primitives.sequence.seq_push acc a
+    result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter_loop
+      iterInst it1 acc1
+  | option.Option.Some (result.Result.Err e) =>
+    .ok (option.Option.Some e, acc)
+partial_fixpoint
+
+open Aeneas.Std (RustM) in
+def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
+    {A E V T IntoIter : Type}
+    (FromIteratorInst : iter.traits.collect.FromIterator V A)
+    (IntoIteratorInst : iter.traits.collect.IntoIterator T (result.Result A E) IntoIter)
+    -- NOT named `iter`: that shadows the `iter` namespace, so `iter.traits.…`
+    -- below would parse as a field projection (cf. `rename_iter_param` in
+    -- `patch_lean.py`).
+    (input : T) : RustM (result.Result V E) := do
+  let it ← IntoIteratorInst.into_iter input
+  let empty ← rust_primitives.sequence.seq_empty A
+  let (err, acc) ←
+    result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter_loop
+      IntoIteratorInst.iteratorIteratorInst it empty
+  match err with
+  | option.Option.Some e => .ok (result.Result.Err e)
+  | option.Option.None => do
+    let v ← FromIteratorInst.from_iter
+      (iter.traits.collect.IntoIterator.Blanket
+        (result.SeqIter.Insts.CoreIterTraitsIteratorIterator A)) acc
+    .ok (result.Result.Ok v)
+
+-- Argument order matches aeneas's emission at a `collect::<Result<_, _>>()`
+-- call site: the error type `E` explicitly (it appears nowhere else, so it
+-- cannot be inferred), then the `FromIterator` dictionary for the collection,
+-- from which `A` and `V` follow.
+@[reducible]
+def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult
+    (E : Type) {A V : Type} (FromIteratorInst : iter.traits.collect.FromIterator V A) :
+    iter.traits.collect.FromIterator (result.Result V E) (result.Result A E) := {
+  from_iter := fun {_T _IntoIter : Type} IntoIteratorInst =>
+    result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
+      FromIteratorInst IntoIteratorInst
+}
+
+
 end core
 
 namespace alloc

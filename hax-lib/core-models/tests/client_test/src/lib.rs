@@ -522,6 +522,15 @@ pub fn iter_collect_vec(n: usize) -> Vec<usize> {
     (0..n).collect()
 }
 
+/// `collect::<Result<_, _>>()` — exercises the hand-written
+/// `FromIterator<Result<A, E>> for Result<V, E>` in `FunsEpilogue.lean` (the
+/// Rust impl is `aeneas::exclude`d, so nothing else would reach the shim).
+pub fn iter_collect_result(n: usize) -> Result<Vec<usize>, usize> {
+    (0..n)
+        .map(|x| if x == 7 { Err(x) } else { Ok(x) })
+        .collect()
+}
+
 pub fn iter_map_collect_vec(n: usize) -> Vec<usize> {
     (0..n).map(|x| x.wrapping_mul(2)).collect()
 }

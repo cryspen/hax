@@ -65,8 +65,14 @@ include Core_models.Bundle {impl_2__transpose as impl_2__transpose}
 
 include Core_models.Bundle {impl_3__flatten as impl_3__flatten}
 
+include Core_models.Bundle {t_SeqIter as t_SeqIter}
+
+include Core_models.Bundle {SeqIter as SeqIter}
+
 include Core_models.Bundle {impl_4__from__result as impl_4}
 
 include Core_models.Bundle {impl_5__from__result as impl_5}
 
 include Core_models.Bundle {impl_6__from__result as impl_6}
+
+include Core_models.Bundle {impl_7__from__result as impl_7}

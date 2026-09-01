@@ -12069,36 +12069,30 @@ def result.Result.unwrap_err
   | core.result.Result.Ok _ => panicking.internal.panic E
   | core.result.Result.Err e => Aeneas.Std.RustM.ok e
 
-/-- [core_models::result::{impl core_models::iter::traits::collect::FromIterator<core_models::result::Result<A, E>> for core_models::result::Result<V, E>}::from_iter]:
-    Source: 'core-models/src/core/result.rs', lines 365:4-370:5
+/-- [core_models::result::{impl core_models::iter::traits::iterator::Iterator<A> for core_models::result::SeqIter<A>}::next]:
+    Source: 'core-models/src/core/result.rs', lines 361:4-367:5
     Visibility: public -/
-def
-  result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
-  {A : Type} {E : Type} {V : Type} {T : Type} {Clause1_IntoIter : Type}
-  (itertraitscollectFromIteratorInst : iter.traits.collect.FromIterator V A)
-  (itertraitscollectIntoIteratorTResultClause1_IntoIterInst :
-  iter.traits.collect.IntoIterator T (result.Result A E) Clause1_IntoIter)
-  (iter_ : T) :
-  RustM (result.Result V E)
+def result.SeqIter.Insts.CoreIterTraitsIteratorIterator.next
+  {A : Type} (self : result.SeqIter A) :
+  RustM ((option.Option A) × (result.SeqIter A))
   := do
-  fail Error.panic
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (option.Option.None, self)
+  else
+    let (t, s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (option.Option.Some t, s)
 
-/-- Trait implementation: [core_models::result::{impl core_models::iter::traits::collect::FromIterator<core_models::result::Result<A, E>> for core_models::result::Result<V, E>}]
-    Source: 'core-models/src/core/result.rs', lines 362:0-371:1 -/
+/-- Trait implementation: [core_models::result::{impl core_models::iter::traits::iterator::Iterator<A> for core_models::result::SeqIter<A>}]
+    Source: 'core-models/src/core/result.rs', lines 358:0-368:1 -/
 @[reducible]
-def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult {A :
-  Type} (E : Type) {V : Type} (itertraitscollectFromIteratorInst :
-  iter.traits.collect.FromIterator V A) : iter.traits.collect.FromIterator
-  (result.Result V E) (result.Result A E) := {
-  from_iter := fun {T : Type} {Clause0_IntoIter : Type}
-    (itertraitscollectIntoIteratorPResultPInst :
-    iter.traits.collect.IntoIterator T (result.Result A E) Clause0_IntoIter) =>
-    result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
-    itertraitscollectFromIteratorInst itertraitscollectIntoIteratorPResultPInst
+def result.SeqIter.Insts.CoreIterTraitsIteratorIterator (A : Type) :
+  iter.traits.iterator.Iterator (result.SeqIter A) A := {
+  next := result.SeqIter.Insts.CoreIterTraitsIteratorIterator.next
 }
 
 /-- [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}::branch]:
-    Source: 'core-models/src/core/result.rs', lines 384:4-389:5
+    Source: 'core-models/src/core/result.rs', lines 432:4-437:5
     Visibility: public -/
 def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
   {T : Type} {E : Type} (self : result.Result T E) :
@@ -12110,7 +12104,7 @@ def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
     Aeneas.Std.RustM.ok (ops.control_flow.ControlFlow.Break (result.Result.Err e))
 
 /-- [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}::from_output]:
-    Source: 'core-models/src/core/result.rs', lines 379:4-381:5
+    Source: 'core-models/src/core/result.rs', lines 427:4-429:5
     Visibility: public -/
 def
   result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.from_output
@@ -12118,7 +12112,7 @@ def
   Aeneas.Std.RustM.ok (result.Result.Ok output)
 
 /-- Trait implementation: [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 374:0-390:1 -/
+    Source: 'core-models/src/core/result.rs', lines 422:0-438:1 -/
 @[reducible]
 def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE (T : Type)
   (E : Type) : ops.try_trait.Try (result.Result T E) T (result.Result
@@ -12131,7 +12125,7 @@ def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE (T : Type)
 }
 
 /-- [core_models::result::{core_models::result::Result<core_models::option::Option<T>, E>}::transpose]:
-    Source: 'core-models/src/core/result.rs', lines 396:4-402:5
+    Source: 'core-models/src/core/result.rs', lines 444:4-450:5
     Visibility: public -/
 def result.ResultOptionE.transpose
   {T : Type} {E : Type} (self : result.Result (option.Option T) E) :
@@ -12145,7 +12139,7 @@ def result.ResultOptionE.transpose
   | core.result.Result.Err e => Aeneas.Std.RustM.ok (option.Option.Some (result.Result.Err e))
 
 /-- [core_models::result::{impl core_models::cmp::PartialEq<core_models::result::Result<T, E>> for core_models::result::Result<T, E>}::eq]:
-    Source: 'core-models/src/core/result.rs', lines 412:4-418:5
+    Source: 'core-models/src/core/result.rs', lines 460:4-466:5
     Visibility: public -/
 def result.Result.Insts.CoreCmpPartialEqResult.eq
   {T : Type} {E : Type} (cmpPartialEqInst : cmp.PartialEq T T)
@@ -12164,7 +12158,7 @@ def result.Result.Insts.CoreCmpPartialEqResult.eq
     | core.result.Result.Err b => cmpPartialEqInst1.eq a b
 
 /-- Trait implementation: [core_models::result::{impl core_models::cmp::PartialEq<core_models::result::Result<T, E>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 409:0-419:1 -/
+    Source: 'core-models/src/core/result.rs', lines 457:0-467:1 -/
 @[reducible]
 impl_def result.Result.Insts.CoreCmpPartialEqResult {T : Type} {E :
   Type} (cmpPartialEqInst : cmp.PartialEq T T) (cmpPartialEqInst1 :
@@ -12178,7 +12172,7 @@ impl_def result.Result.Insts.CoreCmpPartialEqResult {T : Type} {E :
 }
 
 /-- [core_models::result::{impl core_models::ops::try_trait::FromResidual<core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, F>}::from_residual]:
-    Source: 'core-models/src/core/result.rs', lines 429:4-434:5
+    Source: 'core-models/src/core/result.rs', lines 477:4-482:5
     Visibility: public -/
 def
   result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE.from_residual
@@ -12193,7 +12187,7 @@ def
     Aeneas.Std.RustM.ok (result.Result.Err t)
 
 /-- Trait implementation: [core_models::result::{impl core_models::ops::try_trait::FromResidual<core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, F>}]
-    Source: 'core-models/src/core/result.rs', lines 426:0-435:1 -/
+    Source: 'core-models/src/core/result.rs', lines 474:0-483:1 -/
 @[reducible]
 def result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE (T
   : Type) {E : Type} {F : Type} (convertFromInst : convert.From F E) :

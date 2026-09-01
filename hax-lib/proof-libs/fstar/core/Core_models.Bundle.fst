@@ -3698,8 +3698,14 @@ let impl_3__flatten (#v_T #v_E: Type0) (self: t_Result (t_Result v_T v_E) v_E) :
   | Result_Ok inner -> inner
   | Result_Err e -> Result_Err e <: t_Result v_T v_E
 
+/// Yields a `Seq`'s items by value, so the `Result` shunt below can hand the
+/// `Ok`s it accumulated to `V`'s own `from_iter` (which needs an
+/// `IntoIterator<Item = A>`, and `slice::Iter` only yields references).
+/// Implementation detail of that shunt; real `core` has no counterpart.
+type t_SeqIter (v_A: Type0) = | SeqIter : Rust_primitives.Sequence.t_Seq v_A -> t_SeqIter v_A
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5__from__result (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t_Result v_T v_E) =
+let impl_6__from__result (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t_Result v_T v_E) =
   {
     f_Output = v_T;
     f_Residual = t_Result t_Infallible v_E;
@@ -4263,14 +4269,14 @@ let impl_3__from__option
 /// is unreachable — the residual\'s payload is `Infallible`.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_6__from__result': #v_T: Type0 -> #v_E: Type0 -> #v_F: Type0 -> {| i0: t_From v_F v_E |}
+val impl_7__from__result': #v_T: Type0 -> #v_E: Type0 -> #v_F: Type0 -> {| i0: t_From v_F v_E |}
   -> Core_models.Ops.Try_trait.t_FromResidual (t_Result v_T v_F) (t_Result t_Infallible v_E)
 
 unfold
-let impl_6__from__result
+let impl_7__from__result
       (#v_T #v_E #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_From v_F v_E)
-     = impl_6__from__result' #v_T #v_E #v_F #i0
+     = impl_7__from__result' #v_T #v_E #v_F #i0
 
 /// See [`std::cmp::PartialOrd`]
 class t_PartialOrd (v_Self: Type0) (v_Rhs: Type0) = {
@@ -7516,6 +7522,28 @@ let impl_11__from__range: t_Iterator (t_Range isize) =
       self, hax_temp_output <: (t_Range isize & t_Option isize)
   }
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_4__from__result (#v_A: Type0) : t_Iterator (t_SeqIter v_A) =
+  {
+    f_Item = v_A;
+    f_next_pre = (fun (self: t_SeqIter v_A) -> true);
+    f_next_post = (fun (self: t_SeqIter v_A) (out1: (t_SeqIter v_A & t_Option v_A)) -> true);
+    f_next
+    =
+    fun (self: t_SeqIter v_A) ->
+      let (self: t_SeqIter v_A), (hax_temp_output: t_Option v_A) =
+        if (Rust_primitives.Sequence.seq_len #v_A self._0 <: usize) =. mk_usize 0
+        then self, (Option_None <: t_Option v_A) <: (t_SeqIter v_A & t_Option v_A)
+        else
+          let (tmp0: Rust_primitives.Sequence.t_Seq v_A), (out: v_A) =
+            Rust_primitives.Sequence.seq_remove #v_A self._0 (mk_usize 0)
+          in
+          let self:t_SeqIter v_A = { self with _0 = tmp0 } <: t_SeqIter v_A in
+          self, (Option_Some out <: t_Option v_A) <: (t_SeqIter v_A & t_Option v_A)
+      in
+      self, hax_temp_output <: (t_SeqIter v_A & t_Option v_A)
+  }
+
 /// See [`std::cmp::Ord`]
 class t_Ord (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Eq v_Self;
@@ -8057,14 +8085,14 @@ class t_FromIterator (v_Self: Type0) (v_A: Type0) = {
 /// Models the std impl `FromIterator<Result<A, E>> for Result<V, E>`: collect
 /// an iterator of `Result`s into a `Result` of a collection, short-circuiting
 /// on the first `Err`.
-/// Opaque: the real short-circuiting shunt (collect the `Ok`s, stop at the
-/// first `Err`) needs to accumulate items, which `core` has no collection for.
-/// So the behaviour is axiomatised — this impl exists so `collect::<Result<_,
-/// _>>()` still *resolves* (it is NOT stubbed away); the body below only has to
-/// typecheck under the `Item = Result<A, E>` bound and is never extracted.
+/// Accumulates the `Ok`s in a `rust_primitives` `Seq` and stops at the first
+/// `Err`, then builds `V` from the accumulator. std uses a `&mut Option<E>`
+/// side channel for the same effect; the model has no `&mut` it can thread
+/// through `V::from_iter`, so it buffers instead. The `while` form avoids an
+/// early `return` inside the loop, which hax\'s loop functionalization rejects.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_4__from__result':
+val impl_5__from__result':
     #v_A: Type0 ->
     #v_E: Type0 ->
     #v_V: Type0 ->
@@ -8072,10 +8100,10 @@ val impl_4__from__result':
   -> t_FromIterator (t_Result v_V v_E) (t_Result v_A v_E)
 
 unfold
-let impl_4__from__result
+let impl_5__from__result
       (#v_A #v_E #v_V: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_FromIterator v_V v_A)
-     = impl_4__from__result' #v_A #v_E #v_V #i0
+     = impl_5__from__result' #v_A #v_E #v_V #i0
 
 class t_IteratorMethods (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Iterator v_Self;
