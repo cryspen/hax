@@ -3698,10 +3698,8 @@ let impl_3__flatten (#v_T #v_E: Type0) (self: t_Result (t_Result v_T v_E) v_E) :
   | Result_Ok inner -> inner
   | Result_Err e -> Result_Err e <: t_Result v_T v_E
 
-/// Yields a `Seq`'s items by value, so the `Result` shunt below can hand the
-/// `Ok`s it accumulated to `V`'s own `from_iter` (which needs an
-/// `IntoIterator<Item = A>`, and `slice::Iter` only yields references).
-/// Implementation detail of that shunt; real `core` has no counterpart.
+/// Yields a `Seq` by value, for the `Result` shunt below: `V::from_iter` needs
+/// an `IntoIterator<Item = A>`, and `slice::Iter` only yields references.
 type t_SeqIter (v_A: Type0) = | SeqIter : Rust_primitives.Sequence.t_Seq v_A -> t_SeqIter v_A
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -8082,14 +8080,10 @@ class t_FromIterator (v_Self: Type0) (v_A: Type0) = {
         (fun result -> f_from_iter_post #v_T #i1 #_ x0 result)
 }
 
-/// Models the std impl `FromIterator<Result<A, E>> for Result<V, E>`: collect
-/// an iterator of `Result`s into a `Result` of a collection, short-circuiting
-/// on the first `Err`.
-/// Accumulates the `Ok`s in a `rust_primitives` `Seq` and stops at the first
-/// `Err`, then builds `V` from the accumulator. std uses a `&mut Option<E>`
-/// side channel for the same effect; the model has no `&mut` it can thread
-/// through `V::from_iter`, so it buffers instead. The `while` form avoids an
-/// early `return` inside the loop, which hax\'s loop functionalization rejects.
+/// See [`std::iter::FromIterator`] for `Result`: buffers the `Ok`s, stops at
+/// the first `Err`. std threads a `&mut Option<E>` through `V::from_iter`,
+/// which the model cannot, hence the `Seq`. `while` rather than an early
+/// `return`, which hax cannot functionalize.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl_5__from__result':

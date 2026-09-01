@@ -62,17 +62,12 @@ abbrev I64.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.I64   := fmt.Debug.Blanke
 abbrev I128.Insts.CoreFmtDebug  : fmt.Debug Aeneas.Std.I128  := fmt.Debug.Blanket _
 abbrev Isize.Insts.CoreFmtDebug : fmt.Debug Aeneas.Std.Isize := fmt.Debug.Blanket _
 
-/-! ## `Iterator::collect` (a provided method kept OFF the `Iterator` structure)
+/-! ## Provided methods kept OFF the `Iterator` structure
 
-`collect` is EAGER, so a `collect` field would be `collect.default SELF`, whose
-resolution recurses through `IntoIterator.Blanket SELF` → the IntoIter↔Iterator
-coinductivity that makes `impl_def` report `could not resolve recursive fields:
-[collect]`. Aeneas.Std handles this by keeping `collect` off the structure and
-supplying `collect.default` as a *standalone* function (there `IteratorInst` is
-an ordinary parameter, never `SELF`). We mirror that exactly. The body is the
-same as Aeneas.Std's: fold `self` through the passed `FromIterator` instance,
-wrapping `self` as an `IntoIterator` via the `Blanket` (which now carries the
-`iteratorIteratorInst` super-instance, so `from_iter` has `next` to fold with). -/
+A field would be `<m>.default SELF`, whose resolution recurses through
+`IntoIterator.Blanket SELF` — the cycle `impl_def` reports as `could not resolve
+recursive fields`. Aeneas.Std keeps them off the structure too, as standalone
+functions where the dictionaries are ordinary parameters. -/
 open Aeneas.Std (RustM) in
 def iter.traits.iterator.Iterator.collect.default {Self B Clause0_Item : Type}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
@@ -81,21 +76,12 @@ def iter.traits.iterator.Iterator.collect.default {Self B Clause0_Item : Type}
   collectFromIteratorInst.from_iter
     (iter.traits.collect.IntoIterator.Blanket IteratorInst) self
 
-/-! ## `Iterator::rev` (a provided method kept OFF the `Iterator` structure)
+/-! ### `rev`
 
-`rev` cannot be promoted onto the `Iterator` trait like `map`/`enumerate`: its
-`Self: DoubleEndedIterator` bound makes the `Iterator` structure reference
-`DoubleEndedIterator`, which references `Iterator` back (its supertrait) — a
-mutual trait recursion aeneas rejects ("their model will not type-check"). This
-is the circularity Aeneas.Std's `Iter.lean` flags, and we resolve it the same
-way: keep `rev` off the structure and supply `rev.default`/`rev.trait_default`
-as standalone functions here (there the `Iterator`/`DoubleEndedIterator`
-instances are ordinary parameters, never `SELF`). The `DoubleEndedIterator`/
-`ExactSizeIterator` traits, the `Rev` adapter and its `Iterator::next`
-(delegating to `next_back`), and the `next_back` instances for `Range`/slice
-`Iter`/`Enumerate` are all generated from the Rust source; only these two
-dispatch shims are hand-written. The `@[rust_fun …]` tag maps a downstream
-`.rev()` call onto `rev.trait_default` (as in Aeneas.Std). -/
+`Self: DoubleEndedIterator` would make `Iterator` reference a trait that
+references it back, which aeneas rejects. `DoubleEndedIterator`,
+`ExactSizeIterator`, `Rev` and the `next_back` instances are all generated; only
+this dispatch shim is hand-written. -/
 -- aeneas emits `Iterator.rev.default (IteratorInst) (DEInst) (self)` at a downstream
 -- `.rev()` call (see `iter_rev_range` in `tests/client_test/src/lib.rs`), so THAT
 -- is the
@@ -109,15 +95,10 @@ def iter.traits.iterator.Iterator.rev.default
     (self : Self) : RustM (iter.adapters.rev.Rev Self) :=
   iter.adapters.rev.Rev.new self
 
-/-! ## P2c lazy adapters kept OFF the `Iterator` structure — zip / chain / flat_map / flatten
+/-! ### zip / chain / flat_map / flatten
 
-Unlike step_by/take/skip/filter, these cannot be trait fields: their `.default`
-takes the SELF `Iterator` instance (the extra `Iterator`/`Fn` bound threads it
-in), so a per-instance field `<m> := <m>.default SELF …` self-references the
-instance → the same `impl_def: could not resolve recursive fields` wall that
-`collect` hits. Supplied here as standalone functions (the instances are
-ordinary parameters, never `SELF`), delegating to the generated adapter `.new`
-constructors. `@[rust_fun …]` maps a downstream `.<m>()` onto the shim. -/
+Their `.default` takes the SELF `Iterator` instance, so a field would
+self-reference the instance. -/
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::zip"]
 def iter.traits.iterator.Iterator.zip.default
@@ -126,14 +107,9 @@ def iter.traits.iterator.Iterator.zip.default
     (IntoIterInst : iter.traits.collect.IntoIterator U Clause1_Item IntoIter)
     (self : Self) (other : U) :
     RustM (iter.adapters.zip.Zip Self IntoIter) := do
-  -- std bounds `zip`'s argument by `IntoIterator`, not `Iterator`, so aeneas
-  -- passes an `IntoIterator` dictionary here and the result is indexed by
-  -- `U::IntoIter`. Take the faithful bound and call `into_iter` (as Aeneas.Std
-  -- does); the `Iterator` instance the `Zip` needs comes from the dictionary's
-  -- `iteratorIteratorInst` super-field. NOTE: the Rust-side `IteratorMethods`
-  -- declaration still says `I2: Iterator` — that trait only feeds the F* lane
-  -- and the differential tests, whereas this shim has to match what aeneas
-  -- emits from *std*'s signature.
+  -- std bounds the argument by `IntoIterator`, so aeneas passes that dictionary
+  -- and indexes the result by `U::IntoIter`. The Rust-side `IteratorMethods`
+  -- still says `Iterator`: it only feeds F* and the differential tests.
   let b ← IntoIterInst.into_iter other
   iter.adapters.zip.Zip.new IteratorInst IntoIterInst.iteratorIteratorInst self b
 
@@ -190,17 +166,12 @@ def iter.traits.iterator.Iterator.flatten.trait_default
     RustM (iter.adapters.flatten.Flatten Self Clause0_Item Clause1_Item) :=
   iter.traits.iterator.Iterator.flatten.default IteratorInst IteratorInst1 self
 
-/-! ## P3 eager consumers kept OFF the `Iterator` structure
+/-! ### Eager consumers
 
-These consume the iterator (never build an adapter), so — like `collect` — a
-trait field would be `<m> := <m>.default SELF …`, self-referencing the instance
-→ the `impl_def` recursive-field wall. Supplied as standalone `@[rust_fun]`-
-tagged dispatch functions delegating to the generated opaque `iter_*` loop
-helpers (the instances/`Fn`/`Ord` dictionaries are ordinary params, never
-`SELF`). `nth` is omitted: its helper `iter_nth` is `aeneas::exclude`d (a Lean
-forward-reference to `core.Usize.Insts.CoreIterRangeStep`), so there is no
-`iter_nth` to delegate to. `sum`/`product` need `Sum`/`Product` accumulator
-traits (declared without instances) and are likewise left for later. -/
+These consume the iterator, so a field would self-reference the instance. They
+delegate to the generated `iter_*` loop helpers. `nth` is absent: its helper is
+excluded (a Lean forward reference to `core.Usize.Insts.CoreIterRangeStep`), and
+`sum`/`product` need the `Sum`/`Product` accumulator traits. -/
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::fold"]
 def iter.traits.iterator.Iterator.fold.default
@@ -313,16 +284,11 @@ def iter.traits.iterator.Iterator.max.default
     (self : Self) : RustM (option.Option Clause0_Item) :=
   iter.traits.iterator.iter_max IteratorInst OrdInst self
 
-/-! ## Lazy adapters kept OFF the `Iterator` structure — map / enumerate / step_by /
-     take / skip / filter / filter_map / take_while / skip_while / map_while
+/-! ### Lazy adapter constructors
 
-These COULD be trait fields (their `.default` is instance-free or takes only a
-closure `Fn` dictionary — no SELF instance), but making them fields forced a
-`patch_lean.py` back-fill (`fill_iterator_default_fields`) onto the cross-crate
-`alloc` `Iterator` instances. To keep the generated Lean un-patched we supply
-them here as standalone `@[rust_fun]`-tagged functions instead, exactly like
-rev/collect/zip/… . Bodies just build the adapter via its generated `::new`
-(the unused `Fn` dictionaries mirror what aeneas threads through). -/
+These could be fields, but that forced a `patch_lean.py` back-fill onto the
+cross-crate `alloc` instances, so they are standalone too. Bodies just build the
+adapter via its generated `::new`. -/
 -- Signatures match aeneas's downstream emission `Iterator.<m>.default (IteratorInst)
 -- [otherInsts] (self) [args]`, as pinned by the `iter_*` canary functions in
 -- `tests/client_test/src/lib.rs`. `map`'s closure dictionary is `FnMut` (std uses FnMut), matching the
@@ -436,13 +402,11 @@ def iter.traits.iterator.Iterator.fuse.default
     RustM (iter.adapters.fuse.Fuse Self) :=
   iter.adapters.fuse.Fuse.new self
 
-/-! ## `slice::iter_mut` / `IterMut` — the &mut-yielding slice iterator (opaque model)
+/-! ## `slice::iter_mut` / `IterMut`
 
-`IterMut` yields `&mut T`, so its `next` returns a 3-tuple `(Option T) × Self ×
-(Self → Option T → Self)` — the third component writes the (possibly-modified)
-element back. This can't be an `Iterator` trait instance (2-tuple `next`), so the
-extraction calls this specialised `next` directly (as with Aeneas.Std's
-`SliceIter`). Bodies mirror Aeneas.Std, adapted to `core.option.Option`. -/
+`IterMut` yields `&mut T`, so `next` returns a 3-tuple whose third component
+writes the element back — which cannot be an `Iterator` instance. The extraction
+calls this directly, as with Aeneas.Std's `SliceIter`. -/
 open Aeneas.Std in
 def slice.iter.IterMut.Insts.CoreIterTraitsIteratorIteratorMutAT.next {T : Type}
     (it : slice.iter.IterMut T) :
@@ -476,19 +440,12 @@ def str.Str.as_bytes (s : Str) : Aeneas.Std.RustM (Slice U8) :=
 
 /-! ## Per-impl specialisations of the eager consumers
 
-Aeneas emits the *generic* `Iterator.<m>.default` for the lazy adapter
-constructors, but a *per-impl specialisation* `<Receiver>.Insts.<Inst>.<m>` for
-the eager consumers (`count`, `fold`, `last`, `min`, `max`) whenever the
-receiver type is concrete. Each specialisation is just the generic default with
-that receiver's own instance applied, so they are one-liners — but there is one
-per (receiver, consumer) pair a client actually uses, so this set grows with
-downstream code rather than being closed. The same consumers on a *polymorphic*
-receiver are emitted as `Iterator` record-field projections instead, which this
-model cannot serve; see the `poly_*` notes in `tests/client_test/src/lib.rs`.
-
-Argument order is always: the instance's own dictionaries, then the consumer's
-extra dictionaries, then `self`, then the consumer's remaining arguments — so
-partial application plus eta is enough. -/
+Aeneas emits the generic `.default` for the lazy constructors, but a per-impl
+`<Receiver>.Insts.<Inst>.<m>` for `count`/`fold`/`last`/`min`/`max` on a concrete
+receiver. Each is that default with the receiver's instance applied, so this set
+grows with downstream code. The same consumers on a POLYMORPHIC receiver are
+record-field projections, which this model cannot serve — see `poly_*` in
+`tests/client_test/src/lib.rs`. -/
 
 -- Range<A>
 -- (`…IteratorIterator.count` is NOT defined here: `FunsPrologue.lean` already
@@ -581,13 +538,9 @@ abbrev iter.adapters.flatten.Flatten.Insts.CoreIterTraitsIteratorIterator.count
 
 /-! ## `FromIterator<Result<A, E>> for Result<V, E>`
 
-The Rust model in `result.rs` is a real short-circuiting fold — it accumulates
-the `Ok`s in a `Seq` and stops at the first `Err` — but extracting its body
-makes aeneas fail with `Could not find: type_var_id` while resolving the
-`IntoIterator::Item` associated type, the same limitation that keeps `Vec`'s
-`FromIterator` hand-written. So the impl is `aeneas::exclude`d and reproduced
-here. This is NOT a stub: it performs the same fold, and `SeqIter` plus its
-`Iterator` instance are generated from the Rust source. -/
+The Rust model in `result.rs` is the real fold, but extracting it trips aeneas's
+`type_var_id` on `IntoIterator::Item`, as for `Vec`. Reproduced here — same fold,
+not a stub; `SeqIter` and its instance are generated. -/
 open Aeneas.Std (RustM) in
 def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter_loop
     {A E IntoIter : Type}

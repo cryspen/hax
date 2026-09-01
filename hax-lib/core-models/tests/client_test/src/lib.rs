@@ -349,19 +349,12 @@ pub fn box_deref(b: &Box<u8>) -> u8 {
 
 // ----- Iterator provided methods (shim canary) ------------------------------
 //
-// Canary for the hand-written `Iterator` provided-method shims in
-// `CoreModels/Core/FunsEpilogue.lean`. Those shims are matched by NAME and
-// SIGNATURE against what aeneas emits at the call site, so the Rust-level
-// differential tests in `core-models/src/core/iter.rs` cannot check them —
-// only extracting a client crate and elaborating the result can. There is one
-// function per shim so that a missing or mis-signed shim names itself in the
-// Lean error.
-//
-// Receivers are varied deliberately. `Range<usize>` and a slice `Iter` are
-// CONCRETE, where aeneas may emit a per-impl specialisation; the `poly_*`
-// functions are GENERIC, where it must emit the dictionary-passing
-// `Iterator::<m>.default` form. Both shapes have to resolve, and a shim that
-// covers one does not necessarily cover the other.
+// The hand-written shims in `CoreModels/Core/FunsEpilogue.lean` are matched by
+// name AND signature against aeneas's emission, which only extracting a client
+// crate can check. One function per shim, so a missing or mis-signed one names
+// itself in the Lean error. Receivers vary on purpose: concrete ones may get a
+// per-impl specialisation, generic ones (`poly_*`) the dictionary-passing
+// `.default` form, and a shim covering one need not cover the other.
 
 // --- eager consumers, concrete receiver ---
 
@@ -491,24 +484,12 @@ pub fn iter_chain(n: usize, m: usize) -> usize {
     (0..n).chain(0..m).count()
 }
 
-// PARKED — needs a Rust-side reshape of the adapter structs; it is NOT fixable
-// in the Lean shim the way `zip`/`chain` were. std's bounds are
-// `flat_map<U: IntoIterator, F: FnMut(Self::Item) -> U>` and
-// `flatten where Self::Item: IntoIterator`, so the closure (resp. the item)
-// yields a COLLECTION while the adapter must store an ITERATOR. Our
-// `FlatMap<I, U, F>` holds `Option<U>` and its generated `::new` therefore
-// demands `FnMut F Item U` with `U` the stored iterator — which only unifies
-// with the dictionary's `IntoIter` for the blanket `IntoIterator for I: Iterator`
-// case, and not for a real collection such as `Vec`. Verified empirically:
-// giving the shims an `IntoIterator` dictionary fails with
-// `FnMut F Clause0_Item U` vs `FnMut F Clause0_Item IntoIter`.
-//
-// The fix is to index the structs by the iterator while keeping the closure's
-// output the collection:
-//     pub struct FlatMap<I, U: IntoIterator, F> { it: I, f: F, current: Option<U::IntoIter> }
-// with `next` applying `into_iter` to `(self.f)(x)`, and likewise for
-// `Flatten<I> where I::Item: IntoIterator`. If that trips the F* lane it can be
-// made Lean-only with `hax_lib::exclude` under the F* cfg.
+// PARKED — needs a Rust-side reshape, not a shim change like `zip`/`chain`.
+// std has the closure (resp. item) yield a COLLECTION while the adapter stores
+// an ITERATOR, but `FlatMap<I, U, F>` holds `Option<U>`, so its `::new` demands
+// `FnMut F Item U` with `U` the stored iterator — which only unifies with the
+// dictionary's `IntoIter` for the blanket `IntoIterator for I: Iterator`. Fix:
+// index the structs by `U::IntoIter` and apply `into_iter` inside `next`.
 //
 //   pub fn iter_flat_map(n: usize) -> usize {
 //       (0..n).flat_map(|i| 0..i).count()
@@ -622,10 +603,12 @@ pub fn slice_iter_map_count(x: &[u8]) -> usize {
 //       it.collect()
 //   }
 
-// Passing a COLLECTION (not an iterator) to `zip`/`chain`/`flat_map` needs the
-// faithful `U: IntoIterator` bound. The model currently weakens it to
-// `U: Iterator`, so these do not resolve yet; they are the acceptance test for
-// restoring the bound.
-//
-//   pub fn iter_zip_slice(x: &[u8], y: &[u8]) -> usize { x.iter().zip(y).count() }
-//   pub fn iter_chain_slice(x: &[u8], y: &[u8]) -> usize { x.iter().chain(y).count() }
+// A COLLECTION, not an iterator, as the argument: only resolves because the
+// shims take the faithful `U: IntoIterator` bound.
+pub fn iter_zip_slice(x: &[u8], y: &[u8]) -> usize {
+    x.iter().zip(y).count()
+}
+
+pub fn iter_chain_slice(x: &[u8], y: &[u8]) -> usize {
+    x.iter().chain(y).count()
+}

@@ -20,19 +20,12 @@ pub mod traits {
             fn next(&mut self) -> Option<Self::Item>;
         }
 
-        // This trait is an addition to deal with the default methods that the F*
-        // backend doesn't handle.
-        //
-        // NO provided methods are promoted onto `Iterator` itself: promoting them made
-        // aeneas emit them as STRUCTURE FIELDS, which then had to be back-filled on the
-        // cross-crate `alloc` `Iterator` instances by a `patch_lean.py` post-processor.
-        // Instead every `Iterator` provided method is supplied as a standalone
-        // `@[rust_fun]`-tagged function in `FunsEpilogue.lean` — the same shape aeneas
-        // itself uses for `rev`/`collect`. The declarations below exist for the F*
-        // backend and the Rust differential tests, reached through the aeneas-excluded
-        // blanket impl; nothing here is extracted to Lean. The
-        // `DoubleEndedIterator`/`ExactSizeIterator` traits, the `Rev` adapter and the
-        // `next_back` instances that `rev` needs are defined further down.
+        // Holds the `Iterator` provided methods, which the F* backend cannot take as
+        // trait defaults. Nothing here reaches Lean: the blanket impl below is
+        // aeneas-excluded, and each method is instead a standalone
+        // `@[rust_fun]`-tagged function in `FunsEpilogue.lean` (the shape aeneas
+        // itself uses for `rev`/`collect`). Keeping them off `Iterator` also keeps
+        // it clear of the `IntoIterator`/`DoubleEndedIterator` cycles.
         #[hax_lib::attributes]
         pub(crate) trait IteratorMethods: Iterator {
             fn fold<B, F: FnMut(B, Self::Item) -> B>(self, init: B, f: F) -> B;
@@ -464,14 +457,10 @@ pub mod traits {
     pub mod collect {
         /// See [`std::iter::IntoIterator`]
         pub trait IntoIterator {
-            // The `IntoIter: Iterator<Item = Self::Item>` bound carries the
-            // Iterator super-instance (extracted as the `iteratorInst` field),
-            // which `FromIterator::from_iter` needs to actually fold the
-            // iterator — mirroring Aeneas.Std's `IntoIterator`. (It was
-            // previously omitted to dodge the IntoIter↔Iterator coinduction,
-            // but the standalone `collect.default`/computable `from_iter` model
-            // — again mirroring Aeneas.Std — keeps that out of the recursive
-            // field resolution that `impl_def` chokes on.)
+            // The bound carries the `Iterator` super-instance that
+            // `FromIterator::from_iter` needs to fold with, as in Aeneas.Std.
+            // Keeping the provided methods standalone keeps it out of the
+            // recursive field resolution `impl_def` chokes on.
             type Item;
             type IntoIter: super::iterator::Iterator<Item = Self::Item>;
             fn into_iter(self) -> Self::IntoIter;
@@ -525,34 +514,15 @@ pub mod adapters {
                 }
             }
         }
-        // `Enumerate<I>::next_back` is NOT in Aeneas.Std — authored fresh. After the
-        // inner `next_back` yields the back element, `I::len()` is the count still
-        // remaining, which is exactly that element's index relative to `count`
-        // (elements already consumed from the front). Requires the inner iterator to be
-        // both double-ended and exact-size.
+        // After the inner `next_back`, `I::len()` is the count still remaining,
+        // which is that element's index relative to `count`. Hence the
+        // double-ended AND exact-size bounds.
         //
-        // BOUND ORDER IS A KNOWN PROBLEM HERE, and both orders are wrong in
-        // different ways — see the note in `tests/client_test/src/lib.rs` on
-        // `iter_rev_enumerate`:
-        //
-        //   * `DoubleEndedIterator + ExactSizeIterator` (this order) extracts
-        //     cleanly, but std declares the bounds the other way round
-        //     (library/core/src/iter/adapters/enumerate.rs), and the extracted
-        //     instance takes its dictionaries positionally — so a downstream
-        //     `.enumerate().rev()` passes the `ExactSizeIterator` dictionary
-        //     where the `DoubleEndedIterator` one is expected.
-        //
-        //   * `ExactSizeIterator + DoubleEndedIterator` (matching std) fixes the
-        //     call site but does not extract at all: `Enumerate<I>` then reaches
-        //     `Iterator` by two parent paths, aeneas types `next_back`'s
-        //     destination from the first and its value from the second, and
-        //     fails with "new value doesn't have the same type as its
-        //     destination" (interp/Interp.ml:609) — the same assertion that
-        //     forces `iter_rposition` to be excluded.
-        //
-        // Fixing it properly means pinning the `Iterator` path explicitly, most
-        // likely by moving the body into a standalone helper that takes the
-        // dictionaries as ordinary parameters (as the `iter_*` helpers do).
+        // Both bound orders are wrong, differently: this one extracts but hands
+        // `.enumerate().rev()` its dictionaries in the wrong positions (std
+        // declares them the other way), while std's order makes `Enumerate<I>`
+        // reach `Iterator` by two parent paths and aeneas rejects it. See
+        // `iter_rev_enumerate` in `tests/client_test/src/lib.rs`.
         #[cfg(not(hax_backend_fstar))]
         impl<
             I: crate::iter::traits::double_ended::DoubleEndedIterator
@@ -563,12 +533,9 @@ pub mod adapters {
                 match self.iter.next_back() {
                     Option::Some(a) => {
                         let len = self.iter.len();
-                        // No `hax_lib::assume!` here: the Lean library has no model for
-                        // it (see `next` above, where the assume is F*-gated), and this
-                        // whole impl is Lean-only, so an F*-gated assume would be dead.
-                        // The extracted `self.count + len` is a checked `Usize` add that
-                        // fails on overflow — unreachable for a real iterator, and a
-                        // panic rather than a wrap if it ever were reached.
+                        // No `assume!`: Lean has no model for it, and this impl is
+                        // Lean-only. The extracted add is checked, so it panics on
+                        // overflow rather than wrapping.
                         Option::Some((self.count + len, a))
                     }
                     Option::None => Option::None,
@@ -655,11 +622,8 @@ pub mod adapters {
         }
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
-        // `FnMut` (not `Fn`), matching `std::iter::Map` — a downstream `.map(closure)`
-        // where the closure captures mutably yields an `FnMut` instance, so
-        // `Map<_, closure>: Iterator` must hold for `FnMut` (else `collect` over the
-        // map fails to resolve). `Fn` here would be stricter than std and reject such
-        // closures. Pinned by `iter_map` / `poly_map_count` in
+        // `FnMut`, as in std: a downstream `.map(closure)` yields an `FnMut`
+        // instance, and `Fn` would reject it. Pinned by `iter_map` in
         // `tests/client_test/src/lib.rs`.
         #[hax_lib::attributes]
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -1446,13 +1410,8 @@ mod tests {
             prop_assert_eq!(model, std_result);
         }
 
-        // P2 lazy-adapter promotions: drive the promoted constructor + its adapter's
-        // `next` and compare to std.
 
-        // P2c adapters (the standalone-epilogue ones): validate the underlying
-        // adapter `next` semantics the shims delegate to (never exercised before).
-
-        // P4a closure-driven adapters.
+        // Closure-driven adapters.
         #[test]
         fn test_filter_map(v in prop::collection::vec(any::<i32>(), 0..=20)) {
             let mut it = VecIter::new(v.clone()).filter_map(
@@ -1501,8 +1460,8 @@ mod tests {
             prop_assert_eq!(model, std_result);
         }
 
-        // P4b adapters: inspect (passthrough) and fuse (identity over a well-behaved
-        // iterator) — both should reproduce the input sequence unchanged.
+        // `inspect` passes through and `fuse` is the identity over a well-behaved
+        // iterator: both reproduce the input unchanged.
         #[test]
         fn test_inspect(v in prop::collection::vec(any::<i32>(), 0..=20)) {
             let mut it = VecIter::new(v.clone()).inspect(|_x: &i32| {});

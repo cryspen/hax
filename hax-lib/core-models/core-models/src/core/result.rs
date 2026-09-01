@@ -15,7 +15,7 @@ use super::option::Option;
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::is_ok`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn is_ok(&self) -> bool {
         matches!(*self, Ok(_))
     }
@@ -29,7 +29,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::is_err`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn is_err(&self) -> bool {
         !self.is_ok()
     }
@@ -43,7 +43,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_ref`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub const fn as_ref(&self) -> Result<&T, &E> {
         match *self {
             Ok(ref t) => Ok(t),
@@ -52,7 +52,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_mut`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     #[hax_lib::exclude]
     pub fn as_mut(&mut self) -> Result<&mut T, &mut E> {
         match *self {
@@ -155,7 +155,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or_default`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn map_or_default<U, F>(self, f: F) -> U
     where
         F: FnOnce(T) -> U,
@@ -184,7 +184,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::ok`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn ok(self) -> Option<T> {
         match self {
             Ok(x) => Option::Some(x),
@@ -193,7 +193,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::err`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn err(self) -> Option<E> {
         match self {
             Ok(_) => Option::None,
@@ -311,7 +311,7 @@ impl<T, E> Result<T, E> {
 }
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T: Clone, E> Result<T, E> {
     /// See [`std::result::Result::cloned`]
     pub fn cloned(self) -> Result<T, E> {
@@ -324,7 +324,7 @@ impl<T: Clone, E> Result<T, E> {
 
 #[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T, E> Result<Option<T>, E> {
     /// See [`std::result::Result::transpose`]
     pub fn transpose(self) -> Option<Result<T, E>> {
@@ -337,7 +337,7 @@ impl<T, E> Result<Option<T>, E> {
 }
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T, E> Result<Result<T, E>, E> {
     /// See [`std::result::Result::flatten`]
     pub fn flatten(self) -> Result<T, E> {
@@ -348,10 +348,8 @@ impl<T, E> Result<Result<T, E>, E> {
     }
 }
 
-/// Yields a `Seq`'s items by value, so the `Result` shunt below can hand the
-/// `Ok`s it accumulated to `V`'s own `from_iter` (which needs an
-/// `IntoIterator<Item = A>`, and `slice::Iter` only yields references).
-/// Implementation detail of that shunt; real `core` has no counterpart.
+/// Yields a `Seq` by value, for the `Result` shunt below: `V::from_iter` needs
+/// an `IntoIterator<Item = A>`, and `slice::Iter` only yields references.
 struct SeqIter<A>(rust_primitives::sequence::Seq<A>);
 
 #[hax_lib::attributes]
@@ -367,25 +365,15 @@ impl<A> crate::iter::traits::iterator::Iterator for SeqIter<A> {
     }
 }
 
-/// Models the std impl `FromIterator<Result<A, E>> for Result<V, E>`: collect
-/// an iterator of `Result`s into a `Result` of a collection, short-circuiting
-/// on the first `Err`.
-///
-/// Accumulates the `Ok`s in a `rust_primitives` `Seq` and stops at the first
-/// `Err`, then builds `V` from the accumulator. std uses a `&mut Option<E>`
-/// side channel for the same effect; the model has no `&mut` it can thread
-/// through `V::from_iter`, so it buffers instead. The `while` form avoids an
-/// early `return` inside the loop, which hax's loop functionalization rejects.
-// opaque for F* only: the while loop over `next` is the same shape as the
-// `iter_*` helpers, which F* cannot functionalize.
+/// See [`std::iter::FromIterator`] for `Result`: buffers the `Ok`s, stops at
+/// the first `Err`. std threads a `&mut Option<E>` through `V::from_iter`,
+/// which the model cannot, hence the `Seq`. `while` rather than an early
+/// `return`, which hax cannot functionalize.
+// F*: while-loop over `next`, as in the `iter_*` helpers.
 #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-// Excluded from aeneas, and hand-written in `CoreModels/Core/FunsEpilogue.lean`
-// instead: extracting this body makes aeneas fail with `Could not find:
-// type_var_id` while resolving the `IntoIterator::Item` associated type — the
-// same limitation that keeps `Vec`'s `FromIterator` hand-written. The Rust body
-// above is the real model (and is what the differential tests exercise); the
-// Lean counterpart performs the same short-circuiting fold.
-#[cfg_attr(charon, aeneas::exclude)]
+// Lean: extracting this trips aeneas's `type_var_id` on `IntoIterator::Item`,
+// as for `Vec`. Same fold hand-written in `FunsEpilogue.lean`.
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 #[hax_lib::attributes]
 impl<A, E, V: crate::iter::traits::collect::FromIterator<A>>
     crate::iter::traits::collect::FromIterator<Result<A, E>> for Result<V, E>

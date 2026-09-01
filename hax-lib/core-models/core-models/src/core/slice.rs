@@ -68,13 +68,10 @@ pub mod iter {
         }
     }
 
-    // NOTE: `slice::iter_mut`/`IterMut` are NOT modelled as an `impl Iterator`:
-    // a `&mut`-yielding iterator's `next` must return a 3-tuple `(Option T) × Self
-    // × back-prop-fn` (aeneas models the yielded `&mut T` with a write-back), but the
-    // `Iterator` trait's `next` is the 2-tuple `(Option Item) × Self`. Aeneas.Std
-    // models `IterMut` as an OPAQUE type with a specialised `next` instead
-    // (SliceIter.lean); supplying that in core-models is a hand-written Lean model,
-    // not a Rust `impl`. Deferred — see FunsEpilogue / the residuals task.
+    // `iter_mut`/`IterMut` are not an `impl Iterator`: a `&mut`-yielding `next`
+    // needs a 3-tuple with a write-back, not the trait's 2-tuple. Aeneas.Std
+    // supplies a specialised `next` on an opaque type instead; that has to be
+    // hand-written Lean, not a Rust impl. Deferred.
 
     impl<'a, T> crate::iter::traits::iterator::Iterator for Chunks<'a, T> {
         type Item = &'a [T];
