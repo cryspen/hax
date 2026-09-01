@@ -137,6 +137,13 @@ pub(crate) fn charon_attr(name: TokenStream) -> Option<TokenStream> {
     cfg!(charon).then(|| quote! {#[charon::#name]})
 }
 
+/// Whether the future value of mutable arguments (used by postconditions) come before or after the
+/// result binder. The legacy engine expect future values before the return one, while the aeneas
+/// engine expects the opposite.
+pub(crate) fn future_args_last() -> bool {
+    cfg!(hax_backend_lean)
+}
+
 /// Merge two `syn::Generics`, respecting lifetime orders
 pub(crate) fn merge_generics(x: Generics, y: Generics) -> Generics {
     Generics {
@@ -429,8 +436,13 @@ pub fn make_fn_decoration(
                 };
 
                 if !is_output_typ_unit || pats.is_empty() {
-                    pats.push(ret_binder.to_token_stream());
-                    tys.push(quote! {#output_typ});
+                    if future_args_last() {
+                        pats.insert(0, ret_binder.to_token_stream());
+                        tys.insert(0, quote! {#output_typ});
+                    } else {
+                        pats.push(ret_binder.to_token_stream());
+                        tys.push(quote! {#output_typ});
+                    }
                 }
 
                 sig.inputs

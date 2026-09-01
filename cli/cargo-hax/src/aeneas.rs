@@ -440,17 +440,13 @@ pub fn run(
     // User-supplied charon flags go before the `--` cargo separator.
     charon_cmd.args(&selection_flags);
     charon_cmd.args(&user_charon_args);
-    // Everything after `--` is forwarded to cargo: build the host (proc-macro)
-    // crates with `--cfg hax` too, so hax-lib macros expand consistently. `--cfg
-    // charon` additionally makes them emit charon's own `charon::opaque`/`exclude`
-    // markers: this lane bypasses the engine, so those are how a `hax_lib::opaque`
-    // reaches aeneas.
+    // Extra flags that charon will forward to cargo. Meant mostly for `hax_lib`.
     charon_cmd.args([
         "--",
         "-Zhost-config",
         "-Ztarget-applies-to-host",
         "--config",
-        r#"host.rustflags=["--cfg","hax","--cfg","charon"]"#,
+        r#"host.rustflags=["--cfg","hax","--cfg","charon","--cfg","hax_backend_lean"]"#,
     ]);
     // Register the tool-attribute namespaces through `RUSTFLAGS`, which cargo applies
     // to every target crate. `--rustc-arg` only reaches the crate charon instruments,
