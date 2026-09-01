@@ -137,6 +137,15 @@ pub(crate) fn charon_attr(name: TokenStream) -> Option<TokenStream> {
     cfg!(charon).then(|| quote! {#[charon::#name]})
 }
 
+/// Whether the future arguments of a postcondition come after the result binder
+/// instead of before it. The aeneas/lean lane returns `(result, &mut args...)` while
+/// the engine lanes return `(&mut args..., result)`; the lean backend is the only one
+/// to set `cfg(hax_backend_lean)` on this crate's build (see `host.rustflags` in
+/// `cli/cargo-hax/src/aeneas.rs`).
+pub(crate) fn future_args_last() -> bool {
+    cfg!(hax_backend_lean)
+}
+
 /// Merge two `syn::Generics`, respecting lifetime orders
 pub(crate) fn merge_generics(x: Generics, y: Generics) -> Generics {
     Generics {
@@ -429,8 +438,13 @@ pub fn make_fn_decoration(
                 };
 
                 if !is_output_typ_unit || pats.is_empty() {
-                    pats.push(ret_binder.to_token_stream());
-                    tys.push(quote! {#output_typ});
+                    if future_args_last() {
+                        pats.insert(0, ret_binder.to_token_stream());
+                        tys.insert(0, quote! {#output_typ});
+                    } else {
+                        pats.push(ret_binder.to_token_stream());
+                        tys.push(quote! {#output_typ});
+                    }
                 }
 
                 sig.inputs

@@ -255,6 +255,9 @@ attribute_macros! {
     /// In the case of a function that has one or more `&mut` inputs, in
     /// the `ensures` clause, you can refer to such an `&mut` input `x` as
     /// `x` for its "past" value and `future(x)` for its "future" value.
+    /// Where those future values sit relative to the result in the generated
+    /// postcondition is backend-dependent, since each backend orders the tuple
+    /// its functions return differently.
     ///
     /// You can use the (unqualified) macro `fstar!` (`BACKEND!` for any
     /// backend `BACKEND`) to inline F* (or Coq, ProVerif, etc.) code in

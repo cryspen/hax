@@ -444,13 +444,18 @@ pub fn run(
     // crates with `--cfg hax` too, so hax-lib macros expand consistently. `--cfg
     // charon` additionally makes them emit charon's own `charon::opaque`/`exclude`
     // markers: this lane bypasses the engine, so those are how a `hax_lib::opaque`
-    // reaches aeneas.
+    // reaches aeneas. `--cfg hax_backend_lean` has to be repeated here, on the host
+    // build: the `--rustc-arg` above only reaches the crate charon instruments, and
+    // the macros need the flag at expansion time to pick the postcondition argument
+    // order. Aeneas returns `(result, mutated borrows...)` where the engine returns
+    // `(mutated args..., result)`, so the tuple the generated `ensures` function
+    // takes is ordered to match whichever lane consumes it.
     charon_cmd.args([
         "--",
         "-Zhost-config",
         "-Ztarget-applies-to-host",
         "--config",
-        r#"host.rustflags=["--cfg","hax","--cfg","charon"]"#,
+        r#"host.rustflags=["--cfg","hax","--cfg","charon","--cfg","hax_backend_lean"]"#,
     ]);
     // Register the tool-attribute namespaces through `RUSTFLAGS`, which cargo applies
     // to every target crate. `--rustc-arg` only reaches the crate charon instruments,
