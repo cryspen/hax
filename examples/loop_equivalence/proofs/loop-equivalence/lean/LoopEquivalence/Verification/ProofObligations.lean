@@ -1,5 +1,5 @@
 import LoopEquivalence.Extraction
-import LoopEquivalence.Proofs.MissingSpecs
+import LoopEquivalence.Verification.MissingSpecs
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
