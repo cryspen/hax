@@ -10,9 +10,6 @@ fn f1(x: u8) {}
 #[hax_lib::requires(x > 0)]
 fn f2(x: u8) {}
 
-// The argument is only there to work around cryspen/hax#2177: the Lean backend
-// drops the postcondition of a function that takes none. Remove once fixed.
-
 #[spec(ensures: *output == x)]
 fn f3(x: u8) -> u8 {
     x

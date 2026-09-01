@@ -1,7 +1,7 @@
 /- Discharges the obligations that `Extraction/ProofObligations.lean` states
 with `sorry`: every `#[spec(..)]` in `src/lib.rs` holds, whether it was written
 with `anodized` or with `hax_lib` directly. -/
-import Anodized.Extraction
+import AnodizedLean.Extraction
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc

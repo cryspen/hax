@@ -1,6 +1,7 @@
-[scenario.anodized]
-backend = "lean"
-
 [scenario.anodized-fstar]
 backend = "fstar"
 output-dir = "proofs/anodized/fstar"
+
+[scenario.anodized-lean]
+backend = "lean"
+output-dir = "proofs/anodized/lean"

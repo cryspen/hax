@@ -9,7 +9,7 @@ fstar:
 	make -C proofs/anodized/fstar/extraction
 
 lean:
-	cargo hax extract anodized
+	cargo hax extract anodized-lean
 	(cd proofs/anodized/lean && \
 		elan default $$(cat lean-toolchain) && \
 		lake exe cache get && \
@@ -18,5 +18,5 @@ lean:
 clean:
 	rm -f proofs/anodized/fstar/extraction/.depend
 	rm -f proofs/anodized/fstar/extraction/*.fst
-	-rm -rf proofs/anodized/lean/Anodized/Extraction
+	-rm -rf proofs/anodized/lean/AnodizedLean/Extraction
 	-cd proofs/anodized/lean && lake clean

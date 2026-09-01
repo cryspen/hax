@@ -1,9 +1,9 @@
-name = "Anodized"
+name = "AnodizedLean"
 version = "0.1.0"
-defaultTargets = ["Anodized"]
+defaultTargets = ["AnodizedLean"]
 
 [[lean_lib]]
-name = "Anodized"
+name = "AnodizedLean"
 
 [[require]]
 name = "hax"
