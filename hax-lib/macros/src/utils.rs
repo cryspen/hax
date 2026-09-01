@@ -137,11 +137,9 @@ pub(crate) fn charon_attr(name: TokenStream) -> Option<TokenStream> {
     cfg!(charon).then(|| quote! {#[charon::#name]})
 }
 
-/// Whether the future arguments of a postcondition come after the result binder
-/// instead of before it. The aeneas/lean lane returns `(result, &mut args...)` while
-/// the engine lanes return `(&mut args..., result)`; the lean backend is the only one
-/// to set `cfg(hax_backend_lean)` on this crate's build (see `host.rustflags` in
-/// `cli/cargo-hax/src/aeneas.rs`).
+/// Whether the future value of mutable arguments (used by postconditions) come before or after the
+/// result binder. The legacy engine expect future values before the return one, while the aeneas
+/// engine expects the opposite.
 pub(crate) fn future_args_last() -> bool {
     cfg!(hax_backend_lean)
 }
