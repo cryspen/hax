@@ -133,12 +133,29 @@ jobs:
           tar -cf - -C target/${{ matrix.target }}/release cargo-hax \
             | zstd -9 -T0 -o "$ARCHIVE"
 
+      # The release notes: the released version's changelog section, which the
+      # version bump renames from `[Unreleased]`. A pre-release keeps
+      # `[Unreleased]` in place, has no section of its own, and so gets an
+      # empty body. Headings match with and without brackets, covering the
+      # sections that predate the bracketed form.
+      - name: Extract the changelog section
+        if: env.PUBLISHED != 'true'
+        env:
+          VERSION: ${{ needs.tag.outputs.version }}
+        run: |
+          awk -v version="$VERSION" '
+            /^## / { heading = $2; gsub(/[][]/, "", heading)
+                     on = (heading == version); next }
+            on { print }
+          ' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
+
       - name: Release
         if: env.PUBLISHED != 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.tag.outputs.tag }}
           prerelease: ${{ contains(needs.tag.outputs.version, '-') }}
+          body_path: ${{ runner.temp }}/release-notes.md
           files: ${{ env.ARCHIVE }}
 
   # Installs the release the way every user's `cargo binstall` does, once the

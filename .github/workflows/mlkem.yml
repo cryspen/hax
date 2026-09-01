@@ -73,26 +73,56 @@ jobs:
           printf '\n[patch.crates-io]\nhax-lib = { path = "../hax/hax-lib" }\n' >> Cargo.toml
           cargo update -p hax-lib
 
-      - if: runner.environment == 'github-hosted'
+      # The patch above only takes effect while the local `hax-lib` satisfies
+      # the requirement libcrux declares: between a version bump and the
+      # release that publishes it, the lockfile keeps the published version,
+      # which `cargo-hax` rejects, so the extraction is skipped instead of
+      # failing the merge queue.
+      - name: Check the `hax-lib` version libcrux resolved
+        id: haxlib
+        run: |
+          set -o pipefail
+          binary="$(cargo metadata --format-version 1 --no-deps \
+            --manifest-path hax/Cargo.toml \
+            | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
+          found="$(awk -F '"' '/^name = "hax-lib"$/ { getline; print $2 }' \
+            libcrux/Cargo.lock)"
+          if [ "${binary%%-*}" = "${found%%-*}" ]; then
+            echo "compatible=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "compatible=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::skipping the extraction: cargo-hax $binary" \
+              "requires hax-lib ${binary%%-*}, but libcrux resolved" \
+              "hax-lib $found"
+          fi
+
+      - if: >-
+          steps.haxlib.outputs.compatible == 'true' &&
+          runner.environment == 'github-hosted'
         uses: DeterminateSystems/nix-installer-action@main
       - name: Set up Cachix
+        if: steps.haxlib.outputs.compatible == 'true'
         uses: cachix/cachix-action@v15
         with:
           name: fstar-nix-versions
           push: false
-    
+
       - name: ⤵ Install hax
+        if: steps.haxlib.outputs.compatible == 'true'
         run: |
           nix profile install ./hax
 
       - name: ⤵ Install FStar
+        if: steps.haxlib.outputs.compatible == 'true'
         run: nix profile install github:FStarLang/FStar/v2025.02.17
 
       - name: 🏃 Extract ML-KEM crate
+        if: steps.haxlib.outputs.compatible == 'true'
         working-directory: libcrux/libcrux-ml-kem
         run: ./hax.py extract
-  
+
       - name: 🏃 Lax ML-KEM crate
+        if: steps.haxlib.outputs.compatible == 'true'
         working-directory: libcrux/libcrux-ml-kem
         run: |
           env FSTAR_HOME=${{ github.workspace }}/fstar \

@@ -144,11 +144,13 @@ jobs:
           git push --force origin "$branch"
           title="$(jq -rn --arg s "chore: release v$version" '$s | @uri')"
           body="$(jq -rn --arg s "${PR_BODY//__BRANCH__/$branch}" '$s | @uri')"
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/main...$branch?quick_pull=1&title=$title&body=$body"
           {
             echo "### Release v$version"
             echo
-            echo "[Open the release PR]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/main...$branch?quick_pull=1&title=$title&body=$body) to continue; the release stalls without it."
+            echo "[Open the release PR]($url) to continue."
           } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=Open the release PR for v$version::$url"
 
   # Queues the publish once a release PR merges. The head-repository check
   # keeps a fork branch that happens to be named `release/...` from counting
