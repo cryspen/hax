@@ -238,26 +238,6 @@ impl<T, const N: usize> crate::convert::AsRef<[T]> for [T; N] {
     }
 }
 
-/// See [`std::convert::TryFrom`] `<&mut [T]>` for `[T; N]`
-///
-/// Real `core`'s companion to the `TryFrom<&[T]>` impl in `crate::convert`:
-/// same length check, `&mut` receiver.
-//
-// Lean-only: the `&mut` write-back makes the extracted `try_from` return an
-// extra `Slice T`, which does not fit `convert::TryFrom`'s field.
-#[cfg(not(hax_backend_fstar))]
-#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
-impl<T: Copy, const N: usize> crate::convert::TryFrom<&mut [T]> for [T; N] {
-    type Error = TryFromSliceError;
-    fn try_from(s: &mut [T]) -> crate::result::Result<[T; N], TryFromSliceError> {
-        if slice_length(s) == N {
-            crate::result::Result::Ok(array_from_fn(|i| *slice_index(s, i)))
-        } else {
-            crate::result::Result::Err(TryFromSliceError)
-        }
-    }
-}
-
 mod iter {
     use crate::option::Option;
     use rust_primitives::sequence::*;
@@ -337,16 +317,6 @@ mod tests {
             *crate::ops::index::IndexMut::index_mut(&mut model, i) = v;
             *std::ops::IndexMut::index_mut(&mut std_, i) = v;
             prop_assert_eq!(model, std_);
-        }
-
-        #[test]
-        fn test_try_from_mut_slice_to_array(v in prop::collection::vec(any::<u8>(), 0..=6)) {
-            let mut model = v.clone();
-            let mut std_ = v;
-            prop_assert_eq!(
-                <[u8; 4] as crate::convert::TryFrom<&mut [u8]>>::try_from(&mut model[..]).ok(),
-                <[u8; 4] as std::convert::TryFrom<&mut [u8]>>::try_from(&mut std_[..]).ok().inject()
-            );
         }
     }
 
