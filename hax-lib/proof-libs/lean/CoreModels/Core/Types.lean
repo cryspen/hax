@@ -34,7 +34,7 @@ def array.Array (T : Type) (N : Std.Usize) := Array T N
 -/
 
 /-- [core_models::array::{core_models::array::Array<T, N>}::each_ref::closure]
-    Source: 'core-models/src/core/array.rs', lines 57:22-57:43 -/
+    Source: 'core-models/src/core/array.rs', lines 63:22-63:43 -/
 @[reducible]
 def array.Array.each_ref.closure (T : Type) (N : Std.Usize) := Array T N
 
@@ -46,7 +46,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → RustM Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 177:4-177:55
+    Source: 'core-models/src/core/array.rs', lines 197:4-197:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -57,6 +57,15 @@ def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
     Visibility: public -/
 structure ops.index.Index (Self : Type) (Idx : Type) (Self_Output : Type) where
   index : Self → Idx → RustM Self_Output
+
+/-- Trait declaration: [core_models::ops::index::IndexMut]
+    Source: 'core-models/src/core/ops.rs', lines 155:4-157:5
+    Visibility: public -/
+structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
+  Type) where
+  IndexInst : ops.index.Index Self Idx Self_Clause0_Output
+  index_mut : Self → Idx → RustM (Self_Clause0_Output ×
+    (Self_Clause0_Output → Self))
 
 /-- Trait declaration: [core_models::clone::Clone]
     Source: 'core-models/src/core/clone.rs', lines 13:0-16:1
@@ -707,15 +716,6 @@ structure ops.bit.BitOrAssign (Self : Type) (Rhs : Type) where
 inductive ops.control_flow.ControlFlow (B : Type) (C : Type) where
 | Continue : C → ops.control_flow.ControlFlow B C
 | Break : B → ops.control_flow.ControlFlow B C
-
-/-- Trait declaration: [core_models::ops::index::IndexMut]
-    Source: 'core-models/src/core/ops.rs', lines 155:4-157:5
-    Visibility: public -/
-structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
-  Type) where
-  IndexInst : ops.index.Index Self Idx Self_Clause0_Output
-  index_mut : Self → Idx → RustM (Self_Clause0_Output ×
-    (Self_Clause0_Output → Self))
 
 /-
 /-- Trait declaration: [core_models::ops::function::FnOnce]

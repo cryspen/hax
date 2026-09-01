@@ -219,6 +219,11 @@ pub fn array_index_val(a: [u32; 4], i: usize) -> u32 {
     a[i]
 }
 
+/// Covers `<[T; N] as IndexMut<Range<usize>>>::index_mut` (cryspen/hax#2174).
+pub fn array_write_range(a: &mut [u8; 8], src: &[u8]) {
+    a[0..src.len()].copy_from_slice(src);
+}
+
 // ----- Slices ---------------------------------------------------------------
 
 pub fn slice_len(x: &[u8]) -> usize {
