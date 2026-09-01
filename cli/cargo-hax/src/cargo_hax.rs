@@ -762,6 +762,17 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
     }
 }
 
+/// Exits the process, downgrading a successful code to a failure when an
+/// error-severity message was reported: a reported error and a zero exit
+/// status must never combine. Every exit path that can carry code 0 goes
+/// through here.
+fn exit(code: i32) -> ! {
+    if code == 0 && hax_types::diagnostics::message::errors_reported() {
+        std::process::exit(1)
+    }
+    std::process::exit(code)
+}
+
 fn main() {
     let args: Vec<String> = get_args("hax");
     let mut options = match &args[..] {
@@ -786,7 +797,7 @@ fn main() {
     // The `tools` subcommands never involve the hax frontend: handle them
     // directly and exit.
     if let Command::Tools(ref command) = options.command {
-        std::process::exit(tools::run(command, options.message_format));
+        exit(tools::run(command, options.message_format));
     }
 
     // `extract` resolves the proof scenarios of the project and re-enters
@@ -800,7 +811,7 @@ fn main() {
         ref hermeticity,
     } = options.command
     {
-        std::process::exit(scenario::run(
+        exit(scenario::run(
             names,
             packages,
             &options.cargo_flags,
@@ -875,7 +886,7 @@ fn main() {
             options.message_format,
             project,
         );
-        std::process::exit(if error { 1 } else { 0 });
+        exit(if error { 1 } else { 0 });
     }
 
     let (haxmeta_files, exit_code) = options
@@ -894,7 +905,7 @@ fn main() {
         .unwrap_or_else(|| compute_haxmeta_files(&options));
     let error = run_command(&options, haxmeta_files);
 
-    std::process::exit(if exit_code == 0 && error {
+    exit(if exit_code == 0 && error {
         1
     } else {
         exit_code

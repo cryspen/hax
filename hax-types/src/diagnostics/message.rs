@@ -310,6 +310,17 @@ impl HaxMessage {
     }
 }
 
+/// Whether this process reported an error-severity message.
+/// [`HaxMessage::report`] sets it, and [`errors_reported`] exposes it: a
+/// reported error and a successful exit status must never combine, so an
+/// exit path with a zero code has to consult it.
+static ERROR_REPORTED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Whether an error-severity message was reported in this process.
+pub fn errors_reported() -> bool {
+    ERROR_REPORTED.load(std::sync::atomic::Ordering::Relaxed)
+}
+
 const ENGINE_BINARY_NAME: &str = "hax-engine";
 
 use annotate_snippets::{Level, Renderer};
@@ -336,7 +347,52 @@ fn relative_to_cwd(path: PathBuf) -> PathBuf {
 }
 
 impl HaxMessage {
+    /// Whether this message reports an error, i.e. renders at error level.
+    /// Reporting one commits the process to a failing exit status. Kept
+    /// exhaustive so that a new variant forces a decision here, matching
+    /// the level [`Self::render_styled`] gives it.
+    pub fn is_error(&self) -> bool {
+        match self {
+            Self::Diagnostic { .. }
+            | Self::BinaryNotFound { .. }
+            | Self::HaxEngineFailure { .. }
+            | Self::GenericError { .. }
+            | Self::HaxTomlError { .. }
+            | Self::HaxLibIncompatible { .. } => true,
+            Self::ScenarioSummary { failed, .. } => !failed.is_empty(),
+            Self::ProducedFile { .. }
+            | Self::CargoBuildFailure
+            | Self::WarnExperimentalBackend { .. }
+            | Self::ProfilingData(..)
+            | Self::Stats { .. }
+            | Self::GenericWarning { .. }
+            | Self::Step { .. }
+            | Self::SubprocessOutput { .. }
+            | Self::OutputTruncated { .. }
+            | Self::UnsupportedOption { .. }
+            | Self::HaxTomlWarning { .. }
+            | Self::MemberToolOverrides { .. }
+            | Self::StrayHaxToml { .. }
+            | Self::UnverifiedInstall { .. }
+            | Self::NonDefaultToolVersion { .. }
+            | Self::CachedUnverifiedToolInUse { .. }
+            | Self::ToolsShow { .. }
+            | Self::ToolsList { .. }
+            | Self::ToolsInstalled { .. }
+            | Self::LakefilePinDrift { .. }
+            | Self::ToolRemoved { .. }
+            | Self::ToolsCleaned { .. }
+            | Self::ToolsPinned { .. }
+            | Self::RootModuleMissingImport { .. }
+            | Self::RootModuleStaleImport { .. }
+            | Self::ScenarioDryRun { .. } => false,
+        }
+    }
+
     pub fn report(self, message_format: MessageFormat, rctx: Option<&mut ReportCtx>) {
+        if self.is_error() {
+            ERROR_REPORTED.store(true, std::sync::atomic::Ordering::Relaxed);
+        }
         // A message that renders to nothing has nothing to print: a report
         // of an empty listing must not become a blank line.
         if let Some(rendered) = self.render(message_format, rctx)
@@ -346,6 +402,9 @@ impl HaxMessage {
         }
     }
     pub fn report_styled(self, rctx: Option<&mut ReportCtx>) {
+        if self.is_error() {
+            ERROR_REPORTED.store(true, std::sync::atomic::Ordering::Relaxed);
+        }
         println!("{}", self.render_styled(rctx))
     }
 
@@ -903,4 +962,24 @@ fn render_tools_installed(installed: &[InstalledTool]) -> String {
         })
         .collect::<Vec<_>>()
         .join("\n")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_reported_error_must_not_exit_successfully() {
+        let warning = HaxMessage::GenericWarning {
+            message: "w".into(),
+        };
+        assert!(!warning.is_error());
+
+        let error = HaxMessage::GenericError {
+            message: "e".into(),
+        };
+        assert!(error.is_error());
+        error.report(MessageFormat::Json, None);
+        assert!(errors_reported());
+    }
 }
