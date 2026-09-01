@@ -4,6 +4,9 @@ let
   pname = "hax";
   is-webapp-static-asset = path:
     builtins.match ".*(script[.]js|index[.]html)" path != null;
+  # Crate readmes are compiled in as rustdoc crate docs via
+  # `#![doc = include_str!("../README.md")]`.
+  is-crate-readme = path: builtins.match ".*/README[.]md" path != null;
   buildInputs = lib.optionals stdenv.isDarwin [ libiconv zlib.dev ];
   binaries = [ hax hax-engine.bin rustc gcc hax_rust_engine ] ++ buildInputs;
   commonArgs = {
@@ -13,9 +16,11 @@ let
       filter = path: type:
         (builtins.isNull
         (builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path)
-        && builtins.isNull (builtins.match ".*[.](md|svg)" path)
+        && (builtins.isNull (builtins.match ".*[.](md|svg)" path)
+          || is-crate-readme path)
         && (craneLib.filterCargoSources path type
-          || is-webapp-static-asset path))
+          || is-webapp-static-asset path
+          || is-crate-readme path))
         || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
     inherit buildInputs doCheck;
