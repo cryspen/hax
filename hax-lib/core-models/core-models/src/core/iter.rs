@@ -1647,27 +1647,34 @@ mod tests {
             );
         }
 
-        /// `take_while` latches: once the predicate fails, every later `next` is
-        /// `None` even if the inner iterator still has matching items.
+        /// `take_while`'s four outcomes, all through ONE closure type: llvm-cov
+        /// scores regions per monomorphisation, so splitting these across
+        /// closures leaves an arm unreached in each instantiation.
         #[test]
-        fn test_take_while_latches(bound in any::<i32>()) {
-            let v = vec![bound.saturating_sub(1), bound.saturating_add(1), bound.saturating_sub(1)];
-            let mut it = VecIter::new(v.clone()).take_while(|x: &i32| *x < bound);
+        fn test_take_while_arms(bound in any::<i32>()) {
+            let pred = |x: &i32| *x < bound;
+            let below = bound.saturating_sub(1);
+
+            // Predicate fails partway: yield, then latch, then stay latched.
+            let stops = vec![below, bound.saturating_add(1), below];
+            let mut it = VecIter::new(stops.clone()).take_while(pred);
             let mut got = Vec::new();
-            // `drain` would stop at the first `None`; keep going, so the call
-            // after the predicate fails re-enters the latched branch.
-            for _ in 0..v.len() + 1 {
+            for _ in 0..stops.len() + 1 {
                 if let Option::Some(x) = it.next() {
                     got.push(x);
                 }
             }
-            prop_assert_eq!(got, v.iter().copied().take_while(|x| *x < bound).collect::<Vec<_>>());
-
-            // An all-accepting predicate: the inner iterator exhausts while the
-            // flag is still unset, which is a different arm from the latch above.
             prop_assert_eq!(
-                drain(VecIter::new(v.clone()).take_while(|_x: &i32| true)),
-                v
+                got,
+                stops.iter().copied().take_while(|x| *x < bound).collect::<Vec<_>>()
+            );
+
+            // Predicate always holds: the inner iterator exhausts with the flag
+            // still unset, which is the remaining arm.
+            let all_pass = vec![below; 3];
+            prop_assert_eq!(
+                drain(VecIter::new(all_pass.clone()).take_while(pred)),
+                all_pass.iter().copied().take_while(|x| *x < bound).collect::<Vec<_>>()
             );
         }
 

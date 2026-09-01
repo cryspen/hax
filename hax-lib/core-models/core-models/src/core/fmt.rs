@@ -90,6 +90,11 @@ impl<'a> Arguments<'a> {
     /// Not a real `std::fmt::Arguments` method: the carve lowers panic/assert
     /// messages to `Arguments::from_str(msg)` and discards the result, so this
     /// exists to make those call sites resolve.
+    ///
+    /// Opaque: real `core` builds an `Arguments` that carries the formatted
+    /// message, while the model's is a payload-free phantom, so the body is not
+    /// a model of what `core` does — only enough to have a value.
+    #[hax_lib::opaque]
     pub fn from_str(_s: &str) -> Arguments<'a> {
         Arguments(&())
     }
