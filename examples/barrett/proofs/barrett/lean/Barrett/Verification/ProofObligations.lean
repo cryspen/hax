@@ -1,5 +1,5 @@
 import Barrett.Extraction
-import Barrett.Proofs.MissingSpecs
+import Barrett.Verification.MissingSpecs
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
