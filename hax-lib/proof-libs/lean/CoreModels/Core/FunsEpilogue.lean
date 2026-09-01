@@ -446,7 +446,7 @@ extraction calls this specialised `next` directly (as with Aeneas.Std's
 open Aeneas.Std in
 def slice.iter.IterMut.Insts.CoreIterTraitsIteratorIteratorMutAT.next {T : Type}
     (it : slice.iter.IterMut T) :
-    Aeneas.Std.Result ((option.Option T) × (slice.iter.IterMut T) ×
+    Aeneas.Std.RustM ((option.Option T) × (slice.iter.IterMut T) ×
       (slice.iter.IterMut T → option.Option T → slice.iter.IterMut T)) :=
   if h : it.i < it.slice.length then
     let x := it.slice[it.i]
@@ -461,7 +461,7 @@ def slice.iter.IterMut.Insts.CoreIterTraitsIteratorIteratorMutAT.next {T : Type}
 
 open Aeneas.Std in
 def slice.Slice.iter_mut {T : Type} (s : Aeneas.Std.Slice T) :
-    Aeneas.Std.Result ((slice.iter.IterMut T) ×
+    Aeneas.Std.RustM ((slice.iter.IterMut T) ×
       (slice.iter.IterMut T → Aeneas.Std.Slice T)) :=
   .ok ({ slice := s, i := 0 }, fun it => it.slice)
 
@@ -471,7 +471,7 @@ def slice.Slice.iter_mut {T : Type} (s : Aeneas.Std.Slice T) :
 the identity on the underlying bytes — faithful, no opacity, no trust expansion.
 (The verify path passes a domain-separator `label : Str` to `Transcript::new`.) -/
 open Aeneas.Std in
-def str.Str.as_bytes (s : Str) : Aeneas.Std.Result (Slice U8) :=
+def str.Str.as_bytes (s : Str) : Aeneas.Std.RustM (Slice U8) :=
   .ok s
 
 /-! ## Per-impl specialisations of the eager consumers
@@ -491,11 +491,8 @@ extra dictionaries, then `self`, then the consumer's remaining arguments — so
 partial application plus eta is enough. -/
 
 -- Range<A>
-abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.count
-    {A : Type} (StepInst : iter.range.Step A) :=
-  iter.traits.iterator.Iterator.count.default
-    (ops.range.Range.Insts.CoreIterTraitsIteratorIterator StepInst)
-
+-- (`…IteratorIterator.count` is NOT defined here: `FunsPrologue.lean` already
+-- provides it, derived from `Step::steps_between` instead of driving `next`.)
 abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.last
     {A : Type} (StepInst : iter.range.Step A) :=
   iter.traits.iterator.Iterator.last.default

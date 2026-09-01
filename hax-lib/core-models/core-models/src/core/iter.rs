@@ -560,7 +560,12 @@ pub mod adapters {
                 match self.iter.next_back() {
                     Option::Some(a) => {
                         let len = self.iter.len();
-                        hax_lib::assume!(self.count + len < crate::num::usize::MAX);
+                        // No `hax_lib::assume!` here: the Lean library has no model for
+                        // it (see `next` above, where the assume is F*-gated), and this
+                        // whole impl is Lean-only, so an F*-gated assume would be dead.
+                        // The extracted `self.count + len` is a checked `Usize` add that
+                        // fails on overflow — unreachable for a real iterator, and a
+                        // panic rather than a wrap if it ever were reached.
                         Option::Some((self.count + len, a))
                     }
                     Option::None => Option::None,
