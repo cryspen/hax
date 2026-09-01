@@ -330,6 +330,22 @@ mod tests {
     use crate::testing::Inject;
     use proptest::prelude::*;
 
+    // `as_mut` is `cfg(not(hax_backend_fstar))` (F* cannot model a `&mut`
+    // return), so its test has to carry the same gate.
+    #[cfg(not(hax_backend_fstar))]
+    proptest! {
+        #[test]
+        fn test_as_mut(x in any::<Option<u8>>()) {
+            let mut model = x.clone().inject();
+            let mut std_ = x;
+            match (super::Option::as_mut(&mut model), std_.as_mut()) {
+                (super::Option::Some(a), Some(b)) => prop_assert_eq!(*a, *b),
+                (super::Option::None, None) => {}
+                _ => prop_assert!(false, "as_mut disagreed with core"),
+            }
+        }
+    }
+
     proptest! {
         #[test]
         fn test_is_some(x in any::<Option<u8>>()) {

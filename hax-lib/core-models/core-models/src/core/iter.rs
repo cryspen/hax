@@ -554,13 +554,15 @@ pub mod adapters {
         pub struct Rev<I> {
             iter: I,
         }
+        // Gated like the `Iterator` impl below and `rev` itself: `Rev` is
+        // unreachable on the F* lane, so an ungated constructor is dead code there.
+        #[cfg(not(hax_backend_fstar))]
         impl<I> Rev<I> {
             pub fn new(iter: I) -> Rev<I> {
                 Rev { iter }
             }
         }
-        // `Rev<I>::next` delegates to the inner `next_back` (mirrors Aeneas.Std). Lean/
-        // charon backend only, matching the `rev` provided method and `DoubleEndedIterator`.
+        // `next` delegates to the inner `next_back`, as in Aeneas.Std.
         #[cfg(not(hax_backend_fstar))]
         impl<I: DoubleEndedIterator> Iterator for Rev<I> {
             type Item = <I as Iterator>::Item;
@@ -1351,10 +1353,8 @@ mod tests {
     impl<T: Clone> crate::iter::traits::double_ended::DoubleEndedIterator for VecIter<T> {
         fn next_back(&mut self) -> Option<T> {
             if self.pos < self.data.len() {
-                match self.data.pop() {
-                    std::option::Option::Some(v) => Option::Some(v),
-                    std::option::Option::None => Option::None,
-                }
+                // `pos < len` guarantees a back element, so `pop` cannot be `None`.
+                Option::Some(self.data.pop().unwrap())
             } else {
                 Option::None
             }
@@ -1608,6 +1608,24 @@ mod tests {
         }
     }
 
+    /// Unlike `Consumed`, this one DRIVES the iterator, so it observes the
+    /// items the `Result` shunt buffered (and covers `SeqIter::next`).
+    #[derive(PartialEq, Debug)]
+    struct Total(u32);
+
+    impl super::traits::collect::FromIterator<u8> for Total {
+        // Declares the trait's `Item = u8` bound (unlike `Consumed`, which omits
+        // it and so cannot read the items).
+        fn from_iter<T: super::traits::collect::IntoIterator<Item = u8>>(iter: T) -> Self {
+            let mut it = super::traits::collect::IntoIterator::into_iter(iter);
+            let mut acc = 0u32;
+            while let Option::Some(x) = Iterator::next(&mut it) {
+                acc += x as u32;
+            }
+            Total(acc)
+        }
+    }
+
     /// The adapters are lazy; draining them is what observes them.
     fn drain<I: Iterator>(mut it: I) -> Vec<I::Item> {
         let mut out = Vec::new();
@@ -1618,6 +1636,55 @@ mod tests {
     }
 
     proptest! {
+        /// The `Rev` adapter itself (its `next` delegates to the inner `next_back`).
+        /// Gated like the `DoubleEndedIterator` impls it relies on.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_rev_adapter(v in prop::collection::vec(any::<i32>(), 0..=20)) {
+            prop_assert_eq!(
+                drain(crate::iter::adapters::rev::Rev::new(VecIter::new(v.clone()))),
+                v.iter().copied().rev().collect::<Vec<_>>()
+            );
+        }
+
+        /// `take_while` latches: once the predicate fails, every later `next` is
+        /// `None` even if the inner iterator still has matching items.
+        #[test]
+        fn test_take_while_latches(bound in any::<i32>()) {
+            let v = vec![bound.saturating_sub(1), bound.saturating_add(1), bound.saturating_sub(1)];
+            let mut it = VecIter::new(v.clone()).take_while(|x: &i32| *x < bound);
+            let mut got = Vec::new();
+            // `drain` would stop at the first `None`; keep going, so the call
+            // after the predicate fails re-enters the latched branch.
+            for _ in 0..v.len() + 1 {
+                if let Option::Some(x) = it.next() {
+                    got.push(x);
+                }
+            }
+            prop_assert_eq!(got, v.iter().copied().take_while(|x| *x < bound).collect::<Vec<_>>());
+
+            // An all-accepting predicate: the inner iterator exhausts while the
+            // flag is still unset, which is a different arm from the latch above.
+            prop_assert_eq!(
+                drain(VecIter::new(v.clone()).take_while(|_x: &i32| true)),
+                v
+            );
+        }
+
+        /// `fuse` latches: `next` past exhaustion stays `None`.
+        #[test]
+        fn test_fuse_latches(v in prop::collection::vec(any::<i32>(), 0..=5)) {
+            let mut it = VecIter::new(v.clone()).fuse();
+            let mut got = Vec::new();
+            // Two extra `next` calls past the end exercise the `done` branch.
+            for _ in 0..v.len() + 2 {
+                if let Option::Some(x) = it.next() {
+                    got.push(x);
+                }
+            }
+            prop_assert_eq!(got, v);
+        }
+
         #[test]
         fn test_map(v in prop::collection::vec(any::<u8>(), 0..=20), table in any::<[u8; 256]>()) {
             let f = |x: u8| table[x as usize];
@@ -1723,6 +1790,16 @@ mod tests {
             let it = VecIter::new(v).map(crate::result::Result::<u8, u8>::Ok);
             let collected: crate::result::Result<Consumed, u8> = it.collect();
             prop_assert_eq!(collected, crate::result::Result::Ok(Consumed));
+        }
+
+        /// Collecting into a collector that actually drains: the `Ok`s buffered by
+        /// the `Result` shunt must reach `V::from_iter` in order.
+        #[test]
+        fn test_collect_into_result_total(v in prop::collection::vec(any::<u8>(), 0..=10)) {
+            let it = VecIter::new(v.clone()).map(crate::result::Result::<u8, u8>::Ok);
+            let collected: crate::result::Result<Total, u8> = it.collect();
+            let expected: u32 = v.iter().map(|&x| x as u32).sum();
+            prop_assert_eq!(collected, crate::result::Result::Ok(Total(expected)));
         }
 
         /// The `Err` case the previous axiomatised `from_iter` could not model:

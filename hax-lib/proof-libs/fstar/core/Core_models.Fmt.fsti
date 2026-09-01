@@ -86,9 +86,7 @@ val impl_12__write_fmt (f: t_Formatter) (args: t_Arguments)
       Prims.l_True
       (fun _ -> Prims.l_True)
 
-/// The carve lowers panic/assert messages to `Arguments::from_str(msg)`
-/// (the formatted value is discarded); model it as an opaque stub so those
-/// call sites resolve. Not a real `std::fmt::Arguments` method. Opaque
-/// because constructing the phantom `Arguments(&())` is a \"bottom\" aeneas
-/// can\'t translate — and the result is unused anyway.
-val impl_12__from_str (s: string) : Prims.Pure t_Arguments Prims.l_True (fun _ -> Prims.l_True)
+/// Not a real `std::fmt::Arguments` method: the carve lowers panic/assert
+/// messages to `Arguments::from_str(msg)` and discards the result, so this
+/// exists to make those call sites resolve.
+val impl_12__from_str (e_s: string) : Prims.Pure t_Arguments Prims.l_True (fun _ -> Prims.l_True)

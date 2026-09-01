@@ -87,14 +87,11 @@ impl<'a> Arguments<'a> {
     fn write_fmt(f: &mut Formatter, args: Arguments) -> Result {
         Result::Ok(())
     }
-    /// The carve lowers panic/assert messages to `Arguments::from_str(msg)`
-    /// (the formatted value is discarded); model it as an opaque stub so those
-    /// call sites resolve. Not a real `std::fmt::Arguments` method. Opaque
-    /// because constructing the phantom `Arguments(&())` is a "bottom" aeneas
-    /// can't translate — and the result is unused anyway.
-    #[hax_lib::opaque]
-    pub fn from_str(s: &str) -> Arguments<'a> {
-        crate::panicking::internal::panic()
+    /// Not a real `std::fmt::Arguments` method: the carve lowers panic/assert
+    /// messages to `Arguments::from_str(msg)` and discards the result, so this
+    /// exists to make those call sites resolve.
+    pub fn from_str(_s: &str) -> Arguments<'a> {
+        Arguments(&())
     }
 }
 
@@ -220,6 +217,15 @@ mod tests {
     fn test_write_str() {
         let mut f = Formatter;
         assert!(f.write_str("hello").is_ok());
+    }
+
+    // `Arguments` is a phantom, so reaching the constructor is the whole
+    // observable behaviour.
+    #[test]
+    fn test_arguments_from_str() {
+        let mut f = Formatter;
+        let args = Arguments::from_str("boom");
+        assert!(super::Arguments::write_fmt(&mut f, args).is_ok());
     }
 
     #[test]
