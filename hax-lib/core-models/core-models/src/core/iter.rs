@@ -18,7 +18,6 @@ pub mod traits {
             type Item;
             #[hax_lib::requires(true)]
             fn next(&mut self) -> Option<Self::Item>;
-
         }
 
         // This trait is an addition to deal with the default methods that the F*
@@ -117,7 +116,11 @@ pub mod traits {
 
         // opaque: while-let loop is not supported by hax FunctionalizeLoops
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        fn iter_fold<I: Iterator, B, F: FnMut(B, I::Item) -> B>(mut iter: I, init: B, mut f: F) -> B {
+        fn iter_fold<I: Iterator, B, F: FnMut(B, I::Item) -> B>(
+            mut iter: I,
+            init: B,
+            mut f: F,
+        ) -> B {
             let mut accum = init;
             while let Option::Some(x) = iter.next() {
                 accum = f(accum, x);

@@ -426,11 +426,15 @@ pub fn iter_max(n: usize) -> Option<usize> {
 // --- lazy adapters, concrete receiver; each terminated by a shimmed consumer ---
 
 pub fn iter_map(n: usize) -> usize {
-    (0..n).map(|x| x.wrapping_mul(2)).fold(0usize, |a, b| a.wrapping_add(b))
+    (0..n)
+        .map(|x| x.wrapping_mul(2))
+        .fold(0usize, |a, b| a.wrapping_add(b))
 }
 
 pub fn iter_enumerate(n: usize) -> usize {
-    (0..n).enumerate().fold(0usize, |a, (i, _x)| a.wrapping_add(i))
+    (0..n)
+        .enumerate()
+        .fold(0usize, |a, (i, _x)| a.wrapping_add(i))
 }
 
 pub fn iter_step_by(n: usize) -> usize {
@@ -450,7 +454,9 @@ pub fn iter_filter(n: usize) -> usize {
 }
 
 pub fn iter_filter_map(n: usize) -> usize {
-    (0..n).filter_map(|x| if x > 2 { Some(x) } else { None }).count()
+    (0..n)
+        .filter_map(|x| if x > 2 { Some(x) } else { None })
+        .count()
 }
 
 pub fn iter_take_while(n: usize) -> usize {
@@ -462,7 +468,9 @@ pub fn iter_skip_while(n: usize) -> usize {
 }
 
 pub fn iter_map_while(n: usize) -> usize {
-    (0..n).map_while(|x| if x < 5 { Some(x) } else { None }).count()
+    (0..n)
+        .map_while(|x| if x < 5 { Some(x) } else { None })
+        .count()
 }
 
 // PARKED — same unit-returning-closure `FnMut` inconsistency as `iter_for_each`.
@@ -533,7 +541,6 @@ pub fn iter_rev_slice(x: &[u8]) -> usize {
     x.iter().rev().count()
 }
 
-
 // PARKED — `DoubleEndedIterator for Enumerate<I>` needs both `ExactSizeIterator`
 // and `DoubleEndedIterator`, and BOTH bound orders fail: std's order breaks
 // extraction (`Enumerate<I>` reaches `Iterator` by two parent paths), the other
@@ -543,7 +550,6 @@ pub fn iter_rev_slice(x: &[u8]) -> usize {
 //   pub fn iter_rev_enumerate(x: &[u8]) -> usize {
 //       x.iter().enumerate().rev().count()
 //   }
-
 
 // --- slice `Iter` as receiver (a different concrete instance) ---
 
