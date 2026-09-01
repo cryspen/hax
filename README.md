@@ -106,10 +106,12 @@ Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub 
 hax is a cargo subcommand.
 The command `cargo hax` accepts the following subcommands:
 
+<!-- --8<-- [start:subcommands] -->
  * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND`.
  * **`extract`** (`cargo hax extract [NAME...]`): run the proof scenarios declared in `hax.toml`; without names, every scenario in scope runs. See [Proof scenarios](https://hax.cryspen.com/manual/tools/#proof-scenarios) in the manual.
  * **`json`** (`cargo hax json`): extract the typed AST of your crate as a JSON file.
  * **`tools`** (`cargo hax tools SUBCOMMAND`): manage the external tools hax depends on (e.g. Charon and Aeneas). See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in the manual.
+<!-- --8<-- [end:subcommands] -->
 
 ### Backends
 
@@ -127,9 +129,10 @@ Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimi
 
 ## Installation
 
+<!-- --8<-- [start:installation] -->
 hax is supported on Linux (`x86_64` and `aarch64`) and macOS (`aarch64`). Windows is not supported; use [WSL](https://learn.microsoft.com/windows/wsl/) there.
 
-All methods below install hax itself; the target provers (Lean, F\*, ...) must be installed separately (see the [manual](https://hax.cryspen.com/manual/)).
+All methods below install hax itself; the target provers (Lean, F\*, ...) must be installed separately (see the quick start of the respective backend in the [manual](https://hax.cryspen.com/manual/)).
 
 ### For the Lean backend
 
@@ -184,7 +187,11 @@ Prerequisites: a C compiler, [`opam`](https://opam.ocaml.org/), [`rustup`](https
 
 1. Clone this repo: `git clone https://github.com/cryspen/hax.git && cd hax`
 2. Create (or use an existing) opam *switch* by running `opam switch create hax 5.4.1`
-3. Run the [setup.sh](./setup.sh) script: `./setup.sh`
+3. Run the [setup.sh](https://github.com/cryspen/hax/blob/main/setup.sh) script: `./setup.sh`
+4. Run `cargo hax --help`
+
+Note: Please make sure that `$HOME/.cargo/bin` is in your `$PATH`, as
+that is where `setup.sh` will install hax.
 
 #### Nix
 
@@ -203,6 +210,7 @@ Prerequisites: [Docker](https://docs.docker.com/get-started/get-docker/).
 3. Get a shell: `docker run -it --rm -v /some/dir/with/a/crate:/work hax bash`
 
 Inside the container, hax is invoked as `cargo-hax` instead of `cargo hax`.
+<!-- --8<-- [end:installation] -->
 
 ## Supported Subset of the Rust Language
 

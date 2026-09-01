@@ -41,7 +41,10 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.superfences
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      # Fail the build on a missing snippet file or section instead of
+      # silently expanding it to nothing.
+      check_paths: true
   - pymdownx.keys
   - pymdownx.caret
   - pymdownx.mark
