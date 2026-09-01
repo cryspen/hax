@@ -144,6 +144,13 @@ pub(crate) fn future_args_last() -> bool {
     cfg!(hax_backend_lean)
 }
 
+/// Whether the decoration of a function without argument needs a padding unit argument. The legacy
+/// engine translates functions of arity zero to functions taking exactly one unit argument, while
+/// the aeneas engine keeps them of arity zero.
+pub(crate) fn pad_nullary_sig() -> bool {
+    !cfg!(hax_backend_lean)
+}
+
 /// Merge two `syn::Generics`, respecting lifetime orders
 pub(crate) fn merge_generics(x: Generics, y: Generics) -> Generics {
     Generics {
@@ -322,7 +329,7 @@ fn create_future_ident(name: &str) -> syn::Ident {
 /// we need a function of arity two.
 /// `fix_signature_arity` adds a `unit` if needed.
 fn add_unit_to_sig_if_needed(signature: &mut Signature) {
-    if signature.inputs.is_empty() {
+    if signature.inputs.is_empty() && pad_nullary_sig() {
         signature.inputs.push(parse_quote! {_: ()})
     }
 }

@@ -243,6 +243,43 @@ mod future_self {
     }
 }
 
+/// The extra tuple an `ensures` receives carries the `future(_)` values and the
+/// result. The engine lanes order it `(futures..., result)`; the aeneas/Lean lane
+/// emits `(result, futures...)`, matching the tuple an Aeneas-extracted function
+/// returns. Only the engine lanes run here, so these cases guard against that
+/// ordering leaking into them. Each gives its futures and result *distinct* types,
+/// which is what makes the order visible: `swap_and_mut_req_ens` above is
+/// all-`u32`, so a permutation there renames binders and nothing else.
+mod future_and_result_order {
+    /// One `&mut` input, non-unit result: `(u32, bool)` in the engine lanes,
+    /// `(bool, u32)` in the aeneas/Lean lane.
+    #[hax_lib::ensures(|result| *future(x) == x.wrapping_add(1) && result == (*future(x) == 0))]
+    fn one_mut_and_result(x: &mut u32) -> bool {
+        *x = x.wrapping_add(1);
+        *x == 0
+    }
+
+    /// Two `&mut` inputs: pins the futures' order relative to each other as
+    /// well as relative to the result. `(u8, u64, bool)` in the engine lanes,
+    /// `(bool, u8, u64)` in the aeneas/Lean lane.
+    #[hax_lib::ensures(|result| *future(a) == a.wrapping_add(1)
+        && *future(b) == b.wrapping_add(2)
+        && result == (*future(a) == 0))]
+    fn two_mut_and_result(a: &mut u8, b: &mut u64) -> bool {
+        *a = a.wrapping_add(1);
+        *b = b.wrapping_add(2);
+        *a == 0
+    }
+
+    /// One `&mut` input, unit result: the result binder is dropped altogether,
+    /// so what is left is futures-only and the reordering is a no-op — both
+    /// lanes agree here.
+    #[hax_lib::ensures(|_| *future(x) == x.wrapping_add(1))]
+    fn one_mut_no_result(x: &mut u32) {
+        *x = x.wrapping_add(1);
+    }
+}
+
 mod replace_body {
     #[hax_lib::fstar::replace_body("magic ${x}")]
     fn f(x: u8, y: u8) -> u8 {
