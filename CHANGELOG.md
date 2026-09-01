@@ -84,6 +84,11 @@ Changes to the Lean backend and library:
  - Lean library for the new Lean/Aeneas backend (#2080, #2146, #2130)
  - Legacy Lean: Hoist methods to allow (mutual) recursion between methods and associated items of
    the same impl (163)
+ - Model `Iterator`'s provided methods, so `map`/`filter`/`fold`/`collect`/`rev` and the other
+   adapters resolve when a downstream crate is extracted to Lean. Adds `DoubleEndedIterator`,
+   `ExactSizeIterator` and the `Rev`, `FilterMap`, `TakeWhile`, `SkipWhile`, `MapWhile`, `Inspect`
+   and `Fuse` adapters, makes `collect` into `Vec` and `Result` computable, and gives
+   `zip`/`chain` std's `IntoIterator` bound so a collection can be passed directly (#2200)
 
 Miscellaneous:
  - Update the required OCaml version to 5.4.1 (#2137)
