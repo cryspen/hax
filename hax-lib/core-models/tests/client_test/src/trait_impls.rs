@@ -1,9 +1,8 @@
 //! Trait impls a downstream crate writes for its *own* types.
 //!
-//! Guards one hazard: `Clone` gained `clone_from` and `Eq` an
-//! `assert_receiver_is_total_eq`, so both extracted structures carry an extra
-//! field. `patch_lean.py` injects a default for our own Lean, but **a client
-//! runs no patch script** — aeneas's output has to elaborate as-is.
+//! Guards the extra field on `Clone`: aeneas sets `clone_from` in every
+//! instance it builds for a crate that is not `core-models` itself, and these
+//! impls are what checks that it does. `Eq` carries no such field.
 
 #![allow(dead_code)]
 

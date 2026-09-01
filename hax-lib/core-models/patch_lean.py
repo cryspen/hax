@@ -378,37 +378,21 @@ def comment_out_num_bounds(text: str) -> str:
             for t in types for b in ("MIN", "MAX")]
     return comment_out_blocks(text, subs, trailer="provided by CoreModels.Core.FunsPrologue")
 
-def add_provided_method_defaults(text: str) -> str:
-    """Give the two provided trait methods a Lean-level default.
+def add_clone_from_default(text: str) -> str:
+    """Give `Clone::clone_from` a Lean-level default, as Aeneas's own
+    `Aeneas/Std/Core/Core.lean` does for its hand-written `clone.Clone`.
 
-    `core_models::clone::Clone::clone_from` and
-    `core_models::cmp::Eq::assert_receiver_is_total_eq` have default bodies in
-    Rust, and hax emits those bodies as the `@[trait_default]` functions
-    `clone.Clone.clone_from.default` /
-    `cmp.Eq.assert_receiver_is_total_eq.default`. Aeneas fills the field in for
-    every instance it generates *inside the same crate*, but omits it when it
-    builds an instance of an out-of-crate trait -- which is every
-    `#[derive(Clone)]`/`#[derive(Eq)]` in the `alloc` model, every hand-written
-    instance in `FunsPrologue.lean`/`HaxLib/`, and, crucially, every
-    `#[derive]`/`impl` in a *downstream* crate, which runs no patch script of
-    its own. Without a default in the structure those instances fail with
-    "Fields missing".
-
-    Aeneas's own `Aeneas/Std/Core/{Core,Cmp}.lean` declares the same two fields
-    with the same defaults, so this only brings the generated declaration in
-    line with it.
+    Aeneas fills the field in the instances it generates for a crate that
+    depends on us, but omits it in the three hand-written `impl Clone` blocks of
+    the `alloc` model (`Global`, `Box<T>`, `Vec<T>`), which then fail with
+    "Fields missing". Those cannot be hand-written in a prologue instead: the
+    instance's `clone` field refers to a function generated in the same file.
     """
-    text = replace(
+    return replace(
         "Clone.clone_from default",
         text,
-        "  clone_from : Self → Self → RustM Self\n",
-        "  clone_from : Self → Self → RustM Self := fun _ => clone\n",
-    )
-    return replace(
-        "Eq.assert_receiver_is_total_eq default",
-        text,
-        "  assert_receiver_is_total_eq : Self → RustM Unit\n",
-        "  assert_receiver_is_total_eq : Self → RustM Unit := fun _ => ok ()\n",
+        "  clone_from : Self \u2192 Self \u2192 RustM Self\n",
+        "  clone_from : Self \u2192 Self \u2192 RustM Self := fun _ => clone\n",
     )
 
 
@@ -733,7 +717,7 @@ def main() -> int:
                 end_marker="end CoreModels.core",
             )
         if path == types_path:
-            text = add_provided_method_defaults(text)
+            text = add_clone_from_default(text)
             text = comment_out_types(text)
         write(path, text)
         print(f"patched {CORE_DIR}.")

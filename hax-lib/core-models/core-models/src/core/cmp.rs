@@ -23,15 +23,7 @@ where
 }
 
 /// See [`std::cmp::Eq`]
-pub trait Eq: PartialEq<Self> {
-    /// See [`std::cmp::Eq::assert_receiver_is_total_eq`]. `#[derive(Eq)]` calls
-    /// it; the body is empty in real `core` too.
-    ///
-    /// Renamed upstream to `assert_fields_are_eq` after our nightly pins;
-    /// rename here and in Aeneas's Lean at the next toolchain bump.
-    #[cfg(not(hax_backend_fstar))]
-    fn assert_receiver_is_total_eq(&self) {}
-}
+pub trait Eq: PartialEq<Self> {}
 
 /// See [`std::cmp::Ordering`]
 #[cfg_attr(test, derive(PartialEq, Debug))]
@@ -681,13 +673,5 @@ mod tests {
             <() as PartialEq<()>>::ne(&(), &()),
             std::cmp::PartialEq::ne(&(), &())
         );
-    }
-
-    /// A no-op in real `core` too: all there is to check is that it runs.
-    #[cfg(not(hax_backend_fstar))]
-    #[test]
-    fn test_assert_receiver_is_total_eq() {
-        super::Eq::assert_receiver_is_total_eq(&());
-        super::Eq::assert_receiver_is_total_eq(&1u8);
     }
 }

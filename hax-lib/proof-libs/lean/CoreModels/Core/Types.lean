@@ -239,15 +239,14 @@ structure borrow.Borrow (Self : Type) (Borrowed : Type) where
   borrow : Self → RustM Borrowed
 
 /-- Trait declaration: [core_models::cmp::Eq]
-    Source: 'core-models/src/core/cmp.rs', lines 26:0-34:1
+    Source: 'core-models/src/core/cmp.rs', lines 26:0-26:32
     Visibility: public -/
 structure cmp.Eq (Self : Type) where
   PartialEqInst : cmp.PartialEq Self Self
-  assert_receiver_is_total_eq : Self → RustM Unit := fun _ => ok ()
 
 /-
 /-- [core_models::cmp::Ordering]
-    Source: 'core-models/src/core/cmp.rs', lines 38:0-45:1
+    Source: 'core-models/src/core/cmp.rs', lines 30:0-37:1
     Visibility: public -/
 @[discriminant isize [-1,0,1]]
 inductive cmp.Ordering where
@@ -257,7 +256,7 @@ inductive cmp.Ordering where
 -/
 
 /-- Trait declaration: [core_models::cmp::PartialOrd]
-    Source: 'core-models/src/core/cmp.rs', lines 49:0-85:1
+    Source: 'core-models/src/core/cmp.rs', lines 41:0-77:1
     Visibility: public -/
 structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   PartialEqInst : cmp.PartialEq Self Rhs
@@ -268,12 +267,12 @@ structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   ge : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Neq]
-    Source: 'core-models/src/core/cmp.rs', lines 88:0-91:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 80:0-83:1 -/
 structure cmp.Neq (Self : Type) (Rhs : Type) where
   neq : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Ord]
-    Source: 'core-models/src/core/cmp.rs', lines 159:0-163:1
+    Source: 'core-models/src/core/cmp.rs', lines 151:0-155:1
     Visibility: public -/
 structure cmp.Ord (Self : Type) where
   EqInst : cmp.Eq Self
@@ -281,7 +280,7 @@ structure cmp.Ord (Self : Type) where
   cmp : Self → Self → RustM cmp.Ordering
 
 /-- [core_models::cmp::Reverse]
-    Source: 'core-models/src/core/cmp.rs', lines 182:0-182:29
+    Source: 'core-models/src/core/cmp.rs', lines 174:0-174:29
     Visibility: public -/
 @[reducible]
 def cmp.Reverse (T : Type) := T

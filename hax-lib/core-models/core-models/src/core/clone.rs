@@ -15,8 +15,8 @@ pub trait Clone {
     fn clone(self) -> Self;
 
     /// See [`std::clone::Clone::clone_from`]. The model must carry it: aeneas
-    /// builds a `#[derive(Clone)]` instance as `{ clone := …, clone_from := … }`,
-    /// so an instance missing the field fails to elaborate.
+    /// sets `clone_from := clone.Clone.clone_from.default …` in every instance
+    /// it builds, so a trait without the field gets an unknown-field error.
     ///
     /// Real `core` writes into `*self`; like `clone`, the model consumes `self`
     /// and returns the new value.
