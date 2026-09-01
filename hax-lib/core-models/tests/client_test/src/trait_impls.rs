@@ -1,23 +1,13 @@
-//! Client-side trait impls, the ones a downstream crate writes for its *own*
-//! types.
+//! Trait impls a downstream crate writes for its *own* types.
 //!
-//! This module exists to guard one specific hazard. `core_models` gives
-//! `clone::Clone` a provided `clone_from` and `cmp::Eq` a provided
-//! `assert_receiver_is_total_eq`, so the extracted `core.clone.Clone` /
-//! `core.cmp.Eq` structures carry an extra field each. `core-models`'
-//! own Lean is post-processed (`patch_lean.py` gives both fields a Lean-level
-//! default), but **a downstream crate runs no patch script**: whatever aeneas
-//! emits for the instances below has to elaborate as-is. If aeneas omitted a
-//! defaulted field, the Lean here would fail with "Fields missing" and there
-//! would be no way for the client to fix it.
+//! Guards one hazard: `Clone` gained a provided `clone_from` and `Eq` an
+//! `assert_receiver_is_total_eq`, so both extracted structures carry an extra
+//! field. `core-models`' own Lean gets a default injected by `patch_lean.py`,
+//! but **a client runs no patch script** — so whatever aeneas emits for the
+//! instances below has to elaborate as-is, or the client is stuck.
 //!
-//! So: derive and hand-write `Clone`, `PartialEq` and `Eq` on client structs and
-//! enums, and use each one, so the instances are actually built and elaborated.
-//!
-//! `Debug` is *not* here: aeneas fails with an internal `Unreachable` on any
-//! client function whose signature mentions `core::fmt::Formatter`, so neither a
-//! `#[derive(Debug)]` nor a hand-written `impl Debug` can be extracted at all.
-//! See the comment further down, and `lib.rs`'s fmt section.
+//! `Debug` is absent: aeneas fails with an internal `Unreachable` on any client
+//! signature mentioning `core::fmt::Formatter`.
 
 #![allow(dead_code)]
 

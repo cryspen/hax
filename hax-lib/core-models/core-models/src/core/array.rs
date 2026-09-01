@@ -10,54 +10,30 @@ pub struct TryFromSliceError;
 struct Array<T, const N: usize>([T; N]);
 
 // Array impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
-#[hax_lib::attributes]
 impl<T> Array<T, 0> {}
 
-#[hax_lib::attributes]
 impl<T, const N: usize> Array<T, N> {
     /// See [`std::array::map`]
     // `FnMut` (not `Fn`) matches `std::array::map`'s bound; aeneas synthesises the
@@ -96,7 +72,6 @@ pub fn from_fn<T, const N: usize, F: FnMut(usize) -> T>(f: F) -> [T; N] {
 }
 
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
-#[hax_lib::attributes]
 impl<T, const N: usize> crate::iter::traits::collect::IntoIterator for [T; N] {
     type Item = T;
     type IntoIter = iter::IntoIter<T, N>;
@@ -190,7 +165,6 @@ impl<T, const N: usize> Index<RangeFull> for [T; N] {
 // Not for `hax_backend_fstar`: that model's blanket `impl<T> Clone for T`
 // already covers arrays, and both in scope fails coherence.
 #[cfg(not(hax_backend_fstar))]
-#[hax_lib::attributes]
 impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
     fn clone(self) -> Self {
         self
@@ -208,7 +182,6 @@ pub mod equality {
     use rust_primitives::slice::array_index;
 
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-    #[hax_lib::attributes]
     impl<T: crate::cmp::PartialEq<U>, U, const N: usize> crate::cmp::PartialEq<[U; N]> for [T; N] {
         #[cfg(not(hax_backend_fstar))]
         fn ne(&self, other: &[U; N]) -> bool {
@@ -237,7 +210,6 @@ pub mod equality {
 /// the `[T; 0]` one without the `T: Default` bound. Rust coherence rules out
 /// providing both that impl and the const-generic one below, so the model keeps
 /// only the const-generic form, which covers `N = 0` as well.
-#[hax_lib::attributes]
 impl<T: crate::default::Default, const N: usize> crate::default::Default for [T; N] {
     fn default() -> [T; N] {
         array_from_fn(|_i| <T as crate::default::Default>::default())
@@ -246,7 +218,6 @@ impl<T: crate::default::Default, const N: usize> crate::default::Default for [T;
 
 /// See [`std::fmt::Debug`] for `[T; N]`
 #[cfg(not(hax_backend_fstar))]
-#[hax_lib::attributes]
 impl<T: crate::fmt::Debug, const N: usize> crate::fmt::Debug for [T; N] {
     fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
         crate::fmt::Result::Ok(())
@@ -255,7 +226,6 @@ impl<T: crate::fmt::Debug, const N: usize> crate::fmt::Debug for [T; N] {
 
 /// See [`std::fmt::Debug`] for [`TryFromSliceError`]
 #[cfg(not(hax_backend_fstar))]
-#[hax_lib::attributes]
 impl crate::fmt::Debug for TryFromSliceError {
     fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
         crate::fmt::Result::Ok(())
@@ -263,7 +233,6 @@ impl crate::fmt::Debug for TryFromSliceError {
 }
 
 /// See [`std::convert::AsRef`] for `[T; N]`
-#[hax_lib::attributes]
 impl<T, const N: usize> crate::convert::AsRef<[T]> for [T; N] {
     fn as_ref(&self) -> &[T] {
         array_as_slice(self)
@@ -281,7 +250,6 @@ impl<T, const N: usize> crate::convert::AsRef<[T]> for [T; N] {
 // arguments have no F* model here anyway.
 #[cfg(not(hax_backend_fstar))]
 #[cfg_attr(charon, aeneas::exclude)]
-#[hax_lib::attributes]
 impl<T: Copy, const N: usize> crate::convert::TryFrom<&mut [T]> for [T; N] {
     type Error = TryFromSliceError;
     fn try_from(s: &mut [T]) -> crate::result::Result<[T; N], TryFromSliceError> {

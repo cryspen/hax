@@ -1,13 +1,10 @@
 //! Model of `core::panic` — the payload types a panic hook is handed.
 //!
-//! Every model panic diverges (see [`crate::panicking`]), so nothing here is
-//! ever constructed by the model itself; the types exist so that a client
-//! mentioning them has a name to resolve to, which is also all Aeneas's Lean
-//! library gives them (an axiom apiece).
+//! Every model panic diverges, so nothing here is ever constructed; the types
+//! exist so a client mentioning them has a name to resolve to, which is all
+//! Aeneas gives them too.
 //!
-//! Lean-only: the F* extraction drops this module through the `-i` flags on the
-//! `fstar-core-models` target in the Makefile.
-
+//! Lean-only: F* drops this module via the Makefile's `-i` flags.
 /// See [`std::panic::Location`]
 pub mod location {
     /// See [`std::panic::Location`]

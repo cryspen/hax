@@ -1,12 +1,7 @@
-//! Model of `core::ptr` — the alignment types only.
+//! Model of `core::ptr` — the alignment types only, since the model has no raw
+//! pointers. `alignment` is here because `alloc::layout::Layout` names it.
 //!
-//! The model has no raw pointers, so nothing else in `core::ptr` is
-//! representable. `alignment` is here because `core::alloc::layout::Layout`
-//! names it, and because a client that mentions `Alignment` needs the name.
-//!
-//! Lean-only: the F* extraction drops this module through the `-i` flags on the
-//! `fstar-core-models` target in the Makefile.
-
+//! Lean-only: F* drops this module via the Makefile's `-i` flags.
 /// See [`std::ptr::Alignment`]
 pub mod alignment {
     // Real `core` generates one variant per power of two on a 64-bit target,

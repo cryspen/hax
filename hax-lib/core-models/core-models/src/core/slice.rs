@@ -530,14 +530,12 @@ pub mod index {
         #[cfg(not(hax_backend_fstar))]
         fn get_unchecked_mut(self, slice: &mut T) -> &mut Self::Output;
 
-        /// See [`std::slice::SliceIndex::index_mut`]. The `&mut` counterpart of
-        /// `index`, and — as there — the same in-bounds projection as
-        /// `get_unchecked_mut`, with the precondition stated per impl.
+        /// See [`std::slice::SliceIndex::index_mut`]: the `&mut` counterpart of
+        /// `index`, same in-bounds projection, precondition per impl.
         //
-        // Declared last rather than next to `index`, which is where real core
-        // has it: the extracted structure lists its fields in declaration
-        // order, and moving `index` would reorder every published
-        // `core.slice.index.SliceIndex` literal.
+        // Declared last, not next to `index` as in real core: fields are
+        // extracted in declaration order, and moving `index` would reorder every
+        // published `SliceIndex` literal.
         #[cfg(not(hax_backend_fstar))]
         fn index_mut(self, slice: &mut T) -> &mut Self::Output;
     }

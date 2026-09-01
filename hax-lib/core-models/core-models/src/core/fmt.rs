@@ -269,26 +269,15 @@ impl<'a> Arguments<'a> {
         Arguments(&())
     }
 
-    /// See [`std::fmt::Arguments::new`]
+    /// See [`std::fmt::Arguments::new`]: `format_args!`'s non-literal entry
+    /// point. The model's `Arguments` has no payload, so neither argument is
+    /// read.
     ///
-    /// `format_args!`'s non-literal entry point. Real `core` transmutes the two
-    /// arrays into the pointers `Arguments` holds; the model's `Arguments` has
-    /// no payload, so neither argument is read.
-    ///
-    /// Unsafe in real `core` — the caller has to have produced a well-formed
-    /// template — but there is nothing here to be unsafe about.
-    ///
-    /// `aeneas::exclude`d, like every other `Arguments` constructor in this
-    /// module (they are `hax_lib::opaque`): aeneas fails with "There should be
-    /// no bottoms in the value" on a body that builds one. The Lean counterpart
-    /// is hand-written in
-    /// `../proof-libs/lean/CoreModels/Core/FunsPrologue.lean`.
-    ///
-    /// `hax_lib::exclude`d on the F* lane: this is the only thing in `fmt` that
-    /// mentions `fmt::rt`, and `fmt::rt` already mentions `fmt`, so its presence
-    /// closes a module cycle and hax collapses the whole of `Core_models.Fmt`
-    /// (and `Core_models.Fmt.Rt`) into one `Core_models.Fmt.Bundle` module,
-    /// renaming two published modules.
+    /// Excluded from aeneas like the other `Arguments` constructors ("There
+    /// should be no bottoms in the value"); the Lean is hand-written in
+    /// `FunsPrologue.lean`. Excluded from F* too: it is the only `fmt` item
+    /// mentioning `fmt::rt`, which closes a module cycle and makes hax collapse
+    /// and rename `Core_models.Fmt{,.Rt}`.
     #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
     #[cfg_attr(charon, aeneas::exclude)]
     fn new<const N: usize, const M: usize>(

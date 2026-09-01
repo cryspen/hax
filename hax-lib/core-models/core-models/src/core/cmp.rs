@@ -24,16 +24,13 @@ where
 
 /// See [`std::cmp::Eq`]
 pub trait Eq: PartialEq<Self> {
-    /// See [`std::cmp::Eq::assert_receiver_is_total_eq`]. Provided method:
-    /// `#[derive(Eq)]` emits a call to it, so an extracted client needs the
-    /// model to carry it. Real `core`'s body is empty too — the method exists
-    /// only to make the derive check that every field is `Eq`.
+    /// See [`std::cmp::Eq::assert_receiver_is_total_eq`]. `#[derive(Eq)]` calls
+    /// it, so an extracted client needs the model to carry it; real `core`'s
+    /// body is empty too.
     ///
-    /// Upstream renamed this to `assert_fields_are_eq` after the nightly hax
-    /// pins (it is still `assert_receiver_is_total_eq` in nightly-2025-11-08,
-    /// which is what charon extracts a client against); Aeneas's Lean library
-    /// already uses the new name, so the two have to be renamed in lockstep
-    /// with the next toolchain bump.
+    /// NOTE: upstream renamed it to `assert_fields_are_eq` after our nightly
+    /// pins, and Aeneas's Lean already uses the new name — rename both in
+    /// lockstep at the next toolchain bump.
     #[cfg(not(hax_backend_fstar))]
     fn assert_receiver_is_total_eq(&self) {}
 }

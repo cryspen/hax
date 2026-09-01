@@ -1,12 +1,7 @@
-//! Model of `core::pin`.
+//! Model of `core::pin`. Pinning has no runtime content, so both types are the
+//! `repr(transparent)` newtypes real `core` has and nothing else.
 //!
-//! Pinning is a compile-time discipline with no runtime content, so both types
-//! below are the `repr(transparent)` newtypes real `core` has and nothing else
-//! — which is what Aeneas's Lean library declares them as (an axiom apiece).
-//!
-//! Lean-only: the F* extraction drops this module through the `-i` flags on the
-//! `fstar-core-models` target in the Makefile.
-
+//! Lean-only: F* drops this module via the Makefile's `-i` flags.
 /// See [`std::pin::Pin`]
 pub struct Pin<Ptr> {
     pointer: Ptr,

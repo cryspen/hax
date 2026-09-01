@@ -32,7 +32,7 @@ let impl_23__each_ref (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Array 
 let from_fn = Rust_primitives.Slice.array_from_fn
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) usize =
+let impl_27 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) usize =
   {
     f_Output = v_T;
     f_index_pre = (fun (self_: t_Array v_T v_N) (i: usize) -> i <. v_N);
@@ -48,7 +48,7 @@ let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
 /// providing both that impl and the const-generic one below, so the model keeps
 /// only the const-generic form, which covers `N = 0` as well.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_30
+let impl_25
       (#v_T: Type0)
       (v_N: usize)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Default.t_Default v_T)
@@ -2508,7 +2508,7 @@ let impl_30__from__num: Core_models.Default.t_Default bool =
 type t_RangeTo (v_T: Type0) = { f_end:v_T }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_27 (#v_T: Type0) (v_N: usize)
+let impl_29 (#v_T: Type0) (v_N: usize)
     : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (t_RangeTo usize) =
   {
     f_Output = t_Slice v_T;
@@ -2524,7 +2524,7 @@ let impl_27 (#v_T: Type0) (v_N: usize)
 type t_RangeFrom (v_T: Type0) = { f_start:v_T }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_28 (#v_T: Type0) (v_N: usize)
+let impl_30 (#v_T: Type0) (v_N: usize)
     : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (t_RangeFrom usize) =
   {
     f_Output = t_Slice v_T;
@@ -2543,7 +2543,7 @@ type t_Range (v_T: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_26 (#v_T: Type0) (v_N: usize)
+let impl_28 (#v_T: Type0) (v_N: usize)
     : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (t_Range usize) =
   {
     f_Output = t_Slice v_T;
@@ -2561,7 +2561,7 @@ let impl_26 (#v_T: Type0) (v_N: usize)
 type t_RangeFull = | RangeFull : t_RangeFull
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_29 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) t_RangeFull =
+let impl_31 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) t_RangeFull =
   {
     f_Output = t_Slice v_T;
     f_index_pre = (fun (self: t_Array v_T v_N) (i: t_RangeFull) -> true);
@@ -3795,7 +3795,7 @@ class t_AsRef (v_Self: Type0) (v_T: Type0) = {
 
 /// See [`std::convert::AsRef`] for `[T; N]`
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_31 (#v_T: Type0) (v_N: usize) : t_AsRef (t_Array v_T v_N) (t_Slice v_T) =
+let impl_26 (#v_T: Type0) (v_N: usize) : t_AsRef (t_Array v_T v_N) (t_Slice v_T) =
   {
     f_as_ref_pre = (fun (self: t_Array v_T v_N) -> true);
     f_as_ref_post = (fun (self: t_Array v_T v_N) (out: t_Slice v_T) -> true);
