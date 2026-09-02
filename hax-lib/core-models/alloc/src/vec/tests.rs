@@ -358,3 +358,14 @@ fn test_remove_past_end_panics() {
     let i = std::hint::black_box(3usize);
     crate::testing::panics_like_core(|| model.remove(i), || real.remove(i));
 }
+
+/// `From<[T; N]>` — only in the default `vec` variant (the F* one carries the
+/// allocator parameter, which would need its own impl).
+#[cfg(not(hax_backend_fstar))]
+#[test]
+fn test_from_array() {
+    let a: [u8; 3] = [1, 2, 3];
+    let model: super::Vec<u8> = From::from(a);
+    let real: Vec<u8> = From::from(a);
+    assert_eq!(model, real.inject());
+}

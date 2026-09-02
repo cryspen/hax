@@ -189,7 +189,17 @@ CORE_MODELS_FSTAR_INTERFACES = \
      +!core_models::mem +!core_models::mem::*'
 
 
-CORE_MODELS_FSTAR_EXCLUDES = -core_models::iter::range::**
+# `core_models::{alloc,panic,pin,ptr,sync}` are the Lean-only modules: they hold
+# the types Aeneas's Lean library declares as axioms (`Layout`, `Alignment`,
+# `PanicInfo`, `Pin`, `AtomicBool`, …) and no operations at all, so there is
+# nothing for an F* proof to use, and shipping five more modules in the F*
+# bundle only adds names that can collide.
+CORE_MODELS_FSTAR_EXCLUDES = -core_models::iter::range::** \
+    -core_models::alloc -core_models::alloc::** \
+    -core_models::panic -core_models::panic::** \
+    -core_models::pin -core_models::pin::** \
+    -core_models::ptr -core_models::ptr::** \
+    -core_models::sync -core_models::sync::**
 
 
 STD_FSTAR_EXCLUDES = -core_models::**

@@ -20,6 +20,95 @@ set_option maxRecDepth 2048
 
 namespace CoreModels.core
 
+/-- [core_models::ptr::alignment::AlignmentEnum]
+    Source: 'core-models/src/core/ptr.rs', lines 11:16-16:17
+    Visibility: public -/
+@[discriminant isize]
+inductive ptr.alignment.AlignmentEnum where
+| _Align1Shl0 : ptr.alignment.AlignmentEnum
+| _Align1Shl1 : ptr.alignment.AlignmentEnum
+| _Align1Shl2 : ptr.alignment.AlignmentEnum
+| _Align1Shl3 : ptr.alignment.AlignmentEnum
+| _Align1Shl4 : ptr.alignment.AlignmentEnum
+| _Align1Shl5 : ptr.alignment.AlignmentEnum
+| _Align1Shl6 : ptr.alignment.AlignmentEnum
+| _Align1Shl7 : ptr.alignment.AlignmentEnum
+| _Align1Shl8 : ptr.alignment.AlignmentEnum
+| _Align1Shl9 : ptr.alignment.AlignmentEnum
+| _Align1Shl10 : ptr.alignment.AlignmentEnum
+| _Align1Shl11 : ptr.alignment.AlignmentEnum
+| _Align1Shl12 : ptr.alignment.AlignmentEnum
+| _Align1Shl13 : ptr.alignment.AlignmentEnum
+| _Align1Shl14 : ptr.alignment.AlignmentEnum
+| _Align1Shl15 : ptr.alignment.AlignmentEnum
+| _Align1Shl16 : ptr.alignment.AlignmentEnum
+| _Align1Shl17 : ptr.alignment.AlignmentEnum
+| _Align1Shl18 : ptr.alignment.AlignmentEnum
+| _Align1Shl19 : ptr.alignment.AlignmentEnum
+| _Align1Shl20 : ptr.alignment.AlignmentEnum
+| _Align1Shl21 : ptr.alignment.AlignmentEnum
+| _Align1Shl22 : ptr.alignment.AlignmentEnum
+| _Align1Shl23 : ptr.alignment.AlignmentEnum
+| _Align1Shl24 : ptr.alignment.AlignmentEnum
+| _Align1Shl25 : ptr.alignment.AlignmentEnum
+| _Align1Shl26 : ptr.alignment.AlignmentEnum
+| _Align1Shl27 : ptr.alignment.AlignmentEnum
+| _Align1Shl28 : ptr.alignment.AlignmentEnum
+| _Align1Shl29 : ptr.alignment.AlignmentEnum
+| _Align1Shl30 : ptr.alignment.AlignmentEnum
+| _Align1Shl31 : ptr.alignment.AlignmentEnum
+| _Align1Shl32 : ptr.alignment.AlignmentEnum
+| _Align1Shl33 : ptr.alignment.AlignmentEnum
+| _Align1Shl34 : ptr.alignment.AlignmentEnum
+| _Align1Shl35 : ptr.alignment.AlignmentEnum
+| _Align1Shl36 : ptr.alignment.AlignmentEnum
+| _Align1Shl37 : ptr.alignment.AlignmentEnum
+| _Align1Shl38 : ptr.alignment.AlignmentEnum
+| _Align1Shl39 : ptr.alignment.AlignmentEnum
+| _Align1Shl40 : ptr.alignment.AlignmentEnum
+| _Align1Shl41 : ptr.alignment.AlignmentEnum
+| _Align1Shl42 : ptr.alignment.AlignmentEnum
+| _Align1Shl43 : ptr.alignment.AlignmentEnum
+| _Align1Shl44 : ptr.alignment.AlignmentEnum
+| _Align1Shl45 : ptr.alignment.AlignmentEnum
+| _Align1Shl46 : ptr.alignment.AlignmentEnum
+| _Align1Shl47 : ptr.alignment.AlignmentEnum
+| _Align1Shl48 : ptr.alignment.AlignmentEnum
+| _Align1Shl49 : ptr.alignment.AlignmentEnum
+| _Align1Shl50 : ptr.alignment.AlignmentEnum
+| _Align1Shl51 : ptr.alignment.AlignmentEnum
+| _Align1Shl52 : ptr.alignment.AlignmentEnum
+| _Align1Shl53 : ptr.alignment.AlignmentEnum
+| _Align1Shl54 : ptr.alignment.AlignmentEnum
+| _Align1Shl55 : ptr.alignment.AlignmentEnum
+| _Align1Shl56 : ptr.alignment.AlignmentEnum
+| _Align1Shl57 : ptr.alignment.AlignmentEnum
+| _Align1Shl58 : ptr.alignment.AlignmentEnum
+| _Align1Shl59 : ptr.alignment.AlignmentEnum
+| _Align1Shl60 : ptr.alignment.AlignmentEnum
+| _Align1Shl61 : ptr.alignment.AlignmentEnum
+| _Align1Shl62 : ptr.alignment.AlignmentEnum
+| _Align1Shl63 : ptr.alignment.AlignmentEnum
+
+/-- [core_models::ptr::alignment::Alignment]
+    Source: 'core-models/src/core/ptr.rs', lines 28:4-28:40
+    Visibility: public -/
+@[reducible]
+def ptr.alignment.Alignment := ptr.alignment.AlignmentEnum
+
+/-- [core_models::alloc::layout::Layout]
+    Source: 'core-models/src/core/alloc.rs', lines 11:4-14:5
+    Visibility: public -/
+structure alloc.layout.Layout where
+  size : Std.Usize
+  align : ptr.alignment.Alignment
+
+/-- [core_models::alloc::layout::LayoutError]
+    Source: 'core-models/src/core/alloc.rs', lines 17:4-17:27
+    Visibility: public -/
+@[reducible]
+def alloc.layout.LayoutError := Unit
+
 /-- [core_models::array::TryFromSliceError]
     Source: 'core-models/src/core/array.rs', lines 4:0-4:29
     Visibility: public -/
@@ -63,7 +152,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → RustM Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 199:4-199:55
+    Source: 'core-models/src/core/array.rs', lines 240:4-240:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -85,10 +174,11 @@ structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
     (Self_Clause0_Output → Self))
 
 /-- Trait declaration: [core_models::clone::Clone]
-    Source: 'core-models/src/core/clone.rs', lines 13:0-16:1
+    Source: 'core-models/src/core/clone.rs', lines 13:0-25:1
     Visibility: public -/
 structure clone.Clone (Self : Type) where
   clone : Self → RustM Self
+  clone_from : Self → Self → RustM Self
 
 /-- Trait declaration: [core_models::cmp::PartialEq]
     Source: 'core-models/src/core/cmp.rs', lines 5:0-23:1
@@ -96,6 +186,52 @@ structure clone.Clone (Self : Type) where
 structure cmp.PartialEq (Self : Type) (Rhs : Type) where
   eq : Self → Rhs → RustM Bool
   ne : Self → Rhs → RustM Bool
+
+/-- Trait declaration: [core_models::default::Default]
+    Source: 'core-models/src/core/default.rs', lines 3:0-7:1
+    Visibility: public -/
+structure default.Default (Self : Type) where
+  default : RustM Self
+
+/-- [core_models::array::{impl core_models::default::Default for [T; N]}::default::closure]
+    Source: 'core-models/src/core/array.rs', lines 210:22-210:68 -/
+@[reducible]
+def array.DefaultArray.default.closure (T : Type) (N : Std.Usize) := Unit
+
+/-
+/-- [core_models::result::Result]
+    Source: 'core-models/src/core/result.rs', lines 3:0-8:1
+    Visibility: public -/
+@[discriminant isize]
+inductive result.Result (T : Type) (E : Type) where
+| Ok : T → result.Result T E
+| Err : E → result.Result T E
+-/
+
+/-- [core_models::fmt::Formatter]
+    Source: 'core-models/src/core/fmt.rs', lines 10:0-10:21
+    Visibility: public -/
+@[reducible]
+def fmt.Formatter := Unit
+
+/-- [core_models::fmt::Error]
+    Source: 'core-models/src/core/fmt.rs', lines 4:0-4:17
+    Visibility: public -/
+@[reducible]
+def fmt.Error := Unit
+
+/-- Trait declaration: [core_models::fmt::Debug]
+    Source: 'core-models/src/core/fmt.rs', lines 85:0-91:1
+    Visibility: public -/
+structure fmt.Debug (Self : Type) where
+  fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
+    fmt.Formatter)
+
+/-- Trait declaration: [core_models::convert::AsRef]
+    Source: 'core-models/src/core/convert.rs', lines 83:0-87:1
+    Visibility: public -/
+structure convert.AsRef (Self : Type) (T : Type) where
+  as_ref : Self → RustM T
 
 /-- Trait declaration: [core_models::borrow::Borrow]
     Source: 'core-models/src/core/borrow.rs', lines 2:0-5:1 -/
@@ -149,16 +285,6 @@ structure cmp.Ord (Self : Type) where
 @[reducible]
 def cmp.Reverse (T : Type) := T
 
-/-
-/-- [core_models::result::Result]
-    Source: 'core-models/src/core/result.rs', lines 3:0-8:1
-    Visibility: public -/
-@[discriminant isize]
-inductive result.Result (T : Type) (E : Type) where
-| Ok : T → result.Result T E
-| Err : E → result.Result T E
--/
-
 /-- Trait declaration: [core_models::convert::TryInto]
     Source: 'core-models/src/core/convert.rs', lines 5:0-10:1 -/
 structure convert.TryInto (Self : Type) (T : Type) (Self_Error : Type) where
@@ -194,45 +320,14 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
   Type) (N : Std.Usize) :=
   Slice T
 
-/-- Trait declaration: [core_models::convert::AsRef]
-    Source: 'core-models/src/core/convert.rs', lines 83:0-87:1
-    Visibility: public -/
-structure convert.AsRef (Self : Type) (T : Type) where
-  as_ref : Self → RustM T
-
 /-- [core_models::num::error::TryFromIntError]
     Source: 'core-models/src/core/num/error.rs', lines 6:0-6:42
     Visibility: public -/
 @[reducible]
 def num.error.TryFromIntError := Unit
 
-/-- Trait declaration: [core_models::default::Default]
-    Source: 'core-models/src/core/default.rs', lines 3:0-7:1
-    Visibility: public -/
-structure default.Default (Self : Type) where
-  default : RustM Self
-
-/-- [core_models::fmt::Formatter]
-    Source: 'core-models/src/core/fmt.rs', lines 10:0-10:21
-    Visibility: public -/
-@[reducible]
-def fmt.Formatter := Unit
-
-/-- [core_models::fmt::Error]
-    Source: 'core-models/src/core/fmt.rs', lines 4:0-4:17
-    Visibility: public -/
-@[reducible]
-def fmt.Error := Unit
-
-/-- Trait declaration: [core_models::fmt::Debug]
-    Source: 'core-models/src/core/fmt.rs', lines 25:0-31:1
-    Visibility: public -/
-structure fmt.Debug (Self : Type) where
-  fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
-    fmt.Formatter)
-
 /-- Trait declaration: [core_models::fmt::Display]
-    Source: 'core-models/src/core/fmt.rs', lines 19:0-22:1
+    Source: 'core-models/src/core/fmt.rs', lines 79:0-82:1
     Visibility: public -/
 structure fmt.Display (Self : Type) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
@@ -251,25 +346,25 @@ structure error.Error (Self : Type) where
 def f32.f32 := Unit
 
 /-- [core_models::fmt::Arguments]
-    Source: 'core-models/src/core/fmt.rs', lines 34:0-34:33
+    Source: 'core-models/src/core/fmt.rs', lines 94:0-94:33
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 108:4-115:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 244:4-251:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 117:4-119:5
+    Source: 'core-models/src/core/fmt.rs', lines 253:4-255:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 198:4-202:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 334:4-338:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -277,7 +372,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 204:4-209:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 340:4-345:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -285,7 +380,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 211:4-211:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 347:4-347:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
@@ -865,41 +960,80 @@ structure ops.deref.DerefMut (Self : Type) (Self_Clause0_Target : Type) where
     Self))
 
 /-- Trait declaration: [core_models::ops::drop::Drop]
-    Source: 'core-models/src/core/ops.rs', lines 307:4-309:5 -/
+    Source: 'core-models/src/core/ops.rs', lines 307:4-313:5
+    Visibility: public -/
 structure ops.drop.Drop (Self : Type) where
   drop : Self → RustM Self
 
 /-- [core_models::ops::range::RangeTo]
-    Source: 'core-models/src/core/ops.rs', lines 314:4-316:5
+    Source: 'core-models/src/core/ops.rs', lines 318:4-320:5
     Visibility: public -/
 structure ops.range.RangeTo (T : Type) where
   «end» : T
 
 /-- [core_models::ops::range::RangeFrom]
-    Source: 'core-models/src/core/ops.rs', lines 318:4-320:5
+    Source: 'core-models/src/core/ops.rs', lines 322:4-324:5
     Visibility: public -/
 structure ops.range.RangeFrom (T : Type) where
   start : T
 
 /-- [core_models::ops::range::Range]
-    Source: 'core-models/src/core/ops.rs', lines 322:4-325:5
+    Source: 'core-models/src/core/ops.rs', lines 326:4-329:5
     Visibility: public -/
 structure ops.range.Range (T : Type) where
   start : T
   «end» : T
 
 /-- [core_models::ops::range::RangeFull]
-    Source: 'core-models/src/core/ops.rs', lines 327:4-327:25
+    Source: 'core-models/src/core/ops.rs', lines 331:4-331:25
     Visibility: public -/
 @[reducible]
 def ops.range.RangeFull := Unit
 
 /-- [core_models::ops::range::RangeInclusive]
-    Source: 'core-models/src/core/ops.rs', lines 329:4-332:5
+    Source: 'core-models/src/core/ops.rs', lines 333:4-336:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
   start : T
   «end» : T
+
+/-- [core_models::panic::location::Location]
+    Source: 'core-models/src/core/panic.rs', lines 11:4-15:5
+    Visibility: public -/
+structure panic.location.Location where
+  filename : Str
+  line : Std.U32
+  col : Std.U32
+
+/-- [core_models::panic::panic_info::PanicInfo]
+    Source: 'core-models/src/core/panic.rs', lines 21:4-26:5
+    Visibility: public -/
+structure panic.panic_info.PanicInfo where
+  message : fmt.Arguments
+  location : panic.location.Location
+  can_unwind : Bool
+  force_no_backtrace : Bool
+
+/-- [core_models::panicking::AssertKind]
+    Source: 'core-models/src/core/panicking.rs', lines 24:0-31:1
+    Visibility: public -/
+@[discriminant isize]
+inductive panicking.AssertKind where
+| Eq : panicking.AssertKind
+| Ne : panicking.AssertKind
+| Match : panicking.AssertKind
+
+/-- [core_models::pin::Pin]
+    Source: 'core-models/src/core/pin.rs', lines 6:0-8:1
+    Visibility: public -/
+structure pin.Pin (Ptr : Type) where
+  pointer : Ptr
+
+/-- [core_models::pin::helper::PinHelper]
+    Source: 'core-models/src/core/pin.rs', lines 14:4-16:5
+    Visibility: public -/
+structure pin.helper.PinHelper (Ptr : Type) where
+  pointer : Ptr
 
 /-- [core_models::result::SeqIter]
     Source: 'core-models/src/core/result.rs', lines 353:0-353:53 -/
@@ -933,15 +1067,21 @@ structure slice.iter.ChunksExact (T : Type) where
 @[reducible]
 def slice.iter.Iter (T : Type) := rust_primitives.sequence.Seq T
 
+/-- [core_models::slice::iter::IterMut]
+    Source: 'core-models/src/core/slice.rs', lines 43:4-43:50
+    Visibility: public -/
+@[reducible]
+def slice.iter.IterMut (T : Type) := rust_primitives.sequence.Seq T
+
 /-- [core_models::slice::iter::Windows]
-    Source: 'core-models/src/core/slice.rs', lines 107:4-110:5
+    Source: 'core-models/src/core/slice.rs', lines 124:4-127:5
     Visibility: public -/
 structure slice.iter.Windows (T : Type) where
   size : Std.Usize
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 476:4-496:5
+    Source: 'core-models/src/core/slice.rs', lines 506:4-531:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
@@ -951,6 +1091,7 @@ structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   get_mut : Self → T → RustM ((option.Option Self_Output) × (option.Option
     Self_Output → T))
   get_unchecked_mut : Self → T → RustM (Self_Output × (Self_Output → T))
+  index_mut : Self → T → RustM (Self_Output × (Self_Output → T))
 
 /-- [core_models::str::error::Utf8Error]
     Source: 'core-models/src/core/str.rs', lines 40:4-40:25
@@ -967,5 +1108,17 @@ def str.iter.Split (T : Type) := T
     Source: 'core-models/src/core/str.rs', lines 57:4-60:5 -/
 structure str.traits.FromStr (Self : Type) (Self_Err : Type) where
   from_str : Str → RustM (result.Result Self Self_Err)
+
+/-- [core_models::sync::atomic::AtomicBool]
+    Source: 'core-models/src/core/sync.rs', lines 11:4-13:5
+    Visibility: public -/
+structure sync.atomic.AtomicBool where
+  v : Std.U8
+
+/-- [core_models::sync::atomic::AtomicU32]
+    Source: 'core-models/src/core/sync.rs', lines 16:4-18:5
+    Visibility: public -/
+structure sync.atomic.AtomicU32 where
+  v : Std.U32
 
 end CoreModels.core

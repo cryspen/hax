@@ -43,24 +43,7 @@ abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
 abbrev option.Option.Insts.CoreOpsTry_traitTry.branch :=
   @option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
 
-/-! ## Scalar Debug instances
-
-`Result::{unwrap, expect}` carry std's `E: Debug` bound, so extracted call sites
-pass a per-type dictionary. The model only has the blanket `impl<T> Debug for T`
-(a concrete `impl Debug for u8` would overlap it), so name the instances here. -/
-
-abbrev U8.Insts.CoreFmtDebug    : fmt.Debug Aeneas.Std.U8    := fmt.Debug.Blanket _
-abbrev U16.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.U16   := fmt.Debug.Blanket _
-abbrev U32.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.U32   := fmt.Debug.Blanket _
-abbrev U64.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.U64   := fmt.Debug.Blanket _
-abbrev U128.Insts.CoreFmtDebug  : fmt.Debug Aeneas.Std.U128  := fmt.Debug.Blanket _
-abbrev Usize.Insts.CoreFmtDebug : fmt.Debug Aeneas.Std.Usize := fmt.Debug.Blanket _
-abbrev I8.Insts.CoreFmtDebug    : fmt.Debug Aeneas.Std.I8    := fmt.Debug.Blanket _
-abbrev I16.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.I16   := fmt.Debug.Blanket _
-abbrev I32.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.I32   := fmt.Debug.Blanket _
-abbrev I64.Insts.CoreFmtDebug   : fmt.Debug Aeneas.Std.I64   := fmt.Debug.Blanket _
-abbrev I128.Insts.CoreFmtDebug  : fmt.Debug Aeneas.Std.I128  := fmt.Debug.Blanket _
-abbrev Isize.Insts.CoreFmtDebug : fmt.Debug Aeneas.Std.Isize := fmt.Debug.Blanket _
+/-! ## Scalar Debug instances -/
 
 /-! ## Provided methods kept OFF the `Iterator` structure
 
@@ -401,33 +384,6 @@ def iter.traits.iterator.Iterator.fuse.default
     (self : Self) :
     RustM (iter.adapters.fuse.Fuse Self) :=
   iter.adapters.fuse.Fuse.new self
-
-/-! ## `slice::iter_mut` / `IterMut`
-
-`IterMut` yields `&mut T`, so `next` returns a 3-tuple whose third component
-writes the element back — which cannot be an `Iterator` instance. The extraction
-calls this directly, as with Aeneas.Std's `SliceIter`. -/
-open Aeneas.Std in
-def slice.iter.IterMut.Insts.CoreIterTraitsIteratorIteratorMutAT.next {T : Type}
-    (it : slice.iter.IterMut T) :
-    Aeneas.Std.RustM ((option.Option T) × (slice.iter.IterMut T) ×
-      (slice.iter.IterMut T → option.Option T → slice.iter.IterMut T)) :=
-  if h : it.i < it.slice.length then
-    let x := it.slice[it.i]
-    let i := it.i
-    let it := { it with i := i + 1 }
-    let back := fun (it' : slice.iter.IterMut T) (o : option.Option T) =>
-      match o with
-      | option.Option.None => it'
-      | option.Option.Some x => { it' with slice := it'.slice.setAtNat i x }
-    .ok (option.Option.Some x, it, back)
-  else .ok (option.Option.None, it, fun it' _ => it')
-
-open Aeneas.Std in
-def slice.Slice.iter_mut {T : Type} (s : Aeneas.Std.Slice T) :
-    Aeneas.Std.RustM ((slice.iter.IterMut T) ×
-      (slice.iter.IterMut T → Aeneas.Std.Slice T)) :=
-  .ok ({ slice := s, i := 0 }, fun it => it.slice)
 
 /-! ## `str::as_bytes`
 

@@ -169,6 +169,13 @@ impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
     fn clone(self) -> Self {
         self
     }
+    // Real `core` overrides `clone_from` for arrays (it clones element-wise into
+    // the existing storage instead of allocating a new array). With `clone` the
+    // identity here, overwriting the receiver with the source is that same
+    // element-wise clone.
+    fn clone_from(self, source: Self) -> Self {
+        source
+    }
 }
 
 pub mod equality {
@@ -190,6 +197,40 @@ pub mod equality {
             }
             true
         }
+    }
+}
+
+// The items below are appended at the end of the module. hax's F* disambiguator
+// numbers a module's *annotated* impls top-to-bottom, and every impl above is
+// annotated, so appending here leaves the published `impl_NN` names untouched.
+
+/// See [`std::default::Default`] for `[T; N]`
+impl<T: crate::default::Default, const N: usize> crate::default::Default for [T; N] {
+    fn default() -> [T; N] {
+        array_from_fn(|_i| <T as crate::default::Default>::default())
+    }
+}
+
+/// See [`std::fmt::Debug`] for `[T; N]`
+#[cfg(not(hax_backend_fstar))]
+impl<T: crate::fmt::Debug, const N: usize> crate::fmt::Debug for [T; N] {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
+/// See [`std::fmt::Debug`] for [`TryFromSliceError`]
+#[cfg(not(hax_backend_fstar))]
+impl crate::fmt::Debug for TryFromSliceError {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
+/// See [`std::convert::AsRef`] for `[T; N]`
+impl<T, const N: usize> crate::convert::AsRef<[T]> for [T; N] {
+    fn as_ref(&self) -> &[T] {
+        array_as_slice(self)
     }
 }
 
@@ -223,6 +264,55 @@ mod tests {
     }
 
     use proptest::prelude::*;
+
+    #[test]
+    fn test_array_default() {
+        assert_eq!(
+            <[u8; 4] as crate::default::Default>::default(),
+            <[u8; 4] as std::default::Default>::default()
+        );
+        assert_eq!(
+            <[u8; 0] as crate::default::Default>::default(),
+            <[u8; 0] as std::default::Default>::default()
+        );
+    }
+
+    /// `Debug` for arrays and for `TryFromSliceError` render nothing, like every
+    /// other `Debug` in the model.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_array_debug() {
+        let mut f = crate::fmt::Formatter;
+        assert!(crate::fmt::Debug::fmt(&[1u8, 2, 3], &mut f).is_ok());
+        assert!(crate::fmt::Debug::fmt(&super::TryFromSliceError, &mut f).is_ok());
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    proptest! {
+        #[test]
+        fn test_array_clone_from(a in any::<[u8; 3]>(), b in any::<[u8; 3]>()) {
+            let mut std_dst = a;
+            std::clone::Clone::clone_from(&mut std_dst, &b);
+            prop_assert_eq!(crate::clone::Clone::clone_from(a, b), std_dst);
+        }
+
+        #[test]
+        fn test_array_as_ref(a in any::<[u8; 3]>()) {
+            prop_assert_eq!(
+                crate::convert::AsRef::<[u8]>::as_ref(&a),
+                std::convert::AsRef::<[u8]>::as_ref(&a)
+            );
+        }
+
+        #[test]
+        fn test_array_index_mut(a in any::<[u8; 3]>(), i in 0usize..3, v in any::<u8>()) {
+            let mut model = a;
+            let mut std_ = a;
+            *crate::ops::index::IndexMut::index_mut(&mut model, i) = v;
+            *std::ops::IndexMut::index_mut(&mut std_, i) = v;
+            prop_assert_eq!(model, std_);
+        }
+    }
 
     // Equal arrays are the case `ne` inverts, so reach that case explicitly.
     #[cfg(not(hax_backend_fstar))]

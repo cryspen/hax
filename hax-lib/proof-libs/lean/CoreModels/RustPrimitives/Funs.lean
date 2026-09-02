@@ -20,6 +20,14 @@ def rust_primitives.slice.slice_split_at
   {T : Type} : Slice T → Std.Usize → RustM ((Slice T) × (Slice T)) :=
   Aeneas.Std.core.slice.Slice.split_at
 
+/-- The `&mut` counterpart of `slice_split_at`. hax turns the two `&mut` returns
+    into a value pair plus a write-back function, which is exactly the shape of
+    Aeneas's own `core::slice::{[@T]}::split_at_mut`. -/
+def rust_primitives.slice.slice_split_at_mut
+  {T : Type} : Slice T → Std.Usize →
+  RustM (((Slice T) × (Slice T)) × (((Slice T) × (Slice T)) → Slice T)) :=
+  Aeneas.Std.core.slice.Slice.split_at_mut
+
 /-- Recursive helper function for `slice_contains` -/
 def rust_primitives.slice.slice_contains_go {T : Type}
     (inst : core.cmp.PartialEq T T) (x : T) : List T → RustM Bool
@@ -205,6 +213,59 @@ def rust_primitives.slice.array_index
 @[spec]
 def rust_primitives.sequence.seq_from_slice
   {T : Type} : Slice T → RustM (rust_primitives.sequence.Seq T) := fun s => ok s
+
+/-- [rust_primitives::sequence::seq_from_slice_mut]:
+    Name pattern: [rust_primitives::sequence::seq_from_slice_mut]
+    Visibility: public
+
+    The `&mut` counterpart of `seq_from_slice`, backing
+    `core_models::slice::Slice::iter_mut`. `Seq T` *is* `Slice T`, so the
+    sequence is the slice and the write-back is the identity -- the same shape
+    Aeneas gives `core::slice::{[@T]}::iter_mut`. -/
+@[rust_fun "rust_primitives::sequence::seq_from_slice_mut"]
+def rust_primitives.sequence.seq_from_slice_mut
+  {T : Type} :
+  Slice T → RustM ((rust_primitives.sequence.Seq T) ×
+    ((rust_primitives.sequence.Seq T) → Slice T)) :=
+  fun s => ok (s, fun s' => s')
+
+/-- [rust_primitives::sequence::seq_remove_mut]:
+    Name pattern: [rust_primitives::sequence::seq_remove_mut]
+    Visibility: public
+
+    `seq_remove` for a sequence of *mutable* references. The element is itself an
+    `&mut`, so hax gives it a write-back of its own: the third component takes
+    the sequence the caller ended up with and the (possibly updated) element, and
+    puts the element back where it was removed from. Composed with
+    `seq_from_slice_mut`'s write-back, that is what makes a write through an
+    `IterMut` item land in the original slice.
+
+    The length guard mirrors Aeneas's own `split_at_mut`: a sequence that would
+    overflow `Usize.max` once the element is put back cannot arise from the only
+    caller, and is returned unchanged. -/
+@[rust_fun "rust_primitives::sequence::seq_remove_mut"]
+def rust_primitives.sequence.seq_remove_mut
+  {T : Type} :
+  rust_primitives.sequence.Seq T → Std.Usize → RustM (T ×
+    (rust_primitives.sequence.Seq T) ×
+    ((rust_primitives.sequence.Seq T) → T →
+      (rust_primitives.sequence.Seq T))) := fun s i =>
+  if h : i.val < s.val.length then
+    let x := s.val.get ⟨i.val, h⟩
+    let rest : rust_primitives.sequence.Seq T :=
+      ⟨s.val.take i.val ++ s.val.drop (i.val + 1), by
+        simp only [List.length_append, List.length_take, List.length_drop]
+        have := s.property; omega⟩
+    let back : rust_primitives.sequence.Seq T → T →
+        rust_primitives.sequence.Seq T := fun s' x' =>
+      if h' : s'.val.length + 1 ≤ Std.Usize.max then
+        ⟨s'.val.take i.val ++ x' :: s'.val.drop i.val, by
+          simp only [List.length_append, List.length_cons, List.length_take,
+            List.length_drop]
+          omega⟩
+      else s'
+    ok (x, rest, back)
+  else fail .panic
 
 @[spec]
 def rust_primitives.sequence.seq_from_array

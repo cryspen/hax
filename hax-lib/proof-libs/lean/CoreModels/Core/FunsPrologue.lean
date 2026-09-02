@@ -254,6 +254,50 @@ def Shared1A.Insts.CoreCmpPartialOrdShared0B.gt
   | _ => ok false
 
 
+/-! ## Formatting arguments
+
+`fmt::Arguments::new` is `aeneas::exclude`d in `core-models/src/core/fmt.rs`
+(aeneas fails with "There should be no bottoms in the value" on any body that
+builds an `Arguments`, which is why every other constructor there is
+`hax_lib::opaque`), so its model lives here. `fmt.Arguments` is `Unit`. -/
+
+def fmt.Arguments.new {N M : Usize}
+    (_template : Array U8 N) (_args : Array fmt.rt.Argument M) :
+    RustM fmt.Arguments :=
+  ok ()
+
+/-! ## Comparing and cloning references
+
+Real core's `impl PartialEq<&B> for &A` and `impl Clone for &T`, which the model
+cannot provide from Rust: an impl whose self type is a reference gets the impl's
+lifetimes baked into its extracted name (see the `PartialOrd` pair above), and
+`Clone for &T` would overlap the model's own primitive instances. The names below
+are the ones an extracted client actually references -- read off
+`tests/client_test`'s extraction, like the `PartialOrd` pair. -/
+
+def Shared1A.Insts.CoreCmpPartialEqShared0B.eq {A B : Type}
+    (PartialEqInst : cmp.PartialEq A B) : A → B → RustM Bool :=
+  PartialEqInst.eq
+
+def Shared1A.Insts.CoreCmpPartialEqShared0B.ne {A B : Type}
+    (PartialEqInst : cmp.PartialEq A B) : A → B → RustM Bool :=
+  PartialEqInst.ne
+
+def Shared1A.Insts.CoreCmpPartialEqShared0B {A B : Type}
+    (PartialEqInst : cmp.PartialEq A B) : cmp.PartialEq A B :=
+  PartialEqInst
+
+/-- `Clone` for a shared reference: cloning `&T` copies the reference, which
+    extraction erases, so this is the identity even when `T` is not `Clone`. -/
+def Shared0T.Insts.CoreCloneClone.clone {T : Type} : T → RustM T := ok
+
+def Shared0T.Insts.CoreCloneClone (T : Type) : clone.Clone T := {
+  clone := Shared0T.Insts.CoreCloneClone.clone
+  -- `Clone` gained a `clone_from` provided method (see `clone.rs`); cloning a
+  -- shared reference is the identity, so overwriting is just the source.
+  clone_from := fun _ source => ok source
+}
+
 /-! ## Option -/
 
 def option.Option.unwrap_or :=

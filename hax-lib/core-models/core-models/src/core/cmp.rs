@@ -315,6 +315,37 @@ pub fn clamp<T: Ord>(value: T, min: T, max: T) -> T {
     }
 }
 
+// `PartialEq`/`Eq`/`PartialOrd`/`Ord` for the unit type, which real `core`
+// spells out in `cmp::impls`.
+
+/// See [`std::cmp::PartialEq`] for `()`
+impl PartialEq<()> for () {
+    fn eq(&self, other: &()) -> bool {
+        true
+    }
+    #[cfg(not(hax_backend_fstar))]
+    fn ne(&self, other: &()) -> bool {
+        false
+    }
+}
+
+/// See [`std::cmp::Eq`] for `()`
+impl Eq for () {}
+
+/// See [`std::cmp::PartialOrd`] for `()`
+impl PartialOrd<()> for () {
+    fn partial_cmp(&self, other: &()) -> Option<Ordering> {
+        Option::Some(Ordering::Equal)
+    }
+}
+
+/// See [`std::cmp::Ord`] for `()`
+impl Ord for () {
+    fn cmp(&self, other: &()) -> Ordering {
+        Ordering::Equal
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::{Ord, PartialEq, PartialOrd};
@@ -615,6 +646,32 @@ mod tests {
         crate::testing::panics_like_core(
             || super::clamp(5u8, 7u8, 3u8),
             || std::cmp::Ord::clamp(5u8, 7u8, 3u8),
+        );
+    }
+
+    /// The unit type's comparison impls, against std's.
+    #[test]
+    fn test_unit_cmp() {
+        assert_eq!(
+            <() as PartialEq<()>>::eq(&(), &()),
+            std::cmp::PartialEq::eq(&(), &())
+        );
+        assert_eq!(
+            <() as PartialOrd<()>>::partial_cmp(&(), &()),
+            std::cmp::PartialOrd::partial_cmp(&(), &()).inject()
+        );
+        assert_eq!(
+            <() as Ord>::cmp(&(), &()),
+            std::cmp::Ord::cmp(&(), &()).inject()
+        );
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_unit_ne() {
+        assert_eq!(
+            <() as PartialEq<()>>::ne(&(), &()),
+            std::cmp::PartialEq::ne(&(), &())
         );
     }
 }

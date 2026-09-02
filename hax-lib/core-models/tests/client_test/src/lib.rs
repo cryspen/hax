@@ -10,6 +10,7 @@
 #![allow(dead_code)]
 
 pub mod hax_lib;
+pub mod trait_impls;
 
 // ----- Option ---------------------------------------------------------------
 
@@ -244,6 +245,16 @@ pub fn array_write_range(a: &mut [u8; 8], src: &[u8]) {
 
 pub fn slice_len(x: &[u8]) -> usize {
     x.len()
+}
+
+/// `IterMut::next` yields an `&mut T`, so hax gives it a write-back return and
+/// no `Iterator` instance can hold it -- `patch_lean.py` drops the ill-typed
+/// record aeneas emits, keeping the function. This is what resolves to that
+/// function, and what would catch its name drifting.
+pub fn slice_iter_mut_bump_first(s: &mut [u32]) {
+    if let Some(x) = s.iter_mut().next() {
+        *x += 1;
+    }
 }
 
 // NOTE: slice indexing through `SliceIndex` is currently excluded from

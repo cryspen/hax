@@ -30,10 +30,27 @@
 // `cargo llvm-cov`, so normal builds and extraction never see this.
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 // int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
-#![cfg_attr(test, feature(step_trait, int_roundings))]
+// `fmt_helpers_for_derive`: the proptests compare against std's
+// `Formatter::debug_struct_fields_finish`, which is unstable.
+#![cfg_attr(test, feature(step_trait, int_roundings, fmt_helpers_for_derive))]
 // `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
 // from `cargo hax`.
 #![cfg_attr(charon, register_tool(aeneas))]
+
+// Lean-only modules. They carry no operations -- the types exist so that a
+// client mentioning them resolves, which is all Aeneas's Lean library gives
+// them too. The F* extraction drops them through the `-i` flags on the
+// `fstar-core-models` Makefile target.
+#[path = "core/alloc.rs"]
+pub mod alloc;
+#[path = "core/panic.rs"]
+pub mod panic;
+#[path = "core/pin.rs"]
+pub mod pin;
+#[path = "core/ptr.rs"]
+pub mod ptr;
+#[path = "core/sync.rs"]
+pub mod sync;
 
 #[path = "core/array.rs"]
 pub mod array;

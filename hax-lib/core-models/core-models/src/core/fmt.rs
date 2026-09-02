@@ -9,8 +9,68 @@ pub type Result = super::result::Result<(), Error>;
 /// See [`std::fmt::Formatter`]
 pub struct Formatter;
 
+// `Formatter::debug_struct_field{1..5}_finish`: one arity per field count, as
+// real `core` spells them out.
+macro_rules! debug_struct_field_finish {
+    ($( $name:ident : $( ($T:ident, $key:ident, $value:ident) ),+ );+ $(;)?) => {$(
+        #[doc = concat!("See [`std::fmt::Formatter::", stringify!($name), "`]")]
+        pub fn $name<$($T: Debug),+>(
+            &mut self,
+            struct_name: &str,
+            $($key: &str, $value: &$T),+
+        ) -> Result {
+            Result::Ok(())
+        }
+    )+};
+}
+
 impl Formatter {
     pub fn write_str(&mut self, data: &str) -> Result {
+        Result::Ok(())
+    }
+
+    // The `debug_*_finish` family is what `#[derive(Debug)]` expands to. The
+    // model's `Formatter` renders nothing, so they all succeed without reading
+    // their arguments. Real `core` takes the values as `&dyn Debug`; the model
+    // takes one generic reference per field, since `dyn` has no F* counterpart.
+
+    debug_struct_field_finish! {
+        debug_struct_field1_finish: (T1, name1, value1);
+        debug_struct_field2_finish: (T1, name1, value1), (T2, name2, value2);
+        debug_struct_field3_finish:
+            (T1, name1, value1), (T2, name2, value2), (T3, name3, value3);
+        debug_struct_field4_finish:
+            (T1, name1, value1), (T2, name2, value2), (T3, name3, value3),
+            (T4, name4, value4);
+        debug_struct_field5_finish:
+            (T1, name1, value1), (T2, name2, value2), (T3, name3, value3),
+            (T4, name4, value4), (T5, name5, value5);
+    }
+
+    /// See [`std::fmt::Formatter::debug_struct_fields_finish`]
+    ///
+    /// Real `core` asserts that the two slices have the same length; the model
+    /// keeps that panic, since it is the only observable behaviour left.
+    pub fn debug_struct_fields_finish<T: Debug>(
+        &mut self,
+        struct_name: &str,
+        names: &[&str],
+        values: &[&T],
+    ) -> Result {
+        if rust_primitives::slice::slice_length(names)
+            != rust_primitives::slice::slice_length(values)
+        {
+            crate::panicking::internal::panic()
+        }
+        Result::Ok(())
+    }
+
+    /// See [`std::fmt::Formatter::debug_tuple_field1_finish`]
+    pub fn debug_tuple_field1_finish<T1: Debug>(
+        &mut self,
+        struct_name: &str,
+        value1: &T1,
+    ) -> Result {
         Result::Ok(())
     }
 }
@@ -33,15 +93,74 @@ pub trait Debug {
 /// See [`std::fmt::Arguments`]
 pub struct Arguments<'a>(&'a ());
 
+// F*-only. Real `core` has no blanket `Debug`, and keeping one here is what
+// made the concrete impls below impossible to add (`E0119`). The F* model keeps
+// it: its `Clone`/`TrivialClone`/`UseCloned` are blanket too (see
+// `crate::clone`), and nothing in the F* lane needs the per-type names.
+#[cfg(hax_backend_fstar)]
 impl<T> Debug for T {
-    #[cfg(not(hax_backend_fstar))]
-    fn fmt(&self, f: &mut Formatter) -> Result {
-        Result::Ok(())
-    }
-    #[cfg(hax_backend_fstar)]
     fn dbg_fmt(&self, f: &mut Formatter) -> Result {
         Result::Ok(())
     }
+}
+
+/// See [`std::fmt::Debug`] for `&T`
+#[cfg(not(hax_backend_fstar))]
+impl<T: Debug + ?Sized> Debug for &T {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        (**self).fmt(f)
+    }
+}
+
+/// See [`std::fmt::Debug`] for `bool`
+#[cfg(not(hax_backend_fstar))]
+impl Debug for core::primitive::bool {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        Result::Ok(())
+    }
+}
+
+/// See [`std::fmt::Debug`] for `()`
+#[cfg(not(hax_backend_fstar))]
+impl Debug for () {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        Result::Ok(())
+    }
+}
+
+/// `core::fmt::num` — where real `core` puts the integer `Debug`/`Display`
+/// impls. The model mirrors the nesting so that the extracted names match the
+/// `core::fmt::num::{core::fmt::Debug<u8>}` paths a client references.
+#[cfg(not(hax_backend_fstar))]
+pub mod num {
+    use super::{Debug, Formatter, Result};
+
+    macro_rules! impl_debug_for_int {
+        ($($t:ty),*) => {
+            $(
+                impl Debug for $t {
+                    fn fmt(&self, f: &mut Formatter) -> Result {
+                        Result::Ok(())
+                    }
+                }
+            )*
+        };
+    }
+
+    impl_debug_for_int!(
+        core::primitive::u8,
+        core::primitive::u16,
+        core::primitive::u32,
+        core::primitive::u64,
+        core::primitive::u128,
+        core::primitive::usize,
+        core::primitive::i8,
+        core::primitive::i16,
+        core::primitive::i32,
+        core::primitive::i64,
+        core::primitive::i128,
+        core::primitive::isize
+    );
 }
 
 // No blanket `Display` (unlike `Debug` above); spell out the integer impls,
@@ -96,6 +215,23 @@ impl<'a> Arguments<'a> {
     /// a model of what `core` does — only enough to have a value.
     #[hax_lib::opaque]
     pub fn from_str(_s: &str) -> Arguments<'a> {
+        Arguments(&())
+    }
+
+    /// See [`std::fmt::Arguments::new`]: `format_args!`'s non-literal entry
+    /// point. The model's `Arguments` has no payload, so neither argument is
+    /// read.
+    ///
+    /// Excluded from Lean like the other `Arguments` constructors ("There
+    /// should be no bottoms in the value"); hand-written in `FunsPrologue.lean`.
+    /// Excluded from F* too: it is the only `fmt` item mentioning `fmt::rt`,
+    /// whose module cycle makes hax rename `Core_models.Fmt{,.Rt}`.
+    #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
+    fn new<const N: usize, const M: usize>(
+        template: &'a [core::primitive::u8; N],
+        args: &'a [rt::Argument<'a>; M],
+    ) -> Arguments<'a> {
         Arguments(&())
     }
 }
@@ -240,6 +376,99 @@ mod tests {
         assert!(super::Debug::fmt(&1u8, &mut f).is_ok());
         #[cfg(hax_backend_fstar)]
         assert!(super::Debug::dbg_fmt(&1u8, &mut f).is_ok());
+    }
+
+    /// `Arguments::new` is `format_args!`'s non-literal entry point; the
+    /// model's `Arguments` has no payload, so construction is all there is.
+    #[test]
+    fn test_arguments_new() {
+        let template: [u8; 0] = [];
+        let args: [super::rt::Argument; 0] = [];
+        let _ = Arguments::new(&template, &args);
+    }
+
+    /// The `debug_*_finish` family: `#[derive(Debug)]`'s entry points. Like
+    /// everything else here they render nothing and succeed.
+    #[test]
+    fn test_debug_finish_family() {
+        let mut f = Formatter;
+        assert!(f.debug_struct_field1_finish("S", "a", &1u8).is_ok());
+        assert!(
+            f.debug_struct_field2_finish("S", "a", &1u8, "b", &2u16)
+                .is_ok()
+        );
+        assert!(
+            f.debug_struct_field3_finish("S", "a", &1u8, "b", &2u16, "c", &3u32)
+                .is_ok()
+        );
+        assert!(
+            f.debug_struct_field4_finish("S", "a", &1u8, "b", &2u16, "c", &3u32, "d", &4u64)
+                .is_ok()
+        );
+        assert!(
+            f.debug_struct_field5_finish(
+                "S", "a", &1u8, "b", &2u16, "c", &3u32, "d", &4u64, "e", &5u128
+            )
+            .is_ok()
+        );
+        assert!(f.debug_tuple_field1_finish("S", &1u8).is_ok());
+
+        let names: [&str; 2] = ["a", "b"];
+        let (v1, v2) = (1u8, 2u8);
+        let values: [&u8; 2] = [&v1, &v2];
+        assert!(f.debug_struct_fields_finish("S", &names, &values).is_ok());
+    }
+
+    /// `debug_struct_fields_finish` asserts that the two slices agree in
+    /// length; real `core` panics too, which is what the std side below shows
+    /// (its version is only reachable from inside a `Debug` impl).
+    #[test]
+    fn test_debug_struct_fields_finish_length_mismatch() {
+        struct Mismatch;
+        impl std::fmt::Debug for Mismatch {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                let names: [&str; 2] = ["a", "b"];
+                let values: [&dyn std::fmt::Debug; 1] = [&1u8];
+                f.debug_struct_fields_finish("S", &names, &values)
+            }
+        }
+
+        let names: [&str; 2] = ["a", "b"];
+        let v = 1u8;
+        let values: [&u8; 1] = [&v];
+        crate::testing::panics_like_core(
+            || Formatter.debug_struct_fields_finish("S", &names, &values),
+            || format!("{:?}", Mismatch),
+        );
+    }
+
+    /// The concrete `Debug` impls: `&T`, `bool`, `()` and, through
+    /// `fmt::num`, every integer type. Only in the default configuration --
+    /// under `hax_backend_fstar` the blanket impl covers everything and the
+    /// method is called `dbg_fmt`.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_concrete_debug_impls() {
+        fn check<T: super::Debug>(x: &T) {
+            let mut f = Formatter;
+            assert!(super::Debug::fmt(x, &mut f).is_ok());
+        }
+        check(&true);
+        check(&());
+        check(&1u8);
+        // `&T` goes through the reference impl, which forwards to `T`'s.
+        check(&&1u8);
+        check(&1u16);
+        check(&1u32);
+        check(&1u64);
+        check(&1u128);
+        check(&1usize);
+        check(&-1i8);
+        check(&-1i16);
+        check(&-1i32);
+        check(&-1i64);
+        check(&-1i128);
+        check(&-1isize);
     }
 
     macro_rules! display_tests {

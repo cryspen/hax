@@ -63,10 +63,7 @@ Changes to the hax-lib crate:
    has to reach rustc too so that the `cfg(hax)` dependencies resolve (#2087)
 
 Changes to core models:
- - Improve core models library (#2049, #2157, #2077, #2160)
- - Model `IndexMut` for `[T; N]`, so writing through an array range
-   (`arr[a..b].copy_from_slice(src)`) extracts instead of referring to a nonexistent
-   `core.Array.Insts.CoreOpsIndexIndexMut.index_mut` (#2187, fix #2174)
+ - Improve core models library (#2049, #2157, #2077, #2160, #2187, #2199)
  - Add core model testing infrastructure
 
 Changes to the F* backend and library:

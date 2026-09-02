@@ -13,6 +13,15 @@
 pub trait Clone {
     /// See [`std::clone::Clone::clone`]
     fn clone(self) -> Self;
+
+    /// See [`std::clone::Clone::clone_from`]
+    #[cfg(not(hax_backend_fstar))]
+    fn clone_from(self, source: Self) -> Self
+    where
+        Self: Sized,
+    {
+        source.clone()
+    }
 }
 
 // In our model for F*, everything is clonable
@@ -67,6 +76,17 @@ mod tests {
                     #[test]
                     fn [<test_clone_ $t>](x in any::<$t>()) {
                         prop_assert_eq!(crate::clone::Clone::clone(x.inject()), x.clone().inject());
+                    }
+
+                    #[cfg(not(hax_backend_fstar))]
+                    #[test]
+                    fn [<test_clone_from_ $t>](x in any::<$t>(), y in any::<$t>()) {
+                        let mut std_dst = x;
+                        std::clone::Clone::clone_from(&mut std_dst, &y);
+                        prop_assert_eq!(
+                            crate::clone::Clone::clone_from(x.inject(), y.inject()),
+                            std_dst.inject()
+                        );
                     }
                 }
             )* }

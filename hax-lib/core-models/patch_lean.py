@@ -378,6 +378,43 @@ def comment_out_num_bounds(text: str) -> str:
             for t in types for b in ("MIN", "MAX")]
     return comment_out_blocks(text, subs, trailer="provided by CoreModels.Core.FunsPrologue")
 
+def drop_itermut_iterator_instance(text: str) -> str:
+    """Drop the generated `Iterator` *instance* for `slice::iter::IterMut`.
+
+    `IterMut::next` yields an `&'a mut T`, so hax gives it a write-back and the
+    extracted function has type
+    `Self -> Result ((Option T) x Self x (Self -> Option T -> Self))` -- exactly
+    the shape Aeneas gives
+    `core::slice::iter::{Iterator<IterMut<'a, @T>, &'a mut @T>}::next`. That does
+    not fit `Iterator`'s `next` field, so the instance record aeneas emits next
+    to it is ill-typed. Aeneas's own library has the same asymmetry: the `next`
+    function exists, the `Iterator` instance does not.
+
+    Only the record is dropped -- hence the exact ident match rather than
+    `comment_out_blocks`, whose containment mode would take the `::next`
+    function with it. That function is what a client referencing
+    `core::slice::iter::{Iterator<IterMut<...>, &mut _>}::next` resolves to.
+    """
+    target = (
+        "core_models::slice::iter::{impl "
+        "core_models::iter::traits::iterator::Iterator<&'a mut T> for "
+        "core_models::slice::iter::IterMut<'a, T>}"
+    )
+    trailer = (
+        "IterMut::next has a write-back return, which no Iterator instance "
+        "can hold (Aeneas has no such instance either)"
+    )
+
+    def fn(ident: str, block_lines: list[str]) -> str | None:
+        if ident != target:
+            return None
+        _record("drop IterMut Iterator instance", 1)
+        return "/-\n" + "\n".join(block_lines) + "\n-/  -- " + trailer
+
+    _MATCHES.setdefault("drop IterMut Iterator instance", 0)
+    return transform_blocks(text, fn)
+
+
 def comment_out_types(text: str) -> str:
     """
     Some type declarations in Types.lean are commented out: most are provided
@@ -652,6 +689,7 @@ def main() -> int:
             text = fix_result_match(text)
             text = rename_iter_param(text)
             text = qualify_result_monad_impls(text)
+            text = drop_itermut_iterator_instance(text)
             # The `StepBy` iterator monomorphises onto the concrete `Usize`
             # `Step` instance, which Aeneas emits *later* in the file. Hoist
             # the adapter past it so the reference resolves.
