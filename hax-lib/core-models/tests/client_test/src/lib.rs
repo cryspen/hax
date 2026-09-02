@@ -120,6 +120,22 @@ pub fn ge_usize(x: usize, y: usize) -> bool {
     x >= y
 }
 
+/// Derived impls whose provided methods the crate never calls: charon drops
+/// those unless they are named as translation roots, and Lean then rejects the
+/// impl (cryspen/hax#2172).
+#[derive(PartialEq)]
+pub enum DerivedPartialEq {
+    A,
+    B,
+}
+
+#[derive(PartialEq, Eq, PartialOrd, Ord)]
+pub struct DerivedOrd(pub u8);
+
+pub fn derived_eq(x: &DerivedPartialEq, y: &DerivedPartialEq) -> bool {
+    x == y
+}
+
 // ----- Bitwise --------------------------------------------------------------
 
 pub fn xor_u64(x: u64, y: u64) -> u64 {

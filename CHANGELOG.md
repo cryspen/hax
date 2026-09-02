@@ -41,6 +41,7 @@ Changes to cargo-hax:
    run's target directory are accepted, and a lost or partial report set fails the run instead
    of silently producing an incomplete extraction
  - Exit with a failing status whenever an error was reported
+ - Make traits from `core` with default methods visible to charon so that impls of these traits have the right defaulted implementations (#2172)
 
 Changes to the hax-lib crate:
  - Add `hax_lib::ensures_ref`, an `ensures` whose closure takes the result by reference,
