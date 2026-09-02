@@ -64,7 +64,7 @@ jobs:
               echo ''
               echo 'Once done, re-run this workflow by clicking **"Re-run jobs"**.'
               echo ''
-              cat CONTRIBUTING.md | awk '/^### Changelog$/{f=1;next} /^##?#? /&&f{exit} f' | sed 's/^###\s*//'
+              cat CONTRIBUTING.md | awk '/^## Changelog$/{f=1;next} /^#{1,2} /&&f{exit} f' | sed 's/^##\s*//'
             } > error-message
             cat error-message >> $GITHUB_STEP_SUMMARY
             exit 1

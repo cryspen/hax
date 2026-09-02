@@ -125,14 +125,21 @@ window of 2 days, otherwise the PR will be reverted.
  - Try to avoid exceptions, if possible.
  - Never use `==`, which is the physical equality, and almost never what you want.
 
-### Changelog
+## Contributing to `core-models`
+
+Contributions to the model of Rust's `core` and `alloc` libraries are
+welcome. See
+[`hax-lib/core-models/README.md`](./hax-lib/core-models/README.md#contributing)
+for the instructions.
+
+## Changelog
 Our changelog format is based on https://keepachangelog.com/.
 Please add an entry under the `## [Unreleased]` section, in a subsection (`Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` -- see https://keepachangelog.com/en/1.0.0/#how) for each notable change.
 A release turns the `## [Unreleased]` heading into the version heading, so the section is absent right after a release; recreate it at the top of the file in that case.
 
 Please prefix with `engine:`, `frontend:` or similar.
 
-#### Should I add an entry to `CHANGELOG.md`?
+### Should I add an entry to `CHANGELOG.md`?
 
 **Include in CHANGELOG.md:**
  - New features and enhancements
