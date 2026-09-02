@@ -11,6 +11,10 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - uses: DeterminateSystems/determinate-nix-action@v3
+    - uses: cachix/cachix-action@v15
+      with:
+        name: hax
+        skipPush: true
     - uses: actions/setup-node@v5
       with:
         node-version: lts/*
@@ -50,20 +54,13 @@ jobs:
         retention-days: 30
     - name: Open an issue on failure
       if: failure() && github.event_name == 'schedule'
+      uses: ./.github/actions/open-issue-once
       env:
         GH_TOKEN: ${{ github.token }}
-        TITLE: Scheduled Playwright docs tests are failing
-        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-      run: |
-        set -euo pipefail
-        open=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
-        if [ -n "$open" ]; then
-          echo "Issue #$open is already open, not opening another one."
-          exit 0
-        fi
-        gh issue create --title "$TITLE" --label tests --body \
-          "The scheduled [Playwright Docs Tests]($RUN_URL) run failed on \`$GITHUB_SHA\`.
+      with:
+        label: tests
+        title: Scheduled Playwright docs tests are failing
+        body: |-
+          The scheduled [Playwright Docs Tests](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) run failed on `${{ github.sha }}`.
 
-        Download the \`playwright-report\` artifact from that run to see which
-        checks failed. This issue is opened once per breakage; while it stays
-        open, subsequent failing runs will not open or comment on anything."
+          Download the `playwright-report` artifact from that run to see which checks failed.

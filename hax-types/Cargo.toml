@@ -6,7 +6,7 @@ license.workspace = true
 homepage.workspace = true
 edition.workspace = true
 repository.workspace = true
-readme.workspace = true
+readme = "README.md"
 description = "Helper crate defining the types used to communicate between the custom rustc driver, the CLI and the engine of hax."
 
 [dependencies]

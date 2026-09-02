@@ -4,7 +4,7 @@ weight: 100
 
 # Tool versions and proof scenarios
 
-Some hax backends rely on external tools. The `lean` backend (`cargo hax into lean`) runs the [aeneas](https://github.com/AeneasVerif/aeneas) pipeline, which needs the `aeneas` and `charon` binaries. hax manages these binaries for you: it knows which versions a project needs, downloads pre-built binaries on demand, verifies them against a manifest shipped with the release, and caches them so later runs reuse them.
+Some hax backends rely on external tools. The `lean` backend (`cargo hax into lean`) runs the [Aeneas](https://github.com/AeneasVerif/aeneas) pipeline, which needs the `aeneas` and `charon` binaries. hax manages these binaries for you: it knows which versions a project needs, downloads pre-built binaries on demand, verifies them against a manifest shipped with the release, and caches them so later runs reuse them.
 
 This page covers the `cargo hax tools` subcommands, the `hax.toml` file that pins versions per project, how a version is resolved, how to point hax at a locally built binary instead, and the proof scenarios that store complete extraction configurations in `hax.toml` (see [Proof scenarios](#proof-scenarios)).
 
@@ -179,7 +179,13 @@ A relative path is resolved against the directory of the `hax.toml` declaring it
 
 ## The `hax-lib` compatibility check
 
-`cargo-hax` and `hax-lib` are released together under one version number, and that pair is the only combination that is tested. Before processing a crate, hax checks that the crate's direct `hax-lib` dependency matches the binary's own version exactly (a 0.3.7 binary accepts only `hax-lib` 0.3.7). A crate with no direct `hax-lib` dependency is not checked, and neither are workspace members this run does not process. When the run selects packages itself, a plain `-C -p <member> ;` selection is checked exactly, against the named members only: a `-p` build also compiles those members' workspace-member dependencies, and an incompatible `hax-lib` on one of those passes the check and fails at compile time. For any broader selection (`-C --workspace ;`, `--exclude`, path or version specs) hax leaves the selection to Cargo and aborts only on an incompatibility no selection can avoid, that is one shared by every member of the workspace; a workspace mixing compatible and incompatible `hax-lib` versions fails at compile time instead.
+`cargo-hax` and `hax-lib` are released together under one version number, and that pair is the only combination that is tested. Before processing a crate, hax checks that the crate's direct `hax-lib` dependency matches the binary's own version exactly (a 0.3.7 binary accepts only `hax-lib` 0.3.7).
+
+The scope of the check:
+
+- A crate with no direct `hax-lib` dependency is not checked, and neither are workspace members this run does not process.
+- A plain `-C -p <member> ;` selection is checked exactly, against the named members only. A `-p` build also compiles those members' workspace-member dependencies, and an incompatible `hax-lib` on one of those passes the check and fails at compile time.
+- For any broader selection (`-C --workspace ;`, `--exclude`, path or version specs) hax leaves the selection to Cargo and aborts only on an incompatibility no selection can avoid, that is one shared by every member of the workspace; a workspace mixing compatible and incompatible `hax-lib` versions fails at compile time instead.
 
 If the check fails, hax aborts before running any tool and prints the mismatch with a remedy:
 
@@ -210,11 +216,27 @@ Scenario names consist of lowercase alphanumeric segments starting with a letter
 
 ### Scenario keys
 
-Keys applying to every backend: `backend`, `package`, `output-dir`, `features`, `all-features`, `no-default-features`, and `env`. The feature keys select cargo features for the build; `env` entries are set for every process a scenario run spawns, cargo included, so build-affecting variables such as `RUSTFLAGS` take effect. The `DRIVER_HAX_FRONTEND*` variables hax communicates through internally cannot be set.
+Keys applying to every backend: `backend`, `package`, `output-dir`, `features`, `all-features`, `no-default-features`, and `env`.
 
-Item selection is unified across backends as `include` (root patterns whose transitive dependencies are extracted; absent means the whole crate), `exclude` (drop items entirely), `opaque` (extract signature-only), and `default-opaques` (whether the built-in opaque set applies, default `true`). In this version, these keys work for the Lean backend only, where they compile to charon's `--start-from`, `--exclude`, and `--opaque` flags and use charon's name-pattern language (paths, `::*`, `{impl Trait for Type}` with `_` wildcards). For the other backends, `select-clauses` takes raw `-i` clauses until the unified keys cover them. Prefer `opaque` over `exclude` unless removal is intended: charon's `--exclude` is not reachability-aware, and an excluded item that is still referenced makes aeneas fail.
+- The feature keys select cargo features for the build.
+- `env` entries are set for every process a scenario run spawns, cargo included, so build-affecting variables such as `RUSTFLAGS` take effect. The `DRIVER_HAX_FRONTEND*` variables hax communicates through internally cannot be set.
 
-Backend-specific keys: `z3rlimit`, `fuel`, `ifuel`, `interfaces`, and `line-width` for F*; `charon-args`, `aeneas-args`, and `project-files` for Lean; `assume-items` for ProVerif. The F* and ProVerif keys mirror flags of `cargo hax into <backend>`; see its `--help` for their effects. `charon-args` and `aeneas-args` are arrays passed verbatim, one element per process argument, after the arguments hax compiles from the structured keys; no shell splitting is applied. The per-scenario `project-files` key overrides the top-level one. Environment variables that supply defaults for `into` flags (currently `HAX_FSTAR_LINE_WIDTH`) do not apply to scenario runs, which never parse flags; set the corresponding key (`line-width`) instead.
+Item selection is unified across backends:
+
+- `include`: root patterns whose transitive dependencies are extracted; absent means the whole crate.
+- `exclude`: drop items entirely.
+- `opaque`: extract signature-only.
+- `default-opaques`: whether the built-in opaque set applies (default `true`).
+
+In this version, these keys work for the Lean backend only, where they compile to Charon's `--start-from`, `--exclude`, and `--opaque` flags and use Charon's name-pattern language (paths, `::*`, `{impl Trait for Type}` with `_` wildcards). For the other backends, `select-clauses` takes raw `-i` clauses until the unified keys cover them. Prefer `opaque` over `exclude` unless removal is intended: Charon's `--exclude` is not reachability-aware, and an excluded item that is still referenced makes Aeneas fail.
+
+Backend-specific keys:
+
+- F\*: `z3rlimit`, `fuel`, `ifuel`, `interfaces`, and `line-width`. They mirror flags of `cargo hax into fstar`; see its `--help` for their effects.
+- Lean: `charon-args`, `aeneas-args`, and `project-files`. `charon-args` and `aeneas-args` are arrays passed verbatim, one element per process argument, after the arguments hax compiles from the structured keys; no shell splitting is applied. The per-scenario `project-files` key overrides the top-level one.
+- ProVerif: `assume-items`, mirroring the flag of `cargo hax into pro-verif`.
+
+Environment variables that supply defaults for `into` flags (currently `HAX_FSTAR_LINE_WIDTH`) do not apply to scenario runs, which never parse flags; set the corresponding key (`line-width`) instead.
 
 A key that does not apply to the declared backend is a hard error, as is an unknown key inside a scenario table: silently ignoring a misspelled `exclude` would change what is extracted. This means a `hax.toml` written for a newer hax can fail on an older scenario-aware hax, which is intentional; the warn-and-ignore rule for unknown top-level keys is unchanged and covers hax versions that predate scenarios.
 
@@ -237,21 +259,33 @@ cargo hax extract -p openmls   # restrict the scope to one package; combines wit
 cargo hax extract --dry-run    # print resolved invocations without running them
 ```
 
-`extract` also takes the shared diagnostics options of `into` (`-v`, `--message-format`), but not `-C ... ;`: a scenario's cargo invocation is derived from its own keys. For hermetic runs, `extract` takes cargo's `--locked`, `--frozen`, and `--offline` flags directly and applies them to every cargo invocation of the run: project discovery, the frontend's `cargo check`, and the build charon drives.
+`extract` also takes the shared diagnostics options of `into` (`-v`, `--message-format`), but not `-C ... ;`: a scenario's cargo invocation is derived from its own keys. For hermetic runs, `extract` takes cargo's `--locked`, `--frozen`, and `--offline` flags directly and applies them to every cargo invocation of the run: project discovery, the frontend's `cargo check`, and the build Charon drives.
 
 An empty scope and a name matching no scenario are errors, so a missing or mis-located `hax.toml` fails loudly in CI. Scenarios run sequentially; a failing scenario does not abort the run, failures are collected into a summary and produce a non-zero exit code. Note that scenarios differing in `features` or `env` invalidate each other's build caches in the shared target directory.
 
 ### Output layout
 
-A scenario writes to `<crate>/proofs/<scenario>/<backend>` by default, so two extractions of the same crate never overwrite each other. The Lean backend scaffolds a complete Lean package there, named after the scenario (CamelCase), with its own `Verification/` folder; re-running `extract` regenerates only `Extraction/`. The other backends keep an `extraction/` subdirectory below the backend directory, matching the `proofs/<backend>/extraction` layout of `cargo hax into`. `output-dir` overrides the default and is resolved relative to the root of the extracted package; it must name a directory of its own, so an absolute path and a path resolving to the package root are rejected, while a `..` component is allowed so several members can extract into one shared tree.
+A scenario writes to `<crate>/proofs/<scenario>/<backend>` by default, so two extractions of the same crate never overwrite each other.
 
-Before anything runs, and before `-p` narrows the scope, hax verifies that all scenarios in scope resolve to distinct output directories, none nested in another, and aborts otherwise; an `output-dir` equal to the scenario-less `proofs/<backend>/` layout is only warned about, since pointing a single scenario at the old path is a reasonable migration step. Renaming a scenario orphans its old directory, including `Verification/` content: a full-scope `cargo hax extract` warns about directories directly below `proofs/` that no scenario in scope accounts for and that are not a backend directory of the scenario-less layout.
+- The Lean backend scaffolds a complete Lean package there, named after the scenario (CamelCase), with its own `Verification/` folder; re-running `extract` regenerates only `Extraction/`.
+- The other backends keep an `extraction/` subdirectory below the backend directory, matching the `proofs/<backend>/extraction` layout of `cargo hax into`.
+- `output-dir` overrides the default and is resolved relative to the root of the extracted package. It must name a directory of its own, so an absolute path and a path resolving to the package root are rejected, while a `..` component is allowed so several members can extract into one shared tree.
+
+Before anything runs, and before `-p` narrows the scope, hax verifies that all scenarios in scope resolve to distinct output directories, none nested in another, and aborts otherwise. An `output-dir` equal to the scenario-less `proofs/<backend>/` layout is only warned about, since pointing a single scenario at the old path is a reasonable migration step. Renaming a scenario orphans its old directory, including `Verification/` content: a full-scope `cargo hax extract` warns about directories directly below `proofs/` that no scenario in scope accounts for and that are not a backend directory of the scenario-less layout.
 
 All scenarios of a project share one Lean toolchain and library pin, resolved through the `[versions]` mechanism above; versions are scenario-independent.
 
 ## The Lean root module check
 
-The root module `<PkgName>.lean` is generated once, then left to you: regenerating it would overwrite your edits. Its generated imports are stable: the extracted modules are reached through `<PkgName>/Extraction.lean`, which hax rewrites on every extraction, so files the extraction adds or drops never require a root-module edit. On every Lean extraction, hax warns when the root module imports neither `<PkgName>.Extraction` nor its commented-out form (the extraction would silently stay out of the build), likewise for the `Verification/ProofObligations.lean` stub, and when an import under `<PkgName>.Extraction.` names a file the extraction no longer produces (say, in a root module predating `Extraction.lean`), which fails the build less legibly than a warning here. The fix is editing the import line by hand. A commented-out import (`-- import ...`) silences the warnings for that module, and for the `Verification/` stub it also stops hax from recreating it. `Extraction.lean` skips the `Extraction/ProofObligations.lean` template: it is the starting point for the proofs in `Verification/ProofObligations.lean`, and importing both would declare every obligation twice.
+The root module `<PkgName>.lean` is generated once, then left to you: regenerating it would overwrite your edits. Its generated imports are stable: the extracted modules are reached through `<PkgName>/Extraction.lean`, which hax rewrites on every extraction, so files the extraction adds or drops never require a root-module edit.
+
+On every Lean extraction, hax warns when:
+
+- the root module imports neither `<PkgName>.Extraction` nor its commented-out form (the extraction would silently stay out of the build);
+- the same holds for the `Verification/ProofObligations.lean` stub;
+- an import under `<PkgName>.Extraction.` names a file the extraction no longer produces (say, in a root module predating `Extraction.lean`), which fails the build less legibly than a warning here.
+
+The fix is editing the import line by hand. A commented-out import (`-- import ...`) silences the warnings for that module, and for the `Verification/` stub it also stops hax from recreating it. `Extraction.lean` skips the `Extraction/ProofObligations.lean` template: it is the starting point for the proofs in `Verification/ProofObligations.lean`, and importing both would declare every obligation twice.
 
 ## The Lean project pin check
 

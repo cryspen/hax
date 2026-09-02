@@ -1,0 +1,42 @@
+name: Markdown links
+
+# Checks the links in all repository markdown outside docs/, which is
+# part of the website; the links on the website itself are checked by
+# the Playwright docs tests.
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+jobs:
+  lychee:
+    if: github.repository == 'cryspen/hax'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        env:
+          # Authenticates github.com requests, which dominate the checked
+          # links and get rate-limited quickly when anonymous.
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          args: >-
+            --no-progress
+            --max-retries 5
+            --exclude-path docs
+            './**/*.md'
+          fail: true
+      - name: Open an issue on failure
+        if: failure() && github.event_name == 'schedule'
+        uses: ./.github/actions/open-issue-once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          label: tests
+          title: Scheduled markdown link checks are failing
+          body: |-
+            The scheduled [Markdown links](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) run failed on `${{ github.sha }}`.
+
+            See the run's log for the broken links.

@@ -1,0 +1,34 @@
+name: Docs build
+
+# The .#docs derivation builds the mkdocs site (which snippet-includes
+# markdown from anywhere in the repository) and the frontend rustdoc, so
+# the paths cover the snippet sources, the Rust sources, and the pinned
+# toolchain besides docs/ itself.
+on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "mkdocs.yml"
+      - "**.md"
+      - "**.rs"
+      - "**/Cargo.toml"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "rust-toolchain.toml"
+      - "**.nix"
+      - "flake.lock"
+      - ".github/workflows/docs_build.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+      - name: Build documentation
+        run: nix build .#docs

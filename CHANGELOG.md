@@ -37,6 +37,10 @@ Changes to cargo-hax:
  - Add support for specifications written with [`anodized`](https://github.com/mkovaxx/anodized):
    `#[spec(requires: ..)]`, `#[spec(ensures: ..)]` and `#[spec(maintains: ..)]` now extract as
    pre- and postconditions, on every backend
+ - Validate driver reports on cargo's stderr: only haxmeta files of workspace crates under the
+   run's target directory are accepted, and a lost or partial report set fails the run instead
+   of silently producing an incomplete extraction
+ - Exit with a failing status whenever an error was reported
 
 Changes to the hax-lib crate:
  - Add `hax_lib::ensures_ref`, an `ensures` whose closure takes the result by reference,

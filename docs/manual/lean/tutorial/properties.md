@@ -11,7 +11,7 @@ This contract stipulates that, given a small input, the function will
 _return a value_: it will not panic or diverge. We could enrich the
 contract of `square` with a post-condition about the fact it is an
 increasing function:
-```{.rust .playable .lean-backend}
+```{.rust}
 #[hax_lib::requires(x < 16)]
 #[hax_lib::ensures(|res| res >= x)]
 pub fn square(x: u8) -> u8 {

@@ -148,10 +148,25 @@ pub fn path_entries(bin: &Path) -> String {
     )
 }
 
+/// A shell fragment that writes an empty file at the `--dest-file`
+/// argument, satisfying the pipeline's check that charon produced its LLBC
+/// file.
+pub const WRITE_DEST_FILE: &str = "prev=''\n\
+    for arg in \"$@\"; do\n\
+    \tif [ \"$prev\" = '--dest-file' ]; then : > \"$arg\"; fi\n\
+    \tprev=\"$arg\"\n\
+    done\n";
+
+/// A charon stub: records its invocation in the working directory like
+/// [`stub`] and writes an empty LLBC file at its `--dest-file` argument.
+pub fn charon_stub() -> String {
+    format!("#!/bin/sh\necho \"$@\" > charon-invoked\n{WRITE_DEST_FILE}exit 0\n")
+}
+
 /// Stub executables for the whole pipeline in `bin`: marker-recording
 /// charon and charon-driver stubs, and `aeneas_stub` as aeneas.
 pub fn stub_pipeline_tools(bin: &Path, aeneas_stub: &str) {
-    write_executable(&bin.join("charon"), &stub("charon-invoked"));
+    write_executable(&bin.join("charon"), &charon_stub());
     write_executable(&bin.join("charon-driver"), &stub("driver-invoked"));
     write_executable(&bin.join("aeneas"), aeneas_stub);
 }

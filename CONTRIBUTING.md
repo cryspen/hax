@@ -3,7 +3,7 @@
 The following is a set of guidelines for contributing to this repository.
 These are mostly guidelines, not rules.
 Use your best judgement, and feel free to propose changes to this document in a pull request.
-The processes described here is not to pester you but to increase and maintain code quality.
+The processes described here are not to pester you but to increase and maintain code quality.
 
 ## Working with this repository
 
@@ -11,11 +11,84 @@ We use issues to organise and prioritise work items.
 
 **Assignee meaning in issues:** The assignee is the person responsible for following up on the issue (making sure it eventually gets addressed). It is usually (but not necessarily) the one working on it.
 
-After picking up an issue, create a branch.
 There can be any number of branches and pull requests for one issue.
 But make sure that each issue is clearly linked to the pull request.
 There must be one pull request that closes the issue.
 If there are multiple PRs for an issue, make sure this is clear in the pull request.
+
+## Development
+
+The documentation of the internal crates of the hax frontend can be
+found [here](https://hax.cryspen.com/frontend/index.html).
+
+### Edit the sources (Nix)
+
+Just clone & `cd` into the repo, then run `nix develop .`.
+You can also just use [direnv](https://github.com/nix-community/nix-direnv), with [editor integration](https://github.com/direnv/direnv/wiki#editor-integration).
+
+The flake provides several dev shells:
+
+| Shell | Purpose |
+|-------|---------|
+| `nix develop .` | Hacking on hax itself: the toolchain to build the Rust CLI, the frontend and the OCaml engine. Provides no backend verifier. |
+| `nix develop .#fstar` | The above plus F\*, for the F\* backend and the F\* proof libraries. Used by CI to check the proof libraries. |
+| `nix develop .#examples` | The above plus ProVerif and Lean (through `elan`), for running `examples/` against a hax you build yourself. |
+| `nix develop .#ci-examples` | Running `examples/` against a hax built by the flake, rather than one you build from source. Used by CI. |
+
+The first three shells give you the toolchain to build hax, not a `cargo-hax` binary: run `just build` first (see [below](#building-testing-and-formatting)).
+
+In any Nix command from the README's [*Installation*](README.md#installation) section, replace `github:cryspen/hax` by `./some-dir` to compile a local checkout of hax that lives in `./some-dir`.
+
+### Structure of this repository
+
+- `frontend/`: Rust library that hooks into the Rust compiler and
+  extracts its internal typed abstract syntax tree
+  [**THIR**](https://rustc-dev-guide.rust-lang.org/thir.html) as JSON.
+- `engine/`: the simplification and elaboration engine that translates programs
+  from the Rust language to various backends (see `engine/backends/`). Written
+  in OCaml.
+- `rust-engine/`: an on-going rewrite of our engine from OCaml to Rust.
+- `cli/`: the `cargo hax` subcommand and the custom rustc drivers it
+  uses to run the frontend.
+- `hax-lib/`: helper crate providing hax-specific macros (e.g.
+  `requires`, `ensures`) for annotating Rust programs.
+- `hax-types/`: types shared between the frontend, the CLI, and the engine.
+- `proof-libs/`: a symlink to `hax-lib/proof-libs/`, the per-backend
+  proof libraries that the extracted code builds against.
+- `examples/`: examples showing what hax can do.
+- `tests/`: integration tests.
+- `docs/`: sources of the [hax website](https://hax.cryspen.com/),
+  including the manual and the blog.
+
+### Building, testing, and formatting
+
+We use the [`just` command runner](https://just.systems/). If you use
+Nix, the dev shell provides it automatically, if you don't use Nix,
+please [install `just`](https://just.systems/man/en/packages.html) on
+your system.
+
+The most important commands:
+
+- `just build` builds the Rust and OCaml parts and installs the binaries in PATH (`just rust` and `just ocaml` build one part).
+- `just test` runs the hax integration tests.
+- `just check-example <name>` extracts and verifies one example, `just check-examples` all of them.
+- `just fmt` formats all the code.
+
+Run `just` or `just --list` to list all commands.
+
+### Documentation
+
+`mkdocs.yml` at the repository root configures the [mkdocs-material](https://squidfunk.github.io/mkdocs-material) site built from `docs/`.
+
+`just docs` serves the site locally with live reload (it runs `mkdocs serve`). It requires mkdocs and the plugins:
+
+```bash
+pip install mkdocs-material mkdocs-glightbox mkdocs-nav-weight mkdocs-awesome-nav
+```
+
+Alternatively, `nix run .#serve-docs` builds the site with Nix and serves the result, without any Python setup (but also without live reload).
+
+The [`pymdownx.snippets`](https://facelessuser.github.io/pymdown-extensions/extensions/snippets/) extension can include files from anywhere in the repository, resolved relative to the repository root. For example, `--8<-- "README.md:subcommands"` on its own line includes the part of `README.md` between the `<!-- --8<-- [start:subcommands] -->` and `<!-- --8<-- [end:subcommands] -->` markers. Prefer such named sections over the line-range form (`--8<-- "README.md:107:114"`), which silently includes the wrong content when the target file's lines shift.
 
 ## Pull Requests
 
@@ -47,7 +120,7 @@ When a PR introduces a regression, a fix should be submitted in a
 window of 2 days, otherwise the PR will be reverted.
 
 ## Rules for the OCaml code
- - Never use the OCaml standard library, always use [`base`](https://v3.ocaml.org/p/base/latest/doc/index.html), [`core`](https://v3.ocaml.org/p/core/latest/doc/index.html) or [`stdlib`](https://v3.ocaml.org/p/stdlib/latest/doc/index.html) instead.
+ - Avoid the OCaml standard library (`Stdlib`), prefer [`base`](https://v3.ocaml.org/p/base/latest/doc/index.html) or [`core`](https://v3.ocaml.org/p/core/latest/doc/index.html).
  - Avoid non-total functions (e.g. all the `_exn` functions in `base`).
  - Try to avoid exceptions, if possible.
  - Never use `==`, which is the physical equality, and almost never what you want.

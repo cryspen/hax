@@ -96,8 +96,7 @@ Here are some resources for learning more about hax:
  - [Manual](https://hax.cryspen.com/manual/index.html) (work in progress)
     + Quick start: [Lean](https://hax.cryspen.com/manual/lean/quick_start/), [F*](https://hax.cryspen.com/manual/fstar/quick_start/)
     + Tutorial: [Lean](https://hax.cryspen.com/manual/lean/tutorial/), [F*](https://hax.cryspen.com/manual/fstar/tutorial/)
- - [Examples](./examples/): the [examples directory](./examples/) contains
-   a set of examples that show what hax can do for you.
+ - [Examples](./examples/): a set of examples that show what hax can do for you.
  - Other [specifications](https://github.com/hacspec/specs) of cryptographic protocols.
 
 Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub Discussion](https://github.com/cryspen/hax/discussions). For bugs, file an [Issue](https://github.com/cryspen/hax/issues).
@@ -107,8 +106,12 @@ Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub 
 hax is a cargo subcommand.
 The command `cargo hax` accepts the following subcommands:
 
+<!-- --8<-- [start:subcommands] -->
  * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND`.
+ * **`extract`** (`cargo hax extract [NAME...]`): run the proof scenarios declared in `hax.toml`; without names, every scenario in scope runs. See [Proof scenarios](https://hax.cryspen.com/manual/tools/#proof-scenarios) in the manual.
  * **`json`** (`cargo hax json`): extract the typed AST of your crate as a JSON file.
+ * **`tools`** (`cargo hax tools SUBCOMMAND`): manage the external tools hax depends on (e.g. Charon and Aeneas). See [Managing tool versions](https://hax.cryspen.com/manual/tools/) in the manual.
+<!-- --8<-- [end:subcommands] -->
 
 ### Backends
 
@@ -126,9 +129,10 @@ Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimi
 
 ## Installation
 
+<!-- --8<-- [start:installation] -->
 hax is supported on Linux (`x86_64` and `aarch64`) and macOS (`aarch64`). Windows is not supported; use [WSL](https://learn.microsoft.com/windows/wsl/) there.
 
-All methods below install hax itself; the target provers (Lean, F\*, ...) must be installed separately (see the [manual](https://hax.cryspen.com/manual/)).
+All methods below install hax itself; the target provers (Lean, F\*, ...) must be installed separately (see the quick start of the respective backend in the [manual](https://hax.cryspen.com/manual/)).
 
 ### For the Lean backend
 
@@ -183,7 +187,11 @@ Prerequisites: a C compiler, [`opam`](https://opam.ocaml.org/), [`rustup`](https
 
 1. Clone this repo: `git clone https://github.com/cryspen/hax.git && cd hax`
 2. Create (or use an existing) opam *switch* by running `opam switch create hax 5.4.1`
-3. Run the [setup.sh](./setup.sh) script: `./setup.sh`
+3. Run the [setup.sh](https://github.com/cryspen/hax/blob/main/setup.sh) script: `./setup.sh`
+4. Run `cargo hax --help`
+
+Note: Please make sure that `$HOME/.cargo/bin` is in your `$PATH`, as
+that is where `setup.sh` will install hax.
 
 #### Nix
 
@@ -202,72 +210,17 @@ Prerequisites: [Docker](https://docs.docker.com/get-started/get-docker/).
 3. Get a shell: `docker run -it --rm -v /some/dir/with/a/crate:/work hax bash`
 
 Inside the container, hax is invoked as `cargo-hax` instead of `cargo hax`.
+<!-- --8<-- [end:installation] -->
 
 ## Supported Subset of the Rust Language
 
-hax intends to support full Rust, with the one exception, promoting a functional style: mutable references (aka `&mut T`) on return types or when aliasing (see https://github.com/cryspen/hax/issues/420) are forbidden.
+hax intends to support full Rust, with one exception that promotes a functional style: mutable references (aka `&mut T`) are forbidden on return types and when aliasing (see https://github.com/cryspen/hax/issues/420).
 
 Each unsupported Rust feature is documented as an issue labeled [`unsupported-rust`](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust). When the issue is labeled [`wontfix-v1`](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1), that means we don't plan on supporting that feature soon.
 
 Quicklinks:
  - [🔨 Rejected rust we want to support](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+-label%3Awontfix%2Cwontfix-v1);
  - [💭 Rejected rust we don't plan to support in v1](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1).
-
-## Hacking on hax
-The documentation of the internal crate of hax and its engine can be
-found [here for the engine](https://hax.cryspen.com/engine/index.html)
-and [here for the frontend](https://hax.cryspen.com/frontend/index.html).
-
-### Edit the sources (Nix)
-
-Just clone & `cd` into the repo, then run `nix develop .`.
-You can also just use [direnv](https://github.com/nix-community/nix-direnv), with [editor integration](https://github.com/direnv/direnv/wiki#editor-integration).
-
-The flake provides several dev shells:
-
-| Shell | Purpose |
-|-------|---------|
-| `nix develop .` | Hacking on hax itself: the toolchain to build the Rust CLI, the frontend and the OCaml engine. Provides no backend verifier. |
-| `nix develop .#fstar` | The above plus F\*, for the F\* backend and the F\* proof libraries. Used by CI to check the proof libraries. |
-| `nix develop .#examples` | The above plus ProVerif and Lean (through `elan`), for running `examples/` against a hax you build yourself. |
-| `nix develop .#ci-examples` | Running `examples/` against a hax built by the flake, rather than one you build from source. Used by CI. |
-
-The first three shells give you the toolchain to build hax, not a `cargo-hax` binary: run `just build` first (see [below](#compiling-formatting-and-more)).
-
-In any Nix command from the *Installation* section, replace `github:cryspen/hax` by `./some-dir` to compile a local checkout of hax that lives in `./some-dir`.
-
-### Structure of this repository
-
-- `frontend/`: Rust library that hooks into the Rust compiler and
-  extracts its internal typed abstract syntax tree
-  [**THIR**](https://rustc-dev-guide.rust-lang.org/thir.html) as JSON.
-- `engine/`: the simplification and elaboration engine that translates programs
-  from the Rust language to various backends (see `engine/backends/`). Written
-  in OCaml.
-- `rust-engine/`: an on-going rewrite of our engine from OCaml to Rust.
-- `cli/`: the `cargo hax` subcommand and the custom rustc drivers it
-  uses to run the frontend.
-- `hax-lib/`: helper crate providing hax-specific macros (e.g.
-  `requires`, `ensures`) for annotating Rust programs.
-- `hax-types/`: types shared between the frontend, the CLI, and the engine.
-- `proof-libs/`: a symlink to `hax-lib/proof-libs/`, the per-backend
-  proof libraries that the extracted code builds against.
-- `examples/`: examples showing what hax can do.
-- `tests/`: integration tests.
-- `docs/`: sources of the [hax website](https://hax.cryspen.com/),
-  including the manual and the blog.
-
-### Compiling, formatting, and more
-We use the [`just` command runner](https://just.systems/). If you use
-Nix, the dev shell provides it automatically, if you don't use Nix,
-please [install `just`](https://just.systems/man/en/packages.html) on
-your system.
-
-Anywhere within the repository, you can build and install in PATH (1)
-the Rust parts with `just rust`, (2) the OCaml parts with `just ocaml`
-or (3) both with `just build`. More commands (e.g. `just fmt` to
-format) are available, please run `just` or `just --list` to get all
-the commands.
 
 ## Publications & Other material
 
@@ -284,7 +237,7 @@ the commands.
 
 ## Contributing
 
-Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/cryspen/hax/discussions), or file an [issue](https://github.com/cryspen/hax/issues) to discuss your contribution.
+Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/cryspen/hax/discussions), or file an [issue](https://github.com/cryspen/hax/issues) to discuss your contribution. The contribution guidelines are described in [CONTRIBUTING.md](./CONTRIBUTING.md), including the [development setup](./CONTRIBUTING.md#development), the structure of the repository, and the build commands.
 
 
 [chat-link]: https://hacspec.zulipchat.com

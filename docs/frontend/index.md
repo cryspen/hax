@@ -1,6 +1,6 @@
 # Frontend
 
-hax is a tool designed to facilitate the formal verification of Rust programs. It enables the translation of Rust crates into formal languages like Lean, F* or Coq. Once translated, these formal representations allow to write formal proofs about the behavior and correctness of their Rust code.
+hax is a tool designed to facilitate the formal verification of Rust programs. It enables the translation of Rust crates into formal languages like Lean, F* or Rocq. Once translated, these formal representations allow to write formal proofs about the behavior and correctness of their Rust code.
 
 ## User flow
 
@@ -22,7 +22,8 @@ For a practical guide on using hax, please refer to the [manual](../manual/index
 
 ## High-Level Architecture of hax {#high-level-arch}
 
-hax consists of five main components, as illustrated in the diagram below, with
+This section gives a finer-grained view of the pipeline described in the
+[architecture chapter](../dev/architecture.md): five main components, as illustrated in the diagram below, with
 each numbered step directly corresponding to its labeled section in the diagram:
 
 1. The **frontend** handles the extraction and export of given [Rust
@@ -105,7 +106,7 @@ Our custom export logic extends this by generating additional artifacts:
   serialization of the
   [`HaxMeta`](https://hax.cryspen.com/frontend/docs/hax_types/driver_api/struct.HaxMeta.html)
   type.
-- **Diagnostic messages**: sent to standard output and used to communicate
+- **Diagnostic messages**: sent to standard error and used to communicate
   specifically with `cargo hax`. Those messages are JSON serializations of the
   [`HaxDriverMessage`](https://hax.cryspen.com/frontend/docs/hax_types/driver_api/enum.HaxDriverMessage.html)
   type.
@@ -122,50 +123,3 @@ implemented in Rust, while the engine is implemented in OCaml. Communication
 between all components occurs through **stdout**, **stderr**, or **stdin**,
 using JSON messages defined in the Rust crate
 [`hax-types`](https://hax.cryspen.com/frontend/docs/hax_types/index.html).
-
-This section provides an overview of the workflow of the frontend of hax. 
-
-<!-- 
-## A Brief Tour of The Rust Compiler
-
-The Rust compiler transforms raw source code from the user into various representations, all the way to machine code when that's what the user requests.
-
-The Rust compiler has several intermediate representations (IR), exposing various views on Rust programs, each suited for different jobs: parsing, typing, borrow checking, etc. As illustrated below by the diagram, the following main IR are:
-
-  - **Parse AST**: an untyped abstract syntax tree (AST) just after parsing;
-  - **HIR**: Higher-level Intermediate Representation, an AST close to Rust surface language after name resolution and macro expansion;
-  - **THIR**: Typed Higher-level Intermediate Representation, a fully typed version of HIR;
-  - **MIR**: Mid-level Intermediate Representation, a simplified Rust AST, in which borrow checking takes place;
-  - **LLVM**: interfaces with LLVM.
-
-![](./rustc-diagram.excalidraw.png){: .center style="width:min(100%, 500px)"}
-
-## Querying The Rust Compiler
-
-The Rust compiler has mechanisms enabling tools to hook into it at the various compile stages. From here, it is possible to interactively ask Rust about items such as types, traits, names, etc. of a certain Rust construct inside the code.
-
-The Rust compiler is optmizied for performance; its work is divided in many
-smaller parts and is orchestrated by a system of lazy queries.
-
-Rust is optmizied for performance, and its query system is a complex beast.
-Finding your way to the information you are looking for is not simple and
-requires a certain familiarity with the compiler.
-
-From this observation, we decided to split hax in two: a first part that interacts with rustc, and a second that transform Rust ASTs to our various backends.
-
-The goal of the frontend is to take care of all the boring and complex job of interacting with rustc.
-The frontend takes Rust code and extracts complete ASTs, designed for easy consumption for other tools.
-
-The ASTs we define are mirrored version of rustc's THIR and MIR, enriched with a lot of extra pieces of data.
-
-## Workflow of the JSON extraction
-
-The frontend defines a binary `cargo-hax`, providing a [custom command](https://doc.rust-lang.org/book/ch14-05-extending-cargo.html) `hax` to `cargo` that allows you to get a JSON-encoded AST for a given Rust program.
-
-Running `cargo hax json` invokes hax' frontend and queries for JSON.
-
-The motivation behind hax' frontend is that interacting with the Rust compiler (rustc) can be difficult. Rustc works with its internal optimized representations and with a system of interactive queries.
-
-![](./workflow-diagram.excalidraw.png)
-
-The hax frontend. Its [rustdoc](https://doc.rust-lang.org/rustdoc/what-is-rustdoc.html) documentation can be found [here](./docs/hax_frontend_exporter/index.html). -->

@@ -6,11 +6,11 @@ use hax_types::driver_api::*;
 use hax_types::engine_api::*;
 use is_terminal::IsTerminal;
 use serde_jsonlines::BufReadExt;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::io::BufRead;
 use std::io::Write;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process;
 
 mod aeneas;
@@ -396,14 +396,6 @@ fn run_engine(
     error
 }
 
-/// Uses `cargo metadata` to compute a derived target directory.
-fn target_dir(suffix: &str) -> PathBuf {
-    let metadata = cargo_metadata::MetadataCommand::new().exec().unwrap();
-    let mut dir = metadata.target_directory;
-    dir.push(suffix);
-    dir.into()
-}
-
 /// Gets hax version: if hax is being compiled from a dirty git repo,
 /// then this function taints the hax version with the hash of the
 /// current executable. This makes sure cargo doesn't cache across
@@ -456,6 +448,49 @@ fn get_hax_rustc_driver_path(message_format: MessageFormat) -> PathBuf {
     path
 }
 
+/// Parses and validates one `::hax-driver::`-prefixed line from cargo's
+/// stderr. That stream is shared with everything the build runs (proc
+/// macros, build scripts), so a report is only accepted when it names a
+/// `.haxmeta` file of a workspace crate under this run's target directory
+/// (`target_dir` must be canonical); anything else is an error, never a
+/// trusted input or a panic.
+fn accept_driver_message(
+    msg: &str,
+    target_dir: &Path,
+    workspace_crates: &HashSet<String>,
+) -> Result<EmitHaxMetaMessage, String> {
+    let msg: HaxDriverMessage = serde_json::from_str(msg)
+        .map_err(|e| format!("malformed hax driver message on cargo's stderr: {e}"))?;
+    let HaxDriverMessage::EmitHaxMeta(data) = msg;
+    let path = data.path.canonicalize().map_err(|e| {
+        format!(
+            "hax driver message names an unreadable haxmeta file {}: {e}",
+            data.path.display()
+        )
+    })?;
+    if !path.starts_with(target_dir) {
+        return Err(format!(
+            "hax driver message names a haxmeta file outside the target directory {}: {}",
+            target_dir.display(),
+            path.display()
+        ));
+    }
+    // The driver names its output `<crate_name>-<cg_metadata>.haxmeta`.
+    let crate_name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .and_then(|name| name.strip_suffix(".haxmeta"))
+        .and_then(|stem| stem.rsplit_once('-'))
+        .map(|(crate_name, _cg_metadata)| crate_name);
+    match crate_name {
+        Some(name) if workspace_crates.contains(name) => Ok(data),
+        _ => Err(format!(
+            "hax driver message names a haxmeta file that belongs to no workspace crate: {}",
+            path.display()
+        )),
+    }
+}
+
 /// Calls `cargo` with a custom driver which computes `haxmeta` files
 /// in `TARGET`. One `haxmeta` file is produced by crate. Each
 /// `haxmeta` file contains the full AST of one crate.
@@ -464,6 +499,62 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
     // Resolved before anything else, so that a missing driver is reported
     // instead of installing a toolchain for a run that cannot happen.
     let driver = get_hax_rustc_driver_path(options.message_format);
+    // `cargo metadata` yields both the target directory the driver writes
+    // into and the workspace members, the two facts the driver's reports
+    // are validated against. It gets the `-C ... ;` flags it understands
+    // (`--manifest-path`, feature selection, ...), so that it describes the
+    // same workspace as the `cargo check` below.
+    let cargo_args = tools::project::CargoArgs::parse(&options.cargo_flags);
+    let report_error_and_abort = |message: String| {
+        HaxMessage::GenericError { message }.report(options.message_format, None);
+        (vec![], 1)
+    };
+    let metadata = match tools::project::run_cargo_metadata(&cargo_args, tools::project::Deps::Skip)
+    {
+        Ok(metadata) => metadata,
+        Err(message) => return report_error_and_abort(message),
+    };
+    // An explicit `--target-dir` among the cargo flags beats the
+    // `CARGO_TARGET_DIR` environment variable, so when one is given the
+    // build writes there verbatim and no `hax` subdirectory can be imposed.
+    let (target_dir, custom_target_dir) = match &cargo_args.target_dir {
+        Some(dir) => (PathBuf::from(dir), false),
+        None => {
+            let mut dir: PathBuf = metadata.target_directory.clone().into();
+            if !options.no_custom_target_directory {
+                dir.push("hax");
+            }
+            (dir, !options.no_custom_target_directory)
+        }
+    };
+    // The driver's reports are matched against the canonical target
+    // directory, resolved once here. It is created first: on a fresh
+    // project no build has made it yet, and canonicalization needs an
+    // existing path.
+    if let Err(e) = fs::create_dir_all(&target_dir) {
+        return report_error_and_abort(format!(
+            "could not create the target directory {}: {e}",
+            target_dir.display()
+        ));
+    }
+    let target_dir = match target_dir.canonicalize() {
+        Ok(dir) => dir,
+        Err(e) => {
+            return report_error_and_abort(format!(
+                "could not resolve the target directory {}: {e}",
+                target_dir.display()
+            ));
+        }
+    };
+    // The driver names its haxmeta file after the rustc crate it compiled,
+    // i.e. after the cargo target (lib, bins, ...), not after the package.
+    let workspace_crates: HashSet<String> = metadata
+        .packages
+        .iter()
+        .filter(|package| metadata.workspace_members.contains(&package.id))
+        .flat_map(|package| &package.targets)
+        .map(|target| target.name.replace('-', "_"))
+        .collect();
     let mut cmd = {
         let mut cmd = process::Command::new("cargo");
         if let Some(toolchain) = toolchain() {
@@ -481,8 +572,8 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
             cmd.args([MSG_FMT_FLAG, "json"]);
         }
         cmd.stderr(std::process::Stdio::piped());
-        if !options.no_custom_target_directory {
-            cmd.env("CARGO_TARGET_DIR", target_dir("hax"));
+        if custom_target_dir {
+            cmd.env("CARGO_TARGET_DIR", &target_dir);
         };
         cmd.env("RUSTC_WORKSPACE_WRAPPER", driver)
             .env(RUST_LOG_STYLE, rust_log_style())
@@ -497,16 +588,42 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
     };
 
     let mut child = cmd.spawn().unwrap();
-    let haxmeta_files = {
+    let mut channel_error = false;
+    let mut haxmeta_files = {
         let mut haxmeta_files = vec![];
         let stderr = child.stderr.take().unwrap();
         let stderr = std::io::BufReader::new(stderr);
-        for line in std::io::BufReader::new(stderr).lines().flatten() {
+        for line in std::io::BufReader::new(stderr).lines() {
+            let line = match line {
+                Ok(line) => line,
+                // A line the channel cannot represent (e.g. invalid UTF-8)
+                // could hide a driver report: fail rather than risk a
+                // silently incomplete extraction. The stream is still
+                // drained, so the build is not blocked on a full pipe.
+                Err(e) if e.kind() == std::io::ErrorKind::InvalidData => {
+                    HaxMessage::GenericError {
+                        message: format!("unreadable line on cargo's stderr: {e}"),
+                    }
+                    .report(options.message_format, None);
+                    channel_error = true;
+                    continue;
+                }
+                Err(e) => {
+                    HaxMessage::GenericError {
+                        message: format!("could not read cargo's stderr: {e}"),
+                    }
+                    .report(options.message_format, None);
+                    channel_error = true;
+                    break;
+                }
+            };
             if let Some(msg) = line.strip_prefix(HAX_DRIVER_STDERR_PREFIX) {
-                use HaxDriverMessage;
-                let msg = serde_json::from_str(msg).unwrap();
-                match msg {
-                    HaxDriverMessage::EmitHaxMeta(data) => haxmeta_files.push(data),
+                match accept_driver_message(msg, &target_dir, &workspace_crates) {
+                    Ok(data) => haxmeta_files.push(data),
+                    Err(message) => {
+                        HaxMessage::GenericError { message }.report(options.message_format, None);
+                        channel_error = true;
+                    }
                 }
             } else {
                 eprintln!("{}", line);
@@ -519,9 +636,25 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
         .wait()
         .expect("`driver-hax-frontend-exporter`: could not start?");
 
+    // A corrupt driver channel makes the collected set untrustworthy:
+    // producing output from it would overwrite a previous good extraction
+    // with a possibly truncated one.
+    if channel_error {
+        haxmeta_files.clear();
+    }
     let exit_code = if !status.success() {
         HaxMessage::CargoBuildFailure.report(options.message_format, None);
         status.code().unwrap_or(254)
+    } else if channel_error {
+        1
+    } else if haxmeta_files.is_empty() {
+        HaxMessage::GenericError {
+            message: "the build succeeded, but the hax driver reported no haxmeta file: \
+                      the extraction would be empty"
+                .into(),
+        }
+        .report(options.message_format, None);
+        1
     } else {
         0
     };
@@ -652,6 +785,17 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
     }
 }
 
+/// Exits the process, downgrading a successful code to a failure when an
+/// error-severity message was reported: a reported error and a zero exit
+/// status must never combine. Every exit path that can carry code 0 goes
+/// through here.
+fn exit(code: i32) -> ! {
+    if code == 0 && hax_types::diagnostics::message::errors_reported() {
+        std::process::exit(1)
+    }
+    std::process::exit(code)
+}
+
 fn main() {
     let args: Vec<String> = get_args("hax");
     let mut options = match &args[..] {
@@ -676,7 +820,7 @@ fn main() {
     // The `tools` subcommands never involve the hax frontend: handle them
     // directly and exit.
     if let Command::Tools(ref command) = options.command {
-        std::process::exit(tools::run(command, options.message_format));
+        exit(tools::run(command, options.message_format));
     }
 
     // `extract` resolves the proof scenarios of the project and re-enters
@@ -690,7 +834,7 @@ fn main() {
         ref hermeticity,
     } = options.command
     {
-        std::process::exit(scenario::run(
+        exit(scenario::run(
             names,
             packages,
             &options.cargo_flags,
@@ -765,7 +909,7 @@ fn main() {
             options.message_format,
             project,
         );
-        std::process::exit(if error { 1 } else { 0 });
+        exit(if error { 1 } else { 0 });
     }
 
     let (haxmeta_files, exit_code) = options
@@ -784,9 +928,56 @@ fn main() {
         .unwrap_or_else(|| compute_haxmeta_files(&options));
     let error = run_command(&options, haxmeta_files);
 
-    std::process::exit(if exit_code == 0 && error {
+    exit(if exit_code == 0 && error {
         1
     } else {
         exit_code
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn workspace() -> HashSet<String> {
+        HashSet::from(["my_crate".to_string()])
+    }
+
+    fn message_for(path: &Path) -> String {
+        serde_json::to_string(&HaxDriverMessage::EmitHaxMeta(EmitHaxMetaMessage {
+            working_dir: None,
+            manifest_dir: None,
+            path: path.to_path_buf(),
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn a_marker_line_from_a_compiled_crate_cannot_inject_a_haxmeta() {
+        let dir = tempfile::tempdir().unwrap();
+        let target = dir.path().join("target");
+        std::fs::create_dir(&target).unwrap();
+        // The caller hands the function a canonical target directory.
+        let target = target.canonicalize().unwrap();
+
+        // A well-formed report for a file outside the target directory.
+        let outside = dir.path().join("my_crate-0123456789abcdef.haxmeta");
+        std::fs::write(&outside, b"").unwrap();
+        assert!(accept_driver_message(&message_for(&outside), &target, &workspace()).is_err());
+
+        // A well-formed report under the target directory for a crate that
+        // is no workspace member.
+        let foreign = target.join("victim-0123456789abcdef.haxmeta");
+        std::fs::write(&foreign, b"").unwrap();
+        assert!(accept_driver_message(&message_for(&foreign), &target, &workspace()).is_err());
+
+        // A marker-prefixed line that is not a driver message is an error,
+        // not a panic.
+        assert!(accept_driver_message("not json", &target, &workspace()).is_err());
+
+        // The driver's own report is accepted.
+        let legit = target.join("my_crate-0123456789abcdef.haxmeta");
+        std::fs::write(&legit, b"").unwrap();
+        assert!(accept_driver_message(&message_for(&legit), &target, &workspace()).is_ok());
+    }
 }

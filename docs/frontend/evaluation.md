@@ -139,7 +139,7 @@ The qualitative evaluation aims at identifying what Rust patterns the frontend c
 The Rust compiler (rustc) has extensive test suites that describe various expectations of how it should handle Rust input. One of them is the [coverage test suite](https://rustc-dev-guide.rust-lang.org/tests/compiletest.html#coverage-tests) which contains a set of Rust inputs that is supposed to cover a wide range of Rust constructs. This test suite has been adapted to test hax.
 
 We use the following methodology:
-- The Rust inputs from the test suite have been copied to `rustc-coverage-tests/src/`, and can be updated using a script.
+- The Rust inputs from the test suite have been copied to `tests/src/rustc-coverage/`, and can be updated using a script.
 - A Rust crate structure is built around these source files, to allow hax to handle them. The files that fail `cargo check` are excluded. There are currently 26 excluded (out of 81) tests, mostly because they contain asynchronous code, which requires a runtime file that is missing in our infrastructure.
 - To test hax frontend, we run `cargo hax json`. If the command succeeds, the test is considered successful.
 
@@ -155,4 +155,4 @@ If the Rust code we get out of this tool is equivalent to the Rust code it was g
 
 There is no easy way of testing the full input/output equivalence so the methodology here is to test that the resulting code behaves the same as the input code with respect to relevant test cases.
 
-This work is available in the `hax-rust-engine` folder. In the `tests` subfolder, an input file is available with tests for all Rust constructs supported by the printer (currently functions and expressions). For now these tests pass after extracting and printing the file with hax frontend and the Rust printer. This means that for the Rust constructs covered by the printer and the test file, hax frontend's extraction is correct. However this still needs to be extended to test more Rust constructs.
+This work is available in the `rust-engine` folder. An input file with tests for all Rust constructs supported by the printer (currently functions and expressions) has been used to validate it. These tests pass after extracting and printing the file with hax frontend and the Rust printer. This means that for the Rust constructs covered by the printer and the test file, hax frontend's extraction is correct. However this still needs to be extended to test more Rust constructs.
