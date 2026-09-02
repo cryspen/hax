@@ -272,7 +272,9 @@ pub mod traits {
                 Option::None => return Option::None,
             };
             while let Option::Some(x) = iter.next() {
-                if let crate::cmp::Ordering::Greater = crate::cmp::Ord::cmp(&x, &max) {
+                if let crate::cmp::Ordering::Greater | crate::cmp::Ordering::Equal =
+                    crate::cmp::Ord::cmp(&x, &max)
+                {
                     max = x;
                 }
             }
