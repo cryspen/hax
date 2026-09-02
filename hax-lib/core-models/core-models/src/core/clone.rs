@@ -14,12 +14,7 @@ pub trait Clone {
     /// See [`std::clone::Clone::clone`]
     fn clone(self) -> Self;
 
-    /// See [`std::clone::Clone::clone_from`]. The model must carry it: aeneas
-    /// sets `clone_from := clone.Clone.clone_from.default …` in every instance
-    /// it builds, so a trait without the field gets an unknown-field error.
-    ///
-    /// Real `core` writes into `*self`; like `clone`, the model consumes `self`
-    /// and returns the new value.
+    /// See [`std::clone::Clone::clone_from`]
     #[cfg(not(hax_backend_fstar))]
     fn clone_from(self, source: Self) -> Self
     where
@@ -83,8 +78,6 @@ mod tests {
                         prop_assert_eq!(crate::clone::Clone::clone(x.inject()), x.clone().inject());
                     }
 
-                    // `clone_from` overwrites the receiver with a clone of the
-                    // source, exactly as std's provided method does.
                     #[cfg(not(hax_backend_fstar))]
                     #[test]
                     fn [<test_clone_from_ $t>](x in any::<$t>(), y in any::<$t>()) {

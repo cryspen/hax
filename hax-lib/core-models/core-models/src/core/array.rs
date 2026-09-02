@@ -205,10 +205,6 @@ pub mod equality {
 // annotated, so appending here leaves the published `impl_NN` names untouched.
 
 /// See [`std::default::Default`] for `[T; N]`
-///
-/// Real `core` spells this out as 33 monomorphic impls (`[T; 0]` … `[T; 32]`).
-/// Coherence rules out keeping both those and the const-generic form, which
-/// covers `N = 0` anyway.
 impl<T: crate::default::Default, const N: usize> crate::default::Default for [T; N] {
     fn default() -> [T; N] {
         array_from_fn(|_i| <T as crate::default::Default>::default())
@@ -293,8 +289,6 @@ mod tests {
 
     #[cfg(not(hax_backend_fstar))]
     proptest! {
-        // `clone_from` overwrites the receiver with a clone of the source, like
-        // std's array-specific override.
         #[test]
         fn test_array_clone_from(a in any::<[u8; 3]>(), b in any::<[u8; 3]>()) {
             let mut std_dst = a;

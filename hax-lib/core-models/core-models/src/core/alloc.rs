@@ -8,10 +8,6 @@
 /// See [`std::alloc::Layout`]
 pub mod layout {
     /// See [`std::alloc::Layout`]
-    ///
-    /// The two fields real `core` has, and the two Aeneas's Lean library models.
-    /// No operations: every constructor in real `core` checks alignment
-    /// invariants the model has no way to state.
     pub struct Layout {
         size: core::primitive::usize,
         align: crate::ptr::alignment::Alignment,

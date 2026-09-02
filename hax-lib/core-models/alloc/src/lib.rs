@@ -68,12 +68,6 @@ mod boxed {
         }
     }
 
-    // The trait impls below are what makes a `Box<T>` usable as a `T`
-    // downstream. Extraction erases `Box`, so each one is the identity on the
-    // payload -- which is the shape Aeneas's Lean library gives them too. They
-    // are kept after the inherent impl block, whose `impl__new` name carries no
-    // disambiguator and so is unaffected.
-
     /// See [`std::ops::Deref`] for `Box<T>`
     impl<T> core::ops::Deref for Box<T> {
         type Target = T;
@@ -81,11 +75,6 @@ mod boxed {
             &self.0
         }
     }
-
-    // `DerefMut for Box<T>` is NOT here: `core_models::ops::deref` has no
-    // `DerefMut` trait on this branch (it arrives with the `cov-core-small`
-    // series), so there is nothing for the impl to implement. It belongs with
-    // that series.
 
     /// See [`std::clone::Clone`] for `Box<T>`
     impl<T: Clone> Clone for Box<T> {

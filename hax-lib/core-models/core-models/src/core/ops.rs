@@ -305,10 +305,7 @@ mod deref {
 pub mod drop {
     /// See [`std::ops::Drop`]
     pub trait Drop {
-        /// See [`std::ops::Drop::drop`]. Provided here (a pure model of
-        /// destruction does nothing anyway) so the extracted trait carries the
-        /// `drop.default` entry Aeneas's has; impls still override it. F* keeps
-        /// it required — it rejects trait-item defaults.
+        /// See [`std::ops::Drop::drop`]
         #[cfg(not(hax_backend_fstar))]
         fn drop(&mut self) {}
         #[cfg(hax_backend_fstar)]

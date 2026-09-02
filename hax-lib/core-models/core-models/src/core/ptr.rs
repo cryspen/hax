@@ -4,12 +4,6 @@
 //! Lean-only: F* drops this module via the Makefile's `-i` flags.
 /// See [`std::ptr::Alignment`]
 pub mod alignment {
-    // Real `core` generates one variant per power of two on a 64-bit target,
-    // with the alignment itself (`1 << n`) as the discriminant. The model drops
-    // the discriminants — aeneas converts them with OCaml's `Z.to_int`, and
-    // `1 << 62` already overflows a 63-bit int (`Z.Overflow` in
-    // `SymbolicToPureTypes.translate_variant`) — which is also how Aeneas's own
-    // Lean library declares this enum: 64 plain variants.
     macro_rules! alignment_enum {
         ($($n:literal),*) => {
             pastey::paste! {
@@ -31,8 +25,5 @@ pub mod alignment {
     );
 
     /// See [`std::ptr::Alignment`]
-    ///
-    /// A `repr(transparent)` newtype over [`AlignmentEnum`] in real `core` too;
-    /// the model carries no operations, as Aeneas's does not either.
     pub struct Alignment(AlignmentEnum);
 }

@@ -43,14 +43,7 @@ abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
 abbrev option.Option.Insts.CoreOpsTry_traitTry.branch :=
   @option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
 
-/-! ## Scalar Debug instances
-
-`Result::{unwrap, expect}` carry std's `E: Debug` bound, so extracted call sites
-pass a per-type dictionary. These used to be named here, because the model only
-had the blanket `impl<T> Debug for T` and a concrete `impl Debug for u8` would
-have overlapped it. The blanket is now F*-only and `core_models::fmt::num`
-carries the twelve concrete impls, so `<Int>.Insts.CoreFmtDebug` comes out of
-`Funs.lean` and the shims here would be duplicate declarations. -/
+/-! ## Scalar Debug instances -/
 
 /-! ## Provided methods kept OFF the `Iterator` structure
 

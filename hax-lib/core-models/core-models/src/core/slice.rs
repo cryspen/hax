@@ -70,12 +70,6 @@ pub mod iter {
         }
     }
     
-    /// `Iterator` for [`IterMut`]. `next` yields an `&'a mut T`, so hax gives
-    /// it a write-back return and the result no longer fits `Iterator`'s `next`
-    /// field — which is exactly what Aeneas does for
-    /// `core::slice::iter::{Iterator<IterMut<'a, @T>, &'a mut @T>}::next`
-    /// (a standalone function, with no `Iterator` instance). `patch_lean.py`
-    /// therefore drops the generated instance record and keeps the `next`.
     #[cfg(not(hax_backend_fstar))]
     impl<'a, T> crate::iter::traits::iterator::Iterator for IterMut<'a, T> {
         type Item = &'a mut T;
@@ -532,10 +526,6 @@ pub mod index {
 
         /// See [`std::slice::SliceIndex::index_mut`]: the `&mut` counterpart of
         /// `index`, same in-bounds projection, precondition per impl.
-        //
-        // Declared last, not next to `index` as in real core: fields extract in
-        // declaration order, so moving `index` would reorder every published
-        // `SliceIndex` literal.
         #[cfg(not(hax_backend_fstar))]
         fn index_mut(self, slice: &mut T) -> &mut Self::Output;
     }

@@ -104,11 +104,6 @@ impl<T> Debug for T {
     }
 }
 
-// The concrete `Debug` impls real `core` spells out, and Aeneas's Lean library
-// with it. Each renders nothing, like everything else in this module.
-//
-// `&T` first, mirroring `core::fmt`'s own order.
-
 /// See [`std::fmt::Debug`] for `&T`
 #[cfg(not(hax_backend_fstar))]
 impl<T: Debug + ?Sized> Debug for &T {

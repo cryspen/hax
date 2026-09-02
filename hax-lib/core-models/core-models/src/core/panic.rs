@@ -1,9 +1,5 @@
 //! Model of `core::panic` — the payload types a panic hook is handed.
 //!
-//! Every model panic diverges, so nothing here is ever constructed; the types
-//! exist so a client mentioning them has a name to resolve to, which is all
-//! Aeneas gives them too.
-//!
 //! Lean-only: F* drops this module via the Makefile's `-i` flags.
 /// See [`std::panic::Location`]
 pub mod location {
