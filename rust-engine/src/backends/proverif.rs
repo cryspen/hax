@@ -900,7 +900,7 @@ const _: () = {
             // give them short positional names `v_0`, `v_1`, … rather than the
             // fully-qualified field id — only globals deserve qualified names,
             // and the qualified form produced unreadable binders like
-            // `libcrux_psq__aead__AEADError__Deserialize__0_v`.
+            // `some_crate__module__Error__Variant__0_v`.
             let bind_names: Vec<String> = (0..typed_args_vec.len())
                 .map(|i| format!("v_{i}"))
                 .collect();

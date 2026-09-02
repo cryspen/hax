@@ -20,11 +20,6 @@
 (*                                                                 *)
 (* Load after primitives.pvl:                                      *)
 (*   proverif -lib primitives.pvl -lib cryptolib.pvl lib.pvl       *)
-(*                                                                 *)
-(* Provenance: unifies the per-example models of proverif-psk,     *)
-(* libcrux-psq (`psq_crypto.pvl`), Mandrake/Minos (`crypto/*.rs`   *)
-(* `before`+`replace_body` blocks), Bertie (`handwritten_lib.pvl`) *)
-(* and SPQR (`handwritten/cryptolib.pvl`).                          *)
 (*****************************************************************)
 
 (*===============================================================*)

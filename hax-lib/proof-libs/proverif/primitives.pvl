@@ -517,7 +517,7 @@ letfun hex__encode(x: bitstring) = x.                    (* bytes <-> hex string
    Real serialization concatenates FIXED-LENGTH fields, so the byte string
    determines the split unambiguously and the encoding is INJECTIVE in
    (a, b). The flat `array_extend`/`array_concat` byte model is deliberately
-   NOT injective (boundaries shift, e.g. `array_extend(nil, x) = x`), which is
+   not injective (boundaries shift, e.g. `array_extend(nil, x) = x`), which is
    fine for opaque blobs but UNSOUND when a multi-field serialization feeds a
    hash or signature: an attacker could re-partition a signed structure
    (move bytes across the field boundary) into a different struct with the
