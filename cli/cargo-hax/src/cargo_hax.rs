@@ -72,8 +72,8 @@ fn rust_log_style() -> String {
     })
 }
 
-/// The `cfg` names that hax uses: `hax`, `hax_backend_<name>`, and the hax_lib-internal
-/// `hax_compilation`.
+/// The `cfg` names that hax uses: `hax`, `hax_backend_<name>`, the hax_lib-internal
+/// `hax_compilation`, and the ones hax sets for `anodized`.
 pub fn hax_cfg_names() -> impl Iterator<Item = String> {
     ["hax".to_string(), "hax_compilation".to_string()]
         .into_iter()
@@ -81,6 +81,7 @@ pub fn hax_cfg_names() -> impl Iterator<Item = String> {
             BackendName::iter()
                 .map(|backend| format!("hax_backend_{}", backend.to_string().replace('-', "_"))),
         )
+        .chain(ANODIZED_CFG_NAMES.iter().map(|name| name.to_string()))
 }
 
 /// `--check-cfg` declarations for the cfg names that hax uses.
@@ -97,12 +98,12 @@ fn check_cfg_flags() -> String {
 /// `anodized` reads them when its proc-macro crate is compiled.
 const ANODIZED_CFG_NAMES: &[&str] = &["anodized_hax", "anodized_discard_specs"];
 
-/// Sets the `anodized` cfg names, and declares them so that reading one with
-/// `#[cfg(..)]` does not warn.
+/// Sets the `anodized` cfg names. They are declared by `check_cfg_flags`,
+/// along with hax's own.
 pub fn anodized_flags() -> String {
     ANODIZED_CFG_NAMES
         .iter()
-        .map(|name| format!("--cfg {name} --check-cfg cfg({name})"))
+        .map(|name| format!("--cfg {name}"))
         .collect::<Vec<_>>()
         .join(" ")
 }
