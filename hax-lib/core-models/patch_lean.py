@@ -378,38 +378,6 @@ def comment_out_num_bounds(text: str) -> str:
             for t in types for b in ("MIN", "MAX")]
     return comment_out_blocks(text, subs, trailer="provided by CoreModels.Core.FunsPrologue")
 
-def add_clone_from_default(text: str) -> str:
-    """Give `Clone::clone_from` a Lean-level default, as Aeneas's own
-    `Aeneas/Std/Core/Core.lean` does for its hand-written `clone.Clone`.
-
-    A provided method needs one or it breaks every crate that does not call it.
-    Charon translates a provided method only for a crate that uses it somewhere,
-    so a crate deriving `Clone` without ever calling `clone_from` -- the `alloc`
-    model, `tests/rust_lean_equiv_test`, most proof projects -- gets instances
-    with no `clone_from` field, and Lean rejects them against a structure whose
-    field has no default. hax cannot emit the default itself: aeneas's
-    `extract_trait_decl` never emits Lean field defaults.
-
-    Two alternatives do not work. `--start-from crate --start-from
-    'core::clone::Clone::clone_from'` does fix the `alloc` lane, but only for a
-    crate that passes it, so it moves the breakage onto every downstream
-    project. `--translate-all-methods` drops the pruning globally and then
-    Aeneas fails on real `core`'s `Iterator::try_fold`. A prologue cannot stand
-    in either: an instance's `clone` field refers to a function generated in the
-    same file.
-
-    `PartialEq::ne` and `PartialOrd::{lt,le,gt,ge}` have the same latent hole
-    and predate this rule -- they survive only because most crates use `!=`
-    and `<` somewhere.
-    """
-    return replace(
-        "Clone.clone_from default",
-        text,
-        "  clone_from : Self \u2192 Self \u2192 RustM Self\n",
-        "  clone_from : Self \u2192 Self \u2192 RustM Self := fun _ => clone\n",
-    )
-
-
 def drop_itermut_iterator_instance(text: str) -> str:
     """Drop the generated `Iterator` *instance* for `slice::iter::IterMut`.
 
@@ -731,7 +699,6 @@ def main() -> int:
                 end_marker="end CoreModels.core",
             )
         if path == types_path:
-            text = add_clone_from_default(text)
             text = comment_out_types(text)
         write(path, text)
         print(f"patched {CORE_DIR}.")

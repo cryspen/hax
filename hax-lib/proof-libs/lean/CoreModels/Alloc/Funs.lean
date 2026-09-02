@@ -34,8 +34,10 @@ def alloc.Global.Insts.CoreCloneClone.clone
 /-- Trait implementation: [alloc::alloc::{impl core::clone::Clone for alloc::alloc::Global}]
     Source: 'src/lib.rs', lines 31:13-31:18 -/
 @[reducible]
-def alloc.Global.Insts.CoreCloneClone : core.clone.Clone alloc.Global := {
+impl_def alloc.Global.Insts.CoreCloneClone : core.clone.Clone alloc.Global := {
   clone := alloc.Global.Insts.CoreCloneClone.clone
+  clone_from := core.clone.Clone.clone_from.default
+    alloc.Global.Insts.CoreCloneClone
 }
 
 /-- Trait implementation: [alloc::alloc::{impl alloc::alloc::Allocator for alloc::alloc::Global}]
@@ -91,9 +93,11 @@ def boxed.Box.Insts.CoreCloneClone.clone
 /-- Trait implementation: [alloc::boxed::{impl core::clone::Clone for alloc::boxed::Box<T>}]
     Source: 'src/lib.rs', lines 91:4-95:5 -/
 @[reducible]
-def boxed.Box.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
+impl_def boxed.Box.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
   core.clone.Clone T) : core.clone.Clone (boxed.Box T) := {
   clone := boxed.Box.Insts.CoreCloneClone.clone corecloneCloneInst
+  clone_from := core.clone.Clone.clone_from.default
+    (boxed.Box.Insts.CoreCloneClone corecloneCloneInst)
 }
 
 /-- [alloc::boxed::{impl core::cmp::PartialEq<alloc::boxed::Box<U>> for alloc::boxed::Box<T>}::eq]:
@@ -389,9 +393,11 @@ def vec.Vec.Insts.CoreCloneClone.clone
 /-- Trait implementation: [alloc::vec::{impl core::clone::Clone for alloc::vec::Vec<T>}]
     Source: 'src/lib.rs', lines 744:4-752:5 -/
 @[reducible]
-def vec.Vec.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
+impl_def vec.Vec.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
   core.clone.Clone T) : core.clone.Clone (vec.Vec T) := {
   clone := vec.Vec.Insts.CoreCloneClone.clone corecloneCloneInst
+  clone_from := core.clone.Clone.clone_from.default
+    (vec.Vec.Insts.CoreCloneClone corecloneCloneInst)
 }
 
 /-- [alloc::vec::{impl core::ops::index::Index<I, Clause0_Output> for alloc::vec::Vec<T>}::index]:

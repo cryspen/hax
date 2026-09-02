@@ -178,7 +178,7 @@ structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
     Visibility: public -/
 structure clone.Clone (Self : Type) where
   clone : Self → RustM Self
-  clone_from : Self → Self → RustM Self := fun _ => clone
+  clone_from : Self → Self → RustM Self
 
 /-- Trait declaration: [core_models::cmp::PartialEq]
     Source: 'core-models/src/core/cmp.rs', lines 5:0-23:1
