@@ -178,22 +178,17 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     permissions:
+      contents: read # for the checkout that provides the local action
       issues: write
     steps:
-      - env:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/open-issue-once
+        env:
           GH_TOKEN: ${{ github.token }}
-          TITLE: Release run for ${{ github.ref_name }} failed
-          BODY: |
+        with:
+          title: Release run for ${{ github.ref_name }} failed
+          on-existing: comment
+          body: |
             The `release` workflow failed, so the release may be missing assets: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
             Once the cause is fixed, restart it with `gh workflow run release.yml --ref ${{ github.ref_name }}`; it publishes only the assets that are still missing.
-        run: |
-          number="$(gh issue list -R "$GITHUB_REPOSITORY" --state open \
-            --search "\"$TITLE\" in:title" --json number,title \
-            --jq '.[] | select(.title == env.TITLE) | .number' | head -n 1)"
-          if [ -n "$number" ]; then
-            gh issue comment "$number" -R "$GITHUB_REPOSITORY" --body "$BODY"
-          else
-            gh issue create -R "$GITHUB_REPOSITORY" \
-              --title "$TITLE" --body "$BODY"
-          fi

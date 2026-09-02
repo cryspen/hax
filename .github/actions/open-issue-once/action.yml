@@ -1,0 +1,60 @@
+name: Open an issue once
+description: >-
+  Open an issue for a failing scheduled or automated run, deduplicated by
+  exact title match against the open issues. The caller must set GH_TOKEN
+  in the step's environment.
+
+inputs:
+  title:
+    description: Issue title, also used to find an already open issue.
+    required: true
+  body:
+    description: Issue body.
+    required: true
+  label:
+    description: Label for a newly created issue. Empty adds no label.
+    default: ""
+  on-existing:
+    description: >-
+      What to do when an issue with the same title is already open:
+      "skip" (default) leaves it alone and appends a note to a new issue's
+      body explaining that behavior; "comment" posts the body as a comment
+      on the open issue.
+    default: skip
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        TITLE: ${{ inputs.title }}
+        BODY: ${{ inputs.body }}
+        LABEL: ${{ inputs.label }}
+        ON_EXISTING: ${{ inputs.on-existing }}
+      run: |
+        set -euo pipefail
+        case "$ON_EXISTING" in
+          skip|comment) ;;
+          *)
+            echo "invalid on-existing value: $ON_EXISTING"
+            exit 1
+            ;;
+        esac
+        open="$(gh issue list --state open \
+          --search "\"$TITLE\" in:title" --json number,title \
+          --jq '.[] | select(.title == env.TITLE) | .number' | head -n 1)"
+        if [ -n "$open" ]; then
+          if [ "$ON_EXISTING" = comment ]; then
+            gh issue comment "$open" --body "$BODY"
+          else
+            echo "Issue #$open is already open, not opening another one."
+          fi
+          exit 0
+        fi
+        if [ "$ON_EXISTING" = skip ]; then
+          BODY="$BODY
+
+        This issue is opened once per breakage; while it stays open,
+        subsequent failing runs will not open or comment on anything."
+        fi
+        gh issue create --title "$TITLE" ${LABEL:+--label "$LABEL"} --body "$BODY"
