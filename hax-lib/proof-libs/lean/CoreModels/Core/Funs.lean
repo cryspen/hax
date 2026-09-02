@@ -13,6 +13,9 @@ open Std.Do
 set_option linter.dupNamespace false
 set_option linter.hashCommand false
 set_option linter.unusedVariables false
+set_option linter.style.whitespace false
+set_option linter.style.setOption false
+set_option linter.style.longLine false
 
 /- You can set the `maxHeartbeats` value with the `-max-heartbeats` CLI option -/
 set_option maxHeartbeats 1000000
@@ -4212,15 +4215,15 @@ def intrinsics.unreachable : RustM Never := do
 def iter.traits.iterator.iter_fold_loop.body
   {I : Type} {B : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (coreopsfunctionFnFPairBInst :
-  core.ops.function.Fn F (B × Clause0_Item) B) (f : F) (iter_ : I) (accum : B)
+  core.ops.function.Fn F (B × Clause0_Item) B) (f : F) (iter1 : I) (accum : B)
   :
   RustM (ControlFlow (I × B) B)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let accum1 ← coreopsfunctionFnFPairBInst.call f (accum, x)
-    ok (cont (iter1, accum1))
+    ok (cont (iter2, accum1))
   | option.Option.None => ok (done accum)
 
 /-- [core_models::iter::traits::iterator::iter_fold]: loop 0:
@@ -4229,14 +4232,14 @@ def iter.traits.iterator.iter_fold_loop.body
 def iter.traits.iterator.iter_fold_loop
   {I : Type} {B : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (coreopsfunctionFnFPairBInst :
-  core.ops.function.Fn F (B × Clause0_Item) B) (iter_ : I) (f : F) (accum : B)
+  core.ops.function.Fn F (B × Clause0_Item) B) (iter1 : I) (f : F) (accum : B)
   :
   RustM B
   := do
   loop
-    (fun (iter1, accum1) => iter.traits.iterator.iter_fold_loop.body
-      IteratorInst coreopsfunctionFnFPairBInst f iter1 accum1)
-    (iter_, accum)
+    (fun (iter2, accum1) => iter.traits.iterator.iter_fold_loop.body
+      IteratorInst coreopsfunctionFnFPairBInst f iter2 accum1)
+    (iter1, accum)
 
 /-- [core_models::iter::traits::iterator::iter_fold]:
     Source: 'core-models/src/core/iter.rs', lines 87:8-93:9 -/
@@ -4244,12 +4247,12 @@ def iter.traits.iterator.iter_fold_loop
 def iter.traits.iterator.iter_fold
   {I : Type} {B : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (coreopsfunctionFnFPairBInst :
-  core.ops.function.Fn F (B × Clause0_Item) B) (iter_ : I) (init : B) 
+  core.ops.function.Fn F (B × Clause0_Item) B) (iter1 : I) (init : B) 
   (f : F) :
   RustM B
   := do
   iter.traits.iterator.iter_fold_loop IteratorInst coreopsfunctionFnFPairBInst
-    iter_ f init
+    iter1 f init
 
 /-- [core_models::iter::traits::iterator::iter_all]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 98:12-104:9 -/
@@ -4258,15 +4261,15 @@ def iter.traits.iterator.iter_all_loop.body
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemBoolInst : core.ops.function.Fn F
-  Clause0_Item Bool) (f : F) (iter_ : I) :
+  Clause0_Item Bool) (f : F) (iter1 : I) :
   RustM (ControlFlow I Bool)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let b ← coreopsfunctionFnFTupleClause0_ItemBoolInst.call f x
     if b
-    then ok (cont iter1)
+    then ok (cont iter2)
     else ok (done false)
   | option.Option.None => ok (done true)
 
@@ -4277,13 +4280,13 @@ def iter.traits.iterator.iter_all_loop
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemBoolInst : core.ops.function.Fn F
-  Clause0_Item Bool) (iter_ : I) (f : F) :
+  Clause0_Item Bool) (iter1 : I) (f : F) :
   RustM Bool
   := do
   loop
-    (fun iter1 => iter.traits.iterator.iter_all_loop.body IteratorInst
-      coreopsfunctionFnFTupleClause0_ItemBoolInst f iter1)
-    iter_
+    (fun iter2 => iter.traits.iterator.iter_all_loop.body IteratorInst
+      coreopsfunctionFnFTupleClause0_ItemBoolInst f iter2)
+    iter1
 
 /-- [core_models::iter::traits::iterator::iter_all]:
     Source: 'core-models/src/core/iter.rs', lines 97:8-104:9 -/
@@ -4292,11 +4295,11 @@ def iter.traits.iterator.iter_all
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemBoolInst : core.ops.function.Fn F
-  Clause0_Item Bool) (iter_ : I) (f : F) :
+  Clause0_Item Bool) (iter1 : I) (f : F) :
   RustM Bool
   := do
   iter.traits.iterator.iter_all_loop IteratorInst
-    coreopsfunctionFnFTupleClause0_ItemBoolInst iter_ f
+    coreopsfunctionFnFTupleClause0_ItemBoolInst iter1 f
 
 /-- [core_models::iter::traits::iterator::iter_any]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 109:12-115:9 -/
@@ -4305,16 +4308,16 @@ def iter.traits.iterator.iter_any_loop.body
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemBoolInst : core.ops.function.Fn F
-  Clause0_Item Bool) (f : F) (iter_ : I) :
+  Clause0_Item Bool) (f : F) (iter1 : I) :
   RustM (ControlFlow I Bool)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let b ← coreopsfunctionFnFTupleClause0_ItemBoolInst.call f x
     if b
     then ok (done true)
-    else ok (cont iter1)
+    else ok (cont iter2)
   | option.Option.None => ok (done false)
 
 /-- [core_models::iter::traits::iterator::iter_any]: loop 0:
@@ -4324,13 +4327,13 @@ def iter.traits.iterator.iter_any_loop
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemBoolInst : core.ops.function.Fn F
-  Clause0_Item Bool) (iter_ : I) (f : F) :
+  Clause0_Item Bool) (iter1 : I) (f : F) :
   RustM Bool
   := do
   loop
-    (fun iter1 => iter.traits.iterator.iter_any_loop.body IteratorInst
-      coreopsfunctionFnFTupleClause0_ItemBoolInst f iter1)
-    iter_
+    (fun iter2 => iter.traits.iterator.iter_any_loop.body IteratorInst
+      coreopsfunctionFnFTupleClause0_ItemBoolInst f iter2)
+    iter1
 
 /-- [core_models::iter::traits::iterator::iter_any]:
     Source: 'core-models/src/core/iter.rs', lines 108:8-115:9 -/
@@ -4339,11 +4342,11 @@ def iter.traits.iterator.iter_any
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemBoolInst : core.ops.function.Fn F
-  Clause0_Item Bool) (iter_ : I) (f : F) :
+  Clause0_Item Bool) (iter1 : I) (f : F) :
   RustM Bool
   := do
   iter.traits.iterator.iter_any_loop IteratorInst
-    coreopsfunctionFnFTupleClause0_ItemBoolInst iter_ f
+    coreopsfunctionFnFTupleClause0_ItemBoolInst iter1 f
 
 /-- [core_models::iter::traits::iterator::iter_find]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 123:12-129:9 -/
@@ -4352,18 +4355,18 @@ def iter.traits.iterator.iter_find_loop.body
   {I : Type} {P : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnPTupleSharedClause0_ItemBoolInst : core.ops.function.Fn P
-  Clause0_Item Bool) (predicate : P) (iter_ : I) :
+  Clause0_Item Bool) (predicate : P) (iter1 : I) :
   RustM (ControlFlow I ((option.Option Clause0_Item) × I))
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let b ←
       coreopsfunctionFnPTupleSharedClause0_ItemBoolInst.call predicate x
     if b
-    then ok (done (o, iter1))
-    else ok (cont iter1)
-  | option.Option.None => ok (done (option.Option.None, iter1))
+    then ok (done (o, iter2))
+    else ok (cont iter2)
+  | option.Option.None => ok (done (option.Option.None, iter2))
 
 /-- [core_models::iter::traits::iterator::iter_find]: loop 0:
     Source: 'core-models/src/core/iter.rs', lines 123:12-129:9 -/
@@ -4372,13 +4375,13 @@ def iter.traits.iterator.iter_find_loop
   {I : Type} {P : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnPTupleSharedClause0_ItemBoolInst : core.ops.function.Fn P
-  Clause0_Item Bool) (iter_ : I) (predicate : P) :
+  Clause0_Item Bool) (iter1 : I) (predicate : P) :
   RustM ((option.Option Clause0_Item) × I)
   := do
   loop
-    (fun iter1 => iter.traits.iterator.iter_find_loop.body IteratorInst
-      coreopsfunctionFnPTupleSharedClause0_ItemBoolInst predicate iter1)
-    iter_
+    (fun iter2 => iter.traits.iterator.iter_find_loop.body IteratorInst
+      coreopsfunctionFnPTupleSharedClause0_ItemBoolInst predicate iter2)
+    iter1
 
 /-- [core_models::iter::traits::iterator::iter_find]:
     Source: 'core-models/src/core/iter.rs', lines 119:8-129:9 -/
@@ -4387,11 +4390,11 @@ def iter.traits.iterator.iter_find
   {I : Type} {P : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnPTupleShared0Clause0_ItemBoolInst : core.ops.function.Fn P
-  Clause0_Item Bool) (iter_ : I) (predicate : P) :
+  Clause0_Item Bool) (iter1 : I) (predicate : P) :
   RustM ((option.Option Clause0_Item) × I)
   := do
   iter.traits.iterator.iter_find_loop IteratorInst
-    coreopsfunctionFnPTupleShared0Clause0_ItemBoolInst iter_ predicate
+    coreopsfunctionFnPTupleShared0Clause0_ItemBoolInst iter1 predicate
 
 /-- [core_models::iter::traits::iterator::iter_find_map]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 137:12-143:9 -/
@@ -4400,16 +4403,16 @@ def iter.traits.iterator.iter_find_map_loop.body
   {I : Type} {B : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemOptionInst : core.ops.function.Fn F
-  Clause0_Item (option.Option B)) (f : F) (iter_ : I) :
+  Clause0_Item (option.Option B)) (f : F) (iter1 : I) :
   RustM (ControlFlow I (option.Option B))
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let o1 ← coreopsfunctionFnFTupleClause0_ItemOptionInst.call f x
     match o1 with
     | option.Option.Some _ => ok (done o1)
-    | option.Option.None => ok (cont iter1)
+    | option.Option.None => ok (cont iter2)
   | option.Option.None => ok (done option.Option.None)
 
 /-- [core_models::iter::traits::iterator::iter_find_map]: loop 0:
@@ -4419,13 +4422,13 @@ def iter.traits.iterator.iter_find_map_loop
   {I : Type} {B : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemOptionInst : core.ops.function.Fn F
-  Clause0_Item (option.Option B)) (iter_ : I) (f : F) :
+  Clause0_Item (option.Option B)) (iter1 : I) (f : F) :
   RustM (option.Option B)
   := do
   loop
-    (fun iter1 => iter.traits.iterator.iter_find_map_loop.body IteratorInst
-      coreopsfunctionFnFTupleClause0_ItemOptionInst f iter1)
-    iter_
+    (fun iter2 => iter.traits.iterator.iter_find_map_loop.body IteratorInst
+      coreopsfunctionFnFTupleClause0_ItemOptionInst f iter2)
+    iter1
 
 /-- [core_models::iter::traits::iterator::iter_find_map]:
     Source: 'core-models/src/core/iter.rs', lines 133:8-143:9 -/
@@ -4434,11 +4437,11 @@ def iter.traits.iterator.iter_find_map
   {I : Type} {B : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemOptionInst : core.ops.function.Fn F
-  Clause0_Item (option.Option B)) (iter_ : I) (f : F) :
+  Clause0_Item (option.Option B)) (iter1 : I) (f : F) :
   RustM (option.Option B)
   := do
   iter.traits.iterator.iter_find_map_loop IteratorInst
-    coreopsfunctionFnFTupleClause0_ItemOptionInst iter_ f
+    coreopsfunctionFnFTupleClause0_ItemOptionInst iter1 f
 
 /-- [core_models::iter::traits::iterator::iter_position]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 152:12-159:9 -/
@@ -4447,17 +4450,17 @@ def iter.traits.iterator.iter_position_loop.body
   {I : Type} {P : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnPTupleClause0_ItemBoolInst : core.ops.function.Fn P
-  Clause0_Item Bool) (predicate : P) (iter_ : I) (i : Std.Usize) :
+  Clause0_Item Bool) (predicate : P) (iter1 : I) (i : Std.Usize) :
   RustM (ControlFlow (I × Std.Usize) (option.Option Std.Usize))
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let b ← coreopsfunctionFnPTupleClause0_ItemBoolInst.call predicate x
     if b
     then ok (done (option.Option.Some i))
     else let i1 ← i + 1#usize
-         ok (cont (iter1, i1))
+         ok (cont (iter2, i1))
   | option.Option.None => ok (done option.Option.None)
 
 /-- [core_models::iter::traits::iterator::iter_position]: loop 0:
@@ -4467,14 +4470,14 @@ def iter.traits.iterator.iter_position_loop
   {I : Type} {P : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnPTupleClause0_ItemBoolInst : core.ops.function.Fn P
-  Clause0_Item Bool) (iter_ : I) (predicate : P) (i : Std.Usize) :
+  Clause0_Item Bool) (iter1 : I) (predicate : P) (i : Std.Usize) :
   RustM (option.Option Std.Usize)
   := do
   loop
-    (fun (iter1, i1) => iter.traits.iterator.iter_position_loop.body
-      IteratorInst coreopsfunctionFnPTupleClause0_ItemBoolInst predicate iter1
+    (fun (iter2, i1) => iter.traits.iterator.iter_position_loop.body
+      IteratorInst coreopsfunctionFnPTupleClause0_ItemBoolInst predicate iter2
       i1)
-    (iter_, i)
+    (iter1, i)
 
 /-- [core_models::iter::traits::iterator::iter_position]:
     Source: 'core-models/src/core/iter.rs', lines 147:8-159:9 -/
@@ -4483,24 +4486,24 @@ def iter.traits.iterator.iter_position
   {I : Type} {P : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnPTupleClause0_ItemBoolInst : core.ops.function.Fn P
-  Clause0_Item Bool) (iter_ : I) (predicate : P) :
+  Clause0_Item Bool) (iter1 : I) (predicate : P) :
   RustM (option.Option Std.Usize)
   := do
   iter.traits.iterator.iter_position_loop IteratorInst
-    coreopsfunctionFnPTupleClause0_ItemBoolInst iter_ predicate 0#usize
+    coreopsfunctionFnPTupleClause0_ItemBoolInst iter1 predicate 0#usize
 
 /-- [core_models::iter::traits::iterator::iter_count]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 165:12-167:13 -/
 @[rust_loop_body]
 def iter.traits.iterator.iter_count_loop.body
   {I : Type} {Clause0_Item : Type} (IteratorInst :
-  iter.traits.iterator.Iterator I Clause0_Item) (iter_ : I) (n : Std.Usize) :
+  iter.traits.iterator.Iterator I Clause0_Item) (iter1 : I) (n : Std.Usize) :
   RustM (ControlFlow (I × Std.Usize) Std.Usize)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some _ => let n1 ← n + 1#usize
-                            ok (cont (iter1, n1))
+                            ok (cont (iter2, n1))
   | option.Option.None => ok (done n)
 
 /-- [core_models::iter::traits::iterator::iter_count]: loop 0:
@@ -4508,37 +4511,37 @@ def iter.traits.iterator.iter_count_loop.body
 @[rust_loop]
 def iter.traits.iterator.iter_count_loop
   {I : Type} {Clause0_Item : Type} (IteratorInst :
-  iter.traits.iterator.Iterator I Clause0_Item) (iter_ : I) (n : Std.Usize) :
+  iter.traits.iterator.Iterator I Clause0_Item) (iter1 : I) (n : Std.Usize) :
   RustM Std.Usize
   := do
   loop
-    (fun (iter1, n1) => iter.traits.iterator.iter_count_loop.body IteratorInst
-      iter1 n1)
-    (iter_, n)
+    (fun (iter2, n1) => iter.traits.iterator.iter_count_loop.body IteratorInst
+      iter2 n1)
+    (iter1, n)
 
 /-- [core_models::iter::traits::iterator::iter_count]:
     Source: 'core-models/src/core/iter.rs', lines 163:8-169:9 -/
 @[reducible]
 def iter.traits.iterator.iter_count
   {I : Type} {Clause0_Item : Type} (IteratorInst :
-  iter.traits.iterator.Iterator I Clause0_Item) (iter_ : I) :
+  iter.traits.iterator.Iterator I Clause0_Item) (iter1 : I) :
   RustM Std.Usize
   := do
-  iter.traits.iterator.iter_count_loop IteratorInst iter_ 0#usize
+  iter.traits.iterator.iter_count_loop IteratorInst iter1 0#usize
 
 /-- [core_models::iter::traits::iterator::iter_last]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 187:12-189:13 -/
 @[rust_loop_body]
 def iter.traits.iterator.iter_last_loop.body
   {I : Type} {Clause0_Item : Type} (IteratorInst :
-  iter.traits.iterator.Iterator I Clause0_Item) (iter_ : I)
+  iter.traits.iterator.Iterator I Clause0_Item) (iter1 : I)
   (last : option.Option Clause0_Item) :
   RustM (ControlFlow (I × (option.Option Clause0_Item)) (option.Option
     Clause0_Item))
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
-  | option.Option.Some _ => ok (cont (iter1, o))
+  | option.Option.Some _ => ok (cont (iter2, o))
   | option.Option.None => ok (done last)
 
 /-- [core_models::iter::traits::iterator::iter_last]: loop 0:
@@ -4546,24 +4549,24 @@ def iter.traits.iterator.iter_last_loop.body
 @[rust_loop]
 def iter.traits.iterator.iter_last_loop
   {I : Type} {Clause0_Item : Type} (IteratorInst :
-  iter.traits.iterator.Iterator I Clause0_Item) (iter_ : I)
+  iter.traits.iterator.Iterator I Clause0_Item) (iter1 : I)
   (last : option.Option Clause0_Item) :
   RustM (option.Option Clause0_Item)
   := do
   loop
-    (fun (iter1, last1) => iter.traits.iterator.iter_last_loop.body
-      IteratorInst iter1 last1)
-    (iter_, last)
+    (fun (iter2, last1) => iter.traits.iterator.iter_last_loop.body
+      IteratorInst iter2 last1)
+    (iter1, last)
 
 /-- [core_models::iter::traits::iterator::iter_last]:
     Source: 'core-models/src/core/iter.rs', lines 185:8-191:9 -/
 @[reducible]
 def iter.traits.iterator.iter_last
   {I : Type} {Clause0_Item : Type} (IteratorInst :
-  iter.traits.iterator.Iterator I Clause0_Item) (iter_ : I) :
+  iter.traits.iterator.Iterator I Clause0_Item) (iter1 : I) :
   RustM (option.Option Clause0_Item)
   := do
-  iter.traits.iterator.iter_last_loop IteratorInst iter_ option.Option.None
+  iter.traits.iterator.iter_last_loop IteratorInst iter1 option.Option.None
 
 /-- [core_models::iter::traits::iterator::iter_for_each]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 196:12-198:13 -/
@@ -4572,14 +4575,14 @@ def iter.traits.iterator.iter_for_each_loop.body
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemTupleInst : core.ops.function.Fn F
-  Clause0_Item Unit) (f : F) (iter_ : I) :
+  Clause0_Item Unit) (f : F) (iter1 : I) :
   RustM (ControlFlow I Unit)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     coreopsfunctionFnFTupleClause0_ItemTupleInst.call f x
-    ok (cont iter1)
+    ok (cont iter2)
   | option.Option.None => ok (done ())
 
 /-- [core_models::iter::traits::iterator::iter_for_each]: loop 0:
@@ -4589,13 +4592,13 @@ def iter.traits.iterator.iter_for_each_loop
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemTupleInst : core.ops.function.Fn F
-  Clause0_Item Unit) (iter_ : I) (f : F) :
+  Clause0_Item Unit) (iter1 : I) (f : F) :
   RustM Unit
   := do
   loop
-    (fun iter1 => iter.traits.iterator.iter_for_each_loop.body IteratorInst
-      coreopsfunctionFnFTupleClause0_ItemTupleInst f iter1)
-    iter_
+    (fun iter2 => iter.traits.iterator.iter_for_each_loop.body IteratorInst
+      coreopsfunctionFnFTupleClause0_ItemTupleInst f iter2)
+    iter1
 
 /-- [core_models::iter::traits::iterator::iter_for_each]:
     Source: 'core-models/src/core/iter.rs', lines 195:8-199:9 -/
@@ -4604,11 +4607,11 @@ def iter.traits.iterator.iter_for_each
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFTupleClause0_ItemTupleInst : core.ops.function.Fn F
-  Clause0_Item Unit) (iter_ : I) (f : F) :
+  Clause0_Item Unit) (iter1 : I) (f : F) :
   RustM Unit
   := do
   iter.traits.iterator.iter_for_each_loop IteratorInst
-    coreopsfunctionFnFTupleClause0_ItemTupleInst iter_ f
+    coreopsfunctionFnFTupleClause0_ItemTupleInst iter1 f
 
 /-- [core_models::iter::traits::iterator::iter_reduce]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 211:12-213:13 -/
@@ -4617,15 +4620,15 @@ def iter.traits.iterator.iter_reduce_loop.body
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFPairClause0_ItemInst : core.ops.function.Fn F
-  (Clause0_Item × Clause0_Item) Clause0_Item) (f : F) (iter_ : I)
+  (Clause0_Item × Clause0_Item) Clause0_Item) (f : F) (iter1 : I)
   (accum : Clause0_Item) :
   RustM (ControlFlow (I × Clause0_Item) Clause0_Item)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let accum1 ← coreopsfunctionFnFPairClause0_ItemInst.call f (accum, x)
-    ok (cont (iter1, accum1))
+    ok (cont (iter2, accum1))
   | option.Option.None => ok (done accum)
 
 /-- [core_models::iter::traits::iterator::iter_reduce]: loop 0:
@@ -4635,14 +4638,14 @@ def iter.traits.iterator.iter_reduce_loop
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFPairClause0_ItemInst : core.ops.function.Fn F
-  (Clause0_Item × Clause0_Item) Clause0_Item) (iter_ : I) (f : F)
+  (Clause0_Item × Clause0_Item) Clause0_Item) (iter1 : I) (f : F)
   (accum : Clause0_Item) :
   RustM Clause0_Item
   := do
   loop
-    (fun (iter1, accum1) => iter.traits.iterator.iter_reduce_loop.body
-      IteratorInst coreopsfunctionFnFPairClause0_ItemInst f iter1 accum1)
-    (iter_, accum)
+    (fun (iter2, accum1) => iter.traits.iterator.iter_reduce_loop.body
+      IteratorInst coreopsfunctionFnFPairClause0_ItemInst f iter2 accum1)
+    (iter1, accum)
 
 /-- [core_models::iter::traits::iterator::iter_reduce]:
     Source: 'core-models/src/core/iter.rs', lines 203:8-215:9 -/
@@ -4650,15 +4653,15 @@ def iter.traits.iterator.iter_reduce
   {I : Type} {F : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
   (coreopsfunctionFnFPairClause0_ItemInst : core.ops.function.Fn F
-  (Clause0_Item × Clause0_Item) Clause0_Item) (iter_ : I) (f : F) :
+  (Clause0_Item × Clause0_Item) Clause0_Item) (iter1 : I) (f : F) :
   RustM (option.Option Clause0_Item)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let accum ←
       iter.traits.iterator.iter_reduce_loop IteratorInst
-        coreopsfunctionFnFPairClause0_ItemInst iter1 f x
+        coreopsfunctionFnFPairClause0_ItemInst iter2 f x
     ok (option.Option.Some accum)
   | option.Option.None => ok option.Option.None
 
@@ -4668,17 +4671,17 @@ def iter.traits.iterator.iter_reduce
 def iter.traits.iterator.iter_min_loop.body
   {I : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (cmpOrdInst : cmp.Ord
-  Clause0_Item) (iter_ : I) (min : Clause0_Item) :
+  Clause0_Item) (iter1 : I) (min : Clause0_Item) :
   RustM (ControlFlow (I × Clause0_Item) Clause0_Item)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let o1 ← cmpOrdInst.cmp x min
     match o1 with
-    | cmp.Ordering.Less => ok (cont (iter1, x))
-    | cmp.Ordering.Equal => ok (cont (iter1, min))
-    | cmp.Ordering.Greater => ok (cont (iter1, min))
+    | cmp.Ordering.Less => ok (cont (iter2, x))
+    | cmp.Ordering.Equal => ok (cont (iter2, min))
+    | cmp.Ordering.Greater => ok (cont (iter2, min))
   | option.Option.None => ok (done min)
 
 /-- [core_models::iter::traits::iterator::iter_min]: loop 0:
@@ -4687,27 +4690,27 @@ def iter.traits.iterator.iter_min_loop.body
 def iter.traits.iterator.iter_min_loop
   {I : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (cmpOrdInst : cmp.Ord
-  Clause0_Item) (iter_ : I) (min : Clause0_Item) :
+  Clause0_Item) (iter1 : I) (min : Clause0_Item) :
   RustM Clause0_Item
   := do
   loop
-    (fun (iter1, min1) => iter.traits.iterator.iter_min_loop.body IteratorInst
-      cmpOrdInst iter1 min1)
-    (iter_, min)
+    (fun (iter2, min1) => iter.traits.iterator.iter_min_loop.body IteratorInst
+      cmpOrdInst iter2 min1)
+    (iter1, min)
 
 /-- [core_models::iter::traits::iterator::iter_min]:
     Source: 'core-models/src/core/iter.rs', lines 219:8-233:9 -/
 def iter.traits.iterator.iter_min
   {I : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (cmpOrdInst : cmp.Ord
-  Clause0_Item) (iter_ : I) :
+  Clause0_Item) (iter1 : I) :
   RustM (option.Option Clause0_Item)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let min ←
-      iter.traits.iterator.iter_min_loop IteratorInst cmpOrdInst iter1 x
+      iter.traits.iterator.iter_min_loop IteratorInst cmpOrdInst iter2 x
     ok (option.Option.Some min)
   | option.Option.None => ok option.Option.None
 
@@ -4717,17 +4720,17 @@ def iter.traits.iterator.iter_min
 def iter.traits.iterator.iter_max_loop.body
   {I : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (cmpOrdInst : cmp.Ord
-  Clause0_Item) (iter_ : I) (max : Clause0_Item) :
+  Clause0_Item) (iter1 : I) (max : Clause0_Item) :
   RustM (ControlFlow (I × Clause0_Item) Clause0_Item)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let o1 ← cmpOrdInst.cmp x max
     match o1 with
-    | cmp.Ordering.Less => ok (cont (iter1, max))
-    | cmp.Ordering.Equal => ok (cont (iter1, max))
-    | cmp.Ordering.Greater => ok (cont (iter1, x))
+    | cmp.Ordering.Less => ok (cont (iter2, max))
+    | cmp.Ordering.Equal => ok (cont (iter2, max))
+    | cmp.Ordering.Greater => ok (cont (iter2, x))
   | option.Option.None => ok (done max)
 
 /-- [core_models::iter::traits::iterator::iter_max]: loop 0:
@@ -4736,27 +4739,27 @@ def iter.traits.iterator.iter_max_loop.body
 def iter.traits.iterator.iter_max_loop
   {I : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (cmpOrdInst : cmp.Ord
-  Clause0_Item) (iter_ : I) (max : Clause0_Item) :
+  Clause0_Item) (iter1 : I) (max : Clause0_Item) :
   RustM Clause0_Item
   := do
   loop
-    (fun (iter1, max1) => iter.traits.iterator.iter_max_loop.body IteratorInst
-      cmpOrdInst iter1 max1)
-    (iter_, max)
+    (fun (iter2, max1) => iter.traits.iterator.iter_max_loop.body IteratorInst
+      cmpOrdInst iter2 max1)
+    (iter1, max)
 
 /-- [core_models::iter::traits::iterator::iter_max]:
     Source: 'core-models/src/core/iter.rs', lines 237:8-251:9 -/
 def iter.traits.iterator.iter_max
   {I : Type} {Clause0_Item : Type} (IteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item) (cmpOrdInst : cmp.Ord
-  Clause0_Item) (iter_ : I) :
+  Clause0_Item) (iter1 : I) :
   RustM (option.Option Clause0_Item)
   := do
-  let (o, iter1) ← IteratorInst.next iter_
+  let (o, iter2) ← IteratorInst.next iter1
   match o with
   | option.Option.Some x =>
     let max ←
-      iter.traits.iterator.iter_max_loop IteratorInst cmpOrdInst iter1 x
+      iter.traits.iterator.iter_max_loop IteratorInst cmpOrdInst iter2 x
     ok (option.Option.Some max)
   | option.Option.None => ok option.Option.None
 
@@ -4783,8 +4786,8 @@ def iter.traits.collect.IntoIterator.Blanket {I : Type} {Clause0_Item : Type}
     Source: 'core-models/src/core/iter.rs', lines 409:12-411:13
     Visibility: public -/
 def iter.adapters.enumerate.Enumerate.new
-  {I : Type} (iter_ : I) : RustM (iter.adapters.enumerate.Enumerate I) := do
-  ok { iter := iter_, count := 0#usize }
+  {I : Type} (iter1 : I) : RustM (iter.adapters.enumerate.Enumerate I) := do
+  ok { iter := iter1, count := 0#usize }
 
 /-- [core_models::iter::adapters::enumerate::{impl core_models::iter::traits::iterator::Iterator<(usize, Clause0_Item)> for core_models::iter::adapters::enumerate::Enumerate<I>}::next]:
     Source: 'core-models/src/core/iter.rs', lines 417:12-431:13
@@ -4821,13 +4824,13 @@ def
     Source: 'core-models/src/core/iter.rs', lines 447:12-452:13
     Visibility: public -/
 def iter.adapters.step_by.StepBy.new
-  {I : Type} (iter_ : I) (step : Std.Usize) :
+  {I : Type} (iter1 : I) (step : Std.Usize) :
   RustM (iter.adapters.step_by.StepBy I)
   := do
   if step = 0#usize
   then panicking.internal.panic Unit
-       ok { iter := iter_, step }
-  else ok { iter := iter_, step }
+       ok { iter := iter1, step }
+  else ok { iter := iter1, step }
 
 
 
@@ -4841,10 +4844,10 @@ def iter.adapters.step_by.StepBy.new
     Source: 'core-models/src/core/iter.rs', lines 481:12-483:13
     Visibility: public -/
 def iter.adapters.map.Map.new
-  {I : Type} {F : Type} (iter_ : I) (f : F) :
+  {I : Type} {F : Type} (iter1 : I) (f : F) :
   RustM (iter.adapters.map.Map I F)
   := do
-  ok { iter := iter_, f }
+  ok { iter := iter1, f }
 
 /-- [core_models::iter::adapters::map::{impl core_models::iter::traits::iterator::Iterator<O> for core_models::iter::adapters::map::Map<I, F>}::next]:
     Source: 'core-models/src/core/iter.rs', lines 492:12-497:13
@@ -4881,10 +4884,10 @@ def iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator {I :
     Source: 'core-models/src/core/iter.rs', lines 510:12-512:13
     Visibility: public -/
 def iter.adapters.take.Take.new
-  {I : Type} (iter_ : I) (n : Std.Usize) :
+  {I : Type} (iter1 : I) (n : Std.Usize) :
   RustM (iter.adapters.take.Take I)
   := do
-  ok { iter := iter_, n }
+  ok { iter := iter1, n }
 
 /-- [core_models::iter::adapters::take::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::take::Take<I>}::next]:
     Source: 'core-models/src/core/iter.rs', lines 518:12-525:13
@@ -5168,10 +5171,10 @@ def iter.adapters.zip.Zip.Insts.CoreIterTraitsIteratorIteratorPair {I1 :
     Source: 'core-models/src/core/iter.rs', lines 653:12-655:13
     Visibility: public -/
 def iter.adapters.filter.Filter.new
-  {I : Type} {P : Type} (iter_ : I) (predicate : P) :
+  {I : Type} {P : Type} (iter1 : I) (predicate : P) :
   RustM (iter.adapters.filter.Filter I P)
   := do
-  ok { iter := iter_, predicate }
+  ok { iter := iter1, predicate }
 
 /-- [core_models::iter::adapters::chain::{core_models::iter::adapters::chain::Chain<A, B>}::new]:
     Source: 'core-models/src/core/iter.rs', lines 687:12-692:13
@@ -5224,10 +5227,10 @@ def iter.adapters.chain.Chain.Insts.CoreIterTraitsIteratorIterator {A :
     Source: 'core-models/src/core/iter.rs', lines 720:12-722:13
     Visibility: public -/
 def iter.adapters.skip.Skip.new
-  {I : Type} (iter_ : I) (n : Std.Usize) :
+  {I : Type} (iter1 : I) (n : Std.Usize) :
   RustM (iter.adapters.skip.Skip I)
   := do
-  ok { iter := iter_, n }
+  ok { iter := iter1, n }
 
 /-- [core_models::iter::adapters::skip::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip::Skip<I>}::next]: loop body 0:
     Source: 'core-models/src/core/iter.rs', lines 730:16-737:13
@@ -5371,10 +5374,10 @@ def num.I8.overflowing_add
 def num.I8.checked_add_unsigned
   (x : Std.I8) (y : Std.U8) : RustM (option.Option Std.I8) := do
   let i ← lift (UScalar.hcast .I8 y)
-  let (result, overflowed) ← num.I8.overflowing_add x i
+  let (result1, overflowed) ← num.I8.overflowing_add x i
   let i1 ← lift (IScalar.hcast .U8 num.I8.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::forward_unchecked]:
@@ -5399,10 +5402,10 @@ def num.I16.overflowing_add
 def num.I16.checked_add_unsigned
   (x : Std.I16) (y : Std.U16) : RustM (option.Option Std.I16) := do
   let i ← lift (UScalar.hcast .I16 y)
-  let (result, overflowed) ← num.I16.overflowing_add x i
+  let (result1, overflowed) ← num.I16.overflowing_add x i
   let i1 ← lift (IScalar.hcast .U16 num.I16.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::forward_unchecked]:
@@ -5427,10 +5430,10 @@ def num.I32.overflowing_add
 def num.I32.checked_add_unsigned
   (x : Std.I32) (y : Std.U32) : RustM (option.Option Std.I32) := do
   let i ← lift (UScalar.hcast .I32 y)
-  let (result, overflowed) ← num.I32.overflowing_add x i
+  let (result1, overflowed) ← num.I32.overflowing_add x i
   let i1 ← lift (IScalar.hcast .U32 num.I32.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::forward_unchecked]:
@@ -5455,10 +5458,10 @@ def num.I64.overflowing_add
 def num.I64.checked_add_unsigned
   (x : Std.I64) (y : Std.U64) : RustM (option.Option Std.I64) := do
   let i ← lift (UScalar.hcast .I64 y)
-  let (result, overflowed) ← num.I64.overflowing_add x i
+  let (result1, overflowed) ← num.I64.overflowing_add x i
   let i1 ← lift (IScalar.hcast .U64 num.I64.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::forward_unchecked]:
@@ -5483,11 +5486,11 @@ def num.Isize.overflowing_add
 def num.Isize.checked_add_unsigned
   (x : Std.Isize) (y : Std.Usize) : RustM (option.Option Std.Isize) := do
   let i ← lift (UScalar.hcast .Isize y)
-  let (result, overflowed) ← num.Isize.overflowing_add x i
+  let (result1, overflowed) ← num.Isize.overflowing_add x i
   let i1 := num.Isize.MAX
   let i2 ← lift (IScalar.hcast .Usize i1)
   if overflowed = (y > i2)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::forward_unchecked]:
@@ -5511,10 +5514,10 @@ def num.I128.overflowing_add
 def num.I128.checked_add_unsigned
   (x : Std.I128) (y : Std.U128) : RustM (option.Option Std.I128) := do
   let i ← lift (UScalar.hcast .I128 y)
-  let (result, overflowed) ← num.I128.overflowing_add x i
+  let (result1, overflowed) ← num.I128.overflowing_add x i
   let i1 ← lift (IScalar.hcast .U128 num.I128.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::forward_unchecked]:
@@ -5539,10 +5542,10 @@ def num.I8.overflowing_sub
 def num.I8.checked_sub_unsigned
   (x : Std.I8) (y : Std.U8) : RustM (option.Option Std.I8) := do
   let i ← lift (UScalar.hcast .I8 y)
-  let (result, overflowed) ← num.I8.overflowing_sub x i
+  let (result1, overflowed) ← num.I8.overflowing_sub x i
   let i1 ← lift (IScalar.hcast .U8 num.I8.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::backward_unchecked]:
@@ -5567,10 +5570,10 @@ def num.I16.overflowing_sub
 def num.I16.checked_sub_unsigned
   (x : Std.I16) (y : Std.U16) : RustM (option.Option Std.I16) := do
   let i ← lift (UScalar.hcast .I16 y)
-  let (result, overflowed) ← num.I16.overflowing_sub x i
+  let (result1, overflowed) ← num.I16.overflowing_sub x i
   let i1 ← lift (IScalar.hcast .U16 num.I16.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::backward_unchecked]:
@@ -5595,10 +5598,10 @@ def num.I32.overflowing_sub
 def num.I32.checked_sub_unsigned
   (x : Std.I32) (y : Std.U32) : RustM (option.Option Std.I32) := do
   let i ← lift (UScalar.hcast .I32 y)
-  let (result, overflowed) ← num.I32.overflowing_sub x i
+  let (result1, overflowed) ← num.I32.overflowing_sub x i
   let i1 ← lift (IScalar.hcast .U32 num.I32.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::backward_unchecked]:
@@ -5623,10 +5626,10 @@ def num.I64.overflowing_sub
 def num.I64.checked_sub_unsigned
   (x : Std.I64) (y : Std.U64) : RustM (option.Option Std.I64) := do
   let i ← lift (UScalar.hcast .I64 y)
-  let (result, overflowed) ← num.I64.overflowing_sub x i
+  let (result1, overflowed) ← num.I64.overflowing_sub x i
   let i1 ← lift (IScalar.hcast .U64 num.I64.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::backward_unchecked]:
@@ -5651,11 +5654,11 @@ def num.Isize.overflowing_sub
 def num.Isize.checked_sub_unsigned
   (x : Std.Isize) (y : Std.Usize) : RustM (option.Option Std.Isize) := do
   let i ← lift (UScalar.hcast .Isize y)
-  let (result, overflowed) ← num.Isize.overflowing_sub x i
+  let (result1, overflowed) ← num.Isize.overflowing_sub x i
   let i1 := num.Isize.MAX
   let i2 ← lift (IScalar.hcast .Usize i1)
   if overflowed = (y > i2)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::backward_unchecked]:
@@ -5679,10 +5682,10 @@ def num.I128.overflowing_sub
 def num.I128.checked_sub_unsigned
   (x : Std.I128) (y : Std.U128) : RustM (option.Option Std.I128) := do
   let i ← lift (UScalar.hcast .I128 y)
-  let (result, overflowed) ← num.I128.overflowing_sub x i
+  let (result1, overflowed) ← num.I128.overflowing_sub x i
   let i1 ← lift (IScalar.hcast .U128 num.I128.MAX)
   if overflowed = (y > i1)
-  then ok (option.Option.Some result)
+  then ok (option.Option.Some result1)
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::backward_unchecked]:
@@ -5874,10 +5877,10 @@ def num.U8.overflowing_add
     Visibility: public -/
 def num.U8.checked_add
   (x : Std.U8) (y : Std.U8) : RustM (option.Option Std.U8) := do
-  let (result, overflowed) ← num.U8.overflowing_add x y
+  let (result1, overflowed) ← num.U8.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::forward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 831:20-836:21
@@ -5938,10 +5941,10 @@ def num.U16.overflowing_add
     Visibility: public -/
 def num.U16.checked_add
   (x : Std.U16) (y : Std.U16) : RustM (option.Option Std.U16) := do
-  let (result, overflowed) ← num.U16.overflowing_add x y
+  let (result1, overflowed) ← num.U16.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::forward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 831:20-836:21
@@ -6002,10 +6005,10 @@ def num.U32.overflowing_add
     Visibility: public -/
 def num.U32.checked_add
   (x : Std.U32) (y : Std.U32) : RustM (option.Option Std.U32) := do
-  let (result, overflowed) ← num.U32.overflowing_add x y
+  let (result1, overflowed) ← num.U32.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::forward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 831:20-836:21
@@ -6066,10 +6069,10 @@ def num.U64.overflowing_add
     Visibility: public -/
 def num.U64.checked_add
   (x : Std.U64) (y : Std.U64) : RustM (option.Option Std.U64) := do
-  let (result, overflowed) ← num.U64.overflowing_add x y
+  let (result1, overflowed) ← num.U64.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::forward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 831:20-836:21
@@ -6130,10 +6133,10 @@ def num.Usize.overflowing_add
     Visibility: public -/
 def num.Usize.checked_add
   (x : Std.Usize) (y : Std.Usize) : RustM (option.Option Std.Usize) := do
-  let (result, overflowed) ← num.Usize.overflowing_add x y
+  let (result1, overflowed) ← num.Usize.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::forward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 831:20-836:21
@@ -6199,10 +6202,10 @@ def num.U128.overflowing_add
     Visibility: public -/
 def num.U128.checked_add
   (x : Std.U128) (y : Std.U128) : RustM (option.Option Std.U128) := do
-  let (result, overflowed) ← num.U128.overflowing_add x y
+  let (result1, overflowed) ← num.U128.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::forward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 923:20-925:21
@@ -6225,10 +6228,10 @@ def U128.Insts.CoreIterRangeStep.forward
     Visibility: public -/
 def num.I128.checked_add
   (x : Std.I128) (y : Std.I128) : RustM (option.Option Std.I128) := do
-  let (result, overflowed) ← num.I128.overflowing_add x y
+  let (result1, overflowed) ← num.I128.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::forward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 955:20-957:21
@@ -6258,10 +6261,10 @@ def num.U8.overflowing_sub
     Visibility: public -/
 def num.U8.checked_sub
   (x : Std.U8) (y : Std.U8) : RustM (option.Option Std.U8) := do
-  let (result, overflowed) ← num.U8.overflowing_sub x y
+  let (result1, overflowed) ← num.U8.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::backward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 838:20-843:21
@@ -6322,10 +6325,10 @@ def num.U16.overflowing_sub
     Visibility: public -/
 def num.U16.checked_sub
   (x : Std.U16) (y : Std.U16) : RustM (option.Option Std.U16) := do
-  let (result, overflowed) ← num.U16.overflowing_sub x y
+  let (result1, overflowed) ← num.U16.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::backward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 838:20-843:21
@@ -6386,10 +6389,10 @@ def num.U32.overflowing_sub
     Visibility: public -/
 def num.U32.checked_sub
   (x : Std.U32) (y : Std.U32) : RustM (option.Option Std.U32) := do
-  let (result, overflowed) ← num.U32.overflowing_sub x y
+  let (result1, overflowed) ← num.U32.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::backward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 838:20-843:21
@@ -6450,10 +6453,10 @@ def num.U64.overflowing_sub
     Visibility: public -/
 def num.U64.checked_sub
   (x : Std.U64) (y : Std.U64) : RustM (option.Option Std.U64) := do
-  let (result, overflowed) ← num.U64.overflowing_sub x y
+  let (result1, overflowed) ← num.U64.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::backward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 838:20-843:21
@@ -6514,10 +6517,10 @@ def num.Usize.overflowing_sub
     Visibility: public -/
 def num.Usize.checked_sub
   (x : Std.Usize) (y : Std.Usize) : RustM (option.Option Std.Usize) := do
-  let (result, overflowed) ← num.Usize.overflowing_sub x y
+  let (result1, overflowed) ← num.Usize.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::backward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 838:20-843:21
@@ -6583,10 +6586,10 @@ def num.U128.overflowing_sub
     Visibility: public -/
 def num.U128.checked_sub
   (x : Std.U128) (y : Std.U128) : RustM (option.Option Std.U128) := do
-  let (result, overflowed) ← num.U128.overflowing_sub x y
+  let (result1, overflowed) ← num.U128.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::backward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 927:20-929:21
@@ -6609,10 +6612,10 @@ def U128.Insts.CoreIterRangeStep.backward
     Visibility: public -/
 def num.I128.checked_sub
   (x : Std.I128) (y : Std.I128) : RustM (option.Option Std.I128) := do
-  let (result, overflowed) ← num.I128.overflowing_sub x y
+  let (result1, overflowed) ← num.I128.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::backward_checked]:
     Source: 'core-models/src/core/iter.rs', lines 959:20-961:21
@@ -6969,10 +6972,10 @@ def I128.Insts.CoreIterRangeStep.steps_between
   then
     let o ← num.I128.checked_sub «end» start
     match o with
-    | option.Option.Some result =>
+    | option.Option.Some result1 =>
       let r ←
         Usize.Insts.CoreConvertTryFromI128TryFromIntError.try_from
-          result
+          result1
       match r with
       | core.result.Result.Ok steps => ok (steps, option.Option.Some steps)
       | core.result.Result.Err _ => ok (core.num.Usize.MAX, option.Option.None)
@@ -7432,60 +7435,60 @@ def num.Usize.overflowing_mul
     Visibility: public -/
 def num.U8.checked_mul
   (x : Std.U8) (y : Std.U8) : RustM (option.Option Std.U8) := do
-  let (result, overflowed) ← num.U8.overflowing_mul x y
+  let (result1, overflowed) ← num.U8.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u16}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13
     Visibility: public -/
 def num.U16.checked_mul
   (x : Std.U16) (y : Std.U16) : RustM (option.Option Std.U16) := do
-  let (result, overflowed) ← num.U16.overflowing_mul x y
+  let (result1, overflowed) ← num.U16.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u32}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13
     Visibility: public -/
 def num.U32.checked_mul
   (x : Std.U32) (y : Std.U32) : RustM (option.Option Std.U32) := do
-  let (result, overflowed) ← num.U32.overflowing_mul x y
+  let (result1, overflowed) ← num.U32.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u64}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13
     Visibility: public -/
 def num.U64.checked_mul
   (x : Std.U64) (y : Std.U64) : RustM (option.Option Std.U64) := do
-  let (result, overflowed) ← num.U64.overflowing_mul x y
+  let (result1, overflowed) ← num.U64.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u128}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13
     Visibility: public -/
 def num.U128.checked_mul
   (x : Std.U128) (y : Std.U128) : RustM (option.Option Std.U128) := do
-  let (result, overflowed) ← num.U128.overflowing_mul x y
+  let (result1, overflowed) ← num.U128.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::usize}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13
     Visibility: public -/
 def num.Usize.checked_mul
   (x : Std.Usize) (y : Std.Usize) : RustM (option.Option Std.Usize) := do
-  let (result, overflowed) ← num.Usize.overflowing_mul x y
+  let (result1, overflowed) ← num.Usize.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u8}::unchecked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13
@@ -7644,60 +7647,60 @@ def num.Usize.overflowing_pow
     Visibility: public -/
 def num.U8.checked_pow
   (x : Std.U8) (exp : Std.U32) : RustM (option.Option Std.U8) := do
-  let (result, overflowed) ← num.U8.overflowing_pow x exp
+  let (result1, overflowed) ← num.U8.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u16}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 123:12-130:13
     Visibility: public -/
 def num.U16.checked_pow
   (x : Std.U16) (exp : Std.U32) : RustM (option.Option Std.U16) := do
-  let (result, overflowed) ← num.U16.overflowing_pow x exp
+  let (result1, overflowed) ← num.U16.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u32}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 123:12-130:13
     Visibility: public -/
 def num.U32.checked_pow
   (x : Std.U32) (exp : Std.U32) : RustM (option.Option Std.U32) := do
-  let (result, overflowed) ← num.U32.overflowing_pow x exp
+  let (result1, overflowed) ← num.U32.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u64}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 123:12-130:13
     Visibility: public -/
 def num.U64.checked_pow
   (x : Std.U64) (exp : Std.U32) : RustM (option.Option Std.U64) := do
-  let (result, overflowed) ← num.U64.overflowing_pow x exp
+  let (result1, overflowed) ← num.U64.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u128}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 123:12-130:13
     Visibility: public -/
 def num.U128.checked_pow
   (x : Std.U128) (exp : Std.U32) : RustM (option.Option Std.U128) := do
-  let (result, overflowed) ← num.U128.overflowing_pow x exp
+  let (result1, overflowed) ← num.U128.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::usize}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 123:12-130:13
     Visibility: public -/
 def num.Usize.checked_pow
   (x : Std.Usize) (exp : Std.U32) : RustM (option.Option Std.Usize) := do
-  let (result, overflowed) ← num.Usize.overflowing_pow x exp
+  let (result1, overflowed) ← num.Usize.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u8}::count_ones]:
     Source: 'core-models/src/core/num/mod.rs', lines 132:12-134:13
@@ -8524,50 +8527,50 @@ def num.Isize.saturating_add
     Visibility: public -/
 def num.I8.checked_add
   (x : Std.I8) (y : Std.I8) : RustM (option.Option Std.I8) := do
-  let (result, overflowed) ← num.I8.overflowing_add x y
+  let (result1, overflowed) ← num.I8.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i16}::checked_add]:
     Source: 'core-models/src/core/num/mod.rs', lines 289:12-296:13
     Visibility: public -/
 def num.I16.checked_add
   (x : Std.I16) (y : Std.I16) : RustM (option.Option Std.I16) := do
-  let (result, overflowed) ← num.I16.overflowing_add x y
+  let (result1, overflowed) ← num.I16.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i32}::checked_add]:
     Source: 'core-models/src/core/num/mod.rs', lines 289:12-296:13
     Visibility: public -/
 def num.I32.checked_add
   (x : Std.I32) (y : Std.I32) : RustM (option.Option Std.I32) := do
-  let (result, overflowed) ← num.I32.overflowing_add x y
+  let (result1, overflowed) ← num.I32.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i64}::checked_add]:
     Source: 'core-models/src/core/num/mod.rs', lines 289:12-296:13
     Visibility: public -/
 def num.I64.checked_add
   (x : Std.I64) (y : Std.I64) : RustM (option.Option Std.I64) := do
-  let (result, overflowed) ← num.I64.overflowing_add x y
+  let (result1, overflowed) ← num.I64.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::isize}::checked_add]:
     Source: 'core-models/src/core/num/mod.rs', lines 289:12-296:13
     Visibility: public -/
 def num.Isize.checked_add
   (x : Std.Isize) (y : Std.Isize) : RustM (option.Option Std.Isize) := do
-  let (result, overflowed) ← num.Isize.overflowing_add x y
+  let (result1, overflowed) ← num.Isize.overflowing_add x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i8}::unchecked_add]:
     Source: 'core-models/src/core/num/mod.rs', lines 299:12-301:13
@@ -8655,50 +8658,50 @@ def num.Isize.saturating_sub
     Visibility: public -/
 def num.I8.checked_sub
   (x : Std.I8) (y : Std.I8) : RustM (option.Option Std.I8) := do
-  let (result, overflowed) ← num.I8.overflowing_sub x y
+  let (result1, overflowed) ← num.I8.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i16}::checked_sub]:
     Source: 'core-models/src/core/num/mod.rs', lines 315:12-322:13
     Visibility: public -/
 def num.I16.checked_sub
   (x : Std.I16) (y : Std.I16) : RustM (option.Option Std.I16) := do
-  let (result, overflowed) ← num.I16.overflowing_sub x y
+  let (result1, overflowed) ← num.I16.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i32}::checked_sub]:
     Source: 'core-models/src/core/num/mod.rs', lines 315:12-322:13
     Visibility: public -/
 def num.I32.checked_sub
   (x : Std.I32) (y : Std.I32) : RustM (option.Option Std.I32) := do
-  let (result, overflowed) ← num.I32.overflowing_sub x y
+  let (result1, overflowed) ← num.I32.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i64}::checked_sub]:
     Source: 'core-models/src/core/num/mod.rs', lines 315:12-322:13
     Visibility: public -/
 def num.I64.checked_sub
   (x : Std.I64) (y : Std.I64) : RustM (option.Option Std.I64) := do
-  let (result, overflowed) ← num.I64.overflowing_sub x y
+  let (result1, overflowed) ← num.I64.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::isize}::checked_sub]:
     Source: 'core-models/src/core/num/mod.rs', lines 315:12-322:13
     Visibility: public -/
 def num.Isize.checked_sub
   (x : Std.Isize) (y : Std.Isize) : RustM (option.Option Std.Isize) := do
-  let (result, overflowed) ← num.Isize.overflowing_sub x y
+  let (result1, overflowed) ← num.Isize.overflowing_sub x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i8}::unchecked_sub]:
     Source: 'core-models/src/core/num/mod.rs', lines 325:12-327:13
@@ -8859,60 +8862,60 @@ def num.Isize.overflowing_mul
     Visibility: public -/
 def num.I8.checked_mul
   (x : Std.I8) (y : Std.I8) : RustM (option.Option Std.I8) := do
-  let (result, overflowed) ← num.I8.overflowing_mul x y
+  let (result1, overflowed) ← num.I8.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i16}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 361:12-368:13
     Visibility: public -/
 def num.I16.checked_mul
   (x : Std.I16) (y : Std.I16) : RustM (option.Option Std.I16) := do
-  let (result, overflowed) ← num.I16.overflowing_mul x y
+  let (result1, overflowed) ← num.I16.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i32}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 361:12-368:13
     Visibility: public -/
 def num.I32.checked_mul
   (x : Std.I32) (y : Std.I32) : RustM (option.Option Std.I32) := do
-  let (result, overflowed) ← num.I32.overflowing_mul x y
+  let (result1, overflowed) ← num.I32.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i64}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 361:12-368:13
     Visibility: public -/
 def num.I64.checked_mul
   (x : Std.I64) (y : Std.I64) : RustM (option.Option Std.I64) := do
-  let (result, overflowed) ← num.I64.overflowing_mul x y
+  let (result1, overflowed) ← num.I64.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i128}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 361:12-368:13
     Visibility: public -/
 def num.I128.checked_mul
   (x : Std.I128) (y : Std.I128) : RustM (option.Option Std.I128) := do
-  let (result, overflowed) ← num.I128.overflowing_mul x y
+  let (result1, overflowed) ← num.I128.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::isize}::checked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 361:12-368:13
     Visibility: public -/
 def num.Isize.checked_mul
   (x : Std.Isize) (y : Std.Isize) : RustM (option.Option Std.Isize) := do
-  let (result, overflowed) ← num.Isize.overflowing_mul x y
+  let (result1, overflowed) ← num.Isize.overflowing_mul x y
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i8}::unchecked_mul]:
     Source: 'core-models/src/core/num/mod.rs', lines 371:12-373:13
@@ -9071,60 +9074,60 @@ def num.Isize.overflowing_pow
     Visibility: public -/
 def num.I8.checked_pow
   (x : Std.I8) (exp : Std.U32) : RustM (option.Option Std.I8) := do
-  let (result, overflowed) ← num.I8.overflowing_pow x exp
+  let (result1, overflowed) ← num.I8.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i16}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 390:12-397:13
     Visibility: public -/
 def num.I16.checked_pow
   (x : Std.I16) (exp : Std.U32) : RustM (option.Option Std.I16) := do
-  let (result, overflowed) ← num.I16.overflowing_pow x exp
+  let (result1, overflowed) ← num.I16.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i32}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 390:12-397:13
     Visibility: public -/
 def num.I32.checked_pow
   (x : Std.I32) (exp : Std.U32) : RustM (option.Option Std.I32) := do
-  let (result, overflowed) ← num.I32.overflowing_pow x exp
+  let (result1, overflowed) ← num.I32.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i64}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 390:12-397:13
     Visibility: public -/
 def num.I64.checked_pow
   (x : Std.I64) (exp : Std.U32) : RustM (option.Option Std.I64) := do
-  let (result, overflowed) ← num.I64.overflowing_pow x exp
+  let (result1, overflowed) ← num.I64.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i128}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 390:12-397:13
     Visibility: public -/
 def num.I128.checked_pow
   (x : Std.I128) (exp : Std.U32) : RustM (option.Option Std.I128) := do
-  let (result, overflowed) ← num.I128.overflowing_pow x exp
+  let (result1, overflowed) ← num.I128.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::isize}::checked_pow]:
     Source: 'core-models/src/core/num/mod.rs', lines 390:12-397:13
     Visibility: public -/
 def num.Isize.checked_pow
   (x : Std.Isize) (exp : Std.U32) : RustM (option.Option Std.Isize) := do
-  let (result, overflowed) ← num.Isize.overflowing_pow x exp
+  let (result1, overflowed) ← num.Isize.overflowing_pow x exp
   if overflowed
   then ok option.Option.None
-  else ok (option.Option.Some result)
+  else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i8}::count_ones]:
     Source: 'core-models/src/core/num/mod.rs', lines 399:12-401:13
@@ -10309,7 +10312,7 @@ def ops.range.RangeU8.Insts.CoreIterTraitsIteratorIteratorU8.next
   (self : ops.range.Range Std.U8) :
   RustM ((option.Option Std.U8) × (ops.range.Range Std.U8))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#u8
@@ -10330,7 +10333,7 @@ def ops.range.RangeU16.Insts.CoreIterTraitsIteratorIteratorU16.next
   (self : ops.range.Range Std.U16) :
   RustM ((option.Option Std.U16) × (ops.range.Range Std.U16))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#u16
@@ -10352,7 +10355,7 @@ def ops.range.RangeU32.Insts.CoreIterTraitsIteratorIteratorU32.next
   (self : ops.range.Range Std.U32) :
   RustM ((option.Option Std.U32) × (ops.range.Range Std.U32))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#u32
@@ -10374,7 +10377,7 @@ def ops.range.RangeU64.Insts.CoreIterTraitsIteratorIteratorU64.next
   (self : ops.range.Range Std.U64) :
   RustM ((option.Option Std.U64) × (ops.range.Range Std.U64))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#u64
@@ -10396,7 +10399,7 @@ def ops.range.RangeU128.Insts.CoreIterTraitsIteratorIteratorU128.next
   (self : ops.range.Range Std.U128) :
   RustM ((option.Option Std.U128) × (ops.range.Range Std.U128))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#u128
@@ -10418,7 +10421,7 @@ def ops.range.RangeUsize.Insts.CoreIterTraitsIteratorIteratorUsize.next
   (self : ops.range.Range Std.Usize) :
   RustM ((option.Option Std.Usize) × (ops.range.Range Std.Usize))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#usize
@@ -10440,7 +10443,7 @@ def ops.range.RangeI8.Insts.CoreIterTraitsIteratorIteratorI8.next
   (self : ops.range.Range Std.I8) :
   RustM ((option.Option Std.I8) × (ops.range.Range Std.I8))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#i8
@@ -10461,7 +10464,7 @@ def ops.range.RangeI16.Insts.CoreIterTraitsIteratorIteratorI16.next
   (self : ops.range.Range Std.I16) :
   RustM ((option.Option Std.I16) × (ops.range.Range Std.I16))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#i16
@@ -10483,7 +10486,7 @@ def ops.range.RangeI32.Insts.CoreIterTraitsIteratorIteratorI32.next
   (self : ops.range.Range Std.I32) :
   RustM ((option.Option Std.I32) × (ops.range.Range Std.I32))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#i32
@@ -10505,7 +10508,7 @@ def ops.range.RangeI64.Insts.CoreIterTraitsIteratorIteratorI64.next
   (self : ops.range.Range Std.I64) :
   RustM ((option.Option Std.I64) × (ops.range.Range Std.I64))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#i64
@@ -10527,7 +10530,7 @@ def ops.range.RangeI128.Insts.CoreIterTraitsIteratorIteratorI128.next
   (self : ops.range.Range Std.I128) :
   RustM ((option.Option Std.I128) × (ops.range.Range Std.I128))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#i128
@@ -10549,7 +10552,7 @@ def ops.range.RangeIsize.Insts.CoreIterTraitsIteratorIteratorIsize.next
   (self : ops.range.Range Std.Isize) :
   RustM ((option.Option Std.Isize) × (ops.range.Range Std.Isize))
   := do
-  if self.start >= self.«end»
+  if self.start >= self.end
   then ok (option.Option.None, self)
   else
     let i ← self.start + 1#isize
@@ -10640,13 +10643,13 @@ def option.Option.map
     Visibility: public -/
 def option.Option.map_or
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
-  core.ops.function.FnOnce F T U) (self : option.Option T) (default : U)
+  core.ops.function.FnOnce F T U) (self : option.Option T) (default1 : U)
   (f : F) :
   RustM U
   := do
   match self with
   | option.Option.Some t => coreopsfunctionFnOnceFTupleTUInst.call_once f t
-  | option.Option.None => ok default
+  | option.Option.None => ok default1
 
 /-- [core_models::option::{core_models::option::Option<T>}::map_or_else]:
     Source: 'core-models/src/core/option.rs', lines 120:4-129:5
@@ -10655,12 +10658,13 @@ def option.Option.map_or_else
   {T : Type} {U : Type} {D : Type} {F : Type}
   (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
   (coreopsfunctionFnOnceDTupleUInst : core.ops.function.FnOnce D Unit U)
-  (self : option.Option T) (default : D) (f : F) :
+  (self : option.Option T) (default1 : D) (f : F) :
   RustM U
   := do
   match self with
   | option.Option.Some t => coreopsfunctionFnOnceFTupleTUInst.call_once f t
-  | option.Option.None => coreopsfunctionFnOnceDTupleUInst.call_once default ()
+  | option.Option.None =>
+    coreopsfunctionFnOnceDTupleUInst.call_once default1 ()
 
 /-- [core_models::option::{core_models::option::Option<T>}::map_or_default]:
     Source: 'core-models/src/core/option.rs', lines 132:4-141:5
@@ -11028,12 +11032,12 @@ def result.Result.map
 def result.Result.map_or
   {T : Type} {E : Type} {U : Type} {F : Type}
   (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
-  (self : result.Result T E) (default : U) (f : F) :
+  (self : result.Result T E) (default1 : U) (f : F) :
   RustM U
   := do
   match self with
   | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTUInst.call_once f t
-  | core.result.Result.Err _ => Aeneas.Std.RustM.ok default
+  | core.result.Result.Err _ => Aeneas.Std.RustM.ok default1
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map_or_else]:
     Source: 'core-models/src/core/result.rs', lines 146:4-155:5
@@ -11042,13 +11046,13 @@ def result.Result.map_or_else
   {T : Type} {E : Type} {U : Type} {D : Type} {F : Type}
   (coreopsfunctionFnOnceDTupleEUInst : core.ops.function.FnOnce D E U)
   (coreopsfunctionFnOnceFTupleTUInst : core.ops.function.FnOnce F T U)
-  (self : result.Result T E) (default : D) (f : F) :
+  (self : result.Result T E) (default1 : D) (f : F) :
   RustM U
   := do
   match self with
   | core.result.Result.Ok t => coreopsfunctionFnOnceFTupleTUInst.call_once f t
   | core.result.Result.Err e =>
-    coreopsfunctionFnOnceDTupleEUInst.call_once default e
+    coreopsfunctionFnOnceDTupleEUInst.call_once default1 e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::inspect]:
     Source: 'core-models/src/core/result.rs', lines 171:4-176:5
@@ -11133,12 +11137,12 @@ def result.Result.or_else
     Source: 'core-models/src/core/result.rs', lines 240:4-245:5
     Visibility: public -/
 def result.Result.unwrap_or
-  {T : Type} {E : Type} (self : result.Result T E) (default : T) :
+  {T : Type} {E : Type} (self : result.Result T E) (default1 : T) :
   RustM T
   := do
   match self with
   | core.result.Result.Ok t => Aeneas.Std.RustM.ok t
-  | core.result.Result.Err _ => Aeneas.Std.RustM.ok default
+  | core.result.Result.Err _ => Aeneas.Std.RustM.ok default1
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map_err]:
     Source: 'core-models/src/core/result.rs', lines 247:4-255:5
@@ -11211,13 +11215,13 @@ def
   {A : Type} (E : Type) {V : Type} {T : Type} {Clause1_Item : Type}
   {Clause1_IntoIter : Type} (itertraitscollectFromIteratorInst :
   iter.traits.collect.FromIterator V A) (itertraitscollectIntoIteratorInst :
-  iter.traits.collect.IntoIterator T Clause1_Item Clause1_IntoIter) (iter_ : T)
+  iter.traits.collect.IntoIterator T Clause1_Item Clause1_IntoIter) (iter1 : T)
   :
   RustM (result.Result V E)
   := do
   let t ←
     itertraitscollectFromIteratorInst.from_iter
-      itertraitscollectIntoIteratorInst iter_
+      itertraitscollectIntoIteratorInst iter1
   Aeneas.Std.RustM.ok (result.Result.Ok t)
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::collect::FromIterator<core_models::result::Result<A, E>> for core_models::result::Result<V, E>}]
@@ -11699,12 +11703,12 @@ def slice.Slice.windows
 @[rust_loop_body]
 def slice.Slice.fill_loop.body
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (value : T)
-  (iter_ : core.ops.range.Range Std.Usize) (s : Slice T) :
+  (iter1 : core.ops.range.Range Std.Usize) (s : Slice T) :
   RustM (ControlFlow ((core.ops.range.Range Std.Usize) × (Slice T)) (Slice T))
   := do
-  let (o, iter1) ←
+  let (o, iter2) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-      core.Usize.Insts.CoreIterRangeStep iter_
+      core.Usize.Insts.CoreIterRangeStep iter1
   match o with
   | core.option.Option.None => ok (done s)
   | core.option.Option.Some i =>
@@ -11712,20 +11716,20 @@ def slice.Slice.fill_loop.body
     let (t1, index_mut_back) ← Slice.index_mut_usize s i
     let s1 := index_mut_back t1
     let s2 ← Slice.update s1 i t
-    ok (cont (iter1, s2))
+    ok (cont (iter2, s2))
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::fill]: loop 0:
     Source: 'core-models/src/core/slice.rs', lines 280:8-282:9 -/
 @[rust_loop]
 def slice.Slice.fill_loop
   {T : Type} (corecloneCloneInst : core.clone.Clone T)
-  (iter_ : core.ops.range.Range Std.Usize) (s : Slice T) (value : T) :
+  (iter1 : core.ops.range.Range Std.Usize) (s : Slice T) (value : T) :
   RustM (Slice T)
   := do
   loop
-    (fun (iter1, s1) => slice.Slice.fill_loop.body corecloneCloneInst value
-      iter1 s1)
-    (iter_, s)
+    (fun (iter2, s1) => slice.Slice.fill_loop.body corecloneCloneInst value
+      iter2 s1)
+    (iter1, s)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::fill]:
     Source: 'core-models/src/core/slice.rs', lines 276:4-283:5 -/
@@ -11744,12 +11748,12 @@ def slice.Slice.fill
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
   {U : Type} {T : Type} (cmpPartialEqInst : cmp.PartialEq T U) (self : Slice T)
-  (other : Slice U) (iter_ : core.ops.range.Range Std.Usize) (res : Bool) :
+  (other : Slice U) (iter1 : core.ops.range.Range Std.Usize) (res : Bool) :
   RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
   := do
-  let (o, iter1) ←
+  let (o, iter2) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-      core.Usize.Insts.CoreIterRangeStep iter_
+      core.Usize.Insts.CoreIterRangeStep iter1
   match o with
   | core.option.Option.None => ok (done res)
   | core.option.Option.Some i =>
@@ -11759,9 +11763,9 @@ def Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
       let t1 ← Slice.index_usize other i
       let b ← cmpPartialEqInst.eq t t1
       if b
-      then ok (cont (iter1, true))
-      else ok (cont (iter1, false))
-    else ok (cont (iter1, false))
+      then ok (cont (iter2, true))
+      else ok (cont (iter2, false))
+    else ok (cont (iter2, false))
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::eq]: loop 0:
     Source: 'core-models/src/core/slice.rs', lines 325:12-330:13
@@ -11769,14 +11773,14 @@ def Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialEqSlice.eq_loop
   {U : Type} {T : Type} (cmpPartialEqInst : cmp.PartialEq T U)
-  (iter_ : core.ops.range.Range Std.Usize) (self : Slice T) (other : Slice U)
+  (iter1 : core.ops.range.Range Std.Usize) (self : Slice T) (other : Slice U)
   (res : Bool) :
   RustM Bool
   := do
   loop
-    (fun (iter1, res1) => Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
-      cmpPartialEqInst self other iter1 res1)
-    (iter_, res)
+    (fun (iter2, res1) => Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
+      cmpPartialEqInst self other iter2 res1)
+    (iter1, res)
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::eq]:
     Source: 'core-models/src/core/slice.rs', lines 320:4-333:5
@@ -11831,13 +11835,13 @@ def Slice.Insts.CoreCmpEq {T : Type} (cmpEqInst : cmp.Eq T) : cmp.Eq
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop.body
   {T : Type} (cmpPartialOrdInst : cmp.PartialOrd T T) (self : Slice T)
-  (other : Slice T) (iter_ : core.ops.range.Range Std.Usize) :
+  (other : Slice T) (iter1 : core.ops.range.Range Std.Usize) :
   RustM (ControlFlow (core.ops.range.Range Std.Usize) (option.Option
     cmp.Ordering))
   := do
-  let (o, iter1) ←
+  let (o, iter2) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-      core.Usize.Insts.CoreIterRangeStep iter_
+      core.Usize.Insts.CoreIterRangeStep iter1
   match o with
   | core.option.Option.None =>
     let i ← core.slice.Slice.len self
@@ -11856,7 +11860,7 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop.body
     | option.Option.Some o2 =>
       match o2 with
       | cmp.Ordering.Less => ok (done o1)
-      | cmp.Ordering.Equal => ok (cont iter1)
+      | cmp.Ordering.Equal => ok (cont iter2)
       | cmp.Ordering.Greater => ok (done o1)
     | option.Option.None => ok (done option.Option.None)
 
@@ -11866,14 +11870,14 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop.body
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop
   {T : Type} (cmpPartialOrdInst : cmp.PartialOrd T T)
-  (iter_ : core.ops.range.Range Std.Usize) (self : Slice T) (other : Slice T) :
+  (iter1 : core.ops.range.Range Std.Usize) (self : Slice T) (other : Slice T) :
   RustM (option.Option cmp.Ordering)
   := do
   loop
-    (fun iter1 =>
+    (fun iter2 =>
       Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop.body
-      cmpPartialOrdInst self other iter1)
-    iter_
+      cmpPartialOrdInst self other iter2)
+    iter1
 
 /-- [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}::partial_cmp]:
     Source: 'core-models/src/core/slice.rs', lines 342:4-364:5
@@ -11917,12 +11921,12 @@ impl_def Slice.Insts.CoreCmpPartialOrdSlice {T : Type}
 @[rust_loop_body]
 def Slice.Insts.CoreCmpOrd.cmp_loop.body
   {T : Type} (cmpOrdInst : cmp.Ord T) (self : Slice T) (other : Slice T)
-  (iter_ : core.ops.range.Range Std.Usize) :
+  (iter1 : core.ops.range.Range Std.Usize) :
   RustM (ControlFlow (core.ops.range.Range Std.Usize) cmp.Ordering)
   := do
-  let (o, iter1) ←
+  let (o, iter2) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-      core.Usize.Insts.CoreIterRangeStep iter_
+      core.Usize.Insts.CoreIterRangeStep iter1
   match o with
   | core.option.Option.None =>
     let i ← core.slice.Slice.len self
@@ -11939,7 +11943,7 @@ def Slice.Insts.CoreCmpOrd.cmp_loop.body
     let o1 ← cmpOrdInst.cmp t t1
     match o1 with
     | cmp.Ordering.Less => ok (done cmp.Ordering.Less)
-    | cmp.Ordering.Equal => ok (cont iter1)
+    | cmp.Ordering.Equal => ok (cont iter2)
     | cmp.Ordering.Greater => ok (done cmp.Ordering.Greater)
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]: loop 0:
@@ -11947,14 +11951,14 @@ def Slice.Insts.CoreCmpOrd.cmp_loop.body
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpOrd.cmp_loop
-  {T : Type} (cmpOrdInst : cmp.Ord T) (iter_ : core.ops.range.Range Std.Usize)
+  {T : Type} (cmpOrdInst : cmp.Ord T) (iter1 : core.ops.range.Range Std.Usize)
   (self : Slice T) (other : Slice T) :
   RustM cmp.Ordering
   := do
   loop
-    (fun iter1 => Slice.Insts.CoreCmpOrd.cmp_loop.body cmpOrdInst self
-      other iter1)
-    iter_
+    (fun iter2 => Slice.Insts.CoreCmpOrd.cmp_loop.body cmpOrdInst self
+      other iter2)
+    iter1
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]:
     Source: 'core-models/src/core/slice.rs', lines 370:4-392:5
@@ -12036,23 +12040,23 @@ def SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter (T
     Source: 'core-models/src/core/slice.rs', lines 499:8-501:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_unchecked_mut
-  {T : Type} (self : Std.Usize) (slice : Slice T) :
+  {T : Type} (self : Std.Usize) (slice1 : Slice T) :
   RustM (T × (T → Slice T))
   := do
-  rust_primitives.slice.slice_index_mut slice self
+  rust_primitives.slice.slice_index_mut slice1 self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get_mut]:
     Source: 'core-models/src/core/slice.rs', lines 490:8-496:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_mut
-  {T : Type} (self : Std.Usize) (slice : Slice T) :
+  {T : Type} (self : Std.Usize) (slice1 : Slice T) :
   RustM ((option.Option T) × (option.Option T → Slice T))
   := do
-  let i ← rust_primitives.slice.slice_length slice
+  let i ← rust_primitives.slice.slice_length slice1
   if self < i
   then
     let (t, slice_index_mut_back) ←
-      rust_primitives.slice.slice_index_mut slice self
+      rust_primitives.slice.slice_index_mut slice1 self
     let back :=
       fun o =>
         let t1 := match o with
@@ -12060,34 +12064,34 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_mut
                   | _ => t
         slice_index_mut_back t1
     ok (option.Option.Some t, back)
-  else let back := fun o => slice
+  else let back := fun o => slice1
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get_unchecked]:
     Source: 'core-models/src/core/slice.rs', lines 486:8-488:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_unchecked
-  {T : Type} (self : Std.Usize) (slice : Slice T) : RustM T := do
-  rust_primitives.slice.slice_index slice self
+  {T : Type} (self : Std.Usize) (slice1 : Slice T) : RustM T := do
+  rust_primitives.slice.slice_index slice1 self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::index]:
     Source: 'core-models/src/core/slice.rs', lines 482:8-484:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.index
-  {T : Type} (self : Std.Usize) (slice : Slice T) : RustM T := do
-  rust_primitives.slice.slice_index slice self
+  {T : Type} (self : Std.Usize) (slice1 : Slice T) : RustM T := do
+  rust_primitives.slice.slice_index slice1 self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get]:
     Source: 'core-models/src/core/slice.rs', lines 474:8-480:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get
-  {T : Type} (self : Std.Usize) (slice : Slice T) :
+  {T : Type} (self : Std.Usize) (slice1 : Slice T) :
   RustM (option.Option T)
   := do
-  let i ← rust_primitives.slice.slice_length slice
+  let i ← rust_primitives.slice.slice_length slice1
   if self < i
   then
-    let t ← rust_primitives.slice.slice_index slice self
+    let t ← rust_primitives.slice.slice_index slice1 self
     ok (option.Option.Some t)
   else ok option.Option.None
 
@@ -12110,50 +12114,50 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT (T : Type) :
     Visibility: public -/
 def
   ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
-  {T : Type} (self : ops.range.RangeFull) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFull) (slice1 : Slice T) :
   RustM ((Slice T) × (Slice T → Slice T))
   := do
-  ok (slice, fun slice1 => slice1)
+  ok (slice1, fun slice2 => slice2)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get_mut]:
     Source: 'core-models/src/core/slice.rs', lines 518:8-520:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
-  {T : Type} (self : ops.range.RangeFull) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFull) (slice1 : Slice T) :
   RustM ((option.Option (Slice T)) × (option.Option (Slice T) → Slice T))
   := do
   let back := fun o => match o with
                        | option.Option.Some s => s
-                       | _ => slice
-  ok (option.Option.Some slice, back)
+                       | _ => slice1
+  ok (option.Option.Some slice1, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get_unchecked]:
     Source: 'core-models/src/core/slice.rs', lines 514:8-516:9
     Visibility: public -/
 def
   ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
-  {T : Type} (self : ops.range.RangeFull) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFull) (slice1 : Slice T) :
   RustM (Slice T)
   := do
-  ok slice
+  ok slice1
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::index]:
     Source: 'core-models/src/core/slice.rs', lines 511:8-513:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.index
-  {T : Type} (self : ops.range.RangeFull) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFull) (slice1 : Slice T) :
   RustM (Slice T)
   := do
-  ok slice
+  ok slice1
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get]:
     Source: 'core-models/src/core/slice.rs', lines 508:8-510:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get
-  {T : Type} (self : ops.range.RangeFull) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFull) (slice1 : Slice T) :
   RustM (option.Option (Slice T))
   := do
-  ok (option.Option.Some slice)
+  ok (option.Option.Some slice1)
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}]
     Source: 'core-models/src/core/slice.rs', lines 506:4-525:5 -/
@@ -12177,25 +12181,25 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
-  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice1 : Slice T) :
   RustM ((Slice T) × (Slice T → Slice T))
   := do
-  let len ← rust_primitives.slice.slice_length slice
-  rust_primitives.slice.slice_slice_mut slice self.start len
+  let len ← rust_primitives.slice.slice_length slice1
+  rust_primitives.slice.slice_slice_mut slice1 self.start len
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get_mut]:
     Source: 'core-models/src/core/slice.rs', lines 547:8-554:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
-  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice1 : Slice T) :
   RustM ((option.Option (Slice T)) × (option.Option (Slice T) → Slice T))
   := do
-  let len ← rust_primitives.slice.slice_length slice
+  let len ← rust_primitives.slice.slice_length slice1
   if self.start <= len
   then
     let (s, slice_slice_mut_back) ←
-      rust_primitives.slice.slice_slice_mut slice self.start len
+      rust_primitives.slice.slice_slice_mut slice1 self.start len
     let back :=
       fun o =>
         let s1 := match o with
@@ -12203,7 +12207,7 @@ def
                   | _ => s
         slice_slice_mut_back s1
     ok (option.Option.Some s, back)
-  else let back := fun o => slice
+  else let back := fun o => slice1
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get_unchecked]:
@@ -12211,35 +12215,35 @@ def
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
-  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice1 : Slice T) :
   RustM (Slice T)
   := do
-  let i ← rust_primitives.slice.slice_length slice
-  rust_primitives.slice.slice_slice slice self.start i
+  let i ← rust_primitives.slice.slice_length slice1
+  rust_primitives.slice.slice_slice slice1 self.start i
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::index]:
     Source: 'core-models/src/core/slice.rs', lines 539:8-541:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
-  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice1 : Slice T) :
   RustM (Slice T)
   := do
-  let i ← rust_primitives.slice.slice_length slice
-  rust_primitives.slice.slice_slice slice self.start i
+  let i ← rust_primitives.slice.slice_length slice1
+  rust_primitives.slice.slice_slice slice1 self.start i
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get]:
     Source: 'core-models/src/core/slice.rs', lines 531:8-537:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
-  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeFrom Std.Usize) (slice1 : Slice T) :
   RustM (option.Option (Slice T))
   := do
-  let i ← rust_primitives.slice.slice_length slice
+  let i ← rust_primitives.slice.slice_length slice1
   if self.start <= i
   then
-    let s ← rust_primitives.slice.slice_slice slice self.start i
+    let s ← rust_primitives.slice.slice_slice slice1 self.start i
     ok (option.Option.Some s)
   else ok option.Option.None
 
@@ -12266,24 +12270,24 @@ def ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
-  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice1 : Slice T) :
   RustM ((Slice T) × (Slice T → Slice T))
   := do
-  rust_primitives.slice.slice_slice_mut slice 0#usize self.«end»
+  rust_primitives.slice.slice_slice_mut slice1 0#usize self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get_mut]:
     Source: 'core-models/src/core/slice.rs', lines 582:8-588:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
-  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice1 : Slice T) :
   RustM ((option.Option (Slice T)) × (option.Option (Slice T) → Slice T))
   := do
-  let i ← rust_primitives.slice.slice_length slice
-  if self.«end» <= i
+  let i ← rust_primitives.slice.slice_length slice1
+  if self.end <= i
   then
     let (s, slice_slice_mut_back) ←
-      rust_primitives.slice.slice_slice_mut slice 0#usize self.«end»
+      rust_primitives.slice.slice_slice_mut slice1 0#usize self.end
     let back :=
       fun o =>
         let s1 := match o with
@@ -12291,7 +12295,7 @@ def
                   | _ => s
         slice_slice_mut_back s1
     ok (option.Option.Some s, back)
-  else let back := fun o => slice
+  else let back := fun o => slice1
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get_unchecked]:
@@ -12299,32 +12303,32 @@ def
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
-  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice1 : Slice T) :
   RustM (Slice T)
   := do
-  rust_primitives.slice.slice_slice slice 0#usize self.«end»
+  rust_primitives.slice.slice_slice slice1 0#usize self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::index]:
     Source: 'core-models/src/core/slice.rs', lines 574:8-576:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
-  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice1 : Slice T) :
   RustM (Slice T)
   := do
-  rust_primitives.slice.slice_slice slice 0#usize self.«end»
+  rust_primitives.slice.slice_slice slice1 0#usize self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get]:
     Source: 'core-models/src/core/slice.rs', lines 566:8-572:9
     Visibility: public -/
 def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
-  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.RangeTo Std.Usize) (slice1 : Slice T) :
   RustM (option.Option (Slice T))
   := do
-  let i ← rust_primitives.slice.slice_length slice
-  if self.«end» <= i
+  let i ← rust_primitives.slice.slice_length slice1
+  if self.end <= i
   then
-    let s ← rust_primitives.slice.slice_slice slice 0#usize self.«end»
+    let s ← rust_primitives.slice.slice_slice slice1 0#usize self.end
     ok (option.Option.Some s)
   else ok option.Option.None
 
@@ -12351,26 +12355,26 @@ def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
-  {T : Type} (self : ops.range.Range Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.Range Std.Usize) (slice1 : Slice T) :
   RustM ((Slice T) × (Slice T → Slice T))
   := do
-  rust_primitives.slice.slice_slice_mut slice self.start self.«end»
+  rust_primitives.slice.slice_slice_mut slice1 self.start self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get_mut]:
     Source: 'core-models/src/core/slice.rs', lines 615:8-621:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
-  {T : Type} (self : ops.range.Range Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.Range Std.Usize) (slice1 : Slice T) :
   RustM ((option.Option (Slice T)) × (option.Option (Slice T) → Slice T))
   := do
-  if self.start <= self.«end»
+  if self.start <= self.end
   then
-    let i ← rust_primitives.slice.slice_length slice
-    if self.«end» <= i
+    let i ← rust_primitives.slice.slice_length slice1
+    if self.end <= i
     then
       let (s, slice_slice_mut_back) ←
-        rust_primitives.slice.slice_slice_mut slice self.start self.«end»
+        rust_primitives.slice.slice_slice_mut slice1 self.start self.end
       let back :=
         fun o =>
           let s1 := match o with
@@ -12378,9 +12382,9 @@ def
                     | _ => s
           slice_slice_mut_back s1
       ok (option.Option.Some s, back)
-    else let back := fun o => slice
+    else let back := fun o => slice1
          ok (option.Option.None, back)
-  else let back := fun o => slice
+  else let back := fun o => slice1
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get_unchecked]:
@@ -12388,33 +12392,33 @@ def
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
-  {T : Type} (self : ops.range.Range Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.Range Std.Usize) (slice1 : Slice T) :
   RustM (Slice T)
   := do
-  rust_primitives.slice.slice_slice slice self.start self.«end»
+  rust_primitives.slice.slice_slice slice1 self.start self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::index]:
     Source: 'core-models/src/core/slice.rs', lines 607:8-609:9
     Visibility: public -/
 def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
-  {T : Type} (self : ops.range.Range Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.Range Std.Usize) (slice1 : Slice T) :
   RustM (Slice T)
   := do
-  rust_primitives.slice.slice_slice slice self.start self.«end»
+  rust_primitives.slice.slice_slice slice1 self.start self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get]:
     Source: 'core-models/src/core/slice.rs', lines 599:8-605:9
     Visibility: public -/
 def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
-  {T : Type} (self : ops.range.Range Std.Usize) (slice : Slice T) :
+  {T : Type} (self : ops.range.Range Std.Usize) (slice1 : Slice T) :
   RustM (option.Option (Slice T))
   := do
-  if self.start <= self.«end»
+  if self.start <= self.end
   then
-    let i ← rust_primitives.slice.slice_length slice
-    if self.«end» <= i
+    let i ← rust_primitives.slice.slice_length slice1
+    if self.end <= i
     then
-      let s ← rust_primitives.slice.slice_slice slice self.start self.«end»
+      let s ← rust_primitives.slice.slice_slice slice1 self.start self.end
       ok (option.Option.Some s)
     else ok option.Option.None
   else ok option.Option.None
@@ -12492,7 +12496,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice.index
   {T : Type} (self : Slice T) (i : ops.range.Range Std.Usize) :
   RustM (Slice T)
   := do
-  rust_primitives.slice.slice_slice self i.start i.«end»
+  rust_primitives.slice.slice_slice self i.start i.end
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::Range<usize>, [T]> for &'_0 [T]}]
     Source: 'core-models/src/core/slice.rs', lines 683:0-689:1 -/
@@ -12509,7 +12513,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice.index
   {T : Type} (self : Slice T) (i : ops.range.RangeTo Std.Usize) :
   RustM (Slice T)
   := do
-  rust_primitives.slice.slice_slice self 0#usize i.«end»
+  rust_primitives.slice.slice_slice self 0#usize i.end
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeTo<usize>, [T]> for &'_0 [T]}]
     Source: 'core-models/src/core/slice.rs', lines 692:0-698:1 -/
@@ -12574,13 +12578,13 @@ def Shared0Slice.Insts.CoreOpsIndexIndexUsizeT (T : Type) :
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
   {T : Type} {U : Type} {N : Std.Usize} (cmpPartialEqInst : cmp.PartialEq T U)
-  (self : Slice T) (other : Array U N) (iter_ : core.ops.range.Range Std.Usize)
+  (self : Slice T) (other : Array U N) (iter1 : core.ops.range.Range Std.Usize)
   (res : Bool) :
   RustM (ControlFlow ((core.ops.range.Range Std.Usize) × Bool) Bool)
   := do
-  let (o, iter1) ←
+  let (o, iter2) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-      core.Usize.Insts.CoreIterRangeStep iter_
+      core.Usize.Insts.CoreIterRangeStep iter1
   match o with
   | core.option.Option.None => ok (done res)
   | core.option.Option.Some i =>
@@ -12590,9 +12594,9 @@ def Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
       let t1 ← rust_primitives.slice.array_index other i
       let b ← cmpPartialEqInst.eq t t1
       if b
-      then ok (cont (iter1, true))
-      else ok (cont (iter1, false))
-    else ok (cont (iter1, false))
+      then ok (cont (iter2, true))
+      else ok (cont (iter2, false))
+    else ok (cont (iter2, false))
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::eq]: loop 0:
     Source: 'core-models/src/core/slice.rs', lines 744:16-749:17
@@ -12600,14 +12604,14 @@ def Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialEqArray.eq_loop
   {T : Type} {U : Type} {N : Std.Usize} (cmpPartialEqInst : cmp.PartialEq T U)
-  (iter_ : core.ops.range.Range Std.Usize) (self : Slice T) (other : Array U N)
+  (iter1 : core.ops.range.Range Std.Usize) (self : Slice T) (other : Array U N)
   (res : Bool) :
   RustM Bool
   := do
   loop
-    (fun (iter1, res1) => Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
-      cmpPartialEqInst self other iter1 res1)
-    (iter_, res)
+    (fun (iter2, res1) => Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
+      cmpPartialEqInst self other iter2 res1)
+    (iter1, res)
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::eq]:
     Source: 'core-models/src/core/slice.rs', lines 739:8-752:9
@@ -12669,17 +12673,17 @@ def
   iter.adapters.step_by.StepBy.Insts.CoreIterTraitsIteratorIterator.next_loop.body
   {I : Type} {Clause0_Item : Type} (traitsiteratorIteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
-  (iter_ : core.ops.range.Range Std.Usize) (t : I) :
+  (iter1 : core.ops.range.Range Std.Usize) (t : I) :
   RustM (ControlFlow ((core.ops.range.Range Std.Usize) × I) I)
   := do
-  let (o, iter1) ←
+  let (o, iter2) ←
     core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
-      core.Usize.Insts.CoreIterRangeStep iter_
+      core.Usize.Insts.CoreIterRangeStep iter1
   match o with
   | core.option.Option.None => ok (done t)
   | core.option.Option.Some _ =>
     let (_, t1) ← traitsiteratorIteratorInst.next t
-    ok (cont (iter1, t1))
+    ok (cont (iter2, t1))
 
 /-- [core_models::iter::adapters::step_by::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::step_by::StepBy<I>}::next]: loop 0:
     Source: 'core-models/src/core/iter.rs', lines 465:16-467:17
@@ -12689,14 +12693,14 @@ def
   iter.adapters.step_by.StepBy.Insts.CoreIterTraitsIteratorIterator.next_loop
   {I : Type} {Clause0_Item : Type} (traitsiteratorIteratorInst :
   iter.traits.iterator.Iterator I Clause0_Item)
-  (iter_ : core.ops.range.Range Std.Usize) (t : I) :
+  (iter1 : core.ops.range.Range Std.Usize) (t : I) :
   RustM I
   := do
   loop
-    (fun (iter1, t1) =>
+    (fun (iter2, t1) =>
       iter.adapters.step_by.StepBy.Insts.CoreIterTraitsIteratorIterator.next_loop.body
-      traitsiteratorIteratorInst iter1 t1)
-    (iter_, t)
+      traitsiteratorIteratorInst iter2 t1)
+    (iter1, t)
 
 /-- [core_models::iter::adapters::step_by::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::step_by::StepBy<I>}::next]:
     Source: 'core-models/src/core/iter.rs', lines 461:12-469:13
