@@ -25,9 +25,3 @@ fn f4(x: u8) -> u8 {
 fn f5(x: u8) -> u8 {
     x
 }
-
-
-#[spec(maintains: *x > 0)]
-fn f6(x: &mut u8) {}
-
-

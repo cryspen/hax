@@ -28,7 +28,4 @@ theorem f4.spec.proof (x : Std.U8) : f4.spec x := by
 theorem f5.spec.proof (x : Std.U8) : f5.spec x := by
   unfold spec post; hax_mvcgen [f5]
 
-theorem f6.spec.proof (x : Std.U8) : f6.spec x := by
-  unfold spec post; intro _; hax_mvcgen [f6]
-
 end anodized_example
