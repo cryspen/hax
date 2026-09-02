@@ -1,0 +1,10 @@
+name = "AnodizedLean"
+version = "0.1.0"
+defaultTargets = ["AnodizedLean"]
+
+[[lean_lib]]
+name = "AnodizedLean"
+
+[[require]]
+name = "hax"
+path = "../../../../../hax-lib/proof-libs/lean"

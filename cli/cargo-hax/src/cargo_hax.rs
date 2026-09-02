@@ -72,8 +72,8 @@ fn rust_log_style() -> String {
     })
 }
 
-/// The `cfg` names that hax uses: `hax`, `hax_backend_<name>`, and the hax_lib-internal
-/// `hax_compilation`.
+/// The `cfg` names that hax uses: `hax`, `hax_backend_<name>`, the hax_lib-internal
+/// `hax_compilation`, and the ones hax sets for `anodized`.
 pub fn hax_cfg_names() -> impl Iterator<Item = String> {
     ["hax".to_string(), "hax_compilation".to_string()]
         .into_iter()
@@ -81,6 +81,7 @@ pub fn hax_cfg_names() -> impl Iterator<Item = String> {
             BackendName::iter()
                 .map(|backend| format!("hax_backend_{}", backend.to_string().replace('-', "_"))),
         )
+        .chain(ANODIZED_CFG_NAMES.iter().map(|name| name.to_string()))
 }
 
 /// `--check-cfg` declarations for the cfg names that hax uses.
@@ -91,13 +92,35 @@ fn check_cfg_flags() -> String {
         .join(" ")
 }
 
+/// The `cfg` names that make `anodized`'s `#[spec(..)]` emit `hax_lib`
+/// annotations (`anodized_hax`) and drop the `__anodized_fn_*` items it emits
+/// for rustc to type-check the specification against (`anodized_discard_specs`).
+/// `anodized` reads them when its proc-macro crate is compiled.
+const ANODIZED_CFG_NAMES: &[&str] = &["anodized_hax", "anodized_discard_specs"];
+
+/// Sets the `anodized` cfg names. They are declared by `check_cfg_flags`,
+/// along with hax's own.
+pub fn anodized_flags() -> String {
+    ANODIZED_CFG_NAMES
+        .iter()
+        .map(|name| format!("--cfg {name}"))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 /// We set `cfg(hax)` so that client crates can include dependencies
 /// or cfg-gate pieces of code. Moreover, we use `--check-cfg` to
 /// suppress warnings about all cfg-names that hax uses.
 const RUSTFLAGS: &str = "RUSTFLAGS";
 pub fn rustflags() -> String {
     let rustflags = std::env::var(RUSTFLAGS).unwrap_or("".into());
-    [rustflags, "--cfg hax".into(), check_cfg_flags()].join(" ")
+    [
+        rustflags,
+        "--cfg hax".into(),
+        check_cfg_flags(),
+        anodized_flags(),
+    ]
+    .join(" ")
 }
 
 /// Find an external binary: check the given env var, then `PATH`.

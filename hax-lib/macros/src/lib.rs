@@ -110,6 +110,21 @@ passthrough_attributes! {
     /// ```
     ensures;
 
+    /// Same as [`macro@ensures`], but the closure takes the result by
+    /// reference: the binder has type `&T` where `T` is the function's return
+    /// type.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use hax_lib_macros::*;
+    /// #[ensures_ref(|result| result.len() == 2)]
+    /// pub fn pair(x: u64) -> Vec<u64> {
+    ///     vec![x, x]
+    /// }
+    /// ```
+    ensures_ref;
+
     /// Mark an item opaque: the extraction will assume the
     /// type without revealing its definition.
     #[deprecated(note = "Please use 'opaque' instead")]
