@@ -1,8 +1,10 @@
 //! Trait impls a downstream crate writes for its *own* types.
 //!
-//! Guards the extra field on `Clone`: aeneas sets `clone_from` in every
-//! instance it builds for a crate that is not `core-models` itself, and these
-//! impls are what checks that it does. `Eq` carries no such field.
+//! Guards `Clone`'s `clone_from` field. Charon translates a provided method
+//! only when the crate under extraction calls it somewhere, so the call below
+//! is what makes aeneas emit `clone_from := ...default inst` in every instance
+//! here. The opposite shape -- no call anywhere, so no field at all -- is what
+//! the `alloc` model extraction exercises.
 
 #![allow(dead_code)]
 

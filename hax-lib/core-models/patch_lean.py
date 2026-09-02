@@ -382,11 +382,14 @@ def add_clone_from_default(text: str) -> str:
     """Give `Clone::clone_from` a Lean-level default, as Aeneas's own
     `Aeneas/Std/Core/Core.lean` does for its hand-written `clone.Clone`.
 
-    Aeneas fills the field in the instances it generates for a crate that
-    depends on us, but omits it in the three hand-written `impl Clone` blocks of
-    the `alloc` model (`Global`, `Box<T>`, `Vec<T>`), which then fail with
-    "Fields missing". Those cannot be hand-written in a prologue instead: the
-    instance's `clone` field refers to a function generated in the same file.
+    Charon translates a provided method only for the impls whose crate calls it
+    (`--translate-all-methods` turns that off globally, but then real `core`'s
+    `Iterator` comes along and Aeneas fails). So a crate that derives `Clone`
+    without ever calling `clone_from` -- the `alloc` model, and most downstream
+    crates -- gets an instance with no `clone_from` field, and the field has to
+    default. Aeneas declares its own `clone.Clone` that way for this reason,
+    and a prologue cannot stand in: an instance's `clone` field refers to a
+    function generated in the same file.
     """
     return replace(
         "Clone.clone_from default",
