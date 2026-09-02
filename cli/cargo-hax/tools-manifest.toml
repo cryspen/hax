@@ -22,8 +22,10 @@
 
 # ---- aeneas -----------------------------------------------------------------
 # Provenance: pre-built archives published by the cryspen/aeneas fork's
-# nightly releases (upstream: AeneasVerif/aeneas). Archives are flat, with
-# the executable at the archive root.
+# releases (upstream: AeneasVerif/aeneas): `nightly-YYYY.MM.DD-<shortsha>`
+# tags from the scheduled nightly builds, `build-<shortsha>` tags from
+# on-demand builds of a specific commit. Archives are flat, with the
+# executable at the archive root.
 
 [tools.aeneas."nightly-2026.07.21-52fd438".linux-x86_64]
 url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-linux-x86_64.tar.gz"
