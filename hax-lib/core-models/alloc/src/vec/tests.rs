@@ -44,6 +44,35 @@ proptest! {
         prop_assert_eq!(model.as_slice(), v.as_slice());
     }
 
+    // `as_mut_slice` is `cfg(not(hax_backend_fstar))`, like `DerefMut for Vec`
+    // (its only user): F* cannot model a `&mut [T]` return.
+    // `DerefMut for Vec` has the same F* gating as `as_mut_slice`, its only user.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_deref_mut(v in prop::collection::vec(any::<u8>(), 0..100), x in any::<u8>()) {
+        let mut model = v.clone().inject();
+        let mut std_v = v.clone();
+        if !v.is_empty() {
+            // `&mut *model` is what goes through `DerefMut`.
+            let s: &mut [u8] = &mut *model;
+            s[0] = x;
+            std_v[0] = x;
+        }
+        prop_assert_eq!(model.as_slice(), std_v.as_slice());
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_as_mut_slice(v in prop::collection::vec(any::<u8>(), 0..100), x in any::<u8>()) {
+        let mut model = v.clone().inject();
+        let mut std_v = v.clone();
+        if !v.is_empty() {
+            model.as_mut_slice()[0] = x;
+            std_v.as_mut_slice()[0] = x;
+        }
+        prop_assert_eq!(model.as_slice(), std_v.as_slice());
+    }
+
     #[test]
     fn test_push(v in prop::collection::vec(any::<u8>(), 0..50), x in any::<u8>()) {
         let mut model = v.inject();

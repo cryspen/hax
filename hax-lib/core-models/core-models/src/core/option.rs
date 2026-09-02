@@ -49,6 +49,17 @@ impl<T> Option<T> {
         }
     }
 
+    /// See [`std::option::Option::as_mut`]
+    // The `ref mut` binding trips hax's `&mut` restriction (HAX0003, hacspec/hax#420),
+    // so this is excluded from the F* backend; aeneas/lean/native keep it.
+    #[cfg(not(hax_backend_fstar))]
+    pub fn as_mut(&mut self) -> Option<&mut T> {
+        match *self {
+            Some(ref mut x) => Some(x),
+            None => None,
+        }
+    }
+
     /// See [`std::option::Option::expect`]
     #[cfg_attr(not(charon), hax_lib::requires(self.is_some()))]
     pub fn expect(self, _msg: &str) -> T {
@@ -318,6 +329,22 @@ impl<T> crate::ops::try_trait::FromResidual<Option<crate::convert::Infallible>> 
 mod tests {
     use crate::testing::Inject;
     use proptest::prelude::*;
+
+    // `as_mut` is `cfg(not(hax_backend_fstar))` (F* cannot model a `&mut`
+    // return), so its test has to carry the same gate.
+    #[cfg(not(hax_backend_fstar))]
+    proptest! {
+        #[test]
+        fn test_as_mut(x in any::<Option<u8>>()) {
+            let mut model = x.clone().inject();
+            let mut std_ = x;
+            match (super::Option::as_mut(&mut model), std_.as_mut()) {
+                (super::Option::Some(a), Some(b)) => prop_assert_eq!(*a, *b),
+                (super::Option::None, None) => {}
+                _ => prop_assert!(false, "as_mut disagreed with core"),
+            }
+        }
+    }
 
     proptest! {
         #[test]

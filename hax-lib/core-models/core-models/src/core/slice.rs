@@ -45,6 +45,34 @@ pub mod iter {
         }
     }
 
+    // `next_back` pops the last element; `len` is the remaining count. Lean/charon
+    // backend only, matching `DoubleEndedIterator`/`ExactSizeIterator`. These make
+    // `slice.iter().rev()` and `slice.iter().enumerate().rev()` iterate.
+    #[cfg(not(hax_backend_fstar))]
+    impl<'a, T> crate::iter::traits::double_ended::DoubleEndedIterator for Iter<'a, T> {
+        fn next_back(&mut self) -> Option<Self::Item> {
+            let n = seq_len(&self.0);
+            if n == 0 {
+                Option::None
+            } else {
+                let res = seq_remove(&mut self.0, n - 1);
+                Option::Some(res)
+            }
+        }
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    impl<'a, T> crate::iter::traits::exact_size::ExactSizeIterator for Iter<'a, T> {
+        fn len(&self) -> usize {
+            seq_len(&self.0)
+        }
+    }
+
+    // `iter_mut`/`IterMut` are not an `impl Iterator`: a `&mut`-yielding `next`
+    // needs a 3-tuple with a write-back, not the trait's 2-tuple. Aeneas.Std
+    // supplies a specialised `next` on an opaque type instead; that has to be
+    // hand-written Lean, not a Rust impl. Deferred.
+
     impl<'a, T> crate::iter::traits::iterator::Iterator for Chunks<'a, T> {
         type Item = &'a [T];
         fn next(&mut self) -> Option<Self::Item> {
@@ -768,6 +796,29 @@ mod tests {
             out.push(x);
         }
         out
+    }
+
+    /// `Iter`'s `DoubleEndedIterator`/`ExactSizeIterator` impls, which `rev` and
+    /// `Enumerate::next_back` need.
+    #[cfg(not(hax_backend_fstar))]
+    proptest! {
+        #[test]
+        fn test_iter_next_back(slice in prop::collection::vec(any::<u8>(), 0..=20)) {
+            use crate::iter::traits::double_ended::DoubleEndedIterator;
+            let mut it = Slice::iter(&slice[..]);
+            let mut got = Vec::new();
+            while let ModelOption::Some(x) = it.next_back() {
+                got.push(x);
+            }
+            prop_assert_eq!(got, slice.iter().rev().collect::<Vec<_>>());
+        }
+
+        #[test]
+        fn test_iter_len(slice in prop::collection::vec(any::<u8>(), 0..=20)) {
+            use crate::iter::traits::exact_size::ExactSizeIterator;
+            let it = Slice::iter(&slice[..]);
+            prop_assert_eq!(ExactSizeIterator::len(&it), slice.len());
+        }
     }
 
     proptest! {

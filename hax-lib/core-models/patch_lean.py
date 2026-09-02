@@ -297,50 +297,6 @@ def rename_iter_param(text: str) -> str:
     return transform_blocks(text, fn)
 
 
-def drop_intoiterator_iterator_inst(text: str) -> str:
-    """Strip the `iteratorIteratorInst := ...` field from `IntoIterator` impl
-    records.
-
-    Aeneas extracts the alloc crate against the *real* `core`'s
-    `IntoIterator` trait, whose Lean shape carries an `iteratorIteratorInst`
-    field (the materialised `IntoIter: Iterator` super-bound). Our
-    replacement `core_models` `IntoIterator` (in `CoreModels.Core`) has no
-    such field — the core-side impls (e.g. arrays) never set it. So the
-    `iteratorIteratorInst := ...` assignment Aeneas emits in every alloc
-    `IntoIterator` impl record refers to a nonexistent field and breaks
-    elaboration; we drop it, leaving just the `into_iter := ...` field.
-
-    Only `IntoIterator` trait-implementation blocks are touched. Within such
-    a block we delete the `iteratorIteratorInst :=` line and any (more
-    deeply indented) continuation lines of its value, up to the next field
-    assignment (`<name> :=`) or the closing `}`.
-    """
-    def fn(ident: str, block_lines: list[str]) -> str | None:
-        if "iter::traits::collect::IntoIterator" not in ident:
-            return None
-        out: list[str] = []
-        i, n, dropped = 0, len(block_lines), False
-        while i < n:
-            if block_lines[i].lstrip().startswith("iteratorIteratorInst :="):
-                i += 1  # skip the field line itself
-                # Skip its value continuation lines until the next field /  `}`.
-                while i < n:
-                    nxt = block_lines[i].strip()
-                    if nxt == "}" or re.match(r"\w+ :=", nxt):
-                        break
-                    i += 1
-                dropped = True
-                continue
-            out.append(block_lines[i])
-            i += 1
-        if dropped:
-            _record("drop_intoiterator_iterator_inst", 1)
-        return "\n".join(out) if dropped else None
-
-    _MATCHES.setdefault("drop_intoiterator_iterator_inst", 0)
-    return transform_blocks(text, fn)
-
-
 # Standalone `ok` tokens, i.e. NOT already part of a dotted path such as
 # `result.Result.ok` or `Aeneas.Std.RustM.ok`.
 _BARE_OK_RE = re.compile(r"(?<![\w.])ok\b")
@@ -754,7 +710,13 @@ def patch_alloc() -> None:
         text = escape_keyword_binders(text)
         if path == funs:
             text = rename_iter_param(text)
-            text = drop_intoiterator_iterator_inst(text)
+            # `drop_intoiterator_iterator_inst` removed: `IntoIterator` now carries
+            # the `iteratorIteratorInst` super-instance field (the `IntoIter: Iterator`
+            # bound is back, mirroring Aeneas.Std), so the alloc impls must KEEP it.
+            # `fill_iterator_default_fields` removed: no `Iterator` provided method is a
+            # trait field any more (all are standalone `@[rust_fun]` shims in the
+            # epilogue), so the alloc `Iterator` instances are just `{ next := … }` and
+            # need no cross-crate back-fill.
         write(path, text)
     print(f"patched {ALLOC_DIR}.")
 

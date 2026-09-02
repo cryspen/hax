@@ -87,6 +87,17 @@ impl<'a> Arguments<'a> {
     fn write_fmt(f: &mut Formatter, args: Arguments) -> Result {
         Result::Ok(())
     }
+    /// Not a real `std::fmt::Arguments` method: the carve lowers panic/assert
+    /// messages to `Arguments::from_str(msg)` and discards the result, so this
+    /// exists to make those call sites resolve.
+    ///
+    /// Opaque: real `core` builds an `Arguments` that carries the formatted
+    /// message, while the model's is a payload-free phantom, so the body is not
+    /// a model of what `core` does — only enough to have a value.
+    #[hax_lib::opaque]
+    pub fn from_str(_s: &str) -> Arguments<'a> {
+        Arguments(&())
+    }
 }
 
 mod rt {
@@ -211,6 +222,15 @@ mod tests {
     fn test_write_str() {
         let mut f = Formatter;
         assert!(f.write_str("hello").is_ok());
+    }
+
+    // `Arguments` is a phantom, so reaching the constructor is the whole
+    // observable behaviour.
+    #[test]
+    fn test_arguments_from_str() {
+        let mut f = Formatter;
+        let args = Arguments::from_str("boom");
+        assert!(super::Arguments::write_fmt(&mut f, args).is_ok());
     }
 
     #[test]

@@ -15,7 +15,7 @@ use super::option::Option;
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::is_ok`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn is_ok(&self) -> bool {
         matches!(*self, Ok(_))
     }
@@ -29,7 +29,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::is_err`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn is_err(&self) -> bool {
         !self.is_ok()
     }
@@ -43,7 +43,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_ref`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub const fn as_ref(&self) -> Result<&T, &E> {
         match *self {
             Ok(ref t) => Ok(t),
@@ -52,7 +52,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_mut`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     #[hax_lib::exclude]
     pub fn as_mut(&mut self) -> Result<&mut T, &mut E> {
         match *self {
@@ -155,7 +155,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::map_or_default`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn map_or_default<U, F>(self, f: F) -> U
     where
         F: FnOnce(T) -> U,
@@ -184,7 +184,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::ok`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn ok(self) -> Option<T> {
         match self {
             Ok(x) => Option::Some(x),
@@ -193,7 +193,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::err`]
-    #[cfg_attr(charon, aeneas::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn err(self) -> Option<E> {
         match self {
             Ok(_) => Option::None,
@@ -311,7 +311,7 @@ impl<T, E> Result<T, E> {
 }
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T: Clone, E> Result<T, E> {
     /// See [`std::result::Result::cloned`]
     pub fn cloned(self) -> Result<T, E> {
@@ -324,7 +324,7 @@ impl<T: Clone, E> Result<T, E> {
 
 #[cfg(hax_backend_fstar)]
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T, E> Result<Option<T>, E> {
     /// See [`std::result::Result::transpose`]
     pub fn transpose(self) -> Option<Result<T, E>> {
@@ -337,7 +337,7 @@ impl<T, E> Result<Option<T>, E> {
 }
 
 #[hax_lib::attributes]
-#[cfg_attr(charon, aeneas::exclude)]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T, E> Result<Result<T, E>, E> {
     /// See [`std::result::Result::flatten`]
     pub fn flatten(self) -> Result<T, E> {
@@ -348,22 +348,61 @@ impl<T, E> Result<Result<T, E>, E> {
     }
 }
 
-/// Models the std impl `FromIterator<Result<A, E>> for Result<V, E>`: collect
-/// an iterator of `Result`s into a `Result` of a collection, short-circuiting
-/// on the first `Err`.
-///
-/// Opaque: our `FromIterator::from_iter` signature deliberately omits the
-/// `Item = ...` bound (to avoid the associated-type constraint), so the
-/// short-circuiting body cannot be written in terms of the iterator's items;
-/// the behaviour is axiomatised. The body below exists only to typecheck —
-/// it delegates to `V`'s own `from_iter`.
+/// Yields a `Seq` by value, for the `Result` shunt below: `V::from_iter` needs
+/// an `IntoIterator<Item = A>`, and `slice::Iter` only yields references.
+struct SeqIter<A>(rust_primitives::sequence::Seq<A>);
+
+#[hax_lib::attributes]
+impl<A> crate::iter::traits::iterator::Iterator for SeqIter<A> {
+    type Item = A;
+
+    fn next(&mut self) -> crate::option::Option<A> {
+        if rust_primitives::sequence::seq_len(&self.0) == 0 {
+            crate::option::Option::None
+        } else {
+            crate::option::Option::Some(rust_primitives::sequence::seq_remove(&mut self.0, 0))
+        }
+    }
+}
+
+/// See [`std::iter::FromIterator`] for `Result`: buffers the `Ok`s, stops at
+/// the first `Err`. std threads a `&mut Option<E>` through `V::from_iter`,
+/// which the model cannot, hence the `Seq`. `while` rather than an early
+/// `return`, which hax cannot functionalize.
+// F*: while-loop over `next`, as in the `iter_*` helpers.
 #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+// Lean: extracting this trips aeneas's `type_var_id` on `IntoIterator::Item`,
+// as for `Vec`. Same fold hand-written in `FunsEpilogue.lean`.
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 #[hax_lib::attributes]
 impl<A, E, V: crate::iter::traits::collect::FromIterator<A>>
     crate::iter::traits::collect::FromIterator<Result<A, E>> for Result<V, E>
 {
-    fn from_iter<T: crate::iter::traits::collect::IntoIterator>(iter: T) -> Result<V, E> {
-        Ok(<V as crate::iter::traits::collect::FromIterator<A>>::from_iter(iter))
+    fn from_iter<T: crate::iter::traits::collect::IntoIterator<Item = Result<A, E>>>(
+        iter: T,
+    ) -> Result<V, E> {
+        let mut it = crate::iter::traits::collect::IntoIterator::into_iter(iter);
+        let mut acc = rust_primitives::sequence::seq_empty();
+        let mut err: crate::option::Option<E> = crate::option::Option::None;
+        let mut done = false;
+        while !done {
+            match crate::iter::traits::iterator::Iterator::next(&mut it) {
+                crate::option::Option::None => done = true,
+                crate::option::Option::Some(Ok(a)) => {
+                    rust_primitives::sequence::seq_push(&mut acc, a)
+                }
+                crate::option::Option::Some(Err(e)) => {
+                    err = crate::option::Option::Some(e);
+                    done = true;
+                }
+            }
+        }
+        match err {
+            crate::option::Option::Some(e) => Err(e),
+            crate::option::Option::None => {
+                Ok(<V as crate::iter::traits::collect::FromIterator<A>>::from_iter(SeqIter(acc)))
+            }
+        }
     }
 }
 

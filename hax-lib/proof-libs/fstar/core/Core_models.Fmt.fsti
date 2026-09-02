@@ -85,3 +85,11 @@ val impl_12__write_fmt (f: t_Formatter) (args: t_Arguments)
     : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
       Prims.l_True
       (fun _ -> Prims.l_True)
+
+/// Not a real `std::fmt::Arguments` method: the carve lowers panic/assert
+/// messages to `Arguments::from_str(msg)` and discards the result, so this
+/// exists to make those call sites resolve.
+/// Opaque: real `core` builds an `Arguments` that carries the formatted
+/// message, while the model\'s is a payload-free phantom, so the body is not
+/// a model of what `core` does — only enough to have a value.
+val impl_12__from_str (e_s: string) : Prims.Pure t_Arguments Prims.l_True (fun _ -> Prims.l_True)
