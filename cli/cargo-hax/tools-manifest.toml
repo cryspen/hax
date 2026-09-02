@@ -8,7 +8,9 @@
 # unverified and with a warning.
 #
 # Entries are only added, never removed: every version ever published stays
-# installable with verification on the supported platforms. Adding a version is a single reviewed
+# installable with verification on the supported platforms. Append new versions
+# at the end of their tool's section: file order is release order, and
+# `tools list` relies on it. Adding a version is a single reviewed
 # commit; generate its entries with `just add-tool-version <tool> <version>`,
 # which hashes the artifacts themselves and checks them the way an install
 # does, and record the provenance in a comment when it is not obvious from

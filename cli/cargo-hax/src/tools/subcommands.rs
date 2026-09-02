@@ -382,14 +382,24 @@ pub fn list(
         let default = defaults.tools.get(tool);
 
         // The manifest's versions and any cached ones, merged into one list,
-        // newest first. A version installed through the fallback path can be
-        // newer than the manifest, so the two sets are sorted together rather
-        // than concatenated. Lexicographic order matches release order for
-        // the `nightly-YYYY.MM.DD` tags in use.
-        let mut all_versions: BTreeSet<String> = BTreeSet::new();
-        all_versions.extend(manifest.versions_of(tool).into_iter().map(String::from));
-        all_versions.extend(installed.iter().cloned());
-        let ordered: Vec<String> = all_versions.into_iter().rev().collect();
+        // newest first. The manifest is append-only, so reversing it yields
+        // release order regardless of the tag scheme. Cached versions the
+        // manifest does not know were installed through the fallback path,
+        // typically because they are newer than this binary's manifest, so
+        // they go on top.
+        let ordered: Vec<String> = installed
+            .iter()
+            .filter(|version| !manifest.knows_version(tool, version))
+            .rev()
+            .cloned()
+            .chain(
+                manifest
+                    .versions_of(tool)
+                    .into_iter()
+                    .rev()
+                    .map(String::from),
+            )
+            .collect();
 
         let recent = if all { ordered.len() } else { LIST_RECENT };
         let mut versions = Vec::new();

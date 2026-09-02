@@ -486,16 +486,28 @@ fn list_truncates_and_filters() {
             "0".repeat(64),
         ));
     }
+    // A tag that sorts before the nightlies but, being appended last, is the
+    // newest release: it must top the list, and truncation must drop the
+    // oldest nightlies instead.
+    manifest.push_str(&format!(
+        "[tools.charon.\"build-abc1234\".{}]\nurl = \"https://example.com/build.tar.gz\"\nsha256 = \"{}\"\n",
+        platform(),
+        "0".repeat(64),
+    ));
     let env = Env::new(&manifest);
 
     let (output, success) = env.run(&["tools", "list", "charon"]);
     assert!(success);
     assert!(
-        output.contains("2 older versions omitted (use --all)"),
+        output.contains("3 older versions omitted (use --all)"),
         "{output}"
     );
     assert!(!output.contains("nightly-2026.01.00"), "{output}");
     assert!(output.contains("nightly-2026.01.11"), "{output}");
+    assert!(
+        output.find("build-abc1234").unwrap() < output.find("nightly-2026.01.11").unwrap(),
+        "{output}"
+    );
 
     let (output, _) = env.run(&["tools", "list", "charon", "--all"]);
     assert!(output.contains("nightly-2026.01.00"), "{output}");
