@@ -1794,7 +1794,6 @@ mod tests {
         // `Result<V, E>: FromIterator<Result<A, E>>` delegates to `V`'s own
         // `from_iter`, which is all its (opaque) body claims to do.
         #[test]
-        #[test]
         fn test_collect_into_result(v in prop::collection::vec(any::<u8>(), 0..=10)) {
             let it = VecIter::new(v).map(crate::result::Result::<u8, u8>::Ok);
             let collected: crate::result::Result<Consumed, u8> = it.collect();
