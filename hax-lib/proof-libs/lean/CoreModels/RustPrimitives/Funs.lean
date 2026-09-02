@@ -20,14 +20,9 @@ def rust_primitives.slice.slice_split_at
   {T : Type} : Slice T → Std.Usize → RustM ((Slice T) × (Slice T)) :=
   Aeneas.Std.core.slice.Slice.split_at
 
-/-- [rust_primitives::slice::slice_split_at_mut]:
-    Name pattern: [rust_primitives::slice::slice_split_at_mut]
-    Visibility: public
-
-    The `&mut` counterpart of `slice_split_at`. hax turns the two `&mut` returns
+/-- The `&mut` counterpart of `slice_split_at`. hax turns the two `&mut` returns
     into a value pair plus a write-back function, which is exactly the shape of
     Aeneas's own `core::slice::{[@T]}::split_at_mut`. -/
-@[rust_fun "rust_primitives::slice::slice_split_at_mut"]
 def rust_primitives.slice.slice_split_at_mut
   {T : Type} : Slice T → Std.Usize →
   RustM (((Slice T) × (Slice T)) × (((Slice T) × (Slice T)) → Slice T)) :=
