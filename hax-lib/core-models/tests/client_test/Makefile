@@ -3,7 +3,7 @@
 
 HAX ?= cargo hax
 LEAN_DIR = proofs/lean
-EXTRACTION_DIR = $(LEAN_DIR)/ClientTest/Extraction
+EXTRACTION_DIR = $(LEAN_DIR)/ClientTest/
 
 # std's slice-iterator macros OVERRIDE `Iterator::find` (library/core/src/slice/
 # iter/macros.rs), and that override's signature has a higher-ranked lifetime
