@@ -65,11 +65,11 @@ pub mod iter {
                 Option::None
             } else {
                 let res = seq_remove(&mut self.0, n - 1);
-                   Option::Some(res)
+                Option::Some(res)
             }
         }
     }
-    
+
     #[cfg(not(hax_backend_fstar))]
     impl<'a, T> crate::iter::traits::iterator::Iterator for IterMut<'a, T> {
         type Item = &'a mut T;

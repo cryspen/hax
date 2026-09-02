@@ -1008,7 +1008,7 @@ pub mod vec {
             self.as_mut_slice()
         }
     }
-    
+
     /// See [`std::convert::From`] `<[T; N]>` for `Vec<T>`
     impl<T, const N: usize> From<[T; N]> for Vec<T> {
         fn from(a: [T; N]) -> Vec<T> {
