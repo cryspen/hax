@@ -21,7 +21,7 @@ set_option maxRecDepth 2048
 namespace CoreModels.core
 
 /-- [core_models::ptr::alignment::AlignmentEnum]
-    Source: 'core-models/src/core/ptr.rs', lines 17:16-22:17
+    Source: 'core-models/src/core/ptr.rs', lines 11:16-16:17
     Visibility: public -/
 @[discriminant isize]
 inductive ptr.alignment.AlignmentEnum where
@@ -91,20 +91,20 @@ inductive ptr.alignment.AlignmentEnum where
 | _Align1Shl63 : ptr.alignment.AlignmentEnum
 
 /-- [core_models::ptr::alignment::Alignment]
-    Source: 'core-models/src/core/ptr.rs', lines 37:4-37:40
+    Source: 'core-models/src/core/ptr.rs', lines 28:4-28:40
     Visibility: public -/
 @[reducible]
 def ptr.alignment.Alignment := ptr.alignment.AlignmentEnum
 
 /-- [core_models::alloc::layout::Layout]
-    Source: 'core-models/src/core/alloc.rs', lines 15:4-18:5
+    Source: 'core-models/src/core/alloc.rs', lines 11:4-14:5
     Visibility: public -/
 structure alloc.layout.Layout where
   size : Std.Usize
   align : ptr.alignment.Alignment
 
 /-- [core_models::alloc::layout::LayoutError]
-    Source: 'core-models/src/core/alloc.rs', lines 21:4-21:27
+    Source: 'core-models/src/core/alloc.rs', lines 17:4-17:27
     Visibility: public -/
 @[reducible]
 def alloc.layout.LayoutError := Unit
@@ -152,7 +152,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → RustM Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 244:4-244:55
+    Source: 'core-models/src/core/array.rs', lines 240:4-240:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -174,7 +174,7 @@ structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
     (Self_Clause0_Output → Self))
 
 /-- Trait declaration: [core_models::clone::Clone]
-    Source: 'core-models/src/core/clone.rs', lines 13:0-30:1
+    Source: 'core-models/src/core/clone.rs', lines 13:0-25:1
     Visibility: public -/
 structure clone.Clone (Self : Type) where
   clone : Self → RustM Self
@@ -194,7 +194,7 @@ structure default.Default (Self : Type) where
   default : RustM Self
 
 /-- [core_models::array::{impl core_models::default::Default for [T; N]}::default::closure]
-    Source: 'core-models/src/core/array.rs', lines 214:22-214:68 -/
+    Source: 'core-models/src/core/array.rs', lines 210:22-210:68 -/
 @[reducible]
 def array.DefaultArray.default.closure (T : Type) (N : Std.Usize) := Unit
 
@@ -352,19 +352,19 @@ def f32.f32 := Unit
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 249:4-256:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 244:4-251:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 258:4-260:5
+    Source: 'core-models/src/core/fmt.rs', lines 253:4-255:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 339:4-343:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 334:4-338:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -372,7 +372,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 345:4-350:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 340:4-345:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -380,7 +380,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 352:4-352:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 347:4-347:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
@@ -960,45 +960,45 @@ structure ops.deref.DerefMut (Self : Type) (Self_Clause0_Target : Type) where
     Self))
 
 /-- Trait declaration: [core_models::ops::drop::Drop]
-    Source: 'core-models/src/core/ops.rs', lines 307:4-316:5
+    Source: 'core-models/src/core/ops.rs', lines 307:4-313:5
     Visibility: public -/
 structure ops.drop.Drop (Self : Type) where
   drop : Self → RustM Self
 
 /-- [core_models::ops::range::RangeTo]
-    Source: 'core-models/src/core/ops.rs', lines 321:4-323:5
+    Source: 'core-models/src/core/ops.rs', lines 318:4-320:5
     Visibility: public -/
 structure ops.range.RangeTo (T : Type) where
   «end» : T
 
 /-- [core_models::ops::range::RangeFrom]
-    Source: 'core-models/src/core/ops.rs', lines 325:4-327:5
+    Source: 'core-models/src/core/ops.rs', lines 322:4-324:5
     Visibility: public -/
 structure ops.range.RangeFrom (T : Type) where
   start : T
 
 /-- [core_models::ops::range::Range]
-    Source: 'core-models/src/core/ops.rs', lines 329:4-332:5
+    Source: 'core-models/src/core/ops.rs', lines 326:4-329:5
     Visibility: public -/
 structure ops.range.Range (T : Type) where
   start : T
   «end» : T
 
 /-- [core_models::ops::range::RangeFull]
-    Source: 'core-models/src/core/ops.rs', lines 334:4-334:25
+    Source: 'core-models/src/core/ops.rs', lines 331:4-331:25
     Visibility: public -/
 @[reducible]
 def ops.range.RangeFull := Unit
 
 /-- [core_models::ops::range::RangeInclusive]
-    Source: 'core-models/src/core/ops.rs', lines 336:4-339:5
+    Source: 'core-models/src/core/ops.rs', lines 333:4-336:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
   start : T
   «end» : T
 
 /-- [core_models::panic::location::Location]
-    Source: 'core-models/src/core/panic.rs', lines 15:4-19:5
+    Source: 'core-models/src/core/panic.rs', lines 11:4-15:5
     Visibility: public -/
 structure panic.location.Location where
   filename : Str
@@ -1006,7 +1006,7 @@ structure panic.location.Location where
   col : Std.U32
 
 /-- [core_models::panic::panic_info::PanicInfo]
-    Source: 'core-models/src/core/panic.rs', lines 25:4-30:5
+    Source: 'core-models/src/core/panic.rs', lines 21:4-26:5
     Visibility: public -/
 structure panic.panic_info.PanicInfo where
   message : fmt.Arguments
@@ -1074,14 +1074,14 @@ def slice.iter.Iter (T : Type) := rust_primitives.sequence.Seq T
 def slice.iter.IterMut (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [core_models::slice::iter::Windows]
-    Source: 'core-models/src/core/slice.rs', lines 130:4-133:5
+    Source: 'core-models/src/core/slice.rs', lines 124:4-127:5
     Visibility: public -/
 structure slice.iter.Windows (T : Type) where
   size : Std.Usize
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 512:4-541:5
+    Source: 'core-models/src/core/slice.rs', lines 506:4-531:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where

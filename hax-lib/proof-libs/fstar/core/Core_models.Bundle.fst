@@ -43,9 +43,6 @@ let impl_27 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
   }
 
 /// See [`std::default::Default`] for `[T; N]`
-/// Real `core` spells this out as 33 monomorphic impls (`[T; 0]` … `[T; 32]`).
-/// Coherence rules out keeping both those and the const-generic form, which
-/// covers `N = 0` anyway.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_25
       (#v_T: Type0)
