@@ -382,14 +382,25 @@ def add_clone_from_default(text: str) -> str:
     """Give `Clone::clone_from` a Lean-level default, as Aeneas's own
     `Aeneas/Std/Core/Core.lean` does for its hand-written `clone.Clone`.
 
-    Charon translates a provided method only for the impls whose crate calls it
-    (`--translate-all-methods` turns that off globally, but then real `core`'s
-    `Iterator` comes along and Aeneas fails). So a crate that derives `Clone`
-    without ever calling `clone_from` -- the `alloc` model, and most downstream
-    crates -- gets an instance with no `clone_from` field, and the field has to
-    default. Aeneas declares its own `clone.Clone` that way for this reason,
-    and a prologue cannot stand in: an instance's `clone` field refers to a
-    function generated in the same file.
+    A provided method needs one or it breaks every crate that does not call it.
+    Charon translates a provided method only for a crate that uses it somewhere,
+    so a crate deriving `Clone` without ever calling `clone_from` -- the `alloc`
+    model, `tests/rust_lean_equiv_test`, most proof projects -- gets instances
+    with no `clone_from` field, and Lean rejects them against a structure whose
+    field has no default. hax cannot emit the default itself: aeneas's
+    `extract_trait_decl` never emits Lean field defaults.
+
+    Two alternatives do not work. `--start-from crate --start-from
+    'core::clone::Clone::clone_from'` does fix the `alloc` lane, but only for a
+    crate that passes it, so it moves the breakage onto every downstream
+    project. `--translate-all-methods` drops the pruning globally and then
+    Aeneas fails on real `core`'s `Iterator::try_fold`. A prologue cannot stand
+    in either: an instance's `clone` field refers to a function generated in the
+    same file.
+
+    `PartialEq::ne` and `PartialOrd::{lt,le,gt,ge}` have the same latent hole
+    and predate this rule -- they survive only because most crates use `!=`
+    and `<` somewhere.
     """
     return replace(
         "Clone.clone_from default",
