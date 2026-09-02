@@ -247,6 +247,16 @@ pub fn slice_len(x: &[u8]) -> usize {
     x.len()
 }
 
+/// `IterMut::next` yields an `&mut T`, so hax gives it a write-back return and
+/// no `Iterator` instance can hold it -- `patch_lean.py` drops the ill-typed
+/// record aeneas emits, keeping the function. This is what resolves to that
+/// function, and what would catch its name drifting.
+pub fn slice_iter_mut_bump_first(s: &mut [u32]) {
+    if let Some(x) = s.iter_mut().next() {
+        *x += 1;
+    }
+}
+
 // NOTE: slice indexing through `SliceIndex` is currently excluded from
 // our extraction (see `CHARON_EXCLUDES` in the parent Makefile).
 // Re-enable the tests below once the full SliceIndex modeling lands
