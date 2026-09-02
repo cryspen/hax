@@ -1,4 +1,9 @@
-# Notes about developping on the engine
+# Hax OCaml Engine
+
+This directory contains the hax engine: it takes the Rust AST produced by the frontend and translates it, through a sequence of rewrite phases, into the language of the selected backend (see `backends/`).
+Parts of it are being rewritten in Rust in [`../rust-engine`](../rust-engine).
+
+## Design
 
 Note that Hax uses [JSON schemas](https://json-schema.org/): an OCaml
 module `types.ml` definining the types we declared on the Rust side

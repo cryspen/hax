@@ -30,7 +30,10 @@ jobs:
             'https://github.com/${{ github.repository }}' /tmp/hax-release
           rm -rf docs/manual
           cp -r /tmp/hax-release/docs/manual docs/manual
-          git add -A docs/manual # For nix to pick up the replacement
+          # The manual includes sections of the readme as snippets, so the
+          # readme must come from the same release.
+          cp /tmp/hax-release/README.md README.md
+          git add -A docs/manual README.md # For nix to pick up the replacement
       - name: Build documentation
         run: nix build .#docs
       - name: Upload static files as artifact

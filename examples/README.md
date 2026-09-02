@@ -8,10 +8,6 @@ the generated files live in `<EXAMPLE>/proofs/<scenario>/<backend>/`.
 
 ## Lean
 
-For the Lean backend, we have four examples: `barrett`, `sha3`, `loop_equivalence`,
-and `adc`. The `lean_tutorial` example accompanies the
-[Lean tutorial](../docs/manual/lean/tutorial/index.md).
-
 ### Barrett reduction
 
 Barrett reduction allows to compute remainders without using divisions. It
@@ -26,9 +22,9 @@ cd barrett/
 make lean
 ```
 
-This extracts the Rust code from `barrett/src/lib.rs` into
-`examples/barrett/proofs/barrett/lean/Barrett/Extraction/`. The Lean proof can be found in
-`examples/barrett/proofs/barrett/lean/Barrett/Verification/ProofObligations.lean`.
+This extracts the Rust code from `src/lib.rs` into
+`proofs/barrett/lean/Barrett/Extraction/`. The Lean proof can be found in
+`proofs/barrett/lean/Barrett/Verification/ProofObligations.lean`.
 
 ### SHA-3
 
@@ -55,9 +51,9 @@ cd sha3/
 make lean
 ```
 
-This extracts the Rust code from `sha3/src/lib.rs` into
-`examples/sha3/proofs/sha3/lean/Sha3/Extraction/Funs.lean`. The Lean proof can be found in
-`examples/sha3/proofs/sha3/lean/Sha3/Verification/Equivalence.lean`.
+This extracts the Rust code from `src/lib.rs` into
+`proofs/sha3/lean/Sha3/Extraction/Funs.lean`. The Lean proof can be found in
+`proofs/sha3/lean/Sha3/Verification/Equivalence.lean`.
 
 ### Loop Equivalence
 
@@ -84,6 +80,16 @@ cd adc/
 make lean
 ```
 
+### Lean tutorial
+
+The `lean_tutorial` example accompanies the
+[Lean tutorial](../docs/manual/lean/tutorial/index.md): it contains the code
+the tutorial develops. The extraction and proofs can be run as follows:
+```sh
+cd lean_tutorial/
+make lean
+```
+
 ## F*
 
 ### Requirements
@@ -104,13 +110,28 @@ modules using F\*.
 Note the generated modules live in the
 `<EXAMPLE>/proofs/<scenario>/fstar/extraction` folders.
 
-| Name               | Status of the F\* extraction |
-| ------------------ | ---------------------------- |
-| chacha20           | Typechecks                   |
-| limited-order-book | Typechecks                   |
-| sha256             | Lax-typechecks               |
-| barrett            | Typechecks                   |
-| kyber_compress     | Typechecks                   |
+| Name               | Description                                                              | Status of the F\* extraction |
+| ------------------ | ------------------------------------------------------------------------ | ---------------------------- |
+| chacha20           | An implementation of the ChaCha20 stream cipher.                          | Typechecks                   |
+| limited-order-book | A limited order book, the matching component of an exchange.              | Typechecks                   |
+| sha256             | An implementation of the SHA-256 hash function.                           | Lax-typechecks               |
+| barrett            | Barrett reduction (see the [Lean section](#barrett-reduction) above).     | Typechecks                   |
+| kyber_compress     | The coefficient compression function of Kyber (ML-KEM).                   | Typechecks                   |
+
+## ProVerif
+
+The `proverif-psk` example implements the initiator and responder logic of a
+simplistic pre-shared-key (PSK) based protocol, and analyzes it with the
+ProVerif backend; a handwritten ProVerif model of the same protocol is included
+for comparison. See its [Readme](./proverif-psk/Readme.md) for the protocol and
+the modeling choices.
+
+With [ProVerif](https://bblanche.gitlabpages.inria.fr/proverif/) installed, the
+extraction and analysis can be run as follows:
+```sh
+cd proverif-psk/
+make
+```
 
 ## Checking examples
 

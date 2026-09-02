@@ -7,7 +7,7 @@ homepage.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 repository.workspace = true
-readme.workspace = true
+readme = "README.md"
 build = "build.rs"
 description = "The high assurance translation toolchain"
 

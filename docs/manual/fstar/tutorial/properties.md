@@ -72,7 +72,7 @@ zero. -->
 The proof for the code above uses the Z3 SMT solver to prove the
 post-condition.  Since the SMT solver needs to reason about non-linear
 arithmetic (multiplication, modulus, division) it needs more
-resources, hence we bump up the `rlimit` to 100 in an annotation above
+resources, hence we bump up the `rlimit` to 500 in an annotation above
 the function. With this annotation F\* and Z3 are able to automatically
 verify this function. However, it is worth noting that the heuristic
 strategies used by Z3 for non-linear arithmetic may sometimes fail to

@@ -9,22 +9,22 @@ what you are looking for!
 
 ## Setup the tools
 
- - <input type="checkbox" class="user-checkable"/> [Install the hax toolchain](https://github.com/cryspen/hax?tab=readme-ov-file#installation).  
-   <span style="margin-right:30px;"></span>🪄 Running `cargo hax --version` should print some version info.
- - <input type="checkbox" class="user-checkable"/> [Install F\*](https://github.com/FStarLang/FStar/blob/master/INSTALL.md)
+ - [Install hax](../index.md#installation).  
+   Check: Running `cargo hax --version` should print some version info.
+ - [Install F\*](https://github.com/FStarLang/FStar/blob/master/INSTALL.md)
 
 ## Setup the crate you want to verify
 
 *Note: the instructions below assume you are in the folder of the specific crate (**not workspace!**) you want to extract.*
 
 
- - <input type="checkbox" class="user-checkable"/> Create the folder `proofs/fstar/extraction`, right next to the `Cargo.toml` of the crate you want to verify.  
-   <span style="margin-right:30px;"></span>🪄 `mkdir -p proofs/fstar/extraction`
- - <input type="checkbox" class="user-checkable"/> Copy [this makefile](https://gist.github.com/maximebuyse/95a60c848b199c38eb93a41cfede34bf) to `proofs/fstar/extraction/Makefile`  
-   <span style="margin-right:30px;"></span>🪄 `curl -o proofs/fstar/extraction/Makefile https://gist.githubusercontent.com/maximebuyse/95a60c848b199c38eb93a41cfede34bf/raw/Makefile`
- - <input type="checkbox" class="user-checkable"/> Add `hax-lib` as a dependency to your crate, enabled only when using hax.  
-   <span style="margin-right:30px;"></span>🪄 `cargo add --target 'cfg(hax)' --git https://github.com/cryspen/hax hax-lib`  
-   <span style="margin-right:30px;"></span><span style="opacity: 0;">🪄</span> *(`hax-lib` is not mandatory, but this guide assumes it is present)*
+ - Create the folder `proofs/fstar/extraction`, right next to the `Cargo.toml` of the crate you want to verify.  
+   `mkdir -p proofs/fstar/extraction`
+ - Copy [this makefile](https://github.com/cryspen/hax/blob/main/docs/manual/fstar/tutorial/proofs/fstar/extraction/Makefile) to `proofs/fstar/extraction/Makefile`  
+   `curl -o proofs/fstar/extraction/Makefile https://raw.githubusercontent.com/cryspen/hax/main/docs/manual/fstar/tutorial/proofs/fstar/extraction/Makefile`
+ - Add `hax-lib` as a dependency to your crate, enabled only when using hax.  
+   `cargo add --target 'cfg(hax)' --git https://github.com/cryspen/hax hax-lib`  
+   *(`hax-lib` is not mandatory, but this guide assumes it is present)*
 
 ## Partial extraction
 

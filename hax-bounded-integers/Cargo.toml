@@ -6,7 +6,7 @@ license.workspace = true
 homepage.workspace = true
 edition.workspace = true
 repository.workspace = true
-readme.workspace = true
+readme = "README.md"
 description = "Newtypes for working with bounded integers with hax"
 
 [dependencies]

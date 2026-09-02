@@ -2,4 +2,6 @@
 weight: 10
 ---
 
+# F\* backend
+
 This section introduces the F\* backend of hax. It covers how to setup a project, and the basics of how to use the hax and F\* to verify Rust code.

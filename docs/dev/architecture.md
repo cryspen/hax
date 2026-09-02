@@ -1,11 +1,13 @@
 # Architecture
 
-hax is a software pipeline designed to transform Rust code into various formal verification backends such as **Lean**, **F\***, **Coq**, **ProVerif**, and **EasyCrypt**. It comprises two main components:
+hax is a software pipeline designed to transform Rust code into various formal verification backends such as **Lean**, **F\***, **Rocq**, **ProVerif**, and **EasyCrypt**. The Lean backend runs the external [Charon](https://github.com/AeneasVerif/charon) + [Aeneas](https://github.com/AeneasVerif/aeneas) pipeline: `cargo-hax` orchestrates it, and none of the components below are involved.
+
+The remaining backends, including the legacy Lean backend, run the legacy pipeline this page describes. It comprises two main components:
 
 1. **The Frontend** (written in Rust)
-2. **The Engine** (written in OCaml)
+2. **The Engine** (written in OCaml, with a partial rewrite in Rust)
 
-The frontend hooks into the Rust compiler, producing a abstract syntax tree for a given crate. The engine then takes this AST in input, applies various transformation, to reach in the end the language of the backend: Lean, F*, Coq...
+The frontend hooks into the Rust compiler, producing an abstract syntax tree for a given crate. The engine then takes this AST as input and applies various transformations, to reach in the end the language of the backend: F*, Rocq...
 
 ## The Frontend (Rust)
 
@@ -19,7 +21,7 @@ This library mirrors the internal types of the Rust compiler (`rustc`) that cons
 
 ### `hax-driver` Binary
 
-`hax-driver` is a custom Rust compiler driver that behaves like `rustc` but performs additional tasks:
+`hax-driver` (crate name; the binary is called `driver-hax-frontend-exporter`) is a custom Rust compiler driver that behaves like `rustc` but performs additional tasks:
 
 1. **Item Enumeration:** Lists all items in a crate.
 2. **AST Transformation:** Applies `sinto` on each item to generate the hax-ified AST.
@@ -31,17 +33,19 @@ This library mirrors the internal types of the Rust compiler (`rustc`) that cons
 
 **Workflow:**
 
-1. **Custom Build Execution:** Runs `cargo build`, instructing Cargo to use `hax-driver` instead of `rustc`.
-2. **Multiple Compiler Invocations:** `cargo build` invokes `hax-driver` multiple times with various options.
+1. **Custom Build Execution:** Runs `cargo check`, instructing Cargo to use `hax-driver` instead of `rustc`.
+2. **Multiple Compiler Invocations:** `cargo check` invokes `hax-driver` multiple times with various options.
 3. **Inter-Process Communication:** `hax-driver` communicates with `cargo-hax` via `stderr` using JSON lines.
 4. **Metadata Generation:** Produces `haxmeta` files containing the transformed ASTs.
 5. **Engine Invocation (Optional):** If requested, runs the engine, passing options and `haxmeta` information via `stdin` serialized as JSON.
 6. **Interactive Communication:** Engages in interactive communication with the engine.
 7. **User Reporting:** Outputs results and diagnostics to the user.
 
-## The Engine (OCaml - [documentation](/engine/docs/hax-engine/index.html))
+## The Engine (OCaml)
 
 The engine processes the transformed ASTs and options provided via JSON input from `stdin`. It performs several key functions to convert the hax-ified Rust code into the target backend language.
+
+The engine is written in OCaml, and parts of it have been rewritten in Rust in the [`rust-engine`](https://github.com/cryspen/hax/tree/main/rust-engine) crate: the legacy Lean backend runs its phases and printer there, and the F\* backend can run its phases there (behind an experimental flag) while delegating printing to the OCaml engine. This section describes the OCaml engine; the concepts (import, internal AST, phases, printers) carry over to the Rust rewrite.
 
 ### Importing and Simplifying ASTs
 

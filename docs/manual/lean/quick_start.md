@@ -6,14 +6,13 @@ weight: 1
 
 ## Setup the tools
 
- - <input type="checkbox" class="user-checkable"/> [Install the hax toolchain](https://github.com/cryspen/hax?tab=readme-ov-file#installation).  
-   <span style="margin-right:30px;"></span>🪄 Running `cargo hax --version` should print some version info.  
-   <span style="margin-right:30px;"></span><span style="opacity: 0;">🪄</span> *(from hax 0.4.0 onwards, `cargo install --locked cargo-hax` is enough for this backend: it needs no hax engine)*
- - <input type="checkbox" class="user-checkable"/> [Install Lean](https://lean-lang.org/install/)
- - <input type="checkbox" class="user-checkable"/> *(Optional, for `lean` backend only)* Aeneas and charon are downloaded automatically on first use; to pre-install them, run `cargo hax tools install` inside your crate.
- - <input type="checkbox" class="user-checkable"/> Add `hax-lib` as a dependency to your crate.  
-   <span style="margin-right:30px;"></span>🪄 `cargo add --git https://github.com/cryspen/hax hax-lib`  
-   <span style="margin-right:30px;"></span><span style="opacity: 0;">🪄</span> *(`hax-lib` is not mandatory, but this guide assumes it is present)*
+ - [Install hax](../index.md#installation).  
+   Check: Running `cargo hax --version` should print some version info.
+ - [Install Lean](https://lean-lang.org/install/)
+ - *(Optional)* Aeneas and Charon are downloaded automatically on first use; to pre-install them, run `cargo hax tools install` inside your crate.
+ - Add `hax-lib` as a dependency to your crate.  
+   `cargo add --git https://github.com/cryspen/hax hax-lib`  
+   *(`hax-lib` is not mandatory, but this guide assumes it is present)*
 
 ## Partial extraction
 
@@ -61,6 +60,13 @@ include = ["your_crate::some_module::my_function"]
 For CI, `cargo hax extract` followed by `git diff --exit-code` catches extraction output that was not re-committed, and `lake build` per scenario runs the verification.
 
 ## Start Lean verification
-After extracting your Rust code to Lean, the result is a complete Lean package (in `proofs/lean`, or `proofs/<scenario>/lean` for a scenario run): besides the extracted modules under `<PkgName>/Extraction/` and the `<PkgName>/Extraction.lean` module importing them, the extraction generates a `lakefile.toml` and `lean-toolchain` pinned to the versions matching it, a root module importing the extraction and the proofs, and a `<PkgName>/Verification/` folder for handwritten proofs, which hax never touches. If the crate uses external definitions, their models live in `<PkgName>/Assumptions/`: hax seeds each file there once, from the template aeneas generates, and never modifies it afterwards. You can type-check the extraction with `lake build` in that folder, or directly in the IDE using the LSP. Running `lake exe cache get` beforehand downloads prebuilt binaries for mathlib, saving you from compiling it from source. Contrarily to F\*, successfully building the code doesn't prove panic freedom by default.
+After extracting your Rust code to Lean, the result is a complete Lean package (in `proofs/lean`, or `proofs/<scenario>/lean` for a scenario run). You can type-check the extraction with `lake build` in that folder, or directly in the IDE using the LSP. Running `lake exe cache get` beforehand downloads prebuilt binaries for mathlib, saving you from compiling it from source. Contrarily to F\*, successfully building the code doesn't prove panic freedom by default.
 
-The `Extraction/` folder and the `Extraction.lean` module next to it are owned by hax: both are rewritten on every extraction, so edits there are lost. Everything you write belongs in `Verification/` (proofs) or `Assumptions/` (models of external definitions); the other files outside `Extraction/` are created only when missing, so it is safe to re-run after editing them. The root module is yours after its creation; since the extraction is reached through the single import of `<PkgName>.Extraction`, it never needs an update when the extracted files change, and hax only warns when one of its imports is missing or stale, see [the root module check](../tools.md#the-lean-root-module-check). A commented-out import (`-- import ...`) silences those warnings for a module, and for `Verification/ProofObligations.lean` it also stops hax from recreating the stub; extraction files are regenerated and `Assumptions/` files re-seeded regardless.
+The package contains:
+
+- `<PkgName>/Extraction/`, and the `<PkgName>/Extraction.lean` module importing it: the extracted modules. Both are owned by hax and rewritten on every extraction, so edits there are lost.
+- `<PkgName>/Verification/`: your handwritten proofs; hax never touches this folder.
+- `<PkgName>/Assumptions/`: models of the external definitions the crate uses, if any. hax seeds each file there once, from the template Aeneas generates, and never modifies it afterwards.
+- a `lakefile.toml` and `lean-toolchain` pinned to the versions matching the extraction, and a root module importing the extraction and the proofs. These are created only when missing, so it is safe to re-run after editing them.
+
+The root module is yours after its creation; since the extraction is reached through the single import of `<PkgName>.Extraction`, it never needs an update when the extracted files change, and hax only warns when one of its imports is missing or stale, see [the root module check](../tools.md#the-lean-root-module-check). A commented-out import (`-- import ...`) silences those warnings for a module, and for `Verification/ProofObligations.lean` it also stops hax from recreating the stub; extraction files are regenerated and `Assumptions/` files re-seeded regardless.

@@ -18,7 +18,7 @@ not in of `F₃`.
 
 Representing `F₃` as `i32`s, every time we define a function consuming
 `F₃` elements, we face the risk to consume *illegal* elements. We are
-thus back to [chapter 4.1](panic-freedom.md): we should panic on
+thus back to the [chapter on panic freedom](panic-freedom.md): we should panic on
 illegal elements, and add hax pre-conditions on every single
 function. That's not ideal: the property of being either `0`, `1` or
 `2` should be encoded directly on the type representing `F₃` elements.
