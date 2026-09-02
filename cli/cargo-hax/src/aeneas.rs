@@ -19,8 +19,11 @@ pub(crate) mod package;
 
 const BACKEND_DIR: &str = "lean";
 
-// Flags that should trigger a warning when passed to charon/aeneas
-const CHARON_WARN_FLAGS: &[&str] = &["--dest-file"];
+// Charon flags that are rejected when passed by the user: aeneas is always
+// run on the LLBC file hax chooses, so redirecting charon's output severs
+// the charon→aeneas handoff.
+const CHARON_RESERVED_FLAGS: &[&str] = &["--dest-file"];
+// Aeneas flags that trigger a warning when passed by the user.
 const AENEAS_WARN_FLAGS: &[&str] = &["-backend", "-dest", "-subdir", "-split-files"];
 
 /// Shell-split a user-supplied extra-args string, reporting a fatal error on
@@ -71,21 +74,21 @@ fn args_source(
     }
 }
 
-/// Warn if the extra args (the scenario's `<tool>-args` key or the
+/// Warn if the extra aeneas args (the scenario's `<tool>-args` key or the
 /// `--<tool>-args` flag) re-specify a flag that the pipeline already sets
 /// and relies on (e.g. those controlling where output is written). Such
 /// flags are still forwarded (the tools keep the last occurrence), but
-/// overriding them can break the charon→aeneas handoff or the layout the
-/// generated proof project assumes.
-fn warn_on_reserved_flags(
+/// overriding them can break the layout the generated proof project
+/// assumes.
+fn warn_on_overridden_pipeline_flags(
     scenario_args: &[String],
     cli_args: &[String],
-    reserved: &[&str],
+    pipeline_flags: &[&str],
     tool: &str,
     message_format: MessageFormat,
 ) {
     let combined: Vec<String> = scenario_args.iter().chain(cli_args).cloned().collect();
-    let overridden = overridden_flags(&combined, reserved);
+    let overridden = overridden_flags(&combined, pipeline_flags);
     if !overridden.is_empty() {
         HaxMessage::GenericWarning {
             message: format!(
@@ -399,6 +402,50 @@ pub fn run(
         crate_name.as_deref().unwrap_or("output").replace('-', "_")
     ));
 
+    // Parse once so we can both inspect and forward the user's charon flags.
+    // Rejected before anything is deleted or run, so a pure usage error
+    // leaves the previous run's artifacts intact.
+    let scenario_charon_args = &options.scenario.charon_args;
+    let cli_charon_args = shell_split(options.charon_args.as_deref(), "charon", message_format);
+    let mut user_charon_args = scenario_charon_args.clone();
+    user_charon_args.extend(cli_charon_args.iter().cloned());
+    let reserved_charon_flags = overridden_flags(&user_charon_args, CHARON_RESERVED_FLAGS);
+    if !reserved_charon_flags.is_empty() {
+        HaxMessage::GenericError {
+            message: format!(
+                "{} overrides {}, which hax reserves: aeneas is always run on the \
+                 LLBC file hax chooses, so redirecting charon's output would make \
+                 the extraction read a stale or missing file",
+                args_source(
+                    scenario_charon_args,
+                    &cli_charon_args,
+                    &reserved_charon_flags,
+                    "charon"
+                ),
+                reserved_charon_flags.join(" and ")
+            ),
+        }
+        .report(message_format, None);
+        return true;
+    }
+
+    // The charon→aeneas handoff is this file: remove any LLBC a previous run
+    // left, so a charon run that produces none is caught by the existence
+    // check below instead of feeding aeneas stale code.
+    if let Err(e) = fs::remove_file(&llbc_file)
+        && e.kind() != std::io::ErrorKind::NotFound
+    {
+        HaxMessage::GenericError {
+            message: format!(
+                "failed to remove the previous LLBC file {}: {}",
+                llbc_file.display(),
+                e
+            ),
+        }
+        .report(message_format, None);
+        return true;
+    }
+
     // Running charon
 
     HaxMessage::Step {
@@ -406,20 +453,6 @@ pub fn run(
         target: "charon".to_string(),
     }
     .report(message_format, None);
-
-    // Parse once so we can both inspect and forward the user's charon flags.
-    // `--dest-file` is reserved: its value is fed verbatim to aeneas below.
-    let scenario_charon_args = &options.scenario.charon_args;
-    let cli_charon_args = shell_split(options.charon_args.as_deref(), "charon", message_format);
-    let mut user_charon_args = scenario_charon_args.clone();
-    user_charon_args.extend(cli_charon_args.iter().cloned());
-    warn_on_reserved_flags(
-        scenario_charon_args,
-        &cli_charon_args,
-        CHARON_WARN_FLAGS,
-        "charon",
-        message_format,
-    );
     // The unified item-selection keys, compiled to charon's selection
     // flags; the verbatim extra arguments follow them.
     let selection_flags = options.scenario.selection_flags();
@@ -497,6 +530,19 @@ pub fn run(
         }
     }
 
+    // The file was removed above, so its presence proves this charon run
+    // wrote it.
+    if !llbc_file.is_file() {
+        HaxMessage::GenericError {
+            message: format!(
+                "charon exited successfully but did not produce {}",
+                llbc_file.display()
+            ),
+        }
+        .report(message_format, None);
+        return true;
+    }
+
     // Running Aeneas
 
     // The output-layout flags are reserved: overriding them moves the output
@@ -508,7 +554,7 @@ pub fn run(
         .copied()
         .filter(|flag| !(layout_warned && matches!(*flag, "-dest" | "-subdir")))
         .collect();
-    warn_on_reserved_flags(
+    warn_on_overridden_pipeline_flags(
         scenario_aeneas_args,
         &cli_aeneas_args,
         &aeneas_warn_flags,

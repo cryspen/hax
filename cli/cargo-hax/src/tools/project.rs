@@ -18,10 +18,13 @@ use super::config::{self, HaxToml, ScenarioEntry};
 /// manifest and which crates a run processes. Everything else in
 /// `-C ... ;` is `cargo check`'s business alone.
 #[derive(Debug, Default)]
-struct CargoArgs {
+pub(crate) struct CargoArgs {
     /// `--manifest-path`, verbatim (Cargo resolves a relative value
     /// against the invocation directory, and so does `cargo metadata`).
     manifest_path: Option<String>,
+    /// `--target-dir`, verbatim. It beats the `CARGO_TARGET_DIR`
+    /// environment variable, so a run that passes it builds there.
+    pub(crate) target_dir: Option<String>,
     /// The `-p`/`--package` values, verbatim. A value that names a
     /// workspace member lets the `hax-lib` gate check exactly the selected
     /// crates; any other spec form (paths, globs, `name@version`) is
@@ -40,7 +43,7 @@ struct CargoArgs {
 }
 
 impl CargoArgs {
-    fn parse(flags: &[String]) -> Self {
+    pub(crate) fn parse(flags: &[String]) -> Self {
         const FORWARDED: &[&str] = &[
             "--offline",
             "--locked",
@@ -62,6 +65,10 @@ impl CargoArgs {
                 args.manifest_path = flags.next().cloned();
             } else if let Some(path) = flag.strip_prefix("--manifest-path=") {
                 args.manifest_path = Some(path.to_string());
+            } else if flag == "--target-dir" {
+                args.target_dir = flags.next().cloned();
+            } else if let Some(path) = flag.strip_prefix("--target-dir=") {
+                args.target_dir = Some(path.to_string());
             } else if flag == "-p" || flag == "--package" {
                 if let Some(spec) = flags.next() {
                     args.package_specs.push(spec.clone());
@@ -432,13 +439,16 @@ impl ProjectContext {
 /// dependency resolution, which needs neither the network nor a resolvable
 /// dependency set.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Deps {
+pub(crate) enum Deps {
     Resolve,
     Skip,
 }
 
 /// Run `cargo metadata` for the project of the invocation directory.
-fn run_cargo_metadata(args: &CargoArgs, deps: Deps) -> Result<cargo_metadata::Metadata, String> {
+pub(crate) fn run_cargo_metadata(
+    args: &CargoArgs,
+    deps: Deps,
+) -> Result<cargo_metadata::Metadata, String> {
     let mut command = cargo_metadata::MetadataCommand::new();
     if let Some(path) = &args.manifest_path {
         command.manifest_path(path);
@@ -548,6 +558,18 @@ mod tests {
             assert_eq!(args.manifest_path.as_deref(), Some("../a/Cargo.toml"));
             assert!(!args.selects_packages());
         }
+    }
+
+    #[test]
+    fn the_target_dir_is_read_in_both_spellings() {
+        for flags in [
+            vec!["--target-dir", "../build"],
+            vec!["--target-dir=../build"],
+        ] {
+            assert_eq!(parse(&flags).target_dir.as_deref(), Some("../build"));
+        }
+        // Arguments past a bare `--` are rustc's.
+        assert_eq!(parse(&["--", "--target-dir", "../build"]).target_dir, None);
     }
 
     #[test]

@@ -7,18 +7,23 @@ mod common;
 
 use std::path::Path;
 
-/// A charon stub that records its invocation and fails when the
-/// environment says so, to exercise per-scenario `env` and the failure
-/// summary.
-const CHARON_STUB: &str = "#!/bin/sh\n\
-    if [ -n \"$SCENARIO_FAIL\" ]; then exit 1; fi\n\
-    echo \"$@\" > charon-invoked\n\
-    exit 0\n";
+/// A charon stub that records its invocation, writes its LLBC file, and
+/// fails when the environment says so, to exercise per-scenario `env` and
+/// the failure summary.
+fn charon_stub() -> String {
+    format!(
+        "#!/bin/sh\n\
+         if [ -n \"$SCENARIO_FAIL\" ]; then exit 1; fi\n\
+         echo \"$@\" > charon-invoked\n\
+         {}exit 0\n",
+        common::WRITE_DEST_FILE
+    )
+}
 
 /// The stub pipeline, with a charon that honors `$SCENARIO_FAIL`.
 fn stub_tools(bin: &Path) {
     common::stub_pipeline_tools(bin, &common::stub("aeneas-invoked"));
-    common::write_executable(&bin.join("charon"), CHARON_STUB);
+    common::write_executable(&bin.join("charon"), &charon_stub());
 }
 
 /// A crate with stub tools and the given extra `hax.toml` contents.

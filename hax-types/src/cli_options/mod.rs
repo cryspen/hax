@@ -285,8 +285,9 @@ INVOCATION:
   before each tool runs.
 
   Overriding a flag that controls where output is written (aeneas's -backend,
-  -dest, -subdir, or -split-files, or charon's --dest-file) may break the extraction
-  or the generated proof project. Overriding -dest or -subdir additionally disables
+  -dest, -subdir, or -split-files) may break the extraction or the generated
+  proof project. Charon's --dest-file is reserved and rejected: aeneas is always
+  run on the LLBC file hax chooses. Overriding -dest or -subdir additionally disables
   the generation and checking of the Lean package files and the clearing of stale
   extraction files, since hax no longer knows the package layout. Committing
   `project-files = false` in `hax.toml` disables the package files for every

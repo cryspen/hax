@@ -47,6 +47,55 @@ fn path_entry_runs_the_supplied_binaries_with_a_notice() {
 }
 
 #[test]
+fn a_charon_run_that_produced_no_llbc_must_not_extract_from_a_stale_one() {
+    let dir = tempfile::tempdir().unwrap();
+    let crate_dir = dir.path().join("crate");
+    write_crate(&crate_dir);
+    let bin = dir.path().join("bin");
+    stub_pipeline_tools(&bin, &stub("aeneas-invoked"));
+    // A charon that exits 0 without writing its `--dest-file`.
+    common::write_executable(&bin.join("charon"), &stub("charon-invoked"));
+    write_path_entries(&crate_dir, &bin);
+    // An LLBC file left by an earlier run.
+    let llbc = crate_dir.join("proofs/lean/llbc/fixture.llbc");
+    std::fs::create_dir_all(llbc.parent().unwrap()).unwrap();
+    std::fs::write(&llbc, "stale").unwrap();
+
+    let (output, success) = run_backend(&crate_dir, &[]);
+    assert!(!success, "{output}");
+    assert!(output.contains("did not produce"), "{output}");
+    // The stale file is gone and aeneas never ran.
+    assert!(!llbc.exists());
+    assert!(!crate_dir.join("aeneas-invoked").exists());
+}
+
+#[test]
+fn overriding_charons_dest_file_is_an_error() {
+    let dir = tempfile::tempdir().unwrap();
+    let crate_dir = dir.path().join("crate");
+    write_crate(&crate_dir);
+    let bin = dir.path().join("bin");
+    stub_pipeline_tools(&bin, &stub("aeneas-invoked"));
+    write_path_entries(&crate_dir, &bin);
+    // An LLBC file left by an earlier, successful run.
+    let llbc = crate_dir.join("proofs/lean/llbc/fixture.llbc");
+    std::fs::create_dir_all(llbc.parent().unwrap()).unwrap();
+    std::fs::write(&llbc, "previous").unwrap();
+
+    let (output, success) = common::run_hax(
+        &["into", "lean", "--charon-args=--dest-file /elsewhere.llbc"],
+        &crate_dir,
+        &[],
+    );
+    assert!(!success, "{output}");
+    assert!(output.contains("--dest-file"), "{output}");
+    assert!(output.contains("hax reserves"), "{output}");
+    // The error precedes any tool run and any file removal.
+    assert!(!crate_dir.join("charon-invoked").exists());
+    assert!(llbc.exists());
+}
+
+#[test]
 fn missing_sibling_executable_is_a_clear_error() {
     let dir = tempfile::tempdir().unwrap();
     let crate_dir = dir.path().join("crate");
@@ -67,7 +116,7 @@ fn missing_sibling_executable_is_a_clear_error() {
 fn hax_toml_pin_installs_on_demand_and_runs_from_the_cache() {
     // Fixture archives holding executable stubs.
     let charon = make_archive(&[
-        ("charon", &stub("charon-invoked")),
+        ("charon", &common::charon_stub()),
         ("charon-driver", &stub("driver-invoked")),
     ]);
     let aeneas = make_archive(&[("aeneas", &stub("aeneas-invoked"))]);

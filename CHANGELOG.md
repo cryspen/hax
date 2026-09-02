@@ -34,6 +34,10 @@ Changes to cargo-hax:
  - Add proof scenarios: named extraction configurations committed as `[scenario.<name>]` tables in
    `hax.toml`, run with the new `cargo hax extract [NAME]...` subcommand into per-scenario
    `proofs/<scenario>/<backend>/` directories
+ - Validate driver reports on cargo's stderr: only haxmeta files of workspace crates under the
+   run's target directory are accepted, and a lost or partial report set fails the run instead
+   of silently producing an incomplete extraction
+ - Exit with a failing status whenever an error was reported
 
 Changes to the hax-lib crate:
  - Remove dependency to proc_macro_error2 (unmaintained) (#2039)
