@@ -630,30 +630,39 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.map
   Aeneas.Std.RustM (core.iter.adapters.map.Map (vec.into_iter.IntoIter T) F) :=
   fun it f => .ok { iter := it, f := f }
 
-/-! ## `FromIterator<T>` for `VecDeque<T, Global>`
+/-! ## `FromIterator<T>` for `VecDeque<T, Global>`-/
 
-Like `Vec`'s `FromIterator`, this impl is `--exclude`d from charon: alloc
-implements *std*'s `FromIterator`, whose `from_iter<I: IntoIterator<Item = A>>`
-pins the iterator's `Item` to the element type, which cannot match
-core-models' deliberately bound-free `FromIterator::from_iter<T: IntoIterator>`
-(its `Clause0_Item` is a free implicit). So we supply the instance by hand,
-binding `Item` free to match the trait field.
+open Aeneas.Std (RustM) in
+def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
+    {T IntoIter : Type}
+    (iterInst : core.iter.traits.iterator.Iterator IntoIter T)
+    (it : IntoIter) (res : collections.vec_deque.VecDeque T alloc.Global) : RustM (collections.vec_deque.VecDeque T alloc.Global) := do
+  let (o, it1) ← iterInst.next it
+  match o with
+  | core.option.Option.None => .ok res
+  | core.option.Option.Some x =>
+    let res1 ← collections.vec_deque.VecDeque.push_back res x
+    collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop iterInst it1 res1
+partial_fixpoint
 
-NOTE: this is a *stub* — `from_iter` returns an empty deque. We cannot model
-the real collect: core-models' `IntoIterator` carries no `Iterator`
-super-instance (the `iteratorIteratorInst` field was dropped), so there is no
-`next` to drive a fold here. Refine if downstream reasoning depends on the
-contents of a `VecDeque::from_iter` result. -/
-opaque collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter
-  (T : Type) : {T_1 Clause0_Item Clause0_IntoIter : Type} →
-  core.iter.traits.collect.IntoIterator T_1 Clause0_Item Clause0_IntoIter →
-  T_1 → Aeneas.Std.RustM (VecDeque T alloc.Global)
+open Aeneas.Std (RustM) in
+def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter
+    {T I IntoIter : Type}
+    (IntoIteratorInst : core.iter.traits.collect.IntoIterator I T IntoIter)
+    (iter : I) : RustM (collections.vec_deque.VecDeque T alloc.Global) := do
+  let res ← collections.vec_deque.VecDequeTGlobal.new T
+  let it ← IntoIteratorInst.into_iter iter
+  collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
+    IntoIteratorInst.iteratorIteratorInst it res
 
+@[reducible]
 def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator
   (T : Type) :
   core.iter.traits.collect.FromIterator
     (collections.vec_deque.VecDeque T alloc.Global) T := {
-  from_iter := collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter T
+  from_iter := fun {T1 Clause0_IntoIter : Type}
+    (IntoIteratorInst : core.iter.traits.collect.IntoIterator T1 T Clause0_IntoIter) =>
+    collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter IntoIteratorInst
 }
 
 /-! ## Real (computable) `FromIterator<T>` for `Vec<T>`
