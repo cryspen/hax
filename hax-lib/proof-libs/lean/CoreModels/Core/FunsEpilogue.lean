@@ -466,6 +466,32 @@ abbrev iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsIteratorIteratorPai
     (iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsIteratorIteratorPairUsizeClause0_Item
       IteratorInst) FoldFnInst
 
+abbrev iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsIteratorIteratorPairUsizeClause0_Item.count
+    {I Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item) :=
+  iter.traits.iterator.Iterator.count.default
+    (iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsIteratorIteratorPairUsizeClause0_Item
+      IteratorInst)
+
+-- FilterMap<I, F>
+abbrev iter.adapters.filter_map.FilterMap.Insts.CoreIterTraitsIteratorIterator.fold
+    {I F Clause0_Item B G : Type}
+    (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item)
+    (FnMutInst : core.ops.function.FnMut F Clause0_Item (option.Option B))
+    (FoldFnInst : core.ops.function.FnMut G (B × B) B) :=
+  iter.traits.iterator.Iterator.fold.default
+    (iter.adapters.filter_map.FilterMap.Insts.CoreIterTraitsIteratorIterator
+      IteratorInst FnMutInst) FoldFnInst
+
+-- StepBy<I>
+abbrev iter.adapters.step_by.StepBy.Insts.CoreIterTraitsIteratorIterator.fold
+    {I Clause0_Item B G : Type}
+    (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item)
+    (FoldFnInst : core.ops.function.FnMut G (B × Clause0_Item) B) :=
+  iter.traits.iterator.Iterator.fold.default
+    (iter.adapters.step_by.StepBy.Insts.CoreIterTraitsIteratorIterator IteratorInst)
+    FoldFnInst
+
 -- Skip<I>
 abbrev iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator.count
     {I Clause0_Item : Type}
@@ -613,6 +639,10 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.map
   vec.into_iter.IntoIter T → F →
   Aeneas.Std.RustM (core.iter.adapters.map.Map (vec.into_iter.IntoIter T) F) :=
   fun it f => .ok { iter := it, f := f }
+
+abbrev vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.count {T : Type} :=
+  core.iter.traits.iterator.Iterator.count.default
+    (vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator T)
 
 /-! ## `FromIterator<T>` for `VecDeque<T, Global>`-/
 
