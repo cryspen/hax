@@ -55,7 +55,7 @@ Not all items extract smoothly. The files `TypesPrologue.lean`, `FunsPrologue.le
 `FunsEpilogue.lean` contain manual workarounds for some items.
 
 The crates `hax_lib` and `rust_primitives` are not intended to be extracted by hax.
-The Lean analogues of their items are defined manually in `HaxLib/Funs.lean` and
+The Lean analogues of their items are defined manually in `HaxLib/` and
 `RustPrimitives/Funs.lean`.
 
 ### Hax

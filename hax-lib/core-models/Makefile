@@ -30,12 +30,10 @@ CORE_MODELS_DIR = core-models
 # namespace (downstream Aeneas-extracted code expects `alloc.vec.Vec` etc.).
 ALLOC_STAGE_DIR = .alloc-extract
 
-# Items in the `alloc` crate that must not reach Aeneas, either because it
-# crashes on them (even after the rename trick) or because they are
-# `#[hax_lib::opaque]` models whose Rust body is a type-checker placeholder
-# rather than a specification (`sort_by`): hax drops those bodies, but Aeneas
-# would extract them verbatim and hand Lean a wrong definition.
-# They are independent of the patcher's Lean-text comment-out logic.
+# Items in the `alloc` crate that must not reach Aeneas, because it crashes on
+# them (even after the rename trick) or cannot translate them -- `sort_by` takes
+# a comparator closure. They are independent of the patcher's Lean-text
+# comment-out logic.
 ALLOC_CHARON_EXCLUDES = \
     --exclude 'alloc_models::collections::binary_heap::*' \
     --exclude '{impl alloc_models::collections::binary_heap::BinaryHeap<_, _>}' \
