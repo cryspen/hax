@@ -7,6 +7,10 @@ where
     Rhs: ?Sized,
 {
     /// See [`std::cmp::PartialEq::eq`]
+    // `requires(true)`, here and on the other trait methods in the model, is
+    // load-bearing: it makes hax emit the F* precondition field as
+    // `pred: Type0{true ==> pred}`, so a caller discharges it for free. Without
+    // it the field is an unconstrained `Type0` and every call site owes a proof.
     #[hax_lib::requires(true)]
     fn eq(&self, other: &Rhs) -> bool;
 
@@ -27,6 +31,7 @@ pub trait Eq: PartialEq<Self> {}
 
 /// See [`std::cmp::Ordering`]
 #[cfg_attr(test, derive(PartialEq, Debug))]
+#[repr(i8)]
 pub enum Ordering {
     /// See [`std::cmp::Ordering::Less`]
     Less = -1,

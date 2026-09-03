@@ -166,9 +166,6 @@ let impl_1__append (#v_T #v_A: Type0) (self other: t_Vec v_T v_A)
   let self:t_Vec v_T v_A = { self with _0 = tmp0 } <: t_Vec v_T v_A in
   let other:t_Vec v_T v_A = { other with _0 = tmp1 } <: t_Vec v_T v_A in
   let _:Prims.unit = () in
-  let other:t_Vec v_T v_A =
-    { other with _0 = Rust_primitives.Sequence.seq_empty #v_T () } <: t_Vec v_T v_A
-  in
   self, other <: (t_Vec v_T v_A & t_Vec v_T v_A)
 
 /// See [`std::vec::Vec::split_off`]: truncate `self` to `[0, at)` and
