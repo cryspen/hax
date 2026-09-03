@@ -61,6 +61,7 @@ mod traits {
 
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     impl FromStr for u64 {
         type Err = u64;
         // Excluded from coverage: the Lean library models no string
