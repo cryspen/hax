@@ -470,12 +470,40 @@ impl<T, E, F: crate::convert::From<E>>
     }
 }
 
+/// Mirrors the `Option` instance in `core/option.rs`.
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T: super::clone::Clone, E: super::clone::Clone> super::clone::Clone for Result<T, E> {
+    fn clone(self) -> Self {
+        match self {
+            Ok(v) => Ok(v.clone()),
+            Err(e) => Err(e.clone()),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    #[cfg(not(hax_backend_fstar))]
+    use crate::testing::CloneWitness;
     use crate::testing::Inject;
     use proptest::prelude::*;
 
     proptest! {
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_clone_applies_element_clone(v in any::<u8>()) {
+            let ok = super::Result::<CloneWitness, CloneWitness>::Ok(CloneWitness::new(v));
+            match crate::clone::Clone::clone(ok) {
+                super::Result::Ok(w) => prop_assert!(w.cloned && w.value == v),
+                super::Result::Err(_) => prop_assert!(false),
+            }
+            let err = super::Result::<CloneWitness, CloneWitness>::Err(CloneWitness::new(v));
+            match crate::clone::Clone::clone(err) {
+                super::Result::Err(w) => prop_assert!(w.cloned && w.value == v),
+                super::Result::Ok(_) => prop_assert!(false),
+            }
+        }
         #[test]
         fn test_is_ok(x in any::<Result<u8, u8>>()) {
             prop_assert!(x.clone().inject().is_ok() == x.is_ok());

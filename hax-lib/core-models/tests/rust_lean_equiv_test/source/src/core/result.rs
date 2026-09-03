@@ -1,6 +1,6 @@
 //! Equivalence tests for `core::result::Result::*`.
 
-use crate::helpers::{Keyed, keyed};
+use crate::helpers::{Bumped, Keyed, keyed};
 use rust_lean_test_macro::rust_lean_test;
 
 // Local helpers: function-level return-type annotations survive Aeneas
@@ -467,5 +467,20 @@ pub fn test_eq_ok_vs_err() -> bool {
     (a == b) == false
 }
 
-// TODO(result-clone): the model has `Clone for Option<T>` but no counterpart
-// for `Result<T, E>`, so a `Clone` test has nothing to elaborate against.
+#[rust_lean_test]
+pub fn test_clone_ok_applies_element_clone() -> bool {
+    let a: Result<Bumped, Bumped> = Ok(Bumped(1));
+    match a.clone() {
+        Ok(b) => b.0 == 2,
+        Err(_) => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_clone_err_applies_element_clone() -> bool {
+    let a: Result<Bumped, Bumped> = Err(Bumped(1));
+    match a.clone() {
+        Err(b) => b.0 == 2,
+        Ok(_) => false,
+    }
+}
