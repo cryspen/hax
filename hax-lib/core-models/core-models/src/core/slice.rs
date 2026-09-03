@@ -397,8 +397,12 @@ impl<U, T: crate::cmp::PartialEq<U>> crate::cmp::PartialEq<[U]> for [T] {
         } else {
             let mut res = true;
             for i in 0..self.len() {
+                // Not an early return: aeneas rejects one inside this loop
+                // ("early returns inside of loops are not supported yet"),
+                // though it accepts the one in `partial_cmp` below. `res &&`
+                // keeps the short-circuit -- once unequal, `eq` is not called
+                // again, and it may panic.
                 if res && !self[i].eq(&other[i]) {
-                    // This should be an early return, but aeneas doesn't support that
                     res = false;
                 }
             }
@@ -846,8 +850,8 @@ pub mod equality {
             } else {
                 let mut res = true;
                 for i in 0..N {
+                    // As in the `[U]` impl above.
                     if res && !slice_index(self, i).eq(array_index(other, i)) {
-                        // This should be an early return, but aeneas doesn't support that
                         res = false;
                     }
                 }

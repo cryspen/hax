@@ -186,7 +186,7 @@ structure clone.Clone (Self : Type) where
 def array.CloneArray.clone.closure (T : Type) (N : Std.Usize) := Unit
 
 /-- Trait declaration: [core_models::cmp::PartialEq]
-    Source: 'core-models/src/core/cmp.rs', lines 5:0-23:1
+    Source: 'core-models/src/core/cmp.rs', lines 5:0-27:1
     Visibility: public -/
 structure cmp.PartialEq (Self : Type) (Rhs : Type) where
   eq : Self → Rhs → RustM Bool
@@ -244,16 +244,16 @@ structure borrow.Borrow (Self : Type) (Borrowed : Type) where
   borrow : Self → RustM Borrowed
 
 /-- Trait declaration: [core_models::cmp::Eq]
-    Source: 'core-models/src/core/cmp.rs', lines 26:0-26:32
+    Source: 'core-models/src/core/cmp.rs', lines 30:0-30:32
     Visibility: public -/
 structure cmp.Eq (Self : Type) where
   PartialEqInst : cmp.PartialEq Self Self
 
 /-
 /-- [core_models::cmp::Ordering]
-    Source: 'core-models/src/core/cmp.rs', lines 30:0-37:1
+    Source: 'core-models/src/core/cmp.rs', lines 35:0-42:1
     Visibility: public -/
-@[discriminant isize [-1,0,1]]
+@[discriminant i8 [-1,0,1]]
 inductive cmp.Ordering where
 | Less : cmp.Ordering
 | Equal : cmp.Ordering
@@ -261,7 +261,7 @@ inductive cmp.Ordering where
 -/
 
 /-- Trait declaration: [core_models::cmp::PartialOrd]
-    Source: 'core-models/src/core/cmp.rs', lines 41:0-77:1
+    Source: 'core-models/src/core/cmp.rs', lines 46:0-82:1
     Visibility: public -/
 structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   PartialEqInst : cmp.PartialEq Self Rhs
@@ -272,12 +272,12 @@ structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   ge : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Neq]
-    Source: 'core-models/src/core/cmp.rs', lines 80:0-83:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 85:0-88:1 -/
 structure cmp.Neq (Self : Type) (Rhs : Type) where
   neq : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Ord]
-    Source: 'core-models/src/core/cmp.rs', lines 151:0-155:1
+    Source: 'core-models/src/core/cmp.rs', lines 156:0-160:1
     Visibility: public -/
 structure cmp.Ord (Self : Type) where
   EqInst : cmp.Eq Self
@@ -285,7 +285,7 @@ structure cmp.Ord (Self : Type) where
   cmp : Self → Self → RustM cmp.Ordering
 
 /-- [core_models::cmp::Reverse]
-    Source: 'core-models/src/core/cmp.rs', lines 174:0-174:29
+    Source: 'core-models/src/core/cmp.rs', lines 179:0-179:29
     Visibility: public -/
 @[reducible]
 def cmp.Reverse (T : Type) := T
@@ -1086,7 +1086,7 @@ structure slice.iter.Windows (T : Type) where
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 522:4-547:5
+    Source: 'core-models/src/core/slice.rs', lines 526:4-551:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where

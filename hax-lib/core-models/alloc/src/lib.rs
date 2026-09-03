@@ -755,7 +755,7 @@ pub mod vec {
                 for i in 0..self.len() {
                     // `res &&` keeps this short-circuiting like std's early
                     // return: once unequal, `T::eq` is not called again (it may
-                    // panic). Aeneas has no early return, hence the flag.
+                    // panic). Aeneas rejects an early return inside a loop.
                     if res && !(self[i] == other[i]) {
                         res = false
                     }
@@ -885,8 +885,7 @@ pub mod vec {
         }
         #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= usize::MAX.to_int())]
         pub fn append(&mut self, other: &mut Vec<T>) {
-            seq_concat(&mut self.0, &mut other.0);
-            other.0 = seq_empty()
+            seq_concat(&mut self.0, &mut other.0)
         }
         /// See [`std::vec::Vec::split_off`]: truncate `self` to `[0, at)` and
         /// return the tail `[at, len)` as a new `Vec`.
@@ -1134,8 +1133,7 @@ pub mod vec {
         }
         #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= usize::MAX.to_int())]
         pub fn append(&mut self, other: &mut Vec<T, A>) {
-            seq_concat(&mut self.0, &mut other.0);
-            other.0 = seq_empty()
+            seq_concat(&mut self.0, &mut other.0)
         }
         /// See [`std::vec::Vec::split_off`]: truncate `self` to `[0, at)` and
         /// return the tail `[at, len)` as a new `Vec`.

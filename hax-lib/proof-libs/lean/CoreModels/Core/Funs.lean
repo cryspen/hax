@@ -684,7 +684,7 @@ impl_def Isize.Insts.CoreCloneClone : clone.Clone Std.Isize := {
 }
 
 /-- [core_models::cmp::PartialEq::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 20:4-22:5
+    Source: 'core-models/src/core/cmp.rs', lines 24:4-26:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialEq.ne.default
@@ -696,7 +696,7 @@ def cmp.PartialEq.ne.default
   ok (b = false)
 
 /-- [core_models::cmp::PartialOrd::lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 53:4-55:5
+    Source: 'core-models/src/core/cmp.rs', lines 58:4-60:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.lt.default
@@ -714,7 +714,7 @@ def cmp.PartialOrd.lt.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::le]:
-    Source: 'core-models/src/core/cmp.rs', lines 58:4-63:5
+    Source: 'core-models/src/core/cmp.rs', lines 63:4-68:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.le.default
@@ -732,7 +732,7 @@ def cmp.PartialOrd.le.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 66:4-68:5
+    Source: 'core-models/src/core/cmp.rs', lines 71:4-73:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.gt.default
@@ -750,7 +750,7 @@ def cmp.PartialOrd.gt.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::PartialOrd::ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 71:4-76:5
+    Source: 'core-models/src/core/cmp.rs', lines 76:4-81:5
     Visibility: public -/
 @[trait_default]
 def cmp.PartialOrd.ge.default
@@ -768,7 +768,7 @@ def cmp.PartialOrd.ge.default
   | option.Option.None => ok false
 
 /-- [core_models::cmp::{impl core_models::cmp::Neq<T> for T}::neq]:
-    Source: 'core-models/src/core/cmp.rs', lines 86:4-89:5 -/
+    Source: 'core-models/src/core/cmp.rs', lines 91:4-94:5 -/
 def cmp.Neq.Blanket.neq
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : T) (y : T) :
   RustM Bool
@@ -777,7 +777,7 @@ def cmp.Neq.Blanket.neq
   ok (b = false)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Neq<T> for T}]
-    Source: 'core-models/src/core/cmp.rs', lines 85:0-90:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 90:0-95:1 -/
 @[reducible]
 def cmp.Neq.Blanket {T : Type} (PartialEqInst : cmp.PartialEq T T) : cmp.Neq T
   T := {
@@ -785,7 +785,7 @@ def cmp.Neq.Blanket {T : Type} (PartialEqInst : cmp.PartialEq T T) : cmp.Neq T
 }
 
 /-- [core_models::cmp::max]:
-    Source: 'core-models/src/core/cmp.rs', lines 158:0-163:1
+    Source: 'core-models/src/core/cmp.rs', lines 163:0-168:1
     Visibility: public -/
 def cmp.max {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
   let o ← OrdInst.cmp v1 v2
@@ -795,7 +795,7 @@ def cmp.max {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
   | cmp.Ordering.Greater => ok v1
 
 /-- [core_models::cmp::min]:
-    Source: 'core-models/src/core/cmp.rs', lines 166:0-171:1
+    Source: 'core-models/src/core/cmp.rs', lines 171:0-176:1
     Visibility: public -/
 def cmp.min {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
   let o ← OrdInst.cmp v1 v2
@@ -805,7 +805,7 @@ def cmp.min {T : Type} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
   | cmp.Ordering.Greater => ok v2
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 187:4-189:5
+    Source: 'core-models/src/core/cmp.rs', lines 192:4-194:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : cmp.Reverse T)
@@ -815,7 +815,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   PartialEqInst.eq other self
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 184:4-186:5
+    Source: 'core-models/src/core/cmp.rs', lines 189:4-191:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse.ne
   {T : Type} (PartialEqInst : cmp.PartialEq T T) (self : cmp.Reverse T)
@@ -828,7 +828,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 182:0-190:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 187:0-195:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type} (PartialEqInst
   : cmp.PartialEq T T) : cmp.PartialEq (cmp.Reverse T) (cmp.Reverse T) := {
@@ -837,7 +837,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type} (PartialEqInst
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::partial_cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 177:4-179:5
+    Source: 'core-models/src/core/cmp.rs', lines 182:4-184:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   {T : Type} (PartialOrdInst : cmp.PartialOrd T T) (self : cmp.Reverse T)
@@ -847,7 +847,7 @@ def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   PartialOrdInst.partial_cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 176:0-180:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 181:0-185:1 -/
 @[reducible]
 impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type}
   (PartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (cmp.Reverse T)
@@ -867,7 +867,7 @@ impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type}
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 192:0-192:32 -/
+    Source: 'core-models/src/core/cmp.rs', lines 197:0-197:32 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpEq {T : Type} (EqInst : cmp.Eq T) : cmp.Eq
   (cmp.Reverse T) := {
@@ -876,7 +876,7 @@ def cmp.Reverse.Insts.CoreCmpEq {T : Type} (EqInst : cmp.Eq T) : cmp.Eq
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}::cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 195:4-197:5
+    Source: 'core-models/src/core/cmp.rs', lines 200:4-202:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpOrd.cmp
   {T : Type} (OrdInst : cmp.Ord T) (self : cmp.Reverse T)
@@ -886,7 +886,7 @@ def cmp.Reverse.Insts.CoreCmpOrd.cmp
   OrdInst.cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 194:0-198:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 199:0-203:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
   cmp.Ord (cmp.Reverse T) := {
@@ -897,7 +897,7 @@ def cmp.Reverse.Insts.CoreCmpOrd {T : Type} (OrdInst : cmp.Ord T) :
 }
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 255:4-257:5
+    Source: 'core-models/src/core/cmp.rs', lines 260:4-262:5
     Visibility: public -/
 def cmp.Ordering.is_eq (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -906,7 +906,7 @@ def cmp.Ordering.is_eq (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 259:4-261:5
+    Source: 'core-models/src/core/cmp.rs', lines 264:4-266:5
     Visibility: public -/
 def cmp.Ordering.is_ne (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -915,7 +915,7 @@ def cmp.Ordering.is_ne (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 263:4-265:5
+    Source: 'core-models/src/core/cmp.rs', lines 268:4-270:5
     Visibility: public -/
 def cmp.Ordering.is_lt (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -924,7 +924,7 @@ def cmp.Ordering.is_lt (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 267:4-269:5
+    Source: 'core-models/src/core/cmp.rs', lines 272:4-274:5
     Visibility: public -/
 def cmp.Ordering.is_gt (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -933,7 +933,7 @@ def cmp.Ordering.is_gt (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_le]:
-    Source: 'core-models/src/core/cmp.rs', lines 271:4-273:5
+    Source: 'core-models/src/core/cmp.rs', lines 276:4-278:5
     Visibility: public -/
 def cmp.Ordering.is_le (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -942,7 +942,7 @@ def cmp.Ordering.is_le (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 275:4-277:5
+    Source: 'core-models/src/core/cmp.rs', lines 280:4-282:5
     Visibility: public -/
 def cmp.Ordering.is_ge (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -951,7 +951,7 @@ def cmp.Ordering.is_ge (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::reverse]:
-    Source: 'core-models/src/core/cmp.rs', lines 279:4-285:5
+    Source: 'core-models/src/core/cmp.rs', lines 284:4-290:5
     Visibility: public -/
 def cmp.Ordering.reverse (self : cmp.Ordering) : RustM cmp.Ordering := do
   match self with
@@ -960,7 +960,7 @@ def cmp.Ordering.reverse (self : cmp.Ordering) : RustM cmp.Ordering := do
   | cmp.Ordering.Greater => ok cmp.Ordering.Less
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then]:
-    Source: 'core-models/src/core/cmp.rs', lines 287:4-292:5
+    Source: 'core-models/src/core/cmp.rs', lines 292:4-297:5
     Visibility: public -/
 def cmp.Ordering.then
   (self : cmp.Ordering) (other : cmp.Ordering) : RustM cmp.Ordering := do
@@ -970,7 +970,7 @@ def cmp.Ordering.then
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then_with]:
-    Source: 'core-models/src/core/cmp.rs', lines 294:4-299:5
+    Source: 'core-models/src/core/cmp.rs', lines 299:4-304:5
     Visibility: public -/
 def cmp.Ordering.then_with
   {F : Type} (coreopsfunctionFnOnceFTupleOrderingInst :
@@ -991,7 +991,7 @@ def panicking.internal.panic (T : Type) : RustM T := do
   fail Error.panic
 
 /-- [core_models::cmp::clamp]:
-    Source: 'core-models/src/core/cmp.rs', lines 304:0-316:1
+    Source: 'core-models/src/core/cmp.rs', lines 309:0-321:1
     Visibility: public -/
 def cmp.clamp
   {T : Type} (OrdInst : cmp.Ord T) (value : T) (min : T) (max : T) :
@@ -1014,21 +1014,21 @@ def cmp.clamp
     | cmp.Ordering.Greater => ok max
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 327:4-329:5
+    Source: 'core-models/src/core/cmp.rs', lines 332:4-334:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialEqTuple.ne
   (_ : Unit) (_ : Unit) : RustM Bool := do
   ok false
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 323:4-325:5
+    Source: 'core-models/src/core/cmp.rs', lines 328:4-330:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialEqTuple.eq
   (_ : Unit) (_ : Unit) : RustM Bool := do
   ok true
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 322:0-330:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 327:0-335:1 -/
 @[reducible]
 def Tuple.Insts.CoreCmpPartialEqTuple : cmp.PartialEq Unit Unit := {
   eq := Tuple.Insts.CoreCmpPartialEqTuple.eq
@@ -1036,21 +1036,21 @@ def Tuple.Insts.CoreCmpPartialEqTuple : cmp.PartialEq Unit Unit := {
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 333:0-333:17 -/
+    Source: 'core-models/src/core/cmp.rs', lines 338:0-338:17 -/
 @[reducible]
 def Tuple.Insts.CoreCmpEq : cmp.Eq Unit := {
   PartialEqInst := Tuple.Insts.CoreCmpPartialEqTuple
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialOrd<()> for ()}::partial_cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 337:4-339:5
+    Source: 'core-models/src/core/cmp.rs', lines 342:4-344:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialOrdTuple.partial_cmp
   (_ : Unit) (_ : Unit) : RustM (option.Option cmp.Ordering) := do
   ok (option.Option.Some cmp.Ordering.Equal)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<()> for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 336:0-340:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 341:0-345:1 -/
 @[reducible]
 impl_def Tuple.Insts.CoreCmpPartialOrdTuple : cmp.PartialOrd Unit Unit
   := {
@@ -1063,14 +1063,14 @@ impl_def Tuple.Insts.CoreCmpPartialOrdTuple : cmp.PartialOrd Unit Unit
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::Ord for ()}::cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 344:4-346:5
+    Source: 'core-models/src/core/cmp.rs', lines 349:4-351:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpOrd.cmp
   (_ : Unit) (_ : Unit) : RustM cmp.Ordering := do
   ok cmp.Ordering.Equal
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 343:0-347:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 348:0-352:1 -/
 @[reducible]
 def Tuple.Insts.CoreCmpOrd : cmp.Ord Unit := {
   EqInst := Tuple.Insts.CoreCmpEq
@@ -1079,7 +1079,7 @@ def Tuple.Insts.CoreCmpOrd : cmp.Ord Unit := {
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 352:4-359:5
+    Source: 'core-models/src/core/cmp.rs', lines 357:4-364:5
     Visibility: public -/
 def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq
   (self : cmp.Ordering) (other : cmp.Ordering) : RustM Bool := do
@@ -1101,7 +1101,7 @@ def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq
     | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 360:4-364:5
+    Source: 'core-models/src/core/cmp.rs', lines 365:4-369:5
     Visibility: public -/
 def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.ne
   (self : cmp.Ordering) (other : cmp.Ordering) : RustM Bool := do
@@ -1109,7 +1109,7 @@ def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}]
-    Source: 'core-models/src/core/cmp.rs', lines 351:0-365:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 356:0-370:1 -/
 @[reducible]
 def cmp.Ordering.Insts.CoreCmpPartialEqOrdering : cmp.PartialEq
   cmp.Ordering cmp.Ordering := {
@@ -1118,7 +1118,7 @@ def cmp.Ordering.Insts.CoreCmpPartialEqOrdering : cmp.PartialEq
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Ordering}]
-    Source: 'core-models/src/core/cmp.rs', lines 369:0-369:23 -/
+    Source: 'core-models/src/core/cmp.rs', lines 374:0-374:23 -/
 @[reducible]
 def cmp.Ordering.Insts.CoreCmpEq : cmp.Eq cmp.Ordering := {
   PartialEqInst := cmp.Ordering.Insts.CoreCmpPartialEqOrdering
@@ -13568,7 +13568,7 @@ def slice.Slice.fill
   else ok s
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::eq]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 399:12-404:13
+    Source: 'core-models/src/core/slice.rs', lines 399:12-408:13
     Visibility: public -/
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
@@ -13593,7 +13593,7 @@ def Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
     else ok (cont (iter1, false))
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::eq]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 399:12-404:13
+    Source: 'core-models/src/core/slice.rs', lines 399:12-408:13
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialEqSlice.eq_loop
@@ -13608,7 +13608,7 @@ def Slice.Insts.CoreCmpPartialEqSlice.eq_loop
     (iter_, res)
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::eq]:
-    Source: 'core-models/src/core/slice.rs', lines 394:4-407:5
+    Source: 'core-models/src/core/slice.rs', lines 394:4-411:5
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialEqSlice.eq
   {U : Type} {T : Type} (cmpPartialEqInst : cmp.PartialEq T U) (self : Slice T)
@@ -13636,7 +13636,7 @@ def Slice.Insts.CoreCmpPartialEqSlice.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 389:0-408:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 389:0-412:1 -/
 @[reducible]
 def Slice.Insts.CoreCmpPartialEqSlice {U : Type} {T : Type}
   (cmpPartialEqInst : cmp.PartialEq T U) : cmp.PartialEq (Slice T) (Slice U)
@@ -13646,7 +13646,7 @@ def Slice.Insts.CoreCmpPartialEqSlice {U : Type} {T : Type}
 }
 
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::Eq for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 411:0-411:49 -/
+    Source: 'core-models/src/core/slice.rs', lines 415:0-415:49 -/
 @[reducible]
 def Slice.Insts.CoreCmpEq {T : Type} (cmpEqInst : cmp.Eq T) : cmp.Eq
   (Slice T) := {
@@ -13655,7 +13655,7 @@ def Slice.Insts.CoreCmpEq {T : Type} (cmpEqInst : cmp.Eq T) : cmp.Eq
 }
 
 /-- [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}::partial_cmp]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 424:8-438:5
+    Source: 'core-models/src/core/slice.rs', lines 428:8-442:5
     Visibility: public -/
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop.body
@@ -13690,7 +13690,7 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop.body
     | option.Option.None => ok (done option.Option.None)
 
 /-- [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}::partial_cmp]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 424:8-438:5
+    Source: 'core-models/src/core/slice.rs', lines 428:8-442:5
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop
@@ -13705,7 +13705,7 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop
     iter_
 
 /-- [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}::partial_cmp]:
-    Source: 'core-models/src/core/slice.rs', lines 416:4-438:5
+    Source: 'core-models/src/core/slice.rs', lines 420:4-442:5
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp
   {T : Type} (cmpPartialOrdInst : cmp.PartialOrd T T) (self : Slice T)
@@ -13721,7 +13721,7 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp
     { start := 0#usize, «end» := l } self other
 
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 415:0-439:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 419:0-443:1 -/
 @[reducible]
 impl_def Slice.Insts.CoreCmpPartialOrdSlice {T : Type}
   (cmpPartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (Slice T) (Slice T)
@@ -13741,7 +13741,7 @@ impl_def Slice.Insts.CoreCmpPartialOrdSlice {T : Type}
 }
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 452:8-466:5
+    Source: 'core-models/src/core/slice.rs', lines 456:8-470:5
     Visibility: public -/
 @[rust_loop_body]
 def Slice.Insts.CoreCmpOrd.cmp_loop.body
@@ -13772,7 +13772,7 @@ def Slice.Insts.CoreCmpOrd.cmp_loop.body
     | cmp.Ordering.Greater => ok (done cmp.Ordering.Greater)
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 452:8-466:5
+    Source: 'core-models/src/core/slice.rs', lines 456:8-470:5
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpOrd.cmp_loop
@@ -13786,7 +13786,7 @@ def Slice.Insts.CoreCmpOrd.cmp_loop
     iter_
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]:
-    Source: 'core-models/src/core/slice.rs', lines 444:4-466:5
+    Source: 'core-models/src/core/slice.rs', lines 448:4-470:5
     Visibility: public -/
 def Slice.Insts.CoreCmpOrd.cmp
   {T : Type} (cmpOrdInst : cmp.Ord T) (self : Slice T) (other : Slice T) :
@@ -13801,7 +13801,7 @@ def Slice.Insts.CoreCmpOrd.cmp
     { start := 0#usize, «end» := l } self other
 
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::Ord for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 443:0-467:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 447:0-471:1 -/
 @[reducible]
 def Slice.Insts.CoreCmpOrd {T : Type} (cmpOrdInst : cmp.Ord T) : cmp.Ord
   (Slice T) := {
@@ -13812,7 +13812,7 @@ def Slice.Insts.CoreCmpOrd {T : Type} (cmpOrdInst : cmp.Ord T) : cmp.Ord
 }
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::starts_with]:
-    Source: 'core-models/src/core/slice.rs', lines 478:4-484:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 482:4-488:5 -/
 def slice.Slice.starts_with
   {T : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T) (s : Slice T)
   (needle : Slice T) :
@@ -13827,7 +13827,7 @@ def slice.Slice.starts_with
   else ok false
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::ends_with]:
-    Source: 'core-models/src/core/slice.rs', lines 488:4-495:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 492:4-499:5 -/
 def slice.Slice.ends_with
   {T : Type} (corecmpPartialEqInst : core.cmp.PartialEq T T) (s : Slice T)
   (needle : Slice T) :
@@ -13843,7 +13843,7 @@ def slice.Slice.ends_with
   else ok false
 
 /-- [core_models::slice::{impl core_models::iter::traits::collect::IntoIterator<&'a T, core_models::slice::iter::Iter<'a, T>> for &'a [T]}::into_iter]:
-    Source: 'core-models/src/core/slice.rs', lines 503:4-505:5
+    Source: 'core-models/src/core/slice.rs', lines 507:4-509:5
     Visibility: public -/
 def
   SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
@@ -13852,7 +13852,7 @@ def
   ok i
 
 /-- Trait implementation: [core_models::slice::{impl core_models::iter::traits::collect::IntoIterator<&'a T, core_models::slice::iter::Iter<'a, T>> for &'a [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 500:0-506:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 504:0-510:1 -/
 @[reducible]
 def SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter (T
   : Type) : iter.traits.collect.IntoIterator (Slice T) T (slice.iter.Iter T)
@@ -13864,7 +13864,7 @@ def SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter (T
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 583:8-585:9
+    Source: 'core-models/src/core/slice.rs', lines 587:8-589:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.index_mut
   {T : Type} (self : Std.Usize) (slice : Slice T) :
@@ -13873,7 +13873,7 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.index_mut
   rust_primitives.slice.slice_index_mut slice self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 578:8-580:9
+    Source: 'core-models/src/core/slice.rs', lines 582:8-584:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_unchecked_mut
   {T : Type} (self : Std.Usize) (slice : Slice T) :
@@ -13882,7 +13882,7 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_unchecked_mut
   rust_primitives.slice.slice_index_mut slice self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 569:8-575:9
+    Source: 'core-models/src/core/slice.rs', lines 573:8-579:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_mut
   {T : Type} (self : Std.Usize) (slice : Slice T) :
@@ -13904,21 +13904,21 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_mut
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 565:8-567:9
+    Source: 'core-models/src/core/slice.rs', lines 569:8-571:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_unchecked
   {T : Type} (self : Std.Usize) (slice : Slice T) : RustM T := do
   rust_primitives.slice.slice_index slice self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 561:8-563:9
+    Source: 'core-models/src/core/slice.rs', lines 565:8-567:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.index
   {T : Type} (self : Std.Usize) (slice : Slice T) : RustM T := do
   rust_primitives.slice.slice_index slice self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 553:8-559:9
+    Source: 'core-models/src/core/slice.rs', lines 557:8-563:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get
   {T : Type} (self : Std.Usize) (slice : Slice T) :
@@ -13932,7 +13932,7 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get
   else ok option.Option.None
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}]
-    Source: 'core-models/src/core/slice.rs', lines 551:4-586:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 555:4-590:5 -/
 @[reducible]
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT (T : Type) :
   slice.index.SliceIndex Std.Usize (Slice T) T := {
@@ -13947,7 +13947,7 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT (T : Type) :
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 610:8-612:9
+    Source: 'core-models/src/core/slice.rs', lines 614:8-616:9
     Visibility: public -/
 def
   ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.index_mut
@@ -13957,7 +13957,7 @@ def
   ok (slice, fun slice1 => slice1)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 606:8-608:9
+    Source: 'core-models/src/core/slice.rs', lines 610:8-612:9
     Visibility: public -/
 def
   ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
@@ -13967,7 +13967,7 @@ def
   ok (slice, fun slice1 => slice1)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 602:8-604:9
+    Source: 'core-models/src/core/slice.rs', lines 606:8-608:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
   {T : Type} (self : ops.range.RangeFull) (slice : Slice T) :
@@ -13979,7 +13979,7 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
   ok (option.Option.Some slice, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 598:8-600:9
+    Source: 'core-models/src/core/slice.rs', lines 602:8-604:9
     Visibility: public -/
 def
   ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
@@ -13989,7 +13989,7 @@ def
   ok slice
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 595:8-597:9
+    Source: 'core-models/src/core/slice.rs', lines 599:8-601:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.index
   {T : Type} (self : ops.range.RangeFull) (slice : Slice T) :
@@ -13998,7 +13998,7 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.index
   ok slice
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 592:8-594:9
+    Source: 'core-models/src/core/slice.rs', lines 596:8-598:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   {T : Type} (self : ops.range.RangeFull) (slice : Slice T) :
@@ -14007,7 +14007,7 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   ok (option.Option.Some slice)
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}]
-    Source: 'core-models/src/core/slice.rs', lines 590:4-613:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 594:4-617:5 -/
 @[reducible]
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
   Type) : slice.index.SliceIndex ops.range.RangeFull (Slice T) (Slice T) := {
@@ -14026,7 +14026,7 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 651:8-654:9
+    Source: 'core-models/src/core/slice.rs', lines 655:8-658:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index_mut
@@ -14037,7 +14037,7 @@ def
   rust_primitives.slice.slice_slice_mut slice self.start len
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 645:8-648:9
+    Source: 'core-models/src/core/slice.rs', lines 649:8-652:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
@@ -14048,7 +14048,7 @@ def
   rust_primitives.slice.slice_slice_mut slice self.start len
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 635:8-642:9
+    Source: 'core-models/src/core/slice.rs', lines 639:8-646:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
@@ -14071,7 +14071,7 @@ def
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 631:8-633:9
+    Source: 'core-models/src/core/slice.rs', lines 635:8-637:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
@@ -14082,7 +14082,7 @@ def
   rust_primitives.slice.slice_slice slice self.start i
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 627:8-629:9
+    Source: 'core-models/src/core/slice.rs', lines 631:8-633:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
@@ -14093,7 +14093,7 @@ def
   rust_primitives.slice.slice_slice slice self.start i
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 619:8-625:9
+    Source: 'core-models/src/core/slice.rs', lines 623:8-629:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
@@ -14108,7 +14108,7 @@ def
   else ok option.Option.None
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}]
-    Source: 'core-models/src/core/slice.rs', lines 617:4-655:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 621:4-659:5 -/
 @[reducible]
 def ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T
   : Type) : slice.index.SliceIndex (ops.range.RangeFrom Std.Usize) (Slice T)
@@ -14128,7 +14128,7 @@ def ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 690:8-692:9
+    Source: 'core-models/src/core/slice.rs', lines 694:8-696:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index_mut
@@ -14138,7 +14138,7 @@ def
   rust_primitives.slice.slice_slice_mut slice 0#usize self.«end»
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 685:8-687:9
+    Source: 'core-models/src/core/slice.rs', lines 689:8-691:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
@@ -14148,7 +14148,7 @@ def
   rust_primitives.slice.slice_slice_mut slice 0#usize self.«end»
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 676:8-682:9
+    Source: 'core-models/src/core/slice.rs', lines 680:8-686:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
@@ -14171,7 +14171,7 @@ def
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 672:8-674:9
+    Source: 'core-models/src/core/slice.rs', lines 676:8-678:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
@@ -14181,7 +14181,7 @@ def
   rust_primitives.slice.slice_slice slice 0#usize self.«end»
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 668:8-670:9
+    Source: 'core-models/src/core/slice.rs', lines 672:8-674:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
@@ -14191,7 +14191,7 @@ def
   rust_primitives.slice.slice_slice slice 0#usize self.«end»
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 660:8-666:9
+    Source: 'core-models/src/core/slice.rs', lines 664:8-670:9
     Visibility: public -/
 def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   {T : Type} (self : ops.range.RangeTo Std.Usize) (slice : Slice T) :
@@ -14205,7 +14205,7 @@ def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   else ok option.Option.None
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}]
-    Source: 'core-models/src/core/slice.rs', lines 658:4-693:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 662:4-697:5 -/
 @[reducible]
 def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
   Type) : slice.index.SliceIndex (ops.range.RangeTo Std.Usize) (Slice T) (Slice
@@ -14225,7 +14225,7 @@ def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 728:8-730:9
+    Source: 'core-models/src/core/slice.rs', lines 732:8-734:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index_mut
@@ -14235,7 +14235,7 @@ def
   rust_primitives.slice.slice_slice_mut slice self.start self.«end»
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 723:8-725:9
+    Source: 'core-models/src/core/slice.rs', lines 727:8-729:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
@@ -14245,7 +14245,7 @@ def
   rust_primitives.slice.slice_slice_mut slice self.start self.«end»
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 714:8-720:9
+    Source: 'core-models/src/core/slice.rs', lines 718:8-724:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
@@ -14272,7 +14272,7 @@ def
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 710:8-712:9
+    Source: 'core-models/src/core/slice.rs', lines 714:8-716:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
@@ -14282,7 +14282,7 @@ def
   rust_primitives.slice.slice_slice slice self.start self.«end»
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 706:8-708:9
+    Source: 'core-models/src/core/slice.rs', lines 710:8-712:9
     Visibility: public -/
 def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
   {T : Type} (self : ops.range.Range Std.Usize) (slice : Slice T) :
@@ -14291,7 +14291,7 @@ def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
   rust_primitives.slice.slice_slice slice self.start self.«end»
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 698:8-704:9
+    Source: 'core-models/src/core/slice.rs', lines 702:8-708:9
     Visibility: public -/
 def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   {T : Type} (self : ops.range.Range Std.Usize) (slice : Slice T) :
@@ -14308,7 +14308,7 @@ def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   else ok option.Option.None
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}]
-    Source: 'core-models/src/core/slice.rs', lines 696:4-731:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 700:4-735:5 -/
 @[reducible]
 def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
   Type) : slice.index.SliceIndex (ops.range.Range Std.Usize) (Slice T) (Slice
@@ -14328,7 +14328,7 @@ def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
 }
 
 /-- [core_models::slice::index::{impl core_models::ops::index::Index<I, Clause0_Output> for [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 747:8-752:9
+    Source: 'core-models/src/core/slice.rs', lines 751:8-756:9
     Visibility: public -/
 def Slice.Insts.CoreOpsIndexIndex.index
   {T : Type} {I : Type} {Clause0_Output : Type}
@@ -14342,7 +14342,7 @@ def Slice.Insts.CoreOpsIndexIndex.index
   | option.Option.None => panicking.internal.panic Clause0_Output
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::ops::index::Index<I, Clause0_Output> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 741:4-753:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 745:4-757:5 -/
 @[reducible]
 def Slice.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output
   : Type} (SliceIndexISliceClause0_OutputInst : slice.index.SliceIndex I (Slice
@@ -14352,7 +14352,7 @@ def Slice.Insts.CoreOpsIndexIndex {T : Type} {I : Type} {Clause0_Output
 }
 
 /-- [core_models::slice::index::{impl core_models::ops::index::IndexMut<I, Clause0_Output> for [T]}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 772:8-774:9
+    Source: 'core-models/src/core/slice.rs', lines 776:8-778:9
     Visibility: public -/
 def Slice.Insts.CoreOpsIndexIndexMut.index_mut
   {T : Type} {I : Type} {Clause0_Output : Type}
@@ -14363,7 +14363,7 @@ def Slice.Insts.CoreOpsIndexIndexMut.index_mut
   SliceIndexISliceClause0_OutputInst.get_unchecked_mut i self
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::ops::index::IndexMut<I, Clause0_Output> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 761:4-775:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 765:4-779:5 -/
 @[reducible]
 def Slice.Insts.CoreOpsIndexIndexMut {T : Type} {I : Type}
   {Clause0_Output : Type} (SliceIndexISliceClause0_OutputInst :
@@ -14376,7 +14376,7 @@ def Slice.Insts.CoreOpsIndexIndexMut {T : Type} {I : Type}
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::Range<usize>, [T]> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 790:4-792:5
+    Source: 'core-models/src/core/slice.rs', lines 794:4-796:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice.index
   {T : Type} (self : Slice T) (i : ops.range.Range Std.Usize) :
@@ -14385,7 +14385,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice.index
   rust_primitives.slice.slice_slice self i.start i.«end»
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::Range<usize>, [T]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 787:0-793:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 791:0-797:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice (T : Type) :
   ops.index.Index (Slice T) (ops.range.Range Std.Usize) (Slice T) := {
@@ -14393,7 +14393,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice (T : Type) :
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeTo<usize>, [T]> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 799:4-801:5
+    Source: 'core-models/src/core/slice.rs', lines 803:4-805:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice.index
   {T : Type} (self : Slice T) (i : ops.range.RangeTo Std.Usize) :
@@ -14402,7 +14402,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice.index
   rust_primitives.slice.slice_slice self 0#usize i.«end»
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeTo<usize>, [T]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 796:0-802:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 800:0-806:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice (T : Type) :
   ops.index.Index (Slice T) (ops.range.RangeTo Std.Usize) (Slice T) := {
@@ -14410,7 +14410,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice (T : Type) :
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeFrom<usize>, [T]> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 808:4-810:5
+    Source: 'core-models/src/core/slice.rs', lines 812:4-814:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeFromUsizeSlice.index
   {T : Type} (self : Slice T) (i : ops.range.RangeFrom Std.Usize) :
@@ -14420,7 +14420,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeFromUsizeSlice.index
   rust_primitives.slice.slice_slice self i.start i1
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeFrom<usize>, [T]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 805:0-811:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 809:0-815:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeFromUsizeSlice (T : Type) :
   ops.index.Index (Slice T) (ops.range.RangeFrom Std.Usize) (Slice T) := {
@@ -14428,7 +14428,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeFromUsizeSlice (T : Type) :
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeFull, [T]> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 816:4-818:5
+    Source: 'core-models/src/core/slice.rs', lines 820:4-822:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeFullSlice.index
   {T : Type} (self : Slice T) (i : ops.range.RangeFull) : RustM (Slice T) := do
@@ -14436,7 +14436,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeFullSlice.index
   rust_primitives.slice.slice_slice self 0#usize i1
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeFull, [T]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 814:0-819:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 818:0-823:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeFullSlice (T : Type) :
   ops.index.Index (Slice T) ops.range.RangeFull (Slice T) := {
@@ -14444,14 +14444,14 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeFullSlice (T : Type) :
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<usize, T> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 826:4-828:5
+    Source: 'core-models/src/core/slice.rs', lines 830:4-832:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexUsizeT.index
   {T : Type} (self : Slice T) (i : Std.Usize) : RustM T := do
   rust_primitives.slice.slice_index self i
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<usize, T> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 823:0-829:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 827:0-833:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexUsizeT (T : Type) :
   ops.index.Index (Slice T) Std.Usize T := {
@@ -14459,7 +14459,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexUsizeT (T : Type) :
 }
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::eq]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 848:16-853:17
+    Source: 'core-models/src/core/slice.rs', lines 852:16-857:17
     Visibility: public -/
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
@@ -14485,7 +14485,7 @@ def Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
     else ok (cont (iter1, false))
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::eq]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 848:16-853:17
+    Source: 'core-models/src/core/slice.rs', lines 852:16-857:17
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialEqArray.eq_loop
@@ -14500,7 +14500,7 @@ def Slice.Insts.CoreCmpPartialEqArray.eq_loop
     (iter_, res)
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::eq]:
-    Source: 'core-models/src/core/slice.rs', lines 843:8-856:9
+    Source: 'core-models/src/core/slice.rs', lines 847:8-860:9
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialEqArray.eq
   {T : Type} {U : Type} {N : Std.Usize} (cmpPartialEqInst : cmp.PartialEq T U)
@@ -14515,7 +14515,7 @@ def Slice.Insts.CoreCmpPartialEqArray.eq
       { start := 0#usize, «end» := N } self other true
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::ne]:
-    Source: 'core-models/src/core/slice.rs', lines 840:8-842:9
+    Source: 'core-models/src/core/slice.rs', lines 844:8-846:9
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialEqArray.ne
   {T : Type} {U : Type} {N : Std.Usize} (cmpPartialEqInst : cmp.PartialEq T U)
@@ -14527,7 +14527,7 @@ def Slice.Insts.CoreCmpPartialEqArray.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 838:4-857:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 842:4-861:5 -/
 @[reducible]
 def Slice.Insts.CoreCmpPartialEqArray {T : Type} {U : Type} (N :
   Std.Usize) (cmpPartialEqInst : cmp.PartialEq T U) : cmp.PartialEq (Slice T)

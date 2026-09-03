@@ -72,13 +72,13 @@ type t_Ordering =
   | Ordering_Equal : t_Ordering
   | Ordering_Greater : t_Ordering
 
-let anon_const_Ordering_Less__anon_const_0: isize = mk_isize (-1)
+let anon_const_Ordering_Less__anon_const_0: i8 = mk_i8 (-1)
 
-let anon_const_Ordering_Equal__anon_const_0: isize = mk_isize 0
+let anon_const_Ordering_Equal__anon_const_0: i8 = mk_i8 0
 
-let anon_const_Ordering_Greater__anon_const_0: isize = mk_isize 1
+let anon_const_Ordering_Greater__anon_const_0: i8 = mk_i8 1
 
-let t_Ordering_cast_to_repr (x: t_Ordering) : isize =
+let t_Ordering_cast_to_repr (x: t_Ordering) : i8 =
   match x <: t_Ordering with
   | Ordering_Less  -> anon_const_Ordering_Less__anon_const_0
   | Ordering_Equal  -> anon_const_Ordering_Equal__anon_const_0
