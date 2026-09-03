@@ -21,7 +21,7 @@ This script:
 
 Note that some items are being removed before this script even runs:
 * some items are excluded via charon's `--exclude`, passed by our `Makefile`
-* some items are excluded via `aeneas::exclude` annotations in the Rust sources.
+* some items are excluded via `hax_lib::exclude` annotations in the Rust sources.
 """
 
 from __future__ import annotations

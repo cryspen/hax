@@ -117,7 +117,7 @@ def Isize.Insts.CoreCmpPartialOrdIsize : cmp.PartialOrd Isize Isize := mkIPartia
 
 /-! ## Scalar `Ord` instances
 
-`core::cmp::Ord for <int>` is `aeneas::exclude`d in `cmp.rs` (like `PartialEq`
+`core::cmp::Ord for <int>` is `hax_lib::exclude`d in `cmp.rs` (like `PartialEq`
 / `PartialOrd`), so — to match the excluded `PartialOrd` instances above — we
 re-provide it here. Without these, any model code requiring `T: Ord` on a
 scalar (e.g. `<[T]>::cmp`, sorting, `BinaryHeap`) references an undefined
@@ -158,7 +158,7 @@ def Isize.Insts.CoreCmpOrd : cmp.Ord Isize := mkIOrd
 
 /-! ## Scalar `Eq` instances
 
-`core::cmp::Eq for <int>` is `aeneas::exclude`d in `cmp.rs` alongside PartialEq/
+`core::cmp::Eq for <int>` is `hax_lib::exclude`d in `cmp.rs` alongside PartialEq/
 PartialOrd/Ord, so re-provide it here (a downstream `==`/derived-Eq on a scalar
 references `<int>.Insts.CoreCmpEq`). `cmp.Eq` is just the `PartialEq` marker. -/
 def mkUEq {ty} : cmp.Eq (UScalar ty) :=
@@ -256,7 +256,7 @@ def Shared1A.Insts.CoreCmpPartialOrdShared0B.gt
 
 /-! ## Formatting arguments
 
-`fmt::Arguments::new` is `aeneas::exclude`d in `core-models/src/core/fmt.rs`
+`fmt::Arguments::new` is `hax_lib::exclude`d in `core-models/src/core/fmt.rs`
 (aeneas fails with "There should be no bottoms in the value" on any body that
 builds an `Arguments`, which is why every other constructor there is
 `hax_lib::opaque`), so its model lives here. `fmt.Arguments` is `Unit`. -/
