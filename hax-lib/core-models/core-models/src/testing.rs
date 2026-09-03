@@ -105,3 +105,45 @@ pub fn panics_like_core<A, B>(model: impl FnOnce() -> A, core: impl FnOnce() -> 
         "real `core` did not panic, so the model must not either"
     );
 }
+
+/// A value that records whether it was cloned, so a model that drops the
+/// element `Clone` dictionary is observable.
+///
+/// Not built under `hax_backend_fstar`, whose blanket `impl<T> Clone for T`
+/// would collide.
+#[cfg(not(hax_backend_fstar))]
+#[derive(Debug, PartialEq)]
+pub struct CloneWitness {
+    pub value: u8,
+    pub cloned: bool,
+}
+
+#[cfg(not(hax_backend_fstar))]
+impl CloneWitness {
+    pub fn new(value: u8) -> Self {
+        CloneWitness {
+            value,
+            cloned: false,
+        }
+    }
+}
+
+#[cfg(not(hax_backend_fstar))]
+impl std::clone::Clone for CloneWitness {
+    fn clone(&self) -> Self {
+        CloneWitness {
+            value: self.value,
+            cloned: true,
+        }
+    }
+}
+
+#[cfg(not(hax_backend_fstar))]
+impl crate::clone::Clone for CloneWitness {
+    fn clone(self) -> Self {
+        CloneWitness {
+            value: self.value,
+            cloned: true,
+        }
+    }
+}
