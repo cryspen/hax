@@ -52,15 +52,26 @@ ATTR_FN_RE = re.compile(
 
 SKIP_RE = re.compile(r'skip_lean\s*=\s*"(?P<reason>[^"]*)"')
 
+ATTR = "#[rust_lean_test"
+
 
 def strip_comments(src: str) -> str:
     """Strip Rust comments so a commented-out test stops matching ATTR_FN_RE.
-    Depth-tracked: Rust block comments nest, and disabled tests here have been
-    wrapped more than once."""
+
+    Block comments nest, and disabled tests here have been wrapped more than
+    once, so the depth is tracked. String literals are copied through: a `//`
+    or `/*` inside one is not a comment opener.
+    """
     out: list[str] = []
     i, n, depth = 0, len(src), 0
     while i < n:
-        if src.startswith("/*", i):
+        if depth == 0 and src[i] == '"':
+            j = i + 1
+            while j < n and src[j] != '"':
+                j += 2 if src[j] == "\\" else 1
+            out.append(src[i : j + 1])
+            i = j + 1
+        elif src.startswith("/*", i):
             depth += 1
             i += 2
         elif depth and src.startswith("*/", i):
@@ -91,13 +102,26 @@ def collect_source_tests() -> list[tuple[str, str | None]]:
     tests: list[tuple[str, str | None]] = []
     seen: set[str] = set()
     for rs in sorted(SRC_ROOT.rglob("*.rs")):
-        for m in ATTR_FN_RE.finditer(strip_comments(rs.read_text())):
+        src = strip_comments(rs.read_text())
+        found = 0
+        for m in ATTR_FN_RE.finditer(src):
             name = m.group("name")
             if name in seen:
                 sys.exit(f"gen_lean_tests.py: duplicate test name: {name} (in {rs})")
             seen.add(name)
             skip = SKIP_RE.search(m.group("args") or "")
             tests.append((name, skip.group("reason") if skip else None))
+            found += 1
+        # A test the regex misses keeps its Rust half -- the proc macro emits
+        # that -- and silently loses its guard, so it goes on passing while
+        # checking nothing.
+        marked = src.count(ATTR)
+        if found != marked:
+            sys.exit(
+                f"gen_lean_tests.py: {rs} has {marked} `{ATTR}` attribute(s) but "
+                f"{found} matched: a test whose signature is not "
+                f"`pub fn NAME() -> bool` gets no `#guard`."
+            )
     return tests
 
 
@@ -190,34 +214,69 @@ def generate() -> None:
         print(f"gen_lean_tests.py: note: skipped test `{name}` was not extracted")
 
 
+GUARD_RE = re.compile(
+    r"^-- skip_lean: (?P<reason>.*)\n#guard (?P<fq>\S+) ==", re.MULTILINE
+)
+
+
+def now_passing(skipped_text: str, log: str) -> tuple[list[tuple[str, str]], int]:
+    """Split the guards in `skipped_text` into the ones Lean did NOT complain
+    about — those now agree with Rust — and a total count.
+
+    A guard is judged still-failing by its fully qualified name appearing in
+    Lean's error output.
+    """
+    guards = GUARD_RE.findall(skipped_text)
+    return [(fq, reason) for reason, fq in guards if fq not in log], len(guards)
+
+
+def self_test() -> int:
+    """Exercise `now_passing` both ways.
+
+    The skip list is usually empty, so `report_skipped` normally returns before
+    reaching the decision and nothing would notice it breaking.
+    """
+    skipped = (
+        "-- skip_lean: still broken\n"
+        "#guard crate.mod.test_a == .ok true\n"
+        "-- skip_lean: fixed upstream\n"
+        "#guard crate.mod.test_b == .ok true\n"
+    )
+    passing, total = now_passing(skipped, "error: crate.mod.test_a failed")
+    assert total == 2, total
+    assert passing == [("crate.mod.test_b", "fixed upstream")], passing
+    assert now_passing(skipped, "")[0] == [
+        ("crate.mod.test_a", "still broken"),
+        ("crate.mod.test_b", "fixed upstream"),
+    ]
+    assert now_passing("", "anything") == ([], 0)
+    print("gen_lean_tests.py: self-test ok")
+    return 0
+
+
 def report_skipped(log_path: pathlib.Path) -> None:
     """Fail if any guard in SkippedTests.lean is absent from Lean's error
     output — i.e. a skipped test now agrees and should be re-enabled."""
     if not OUT_SKIPPED.exists():
         sys.exit(f"gen_lean_tests.py: {OUT_SKIPPED} not found; run the generator first.")
-    guards = re.findall(
-        r"^-- skip_lean: (?P<reason>.*)\n#guard (?P<fq>\S+) ==",
-        OUT_SKIPPED.read_text(),
-        re.MULTILINE,
-    )
-    if not guards:
+    passing, total = now_passing(OUT_SKIPPED.read_text(), log_path.read_text())
+    if total == 0:
         print("gen_lean_tests.py: no skipped tests.")
         return
-    log = log_path.read_text()
-    # With the reason: that's what says whether to re-enable.
-    passing = [(fq, reason) for reason, fq in guards if fq not in log]
     if passing:
         listing = "\n".join(f"  - {fq}\n      skipped for: {r}" for fq, r in passing)
         sys.exit(
-            f"gen_lean_tests.py: {len(passing)} of {len(guards)} skipped test(s) now "
+            f"gen_lean_tests.py: {len(passing)} of {total} skipped test(s) now "
             f"agree with Rust:\n{listing}\n"
             f"Drop their `skip_lean` so the suite covers them again."
         )
-    print(f"gen_lean_tests.py: all {len(guards)} skipped test(s) still fail, as expected.")
+    print(f"gen_lean_tests.py: all {total} skipped test(s) still fail, as expected.")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1 and sys.argv[1] == "--report-skipped":
+    if len(sys.argv) > 1 and sys.argv[1] == "--self-test":
+        sys.exit(self_test())
+    elif len(sys.argv) > 1 and sys.argv[1] == "--report-skipped":
         report_skipped(pathlib.Path(sys.argv[2]))
     else:
         generate()

@@ -4,9 +4,9 @@ HAX ?= cargo hax
 LEAN_DIR = source/proofs/lean
 EXTRACTION_DIR = $(LEAN_DIR)/RustLeanTests/Extraction
 
-.PHONY: all cargo-test extract gen-lean-tests build check-skipped clean
+.PHONY: all cargo-test extract gen-lean-tests build check-skipped self-test clean
 
-all: cargo-test build
+all: cargo-test self-test build
 
 # Rust-side half: every `#[rust_lean_test]` generates a `#[cfg(test)]
 # #[test]` wrapper that asserts the function returns `true`. The Lean-side
@@ -33,7 +33,12 @@ build: gen-lean-tests
 #    Here we elaborate it on purpose: every guard is expected to FAIL, and one
 #    that passes means its blocker is gone. Hence `-` — success is the failure
 #    case.
-check-skipped: gen-lean-tests
+# The skip list is usually empty, so `check-skipped` returns before reaching the
+# decision it exists to make; this exercises it directly.
+self-test:
+	python3 gen_lean_tests.py --self-test
+
+check-skipped: gen-lean-tests self-test
 	-cd $(LEAN_DIR) && lake env lean RustLeanTests/SkippedTests.lean > $(abspath skipped.log) 2>&1
 	python3 gen_lean_tests.py --report-skipped skipped.log
 
