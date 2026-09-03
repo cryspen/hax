@@ -116,21 +116,21 @@ pub fn test_box_clone_applies_element_clone() -> bool {
 
 #[rust_lean_test]
 pub fn test_box_eq_goes_through_the_dictionary() -> bool {
-    Box::new(keyed(5, 1)) == Box::new(keyed(5, 2))
+    let a = Box::new(keyed(5, 1));
+    let b = Box::new(keyed(5, 2));
+    a == b
 }
 
-// TODO(box-ne-name): `!=` on a `Box` resolves to
-// `alloc.Box.Insts.CoreCmpPartialEqBox.ne`; the model publishes it under
-// `alloc.boxed.Box.…`. `skip_lean` cannot apply -- the guard fails to
-// elaborate, not to hold.
-/*
 #[rust_lean_test]
 pub fn test_box_ne_goes_through_the_dictionary() -> bool {
-    (Box::new(keyed(5, 1)) != Box::new(keyed(5, 2))) == false
+    let a = Box::new(keyed(5, 1));
+    let b = Box::new(keyed(5, 2));
+    (a != b) == false
 }
-*/
 
 #[rust_lean_test]
 pub fn test_box_eq_differing_keys() -> bool {
-    (Box::new(keyed(5, 1)) == Box::new(keyed(6, 1))) == false
+    let a = Box::new(keyed(5, 1));
+    let b = Box::new(keyed(6, 1));
+    (a == b) == false
 }

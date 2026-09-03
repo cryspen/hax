@@ -9,7 +9,7 @@ namespace core
 
 This file contains workarounds required to be present **after** `Funs.lean` runs.
 
-See `FunsEpilogue.lean` for workarounds that run before `Funs.lean`.
+See `FunsPrologue.lean` for workarounds that run before `Funs.lean`.
 
 -/
 
@@ -42,6 +42,20 @@ abbrev result.Result.Insts.CoreOpsTry_traitTry.branch :=
 /-- Same aliasing as `Result` above, for `?` on `Option`. -/
 abbrev option.Option.Insts.CoreOpsTry_traitTry.branch :=
   @option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
+
+/-! ## `[T]: PartialEq<[U; N]>` through a shared reference
+
+`s == [..]` on an `&[T]` resolves to `Shared0Slice.Insts.…`, as `impl
+PartialEq<&B> for &A` resolves to `Shared1A.Insts.…` in `FunsPrologue.lean`;
+the extraction publishes the impl under `Slice.Insts.…`. -/
+abbrev Shared0Slice.Insts.CoreCmpPartialEqArray.eq :=
+  @Slice.Insts.CoreCmpPartialEqArray.eq
+
+abbrev Shared0Slice.Insts.CoreCmpPartialEqArray.ne :=
+  @Slice.Insts.CoreCmpPartialEqArray.ne
+
+abbrev Shared0Slice.Insts.CoreCmpPartialEqArray :=
+  @Slice.Insts.CoreCmpPartialEqArray
 
 /-! ## Scalar Debug instances -/
 
@@ -554,6 +568,20 @@ end core
 
 namespace alloc
 
+/-! ## `!=` on a `Box`
+
+Extraction erases `Box`, so `==` folds into the payload's own `eq` at the call
+site, but `!=` still calls the impl -- under `alloc.Box.…`, while the extraction
+publishes it as `alloc.boxed.Box.…`. -/
+abbrev Box.Insts.CoreCmpPartialEqBox.ne :=
+  @boxed.Box.Insts.CoreCmpPartialEqBox.ne
+
+abbrev Box.Insts.CoreCmpPartialEqBox.eq :=
+  @boxed.Box.Insts.CoreCmpPartialEqBox.eq
+
+abbrev Box.Insts.CoreCmpPartialEqBox :=
+  @boxed.Box.Insts.CoreCmpPartialEqBox
+
 /-! ## `IntoIterator` for `&Vec<T>` (aeneas's `SharedAVec`)
 
 `(&vec).into_iter()` / iterating a `&Vec<T>` yields `&T` via a slice `Iter`. aeneas
@@ -627,10 +655,10 @@ def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterato
 via `next` into a `Vec` (`vec.Vec.push`), but Aeneas can't extract it — it hits
 `type_var_id` resolving the `IntoIterator::Item` associated type (the same aeneas
 bug the carve saw), so the impl stays `--exclude`d and we hand-write it, exactly
-as Aeneas.Std hand-writes `alloc.vec.FromIteratorVec`. This is a genuine fold, not
-the empty stub the VecDeque one is — `IntoIterator` now carries `iteratorIteratorInst`
-(the `IntoIter: Iterator` bound), and `FromIterator::from_iter` pins `Item = A`, so
-the fold type-checks and `collect` is computable. -/
+as Aeneas.Std hand-writes `alloc.vec.FromIteratorVec`. `IntoIterator` carries
+`iteratorIteratorInst` (the `IntoIter: Iterator` bound) and
+`FromIterator::from_iter` pins `Item = A`, so the fold type-checks and `collect`
+is computable. -/
 open Aeneas.Std (RustM) in
 def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
     {T IntoIter : Type}

@@ -763,23 +763,15 @@ pub fn test_slice_ne_goes_through_the_dictionary() -> bool {
     (a.as_slice() != b.as_slice()) == false
 }
 
-// TODO(shared-slice-eq-array): `&[T] == [U; N]` resolves to
-// `core.Shared0Slice.Insts.CoreCmpPartialEqArray.eq`; the model publishes it as
-// `core.Slice.Insts.…`. `skip_lean` cannot apply -- the guard fails to
-// elaborate, not to hold.
-/*
 #[rust_lean_test]
 pub fn test_slice_array_eq_goes_through_the_dictionary() -> bool {
     let a = [keyed(1, 1), keyed(2, 1)];
     let b = [keyed(1, 2), keyed(2, 2)];
     a.as_slice() == b
 }
-*/
 
 // Lexicographic through `T`'s `Ord`, so a coarser `Ord` makes two structurally
 // different slices compare `Equal`.
-// TODO(ordering-partial-eq): `match`, not `==` -- the model declares
-// `cmp::Ordering` but gives it no `PartialEq` impl.
 #[rust_lean_test]
 pub fn test_slice_cmp_goes_through_the_dictionary() -> bool {
     let a = [keyed(1, 1), keyed(2, 1)];
