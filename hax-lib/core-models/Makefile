@@ -120,10 +120,11 @@ alloc-extract: $(ALLOC_STAGE_DIR)/Cargo.toml
 # 2. Move generated files into $(LEAN_DIR)/CoreModels/ and apply our patches
 #    (imports, opens, namespace rename, comment-outs of broken defs, etc.).
 #
-# Aeneas also writes `Specs.lean` and `ProofObligations.lean`, which the Lean
-# library has no use for yet: they stay in $(EXTRACT_DIR).
-GENERATED_LEAN = Funs.lean Types.lean \
-                 FunsExternal_Template.lean TypesExternal_Template.lean
+# Aeneas also writes `Specs.lean`, `ProofObligations.lean` and the
+# `*External_Template.lean` pair, none of which the Lean library imports: those
+# stay in $(EXTRACT_DIR), which is where to look for the list of externals
+# Aeneas expects `CoreModels/RustPrimitives/Funs.lean` to provide.
+GENERATED_LEAN = Funs.lean Types.lean
 
 patch:
 	@test -d $(EXTRACT_DIR)/CoreModels/Core -a -d $(EXTRACT_DIR)/CoreModels/Alloc \
@@ -146,8 +147,6 @@ lean: extract patch build
 clean-generated:
 	rm -f $(LEAN_DIR)/CoreModels/Core/Funs.lean
 	rm -f $(LEAN_DIR)/CoreModels/Core/Types.lean
-	rm -f $(LEAN_DIR)/CoreModels/Core/FunsExternal_Template.lean
-	rm -f $(LEAN_DIR)/CoreModels/Core/TypesExternal_Template.lean
 	rm -rf $(LEAN_DIR)/CoreModels/Alloc
 
 # Drop the staged alloc copy.

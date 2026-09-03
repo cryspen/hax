@@ -3,13 +3,11 @@
 Post-process Aeneas-generated Lean files into the layout expected by our
 Aeneas core replacement library.
 
-The `patch` target of the Makefile installs these four Aeneas-generated files
-into ../proof-libs/lean/CoreModels/Core (for `core`) and
-../proof-libs/lean/CoreModels/Alloc (for `alloc`) before running this script:
-    Funs.lean
-    Types.lean
-    FunsExternal_Template.lean
-    TypesExternal_Template.lean
+The `patch` target of the Makefile installs `Funs.lean` and `Types.lean` into
+../proof-libs/lean/CoreModels/Core (for `core`) and
+../proof-libs/lean/CoreModels/Alloc (for `alloc`) before running this script.
+Aeneas's `*External_Template.lean` are not installed: their definitions live in
+`CoreModels/RustPrimitives/Funs.lean`, and nothing imports the templates.
 
 This script:
   * Rewrites imports & opens to match our package layout.
@@ -46,7 +44,9 @@ ALLOC_DIR = LEAN_DIR / "CoreModels" / "Alloc"
 # is obsolete and can be deleted. Warnings only — a stale pattern is usually
 # caught by the Lean build, and failing here would block re-extraction.
 # The counts are only meaningful on *fresh* Aeneas output: re-running the
-# patcher over already-patched files reports most passes as unmatched.
+# patcher over already-patched files reports most passes as unmatched. Only a
+# count of zero warns, so a pass that matched some of its sites and not others
+# is silent; patterns are written to be all-or-nothing for that reason.
 _MATCHES: dict[str, int] = {}
 
 
@@ -127,17 +127,25 @@ def escape_keyword_binders(text: str) -> str:
     alt = "|".join(re.escape(name) for name in sorted(escaped))
     # Binder positions only: `(x :`, `{x :`, `⦃x :`, and record fields `{ x :`.
     # `:=` is excluded so that record *literals* (`{ start := ... }`) and
-    # definitions are left alone.
+    # definitions are left alone. A group can introduce several names
+    # (`(start end : U8)`), so the run before the `:` is escaped name by name.
+    def escape_group(m: re.Match[str]) -> str:
+        names = " ".join(
+            f"«{w}»" if w in escaped else w for w in m.group(2).split()
+        )
+        return f"{m.group(1)}{names}{m.group(3)}"
+
     return re.sub(
-        rf"([({{⦃]\s*)({alt})(\s*:(?!=))",
-        lambda m: f"{m.group(1)}«{m.group(2)}»{m.group(3)}",
+        rf"([({{⦃]\s*)((?:(?:{alt})|\w+)(?:\s+\w+)*)(\s*:(?!=))",
+        escape_group,
         text,
     )
 
 def fix_fail_panic(text: str) -> str:
     """In the definition of a Lean `item` called `panic`, the name `panic`
     does not resolve to `Error.panic` as it should."""
-    return replace("fix_fail_panic", text, "  fail panic\n", "  fail Error.panic\n")
+    return sub("fix_fail_panic", r"^(\s*)fail panic$", r"\1fail Error.panic",
+               text, flags=re.MULTILINE)
 
 def rename_namespace(text: str) -> str:
     """
@@ -230,27 +238,31 @@ def rewrite_phantom_data(text: str) -> str:
     Lean unfolds it and loses the `A` during unification, which then breaks
     the `{A : Type}` implicit at call sites like `alloc.vec.Vec.clear v`.
 
-    `TypesPrologue.lean` defines a replacement: `structure PhantomData (A : Type)
-    where mk ::` — a *non-reducible* carrier that keeps `A` syntactically
-    present. This pass rewires the Aeneas output to use it. It runs on both
-    `Core/{Types,Funs}.lean` and `Alloc/{Types,Funs}.lean`:
+    `TypesPrologue.lean` defines a replacement, `def marker.PhantomData (_ :
+    Type) := Unit` with `marker.PhantomData.mk : Unit`. A `def` is
+    semi-reducible, so unification does not unfold it and `A` stays
+    syntactically present. This pass rewires the Aeneas output to use it:
 
-      1. Rewrite the `()` constructor in phantom-field position to
-         `core.Phantom.mk`. One textual shape is handled:
-           - `, ())` — the common form, where the phantom is the second
-             slot of a 2-tuple (`vec.Vec`, `VecDeque`, `Drain`, …).
-         Destructured forms like `(seq, pd)` don't textually match `, ()`
-         and are left alone.
+      1. `rewrite_phantom_ctor` rewrites the `()` constructor in phantom-field
+         position to `core.marker.PhantomData.mk`. Only `, ())` is handled --
+         the phantom as the second slot of a 2-tuple (`vec.Vec`, `VecDeque`,
+         `Drain`, …). Destructured forms like `(seq, pd)` do not match and are
+         left alone. Every phantom-carrying type is in `alloc`, so that pass
+         runs on the alloc lane only; a genuine `(x, ())` elsewhere is untouched.
 
       2. Comment out Aeneas's own `core_models::marker::PhantomData`
          definition block in `Core/Types.lean`.
     """
-    text = sub("phantom/tuple ()", r",\s*\(\)\)",
-               ", core.marker.PhantomData.mk)", text)
     return comment_out_blocks(
         text, ["core_models::marker::PhantomData"],
         trailer="replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`",
     )
+
+
+def rewrite_phantom_ctor(text: str) -> str:
+    """See `rewrite_phantom_data`, step 1. Alloc lane only."""
+    return sub("phantom/tuple ()", r",\s*\(\)\)",
+               ", core.marker.PhantomData.mk)", text)
 
 
 def rename_iter_param(text: str) -> str:
@@ -451,11 +463,6 @@ def add_funs_prologue_import(text: str) -> str:
         "import Aeneas\nimport CoreModels.Core.FunsPrologue\n",
     )
 
-# Identifies the start of a top-level "block" (a doc comment, an attribute,
-# or a bare def/structure/inductive/abbrev/instance line).
-BLOCK_START_RE = re.compile(
-    r"^(/--|@\[|def |structure |inductive |abbrev |instance |theorem |@\[reducible\])"
-)
 #  /-- [core_models::foo::Bar]:                (function definitions)
 #  /-- [core_models::foo::Bar]                  (type / inductive definitions)
 #
@@ -473,7 +480,7 @@ DOC_HEADER_TRAIT_RE = re.compile(
 
 DEF_KEYWORDS = (
     "def ", "structure ", "inductive ", "abbrev ",
-    "instance ", "theorem ", "noncomputable def ",
+    "instance ", "theorem ", "noncomputable def ", "divergent def ",
 )
 
 
@@ -670,10 +677,8 @@ def main() -> int:
     # Apply transforms in dependency order: Types -> FunsExternal -> Funs
     types_path = CORE_DIR / "Types.lean"
     funs_path = CORE_DIR / "Funs.lean"
-    funs_ext_path = CORE_DIR / "FunsExternal_Template.lean"
-    types_ext_path = CORE_DIR / "TypesExternal_Template.lean"
 
-    for path in [types_path, types_ext_path, funs_ext_path, funs_path]:
+    for path in [types_path, funs_path]:
         if not path.exists():
             continue
         text = read(path)
@@ -745,6 +750,7 @@ def patch_alloc() -> None:
         text = rewrite_alloc_imports(text)
         text = fix_fail_panic(text)
         text = rewrite_phantom_data(text)
+        text = rewrite_phantom_ctor(text)
         text = escape_keyword_binders(text)
         if path == funs:
             text = rename_iter_param(text)
