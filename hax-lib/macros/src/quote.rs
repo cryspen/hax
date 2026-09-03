@@ -60,8 +60,31 @@ impl ToTokens for Antiquote {
     }
 }
 
+/// Give every token of `ts` (recursively) the hygiene context of `span`,
+/// keeping its own location.
+///
+/// Antiquotation tokens are parsed from the contents of the payload string
+/// literal, so they get `Span::call_site()`. When the quote macro is invoked
+/// through a `macro_rules!` wrapper, that context is the wrapper's, and
+/// identifiers cannot see the caller's locals. The literal itself carries the
+/// context of the place where the user wrote it.
+fn respan(ts: TokenStream, span: proc_macro2::Span) -> TokenStream {
+    ts.into_iter()
+        .map(|mut tt| {
+            if let proc_macro2::TokenTree::Group(ref mut g) = tt {
+                *g = proc_macro2::Group::new(g.delimiter(), respan(g.stream(), span));
+            }
+            tt.set_span(tt.span().resolved_at(span));
+            tt
+        })
+        .collect()
+}
+
 /// Extract antiquotations (`$[?][$][:]...`, `$[?][$][:]{...}`) and parses them.
-fn process_string(s: &str) -> std::result::Result<(String, Vec<Antiquote>), String> {
+fn process_string(
+    s: &str,
+    span: proc_macro2::Span,
+) -> std::result::Result<(String, Vec<Antiquote>), String> {
     let mut chars = s.chars().peekable();
     let mut antiquotations = vec![];
     let mut output = String::new();
@@ -116,7 +139,7 @@ fn process_string(s: &str) -> std::result::Result<(String, Vec<Antiquote>), Stri
                     // panicking, but also makes rustc to exit earlier.
                     panic!("{message}");
                 }
-                let ts: pm::TokenStream = ts?.into();
+                let ts: pm::TokenStream = respan(ts?, span).into();
                 antiquotations.push(Antiquote { ts, kind })
             }
             _ => output.push(ch),
@@ -230,11 +253,13 @@ pub(super) enum InlineExprType {
 
 pub(super) fn expression(typ: InlineExprType, payload: pm::TokenStream) -> pm::TokenStream {
     let (mut backend_code, antiquotes) = {
-        let payload = parse_macro_input!(payload as LitStr).value();
+        let payload_lit = parse_macro_input!(payload as LitStr);
+        let payload_span = payload_lit.span();
+        let payload = payload_lit.value();
         if payload.contains(SPLIT_MARK) {
             return quote! {std::compile_error!(std::concat!($SPLIT_MARK, " is reserved"))}.into();
         }
-        let (string, antiquotes) = match process_string(&payload) {
+        let (string, antiquotes) = match process_string(&payload, payload_span) {
             Ok(x) => x,
             Err(message) => return quote! {std::compile_error!(#message)}.into(),
         };
