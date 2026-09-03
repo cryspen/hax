@@ -459,6 +459,13 @@ abbrev iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator.count
   iter.traits.iterator.Iterator.count.default
     (iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator IteratorInst)
 
+-- Take<I>
+abbrev iter.adapters.take.Take.Insts.CoreIterTraitsIteratorIterator.count
+    {I Clause0_Item : Type}
+    (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item) :=
+  iter.traits.iterator.Iterator.count.default
+    (iter.adapters.take.Take.Insts.CoreIterTraitsIteratorIterator IteratorInst)
+
 -- Fuse<I>
 abbrev iter.adapters.fuse.Fuse.Insts.CoreIterTraitsIteratorIterator.count
     {I Clause0_Item : Type}
