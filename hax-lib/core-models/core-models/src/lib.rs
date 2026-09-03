@@ -33,9 +33,8 @@
 // `fmt_helpers_for_derive`: the proptests compare against std's
 // `Formatter::debug_struct_fields_finish`, which is unstable.
 #![cfg_attr(test, feature(step_trait, int_roundings, fmt_helpers_for_derive))]
-// `cfg(charon)` marks the Lean extraction; `feature(register_tool)` comes
-// from `cargo hax`.
-#![cfg_attr(charon, register_tool(aeneas))]
+// `feature(register_tool)` comes from `cargo hax`.
+#![cfg_attr(hax_backend_lean, register_tool(aeneas))]
 
 // Lean-only modules. They carry no operations -- the types exist so that a
 // client mentioning them resolves, which is all Aeneas's Lean library gives
