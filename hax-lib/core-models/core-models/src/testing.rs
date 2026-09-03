@@ -147,3 +147,61 @@ impl crate::clone::Clone for CloneWitness {
         }
     }
 }
+
+/// An `Ord` coarser than equality: two `Keyed` compare `Equal` when their
+/// `key` matches, while staying distinguishable by `tag`.
+#[derive(Debug, Clone, Copy)]
+pub struct Keyed {
+    pub key: u8,
+    pub tag: u8,
+}
+
+pub fn keyed(key: u8, tag: u8) -> Keyed {
+    Keyed { key, tag }
+}
+
+impl std::cmp::PartialEq for Keyed {
+    fn eq(&self, other: &Self) -> bool {
+        self.key == other.key
+    }
+}
+
+impl std::cmp::Eq for Keyed {}
+
+impl std::cmp::PartialOrd for Keyed {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(std::cmp::Ord::cmp(self, other))
+    }
+}
+
+impl std::cmp::Ord for Keyed {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.key.cmp(&other.key)
+    }
+}
+
+impl crate::cmp::PartialEq<Keyed> for Keyed {
+    fn eq(&self, other: &Keyed) -> bool {
+        self.key == other.key
+    }
+}
+
+impl crate::cmp::Eq for Keyed {}
+
+impl crate::cmp::PartialOrd<Keyed> for Keyed {
+    fn partial_cmp(&self, other: &Keyed) -> crate::option::Option<crate::cmp::Ordering> {
+        crate::option::Option::Some(crate::cmp::Ord::cmp(self, other))
+    }
+}
+
+impl crate::cmp::Ord for Keyed {
+    fn cmp(&self, other: &Keyed) -> crate::cmp::Ordering {
+        if self.key < other.key {
+            crate::cmp::Ordering::Less
+        } else if self.key > other.key {
+            crate::cmp::Ordering::Greater
+        } else {
+            crate::cmp::Ordering::Equal
+        }
+    }
+}

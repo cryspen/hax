@@ -245,21 +245,32 @@ impl<T> Slice<T> {
     // F*-only: the equivalence tests call this, so Lean needs the body; it is
     // written over primitives the Lean library provides.
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    // std's `binary_search_by` loop: the textbook one picks a different member
+    // of a run of equal elements, which Rust leaves unspecified.
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
     where
         T: crate::cmp::Ord,
     {
-        let mut low = 0;
-        let mut high = Self::len(s);
-        while low < high {
-            let mid = low + (high - low) / 2;
-            match crate::cmp::Ord::cmp(rust_primitives::slice::slice_index(s, mid), x) {
-                crate::cmp::Ordering::Less => low = mid + 1,
-                crate::cmp::Ordering::Greater => high = mid,
-                crate::cmp::Ordering::Equal => return Result::Ok(mid),
-            }
+        let mut size = Self::len(s);
+        if size == 0 {
+            return Result::Err(0);
         }
-        Result::Err(low)
+        let mut base = 0;
+        while size > 1 {
+            let half = size / 2;
+            let mid = base + half;
+            // Only `Greater` keeps `base`, so an equal run resolves to its last.
+            base = match crate::cmp::Ord::cmp(rust_primitives::slice::slice_index(s, mid), x) {
+                crate::cmp::Ordering::Greater => base,
+                _ => mid,
+            };
+            size -= half;
+        }
+        match crate::cmp::Ord::cmp(rust_primitives::slice::slice_index(s, base), x) {
+            crate::cmp::Ordering::Equal => Result::Ok(base),
+            crate::cmp::Ordering::Less => Result::Err(base + 1),
+            crate::cmp::Ordering::Greater => Result::Err(base),
+        }
     }
     /// See [`std::slice::get`]
     fn get<I: SliceIndex<[T]>>(s: &[T], index: I) -> Option<&<I as SliceIndex<[T]>>::Output> {
@@ -331,12 +342,17 @@ impl<T> Slice<T> {
     /// See [`std::slice::fill`]
     // opaque: for-loop + indexed mutation causes F* dependency cycle through Rust_primitives.Hax
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+    // std clones into every slot but the last, and moves `value` into that one.
     fn fill(s: &mut [T], value: T)
     where
         T: Clone,
     {
-        for i in 0..s.len() {
-            s[i] = value.clone();
+        let len = Self::len(s);
+        if len > 0 {
+            for i in 0..len - 1 {
+                s[i] = value.clone();
+            }
+            s[len - 1] = value;
         }
     }
 
@@ -847,6 +863,8 @@ mod tests {
     use crate::iter::traits::iterator::Iterator as ModelIterator;
     use crate::option::Option as ModelOption;
     use crate::testing::Inject;
+    #[cfg(not(hax_backend_fstar))]
+    use crate::testing::{CloneWitness, Keyed, keyed};
     use proptest::prelude::*;
 
     /// The slice iterators are lazy; draining them is what observes them.
@@ -1173,6 +1191,17 @@ mod tests {
             prop_assert_eq!(model, std_slice);
         }
 
+        // `len` reaches 0, for the guard around the `len - 1` subtraction.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_fill_moves_the_last_element(value in any::<u8>(), len in 0usize..=6) {
+            let mut model: Vec<CloneWitness> = (0..len).map(|_| CloneWitness::new(0)).collect();
+            let mut std_slice: Vec<CloneWitness> = (0..len).map(|_| CloneWitness::new(0)).collect();
+            Slice::fill(&mut model[..], CloneWitness::new(value));
+            std_slice.fill(CloneWitness::new(value));
+            prop_assert_eq!(model, std_slice);
+        }
+
         #[test]
         fn test_index_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4) {
             let s: &[u8] = &slice[..];
@@ -1489,20 +1518,45 @@ mod tests {
 
         // ----- binary_search -------------------------------------------------
 
-        // Sorted and deduplicated, so std's "any matching index" is the only one
-        // and the two results can be compared exactly. `needle` is drawn from the
-        // same domain, hitting both the `Ok` and the `Err` side.
+        // Not deduplicated, and drawn narrow so equal runs are common.
         #[test]
         fn test_binary_search(
-            values in prop::collection::vec(0u8..=30, 0..=12),
-            needle in 0u8..=30,
+            values in prop::collection::vec(0u8..=8, 0..=12),
+            needle in 0u8..=8,
         ) {
             let mut sorted = values;
             sorted.sort();
-            sorted.dedup();
             prop_assert_eq!(
                 Slice::binary_search(&sorted[..], &needle),
                 sorted.binary_search(&needle).inject()
+            );
+        }
+
+        #[test]
+        fn test_binary_search_all_equal(len in 0usize..=12, needle in 0u8..=1) {
+            let values = vec![1u8; len];
+            prop_assert_eq!(
+                Slice::binary_search(&values[..], &needle),
+                values.binary_search(&needle).inject()
+            );
+        }
+
+        // A run of equal `Keyed`s stays distinguishable by `tag`, so this pins
+        // down which member std returns and that the model threads `Ord`.
+        #[test]
+        fn test_binary_search_equal_run(
+            before in 0usize..=3,
+            run in 1usize..=8,
+            after in 0usize..=3,
+        ) {
+            let mut values: Vec<Keyed> = Vec::new();
+            values.extend((0..before).map(|i| keyed(0, i as u8)));
+            values.extend((0..run).map(|i| keyed(1, 10 + i as u8)));
+            values.extend((0..after).map(|i| keyed(2, 20 + i as u8)));
+            let needle = keyed(1, 99);
+            prop_assert_eq!(
+                Slice::binary_search(&values[..], &needle),
+                values.binary_search(&needle).inject()
             );
         }
 
