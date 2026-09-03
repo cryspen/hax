@@ -385,15 +385,33 @@ pub enum ImplItemKind<Body: IsBody> {
             let (tcx, owner_id) = (s.base().tcx, s.owner_id());
             let assoc_item = tcx.opt_associated_item(owner_id).unwrap();
             let impl_did = assoc_item.impl_container(tcx).unwrap();
-            tcx.explicit_item_bounds(assoc_item.trait_item_def_id().unwrap())
-                .skip_binder() // Skips an `EarlyBinder`, likely for GATs
-                .iter()
-                .copied()
-                .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
-                    !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
-                }))
-                .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, impl_did, clause, span))
-                .collect::<Vec<_>>()
+            // For a generic associated type, `explicit_item_bounds` is an `EarlyBinder`
+            // over `[Self, <GAT params>]`. `super_clause_to_clause_and_impl_expr`
+            // instantiates each bound with the impl trait ref's (trait-arity) args, so the
+            // GAT's own params have no argument and rustc ICEs in `binder.rs` ("type
+            // parameter out of range when instantiating"), aborting the whole crate. Skip
+            // resolving the bounds for GATs: the associated type itself still extracts, and
+            // the FullDef importer resolves these correctly. See
+            // https://github.com/cryspen/hax/issues/1907.
+            if tcx.generics_of(owner_id).is_own_empty() {
+                tcx.explicit_item_bounds(assoc_item.trait_item_def_id().unwrap())
+                    .skip_binder() // Skips an `EarlyBinder`, likely for GATs
+                    .iter()
+                    .copied()
+                    .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
+                        !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
+                    }))
+                    .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, impl_did, clause, span))
+                    .collect::<Vec<_>>()
+            } else {
+                crate::warning!(
+                    s[tcx.def_span(owner_id)],
+                    "Trait bounds on generic associated types are not yet resolved by the \
+                     HIR exporter; the bounds on this associated type are omitted. See \
+                     https://github.com/cryspen/hax/issues/1907"
+                );
+                vec![]
+            }
         };
         ImplItemKind::Type {
             ty: t.sinto(s),
