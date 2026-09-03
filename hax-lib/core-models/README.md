@@ -313,7 +313,3 @@ PRs welcome. Please:
   reader knows the Lean side is hitting a hand-written definition in
   `../proof-libs/lean/CoreModels/Core/FunsPrologue.lean` (or `FunsEpilogue.lean`,
   or `RustPrimitives/Funs.lean`) rather than the extraction.
-
-## License
-
-[fill in]
