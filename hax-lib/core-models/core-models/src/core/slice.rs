@@ -1325,9 +1325,6 @@ mod tests {
             );
         }
 
-        // `[T]: PartialEq<[U; N]>` — slice vs array (`s == [..]`). `use_equal`
-        // biases toward the equal case, which random slices rarely hit.
-        #[test]
         // `use_equal` makes the equal case common, which is what `ne` turns on.
         #[cfg(not(hax_backend_fstar))]
         #[test]
@@ -1376,6 +1373,9 @@ mod tests {
             prop_assert_eq!(model, std_v);
         }
 
+        // `[T]: PartialEq<[U; N]>` — slice vs array (`s == [..]`). `use_equal`
+        // biases toward the equal case, which random slices rarely hit.
+        #[test]
         fn test_eq_array(
             arr in any::<[u8; 3]>(),
             other in prop::collection::vec(any::<u8>(), 0..=6),
