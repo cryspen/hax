@@ -64,11 +64,19 @@ jobs:
       # and `cargo-hax`, and between a version bump and the release that follows
       # it. The install step already builds the working tree.
       #
-      # Skipped on release PRs: the tarball's lockfile resolves the sibling
-      # crates from crates.io at the bumped version, which is only published
-      # once the PR merges.
+      # Skipped while a release is in flight: the tarball's lockfile resolves
+      # the sibling crates from crates.io at the bumped version, which is only
+      # published after the release PR merges. On pull requests the branch name
+      # says so; on the push to `main` the merge commit message does; the merge
+      # queue offers neither, so it is skipped there altogether. Each merge
+      # produces its own push, so a regression from an ordinary queued change
+      # still surfaces on `main`; one in the release PR itself waits for the
+      # next non-release push or the weekly schedule.
       - name: Check the published tarball
-        if: "!startsWith(github.head_ref, 'release/')"
+        if: >-
+          github.event_name != 'merge_group' &&
+          !startsWith(github.head_ref, 'release/') &&
+          !contains(github.event.head_commit.message, 'from cryspen/release/')
         run: |
           cargo package --locked --no-verify -p cargo-hax
           tar --extract --directory "$RUNNER_TEMP" \
