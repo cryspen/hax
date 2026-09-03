@@ -60,25 +60,21 @@ impl ToTokens for Antiquote {
     }
 }
 
-/// Re-span every token of a token stream (recursively) to `span`.
+/// Give every token of `ts` (recursively) the hygiene context of `span`,
+/// keeping its own location.
 ///
-/// Antiquotation snippets are parsed out of the *contents* of a string
-/// literal with `syn::parse_str`, which spans every produced token at
-/// `Span::call_site()`. When a quotation macro (e.g. `fstar!`) is invoked
-/// via a `macro_rules!` wrapper, that call site is the wrapper's expansion
-/// context, so identifiers cannot resolve to the user's locals (hygiene).
-/// The string literal token itself, however, travels through wrappers
-/// carrying the original span: re-spanning the antiquotation tokens onto
-/// the literal's span makes them resolve at the place the user actually
-/// wrote them. For direct invocations the literal's span belongs to the
-/// same call-site context as before, so behavior is unchanged.
+/// Antiquotation tokens are parsed from the contents of the payload string
+/// literal, so they get `Span::call_site()`. When the quote macro is invoked
+/// through a `macro_rules!` wrapper, that context is the wrapper's, and
+/// identifiers cannot see the caller's locals. The literal itself carries the
+/// context of the place where the user wrote it.
 fn respan(ts: TokenStream, span: proc_macro2::Span) -> TokenStream {
     ts.into_iter()
         .map(|mut tt| {
             if let proc_macro2::TokenTree::Group(ref mut g) = tt {
                 *g = proc_macro2::Group::new(g.delimiter(), respan(g.stream(), span));
             }
-            tt.set_span(span);
+            tt.set_span(tt.span().resolved_at(span));
             tt
         })
         .collect()
@@ -299,11 +295,7 @@ pub(super) fn expression(typ: InlineExprType, payload: pm::TokenStream) -> pm::T
     };
 
     quote! {
-        // `unused_qualifications` (and lint friends) used to be silenced
-        // implicitly because antiquotation tokens carried macro-expansion
-        // spans; now that they carry the payload literal's span (see
-        // `respan`), suppress them explicitly.
-        ::hax_lib::#function(#[allow(unused_variables, unused_qualifications, unreachable_code, deprecated)]{#backend_code})
+        ::hax_lib::#function(#[allow(unused_variables)]{#backend_code})
     }
     .into()
 }
