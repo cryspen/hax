@@ -2,7 +2,7 @@
 //!
 //! These mirror the proptest block in `core-models/src/core/slice.rs`.
 
-use crate::helpers::Bumped;
+use crate::helpers::{Bumped, keyed};
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- len -------------------------------------------------------------------
@@ -715,4 +715,110 @@ pub fn test_copy_from_slice() -> bool {
     let d: &mut [u8] = &mut dst;
     d.copy_from_slice(&src);
     dst == [7, 8, 9]
+}
+
+// ----- dictionary-applying tests ---------------------------------------------
+
+// `starts_with`/`ends_with` compare through `T`'s `PartialEq`.
+#[rust_lean_test]
+pub fn test_starts_with_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 9), keyed(2, 9)];
+    let needle = [keyed(1, 0)];
+    a.as_slice().starts_with(needle.as_slice())
+}
+
+#[rust_lean_test]
+pub fn test_ends_with_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 9), keyed(2, 9)];
+    let needle = [keyed(2, 0)];
+    a.as_slice().ends_with(needle.as_slice())
+}
+
+#[rust_lean_test]
+pub fn test_starts_with_differing_keys() -> bool {
+    let a = [keyed(1, 0), keyed(2, 0)];
+    let needle = [keyed(3, 0)];
+    a.as_slice().starts_with(needle.as_slice()) == false
+}
+
+// `contains` on a type whose `eq` ignores half the value.
+#[rust_lean_test]
+pub fn test_contains_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 9), keyed(2, 9)];
+    a.as_slice().contains(&keyed(2, 0))
+}
+
+// Slice equality: same length, equal by the dictionary, different structurally.
+#[rust_lean_test]
+pub fn test_slice_eq_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 1), keyed(2, 1)];
+    let b = [keyed(1, 2), keyed(2, 2)];
+    a.as_slice() == b.as_slice()
+}
+
+#[rust_lean_test]
+pub fn test_slice_ne_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 1), keyed(2, 1)];
+    let b = [keyed(1, 2), keyed(2, 2)];
+    (a.as_slice() != b.as_slice()) == false
+}
+
+// TODO(shared-slice-eq-array): `&[T] == [U; N]` resolves to
+// `core.Shared0Slice.Insts.CoreCmpPartialEqArray.eq`; the model publishes it as
+// `core.Slice.Insts.…`. `skip_lean` cannot apply -- the guard fails to
+// elaborate, not to hold.
+/*
+#[rust_lean_test]
+pub fn test_slice_array_eq_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 1), keyed(2, 1)];
+    let b = [keyed(1, 2), keyed(2, 2)];
+    a.as_slice() == b
+}
+*/
+
+// Lexicographic through `T`'s `Ord`, so a coarser `Ord` makes two structurally
+// different slices compare `Equal`.
+// TODO(ordering-partial-eq): `match`, not `==` -- the model declares
+// `cmp::Ordering` but gives it no `PartialEq` impl.
+#[rust_lean_test]
+pub fn test_slice_cmp_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 1), keyed(2, 1)];
+    let b = [keyed(1, 2), keyed(2, 2)];
+    match a.as_slice().cmp(b.as_slice()) {
+        core::cmp::Ordering::Equal => true,
+        _ => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_slice_cmp_shorter_is_less() -> bool {
+    let a = [keyed(1, 0)];
+    let b = [keyed(1, 0), keyed(9, 0)];
+    match a.as_slice().cmp(b.as_slice()) {
+        core::cmp::Ordering::Less => true,
+        _ => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_slice_partial_cmp_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 1), keyed(2, 1)];
+    let b = [keyed(1, 2), keyed(2, 2)];
+    match a.as_slice().partial_cmp(b.as_slice()) {
+        Some(core::cmp::Ordering::Equal) => true,
+        _ => false,
+    }
+}
+
+// The `Ord` dictionary, without pinning which member of an equal run returns.
+#[rust_lean_test]
+pub fn test_binary_search_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 9), keyed(3, 9), keyed(5, 9)];
+    a.as_slice().binary_search(&keyed(3, 0)) == Ok(1)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_absent_goes_through_the_dictionary() -> bool {
+    let a = [keyed(1, 9), keyed(3, 9), keyed(5, 9)];
+    a.as_slice().binary_search(&keyed(4, 0)) == Err(2)
 }

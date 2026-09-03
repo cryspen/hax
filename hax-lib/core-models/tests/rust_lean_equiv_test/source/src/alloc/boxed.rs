@@ -9,6 +9,7 @@
 //! below are hand-picked to cover construction, single-deref, and
 //! double-deref via a reborrow.
 
+use crate::helpers::{Bumped, keyed};
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- Box::new + single deref ----------------------------------------------
@@ -100,4 +101,36 @@ pub fn test_box_mut_increment() -> bool {
     let mut b: Box<u8> = Box::new(10);
     *b = *b + 5;
     *b == 15
+}
+
+// ----- dictionary-applying tests ---------------------------------------------
+//
+// Extraction erases `Box`, but both impls still route through the payload's own
+// dictionary.
+
+#[rust_lean_test]
+pub fn test_box_clone_applies_element_clone() -> bool {
+    let b = Box::new(Bumped(1));
+    b.clone().0 == 2
+}
+
+#[rust_lean_test]
+pub fn test_box_eq_goes_through_the_dictionary() -> bool {
+    Box::new(keyed(5, 1)) == Box::new(keyed(5, 2))
+}
+
+// TODO(box-ne-name): `!=` on a `Box` resolves to
+// `alloc.Box.Insts.CoreCmpPartialEqBox.ne`; the model publishes it under
+// `alloc.boxed.Box.…`. `skip_lean` cannot apply -- the guard fails to
+// elaborate, not to hold.
+/*
+#[rust_lean_test]
+pub fn test_box_ne_goes_through_the_dictionary() -> bool {
+    (Box::new(keyed(5, 1)) != Box::new(keyed(5, 2))) == false
+}
+*/
+
+#[rust_lean_test]
+pub fn test_box_eq_differing_keys() -> bool {
+    (Box::new(keyed(5, 1)) == Box::new(keyed(6, 1))) == false
 }

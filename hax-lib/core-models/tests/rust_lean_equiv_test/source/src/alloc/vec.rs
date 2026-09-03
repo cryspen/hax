@@ -8,7 +8,7 @@
 //!   so we verify per-element contents by sequential `pop()`s instead of
 //!   `v[i] == x`.
 
-use crate::helpers::Bumped;
+use crate::helpers::{Bumped, Keyed, keyed};
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- new -------------------------------------------------------------------
@@ -440,4 +440,59 @@ pub fn test_vec_split_off() -> bool {
     eb.push(2u8);
     eb.push(3u8);
     (a == ea) && (b == eb)
+}
+
+// ----- dictionary-applying tests ---------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_clone_applies_element_clone() -> bool {
+    let mut v: Vec<Bumped> = Vec::new();
+    v.push(Bumped(1));
+    v.push(Bumped(2));
+    let w = v.clone();
+    w[0].0 == 2 && w[1].0 == 3
+}
+
+// `resize` clones into all but the last new slot and moves `value` into that one.
+#[rust_lean_test]
+pub fn test_vec_resize_moves_the_last_element() -> bool {
+    let mut v: Vec<Bumped> = Vec::new();
+    v.resize(3, Bumped(1));
+    v[0].0 == 2 && v[1].0 == 2 && v[2].0 == 1
+}
+
+// Growing by one is entirely the moved-in case.
+#[rust_lean_test]
+pub fn test_vec_resize_by_one_is_moved() -> bool {
+    let mut v: Vec<Bumped> = Vec::new();
+    v.resize(1, Bumped(1));
+    v[0].0 == 1
+}
+
+// Shrinking never touches the dictionary.
+#[rust_lean_test]
+pub fn test_vec_resize_shrink_keeps_the_prefix() -> bool {
+    let mut v: Vec<Bumped> = Vec::new();
+    v.push(Bumped(7));
+    v.push(Bumped(8));
+    v.resize(1, Bumped(0));
+    v.len() == 1 && v[0].0 == 7
+}
+
+#[rust_lean_test]
+pub fn test_vec_eq_goes_through_the_dictionary() -> bool {
+    let mut a: Vec<Keyed> = Vec::new();
+    a.push(keyed(1, 1));
+    let mut b: Vec<Keyed> = Vec::new();
+    b.push(keyed(1, 2));
+    a == b
+}
+
+#[rust_lean_test]
+pub fn test_vec_ne_goes_through_the_dictionary() -> bool {
+    let mut a: Vec<Keyed> = Vec::new();
+    a.push(keyed(1, 1));
+    let mut b: Vec<Keyed> = Vec::new();
+    b.push(keyed(1, 2));
+    (a != b) == false
 }

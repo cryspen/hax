@@ -56,3 +56,57 @@ impl PartialEq for Bumped {
         !(self.0 + 1 == other.0 + 1)
     }
 }
+
+/// An `Ord` coarser than identity: two `Keyed` values with the same `key`
+/// compare `Equal` while staying distinguishable by `tag`.
+///
+/// `Bumped` covers the `Clone`/`PartialEq` dictionaries; this covers `Ord` and
+/// `PartialOrd`, and makes tie-breaking observable — which of several equal
+/// elements comes back differs between neighbours in std.
+pub struct Keyed {
+    pub key: u8,
+    pub tag: u8,
+}
+
+pub fn keyed(key: u8, tag: u8) -> Keyed {
+    Keyed { key, tag }
+}
+
+impl Clone for Keyed {
+    fn clone(&self) -> Keyed {
+        Keyed {
+            key: self.key,
+            tag: self.tag,
+        }
+    }
+}
+
+impl PartialEq for Keyed {
+    fn eq(&self, other: &Keyed) -> bool {
+        self.key == other.key
+    }
+    // Spelled out for the same reason as `Bumped::ne`.
+    fn ne(&self, other: &Keyed) -> bool {
+        !(self.key == other.key)
+    }
+}
+
+impl Eq for Keyed {}
+
+impl PartialOrd for Keyed {
+    fn partial_cmp(&self, other: &Keyed) -> Option<core::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Keyed {
+    fn cmp(&self, other: &Keyed) -> core::cmp::Ordering {
+        if self.key < other.key {
+            core::cmp::Ordering::Less
+        } else if self.key > other.key {
+            core::cmp::Ordering::Greater
+        } else {
+            core::cmp::Ordering::Equal
+        }
+    }
+}

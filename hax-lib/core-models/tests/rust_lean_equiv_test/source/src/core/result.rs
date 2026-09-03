@@ -1,5 +1,6 @@
 //! Equivalence tests for `core::result::Result::*`.
 
+use crate::helpers::{Keyed, keyed};
 use rust_lean_test_macro::rust_lean_test;
 
 // Local helpers: function-level return-type annotations survive Aeneas
@@ -434,3 +435,37 @@ pub fn test_inspect_err_returns_self() -> bool {
         Err(e) => e == 4,
     }
 }
+
+// ----- dictionary-applying tests ---------------------------------------------
+
+#[rust_lean_test]
+pub fn test_eq_ok_goes_through_the_dictionary() -> bool {
+    let a: Result<Keyed, u8> = Ok(keyed(5, 1));
+    let b: Result<Keyed, u8> = Ok(keyed(5, 2));
+    a == b
+}
+
+#[rust_lean_test]
+pub fn test_eq_err_goes_through_the_dictionary() -> bool {
+    let a: Result<u8, Keyed> = Err(keyed(5, 1));
+    let b: Result<u8, Keyed> = Err(keyed(5, 2));
+    a == b
+}
+
+#[rust_lean_test]
+pub fn test_eq_ok_differing_keys() -> bool {
+    let a: Result<Keyed, u8> = Ok(keyed(5, 1));
+    let b: Result<Keyed, u8> = Ok(keyed(6, 1));
+    (a == b) == false
+}
+
+// The mismatch arm never reaches either dictionary.
+#[rust_lean_test]
+pub fn test_eq_ok_vs_err() -> bool {
+    let a: Result<Keyed, Keyed> = Ok(keyed(5, 1));
+    let b: Result<Keyed, Keyed> = Err(keyed(5, 1));
+    (a == b) == false
+}
+
+// TODO(result-clone): the model has `Clone for Option<T>` but no counterpart
+// for `Result<T, E>`, so a `Clone` test has nothing to elaborate against.

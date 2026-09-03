@@ -1,6 +1,7 @@
 //! Equivalence tests for `core::option::Option::*`.
 
 use crate::helpers::none_u8;
+use crate::helpers::{Bumped, Keyed, keyed};
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- is_some / is_none -----------------------------------------------------
@@ -609,4 +610,43 @@ pub fn test_option_eq_some_none() -> bool {
 #[rust_lean_test]
 pub fn test_option_eq_none_some() -> bool {
     (none_u8() == Some(5u8)) == false
+}
+
+// ----- dictionary-applying tests ---------------------------------------------
+
+#[rust_lean_test]
+pub fn test_clone_some_applies_element_clone() -> bool {
+    let x = Some(Bumped(1));
+    match x.clone() {
+        Some(b) => b.0 == 2,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_clone_none_of_a_cloneable_element() -> bool {
+    let x: Option<Bumped> = None;
+    x.clone().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_eq_some_goes_through_the_dictionary() -> bool {
+    Some(keyed(5, 1)) == Some(keyed(5, 2))
+}
+
+#[rust_lean_test]
+pub fn test_ne_some_goes_through_the_dictionary() -> bool {
+    (Some(keyed(5, 1)) != Some(keyed(5, 2))) == false
+}
+
+#[rust_lean_test]
+pub fn test_eq_some_differing_keys() -> bool {
+    (Some(keyed(5, 1)) == Some(keyed(6, 1))) == false
+}
+
+// The mismatch arm never reaches the element dictionary.
+#[rust_lean_test]
+pub fn test_eq_some_vs_none() -> bool {
+    let n: Option<Keyed> = None;
+    (Some(keyed(5, 1)) == n) == false
 }
