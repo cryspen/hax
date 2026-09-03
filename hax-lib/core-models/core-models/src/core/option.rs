@@ -16,6 +16,7 @@ use super::result::*;
 impl<T> Option<T> {
     /// See [`std::option::Option::is_some`]
     #[hax_lib::ensures(|res| hax_lib::Prop::implies(res.into(), fstar!("Option_Some? self")))]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn is_some(&self) -> bool {
         matches!(*self, Some(_))
     }
@@ -29,6 +30,7 @@ impl<T> Option<T> {
     }
 
     /// See [`std::option::Option::is_none`]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn is_none(&self) -> bool {
         self.is_some() == false
     }
@@ -79,6 +81,7 @@ impl<T> Option<T> {
     }
 
     /// See [`std::option::Option::unwrap_or`]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn unwrap_or(self, default: T) -> T {
         match self {
             Some(x) => x,
@@ -182,6 +185,10 @@ impl<T> Option<T> {
     ///
     /// Note: The interface in Rust is wrong, but is good after extraction.
     /// We cannot make a useful model with the right interface so we lose the executability.
+    //
+    // The pair is in hax's F* order, (new_self, returned); aeneas uses the
+    // opposite one, so dropping the exclude hands Lean a backwards `take`.
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn take(self) -> (Option<T>, Option<T>) {
         (None, self)
     }
