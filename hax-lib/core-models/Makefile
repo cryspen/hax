@@ -74,25 +74,6 @@ all: lean fstar coverage
 # the recipes below override hax's per-crate `-subdir`. hax warns about that.
 AENEAS_ARGS = -all-computable
 
-# `--exclude` removes items at the LLBC level so Aeneas never sees them.
-# We use it for pure-fn duplicates that we provide ourselves in
-# `Aeneas/PureFuns.lean` (Aeneas marks the corresponding `core::*` items
-# with `~can_fail:false`, so the extraction emits *pure* references that
-# our shims must satisfy).
-#
-# Things we *cannot* exclude here (because the rest of the crate references
-# them and Aeneas's dependency analysis crashes if they vanish):
-#   - `core_models::num::*::{MIN,MAX}` (used by `try_from` impls).
-#   - The trait/type forward declarations (`clone::Clone`, `marker::Copy`,
-#     `ops::function::{Fn,FnMut,FnOnce}`, `option::Option`).
-# These are still handled at the Lean text level by `patch_lean.py`.
-CHARON_EXCLUDES = \
-    --exclude 'core_models::mem::swap' \
-    --exclude 'core_models::mem::replace' \
-    --exclude 'core_models::option::_::is_some' \
-    --exclude 'core_models::option::_::is_none' \
-    --exclude 'core_models::option::_::unwrap_or' \
-    --exclude 'core_models::option::_::take'
 
 # 1. Run charon + Aeneas, writing the Lean files into $(EXTRACT_DIR)/CoreModels/Core/.
 # `HAX_CORE_MODELS_EXTRACTION_MODE=on` is what lets the library be named
@@ -102,7 +83,6 @@ extract: alloc-extract
 	cd $(CORE_MODELS_DIR) && RUSTFLAGS=$(RUSTFLAGS) \
 	    HAX_CORE_MODELS_EXTRACTION_MODE=on $(HAX) into \
 	    --output-dir $(abspath $(EXTRACT_DIR)) lean \
-	    --charon-args="$(CHARON_EXCLUDES)" \
 	    --aeneas-args="-subdir CoreModels/Core $(AENEAS_ARGS)"
 
 # -----------------------------------------------------------------------------

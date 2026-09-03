@@ -78,12 +78,14 @@ pub unsafe fn uninitialized<T>() -> T {
 }
 
 /// See [`std::mem::swap`]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 #[hax_lib::opaque]
 pub fn swap<T>(x: &mut T, y: &mut T) {
     rust_primitives::mem::swap(x, y)
 }
 
 /// See [`std::mem::replace`]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 #[hax_lib::opaque]
 pub fn replace<T>(dest: &mut T, mut src: T) -> T {
     swap(dest, &mut src);
