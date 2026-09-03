@@ -280,7 +280,7 @@ impl<T> Slice<T> {
     // opaque for F*: the generic precondition isn't provable here (the concrete
     // `SliceIndex` impls verify).
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-    #[cfg_attr(not(charon), hax_lib::requires(index.get(s).is_some()))]
+    #[cfg_attr(not(hax_backend_lean), hax_lib::requires(index.get(s).is_some()))]
     fn get_unchecked<I: SliceIndex<[T]>>(s: &[T], index: I) -> &<I as SliceIndex<[T]>>::Output {
         index.get_unchecked(s)
     }
@@ -295,7 +295,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::get_unchecked_mut`]
     #[cfg(not(hax_backend_fstar))]
-    #[cfg_attr(not(charon), hax_lib::requires(index.get(s).is_some()))]
+    #[cfg_attr(not(hax_backend_lean), hax_lib::requires(index.get(s).is_some()))]
     fn get_unchecked_mut<I: SliceIndex<[T]>>(
         s: &mut [T],
         index: I,
@@ -743,7 +743,7 @@ pub mod index {
         I: SliceIndex<[T]>,
     {
         type Output = I::Output;
-        #[cfg_attr(not(charon), hax_lib::requires(i.get(self).is_some()))]
+        #[cfg_attr(not(hax_backend_lean), hax_lib::requires(i.get(self).is_some()))]
         fn index(&self, i: I) -> &I::Output {
             match i.get(self) {
                 Option::Some(r) => r,
@@ -768,7 +768,7 @@ pub mod index {
         // divergent `panic`. The precondition mirrors `Index::index`.
         // Kept out of the Lean lane: routed through hax's spec channel, this
         // precondition makes aeneas fail with an internal `Invalid_argument`.
-        #[cfg_attr(not(charon), hax_lib::requires(i.get(self).is_some()))]
+        #[cfg_attr(not(hax_backend_lean), hax_lib::requires(i.get(self).is_some()))]
         fn index_mut(&mut self, i: I) -> &mut I::Output {
             i.get_unchecked_mut(self)
         }

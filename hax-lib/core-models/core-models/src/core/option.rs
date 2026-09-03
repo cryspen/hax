@@ -63,7 +63,7 @@ impl<T> Option<T> {
     }
 
     /// See [`std::option::Option::expect`]
-    #[cfg_attr(not(charon), hax_lib::requires(self.is_some()))]
+    #[cfg_attr(not(hax_backend_lean), hax_lib::requires(self.is_some()))]
     pub fn expect(self, _msg: &str) -> T {
         match self {
             Some(val) => val,
@@ -72,7 +72,7 @@ impl<T> Option<T> {
     }
 
     /// See [`std::option::Option::unwrap`]
-    #[cfg_attr(not(charon), hax_lib::requires(self.is_some()))]
+    #[cfg_attr(not(hax_backend_lean), hax_lib::requires(self.is_some()))]
     pub fn unwrap(self) -> T {
         match self {
             Some(val) => val,

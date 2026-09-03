@@ -1,7 +1,7 @@
 HAX ?= cargo hax
-# `cfg(charon)` marks the Lean pipeline in the model sources: it enables the
-# `aeneas::exclude` annotations and drops the specs Aeneas cannot translate.
-RUSTFLAGS ?= "--cfg charon"
+# `cfg(hax_backend_lean)` marks the Lean pipeline in the model sources: it enables
+# the `aeneas::exclude` annotations and drops the specs Aeneas cannot translate.
+RUSTFLAGS ?= "--cfg hax_backend_lean"
 
 # Absolute path to the `hax-lib` crate, for the alloc-staging step below.
 # The workspace Cargo.toml reaches it as a *relative* path (`..`), which

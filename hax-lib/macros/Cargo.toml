@@ -25,4 +25,4 @@ quote = { workspace = true }
 hax-lib = { path = ".." }
 
 [lints.rust]
-unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(charon)', 'cfg(hax_backend_lean)', 'cfg(doc_cfg)'] }
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_backend_lean)', 'cfg(doc_cfg)'] }
