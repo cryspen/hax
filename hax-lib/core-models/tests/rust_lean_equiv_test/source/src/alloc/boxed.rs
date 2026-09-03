@@ -121,17 +121,11 @@ pub fn test_box_eq_goes_through_the_dictionary() -> bool {
     a == b
 }
 
-// Rust-only: `!=` on a `Box` resolves to
-// `alloc.Box.Insts.CoreCmpPartialEqBox.ne`, which the model publishes under
-// `alloc.boxed.Box.…`. `skip_lean` cannot apply -- the guard fails to
-// elaborate, not to hold.
-#[cfg(test)]
-#[test]
-fn test_box_ne_goes_through_the_dictionary() {
+#[rust_lean_test]
+pub fn test_box_ne_goes_through_the_dictionary() -> bool {
     let a = Box::new(keyed(5, 1));
     let b = Box::new(keyed(5, 2));
-    let differ = a != b;
-    assert!(!differ);
+    (a != b) == false
 }
 
 #[rust_lean_test]
