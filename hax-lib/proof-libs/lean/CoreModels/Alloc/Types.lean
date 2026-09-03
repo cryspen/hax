@@ -84,7 +84,7 @@ def vec.Vec (T : Type) := rust_primitives.sequence.Seq T
 def vec.into_iter.IntoIter (T : Type) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::drain::Drain]
-    Source: 'src/lib.rs', lines 914:8-914:76
+    Source: 'src/lib.rs', lines 912:8-912:76
     Visibility: public -/
 def vec.drain.Drain (T : Type) (A : Type) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A

@@ -152,7 +152,7 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
   into_iter : Self → RustM Self_IntoIter
 
 /-- [core_models::array::iter::IntoIter]
-    Source: 'core-models/src/core/array.rs', lines 240:4-240:55
+    Source: 'core-models/src/core/array.rs', lines 238:4-238:55
     Visibility: public -/
 @[reducible]
 def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
@@ -180,6 +180,11 @@ structure clone.Clone (Self : Type) where
   clone : Self → RustM Self
   clone_from : Self → Self → RustM Self
 
+/-- [core_models::array::{impl core_models::clone::Clone for [T; N]}::clone::closure]
+    Source: 'core-models/src/core/array.rs', lines 170:25-170:38 -/
+@[reducible]
+def array.CloneArray.clone.closure (T : Type) (N : Std.Usize) := Unit
+
 /-- Trait declaration: [core_models::cmp::PartialEq]
     Source: 'core-models/src/core/cmp.rs', lines 5:0-23:1
     Visibility: public -/
@@ -194,7 +199,7 @@ structure default.Default (Self : Type) where
   default : RustM Self
 
 /-- [core_models::array::{impl core_models::default::Default for [T; N]}::default::closure]
-    Source: 'core-models/src/core/array.rs', lines 210:22-210:68 -/
+    Source: 'core-models/src/core/array.rs', lines 208:22-208:68 -/
 @[reducible]
 def array.DefaultArray.default.closure (T : Type) (N : Std.Usize) := Unit
 
@@ -672,7 +677,7 @@ def marker.PhantomData (T : Type) := T
 -/  -- replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
-    Source: 'core-models/src/core/mem.rs', lines 136:4-138:5
+    Source: 'core-models/src/core/mem.rs', lines 138:4-140:5
     Visibility: public -/
 structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
@@ -1081,7 +1086,7 @@ structure slice.iter.Windows (T : Type) where
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
-    Source: 'core-models/src/core/slice.rs', lines 506:4-531:5
+    Source: 'core-models/src/core/slice.rs', lines 522:4-547:5
     Visibility: public -/
 structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
   where
