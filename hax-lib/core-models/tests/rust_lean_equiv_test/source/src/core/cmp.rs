@@ -238,3 +238,20 @@ pub fn test_reverse_eq_goes_through_the_dictionary() -> bool {
     use core::cmp::Reverse;
     Reverse(keyed(5, 1)) == Reverse(keyed(5, 2))
 }
+
+// ----- PartialEq for Ordering ------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_ordering_eq_same() -> bool {
+    3u8.cmp(&7u8) == core::cmp::Ordering::Less
+}
+
+#[rust_lean_test]
+pub fn test_ordering_eq_different() -> bool {
+    (3u8.cmp(&7u8) == core::cmp::Ordering::Greater) == false
+}
+
+#[rust_lean_test]
+pub fn test_ordering_ne() -> bool {
+    5u8.cmp(&5u8) != core::cmp::Ordering::Less
+}

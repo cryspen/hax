@@ -346,9 +346,26 @@ impl Ord for () {
     }
 }
 
+/// See [`std::cmp::PartialEq`] for [`Ordering`]
+#[cfg(not(hax_backend_fstar))]
+impl PartialEq<Ordering> for Ordering {
+    fn eq(&self, other: &Ordering) -> bool {
+        match (self, other) {
+            (Ordering::Less, Ordering::Less) => true,
+            (Ordering::Equal, Ordering::Equal) => true,
+            (Ordering::Greater, Ordering::Greater) => true,
+            _ => false,
+        }
+    }
+}
+
+/// See [`std::cmp::Eq`] for [`Ordering`]
+#[cfg(not(hax_backend_fstar))]
+impl Eq for Ordering {}
+
 #[cfg(test)]
 mod tests {
-    use super::{Ord, PartialEq, PartialOrd};
+    use super::{Ord, Ordering, PartialEq, PartialOrd};
     use crate::testing::Inject;
     use proptest::prelude::*;
 
@@ -673,5 +690,27 @@ mod tests {
             <() as PartialEq<()>>::ne(&(), &()),
             std::cmp::PartialEq::ne(&(), &())
         );
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_ordering_eq() {
+        let all = [
+            std::cmp::Ordering::Less,
+            std::cmp::Ordering::Equal,
+            std::cmp::Ordering::Greater,
+        ];
+        for a in all {
+            for b in all {
+                assert_eq!(
+                    <Ordering as PartialEq<Ordering>>::eq(&a.inject(), &b.inject()),
+                    a == b
+                );
+                assert_eq!(
+                    <Ordering as PartialEq<Ordering>>::ne(&a.inject(), &b.inject()),
+                    a != b
+                );
+            }
+        }
     }
 }
