@@ -323,8 +323,8 @@ pub mod arithmetic {
         }
     }
 
-    // Rust inlines these values, for now we model usize by u64
-    // eventually we could try to define in the backend as 32 or 64
+    // Rust inlines these values, so the model pins usize at 64 bits, which is
+    // what Aeneas's `Usize` evaluates to as well.
     pub const SIZE_BYTES: usize = 8;
     pub const SIZE_BITS: u32 = 64;
     pub const USIZE_MAX: usize = u64::MAX as usize;

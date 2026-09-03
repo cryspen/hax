@@ -850,8 +850,6 @@ pub mod vec {
         pub fn as_mut_slice(&mut self) -> &mut [T] {
             seq_to_slice_mut(&mut self.0)
         }
-        // These are opaque for F* only: a bare `#[hax_lib::opaque]` is invisible to
-        // charon, so aeneas extracts the body regardless and it must model std.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn truncate(&mut self, n: usize) {
             let l = seq_len(&self.0);
@@ -1101,8 +1099,6 @@ pub mod vec {
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
         }
-        // These are opaque for F* only: a bare `#[hax_lib::opaque]` is invisible to
-        // charon, so aeneas extracts the body regardless and it must model std.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         pub fn truncate(&mut self, n: usize) {
             let l = seq_len(&self.0);

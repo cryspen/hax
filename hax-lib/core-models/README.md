@@ -77,18 +77,6 @@ sweeps the `u8`/`i8` domain against references built from operations that do not
 route through `rust_primitives`, which is what makes the comparison meaningful
 on the Lean side.
 
-Two further gaps worth knowing about:
-
-- **`#[hax_lib::requires]` reaches F\* only.** Charon does not see it, so the
-  Lean definition is total where the contract is not. Where that would make Lean
-  disagree with a panicking Rust operation, the Lean primitive must fail
-  explicitly instead (as `abs` and `rem_euclid` do).
-- **`#[hax_lib::opaque]` reaches hax only.** Aeneas extracts the body regardless,
-  so an `opaque` item whose Rust body is a placeholder becomes a *wrong* Lean
-  definition. Such items must be `--exclude`d or `--opaque`d for charon in the
-  `Makefile`; prefer `#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]` when the
-  body is a faithful model and only F\* needs it dropped.
-
 ## Coverage
 
 [`COVERAGE.md`](COVERAGE.md) reports, per top-level module, how much of the
