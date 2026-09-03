@@ -567,39 +567,51 @@ def rust_primitives.arithmetic.overflowing_mul_isize : Std.Isize → Std.Isize �
 def rust_primitives.arithmetic.overflowing_pow_isize : Std.Isize → Std.U32 → RustM (Std.Isize × Bool) :=
   fun x n => ok (ioverflowing_pow x n)
 
+@[spec]
 def rust_primitives.arithmetic.pow_u8 : Std.U8 → Std.U32 → RustM Std.U8 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_u16 : Std.U16 → Std.U32 → RustM Std.U16 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_u32 : Std.U32 → Std.U32 → RustM Std.U32 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_u64 : Std.U64 → Std.U32 → RustM Std.U64 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_u128 : Std.U128 → Std.U32 → RustM Std.U128 :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_usize : Std.Usize → Std.U32 → RustM Std.Usize :=
   fun x n => UScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_i8 : Std.I8 → Std.U32 → RustM Std.I8 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_i16 : Std.I16 → Std.U32 → RustM Std.I16 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_i32 : Std.I32 → Std.U32 → RustM Std.I32 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_i64 : Std.I64 → Std.U32 → RustM Std.I64 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_i128 : Std.I128 → Std.U32 → RustM Std.I128 :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
+@[spec]
 def rust_primitives.arithmetic.pow_isize : Std.Isize → Std.U32 → RustM Std.Isize :=
   fun x n => IScalar.tryMk _ (x.val ^ n.val)
 
