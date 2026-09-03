@@ -1078,6 +1078,52 @@ def Tuple.Insts.CoreCmpOrd : cmp.Ord Unit := {
   cmp := Tuple.Insts.CoreCmpOrd.cmp
 }
 
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}::eq]:
+    Source: 'core-models/src/core/cmp.rs', lines 352:4-359:5
+    Visibility: public -/
+def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq
+  (self : cmp.Ordering) (other : cmp.Ordering) : RustM Bool := do
+  match self with
+  | cmp.Ordering.Less =>
+    match other with
+    | cmp.Ordering.Less => ok true
+    | cmp.Ordering.Equal => ok false
+    | cmp.Ordering.Greater => ok false
+  | cmp.Ordering.Equal =>
+    match other with
+    | cmp.Ordering.Less => ok false
+    | cmp.Ordering.Equal => ok true
+    | cmp.Ordering.Greater => ok false
+  | cmp.Ordering.Greater =>
+    match other with
+    | cmp.Ordering.Less => ok false
+    | cmp.Ordering.Equal => ok false
+    | cmp.Ordering.Greater => ok true
+
+/-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}::ne]:
+    Source: 'core-models/src/core/cmp.rs', lines 360:4-364:5
+    Visibility: public -/
+def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.ne
+  (self : cmp.Ordering) (other : cmp.Ordering) : RustM Bool := do
+  let b ← cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq self other
+  ok (b = false)
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}]
+    Source: 'core-models/src/core/cmp.rs', lines 351:0-365:1 -/
+@[reducible]
+def cmp.Ordering.Insts.CoreCmpPartialEqOrdering : cmp.PartialEq
+  cmp.Ordering cmp.Ordering := {
+  eq := cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq
+  ne := cmp.Ordering.Insts.CoreCmpPartialEqOrdering.ne
+}
+
+/-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Ordering}]
+    Source: 'core-models/src/core/cmp.rs', lines 369:0-369:23 -/
+@[reducible]
+def cmp.Ordering.Insts.CoreCmpEq : cmp.Eq cmp.Ordering := {
+  PartialEqInst := cmp.Ordering.Insts.CoreCmpPartialEqOrdering
+}
+
 /-- [core_models::convert::{impl core_models::convert::Into<U> for T}::into]:
     Source: 'core-models/src/core/convert.rs', lines 38:4-40:5 -/
 def convert.Into.Blanket.into
@@ -12969,6 +13015,34 @@ def result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE (T
   from_residual :=
     result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE.from_residual
     T convertFromInst
+}
+
+/-- [core_models::result::{impl core_models::clone::Clone for core_models::result::Result<T, E>}::clone]:
+    Source: 'core-models/src/core/result.rs', lines 477:4-482:5
+    Visibility: public -/
+def result.Result.Insts.CoreCloneClone.clone
+  {T : Type} {E : Type} (cloneCloneInst : clone.Clone T) (cloneCloneInst1 :
+  clone.Clone E) (self : result.Result T E) :
+  RustM (result.Result T E)
+  := do
+  match self with
+  | core.result.Result.Ok v =>
+    let t ← cloneCloneInst.clone v
+    Aeneas.Std.RustM.ok (result.Result.Ok t)
+  | core.result.Result.Err e =>
+    let t ← cloneCloneInst1.clone e
+    Aeneas.Std.RustM.ok (result.Result.Err t)
+
+/-- Trait implementation: [core_models::result::{impl core_models::clone::Clone for core_models::result::Result<T, E>}]
+    Source: 'core-models/src/core/result.rs', lines 476:0-483:1 -/
+@[reducible]
+impl_def result.Result.Insts.CoreCloneClone {T : Type} {E : Type}
+  (cloneCloneInst : clone.Clone T) (cloneCloneInst1 : clone.Clone E) :
+  clone.Clone (result.Result T E) := {
+  clone := result.Result.Insts.CoreCloneClone.clone cloneCloneInst
+    cloneCloneInst1
+  clone_from := clone.Clone.clone_from.default
+    (result.Result.Insts.CoreCloneClone cloneCloneInst cloneCloneInst1)
 }
 
 /-- [core_models::slice::iter::{core_models::slice::iter::Chunks<'a, T>}::new]:
