@@ -65,6 +65,9 @@ Changes to the hax-lib crate:
 Changes to core models:
  - Improve core models library (#2049, #2157, #2077, #2160, #2187, #2199)
  - Add core model testing infrastructure
+ - Improve the core models library: fix divergences from `core`, model the missing
+   items extracted code resolves to, extend the Rust and Rust/Lean test suites, and
+   settle on one exclusion attribute and one backend cfg (#2183)
 
 Changes to the F* backend and library:
  - Fix some regressions in the F* proof lib (particularly the `vec_deque` models)
