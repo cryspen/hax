@@ -907,6 +907,124 @@ pub fn pv_extern(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStre
     .into()
 }
 
+/// Models a Rust function as a *generic, pre-declared* symbolic operation from
+/// the shared symbolic library (`primitives.pvl` / `cryptolib.pvl`). Writing
+///
+/// ```ignore
+/// #[hax_lib::symbolic_model("aead_enc")]
+/// fn encrypt(key: &Key, msg: &[u8]) -> Vec<u8> { … }
+/// ```
+///
+/// makes the ProVerif backend emit `letfun encrypt(key, msg) = aead_enc(key,
+/// msg).`, where `aead_enc` is an opaque symbol defined *once* in the trusted
+/// library and shared by every protocol. Unlike [`pv_extern`], no per-function
+/// `fun` declaration is generated: the op already lives in the library, so
+/// many protocol wrappers reuse one audited symbol (and crypto is modelled
+/// one-way, never an invertible `[data]` constructor).
+///
+/// The annotation is **backend-neutral** and drives *two* consumers from one
+/// fact — the symbolic op name:
+///  - the **ProVerif backend** lowers it to `letfun f(args) = op(args)` (via
+///    `proverif::replace_body`, under `cfg(hax_backend_proverif)`);
+///  - the **runtime symbolic tracer** records the call as `op(args)→result`
+///    (via `symbolic_trace::traced(symbolic, name = "op")`, under
+///    `cfg(feature = "symbolic_trace")`).
+///
+/// Because both use the *same* op name, a trace term `Struct{type_name:"op",…}`
+/// corresponds directly to the ProVerif `op` symbol — the trace is a witness for
+/// the static model. The two cfgs are orthogonal (extraction never has the
+/// feature; a runtime trace never has `hax_backend_proverif`), so exactly one
+/// arm is ever active; a plain build has neither and keeps the real body. The
+/// tracer arm emits tokens referencing `::symbolic_trace` (the tracing crate),
+/// so `hax-lib` itself never depends on it — the *using* crate opts in via the
+/// `symbolic_trace` feature + dependency.
+///
+/// The op's argument list is the annotated function's parameters (a receiver
+/// becomes `self` and is `skip`ped by the tracer, non-identifier patterns fall
+/// back to `p<i>`), so the library op's arity must line up. Randomness and fixed
+/// constants (an empty AAD, a domain-separation tag) are folded into the op's
+/// *library* definition, never passed at the call site.
+///
+/// Serializers of a single struct map onto the `identity` op (the wire bytes
+/// carry the struct's own term); multi-value combiners onto a `tupleN` op.
+#[proc_macro_attribute]
+pub fn symbolic_model(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let op: LitStr = parse_macro_input!(attr);
+    let item: ItemFn = parse_macro_input!(item);
+    let arg_names: Vec<String> = item
+        .sig
+        .inputs
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| match arg {
+            FnArg::Receiver(_) => "self".to_string(),
+            FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) => pat_ident.ident.to_string(),
+                _ => format!("p{}", i),
+            },
+        })
+        .collect();
+    let body_call = format!("{}({})", op.value(), arg_names.join(", "));
+    let body_lit = LitStr::new(&body_call, Span::call_site());
+    let traced_arm = symbolic_traced_arm(&op, &item);
+    quote! {
+        #traced_arm
+        #[::hax_lib::proverif::replace_body(#body_lit)]
+        #item
+    }
+    .into()
+}
+
+/// Build the runtime-tracer arm shared by the real and dummy `symbolic_model`:
+/// `#[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(symbolic,
+/// name = "op"[, skip(self, <&mut args>)]))]`. The tracer skips the receiver
+/// (its state colours the trace's member column) and every `&mut` argument (an
+/// out-param / RNG source — not a symbolic input, and generic `&mut R` would
+/// otherwise fail the tracer's arg probe).
+fn symbolic_traced_arm(op: &LitStr, item: &ItemFn) -> proc_macro2::TokenStream {
+    let mut skip_toks: Vec<proc_macro2::TokenStream> = Vec::new();
+    if matches!(item.sig.inputs.first(), Some(FnArg::Receiver(_))) {
+        skip_toks.push(quote!(self));
+    }
+    for arg in item.sig.inputs.iter() {
+        if let FnArg::Typed(pt) = arg {
+            if matches!(&*pt.ty, syn::Type::Reference(r) if r.mutability.is_some()) {
+                if let syn::Pat::Ident(pi) = &*pt.pat {
+                    let id = &pi.ident;
+                    skip_toks.push(quote!(#id));
+                }
+            }
+        }
+    }
+    let skip_arm = if skip_toks.is_empty() {
+        quote!()
+    } else {
+        quote!(, skip(#(#skip_toks),*))
+    };
+    quote! {
+        #[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(symbolic, name = #op #skip_arm))]
+    }
+}
+
+/// Marks a *compiled* protocol / state-machine function as a trace event: the
+/// runtime symbolic tracer records the transition each time it runs, mirroring a
+/// ProVerif `event`. For the ProVerif backend this is a no-op — the function is
+/// extracted and analyzed exactly as written (its accept/reject logic
+/// *compiles*). Under `cfg(feature = "symbolic_trace")` it emits the tracer's
+/// exit-event marker (`symbolic_trace::traced(exit, skip)`), referencing the
+/// tracing crate directly so `hax-lib` never depends on it. Backend-neutral, and
+/// kept distinct from [`symbolic_model`] because a traced fn is *analyzed*, not
+/// abstracted into a library op.
+#[proc_macro_attribute]
+pub fn symbolic_trace(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: TokenStream = item.into();
+    quote! {
+        #[cfg_attr(feature = "symbolic_trace", ::symbolic_trace::traced(exit, skip))]
+        #item
+    }
+    .into()
+}
+
 /// Shorthand for `#[hax_lib::proverif::replace_body(<lit>)]`. Useful for
 /// trivial constant stubs like `pv_stub!("nat_lit(0)")` on length helpers.
 #[proc_macro_attribute]

@@ -41,11 +41,12 @@ pub struct Message(aead::Tag, Vec<u8>);
 pub struct KeyIv(libcrux::aead::Key, libcrux::aead::Iv);
 
 /* Wire formats */
-// Redirect to the shared symbolic crypto library (`cryptolib.pvl`): the
-// protocol model carries no `${f}` antiquotes and no per-example `fun`/`reduc`
-// blocks — the serializer is the library's injective `crypto__serialize`, its
-// parser the inverse `crypto__deserialize` (round-trip reduc lives in the lib).
-#[hax::proverif::replace_body("crypto__serialize(key_iv)")]
+// A single-struct byte-serializer is `identity` on the struct's symbolic term:
+// the wire bytes carry `KeyIv`'s own value, so serialize/deserialize collapse
+// to the generic `identity` op (defined once in the shared symbolic library).
+// One annotation, one fact (the op name) — readable by the ProVerif backend
+// and the runtime symbolic tracer alike.
+#[hax::symbolic_model("identity")]
 fn serialize_key_iv(key_iv: &KeyIv) -> Vec<u8> {
     let mut result = Vec::new();
     result.extend_from_slice(key_iv.1 .0.as_ref());
@@ -56,15 +57,15 @@ fn serialize_key_iv(key_iv: &KeyIv) -> Vec<u8> {
     result
 }
 
-#[hax::proverif::replace_body("crypto__deserialize(bytes)")]
+#[hax::symbolic_model("identity")]
 fn deserialize_key_iv(bytes: &[u8]) -> Result<KeyIv, Error> {
     let iv = aead::Iv::new(&bytes[..12])?;
     let key = aead::Key::from_slice(Algorithm::Chacha20Poly1305, &bytes[12..])?;
     Ok(KeyIv(key, iv))
 }
 
-/* Cryptographic functions — redirected to `cryptolib.pvl` */
-#[hax::proverif::replace_body("crypto__kdf(ikm, info)")]
+/* Cryptographic functions — modelled by the shared `cryptolib.pvl` ops */
+#[hax::symbolic_model("kdf")]
 fn derive_key_iv(ikm: &[u8], info: &[u8]) -> Result<KeyIv, Error> {
     let key_iv_bytes =
         libcrux::hkdf::expand(libcrux::hkdf::Algorithm::Sha256, ikm, info, AEAD_KEY_NONCE)?;
@@ -77,14 +78,14 @@ fn derive_key_iv(ikm: &[u8], info: &[u8]) -> Result<KeyIv, Error> {
     Ok(KeyIv(key, iv))
 }
 
-#[hax::proverif::replace_body("crypto__aead_enc(key_iv, message, empty)")]
+#[hax::symbolic_model("aead_enc")]
 pub fn encrypt(key_iv: &KeyIv, message: &[u8]) -> Result<Message, Error> {
     let (tag, ctxt) =
         libcrux::aead::encrypt_detached(&key_iv.0, message, aead::Iv(key_iv.1 .0), EMPTY_AAD)?;
     Ok(Message(tag, ctxt))
 }
 
-#[hax::proverif::replace_body("crypto__aead_dec(key_iv, message, empty)")]
+#[hax::symbolic_model("aead_dec")]
 fn decrypt(key_iv: &KeyIv, message: Message) -> Result<Vec<u8>, Error> {
     libcrux::aead::decrypt_detached(
         &key_iv.0,
