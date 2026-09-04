@@ -12,7 +12,6 @@ include
       include On.Macro
       include On.Construct_base
       include On.Quote
-      include On.Dyn
       include On.Unsafe
     end)
     (struct
@@ -45,6 +44,7 @@ module SubtypeToInputLanguage
          and type state_passing_loop = Features.Off.state_passing_loop
          and type fold_like_loop = Features.Off.fold_like_loop
          and type match_guard = Features.Off.match_guard
+         and type dyn = Features.Off.dyn
          and type trait_item_default = Features.Off.trait_item_default) =
 struct
   module FB = InputLanguage
@@ -60,7 +60,6 @@ struct
         include Features.SUBTYPE.On.Slice
         include Features.SUBTYPE.On.Macro
         include Features.SUBTYPE.On.Quote
-        include Features.SUBTYPE.On.Dyn
         include Features.SUBTYPE.On.Unsafe
       end)
 
@@ -387,27 +386,8 @@ struct
             F.term @@ F.AST.Project (impl, F.lid [ (RenderId.render item).name ])
         | None -> F.term @@ F.AST.Wild)
     | TOpaque s -> F.term @@ F.AST.Wild
-    | TDyn { goals; _ } ->
-        let traits = List.map ~f:(pdyn_trait_goal span) goals in
-        let dyn = F.AST.Var (F.lid [ "dyn" ]) |> F.term in
-        let length =
-          F.AST.Const
-            (FStar_Const.Const_int (List.length goals |> Int.to_string, None))
-          |> F.term
-        in
-        F.mk_e_app dyn (length :: traits)
+    | TDyn _ -> .
     | _ -> .
-
-  and pdyn_trait_goal span (goal : dyn_trait_goal) =
-    (* This introduces a potential shadowing *)
-    let type_var = "z" in
-    let pat = F.pat @@ F.AST.PatVar (F.id type_var, None, []) in
-    let trait = F.AST.Var (pconcrete_ident goal.trait) |> F.term in
-    let args =
-      (F.AST.Var (F.lid [ type_var ]) |> F.term)
-      :: List.map ~f:(pgeneric_value span) goal.non_self_args
-    in
-    F.mk_e_abs [ pat ] (F.mk_e_app trait args)
 
   and pimpl_expr span (ie : impl_expr) =
     let some = Option.some in
@@ -2049,6 +2029,7 @@ module TransformToInputLanguage =
   |> Phases.Traits_specs
   |> Phases.Simplify_hoisting
   |> Phases.Newtype_as_refinement
+  |> Phases.Reject.Dyn
   |> Phases.Reject.Trait_item_default
   |> Phases.Bundle_cycles
   |> Phases.Reorder_fields

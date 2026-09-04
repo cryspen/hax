@@ -162,48 +162,37 @@ let ne_bad_message (_: Prims.unit) : Prims.unit =
   ()
 
 /// @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008), proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): fstar(HAX0008, HAX0008, HAX0008, HAX0008)
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = eq_good () in
   let _:Prims.unit = eq_good_message () in
   let _:Prims.unit = ne_good () in
   let _:Prims.unit = ne_good_message () in
   let _:Prims.unit =
-    Hax_lib.v_assert (Core_models.Result.impl__is_err #Prims.unit
-          #(dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z))
-          (Std.Panic.catch_unwind #(Prims.unit -> Prims.unit) #Prims.unit eq_bad
-            <:
-            Core_models.Result.t_Result Prims.unit
-              (dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z)))
+    Hax_lib.v_assert (Rust_primitives.Hax.failure "Explicit rejection by a phase in the Hax engine:\na node of kind [Dyn] have been found in the AST\n\nNote: the error was labeled with context `reject_Dyn`.\n"
+          "core_models::result::impl__is_err::<tuple0,dyn(core_models::any::t_Any + core_models::marker::t_Send)>(std::panic::catch_unwind::<arrow!(tuple0 -> tuple0),tuple0>(new_tests::rustc_coverage__bad_counte..."
+
         <:
         bool)
   in
   let _:Prims.unit =
-    Hax_lib.v_assert (Core_models.Result.impl__is_err #Prims.unit
-          #(dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z))
-          (Std.Panic.catch_unwind #(Prims.unit -> Prims.unit) #Prims.unit eq_bad_message
-            <:
-            Core_models.Result.t_Result Prims.unit
-              (dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z)))
+    Hax_lib.v_assert (Rust_primitives.Hax.failure "Explicit rejection by a phase in the Hax engine:\na node of kind [Dyn] have been found in the AST\n\nNote: the error was labeled with context `reject_Dyn`.\n"
+          "core_models::result::impl__is_err::<tuple0,dyn(core_models::any::t_Any + core_models::marker::t_Send)>(std::panic::catch_unwind::<arrow!(tuple0 -> tuple0),tuple0>(new_tests::rustc_coverage__bad_counte..."
+
         <:
         bool)
   in
   let _:Prims.unit =
-    Hax_lib.v_assert (Core_models.Result.impl__is_err #Prims.unit
-          #(dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z))
-          (Std.Panic.catch_unwind #(Prims.unit -> Prims.unit) #Prims.unit ne_bad
-            <:
-            Core_models.Result.t_Result Prims.unit
-              (dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z)))
+    Hax_lib.v_assert (Rust_primitives.Hax.failure "Explicit rejection by a phase in the Hax engine:\na node of kind [Dyn] have been found in the AST\n\nNote: the error was labeled with context `reject_Dyn`.\n"
+          "core_models::result::impl__is_err::<tuple0,dyn(core_models::any::t_Any + core_models::marker::t_Send)>(std::panic::catch_unwind::<arrow!(tuple0 -> tuple0),tuple0>(new_tests::rustc_coverage__bad_counte..."
+
         <:
         bool)
   in
   let _:Prims.unit =
-    Hax_lib.v_assert (Core_models.Result.impl__is_err #Prims.unit
-          #(dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z))
-          (Std.Panic.catch_unwind #(Prims.unit -> Prims.unit) #Prims.unit ne_bad_message
-            <:
-            Core_models.Result.t_Result Prims.unit
-              (dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z)))
+    Hax_lib.v_assert (Rust_primitives.Hax.failure "Explicit rejection by a phase in the Hax engine:\na node of kind [Dyn] have been found in the AST\n\nNote: the error was labeled with context `reject_Dyn`.\n"
+          "core_models::result::impl__is_err::<tuple0,dyn(core_models::any::t_Any + core_models::marker::t_Send)>(std::panic::catch_unwind::<arrow!(tuple0 -> tuple0),tuple0>(new_tests::rustc_coverage__bad_counte..."
+
         <:
         bool)
   in
