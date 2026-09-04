@@ -1293,6 +1293,38 @@ def _f
 end new_tests.legacy__traits__lib.typenum_perf
 
 
+namespace new_tests.legacy__traits__lib.gat_bounds_issue_1907
+
+class Bound.AssociatedTypes (Self : Type) where
+
+class Bound (Self : Type)
+  [associatedTypes : outParam (Bound.AssociatedTypes (Self : Type))]
+  where
+
+@[reducible] instance Impl.AssociatedTypes : Bound.AssociatedTypes u8 where
+
+instance Impl : Bound u8 where
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (A : Type)
+  [trait_constr_Impl_1_associated_type_i0 : Bound.AssociatedTypes A]
+  [trait_constr_Impl_1_i0 : Bound A ] :
+  Bound.AssociatedTypes (rust_primitives.hax.Tuple2 u8 A)
+  where
+
+instance Impl_1
+  (A : Type)
+  [trait_constr_Impl_1_associated_type_i0 : Bound.AssociatedTypes A]
+  [trait_constr_Impl_1_i0 : Bound A ] :
+  Bound (rust_primitives.hax.Tuple2 u8 A)
+  where
+
+structure S where
+  -- no fields
+
+end new_tests.legacy__traits__lib.gat_bounds_issue_1907
+
+
 namespace new_tests.legacy__traits__lib
 
 class Foo.AssociatedTypes (Self : Type) where
@@ -1416,6 +1448,27 @@ attribute [instance_reducible, instance] Foo.trait_constr_Foo_i0
 end new_tests.legacy__traits__lib.default_traits_parameters
 
 
+namespace new_tests.legacy__traits__lib.gat_bounds_issue_1907
+
+class WithGat.AssociatedTypes (Self : Type) where
+  Assoc : Type
+
+attribute [reducible] WithGat.AssociatedTypes.Assoc
+
+abbrev WithGat.Assoc :=
+  WithGat.AssociatedTypes.Assoc
+
+class WithGat (Self : Type)
+  [associatedTypes : outParam (WithGat.AssociatedTypes (Self : Type))]
+  where
+  (A : Type)
+  [trait_constr_Assoc_associated_type_i1 : Bound.AssociatedTypes
+    associatedTypes.Assoc]
+  [trait_constr_Assoc_i1 : Bound associatedTypes.Assoc ]
+
+end new_tests.legacy__traits__lib.gat_bounds_issue_1907
+
+
 namespace new_tests.legacy__traits__lib
 
 @[reducible] instance Impl_1.AssociatedTypes :
@@ -1473,4 +1526,14 @@ class Trait2 (Self : Type)
 attribute [instance_reducible, instance] Trait2.trait_constr_Trait2_i0
 
 end new_tests.legacy__traits__lib.recursive_trait_with_assoc_type
+
+
+namespace new_tests.legacy__traits__lib.gat_bounds_issue_1907
+
+@[reducible] instance Impl_2.AssociatedTypes : WithGat.AssociatedTypes S where
+  Assoc := (rust_primitives.hax.Tuple2 u8 A)
+
+instance Impl_2 : WithGat S where
+
+end new_tests.legacy__traits__lib.gat_bounds_issue_1907
 

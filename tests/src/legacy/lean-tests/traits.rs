@@ -105,15 +105,15 @@ mod associated_types {
     impl Bar for i16 {}
     impl<A> Foo<i16> for (u32, A) {}
 
-    // impl T3 for S {
-    //     type T = i16;
+    impl T3 for S {
+        type T = i16;
 
-    //     type Tp<A: Bar> = (u32, A);
+        type Tp<A: Bar> = (u32, A);
 
-    //     fn f<A: Bar>(&self, x: Self::T, y: Self::Tp<A>) -> usize {
-    //         12
-    //     }
-    // }
+        fn f<A: Bar>(&self, x: Self::T, y: Self::Tp<A>) -> usize {
+            12
+        }
+    }
 
     trait Chain0 {}
 

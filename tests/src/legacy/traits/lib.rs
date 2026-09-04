@@ -357,3 +357,20 @@ mod typenum_perf {
 
     fn _f<T: IsLess<I20>>() {}
 }
+
+/// The bound on a generic associated type resolves in the impl. The backends still print the
+/// associated type without its own parameters (issue 972), so the output does not type-check.
+mod gat_bounds_issue_1907 {
+    trait Bound {}
+    trait WithGat {
+        type Assoc<A: Bound>: Bound;
+    }
+
+    impl Bound for u8 {}
+    impl<A: Bound> Bound for (u8, A) {}
+
+    struct S;
+    impl WithGat for S {
+        type Assoc<A: Bound> = (u8, A);
+    }
+}
