@@ -1,6 +1,6 @@
+//! @fail(tc): fstar(2)
 //! @fail(tc): legacy-lean(1)
 //! @fail(extraction): legacy-lean(HAX0001, HAX0001)
-//! @fail(tc): fstar(72)
 
 #![allow(dead_code)]
 
@@ -15,6 +15,7 @@ impl Printable<String> for i32 {
 }
 
 /// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): fstar(HAX0008)
 pub fn print(a: Box<dyn Printable<String>>) {
     println!("{}", a.stringify());
 }
