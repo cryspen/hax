@@ -196,6 +196,7 @@ impl Backend for LeanBackend {
     fn phases(&self) -> Vec<PhaseKind> {
         use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
         vec![
+            RejectOrOpacifyMutRef.into(),
             RejectRawOrMutPointer.into(),
             RejectImplTypeMethod.into(),
             RewriteLocalSelf.into(),
