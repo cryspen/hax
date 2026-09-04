@@ -216,6 +216,25 @@ reduc forall new_tests__legacy__traits__lib__implement_arithmetic_trait__0: nat;
       )
     ) = new_tests__legacy__traits__lib__implement_arithmetic_trait__0.
 
+type new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S.
+
+fun new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S_to_bitstring(
+      new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S [typeConverter].
+const new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S_default_value: new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S.
+letfun new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S_default() =
+       new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S_default_value.
+letfun new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S_err() =
+       let x = construct_fail() in new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S_default_value.
+fun new_tests__legacy__traits__lib__gat_bounds_issue_1907___S()
+    : new_tests__legacy__traits__lib__gat_bounds_issue_1907___t_S [data].
+
+
 type new_tests__legacy__traits__lib__t_Struct.
 
 fun new_tests__legacy__traits__lib__t_Struct_to_bitstring(

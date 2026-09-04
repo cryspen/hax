@@ -1507,18 +1507,29 @@ instance Impl_2 : Bar i16 where
 
 instance Impl_3 (A : Type) : Foo (rust_primitives.hax.Tuple2 u32 A) i16 where
 
+@[spec]
+def Impl_4.f_hoisted
+    (A : Type)
+    [trait_constr_f_hoisted_associated_type_i0 : Bar.AssociatedTypes A]
+    [trait_constr_f_hoisted_i0 : Bar A ]
+    (self : S)
+    (x : i16)
+    (y : (rust_primitives.hax.Tuple2 u32 A)) :
+    RustM usize := do
+  (pure (12 : usize))
+
 class Chain0.AssociatedTypes (Self : Type) where
 
 class Chain0 (Self : Type)
   [associatedTypes : outParam (Chain0.AssociatedTypes (Self : Type))]
   where
 
-@[reducible] instance Impl_4.AssociatedTypes : Chain0.AssociatedTypes u8 where
+@[reducible] instance Impl_5.AssociatedTypes : Chain0.AssociatedTypes u8 where
 
-instance Impl_4 : Chain0 u8 where
+instance Impl_5 : Chain0 u8 where
 
 @[spec]
-def Impl_7.f_hoisted (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
+def Impl_8.f_hoisted (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   (pure (0 : u8))
 
 end new_tests.legacy__lean_tests__lib.traits.associated_types
@@ -2387,6 +2398,20 @@ namespace new_tests.legacy__lean_tests__lib.traits.associated_types
 instance Impl : T1 S where
   f := (Impl.f_hoisted)
 
+@[reducible] instance Impl_4.AssociatedTypes : T3.AssociatedTypes S where
+  T := i16
+  Tp := (rust_primitives.hax.Tuple2 u32 A)
+
+instance Impl_4 : T3 S where
+  f :=
+    fun
+      
+      (A : Type)
+      [trait_constr__associated_type_i0 : Bar.AssociatedTypes A]
+      [trait_constr__i0 : Bar A ]
+      =>
+    (Impl_4.f_hoisted A)
+
 class Chain2.AssociatedTypes (Self : Type) where
   [trait_constr_Chain2_i0 : Chain1.AssociatedTypes Self]
 
@@ -2414,20 +2439,20 @@ class Chain3 (Self : Type)
 
 attribute [instance_reducible, instance] Chain3.trait_constr_Chain3_i0
 
-@[reducible] instance Impl_5.AssociatedTypes : Chain1.AssociatedTypes u8 where
+@[reducible] instance Impl_6.AssociatedTypes : Chain1.AssociatedTypes u8 where
   A := u8
   B := u8
 
-instance Impl_5 : Chain1 u8 where
+instance Impl_6 : Chain1 u8 where
 
-@[reducible] instance Impl_6.AssociatedTypes : Chain2.AssociatedTypes u8 where
+@[reducible] instance Impl_7.AssociatedTypes : Chain2.AssociatedTypes u8 where
 
-instance Impl_6 : Chain2 u8 where
+instance Impl_7 : Chain2 u8 where
 
-@[reducible] instance Impl_7.AssociatedTypes : Chain3.AssociatedTypes u8 where
+@[reducible] instance Impl_8.AssociatedTypes : Chain3.AssociatedTypes u8 where
 
-instance Impl_7 : Chain3 u8 where
-  f := (Impl_7.f_hoisted)
+instance Impl_8 : Chain3 u8 where
+  f := (Impl_8.f_hoisted)
 
 end new_tests.legacy__lean_tests__lib.traits.associated_types
 

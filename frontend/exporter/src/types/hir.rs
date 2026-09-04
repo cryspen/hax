@@ -385,15 +385,16 @@ pub enum ImplItemKind<Body: IsBody> {
             let (tcx, owner_id) = (s.base().tcx, s.owner_id());
             let assoc_item = tcx.opt_associated_item(owner_id).unwrap();
             let impl_did = assoc_item.impl_container(tcx).unwrap();
-            tcx.explicit_item_bounds(assoc_item.trait_item_def_id().unwrap())
-                .skip_binder() // Skips an `EarlyBinder`, likely for GATs
-                .iter()
-                .copied()
-                .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
-                    !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
-                }))
-                .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, impl_did, clause, span))
-                .collect::<Vec<_>>()
+            // An inherent associated type has no trait declaration to inherit bounds from.
+            assoc_item.trait_item_def_id().map_or(vec![], |decl_did| {
+                tcx.explicit_item_bounds(decl_did)
+                    .iter_identity_copied()
+                    .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
+                        !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
+                    }))
+                    .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, impl_did, owner_id, clause, span))
+                    .collect()
+            })
         };
         ImplItemKind::Type {
             ty: t.sinto(s),
@@ -439,7 +440,7 @@ pub struct Impl<Body: IsBody> {
                 .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
                     !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
                 }))
-                .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, owner_id, clause, span))
+                .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, owner_id, owner_id, clause, span))
                 .collect::<Vec<_>>()
         } else {
             vec![]
