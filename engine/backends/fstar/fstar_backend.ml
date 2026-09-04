@@ -2019,7 +2019,8 @@ module DepGraphR = Dependencies.Make (Features.Rust)
 
 module TransformToInputLanguage =
   [%functor_application
-    Phases.Reject.RawOrMutPointer(Features.Rust)
+    Phases.Reject_or_opacify_mut_ref(Features.Rust)
+  |> Phases.Reject.RawOrMutPointer
   |> Phases.Reject_impl_type_method
   |> Phases.Rewrite_local_self
   |> Phases.Transform_hax_lib_inline
