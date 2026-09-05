@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__branch__lazy_boolean
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// @fail(extraction): proverif(HAX0008)

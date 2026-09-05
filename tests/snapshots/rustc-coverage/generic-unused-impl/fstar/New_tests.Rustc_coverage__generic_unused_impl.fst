@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__generic_unused_impl
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_W (v_T: Type0) = | W : v_T -> t_W v_T

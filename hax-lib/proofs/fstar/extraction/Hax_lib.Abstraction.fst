@@ -1,6 +1,5 @@
 module Hax_lib.Abstraction
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// Marks a type as abstract: its values can be lowered to concrete

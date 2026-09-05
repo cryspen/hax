@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__while_early_ret
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// @fail(extraction): proverif(HAX0008), ssprove(HAX0001), coq(HAX0001, HAX0001)

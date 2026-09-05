@@ -1,6 +1,5 @@
 module New_tests.Legacy__lean_tests__lib.Traits.Trait_level_args
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_T1 (v_Self: Type0) (v_A: Type0) (v_B: Type0) = {

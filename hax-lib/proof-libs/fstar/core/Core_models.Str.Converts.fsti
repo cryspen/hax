@@ -1,6 +1,5 @@
 module Core_models.Str.Converts
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 val from_utf8 (s: t_Slice u8)

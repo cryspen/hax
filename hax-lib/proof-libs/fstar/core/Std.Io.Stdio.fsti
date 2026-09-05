@@ -1,6 +1,5 @@
 module Std.Io.Stdio
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 val e_print (args: Core_models.Fmt.t_Arguments)

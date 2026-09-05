@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__conditions
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let main__v_B: u32 = mk_u32 100

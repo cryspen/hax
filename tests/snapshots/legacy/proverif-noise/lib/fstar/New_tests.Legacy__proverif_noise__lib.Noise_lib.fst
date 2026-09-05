@@ -1,6 +1,5 @@
 module New_tests.Legacy__proverif_noise__lib.Noise_lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// This module defines the generic Noise processing rules

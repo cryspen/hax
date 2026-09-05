@@ -1,6 +1,5 @@
 module Hax_lib.Prop.Constructors
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 include Hax_lib.Prop.Bundle {from_bool as from_bool}

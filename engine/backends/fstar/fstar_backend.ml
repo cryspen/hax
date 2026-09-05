@@ -1951,7 +1951,10 @@ let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
       bo.fuel bo.ifuel bo.z3rlimit
   in
 
-  List.append [ opts; "open FStar.Mul" ]
+  (* [FStar.Mul] no longer exists: since F*'s "Prims: define * as
+     multiplication", [*] is arithmetic multiplication everywhere and tuple
+     types are spelled [&]. *)
+  List.append [ opts ]
     (if hax_core_models_extraction then [ "open Rust_primitives" ]
      else [ "open Core_models" ])
   |> String.concat ~sep:"\n"

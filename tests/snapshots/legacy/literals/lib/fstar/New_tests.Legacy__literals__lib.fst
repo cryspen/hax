@@ -1,6 +1,5 @@
 module New_tests.Legacy__literals__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let math_integers (x: Hax_lib.Int.t_Int)

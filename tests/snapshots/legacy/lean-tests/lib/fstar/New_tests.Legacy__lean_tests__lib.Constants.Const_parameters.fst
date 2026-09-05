@@ -1,6 +1,5 @@
 module New_tests.Legacy__lean_tests__lib.Constants.Const_parameters
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// Function with const parameter

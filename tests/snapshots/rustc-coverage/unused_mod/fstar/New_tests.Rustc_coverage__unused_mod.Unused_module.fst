@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__unused_mod.Unused_module
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let never_called_function (_: Prims.unit) : Prims.unit =

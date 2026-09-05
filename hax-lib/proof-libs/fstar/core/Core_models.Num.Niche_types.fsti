@@ -1,7 +1,6 @@
 module Core_models.Num.Niche_types
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core_models
-open FStar.Mul
 
 type t_Nanoseconds = | Nanoseconds : u32 -> t_Nanoseconds
 

@@ -1,6 +1,5 @@
 module Sha256
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let v_BLOCK_SIZE: usize = mk_usize 64

@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Recursive_trait_with_assoc_type
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Trait1 (v_Self: Type0) = {

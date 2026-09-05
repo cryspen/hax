@@ -1,6 +1,5 @@
 module New_tests.Legacy__lean_tests__lib.Traits.Associated_types
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Foo (v_Self: Type0) (v_T: Type0) = { __marker_trait_t_Foo:Prims.unit }

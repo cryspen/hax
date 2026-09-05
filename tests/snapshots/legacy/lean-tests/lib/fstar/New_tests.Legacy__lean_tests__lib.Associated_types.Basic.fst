@@ -1,6 +1,5 @@
 module New_tests.Legacy__lean_tests__lib.Associated_types.Basic
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Iterable (v_Self: Type0) = {

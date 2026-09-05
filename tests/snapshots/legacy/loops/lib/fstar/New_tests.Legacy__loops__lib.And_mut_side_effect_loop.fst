@@ -1,6 +1,5 @@
 module New_tests.Legacy__loops__lib.And_mut_side_effect_loop
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// @fail(extraction): proverif(HAX0008)

@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__inline_dead
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let dead (_: Prims.unit) : u32 = mk_u32 42

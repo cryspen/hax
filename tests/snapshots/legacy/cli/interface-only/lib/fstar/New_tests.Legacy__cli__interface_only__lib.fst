@@ -1,6 +1,5 @@
 module New_tests.Legacy__cli__interface_only__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// This item contains unsafe blocks and raw references, two features

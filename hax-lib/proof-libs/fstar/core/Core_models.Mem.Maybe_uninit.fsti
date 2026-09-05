@@ -1,7 +1,6 @@
 module Core_models.Mem.Maybe_uninit
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core_models
-open FStar.Mul
 
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]

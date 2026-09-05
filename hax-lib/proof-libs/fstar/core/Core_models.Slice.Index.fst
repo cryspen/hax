@@ -1,6 +1,5 @@
 module Core_models.Slice.Index
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 /// See [`std::slice::SliceIndex`]. `get_unchecked` is the same in-bounds

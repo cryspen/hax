@@ -1,6 +1,5 @@
 module Core_models.Iter.Traits
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 class t_Iterator (v_Self: Type0) = {

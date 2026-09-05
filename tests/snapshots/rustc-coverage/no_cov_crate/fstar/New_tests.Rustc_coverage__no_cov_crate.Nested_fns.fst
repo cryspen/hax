@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__no_cov_crate.Nested_fns
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let outer_not_covered__inner (is_true: bool) : Prims.unit =

@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Trait_definition
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_MyTrait (v_Self: Type0) = {

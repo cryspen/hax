@@ -1,6 +1,5 @@
 module New_tests.Legacy__attributes__lib.Verifcation_status
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 #push-options "--admit_smt_queries true"

@@ -1,6 +1,5 @@
 module New_tests.Legacy__dyn__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Printable (v_Self: Type0) (v_S: Type0) = {

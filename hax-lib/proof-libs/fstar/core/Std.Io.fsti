@@ -1,6 +1,5 @@
 module Std.Io
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 class t_Read (v_Self: Type0) = {

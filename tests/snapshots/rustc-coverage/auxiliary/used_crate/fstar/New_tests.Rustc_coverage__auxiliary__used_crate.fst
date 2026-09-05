@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__auxiliary__used_crate
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let _ =

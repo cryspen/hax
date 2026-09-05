@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__inline
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let length (#v_T: Type0) (xs: t_Slice v_T) : usize = Core_models.Slice.impl__len #v_T xs

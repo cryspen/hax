@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__closure_macro
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let load_configuration_files (_: Prims.unit)

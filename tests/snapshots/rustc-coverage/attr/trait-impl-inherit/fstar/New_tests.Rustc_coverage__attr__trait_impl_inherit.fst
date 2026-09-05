@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__attr__trait_impl_inherit
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 (* item error backend: Explicit rejection by a phase in the Hax engine:

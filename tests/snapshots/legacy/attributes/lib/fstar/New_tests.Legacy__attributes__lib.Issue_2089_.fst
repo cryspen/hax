@@ -1,6 +1,5 @@
 module New_tests.Legacy__attributes__lib.Issue_2089_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Super (v_Self: Type0) = { [@@@ FStar.Tactics.Typeclasses.no_method]f_B:Type0 }

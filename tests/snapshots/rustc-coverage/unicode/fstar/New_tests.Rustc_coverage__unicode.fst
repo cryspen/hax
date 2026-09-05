@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__unicode
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let v_申し訳ございません (_: Prims.unit) : bool = Core_models.Hint.black_box #bool false

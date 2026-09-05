@@ -1,6 +1,5 @@
 module New_tests.Legacy__side_effects__lib.Issue_1300_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let v_fun (_: Prims.unit) : Core_models.Result.t_Result Prims.unit u8 =

@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__bad_counter_ids
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_Foo = | Foo : u32 -> t_Foo

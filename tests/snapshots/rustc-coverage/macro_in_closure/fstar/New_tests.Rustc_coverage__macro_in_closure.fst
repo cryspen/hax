@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__macro_in_closure
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let v_NO_BLOCK:  Prims.unit -> Prims.unit =

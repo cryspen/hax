@@ -1,6 +1,5 @@
 module New_tests.Legacy__side_effects__lib.Issue_1089_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let test (x y: Core_models.Option.t_Option i32) : Core_models.Option.t_Option i32 =

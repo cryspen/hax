@@ -1,6 +1,5 @@
 module Chacha20
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 40"
-open FStar.Mul
 open Core_models
 
 let _ =

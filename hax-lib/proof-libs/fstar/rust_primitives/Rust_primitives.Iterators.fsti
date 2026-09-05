@@ -2,7 +2,6 @@ module Rust_primitives.Iterators
 
 open Rust_primitives
 open Core_models.Ops.Range
-open FStar.Mul
 
 val foldi_range  (#n:inttype) (#acc_t:Type)
                  (#inv:(acc_t -> i:int_t n -> Type))

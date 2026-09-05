@@ -1,6 +1,5 @@
 module New_tests.Legacy__lean_core_models__lib.Default.Enums
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_E (v_T: Type0) =

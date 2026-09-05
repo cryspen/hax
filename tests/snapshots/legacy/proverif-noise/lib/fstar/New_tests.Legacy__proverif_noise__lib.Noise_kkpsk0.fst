@@ -1,6 +1,5 @@
 module New_tests.Legacy__proverif_noise__lib.Noise_kkpsk0
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_HandshakeStateI0 = {
