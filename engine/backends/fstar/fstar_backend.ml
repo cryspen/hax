@@ -155,8 +155,10 @@ struct
     | Cast -> F.lid [ "cast" ]
     | LogicalOp op -> (
         match op with
-        | And -> F.lid [ "Prims"; "op_AmpAmp" ]
-        | Or -> F.lid [ "Prims"; "op_BarBar" ])
+        (* Since F* uses a uniform mangling for operator names, `&&` and `||`
+           are named `op_Amp_Amp` and `op_Bar_Bar`. *)
+        | And -> F.lid [ "Prims"; "op_Amp_Amp" ]
+        | Or -> F.lid [ "Prims"; "op_Bar_Bar" ])
 
   let pnegative = function true -> "-" | false -> ""
 
