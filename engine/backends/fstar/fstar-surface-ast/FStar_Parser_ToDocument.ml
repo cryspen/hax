@@ -1857,6 +1857,9 @@ and (p_letqualifier :
     | FStar_Parser_AST.Rec ->
         let uu___1 = str "rec" in
         FStar_Pprint.op_Hat_Hat FStar_Pprint.space uu___1
+    | FStar_Parser_AST.LocalUnfold ->
+        let uu___1 = str "unfold" in
+        FStar_Pprint.op_Hat_Hat FStar_Pprint.space uu___1
     | FStar_Parser_AST.NoLetQualifier -> FStar_Pprint.empty
 and (p_aqual : FStar_Parser_AST.arg_qualifier -> FStar_Pprint.document) =
   fun uu___ ->
@@ -2828,6 +2831,13 @@ and (p_noSeqTerm' :
                         let uu___1 =
                           let uu___2 = str "let" in
                           let uu___3 = str "rec" in
+                          FStar_Pprint.op_Hat_Slash_Hat uu___2 uu___3 in
+                        FStar_Pprint.group uu___1
+                    | FStar_Pervasives_Native.Some
+                        (FStar_Parser_AST.LocalUnfold) ->
+                        let uu___1 =
+                          let uu___2 = str "let" in
+                          let uu___3 = str "unfold" in
                           FStar_Pprint.op_Hat_Slash_Hat uu___2 uu___3 in
                         FStar_Pprint.group uu___1
                     | FStar_Pervasives_Native.Some

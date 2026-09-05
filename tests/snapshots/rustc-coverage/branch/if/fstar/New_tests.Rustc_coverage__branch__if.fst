@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__branch__if
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let say (message: string) : Prims.unit =
@@ -124,7 +123,7 @@ let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
     Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Array
               bool (mk_usize 3))
           #FStar.Tactics.Typeclasses.solve
-          (let list = [false; true; true] in
+          (let unfold list = [false; true; true] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
             Rust_primitives.Hax.array_of_list 3 list)
         <:
@@ -140,7 +139,7 @@ let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Array
             bool (mk_usize 5))
         #FStar.Tactics.Typeclasses.solve
-        (let list = [false; true; true; true; true] in
+        (let unfold list = [false; true; true; true; true] in
           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 5);
           Rust_primitives.Hax.array_of_list 5 list)
       <:
@@ -152,7 +151,7 @@ let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
         Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Array
                   bool (mk_usize 3))
               #FStar.Tactics.Typeclasses.solve
-              (let list = [false; true; true] in
+              (let unfold list = [false; true; true] in
                 FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
                 Rust_primitives.Hax.array_of_list 3 list)
             <:

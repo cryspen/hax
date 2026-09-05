@@ -7,7 +7,6 @@ module Core_models.Num.Overflow_spec
 /// so that leaving one of those primitives uninterpreted is a build failure
 /// rather than a silently unusable model (#2127).
 
-open FStar.Mul
 open Rust_primitives
 
 /// unsigned add — in range

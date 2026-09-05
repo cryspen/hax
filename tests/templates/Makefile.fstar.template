@@ -42,7 +42,6 @@ FSTAR_BIN      ?= $(FSTAR_BIN_DETECT)
 
 GIT_ROOT_DIR   := $(shell git rev-parse --show-toplevel)/
 CACHE_DIR      ?= ${GIT_ROOT_DIR}.fstar-cache/checked
-HINT_DIR       ?= ${GIT_ROOT_DIR}.fstar-cache/hints
 
 # Makes command quiet by default
 Q ?= @
@@ -146,12 +145,12 @@ FSTAR_FLAGS = \
 
 FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)
 
-.depend: $(HINT_DIR) $(CACHE_DIR) $(ROOTS) $(HACL_HOME)
+.depend: $(CACHE_DIR) $(ROOTS) $(HACL_HOME)
 	@$(FSTAR) --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
 
 include .depend
 
-$(HINT_DIR) $(CACHE_DIR):
+$(CACHE_DIR):
 	$(Q)mkdir -p $@
 
 define HELPMESSAGE
@@ -195,7 +194,6 @@ describe:
 	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_BIN${ANSI_COLOR_RESET} = %s\n' '${FSTAR_BIN}'
 	@printf ' - ${ANSI_COLOR_BLUE}GIT_ROOT_DIR${ANSI_COLOR_RESET} = %s\n' '${GIT_ROOT_DIR}'
 	@printf ' - ${ANSI_COLOR_BLUE}CACHE_DIR${ANSI_COLOR_RESET} = %s\n' '${CACHE_DIR}'
-	@printf ' - ${ANSI_COLOR_BLUE}HINT_DIR${ANSI_COLOR_RESET} = %s\n' '${HINT_DIR}'
 	@printf ' - ${ANSI_COLOR_BLUE}ADMIT_MODULE_FLAGS${ANSI_COLOR_RESET} = %s\n' '${ADMIT_MODULE_FLAGS}'
 	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_INCLUDE_DIRS_EXTRA${ANSI_COLOR_RESET} = %s\n' '${FSTAR_INCLUDE_DIRS_EXTRA}'
 
@@ -204,7 +202,7 @@ h: ;@bash -c "$$HELPMESSAGE"
 
 HEADER = $(Q)printf '${ANSI_COLOR_BBLUE}[CHECK] %s ${ANSI_COLOR_RESET}\n' "$(basename $(notdir $@))"
 
-run/%: | .depend $(HINT_DIR) $(CACHE_DIR) $(HACL_HOME)
+run/%: | .depend $(CACHE_DIR) $(HACL_HOME)
 	${HEADER}
 	$(Q)$(FSTAR) $(OTHERFLAGS) $(@:run/%=%)
 
@@ -213,15 +211,15 @@ ADMIT_CHECKED = $(addsuffix .checked, $(addprefix $(CACHE_DIR)/,$(ADMIT_MODULES)
 
 $(ADMIT_CHECKED):
 	$(Q)printf '${ANSI_COLOR_BBLUE}[${ANSI_COLOR_TONE}ADMIT${ANSI_COLOR_BBLUE}] %s ${ANSI_COLOR_RESET}\n' "$(basename $(notdir $@))"
-	$(Q)$(FSTAR) $(OTHERFLAGS) $(ADMIT_MODULE_FLAGS) $< $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(notdir $*).hints || { \
+	$(Q)$(FSTAR) $(OTHERFLAGS) $(ADMIT_MODULE_FLAGS) $< || { \
 	  echo "" ; \
 	  exit 1 ; \
 	}
 	$(Q)printf "\n\n"
 
-$(CACHE_DIR)/%.checked: | .depend $(HINT_DIR) $(CACHE_DIR) $(HACL_HOME)
+$(CACHE_DIR)/%.checked: | .depend $(CACHE_DIR) $(HACL_HOME)
 	${HEADER}
-	$(Q)$(FSTAR) $(OTHERFLAGS) $< $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(notdir $*).hints || { \
+	$(Q)$(FSTAR) $(OTHERFLAGS) $< || { \
 	  echo "" ; \
 	  exit 1 ; \
 	}
@@ -232,11 +230,9 @@ verify: $(VERIFIED_CHECKED) $(ADMIT_CHECKED)
 
 # Targets for Emacs
 %.fst-in:
-	$(info $(FSTAR_FLAGS) \
-	  $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(basename $@).fst.hints)
+	$(info $(FSTAR_FLAGS))
 %.fsti-in:
-	$(info $(FSTAR_FLAGS) \
-	  $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(basename $@).fsti.hints)
+	$(info $(FSTAR_FLAGS))
 
 # Targets for VSCode
 hax.fst.config.json: .depend

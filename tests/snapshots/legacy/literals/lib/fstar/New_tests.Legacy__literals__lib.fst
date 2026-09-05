@@ -1,6 +1,5 @@
 module New_tests.Legacy__literals__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let math_integers (x: Hax_lib.Int.t_Int)
@@ -44,7 +43,7 @@ let math_integers (x: Hax_lib.Int.t_Int)
 let panic_with_msg (_: Prims.unit) : Prims.unit =
   Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic_fmt (Core_models.Fmt.Rt.impl_1__new_const
             (mk_usize 1)
-            (let list = ["with msg"] in
+            (let unfold list = ["with msg"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
           <:
@@ -96,7 +95,7 @@ let patterns (_: Prims.unit) : Prims.unit =
     match
       "hello",
       (mk_i32 123,
-        (let list = ["a"; "b"] in
+        (let unfold list = ["a"; "b"] in
           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
           Rust_primitives.Hax.array_of_list 2 list)
         <:
@@ -185,7 +184,7 @@ let casts (x8: u8) (x16: u16) (x32: u32) (x64: u64) (xs: usize) : Prims.unit =
 
 let empty_array (_: Prims.unit) : Prims.unit =
   let _:t_Slice u8 =
-    (let list:Prims.list u8 = [] in
+    (let unfold list:Prims.list u8 = [] in
       FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 0);
       Rust_primitives.Hax.array_of_list 0 list)
     <:

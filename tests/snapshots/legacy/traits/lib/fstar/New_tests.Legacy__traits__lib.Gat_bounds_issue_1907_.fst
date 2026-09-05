@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Gat_bounds_issue_1907_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Bound (v_Self: Type0) = { __marker_trait_t_Bound:Prims.unit }

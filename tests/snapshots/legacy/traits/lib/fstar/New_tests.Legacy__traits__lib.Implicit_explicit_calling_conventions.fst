@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Implicit_explicit_calling_conventions
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_Type (v_TypeArg: Type0) (v_ConstArg: usize) = { f_field:t_Array v_TypeArg v_ConstArg }
@@ -12,7 +11,7 @@ class t_Trait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
       v_Self ->
       v_TypeArg ->
       t_Type v_TypeArg v_ConstArg
-    -> Type0;
+    -> prop;
   f_method_post:
       #v_MethodTypeArg: Type0 ->
       v_MethodConstArg: usize ->
@@ -20,7 +19,7 @@ class t_Trait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
       v_TypeArg ->
       t_Type v_TypeArg v_ConstArg ->
       Prims.unit
-    -> Type0;
+    -> prop;
   f_method:
       #v_MethodTypeArg: Type0 ->
       v_MethodConstArg: usize ->
@@ -36,7 +35,7 @@ class t_Trait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
       v_Self ->
       v_TypeArg ->
       t_Type v_TypeArg v_ConstArg
-    -> Type0;
+    -> prop;
   f_associated_function_post:
       #v_MethodTypeArg: Type0 ->
       v_MethodConstArg: usize ->
@@ -44,7 +43,7 @@ class t_Trait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
       v_TypeArg ->
       t_Type v_TypeArg v_ConstArg ->
       Prims.unit
-    -> Type0;
+    -> prop;
   f_associated_function:
       #v_MethodTypeArg: Type0 ->
       v_MethodConstArg: usize ->

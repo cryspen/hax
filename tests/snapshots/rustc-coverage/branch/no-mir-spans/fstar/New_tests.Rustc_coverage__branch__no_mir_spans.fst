@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__branch__no_mir_spans
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// @fail(extraction): proverif(HAX0008, HAX0008), ssprove(HAX0001), coq(HAX0001, HAX0001)

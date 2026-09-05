@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__auxiliary__used_crate
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let _ =
@@ -17,14 +16,14 @@ let used_only_from_bin_crate_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
+    let unfold list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
-          (let list = ["used_only_from_bin_crate_generic_function with "; "\n"] in
+          (let unfold list = ["used_only_from_bin_crate_generic_function with "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
@@ -42,14 +41,14 @@ let used_only_from_this_lib_crate_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
+    let unfold list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
-          (let list = ["used_only_from_this_lib_crate_generic_function with "; "\n"] in
+          (let unfold list = ["used_only_from_this_lib_crate_generic_function with "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
@@ -67,14 +66,14 @@ let used_from_bin_crate_and_lib_crate_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
+    let unfold list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
-          (let list = ["used_from_bin_crate_and_lib_crate_generic_function with "; "\n"] in
+          (let unfold list = ["used_from_bin_crate_and_lib_crate_generic_function with "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
@@ -92,14 +91,14 @@ let used_with_same_type_from_bin_crate_and_lib_crate_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
+    let unfold list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
-          (let list =
+          (let unfold list =
               ["used_with_same_type_from_bin_crate_and_lib_crate_generic_function with "; "\n"]
             in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
@@ -119,14 +118,14 @@ let unused_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
+    let unfold list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
-          (let list = ["unused_generic_function with "; "\n"] in
+          (let unfold list = ["unused_generic_function with "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
@@ -177,7 +176,7 @@ let uuse_this_lib_crate (_: Prims.unit) : Prims.unit =
   let some_vec:Alloc.Vec.t_Vec i32 Alloc.Alloc.t_Global =
     Alloc.Slice.impl__into_vec #i32
       #Alloc.Alloc.t_Global
-      ((let list = [mk_i32 5; mk_i32 6; mk_i32 7; mk_i32 8] in
+      ((let unfold list = [mk_i32 5; mk_i32 6; mk_i32 7; mk_i32 8] in
           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 4);
           Rust_primitives.Hax.array_of_list 4 list)
         <:

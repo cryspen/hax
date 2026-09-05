@@ -155,8 +155,10 @@ struct
     | Cast -> F.lid [ "cast" ]
     | LogicalOp op -> (
         match op with
-        | And -> F.lid [ "Prims"; "op_AmpAmp" ]
-        | Or -> F.lid [ "Prims"; "op_BarBar" ])
+        (* Since F* uses a uniform mangling for operator names, `&&` and `||`
+           are named `op_Amp_Amp` and `op_Bar_Bar`. *)
+        | And -> F.lid [ "Prims"; "op_Amp_Amp" ]
+        | Or -> F.lid [ "Prims"; "op_Bar_Bar" ])
 
   let pnegative = function true -> "-" | false -> ""
 
@@ -679,7 +681,10 @@ struct
         in
         F.term
         @@ F.AST.Let
-             ( NoLetQualifier,
+             ( (* `unfold`: F* stopped substituting `let`-bound definitions into
+                  verification conditions, so without it the `assert_norm` below
+                  cannot see the list literal. *)
+               LocalUnfold,
                [ (None, (pat, body)) ],
                F.term @@ F.AST.Seq (assertion, array) )
     | Let { lhs; rhs; body; monadic = Some (monad, _) } ->
@@ -1489,7 +1494,7 @@ struct
                              let result_ident = mk_fresh "pred" in
                              let result_bd =
                                FStarBinder.of_named_fstar_typ expr.span
-                                 result_ident F.type0_term
+                                 result_ident F.prop_term
                              in
                              let expr = U.make_lets !bindings expr in
                              let expr = pexpr expr in
@@ -1515,9 +1520,9 @@ struct
                           | F.AST.Product (inputs, _) ->
                               {
                                 ty with
-                                tm = F.AST.Product (inputs, F.type0_term);
+                                tm = F.AST.Product (inputs, F.prop_term);
                               }
-                          | _ -> F.type0_term)
+                          | _ -> F.prop_term)
                     in
 
                     let ty =
@@ -1951,7 +1956,10 @@ let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
       bo.fuel bo.ifuel bo.z3rlimit
   in
 
-  List.append [ opts; "open FStar.Mul" ]
+  (* [FStar.Mul] no longer exists: since F*'s "Prims: define * as
+     multiplication", [*] is arithmetic multiplication everywhere and tuple
+     types are spelled [&]. *)
+  List.append [ opts ]
     (if hax_core_models_extraction then [ "open Rust_primitives" ]
      else [ "open Core_models" ])
   |> String.concat ~sep:"\n"

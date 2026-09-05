@@ -1,6 +1,5 @@
 module New_tests.Legacy__attributes__lib.Future_self
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_Dummy = | Dummy : t_Dummy

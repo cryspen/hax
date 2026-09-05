@@ -1,6 +1,5 @@
 module New_tests.Legacy__let_else__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let let_else (opt: Core_models.Option.t_Option u32) : bool =

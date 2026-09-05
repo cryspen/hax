@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__mcdc__nested_if
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let say (message: string) : Prims.unit =

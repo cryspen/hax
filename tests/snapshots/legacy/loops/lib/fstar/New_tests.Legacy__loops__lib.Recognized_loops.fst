@@ -1,6 +1,5 @@
 module New_tests.Legacy__loops__lib.Recognized_loops
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// @fail(extraction): proverif(HAX0008)

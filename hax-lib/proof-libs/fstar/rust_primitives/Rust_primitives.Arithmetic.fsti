@@ -1,6 +1,5 @@
 module Rust_primitives.Arithmetic
 
-open FStar.Mul
 open Rust_primitives.Integers
 
 let wrapping_add_u8 : u8 -> u8 -> u8 = add_mod

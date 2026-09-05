@@ -33,7 +33,6 @@ FSTAR_HOME    ?= $(HAX_LIBS_HOME)/../../../FStar
 FSTAR_BIN     ?= $(shell command -v fstar.exe 1>&2 2> /dev/null && echo "fstar.exe" || echo "$(FSTAR_HOME)/bin/fstar.exe")
 
 CACHE_DIR     ?= $(HAX_LIBS_HOME)/.cache
-HINT_DIR      ?= $(HAX_LIBS_HOME)/.hints
 
 .PHONY: all verify clean
 
@@ -47,7 +46,7 @@ ROOTS = $(wildcard *.fst)
 
 FSTAR_INCLUDE_DIRS = $(HAX_LIBS_HOME)/rust_primitives $(HAX_LIBS_HOME)/core $(HAX_LIBS_HOME)/hax_lib
 
-FSTAR_FLAGS = --cmi \
+FSTAR_FLAGS = \
   --warn_error -331 \
   --cache_checked_modules --cache_dir $(CACHE_DIR) \
   --already_cached "+Prims+FStar+LowStar+C+Spec.Loops+TestLib" \
@@ -56,32 +55,27 @@ FSTAR_FLAGS = --cmi \
 FSTAR = $(FSTAR_BIN) $(FSTAR_FLAGS) $(OTHERFLAGS)
 
 
-.depend: $(HINT_DIR) $(CACHE_DIR)
+.depend: $(CACHE_DIR)
 	$(info $(ROOTS))
-	$(FSTAR) --cmi --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
+	$(FSTAR) --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
 
 include .depend
-
-$(HINT_DIR):
-	mkdir -p $@
 
 $(CACHE_DIR):
 	mkdir -p $@
 
-$(CACHE_DIR)/%.checked: | .depend $(HINT_DIR) $(CACHE_DIR)
-	$(FSTAR) $< $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(notdir $*).hints
+$(CACHE_DIR)/%.checked: | .depend $(CACHE_DIR)
+	$(FSTAR) $<
 
 verify: $(addsuffix .checked, $(addprefix $(CACHE_DIR)/,$(ROOTS)))
 
 # Targets for interactive mode
 
 %.fst-in:
-	$(info $(FSTAR_FLAGS) \
-	  $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(basename $@).fst.hints)
+	$(info $(FSTAR_FLAGS))
 
 %.fsti-in:
-	$(info $(FSTAR_FLAGS) \
-	  $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(basename $@).fsti.hints)
+	$(info $(FSTAR_FLAGS))
 
 
 # Clean targets

@@ -1,6 +1,5 @@
 module New_tests.Legacy__cli__include_flag__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_Foo = | Foo : t_Foo

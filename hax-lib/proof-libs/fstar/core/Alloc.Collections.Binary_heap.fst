@@ -1,6 +1,5 @@
 module Alloc.Collections.Binary_heap
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 open Rust_primitives.Notations

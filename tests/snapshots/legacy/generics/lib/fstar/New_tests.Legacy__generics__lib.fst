@@ -1,6 +1,5 @@
 module New_tests.Legacy__generics__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let dup
@@ -73,7 +72,7 @@ let g
 let call_g (_: Prims.unit) : usize =
   (g (mk_usize 3)
       #(t_Array usize (mk_usize 3))
-      (let list = [mk_usize 42; mk_usize 3; mk_usize 49] in
+      (let unfold list = [mk_usize 42; mk_usize 3; mk_usize 49] in
         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
         Rust_primitives.Hax.array_of_list 3 list)
     <:
@@ -81,8 +80,8 @@ let call_g (_: Prims.unit) : usize =
   mk_usize 3
 
 class t_Foo (v_Self: Type0) = {
-  f_const_add_pre:v_N: usize -> v_Self -> Type0;
-  f_const_add_post:v_N: usize -> v_Self -> usize -> Type0;
+  f_const_add_pre:v_N: usize -> v_Self -> prop;
+  f_const_add_post:v_N: usize -> v_Self -> usize -> prop;
   f_const_add:v_N: usize -> x0: v_Self
     -> Prims.Pure usize (f_const_add_pre v_N x0) (fun result -> f_const_add_post v_N x0 result)
 }

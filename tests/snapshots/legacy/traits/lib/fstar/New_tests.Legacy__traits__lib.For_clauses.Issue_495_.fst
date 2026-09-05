@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.For_clauses.Issue_495_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let original_function_from_495_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) : Prims.unit =

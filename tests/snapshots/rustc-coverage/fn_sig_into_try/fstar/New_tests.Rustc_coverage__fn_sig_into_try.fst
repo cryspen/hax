@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__fn_sig_into_try
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let a (_: Prims.unit) : Core_models.Option.t_Option i32 =

@@ -1,7 +1,6 @@
 module Hax_bounded_integers.Num_traits
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core_models
-open FStar.Mul
 
 class t_BitOps (v_Self: Type0) = {
   f_Output:Type0;

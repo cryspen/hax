@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__branch__match_arms
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_Enum =
@@ -161,7 +160,7 @@ let main__call_everything (e: t_Enum) : (Prims.unit & Prims.unit) =
   Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Array
             bool (mk_usize 3))
         #FStar.Tactics.Typeclasses.solve
-        (let list = [false; false; true] in
+        (let unfold list = [false; false; true] in
           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
           Rust_primitives.Hax.array_of_list 3 list)
       <:

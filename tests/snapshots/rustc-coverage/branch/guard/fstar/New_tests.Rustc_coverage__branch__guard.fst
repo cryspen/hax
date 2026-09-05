@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__branch__guard
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// @fail(extraction): proverif(HAX0008, HAX0008)
@@ -22,7 +21,7 @@ let branch_match_guard (x: Core_models.Option.t_Option u32) : Prims.unit =
   | Core_models.Option.Option_Some (Rust_primitives.Integers.MkInt 0) ->
     let _:Prims.unit =
       Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-            (let list = ["zero\n"] in
+            (let unfold list = ["zero\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
           <:
@@ -38,7 +37,7 @@ let branch_match_guard (x: Core_models.Option.t_Option u32) : Prims.unit =
             | true ->
               let _:Prims.unit =
                 Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-                      (let list = ["is nonzero and even\n"] in
+                      (let unfold list = ["is nonzero and even\n"] in
                         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                         Rust_primitives.Hax.array_of_list 1 list)
                     <:
@@ -60,7 +59,7 @@ let branch_match_guard (x: Core_models.Option.t_Option u32) : Prims.unit =
               | true ->
                 let _:Prims.unit =
                   Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-                        (let list = ["is nonzero and odd, but divisible by 3\n"] in
+                        (let unfold list = ["is nonzero and odd, but divisible by 3\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
                       <:
@@ -77,7 +76,7 @@ let branch_match_guard (x: Core_models.Option.t_Option u32) : Prims.unit =
       | Core_models.Option.Option_None  ->
         let _:Prims.unit =
           Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-                (let list = ["something else\n"] in
+                (let unfold list = ["something else\n"] in
                   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                   Rust_primitives.Hax.array_of_list 1 list)
               <:

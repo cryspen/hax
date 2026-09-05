@@ -1,6 +1,5 @@
 module Core_models.Iter.Traits.Collect
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 include Core_models.Bundle {t_IntoIterator as t_IntoIterator}

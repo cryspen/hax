@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__attr__impl
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_MyStruct = | MyStruct : t_MyStruct
@@ -18,8 +17,8 @@ let impl_MyStruct__on_on (_: Prims.unit) : Prims.unit = ()
 let impl_MyStruct__on_off (_: Prims.unit) : Prims.unit = ()
 
 class t_MyTrait (v_Self: Type0) = {
-  f_method_pre:Prims.unit -> Type0;
-  f_method_post:Prims.unit -> Prims.unit -> Type0;
+  f_method_pre:Prims.unit -> prop;
+  f_method_post:Prims.unit -> Prims.unit -> prop;
   f_method:x0: Prims.unit
     -> Prims.Pure Prims.unit (f_method_pre x0) (fun result -> f_method_post x0 result)
 }

@@ -1,6 +1,5 @@
 module New_tests.Legacy__cyclic_modules__lib.Bundle_rec1_same_name
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let rec f (x: i32) : i32 =

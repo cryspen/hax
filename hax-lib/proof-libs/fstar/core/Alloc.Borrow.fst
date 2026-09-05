@@ -1,13 +1,12 @@
 module Alloc.Borrow
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 type t_Cow (v_T: Type0) = | Cow : v_T -> t_Cow v_T
 
 class t_ToOwned (v_Self: Type0) = {
-  f_to_owned_pre:v_Self -> Type0;
-  f_to_owned_post:v_Self -> v_Self -> Type0;
+  f_to_owned_pre:v_Self -> prop;
+  f_to_owned_post:v_Self -> v_Self -> prop;
   f_to_owned:x0: v_Self
     -> Prims.Pure v_Self (f_to_owned_pre x0) (fun result -> f_to_owned_post x0 result)
 }

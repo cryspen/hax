@@ -1,6 +1,5 @@
 module Core_models.Slice.Index
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 /// See [`std::slice::SliceIndex`]. `get_unchecked` is the same in-bounds
@@ -8,18 +7,18 @@ open Rust_primitives
 /// `&mut T` and return `&mut Output`.
 class t_SliceIndex (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
-  f_get_pre:self_: v_Self -> slice: v_T -> pred: Type0{true ==> pred};
-  f_get_post:v_Self -> v_T -> Core_models.Option.t_Option f_Output -> Type0;
+  f_get_pre:self_: v_Self -> slice: v_T -> pred: prop{true ==> pred};
+  f_get_post:v_Self -> v_T -> Core_models.Option.t_Option f_Output -> prop;
   f_get:x0: v_Self -> x1: v_T
     -> Prims.Pure (Core_models.Option.t_Option f_Output)
         (f_get_pre x0 x1)
         (fun result -> f_get_post x0 x1 result);
-  f_index_pre:v_Self -> v_T -> Type0;
-  f_index_post:v_Self -> v_T -> f_Output -> Type0;
+  f_index_pre:v_Self -> v_T -> prop;
+  f_index_post:v_Self -> v_T -> f_Output -> prop;
   f_index:x0: v_Self -> x1: v_T
     -> Prims.Pure f_Output (f_index_pre x0 x1) (fun result -> f_index_post x0 x1 result);
-  f_get_unchecked_pre:v_Self -> v_T -> Type0;
-  f_get_unchecked_post:v_Self -> v_T -> f_Output -> Type0;
+  f_get_unchecked_pre:v_Self -> v_T -> prop;
+  f_get_unchecked_post:v_Self -> v_T -> f_Output -> prop;
   f_get_unchecked:x0: v_Self -> x1: v_T
     -> Prims.Pure f_Output
         (f_get_unchecked_pre x0 x1)

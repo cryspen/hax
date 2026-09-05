@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__no_cov_crate
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let _ =
@@ -12,7 +11,7 @@ let _ =
 let do_not_add_coverage_1_ (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["called but not covered\n"] in
+          (let unfold list = ["called but not covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -24,7 +23,7 @@ let do_not_add_coverage_1_ (_: Prims.unit) : Prims.unit =
 let do_not_add_coverage_2_ (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["called but not covered\n"] in
+          (let unfold list = ["called but not covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -36,7 +35,7 @@ let do_not_add_coverage_2_ (_: Prims.unit) : Prims.unit =
 let do_not_add_coverage_not_called (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["not called and not covered\n"] in
+          (let unfold list = ["not called and not covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -48,7 +47,7 @@ let do_not_add_coverage_not_called (_: Prims.unit) : Prims.unit =
 let add_coverage_1_ (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["called and covered\n"] in
+          (let unfold list = ["called and covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -60,7 +59,7 @@ let add_coverage_1_ (_: Prims.unit) : Prims.unit =
 let add_coverage_2_ (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["called and covered\n"] in
+          (let unfold list = ["called and covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -72,7 +71,7 @@ let add_coverage_2_ (_: Prims.unit) : Prims.unit =
 let add_coverage_not_called (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["not called but covered\n"] in
+          (let unfold list = ["not called but covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:

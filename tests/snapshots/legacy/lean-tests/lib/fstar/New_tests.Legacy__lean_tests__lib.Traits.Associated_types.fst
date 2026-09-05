@@ -1,6 +1,5 @@
 module New_tests.Legacy__lean_tests__lib.Traits.Associated_types
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Foo (v_Self: Type0) (v_T: Type0) = { __marker_trait_t_Foo:Prims.unit }
@@ -17,8 +16,8 @@ let impl_3 (#v_A: Type0) : t_Foo (u32 & v_A) i16 = { __marker_trait_t_Foo = () }
 
 class t_T1 (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_T:Type0;
-  f_f_pre:v_Self -> f_T -> Type0;
-  f_f_post:v_Self -> f_T -> f_T -> Type0;
+  f_f_pre:v_Self -> f_T -> prop;
+  f_f_post:v_Self -> f_T -> f_T -> prop;
   f_f:x0: v_Self -> x1: f_T -> Prims.Pure f_T (f_f_pre x0 x1) (fun result -> f_f_post x0 x1 result)
 }
 
@@ -27,8 +26,8 @@ class t_T3 (v_Self: Type0) = {
   f_T_i0:t_Bar f_T;
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Tp:Type0;
   f_Tp_i0:t_Foo f_Tp f_T;
-  f_f_pre:#v_A: Type0 -> {| i1: t_Bar v_A |} -> v_Self -> f_T -> f_Tp -> Type0;
-  f_f_post:#v_A: Type0 -> {| i1: t_Bar v_A |} -> v_Self -> f_T -> f_Tp -> usize -> Type0;
+  f_f_pre:#v_A: Type0 -> {| i1: t_Bar v_A |} -> v_Self -> f_T -> f_Tp -> prop;
+  f_f_post:#v_A: Type0 -> {| i1: t_Bar v_A |} -> v_Self -> f_T -> f_Tp -> usize -> prop;
   f_f:#v_A: Type0 -> {| i1: t_Bar v_A |} -> x0: v_Self -> x1: f_T -> x2: f_Tp
     -> Prims.Pure usize
         (f_f_pre #v_A #i1 x0 x1 x2)
@@ -47,8 +46,8 @@ let impl: t_T1 t_S =
 class t_T2 (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_T:Type0;
   f_T_i0:t_T1 f_T;
-  f_f_pre:v_Self -> f_T -> Type0;
-  f_f_post:v_Self -> f_T -> usize -> Type0;
+  f_f_pre:v_Self -> f_T -> prop;
+  f_f_post:v_Self -> f_T -> usize -> prop;
   f_f:x0: v_Self -> x1: f_T
     -> Prims.Pure usize (f_f_pre x0 x1) (fun result -> f_f_post x0 x1 result)
 }

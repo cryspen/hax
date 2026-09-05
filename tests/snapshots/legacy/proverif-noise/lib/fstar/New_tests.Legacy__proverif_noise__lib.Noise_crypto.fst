@@ -1,6 +1,5 @@
 module New_tests.Legacy__proverif_noise__lib.Noise_crypto
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let _ =
@@ -179,10 +178,10 @@ let kdf_next (secret prev: t_Slice u8) (counter: u8) : Alloc.Vec.t_Vec u8 Alloc.
   hmac_hash secret
     (Alloc.Vec.impl_1__as_slice (Alloc.Slice.impl__concat #(t_Slice u8)
             #u8
-            ((let list =
+            ((let unfold list =
                   [
                     prev;
-                    (let list = [counter] in
+                    (let unfold list = [counter] in
                       FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                       Rust_primitives.Hax.array_of_list 1 list)
                     <:

@@ -1,6 +1,5 @@
 module New_tests.Legacy__cli__interface_only__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// This item contains unsafe blocks and raw references, two features
@@ -143,8 +142,8 @@ let ff_generic (v_X: usize) (#v_U: Type0) (e_x: v_U) : t_Param v_X =
 
 class t_T (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Assoc:Type0;
-  f_d_pre:Prims.unit -> Type0;
-  f_d_post:Prims.unit -> Prims.unit -> Type0;
+  f_d_pre:Prims.unit -> prop;
+  f_d_post:Prims.unit -> Prims.unit -> prop;
   f_d:x0: Prims.unit -> Prims.Pure Prims.unit (f_d_pre x0) (fun result -> f_d_post x0 result)
 }
 
@@ -159,8 +158,8 @@ let impl_T_for_u8: t_T u8 =
   }
 
 class t_T2 (v_Self: Type0) = {
-  f_d_pre:Prims.unit -> Type0;
-  f_d_post:Prims.unit -> Prims.unit -> Type0;
+  f_d_pre:Prims.unit -> prop;
+  f_d_post:Prims.unit -> Prims.unit -> prop;
   f_d:x0: Prims.unit -> Prims.Pure Prims.unit (f_d_pre x0) (fun result -> f_d_post x0 result)
 }
 

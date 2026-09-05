@@ -1,6 +1,5 @@
 module New_tests.Legacy__reordering__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let no_dependency_1_ (_: Prims.unit) : Prims.unit = ()

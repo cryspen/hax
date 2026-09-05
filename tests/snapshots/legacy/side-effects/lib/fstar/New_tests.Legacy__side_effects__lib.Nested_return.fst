@@ -1,6 +1,5 @@
 module New_tests.Legacy__side_effects__lib.Nested_return
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let other_fun (rng: i8) : (i8 & Core_models.Result.t_Result Prims.unit Prims.unit) =
