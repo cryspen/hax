@@ -47,7 +47,7 @@ let index_mutation (x: Core_models.Ops.Range.t_Range usize) (a: t_Slice u8) : Pr
   let v:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
     Alloc.Slice.impl__into_vec #u8
       #Alloc.Alloc.t_Global
-      ((let list = [mk_u8 1] in
+      ((let unfold list = [mk_u8 1] in
           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
           Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -90,7 +90,7 @@ let index_mutation_unsize (x: t_Array u8 (mk_usize 12)) : u8 =
               Core_models.Ops.Range.t_Range usize ]
             <:
             t_Slice u8)
-          ((let list = [mk_u8 1; mk_u8 2] in
+          ((let unfold list = [mk_u8 1; mk_u8 2] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
               Rust_primitives.Hax.array_of_list 2 list)
             <:
@@ -103,7 +103,7 @@ let index_mutation_unsize (x: t_Array u8 (mk_usize 12)) : u8 =
 let build_vec (_: Prims.unit) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
   Alloc.Slice.impl__into_vec #u8
     #Alloc.Alloc.t_Global
-    ((let list = [mk_u8 1; mk_u8 2; mk_u8 3] in
+    ((let unfold list = [mk_u8 1; mk_u8 2; mk_u8 3] in
         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
         Rust_primitives.Hax.array_of_list 3 list)
       <:
@@ -114,7 +114,7 @@ let test_append (_: Prims.unit) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
   let vec2:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
     Alloc.Slice.impl__into_vec #u8
       #Alloc.Alloc.t_Global
-      ((let list = [mk_u8 1; mk_u8 2; mk_u8 3] in
+      ((let unfold list = [mk_u8 1; mk_u8 2; mk_u8 3] in
           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
           Rust_primitives.Hax.array_of_list 3 list)
         <:

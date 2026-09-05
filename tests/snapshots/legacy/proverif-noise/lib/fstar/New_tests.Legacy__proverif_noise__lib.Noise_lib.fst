@@ -181,7 +181,7 @@ let initialize_symmetric (protocol_name: t_Slice u8) : t_SymmetricState =
     then
       Alloc.Slice.impl__concat #(t_Slice u8)
         #u8
-        ((let list =
+        ((let unfold list =
               [
                 protocol_name;
                 Alloc.Vec.impl_1__as_slice (Alloc.Vec.from_elem #u8
@@ -256,7 +256,7 @@ let mix_hash (st: t_SymmetricState) (data: t_Slice u8) : t_SymmetricState =
     New_tests.Legacy__proverif_noise__lib.Noise_crypto.hash (Alloc.Vec.impl_1__as_slice (Alloc.Slice.impl__concat
               #(t_Slice u8)
               #u8
-              ((let list = [Alloc.Vec.impl_1__as_slice h; data] in
+              ((let unfold list = [Alloc.Vec.impl_1__as_slice h; data] in
                   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
                   Rust_primitives.Hax.array_of_list 2 list)
                 <:

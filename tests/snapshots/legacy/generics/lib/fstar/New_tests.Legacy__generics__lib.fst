@@ -72,7 +72,7 @@ let g
 let call_g (_: Prims.unit) : usize =
   (g (mk_usize 3)
       #(t_Array usize (mk_usize 3))
-      (let list = [mk_usize 42; mk_usize 3; mk_usize 49] in
+      (let unfold list = [mk_usize 42; mk_usize 3; mk_usize 49] in
         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
         Rust_primitives.Hax.array_of_list 3 list)
     <:

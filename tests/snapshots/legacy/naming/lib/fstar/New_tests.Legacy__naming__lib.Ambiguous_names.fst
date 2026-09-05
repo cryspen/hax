@@ -6,7 +6,7 @@ open Core_models
 let debug (label value: u32) : Prims.unit =
   let args:(u32 & u32) = label, value <: (u32 & u32) in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 2) =
-    let list =
+    let unfold list =
       [
         Core_models.Fmt.Rt.impl__new_display #u32 args._1;
         Core_models.Fmt.Rt.impl__new_display #u32 args._2
@@ -18,7 +18,7 @@ let debug (label value: u32) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 3)
           (mk_usize 2)
-          (let list = ["["; "] a="; "\n"] in
+          (let unfold list = ["["; "] a="; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
             Rust_primitives.Hax.array_of_list 3 list)
           args

@@ -46,14 +46,14 @@ let main (_: Prims.unit) : Prims.unit =
   in
   let args:t_Foo = (Foo (mk_u32 1) <: t_Foo) <: t_Foo in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #t_Foo args] in
+    let unfold list = [Core_models.Fmt.Rt.impl__new_debug #t_Foo args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
-          (let list = [""; "\n"] in
+          (let unfold list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
@@ -63,14 +63,14 @@ let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = () in
   let args:t_Foo = bar <: t_Foo in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #t_Foo args] in
+    let unfold list = [Core_models.Fmt.Rt.impl__new_debug #t_Foo args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
-          (let list = [""; "\n"] in
+          (let unfold list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
@@ -80,14 +80,14 @@ let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = () in
   let args:t_Foo = baz <: t_Foo in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #t_Foo args] in
+    let unfold list = [Core_models.Fmt.Rt.impl__new_debug #t_Foo args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
-          (let list = [""; "\n"] in
+          (let unfold list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args

@@ -72,7 +72,7 @@ let main (_: Prims.unit) : Prims.unit =
     (t_Version & t_Version & bool)
   in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 3) =
-    let list =
+    let unfold list =
       [
         Core_models.Fmt.Rt.impl__new_debug #t_Version args._1;
         Core_models.Fmt.Rt.impl__new_debug #t_Version args._2;
@@ -85,7 +85,7 @@ let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 4)
           (mk_usize 3)
-          (let list = [""; " < "; " = "; "\n"] in
+          (let unfold list = [""; " < "; " = "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 4);
             Rust_primitives.Hax.array_of_list 4 list)
           args

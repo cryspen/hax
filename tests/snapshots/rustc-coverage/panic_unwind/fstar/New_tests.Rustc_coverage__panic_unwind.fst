@@ -7,7 +7,7 @@ let might_panic (should_panic: bool) : Prims.unit =
   then
     let _:Prims.unit =
       Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-            (let list = ["panicking...\n"] in
+            (let unfold list = ["panicking...\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
           <:
@@ -16,7 +16,7 @@ let might_panic (should_panic: bool) : Prims.unit =
     let _:Prims.unit = () in
     Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic_fmt (Core_models.Fmt.Rt.impl_1__new_const
               (mk_usize 1)
-              (let list = ["panics"] in
+              (let unfold list = ["panics"] in
                 FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                 Rust_primitives.Hax.array_of_list 1 list)
             <:
@@ -26,7 +26,7 @@ let might_panic (should_panic: bool) : Prims.unit =
   else
     let _:Prims.unit =
       Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-            (let list = ["Don't Panic\n"] in
+            (let unfold list = ["Don't Panic\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
           <:

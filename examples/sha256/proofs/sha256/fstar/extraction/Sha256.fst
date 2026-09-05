@@ -15,7 +15,7 @@ let ch (x y z: u32) : u32 = (x &. y <: u32) ^. ((~.x <: u32) &. z <: u32)
 let maj (x y z: u32) : u32 = (x &. y <: u32) ^. ((x &. z <: u32) ^. (y &. z <: u32) <: u32)
 
 let v_OP_TABLE: t_Array u8 (mk_usize 12) =
-  let list =
+  let unfold list =
     [
       mk_u8 2; mk_u8 13; mk_u8 22; mk_u8 6; mk_u8 11; mk_u8 25; mk_u8 7; mk_u8 18; mk_u8 3; mk_u8 17;
       mk_u8 19; mk_u8 10
@@ -25,7 +25,7 @@ let v_OP_TABLE: t_Array u8 (mk_usize 12) =
   Rust_primitives.Hax.array_of_list 12 list
 
 let v_K_TABLE: t_Array u32 (mk_usize 64) =
-  let list =
+  let unfold list =
     [
       mk_u32 1116352408; mk_u32 1899447441; mk_u32 3049323471; mk_u32 3921009573; mk_u32 961987163;
       mk_u32 1508970993; mk_u32 2453635748; mk_u32 2870763221; mk_u32 3624381080; mk_u32 310598401;
@@ -46,7 +46,7 @@ let v_K_TABLE: t_Array u32 (mk_usize 64) =
   Rust_primitives.Hax.array_of_list 64 list
 
 let v_HASH_INIT: t_Array u32 (mk_usize 8) =
-  let list =
+  let unfold list =
     [
       mk_u32 1779033703;
       mk_u32 3144134277;
@@ -397,7 +397,7 @@ let hash (msg: t_Slice u8)
   let _:Prims.unit = assert (Seq.length msg * 8 < pow2 64) in
   let len_bist:u64 = (cast (Core_models.Slice.impl__len #u8 msg <: usize) <: u64) *! mk_u64 8 in
   let len_bist_bytes:t_Array u8 (mk_usize 8) = Core_models.Num.impl_u64__to_be_bytes len_bist in
-  let h, last_block:(t_Array u32 (mk_usize 8) & t_Array u8 (mk_usize 64)) =
+  let (h: t_Array u32 (mk_usize 8)), (last_block: t_Array u8 (mk_usize 64)) =
     if last_block_len <. (v_BLOCK_SIZE -! v_LEN_SIZE <: usize)
     then
       let last_block:t_Array u8 (mk_usize 64) =
