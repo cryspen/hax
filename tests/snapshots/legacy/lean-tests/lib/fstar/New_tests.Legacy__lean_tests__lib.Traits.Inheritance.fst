@@ -3,22 +3,22 @@ module New_tests.Legacy__lean_tests__lib.Traits.Inheritance
 open Core_models
 
 class t_T1 (v_Self: Type0) = {
-  f_f1_pre:v_Self -> Type0;
-  f_f1_post:v_Self -> usize -> Type0;
+  f_f1_pre:v_Self -> prop;
+  f_f1_post:v_Self -> usize -> prop;
   f_f1:x0: v_Self -> Prims.Pure usize (f_f1_pre x0) (fun result -> f_f1_post x0 result)
 }
 
 class t_T2 (v_Self: Type0) = {
-  f_f2_pre:v_Self -> Type0;
-  f_f2_post:v_Self -> usize -> Type0;
+  f_f2_pre:v_Self -> prop;
+  f_f2_post:v_Self -> usize -> prop;
   f_f2:x0: v_Self -> Prims.Pure usize (f_f2_pre x0) (fun result -> f_f2_post x0 result)
 }
 
 class t_T3 (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_T2 v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:t_T1 v_Self;
-  f_f3_pre:v_Self -> Type0;
-  f_f3_post:v_Self -> usize -> Type0;
+  f_f3_pre:v_Self -> prop;
+  f_f3_post:v_Self -> usize -> prop;
   f_f3:x0: v_Self -> Prims.Pure usize (f_f3_pre x0) (fun result -> f_f3_post x0 result)
 }
 
@@ -29,16 +29,16 @@ let _ = fun (v_Self:Type0) {|i: t_T3 v_Self|} -> i._super_i0
 let _ = fun (v_Self:Type0) {|i: t_T3 v_Self|} -> i._super_i1
 
 class t_Tp1 (v_Self: Type0) = {
-  f_f1_pre:v_Self -> Type0;
-  f_f1_post:v_Self -> usize -> Type0;
+  f_f1_pre:v_Self -> prop;
+  f_f1_post:v_Self -> usize -> prop;
   f_f1:x0: v_Self -> Prims.Pure usize (f_f1_pre x0) (fun result -> f_f1_post x0 result)
 }
 
 class t_Tp2 (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Tp1 v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:t_T3 v_Self;
-  f_fp2_pre:v_Self -> Type0;
-  f_fp2_post:v_Self -> usize -> Type0;
+  f_fp2_pre:v_Self -> prop;
+  f_fp2_post:v_Self -> usize -> prop;
   f_fp2:x0: v_Self -> Prims.Pure usize (f_fp2_pre x0) (fun result -> f_fp2_post x0 result)
 }
 

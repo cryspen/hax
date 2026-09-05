@@ -6,11 +6,11 @@ open Rust_primitives
 class t_Default (v_Self: Type0) = {
   f_default_pre:x: Prims.unit
     -> pred:
-      Type0
+      prop
         { (let _:Prims.unit = x in
             true) ==>
           pred };
-  f_default_post:Prims.unit -> v_Self -> Type0;
+  f_default_post:Prims.unit -> v_Self -> prop;
   f_default:x0: Prims.unit
     -> Prims.Pure v_Self (f_default_pre x0) (fun result -> f_default_post x0 result)
 }

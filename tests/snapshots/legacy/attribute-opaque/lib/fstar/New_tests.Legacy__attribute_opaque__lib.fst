@@ -42,11 +42,11 @@ let ff_pre_post = ff_pre_post'
 class t_T (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_U:Type0;
   f_c:u8;
-  f_d_pre:Prims.unit -> Type0;
-  f_d_post:Prims.unit -> Prims.unit -> Type0;
+  f_d_pre:Prims.unit -> prop;
+  f_d_post:Prims.unit -> Prims.unit -> prop;
   f_d:x0: Prims.unit -> Prims.Pure Prims.unit (f_d_pre x0) (fun result -> f_d_post x0 result);
-  f_m_pre:self_: v_Self -> x: u8 -> pred: Type0{x =. mk_u8 0 ==> pred};
-  f_m_post:v_Self -> u8 -> bool -> Type0;
+  f_m_pre:self_: v_Self -> x: u8 -> pred: prop{x =. mk_u8 0 ==> pred};
+  f_m_post:v_Self -> u8 -> bool -> prop;
   f_m:x0: v_Self -> x1: u8 -> Prims.Pure bool (f_m_pre x0 x1) (fun result -> f_m_post x0 x1 result)
 }
 
@@ -59,8 +59,8 @@ let impl_T_for_u8 = impl_T_for_u8'
 
 class t_TrGeneric (v_Self: Type0) (v_U: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Clone.t_Clone v_U;
-  f_f_pre:v_U -> Type0;
-  f_f_post:v_U -> v_Self -> Type0;
+  f_f_pre:v_U -> prop;
+  f_f_post:v_U -> v_Self -> prop;
   f_f:x0: v_U -> Prims.Pure v_Self (f_f_pre x0) (fun result -> f_f_post x0 result)
 }
 

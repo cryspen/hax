@@ -15,8 +15,8 @@ let test (_: Prims.unit) : Prims.unit =
 
 /// Trait definition
 class t_T (v_Self: Type0) (v_N_TRAIT: usize) = {
-  f_f_pre:v_N_FIELD: usize -> v_Self -> Type0;
-  f_f_post:v_N_FIELD: usize -> v_Self -> usize -> Type0;
+  f_f_pre:v_N_FIELD: usize -> v_Self -> prop;
+  f_f_post:v_N_FIELD: usize -> v_Self -> usize -> prop;
   f_f:v_N_FIELD: usize -> x0: v_Self
     -> Prims.Pure usize (f_f_pre v_N_FIELD x0) (fun result -> f_f_post v_N_FIELD x0 result)
 }

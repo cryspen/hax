@@ -3,8 +3,8 @@ module New_tests.Legacy__traits__lib.For_clauses
 open Core_models
 
 class t_Foo (v_Self: Type0) (v_T: Type0) = {
-  f_to_t_pre:v_Self -> Type0;
-  f_to_t_post:v_Self -> v_T -> Type0;
+  f_to_t_pre:v_Self -> prop;
+  f_to_t_post:v_Self -> v_T -> prop;
   f_to_t:x0: v_Self -> Prims.Pure v_T (f_to_t_pre x0) (fun result -> f_to_t_post x0 result)
 }
 

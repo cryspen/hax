@@ -5,8 +5,8 @@
 /// See [`std::clone::Clone`]
 #[hax_lib::fstar::replace(
     "class t_Clone self = {
-  f_clone_pre: self -> Type0;
-  f_clone_post: self -> self -> Type0;
+  f_clone_pre: self -> prop;
+  f_clone_post: self -> self -> prop;
   f_clone: x:self -> r:self {x == r}
 }"
 )]

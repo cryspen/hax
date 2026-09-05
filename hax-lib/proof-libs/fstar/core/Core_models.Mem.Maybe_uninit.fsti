@@ -329,8 +329,8 @@ val f_drop__impl_6__panic_cold_explicit: Prims.unit
 
 class t_SpecFill (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_15671470021555116719:Core_models.Marker.t_Sized v_T;
-  f_spec_fill_pre:v_Self -> v_T -> Type0;
-  f_spec_fill_post:v_Self -> v_T -> v_Self -> Type0;
+  f_spec_fill_pre:v_Self -> v_T -> prop;
+  f_spec_fill_post:v_Self -> v_T -> v_Self -> prop;
   f_spec_fill:x0: v_Self -> x1: v_T
     -> Prims.Pure v_Self (f_spec_fill_pre x0 x1) (fun result -> f_spec_fill_post x0 x1 result)
 }

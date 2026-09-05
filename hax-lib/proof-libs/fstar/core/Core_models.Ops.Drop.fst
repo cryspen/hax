@@ -4,7 +4,7 @@ open Rust_primitives
 
 /// See [`std::ops::Drop`]
 class t_Drop (v_Self: Type0) = {
-  f_drop_pre:v_Self -> Type0;
-  f_drop_post:v_Self -> v_Self -> Type0;
+  f_drop_pre:v_Self -> prop;
+  f_drop_post:v_Self -> v_Self -> prop;
   f_drop:x0: v_Self -> Prims.Pure v_Self (f_drop_pre x0) (fun result -> f_drop_post x0 result)
 }

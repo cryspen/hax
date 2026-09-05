@@ -1489,7 +1489,7 @@ struct
                              let result_ident = mk_fresh "pred" in
                              let result_bd =
                                FStarBinder.of_named_fstar_typ expr.span
-                                 result_ident F.type0_term
+                                 result_ident F.prop_term
                              in
                              let expr = U.make_lets !bindings expr in
                              let expr = pexpr expr in
@@ -1515,9 +1515,9 @@ struct
                           | F.AST.Product (inputs, _) ->
                               {
                                 ty with
-                                tm = F.AST.Product (inputs, F.type0_term);
+                                tm = F.AST.Product (inputs, F.prop_term);
                               }
-                          | _ -> F.type0_term)
+                          | _ -> F.prop_term)
                     in
 
                     let ty =

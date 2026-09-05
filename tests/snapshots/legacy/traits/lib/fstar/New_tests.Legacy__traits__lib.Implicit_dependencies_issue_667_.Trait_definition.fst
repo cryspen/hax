@@ -3,8 +3,8 @@ module New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Trait_defi
 open Core_models
 
 class t_MyTrait (v_Self: Type0) = {
-  f_my_method_pre:v_Self -> Type0;
-  f_my_method_post:v_Self -> Prims.unit -> Type0;
+  f_my_method_pre:v_Self -> prop;
+  f_my_method_post:v_Self -> Prims.unit -> prop;
   f_my_method:x0: v_Self
     -> Prims.Pure Prims.unit (f_my_method_pre x0) (fun result -> f_my_method_post x0 result)
 }

@@ -5,8 +5,8 @@ open Core_models
 class t_T1 (v_Self: Type0) = { __marker_trait_t_T1:Prims.unit }
 
 class t_T2 (v_Self: Type0) = {
-  f_func_pre:{| i1: t_T1 v_Self |} -> v_Self -> Type0;
-  f_func_post:{| i1: t_T1 v_Self |} -> v_Self -> bool -> Type0;
+  f_func_pre:{| i1: t_T1 v_Self |} -> v_Self -> prop;
+  f_func_post:{| i1: t_T1 v_Self |} -> v_Self -> bool -> prop;
   f_func:{| i1: t_T1 v_Self |} -> x0: v_Self
     -> Prims.Pure bool (f_func_pre #i1 x0) (fun result -> f_func_post #i1 x0 result)
 }

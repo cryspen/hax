@@ -3,20 +3,20 @@ module New_tests.Legacy__lean_tests__lib.Traits.Overlapping_methods
 open Core_models
 
 class t_T1 (v_Self: Type0) = {
-  f_f_pre:v_Self -> Type0;
-  f_f_post:v_Self -> usize -> Type0;
+  f_f_pre:v_Self -> prop;
+  f_f_post:v_Self -> usize -> prop;
   f_f:x0: v_Self -> Prims.Pure usize (f_f_pre x0) (fun result -> f_f_post x0 result)
 }
 
 class t_T2 (v_Self: Type0) = {
-  f_f_pre:v_Self -> Type0;
-  f_f_post:v_Self -> usize -> Type0;
+  f_f_pre:v_Self -> prop;
+  f_f_post:v_Self -> usize -> prop;
   f_f:x0: v_Self -> Prims.Pure usize (f_f_pre x0) (fun result -> f_f_post x0 result)
 }
 
 class t_T3 (v_Self: Type0) = {
-  f_f_pre:v_Self -> Type0;
-  f_f_post:v_Self -> usize -> Type0;
+  f_f_pre:v_Self -> prop;
+  f_f_post:v_Self -> usize -> prop;
   f_f:x0: v_Self -> Prims.Pure usize (f_f_pre x0) (fun result -> f_f_post x0 result)
 }
 

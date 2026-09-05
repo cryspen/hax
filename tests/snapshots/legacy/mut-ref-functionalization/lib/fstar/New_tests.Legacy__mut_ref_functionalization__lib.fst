@@ -284,8 +284,8 @@ let k
   (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global & u16 & Prims.unit & u64)
 
 class t_FooTrait (v_Self: Type0) = {
-  f_z_pre:v_Self -> Type0;
-  f_z_post:v_Self -> v_Self -> Type0;
+  f_z_pre:v_Self -> prop;
+  f_z_post:v_Self -> v_Self -> prop;
   f_z:x0: v_Self -> Prims.Pure v_Self (f_z_pre x0) (fun result -> f_z_post x0 result)
 }
 

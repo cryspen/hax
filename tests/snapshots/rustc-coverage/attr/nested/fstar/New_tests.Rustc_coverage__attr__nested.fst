@@ -40,8 +40,8 @@ let impl_MyOuter__outer_method__impl__middle_method__impl__inner_method
   ()
 
 class t_MyTrait (v_Self: Type0) = {
-  f_trait_method_pre:v_Self -> Type0;
-  f_trait_method_post:v_Self -> Prims.unit -> Type0;
+  f_trait_method_pre:v_Self -> prop;
+  f_trait_method_post:v_Self -> Prims.unit -> prop;
   f_trait_method:x0: v_Self
     -> Prims.Pure Prims.unit (f_trait_method_pre x0) (fun result -> f_trait_method_post x0 result)
 }

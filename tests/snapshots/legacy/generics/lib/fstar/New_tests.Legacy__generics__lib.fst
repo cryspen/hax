@@ -80,8 +80,8 @@ let call_g (_: Prims.unit) : usize =
   mk_usize 3
 
 class t_Foo (v_Self: Type0) = {
-  f_const_add_pre:v_N: usize -> v_Self -> Type0;
-  f_const_add_post:v_N: usize -> v_Self -> usize -> Type0;
+  f_const_add_pre:v_N: usize -> v_Self -> prop;
+  f_const_add_post:v_N: usize -> v_Self -> usize -> prop;
   f_const_add:v_N: usize -> x0: v_Self
     -> Prims.Pure usize (f_const_add_pre v_N x0) (fun result -> f_const_add_post v_N x0 result)
 }

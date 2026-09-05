@@ -4,11 +4,11 @@ open Rust_primitives
 
 /// See [`std::hash::Hasher`]
 class t_Hasher (v_Self: Type0) = {
-  f_finish_pre:v_Self -> Type0;
-  f_finish_post:v_Self -> u64 -> Type0;
+  f_finish_pre:v_Self -> prop;
+  f_finish_post:v_Self -> u64 -> prop;
   f_finish:x0: v_Self -> Prims.Pure u64 (f_finish_pre x0) (fun result -> f_finish_post x0 result);
-  f_write_pre:v_Self -> t_Slice u8 -> Type0;
-  f_write_post:v_Self -> t_Slice u8 -> v_Self -> Type0;
+  f_write_pre:v_Self -> t_Slice u8 -> prop;
+  f_write_post:v_Self -> t_Slice u8 -> v_Self -> prop;
   f_write:x0: v_Self -> x1: t_Slice u8
     -> Prims.Pure v_Self (f_write_pre x0 x1) (fun result -> f_write_post x0 x1 result)
 }
@@ -16,8 +16,8 @@ class t_Hasher (v_Self: Type0) = {
 /// See [`std::hash::Hash`]
 class t_Hash (v_Self: Type0) = {
   f_hash_pre:#v_H: Type0 -> {| i1: t_Hasher v_H |} -> self_: v_Self -> h: v_H
-    -> pred: Type0{true ==> pred};
-  f_hash_post:#v_H: Type0 -> {| i1: t_Hasher v_H |} -> v_Self -> v_H -> v_H -> Type0;
+    -> pred: prop{true ==> pred};
+  f_hash_post:#v_H: Type0 -> {| i1: t_Hasher v_H |} -> v_Self -> v_H -> v_H -> prop;
   f_hash:#v_H: Type0 -> {| i1: t_Hasher v_H |} -> x0: v_Self -> x1: v_H
     -> Prims.Pure v_H (f_hash_pre #v_H #i1 x0 x1) (fun result -> f_hash_post #v_H #i1 x0 x1 result)
 }

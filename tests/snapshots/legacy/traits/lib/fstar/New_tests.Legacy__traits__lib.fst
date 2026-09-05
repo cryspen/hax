@@ -4,8 +4,8 @@ open Core_models
 
 class t_SuperTrait (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Clone.t_Clone v_Self;
-  f_function_of_super_trait_pre:v_Self -> Type0;
-  f_function_of_super_trait_post:v_Self -> u32 -> Type0;
+  f_function_of_super_trait_pre:v_Self -> prop;
+  f_function_of_super_trait_post:v_Self -> u32 -> prop;
   f_function_of_super_trait:x0: v_Self
     -> Prims.Pure u32
         (f_function_of_super_trait_pre x0)
@@ -29,8 +29,8 @@ let impl: t_SuperTrait i32 =
 type t_Struct = | Struct : t_Struct
 
 class t_Bar (v_Self: Type0) = {
-  f_bar_pre:v_Self -> Type0;
-  f_bar_post:v_Self -> Prims.unit -> Type0;
+  f_bar_pre:v_Self -> prop;
+  f_bar_post:v_Self -> Prims.unit -> prop;
   f_bar:x0: v_Self -> Prims.Pure Prims.unit (f_bar_pre x0) (fun result -> f_bar_post x0 result)
 }
 
@@ -115,17 +115,17 @@ class t_Foo (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_AssocType:Type0;
   f_AssocType_i0:t_SuperTrait f_AssocType;
   f_N:usize;
-  f_assoc_f_pre:Prims.unit -> Type0;
-  f_assoc_f_post:Prims.unit -> Prims.unit -> Type0;
+  f_assoc_f_pre:Prims.unit -> prop;
+  f_assoc_f_post:Prims.unit -> Prims.unit -> prop;
   f_assoc_f:x0: Prims.unit
     -> Prims.Pure Prims.unit (f_assoc_f_pre x0) (fun result -> f_assoc_f_post x0 result);
-  f_method_f_pre:v_Self -> Type0;
-  f_method_f_post:v_Self -> Prims.unit -> Type0;
+  f_method_f_pre:v_Self -> prop;
+  f_method_f_post:v_Self -> Prims.unit -> prop;
   f_method_f:x0: v_Self
     -> Prims.Pure Prims.unit (f_method_f_pre x0) (fun result -> f_method_f_post x0 result);
-  f_assoc_type_pre:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Type0;
+  f_assoc_type_pre:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> prop;
   f_assoc_type_post:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Prims.unit
-    -> Type0;
+    -> prop;
   f_assoc_type:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> x0: f_AssocType
     -> Prims.Pure Prims.unit
         (f_assoc_type_pre #i1 x0)
@@ -134,8 +134,8 @@ class t_Foo (v_Self: Type0) = {
 
 class t_Lang (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Var:Type0;
-  f_s_pre:v_Self -> i32 -> Type0;
-  f_s_post:v_Self -> i32 -> (v_Self & f_Var) -> Type0;
+  f_s_pre:v_Self -> i32 -> prop;
+  f_s_post:v_Self -> i32 -> (v_Self & f_Var) -> prop;
   f_s:x0: v_Self -> x1: i32
     -> Prims.Pure (v_Self & f_Var) (f_s_pre x0 x1) (fun result -> f_s_post x0 x1 result)
 }

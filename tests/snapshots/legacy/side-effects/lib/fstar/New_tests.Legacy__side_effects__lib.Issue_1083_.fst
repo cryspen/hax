@@ -3,8 +3,8 @@ module New_tests.Legacy__side_effects__lib.Issue_1083_
 open Core_models
 
 class t_MyFrom (v_Self: Type0) (v_T: Type0) = {
-  f_my_from_pre:v_T -> Type0;
-  f_my_from_post:v_T -> v_Self -> Type0;
+  f_my_from_pre:v_T -> prop;
+  f_my_from_post:v_T -> v_Self -> prop;
   f_my_from:x0: v_T -> Prims.Pure v_Self (f_my_from_pre x0) (fun result -> f_my_from_post x0 result)
 }
 

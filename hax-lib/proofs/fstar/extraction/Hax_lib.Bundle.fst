@@ -3540,8 +3540,8 @@ const _: () = ();
 /// Please never implement this trait yourself, use the
 /// `refinement_type` macro instead.
 class t_RefineAs (v_Self: Type0) (v_RefinedType: Type0) = {
-  f_into_checked_pre:v_Self -> Type0;
-  f_into_checked_post:v_Self -> v_RefinedType -> Type0;
+  f_into_checked_pre:v_Self -> prop;
+  f_into_checked_post:v_Self -> v_RefinedType -> prop;
   f_into_checked:x0: v_Self
     -> Prims.Pure v_RefinedType
         (f_into_checked_pre x0)
@@ -3814,8 +3814,8 @@ let impl_7__rem_euclid (self v: t_Int) : t_Int =
       Num_bigint.Bigint.t_BigInt)
 
 class t_ToInt (v_Self: Type0) = {
-  f_to_int_pre:v_Self -> Type0;
-  f_to_int_post:v_Self -> t_Int -> Type0;
+  f_to_int_pre:v_Self -> prop;
+  f_to_int_post:v_Self -> t_Int -> prop;
   f_to_int:x0: v_Self -> Prims.Pure t_Int (f_to_int_pre x0) (fun result -> f_to_int_post x0 result)
 }
 

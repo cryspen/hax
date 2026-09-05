@@ -4,7 +4,7 @@ open Rust_primitives
 open Core_models.Ops.Range
 
 val foldi_range  (#n:inttype) (#acc_t:Type)
-                 (#inv:(acc_t -> i:int_t n -> Type))
+                 (#inv:(acc_t -> i:int_t n -> prop))
                  (r: t_Range (int_t n){r.f_start <=. r.f_end}) 
                  (acc:acc_t{inv acc r.f_start})
                  (f: (acc:acc_t -> i:int_t n{i >=. r.f_start /\ i <. r.f_end /\ inv acc i}
@@ -12,7 +12,7 @@ val foldi_range  (#n:inttype) (#acc_t:Type)
                  : res:acc_t{inv res r.f_end}
 
 val foldi_range_step_by  (#n:inttype) (#acc_t:Type)
-                 (#inv:(acc_t -> i:int_t n -> Type))
+                 (#inv:(acc_t -> i:int_t n -> prop))
                  (r: t_Range (int_t n){r.f_start <=. r.f_end}) 
                  (step: usize{v step > 0 /\ range (v step) n /\ range (v r.f_end + v step) n})
                  (acc:acc_t{inv acc r.f_start})
@@ -32,7 +32,7 @@ let nth_chunk_of #t
 
 val foldi_chunks_exact
   (#t #acc_t:Type)
-  (#inv: acc_t -> usize -> Type)
+  (#inv: acc_t -> usize -> prop)
   (s: t_Slice t)
   (chunk_len: usize {v chunk_len > 0})
   (acc: acc_t {inv acc (sz 0)})
@@ -50,7 +50,7 @@ val foldi_chunks_exact
 
 val fold_chunks_exact
                  (#t:Type) (#acc_t:Type)
-                 (#inv:(acc_t -> Type))
+                 (#inv:(acc_t -> prop))
                  (s:t_Slice t)
                  (chunk_len:usize{v chunk_len > 0}) // /\ Seq.length s % v chunk_len == 0})
                  (acc:acc_t{inv acc})
@@ -60,7 +60,7 @@ val fold_chunks_exact
 
 
 val foldi_slice  (#t:Type) (#acc_t:Type)
-                 (#inv:(acc_t -> usize -> Type))
+                 (#inv:(acc_t -> usize -> prop))
                  (sl: t_Slice t)
                  (acc:acc_t{inv acc (sz 0)})
                  (f: (acc:acc_t -> it:(usize & t){

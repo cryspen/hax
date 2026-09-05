@@ -8,8 +8,8 @@ let main (_: Prims.unit) : Prims.unit = ()
 
 class t_Foo (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Assoc:Type0;
-  f_from_pre:f_Assoc -> Type0;
-  f_from_post:f_Assoc -> v_Self -> Type0;
+  f_from_pre:f_Assoc -> prop;
+  f_from_post:f_Assoc -> v_Self -> prop;
   f_from:x0: f_Assoc -> Prims.Pure v_Self (f_from_pre x0) (fun result -> f_from_post x0 result)
 }
 

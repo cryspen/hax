@@ -38,8 +38,8 @@ let impl_1: Hax_lib.Abstraction.t_Abstraction bool =
   }
 
 class t_ToProp (v_Self: Type0) = {
-  f_to_prop_pre:v_Self -> Type0;
-  f_to_prop_post:v_Self -> t_Prop -> Type0;
+  f_to_prop_pre:v_Self -> prop;
+  f_to_prop_post:v_Self -> t_Prop -> prop;
   f_to_prop:x0: v_Self
     -> Prims.Pure t_Prop (f_to_prop_pre x0) (fun result -> f_to_prop_post x0 result)
 }

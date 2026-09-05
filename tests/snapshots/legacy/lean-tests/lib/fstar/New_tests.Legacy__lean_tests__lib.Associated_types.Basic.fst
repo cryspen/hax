@@ -4,8 +4,8 @@ open Core_models
 
 class t_Iterable (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
-  f_first_pre:v_Self -> Type0;
-  f_first_post:v_Self -> f_Item -> Type0;
+  f_first_pre:v_Self -> prop;
+  f_first_post:v_Self -> f_Item -> prop;
   f_first:x0: v_Self -> Prims.Pure f_Item (f_first_pre x0) (fun result -> f_first_post x0 result)
 }
 

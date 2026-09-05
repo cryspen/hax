@@ -5,8 +5,8 @@ open Rust_primitives
 /// See [`std::ops::Deref`]
 class t_Deref (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Target:Type0;
-  f_deref_pre:v_Self -> Type0;
-  f_deref_post:v_Self -> f_Target -> Type0;
+  f_deref_pre:v_Self -> prop;
+  f_deref_post:v_Self -> f_Target -> prop;
   f_deref:x0: v_Self -> Prims.Pure f_Target (f_deref_pre x0) (fun result -> f_deref_post x0 result)
 }
 

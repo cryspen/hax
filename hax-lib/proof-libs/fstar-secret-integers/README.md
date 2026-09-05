@@ -15,6 +15,11 @@ code in this directory reconciles any type or semantic differences
 between Rust and F*. A number of files in this directory use the 
 [HACL Library](https://github.com/hacl-star/hacl-star/tree/main/lib).
 
+Note that those HACL files are not yet compatible with the F* version hax
+pins (`Lib.IntTypes` still `open`s the removed `FStar.Mul`), so this snapshot
+cannot currently be type-checked end to end. Nothing in the repository builds
+against it.
+
 # Core & Alloc
 
 The `/core` directory contains hand-written models for some parts of

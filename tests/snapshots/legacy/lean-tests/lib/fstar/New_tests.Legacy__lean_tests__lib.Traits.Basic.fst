@@ -3,11 +3,11 @@ module New_tests.Legacy__lean_tests__lib.Traits.Basic
 open Core_models
 
 class t_T1 (v_Self: Type0) = {
-  f_f1_pre:v_Self -> Type0;
-  f_f1_post:v_Self -> usize -> Type0;
+  f_f1_pre:v_Self -> prop;
+  f_f1_post:v_Self -> usize -> prop;
   f_f1:x0: v_Self -> Prims.Pure usize (f_f1_pre x0) (fun result -> f_f1_post x0 result);
-  f_f2_pre:v_Self -> v_Self -> Type0;
-  f_f2_post:v_Self -> v_Self -> usize -> Type0;
+  f_f2_pre:v_Self -> v_Self -> prop;
+  f_f2_post:v_Self -> v_Self -> usize -> prop;
   f_f2:x0: v_Self -> x1: v_Self
     -> Prims.Pure usize (f_f2_pre x0 x1) (fun result -> f_f2_post x0 x1 result)
 }
