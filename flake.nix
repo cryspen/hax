@@ -7,7 +7,7 @@
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    fstar.url = "github:FStarLang/FStar/v2025.10.06";
+    fstar.url = "github:FStarLang/FStar/de1814def7df8ab7253af2b55a54625b4585e344";
     hacl-star = {
       url = "github:hacl-star/hacl-star";
       flake = false;
@@ -221,7 +221,6 @@
             shellHook = ''
               eval $(hax-env)
               export CACHE_DIR=$(mktemp -d)
-              export HINT_DIR=$(mktemp -d)
               export SHELL=${pkgs.bash}/bin/bash
               # Ensure locally-compiled crates (e.g. the test-driver)
               # embed the same HAX_VERSION as the Nix-built cargo-hax.
