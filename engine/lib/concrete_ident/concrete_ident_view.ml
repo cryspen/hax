@@ -26,11 +26,14 @@ module Assert = struct
     | _ -> broken_invariant "last path chunk to exist and be of type TypeNs" did
 
   (* Associated types synthesized for return-position `impl Trait` in traits
-     carry an `AnonAssocTy` chunk rather than a `TypeNs` one. *)
+     carry an `AnonAssocTy` chunk rather than a `TypeNs` one, and are named after
+     their method; suffix them to avoid clashing with it. *)
   let assoc_type_ns (did : Explicit_def_id.t) =
     match List.last (Explicit_def_id.to_def_id did).path with
-    | Some { data = TypeNs data | AnonAssocTy data; disambiguator } ->
+    | Some { data = TypeNs data; disambiguator } ->
         DisambiguatedString.{ data; disambiguator }
+    | Some { data = AnonAssocTy data; disambiguator } ->
+        DisambiguatedString.{ data = data ^ "_impl_trait"; disambiguator }
     | _ ->
         broken_invariant
           "last path chunk to exist and be of type TypeNs or AnonAssocTy" did
