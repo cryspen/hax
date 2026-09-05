@@ -681,7 +681,10 @@ struct
         in
         F.term
         @@ F.AST.Let
-             ( NoLetQualifier,
+             ( (* `unfold`: F* stopped substituting `let`-bound definitions into
+                  verification conditions, so without it the `assert_norm` below
+                  cannot see the list literal. *)
+               LocalUnfold,
                [ (None, (pat, body)) ],
                F.term @@ F.AST.Seq (assertion, array) )
     | Let { lhs; rhs; body; monadic = Some (monad, _) } ->
