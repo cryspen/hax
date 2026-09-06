@@ -23,15 +23,14 @@ let impl: t_Speak t_Cat =
     f_hello = fun (self: t_Cat) -> mk_u8 1
   }
 
-/// @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008)
-let dyn_in_sig (x: dyn 1 (fun z -> t_Speak z)) : u8 =
-  f_hello #(dyn 1 (fun z -> t_Speak z)) #FStar.Tactics.Typeclasses.solve x
+(* [hax::excluded] dyn_in_sig — Explicit rejection by a phase in the Hax engine: a node of kind [Dyn] have been found in the AST *)
 
 /// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): fstar(HAX0008, HAX0008, HAX0008)
 let dyn_in_body (_: Prims.unit) : u8 =
   let c:t_Cat = Cat <: t_Cat in
-  let (d: dyn 1 (fun z -> t_Speak z)):dyn 1 (fun z -> t_Speak z) = Rust_primitives.unsize c in
-  f_hello #(dyn 1 (fun z -> t_Speak z)) #FStar.Tactics.Typeclasses.solve d
+  Rust_primitives.Hax.failure "[hax::opaque] Explicit rejection by a phase in the Hax engine: a node of kind [Dyn] have been found in the AST"
+    ""
 
 /// @fail(extraction): coq(HAX0010, HAX0003), ssprove(HAX0003, HAX0010), legacy-lean(HAX0010, HAX0003), fstar(HAX0010, HAX0003), proverif(HAX0010, HAX0003)
 let mut_ref_return (x: u8) : Rust_primitives.Hax.t_Failure "" =

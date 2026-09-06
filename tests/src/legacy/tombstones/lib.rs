@@ -33,12 +33,14 @@ impl Speak for Cat {
 
 // `dyn` in the signature: the item cannot be stated, so it is excluded.
 /// @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008)
+/// @fail(extraction): fstar(HAX0008)
 pub fn dyn_in_sig(x: &dyn Speak) -> u8 {
     x.hello()
 }
 
 // `dyn` only in the body: the signature is fine, so the body is opacified.
 /// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): fstar(HAX0008, HAX0008, HAX0008)
 pub fn dyn_in_body() -> u8 {
     let c = Cat;
     let d: &dyn Speak = &c;
