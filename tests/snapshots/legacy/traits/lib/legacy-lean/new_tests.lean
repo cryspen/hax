@@ -428,7 +428,7 @@ class Foo (Self : Type) (FooConst : usize) (FooType : Type)
   [associatedTypes : outParam (Foo.AssociatedTypes (Self : Type) (FooConst :
       usize) (FooType : Type))]
   where
-  fun (Self) (FooConst) (FooType) (FunConst : usize) (FunType : Type) :
+  _fun (Self) (FooConst) (FooType) (FunConst : usize) (FunType : Type) :
     ((RustArray FooType FooConst) ->
     (RustArray FunType FunConst) ->
     RustM rust_primitives.hax.Tuple0)
@@ -455,7 +455,7 @@ def Impl.fun_hoisted
 instance Impl (FooConst : usize) (FooType : Type) (SelfType : Type) :
   Foo SelfType (FooConst) FooType
   where
-  fun := fun  (FunConst : usize) (FunType : Type) =>
+  _fun := fun  (FunConst : usize) (FunType : Type) =>
     (Impl.fun_hoisted (FooConst) FooType SelfType (FunConst) FunType)
 
 end new_tests.legacy__traits__lib.interlaced_consts_types
@@ -463,7 +463,7 @@ end new_tests.legacy__traits__lib.interlaced_consts_types
 
 namespace new_tests.legacy__traits__lib.implicit_explicit_calling_conventions
 
-structure Type (TypeArg : Type) (ConstArg : usize) where
+structure _Type (TypeArg : Type) (ConstArg : usize) where
   field : (RustArray TypeArg ConstArg)
 
 class Trait.AssociatedTypes (Self : Type) (TypeArg : Type) (ConstArg : usize)
@@ -478,14 +478,14 @@ class Trait (Self : Type) (TypeArg : Type) (ConstArg : usize)
     (MethodConstArg : usize) :
     (Self ->
     TypeArg ->
-    (Type TypeArg (ConstArg)) ->
+    (_Type TypeArg (ConstArg)) ->
     RustM rust_primitives.hax.Tuple0)
   associated_function (Self) (TypeArg) (ConstArg)
     (MethodTypeArg : Type)
     (MethodConstArg : usize) :
     (Self ->
     TypeArg ->
-    (Type TypeArg (ConstArg)) ->
+    (_Type TypeArg (ConstArg)) ->
     RustM rust_primitives.hax.Tuple0)
 
 @[spec]
@@ -496,7 +496,7 @@ def Impl.method_hoisted
     (MethodConstArg : usize)
     (self : rust_primitives.hax.Tuple0)
     (value_TypeArg : TypeArg)
-    (value_Type : (Type TypeArg (ConstArg))) :
+    (value_Type : (_Type TypeArg (ConstArg))) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
@@ -508,7 +508,7 @@ def Impl.associated_function_hoisted
     (MethodConstArg : usize)
     (_self : rust_primitives.hax.Tuple0)
     (value_TypeArg : TypeArg)
-    (value_Type : (Type TypeArg (ConstArg))) :
+    (value_Type : (_Type TypeArg (ConstArg))) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
@@ -542,7 +542,7 @@ def method_caller
     [trait_constr_method_caller_i0 : Trait ImplTrait TypeArg (ConstArg) ]
     (x : ImplTrait)
     (value_TypeArg : TypeArg)
-    (value_Type : (Type TypeArg (ConstArg))) :
+    (value_Type : (_Type TypeArg (ConstArg))) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (Trait.method
@@ -570,7 +570,7 @@ def associated_function_caller
       ]
     (x : ImplTrait)
     (value_TypeArg : TypeArg)
-    (value_Type : (Type TypeArg (ConstArg))) :
+    (value_Type : (_Type TypeArg (ConstArg))) :
     RustM rust_primitives.hax.Tuple0 := do
   let _ ←
     (Trait.associated_function
