@@ -35,12 +35,10 @@ def Impl.hello_hoisted (self : Cat) : RustM u8 := do (pure (1 : u8))
 instance Impl : Speak Cat where
   hello := (Impl.hello_hoisted)
 
---  @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008)
---  @fail(extraction): fstar(HAX0008)
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008), proverif(HAX0008), fstar(HAX0008)
 -- [hax::excluded] dyn_in_sig — Unsupported `dyn` traits
 
---  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008)
---  @fail(extraction): fstar(HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): coq(HAX0008, HAX0008, HAX0008), proverif(HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008)
 @[spec]
 def dyn_in_body (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   let c : Cat := Cat.mk;
@@ -48,14 +46,9 @@ def dyn_in_body (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
     (rust_primitives.unsize c);
   (Speak.hello sorry /- [hax::opaque] Unsupported `dyn` traits -/ d)
 
---  @fail(extraction): coq(HAX0010, HAX0003), ssprove(HAX0003, HAX0010), legacy-lean(HAX0010, HAX0003), fstar(HAX0010, HAX0003), proverif(HAX0010, HAX0003)
--- [hax::excluded] mut_ref_return — The mutation of this &mut is not allowed here.
-
---  @fail(extraction): proverif(HAX0010, HAX0010, HAX0010, HAX0003, HAX0003, HAX0003), legacy-lean(HAX0010, HAX0010, HAX0010, HAX0003, HAX0003, HAX0003), ssprove(HAX0003, HAX0003, HAX0003, HAX0010, HAX0010, HAX0010), coq(HAX0010, HAX0010, HAX0010, HAX0003, HAX0003, HAX0003), fstar(HAX0010, HAX0010, HAX0010, HAX0003, HAX0003, HAX0003)
-@[spec]
-def body_split (buf : (RustSlice u8)) : RustM u8 := do
-  (pure
-  sorry /- [hax::opaque] The mutation of this &mut is not allowed here. -/)
+--  @fail(extraction): proverif(HAX0003, HAX0003, HAX0003, HAX0010, HAX0010, HAX0010), ssprove(HAX0003, HAX0003, HAX0003, HAX0010, HAX0010, HAX0010), coq(HAX0003, HAX0003, HAX0003, HAX0010, HAX0010, HAX0010)
+opaque body_split (buf : (RustSlice u8)) :
+    RustM (rust_primitives.hax.Tuple2 (RustSlice u8) u8)
 
 end new_tests.legacy__tombstones__lib
 
