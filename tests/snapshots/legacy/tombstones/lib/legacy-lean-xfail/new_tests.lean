@@ -36,9 +36,11 @@ instance Impl : Speak Cat where
   hello := (Impl.hello_hoisted)
 
 --  @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008)
+--  @fail(extraction): fstar(HAX0008)
 -- [hax::excluded] dyn_in_sig — Unsupported `dyn` traits
 
 --  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): fstar(HAX0008, HAX0008, HAX0008)
 @[spec]
 def dyn_in_body (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
   let c : Cat := Cat.mk;

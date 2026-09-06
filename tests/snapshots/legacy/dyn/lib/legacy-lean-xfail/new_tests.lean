@@ -33,7 +33,7 @@ def Impl.stringify_hoisted (self : i32) : RustM alloc.string.String := do
 instance Impl : Printable i32 alloc.string.String where
   stringify := (Impl.stringify_hoisted)
 
---  @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+--  @fail(extraction): fstar(HAX0008), coq(HAX0008), ssprove(HAX0008), proverif(HAX0008)
 -- [hax::excluded] print — Unsupported `dyn` traits
 
 end new_tests.legacy__dyn__lib

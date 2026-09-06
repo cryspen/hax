@@ -162,48 +162,33 @@ let ne_bad_message (_: Prims.unit) : Prims.unit =
   ()
 
 /// @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008), proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): fstar(HAX0008, HAX0008, HAX0008, HAX0008)
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = eq_good () in
   let _:Prims.unit = eq_good_message () in
   let _:Prims.unit = ne_good () in
   let _:Prims.unit = ne_good_message () in
   let _:Prims.unit =
-    Hax_lib.v_assert (Core_models.Result.impl__is_err #Prims.unit
-          #(dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z))
-          (Std.Panic.catch_unwind #(Prims.unit -> Prims.unit) #Prims.unit eq_bad
-            <:
-            Core_models.Result.t_Result Prims.unit
-              (dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z)))
+    Hax_lib.v_assert (Rust_primitives.Hax.failure "[hax::opaque] Explicit rejection by a phase in the Hax engine: a node of kind [Dyn] have been found in the AST"
+          ""
         <:
         bool)
   in
   let _:Prims.unit =
-    Hax_lib.v_assert (Core_models.Result.impl__is_err #Prims.unit
-          #(dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z))
-          (Std.Panic.catch_unwind #(Prims.unit -> Prims.unit) #Prims.unit eq_bad_message
-            <:
-            Core_models.Result.t_Result Prims.unit
-              (dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z)))
+    Hax_lib.v_assert (Rust_primitives.Hax.failure "[hax::opaque] Explicit rejection by a phase in the Hax engine: a node of kind [Dyn] have been found in the AST"
+          ""
         <:
         bool)
   in
   let _:Prims.unit =
-    Hax_lib.v_assert (Core_models.Result.impl__is_err #Prims.unit
-          #(dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z))
-          (Std.Panic.catch_unwind #(Prims.unit -> Prims.unit) #Prims.unit ne_bad
-            <:
-            Core_models.Result.t_Result Prims.unit
-              (dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z)))
+    Hax_lib.v_assert (Rust_primitives.Hax.failure "[hax::opaque] Explicit rejection by a phase in the Hax engine: a node of kind [Dyn] have been found in the AST"
+          ""
         <:
         bool)
   in
   let _:Prims.unit =
-    Hax_lib.v_assert (Core_models.Result.impl__is_err #Prims.unit
-          #(dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z))
-          (Std.Panic.catch_unwind #(Prims.unit -> Prims.unit) #Prims.unit ne_bad_message
-            <:
-            Core_models.Result.t_Result Prims.unit
-              (dyn 2 (fun z -> Core_models.Any.t_Any z) (fun z -> Core_models.Marker.t_Send z)))
+    Hax_lib.v_assert (Rust_primitives.Hax.failure "[hax::opaque] Explicit rejection by a phase in the Hax engine: a node of kind [Dyn] have been found in the AST"
+          ""
         <:
         bool)
   in
