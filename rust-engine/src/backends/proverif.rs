@@ -1354,9 +1354,7 @@ const _: () = {
                 // to the error sink rather than emit a body over unbound
                 // variables. (The `Error` nodes already carry their own
                 // diagnostics.)
-                ExprKind::If { condition, .. }
-                    if ExternRefCollector::expr_has_error(condition) =>
-                {
+                ExprKind::If { condition, .. } if ExternRefCollector::expr_has_error(condition) => {
                     docs!["bitstring_err()", " (* unsupported if-let chain *)"]
                 }
                 ExprKind::If {
@@ -2926,10 +2924,7 @@ fn collect_erased_const_generics(item: &Item, out: &mut HashSet<LocalId>) {
 /// disruption to the generated file. Recursive cycles never become ready (they
 /// depend on each other); their members are opacified to dependency-free
 /// `fun`s, so we emit the leftovers last in source order.
-fn topo_sort_impl_items<'a>(
-    items: &'a [ImplItem],
-    printer: &ProVerifPrinter,
-) -> Vec<&'a ImplItem> {
+fn topo_sort_impl_items<'a>(items: &'a [ImplItem], printer: &ProVerifPrinter) -> Vec<&'a ImplItem> {
     let n = items.len();
     let mut name_to_idx: HashMap<String, usize> = HashMap::new();
     for (i, ii) in items.iter().enumerate() {
@@ -2976,8 +2971,8 @@ fn topo_sort_impl_items<'a>(
         }
     }
     // Cyclic leftovers (opacified recursion) in source order.
-    for i in 0..n {
-        if !emitted[i] {
+    for (i, &done) in emitted.iter().enumerate() {
+        if !done {
             order.push(i);
         }
     }
@@ -3014,8 +3009,7 @@ fn collect_accessors_and_consts(
                 ItemKind::Impl { items, .. } => {
                     for ii in items {
                         let name = printer.render_id(&ii.ident);
-                        let is_nullary_fn =
-                            matches!(&ii.kind, ImplItemKind::Fn { params, .. } if params.is_empty());
+                        let is_nullary_fn = matches!(&ii.kind, ImplItemKind::Fn { params, .. } if params.is_empty());
                         let is_assoc_const = matches!(
                             &ii.kind,
                             ImplItemKind::Resugared(ResugaredImplItemKind::Constant { .. })
@@ -3046,8 +3040,10 @@ fn shape_of_pat(pat: &Pat, printer: &ProVerifPrinter) -> String {
             if fields.is_empty() {
                 format!("{name}()")
             } else {
-                let inner: Vec<String> =
-                    fields.iter().map(|(_, p)| shape_of_pat(p, printer)).collect();
+                let inner: Vec<String> = fields
+                    .iter()
+                    .map(|(_, p)| shape_of_pat(p, printer))
+                    .collect();
                 format!("{name}({})", inner.join(", "))
             }
         }
@@ -3058,10 +3054,10 @@ fn shape_of_pat(pat: &Pat, printer: &ProVerifPrinter) -> String {
 
 /// Rendered name of a call's head, when the call applies a `GlobalId`.
 fn app_head_name(e: &Expr, printer: &ProVerifPrinter) -> Option<String> {
-    if let ExprKind::App { head, .. } = &*e.kind {
-        if let ExprKind::GlobalId(g) = &*head.kind {
-            return Some(printer.render_id(g));
-        }
+    if let ExprKind::App { head, .. } = &*e.kind
+        && let ExprKind::GlobalId(g) = &*head.kind
+    {
+        return Some(printer.render_id(g));
     }
     None
 }
@@ -3151,10 +3147,10 @@ fn collect_recursive_fns(modules: &[Module], printer: &ProVerifPrinter) -> HashS
                 } if !params.is_empty() => add_fn(printer.render_id(name), body),
                 ItemKind::Impl { items, .. } => {
                     for ii in items {
-                        if let ImplItemKind::Fn { body, params } = &ii.kind {
-                            if !params.is_empty() {
-                                add_fn(printer.render_id(&ii.ident), body);
-                            }
+                        if let ImplItemKind::Fn { body, params } = &ii.kind
+                            && !params.is_empty()
+                        {
+                            add_fn(printer.render_id(&ii.ident), body);
                         }
                     }
                 }
@@ -3192,7 +3188,11 @@ fn collect_recursive_fns(modules: &[Module], printer: &ProVerifPrinter) -> HashS
         false
     };
 
-    defined.iter().filter(|n| reaches_self(n)).cloned().collect()
+    defined
+        .iter()
+        .filter(|n| reaches_self(n))
+        .cloned()
+        .collect()
 }
 
 /// Per-reference info kept while scanning the AST. Tracks max-observed
@@ -3357,7 +3357,10 @@ impl ProVerifBackend {
             // Record the result shape a hand-written or imported definition must
             // produce, taken from how call sites destructure this symbol.
             if let Some(shapes) = result_shapes.get(&name) {
-                decls.push(format!("(* result destructured as: {} *)", shapes.join("; ")));
+                decls.push(format!(
+                    "(* result destructured as: {} *)",
+                    shapes.join("; ")
+                ));
             }
             if info.arity == 0 && !info.applied {
                 decls.push(format!("const {name}: bitstring."));
@@ -3542,8 +3545,14 @@ fn lit_const_name(lit: &Literal) -> Option<String> {
         Literal::Int {
             value, negative, ..
         } => Some(nat_lit_const(value.as_ref(), *negative)),
-        Literal::String(s) => Some(format!("string_lit__{}", sanitize_string_literal(s.as_ref()))),
-        Literal::Char(c) => Some(format!("char_lit__{}", sanitize_string_literal(&c.to_string()))),
+        Literal::String(s) => Some(format!(
+            "string_lit__{}",
+            sanitize_string_literal(s.as_ref())
+        )),
+        Literal::Char(c) => Some(format!(
+            "char_lit__{}",
+            sanitize_string_literal(&c.to_string())
+        )),
         Literal::Float {
             value, negative, ..
         } => {
