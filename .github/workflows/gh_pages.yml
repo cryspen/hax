@@ -1,11 +1,12 @@
 name: Deploy to GH Pages
 
+# Runs on every push to `main` and, for a release that becomes the latest,
+# called from the `release` workflow.
 on:
   workflow_dispatch:
+  workflow_call:
   push:
     branches: [main]
-  release:
-    types: [published]
 
 jobs:
   # Build job
@@ -13,7 +14,12 @@ jobs:
     if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
     steps:
+      # A call from the `release` workflow runs on the release tag; the site
+      # is built from `main` regardless, only the manual comes from the
+      # release.
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: cachix/cachix-action@v15
         with:

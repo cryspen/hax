@@ -22,10 +22,13 @@ jobs:
           # links and get rate-limited quickly when anonymous.
           GITHUB_TOKEN: ${{ github.token }}
         with:
+          # eprint.iacr.org rejects lychee's default user agent with 403
+          # Forbidden; so we use a custom user agent string.
           args: >-
             --no-progress
             --max-retries 5
             --exclude-path docs
+            --user-agent 'hax link check (https://github.com/cryspen/hax)'
             './**/*.md'
           fail: true
       - name: Open an issue on failure
