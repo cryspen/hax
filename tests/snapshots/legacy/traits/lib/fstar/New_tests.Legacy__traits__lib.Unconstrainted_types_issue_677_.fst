@@ -1,11 +1,10 @@
 module New_tests.Legacy__traits__lib.Unconstrainted_types_issue_677_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_PolyOp (v_Self: Type0) = {
-  f_op_pre:u32 -> u32 -> Type0;
-  f_op_post:u32 -> u32 -> u32 -> Type0;
+  f_op_pre:u32 -> u32 -> prop;
+  f_op_post:u32 -> u32 -> u32 -> prop;
   f_op:x0: u32 -> x1: u32 -> Prims.Pure u32 (f_op_pre x0 x1) (fun result -> f_op_post x0 x1 result)
 }
 

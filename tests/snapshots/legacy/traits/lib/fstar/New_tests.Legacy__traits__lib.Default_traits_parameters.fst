@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Default_traits_parameters
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Bar (v_Self: Type0) (v_T: Type0) = { __marker_trait_t_Bar:Prims.unit }

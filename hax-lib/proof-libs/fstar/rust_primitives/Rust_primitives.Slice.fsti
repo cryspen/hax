@@ -1,6 +1,5 @@
 module Rust_primitives.Slice
 
-open FStar.Mul
 open Rust_primitives.Arrays
 open Rust_primitives.Integers
 

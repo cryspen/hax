@@ -1,6 +1,5 @@
 module New_tests.Legacy__lean_tests__lib.Array
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let f (v_N: usize) (x: t_Array u8 v_N) : Prims.unit = ()

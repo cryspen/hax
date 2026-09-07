@@ -1,6 +1,5 @@
 module Core_models.Hint
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 /// See [`std::hint::black_box`]

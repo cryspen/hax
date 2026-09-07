@@ -1,6 +1,5 @@
 module New_tests.Legacy__attributes__lib.Inlined_code_ensures_requires
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let increment_array (v: t_Array u8 (mk_usize 4))

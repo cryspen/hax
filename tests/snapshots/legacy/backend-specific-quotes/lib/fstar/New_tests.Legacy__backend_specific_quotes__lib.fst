@@ -1,6 +1,5 @@
 module New_tests.Legacy__backend_specific_quotes__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let a_verbatim_fstar_definition = 42

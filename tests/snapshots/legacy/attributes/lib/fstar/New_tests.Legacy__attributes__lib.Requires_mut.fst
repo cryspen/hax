@@ -1,12 +1,11 @@
 module New_tests.Legacy__attributes__lib.Requires_mut
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Foo (v_Self: Type0) = {
   f_f_pre:x: u8 -> y: u8
     -> pred:
-      Type0
+      prop
         { ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
             (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
             <:
@@ -15,20 +14,20 @@ class t_Foo (v_Self: Type0) = {
           pred };
   f_f_post:x: u8 -> y: u8 -> x1: (u8 & u8)
     -> pred:
-      Type0
+      prop
         { pred ==>
           (let (y_future: u8), (output_variable: u8) = x1 in
             output_variable =. y_future) };
   f_f:x0: u8 -> x1: u8 -> Prims.Pure (u8 & u8) (f_f_pre x0 x1) (fun result -> f_f_post x0 x1 result);
-  f_g_pre:u8 -> u8 -> Type0;
-  f_g_post:u8 -> u8 -> u8 -> Type0;
+  f_g_pre:u8 -> u8 -> prop;
+  f_g_post:u8 -> u8 -> u8 -> prop;
   f_g:x0: u8 -> x1: u8 -> Prims.Pure u8 (f_g_pre x0 x1) (fun result -> f_g_post x0 x1 result);
-  f_h_pre:u8 -> u8 -> Type0;
-  f_h_post:u8 -> u8 -> Prims.unit -> Type0;
+  f_h_pre:u8 -> u8 -> prop;
+  f_h_post:u8 -> u8 -> Prims.unit -> prop;
   f_h:x0: u8 -> x1: u8
     -> Prims.Pure Prims.unit (f_h_pre x0 x1) (fun result -> f_h_post x0 x1 result);
-  f_i_pre:u8 -> u8 -> Type0;
-  f_i_post:u8 -> u8 -> u8 -> Type0;
+  f_i_pre:u8 -> u8 -> prop;
+  f_i_post:u8 -> u8 -> u8 -> prop;
   f_i:x0: u8 -> x1: u8 -> Prims.Pure u8 (f_i_pre x0 x1) (fun result -> f_i_post x0 x1 result)
 }
 

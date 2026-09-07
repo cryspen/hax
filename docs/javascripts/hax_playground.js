@@ -66,7 +66,7 @@ async function call_playground(result_block, query, text, parent_node) {
                     if (file.endsWith('.rs'))
                         continue;
                     let contents = json.Done.files[file];
-                    contents = (contents.split(lean_backend ? 'set_option linter.unusedVariables false' : 'open FStar.Mul')[1] || contents).trim();
+                    contents = (contents.split(lean_backend ? 'set_option linter.unusedVariables false' : 'open Core_models')[1] || contents).trim();
                     contents = contents.replace(/$/gm, ' ').trim();
                     out.push([file, contents]);
                 }

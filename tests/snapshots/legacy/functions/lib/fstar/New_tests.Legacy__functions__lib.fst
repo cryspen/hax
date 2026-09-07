@@ -1,6 +1,5 @@
 module New_tests.Legacy__functions__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let calling_function_pointer__f (#v_T: Type0) (_: Prims.unit) : Prims.unit = ()

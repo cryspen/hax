@@ -1,7 +1,6 @@
 module Core_models.Time
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core_models
-open FStar.Mul
 
 val v_NANOS_PER_SEC: u32
 

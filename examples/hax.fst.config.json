@@ -1,7 +1,6 @@
 {
     "fstar_exe": "fstar.exe",
     "options": [
-        "--cmi",
         "--warn_error",
         "-331",
         "--cache_checked_modules",
@@ -9,9 +8,7 @@
         "${HAX_HOME}/proof-libs/fstar/.cache",
         "--already_cached",
         "+Prims+FStar+LowStar+C+Spec.Loops+TestLib",
-        "--query_stats",
-        "--split_queries",
-        "always"
+        "--query_stats"
     ],
     "include_dirs": [
         ".",

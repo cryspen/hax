@@ -18,11 +18,14 @@ let (uu___is_Formula : level -> Prims.bool) =
 type let_qualifier =
   | NoLetQualifier 
   | Rec 
+  | LocalUnfold 
 let (uu___is_NoLetQualifier : let_qualifier -> Prims.bool) =
   fun projectee ->
     match projectee with | NoLetQualifier -> true | uu___ -> false
 let (uu___is_Rec : let_qualifier -> Prims.bool) =
   fun projectee -> match projectee with | Rec -> true | uu___ -> false
+let (uu___is_LocalUnfold : let_qualifier -> Prims.bool) =
+  fun projectee -> match projectee with | LocalUnfold -> true | uu___ -> false
 type quote_kind =
   | Static 
   | Dynamic 

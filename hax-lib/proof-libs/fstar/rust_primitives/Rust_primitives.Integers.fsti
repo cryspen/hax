@@ -1,6 +1,5 @@
 module Rust_primitives.Integers
 
-open FStar.Mul
 
 #set-options "--max_fuel 0 --max_ifuel 1 --z3rlimit 20"
 

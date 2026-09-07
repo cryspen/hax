@@ -1,6 +1,5 @@
 module New_tests.Legacy__proverif_fn_to_letfun__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_A = {

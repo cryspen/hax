@@ -1,7 +1,6 @@
 module Tutorial_src
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core
-open FStar.Mul
 
 type t_F3 =
   | F3_E1 : t_F3

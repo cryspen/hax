@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__try_error_result
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let call (return_error: bool) : Core_models.Result.t_Result Prims.unit Prims.unit =

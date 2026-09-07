@@ -7,7 +7,6 @@ module Core_models.Num.Checked_mul_spec
 /// so that a mis-stated overflow condition is a build failure rather than a
 /// model that silently reports overflow on correct multiplications.
 
-open FStar.Mul
 open Rust_primitives
 
 /// unsigned — in range

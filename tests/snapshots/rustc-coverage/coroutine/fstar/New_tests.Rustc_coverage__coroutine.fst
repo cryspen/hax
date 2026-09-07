@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__coroutine
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let get_u32 (v_val: bool) : Core_models.Result.t_Result u32 Alloc.String.t_String =

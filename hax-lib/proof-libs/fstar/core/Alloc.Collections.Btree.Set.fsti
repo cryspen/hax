@@ -1,6 +1,5 @@
 module Alloc.Collections.Btree.Set
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 val t_BTreeSet (v_T v_U: Type0) : eqtype

@@ -1,6 +1,5 @@
 module Core_models.Bundle
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 /// See [`std::array::TryFromSliceError`]
@@ -3755,37 +3754,37 @@ let impl_6__from__result (#v_T #v_E: Type0) : Core_models.Ops.Try_trait.t_Try (t
 
 /// See [`std::cmp::PartialEq`]
 class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
-  f_eq_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
-  f_eq_post:v_Self -> v_Rhs -> bool -> Type0;
+  f_eq_pre:self_: v_Self -> other: v_Rhs -> pred: prop{true ==> pred};
+  f_eq_post:v_Self -> v_Rhs -> bool -> prop;
   f_eq:x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_eq_pre x0 x1) (fun result -> f_eq_post x0 x1 result)
 }
 
 class t_Neq (v_Self: Type0) (v_Rhs: Type0) = {
-  f_neq_pre:self_: v_Self -> y: v_Rhs -> pred: Type0{true ==> pred};
-  f_neq_post:v_Self -> v_Rhs -> bool -> Type0;
+  f_neq_pre:self_: v_Self -> y: v_Rhs -> pred: prop{true ==> pred};
+  f_neq_post:v_Self -> v_Rhs -> bool -> prop;
   f_neq:x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_neq_pre x0 x1) (fun result -> f_neq_post x0 x1 result)
 }
 
 /// See [`std::convert::Into`]
 class t_Into (v_Self: Type0) (v_T: Type0) = {
-  f_into_pre:self_: v_Self -> pred: Type0{true ==> pred};
-  f_into_post:v_Self -> v_T -> Type0;
+  f_into_pre:self_: v_Self -> pred: prop{true ==> pred};
+  f_into_post:v_Self -> v_T -> prop;
   f_into:x0: v_Self -> Prims.Pure v_T (f_into_pre x0) (fun result -> f_into_post x0 result)
 }
 
 /// See [`std::convert::From`]
 class t_From (v_Self: Type0) (v_T: Type0) = {
-  f_from_pre:x: v_T -> pred: Type0{true ==> pred};
-  f_from_post:v_T -> v_Self -> Type0;
+  f_from_pre:x: v_T -> pred: prop{true ==> pred};
+  f_from_post:v_T -> v_Self -> prop;
   f_from:x0: v_T -> Prims.Pure v_Self (f_from_pre x0) (fun result -> f_from_post x0 result)
 }
 
 /// See [`std::convert::AsRef`]
 class t_AsRef (v_Self: Type0) (v_T: Type0) = {
-  f_as_ref_pre:self_: v_Self -> pred: Type0{true ==> pred};
-  f_as_ref_post:v_Self -> v_T -> Type0;
+  f_as_ref_pre:self_: v_Self -> pred: prop{true ==> pred};
+  f_as_ref_post:v_Self -> v_T -> prop;
   f_as_ref:x0: v_Self -> Prims.Pure v_T (f_as_ref_pre x0) (fun result -> f_as_ref_post x0 result)
 }
 
@@ -4418,8 +4417,8 @@ let impl_7__from__result
 /// See [`std::cmp::PartialOrd`]
 class t_PartialOrd (v_Self: Type0) (v_Rhs: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_PartialEq v_Self v_Rhs;
-  f_partial_cmp_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
-  f_partial_cmp_post:v_Self -> v_Rhs -> t_Option t_Ordering -> Type0;
+  f_partial_cmp_pre:self_: v_Self -> other: v_Rhs -> pred: prop{true ==> pred};
+  f_partial_cmp_post:v_Self -> v_Rhs -> t_Option t_Ordering -> prop;
   f_partial_cmp:x0: v_Self -> x1: v_Rhs
     -> Prims.Pure (t_Option t_Ordering)
         (f_partial_cmp_pre x0 x1)
@@ -4432,8 +4431,8 @@ let _ = fun (v_Self:Type0) (v_Rhs:Type0) {|i: t_PartialOrd v_Self v_Rhs|} -> i._
 /// See [`std::convert::TryInto`]
 class t_TryInto (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Error:Type0;
-  f_try_into_pre:self_: v_Self -> pred: Type0{true ==> pred};
-  f_try_into_post:v_Self -> t_Result v_T f_Error -> Type0;
+  f_try_into_pre:self_: v_Self -> pred: prop{true ==> pred};
+  f_try_into_post:v_Self -> t_Result v_T f_Error -> prop;
   f_try_into:x0: v_Self
     -> Prims.Pure (t_Result v_T f_Error)
         (f_try_into_pre x0)
@@ -4443,8 +4442,8 @@ class t_TryInto (v_Self: Type0) (v_T: Type0) = {
 /// See [`std::convert::TryFrom`]
 class t_TryFrom (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Error:Type0;
-  f_try_from_pre:x: v_T -> pred: Type0{true ==> pred};
-  f_try_from_post:v_T -> t_Result v_Self f_Error -> Type0;
+  f_try_from_pre:x: v_T -> pred: prop{true ==> pred};
+  f_try_from_post:v_T -> t_Result v_Self f_Error -> prop;
   f_try_from:x0: v_T
     -> Prims.Pure (t_Result v_Self f_Error)
         (f_try_from_pre x0)
@@ -4454,8 +4453,8 @@ class t_TryFrom (v_Self: Type0) (v_T: Type0) = {
 /// See [`std::iter::Iterator`]
 class t_Iterator (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
-  f_next_pre:self_: v_Self -> pred: Type0{true ==> pred};
-  f_next_post:v_Self -> (v_Self & t_Option f_Item) -> Type0;
+  f_next_pre:self_: v_Self -> pred: prop{true ==> pred};
+  f_next_post:v_Self -> (v_Self & t_Option f_Item) -> prop;
   f_next:x0: v_Self
     -> Prims.Pure (v_Self & t_Option f_Item) (f_next_pre x0) (fun result -> f_next_post x0 result)
 }
@@ -7700,8 +7699,8 @@ let impl_4__from__result (#v_A: Type0) : t_Iterator (t_SeqIter v_A) =
 class t_Ord (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Eq v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:t_PartialOrd v_Self v_Self;
-  f_cmp_pre:self_: v_Self -> other: v_Self -> pred: Type0{true ==> pred};
-  f_cmp_post:v_Self -> v_Self -> t_Ordering -> Type0;
+  f_cmp_pre:self_: v_Self -> other: v_Self -> pred: prop{true ==> pred};
+  f_cmp_post:v_Self -> v_Self -> t_Ordering -> prop;
   f_cmp:x0: v_Self -> x1: v_Self
     -> Prims.Pure t_Ordering (f_cmp_pre x0 x1) (fun result -> f_cmp_post x0 x1 result)
 }
@@ -7717,8 +7716,8 @@ class t_IntoIterator (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Item:Type0;
   [@@@ FStar.Tactics.Typeclasses.no_method]f_IntoIter:Type0;
   f_IntoIter_i0:t_Iterator f_IntoIter;
-  f_into_iter_pre:v_Self -> Type0;
-  f_into_iter_post:v_Self -> f_IntoIter -> Type0;
+  f_into_iter_pre:v_Self -> prop;
+  f_into_iter_post:v_Self -> f_IntoIter -> prop;
   f_into_iter:x0: v_Self
     -> Prims.Pure f_IntoIter (f_into_iter_pre x0) (fun result -> f_into_iter_post x0 result)
 }
@@ -7739,23 +7738,23 @@ let impl_24 (#v_T: Type0) (v_N: usize) : t_IntoIterator (t_Array v_T v_N) =
 
 class t_PartialOrdDefaults (v_Self: Type0) (v_Rhs: Type0) = {
   f_lt_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
-    -> pred: Type0{true ==> pred};
-  f_lt_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+    -> pred: prop{true ==> pred};
+  f_lt_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> prop;
   f_lt:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_lt_pre #i1 x0 x1) (fun result -> f_lt_post #i1 x0 x1 result);
   f_le_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
-    -> pred: Type0{true ==> pred};
-  f_le_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+    -> pred: prop{true ==> pred};
+  f_le_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> prop;
   f_le:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_le_pre #i1 x0 x1) (fun result -> f_le_post #i1 x0 x1 result);
   f_gt_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
-    -> pred: Type0{true ==> pred};
-  f_gt_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+    -> pred: prop{true ==> pred};
+  f_gt_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> prop;
   f_gt:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_gt_pre #i1 x0 x1) (fun result -> f_gt_post #i1 x0 x1 result);
   f_ge_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
-    -> pred: Type0{true ==> pred};
-  f_ge_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+    -> pred: prop{true ==> pred};
+  f_ge_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> prop;
   f_ge:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_ge_pre #i1 x0 x1) (fun result -> f_ge_post #i1 x0 x1 result)
 }
@@ -8231,14 +8230,14 @@ class t_FromIterator (v_Self: Type0) (v_A: Type0) = {
       {| i1: t_IntoIterator v_T |} ->
       #_: unit{i1.f_Item == v_A} ->
       iter: v_T
-    -> pred: Type0{true ==> pred};
+    -> pred: prop{true ==> pred};
   f_from_iter_post:
       #v_T: Type0 ->
       {| i1: t_IntoIterator v_T |} ->
       #_: unit{i1.f_Item == v_A} ->
       v_T ->
       v_Self
-    -> Type0;
+    -> prop;
   f_from_iter:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> #_: unit{i1.f_Item == v_A} -> x0: v_T
     -> Prims.Pure v_Self
         (f_from_iter_pre #v_T #i1 #_ x0)
@@ -8273,7 +8272,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       v_Self ->
       v_B ->
       v_F
-    -> Type0;
+    -> prop;
   f_fold_post:
       #v_B: Type0 ->
       #v_F: Type0 ->
@@ -8282,7 +8281,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       v_B ->
       v_F ->
       v_B
-    -> Type0;
+    -> prop;
   f_fold:
       #v_B: Type0 ->
       #v_F: Type0 ->
@@ -8298,14 +8297,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_all_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
       bool
-    -> Type0;
+    -> prop;
   f_all:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
@@ -8318,7 +8317,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_map_post:
       #v_O: Type0 ->
       #v_F: Type0 ->
@@ -8326,7 +8325,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       v_Self ->
       v_F ->
       t_Map v_Self v_F
-    -> Type0;
+    -> prop;
   f_map:
       #v_O: Type0 ->
       #v_F: Type0 ->
@@ -8336,24 +8335,24 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Map v_Self v_F)
         (f_map_pre #v_O #v_F #i1 x0 x1)
         (fun result -> f_map_post #v_O #v_F #i1 x0 x1 result);
-  f_enumerate_pre:v_Self -> Type0;
-  f_enumerate_post:v_Self -> t_Enumerate v_Self -> Type0;
+  f_enumerate_pre:v_Self -> prop;
+  f_enumerate_post:v_Self -> t_Enumerate v_Self -> prop;
   f_enumerate:x0: v_Self
     -> Prims.Pure (t_Enumerate v_Self)
         (f_enumerate_pre x0)
         (fun result -> f_enumerate_post x0 result);
-  f_step_by_pre:self_: v_Self -> step: usize -> pred: Type0{step >. mk_usize 0 ==> pred};
-  f_step_by_post:v_Self -> usize -> t_StepBy v_Self -> Type0;
+  f_step_by_pre:self_: v_Self -> step: usize -> pred: prop{step >. mk_usize 0 ==> pred};
+  f_step_by_post:v_Self -> usize -> t_StepBy v_Self -> prop;
   f_step_by:x0: v_Self -> x1: usize
     -> Prims.Pure (t_StepBy v_Self)
         (f_step_by_pre x0 x1)
         (fun result -> f_step_by_post x0 x1 result);
-  f_take_pre:v_Self -> usize -> Type0;
-  f_take_post:v_Self -> usize -> t_Take v_Self -> Type0;
+  f_take_pre:v_Self -> usize -> prop;
+  f_take_post:v_Self -> usize -> t_Take v_Self -> prop;
   f_take:x0: v_Self -> x1: usize
     -> Prims.Pure (t_Take v_Self) (f_take_pre x0 x1) (fun result -> f_take_post x0 x1 result);
-  f_skip_pre:v_Self -> usize -> Type0;
-  f_skip_post:v_Self -> usize -> t_Skip v_Self -> Type0;
+  f_skip_pre:v_Self -> usize -> prop;
+  f_skip_post:v_Self -> usize -> t_Skip v_Self -> prop;
   f_skip:x0: v_Self -> x1: usize
     -> Prims.Pure (t_Skip v_Self) (f_skip_pre x0 x1) (fun result -> f_skip_post x0 x1 result);
   f_filter_pre:
@@ -8361,14 +8360,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P
-    -> Type0;
+    -> prop;
   f_filter_post:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P ->
       t_Filter v_Self v_P
-    -> Type0;
+    -> prop;
   f_filter:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
@@ -8383,7 +8382,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_filter_map_post:
       #v_B: Type0 ->
       #v_F: Type0 ->
@@ -8391,7 +8390,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       v_Self ->
       v_F ->
       t_FilterMap v_Self v_F
-    -> Type0;
+    -> prop;
   f_filter_map:
       #v_B: Type0 ->
       #v_F: Type0 ->
@@ -8406,14 +8405,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P
-    -> Type0;
+    -> prop;
   f_take_while_post:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P ->
       t_TakeWhile v_Self v_P
-    -> Type0;
+    -> prop;
   f_take_while:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
@@ -8427,14 +8426,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P
-    -> Type0;
+    -> prop;
   f_skip_while_post:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P ->
       t_SkipWhile v_Self v_P
-    -> Type0;
+    -> prop;
   f_skip_while:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
@@ -8449,7 +8448,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_map_while_post:
       #v_B: Type0 ->
       #v_F: Type0 ->
@@ -8457,7 +8456,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       v_Self ->
       v_F ->
       t_MapWhile v_Self v_F
-    -> Type0;
+    -> prop;
   f_map_while:
       #v_B: Type0 ->
       #v_F: Type0 ->
@@ -8472,14 +8471,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_inspect_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
       t_Inspect v_Self v_F
-    -> Type0;
+    -> prop;
   f_inspect:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
@@ -8488,8 +8487,8 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Inspect v_Self v_F)
         (f_inspect_pre #v_F #i1 x0 x1)
         (fun result -> f_inspect_post #v_F #i1 x0 x1 result);
-  f_fuse_pre:v_Self -> Type0;
-  f_fuse_post:v_Self -> t_Fuse v_Self -> Type0;
+  f_fuse_pre:v_Self -> prop;
+  f_fuse_post:v_Self -> t_Fuse v_Self -> prop;
   f_fuse:x0: v_Self
     -> Prims.Pure (t_Fuse v_Self) (f_fuse_pre x0) (fun result -> f_fuse_post x0 result);
   f_flat_map_pre:
@@ -8499,7 +8498,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i2: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_flat_map_post:
       #v_U: Type0 ->
       #v_F: Type0 ->
@@ -8508,7 +8507,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       v_Self ->
       v_F ->
       t_FlatMap v_Self v_U v_F
-    -> Type0;
+    -> prop;
   f_flat_map:
       #v_U: Type0 ->
       #v_F: Type0 ->
@@ -8519,15 +8518,15 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_FlatMap v_Self v_U v_F)
         (f_flat_map_pre #v_U #v_F #i1 #i2 x0 x1)
         (fun result -> f_flat_map_post #v_U #v_F #i1 #i2 x0 x1 result);
-  f_flatten_pre:{| i1: t_Iterator (_super_i0).f_Item |} -> v_Self -> Type0;
-  f_flatten_post:{| i1: t_Iterator (_super_i0).f_Item |} -> v_Self -> t_Flatten v_Self -> Type0;
+  f_flatten_pre:{| i1: t_Iterator (_super_i0).f_Item |} -> v_Self -> prop;
+  f_flatten_post:{| i1: t_Iterator (_super_i0).f_Item |} -> v_Self -> t_Flatten v_Self -> prop;
   f_flatten:{| i1: t_Iterator (_super_i0).f_Item |} -> x0: v_Self
     -> Prims.Pure (t_Flatten v_Self)
         (f_flatten_pre #i1 x0)
         (fun result -> f_flatten_post #i1 x0 result);
-  f_zip_pre:#v_I2: Type0 -> {| i1: t_Iterator v_I2 |} -> v_Self -> v_I2 -> Type0;
+  f_zip_pre:#v_I2: Type0 -> {| i1: t_Iterator v_I2 |} -> v_Self -> v_I2 -> prop;
   f_zip_post:#v_I2: Type0 -> {| i1: t_Iterator v_I2 |} -> v_Self -> v_I2 -> t_Zip v_Self v_I2
-    -> Type0;
+    -> prop;
   f_zip:#v_I2: Type0 -> {| i1: t_Iterator v_I2 |} -> x0: v_Self -> x1: v_I2
     -> Prims.Pure (t_Zip v_Self v_I2)
         (f_zip_pre #v_I2 #i1 x0 x1)
@@ -8538,7 +8537,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       #_: unit{i1.f_Item == (_super_i0).f_Item} ->
       v_Self ->
       v_U
-    -> Type0;
+    -> prop;
   f_chain_post:
       #v_U: Type0 ->
       {| i1: t_Iterator v_U |} ->
@@ -8546,7 +8545,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       v_Self ->
       v_U ->
       t_Chain v_Self v_U
-    -> Type0;
+    -> prop;
   f_chain:
       #v_U: Type0 ->
       {| i1: t_Iterator v_U |} ->
@@ -8561,14 +8560,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_any_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
       bool
-    -> Type0;
+    -> prop;
   f_any:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
@@ -8580,14 +8579,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P
-    -> Type0;
+    -> prop;
   f_find_post:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P ->
       t_Option (_super_i0).f_Item
-    -> Type0;
+    -> prop;
   f_find:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
@@ -8602,7 +8601,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_find_map_post:
       #v_B: Type0 ->
       #v_F: Type0 ->
@@ -8610,7 +8609,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       v_Self ->
       v_F ->
       t_Option v_B
-    -> Type0;
+    -> prop;
   f_find_map:
       #v_B: Type0 ->
       #v_F: Type0 ->
@@ -8625,14 +8624,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P
-    -> Type0;
+    -> prop;
   f_position_post:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P ->
       t_Option usize
-    -> Type0;
+    -> prop;
   f_position:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
@@ -8641,17 +8640,17 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Option usize)
         (f_position_pre #v_P #i1 x0 x1)
         (fun result -> f_position_post #v_P #i1 x0 x1 result);
-  f_count_pre:v_Self -> Type0;
-  f_count_post:v_Self -> usize -> Type0;
+  f_count_pre:v_Self -> prop;
+  f_count_post:v_Self -> usize -> prop;
   f_count:x0: v_Self -> Prims.Pure usize (f_count_pre x0) (fun result -> f_count_post x0 result);
-  f_nth_pre:v_Self -> usize -> Type0;
-  f_nth_post:v_Self -> usize -> t_Option (_super_i0).f_Item -> Type0;
+  f_nth_pre:v_Self -> usize -> prop;
+  f_nth_post:v_Self -> usize -> t_Option (_super_i0).f_Item -> prop;
   f_nth:x0: v_Self -> x1: usize
     -> Prims.Pure (t_Option (_super_i0).f_Item)
         (f_nth_pre x0 x1)
         (fun result -> f_nth_post x0 x1 result);
-  f_last_pre:v_Self -> Type0;
-  f_last_post:v_Self -> t_Option (_super_i0).f_Item -> Type0;
+  f_last_pre:v_Self -> prop;
+  f_last_post:v_Self -> t_Option (_super_i0).f_Item -> prop;
   f_last:x0: v_Self
     -> Prims.Pure (t_Option (_super_i0).f_Item)
         (f_last_pre x0)
@@ -8661,14 +8660,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_for_each_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
       Prims.unit
-    -> Type0;
+    -> prop;
   f_for_each:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
@@ -8682,14 +8681,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F ((_super_i0).f_Item & (_super_i0).f_Item) |} ->
       v_Self ->
       v_F
-    -> Type0;
+    -> prop;
   f_reduce_post:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F ((_super_i0).f_Item & (_super_i0).f_Item) |} ->
       v_Self ->
       v_F ->
       t_Option (_super_i0).f_Item
-    -> Type0;
+    -> prop;
   f_reduce:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F ((_super_i0).f_Item & (_super_i0).f_Item) |} ->
@@ -8698,21 +8697,21 @@ class t_IteratorMethods (v_Self: Type0) = {
     -> Prims.Pure (t_Option (_super_i0).f_Item)
         (f_reduce_pre #v_F #i1 x0 x1)
         (fun result -> f_reduce_post #v_F #i1 x0 x1 result);
-  f_min_pre:{| i1: t_Ord (_super_i0).f_Item |} -> v_Self -> Type0;
-  f_min_post:{| i1: t_Ord (_super_i0).f_Item |} -> v_Self -> t_Option (_super_i0).f_Item -> Type0;
+  f_min_pre:{| i1: t_Ord (_super_i0).f_Item |} -> v_Self -> prop;
+  f_min_post:{| i1: t_Ord (_super_i0).f_Item |} -> v_Self -> t_Option (_super_i0).f_Item -> prop;
   f_min:{| i1: t_Ord (_super_i0).f_Item |} -> x0: v_Self
     -> Prims.Pure (t_Option (_super_i0).f_Item)
         (f_min_pre #i1 x0)
         (fun result -> f_min_post #i1 x0 result);
-  f_max_pre:{| i1: t_Ord (_super_i0).f_Item |} -> v_Self -> Type0;
-  f_max_post:{| i1: t_Ord (_super_i0).f_Item |} -> v_Self -> t_Option (_super_i0).f_Item -> Type0;
+  f_max_pre:{| i1: t_Ord (_super_i0).f_Item |} -> v_Self -> prop;
+  f_max_post:{| i1: t_Ord (_super_i0).f_Item |} -> v_Self -> t_Option (_super_i0).f_Item -> prop;
   f_max:{| i1: t_Ord (_super_i0).f_Item |} -> x0: v_Self
     -> Prims.Pure (t_Option (_super_i0).f_Item)
         (f_max_pre #i1 x0)
         (fun result -> f_max_post #i1 x0 result);
-  f_collect_pre:#v_B: Type0 -> {| i1: t_FromIterator v_B (_super_i0).f_Item |} -> v_Self -> Type0;
+  f_collect_pre:#v_B: Type0 -> {| i1: t_FromIterator v_B (_super_i0).f_Item |} -> v_Self -> prop;
   f_collect_post:#v_B: Type0 -> {| i1: t_FromIterator v_B (_super_i0).f_Item |} -> v_Self -> v_B
-    -> Type0;
+    -> prop;
   f_collect:#v_B: Type0 -> {| i1: t_FromIterator v_B (_super_i0).f_Item |} -> x0: v_Self
     -> Prims.Pure v_B (f_collect_pre #v_B #i1 x0) (fun result -> f_collect_post #v_B #i1 x0 result)
 }

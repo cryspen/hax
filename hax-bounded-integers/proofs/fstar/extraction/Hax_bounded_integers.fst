@@ -1,7 +1,6 @@
 module Hax_bounded_integers
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open Core_models
-open FStar.Mul
 
 ///Bounded i128 integers. This struct enforces the invariant that values are greater or equal to `MIN` and less or equal to `MAX`.
 let t_BoundedI128 (v_MIN v_MAX: i128) = x: i128{x >=. v_MIN && x <=. v_MAX}

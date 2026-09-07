@@ -1,6 +1,5 @@
 module New_tests.Legacy__quotes_through_macro_rules__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let antiquotes_through_wrappers (x: u32) : u32 =

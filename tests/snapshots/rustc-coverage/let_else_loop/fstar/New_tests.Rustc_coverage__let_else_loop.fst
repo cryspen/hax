@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__let_else_loop
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// @fail(extraction): fstar(HAX0001), legacy-lean(HAX0001), coq(HAX0001), proverif(HAX0008)

@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Implement_arithmetic_trait
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_Wrapped = | Wrapped : i32 -> t_Wrapped

@@ -105,7 +105,7 @@ unfold let array_of_list (#t:Type)
   f_fold_return: #b:Type0 -> s:self -> b -> (b -> i:parent_iterator.f_Item{parent_iterator.f_contains s i} -> Core_models.Ops.Control_flow.t_ControlFlow b b) -> Core_models.Ops.Control_flow.t_ControlFlow b b;
 } *)
 let while_loop #acc_t 
-  (inv: acc_t -> Type0)
+  (inv: acc_t -> prop)
   (condition: (c:acc_t {inv c}) -> bool) 
   (fuel: (a:acc_t{inv a} -> nat))
   (init: acc_t {inv init}) 
@@ -124,7 +124,7 @@ let while_loop #acc_t
   while_loop_internal init
 
 assume val while_loop_return #acc_t #ret_t 
-  (inv: acc_t -> Type0)
+  (inv: acc_t -> prop)
   (condition: (c:acc_t {inv c}) -> bool) 
   (fuel: (a:acc_t -> nat))
   (init: acc_t ) 

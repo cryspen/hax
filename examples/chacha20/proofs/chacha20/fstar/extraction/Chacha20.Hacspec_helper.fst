@@ -1,6 +1,5 @@
 module Chacha20.Hacspec_helper
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 40"
-open FStar.Mul
 open Core_models
 
 let to_le_u32s_3_ (bytes: t_Slice u8) : t_Array u32 (mk_usize 3) =

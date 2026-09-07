@@ -1,3 +1,3 @@
 module Hax_lib.Prop
 
-unfold type t_Prop = Type0
+unfold type t_Prop = prop

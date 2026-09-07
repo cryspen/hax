@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__mcdc__non_control_flow
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let assign_and (a b: bool) : Prims.unit =

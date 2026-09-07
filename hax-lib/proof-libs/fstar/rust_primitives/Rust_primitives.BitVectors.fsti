@@ -1,6 +1,5 @@
 module Rust_primitives.BitVectors
 
-open FStar.Mul
 open Rust_primitives.Arrays
 open Rust_primitives.Integers
 

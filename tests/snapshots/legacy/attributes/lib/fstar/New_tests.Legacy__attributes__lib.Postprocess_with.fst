@@ -1,6 +1,5 @@
 module New_tests.Legacy__attributes__lib.Postprocess_with
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 [@@FStar.Tactics.postprocess_with (fun _ -> FStar.Tactics.trefl ())]

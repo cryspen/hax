@@ -1,6 +1,5 @@
 module Core_models.Iter.Adapters.Take_while
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 include Core_models.Bundle {t_TakeWhile as t_TakeWhile}

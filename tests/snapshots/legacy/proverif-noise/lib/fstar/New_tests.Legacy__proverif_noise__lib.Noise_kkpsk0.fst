@@ -1,6 +1,5 @@
 module New_tests.Legacy__proverif_noise__lib.Noise_kkpsk0
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_HandshakeStateI0 = {
@@ -42,7 +41,7 @@ type t_ProtocolName = | ProtocolName : t_Array u8 (mk_usize 36) -> t_ProtocolNam
 
 let v_Noise_KKpsk0_25519_ChaChaPoly_SHA256: t_ProtocolName =
   ProtocolName
-  (let list =
+  (let unfold list =
       [
         mk_u8 78; mk_u8 111; mk_u8 105; mk_u8 115; mk_u8 101; mk_u8 95; mk_u8 75; mk_u8 75;
         mk_u8 112; mk_u8 115; mk_u8 107; mk_u8 48; mk_u8 95; mk_u8 50; mk_u8 53; mk_u8 53; mk_u8 49;

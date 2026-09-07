@@ -1,6 +1,5 @@
 module Alloc.Collections.Vec_deque
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 type t_VecDeque (v_T: Type0) (v_A: Type0) =

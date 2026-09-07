@@ -1,6 +1,5 @@
 module New_tests.Legacy__attributes__lib.Issue_1276_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_S = | S : u8 -> t_S

@@ -1,6 +1,5 @@
 module New_tests.Legacy__naming__lib.Functions_defined_in_trait_impls
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_A = | A : t_A

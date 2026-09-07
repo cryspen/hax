@@ -1,6 +1,5 @@
 module Chacha20
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 40"
-open FStar.Mul
 open Core_models
 
 let _ =
@@ -146,7 +145,7 @@ let chacha20_init (key: t_Array u8 (mk_usize 32)) (iv: t_Array u8 (mk_usize 12))
   let (iv_u32: t_Array u32 (mk_usize 3)):t_Array u32 (mk_usize 3) =
     Chacha20.Hacspec_helper.to_le_u32s_3_ (iv <: t_Slice u8)
   in
-  let list =
+  let unfold list =
     [
       mk_u32 1634760805; mk_u32 857760878; mk_u32 2036477234; mk_u32 1797285236;
       key_u32.[ mk_usize 0 ]; key_u32.[ mk_usize 1 ]; key_u32.[ mk_usize 2 ]; key_u32.[ mk_usize 3 ];
@@ -278,11 +277,7 @@ let chacha20_update (st0: t_Array u32 (mk_usize 16)) (m: t_Slice u8)
         Alloc.Vec.impl_2__extend_from_slice #u8
           #Alloc.Alloc.t_Global
           blocks_out
-          (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
-              #FStar.Tactics.Typeclasses.solve
-              b
-            <:
-            t_Slice u8)
+          (Alloc.Vec.impl_1__as_slice b <: t_Slice u8)
       in
       blocks_out
     else blocks_out

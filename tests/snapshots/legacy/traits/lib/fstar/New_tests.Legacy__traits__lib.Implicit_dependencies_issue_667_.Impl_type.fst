@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Implicit_dependencies_issue_667_.Impl_type
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]

@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Interlaced_consts_types
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_Bar (v_FooConst: usize) (v_FooType: Type0) =
@@ -12,14 +11,14 @@ class t_Foo (v_Self: Type0) (v_FooConst: usize) (v_FooType: Type0) = {
       #v_FunType: Type0 ->
       t_Array v_FooType v_FooConst ->
       t_Array v_FunType v_FunConst
-    -> Type0;
+    -> prop;
   f_fun_post:
       v_FunConst: usize ->
       #v_FunType: Type0 ->
       t_Array v_FooType v_FooConst ->
       t_Array v_FunType v_FunConst ->
       Prims.unit
-    -> Type0;
+    -> prop;
   f_fun:
       v_FunConst: usize ->
       #v_FunType: Type0 ->

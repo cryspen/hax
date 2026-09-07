@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__closure_macro
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let load_configuration_files (_: Prims.unit)
@@ -17,7 +16,7 @@ let load_configuration_files (_: Prims.unit)
 let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit Alloc.String.t_String =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["Starting service\n"] in
+          (let unfold list = ["Starting service\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -37,7 +36,7 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit Alloc.String.t
           let e:Alloc.String.t_String = e in
           let args:Alloc.String.t_String = e <: Alloc.String.t_String in
           let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-            let list = [Core_models.Fmt.Rt.impl__new_display #Alloc.String.t_String args] in
+            let unfold list = [Core_models.Fmt.Rt.impl__new_display #Alloc.String.t_String args] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list
           in
@@ -45,7 +44,7 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit Alloc.String.t
             Core_models.Hint.must_use #Alloc.String.t_String
               (Alloc.Fmt.format (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 1)
                       (mk_usize 1)
-                      (let list = ["Error loading configs: "] in
+                      (let unfold list = ["Error loading configs: "] in
                         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                         Rust_primitives.Hax.array_of_list 1 list)
                       args
@@ -58,14 +57,16 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit Alloc.String.t
           then
             let args:Alloc.String.t_String = message <: Alloc.String.t_String in
             let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-              let list = [Core_models.Fmt.Rt.impl__new_display #Alloc.String.t_String args] in
+              let unfold list =
+                [Core_models.Fmt.Rt.impl__new_display #Alloc.String.t_String args]
+              in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list
             in
             let _:Prims.unit =
               Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
                     (mk_usize 1)
-                    (let list = [""; "\n"] in
+                    (let unfold list = [""; "\n"] in
                       FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
                       Rust_primitives.Hax.array_of_list 2 list)
                     args
@@ -86,7 +87,7 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit Alloc.String.t
               then
                 let _:Prims.unit =
                   Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-                        (let list = ["no msg\n"] in
+                        (let unfold list = ["no msg\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
                       <:
@@ -97,7 +98,7 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit Alloc.String.t
               else
                 let _:Prims.unit =
                   Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-                        (let list = ["error\n"] in
+                        (let unfold list = ["error\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
                       <:

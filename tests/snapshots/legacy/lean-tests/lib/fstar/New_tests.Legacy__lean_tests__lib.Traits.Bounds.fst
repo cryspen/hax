@@ -1,25 +1,24 @@
 module New_tests.Legacy__lean_tests__lib.Traits.Bounds
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_T1 (v_Self: Type0) = {
-  f_f1_pre:v_Self -> Type0;
-  f_f1_post:v_Self -> usize -> Type0;
+  f_f1_pre:v_Self -> prop;
+  f_f1_post:v_Self -> usize -> prop;
   f_f1:x0: v_Self -> Prims.Pure usize (f_f1_pre x0) (fun result -> f_f1_post x0 result)
 }
 
 class t_T2 (v_Self: Type0) = {
-  f_f2_pre:v_Self -> Type0;
-  f_f2_post:v_Self -> usize -> Type0;
+  f_f2_pre:v_Self -> prop;
+  f_f2_post:v_Self -> usize -> prop;
   f_f2:x0: v_Self -> Prims.Pure usize (f_f2_pre x0) (fun result -> f_f2_post x0 result)
 }
 
 class t_Test (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_T2 v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:t_T1 v_T;
-  f_ff_test_pre:v_Self -> v_T -> Type0;
-  f_ff_test_post:v_Self -> v_T -> usize -> Type0;
+  f_ff_test_pre:v_Self -> v_T -> prop;
+  f_ff_test_post:v_Self -> v_T -> usize -> prop;
   f_ff_test:x0: v_Self -> x1: v_T
     -> Prims.Pure usize (f_ff_test_pre x0 x1) (fun result -> f_ff_test_post x0 x1 result)
 }

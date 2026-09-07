@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__mcdc__inlined_expressions
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let inlined_instance (a b: bool) : bool = a && b

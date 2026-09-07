@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__bad_counter_ids
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 type t_Foo = | Foo : u32 -> t_Foo
@@ -36,7 +35,7 @@ let impl_3 = impl_3'
 let eq_good (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["a\n"] in
+          (let unfold list = ["a\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -52,7 +51,7 @@ let eq_good (_: Prims.unit) : Prims.unit =
 let eq_good_message (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["b\n"] in
+          (let unfold list = ["b\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -68,7 +67,7 @@ let eq_good_message (_: Prims.unit) : Prims.unit =
 let ne_good (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["c\n"] in
+          (let unfold list = ["c\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -84,7 +83,7 @@ let ne_good (_: Prims.unit) : Prims.unit =
 let ne_good_message (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["d\n"] in
+          (let unfold list = ["d\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -100,7 +99,7 @@ let ne_good_message (_: Prims.unit) : Prims.unit =
 let eq_bad (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["e\n"] in
+          (let unfold list = ["e\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -116,7 +115,7 @@ let eq_bad (_: Prims.unit) : Prims.unit =
 let eq_bad_message (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["f\n"] in
+          (let unfold list = ["f\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -132,7 +131,7 @@ let eq_bad_message (_: Prims.unit) : Prims.unit =
 let ne_bad (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["g\n"] in
+          (let unfold list = ["g\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -148,7 +147,7 @@ let ne_bad (_: Prims.unit) : Prims.unit =
 let ne_bad_message (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
-          (let list = ["h\n"] in
+          (let unfold list = ["h\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:

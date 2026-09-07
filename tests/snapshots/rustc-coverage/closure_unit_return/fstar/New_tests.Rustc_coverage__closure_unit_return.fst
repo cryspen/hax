@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__closure_unit_return
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let explicit_unit (_: Prims.unit) : Prims.unit =

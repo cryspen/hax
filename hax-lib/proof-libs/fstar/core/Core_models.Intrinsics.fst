@@ -1,6 +1,5 @@
 module Core_models.Intrinsics
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Rust_primitives
 
 /// See [`core::intrinsics::unreachable`]. UB in Rust; modeled as an unreachable

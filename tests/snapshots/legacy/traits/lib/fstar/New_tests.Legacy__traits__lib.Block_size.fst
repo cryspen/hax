@@ -1,6 +1,5 @@
 module New_tests.Legacy__traits__lib.Block_size
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_BlockSizeUser (v_Self: Type0) = {
@@ -16,11 +15,11 @@ let _ = fun (v_Self:Type0) {|i: t_ParBlocksSizeUser v_Self|} -> i._super_i0
 
 class t_BlockBackend (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_ParBlocksSizeUser v_Self;
-  f_proc_block_pre:Alloc.Vec.t_Vec (_super_i0)._super_i0.f_BlockSize Alloc.Alloc.t_Global -> Type0;
+  f_proc_block_pre:Alloc.Vec.t_Vec (_super_i0)._super_i0.f_BlockSize Alloc.Alloc.t_Global -> prop;
   f_proc_block_post:
       Alloc.Vec.t_Vec (_super_i0)._super_i0.f_BlockSize Alloc.Alloc.t_Global ->
       Prims.unit
-    -> Type0;
+    -> prop;
   f_proc_block:x0: Alloc.Vec.t_Vec (_super_i0)._super_i0.f_BlockSize Alloc.Alloc.t_Global
     -> Prims.Pure Prims.unit (f_proc_block_pre x0) (fun result -> f_proc_block_post x0 result)
 }

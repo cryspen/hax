@@ -2,7 +2,6 @@ module Rust_primitives.Hax.Folds
 
 open Rust_primitives
 open Core_models.Ops.Range
-open FStar.Mul
 
 (**** `s.chunks_exact(chunk_size).enumerate()` *)
 /// Predicate that asserts a slice `s_chunk` is exactly the nth chunk
@@ -20,7 +19,7 @@ val fold_enumerated_chunked_slice
   (#t: Type0) (#acc_t: Type0)
   (chunk_size: usize {v chunk_size > 0})
   (s: t_Slice t)
-  (inv: acc_t -> (i:usize{v i <= Seq.length s / v chunk_size}) -> Type0)
+  (inv: acc_t -> (i:usize{v i <= Seq.length s / v chunk_size}) -> prop)
   (init: acc_t {inv init (sz 0)})
   (f: ( acc:acc_t
       -> item:(usize & t_Slice t) {
@@ -43,7 +42,7 @@ val fold_chunked_slice
   (#t: Type0) (#acc_t: Type0)
   (chunk_size: usize {v chunk_size > 0})
   (s: t_Slice t)
-  (inv: acc_t -> (i:usize) -> Type0)
+  (inv: acc_t -> (i:usize) -> prop)
   (init: acc_t {inv init (sz 0)})
   (f: ( acc:acc_t
       -> item:(t_Slice t) {
@@ -63,7 +62,7 @@ val fold_chunked_slice
 val fold_enumerated_slice
   (#t: Type0) (#acc_t: Type0)
   (s: t_Slice t)
-  (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
+  (inv: acc_t -> (i:usize{v i <= v (length s)}) -> prop)
   (init: acc_t {inv init (sz 0)})
   (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) /\ inv acc  (fst i)}
                  -> acc':acc_t    {v (fst i) < v (length s) /\ inv acc' (fst i)}))
@@ -72,7 +71,7 @@ val fold_enumerated_slice
 val fold_enumerated_slice_return
   (#t: Type0) (#acc_t: Type0) (#ret: Type0)
   (s: t_Slice t)
-  (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
+  (inv: acc_t -> (i:usize{v i <= v (length s)}) -> prop)
   (init: acc_t {inv init (sz 0)})
   (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) (*/\ inv acc  (fst i)*)}
                  -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc_t)) (acc':acc_t)    (*{v (fst i) < v (length s) /\ inv acc' (fst i)}*)))
@@ -109,7 +108,7 @@ val fold_range_step_by
   (start: int_t u)
   (end_: int_t u)
   (step: usize {v step > 0 /\ range (v end_ + v step) u})
-  (inv: acc_t -> (i:int_t u{fold_range_step_by_wf_index start end_ step false (v i)}) -> Type0)
+  (inv: acc_t -> (i:int_t u{fold_range_step_by_wf_index start end_ step false (v i)}) -> prop)
   (init: acc_t {inv init start})
   (f: (acc:acc_t -> i:int_t u  {v i < v end_ - ((v end_ - 1 - v start) % v step) /\ fold_range_step_by_wf_index start end_ step true (v i) /\ inv acc i}
                  -> acc':acc_t {(inv acc' (mk_int (v i + v step)))}))
@@ -129,7 +128,7 @@ let rec fold_range
   (#acc_t: Type0) (#u: inttype)
   (start: int_t u)
   (end_: int_t u)
-  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
+  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> prop)
   (init: acc_t {~(range_empty start end_) ==> inv init start})
   (f: (acc:acc_t -> i:int_t u  {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) /\ inv acc i}
                  -> acc':acc_t {(inv acc' (mk_int (v i + 1)))}))
@@ -143,7 +142,7 @@ let rec fold_range_cf
   (#acc_t: Type0) (#u: inttype)
   (start: int_t u)
   (end_: int_t u)
-  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
+  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> prop)
   (acc: acc_t {~(range_empty start end_) ==> inv acc start})
   (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) /\ inv acc i}
                   -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t))
@@ -166,7 +165,7 @@ let rec fold_range_return
   (#acc_t: Type0) (#ret_t: Type0) (#u: inttype)
   (start: int_t u)
   (end_: int_t u)
-  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
+  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> prop)
   (acc: acc_t )
   (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) }
                   -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret_t (unit & acc_t))) acc_t)

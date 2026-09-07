@@ -29,3 +29,6 @@ proof-libs/fstar/rust_primitives/#*#
 # Build copies made by `make mutants MUTANTS_JOBS=<n>`, which points TMPDIR here
 # so that the copies' `hax-lib = { path = ".." }` resolves. Removed on exit.
 /hax-lib/cargo-mutants-*.tmp/
+
+# F* checked-file cache produced by the test driver.
+.fstar-cache/

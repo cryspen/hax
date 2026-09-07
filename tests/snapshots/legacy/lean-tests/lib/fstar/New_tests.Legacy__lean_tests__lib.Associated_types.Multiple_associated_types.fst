@@ -1,16 +1,15 @@
 module New_tests.Legacy__lean_tests__lib.Associated_types.Multiple_associated_types
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 class t_Pair (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_First:Type0;
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Second:Type0;
-  f_first_pre:v_Self -> Type0;
-  f_first_post:v_Self -> f_First -> Type0;
+  f_first_pre:v_Self -> prop;
+  f_first_post:v_Self -> f_First -> prop;
   f_first:x0: v_Self -> Prims.Pure f_First (f_first_pre x0) (fun result -> f_first_post x0 result);
-  f_second_pre:v_Self -> Type0;
-  f_second_post:v_Self -> f_Second -> Type0;
+  f_second_pre:v_Self -> prop;
+  f_second_post:v_Self -> f_Second -> prop;
   f_second:x0: v_Self
     -> Prims.Pure f_Second (f_second_pre x0) (fun result -> f_second_post x0 result)
 }

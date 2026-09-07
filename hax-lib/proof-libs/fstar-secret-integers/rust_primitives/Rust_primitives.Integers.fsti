@@ -1,6 +1,5 @@
 module Rust_primitives.Integers
 
-open FStar.Mul
 
 module LI = Lib.IntTypes
 

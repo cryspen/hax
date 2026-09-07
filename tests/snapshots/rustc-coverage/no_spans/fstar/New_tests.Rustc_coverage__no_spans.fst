@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__no_spans
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 let affected_function (_: Prims.unit) :  Prims.unit -> Prims.unit =

@@ -1,6 +1,5 @@
 module New_tests.Rustc_coverage__tight_inf_loop
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
 open Core_models
 
 /// @fail(extraction): legacy-lean(HAX0001), proverif(HAX0008), coq(HAX0001), fstar(HAX0001)
