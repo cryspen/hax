@@ -25,25 +25,31 @@ jobs:
         with:
           path: hax
 
-      # Bertie pins the published `hax-lib`, which `cargo-hax` only accepts
-      # at its own release version: between a version bump and the release
-      # that publishes it, the extraction cannot run, so it is skipped
-      # instead of failing the merge queue.
-      - name: Check the `hax-lib` version Bertie pins
+      # Bertie depends on the published `hax-lib`, which `cargo-hax` only
+      # accepts at its own release version: between a version bump and the
+      # release that publishes it, the extraction cannot run, so it is
+      # skipped instead of failing the merge queue. Bertie does not commit a
+      # lockfile, so the version is taken from the resolved dependency graph.
+      # Only Bertie's direct `hax-lib` dependency counts: other versions can
+      # occur transitively.
+      - name: Check the `hax-lib` version Bertie resolves
         id: haxlib
         run: |
           set -o pipefail
           binary="$(cargo metadata --format-version 1 --no-deps \
             --manifest-path hax/Cargo.toml \
             | jq -r '.packages[] | select(.name == "cargo-hax") | .version')"
-          found="$(awk -F '"' '/^name = "hax-lib"$/ { getline; print $2 }' \
-            Cargo.lock)"
+          found="$(cargo metadata --format-version 1 \
+            | jq -r '.resolve.root as $root
+              | (.resolve.nodes[] | select(.id == $root).deps[]
+                | select(.name == "hax_lib").pkg) as $id
+              | .packages[] | select(.id == $id).version')"
           if [ "${binary%%-*}" = "${found%%-*}" ]; then
             echo "compatible=true" >> "$GITHUB_OUTPUT"
           else
             echo "compatible=false" >> "$GITHUB_OUTPUT"
             echo "::notice::skipping the extraction: cargo-hax $binary" \
-              "requires hax-lib ${binary%%-*}, but Bertie pins hax-lib $found"
+              "requires hax-lib ${binary%%-*}, but Bertie resolves hax-lib $found"
           fi
 
       - if: steps.haxlib.outputs.compatible == 'true'
