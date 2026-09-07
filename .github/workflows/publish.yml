@@ -61,7 +61,11 @@ jobs:
           git checkout -B main "$SHA"
 
       - uses: cargo-bins/cargo-binstall@v1.21.1
+      # Authenticates the release lookups against the GitHub API, whose quota
+      # for anonymous requests is shared by every runner on the same IP.
       - run: cargo binstall --no-confirm cargo-release@1.1.4
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       # `cargo release` tags the release, which needs a committer identity.
       - run: |

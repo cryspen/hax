@@ -89,9 +89,13 @@ jobs:
 
       - uses: cargo-bins/cargo-binstall@v1.21.1
 
+      # The token authenticates the release lookups against the GitHub API,
+      # whose quota for anonymous requests is shared by every runner on the
+      # same IP and is often spent before this step runs.
       - name: Install the release, from its archive alone
         env:
           VERSION: ${{ inputs.version }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: >
           cargo binstall --no-confirm --strategies crate-meta-data
           --targets ${{ matrix.target }} --root "$RUNNER_TEMP/hax"
