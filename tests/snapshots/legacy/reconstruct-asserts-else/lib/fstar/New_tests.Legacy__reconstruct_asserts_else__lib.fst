@@ -5,14 +5,27 @@ open Core_models
 
 /// Value in the else branch.
 let checked_incr (c: bool) (x: u32) : u32 =
-  let _:Prims.unit = Hax_lib.v_assert (~.c <: bool) in
-  x +! mk_u32 1
+  if c
+  then
+    Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic "explicit panic"
+        <:
+        Rust_primitives.Hax.t_Never)
+  else x +! mk_u32 1
 
 /// Nested panic-elses.
 let nested (c d: bool) (x: u32) : u32 =
-  let _:Prims.unit = Hax_lib.v_assert (~.c <: bool) in
-  let _:Prims.unit = Hax_lib.v_assert (~.d <: bool) in
-  x
+  if c
+  then
+    Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic "explicit panic"
+        <:
+        Rust_primitives.Hax.t_Never)
+  else
+    if d
+    then
+      Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic "explicit panic"
+          <:
+          Rust_primitives.Hax.t_Never)
+    else x
 
 /// No else.
 let bare (c: bool) : Prims.unit = Hax_lib.v_assert (~.c <: bool)

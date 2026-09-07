@@ -14,13 +14,25 @@ From Core Require Import Core.
 (* NotImplementedYet *)
 
 Definition checked_incr (c : bool) (x : t_u32) : t_u32 :=
-  let _ := assert (f_not (c)) in
-  f_add (x) ((1 : t_u32)).
+  if
+    c
+  then
+    never_to_any (panic (("explicit panic"%string : string)))
+  else
+    f_add (x) ((1 : t_u32)).
 
 Definition nested (c : bool) (d : bool) (x : t_u32) : t_u32 :=
-  let _ := assert (f_not (c)) in
-  let _ := assert (f_not (d)) in
-  x.
+  if
+    c
+  then
+    never_to_any (panic (("explicit panic"%string : string)))
+  else
+    if
+      d
+    then
+      never_to_any (panic (("explicit panic"%string : string)))
+    else
+      x.
 
 Definition bare (c : bool) : unit :=
   assert (f_not (c)).

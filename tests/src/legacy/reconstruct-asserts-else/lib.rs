@@ -1,5 +1,5 @@
-//! The `else` branch of an `if c { panic!() } else { .. }` must survive the
-//! assert reconstruction.
+//! An `if c { panic!() } else { .. }` is not an `assert!` expansion: it keeps
+//! its `else` branch instead of being reconstructed into an assert.
 
 #![allow(dead_code)]
 

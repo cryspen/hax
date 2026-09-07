@@ -46,7 +46,7 @@ module Make (F : Features.T) =
               Some (panic, nta, cond, else_)
             in
             match extract e with
-            | Some (panic, nta, cond, else_)
+            | Some (panic, nta, cond, None)
               when Ast.Global_ident.eq_name Rust_primitives__hax__never_to_any
                      nta
                    && (Ast.Global_ident.eq_name Core__panicking__panic panic
@@ -85,33 +85,27 @@ module Make (F : Features.T) =
                       }
                 in
 
-                let assert_expr =
-                  {
-                    e with
-                    typ = U.unit_typ;
-                    e =
-                      App
-                        {
-                          f =
-                            {
-                              e =
-                                GlobalVar
-                                  (Ast.Global_ident.of_name ~value:true
-                                     Hax_lib__assert);
-                              span = e.span;
-                              typ = TArrow ([ TBool ], U.unit_typ);
-                            };
-                          args = [ prop ];
-                          generic_args = [];
-                          bounds_impls = [];
-                          trait = None;
-                        };
-                  }
-                in
-                (match else_ with
-                | None -> assert_expr
-                | Some else_ ->
-                    U.make_seq assert_expr (self#visit_expr () else_))
+                {
+                  e with
+                  typ = U.unit_typ;
+                  e =
+                    App
+                      {
+                        f =
+                          {
+                            e =
+                              GlobalVar
+                                (Ast.Global_ident.of_name ~value:true
+                                   Hax_lib__assert);
+                            span = e.span;
+                            typ = TArrow ([ TBool ], U.unit_typ);
+                          };
+                        args = [ prop ];
+                        generic_args = [];
+                        bounds_impls = [];
+                        trait = None;
+                      };
+                }
             | _ -> super#visit_expr () e
         end
 

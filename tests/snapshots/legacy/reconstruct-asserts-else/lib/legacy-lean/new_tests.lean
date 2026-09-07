@@ -17,15 +17,24 @@ namespace new_tests.legacy__reconstruct_asserts_else__lib
 --  Value in the else branch.
 @[spec]
 def checked_incr (c : Bool) (x : u32) : RustM u32 := do
-  let _ ← (hax_lib.assert (← (!? c)));
-  (x +? (1 : u32))
+  if c then do
+    (rust_primitives.hax.never_to_any
+      (← (core_models.panicking.panic "explicit panic")))
+  else do
+    (x +? (1 : u32))
 
 --  Nested panic-elses.
 @[spec]
 def nested (c : Bool) (d : Bool) (x : u32) : RustM u32 := do
-  let _ ← (hax_lib.assert (← (!? c)));
-  let _ ← (hax_lib.assert (← (!? d)));
-  (pure x)
+  if c then do
+    (rust_primitives.hax.never_to_any
+      (← (core_models.panicking.panic "explicit panic")))
+  else do
+    if d then do
+      (rust_primitives.hax.never_to_any
+        (← (core_models.panicking.panic "explicit panic")))
+    else do
+      (pure x)
 
 --  No else.
 @[spec]

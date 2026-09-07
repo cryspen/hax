@@ -32,15 +32,18 @@ Obligation Tactic := (* try timeout 8 *) solve_ssprove_obligations.
 
 Equations checked_incr (c : both 'bool) (x : both int32) : both int32 :=
   checked_incr c x  :=
-    letb _ := assert (f_not c) in
-    x .+ (ret_both (1 : int32)) : both int32.
+    ifb c
+    then never_to_any (panic (ret_both (explicit panic : chString)))
+    else x .+ (ret_both (1 : int32)) : both int32.
 Fail Next Obligation.
 
 Equations nested (c : both 'bool) (d : both 'bool) (x : both int32) : both int32 :=
   nested c d x  :=
-    letb _ := assert (f_not c) in
-    letb _ := assert (f_not d) in
-    x : both int32.
+    ifb c
+    then never_to_any (panic (ret_both (explicit panic : chString)))
+    else ifb d
+    then never_to_any (panic (ret_both (explicit panic : chString)))
+    else x : both int32.
 Fail Next Obligation.
 
 Equations bare (c : both 'bool) : both 'unit :=
