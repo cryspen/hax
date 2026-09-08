@@ -1,0 +1,42 @@
+[
+  {
+    "name": "bertie",
+    "repository": "cryspen/bertie",
+    "directory": ".",
+    "fstar": "v2025.02.17",
+    "extract": "./hax-driver.py extract-fstar",
+    "lax": "./hax-driver.py typecheck --admit",
+    "prove": "./hax-driver.py typecheck",
+    "timeout": 60
+  },
+  {
+    "name": "libcrux-ml-kem",
+    "repository": "cryspen/libcrux",
+    "directory": "libcrux-ml-kem",
+    "fstar": "v2026.03.24",
+    "extract": "./hax.py extract",
+    "lax": "./hax.py prove --admit",
+    "prove": "./hax.py prove",
+    "timeout": 120
+  },
+  {
+    "name": "libcrux-ml-dsa",
+    "repository": "cryspen/libcrux",
+    "directory": "libcrux-ml-dsa",
+    "fstar": "v2026.03.24",
+    "extract": "./hax.sh extract",
+    "lax": "./hax.sh prove --admit",
+    "prove": "./hax.sh prove",
+    "timeout": 120
+  },
+  {
+    "name": "libcrux-sha3",
+    "repository": "cryspen/libcrux",
+    "directory": "crates/algorithms/sha3",
+    "fstar": "v2026.03.24",
+    "extract": "./hax.sh extract",
+    "lax": "./hax.sh prove --admit",
+    "prove": "./hax.sh prove",
+    "timeout": 120
+  }
+]

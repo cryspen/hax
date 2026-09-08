@@ -1,0 +1,25 @@
+name: Use a local hax-lib
+description: >-
+  Rewrite a project's dependencies on hax's library crates into path
+  dependencies on a local hax checkout, and verify that the project's
+  resolve graph really points there.
+
+inputs:
+  project:
+    description: Path to the project checkout whose manifests to rewrite.
+    required: true
+  hax:
+    description: Path to the hax checkout to depend on.
+    default: .
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PROJECT: ${{ inputs.project }}
+        HAX: ${{ inputs.hax }}
+      run: |
+        set -euo pipefail
+        python3 "${{ github.action_path }}/inject.py" \
+          --project "$PROJECT" --hax "$HAX"
