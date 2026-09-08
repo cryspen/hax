@@ -11,7 +11,7 @@
   },
   {
     "name": "libcrux-ml-kem",
-    "repository": "cryspen/libcrux",
+    "repository": "celabshq/libcrux",
     "directory": "libcrux-ml-kem",
     "fstar": "v2026.03.24",
     "extract": "./hax.py extract",
@@ -21,7 +21,7 @@
   },
   {
     "name": "libcrux-ml-dsa",
-    "repository": "cryspen/libcrux",
+    "repository": "celabshq/libcrux",
     "directory": "libcrux-ml-dsa",
     "fstar": "v2026.03.24",
     "extract": "./hax.sh extract",
@@ -31,7 +31,7 @@
   },
   {
     "name": "libcrux-sha3",
-    "repository": "cryspen/libcrux",
+    "repository": "celabshq/libcrux",
     "directory": "crates/algorithms/sha3",
     "fstar": "v2026.03.24",
     "extract": "./hax.sh extract",
