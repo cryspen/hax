@@ -349,10 +349,12 @@ impl<T> Slice<T> {
     {
         let len = Self::len(s);
         if len > 0 {
-            for i in 0..len - 1 {
+            // Bound once: evaluated twice, Aeneas emits two checked subtractions.
+            let last = len - 1;
+            for i in 0..last {
                 s[i] = value.clone();
             }
-            s[len - 1] = value;
+            s[last] = value;
         }
     }
 
