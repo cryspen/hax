@@ -3,10 +3,15 @@
 // `cargo llvm-cov`, so normal builds and extraction never see this.
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
 
+#[hax_lib::attributes]
 pub trait RngCore {
     // Required methods
+    #[hax_lib::requires(true)]
     fn next_u32(&mut self) -> u32;
+    #[hax_lib::requires(true)]
     fn next_u64(&mut self) -> u64;
+    #[hax_lib::requires(true)]
+    #[hax_lib::ensures(|_| future(dst).len() == dst.len())]
     fn fill_bytes(&mut self, dst: &mut [u8]);
 }
 
