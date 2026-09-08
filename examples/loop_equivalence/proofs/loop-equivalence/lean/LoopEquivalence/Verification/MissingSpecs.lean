@@ -159,13 +159,4 @@ theorem array.equality.PartialEqArray.eq_spec {N : Usize} (a0 : Array U64 N) (a1
   apply RustM.ok_spec
   rw [hb]; exact h
 
-open Std.Do in
-@[spec]
-theorem array.CloneArray.clone_spec {N : Usize} (arr : Array U64 N) :
-    ⦃ ⌜ True ⌝ ⦄
-    core.Array.Insts.CoreCloneClone.clone core.U64.Insts.CoreCloneClone arr
-    ⦃ ⇓ r => ⌜ r = arr ⌝ ⦄ := by
-  rw [core.Array.Insts.CoreCloneClone.clone_id _ _ (fun _ => rfl)]
-  apply RustM.ok_spec; simp
-
 end loop_equivalence

@@ -43,4 +43,15 @@ theorem core.Array.Insts.CoreCloneClone.clone_id {T : Type} {N : Std.Usize}
   intro x
   simp [core.array.CloneArray.clone.closure.Insts.CoreOpsFunctionFnMutTupleTT.call_mut, hid]
 
+/-- `mvcgen`-facing form of `clone_id`. -/
+@[spec]
+theorem core.Array.Insts.CoreCloneClone.clone_spec {T : Type} {N : Std.Usize}
+    (inst : clone.Clone T) (a : Array T N) (hid : ∀ x, inst.clone x = ok x) :
+    ⦃ ⌜ True ⌝ ⦄
+    core.Array.Insts.CoreCloneClone.clone inst a
+    ⦃ ⇓ r => ⌜ r = a ⌝ ⦄ := by
+  rw [core.Array.Insts.CoreCloneClone.clone_id inst a hid]
+  apply RustM.ok_spec
+  simp
+
 end CoreModels
