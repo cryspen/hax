@@ -12477,15 +12477,28 @@ def option.OptionOption.flatten
   | option.Option.Some inner => ok inner
   | option.Option.None => ok option.Option.None
 
+/-- [core_models::option::{core_models::option::Option<T>}::cloned]:
+    Source: 'core-models/src/core/option.rs', lines 265:4-270:5
+    Visibility: public -/
+def option.Option.cloned
+  {T : Type} (cloneCloneInst : clone.Clone T) (self : option.Option T) :
+  RustM (option.Option T)
+  := do
+  match self with
+  | option.Option.Some t =>
+    let t1 ← cloneCloneInst.clone t
+    ok (option.Option.Some t1)
+  | option.Option.None => ok option.Option.None
+
 /-- [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}::default]:
-    Source: 'core-models/src/core/option.rs', lines 265:4-267:5
+    Source: 'core-models/src/core/option.rs', lines 276:4-278:5
     Visibility: public -/
 def option.Option.Insts.CoreDefaultDefault.default
   (T : Type) : RustM (option.Option T) := do
   ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 263:0-268:1 -/
+    Source: 'core-models/src/core/option.rs', lines 274:0-279:1 -/
 @[reducible]
 def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
   (option.Option T) := {
@@ -12493,7 +12506,7 @@ def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
 }
 
 /-- [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}::clone]:
-    Source: 'core-models/src/core/option.rs', lines 273:4-278:5
+    Source: 'core-models/src/core/option.rs', lines 284:4-289:5
     Visibility: public -/
 def option.Option.Insts.CoreCloneClone.clone
   {T : Type} (cloneCloneInst : clone.Clone T) (self : option.Option T) :
@@ -12506,7 +12519,7 @@ def option.Option.Insts.CoreCloneClone.clone
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 272:0-279:1 -/
+    Source: 'core-models/src/core/option.rs', lines 283:0-290:1 -/
 @[reducible]
 impl_def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
   clone.Clone T) : clone.Clone (option.Option T) := {
@@ -12516,7 +12529,7 @@ impl_def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
 }
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::eq]:
-    Source: 'core-models/src/core/option.rs', lines 287:4-293:5
+    Source: 'core-models/src/core/option.rs', lines 298:4-304:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.eq
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -12534,7 +12547,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.eq
     | option.Option.None => ok true
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::ne]:
-    Source: 'core-models/src/core/option.rs', lines 284:4-286:5
+    Source: 'core-models/src/core/option.rs', lines 295:4-297:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.ne
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -12547,7 +12560,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 282:0-294:1 -/
+    Source: 'core-models/src/core/option.rs', lines 293:0-305:1 -/
 @[reducible]
 def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
   (cmpPartialEqInst : cmp.PartialEq T T) : cmp.PartialEq (option.Option T)
@@ -12557,7 +12570,7 @@ def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
 }
 
 /-- [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::branch]:
-    Source: 'core-models/src/core/option.rs', lines 308:4-313:5
+    Source: 'core-models/src/core/option.rs', lines 319:4-324:5
     Visibility: public -/
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
   {T : Type} (self : option.Option T) :
@@ -12569,14 +12582,14 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
     ok (ops.control_flow.ControlFlow.Break option.Option.None)
 
 /-- [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_output]:
-    Source: 'core-models/src/core/option.rs', lines 304:4-306:5
+    Source: 'core-models/src/core/option.rs', lines 315:4-317:5
     Visibility: public -/
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.from_output
   {T : Type} (output : T) : RustM (option.Option T) := do
   ok (option.Option.Some output)
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 300:0-314:1 -/
+    Source: 'core-models/src/core/option.rs', lines 311:0-325:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
   : ops.try_trait.Try (option.Option T) T (option.Option convert.Infallible)
@@ -12588,7 +12601,7 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
 }
 
 /-- [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_residual]:
-    Source: 'core-models/src/core/option.rs', lines 324:4-329:5
+    Source: 'core-models/src/core/option.rs', lines 335:4-340:5
     Visibility: public -/
 def
   option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible.from_residual
@@ -12600,7 +12613,7 @@ def
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 320:0-330:1 -/
+    Source: 'core-models/src/core/option.rs', lines 331:0-341:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible (T
   : Type) : ops.try_trait.FromResidual (option.Option T) (option.Option

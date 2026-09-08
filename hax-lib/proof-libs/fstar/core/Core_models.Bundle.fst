@@ -3244,8 +3244,19 @@ let impl_1__flatten (#v_T: Type0) (self: t_Option (t_Option v_T)) : t_Option v_T
   | Option_Some inner -> inner
   | Option_None  -> Option_None <: t_Option v_T
 
+/// See [`std::option::Option::cloned`]
+let impl_2__cloned
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (self: t_Option v_T)
+    : t_Option v_T =
+  match self <: t_Option v_T with
+  | Option_Some t ->
+    Option_Some (Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve t) <: t_Option v_T
+  | Option_None  -> Option_None <: t_Option v_T
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2__from__option (#v_T: Type0) : Core_models.Default.t_Default (t_Option v_T) =
+let impl_3__from__option (#v_T: Type0) : Core_models.Default.t_Default (t_Option v_T) =
   {
     f_default_pre = (fun (_: Prims.unit) -> true);
     f_default_post = (fun (_: Prims.unit) (out: t_Option v_T) -> true);
@@ -3253,7 +3264,7 @@ let impl_2__from__option (#v_T: Type0) : Core_models.Default.t_Default (t_Option
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4__from__option (#v_T: Type0) : Core_models.Ops.Try_trait.t_Try (t_Option v_T) =
+let impl_5 (#v_T: Type0) : Core_models.Ops.Try_trait.t_Try (t_Option v_T) =
   {
     f_Output = v_T;
     f_Residual = t_Option t_Infallible;
@@ -3286,11 +3297,11 @@ let impl_4__from__option (#v_T: Type0) : Core_models.Ops.Try_trait.t_Try (t_Opti
 /// residual carries `Infallible`, so the `Some` arm is unreachable.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_5': #v_T: Type0
+val impl_6__from__option': #v_T: Type0
   -> Core_models.Ops.Try_trait.t_FromResidual (t_Option v_T) (t_Option t_Infallible)
 
 unfold
-let impl_5 (#v_T: Type0) = impl_5' #v_T
+let impl_6__from__option (#v_T: Type0) = impl_6__from__option' #v_T
 
 /// See [`std::result::Result`]
 type t_Result (v_T: Type0) (v_E: Type0) =
@@ -4385,7 +4396,7 @@ let impl_144: t_From isize bool =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3__from__option
+let impl_4__from__option
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialEq v_T v_T)
     : t_PartialEq (t_Option v_T) (t_Option v_T) =
