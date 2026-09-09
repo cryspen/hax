@@ -6,14 +6,14 @@ name: Projects
 #
 # The projects are listed in `.github/hax-projects.json`; adding one is a
 # single entry there, giving its repository, the directory to run in, the F*
-# version it pins and the commands for each stage. Nothing else in this
-# workflow knows about any particular project.
+# version it pins, the commands for each stage, and how far its own nightly
+# goes. Nothing else in this workflow knows about any particular project.
 #
 # Nightly, because it is the projects and their pinned toolchains that move
-# under a hax that was fine when it landed, and because a full extraction plus
-# lax-check is far too slow to put in front of a pull request. A failing
-# nightly opens one issue per project, deduplicated by title, so a breakage
-# that lasts a week is one issue rather than seven.
+# under a hax that was fine when it landed, and because these runs are far too
+# slow to put in front of a pull request. A failing nightly opens one issue per
+# project, deduplicated by title, so a breakage that lasts a week is one issue
+# rather than seven.
 #
 # On demand, `workflow_dispatch` takes a hax ref and a project ref, which is
 # how a hax change that needs a matching project change is tested before
@@ -52,11 +52,11 @@ on:
         default: ''
       stage:
         description: >-
-          How far to go: "extract", "lax" (the default, what the nightly
-          runs) or "prove" for the full proofs.
+          How far to go, overriding the `stage` each project sets for itself:
+          "extract", "lax" or "prove" for the full proofs.
         type: choice
-        options: [lax, extract, prove]
-        default: lax
+        options: [project default, extract, lax, prove]
+        default: project default
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.projects }}
@@ -117,8 +117,12 @@ jobs:
 
     env:
       CARGO_TERM_COLOR: always
-      # Empty on a schedule, which stops after the lax-check.
-      STAGE: ${{ inputs.stage || 'lax' }}
+      # How far this run goes. The project decides for itself, which is what a
+      # schedule uses; a dispatch can override it, and leaves it alone when the
+      # stage input is left at its "project default".
+      STAGE: >-
+        ${{ (inputs.stage == '' || inputs.stage == 'project default')
+        && matrix.stage || inputs.stage }}
       # Bertie's F* makefiles take the proof libraries from here, so the
       # proof libraries under test are this checkout's. libcrux's take them
       # from `cargo metadata`, which the injection below has pointed here.
@@ -193,6 +197,16 @@ jobs:
           echo "FSTAR_HOME=$home" >> "$GITHUB_ENV"
           fstar.exe --version
 
+      # What the project's own build needs beyond a Rust toolchain, for the
+      # few that need anything; the runner image covers the rest.
+      - name: Install ${{ matrix.packages }}
+        if: matrix.packages != ''
+        env:
+          PACKAGES: ${{ matrix.packages }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $PACKAGES
+
       - name: Use the hax-lib from this checkout
         uses: ./hax/.github/actions/use-local-hax-lib
         with:
@@ -204,9 +218,12 @@ jobs:
         working-directory: project/${{ matrix.directory }}
         run: ${{ matrix.extract }}
 
+      # One or the other, never both: an F* run leaves `.checked` files behind
+      # that a later `make` treats as done, so a lax-check first would leave
+      # the proofs with nothing to do.
       - name: Lax-check
         id: lax
-        if: env.STAGE != 'extract'
+        if: env.STAGE == 'lax'
         working-directory: project/${{ matrix.directory }}
         run: ${{ matrix.lax }}
 

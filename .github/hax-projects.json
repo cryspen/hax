@@ -4,6 +4,7 @@
     "repository": "cryspen/bertie",
     "directory": ".",
     "fstar": "v2025.10.06",
+    "stage": "lax",
     "extract": "./hax-driver.py extract-fstar",
     "lax": "./hax-driver.py typecheck --admit",
     "prove": "./hax-driver.py typecheck",
@@ -14,6 +15,7 @@
     "repository": "celabshq/libcrux",
     "directory": "libcrux-ml-kem",
     "fstar": "v2026.03.24",
+    "stage": "lax",
     "extract": "./hax.py extract",
     "lax": "./hax.py prove --admit",
     "prove": "./hax.py prove",
@@ -24,6 +26,7 @@
     "repository": "celabshq/libcrux",
     "directory": "libcrux-ml-dsa",
     "fstar": "v2026.03.24",
+    "stage": "lax",
     "extract": "./hax.sh extract",
     "lax": "./hax.sh prove --admit",
     "prove": "./hax.sh prove",
@@ -34,9 +37,22 @@
     "repository": "celabshq/libcrux",
     "directory": "crates/algorithms/sha3",
     "fstar": "v2026.03.24",
+    "stage": "lax",
     "extract": "./hax.sh extract",
     "lax": "./hax.sh prove --admit",
     "prove": "./hax.sh prove",
     "timeout": 120
+  },
+  {
+    "name": "spqr",
+    "repository": "signalapp/SparsePostQuantumRatchet",
+    "directory": ".",
+    "fstar": "v2025.10.06",
+    "packages": "protobuf-compiler",
+    "stage": "prove",
+    "extract": "rm -f proofs/fstar/extraction/*.fst* && ./hax.py extract",
+    "lax": "./hax.py prove --admit",
+    "prove": "./hax.py prove",
+    "timeout": 180
   }
 ]
