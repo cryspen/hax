@@ -44,6 +44,17 @@
     "timeout": 120
   },
   {
+    "name": "libcrux-iot-sha3",
+    "repository": "celabshq/libcrux-iot",
+    "directory": "libcrux-iot/sha3",
+    "fstar": "v2025.10.06",
+    "stage": "prove",
+    "extract": "./hax.py clean && ./hax.py extract",
+    "lax": "./hax.py prove --admit",
+    "prove": "./hax.py prove",
+    "timeout": 120
+  },
+  {
     "name": "spqr",
     "repository": "signalapp/SparsePostQuantumRatchet",
     "directory": ".",
