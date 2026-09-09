@@ -6,5 +6,9 @@ edition = "2024"
 [dependencies]
 hax-lib.workspace = true
 
+# `mutants` provides the `mutants::skip` attribute used on the `OsRng` dummies.
+[dev-dependencies]
+mutants = "0.0.3"
+
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)', 'cfg(hax_backend_lean)', 'cfg(coverage)', 'cfg(coverage_nightly)'] }

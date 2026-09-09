@@ -21,10 +21,10 @@ exclude_re = [
     # range, which is a no-op.
     "replace < with <= in vec::Vec<.*>::truncate",
 
-    # `if new_size < l` likewise: at new_size == l the mutant drains an empty
-    # range, and the original's grow loop does not run either. (Also covers the
-    # `while i < new_size` grow loop, which is caught today.)
-    "replace < with <= in vec::Vec<.*>::resize",
+    # `if new_size > l` likewise: at new_size == l the mutant grows by
+    # `seq_create(value, 0)` and concatenates an empty sequence, where the
+    # original drains the empty range `l..l`.
+    "replace > with >= in vec::Vec<.*>::resize",
 
     # `self.0[i] > *max` makes the *first* maximal element win; `>=` makes the
     # last one win. Both return an `Ord`-equal element and leave an equal heap.
