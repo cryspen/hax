@@ -7,6 +7,14 @@ let
   # Crate readmes are compiled in as rustdoc crate docs via
   # `#![doc = include_str!("../README.md")]`.
   is-crate-readme = path: builtins.match ".*/README[.]md" path != null;
+  # Trees that hold cargo sources no workspace member builds against, kept out
+  # so that touching them does not reshuffle the source hash and rebuild the
+  # whole toolchain. `tests` and `hax-lib/core-models` are both `exclude`d from
+  # the workspace (see the root `Cargo.toml`) and nothing path-depends on
+  # either, so neither reaches `cargo build` here.
+  is-excluded-tree = path:
+    builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path != null
+    || builtins.match ".*/hax-lib/core-models/.*" path != null;
   buildInputs = lib.optionals stdenv.isDarwin [ libiconv zlib.dev ];
   binaries = [ hax hax-engine.bin rustc gcc hax_rust_engine ] ++ buildInputs;
   commonArgs = {
@@ -14,8 +22,7 @@ let
     src = lib.cleanSourceWith {
       src = craneLib.path ./..;
       filter = path: type:
-        (builtins.isNull
-        (builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path)
+        (!is-excluded-tree path
         && (builtins.isNull (builtins.match ".*[.](md|svg)" path)
           || is-crate-readme path)
         && (craneLib.filterCargoSources path type
