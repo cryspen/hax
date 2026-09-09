@@ -68,6 +68,7 @@ permissions:
 jobs:
   # The projects to run, as a matrix, from the one file that lists them.
   plan:
+    if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
