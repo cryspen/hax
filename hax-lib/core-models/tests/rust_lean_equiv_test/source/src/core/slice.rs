@@ -396,6 +396,18 @@ pub fn test_binary_search_empty() -> bool {
     a.as_slice().binary_search(&1) == Err(0)
 }
 
+#[rust_lean_test]
+pub fn test_binary_search_unsorted_found() -> bool {
+    let a: [u8; 3] = [3, 1, 2];
+    a.as_slice().binary_search(&1) == Ok(1)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_unsorted_present_but_missed() -> bool {
+    let a: [u8; 5] = [5, 4, 3, 2, 1];
+    a.as_slice().binary_search(&3) == Err(5)
+}
+
 // Rust-only: the model has no `RangeBounds` instance.
 #[cfg(test)]
 #[test]
@@ -407,10 +419,9 @@ fn test_copy_within() {
 }
 
 // ----------------------------------------------------------------------------
-// `core::slice::index::*` is on `CHARON_EXCLUDES`, so the `SliceIndex`
-// impls (for `usize`, `Range`, `RangeFrom`, `RangeTo`, `RangeFull`) are
-// not extracted. The Lean side resolves through the name map to manual
-// definitions. Each `Range*` variant routes through a distinct
+// The `SliceIndex` impls (for `usize`, `Range`, `RangeFrom`, `RangeTo`,
+// `RangeFull`) are not extracted. The Lean side resolves through the name
+// map to manual definitions. Each `Range*` variant routes through a distinct
 // `SliceIndex` impl, so we test all of them.
 // ----------------------------------------------------------------------------
 

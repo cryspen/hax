@@ -1,7 +1,7 @@
 //! Equivalence tests for `core::mem::swap` and `core::mem::replace`.
 //!
-//! Both items are listed in `CHARON_EXCLUDES` so Aeneas does not
-//! extract the Rust std bodies; instead the name map routes them to
+//! Both items carry `#[cfg_attr(hax_backend_lean, hax_lib::exclude)]` so Aeneas
+//! does not extract the Rust std bodies; instead the name map routes them to
 //! manually-written Lean definitions in `lean/CoreModels/FunsExternal.lean`
 //! and friends. The Rust side of each test calls std directly — if the
 //! manual Lean def disagrees with std on a given input, the generated

@@ -1543,6 +1543,17 @@ mod tests {
             );
         }
 
+        #[test]
+        fn test_binary_search_unsorted(
+            values in prop::collection::vec(0u8..=8, 0..=12),
+            needle in 0u8..=8,
+        ) {
+            prop_assert_eq!(
+                Slice::binary_search(&values[..], &needle),
+                values.binary_search(&needle).inject()
+            );
+        }
+
         // ----- SliceIndex::index and Index for [T] ---------------------------
 
         #[test]

@@ -6587,7 +6587,7 @@ def iter.adapters.fuse.Fuse.Insts.CoreIterTraitsIteratorIterator {I :
 }
 
 /-- [core_models::option::{core_models::option::Option<T>}::expect]:
-    Source: 'core-models/src/core/option.rs', lines 67:4-72:5
+    Source: 'core-models/src/core/option.rs', lines 65:4-70:5
     Visibility: public -/
 def option.Option.expect
   {T : Type} (self : option.Option T) (_msg : Str) : RustM T := do
@@ -6642,7 +6642,7 @@ def iter.range.Step.backward_unchecked.default
   StepInst.backward start count
 
 /-- [core_models::option::{core_models::option::Option<T>}::unwrap]:
-    Source: 'core-models/src/core/option.rs', lines 76:4-81:5
+    Source: 'core-models/src/core/option.rs', lines 74:4-79:5
     Visibility: public -/
 def option.Option.unwrap {T : Type} (self : option.Option T) : RustM T := do
   match self with
@@ -12184,8 +12184,17 @@ def
     ops.range.RangeIsize.Insts.CoreIterTraitsDouble_endedDoubleEndedIteratorIsize.next_back
 }
 
+/-- [core_models::option::{core_models::option::Option<T>}::is_some]:
+    Source: 'core-models/src/core/option.rs', lines 19:4-21:5
+    Visibility: public -/
+def option.Option.is_some
+  {T : Type} (self : option.Option T) : RustM Bool := do
+  match self with
+  | option.Option.Some _ => ok true
+  | option.Option.None => ok false
+
 /-- [core_models::option::{core_models::option::Option<T>}::is_some_and]:
-    Source: 'core-models/src/core/option.rs', lines 25:4-30:5
+    Source: 'core-models/src/core/option.rs', lines 24:4-29:5
     Visibility: public -/
 def option.Option.is_some_and
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleTBoolInst :
@@ -12196,8 +12205,16 @@ def option.Option.is_some_and
   | option.Option.Some x => coreopsfunctionFnOnceFTupleTBoolInst.call_once f x
   | option.Option.None => ok false
 
+/-- [core_models::option::{core_models::option::Option<T>}::is_none]:
+    Source: 'core-models/src/core/option.rs', lines 32:4-34:5
+    Visibility: public -/
+def option.Option.is_none
+  {T : Type} (self : option.Option T) : RustM Bool := do
+  let b ← option.Option.is_some self
+  ok (b = false)
+
 /-- [core_models::option::{core_models::option::Option<T>}::is_none_or]:
-    Source: 'core-models/src/core/option.rs', lines 39:4-44:5
+    Source: 'core-models/src/core/option.rs', lines 37:4-42:5
     Visibility: public -/
 def option.Option.is_none_or
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleTBoolInst :
@@ -12209,7 +12226,7 @@ def option.Option.is_none_or
   | option.Option.None => ok true
 
 /-- [core_models::option::{core_models::option::Option<T>}::as_ref]:
-    Source: 'core-models/src/core/option.rs', lines 47:4-52:5
+    Source: 'core-models/src/core/option.rs', lines 45:4-50:5
     Visibility: public -/
 def option.Option.as_ref
   {T : Type} (self : option.Option T) : RustM (option.Option T) := do
@@ -12218,7 +12235,7 @@ def option.Option.as_ref
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::as_mut]:
-    Source: 'core-models/src/core/option.rs', lines 58:4-63:5
+    Source: 'core-models/src/core/option.rs', lines 56:4-61:5
     Visibility: public -/
 def option.Option.as_mut
   {T : Type} (self : option.Option T) :
@@ -12237,8 +12254,17 @@ def option.Option.as_mut
     let back := fun o => option.Option.None
     ok (option.Option.None, back)
 
+/-- [core_models::option::{core_models::option::Option<T>}::unwrap_or]:
+    Source: 'core-models/src/core/option.rs', lines 82:4-87:5
+    Visibility: public -/
+def option.Option.unwrap_or
+  {T : Type} (self : option.Option T) (default1 : T) : RustM T := do
+  match self with
+  | option.Option.Some x => ok x
+  | option.Option.None => ok default1
+
 /-- [core_models::option::{core_models::option::Option<T>}::unwrap_or_else]:
-    Source: 'core-models/src/core/option.rs', lines 93:4-98:5
+    Source: 'core-models/src/core/option.rs', lines 90:4-95:5
     Visibility: public -/
 def option.Option.unwrap_or_else
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleTInst :
@@ -12250,7 +12276,7 @@ def option.Option.unwrap_or_else
   | option.Option.None => coreopsfunctionFnOnceFTupleTInst.call_once f ()
 
 /-- [core_models::option::{core_models::option::Option<T>}::unwrap_or_default]:
-    Source: 'core-models/src/core/option.rs', lines 101:4-109:5
+    Source: 'core-models/src/core/option.rs', lines 98:4-106:5
     Visibility: public -/
 def option.Option.unwrap_or_default
   {T : Type} (defaultDefaultInst : default.Default T) (self : option.Option T)
@@ -12262,7 +12288,7 @@ def option.Option.unwrap_or_default
   | option.Option.None => defaultDefaultInst.default
 
 /-- [core_models::option::{core_models::option::Option<T>}::map]:
-    Source: 'core-models/src/core/option.rs', lines 112:4-120:5
+    Source: 'core-models/src/core/option.rs', lines 109:4-117:5
     Visibility: public -/
 def option.Option.map
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
@@ -12276,7 +12302,7 @@ def option.Option.map
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::map_or]:
-    Source: 'core-models/src/core/option.rs', lines 123:4-131:5
+    Source: 'core-models/src/core/option.rs', lines 120:4-128:5
     Visibility: public -/
 def option.Option.map_or
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
@@ -12289,7 +12315,7 @@ def option.Option.map_or
   | option.Option.None => ok default1
 
 /-- [core_models::option::{core_models::option::Option<T>}::map_or_else]:
-    Source: 'core-models/src/core/option.rs', lines 134:4-143:5
+    Source: 'core-models/src/core/option.rs', lines 131:4-140:5
     Visibility: public -/
 def option.Option.map_or_else
   {T : Type} {U : Type} {D : Type} {F : Type}
@@ -12304,7 +12330,7 @@ def option.Option.map_or_else
     coreopsfunctionFnOnceDTupleUInst.call_once default1 ()
 
 /-- [core_models::option::{core_models::option::Option<T>}::map_or_default]:
-    Source: 'core-models/src/core/option.rs', lines 146:4-155:5
+    Source: 'core-models/src/core/option.rs', lines 143:4-152:5
     Visibility: public -/
 def option.Option.map_or_default
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
@@ -12317,7 +12343,7 @@ def option.Option.map_or_default
   | option.Option.None => defaultDefaultInst.default
 
 /-- [core_models::option::{core_models::option::Option<T>}::ok_or]:
-    Source: 'core-models/src/core/option.rs', lines 158:4-163:5
+    Source: 'core-models/src/core/option.rs', lines 155:4-160:5
     Visibility: public -/
 def option.Option.ok_or
   {T : Type} {E : Type} (self : option.Option T) (err : E) :
@@ -12328,7 +12354,7 @@ def option.Option.ok_or
   | option.Option.None => ok (result.Result.Err err)
 
 /-- [core_models::option::{core_models::option::Option<T>}::ok_or_else]:
-    Source: 'core-models/src/core/option.rs', lines 166:4-171:5
+    Source: 'core-models/src/core/option.rs', lines 163:4-168:5
     Visibility: public -/
 def option.Option.ok_or_else
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleEInst :
@@ -12342,7 +12368,7 @@ def option.Option.ok_or_else
     ok (result.Result.Err t)
 
 /-- [core_models::option::{core_models::option::Option<T>}::and_then]:
-    Source: 'core-models/src/core/option.rs', lines 174:4-182:5
+    Source: 'core-models/src/core/option.rs', lines 171:4-179:5
     Visibility: public -/
 def option.Option.and_then
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTOptionInst :
@@ -12356,7 +12382,7 @@ def option.Option.and_then
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::filter]:
-    Source: 'core-models/src/core/option.rs', lines 199:4-210:5
+    Source: 'core-models/src/core/option.rs', lines 196:4-207:5
     Visibility: public -/
 def option.Option.filter
   {T : Type} {P : Type} (coreopsfunctionFnOncePTupleSharedTBoolInst :
@@ -12372,7 +12398,7 @@ def option.Option.filter
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::or]:
-    Source: 'core-models/src/core/option.rs', lines 213:4-218:5
+    Source: 'core-models/src/core/option.rs', lines 210:4-215:5
     Visibility: public -/
 def option.Option.or
   {T : Type} (self : option.Option T) (optb : option.Option T) :
@@ -12383,7 +12409,7 @@ def option.Option.or
   | option.Option.None => ok optb
 
 /-- [core_models::option::{core_models::option::Option<T>}::or_else]:
-    Source: 'core-models/src/core/option.rs', lines 221:4-226:5
+    Source: 'core-models/src/core/option.rs', lines 218:4-223:5
     Visibility: public -/
 def option.Option.or_else
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleOptionInst :
@@ -12396,7 +12422,7 @@ def option.Option.or_else
   | option.Option.None => coreopsfunctionFnOnceFTupleOptionInst.call_once f ()
 
 /-- [core_models::option::{core_models::option::Option<T>}::xor]:
-    Source: 'core-models/src/core/option.rs', lines 229:4-235:5
+    Source: 'core-models/src/core/option.rs', lines 226:4-232:5
     Visibility: public -/
 def option.Option.xor
   {T : Type} (self : option.Option T) (optb : option.Option T) :
@@ -12413,7 +12439,7 @@ def option.Option.xor
     | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::zip]:
-    Source: 'core-models/src/core/option.rs', lines 238:4-243:5
+    Source: 'core-models/src/core/option.rs', lines 235:4-240:5
     Visibility: public -/
 def option.Option.zip
   {T : Type} {U : Type} (self : option.Option T) (other : option.Option U) :
@@ -12427,7 +12453,7 @@ def option.Option.zip
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::inspect]:
-    Source: 'core-models/src/core/option.rs', lines 246:4-251:5
+    Source: 'core-models/src/core/option.rs', lines 243:4-248:5
     Visibility: public -/
 def option.Option.inspect
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedTTupleInst :
@@ -12441,7 +12467,7 @@ def option.Option.inspect
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<core_models::option::Option<T>>}::flatten]:
-    Source: 'core-models/src/core/option.rs', lines 257:4-262:5
+    Source: 'core-models/src/core/option.rs', lines 254:4-259:5
     Visibility: public -/
 def option.OptionOption.flatten
   {T : Type} (self : option.Option (option.Option T)) :
@@ -12452,14 +12478,14 @@ def option.OptionOption.flatten
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}::default]:
-    Source: 'core-models/src/core/option.rs', lines 268:4-270:5
+    Source: 'core-models/src/core/option.rs', lines 265:4-267:5
     Visibility: public -/
 def option.Option.Insts.CoreDefaultDefault.default
   (T : Type) : RustM (option.Option T) := do
   ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 266:0-271:1 -/
+    Source: 'core-models/src/core/option.rs', lines 263:0-268:1 -/
 @[reducible]
 def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
   (option.Option T) := {
@@ -12467,7 +12493,7 @@ def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
 }
 
 /-- [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}::clone]:
-    Source: 'core-models/src/core/option.rs', lines 276:4-281:5
+    Source: 'core-models/src/core/option.rs', lines 273:4-278:5
     Visibility: public -/
 def option.Option.Insts.CoreCloneClone.clone
   {T : Type} (cloneCloneInst : clone.Clone T) (self : option.Option T) :
@@ -12480,7 +12506,7 @@ def option.Option.Insts.CoreCloneClone.clone
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 275:0-282:1 -/
+    Source: 'core-models/src/core/option.rs', lines 272:0-279:1 -/
 @[reducible]
 impl_def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
   clone.Clone T) : clone.Clone (option.Option T) := {
@@ -12490,7 +12516,7 @@ impl_def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
 }
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::eq]:
-    Source: 'core-models/src/core/option.rs', lines 290:4-296:5
+    Source: 'core-models/src/core/option.rs', lines 287:4-293:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.eq
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -12508,7 +12534,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.eq
     | option.Option.None => ok true
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::ne]:
-    Source: 'core-models/src/core/option.rs', lines 287:4-289:5
+    Source: 'core-models/src/core/option.rs', lines 284:4-286:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.ne
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -12521,7 +12547,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 285:0-297:1 -/
+    Source: 'core-models/src/core/option.rs', lines 282:0-294:1 -/
 @[reducible]
 def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
   (cmpPartialEqInst : cmp.PartialEq T T) : cmp.PartialEq (option.Option T)
@@ -12531,7 +12557,7 @@ def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
 }
 
 /-- [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::branch]:
-    Source: 'core-models/src/core/option.rs', lines 311:4-316:5
+    Source: 'core-models/src/core/option.rs', lines 308:4-313:5
     Visibility: public -/
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
   {T : Type} (self : option.Option T) :
@@ -12543,14 +12569,14 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
     ok (ops.control_flow.ControlFlow.Break option.Option.None)
 
 /-- [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_output]:
-    Source: 'core-models/src/core/option.rs', lines 307:4-309:5
+    Source: 'core-models/src/core/option.rs', lines 304:4-306:5
     Visibility: public -/
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.from_output
   {T : Type} (output : T) : RustM (option.Option T) := do
   ok (option.Option.Some output)
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 303:0-317:1 -/
+    Source: 'core-models/src/core/option.rs', lines 300:0-314:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
   : ops.try_trait.Try (option.Option T) T (option.Option convert.Infallible)
@@ -12562,7 +12588,7 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
 }
 
 /-- [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_residual]:
-    Source: 'core-models/src/core/option.rs', lines 327:4-332:5
+    Source: 'core-models/src/core/option.rs', lines 324:4-329:5
     Visibility: public -/
 def
   option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible.from_residual
@@ -12574,7 +12600,7 @@ def
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 323:0-333:1 -/
+    Source: 'core-models/src/core/option.rs', lines 320:0-330:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible (T
   : Type) : ops.try_trait.FromResidual (option.Option T) (option.Option

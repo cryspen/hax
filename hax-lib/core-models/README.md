@@ -279,16 +279,16 @@ equivalence test exercises Aeneas's translation of the same item.
   not the identity and its `eq` panics on `u8::MAX`. That is what caught the
   dropped dictionaries in `RustPrimitives/Funs.lean`.
 - **Excluded items**: items carrying
-  `#[cfg_attr(hax_backend_lean, hax_lib::exclude)]` (`core::mem::swap`,
-  `Option::{is_some,is_none,unwrap_or,take}`, …) and those listed in
-  `ALLOC_CHARON_EXCLUDES` (most `Vec` indexing, `BinaryHeap`, …) come from
-  hand-written Lean definitions in
+  `#[cfg_attr(hax_backend_lean, hax_lib::exclude)]` (`core::mem::{swap,replace}`,
+  `Option::take`) and some of those listed in `ALLOC_CHARON_EXCLUDES`
+  (`Vec::from_iter`, …) come from hand-written Lean definitions in
   `../proof-libs/lean/CoreModels/Core/Funs{Prologue,Epilogue}.lean`
   and `../proof-libs/lean/CoreModels/RustPrimitives/Funs.lean`. Their
   equivalence tests live in the same file as the rest of the items
   in the same module (e.g. `core::mem::swap` tests live in
   `source/src/core/mem.rs`) — flagged with a section header noting
-  they exercise a manual Lean def.
+  they exercise a manual Lean def. The remaining exclusions
+  (`BinaryHeap`, `<[T]>::sort_by`, …) have no Lean counterpart.
 
 ## Using the Lean library downstream
 

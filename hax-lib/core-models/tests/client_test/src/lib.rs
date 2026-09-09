@@ -258,7 +258,7 @@ pub fn slice_iter_mut_bump_first(s: &mut [u32]) {
 }
 
 // NOTE: slice indexing through `SliceIndex` is currently excluded from
-// our extraction (see `CHARON_EXCLUDES` in the parent Makefile).
+// our extraction.
 // Re-enable the tests below once the full SliceIndex modeling lands
 // (`Sealed` super-trait, `get_mut`/`index_mut` back-edges, raw-pointer
 // `get_unchecked*`).

@@ -406,130 +406,117 @@ pub fn test_flatten_some_none() -> bool {
 // importing the model's Default trait; revisit alongside Default coverage.
 
 // ----------------------------------------------------------------------------
-// The four methods below — `is_some`, `is_none`, `unwrap_or`, `take` — are
-// listed in `CHARON_EXCLUDES`, so Aeneas does not extract their bodies.
-// The Lean side routes through the name map to manually-written
-// definitions in `lean/CoreModels/FunsPrologue.lean` / `FunsExternal.lean`.
-// The Rust call site looks identical to the extracted variants exercised
-// above; the value of having both sections is that one round-trips
-// through extraction, the other through the hand-written Lean def.
+// `take` carries `#[cfg_attr(hax_backend_lean, hax_lib::exclude)]`, so Aeneas
+// does not extract its body and the Lean side resolves to a hand-written
+// definition in `lean/CoreModels/Core/FunsPrologue.lean`. The sections below
+// widen the element types the other three methods are exercised at.
 // ----------------------------------------------------------------------------
 
 use crate::helpers::{none_i32, none_u32};
 
-// ----- is_some (manually defined in Lean, not extracted) --------------------
+// ----- is_some (further element types) --------------------------------------
 
 #[rust_lean_test]
-pub fn test_manual_is_some_some_u8_zero() -> bool {
+pub fn test_is_some_some_u8_zero() -> bool {
     Some(0u8).is_some() == true
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_some_some_u8_max() -> bool {
+pub fn test_is_some_some_u8_max() -> bool {
     Some(u8::MAX).is_some() == true
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_some_none_u8() -> bool {
-    none_u8().is_some() == false
-}
-
-#[rust_lean_test]
-pub fn test_manual_is_some_some_u32() -> bool {
+pub fn test_is_some_some_u32() -> bool {
     Some(123u32).is_some() == true
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_some_none_u32() -> bool {
+pub fn test_is_some_none_u32() -> bool {
     none_u32().is_some() == false
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_some_some_bool() -> bool {
+pub fn test_is_some_some_bool() -> bool {
     Some(true).is_some() == true
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_some_none_bool() -> bool {
+pub fn test_is_some_none_bool() -> bool {
     crate::helpers::none_bool().is_some() == false
 }
 
-// ----- is_none (manually defined in Lean, not extracted) --------------------
+// ----- is_none (further element types) --------------------------------------
 
 #[rust_lean_test]
-pub fn test_manual_is_none_some_u8_zero() -> bool {
+pub fn test_is_none_some_u8_zero() -> bool {
     Some(0u8).is_none() == false
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_none_some_u8_max() -> bool {
+pub fn test_is_none_some_u8_max() -> bool {
     Some(u8::MAX).is_none() == false
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_none_none_u8() -> bool {
-    none_u8().is_none() == true
-}
-
-#[rust_lean_test]
-pub fn test_manual_is_none_some_i32() -> bool {
+pub fn test_is_none_some_i32() -> bool {
     Some(-1i32).is_none() == false
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_none_none_i32() -> bool {
+pub fn test_is_none_none_i32() -> bool {
     none_i32().is_none() == true
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_none_some_bool() -> bool {
+pub fn test_is_none_some_bool() -> bool {
     Some(false).is_none() == false
 }
 
 #[rust_lean_test]
-pub fn test_manual_is_none_none_bool() -> bool {
+pub fn test_is_none_none_bool() -> bool {
     crate::helpers::none_bool().is_none() == true
 }
 
-// ----- unwrap_or (manually defined in Lean, not extracted) ------------------
+// ----- unwrap_or (further element types) ------------------------------------
 
 #[rust_lean_test]
-pub fn test_manual_unwrap_or_some_u8_zero() -> bool {
+pub fn test_unwrap_or_some_u8_zero() -> bool {
     Some(0u8).unwrap_or(42) == 0
 }
 
 #[rust_lean_test]
-pub fn test_manual_unwrap_or_some_u8_max() -> bool {
+pub fn test_unwrap_or_some_u8_max() -> bool {
     Some(u8::MAX).unwrap_or(0) == u8::MAX
 }
 
 #[rust_lean_test]
-pub fn test_manual_unwrap_or_none_u8_small_default() -> bool {
+pub fn test_unwrap_or_none_u8_small_default() -> bool {
     none_u8().unwrap_or(7) == 7
 }
 
 #[rust_lean_test]
-pub fn test_manual_unwrap_or_none_u8_max_default() -> bool {
+pub fn test_unwrap_or_none_u8_max_default() -> bool {
     none_u8().unwrap_or(u8::MAX) == u8::MAX
 }
 
 #[rust_lean_test]
-pub fn test_manual_unwrap_or_some_u32_small() -> bool {
+pub fn test_unwrap_or_some_u32_small() -> bool {
     Some(5u32).unwrap_or(99) == 5
 }
 
 #[rust_lean_test]
-pub fn test_manual_unwrap_or_none_u32_max_default() -> bool {
+pub fn test_unwrap_or_none_u32_max_default() -> bool {
     none_u32().unwrap_or(u32::MAX) == u32::MAX
 }
 
 #[rust_lean_test]
-pub fn test_manual_unwrap_or_some_bool() -> bool {
+pub fn test_unwrap_or_some_bool() -> bool {
     Some(true).unwrap_or(false) == true
 }
 
 #[rust_lean_test]
-pub fn test_manual_unwrap_or_none_bool() -> bool {
+pub fn test_unwrap_or_none_bool() -> bool {
     crate::helpers::none_bool().unwrap_or(true) == true
 }
 
