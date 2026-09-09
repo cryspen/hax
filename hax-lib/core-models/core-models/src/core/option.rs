@@ -182,6 +182,10 @@ impl<T> Option<T> {
     ///
     /// Note: The interface in Rust is wrong, but is good after extraction.
     /// We cannot make a useful model with the right interface so we lose the executability.
+    //
+    // Excluded from Lean: the Lean side is the `FunsPrologue.lean` shim. The
+    // tuple is also in hax's F* order, (new_self, returned), not aeneas's.
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     pub fn take(self) -> (Option<T>, Option<T>) {
         (None, self)
     }

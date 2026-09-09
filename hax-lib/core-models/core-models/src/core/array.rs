@@ -167,14 +167,12 @@ impl<T, const N: usize> Index<RangeFull> for [T; N] {
 #[cfg(not(hax_backend_fstar))]
 impl<T: crate::clone::Clone, const N: usize> crate::clone::Clone for [T; N] {
     fn clone(self) -> Self {
-        self
+        Array::map(self, |x| x.clone())
     }
-    // Real `core` overrides `clone_from` for arrays (it clones element-wise into
-    // the existing storage instead of allocating a new array). With `clone` the
-    // identity here, overwriting the receiver with the source is that same
-    // element-wise clone.
+    // Overridden, not left to the default: charon only emits the per-impl
+    // `clone_from` symbol when the impl overrides it, and clients resolve to it.
     fn clone_from(self, source: Self) -> Self {
-        source
+        source.clone()
     }
 }
 
@@ -254,6 +252,8 @@ mod iter {
 
 #[cfg(test)]
 mod tests {
+    #[cfg(not(hax_backend_fstar))]
+    use crate::testing::CloneWitness;
     use crate::testing::Inject;
 
     impl<T: Inject, const N: usize> Inject for [T; N] {
@@ -555,6 +555,29 @@ mod tests {
         fn test_model_index_usize(arr in any::<[u8; 4]>(), idx in 0usize..4) {
             let m = arr.inject();
             prop_assert_eq!(crate::ops::index::Index::index(&m, idx), &arr[idx]);
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_array_clone_applies_element_clone(arr in any::<[u8; 3]>()) {
+            prop_assert_eq!(
+                crate::clone::Clone::clone(arr.map(CloneWitness::new)),
+                arr.map(CloneWitness::new).clone()
+            );
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_array_clone_from_applies_element_clone(
+            dst in any::<[u8; 3]>(),
+            src in any::<[u8; 3]>(),
+        ) {
+            let mut std_dst = dst.map(CloneWitness::new);
+            std::clone::Clone::clone_from(&mut std_dst, &src.map(CloneWitness::new));
+            prop_assert_eq!(
+                crate::clone::Clone::clone_from(dst.map(CloneWitness::new), src.map(CloneWitness::new)),
+                std_dst
+            );
         }
     }
 }

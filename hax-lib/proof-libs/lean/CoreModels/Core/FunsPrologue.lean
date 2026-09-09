@@ -300,15 +300,6 @@ def Shared0T.Insts.CoreCloneClone (T : Type) : clone.Clone T := {
 
 /-! ## Option -/
 
-def option.Option.unwrap_or :=
-  fun {T} x y => Aeneas.Std.RustM.ok (@Aeneas.Std.core.option.Option.unwrap_or T x y)
-
-def option.Option.is_some :=
-  fun {T} x => Aeneas.Std.RustM.ok (@Aeneas.Std.core.option.Option.is_some T x)
-
-def option.Option.is_none :=
-  fun {T} x => Aeneas.Std.RustM.ok (@Aeneas.Std.core.option.Option.is_none T x)
-
 def option.Option.take :=
   fun {T} x => Aeneas.Std.RustM.ok (@Aeneas.Std.core.option.Option.take T x)
 

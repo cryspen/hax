@@ -77,18 +77,6 @@ sweeps the `u8`/`i8` domain against references built from operations that do not
 route through `rust_primitives`, which is what makes the comparison meaningful
 on the Lean side.
 
-Two further gaps worth knowing about:
-
-- **`#[hax_lib::requires]` reaches F\* only.** Charon does not see it, so the
-  Lean definition is total where the contract is not. Where that would make Lean
-  disagree with a panicking Rust operation, the Lean primitive must fail
-  explicitly instead (as `abs` and `rem_euclid` do).
-- **`#[hax_lib::opaque]` reaches hax only.** Aeneas extracts the body regardless,
-  so an `opaque` item whose Rust body is a placeholder becomes a *wrong* Lean
-  definition. Such items must be `--exclude`d or `--opaque`d for charon in the
-  `Makefile`; prefer `#[cfg_attr(hax_backend_fstar, hax_lib::opaque)]` when the
-  body is a faithful model and only F\* needs it dropped.
-
 ## Coverage
 
 [`COVERAGE.md`](COVERAGE.md) reports, per top-level module, how much of the
@@ -290,15 +278,17 @@ equivalence test exercises Aeneas's translation of the same item.
   on `T`'s `Clone`/`PartialEq`, reach for `helpers::Bumped` — its `clone` is
   not the identity and its `eq` panics on `u8::MAX`. That is what caught the
   dropped dictionaries in `RustPrimitives/Funs.lean`.
-- **Excluded items**: things listed in `CHARON_EXCLUDES` /
-  `ALLOC_CHARON_EXCLUDES` (`core::mem::swap`, `core::slice::index::*`,
-  most `Vec` indexing, `BinaryHeap`, …) come from hand-written Lean
-  definitions in `../proof-libs/lean/CoreModels/Core/Funs{Prologue,Epilogue}.lean`
+- **Excluded items**: items carrying
+  `#[cfg_attr(hax_backend_lean, hax_lib::exclude)]` (`core::mem::{swap,replace}`,
+  `Option::take`) and some of those listed in `ALLOC_CHARON_EXCLUDES`
+  (`Vec::from_iter`, …) come from hand-written Lean definitions in
+  `../proof-libs/lean/CoreModels/Core/Funs{Prologue,Epilogue}.lean`
   and `../proof-libs/lean/CoreModels/RustPrimitives/Funs.lean`. Their
   equivalence tests live in the same file as the rest of the items
   in the same module (e.g. `core::mem::swap` tests live in
   `source/src/core/mem.rs`) — flagged with a section header noting
-  they exercise a manual Lean def.
+  they exercise a manual Lean def. The remaining exclusions
+  (`BinaryHeap`, `<[T]>::sort_by`, …) have no Lean counterpart.
 
 ## Using the Lean library downstream
 
@@ -317,8 +307,8 @@ PRs welcome. Please:
     `tests/rust_lean_equiv_test/source/src/...` covering corner cases
     of the input. See the [Testing](#testing) section for the
     motivation and the pitfalls.
-- If your item is excluded from extraction (added to
-  `CHARON_EXCLUDES`), the equivalence tests still go in the file that
+- If your item is excluded from extraction (see
+  [Pitfalls](#pitfalls)), the equivalence tests still go in the file that
   mirrors the item's `core::*` / `alloc::*` location — flag them with
   a section header like
   `// ----- foo (manually defined in Lean, not extracted) -----` so a

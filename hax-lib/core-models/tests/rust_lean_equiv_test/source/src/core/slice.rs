@@ -320,6 +320,24 @@ pub fn test_fill() -> bool {
     a == [7, 7, 7, 7]
 }
 
+// Cloned into every slot but the last, moved into that one.
+#[rust_lean_test]
+pub fn test_fill_moves_the_last_element() -> bool {
+    let mut a = [Bumped(0), Bumped(0), Bumped(0)];
+    let s: &mut [Bumped] = &mut a;
+    s.fill(Bumped(1));
+    a[0].0 == 2 && a[1].0 == 2 && a[2].0 == 1
+}
+
+// A one-element slice is entirely the moved-in case.
+#[rust_lean_test]
+pub fn test_fill_single_element_is_moved() -> bool {
+    let mut a = [Bumped(0)];
+    let s: &mut [Bumped] = &mut a;
+    s.fill(Bumped(1));
+    a[0].0 == 1
+}
+
 // Rust-only: `slice::iter::Iter` does not translate (see `core::iter`).
 #[cfg(test)]
 #[test]
@@ -334,6 +352,62 @@ pub fn test_binary_search() -> bool {
     a.as_slice().binary_search(&5) == Ok(2)
 }
 
+// Rust leaves the index unspecified on a tie; these pin which one comes back.
+#[rust_lean_test]
+pub fn test_binary_search_all_equal_three() -> bool {
+    let a: [u8; 3] = [1, 1, 1];
+    a.as_slice().binary_search(&1) == Ok(2)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_all_equal_five() -> bool {
+    let a: [u8; 5] = [1, 1, 1, 1, 1];
+    a.as_slice().binary_search(&1) == Ok(4)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_run_in_the_middle() -> bool {
+    let a: [u8; 6] = [1, 3, 3, 3, 5, 7];
+    a.as_slice().binary_search(&3) == Ok(3)
+}
+
+// The `Err` side: insertion point below, inside and above the slice.
+#[rust_lean_test]
+pub fn test_binary_search_absent_low() -> bool {
+    let a: [u8; 4] = [2, 4, 6, 8];
+    a.as_slice().binary_search(&1) == Err(0)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_absent_middle() -> bool {
+    let a: [u8; 4] = [2, 4, 6, 8];
+    a.as_slice().binary_search(&5) == Err(2)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_absent_high() -> bool {
+    let a: [u8; 4] = [2, 4, 6, 8];
+    a.as_slice().binary_search(&9) == Err(4)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_empty() -> bool {
+    let a: [u8; 0] = [];
+    a.as_slice().binary_search(&1) == Err(0)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_unsorted_found() -> bool {
+    let a: [u8; 3] = [3, 1, 2];
+    a.as_slice().binary_search(&1) == Ok(1)
+}
+
+#[rust_lean_test]
+pub fn test_binary_search_unsorted_present_but_missed() -> bool {
+    let a: [u8; 5] = [5, 4, 3, 2, 1];
+    a.as_slice().binary_search(&3) == Err(5)
+}
+
 // Rust-only: the model has no `RangeBounds` instance.
 #[cfg(test)]
 #[test]
@@ -345,10 +419,9 @@ fn test_copy_within() {
 }
 
 // ----------------------------------------------------------------------------
-// `core::slice::index::*` is on `CHARON_EXCLUDES`, so the `SliceIndex`
-// impls (for `usize`, `Range`, `RangeFrom`, `RangeTo`, `RangeFull`) are
-// not extracted. The Lean side resolves through the name map to manual
-// definitions. Each `Range*` variant routes through a distinct
+// The `SliceIndex` impls (for `usize`, `Range`, `RangeFrom`, `RangeTo`,
+// `RangeFull`) are not extracted. The Lean side resolves through the name
+// map to manual definitions. Each `Range*` variant routes through a distinct
 // `SliceIndex` impl, so we test all of them.
 // ----------------------------------------------------------------------------
 

@@ -1,5 +1,6 @@
 //! Equivalence tests for `[T; N]` (`core::array`) operations.
 
+use crate::helpers::Bumped;
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- Index<RangeTo<usize>> -------------------------------------------------
@@ -110,4 +111,22 @@ pub fn test_each_ref_first() -> bool {
     let a: [u8; 4] = [1, 2, 3, 4];
     let refs: [&u8; 4] = a.each_ref();
     *refs[0] == 1
+}
+
+// ----- Clone for [T; N] ------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_array_clone_applies_element_clone() -> bool {
+    let a = [Bumped(1), Bumped(2)];
+    let b = a.clone();
+    b[0].0 == 2 && b[1].0 == 3
+}
+
+// `clone_from` clones element-wise, so the receiver's values do not survive.
+#[rust_lean_test]
+pub fn test_array_clone_from_applies_element_clone() -> bool {
+    let mut dst = [Bumped(10), Bumped(20)];
+    let src = [Bumped(1), Bumped(2)];
+    dst.clone_from(&src);
+    dst[0].0 == 2 && dst[1].0 == 3
 }
