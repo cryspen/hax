@@ -55,17 +55,6 @@
     "timeout": 120
   },
   {
-    "name": "libcrux-iot-ml-kem",
-    "repository": "celabshq/libcrux-iot",
-    "directory": "libcrux-iot/ml-kem",
-    "fstar": "v2025.10.06",
-    "stage": "prove",
-    "extract": "./hax.py clean && ./hax.py extract",
-    "lax": "./hax.py prove --admit",
-    "prove": "./hax.py prove",
-    "timeout": 120
-  },
-  {
     "name": "libcrux-iot-ml-dsa",
     "repository": "celabshq/libcrux-iot",
     "directory": "libcrux-iot/ml-dsa",
@@ -74,17 +63,6 @@
     "extract": "./hax.sh extract",
     "lax": "./hax.sh prove --admit",
     "prove": "./hax.sh prove",
-    "timeout": 120
-  },
-  {
-    "name": "libcrux-iot-sha3",
-    "repository": "celabshq/libcrux-iot",
-    "directory": "libcrux-iot/sha3",
-    "fstar": "v2025.10.06",
-    "stage": "prove",
-    "extract": "./hax.py clean && ./hax.py extract",
-    "lax": "./hax.py prove --admit",
-    "prove": "./hax.py prove",
     "timeout": 120
   },
   {
