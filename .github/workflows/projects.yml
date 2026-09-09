@@ -1,34 +1,7 @@
 name: Projects
 
-# Runs the hax pipeline of the projects that use hax — extraction, then the
-# proofs — against the hax in this checkout, rather than against the
-# published `hax-lib` those projects pin.
-#
-# The projects are listed in `.github/hax-projects.json`; adding one is a
-# single entry there, giving its repository, the directory to run in, the F*
-# version it pins, the commands for each stage, and how far its own nightly
-# goes. Nothing else in this workflow knows about any particular project.
-#
-# Nightly, because it is the projects and their pinned toolchains that move
-# under a hax that was fine when it landed, and because these runs are far too
-# slow to put in front of a pull request. A failing nightly opens one issue per
-# project, deduplicated by title, so a breakage that lasts a week is one issue
-# rather than seven.
-#
-# On demand, `workflow_dispatch` takes a hax ref and a project ref, which is
-# how a hax change that needs a matching project change is tested before
-# either lands:
-#
-#   gh workflow run projects.yml --ref my-hax-branch \
-#     -f projects=libcrux-ml-kem -f project-ref=my-libcrux-branch
-#
-# This replaces the per-project `bertie.yml`, `mlkem.yml` and `mldsa.yml`
-# workflows, which ran on pull requests and in the merge queue. They could
-# not do anything useful there: `cargo-hax` accepts only the `hax-lib` of its
-# own version, so between a version bump and the release that publishes it —
-# which is most of the time — those jobs either skipped every real step or
-# failed on the version check. Their in-repo `[patch.crates-io]` injection
-# never took effect either; see the `use-local-hax-lib` action.
+# Runs the hax pipeline of the projects that use hax against the hax in this
+# checkout. The projects are listed in `.github/hax-projects.json`.
 
 on:
   schedule:
@@ -66,7 +39,6 @@ permissions:
   contents: read
 
 jobs:
-  # The projects to run, as a matrix, from the one file that lists them.
   plan:
     if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
@@ -77,7 +49,6 @@ jobs:
 
       - id: plan
         env:
-          # Empty on a schedule, where every project runs.
           PROJECTS: ${{ inputs.projects || 'all' }}
         run: |
           set -euo pipefail
@@ -117,20 +88,14 @@ jobs:
 
     env:
       CARGO_TERM_COLOR: always
-      # How far this run goes. The project decides for itself, which is what a
-      # schedule uses; a dispatch can override it, and leaves it alone when the
-      # stage input is left at its "project default".
       STAGE: >-
         ${{ (inputs.stage == '' || inputs.stage == 'project default')
         && matrix.stage || inputs.stage }}
-      # Bertie's F* makefiles take the proof libraries from here, so the
-      # proof libraries under test are this checkout's. libcrux's take them
-      # from `cargo metadata`, which the injection below has pointed here.
+      # Bertie's F* makefiles take the proof libraries from here; libcrux's
+      # take them from `cargo metadata`, which the injection points here.
       HAX_HOME: ${{ github.workspace }}/hax
 
     steps:
-      # Building hax, a full F* installation and an extraction of a whole
-      # crate together outgrow the default image's free space.
       - name: Free disk space by removing preinstalled packages
         uses: jlumbroso/free-disk-space@main
         with:
@@ -149,8 +114,6 @@ jobs:
           path: project
           ref: ${{ inputs.project-ref }}
 
-      # Reported in the issue a failing nightly opens: "the nightly is red"
-      # is only actionable with the two commits it was red on.
       - name: Record the versions under test
         id: versions
         run: |
@@ -166,8 +129,6 @@ jobs:
           skipPush: true
           extraPullNames: fstar-nix-versions, z3-nix-versions
 
-      # From the checkout, so this is the hax under test: the engine and the
-      # proof libraries as well as `hax-lib`.
       - name: Build and install hax
         run: nix profile install ./hax
 
@@ -187,9 +148,7 @@ jobs:
             nix profile install "github:FStarLang/FStar/$VERSION"
           fi
 
-      # A separate step, so that the `PATH` the one above exported is in
-      # effect. The projects' makefiles want `FSTAR_HOME`, which is wherever
-      # of the two installations above actually provided `fstar.exe`.
+      # Separate, so the `PATH` the step above exported is in effect.
       - name: Locate the F* installation
         run: |
           set -euo pipefail
@@ -197,8 +156,6 @@ jobs:
           echo "FSTAR_HOME=$home" >> "$GITHUB_ENV"
           fstar.exe --version
 
-      # What the project's own build needs beyond a Rust toolchain, for the
-      # few that need anything; the runner image covers the rest.
       - name: Install ${{ matrix.packages }}
         if: matrix.packages != ''
         env:
@@ -220,9 +177,8 @@ jobs:
         working-directory: project/${{ matrix.directory }}
         run: ${{ matrix.extract }}
 
-      # One or the other, never both: an F* run leaves `.checked` files behind
-      # that a later `make` treats as done, so a lax-check first would leave
-      # the proofs with nothing to do.
+      # One or the other, never both: an F* run leaves `.checked` files a
+      # later `make` treats as done.
       - name: Lax-check
         id: lax
         if: env.STAGE == 'lax'
@@ -235,8 +191,6 @@ jobs:
         working-directory: project/${{ matrix.directory }}
         run: ${{ matrix.prove }}
 
-      # The extraction is worth keeping even when the proofs fail on it:
-      # it is what the failure has to be read against.
       - name: ↑ Upload the extraction
         if: always() && steps.extract.outcome == 'success'
         uses: actions/upload-artifact@v4
@@ -246,9 +200,6 @@ jobs:
           include-hidden-files: true
           if-no-files-found: warn
 
-      # Only the nightly opens issues: a dispatched run has someone watching
-      # it. `open-issue-once` skips a title that is already open, so a
-      # breakage lasting a week is one issue, not seven.
       - name: Open an issue for a failing nightly
         if: failure() && github.event_name == 'schedule'
         uses: ./hax/.github/actions/open-issue-once
@@ -266,6 +217,7 @@ jobs:
             | ${{ matrix.repository }} | [`${{ steps.versions.outputs.project }}`](${{ github.server_url }}/${{ matrix.repository }}/commit/${{ steps.versions.outputs.project }}) |
             | extraction | `${{ steps.extract.outcome }}` |
             | lax-check | `${{ steps.lax.outcome }}` |
+            | proofs | `${{ steps.prove.outcome }}` |
 
             A stage reported as `skipped` did not run because something
             before it failed — the setup steps included; the run's log says
