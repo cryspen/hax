@@ -17,6 +17,10 @@ macro_rules! uint_impl {
         $Name: ty,
         $Max: expr,
         $Bits: expr,
+        // Width used for the rotate shift amounts.  Same as `$Bits` for fixed-width
+        // types, but `rust_primitives::SIZE_BITS` for `usize` so the F* `shiftval`
+        // refinement (bounded by the abstract `bits usize == size_bits`) discharges.
+        $ShiftBits: expr,
         $Bytes: expr,
     ) => {
         #[hax_lib::attributes]
@@ -133,14 +137,25 @@ macro_rules! uint_impl {
                 paste! { [<count_ones_ $Name>](x) }
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            /// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+            /// (which is `x.rotate_right(n)` and would extract back into this model,
+            /// forming a cycle — hence the previous F* `opaque`).  The two shifted
+            /// halves occupy disjoint bit positions, so `^` coincides with `|`.
+            /// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+            /// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+            /// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+            /// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+            /// by the abstract `bits usize == size_bits`, which a literal `64`
+            /// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
-                paste! { [<rotate_right_ $Name>](x, n) }
+                let m = n % $ShiftBits;
+                if m == 0 { x } else { (x >> m) ^ (x << ($ShiftBits - m)) }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            /// Modeled via shifts + xor; see `rotate_right` above for the rationale.
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
-                paste! { [<rotate_left_ $Name>](x, n) }
+                let m = n % $ShiftBits;
+                if m == 0 { x } else { (x << m) ^ (x >> ($ShiftBits - m)) }
             }
             /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -590,6 +605,7 @@ uint_impl! {
     u8,
     255,
     8,
+    8,
     1,
 }
 
@@ -597,6 +613,7 @@ uint_impl! {
     core::primitive::u16,
     u16,
     65535,
+    16,
     16,
     2,
 }
@@ -606,6 +623,7 @@ uint_impl! {
     u32,
     4294967295,
     32,
+    32,
     4,
 }
 
@@ -614,6 +632,7 @@ uint_impl! {
     u64,
     18446744073709551615,
     64,
+    64,
     8,
 }
 
@@ -621,6 +640,7 @@ uint_impl! {
     core::primitive::u128,
     u128,
     340282366920938463463374607431768211455,
+    128,
     128,
     16,
 }
@@ -634,6 +654,10 @@ uint_impl! {
     // `Result U32`, but aeneas inlines associated consts as plain values at use sites
     // (`usize::BITS - x`), matching the fixed-width `u32::BITS : U32`. Value-identical.
     64,
+    // Rotate shift width: `SIZE_BITS` (not the literal `64`) so the F* `shiftval`
+    // refinement, bounded by the abstract `bits usize == size_bits`, discharges.
+    // At a use site aeneas inlines the const, so Lean still sees a plain value.
+    SIZE_BITS,
     SIZE_BYTES,
 }
 

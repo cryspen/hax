@@ -330,18 +330,25 @@ let impl_6__overflowing_pow (x: u8) (exp: u32) : (u8 & bool) =
 let impl_6__count_ones (x: u8) : u32 = Rust_primitives.Arithmetic.count_ones_u8 x
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-assume
-val impl_6__rotate_right': x: u8 -> n: u32 -> u8
-
-unfold
-let impl_6__rotate_right = impl_6__rotate_right'
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+let impl_6__rotate_right (x: u8) (n: u32) : u8 =
+  let m:u32 = n %! mk_u32 8 in
+  if m =. mk_u32 0 then x else (x >>! m <: u8) ^. (x <<! (mk_u32 8 -! m <: u32) <: u8)
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_6__rotate_left': x: u8 -> n: u32 -> u8
-
-unfold
-let impl_6__rotate_left = impl_6__rotate_left'
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+let impl_6__rotate_left (x: u8) (n: u32) : u8 =
+  let m:u32 = n %! mk_u32 8 in
+  if m =. mk_u32 0 then x else (x <<! m <: u8) ^. (x >>! (mk_u32 8 -! m <: u32) <: u8)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -490,18 +497,25 @@ let impl_7__overflowing_pow (x: u16) (exp: u32) : (u16 & bool) =
 let impl_7__count_ones (x: u16) : u32 = Rust_primitives.Arithmetic.count_ones_u16 x
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-assume
-val impl_7__rotate_right': x: u16 -> n: u32 -> u16
-
-unfold
-let impl_7__rotate_right = impl_7__rotate_right'
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+let impl_7__rotate_right (x: u16) (n: u32) : u16 =
+  let m:u32 = n %! mk_u32 16 in
+  if m =. mk_u32 0 then x else (x >>! m <: u16) ^. (x <<! (mk_u32 16 -! m <: u32) <: u16)
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_7__rotate_left': x: u16 -> n: u32 -> u16
-
-unfold
-let impl_7__rotate_left = impl_7__rotate_left'
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+let impl_7__rotate_left (x: u16) (n: u32) : u16 =
+  let m:u32 = n %! mk_u32 16 in
+  if m =. mk_u32 0 then x else (x <<! m <: u16) ^. (x >>! (mk_u32 16 -! m <: u32) <: u16)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -650,18 +664,25 @@ let impl_8__overflowing_pow (x exp: u32) : (u32 & bool) =
 let impl_8__count_ones (x: u32) : u32 = Rust_primitives.Arithmetic.count_ones_u32 x
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-assume
-val impl_8__rotate_right': x: u32 -> n: u32 -> u32
-
-unfold
-let impl_8__rotate_right = impl_8__rotate_right'
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+let impl_8__rotate_right (x n: u32) : u32 =
+  let m:u32 = n %! mk_u32 32 in
+  if m =. mk_u32 0 then x else (x >>! m <: u32) ^. (x <<! (mk_u32 32 -! m <: u32) <: u32)
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_8__rotate_left': x: u32 -> n: u32 -> u32
-
-unfold
-let impl_8__rotate_left = impl_8__rotate_left'
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+let impl_8__rotate_left (x n: u32) : u32 =
+  let m:u32 = n %! mk_u32 32 in
+  if m =. mk_u32 0 then x else (x <<! m <: u32) ^. (x >>! (mk_u32 32 -! m <: u32) <: u32)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -810,18 +831,25 @@ let impl_9__overflowing_pow (x: u64) (exp: u32) : (u64 & bool) =
 let impl_9__count_ones (x: u64) : u32 = Rust_primitives.Arithmetic.count_ones_u64 x
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-assume
-val impl_9__rotate_right': x: u64 -> n: u32 -> u64
-
-unfold
-let impl_9__rotate_right = impl_9__rotate_right'
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+let impl_9__rotate_right (x: u64) (n: u32) : u64 =
+  let m:u32 = n %! mk_u32 64 in
+  if m =. mk_u32 0 then x else (x >>! m <: u64) ^. (x <<! (mk_u32 64 -! m <: u32) <: u64)
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_9__rotate_left': x: u64 -> n: u32 -> u64
-
-unfold
-let impl_9__rotate_left = impl_9__rotate_left'
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+let impl_9__rotate_left (x: u64) (n: u32) : u64 =
+  let m:u32 = n %! mk_u32 64 in
+  if m =. mk_u32 0 then x else (x <<! m <: u64) ^. (x >>! (mk_u32 64 -! m <: u32) <: u64)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -970,18 +998,25 @@ let impl_10__overflowing_pow (x: u128) (exp: u32) : (u128 & bool) =
 let impl_10__count_ones (x: u128) : u32 = Rust_primitives.Arithmetic.count_ones_u128 x
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-assume
-val impl_10__rotate_right': x: u128 -> n: u32 -> u128
-
-unfold
-let impl_10__rotate_right = impl_10__rotate_right'
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+let impl_10__rotate_right (x: u128) (n: u32) : u128 =
+  let m:u32 = n %! mk_u32 128 in
+  if m =. mk_u32 0 then x else (x >>! m <: u128) ^. (x <<! (mk_u32 128 -! m <: u32) <: u128)
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_10__rotate_left': x: u128 -> n: u32 -> u128
-
-unfold
-let impl_10__rotate_left = impl_10__rotate_left'
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+let impl_10__rotate_left (x: u128) (n: u32) : u128 =
+  let m:u32 = n %! mk_u32 128 in
+  if m =. mk_u32 0 then x else (x <<! m <: u128) ^. (x >>! (mk_u32 128 -! m <: u32) <: u128)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -1136,18 +1171,29 @@ let impl_11__overflowing_pow (x: usize) (exp: u32) : (usize & bool) =
 let impl_11__count_ones (x: usize) : u32 = Rust_primitives.Arithmetic.count_ones_usize x
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-assume
-val impl_11__rotate_right': x: usize -> n: u32 -> usize
-
-unfold
-let impl_11__rotate_right = impl_11__rotate_right'
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+let impl_11__rotate_right (x: usize) (n: u32) : usize =
+  let m:u32 = n %! Rust_primitives.Arithmetic.v_SIZE_BITS in
+  if m =. mk_u32 0
+  then x
+  else (x >>! m <: usize) ^. (x <<! (Rust_primitives.Arithmetic.v_SIZE_BITS -! m <: u32) <: usize)
 
 /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-assume
-val impl_11__rotate_left': x: usize -> n: u32 -> usize
-
-unfold
-let impl_11__rotate_left = impl_11__rotate_left'
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+let impl_11__rotate_left (x: usize) (n: u32) : usize =
+  let m:u32 = n %! Rust_primitives.Arithmetic.v_SIZE_BITS in
+  if m =. mk_u32 0
+  then x
+  else (x <<! m <: usize) ^. (x >>! (Rust_primitives.Arithmetic.v_SIZE_BITS -! m <: u32) <: usize)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
