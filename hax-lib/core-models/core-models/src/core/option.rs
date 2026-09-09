@@ -260,6 +260,17 @@ impl<T> Option<Option<T>> {
 }
 
 #[hax_lib::attributes]
+impl<T: super::clone::Clone> Option<T> {
+    /// See [`std::option::Option::cloned`]
+    pub fn cloned(self) -> Option<T> {
+        match self {
+            Some(t) => Some(t.clone()),
+            None => None,
+        }
+    }
+}
+
+#[hax_lib::attributes]
 impl<T> Default for Option<T> {
     /// See [`std::default::Default`]
     fn default() -> Option<T> {
@@ -504,6 +515,11 @@ mod tests {
         #[test]
         fn test_flatten(x in any::<Option<Option<u8>>>()) {
             prop_assert!(x.inject().flatten() == x.flatten().inject());
+        }
+
+        #[test]
+        fn test_cloned(x in any::<Option<u8>>()) {
+            prop_assert!(x.clone().inject().cloned() == x.as_ref().cloned().inject());
         }
 
         #[test]

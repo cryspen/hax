@@ -59,10 +59,12 @@ include Core_models.Bundle {impl__inspect as impl__inspect}
 
 include Core_models.Bundle {impl_1__flatten as impl_1__flatten}
 
-include Core_models.Bundle {impl_2__from__option as impl_2}
+include Core_models.Bundle {impl_2__cloned as impl_2__cloned}
 
 include Core_models.Bundle {impl_3__from__option as impl_3}
 
 include Core_models.Bundle {impl_4__from__option as impl_4}
 
 include Core_models.Bundle {impl_5 as impl_5}
+
+include Core_models.Bundle {impl_6__from__option as impl_6}
