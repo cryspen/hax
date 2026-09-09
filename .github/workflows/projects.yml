@@ -207,10 +207,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $PACKAGES
 
+      # The directory, not the checkout root: cargo finds the workspace above
+      # it, and not every project has one at its root.
       - name: Use the hax-lib from this checkout
         uses: ./hax/.github/actions/use-local-hax-lib
         with:
-          project: project
+          project: project/${{ matrix.directory }}
           hax: hax
 
       - name: Extract
