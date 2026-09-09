@@ -1,4 +1,7 @@
 { craneLib, stdenv, makeWrapper, lib, rustc, rustc-docs, gcc, hax-engine
+  # Whether the `tests` derivation (`checks.toolchain`) is meant to be
+  # buildable: it needs the `tests` workspace vendored, which the individual
+  # build derivations do not.
 , doCheck ? true, zlib, just, libiconv }:
 let
   pname = "hax";
@@ -30,7 +33,14 @@ let
           || is-crate-readme path))
         || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
-    inherit buildInputs doCheck;
+    inherit buildInputs;
+    # The build derivations below only build; the unit and doc tests of the
+    # workspace are covered by the `Test Workspace` CI job, and the toolchain
+    # tests by the `tests` derivation (which re-enables `doCheck`). Leaving
+    # crane's default on made every one of them recompile the whole workspace
+    # as test targets — minutes of the critical path for suites that had
+    # already run elsewhere.
+    doCheck = false;
     cargoExtraArgs = "--locked";
     doNotRemoveReferencesToRustToolchain = true;
   } // (if doCheck then {
