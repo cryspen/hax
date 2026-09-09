@@ -1,0 +1,34 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
+
+  primitives.pvl ships with hax and declares the symbols this file
+  uses but does not define: the public channel c, the construct_fail
+  sink, bitstring_default and bitstring_err, the Some/None and
+  True/False constructors, the nat_N literal constants, logical_and
+  and logical_or, and the rust_primitives, core, and hax_lib opaque
+  functions.
+
+  A symbol this file uses that is defined neither here nor in
+  primitives.pvl is listed in missingdecl.pvl, a diagnostic that is
+  not part of the model. Define each such symbol — by hand or from
+  another crate's extraction — or leave it abstract as an
+  ideal-functionality boundary.
+*)
+
+(* src: src/legacy/proverif-projection/lib.rs:8:0-8:16 new_tests__legacy__proverif_projection__lib__Tag *)
+fun new_tests__legacy__proverif_projection__lib__Tag__Tag(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_projection__lib__Tag__Tag__0(
+    new_tests__legacy__proverif_projection__lib__Tag__Tag(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-projection/lib.rs:11:4-11:32 new_tests__legacy__proverif_projection__lib__Impl__DEFAULT *)
+const new_tests__legacy__proverif_projection__lib__Impl__DEFAULT: bitstring.
+(* src: src/legacy/proverif-projection/lib.rs:14:0-16:1 new_tests__legacy__proverif_projection__lib__dead_projection *)
+letfun new_tests__legacy__proverif_projection__lib__dead_projection(wildcard: bitstring) =
+  new_tests__legacy__proverif_projection__lib__Tag__Tag__0(
+    new_tests__legacy__proverif_projection__lib__Impl__DEFAULT
+  ).
+(* src: src/legacy/proverif-projection/lib.rs:18:0-20:1 new_tests__legacy__proverif_projection__lib__live_projection *)
+letfun new_tests__legacy__proverif_projection__lib__live_projection(t: bitstring) =
+  new_tests__legacy__proverif_projection__lib__Tag__Tag__0(t).

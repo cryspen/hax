@@ -125,12 +125,8 @@ impl Diagnostics {
         Self(map)
     }
 
-    /// Removes a diagnostic from Self if the diagnostic is for the item
-    /// `item_id` (or below), and if the diagnostic is tagged with an error that
-    /// matches `error_code`.
-    /// Returns `Some(_)` if a matching diagnostic was found.
-    /// Removes (and returns) a diagnostic that matches the provided item and
-    /// error code, if present.
+    /// Removes and returns a diagnostic for `item_id` (or one of its
+    /// descendants) that is tagged with `error_code`, if one is present.
     pub fn remove(&mut self, item_id: &DefId, error_code: &ErrorCode) -> Option<Diagnostic> {
         if let Some(diags) = self.0.get_mut(error_code)
             && let Some((i, diag)) = diags
@@ -308,6 +304,62 @@ path = "{hax_path}"
             .code()
             .context("No error code: was the process terminated?")?,
         stderr,
+    })
+}
+
+/// Runs ProVerif on the extracted model in parse/typecheck-only mode.
+///
+/// The generated `lib.pvl` is a *library fragment* (declarations only, no
+/// `process`), so it is loaded via `-lib` alongside the shipped
+/// `primitives.pvl` / `cryptolib.pvl` and the per-model diagnostic
+/// `missingdecl.pvl`. A throwaway `process 0` main file supplies the entry
+/// point ProVerif's front-end requires. `-parse-only` stops after parsing,
+/// name resolution, and typechecking — enough to catch every malformed-model
+/// bug (syntax errors, undefined references, duplicate declarations, arity
+/// mismatches) without paying for the resolution engine.
+pub async fn run_proverif(dir: PathBuf) -> Result<BackendOutput> {
+    let root_path = std::env::current_dir()?;
+    let lib_dir = root_path
+        .join("../hax-lib/proof-libs/proverif")
+        .canonicalize()
+        .context("Could not resolve ProVerif proof lib path")?;
+
+    // The model has no `process` of its own; supply a trivial one so the
+    // pitype front-end has an entry point. Written into (and cleaned up
+    // from) the snapshot dir, which is unique per test so parallel jobs
+    // don't collide.
+    let main_pv = dir.join("_parse_check.pv");
+    std::fs::write(&main_pv, "process\n  0\n")?;
+
+    let mut command = tokio::process::Command::new("proverif");
+    command.arg("-parse-only");
+    command.arg("-lib").arg(lib_dir.join("primitives"));
+    command.arg("-lib").arg(lib_dir.join("cryptolib"));
+    if dir.join("missingdecl.pvl").exists() {
+        command.arg("-lib").arg("missingdecl");
+    }
+    command.arg("-lib").arg("lib");
+    command.arg("_parse_check.pv");
+    command.current_dir(&dir);
+    let out = command.output().await?;
+
+    let _ = std::fs::remove_file(&main_pv);
+
+    // ProVerif prints diagnostics to both stdout and stderr; combine them
+    // so the reported message is complete regardless of stream.
+    let combined = format!(
+        "{}{}",
+        String::from_utf8_lossy(&out.stdout),
+        String::from_utf8_lossy(&out.stderr),
+    );
+    let mut error = combined.lines().rev().take(12).collect::<Vec<_>>();
+    error.reverse();
+    Ok(BackendOutput {
+        error_code: out
+            .status
+            .code()
+            .context("No error code: was the process terminated?")?,
+        stderr: error.join("\n"),
     })
 }
 

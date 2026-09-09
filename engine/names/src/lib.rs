@@ -231,6 +231,12 @@ mod hax {
     fn array_of_list() {}
     fn never_to_any() {}
 
+    // Cons-list encoding of fixed-size collections used by the ProVerif
+    // backend (`array_cons(a, array_cons(b, array_nil()))`). Declared as
+    // `[data]` constructors in `primitives.pvl`.
+    fn array_cons() {}
+    fn array_nil() {}
+
     mod folds {
         fn fold_range() {}
         fn fold_range_cf() {}

@@ -1,0 +1,25 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
+
+  primitives.pvl ships with hax and declares the symbols this file
+  uses but does not define: the public channel c, the construct_fail
+  sink, bitstring_default and bitstring_err, the Some/None and
+  True/False constructors, the nat_N literal constants, logical_and
+  and logical_or, and the rust_primitives, core, and hax_lib opaque
+  functions.
+
+  A symbol this file uses that is defined neither here nor in
+  primitives.pvl is listed in missingdecl.pvl, a diagnostic that is
+  not part of the model. Define each such symbol — by hand or from
+  another crate's extraction — or leave it abstract as an
+  ideal-functionality boundary.
+*)
+
+(* src: src/legacy/proverif-inline/lib.rs:16:0-18:1 new_tests__legacy__proverif_inline__lib__increment *)
+letfun new_tests__legacy__proverif_inline__lib__increment(x: bitstring) = x.
+(* src: src/legacy/proverif-inline/lib.rs:23:0-25:1 new_tests__legacy__proverif_inline__lib__run *)
+letfun new_tests__legacy__proverif_inline__lib__run(start: bitstring) =
+  new_tests__legacy__proverif_inline__lib__increment(
+    new_tests__legacy__proverif_inline__lib__increment(start)
+  ).

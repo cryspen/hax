@@ -1,77 +1,43 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  primitives.pvl ships with hax and declares the symbols this file
+  uses but does not define: the public channel c, the construct_fail
+  sink, bitstring_default and bitstring_err, the Some/None and
+  True/False constructors, the nat_N literal constants, logical_and
+  and logical_or, and the rust_primitives, core, and hax_lib opaque
+  functions.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  A symbol this file uses that is defined neither here nor in
+  primitives.pvl is listed in missingdecl.pvl, a diagnostic that is
+  not part of the model. Define each such symbol — by hand or from
+  another crate's extraction — or leave it abstract as an
+  ideal-functionality boundary.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
+(* src: src/rustc-coverage/assert-ne.rs:7:0-7:16 new_tests__rustc_coverage__assert_ne__Foo *)
+fun new_tests__rustc_coverage__assert_ne__Foo__Foo(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__rustc_coverage__assert_ne__Foo__Foo__0(
+    new_tests__rustc_coverage__assert_ne__Foo__Foo(v_0)
+  ) = v_0.
 
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
 
-type new_tests__rustc_coverage__assert_ne__t_Foo.
-
-fun new_tests__rustc_coverage__assert_ne__t_Foo_to_bitstring(
-      new_tests__rustc_coverage__assert_ne__t_Foo
-    )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__assert_ne__t_Foo_from_bitstring(bitstring)
-    : new_tests__rustc_coverage__assert_ne__t_Foo [typeConverter].
-const new_tests__rustc_coverage__assert_ne__t_Foo_default_value: new_tests__rustc_coverage__assert_ne__t_Foo.
-letfun new_tests__rustc_coverage__assert_ne__t_Foo_default() =
-       new_tests__rustc_coverage__assert_ne__t_Foo_default_value.
-letfun new_tests__rustc_coverage__assert_ne__t_Foo_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__assert_ne__t_Foo_default_value.
-fun new_tests__rustc_coverage__assert_ne__Foo(nat)
-    : new_tests__rustc_coverage__assert_ne__t_Foo [data].
-reduc forall new_tests__rustc_coverage__assert_ne__0: nat;
-    accessor_new_tests__rustc_coverage__assert_ne__t_Foo_new_tests__rustc_coverage__assert_ne__0(
-      new_tests__rustc_coverage__assert_ne__Foo(
-        new_tests__rustc_coverage__assert_ne__0
-      )
-    ) = new_tests__rustc_coverage__assert_ne__0.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__assert_ne__main(wildcard2 : bitstring) =
-       let wildcard1: bitstring = (
-         let (
-           left_val: new_tests__rustc_coverage__assert_ne__t_Foo,
-           right_val: new_tests__rustc_coverage__assert_ne__t_Foo
-         ) = (
-           core_models__hint__black_box(
-             new_tests__rustc_coverage__assert_ne__Foo(5)
-           ),
-           if core_models__hint__black_box(false)
-           then (new_tests__rustc_coverage__assert_ne__Foo(0))
-           else (new_tests__rustc_coverage__assert_ne__Foo(1))
-         ) in (
-           if core_models__cmp__f_eq(left_val, right_val)
-           then
-             (let kind = (core_models__panicking__AssertKind_Ne()) in
-              bitstring_err())
-           else (())
-         )
-       ) in
-       ().
-
+(* src: src/rustc-coverage/assert-ne.rs:9:0-19:1 new_tests__rustc_coverage__assert_ne__main *)
+letfun new_tests__rustc_coverage__assert_ne__main(wildcard: bitstring) =
+  let wildcard: bitstring = (let rust_primitives__hax__Tuple2__Tuple2(
+    left_val: bitstring,
+    right_val: bitstring
+  ) = rust_primitives__hax__Tuple2__Tuple2(
+    core__hint__black_box(new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_5)),
+    let (=True()) = core__hint__black_box(False())
+      in new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_0)
+      else new_tests__rustc_coverage__assert_ne__Foo__Foo(nat_1)
+  ) in
+    (let (=True()) = core__cmp__PartialEq__eq(left_val, right_val)
+      in bitstring_err()
+      else rust_primitives__hax__Tuple0__Tuple0)
+  else bitstring_err()) in
+  rust_primitives__hax__Tuple0__Tuple0().
