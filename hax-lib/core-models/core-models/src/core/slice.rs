@@ -245,8 +245,8 @@ impl<T> Slice<T> {
     // F*-only: the equivalence tests call this, so Lean needs the body; it is
     // written over primitives the Lean library provides.
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-    // std's `binary_search_by` loop: the textbook one picks a different member
-    // of a run of equal elements, which Rust leaves unspecified.
+    // The Rust documentation leaves the behavior unspecified when there are multiple
+    // matches or when the array is unsorted. We follow the Rust core implementation.
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
     where
         T: crate::cmp::Ord,
