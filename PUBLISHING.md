@@ -64,6 +64,8 @@ The merge starts the `publish` workflow on `main`, pinned to the PR's merge comm
 
 The `release` workflow attaches a `cargo-hax` archive per platform to the GitHub release it creates at the `cargo-hax-v*` tag. `cargo binstall cargo-hax` downloads those, at the names `package.metadata.binstall` in `cli/cargo-hax/Cargo.toml` declares, so both the archives and the published manifest have to be in place for a version to be binstallable. The `binstall` workflow verifies that pairing at the end of every `release` run; a manual dispatch re-checks a released version at any time. A failed run files an issue; it, or a run that never started, can be restarted with `gh workflow run release.yml --ref cargo-hax-vX.Y.Z`. The tag must be the ref: a dispatch on any other ref is recognized as not being a release and skipped.
 
+The website serves the manual of the latest stable GitHub release rather than of `main`, so a stable release also runs the `Deploy to GH Pages` workflow.
+
 ### Trusted publishing
 
 The `publish` workflow authenticates with [trusted publishing](https://crates.io/docs/trusted-publishing): every published crate lists repository `cryspen/hax`, workflow `publish.yml` and environment `crates-io` as a trusted publisher in its crates.io settings. A crate's first version cannot be published that way: publish it with a token once, then add the trusted publisher.
