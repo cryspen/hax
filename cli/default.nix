@@ -95,6 +95,19 @@ let
     cargoExtraArgs =
       "--locked -p cargo-hax --bin hax-export-json-schemas --features cargo-hax/legacy-engine";
   });
+  # `cargo hax` and the driver it shells out to, and nothing else. This is all
+  # `hax-engine-names-extract`'s build needs; depending on the full `hax` below
+  # would chain it behind `hax_export_json_schemas`, which it does not use, so
+  # the two ~70s derivations would run one after the other instead of at once.
+  hax_frontend_only = stdenv.mkDerivation {
+    name = "hax-frontend-only-${commonArgs.version}";
+    phases = [ "installPhase" ];
+    installPhase = ''
+      mkdir -p $out/bin
+      cp ${hax_bin}/bin/cargo-hax $out/bin/
+      cp ${hax_driver_and_libs}/bin/driver-hax-frontend-exporter $out/bin/
+    '';
+  };
   # hax without cargo artifacts: only binaries
   hax = stdenv.mkDerivation {
     name = "hax-${commonArgs.version}";
@@ -181,7 +194,7 @@ in stdenv.mkDerivation {
       cargoArtifacts = hax_driver_and_libs;
       # `build.rs` here shells out to `cargo-hax`, which in turn needs
       # `hax-driver` on `PATH`: both are needed, not just `hax_driver_and_libs`.
-      nativeBuildInputs = [ hax ];
+      nativeBuildInputs = [ hax_frontend_only ];
       postUnpack = ''
         cd $sourceRoot/engine/names/extract
         sourceRoot="."
