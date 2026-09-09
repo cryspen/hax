@@ -1595,6 +1595,24 @@ mod tests {
             let model_result = VecIter::new(v).max();
             prop_assert_eq!(model_result, std_result.inject());
         }
+
+        // `min` keeps the first smallest element and `max` the last largest,
+        // which the tests above cannot see over `i32`.
+        #[test]
+        fn test_min_max_tie_breaking(v in crate::testing::tagged_vec(0..=8)) {
+            let tag = |o: Option<crate::testing::Tagged>| match o {
+                Option::Some(t) => std::option::Option::Some(t.tag),
+                Option::None => std::option::Option::None,
+            };
+            prop_assert_eq!(
+                tag(VecIter::new(v.clone()).min()),
+                v.iter().copied().min().map(|t| t.tag)
+            );
+            prop_assert_eq!(
+                tag(VecIter::new(v.clone()).max()),
+                v.iter().copied().max().map(|t| t.tag)
+            );
+        }
     }
 
     /// The model's `FromIterator::from_iter` gets no bound relating the

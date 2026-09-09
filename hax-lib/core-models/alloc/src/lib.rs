@@ -10,6 +10,22 @@ mod testing {
         fn inject(&self) -> Self::Model;
     }
 
+    /// Ordered by `key` alone, so two `Tagged`s can compare equal and still be
+    /// told apart by `tag`. `PartialEq` has to agree with `Ord`, which rules
+    /// out deriving it over both fields.
+    #[derive(Clone, Copy, Debug)]
+    pub struct Tagged {
+        pub key: u8,
+        pub tag: usize,
+    }
+
+    impl PartialEq for Tagged {
+        fn eq(&self, other: &Self) -> bool {
+            self.key == other.key
+        }
+    }
+    impl Eq for Tagged {}
+
     /// Asserts the model and real `alloc` both panic on the same input.
     #[track_caller]
     pub fn panics_like_core<A, B>(model: impl FnOnce() -> A, core: impl FnOnce() -> B) {
@@ -607,6 +623,21 @@ mod slice {
                 let mut std_slice = v;
                 super::Dummy::<u8>::sort_by(&mut model[..], cmp);
                 std_slice.sort_by(cmp);
+                prop_assert_eq!(model, std_slice);
+            }
+
+            // Stability, which sorting `u8`s cannot show.
+            #[test]
+            fn test_sort_by_is_stable(keys in prop::collection::vec(0u8..3, 0..20)) {
+                use crate::testing::Tagged;
+                let by_key = |a: &Tagged, b: &Tagged| a.key.cmp(&b.key);
+                let v: Vec<Tagged> = keys.into_iter().enumerate()
+                    .map(|(tag, key)| Tagged { key, tag })
+                    .collect();
+                let mut model = v.clone();
+                let mut std_slice = v;
+                super::Dummy::<Tagged>::sort_by(&mut model[..], by_key);
+                std_slice.sort_by(by_key);
                 prop_assert_eq!(model, std_slice);
             }
         }

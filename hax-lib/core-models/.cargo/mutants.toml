@@ -11,12 +11,6 @@ exclude_re = [
     # chunk and leave the slice empty.
     "replace < with <= in .*for Chunks<.*::next",
 
-    # `let l = if self.len() < other.len() { self.len() } else { other.len() }`
-    # is a minimum: at equal lengths both arms give the same value. (Also
-    # covers the lexicographic tie-break below it, which is caught today.)
-    "replace < with <= in .*::partial_cmp",
-    "replace < with <= in .*Ord for .*::cmp",
-
     # `if n < l { seq_drain(n, l) }`: at n == l the mutant drains an empty
     # range, which is a no-op.
     "replace < with <= in vec::Vec<.*>::truncate",

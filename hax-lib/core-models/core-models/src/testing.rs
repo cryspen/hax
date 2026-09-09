@@ -147,3 +147,73 @@ impl crate::clone::Clone for CloneWitness {
         }
     }
 }
+
+/// A value ordered by `key` alone, so two `Tagged`s can compare equal and still
+/// be told apart by `tag`.
+#[derive(Clone, Copy, Debug)]
+pub struct Tagged {
+    pub key: u8,
+    pub tag: u8,
+}
+
+impl Tagged {
+    pub fn new(key: u8, tag: u8) -> Self {
+        Tagged { key, tag }
+    }
+}
+
+impl std::cmp::PartialEq for Tagged {
+    fn eq(&self, other: &Self) -> bool {
+        self.key == other.key
+    }
+}
+impl std::cmp::Eq for Tagged {}
+impl std::cmp::PartialOrd for Tagged {
+    fn partial_cmp(&self, other: &Self) -> std::option::Option<std::cmp::Ordering> {
+        std::option::Option::Some(std::cmp::Ord::cmp(self, other))
+    }
+}
+impl std::cmp::Ord for Tagged {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.key.cmp(&other.key)
+    }
+}
+
+// Delegated to the std impls above, so the two orderings cannot drift apart.
+impl crate::cmp::PartialEq<Tagged> for Tagged {
+    fn eq(&self, other: &Tagged) -> bool {
+        self == other
+    }
+}
+impl crate::cmp::Eq for Tagged {}
+impl crate::cmp::PartialOrd<Tagged> for Tagged {
+    fn partial_cmp(&self, other: &Tagged) -> crate::option::Option<crate::cmp::Ordering> {
+        std::cmp::PartialOrd::partial_cmp(self, other).inject()
+    }
+}
+impl crate::cmp::Ord for Tagged {
+    fn cmp(&self, other: &Tagged) -> crate::cmp::Ordering {
+        std::cmp::Ord::cmp(self, other).inject()
+    }
+}
+
+impl Inject for Tagged {
+    type Model = Tagged;
+    fn inject(&self) -> Self::Model {
+        *self
+    }
+}
+
+/// `Tagged` values whose tags are their positions, with keys from a small range
+/// so that ties are common.
+pub fn tagged_vec(
+    len: impl Into<proptest::collection::SizeRange>,
+) -> impl proptest::strategy::Strategy<Value = Vec<Tagged>> {
+    use proptest::strategy::Strategy;
+    proptest::collection::vec(0u8..3, len).prop_map(|keys| {
+        keys.into_iter()
+            .enumerate()
+            .map(|(i, key)| Tagged::new(key, i as u8))
+            .collect()
+    })
+}
