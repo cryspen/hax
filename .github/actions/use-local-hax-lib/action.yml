@@ -1,12 +1,11 @@
 name: Use a local hax-lib
 description: >-
-  Rewrite a project's dependencies on hax's library crates into path
-  dependencies on a local hax checkout, and verify that the project's
-  resolve graph really points there.
+  Point a project's dependencies on hax's library crates at a local hax
+  checkout, and check that the project's resolve graph really points there.
 
 inputs:
   project:
-    description: Path to the project checkout whose manifests to rewrite.
+    description: Path to the project checkout to repoint.
     required: true
   hax:
     description: Path to the hax checkout to depend on.
@@ -19,7 +18,83 @@ runs:
       env:
         PROJECT: ${{ inputs.project }}
         HAX: ${{ inputs.hax }}
+      # `cargo-hax` accepts exactly the `hax-lib` of its own version
+      # (`cli/cargo-hax/src/tools/haxlib.rs`), so testing a hax branch against
+      # a project means building the project against *that* branch's
+      # `hax-lib`.
+      #
+      # A `[patch.crates-io]` entry does not do it: a patch applies only when
+      # its version satisfies the requirement the project declares, and a hax
+      # under development rarely does (`0.4.0-rc.1` against `^0.3.7`). Cargo
+      # then keeps the published crate, says so in a note nobody reads, and
+      # the run fails much later, in `cargo hax`, looking like a hax bug. The
+      # three per-project workflows this replaced all failed exactly there.
+      #
+      # `cargo add --path` rewrites the requirement instead, and writes the
+      # version it finds at that path, so the two can never disagree.
       run: |
         set -euo pipefail
-        python3 "${{ github.action_path }}/inject.py" \
-          --project "$PROJECT" --hax "$HAX"
+        project=$(cd "$PROJECT" && pwd)
+        hax=$(cd "$HAX" && pwd)
+
+        # Name and directory of each library crate the hax checkout provides.
+        # Read from the checkout rather than hardcoded, so a hax that gains or
+        # moves one needs no change here. The `hax-` namespace is every crate a
+        # project annotates against; the workspace also holds crates whose
+        # names a project could use for something of its own.
+        crates=$(cargo metadata --format-version 1 --no-deps \
+            --manifest-path "$hax/Cargo.toml" \
+          | jq -r '.packages[] | select(.name | startswith("hax-"))
+                   | "\(.name) \(.manifest_path | rtrimstr("/Cargo.toml"))"')
+
+        cd "$project"
+
+        # Every workspace member that names one of them directly. Members that
+        # inherit the dependency are listed too, so each gets repointed; the
+        # `[workspace.dependencies]` entry they inherited from is left behind
+        # unused, which is harmless.
+        edges=$(cargo metadata --format-version 1 --no-deps | jq -r '
+          .packages[] as $p | $p.dependencies[]
+          | select(.name | startswith("hax-")) | "\($p.name) \(.name)"' | sort -u)
+
+        if [ -z "$edges" ]; then
+          echo "::error::no dependency on a hax crate anywhere in $project"
+          exit 1
+        fi
+
+        while read -r member dep; do
+          path=$(awk -v d="$dep" '$1 == d {print $2}' <<<"$crates")
+          if [ -z "$path" ]; then
+            echo "::error::$member depends on $dep, which $hax does not provide"
+            exit 1
+          fi
+          cargo add "$dep" --path "$path" -p "$member" --quiet
+          echo "$member: $dep -> $path"
+        done <<<"$edges"
+
+        # Only the resolve graph settles whether that took effect — a stale
+        # lockfile entry, a vendoring config or a `[patch]` of the project's
+        # own could still win. It has to be settled here: the next thing to
+        # notice would be `cargo hax` rejecting the version from inside the
+        # project's own driver script.
+        #
+        # Checked on workspace members' direct edges, which is what
+        # `cargo-hax` gates on. A published copy elsewhere is left alone: a
+        # project depending on published crates that themselves use `hax-lib`
+        # pulls in their copy too, cargo keeps the two side by side, and
+        # neither hax nor this check has anything to say about the one the
+        # project does not compile its own annotations against.
+        published=$(cargo metadata --format-version 1 | jq -r '
+          (.packages | map({key: .id, value: .}) | from_entries) as $byid
+          | .workspace_members as $ws
+          | .resolve.nodes[] | select(.id | IN($ws[])) as $node
+          | $node.deps[] | $byid[.pkg]
+          | select(.name | startswith("hax-")) | select(.source != null)
+          | "  \($byid[$node.id].name) depends on \(.name) \(.version) from \(.source)"')
+
+        if [ -n "$published" ]; then
+          echo "::error::these direct dependencies still resolve to a published version:"
+          echo "$published"
+          exit 1
+        fi
+        echo "every direct hax dependency of $project resolves to $hax"
