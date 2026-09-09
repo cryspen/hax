@@ -367,8 +367,9 @@ endif
 # `--test-workspace` because a model's mutants are usually killed by *another*
 # crate's tests: with cargo-mutants' default (only the mutated package's own
 # tests) 43 of `rust_primitives`' mutants survive spuriously.
+# `PROPTEST_RNG_SEED` so a sweep is reproducible and the CI gate is not flaky.
 mutants:
-	RUSTFLAGS="$(MUTANTS_RUSTFLAGS)" \
+	RUSTFLAGS="$(MUTANTS_RUSTFLAGS)" PROPTEST_RNG_SEED=0 \
 	    cargo mutants $(MUTANTS_MODE) --test-workspace true $(MUTANTS_FLAGS)
 
 # The same sweep under the other cfg. Model variants gated on
