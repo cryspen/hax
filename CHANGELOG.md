@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+Changes to core models:
+ - `BinaryHeap::pop` and `peek` now agree with `std` when several elements
+   compare equal. The model scanned its backing `Vec` for the first maximal
+   element; `std` keeps a heap array and moves the last leaf to the root, so
+   the two returned different elements, and the F\* lane carried the scan as
+   its definition of `pop` (#2237)
+
 ## [0.4.0] - 2026-09-04
 
 Changes to the Rust engine:

@@ -19,8 +19,4 @@ exclude_re = [
     # `seq_create(value, 0)` and concatenates an empty sequence, where the
     # original drains the empty range `l..l`.
     "replace > with >= in vec::Vec<.*>::resize",
-
-    # `self.0[i] > *max` makes the *first* maximal element win; `>=` makes the
-    # last one win. Both return an `Ord`-equal element and leave an equal heap.
-    "replace > with >= in collections::binary_heap::BinaryHeap<.*>::(pop|peek)",
 ]

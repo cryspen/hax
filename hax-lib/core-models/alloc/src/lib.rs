@@ -25,6 +25,16 @@ mod testing {
         }
     }
     impl Eq for Tagged {}
+    impl PartialOrd for Tagged {
+        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+            Some(std::cmp::Ord::cmp(self, other))
+        }
+    }
+    impl Ord for Tagged {
+        fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+            self.key.cmp(&other.key)
+        }
+    }
 
     /// Asserts the model and real `alloc` both panic on the same input.
     #[track_caller]
@@ -167,6 +177,8 @@ mod collections {
     mod binary_heap {
         #[hax_lib::fstar::before("open Rust_primitives.Notations")]
         use crate::vec::*;
+        use rust_primitives::sequence::seq_to_slice_mut;
+        use rust_primitives::slice::slice_swap;
         struct BinaryHeap<T, A>(Vec<T>, std::marker::PhantomData<A>);
 
         impl BinaryHeap<(), ()> {}
@@ -180,6 +192,7 @@ mod collections {
         impl BinaryHeap<(), ()> {}
         impl BinaryHeap<(), ()> {}
 
+        // The `Vec` is std's heap array, not insertion order.
         #[hax_lib::attributes]
         impl<T: Ord, A: crate::alloc::Allocator> BinaryHeap<T, A> {
             fn new() -> BinaryHeap<T, A> {
@@ -188,25 +201,63 @@ mod collections {
                     std::marker::PhantomData::<A>,
                 )
             }
+
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn sift_up(&mut self, start: usize, pos: usize) {
+                let mut pos = pos;
+                while pos > start {
+                    let parent = (pos - 1) / 2;
+                    if self.0[pos] <= self.0[parent] {
+                        break;
+                    }
+                    slice_swap(seq_to_slice_mut(&mut self.0.0), parent, pos);
+                    pos = parent;
+                }
+            }
+
+            /// Descends to a leaf and climbs back, unlike the textbook
+            /// `sift_down`, which leaves a different array on equal elements.
+            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            fn sift_down_to_bottom(&mut self, pos: usize) {
+                let end = self.len();
+                let start = pos;
+                let mut pos = pos;
+                let mut child = 2 * pos + 1;
+                while child + 1 < end {
+                    // On a tie, the right child.
+                    if self.0[child] <= self.0[child + 1] {
+                        child = child + 1;
+                    }
+                    slice_swap(seq_to_slice_mut(&mut self.0.0), pos, child);
+                    pos = child;
+                    child = 2 * pos + 1;
+                }
+                // A last, childless left child.
+                if child + 1 == end {
+                    slice_swap(seq_to_slice_mut(&mut self.0.0), pos, child);
+                    pos = child;
+                }
+                self.sift_up(start, pos);
+            }
+
             #[hax_lib::requires(self.len() < core::primitive::usize::MAX)]
             fn push(&mut self, v: T) {
-                self.0.push(v)
+                let old_len = self.len();
+                self.0.push(v);
+                self.sift_up(0, old_len)
             }
+
             #[hax_lib::ensures(|res| (self.len() > 0) == res.is_some())]
             fn pop(&mut self) -> Option<T> {
-                let mut max: Option<&T> = None;
-                let mut index = 0;
-                for i in 0..self.len() {
-                    hax_lib::loop_invariant!(|i: usize| (i > 0) == max.is_some());
-                    if max.is_none_or(|max| self.0[i] > *max) {
-                        max = Some(&self.0[i]);
-                        index = i;
-                    }
-                }
-                if max.is_some() {
-                    Some(self.0.remove(index))
-                } else {
+                if self.len() == 0 {
                     None
+                } else {
+                    // std's "pop the last leaf, swap it with the root".
+                    let root = self.0.swap_remove(0);
+                    if !self.0.is_empty() {
+                        self.sift_down_to_bottom(0);
+                    }
+                    Some(root)
                 }
             }
         }
@@ -219,14 +270,11 @@ mod collections {
 
             #[hax_lib::ensures(|res| (self.len() > 0) == res.is_some())]
             fn peek(&self) -> Option<&T> {
-                let mut max: Option<&T> = None;
-                for i in 0..self.len() {
-                    hax_lib::loop_invariant!(|i: usize| (i > 0) == max.is_some());
-                    if max.is_none_or(|max| self.0[i] > *max) {
-                        max = Some(&self.0[i]);
-                    }
+                if self.len() == 0 {
+                    None
+                } else {
+                    Some(&self.0[0])
                 }
-                max
             }
         }
 
@@ -244,7 +292,31 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
         mod tests {
             use proptest::prelude::*;
 
+            use crate::testing::Tagged;
+
             proptest! {
+                // Pins the whole pop sequence, not just the values.
+                #[test]
+                fn test_push_pop_ties(keys in prop::collection::vec(0u8..3, 0..14)) {
+                    let items: Vec<Tagged> = keys.iter().enumerate()
+                        .map(|(tag, &key)| Tagged { key, tag }).collect();
+                    let mut model = super::BinaryHeap::<Tagged, crate::alloc::Global>::new();
+                    let mut std_heap = std::collections::BinaryHeap::new();
+                    for &e in &items {
+                        model.push(e);
+                        std_heap.push(e);
+                        prop_assert_eq!(
+                            model.peek().map(|t| t.tag),
+                            std_heap.peek().map(|t| t.tag)
+                        );
+                    }
+                    let mut from_model = Vec::new();
+                    let mut from_std = Vec::new();
+                    while let Some(x) = model.pop() { from_model.push(x.tag); }
+                    while let Some(x) = std_heap.pop() { from_std.push(x.tag); }
+                    prop_assert_eq!(from_model, from_std);
+                }
+
                 #[test]
                 fn test_push_pop(elements in prop::collection::vec(any::<u8>(), 1..20)) {
                     let mut model = super::BinaryHeap::<u8, crate::alloc::Global>::new();
@@ -282,6 +354,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 let mut model = super::BinaryHeap::<u8, crate::alloc::Global>::new();
                 let mut std_heap = std::collections::BinaryHeap::<u8>::new();
                 assert_eq!(model.len(), std_heap.len());
+                assert_eq!(model.peek(), std_heap.peek());
                 assert_eq!(model.pop(), std_heap.pop());
             }
         }
