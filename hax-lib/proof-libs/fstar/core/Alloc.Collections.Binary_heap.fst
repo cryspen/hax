@@ -24,6 +24,43 @@ let impl_10__new
   <:
   t_BinaryHeap v_T v_A
 
+assume
+val impl_10__sift_up':
+    #v_T: Type0 ->
+    #v_A: Type0 ->
+    {| i0: Core_models.Cmp.t_Ord v_T |} ->
+    {| i1: Alloc.Alloc.t_Allocator v_A |} ->
+    self: t_BinaryHeap v_T v_A ->
+    start: usize ->
+    pos: usize
+  -> t_BinaryHeap v_T v_A
+
+unfold
+let impl_10__sift_up
+      (#v_T #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Alloc.Alloc.t_Allocator v_A)
+     = impl_10__sift_up' #v_T #v_A #i0 #i1
+
+/// Descends to a leaf and climbs back, unlike the textbook
+/// `sift_down`, which leaves a different array on equal elements.
+assume
+val impl_10__sift_down_to_bottom':
+    #v_T: Type0 ->
+    #v_A: Type0 ->
+    {| i0: Core_models.Cmp.t_Ord v_T |} ->
+    {| i1: Alloc.Alloc.t_Allocator v_A |} ->
+    self: t_BinaryHeap v_T v_A ->
+    pos: usize
+  -> t_BinaryHeap v_T v_A
+
+unfold
+let impl_10__sift_down_to_bottom
+      (#v_T #v_A: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Alloc.Alloc.t_Allocator v_A)
+     = impl_10__sift_down_to_bottom' #v_T #v_A #i0 #i1
+
 let impl_11__len
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
@@ -40,11 +77,13 @@ let impl_10__push
     : Prims.Pure (t_BinaryHeap v_T v_A)
       (requires (impl_11__len #v_T #v_A self <: usize) <. Core_models.Num.impl_usize__MAX)
       (fun _ -> Prims.l_True) =
+  let old_len:usize = impl_11__len #v_T #v_A self in
   let self:t_BinaryHeap v_T v_A =
     { self with _0 = Alloc.Vec.impl_1__push #v_T #Alloc.Alloc.t_Global self._0 v }
     <:
     t_BinaryHeap v_T v_A
   in
+  let self:t_BinaryHeap v_T v_A = impl_10__sift_up #v_T #v_A self (mk_usize 0) old_len in
   self
 
 let impl_10__pop
@@ -61,56 +100,28 @@ let impl_10__pop
           in
           ((impl_11__len #v_T #v_A self <: usize) >. mk_usize 0 <: bool) =.
           (Core_models.Option.impl__is_some #v_T res <: bool)) =
-  let (max: Core_models.Option.t_Option v_T):Core_models.Option.t_Option v_T =
-    Core_models.Option.Option_None <: Core_models.Option.t_Option v_T
-  in
-  let index:usize = mk_usize 0 in
-  let (index: usize), (max: Core_models.Option.t_Option v_T) =
-    Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
-      (impl_11__len #v_T #v_A self <: usize)
-      (fun temp_0_ i ->
-          let (index: usize), (max: Core_models.Option.t_Option v_T) = temp_0_ in
-          let i:usize = i in
-          (i >. mk_usize 0 <: bool) =. (Core_models.Option.impl__is_some #v_T max <: bool) <: bool)
-      (index, max <: (usize & Core_models.Option.t_Option v_T))
-      (fun temp_0_ i ->
-          let (index: usize), (max: Core_models.Option.t_Option v_T) = temp_0_ in
-          let i:usize = i in
-          if
-            Core_models.Option.impl__is_none_or #v_T
-              #(v_T -> bool)
-              max
-              (fun max ->
-                  let max:v_T = max in
-                  Core_models.Cmp.f_gt #v_T
-                    #v_T
-                    #FStar.Tactics.Typeclasses.solve
-                    (self._0.[ i ] <: v_T)
-                    max
-                  <:
-                  bool)
-            <:
-            bool
-          then
-            let max:Core_models.Option.t_Option v_T =
-              Core_models.Option.Option_Some self._0.[ i ] <: Core_models.Option.t_Option v_T
-            in
-            let index:usize = i in
-            index, max <: (usize & Core_models.Option.t_Option v_T)
-          else index, max <: (usize & Core_models.Option.t_Option v_T))
-  in
   let (self: t_BinaryHeap v_T v_A), (hax_temp_output: Core_models.Option.t_Option v_T) =
-    if Core_models.Option.impl__is_some #v_T max
+    if (impl_11__len #v_T #v_A self <: usize) =. mk_usize 0
     then
-      let (tmp0: Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global), (out: v_T) =
-        Alloc.Vec.impl_1__remove #v_T #Alloc.Alloc.t_Global self._0 index
-      in
-      let self:t_BinaryHeap v_T v_A = { self with _0 = tmp0 } <: t_BinaryHeap v_T v_A in
-      self, (Core_models.Option.Option_Some out <: Core_models.Option.t_Option v_T)
+      self, (Core_models.Option.Option_None <: Core_models.Option.t_Option v_T)
       <:
       (t_BinaryHeap v_T v_A & Core_models.Option.t_Option v_T)
     else
-      self, (Core_models.Option.Option_None <: Core_models.Option.t_Option v_T)
+      let (tmp0: Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global), (out: v_T) =
+        Alloc.Vec.impl_1__swap_remove #v_T #Alloc.Alloc.t_Global self._0 (mk_usize 0)
+      in
+      let self:t_BinaryHeap v_T v_A = { self with _0 = tmp0 } <: t_BinaryHeap v_T v_A in
+      let root:v_T = out in
+      let self:t_BinaryHeap v_T v_A =
+        if ~.(Alloc.Vec.impl_1__is_empty #v_T #Alloc.Alloc.t_Global self._0 <: bool)
+        then
+          let self:t_BinaryHeap v_T v_A =
+            impl_10__sift_down_to_bottom #v_T #v_A self (mk_usize 0)
+          in
+          self
+        else self
+      in
+      self, (Core_models.Option.Option_Some root <: Core_models.Option.t_Option v_T)
       <:
       (t_BinaryHeap v_T v_A & Core_models.Option.t_Option v_T)
   in
@@ -128,43 +139,9 @@ let impl_11__peek
           let res:Core_models.Option.t_Option v_T = res in
           ((impl_11__len #v_T #v_A self <: usize) >. mk_usize 0 <: bool) =.
           (Core_models.Option.impl__is_some #v_T res <: bool)) =
-  let (max: Core_models.Option.t_Option v_T):Core_models.Option.t_Option v_T =
-    Core_models.Option.Option_None <: Core_models.Option.t_Option v_T
-  in
-  let max:Core_models.Option.t_Option v_T =
-    Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
-      (impl_11__len #v_T #v_A self <: usize)
-      (fun max i ->
-          let max:Core_models.Option.t_Option v_T = max in
-          let i:usize = i in
-          (i >. mk_usize 0 <: bool) =. (Core_models.Option.impl__is_some #v_T max <: bool) <: bool)
-      max
-      (fun max i ->
-          let max:Core_models.Option.t_Option v_T = max in
-          let i:usize = i in
-          if
-            Core_models.Option.impl__is_none_or #v_T
-              #(v_T -> bool)
-              max
-              (fun max ->
-                  let max:v_T = max in
-                  Core_models.Cmp.f_gt #v_T
-                    #v_T
-                    #FStar.Tactics.Typeclasses.solve
-                    (self._0.[ i ] <: v_T)
-                    max
-                  <:
-                  bool)
-            <:
-            bool
-          then
-            let max:Core_models.Option.t_Option v_T =
-              Core_models.Option.Option_Some self._0.[ i ] <: Core_models.Option.t_Option v_T
-            in
-            max
-          else max)
-  in
-  max
+  if (impl_11__len #v_T #v_A self <: usize) =. mk_usize 0
+  then Core_models.Option.Option_None <: Core_models.Option.t_Option v_T
+  else Core_models.Option.Option_Some self._0.[ mk_usize 0 ] <: Core_models.Option.t_Option v_T
 
 assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t) 
   -> (#i1: Alloc.Alloc.t_Allocator a) -> h: t_BinaryHeap t a
