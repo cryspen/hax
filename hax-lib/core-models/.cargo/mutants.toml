@@ -20,10 +20,6 @@ exclude_re = [
     # both are no-ops.
     "replace > with >= in vec::Vec<.*>::resize",
 
-    # `self.0[i] > *max` makes the *first* maximal element win; `>=` makes the
-    # last one win. Both return an `Ord`-equal element and leave an equal heap.
-    "replace > with >= in collections::binary_heap::BinaryHeap<.*>::(pop|peek)",
-
     # The only reachable arm returns `None`, which is `Default::default()`.
     "replace <impl .*FromResidual<Option<.*>> for Option<T>>::from_residual -> Self with Default::default\\(\\)",
 ]
