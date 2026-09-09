@@ -1,4 +1,7 @@
 { craneLib, stdenv, makeWrapper, lib, rustc, rustc-docs, gcc, hax-engine
+  # Whether the `tests` derivation (`checks.toolchain`) is meant to be
+  # buildable: it needs the `tests` workspace vendored, which the individual
+  # build derivations do not.
 , doCheck ? true, zlib, just, libiconv }:
 let
   pname = "hax";
@@ -7,6 +10,14 @@ let
   # Crate readmes are compiled in as rustdoc crate docs via
   # `#![doc = include_str!("../README.md")]`.
   is-crate-readme = path: builtins.match ".*/README[.]md" path != null;
+  # Trees that hold cargo sources no workspace member builds against, kept out
+  # so that touching them does not reshuffle the source hash and rebuild the
+  # whole toolchain. `tests` and `hax-lib/core-models` are both `exclude`d from
+  # the workspace (see the root `Cargo.toml`) and nothing path-depends on
+  # either, so neither reaches `cargo build` here.
+  is-excluded-tree = path:
+    builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path != null
+    || builtins.match ".*/hax-lib/core-models/.*" path != null;
   buildInputs = lib.optionals stdenv.isDarwin [ libiconv zlib.dev ];
   binaries = [ hax hax-engine.bin rustc gcc hax_rust_engine ] ++ buildInputs;
   commonArgs = {
@@ -14,8 +25,7 @@ let
     src = lib.cleanSourceWith {
       src = craneLib.path ./..;
       filter = path: type:
-        (builtins.isNull
-        (builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path)
+        (!is-excluded-tree path
         && (builtins.isNull (builtins.match ".*[.](md|svg)" path)
           || is-crate-readme path)
         && (craneLib.filterCargoSources path type
@@ -23,7 +33,14 @@ let
           || is-crate-readme path))
         || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
-    inherit buildInputs doCheck;
+    inherit buildInputs;
+    # The build derivations below only build; the unit and doc tests of the
+    # workspace are covered by the `Test Workspace` CI job, and the toolchain
+    # tests by the `tests` derivation (which re-enables `doCheck`). Leaving
+    # crane's default on made every one of them recompile the whole workspace
+    # as test targets — minutes of the critical path for suites that had
+    # already run elsewhere.
+    doCheck = false;
     cargoExtraArgs = "--locked";
     doNotRemoveReferencesToRustToolchain = true;
   } // (if doCheck then {
@@ -78,6 +95,19 @@ let
     cargoExtraArgs =
       "--locked -p cargo-hax --bin hax-export-json-schemas --features cargo-hax/legacy-engine";
   });
+  # `cargo hax` and the driver it shells out to, and nothing else. This is all
+  # `hax-engine-names-extract`'s build needs; depending on the full `hax` below
+  # would chain it behind `hax_export_json_schemas`, which it does not use, so
+  # the two ~70s derivations would run one after the other instead of at once.
+  hax_frontend_only = stdenv.mkDerivation {
+    name = "hax-frontend-only-${commonArgs.version}";
+    phases = [ "installPhase" ];
+    installPhase = ''
+      mkdir -p $out/bin
+      cp ${hax_bin}/bin/cargo-hax $out/bin/
+      cp ${hax_driver_and_libs}/bin/driver-hax-frontend-exporter $out/bin/
+    '';
+  };
   # hax without cargo artifacts: only binaries
   hax = stdenv.mkDerivation {
     name = "hax-${commonArgs.version}";
@@ -164,7 +194,7 @@ in stdenv.mkDerivation {
       cargoArtifacts = hax_driver_and_libs;
       # `build.rs` here shells out to `cargo-hax`, which in turn needs
       # `hax-driver` on `PATH`: both are needed, not just `hax_driver_and_libs`.
-      nativeBuildInputs = [ hax ];
+      nativeBuildInputs = [ hax_frontend_only ];
       postUnpack = ''
         cd $sourceRoot/engine/names/extract
         sourceRoot="."
