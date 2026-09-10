@@ -4,11 +4,11 @@ name: core-models mutants
 # model's behaviour changes? Coverage (the `test-coverage` job in
 # core_models.yml) only proves the code ran.
 #
-# 890 mutants at ~50s each is ~10h per cfg serially, and still hours with the
+# A full sweep is many hours per cfg serially, and still hours with the
 # `MUTANTS_JOBS` parallelism below, so the sweep is sharded across runners and
 # runs weekly.
 #
-# Not run per-PR: an in-diff sweep on a model PR is routinely 500+ mutants,
+# Not run per-PR: an in-diff sweep on a model PR covers much of the crate,
 # which no amount of within-job parallelism fits into a PR-sized window.
 #
 # `schedule:` only fires from the default branch, so none of this runs until
@@ -36,6 +36,7 @@ defaults:
 jobs:
   sweep:
     name: mutants (${{ matrix.cfg }} cfg, shard ${{ matrix.shard }})
+    if: github.repository == 'cryspen/hax'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
@@ -43,7 +44,7 @@ jobs:
       matrix:
         # Both cfgs are needed: a model variant gated on cfg(hax_backend_fstar)
         # is not built by the default sweep, so its mutants never compile and
-        # every one of them looks like a survivor (62 of alloc's 79). The two
+        # every one of them looks like a survivor. The two
         # sweeps are intersected in `report` below.
         cfg: [default, fstar]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -69,7 +70,7 @@ jobs:
           df -h / | tail -1
           make ${{ matrix.cfg == 'fstar' && 'mutants-fstar' || 'mutants' }} \
               MUTANTS_JOBS=$MUTANTS_JOBS \
-              MUTANTS_FLAGS="--shard ${{ matrix.shard }}/$SHARDS" 2>&1 \
+              MUTANTS_FLAGS="--shard ${{ matrix.shard }}/$SHARDS --annotations none" 2>&1 \
             | tee sweep.log || true
           df -h / | tail -1
 
@@ -77,7 +78,7 @@ jobs:
           grep -qE '[0-9]+ mutants tested' sweep.log || {
             echo "::error::the mutants sweep did not complete"; tail -40 sweep.log; exit 1; }
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: missed-${{ matrix.cfg }}-${{ matrix.shard }}
           path: hax-lib/core-models/${{ env.OUT }}/missed.txt
@@ -85,12 +86,31 @@ jobs:
   report:
     name: survivors common to both cfgs
     needs: sweep
-    if: always() && needs.sweep.result != 'skipped'
+    if: github.repository == 'cryspen/hax' && always() && needs.sweep.result != 'skipped'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v4
+      - name: The sweep must have completed
+        if: needs.sweep.result != 'success'
+        run: |
+          echo "::error::the sweep did not complete; its results are partial"; exit 1
+
+      - name: Report an incomplete sweep
+        if: failure() && github.event_name == 'schedule'
+        uses: ./.github/actions/open-issue-once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          label: ci
+          title: The core-models mutants sweep is not completing
+          body: |-
+            A shard of the scheduled [core-models mutants](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) sweep did not finish, so the run says nothing about whether any mutant survived.
+
+      - uses: actions/download-artifact@v8
         with:
           pattern: missed-*
           path: hax-lib/core-models/shards
@@ -107,9 +127,19 @@ jobs:
             echo "$cfg: $(wc -l < $out/missed.txt) missed"
           done
 
-      # Reporting only: a mutant that only some proptest inputs kill is missed
-      # or caught depending on the seed, so this set is not stable enough to
-      # block on. Each one is still worth fixing (make the rare case certain,
-      # the way `test_eq_reflexive` does).
-      - run: make mutants-genuine
-        continue-on-error: true
+      - name: Intersect the two sweeps
+        id: genuine
+        run: make mutants-genuine
+
+      - name: Open an issue on the survivors
+        if: always() && steps.genuine.outcome == 'failure' && github.event_name == 'schedule'
+        uses: ./.github/actions/open-issue-once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          label: tests
+          title: Mutants are surviving in every configuration
+          body: |-
+            The scheduled [core-models mutants](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) sweep found mutants that no test kills in any configuration that compiles them. The run's log lists them.
+
+            Each one has two exits: strengthen a test until it fails on the mutated model, or record the mutant as accepted, with `#[cfg_attr(test, mutants::skip)]` on the function or a per-mutant regex in `hax-lib/core-models/.cargo/mutants.toml`.
