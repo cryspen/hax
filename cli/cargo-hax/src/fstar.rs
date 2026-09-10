@@ -12,6 +12,13 @@ const MAKEFILE_HAX_CONTENTS: &str = include_str!("fstar/Makefile.hax");
 
 const DEFAULT_EXTRACT_COMMAND: &str = "cargo hax into fstar";
 
+pub fn extract_command(scenario: &hax_types::cli_options::FStarScenarioOptions) -> String {
+    match &scenario.name {
+        Some(name) => format!("cargo hax extract {name}"),
+        None => DEFAULT_EXTRACT_COMMAND.to_string(),
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 enum Ownership {
     Absent,
@@ -119,6 +126,22 @@ mod tests {
         ] {
             assert_eq!(classify(contents), Ownership::Theirs, "for {contents:?}");
         }
+    }
+
+    #[test]
+    fn a_scenario_run_records_its_own_extract_command() {
+        use hax_types::cli_options::FStarScenarioOptions;
+        assert_eq!(
+            extract_command(&FStarScenarioOptions {
+                name: Some("chacha20".into()),
+                project_files: None,
+            }),
+            "cargo hax extract chacha20"
+        );
+        assert_eq!(
+            extract_command(&FStarScenarioOptions::default()),
+            DEFAULT_EXTRACT_COMMAND
+        );
     }
 
     #[test]

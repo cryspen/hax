@@ -185,6 +185,23 @@ pub struct FStarOptions {
 
     #[arg(long, default_value_t = FSTAR_DEFAULT_LINE_WIDTH, env = "HAX_FSTAR_LINE_WIDTH")]
     pub line_width: u16,
+
+    /// The scenario-resolved inputs; not settable from the command line.
+    #[clap(skip)]
+    pub scenario: FStarScenarioOptions,
+}
+
+/// The inputs a proof scenario resolves for the F* backend, carried
+/// through the `__json` re-entry rather than argv. Empty on flag-driven
+/// `into` invocations.
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Debug, Clone, Hash, Eq, PartialEq, Default)]
+pub struct FStarScenarioOptions {
+    /// The scenario's name, so the generated `Makefile` records the
+    /// command that reproduces the extraction.
+    pub name: Option<String>,
+    /// The scenario's `project-files` key, overriding the top-level key.
+    pub project_files: Option<bool>,
 }
 
 impl FStarOptions {
@@ -198,6 +215,7 @@ impl FStarOptions {
             ifuel: FSTAR_DEFAULT_IFUEL,
             interfaces: Vec::new(),
             line_width: FSTAR_DEFAULT_LINE_WIDTH,
+            scenario: FStarScenarioOptions::default(),
         }
     }
 

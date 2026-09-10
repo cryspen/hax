@@ -232,7 +232,7 @@ In this version, these keys work for the Lean backend only, where they compile t
 
 Backend-specific keys:
 
-- F\*: `z3rlimit`, `fuel`, `ifuel`, `interfaces`, and `line-width`. They mirror flags of `cargo hax into fstar`; see its `--help` for their effects.
+- F\*: `z3rlimit`, `fuel`, `ifuel`, `interfaces`, `line-width`, and `project-files`. The first five mirror flags of `cargo hax into fstar`; see its `--help` for their effects. The per-scenario `project-files` key overrides the top-level one, and the generated `Makefile` records `cargo hax extract <name>` as the command that reproduces the extraction.
 - Lean: `charon-args`, `aeneas-args`, and `project-files`. `charon-args` and `aeneas-args` are arrays passed verbatim, one element per process argument, after the arguments hax compiles from the structured keys; no shell splitting is applied. The per-scenario `project-files` key overrides the top-level one.
 - ProVerif: `assume-items`, mirroring the flag of `cargo hax into pro-verif`.
 

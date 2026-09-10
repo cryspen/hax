@@ -506,6 +506,10 @@ fn scenario_options(
                 ifuel: entry.ifuel.unwrap_or(defaults.ifuel),
                 interfaces: entry.interfaces.clone(),
                 line_width: entry.line_width.unwrap_or(defaults.line_width),
+                scenario: FStarScenarioOptions {
+                    name: Some(entry.name.clone()),
+                    project_files: entry.project_files,
+                },
             })
         }
         ScenarioBackend::Coq => Backend::Coq,
@@ -829,6 +833,8 @@ mod tests {
         assert_eq!(fstar.line_width, 44);
         let interfaces: Vec<_> = fstar.interfaces.iter().map(ToString::to_string).collect();
         assert_eq!(interfaces, ["+**::interfaced"]);
+        assert_eq!(fstar.scenario.name.as_deref(), Some("demo-scenario"));
+        assert_eq!(fstar.scenario.project_files, Some(false));
         let selected: Vec<_> = backend
             .translation_options
             .include_namespaces

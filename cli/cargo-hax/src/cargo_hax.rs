@@ -376,16 +376,28 @@ fn run_engine(
         serde_json::to_writer(std::io::BufWriter::new(std::io::stdout()), &output).unwrap()
     }
 
-    if matches!(backend.backend, Backend::Fstar(_)) && !backend.dry_run && produced_any {
+    if let Backend::Fstar(fstar_options) = &backend.backend
+        && !backend.dry_run
+        && produced_any
+    {
         let crate_dir = project
             .and_then(|project| project.root_package.as_ref())
             .map(|package| package.dir.clone());
-        let project_files = match (project, &crate_dir) {
-            (Some(project), Some(crate_dir)) => project_files::enabled(project, crate_dir),
-            _ => true,
-        };
+        // A scenario resolves its own output directory, so only a flag the
+        // caller passed counts as pointing hax at a directory of their own.
+        let explicit_out_dir =
+            backend.output_dir.is_some() && fstar_options.scenario.name.is_none();
+        let project_files = project_files::wanted(
+            explicit_out_dir,
+            fstar_options.scenario.project_files,
+            match (project, &crate_dir) {
+                (Some(project), Some(crate_dir)) => project_files::enabled(project, crate_dir),
+                _ => true,
+            },
+        );
         if project_files {
-            error |= fstar::generate(&out_dir, None, message_format);
+            let command = fstar::extract_command(&fstar_options.scenario);
+            error |= fstar::generate(&out_dir, Some(&command), message_format);
         }
     }
     if !output.debug_json.is_empty() {

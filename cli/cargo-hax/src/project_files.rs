@@ -51,6 +51,13 @@ pub fn write_always(path: &Path, contents: &str, message_format: MessageFormat) 
     }
 }
 
+/// Whether an extraction writes the backend's project files. An
+/// `--output-dir` the caller passed points hax at a directory they manage,
+/// which gets extracted code only.
+pub fn wanted(explicit_out_dir: bool, configured: Option<bool>, default: bool) -> bool {
+    !explicit_out_dir && configured.unwrap_or(default)
+}
+
 pub fn enabled(project: &tools::project::ProjectContext, crate_dir: &Path) -> bool {
     project
         .member_config(crate_dir)
@@ -62,4 +69,25 @@ pub fn enabled(project: &tools::project::ProjectContext, crate_dir: &Path) -> bo
                 .and_then(|config| config.project_files)
         })
         .unwrap_or(true)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::wanted;
+
+    #[test]
+    fn an_explicit_output_directory_gets_extracted_code_only() {
+        assert!(!wanted(true, None, true));
+        // Even a configured `project-files = true`: the flag is per
+        // invocation and names the directory, so it is the more specific.
+        assert!(!wanted(true, Some(true), true));
+    }
+
+    #[test]
+    fn otherwise_the_configured_value_wins_over_the_default() {
+        assert!(wanted(false, None, true));
+        assert!(!wanted(false, None, false));
+        assert!(!wanted(false, Some(false), true));
+        assert!(wanted(false, Some(true), false));
+    }
 }
