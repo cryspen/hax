@@ -83,18 +83,50 @@ impl TestModule {
             .collect()
     }
 
+    /// Returns true if this test's output for `backend` is expected to
+    /// type-check: the backend has a type-checker, and no directive says the
+    /// test fails it.
+    pub fn verification_expected(&self, backend: BackendName) -> bool {
+        Self::has_type_checker(backend)
+            && self
+                .expected_diagnostics(backend, FailureKind::Typecheck)
+                .is_empty()
+    }
+
+    /// Whether `backend` type-checks its output at all.
+    fn has_type_checker(backend: BackendName) -> bool {
+        matches!(backend, BackendName::Fstar | BackendName::LegacyLean)
+    }
+
+    /// The subdirectory this test's `backend` snapshots go in: `<backend>`, or
+    /// `<backend>-xfail` when a type-checker is expected to reject them.
+    pub fn snapshot_backend_dir(&self, backend: BackendName) -> String {
+        if Self::has_type_checker(backend) && !self.verification_expected(backend) {
+            format!("{backend}-xfail")
+        } else {
+            backend.to_string()
+        }
+    }
+
     /// Returns true if verification needs to run for this test, i.e. if the backend supports verification,
     /// verification is not expected to fail, and `--no-verify` was not passed.
     pub fn needs_verification(&self, backend: BackendName, options: &crate::cli::Cli) -> bool {
-        if options.no_verify() {
-            return false;
-        }
-        match backend {
-            BackendName::Fstar | BackendName::LegacyLean => self
-                .expected_diagnostics(backend, FailureKind::Typecheck)
-                .is_empty(),
-            _ => false,
-        }
+        !options.no_verify() && self.verification_expected(backend)
+    }
+
+    /// The directory holding this test's snapshots, relative to
+    /// `tests/snapshots` (e.g. `legacy/attributes/lib`). The per-backend
+    /// snapshots live in a subdirectory named after the backend.
+    pub fn snapshot_dir(&self, tests_crate_dir: &std::path::Path) -> Result<PathBuf> {
+        let relative = self
+            .module_path
+            .strip_prefix(tests_crate_dir.join("src"))
+            .context("internal error, cannot figure out relative path of test module")?;
+        Ok(relative.with_file_name(
+            relative
+                .file_stem()
+                .context("internal error, test module has no `*.rs` extension?")?,
+        ))
     }
 }
 

@@ -1,4 +1,3 @@
-//! @fail(tc): legacy-lean(1)
 //@ edition: 2021
 
 // If the span extractor can't find any relevant spans for a function,

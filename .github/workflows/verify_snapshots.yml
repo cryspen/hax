@@ -1,0 +1,94 @@
+name: Verify snapshots
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  push:
+    branches: [main, dev]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      fstar: ${{ github.event_name == 'pull_request' && steps.filter.outputs.fstar || 'true' }}
+      lean: ${{ github.event_name == 'pull_request' && steps.filter.outputs.lean || 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        if: github.event_name == 'pull_request'
+        with:
+          filters: |
+            fstar:
+              - 'tests/snapshots/**/fstar/**'
+              - 'hax-lib/proof-libs/fstar/**'
+              - 'hax-lib/proofs/fstar/extraction/**'
+              - 'tests/verify/fstar/**'
+              - 'justfile'
+              - 'flake.nix'
+              - 'flake.lock'
+              - '.github/workflows/verify_snapshots.yml'
+            lean:
+              - 'tests/snapshots/**/legacy-lean/**'
+              - 'hax-lib/proof-libs/legacy-lean/**'
+              - 'tests/verify/lean/**'
+              - 'justfile'
+              - 'flake.nix'
+              - 'flake.lock'
+              - '.github/workflows/verify_snapshots.yml'
+
+  fstar:
+    name: fstar
+    needs: changes
+    if: needs.changes.outputs.fstar == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+          extraPullNames: fstar-nix-versions, z3-nix-versions
+
+      - name: Type-check the F* snapshots
+        run: nix develop .#verify-fstar --command just verify-fstar
+
+  lean:
+    name: lean
+    needs: changes
+    if: needs.changes.outputs.lean == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+
+      - name: Type-check the Lean snapshots
+        run: nix develop .#verify-lean --command just verify-lean
+
+  result:
+    name: result
+    needs: [changes, fstar, lean]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the results
+        env:
+          RESULTS: ${{ needs.changes.result }} ${{ needs.fstar.result }} ${{ needs.lean.result }}
+        run: |
+          echo "$RESULTS"
+          for result in $RESULTS; do
+            case $result in
+              success | skipped) ;;
+              *) echo "a job did not pass: $result"; exit 1 ;;
+            esac
+          done

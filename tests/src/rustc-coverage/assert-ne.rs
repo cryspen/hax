@@ -1,4 +1,3 @@
-//! @fail(tc): legacy-lean(1)
 //@ edition: 2021
 
 use core::hint::black_box;

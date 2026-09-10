@@ -244,6 +244,14 @@
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
             packages = defaultPackages;
           };
+          # For `tests/verify`: the provers and nothing else, since verifying
+          # the committed snapshots needs no hax, rustc or engine.
+          verify-fstar = pkgs.mkShell {
+            packages = [ packages.fstar pkgs.gnumake pkgs.just pkgs.git ];
+          };
+          verify-lean = pkgs.mkShell {
+            packages = [ pkgs.elan pkgs.just pkgs.git ];
+          };
           fstar = pkgs.mkShell {
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
             shellHook = ''
