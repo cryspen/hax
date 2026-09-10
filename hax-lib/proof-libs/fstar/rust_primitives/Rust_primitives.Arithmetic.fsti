@@ -20,8 +20,6 @@ let rem_euclid_u8 (x: u8) (y: u8 {v y <> 0}): u8 = x %! y
 val pow_u8 : u8 -> u32 -> u8
 val overflowing_pow_u8 : u8 -> u32 -> u8 & bool
 val count_ones_u8 : u8 -> r:u32{v r <= 8}
-unfold 
-let rotate_left_u8 = rotate_left_u #U8
 
 let wrapping_add_u16 : u16 -> u16 -> u16 = add_mod
 let saturating_add_u16 : u16 -> u16 -> u16 = add_sat
@@ -40,8 +38,6 @@ let rem_euclid_u16 (x: u16) (y: u16 {v y <> 0}): u16 = x %! y
 val pow_u16 : x:u16 -> y:u32 -> result : u16 {v x == 2 /\ v y < 16 ==> result == mk_u16 (pow2 (v y))}
 val overflowing_pow_u16 : u16 -> u32 -> u16 & bool
 val count_ones_u16 : u16 -> r:u32{v r <= 16}
-unfold 
-let rotate_left_u16 = rotate_left_u #U16
 
 let wrapping_add_u32 : u32 -> u32 -> u32 = add_mod
 let saturating_add_u32 : u32 -> u32 -> u32 = add_sat
@@ -60,8 +56,6 @@ let rem_euclid_u32 (x: u32) (y: u32 {v y <> 0}): u32 = x %! y
 val pow_u32 : x:u32 -> y:u32 -> result : u32 {v x == 2 /\ v y <= 16 ==> result == mk_u32 (pow2 (v y))}
 val overflowing_pow_u32 : u32 -> u32 -> u32 & bool
 val count_ones_u32 : u32 -> r:u32{v r <= 32}
-unfold 
-let rotate_left_u32 = rotate_left_u #U32
 
 let wrapping_add_u64 : u64 -> u64 -> u64 = add_mod
 let saturating_add_u64 : u64 -> u64 -> u64 = add_sat
@@ -80,8 +74,6 @@ let rem_euclid_u64 (x: u64) (y: u64 {v y <> 0}): u64 = x %! y
 val pow_u64 : u64 -> u32 -> u64
 val overflowing_pow_u64 : u64 -> u32 -> u64 & bool
 val count_ones_u64 : u64 -> r:u32{v r <= 64}
-unfold 
-let rotate_left_u64 = rotate_left_u #U64
 
 let wrapping_add_u128 : u128 -> u128 -> u128 = add_mod
 let saturating_add_u128 : u128 -> u128 -> u128 = add_sat
@@ -100,8 +92,6 @@ let rem_euclid_u128 (x: u128) (y: u128 {v y <> 0}): u128 = x %! y
 val pow_u128 : u128 -> u32 -> u128
 val overflowing_pow_u128 : u128 -> u32 -> u128 & bool
 val count_ones_u128 : u128 -> r:u32{v r <= 128}
-unfold 
-let rotate_left_u128 = rotate_left_u #U128
 
 let wrapping_add_usize : usize -> usize -> usize = add_mod
 let saturating_add_usize : usize -> usize -> usize = add_sat
@@ -120,8 +110,6 @@ let rem_euclid_usize (x: usize) (y: usize {v y <> 0}): usize = x %! y
 val pow_usize : usize -> u32 -> usize
 val overflowing_pow_usize : usize -> u32 -> usize & bool
 val count_ones_usize : usize -> r:u32{v r <= size_bits}
-unfold 
-let rotate_left_usize = rotate_left_u #USIZE
 
 let wrapping_add_i8 : i8 -> i8 -> i8 = add_mod
 let saturating_add_i8 : i8 -> i8 -> i8 = add_sat

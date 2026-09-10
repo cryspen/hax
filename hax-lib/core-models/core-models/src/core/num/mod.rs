@@ -17,6 +17,7 @@ macro_rules! uint_impl {
         $Name: ty,
         $Max: expr,
         $Bits: expr,
+        $ShiftBits: expr,
         $Bytes: expr,
     ) => {
         #[hax_lib::attributes]
@@ -133,14 +134,24 @@ macro_rules! uint_impl {
                 paste! { [<count_ones_ $Name>](x) }
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
-                paste! { [<rotate_right_ $Name>](x, n) }
+                let m = n % $ShiftBits;
+                if m == 0 {
+                    x
+                } else {
+                    (x >> m) ^ (x << ($ShiftBits - m))
+                }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
-                paste! { [<rotate_left_ $Name>](x, n) }
+                let m = n % $ShiftBits;
+                if m == 0 {
+                    x
+                } else {
+                    (x << m) ^ (x >> ($ShiftBits - m))
+                }
             }
             /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -590,6 +601,7 @@ uint_impl! {
     u8,
     255,
     8,
+    8,
     1,
 }
 
@@ -597,6 +609,7 @@ uint_impl! {
     core::primitive::u16,
     u16,
     65535,
+    16,
     16,
     2,
 }
@@ -606,6 +619,7 @@ uint_impl! {
     u32,
     4294967295,
     32,
+    32,
     4,
 }
 
@@ -614,6 +628,7 @@ uint_impl! {
     u64,
     18446744073709551615,
     64,
+    64,
     8,
 }
 
@@ -621,6 +636,7 @@ uint_impl! {
     core::primitive::u128,
     u128,
     340282366920938463463374607431768211455,
+    128,
     128,
     16,
 }
@@ -634,6 +650,7 @@ uint_impl! {
     // `Result U32`, but aeneas inlines associated consts as plain values at use sites
     // (`usize::BITS - x`), matching the fixed-width `u32::BITS : U32`. Value-identical.
     64,
+    SIZE_BITS,
     SIZE_BYTES,
 }
 
@@ -847,12 +864,18 @@ mod tests {
                         }
 
                         #[test]
-                        fn [<test_ $t _rotate_right>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                        fn [<test_ $t _rotate_right>](
+                            x in any::<$t>(),
+                            n in prop_oneof![Just(0u32), Just($t::BITS), 0u32..$t::BITS, any::<u32>()],
+                        ) {
                             prop_assert_eq!(super::$t::rotate_right(x.inject(), n), x.rotate_right(n));
                         }
 
                         #[test]
-                        fn [<test_ $t _rotate_left>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                        fn [<test_ $t _rotate_left>](
+                            x in any::<$t>(),
+                            n in prop_oneof![Just(0u32), Just($t::BITS), 0u32..$t::BITS, any::<u32>()],
+                        ) {
                             prop_assert_eq!(super::$t::rotate_left(x.inject(), n), x.rotate_left(n));
                         }
 
