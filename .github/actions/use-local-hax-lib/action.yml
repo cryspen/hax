@@ -34,23 +34,35 @@ runs:
 
         cd "$project"
 
+        # `kind` and `target` too: a dev, build or target-scoped dependency
+        # re-added as a plain one is a second entry with a different source,
+        # which cargo then refuses to resolve.
         edges=$(cargo metadata --format-version 1 --no-deps | jq -r '
           .packages[] as $p | $p.dependencies[]
-          | select(.name | startswith("hax-")) | "\($p.name) \(.name)"' | sort -u)
+          | select(.name | startswith("hax-"))
+          | "\($p.name) \(.name) \(.kind // "normal") \(.target // "-")"' | sort -u)
 
         if [ -z "$edges" ]; then
           echo "::error::no dependency on a hax crate anywhere in $project"
           exit 1
         fi
 
-        while read -r member dep; do
+        while read -r member dep kind target; do
           path=$(awk -v d="$dep" '$1 == d {print $2}' <<<"$crates")
           if [ -z "$path" ]; then
             echo "::error::$member depends on $dep, which $hax does not provide"
             exit 1
           fi
-          cargo add "$dep" --path "$path" -p "$member" --quiet
-          echo "$member: $dep -> $path"
+          flags=()
+          case "$kind" in
+            dev) flags+=(--dev) ;;
+            build) flags+=(--build) ;;
+          esac
+          label="$kind"
+          [ "$target" = "-" ] || { flags+=(--target "$target"); label="$kind, $target"; }
+          cargo add "$dep" --path "$path" -p "$member" \
+            ${flags[@]+"${flags[@]}"} --quiet
+          echo "$member: $dep ($label) -> $path"
         done <<<"$edges"
 
         # Checked on workspace members' direct edges, which is what
