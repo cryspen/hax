@@ -349,7 +349,7 @@ structure error.Error (Self : Type) where
   fmtDebugInst : fmt.Debug Self
 
 /-- [core_models::f32::f32]
-    Source: 'core-models/src/core/f32.rs', lines 6:0-6:11 -/
+    Source: 'core-models/src/core/f32.rs', lines 4:0-4:11 -/
 @[reducible]
 def f32.f32 := Unit
 
@@ -406,28 +406,28 @@ structure hash.Hash (Self : Type) where
   hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → RustM H
 
 /-- [core_models::iter::adapters::fuse::Fuse]
-    Source: 'core-models/src/core/iter.rs', lines 1050:8-1053:9
+    Source: 'core-models/src/core/iter.rs', lines 1048:8-1051:9
     Visibility: public -/
 structure iter.adapters.fuse.Fuse (I : Type) where
   iter : I
   done : Bool
 
 /-- [core_models::iter::adapters::inspect::Inspect]
-    Source: 'core-models/src/core/iter.rs', lines 1023:8-1026:9
+    Source: 'core-models/src/core/iter.rs', lines 1021:8-1024:9
     Visibility: public -/
 structure iter.adapters.inspect.Inspect (I : Type) (F : Type) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::map_while::MapWhile]
-    Source: 'core-models/src/core/iter.rs', lines 999:8-1002:9
+    Source: 'core-models/src/core/iter.rs', lines 997:8-1000:9
     Visibility: public -/
 structure iter.adapters.map_while.MapWhile (I : Type) (F : Type) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::skip_while::SkipWhile]
-    Source: 'core-models/src/core/iter.rs', lines 962:8-966:9
+    Source: 'core-models/src/core/iter.rs', lines 960:8-964:9
     Visibility: public -/
 structure iter.adapters.skip_while.SkipWhile (I : Type) (P : Type) where
   iter : I
@@ -435,7 +435,7 @@ structure iter.adapters.skip_while.SkipWhile (I : Type) (P : Type) where
   predicate : P
 
 /-- [core_models::iter::adapters::take_while::TakeWhile]
-    Source: 'core-models/src/core/iter.rs', lines 922:8-926:9
+    Source: 'core-models/src/core/iter.rs', lines 920:8-924:9
     Visibility: public -/
 structure iter.adapters.take_while.TakeWhile (I : Type) (P : Type) where
   iter : I
@@ -443,21 +443,21 @@ structure iter.adapters.take_while.TakeWhile (I : Type) (P : Type) where
   predicate : P
 
 /-- [core_models::iter::adapters::filter_map::FilterMap]
-    Source: 'core-models/src/core/iter.rs', lines 891:8-894:9
+    Source: 'core-models/src/core/iter.rs', lines 889:8-892:9
     Visibility: public -/
 structure iter.adapters.filter_map.FilterMap (I : Type) (F : Type) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::skip::Skip]
-    Source: 'core-models/src/core/iter.rs', lines 861:8-864:9
+    Source: 'core-models/src/core/iter.rs', lines 859:8-862:9
     Visibility: public -/
 structure iter.adapters.skip.Skip (I : Type) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::chain::Chain]
-    Source: 'core-models/src/core/iter.rs', lines 828:8-831:9
+    Source: 'core-models/src/core/iter.rs', lines 826:8-829:9
     Visibility: public -/
 structure iter.adapters.chain.Chain (A : Type) (B : Type) where
   a : option.Option A
@@ -632,7 +632,7 @@ structure iter.adapters.rev.Rev (I : Type) where
   iter : I
 
 /-- Trait declaration: [core_models::iter::range::Step]
-    Source: 'core-models/src/core/iter.rs', lines 1087:4-1107:5
+    Source: 'core-models/src/core/iter.rs', lines 1085:4-1105:5
     Visibility: public -/
 structure iter.range.Step (Self : Type) where
   cloneCloneInst : clone.Clone Self
