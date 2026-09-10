@@ -30,10 +30,6 @@ Obligation Tactic := (* try timeout 8 *) solve_ssprove_obligations.
 
 (*Not implemented yet? todo(item)*)
 
-Class t_Operation (Self : choice_type) (v_Self : v_Self) := {
-  f_double : (both int8 -> both int8) ;
-}.
-
 Definition t_ViaAdd : choice_type :=
   'unit.
 Equations Build_t_ViaAdd : both (t_ViaAdd) :=
@@ -47,6 +43,10 @@ Equations Build_t_ViaMul : both (t_ViaMul) :=
   Build_t_ViaMul  :=
     ret_both (tt (* Empty tuple *) : (t_ViaMul)) : both (t_ViaMul).
 Fail Next Obligation.
+
+Class t_Operation (Self : choice_type) (v_Self : v_Self) := {
+  f_double : (both int8 -> both int8) ;
+}.
 
 #[global] Program Instance t_ViaAdd_t_Operation : t_Operation t_ViaAdd :=
   let f_double := fun  (x : both int8) => x .+ x : both int8 in
