@@ -62,7 +62,7 @@
       in rec {
         packages = {
           inherit rustc ocamlformat rustfmt fstar hax-env rustc-docs proverif;
-          docs = pkgs.python312Packages.callPackage ./docs {
+          docs = pkgs.python3Packages.callPackage ./docs {
             hax-frontend-docs = packages.hax-rust-frontend.docs;
           };
           hax-engine = pkgs.callPackage ./engine {
