@@ -65,6 +65,24 @@ fmt:
   cargo fmt
   cd engine && dune fmt
 
+# Type-check the committed F* snapshots. The optional argument narrows to
+# snapshots whose path matches, e.g. `just verify-fstar loops`.
+verify-fstar MATCHING='':
+  #!/usr/bin/env bash
+  set -euo pipefail
+  # `--keep-going` reports every failing snapshot, not just the first.
+  make -C tests/verify/fstar -Otarget -j "$(nproc)" --keep-going MATCHING='{{MATCHING}}'
+
+# Type-check the committed Lean snapshots.
+verify-lean *FLAGS:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  tests/verify/lean/refresh.sh
+  # `cd`, not `lake --dir`: elan reads the toolchain from the process working
+  # directory, and the Hax library does not build under another Lean.
+  cd tests/verify/lean
+  lake build {{FLAGS}}
+
 # Run hax tests
 test *FLAGS:
   cargo run --release --bin test-driver -- ./tests {{FLAGS}}

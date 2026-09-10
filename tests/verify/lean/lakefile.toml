@@ -1,0 +1,14 @@
+# Type-checks the committed Lean snapshots as one package, so that Hax and Qq
+# are built once rather than once per snapshot. `Snapshots/` is the symlink
+# farm `refresh.sh` builds.
+name = "snapshots"
+version = "0.1.0"
+defaultTargets = ["Snapshots"]
+
+[[lean_lib]]
+name = "Snapshots"
+globs = ["Snapshots.+"]
+
+[[require]]
+name = "Hax"
+path = "../../../hax-lib/proof-libs/legacy-lean"

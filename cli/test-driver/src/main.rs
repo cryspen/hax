@@ -141,22 +141,12 @@ impl BackendTestContext {
 
     /// Path to snapshots directory
     async fn path_to_snapshots(&self) -> Result<PathBuf> {
-        let relative_path_to_test = self
-            .test
-            .module_path
-            .strip_prefix(self.options.tests_crate_dir().join("src"))
-            .context("internal error, cannot figure out relative path of test module")?;
-        let relative_path_to_test = relative_path_to_test.with_file_name(
-            relative_path_to_test
-                .file_stem()
-                .context("internal error, test module has no `*.rs` extension?")?,
-        );
         Ok(self
             .options
             .tests_crate_dir()
             .join("snapshots")
-            .join(relative_path_to_test)
-            .join(self.backend.to_string()))
+            .join(self.test.snapshot_dir(&self.options.tests_crate_dir())?)
+            .join(self.test.snapshot_backend_dir(self.backend)))
     }
 
     /// Move the given output extraction directory to the canonical path the snapshots belongs to.

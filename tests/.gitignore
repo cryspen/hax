@@ -1,5 +1,17 @@
 .hax-tests
 
+# Build state of `tests/verify`
+verify/fstar/.cache*
+verify/fstar/.hints
+verify/fstar/.depend
+verify/lean/.lake
+verify/lean/lake-manifest.json
+verify/lean/Snapshots
+verify/lean/Snapshots.lean
+
+# `test-driver`'s per-snapshot F* cache
+snapshots/**/.fstar-cache
+
 # Generated files under snapshots
 snapshots/**/Makefile
 snapshots/**/lakefile.toml
