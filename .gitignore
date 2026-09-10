@@ -11,6 +11,7 @@ result
 .depend
 .depend.tmp
 .hax-roots
+.hax-extraction
 .fstar-cache/
 dep.graph
 .cache

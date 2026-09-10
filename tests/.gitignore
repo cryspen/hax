@@ -4,6 +4,7 @@
 snapshots/**/Makefile
 snapshots/**/Makefile.hax
 snapshots/**/.hax-roots
+snapshots/**/.hax-extraction
 snapshots/**/dep.graph
 snapshots/**/lakefile.toml
 snapshots/**/lean-toolchain

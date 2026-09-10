@@ -15,6 +15,7 @@ use std::process;
 
 mod aeneas;
 mod engine_debug_webapp;
+mod extraction_manifest;
 mod fstar;
 mod project_files;
 mod scenario;
@@ -227,7 +228,7 @@ fn run_engine(
         .unwrap();
 
     let mut error = false;
-    let mut produced_any = false;
+    let mut produced: std::collections::BTreeSet<PathBuf> = Default::default();
     let mut output = Output {
         diagnostics: vec![],
         files: vec![],
@@ -293,7 +294,7 @@ fn run_engine(
                         output.files.push(file)
                     } else {
                         let path = out_dir.join(&file.path);
-                        produced_any = true;
+                        produced.insert(PathBuf::from(&file.path));
                         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
                         let mut wrote = false;
                         if fs::read_to_string(&path).as_ref().ok() != Some(&file.contents) {
@@ -316,11 +317,12 @@ fn run_engine(
                                 })
                                 .map(|path| fs::read_to_string(path).ok())
                                 .collect();
-                            let f = std::fs::File::create(path.with_file_name(format!(
-                                "{}.map",
-                                path.file_name().unwrap().to_string_lossy()
-                            )))
-                            .unwrap();
+                            let sourcemap_name =
+                                format!("{}.map", path.file_name().unwrap().to_string_lossy());
+                            produced
+                                .insert(PathBuf::from(&file.path).with_file_name(&sourcemap_name));
+                            let f =
+                                std::fs::File::create(path.with_file_name(sourcemap_name)).unwrap();
                             serde_json::to_writer(std::io::BufWriter::new(f), &sourcemap).unwrap()
                         }
                         HaxMessage::ProducedFile { path, wrote }.report(message_format, None)
@@ -376,9 +378,14 @@ fn run_engine(
         serde_json::to_writer(std::io::BufWriter::new(std::io::stdout()), &output).unwrap()
     }
 
+    if !backend.dry_run && !produced.is_empty() {
+        error |= extraction_manifest::remove_stale(&out_dir, &produced, message_format);
+        error |= extraction_manifest::write(&out_dir, &produced, message_format);
+    }
+
     if let Backend::Fstar(fstar_options) = &backend.backend
         && !backend.dry_run
-        && produced_any
+        && !produced.is_empty()
     {
         let crate_dir = project
             .and_then(|project| project.root_package.as_ref())
