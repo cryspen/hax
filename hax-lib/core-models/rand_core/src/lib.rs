@@ -17,6 +17,20 @@ pub trait RngCore {
 
 pub trait CryptoRng: RngCore {}
 
+#[hax_lib::attributes]
+pub trait TryRngCore {
+    type Error: std::error::Error;
+    #[hax_lib::requires(true)]
+    fn try_next_u32(&mut self) -> Result<u32, Self::Error>;
+    #[hax_lib::requires(true)]
+    fn try_next_u64(&mut self) -> Result<u64, Self::Error>;
+    #[hax_lib::requires(true)]
+    #[hax_lib::ensures(|_| future(dst).len() == dst.len())]
+    fn try_fill_bytes(&mut self, dst: &mut [u8]) -> Result<(), Self::Error>;
+}
+
+pub trait TryCryptoRng: TryRngCore {}
+
 mod os {
     pub struct OsRng;
     // Dummy impl
