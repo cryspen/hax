@@ -1,5 +1,4 @@
 //! @fail(tc): legacy-lean(1)
-//! @fail(tc): fstar(72)
 
 // Tests for core models in lean
 #![allow(dead_code)]

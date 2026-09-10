@@ -1,4 +1,3 @@
-//! @fail(tc): legacy-lean(1)
 #![feature(coverage_attribute)]
 //@ edition: 2021
 //@ compile-flags: -Zcoverage-options=mcdc
