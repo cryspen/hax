@@ -82,6 +82,7 @@ verify-lean *FLAGS:
   # directory, and the Hax library does not build under another Lean.
   cd tests/verify/lean
   lake build {{FLAGS}}
+  ./xfail.sh
 
 # Run hax tests
 test *FLAGS:

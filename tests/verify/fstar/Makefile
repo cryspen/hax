@@ -60,15 +60,19 @@ FSTAR_FLAGS = \
 
 FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)
 
+XFAIL_DIRS  := $(shell find $(SNAPSHOTS) -type d -name fstar-xfail | grep -e '$(MATCHING)' | sort)
+XFAIL_CACHE := $(CURDIR)/.cache-xfail$(CACHE_SUFFIX)
+
 # Set explicitly: the default goal is otherwise whichever target appears first,
 # which a later edit can silently change -- adding `FORCE` below once made
 # `make` do nothing at all and report success.
 .DEFAULT_GOAL := all
 
-.PHONY: all verify unique-modules describe clean FORCE
+.PHONY: all verify xfail unique-modules describe clean FORCE
 
 all: unique-modules
 	$(Q)$(MAKE) -f $(firstword $(MAKEFILE_LIST)) verify
+	$(Q)$(MAKE) -f $(firstword $(MAKEFILE_LIST)) xfail
 
 # One cache and one include path make module names a global namespace, where a
 # collision would check one snapshot and silently skip the other. Compared on
@@ -107,14 +111,24 @@ $(CACHE_DIR)/%$(CHECKED): | $(DEPEND) $(CACHE_DIR) $(HINT_DIR)
 
 verify: $(addsuffix $(CHECKED),$(addprefix $(CACHE_DIR)/,$(notdir $(ROOTS))))
 
+# `@fail(tc)` only ever meant "skip the prover", so a directive that has gone
+# stale over-claims and nothing notices. Check the other direction too, after
+# `verify` has filled $(CACHE_DIR) with the closure these runs read.
+xfail: verify
+	$(Q)FSTAR_BIN='$(FSTAR_BIN)' FSTAR_FLAGS='$(FSTAR_FLAGS) $(OTHERFLAGS)' \
+	  CACHE_DIR='$(CACHE_DIR)' XFAIL_CACHE='$(XFAIL_CACHE)' \
+	  SNAPSHOTS='$(SNAPSHOTS)' $(CURDIR)/xfail.sh $(XFAIL_DIRS)
+
 describe:
 	@echo "roots:     $(words $(ROOTS))"
 	@echo "snapshots: $(words $(DIRS))"
+	@echo "xfail:     $(words $(XFAIL_DIRS))"
 	@echo "fstar:     $(FSTAR_BIN)"
 	@echo "cache:     $(CACHE_DIR)"
 	@echo "flags:     $(OTHERFLAGS)"
 
 clean:
-	rm -rf $(CURDIR)/.cache $(CURDIR)/.cache-lax $(HINT_DIR) $(CURDIR)/.depend
+	rm -rf $(CURDIR)/.cache $(CURDIR)/.cache-lax $(CURDIR)/.cache-xfail \
+	  $(CURDIR)/.cache-xfail-lax $(HINT_DIR) $(CURDIR)/.depend
 
 Q ?= @
