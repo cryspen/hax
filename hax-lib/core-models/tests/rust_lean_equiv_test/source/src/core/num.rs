@@ -608,6 +608,16 @@ pub fn test_usize_rotate_right_one() -> bool {
     2usize.rotate_right(1u32) == 1usize
 }
 
+#[rust_lean_test]
+pub fn test_usize_rotate_left_wrapping() -> bool {
+    1usize.rotate_left(65u32) == 2usize
+}
+
+#[rust_lean_test]
+pub fn test_usize_rotate_right_wrapping() -> bool {
+    2usize.rotate_right(65u32) == 1usize
+}
+
 // =============================================================================
 // leading_zeros
 // =============================================================================
