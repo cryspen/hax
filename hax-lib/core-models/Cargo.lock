@@ -392,6 +392,7 @@ name = "rand_core"
 version = "0.1.0"
 dependencies = [
  "hax-lib",
+ "mutants",
 ]
 
 [[package]]

@@ -12601,7 +12601,7 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
 }
 
 /-- [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_residual]:
-    Source: 'core-models/src/core/option.rs', lines 335:4-340:5
+    Source: 'core-models/src/core/option.rs', lines 339:4-344:5
     Visibility: public -/
 def
   option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible.from_residual
@@ -12613,7 +12613,7 @@ def
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 331:0-341:1 -/
+    Source: 'core-models/src/core/option.rs', lines 331:0-345:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible (T
   : Type) : ops.try_trait.FromResidual (option.Option T) (option.Option

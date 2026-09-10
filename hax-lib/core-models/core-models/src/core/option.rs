@@ -332,6 +332,10 @@ impl<T> crate::ops::try_trait::FromResidual<Option<crate::convert::Infallible>> 
     // Excluded from coverage: the `Some(_)` arm holds an `Infallible`, so no
     // test can construct a value that reaches it.
     #[cfg_attr(coverage_nightly, coverage(off))]
+    // mutants::skip: `Default` for `Option` is `None`, and the only reachable
+    // arm returns `None`, so replacing the body with `Default::default()` is an
+    // equivalent mutant.
+    #[cfg_attr(test, mutants::skip)]
     fn from_residual(residual: Option<crate::convert::Infallible>) -> Self {
         match residual {
             None => None,
