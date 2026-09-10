@@ -1,5 +1,6 @@
 //! Equivalence tests for `core::cmp::*`.
 
+use crate::helpers::keyed;
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- u8: PartialEq::eq -----------------------------------------------------
@@ -180,4 +181,60 @@ mod ord_clamp {
     fn test_clamp_above() {
         assert_eq!(9u8.clamp(3, 7), 7);
     }
+}
+
+// ----- dictionary-applying tests: Ord tie-breaking ---------------------------
+
+// std: "Returns the second argument if the comparison determines them to be
+// equal."
+#[rust_lean_test]
+pub fn test_cmp_max_tie_returns_second() -> bool {
+    core::cmp::max(keyed(5, 1), keyed(5, 2)).tag == 2
+}
+
+// std: "Returns the first argument if the comparison determines them to be
+// equal."
+#[rust_lean_test]
+pub fn test_cmp_min_tie_returns_first() -> bool {
+    core::cmp::min(keyed(5, 1), keyed(5, 2)).tag == 1
+}
+
+#[rust_lean_test]
+pub fn test_cmp_max_picks_the_greater() -> bool {
+    core::cmp::max(keyed(1, 1), keyed(9, 2)).tag == 2
+}
+
+#[rust_lean_test]
+pub fn test_cmp_min_picks_the_lesser() -> bool {
+    core::cmp::min(keyed(1, 1), keyed(9, 2)).tag == 1
+}
+
+// ----- dictionary-applying tests: PartialEq ----------------------------------
+
+// `Keyed::eq` ignores `tag`, so a structural comparison would answer `false`.
+#[rust_lean_test]
+pub fn test_partial_eq_goes_through_the_dictionary() -> bool {
+    keyed(5, 1) == keyed(5, 2)
+}
+
+#[rust_lean_test]
+pub fn test_partial_ne_goes_through_the_dictionary() -> bool {
+    (keyed(5, 1) != keyed(5, 2)) == false
+}
+
+// ----- Reverse ---------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_reverse_cmp_is_flipped() -> bool {
+    use core::cmp::Reverse;
+    core::cmp::max(Reverse(keyed(1, 1)), Reverse(keyed(9, 2)))
+        .0
+        .tag
+        == 1
+}
+
+#[rust_lean_test]
+pub fn test_reverse_eq_goes_through_the_dictionary() -> bool {
+    use core::cmp::Reverse;
+    Reverse(keyed(5, 1)) == Reverse(keyed(5, 2))
 }
