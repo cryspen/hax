@@ -190,15 +190,6 @@ jobs:
         working-directory: project/${{ matrix.directory }}
         run: ${{ matrix.prove }}
 
-      - name: ↑ Upload the extraction
-        if: always() && steps.extract.outcome == 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: extraction-${{ matrix.name }}
-          path: project/**/proofs/fstar
-          include-hidden-files: true
-          if-no-files-found: warn
-
       - name: Open an issue for a failing nightly
         if: (failure() || cancelled()) && github.event_name == 'schedule'
         uses: ./hax/.github/actions/open-issue-once
