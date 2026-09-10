@@ -932,6 +932,27 @@ letfun new_tests__legacy__attributes__lib__future_self__impl_Dummy__f(
        ) =
        self.
 
+letfun new_tests__legacy__attributes__lib__future_and_result_order__one_mut_and_result(
+         x : nat
+       ) =
+       let x = (core_models__num__impl_u32__wrapping_add(x, 1)) in
+       let hax_temp_output = (core_models__cmp__f_eq(x, 0)) in
+       (x, hax_temp_output).
+
+letfun new_tests__legacy__attributes__lib__future_and_result_order__two_mut_and_result(
+         a : nat, b : nat
+       ) =
+       let a = (core_models__num__impl_u8__wrapping_add(a, 1)) in
+       let b = (core_models__num__impl_u64__wrapping_add(b, 2)) in
+       let hax_temp_output = (core_models__cmp__f_eq(a, 0)) in
+       (a, b, hax_temp_output).
+
+letfun new_tests__legacy__attributes__lib__future_and_result_order__one_mut_no_result(
+         x : nat
+       ) =
+       let x = (core_models__num__impl_u32__wrapping_add(x, 1)) in
+       x.
+
 letfun new_tests__legacy__attributes__lib__ensures_on_arity_zero_fns__doing_nothing(
          wildcard5 : bitstring
        ) =

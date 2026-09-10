@@ -51,18 +51,6 @@ Equations ff_pre_post (x : both 'bool) (y : both 'bool) : both 'bool :=
     dropped_body : both 'bool.
 Fail Next Obligation.
 
-Class t_T (Self : choice_type) (v_Self : v_Self) := {
-  f_U : choice_type ;
-  f_c : (both int8) ;
-  f_d : (both 'unit) ;
-  f_m : (both v_Self -> both int8 -> both 'bool) ;
-}.
-
-#[global] Program Instance int8_t_T : t_T int8 :=
-  _.
-Fail Next Obligation.
-Hint Unfold int8_t_T.
-
 Class t_TrGeneric (Self : choice_type) (v_Self : v_Self) {v_U : v_U} `{ t_Clone v_U} := {
   f_f : (both v_U -> both v_Self) ;
 }.
@@ -100,3 +88,15 @@ Equations impl_S2__ff_s2 (_ : both 'unit) : both 'unit :=
   impl_S2__ff_s2 _  :=
     dropped_body : both 'unit.
 Fail Next Obligation.
+
+Class t_T (Self : choice_type) (v_Self : v_Self) := {
+  f_U : choice_type ;
+  f_c : (both int8) ;
+  f_d : (both 'unit) ;
+  f_m : (both v_Self -> both int8 -> both 'bool) ;
+}.
+
+#[global] Program Instance int8_t_T : t_T int8 :=
+  _.
+Fail Next Obligation.
+Hint Unfold int8_t_T.
