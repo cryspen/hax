@@ -418,7 +418,7 @@ impl<T: crate::cmp::PartialOrd<T>> crate::cmp::PartialOrd<[T]> for [T] {
     fn partial_cmp(&self, other: &[T]) -> crate::option::Option<crate::cmp::Ordering> {
         // Lexicographic order: compare elements pairwise up to the shorter
         // length; the first non-`Equal` result (including `None`) decides.
-        let l = if self.len() < other.len() {
+        let l = if self.len() <= other.len() {
             self.len()
         } else {
             other.len()
@@ -446,7 +446,7 @@ impl<T: crate::cmp::Ord> crate::cmp::Ord for [T] {
     fn cmp(&self, other: &[T]) -> crate::cmp::Ordering {
         // Lexicographic order: compare elements pairwise up to the shorter
         // length; the first non-`Equal` result decides.
-        let l = if self.len() < other.len() {
+        let l = if self.len() <= other.len() {
             self.len()
         } else {
             other.len()
@@ -1324,6 +1324,42 @@ mod tests {
             prop_assert_eq!(
                 <[u8] as crate::cmp::PartialOrd<[u8]>>::partial_cmp(&a[..], &b[..]),
                 a[..].partial_cmp(&b[..]).inject()
+            );
+        }
+
+        #[test]
+        fn test_slice_cmp_tagged(
+            a in crate::testing::tagged_vec(0..=6),
+            b in crate::testing::tagged_vec(0..=6),
+        ) {
+            use crate::testing::Tagged;
+            prop_assert_eq!(
+                <[Tagged] as crate::cmp::Ord>::cmp(&a[..], &b[..]),
+                a[..].cmp(&b[..]).inject()
+            );
+            prop_assert_eq!(
+                <[Tagged] as crate::cmp::PartialOrd<[Tagged]>>::partial_cmp(&a[..], &b[..]),
+                a[..].partial_cmp(&b[..]).inject()
+            );
+        }
+
+        // Every pair this draws is equal-length with all elements equal, so it
+        // pins the length tie-break after the element loop.
+        #[test]
+        fn test_slice_cmp_equal_lengths_tie(keys in prop::collection::vec(0u8..3, 0..=6)) {
+            use crate::testing::Tagged;
+            let a: Vec<Tagged> = keys.iter().enumerate()
+                .map(|(i, &k)| Tagged::new(k, i as u8)).collect();
+            let b: Vec<Tagged> = keys.iter().enumerate()
+                .map(|(i, &k)| Tagged::new(k, 100 + i as u8)).collect();
+            prop_assert_eq!(a[..].cmp(&b[..]), std::cmp::Ordering::Equal);
+            prop_assert_eq!(
+                <[Tagged] as crate::cmp::Ord>::cmp(&a[..], &b[..]),
+                crate::cmp::Ordering::Equal
+            );
+            prop_assert_eq!(
+                <[Tagged] as crate::cmp::PartialOrd<[Tagged]>>::partial_cmp(&a[..], &b[..]),
+                ModelOption::Some(crate::cmp::Ordering::Equal)
             );
         }
 

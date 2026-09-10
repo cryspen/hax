@@ -13682,7 +13682,7 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp
   := do
   let i ← core.slice.Slice.len self
   let i1 ← core.slice.Slice.len other
-  let l ← if i < i1
+  let l ← if i <= i1
             then ok i
             else ok i1
   Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop cmpPartialOrdInst
@@ -13762,7 +13762,7 @@ def Slice.Insts.CoreCmpOrd.cmp
   := do
   let i ← core.slice.Slice.len self
   let i1 ← core.slice.Slice.len other
-  let l ← if i < i1
+  let l ← if i <= i1
             then ok i
             else ok i1
   Slice.Insts.CoreCmpOrd.cmp_loop cmpOrdInst

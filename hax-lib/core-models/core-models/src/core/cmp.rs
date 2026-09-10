@@ -674,4 +674,58 @@ mod tests {
             std::cmp::PartialEq::ne(&(), &())
         );
     }
+
+    use crate::testing::Tagged;
+
+    proptest! {
+        #[test]
+        fn test_min_max_tie_breaking(k1 in 0u8..3, k2 in 0u8..3) {
+            let a = Tagged::new(k1, 0);
+            let b = Tagged::new(k2, 1);
+            prop_assert_eq!(super::min(a, b).tag, std::cmp::min(a, b).tag);
+            prop_assert_eq!(super::max(a, b).tag, std::cmp::max(a, b).tag);
+        }
+
+        // `clamp` panics unless `min <= max`, so `hi` is built from `lo`.
+        #[test]
+        fn test_clamp_tie_breaking(kv in 0u8..4, klo in 0u8..3, d in 0u8..3) {
+            let lo = Tagged::new(klo, 0);
+            let hi = Tagged::new(klo + d, 1);
+            let v = Tagged::new(kv, 2);
+            prop_assert_eq!(
+                super::clamp(v, lo, hi).tag,
+                std::cmp::Ord::clamp(v, lo, hi).tag
+            );
+        }
+
+        #[test]
+        fn test_reverse_cmp_tagged(k1 in 0u8..3, k2 in 0u8..3) {
+            let a = std::cmp::Reverse(Tagged::new(k1, 0));
+            let b = std::cmp::Reverse(Tagged::new(k2, 1));
+            prop_assert_eq!(
+                <super::Reverse<Tagged> as Ord>::cmp(&a.inject(), &b.inject()),
+                std::cmp::Ord::cmp(&a, &b).inject()
+            );
+        }
+    }
+
+    /// The tie itself, which a strategy reaches only by chance.
+    #[test]
+    fn test_min_max_on_equal_pick_std_argument() {
+        let a = Tagged::new(1, 0);
+        let b = Tagged::new(1, 1);
+        assert_eq!(std::cmp::min(a, b).tag, 0);
+        assert_eq!(std::cmp::max(a, b).tag, 1);
+        assert_eq!(super::min(a, b).tag, 0);
+        assert_eq!(super::max(a, b).tag, 1);
+    }
+
+    #[test]
+    fn test_clamp_on_equal_returns_the_value() {
+        let lo = Tagged::new(1, 0);
+        let hi = Tagged::new(1, 1);
+        let v = Tagged::new(1, 2);
+        assert_eq!(std::cmp::Ord::clamp(v, lo, hi).tag, 2);
+        assert_eq!(super::clamp(v, lo, hi).tag, 2);
+    }
 }
