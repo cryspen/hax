@@ -1,0 +1,223 @@
+name: Projects
+
+# Runs the hax pipeline of the projects that use hax against the hax in this
+# checkout. The projects are listed in `.github/hax-projects.json`.
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+    inputs:
+      projects:
+        description: >-
+          Which projects to run: a comma-separated list of names from
+          .github/hax-projects.json, or "all".
+        default: all
+      hax-ref:
+        description: >-
+          The hax branch, tag or commit to test. Defaults to the ref this
+          run was dispatched from.
+        default: ''
+      project-ref:
+        description: >-
+          The branch, tag or commit of each project repository. Defaults to
+          its default branch.
+        default: ''
+      stage:
+        description: >-
+          How far to go, overriding the `stage` each project sets for itself:
+          "extract", "lax" or "prove" for the full proofs.
+        type: choice
+        options: [project default, extract, lax, prove]
+        default: project default
+
+concurrency:
+  group: >-
+    ${{ github.workflow }}-${{ github.ref }}-${{ inputs.projects }}
+    -${{ inputs.hax-ref }}-${{ inputs.project-ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    if: github.repository == 'cryspen/hax'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.hax-ref }}
+
+      - id: plan
+        env:
+          PROJECTS: ${{ inputs.projects || 'all' }}
+        run: |
+          set -euo pipefail
+          names=$(jq -cn --arg s "$PROJECTS" \
+            '$s | split(",") | map(sub("^ +";"") | sub(" +$";"")) | map(select(. != ""))')
+          matrix=$(jq -c --argjson names "$names" '
+            [.[].name] as $known
+            | ($names - ["all"]) as $requested
+            | ($requested - $known) as $unknown
+            | if ($unknown | length) > 0 then
+                ("unknown project(s): " + ($unknown | join(", "))
+                  + ". Known projects: " + ($known | join(", "))) | halt_error
+              elif ($names | index("all")) then {include: .}
+              else {include: [.[] | select(.name | IN($requested[]))]}
+              end
+          ' .github/hax-projects.json)
+          if [ "$(jq '.include | length' <<< "$matrix")" -eq 0 ]; then
+            echo "::error::no project selected by '$PROJECTS'"
+            exit 1
+          fi
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          jq '.include | map(.name)' <<< "$matrix"
+
+  run:
+    needs: plan
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ matrix.timeout }}
+
+    permissions:
+      contents: read
+      issues: write
+
+    env:
+      CARGO_TERM_COLOR: always
+      STAGE: >-
+        ${{ (inputs.stage == '' || inputs.stage == 'project default')
+        && matrix.stage || inputs.stage }}
+      # Bertie's F* makefiles take the proof libraries from here; libcrux's
+      # take them from `cargo metadata`, which the injection points here.
+      HAX_HOME: ${{ github.workspace }}/hax
+
+    steps:
+      - name: Free disk space by removing preinstalled packages
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+
+      - name: Check out hax
+        id: hax
+        uses: actions/checkout@v4
+        with:
+          path: hax
+          ref: ${{ inputs.hax-ref }}
+
+      - name: Check out ${{ matrix.repository }}
+        id: project
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repository }}
+          path: project
+          ref: ${{ inputs.project-ref }}
+
+      - if: runner.environment == 'github-hosted'
+        uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+          extraPullNames: fstar-nix-versions, z3-nix-versions
+
+      - name: Build and install hax
+        run: nix profile install ./hax
+
+      - name: Install F* ${{ matrix.fstar }}
+        env:
+          VERSION: ${{ matrix.fstar }}
+        run: |
+          set -euo pipefail
+          url="https://github.com/FStarLang/FStar/releases/download/$VERSION/fstar-$VERSION-Linux-x86_64.tar.gz"
+          if curl -fsSL --retry 5 --retry-delay 5 --retry-all-errors \
+              -o /tmp/fstar.tar.gz "$url"; then
+            mkdir -p "$HOME/.fstar"
+            tar -xzf /tmp/fstar.tar.gz -C "$HOME/.fstar" --strip-components=2
+            echo "$HOME/.fstar/bin" >> "$GITHUB_PATH"
+          else
+            echo "::notice::no prebuilt F* $VERSION for this platform; building it"
+            nix profile install "github:FStarLang/FStar/$VERSION"
+          fi
+
+      # Separate, so the `PATH` the step above exported is in effect.
+      - name: Locate the F* installation
+        run: |
+          set -euo pipefail
+          home="$(cd "$(dirname "$(command -v fstar.exe)")/.." && pwd)"
+          echo "FSTAR_HOME=$home" >> "$GITHUB_ENV"
+          fstar.exe --version
+
+      - name: Install ${{ matrix.packages }}
+        if: matrix.packages != ''
+        env:
+          PACKAGES: ${{ matrix.packages }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $PACKAGES
+
+      # The directory, not the checkout root: cargo finds the workspace above
+      # it, and not every project has one at its root.
+      - name: Use the hax-lib from this checkout
+        uses: ./hax/.github/actions/use-local-hax-lib
+        with:
+          project: project/${{ matrix.directory }}
+          hax: hax
+
+      - name: Extract
+        id: extract
+        working-directory: project/${{ matrix.directory }}
+        run: ${{ matrix.extract }}
+
+      # One or the other, never both: an F* run leaves `.checked` files a
+      # later `make` treats as done.
+      - name: Lax-check
+        id: lax
+        if: env.STAGE == 'lax'
+        working-directory: project/${{ matrix.directory }}
+        run: ${{ matrix.lax }}
+
+      - name: Prove
+        id: prove
+        if: env.STAGE == 'prove'
+        working-directory: project/${{ matrix.directory }}
+        run: ${{ matrix.prove }}
+
+      - name: Open an issue for a failing nightly
+        if: (failure() || cancelled()) && github.event_name == 'schedule'
+        uses: ./hax/.github/actions/open-issue-once
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          label: ci
+          title: Nightly hax run of ${{ matrix.name }} is failing
+          body: |-
+            The nightly [Projects](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) run of `${{ matrix.name }}` failed.
+
+            | | |
+            |---|---|
+            | hax | [`${{ steps.hax.outputs.commit }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.hax.outputs.commit }}) |
+            | ${{ matrix.repository }} | [`${{ steps.project.outputs.commit }}`](${{ github.server_url }}/${{ matrix.repository }}/commit/${{ steps.project.outputs.commit }}) |
+            | extraction | `${{ steps.extract.outcome }}` |
+            | lax-check | `${{ env.STAGE == 'lax' && steps.lax.outcome || 'not requested' }}` |
+            | proofs | `${{ env.STAGE == 'prove' && steps.prove.outcome || 'not requested' }}` |
+
+            A requested stage reported as `skipped` did not run because
+            something before it failed — the setup steps included; the run's
+            log says which. A cancelled run has hit its timeout.
+
+            To reproduce, or to test a fix in either repository:
+
+            ```
+            gh workflow run projects.yml \
+              -f projects=${{ matrix.name }} \
+              -f hax-ref=<hax branch> \
+              -f project-ref=<${{ matrix.repository }} branch>
+            ```

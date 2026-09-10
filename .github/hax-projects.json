@@ -1,0 +1,80 @@
+[
+  {
+    "name": "bertie",
+    "repository": "cryspen/bertie",
+    "directory": ".",
+    "fstar": "v2025.10.06",
+    "stage": "lax",
+    "extract": "./hax-driver.py extract-fstar",
+    "lax": "./hax-driver.py typecheck --admit",
+    "prove": "./hax-driver.py typecheck",
+    "timeout": 60
+  },
+  {
+    "name": "libcrux-ml-kem",
+    "repository": "celabshq/libcrux",
+    "directory": "libcrux-ml-kem",
+    "fstar": "v2026.03.24",
+    "stage": "lax",
+    "extract": "./hax.py extract",
+    "lax": "./hax.py prove --admit",
+    "prove": "./hax.py prove",
+    "timeout": 120
+  },
+  {
+    "name": "libcrux-ml-dsa",
+    "repository": "celabshq/libcrux",
+    "directory": "libcrux-ml-dsa",
+    "fstar": "v2026.03.24",
+    "stage": "lax",
+    "extract": "./hax.sh extract",
+    "lax": "./hax.sh prove --admit",
+    "prove": "./hax.sh prove",
+    "timeout": 120
+  },
+  {
+    "name": "libcrux-sha3",
+    "repository": "celabshq/libcrux",
+    "directory": "crates/algorithms/sha3",
+    "fstar": "v2026.03.24",
+    "stage": "prove",
+    "extract": "./hax.sh extract",
+    "lax": "./hax.sh prove --admit",
+    "prove": "./hax.sh prove",
+    "timeout": 120
+  },
+  {
+    "name": "libcrux-kmac",
+    "repository": "celabshq/libcrux",
+    "directory": "crates/algorithms/kmac",
+    "fstar": "v2026.03.24",
+    "stage": "prove",
+    "extract": "./hax.py clean && ./hax.py extract",
+    "lax": "./hax.py prove --admit",
+    "prove": "./hax.py prove",
+    "timeout": 120
+  },
+  {
+    "name": "libcrux-iot-ml-dsa",
+    "repository": "celabshq/libcrux-iot",
+    "directory": "libcrux-iot/ml-dsa",
+    "fstar": "v2025.12.15",
+    "stage": "extract",
+    "extract": "./hax.sh extract",
+    "lax": "./hax.sh prove --admit",
+    "prove": "./hax.sh prove",
+    "timeout": 120
+  },
+  {
+    "name": "spqr",
+    "repository": "signalapp/SparsePostQuantumRatchet",
+    "directory": ".",
+    "fstar": "v2025.10.06",
+    "packages": "protobuf-compiler",
+    "stage": "prove",
+    "extract": "rm -f proofs/fstar/extraction/*.fst* && ./hax.py extract",
+    "lax": "./hax.py prove --admit",
+    "prove": "./hax.py prove",
+    "timeout": 180
+  }
+]
