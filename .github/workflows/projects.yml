@@ -32,7 +32,9 @@ on:
         default: project default
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ inputs.projects }}
+  group: >-
+    ${{ github.workflow }}-${{ github.ref }}-${{ inputs.projects }}
+    -${{ inputs.hax-ref }}-${{ inputs.project-ref }}
   cancel-in-progress: true
 
 permissions:
@@ -46,6 +48,8 @@ jobs:
       matrix: ${{ steps.plan.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.hax-ref }}
 
       - id: plan
         env:
@@ -102,24 +106,19 @@ jobs:
           tool-cache: false
 
       - name: Check out hax
+        id: hax
         uses: actions/checkout@v4
         with:
           path: hax
           ref: ${{ inputs.hax-ref }}
 
       - name: Check out ${{ matrix.repository }}
+        id: project
         uses: actions/checkout@v4
         with:
           repository: ${{ matrix.repository }}
           path: project
           ref: ${{ inputs.project-ref }}
-
-      - name: Record the versions under test
-        id: versions
-        run: |
-          set -euo pipefail
-          echo "hax=$(git -C hax rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-          echo "project=$(git -C project rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - if: runner.environment == 'github-hosted'
         uses: DeterminateSystems/nix-installer-action@main
@@ -201,7 +200,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Open an issue for a failing nightly
-        if: failure() && github.event_name == 'schedule'
+        if: (failure() || cancelled()) && github.event_name == 'schedule'
         uses: ./hax/.github/actions/open-issue-once
         env:
           GH_TOKEN: ${{ github.token }}
@@ -213,15 +212,15 @@ jobs:
 
             | | |
             |---|---|
-            | hax | [`${{ steps.versions.outputs.hax }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.versions.outputs.hax }}) |
-            | ${{ matrix.repository }} | [`${{ steps.versions.outputs.project }}`](${{ github.server_url }}/${{ matrix.repository }}/commit/${{ steps.versions.outputs.project }}) |
+            | hax | [`${{ steps.hax.outputs.commit }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.hax.outputs.commit }}) |
+            | ${{ matrix.repository }} | [`${{ steps.project.outputs.commit }}`](${{ github.server_url }}/${{ matrix.repository }}/commit/${{ steps.project.outputs.commit }}) |
             | extraction | `${{ steps.extract.outcome }}` |
-            | lax-check | `${{ steps.lax.outcome }}` |
-            | proofs | `${{ steps.prove.outcome }}` |
+            | lax-check | `${{ env.STAGE == 'lax' && steps.lax.outcome || 'not requested' }}` |
+            | proofs | `${{ env.STAGE == 'prove' && steps.prove.outcome || 'not requested' }}` |
 
-            A stage reported as `skipped` did not run because something
-            before it failed — the setup steps included; the run's log says
-            which.
+            A requested stage reported as `skipped` did not run because
+            something before it failed — the setup steps included; the run's
+            log says which. A cancelled run has hit its timeout.
 
             To reproduce, or to test a fix in either repository:
 
