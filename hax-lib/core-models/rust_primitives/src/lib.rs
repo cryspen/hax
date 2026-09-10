@@ -276,12 +276,6 @@ pub mod arithmetic {
                 pub fn [<count_ones_ $Self>](x: $Self) -> u32 {
                     x.count_ones()
                 }
-                pub fn [<rotate_right_ $Self>](x: $Self, n: u32) -> $Self {
-                    x.rotate_right(n)
-                }
-                pub fn [<rotate_left_ $Self>](x: $Self, n: u32) -> $Self {
-                    x.rotate_left(n)
-                }
                 pub fn [<leading_zeros_ $Self>](x: $Self) -> u32 {
                     x.leading_zeros()
                 }
@@ -316,8 +310,14 @@ pub mod arithmetic {
             paste! {
                 $(
                     pub fn [<abs_ $Self>](x: $Self) -> $Self {
-                    x.abs()
-                }
+                        x.abs()
+                    }
+                    pub fn [<rotate_right_ $Self>](x: $Self, n: u32) -> $Self {
+                        x.rotate_right(n)
+                    }
+                    pub fn [<rotate_left_ $Self>](x: $Self, n: u32) -> $Self {
+                        x.rotate_left(n)
+                    }
                 )*
             }
         }

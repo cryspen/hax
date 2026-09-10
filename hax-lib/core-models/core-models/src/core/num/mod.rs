@@ -17,9 +17,6 @@ macro_rules! uint_impl {
         $Name: ty,
         $Max: expr,
         $Bits: expr,
-        // Width used for the rotate shift amounts.  Same as `$Bits` for fixed-width
-        // types, but `rust_primitives::SIZE_BITS` for `usize` so the F* `shiftval`
-        // refinement (bounded by the abstract `bits usize == size_bits`) discharges.
         $ShiftBits: expr,
         $Bytes: expr,
     ) => {
@@ -137,34 +134,24 @@ macro_rules! uint_impl {
                 paste! { [<count_ones_ $Name>](x) }
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-            /// Modeled via shifts + xor rather than the `rotate_right_*` primitive
-            /// (which is `x.rotate_right(n)` and would extract back into this model,
-            /// forming a cycle — hence the previous F* `opaque`).  The two shifted
-            /// halves occupy disjoint bit positions, so `^` coincides with `|`.
-            /// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
-            /// `x >> BITS` / `x << BITS`, which is undefined.  The width is
-            /// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
-            /// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
-            /// by the abstract `bits usize == size_bits`, which a literal `64`
-            /// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
-            ///
-            /// `opaque_to_smt`: the shift+xor body is transparent (so the
-            /// `Proof_Utils.Lemmas` bridge lemma can `reveal` it), but rotate is an
-            /// atom by default — otherwise every consumer (e.g. Keccak `rho`, whose
-            /// two sides are the SAME rotate application) loses reflexivity and Z3
-            /// re-proves 25 nonlinear shift+xor equalities per lemma (saturation).
             #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
                 let m = n % $ShiftBits;
-                if m == 0 { x } else { (x >> m) ^ (x << ($ShiftBits - m)) }
+                if m == 0 {
+                    x
+                } else {
+                    (x >> m) ^ (x << ($ShiftBits - m))
+                }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-            /// Modeled via shifts + xor; see `rotate_right` above for the rationale.
-            /// `opaque_to_smt` (see `rotate_right`): atom by default, revealable body.
             #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
                 let m = n % $ShiftBits;
-                if m == 0 { x } else { (x << m) ^ (x >> ($ShiftBits - m)) }
+                if m == 0 {
+                    x
+                } else {
+                    (x << m) ^ (x >> ($ShiftBits - m))
+                }
             }
             /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -663,9 +650,6 @@ uint_impl! {
     // `Result U32`, but aeneas inlines associated consts as plain values at use sites
     // (`usize::BITS - x`), matching the fixed-width `u32::BITS : U32`. Value-identical.
     64,
-    // Rotate shift width: `SIZE_BITS` (not the literal `64`) so the F* `shiftval`
-    // refinement, bounded by the abstract `bits usize == size_bits`, discharges.
-    // At a use site aeneas inlines the const, so Lean still sees a plain value.
     SIZE_BITS,
     SIZE_BYTES,
 }
@@ -880,12 +864,18 @@ mod tests {
                         }
 
                         #[test]
-                        fn [<test_ $t _rotate_right>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                        fn [<test_ $t _rotate_right>](
+                            x in any::<$t>(),
+                            n in prop_oneof![Just(0u32), Just($t::BITS), 0u32..$t::BITS, any::<u32>()],
+                        ) {
                             prop_assert_eq!(super::$t::rotate_right(x.inject(), n), x.rotate_right(n));
                         }
 
                         #[test]
-                        fn [<test_ $t _rotate_left>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                        fn [<test_ $t _rotate_left>](
+                            x in any::<$t>(),
+                            n in prop_oneof![Just(0u32), Just($t::BITS), 0u32..$t::BITS, any::<u32>()],
+                        ) {
                             prop_assert_eq!(super::$t::rotate_left(x.inject(), n), x.rotate_left(n));
                         }
 
