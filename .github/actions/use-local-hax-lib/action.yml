@@ -18,10 +18,6 @@ runs:
       env:
         PROJECT: ${{ inputs.project }}
         HAX: ${{ inputs.hax }}
-      # `cargo add --path` rather than `[patch.crates-io]`: a patch applies
-      # only when its version satisfies what the project declares, which a hax
-      # under development often does not, and cargo then silently keeps the
-      # published crate.
       run: |
         set -euo pipefail
         project=$(cd "$PROJECT" && pwd)
@@ -34,9 +30,6 @@ runs:
 
         cd "$project"
 
-        # `kind` and `target` too: a dev, build or target-scoped dependency
-        # re-added as a plain one is a second entry with a different source,
-        # which cargo then refuses to resolve.
         edges=$(cargo metadata --format-version 1 --no-deps | jq -r '
           .packages[] as $p | $p.dependencies[]
           | select(.name | startswith("hax-"))
@@ -65,9 +58,6 @@ runs:
           echo "$member: $dep ($label) -> $path"
         done <<<"$edges"
 
-        # Checked on workspace members' direct edges, which is what
-        # `cargo-hax` gates on; a published copy deeper in the graph is not
-        # what the project compiles its own annotations against.
         published=$(cargo metadata --format-version 1 | jq -r '
           (.packages | map({key: .id, value: .}) | from_entries) as $byid
           | .workspace_members as $ws
