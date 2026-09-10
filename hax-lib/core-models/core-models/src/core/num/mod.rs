@@ -147,12 +147,21 @@ macro_rules! uint_impl {
             /// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
             /// by the abstract `bits usize == size_bits`, which a literal `64`
             /// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+            ///
+            /// `opaque_to_smt`: the shift+xor body is transparent (so the
+            /// `Proof_Utils.Lemmas` bridge lemma can `reveal` it), but rotate is an
+            /// atom by default — otherwise every consumer (e.g. Keccak `rho`, whose
+            /// two sides are the SAME rotate application) loses reflexivity and Z3
+            /// re-proves 25 nonlinear shift+xor equalities per lemma (saturation).
+            #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
                 let m = n % $ShiftBits;
                 if m == 0 { x } else { (x >> m) ^ (x << ($ShiftBits - m)) }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
             /// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+            /// `opaque_to_smt` (see `rotate_right`): atom by default, revealable body.
+            #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
                 let m = n % $ShiftBits;
                 if m == 0 { x } else { (x << m) ^ (x >> ($ShiftBits - m)) }

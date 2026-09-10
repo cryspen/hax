@@ -329,27 +329,6 @@ let impl_6__overflowing_pow (x: u8) (exp: u32) : (u8 & bool) =
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_6__count_ones (x: u8) : u32 = Rust_primitives.Arithmetic.count_ones_u8 x
 
-/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
-/// (which is `x.rotate_right(n)` and would extract back into this model,
-/// forming a cycle — hence the previous F* `opaque`).  The two shifted
-/// halves occupy disjoint bit positions, so `^` coincides with `|`.
-/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
-/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
-/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
-/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
-/// by the abstract `bits usize == size_bits`, which a literal `64`
-/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
-let impl_6__rotate_right (x: u8) (n: u32) : u8 =
-  let m:u32 = n %! mk_u32 8 in
-  if m =. mk_u32 0 then x else (x >>! m <: u8) ^. (x <<! (mk_u32 8 -! m <: u32) <: u8)
-
-/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
-let impl_6__rotate_left (x: u8) (n: u32) : u8 =
-  let m:u32 = n %! mk_u32 8 in
-  if m =. mk_u32 0 then x else (x <<! m <: u8) ^. (x >>! (mk_u32 8 -! m <: u32) <: u8)
-
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
 val impl_6__leading_zeros': x: u8 -> u32
@@ -433,6 +412,37 @@ let impl_6__unchecked_mul (x y: u8)
 let impl_6__rem_euclid (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u8 x y
 
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+/// `opaque_to_smt`: the shift+xor body is transparent (so the
+/// `Proof_Utils.Lemmas` bridge lemma can `reveal` it), but rotate is an
+/// atom by default — otherwise every consumer (e.g. Keccak `rho`, whose
+/// two sides are the SAME rotate application) loses reflexivity and Z3
+/// re-proves 25 nonlinear shift+xor equalities per lemma (saturation).
+let impl_6__rotate_right (x: u8) (n: u32) : u8 =
+  let m:u32 = n %! mk_u32 8 in
+  if m =. mk_u32 0 then x else (x >>! m <: u8) ^. (x <<! (mk_u32 8 -! m <: u32) <: u8)
+
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+/// `opaque_to_smt` (see `rotate_right`): atom by default, revealable body.
+let impl_6__rotate_left (x: u8) (n: u32) : u8 =
+  let m:u32 = n %! mk_u32 8 in
+  if m =. mk_u32 0 then x else (x <<! m <: u8) ^. (x >>! (mk_u32 8 -! m <: u32) <: u8)
+
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_6__unchecked_div (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
   x /! y
@@ -495,27 +505,6 @@ let impl_7__overflowing_pow (x: u16) (exp: u32) : (u16 & bool) =
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_7__count_ones (x: u16) : u32 = Rust_primitives.Arithmetic.count_ones_u16 x
-
-/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
-/// (which is `x.rotate_right(n)` and would extract back into this model,
-/// forming a cycle — hence the previous F* `opaque`).  The two shifted
-/// halves occupy disjoint bit positions, so `^` coincides with `|`.
-/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
-/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
-/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
-/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
-/// by the abstract `bits usize == size_bits`, which a literal `64`
-/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
-let impl_7__rotate_right (x: u16) (n: u32) : u16 =
-  let m:u32 = n %! mk_u32 16 in
-  if m =. mk_u32 0 then x else (x >>! m <: u16) ^. (x <<! (mk_u32 16 -! m <: u32) <: u16)
-
-/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
-let impl_7__rotate_left (x: u16) (n: u32) : u16 =
-  let m:u32 = n %! mk_u32 16 in
-  if m =. mk_u32 0 then x else (x <<! m <: u16) ^. (x >>! (mk_u32 16 -! m <: u32) <: u16)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -600,6 +589,37 @@ let impl_7__unchecked_mul (x y: u16)
 let impl_7__rem_euclid (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u16 x y
 
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+/// `opaque_to_smt`: the shift+xor body is transparent (so the
+/// `Proof_Utils.Lemmas` bridge lemma can `reveal` it), but rotate is an
+/// atom by default — otherwise every consumer (e.g. Keccak `rho`, whose
+/// two sides are the SAME rotate application) loses reflexivity and Z3
+/// re-proves 25 nonlinear shift+xor equalities per lemma (saturation).
+let impl_7__rotate_right (x: u16) (n: u32) : u16 =
+  let m:u32 = n %! mk_u32 16 in
+  if m =. mk_u32 0 then x else (x >>! m <: u16) ^. (x <<! (mk_u32 16 -! m <: u32) <: u16)
+
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+/// `opaque_to_smt` (see `rotate_right`): atom by default, revealable body.
+let impl_7__rotate_left (x: u16) (n: u32) : u16 =
+  let m:u32 = n %! mk_u32 16 in
+  if m =. mk_u32 0 then x else (x <<! m <: u16) ^. (x >>! (mk_u32 16 -! m <: u32) <: u16)
+
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_7__unchecked_div (x y: u16)
     : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) = x /! y
@@ -662,27 +682,6 @@ let impl_8__overflowing_pow (x exp: u32) : (u32 & bool) =
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_8__count_ones (x: u32) : u32 = Rust_primitives.Arithmetic.count_ones_u32 x
-
-/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
-/// (which is `x.rotate_right(n)` and would extract back into this model,
-/// forming a cycle — hence the previous F* `opaque`).  The two shifted
-/// halves occupy disjoint bit positions, so `^` coincides with `|`.
-/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
-/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
-/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
-/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
-/// by the abstract `bits usize == size_bits`, which a literal `64`
-/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
-let impl_8__rotate_right (x n: u32) : u32 =
-  let m:u32 = n %! mk_u32 32 in
-  if m =. mk_u32 0 then x else (x >>! m <: u32) ^. (x <<! (mk_u32 32 -! m <: u32) <: u32)
-
-/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
-let impl_8__rotate_left (x n: u32) : u32 =
-  let m:u32 = n %! mk_u32 32 in
-  if m =. mk_u32 0 then x else (x <<! m <: u32) ^. (x >>! (mk_u32 32 -! m <: u32) <: u32)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -767,6 +766,37 @@ let impl_8__unchecked_mul (x y: u32)
 let impl_8__rem_euclid (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u32 x y
 
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+/// `opaque_to_smt`: the shift+xor body is transparent (so the
+/// `Proof_Utils.Lemmas` bridge lemma can `reveal` it), but rotate is an
+/// atom by default — otherwise every consumer (e.g. Keccak `rho`, whose
+/// two sides are the SAME rotate application) loses reflexivity and Z3
+/// re-proves 25 nonlinear shift+xor equalities per lemma (saturation).
+let impl_8__rotate_right (x n: u32) : u32 =
+  let m:u32 = n %! mk_u32 32 in
+  if m =. mk_u32 0 then x else (x >>! m <: u32) ^. (x <<! (mk_u32 32 -! m <: u32) <: u32)
+
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+/// `opaque_to_smt` (see `rotate_right`): atom by default, revealable body.
+let impl_8__rotate_left (x n: u32) : u32 =
+  let m:u32 = n %! mk_u32 32 in
+  if m =. mk_u32 0 then x else (x <<! m <: u32) ^. (x >>! (mk_u32 32 -! m <: u32) <: u32)
+
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_8__unchecked_div (x y: u32)
     : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) = x /! y
@@ -829,27 +859,6 @@ let impl_9__overflowing_pow (x: u64) (exp: u32) : (u64 & bool) =
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_9__count_ones (x: u64) : u32 = Rust_primitives.Arithmetic.count_ones_u64 x
-
-/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
-/// (which is `x.rotate_right(n)` and would extract back into this model,
-/// forming a cycle — hence the previous F* `opaque`).  The two shifted
-/// halves occupy disjoint bit positions, so `^` coincides with `|`.
-/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
-/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
-/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
-/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
-/// by the abstract `bits usize == size_bits`, which a literal `64`
-/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
-let impl_9__rotate_right (x: u64) (n: u32) : u64 =
-  let m:u32 = n %! mk_u32 64 in
-  if m =. mk_u32 0 then x else (x >>! m <: u64) ^. (x <<! (mk_u32 64 -! m <: u32) <: u64)
-
-/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
-let impl_9__rotate_left (x: u64) (n: u32) : u64 =
-  let m:u32 = n %! mk_u32 64 in
-  if m =. mk_u32 0 then x else (x <<! m <: u64) ^. (x >>! (mk_u32 64 -! m <: u32) <: u64)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -934,6 +943,37 @@ let impl_9__unchecked_mul (x y: u64)
 let impl_9__rem_euclid (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u64 x y
 
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+/// `opaque_to_smt`: the shift+xor body is transparent (so the
+/// `Proof_Utils.Lemmas` bridge lemma can `reveal` it), but rotate is an
+/// atom by default — otherwise every consumer (e.g. Keccak `rho`, whose
+/// two sides are the SAME rotate application) loses reflexivity and Z3
+/// re-proves 25 nonlinear shift+xor equalities per lemma (saturation).
+let impl_9__rotate_right (x: u64) (n: u32) : u64 =
+  let m:u32 = n %! mk_u32 64 in
+  if m =. mk_u32 0 then x else (x >>! m <: u64) ^. (x <<! (mk_u32 64 -! m <: u32) <: u64)
+
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+/// `opaque_to_smt` (see `rotate_right`): atom by default, revealable body.
+let impl_9__rotate_left (x: u64) (n: u32) : u64 =
+  let m:u32 = n %! mk_u32 64 in
+  if m =. mk_u32 0 then x else (x <<! m <: u64) ^. (x >>! (mk_u32 64 -! m <: u32) <: u64)
+
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_9__unchecked_div (x y: u64)
     : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) = x /! y
@@ -996,27 +1036,6 @@ let impl_10__overflowing_pow (x: u128) (exp: u32) : (u128 & bool) =
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_10__count_ones (x: u128) : u32 = Rust_primitives.Arithmetic.count_ones_u128 x
-
-/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
-/// (which is `x.rotate_right(n)` and would extract back into this model,
-/// forming a cycle — hence the previous F* `opaque`).  The two shifted
-/// halves occupy disjoint bit positions, so `^` coincides with `|`.
-/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
-/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
-/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
-/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
-/// by the abstract `bits usize == size_bits`, which a literal `64`
-/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
-let impl_10__rotate_right (x: u128) (n: u32) : u128 =
-  let m:u32 = n %! mk_u32 128 in
-  if m =. mk_u32 0 then x else (x >>! m <: u128) ^. (x <<! (mk_u32 128 -! m <: u32) <: u128)
-
-/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
-let impl_10__rotate_left (x: u128) (n: u32) : u128 =
-  let m:u32 = n %! mk_u32 128 in
-  if m =. mk_u32 0 then x else (x <<! m <: u128) ^. (x >>! (mk_u32 128 -! m <: u32) <: u128)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -1103,6 +1122,37 @@ let impl_10__rem_euclid (x y: u128)
     : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u128 x y
 
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+/// `opaque_to_smt`: the shift+xor body is transparent (so the
+/// `Proof_Utils.Lemmas` bridge lemma can `reveal` it), but rotate is an
+/// atom by default — otherwise every consumer (e.g. Keccak `rho`, whose
+/// two sides are the SAME rotate application) loses reflexivity and Z3
+/// re-proves 25 nonlinear shift+xor equalities per lemma (saturation).
+let impl_10__rotate_right (x: u128) (n: u32) : u128 =
+  let m:u32 = n %! mk_u32 128 in
+  if m =. mk_u32 0 then x else (x >>! m <: u128) ^. (x <<! (mk_u32 128 -! m <: u32) <: u128)
+
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+/// `opaque_to_smt` (see `rotate_right`): atom by default, revealable body.
+let impl_10__rotate_left (x: u128) (n: u32) : u128 =
+  let m:u32 = n %! mk_u32 128 in
+  if m =. mk_u32 0 then x else (x <<! m <: u128) ^. (x >>! (mk_u32 128 -! m <: u32) <: u128)
+
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_10__unchecked_div (x y: u128)
     : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) = x /! y
@@ -1169,31 +1219,6 @@ let impl_11__overflowing_pow (x: usize) (exp: u32) : (usize & bool) =
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
 let impl_11__count_ones (x: usize) : u32 = Rust_primitives.Arithmetic.count_ones_usize x
-
-/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
-/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
-/// (which is `x.rotate_right(n)` and would extract back into this model,
-/// forming a cycle — hence the previous F* `opaque`).  The two shifted
-/// halves occupy disjoint bit positions, so `^` coincides with `|`.
-/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
-/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
-/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
-/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
-/// by the abstract `bits usize == size_bits`, which a literal `64`
-/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
-let impl_11__rotate_right (x: usize) (n: u32) : usize =
-  let m:u32 = n %! Rust_primitives.Arithmetic.v_SIZE_BITS in
-  if m =. mk_u32 0
-  then x
-  else (x >>! m <: usize) ^. (x <<! (Rust_primitives.Arithmetic.v_SIZE_BITS -! m <: u32) <: usize)
-
-/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
-/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
-let impl_11__rotate_left (x: usize) (n: u32) : usize =
-  let m:u32 = n %! Rust_primitives.Arithmetic.v_SIZE_BITS in
-  if m =. mk_u32 0
-  then x
-  else (x <<! m <: usize) ^. (x >>! (Rust_primitives.Arithmetic.v_SIZE_BITS -! m <: u32) <: usize)
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -1279,6 +1304,41 @@ let impl_11__unchecked_mul (x y: usize)
 let impl_11__rem_euclid (x y: usize)
     : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_usize x y
+
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
+/// Modeled via shifts + xor rather than the `rotate_right_*` primitive
+/// (which is `x.rotate_right(n)` and would extract back into this model,
+/// forming a cycle — hence the previous F* `opaque`).  The two shifted
+/// halves occupy disjoint bit positions, so `^` coincides with `|`.
+/// `m = n % BITS`; the `m == 0` guard avoids the full-width shift
+/// `x >> BITS` / `x << BITS`, which is undefined.  The width is
+/// `$ShiftBits` (the literal for fixed-width types, `SIZE_BITS` for
+/// `usize`): for `usize` the F* shift refinement `shiftval` is bounded
+/// by the abstract `bits usize == size_bits`, which a literal `64`
+/// cannot discharge but `SIZE_BITS` (`== mk_u32 size_bits`) can.
+/// `opaque_to_smt`: the shift+xor body is transparent (so the
+/// `Proof_Utils.Lemmas` bridge lemma can `reveal` it), but rotate is an
+/// atom by default — otherwise every consumer (e.g. Keccak `rho`, whose
+/// two sides are the SAME rotate application) loses reflexivity and Z3
+/// re-proves 25 nonlinear shift+xor equalities per lemma (saturation).
+let impl_11__rotate_right (x: usize) (n: u32) : usize =
+  let m:u32 = n %! Rust_primitives.Arithmetic.v_SIZE_BITS in
+  if m =. mk_u32 0
+  then x
+  else (x >>! m <: usize) ^. (x <<! (Rust_primitives.Arithmetic.v_SIZE_BITS -! m <: u32) <: usize)
+
+[@@ "opaque_to_smt"]
+
+/// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
+/// Modeled via shifts + xor; see `rotate_right` above for the rationale.
+/// `opaque_to_smt` (see `rotate_right`): atom by default, revealable body.
+let impl_11__rotate_left (x: usize) (n: u32) : usize =
+  let m:u32 = n %! Rust_primitives.Arithmetic.v_SIZE_BITS in
+  if m =. mk_u32 0
+  then x
+  else (x <<! m <: usize) ^. (x >>! (Rust_primitives.Arithmetic.v_SIZE_BITS -! m <: u32) <: usize)
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_11__unchecked_div (x y: usize)
