@@ -9,7 +9,7 @@ namespace core
 
 This file contains workarounds required to be present **after** `Funs.lean` runs.
 
-See `FunsEpilogue.lean` for workarounds that run before `Funs.lean`.
+See `FunsPrologue.lean` for workarounds that run before `Funs.lean`.
 
 -/
 
@@ -634,10 +634,10 @@ def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterato
 via `next` into a `Vec` (`vec.Vec.push`), but Aeneas can't extract it — it hits
 `type_var_id` resolving the `IntoIterator::Item` associated type (the same aeneas
 bug the carve saw), so the impl stays `--exclude`d and we hand-write it, exactly
-as Aeneas.Std hand-writes `alloc.vec.FromIteratorVec`. This is a genuine fold, not
-the empty stub the VecDeque one is — `IntoIterator` now carries `iteratorIteratorInst`
-(the `IntoIter: Iterator` bound), and `FromIterator::from_iter` pins `Item = A`, so
-the fold type-checks and `collect` is computable. -/
+as Aeneas.Std hand-writes `alloc.vec.FromIteratorVec`. `IntoIterator` carries
+`iteratorIteratorInst` (the `IntoIter: Iterator` bound) and
+`FromIterator::from_iter` pins `Item = A`, so the fold type-checks and `collect`
+is computable. -/
 open Aeneas.Std (RustM) in
 def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
     {T IntoIter : Type}

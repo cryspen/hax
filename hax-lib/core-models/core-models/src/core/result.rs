@@ -438,8 +438,8 @@ impl<T, E> Result<Option<T>, E> {
     }
 }
 
-/// Mirrors the `Option` instance in `core/option.rs`. F* compares `Result`s with
-/// its own structural equality, so this is only extracted for aeneas/lean.
+/// F* compares `Result`s with its own structural equality, so this is only
+/// extracted for aeneas/lean.
 #[cfg(not(hax_backend_fstar))]
 #[hax_lib::attributes]
 impl<T: super::cmp::PartialEq<T>, E: super::cmp::PartialEq<E>> super::cmp::PartialEq<Result<T, E>>
@@ -470,12 +470,41 @@ impl<T, E, F: crate::convert::From<E>>
     }
 }
 
+/// Mirrors the `Option` instance in `core/option.rs`.
+#[cfg(not(hax_backend_fstar))]
+#[hax_lib::attributes]
+impl<T: super::clone::Clone, E: super::clone::Clone> super::clone::Clone for Result<T, E> {
+    fn clone(self) -> Self {
+        match self {
+            Ok(v) => Ok(v.clone()),
+            Err(e) => Err(e.clone()),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    #[cfg(not(hax_backend_fstar))]
+    use crate::testing::CloneWitness;
     use crate::testing::Inject;
     use proptest::prelude::*;
 
     proptest! {
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_clone_applies_element_clone(v in any::<u8>()) {
+            let ok: Result<CloneWitness, CloneWitness> = Ok(CloneWitness::new(v));
+            prop_assert_eq!(
+                crate::clone::Clone::clone(ok.inject()),
+                ok.clone().inject()
+            );
+            let err: Result<CloneWitness, CloneWitness> = Err(CloneWitness::new(v));
+            prop_assert_eq!(
+                crate::clone::Clone::clone(err.inject()),
+                err.clone().inject()
+            );
+        }
+
         #[test]
         fn test_is_ok(x in any::<Result<u8, u8>>()) {
             prop_assert!(x.clone().inject().is_ok() == x.is_ok());

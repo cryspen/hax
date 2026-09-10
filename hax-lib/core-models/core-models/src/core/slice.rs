@@ -857,6 +857,20 @@ pub mod equality {
             }
         }
     }
+
+    // F* erases the reference, so this would be a second instance at the same
+    // type as the impl above.
+    #[hax_lib::attributes]
+    #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+    impl<T: crate::cmp::PartialEq<U>, U, const N: usize> crate::cmp::PartialEq<[U; N]> for &[T] {
+        #[cfg(not(hax_backend_fstar))]
+        fn ne(&self, other: &[U; N]) -> bool {
+            self.eq(other) == false
+        }
+        fn eq(&self, other: &[U; N]) -> bool {
+            <[T] as crate::cmp::PartialEq<[U; N]>>::eq(self, other)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -1388,6 +1402,21 @@ mod tests {
             let model = <[u8] as crate::cmp::PartialEq<[u8; 3]>>::eq(s, &arr);
             let std_eq = s == arr;
             prop_assert_eq!(model, std_eq);
+        }
+
+        // The same through a shared reference, which std models as its own impl.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_eq_array_shared(
+            arr in any::<[u8; 3]>(),
+            other in prop::collection::vec(any::<u8>(), 0..=6),
+            use_equal in any::<bool>(),
+        ) {
+            let v: Vec<u8> = if use_equal { arr.to_vec() } else { other };
+            let s: &[u8] = &v[..];
+            let std_eq = s == arr;
+            prop_assert_eq!(<&[u8] as crate::cmp::PartialEq<[u8; 3]>>::eq(&s, &arr), std_eq);
+            prop_assert_eq!(<&[u8] as crate::cmp::PartialEq<[u8; 3]>>::ne(&s, &arr), !std_eq);
         }
 
         // ----- get_unchecked (in-bounds) -------------------------------------

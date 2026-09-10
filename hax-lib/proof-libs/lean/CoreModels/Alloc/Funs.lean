@@ -71,22 +71,22 @@ def boxed.Box.new {T : Type} (v : T) : RustM T := do
 /-- [alloc::boxed::{impl core::ops::deref::Deref<T> for alloc::boxed::Box<T>}::deref]:
     Source: 'src/lib.rs', lines 74:8-76:9
     Visibility: public -/
-def boxed.Box.Insts.CoreOpsDerefDeref.deref
+def Box.Insts.CoreOpsDerefDeref.deref
   {T : Type} (self : boxed.Box T) : RustM T := do
   ok self
 
 /-- Trait implementation: [alloc::boxed::{impl core::ops::deref::Deref<T> for alloc::boxed::Box<T>}]
     Source: 'src/lib.rs', lines 72:4-77:5 -/
 @[reducible]
-def boxed.Box.Insts.CoreOpsDerefDeref (T : Type) : core.ops.deref.Deref
+def Box.Insts.CoreOpsDerefDeref (T : Type) : core.ops.deref.Deref
   (boxed.Box T) T := {
-  deref := boxed.Box.Insts.CoreOpsDerefDeref.deref
+  deref := Box.Insts.CoreOpsDerefDeref.deref
 }
 
 /-- [alloc::boxed::{impl core::clone::Clone for alloc::boxed::Box<T>}::clone]:
     Source: 'src/lib.rs', lines 81:8-83:9
     Visibility: public -/
-def boxed.Box.Insts.CoreCloneClone.clone
+def Box.Insts.CoreCloneClone.clone
   {T : Type} (corecloneCloneInst : core.clone.Clone T) (self : boxed.Box T) :
   RustM (boxed.Box T)
   := do
@@ -96,17 +96,17 @@ def boxed.Box.Insts.CoreCloneClone.clone
 /-- Trait implementation: [alloc::boxed::{impl core::clone::Clone for alloc::boxed::Box<T>}]
     Source: 'src/lib.rs', lines 80:4-84:5 -/
 @[reducible]
-impl_def boxed.Box.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
+impl_def Box.Insts.CoreCloneClone {T : Type} (corecloneCloneInst :
   core.clone.Clone T) : core.clone.Clone (boxed.Box T) := {
-  clone := boxed.Box.Insts.CoreCloneClone.clone corecloneCloneInst
+  clone := Box.Insts.CoreCloneClone.clone corecloneCloneInst
   clone_from := core.clone.Clone.clone_from.default
-    (boxed.Box.Insts.CoreCloneClone corecloneCloneInst)
+    (Box.Insts.CoreCloneClone corecloneCloneInst)
 }
 
 /-- [alloc::boxed::{impl core::cmp::PartialEq<alloc::boxed::Box<U>> for alloc::boxed::Box<T>}::eq]:
     Source: 'src/lib.rs', lines 96:8-98:9
     Visibility: public -/
-def boxed.Box.Insts.CoreCmpPartialEqBox.eq
+def Box.Insts.CoreCmpPartialEqBox.eq
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
   (self : boxed.Box T) (other : boxed.Box U) :
   RustM Bool
@@ -116,23 +116,23 @@ def boxed.Box.Insts.CoreCmpPartialEqBox.eq
 /-- [alloc::boxed::{impl core::cmp::PartialEq<alloc::boxed::Box<U>> for alloc::boxed::Box<T>}::ne]:
     Source: 'src/lib.rs', lines 93:8-95:9
     Visibility: public -/
-def boxed.Box.Insts.CoreCmpPartialEqBox.ne
+def Box.Insts.CoreCmpPartialEqBox.ne
   {T : Type} {U : Type} (corecmpPartialEqInst : core.cmp.PartialEq T U)
   (self : boxed.Box T) (other : boxed.Box U) :
   RustM Bool
   := do
   let b ←
-    boxed.Box.Insts.CoreCmpPartialEqBox.eq corecmpPartialEqInst self other
+    Box.Insts.CoreCmpPartialEqBox.eq corecmpPartialEqInst self other
   ok (b = false)
 
 /-- Trait implementation: [alloc::boxed::{impl core::cmp::PartialEq<alloc::boxed::Box<U>> for alloc::boxed::Box<T>}]
     Source: 'src/lib.rs', lines 91:4-99:5 -/
 @[reducible]
-def boxed.Box.Insts.CoreCmpPartialEqBox {T : Type} {U : Type}
+def Box.Insts.CoreCmpPartialEqBox {T : Type} {U : Type}
   (corecmpPartialEqInst : core.cmp.PartialEq T U) : core.cmp.PartialEq
   (boxed.Box T) (boxed.Box U) := {
-  eq := boxed.Box.Insts.CoreCmpPartialEqBox.eq corecmpPartialEqInst
-  ne := boxed.Box.Insts.CoreCmpPartialEqBox.ne corecmpPartialEqInst
+  eq := Box.Insts.CoreCmpPartialEqBox.eq corecmpPartialEqInst
+  ne := Box.Insts.CoreCmpPartialEqBox.ne corecmpPartialEqInst
 }
 
 /-- [alloc::collections::btree::set::{alloc::collections::btree::set::BTreeSet<T, U>}::new]:

@@ -175,6 +175,18 @@ def rename_alloc_models(text: str) -> str:
     return text
 
 
+def rename_boxed_box_insts(text: str) -> str:
+    """Publish `Box`'s trait impls under the name client crates reference.
+
+    Aeneas names a builtin self type by its last path segment, so a client
+    calling `!=` on a `Box` emits `alloc.Box.Insts.…`, while this crate emits
+    the impl at its module path, `alloc.boxed.Box.Insts.…`. Renaming the
+    definitions covers every `Box` impl, present and future.
+    """
+    return replace("rename/boxed.Box.Insts", text,
+                   "boxed.Box.Insts.", "Box.Insts.")
+
+
 def rewrite_alloc_imports(text: str) -> str:
     """Adjust the imports / opens emitted by Aeneas for the staged alloc
     crate. The `alloc_models` rename has already happened by the time this
@@ -742,6 +754,7 @@ def patch_alloc() -> None:
             continue
         text = read(path)
         text = rename_alloc_models(text)
+        text = rename_boxed_box_insts(text)
         text = rewrite_alloc_imports(text)
         text = fix_fail_panic(text)
         text = rewrite_phantom_data(text)
