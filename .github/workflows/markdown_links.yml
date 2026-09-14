@@ -12,6 +12,9 @@ on:
 jobs:
   lychee:
     if: github.repository == 'cryspen/hax'
+    permissions:
+      contents: read
+      issues: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
