@@ -1,6 +1,6 @@
 macro_rules! set_empty_env_var_with {
     ($var:literal, $f: expr) => {{
-        println!("cargo:rurun-if-env-changed={}", $var);
+        println!("cargo:rerun-if-env-changed={}", $var);
         match option_env!($var) {
             Some(value) => value.to_string(),
             None => {
