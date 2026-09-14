@@ -10,7 +10,7 @@ SNAPSHOTS := $(HAX_ROOT)/tests/snapshots
 # `$(OTHERFLAGS)`: make's targets have to be the files F* writes, or dependents
 # start before their dependencies exist and concurrent runs tear the cache.
 CHECKED   = $(if $(findstring --lax,$(OTHERFLAGS)),.checked.lax,.checked)
-CACHE_DIR ?= $(CURDIR)/.cache/$(if $(findstring --lax,$(OTHERFLAGS)),lax,full)
+CACHE_DIR ?= $(HAX_ROOT)/.fstar-cache/verify/$(if $(findstring --lax,$(OTHERFLAGS)),lax,full)
 
 # `.depend` belongs to one mode and one set of roots: `--dep full` emits rules
 # only for the roots it was given, under the names the mode writes. Keeping it
@@ -114,6 +114,7 @@ describe:
 	@echo "flags:     $(OTHERFLAGS)"
 
 clean:
-	rm -rf $(CURDIR)/.cache $(CURDIR)/.cache-lax $(CURDIR)/.cache-xfail-lax
+	rm -rf $(HAX_ROOT)/.fstar-cache/verify $(CURDIR)/.cache $(CURDIR)/.cache-lax \
+	  $(CURDIR)/.cache-xfail-lax
 
 Q ?= @
