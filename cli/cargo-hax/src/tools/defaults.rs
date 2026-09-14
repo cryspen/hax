@@ -97,4 +97,29 @@ mod tests {
             path.display()
         );
     }
+
+    /// The default F* must be the one `flake.nix` pins: `proof-libs` is
+    /// written against that version and does not build on every other.
+    #[test]
+    fn fstar_pin_matches_the_flake() {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../flake.lock");
+        // Nix builds this crate from a filtered source tree without the flake.
+        if !path.is_file() {
+            return;
+        }
+        let contents = std::fs::read_to_string(&path)
+            .unwrap_or_else(|e| panic!("cannot read {}: {e}", path.display()));
+        let lock: serde_json::Value = serde_json::from_str(&contents)
+            .unwrap_or_else(|e| panic!("{} is malformed: {e}", path.display()));
+        let declared = lock["nodes"]["fstar"]["original"]["ref"]
+            .as_str()
+            .unwrap_or_else(|| panic!("{} declares no `fstar` input ref", path.display()));
+
+        assert_eq!(
+            &defaults().tools["fstar"],
+            declared,
+            "`fstar` in defaults.toml must pin the version {} names",
+            path.display()
+        );
+    }
 }

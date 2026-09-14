@@ -277,6 +277,9 @@ mod tests {
         let defaults = super::super::defaults::defaults();
         for platform in SUPPORTED_PLATFORMS.iter().copied() {
             for (tool, version) in &defaults.tools {
+                if super::super::unpublished_platforms(tool, version).contains(&platform) {
+                    continue;
+                }
                 let entry = manifest
                     .lookup(tool, version, platform)
                     .unwrap_or_else(|| panic!("manifest lacks {tool} {version} on {platform}"));

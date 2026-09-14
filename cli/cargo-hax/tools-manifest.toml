@@ -166,6 +166,28 @@ url = "https://github.com/AeneasVerif/charon/releases/download/nightly-2026.09.0
 sha256 = "9d63612aec6558a534a37b9a3ab1b7ed4dce75e6f7e7fbff19cde82a1b8f4c83"
 entry_points = { charon = "charon", charon-driver = "charon-driver" }
 
+# ---- fstar ------------------------------------------------------------------
+# Provenance: upstream FStarLang/FStar releases, the `v<YYYY.MM.DD>` tags.
+# Archives unpack to an `fstar/` directory with the executable at
+# `fstar/bin/fstar.exe`. Windows is published as a zip and is not supported.
+#
+# The default must stay in step with the `fstar` input of `flake.nix`: F*
+# releases are not interchangeable for `proof-libs`, so a version is listed
+# here once it has been tried against them, and the `[fallback]` template
+# reaches the others unverified.
+#
+# v2025.10.06 published no Linux aarch64 build.
+
+[tools.fstar."v2025.10.06".linux-x86_64]
+url = "https://github.com/FStarLang/FStar/releases/download/v2025.10.06/fstar-v2025.10.06-Linux-x86_64.tar.gz"
+sha256 = "940c187d7a6dc3e95d17fd5159b5eaec17d62981c7f135a7e6c531ce3b59442d"
+entry_points = { "fstar.exe" = "fstar/bin/fstar.exe" }
+
+[tools.fstar."v2025.10.06".macos-aarch64]
+url = "https://github.com/FStarLang/FStar/releases/download/v2025.10.06/fstar-v2025.10.06-Darwin-arm64.tar.gz"
+sha256 = "e922281c189240d9e6a16684d5d3b9f3343d345ba2c6cd55ce9b68025c823373"
+entry_points = { "fstar.exe" = "fstar/bin/fstar.exe" }
+
 # ---- fallback templates -----------------------------------------------------
 # Used for versions this manifest does not list (typically ones published
 # after this release of hax): `{version}` is substituted with the requested
@@ -197,3 +219,15 @@ entry_points = { charon = "charon", charon-driver = "charon-driver" }
 [fallback.charon.macos-aarch64]
 url = "https://github.com/AeneasVerif/charon/releases/download/{version}/charon-macos-aarch64.tar.gz"
 entry_points = { charon = "charon", charon-driver = "charon-driver" }
+
+[fallback.fstar.linux-x86_64]
+url = "https://github.com/FStarLang/FStar/releases/download/{version}/fstar-{version}-Linux-x86_64.tar.gz"
+entry_points = { "fstar.exe" = "fstar/bin/fstar.exe" }
+
+[fallback.fstar.linux-aarch64]
+url = "https://github.com/FStarLang/FStar/releases/download/{version}/fstar-{version}-Linux-aarch64.tar.gz"
+entry_points = { "fstar.exe" = "fstar/bin/fstar.exe" }
+
+[fallback.fstar.macos-aarch64]
+url = "https://github.com/FStarLang/FStar/releases/download/{version}/fstar-{version}-Darwin-arm64.tar.gz"
+entry_points = { "fstar.exe" = "fstar/bin/fstar.exe" }

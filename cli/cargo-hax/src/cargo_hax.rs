@@ -404,7 +404,19 @@ fn run_engine(
                 .extract_command
                 .clone()
                 .unwrap_or_else(fstar::invocation_command);
-            error |= fstar::generate(&out_dir, &extract_command, message_format);
+            // The F* this crate resolves to, when it is already installed.
+            let fstar_bin = project.and_then(|project| {
+                tools::resolved_fstar(
+                    project.member_config(&project.crate_dir()),
+                    project.workspace_config.as_ref(),
+                )
+            });
+            error |= fstar::generate(
+                &out_dir,
+                &extract_command,
+                fstar_bin.as_deref(),
+                message_format,
+            );
         }
     }
     if !output.debug_json.is_empty() {

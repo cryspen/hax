@@ -83,6 +83,21 @@ fn entries_for(tool: &str, version: &str, manifest: &Manifest) -> Result<String,
     Ok(entries)
 }
 
+/// An executable name as a TOML key: bare when it can be, quoted
+/// otherwise. `fstar.exe` bare would be a dotted key, naming `exe` inside a
+/// table `fstar` rather than the executable.
+fn toml_key(name: &str) -> String {
+    if !name.is_empty()
+        && name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '-'))
+    {
+        name.to_string()
+    } else {
+        toml::Value::String(name.to_string()).to_string()
+    }
+}
+
 /// One entry, in the layout the manifest file is written in. The version is
 /// validated and the tool is a key of the manifest, so neither needs
 /// escaping.
@@ -94,7 +109,7 @@ fn entry_toml(tool: &str, version: &str, platform: &str, entry: &ArtifactEntry) 
     if let Some(entry_points) = &entry.entry_points {
         let pairs: Vec<String> = entry_points
             .iter()
-            .map(|(name, path)| format!("{name} = \"{path}\""))
+            .map(|(name, path)| format!("{} = \"{path}\"", toml_key(name)))
             .collect();
         block.push_str(&format!("entry_points = {{ {} }}\n", pairs.join(", ")));
     }
