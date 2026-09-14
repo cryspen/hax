@@ -12,7 +12,7 @@ CACHE_DIR ?= $(CURDIR)/.cache
 
 # The snapshots no prover is expected to accept live in
 # `<test>/legacy-lean-xfail/`, so matching `*/legacy-lean/*` is the whole
-# selection. `MATCHING` narrows the run locally: `just verify-lean tuples`.
+# selection. `MATCHING` narrows the run locally: `just verify-lean legacy/tuples`.
 MATCHING ?=
 ROOTS  := $(shell find $(SNAPSHOTS) -path '*/legacy-lean/*.lean' \
             | grep -e '$(MATCHING)' | sort)

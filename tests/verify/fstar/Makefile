@@ -9,9 +9,8 @@ SNAPSHOTS := $(HAX_ROOT)/tests/snapshots
 # a cache and a target name per mode, and a `.depend` generated with
 # `$(OTHERFLAGS)`: make's targets have to be the files F* writes, or dependents
 # start before their dependencies exist and concurrent runs tear the cache.
-CACHE_SUFFIX = $(if $(findstring --lax,$(OTHERFLAGS)),-lax,)
-CHECKED      = $(if $(findstring --lax,$(OTHERFLAGS)),.checked.lax,.checked)
-CACHE_DIR ?= $(CURDIR)/.cache$(CACHE_SUFFIX)
+CHECKED   = $(if $(findstring --lax,$(OTHERFLAGS)),.checked.lax,.checked)
+CACHE_DIR ?= $(CURDIR)/.cache/$(if $(findstring --lax,$(OTHERFLAGS)),lax,full)
 
 # `.depend` belongs to one mode and one set of roots: `--dep full` emits rules
 # only for the roots it was given, under the names the mode writes. Keeping it
@@ -27,7 +26,7 @@ FSTAR_BIN ?= $(FSTAR_BIN_DETECT)
 
 # The snapshots no prover is expected to accept live in `<test>/fstar-xfail/`,
 # so matching `*/fstar/*` is the whole selection. `MATCHING` narrows the run
-# locally: `just verify-fstar tuples`.
+# locally: `just verify-fstar legacy/tuples`.
 MATCHING ?=
 ROOTS := $(shell find $(SNAPSHOTS) -path '*/fstar/*.fst' -o -path '*/fstar/*.fsti' \
            | grep -e '$(MATCHING)' | sort)
@@ -115,6 +114,6 @@ describe:
 	@echo "flags:     $(OTHERFLAGS)"
 
 clean:
-	rm -rf $(CURDIR)/.cache $(CURDIR)/.cache-lax
+	rm -rf $(CURDIR)/.cache $(CURDIR)/.cache-lax $(CURDIR)/.cache-xfail-lax
 
 Q ?= @

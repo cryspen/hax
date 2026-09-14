@@ -1,9 +1,5 @@
 .hax-tests
 
-# Build state of `tests/verify`
-verify/fstar/.cache*
-verify/lean/.cache
-
 # Generated files under snapshots
 snapshots/**/Makefile
 snapshots/**/lakefile.toml

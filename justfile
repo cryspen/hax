@@ -66,7 +66,7 @@ fmt:
   cd engine && dune fmt
 
 # Type-check the committed F* snapshots. The optional argument narrows to
-# snapshots whose path matches, e.g. `just verify-fstar tuples`.
+# snapshots whose path matches, e.g. `just verify-fstar legacy/tuples`.
 verify-fstar MATCHING='':
   #!/usr/bin/env bash
   set -euo pipefail
@@ -74,7 +74,7 @@ verify-fstar MATCHING='':
   make -C tests/verify/fstar -Otarget -j "$(nproc)" --keep-going MATCHING='{{MATCHING}}'
 
 # Type-check the committed Lean snapshots. The optional argument narrows to
-# snapshots whose path matches, e.g. `just verify-lean tuples`.
+# snapshots whose path matches, e.g. `just verify-lean legacy/tuples`.
 verify-lean MATCHING='':
   #!/usr/bin/env bash
   set -euo pipefail
