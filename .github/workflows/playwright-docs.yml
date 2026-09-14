@@ -6,6 +6,9 @@ on:
 jobs:
   test:
     if: github.repository == 'cryspen/hax'
+    permissions:
+      contents: read
+      issues: write
     timeout-minutes: 90
     runs-on: ubuntu-latest
     steps:
