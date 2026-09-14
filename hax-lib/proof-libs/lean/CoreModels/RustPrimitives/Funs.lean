@@ -1238,18 +1238,6 @@ def rust_primitives.sequence.seq_index
   .ok (IScalar.rotate_right x n)
 @[spec] def rust_primitives.arithmetic.rotate_right_isize (x : Isize) (n : U32) : RustM Isize :=
   .ok (IScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u8 (x : U8) (n : U32) : RustM U8 :=
-  .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u16 (x : U16) (n : U32) : RustM U16 :=
-  .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u32 (x : U32) (n : U32) : RustM U32 :=
-  .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u64 (x : U64) (n : U32) : RustM U64 :=
-  .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_u128 (x : U128) (n : U32) : RustM U128 :=
-  .ok (UScalar.rotate_right x n)
-@[spec] def rust_primitives.arithmetic.rotate_right_usize (x : Usize) (n : U32) : RustM Usize :=
-  .ok (UScalar.rotate_right x n)
 
 @[spec] def rust_primitives.arithmetic.rotate_left_i8 (x : I8) (n : U32) : RustM I8 :=
   .ok (IScalar.rotate_left x n)
@@ -1263,17 +1251,5 @@ def rust_primitives.sequence.seq_index
   .ok (IScalar.rotate_left x n)
 @[spec] def rust_primitives.arithmetic.rotate_left_isize (x : Isize) (n : U32) : RustM Isize :=
   .ok (IScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u8 (x : U8) (n : U32) : RustM U8 :=
-  .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u16 (x : U16) (n : U32) : RustM U16 :=
-  .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u32 (x : U32) (n : U32) : RustM U32 :=
-  .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u64 (x : U64) (n : U32) : RustM U64 :=
-  .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_u128 (x : U128) (n : U32) : RustM U128 :=
-  .ok (UScalar.rotate_left x n)
-@[spec] def rust_primitives.arithmetic.rotate_left_usize (x : Usize) (n : U32) : RustM Usize :=
-  .ok (UScalar.rotate_left x n)
 
 end CoreModels

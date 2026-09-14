@@ -583,6 +583,41 @@ pub fn test_u8_rotate_right_full() -> bool {
     0b10000001u8.rotate_right(8u32) == 0b10000001u8
 }
 
+#[rust_lean_test]
+pub fn test_u8_rotate_left_wrapping() -> bool {
+    0b10000001u8.rotate_left(9u32) == 0b00000011u8
+}
+
+#[rust_lean_test]
+pub fn test_u8_rotate_right_wrapping() -> bool {
+    0b10000001u8.rotate_right(9u32) == 0b11000000u8
+}
+
+#[rust_lean_test]
+pub fn test_usize_rotate_left_zero() -> bool {
+    1usize.rotate_left(0u32) == 1usize
+}
+
+#[rust_lean_test]
+pub fn test_usize_rotate_left_one() -> bool {
+    1usize.rotate_left(1u32) == 2usize
+}
+
+#[rust_lean_test]
+pub fn test_usize_rotate_right_one() -> bool {
+    2usize.rotate_right(1u32) == 1usize
+}
+
+#[rust_lean_test]
+pub fn test_usize_rotate_left_wrapping() -> bool {
+    1usize.rotate_left(65u32) == 2usize
+}
+
+#[rust_lean_test]
+pub fn test_usize_rotate_right_wrapping() -> bool {
+    2usize.rotate_right(65u32) == 1usize
+}
+
 // =============================================================================
 // leading_zeros
 // =============================================================================
