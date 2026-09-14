@@ -226,8 +226,8 @@ impl BackendTestContext {
     async fn run_verification(&self, job: JobKind) -> Result<()> {
         let dir = self.path_to_snapshots().await?;
         let output = match self.backend {
-            BackendName::Fstar => run_fstar(true, dir).await?,
-            BackendName::LegacyLean => run_lean(dir).await?,
+            BackendName::Fstar => run_fstar(true, dir.clone()).await?,
+            BackendName::LegacyLean => run_lean(dir.clone()).await?,
             _ => unreachable!(),
         };
         if output.error_code != 0 {
@@ -245,6 +245,13 @@ impl BackendTestContext {
                     bang: true,
                 };
                 push_line(&self.test.module_path, Line { line: 0, kind })?;
+                // The directive just written is what decides the directory, and
+                // it was not there when the snapshot was moved.
+                let xfail = dir.with_file_name(format!("{}-xfail", self.backend));
+                if xfail.exists() {
+                    fs::remove_dir_all(&xfail)?
+                }
+                fs::rename(&dir, &xfail)?;
             }
             job.report_message(output.stderr);
             bail!("Type-checking failed")
