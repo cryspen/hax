@@ -863,6 +863,7 @@ mod tests {
                             prop_assert_eq!(super::$t::count_ones(x.inject()), x.count_ones());
                         }
 
+                        // `n` past `BITS` too: Rust rotates by `n % BITS`.
                         #[test]
                         fn [<test_ $t _rotate_right>](
                             x in any::<$t>(),
@@ -943,12 +944,11 @@ mod tests {
                             );
                         }
 
+                        // `div_ceil` panics exactly where `checked_div` is `None`.
                         #[test]
                         fn [<test_ $t _div_ceil>](x in any::<$t>(), y in any::<$t>()) {
-                            // skip inputs where div_ceil panics (same cases as checked_div == None)
-                            if x.checked_div(y).is_some() {
-                                prop_assert_eq!(super::$t::div_ceil(x.inject(), y.inject()), x.div_ceil(y));
-                            }
+                            prop_assume!(x.checked_div(y).is_some());
+                            prop_assert_eq!(super::$t::div_ceil(x.inject(), y.inject()), x.div_ceil(y));
                         }
                     }
                 )*
@@ -963,10 +963,12 @@ mod tests {
                 $(
                     proptest! {
                         #[test]
-                        fn [<test_ $t _pow>](x in any::<$t>(), exp in 0u32..=2) {
-                            if x <= 2 {
-                                prop_assert_eq!(super::$t::pow(x.inject(), exp), x.pow(exp));
-                            }
+                        fn [<test_ $t _pow>](
+                            x in prop_oneof![(0 as $t)..=(16 as $t), any::<$t>()],
+                            exp in 0u32..=4,
+                        ) {
+                            prop_assume!(x.checked_pow(exp).is_some());
+                            prop_assert_eq!(super::$t::pow(x.inject(), exp), x.pow(exp));
                         }
 
                         #[test]
@@ -1007,10 +1009,12 @@ mod tests {
                 $(
                     proptest! {
                         #[test]
-                        fn [<test_ $t _pow>](x in any::<$t>(), exp in 0u32..=2) {
-                            if x >= -2 && x <= 2 {
-                                prop_assert_eq!(super::$t::pow(x.inject(), exp), x.pow(exp));
-                            }
+                        fn [<test_ $t _pow>](
+                            x in prop_oneof![(-16 as $t)..=(16 as $t), any::<$t>()],
+                            exp in 0u32..=4,
+                        ) {
+                            prop_assume!(x.checked_pow(exp).is_some());
+                            prop_assert_eq!(super::$t::pow(x.inject(), exp), x.pow(exp));
                         }
 
                         #[test]
@@ -1174,6 +1178,27 @@ mod tests {
         }
     }
     rem_euclid_overflow_test! { i8 i16 i32 i64 i128 isize }
+
+    // The proptests above stay inside the non-overflowing domain. `MAX.pow(2)`
+    // is out of range for every integer type.
+    macro_rules! pow_overflow_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    #[test]
+                    fn [<test_ $t _pow_overflow_panics>]() {
+                        let (x, exp) =
+                            (std::hint::black_box(<$t>::MAX), std::hint::black_box(2u32));
+                        crate::testing::panics_like_core(
+                            || super::$t::pow(x.inject(), exp),
+                            || x.pow(exp),
+                        );
+                    }
+                )*
+            }
+        }
+    }
+    pow_overflow_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
 
     int_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
     unchecked_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }

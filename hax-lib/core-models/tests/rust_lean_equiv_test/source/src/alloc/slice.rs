@@ -11,6 +11,7 @@
 //! We pin observations by sequential `pop()`s from the resulting `Vec`,
 //! because direct `v[i]` is in `ALLOC_CHARON_EXCLUDES`.
 
+use crate::helpers::Bumped;
 use rust_lean_test_macro::rust_lean_test;
 
 // ----- [T]::to_vec -----------------------------------------------------------
@@ -106,4 +107,20 @@ mod boxed_slice {
         assert_eq!(v.pop(), Some(2));
         assert_eq!(v.pop(), Some(1));
     }
+}
+
+// ----- dictionary-applying tests ---------------------------------------------
+
+// `to_vec` clones every element; there is nothing to move in.
+#[rust_lean_test]
+pub fn test_to_vec_applies_element_clone() -> bool {
+    let a = [Bumped(1), Bumped(2)];
+    let v = a.as_slice().to_vec();
+    v[0].0 == 2 && v[1].0 == 3
+}
+
+#[rust_lean_test]
+pub fn test_to_vec_empty_of_a_cloneable_element() -> bool {
+    let a: [Bumped; 0] = [];
+    a.as_slice().to_vec().len() == 0
 }

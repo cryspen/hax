@@ -199,7 +199,7 @@ pub mod traits {
 
         // opaque: for-loop generates Rust_primitives.Hax.Folds, causing F* dependency cycle
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-        #[cfg_attr(charon, aeneas::exclude)] // forward reference in lean (`core.Usize.Insts.CoreIterRangeStep`)
+        #[cfg_attr(hax_backend_lean, hax_lib::exclude)] // forward reference in lean (`core.Usize.Insts.CoreIterRangeStep`)
         fn iter_nth<I: Iterator>(mut iter: I, n: usize) -> Option<I::Item> {
             for _ in 0..n {
                 if let Option::None = iter.next() {
@@ -282,7 +282,7 @@ pub mod traits {
         }
 
         #[hax_lib::attributes]
-        #[cfg_attr(charon, aeneas::exclude)]
+        #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
         impl<I: Iterator> IteratorMethods for I {
             fn fold<B, F: FnMut(B, I::Item) -> B>(self, init: B, f: F) -> B {
                 iter_fold(self, init, f)
@@ -800,9 +800,7 @@ pub mod adapters {
             }
         }
         // opaque: loop + Fn output projection not provably bool in F* (opaque still
-        // extracts a real computable loop for the Lean backend). Previously also
-        // `aeneas::exclude`d; un-excluded so `Iterator::filter`'s adapter has a `next`
-        // instance now that `filter` is promoted onto the `Iterator` trait.
+        // extracts a real computable loop for the Lean backend).
         #[hax_lib::attributes]
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator, P: FnMut(&I::Item) -> bool> Iterator for Filter<I, P> {
@@ -1079,7 +1077,7 @@ pub mod adapters {
 pub mod range {
     use crate::clone::Clone;
     // // We cannot use core model's PartialOrd because its instances currently have an
-    // // `aeneas::exclude` attribute.
+    // // `hax_lib::exclude` attribute.
     // use crate::cmp::PartialOrd;
     use crate::option::Option;
     use crate::result::Result;

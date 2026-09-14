@@ -147,3 +147,14 @@ impl crate::clone::Clone for CloneWitness {
         }
     }
 }
+
+#[cfg(not(hax_backend_fstar))]
+impl Inject for CloneWitness {
+    type Model = CloneWitness;
+    fn inject(&self) -> Self::Model {
+        CloneWitness {
+            value: self.value,
+            cloned: self.cloned,
+        }
+    }
+}

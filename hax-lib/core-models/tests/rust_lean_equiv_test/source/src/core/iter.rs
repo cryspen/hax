@@ -28,7 +28,7 @@ pub fn test_range_count_offset() -> bool {
 // ----- Rust-only: blocked on the `IteratorMethods` exclusion -----------------
 
 // These come from the blanket `impl IteratorMethods for I`, which is
-// `aeneas::exclude`d: each extracts to a missing `Iterator.<method>.default`
+// `hax_lib::exclude`d: each extracts to a missing `Iterator.<method>.default`
 // that breaks all of `Funs.lean`, so `skip_lean` cannot apply either.
 #[cfg(test)]
 mod iterator_methods {

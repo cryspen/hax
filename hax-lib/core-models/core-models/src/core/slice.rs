@@ -280,7 +280,7 @@ impl<T> Slice<T> {
     // opaque for F*: the generic precondition isn't provable here (the concrete
     // `SliceIndex` impls verify).
     #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
-    #[cfg_attr(not(charon), hax_lib::requires(index.get(s).is_some()))]
+    #[cfg_attr(not(hax_backend_lean), hax_lib::requires(index.get(s).is_some()))]
     fn get_unchecked<I: SliceIndex<[T]>>(s: &[T], index: I) -> &<I as SliceIndex<[T]>>::Output {
         index.get_unchecked(s)
     }
@@ -295,7 +295,7 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::get_unchecked_mut`]
     #[cfg(not(hax_backend_fstar))]
-    #[cfg_attr(not(charon), hax_lib::requires(index.get(s).is_some()))]
+    #[cfg_attr(not(hax_backend_lean), hax_lib::requires(index.get(s).is_some()))]
     fn get_unchecked_mut<I: SliceIndex<[T]>>(
         s: &mut [T],
         index: I,
@@ -745,7 +745,7 @@ pub mod index {
         I: SliceIndex<[T]>,
     {
         type Output = I::Output;
-        #[cfg_attr(not(charon), hax_lib::requires(i.get(self).is_some()))]
+        #[cfg_attr(not(hax_backend_lean), hax_lib::requires(i.get(self).is_some()))]
         fn index(&self, i: I) -> &I::Output {
             match i.get(self) {
                 Option::Some(r) => r,
@@ -770,7 +770,7 @@ pub mod index {
         // divergent `panic`. The precondition mirrors `Index::index`.
         // Kept out of the Lean lane: routed through hax's spec channel, this
         // precondition makes aeneas fail with an internal `Invalid_argument`.
-        #[cfg_attr(not(charon), hax_lib::requires(i.get(self).is_some()))]
+        #[cfg_attr(not(hax_backend_lean), hax_lib::requires(i.get(self).is_some()))]
         fn index_mut(&mut self, i: I) -> &mut I::Output {
             i.get_unchecked_mut(self)
         }
@@ -855,6 +855,20 @@ pub mod equality {
                 }
                 res
             }
+        }
+    }
+
+    // F* erases the reference, so this would be a second instance at the same
+    // type as the impl above.
+    #[hax_lib::attributes]
+    #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
+    impl<T: crate::cmp::PartialEq<U>, U, const N: usize> crate::cmp::PartialEq<[U; N]> for &[T] {
+        #[cfg(not(hax_backend_fstar))]
+        fn ne(&self, other: &[U; N]) -> bool {
+            self.eq(other) == false
+        }
+        fn eq(&self, other: &[U; N]) -> bool {
+            <[T] as crate::cmp::PartialEq<[U; N]>>::eq(self, other)
         }
     }
 }
@@ -1327,9 +1341,6 @@ mod tests {
             );
         }
 
-        // `[T]: PartialEq<[U; N]>` — slice vs array (`s == [..]`). `use_equal`
-        // biases toward the equal case, which random slices rarely hit.
-        #[test]
         // `use_equal` makes the equal case common, which is what `ne` turns on.
         #[cfg(not(hax_backend_fstar))]
         #[test]
@@ -1378,6 +1389,9 @@ mod tests {
             prop_assert_eq!(model, std_v);
         }
 
+        // `[T]: PartialEq<[U; N]>` — slice vs array (`s == [..]`). `use_equal`
+        // biases toward the equal case, which random slices rarely hit.
+        #[test]
         fn test_eq_array(
             arr in any::<[u8; 3]>(),
             other in prop::collection::vec(any::<u8>(), 0..=6),
@@ -1388,6 +1402,21 @@ mod tests {
             let model = <[u8] as crate::cmp::PartialEq<[u8; 3]>>::eq(s, &arr);
             let std_eq = s == arr;
             prop_assert_eq!(model, std_eq);
+        }
+
+        // The same through a shared reference, which std models as its own impl.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_eq_array_shared(
+            arr in any::<[u8; 3]>(),
+            other in prop::collection::vec(any::<u8>(), 0..=6),
+            use_equal in any::<bool>(),
+        ) {
+            let v: Vec<u8> = if use_equal { arr.to_vec() } else { other };
+            let s: &[u8] = &v[..];
+            let std_eq = s == arr;
+            prop_assert_eq!(<&[u8] as crate::cmp::PartialEq<[u8; 3]>>::eq(&s, &arr), std_eq);
+            prop_assert_eq!(<&[u8] as crate::cmp::PartialEq<[u8; 3]>>::ne(&s, &arr), !std_eq);
         }
 
         // ----- get_unchecked (in-bounds) -------------------------------------
