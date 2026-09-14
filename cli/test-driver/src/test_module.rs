@@ -108,6 +108,16 @@ impl TestModule {
         }
     }
 
+    /// Every subdirectory this test's `backend` snapshots could occupy.
+    pub fn snapshot_backend_dirs(backend: BackendName) -> Vec<String> {
+        let name = backend.to_string();
+        if Self::has_type_checker(backend) {
+            vec![format!("{name}-xfail"), name]
+        } else {
+            vec![name]
+        }
+    }
+
     /// Returns true if verification needs to run for this test, i.e. if the backend supports verification,
     /// verification is not expected to fail, and `--no-verify` was not passed.
     pub fn needs_verification(&self, backend: BackendName, options: &crate::cli::Cli) -> bool {

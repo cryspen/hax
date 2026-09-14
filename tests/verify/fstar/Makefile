@@ -12,7 +12,6 @@ SNAPSHOTS := $(HAX_ROOT)/tests/snapshots
 CACHE_SUFFIX = $(if $(findstring --lax,$(OTHERFLAGS)),-lax,)
 CHECKED      = $(if $(findstring --lax,$(OTHERFLAGS)),.checked.lax,.checked)
 CACHE_DIR ?= $(CURDIR)/.cache$(CACHE_SUFFIX)
-HINT_DIR  ?= $(CURDIR)/.hints
 
 # `.depend` belongs to one mode and one set of roots: `--dep full` emits rules
 # only for the roots it was given, under the names the mode writes. Keeping it
@@ -85,7 +84,7 @@ unique-modules:
 	  exit 1; \
 	fi
 
-$(CACHE_DIR) $(HINT_DIR):
+$(CACHE_DIR):
 	$(Q)mkdir -p $@
 
 # Rewritten only when the selected set changes, so that `.depend` is rebuilt
@@ -96,14 +95,14 @@ $(ROOTS_STAMP): FORCE | $(CACHE_DIR)
 	$(Q)printf '%s\n' $(ROOTS) | cmp -s - $@ 2> /dev/null \
 	  || printf '%s\n' $(ROOTS) > $@
 
-$(DEPEND): $(ROOTS) $(ROOTS_STAMP) | $(CACHE_DIR) $(HINT_DIR)
+$(DEPEND): $(ROOTS) $(ROOTS_STAMP) | $(CACHE_DIR)
 	$(Q)$(FSTAR) $(OTHERFLAGS) --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
 
 include $(DEPEND)
 
-$(CACHE_DIR)/%$(CHECKED): | $(DEPEND) $(CACHE_DIR) $(HINT_DIR)
+$(CACHE_DIR)/%$(CHECKED): | $(DEPEND) $(CACHE_DIR)
 	$(Q)printf '[CHECK] %s\n' "$(basename $(notdir $*))"
-	$(Q)$(FSTAR) $(OTHERFLAGS) $< --hint_file $(HINT_DIR)/$(notdir $*).hints
+	$(Q)$(FSTAR) $(OTHERFLAGS) $<
 
 verify: $(addsuffix $(CHECKED),$(addprefix $(CACHE_DIR)/,$(notdir $(ROOTS))))
 
@@ -115,6 +114,6 @@ describe:
 	@echo "flags:     $(OTHERFLAGS)"
 
 clean:
-	rm -rf $(CURDIR)/.cache $(CURDIR)/.cache-lax $(HINT_DIR) $(CURDIR)/.depend
+	rm -rf $(CURDIR)/.cache $(CURDIR)/.cache-lax
 
 Q ?= @

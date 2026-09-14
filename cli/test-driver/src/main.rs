@@ -163,10 +163,14 @@ impl BackendTestContext {
             )
         }
 
-        if path_to_snapshots.exists() {
-            fs::remove_dir_all(&path_to_snapshots)?
+        let parent = path_to_snapshots.parent().unwrap();
+        for dir in TestModule::snapshot_backend_dirs(self.backend) {
+            let previous = parent.join(dir);
+            if previous.exists() {
+                fs::remove_dir_all(&previous)?
+            }
         }
-        fs::create_dir_all(path_to_snapshots.parent().unwrap())?;
+        fs::create_dir_all(parent)?;
         fs::rename(out_dir, &path_to_snapshots)?;
         helpers::delete_sourcemaps(&path_to_snapshots)?;
         Ok(())
