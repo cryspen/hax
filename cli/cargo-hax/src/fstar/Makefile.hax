@@ -41,8 +41,12 @@ SHELL := /usr/bin/env bash
 
 .DELETE_ON_ERROR:
 
+# Substituted by hax with the F* it resolved for this crate, when that
+# version is installed. Empty otherwise, and the detection below finds an
+# F* on `PATH` or under `FSTAR_HOME`.
+HAX_FSTAR_BIN  :=
 FSTAR_BIN_DETECT := $(if $(shell command -v fstar.exe), fstar.exe, $(FSTAR_HOME)/bin/fstar.exe)
-FSTAR_BIN      ?= $(FSTAR_BIN_DETECT)
+FSTAR_BIN      ?= $(or $(HAX_FSTAR_BIN),$(FSTAR_BIN_DETECT))
 
 GIT_ROOT_DIR   := $(or $(shell git rev-parse --show-toplevel 2> /dev/null),$(CURDIR))/
 

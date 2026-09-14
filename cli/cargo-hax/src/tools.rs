@@ -21,7 +21,7 @@ mod subcommands;
 
 /// The tools whose installation hax manages. A `[tools]` entry naming
 /// anything else is warned about and skipped.
-pub const MANAGED_TOOLS: &[&str] = &["aeneas", "charon"];
+pub const MANAGED_TOOLS: &[&str] = &["aeneas", "charon", "fstar"];
 
 /// The declared-only `[versions]` keys: versions hax must know without
 /// managing an installation.
@@ -33,6 +33,18 @@ pub fn tool_executables(tool: &str) -> &'static [&'static str] {
     match tool {
         "aeneas" => &["aeneas"],
         "charon" => &["charon", "charon-driver"],
+        "fstar" => &["fstar.exe"],
+        _ => &[],
+    }
+}
+
+/// Supported platforms a tool's version has no published artifact for.
+/// Listing the gap here keeps
+/// `embedded_manifest_parses_and_covers_the_defaults` strict for the
+/// platforms upstream does build.
+pub fn unpublished_platforms(tool: &str, version: &str) -> &'static [&'static str] {
+    match (tool, version) {
+        ("fstar", "v2025.10.06") => &["linux-aarch64"],
         _ => &[],
     }
 }
@@ -143,6 +155,24 @@ pub fn provide_tool(
         executables,
         resolution,
     })
+}
+
+/// Where the F* this crate resolves to lives, if it is already available.
+/// Nothing is installed: hax does not run F*, so an extraction must not
+/// pull a toolchain. An absent F* leaves the Makefile to find one itself.
+pub fn resolved_fstar(
+    member: Option<&config::HaxToml>,
+    workspace: Option<&config::HaxToml>,
+) -> Option<std::path::PathBuf> {
+    let resolution = resolve::resolve_tool("fstar", member, workspace, defaults::defaults());
+    let path = match &resolution.kind {
+        resolve::Resolved::Path(path) => path.clone(),
+        resolve::Resolved::Version(version) => {
+            let dir = cache::version_dir("fstar", version).ok()?;
+            cache::executable_path(&dir, "fstar.exe").ok()?
+        }
+    };
+    path.is_file().then_some(path)
 }
 
 /// Resolve a declared-only `[versions]` entry for one crate, noticing a

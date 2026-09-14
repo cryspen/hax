@@ -404,7 +404,19 @@ fn run_engine(
         );
         if project_files {
             let command = fstar::extract_command(&fstar_options.scenario);
-            error |= fstar::generate(&out_dir, Some(&command), message_format);
+            let fstar_bin = match (project, &crate_dir) {
+                (Some(project), Some(crate_dir)) => tools::resolved_fstar(
+                    project.member_config(crate_dir),
+                    project.workspace_config.as_ref(),
+                ),
+                _ => None,
+            };
+            error |= fstar::generate(
+                &out_dir,
+                Some(&command),
+                fstar_bin.as_deref(),
+                message_format,
+            );
         }
     }
     if !output.debug_json.is_empty() {
