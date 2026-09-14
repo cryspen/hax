@@ -250,7 +250,7 @@
             packages = [ packages.fstar pkgs.gnumake pkgs.just pkgs.git ];
           };
           verify-lean = pkgs.mkShell {
-            packages = [ pkgs.elan pkgs.just pkgs.git ];
+            packages = [ pkgs.elan pkgs.gnumake pkgs.just pkgs.git ];
           };
           fstar = pkgs.mkShell {
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;

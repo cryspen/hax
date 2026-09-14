@@ -27,7 +27,7 @@ FSTAR_BIN ?= $(FSTAR_BIN_DETECT)
 
 # The snapshots no prover is expected to accept live in `<test>/fstar-xfail/`,
 # so matching `*/fstar/*` is the whole selection. `MATCHING` narrows the run
-# locally: `just verify-fstar loops`.
+# locally: `just verify-fstar tuples`.
 MATCHING ?=
 ROOTS := $(shell find $(SNAPSHOTS) -path '*/fstar/*.fst' -o -path '*/fstar/*.fsti' \
            | grep -e '$(MATCHING)' | sort)
@@ -63,6 +63,7 @@ FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)
 # which a later edit can silently change -- adding `FORCE` below once made
 # `make` do nothing at all and report success.
 .DEFAULT_GOAL := all
+.DELETE_ON_ERROR:
 
 .PHONY: all verify unique-modules describe clean FORCE
 
