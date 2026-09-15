@@ -227,9 +227,12 @@ FSTAR_HANDWRITTEN = \
     Core_models.Iter.Traits.fst \
     Core_models.Mem.Maybe_uninit.fsti \
     Core_models.Mem.Transmutability.fsti \
+    Core_models.Num.Abs_spec.fst \
     Core_models.Num.Checked_mul_spec.fst \
+    Core_models.Num.Count_ones_spec.fst \
     Core_models.Num.Niche_types.fsti \
     Core_models.Num.Overflow_spec.fst \
+    Core_models.Num.To_le_bytes_spec.fst \
     Core_models.Ops.Index.IndexMut.fst \
     Core_models.Str.fsti \
     Core_models.Time.fsti \
@@ -238,7 +241,8 @@ FSTAR_HANDWRITTEN = \
     Rand.Distributions.Distribution.fsti \
     Rand.Distributions.Integer.fsti \
     Rand.Distr.Integer.fsti \
-    Rand.Rng.fsti
+    Rand.Rng.fsti \
+    Rand_core.Fill_bytes_spec.fst
 
 # Delete every generated module so the reinstall below cannot leave a stale one.
 fstar-prune:

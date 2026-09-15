@@ -1,7 +1,6 @@
 module Rust_primitives.Hax.Folds
 
 open Rust_primitives
-open Core_models.Ops.Range
 open FStar.Mul
 
 (**** `s.chunks_exact(chunk_size).enumerate()` *)
