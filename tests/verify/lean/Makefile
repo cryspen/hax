@@ -47,7 +47,6 @@ describe:
 	@echo "cache:     $(CACHE_DIR)"
 
 clean:
-	rm -rf $(CACHE_DIR) $(CURDIR)/.lake $(CURDIR)/Snapshots \
-	  $(CURDIR)/Snapshots.lean $(CURDIR)/lake-manifest.json
+	rm -rf $(CACHE_DIR)
 
 Q ?= @
