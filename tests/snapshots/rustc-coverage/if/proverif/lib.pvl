@@ -1,48 +1,30 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  primitives.pvl ships with hax and declares the symbols this file
+  uses but does not define: the public channel c, the construct_fail
+  sink, bitstring_default and bitstring_err, the Some/None and
+  True/False constructors, the nat_N literal constants, logical_and
+  and logical_or, and the rust_primitives, core, and hax_lib opaque
+  functions.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  A symbol this file uses that is defined neither here nor in
+  primitives.pvl is listed in missingdecl.pvl, a diagnostic that is
+  not part of the model. Define each such symbol — by hand or from
+  another crate's extraction — or leave it abstract as an
+  ideal-functionality boundary.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__if__main(wildcard1 : bitstring) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (0) in
-       if is_true
-       then
-         (let countdown = (10) in
-          ())
-       else (()).
-
+(* src: src/rustc-coverage/if.rs:5:0-30:1 new_tests__rustc_coverage__if__main *)
+letfun new_tests__rustc_coverage__if__main(wildcard: bitstring) =
+  let countdown = nat_0 in
+  let (=True()) = rust_primitives__hax__machine_int__eq(
+      core__iter__traits__exact_size__ExactSizeIterator__len(
+        std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+      ),
+      nat_1
+    )
+    in (let countdown_1 = nat_10 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else rust_primitives__hax__Tuple0__Tuple0.

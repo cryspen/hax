@@ -1,0 +1,33 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* DIAGNOSTIC, not part of the model. Each symbol below is       *)
+(* referenced by lib.pvl but has no definition (and is not in    *)
+(* primitives.pvl). Define it — by hand or by extracting the     *)
+(* crate that owns it — or deliberately leave it abstract, as an *)
+(* ideal-functionality boundary; a permanent residue can be      *)
+(* correct. Declared WITHOUT `[data]` because the real nature    *)
+(* (one-way fun / data constructor / letfun) is unknown.         *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__branch__if__say *)
+fun core__hint__black_box(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_not *)
+const string_lit__a: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_and *)
+const string_lit__both: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_or *)
+const string_lit__either: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_or *)
+const string_lit__neither: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_not_as *)
+const string_lit__not_x20_x28a_x20as_x20bool_x29: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_not *)
+const string_lit__not_x20a: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_and *)
+const string_lit__not_x20both: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_not_as *)
+const string_lit__not_x20not_x20_x28a_x20as_x20bool_x29: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_not *)
+const string_lit__not_x20not_x20a: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if__branch_not *)
+const string_lit__not_x20not_x20not_x20a: bitstring.

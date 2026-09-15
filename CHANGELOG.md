@@ -42,6 +42,7 @@ Changes to cargo-hax:
    of silently producing an incomplete extraction
  - Exit with a failing status whenever an error was reported
  - Make traits from `core` with default methods visible to charon so that impls of these traits have the right defaulted implementations (#2172)
+ - Add ProVerif as a new backend (#2068)
 
 Changes to the hax-lib crate:
  - Add `hax_lib::ensures_ref`, an `ensures` whose closure takes the result by reference,
@@ -61,6 +62,7 @@ Changes to the hax-lib crate:
    `--cfg hax` (#1759)
  - Fix the docs.rs build of `hax-lib`: its `docs.rs` metadata table was misspelled, and `--cfg hax`
    has to reach rustc too so that the `cfg(hax)` dependencies resolve (#2087)
+ - Add ProVerif crypto-abstraction macros (`proverif::replace_body`, `pv_inline`, `pv_stub`), and ship the symbolic model they target (`primitives.pvl`, `cryptolib.pvl`) (#2068)
 
 Changes to core models:
  - Improve core models library (#2049, #2157, #2077, #2160, #2187, #2199)
@@ -87,6 +89,10 @@ Changes to the Lean backend and library:
    `ExactSizeIterator` and the `Rev`, `FilterMap`, `TakeWhile`, `SkipWhile`, `MapWhile`, `Inspect`
    and `Fuse` adapters, makes `collect` into `Vec` and `Result` computable, and gives
    `zip`/`chain` std's `IntoIterator` bound so a collection can be passed directly (#2200)
+
+Changes to the ProVerif backend:
+- Port the backend to the Rust engine: printer, phases and resugarings, with source spans and a printer sourcemap (#2068)
+- Add a `proverif-psk` example with an analysis harness, and a backend manual (#2068)
 
 Miscellaneous:
  - Update the required OCaml version to 5.4.1 (#2137)

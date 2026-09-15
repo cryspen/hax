@@ -1,38 +1,21 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl lib.pvl
 
-channel c.
+  primitives.pvl ships with hax and declares the symbols this file
+  uses but does not define: the public channel c, the construct_fail
+  sink, bitstring_default and bitstring_err, the Some/None and
+  True/False constructors, the nat_N literal constants, logical_and
+  and logical_or, and the rust_primitives, core, and hax_lib opaque
+  functions.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  A symbol this file uses that is defined neither here nor in
+  primitives.pvl is listed in missingdecl.pvl, a diagnostic that is
+  not part of the model. Define each such symbol — by hand or from
+  another crate's extraction — or leave it abstract as an
+  ideal-functionality boundary.
+*)
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
-
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
-
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
-
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__ignore_map__main(wildcard1 : bitstring) =
-       ().
-
+(* src: src/rustc-coverage/ignore_map.rs:3:0-3:12 new_tests__rustc_coverage__ignore_map__main *)
+letfun new_tests__rustc_coverage__ignore_map__main(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.

@@ -165,6 +165,23 @@ passthrough_attributes! {
     /// refinement type: the use of such a type yields static proof
     /// obligations.
     refinement_type;
+
+    /// β-inline every call to this ProVerif helper at the use site; the
+    /// marked item itself drops out of the extracted model.
+    pv_inline;
+
+    /// Model a Rust function as a uniform-bitstring `extern__<fn>` ProVerif
+    /// letfun, deriving the declaration arity and body-call arguments from the
+    /// annotated function's signature.
+    pv_extern;
+
+    /// Shorthand for `#[hax_lib::proverif::replace_body(<lit>)]`, for trivial
+    /// constant stubs such as `pv_stub!("nat_lit(0)")`.
+    pv_stub;
+
+    /// Declare this ProVerif letfun as the one-sided inverse of another
+    /// function, emitting `reduc forall x: bitstring; self(other(x)) = x.`.
+    pv_inverse_of;
 }
 
 attribute_macros! {
