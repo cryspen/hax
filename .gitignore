@@ -9,6 +9,10 @@ _build
 result
 .DS_Store
 .depend
+.depend.tmp
+.hax-roots
+.fstar-cache/
+dep.graph
 .cache
 .lake
 .hax-tests-cache

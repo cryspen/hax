@@ -15,6 +15,8 @@ use std::process;
 
 mod aeneas;
 mod engine_debug_webapp;
+mod fstar;
+mod project_files;
 mod scenario;
 mod tools;
 use hax_frontend_exporter::id_table;
@@ -192,6 +194,7 @@ fn run_engine(
     working_dir: Option<PathBuf>,
     manifest_dir: Option<PathBuf>,
     backend: &BackendOptions<()>,
+    project: Option<&tools::project::ProjectContext>,
     message_format: MessageFormat,
 ) -> bool {
     let engine_options = EngineOptions {
@@ -224,11 +227,21 @@ fn run_engine(
         .unwrap();
 
     let mut error = false;
+    let mut produced_any = false;
     let mut output = Output {
         diagnostics: vec![],
         files: vec![],
         debug_json: vec![],
     };
+    let out_dir = backend.output_dir.clone().unwrap_or({
+        let backend_name = BackendName::from(&backend.backend);
+        let mut relative_path = PathBuf::from("proofs");
+        relative_path.push(backend_name.to_string());
+        relative_path.extend(backend_name.output_subdir());
+        manifest_dir
+            .map(|manifest_dir| manifest_dir.join(&relative_path))
+            .unwrap_or(relative_path)
+    });
     {
         let mut rctx = hax_types::diagnostics::report::ReportCtx::default();
         let mut stdin = std::io::BufWriter::new(
@@ -248,16 +261,6 @@ fn run_engine(
 
         id_table::WithTable::run(id_table, engine_options, |with_table| {
             send!(with_table);
-        });
-
-        let out_dir = backend.output_dir.clone().unwrap_or({
-            let backend_name = BackendName::from(&backend.backend);
-            let mut relative_path = PathBuf::from("proofs");
-            relative_path.push(backend_name.to_string());
-            relative_path.extend(backend_name.output_subdir());
-            manifest_dir
-                .map(|manifest_dir| manifest_dir.join(&relative_path))
-                .unwrap_or(relative_path)
         });
 
         let stdout = std::io::BufReader::new(engine_subprocess.stdout.take().unwrap());
@@ -290,6 +293,7 @@ fn run_engine(
                         output.files.push(file)
                     } else {
                         let path = out_dir.join(&file.path);
+                        produced_any = true;
                         std::fs::create_dir_all(path.parent().unwrap()).unwrap();
                         let mut wrote = false;
                         if fs::read_to_string(&path).as_ref().ok() != Some(&file.contents) {
@@ -370,6 +374,19 @@ fn run_engine(
 
     if backend.dry_run {
         serde_json::to_writer(std::io::BufWriter::new(std::io::stdout()), &output).unwrap()
+    }
+
+    if matches!(backend.backend, Backend::Fstar(_)) && !backend.dry_run && produced_any {
+        let crate_dir = project
+            .and_then(|project| project.root_package.as_ref())
+            .map(|package| package.dir.clone());
+        let project_files = match (project, &crate_dir) {
+            (Some(project), Some(crate_dir)) => project_files::enabled(project, crate_dir),
+            _ => true,
+        };
+        if project_files {
+            error |= fstar::generate(&out_dir, None, message_format);
+        }
     }
     if !output.debug_json.is_empty() {
         use DebugEngineMode;
@@ -663,7 +680,11 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
 }
 
 /// Run the command given by the user
-fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> bool {
+fn run_command(
+    options: &Options,
+    haxmeta_files: Vec<EmitHaxMetaMessage>,
+    project: Option<&tools::project::ProjectContext>,
+) -> bool {
     match options.command.clone() {
         Command::JSON {
             output_file,
@@ -768,6 +789,7 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
                         working_dir,
                         manifest_dir,
                         &backend,
+                        project,
                         options.message_format,
                     );
             }
@@ -926,7 +948,7 @@ fn main() {
             )
         })
         .unwrap_or_else(|| compute_haxmeta_files(&options));
-    let error = run_command(&options, haxmeta_files);
+    let error = run_command(&options, haxmeta_files, project.as_ref());
 
     exit(if exit_code == 0 && error {
         1
