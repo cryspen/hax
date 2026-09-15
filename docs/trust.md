@@ -16,17 +16,25 @@ moving parts that can fail. The goal of this page is to summarize what can still
 The most common issue with verified code is that the specification does not state what it is
 intended to state. No improvements to our tools can eradicate this fundamental issue entirely.
 The specification is the source of truth and is therefore unverifiable.
+To mitigate this danger, auditing and testing of the specification is crucial.
+After extraction via hax, one can also prove properties about the specification's code
+to gain more confidence about its correctness.
 
 ## Verification coverage
 
-This is probably the second-most common issue with verified code. Is all of the code that we want
-to verify actually included in the verification? The hax CLI has various options to exclude
+This is probably the second-most common issue with verified code.
+It is rare that 100% of a crate can realistically be extracted and verified.
+Understanding exactly the scope of
+what should be extracted is paramount to using hax on real-world projects.
+The hax CLI has various options to exclude
 parts of the code from extraction, and parts of the code can also be excluded via annotations.
+But using these features can also be dangerous: We must make sure that all of the code
+that we want to verify is actually included the extraction.
 
 ## Drift between source code and proof artifacts
 
 A real-world Rust project constantly changes, and keeping up the proofs with the code changes
-is costly. So sometimes, it can make sense to verify only a snapshot of the code, but that also
+can be costly. So sometimes, it can make sense to verify only a snapshot of the code, but that also
 means that only that snapshot is verified. When the ambition is
 to keep the proofs up to date with all code changes, CI must enforce that both extraction and
 verification keep up with every change.
