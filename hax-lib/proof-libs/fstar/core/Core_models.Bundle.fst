@@ -327,7 +327,26 @@ let impl_6__overflowing_pow (x: u8) (exp: u32) : (u8 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u8 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_6__count_ones (x: u8) : u32 = Rust_primitives.Arithmetic.count_ones_u8 x
+let impl_6__count_ones (x: u8) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 8)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: u8) &. mk_u8 1 <: u8) =. mk_u8 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -365,11 +384,13 @@ unfold
 let impl_6__to_be_bytes = impl_6__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_6__to_le_bytes': bytes: u8 -> t_Array u8 (mk_usize 1)
-
-unfold
-let impl_6__to_le_bytes = impl_6__to_le_bytes'
+let impl_6__to_le_bytes (bytes: u8) : t_Array u8 (mk_usize 1) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 1)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 8 <: u32) <: u8)
 
 /// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
 let impl_6__is_power_of_two (x: u8) : bool =
@@ -487,7 +508,26 @@ let impl_7__overflowing_pow (x: u16) (exp: u32) : (u16 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u16 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_7__count_ones (x: u16) : u32 = Rust_primitives.Arithmetic.count_ones_u16 x
+let impl_7__count_ones (x: u16) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 16)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: u16) &. mk_u16 1 <: u16) =. mk_u16 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -525,11 +565,16 @@ unfold
 let impl_7__to_be_bytes = impl_7__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_7__to_le_bytes': bytes: u16 -> t_Array u8 (mk_usize 2)
-
-unfold
-let impl_7__to_le_bytes = impl_7__to_le_bytes'
+let impl_7__to_le_bytes (bytes: u16) : t_Array u8 (mk_usize 2) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 2)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 16 <: u32) <: u16
+          )
+        <:
+        u8)
 
 /// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
 let impl_7__is_power_of_two (x: u16) : bool =
@@ -647,7 +692,26 @@ let impl_8__overflowing_pow (x exp: u32) : (u32 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u32 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_8__count_ones (x: u32) : u32 = Rust_primitives.Arithmetic.count_ones_u32 x
+let impl_8__count_ones (x: u32) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 32)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: u32) &. mk_u32 1 <: u32) =. mk_u32 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -685,11 +749,16 @@ unfold
 let impl_8__to_be_bytes = impl_8__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_8__to_le_bytes': bytes: u32 -> t_Array u8 (mk_usize 4)
-
-unfold
-let impl_8__to_le_bytes = impl_8__to_le_bytes'
+let impl_8__to_le_bytes (bytes: u32) : t_Array u8 (mk_usize 4) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 4)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 32 <: u32) <: u32
+          )
+        <:
+        u8)
 
 /// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
 let impl_8__is_power_of_two (x: u32) : bool =
@@ -807,7 +876,26 @@ let impl_9__overflowing_pow (x: u64) (exp: u32) : (u64 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u64 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_9__count_ones (x: u64) : u32 = Rust_primitives.Arithmetic.count_ones_u64 x
+let impl_9__count_ones (x: u64) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 64)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: u64) &. mk_u64 1 <: u64) =. mk_u64 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -845,11 +933,16 @@ unfold
 let impl_9__to_be_bytes = impl_9__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_9__to_le_bytes': bytes: u64 -> t_Array u8 (mk_usize 8)
-
-unfold
-let impl_9__to_le_bytes = impl_9__to_le_bytes'
+let impl_9__to_le_bytes (bytes: u64) : t_Array u8 (mk_usize 8) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 8)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 64 <: u32) <: u64
+          )
+        <:
+        u8)
 
 /// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
 let impl_9__is_power_of_two (x: u64) : bool =
@@ -967,7 +1060,26 @@ let impl_10__overflowing_pow (x: u128) (exp: u32) : (u128 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u128 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_10__count_ones (x: u128) : u32 = Rust_primitives.Arithmetic.count_ones_u128 x
+let impl_10__count_ones (x: u128) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 128)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: u128) &. mk_u128 1 <: u128) =. mk_u128 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -1005,11 +1117,17 @@ unfold
 let impl_10__to_be_bytes = impl_10__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_10__to_le_bytes': bytes: u128 -> t_Array u8 (mk_usize 16)
-
-unfold
-let impl_10__to_le_bytes = impl_10__to_le_bytes'
+let impl_10__to_le_bytes (bytes: u128) : t_Array u8 (mk_usize 16) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 16)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 128 <: u32)
+            <:
+            u128)
+        <:
+        u8)
 
 /// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
 let impl_10__is_power_of_two (x: u128) : bool =
@@ -1133,7 +1251,26 @@ let impl_11__overflowing_pow (x: usize) (exp: u32) : (usize & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_usize x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_11__count_ones (x: usize) : u32 = Rust_primitives.Arithmetic.count_ones_usize x
+let impl_11__count_ones (x: usize) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      Rust_primitives.Arithmetic.v_SIZE_BITS
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: usize) &. mk_usize 1 <: usize) =. mk_usize 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 assume
@@ -1171,11 +1308,21 @@ unfold
 let impl_11__to_be_bytes = impl_11__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_11__to_le_bytes': bytes: usize -> t_Array u8 (mk_usize 8)
-
-unfold
-let impl_11__to_le_bytes = impl_11__to_le_bytes'
+let impl_11__to_le_bytes (bytes: usize) : t_Array u8 (mk_usize 8) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 8)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>!
+            ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %!
+              Rust_primitives.Arithmetic.v_SIZE_BITS
+              <:
+              u32)
+            <:
+            usize)
+        <:
+        u8)
 
 /// See [`std::primitive::u8::is_power_of_two`] (and similar for other unsigned integer types)
 let impl_11__is_power_of_two (x: usize) : bool =
@@ -1299,7 +1446,26 @@ let impl_12__overflowing_pow (x: i8) (exp: u32) : (i8 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i8 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_12__count_ones (x: i8) : u32 = Rust_primitives.Arithmetic.count_ones_i8 x
+let impl_12__count_ones (x: i8) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 8)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: i8) &. mk_i8 1 <: i8) =. mk_i8 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
 assume
@@ -1351,11 +1517,15 @@ unfold
 let impl_12__to_be_bytes = impl_12__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_12__to_le_bytes': bytes: i8 -> t_Array u8 (mk_usize 1)
-
-unfold
-let impl_12__to_le_bytes = impl_12__to_le_bytes'
+let impl_12__to_le_bytes (bytes: i8) : t_Array u8 (mk_usize 1) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 1)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 8 <: u32) <: i8)
+        <:
+        u8)
 
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_12__signum (x: i8) : i8 =
@@ -1420,7 +1590,7 @@ let impl_12__rem_euclid (x y: i8)
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_12__abs (x: i8) : Prims.Pure i8 (requires x >. impl_12__MIN) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.abs_i8 x
+  if x <. mk_i8 0 then Rust_primitives.Arithmetic.neg x else x
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_12__unchecked_div (x y: i8)
@@ -1489,7 +1659,26 @@ let impl_13__overflowing_pow (x: i16) (exp: u32) : (i16 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i16 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_13__count_ones (x: i16) : u32 = Rust_primitives.Arithmetic.count_ones_i16 x
+let impl_13__count_ones (x: i16) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 16)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: i16) &. mk_i16 1 <: i16) =. mk_i16 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
 assume
@@ -1541,11 +1730,16 @@ unfold
 let impl_13__to_be_bytes = impl_13__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_13__to_le_bytes': bytes: i16 -> t_Array u8 (mk_usize 2)
-
-unfold
-let impl_13__to_le_bytes = impl_13__to_le_bytes'
+let impl_13__to_le_bytes (bytes: i16) : t_Array u8 (mk_usize 2) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 2)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 16 <: u32) <: i16
+          )
+        <:
+        u8)
 
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_13__signum (x: i16) : i16 =
@@ -1610,7 +1804,7 @@ let impl_13__rem_euclid (x y: i16)
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_13__abs (x: i16) : Prims.Pure i16 (requires x >. impl_13__MIN) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.abs_i16 x
+  if x <. mk_i16 0 then Rust_primitives.Arithmetic.neg x else x
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_13__unchecked_div (x y: i16)
@@ -1679,7 +1873,26 @@ let impl_14__overflowing_pow (x: i32) (exp: u32) : (i32 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i32 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_14__count_ones (x: i32) : u32 = Rust_primitives.Arithmetic.count_ones_i32 x
+let impl_14__count_ones (x: i32) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 32)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: i32) &. mk_i32 1 <: i32) =. mk_i32 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
 assume
@@ -1731,11 +1944,16 @@ unfold
 let impl_14__to_be_bytes = impl_14__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_14__to_le_bytes': bytes: i32 -> t_Array u8 (mk_usize 4)
-
-unfold
-let impl_14__to_le_bytes = impl_14__to_le_bytes'
+let impl_14__to_le_bytes (bytes: i32) : t_Array u8 (mk_usize 4) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 4)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 32 <: u32) <: i32
+          )
+        <:
+        u8)
 
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_14__signum (x: i32) : i32 =
@@ -1800,7 +2018,7 @@ let impl_14__rem_euclid (x y: i32)
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_14__abs (x: i32) : Prims.Pure i32 (requires x >. impl_14__MIN) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.abs_i32 x
+  if x <. mk_i32 0 then Rust_primitives.Arithmetic.neg x else x
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_14__unchecked_div (x y: i32)
@@ -1869,7 +2087,26 @@ let impl_15__overflowing_pow (x: i64) (exp: u32) : (i64 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i64 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_15__count_ones (x: i64) : u32 = Rust_primitives.Arithmetic.count_ones_i64 x
+let impl_15__count_ones (x: i64) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 64)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: i64) &. mk_i64 1 <: i64) =. mk_i64 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
 assume
@@ -1921,11 +2158,16 @@ unfold
 let impl_15__to_be_bytes = impl_15__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_15__to_le_bytes': bytes: i64 -> t_Array u8 (mk_usize 8)
-
-unfold
-let impl_15__to_le_bytes = impl_15__to_le_bytes'
+let impl_15__to_le_bytes (bytes: i64) : t_Array u8 (mk_usize 8) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 8)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 64 <: u32) <: i64
+          )
+        <:
+        u8)
 
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_15__signum (x: i64) : i64 =
@@ -1990,7 +2232,7 @@ let impl_15__rem_euclid (x y: i64)
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_15__abs (x: i64) : Prims.Pure i64 (requires x >. impl_15__MIN) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.abs_i64 x
+  if x <. mk_i64 0 then Rust_primitives.Arithmetic.neg x else x
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_15__unchecked_div (x y: i64)
@@ -2059,7 +2301,26 @@ let impl_16__overflowing_pow (x: i128) (exp: u32) : (i128 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i128 x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_16__count_ones (x: i128) : u32 = Rust_primitives.Arithmetic.count_ones_i128 x
+let impl_16__count_ones (x: i128) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 128)
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: i128) &. mk_i128 1 <: i128) =. mk_i128 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
 assume
@@ -2111,11 +2372,17 @@ unfold
 let impl_16__to_be_bytes = impl_16__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_16__to_le_bytes': bytes: i128 -> t_Array u8 (mk_usize 16)
-
-unfold
-let impl_16__to_le_bytes = impl_16__to_le_bytes'
+let impl_16__to_le_bytes (bytes: i128) : t_Array u8 (mk_usize 16) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 16)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>! ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %! mk_u32 128 <: u32)
+            <:
+            i128)
+        <:
+        u8)
 
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_16__signum (x: i128) : i128 =
@@ -2181,7 +2448,7 @@ let impl_16__rem_euclid (x y: i128)
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_16__abs (x: i128) : Prims.Pure i128 (requires x >. impl_16__MIN) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.abs_i128 x
+  if x <. mk_i128 0 then Rust_primitives.Arithmetic.neg x else x
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_16__unchecked_div (x y: i128)
@@ -2253,7 +2520,26 @@ let impl_17__overflowing_pow (x: isize) (exp: u32) : (isize & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_isize x exp
 
 /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-let impl_17__count_ones (x: isize) : u32 = Rust_primitives.Arithmetic.count_ones_isize x
+let impl_17__count_ones (x: isize) : u32 =
+  let n:u32 = mk_u32 0 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      Rust_primitives.Arithmetic.v_SIZE_BITS
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          n <=. i <: bool)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          if ((x >>! i <: isize) &. mk_isize 1 <: isize) =. mk_isize 1 <: bool
+          then
+            let n:u32 = n +! mk_u32 1 in
+            n
+          else n)
+  in
+  n
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
 assume
@@ -2305,11 +2591,21 @@ unfold
 let impl_17__to_be_bytes = impl_17__to_be_bytes'
 
 /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-assume
-val impl_17__to_le_bytes': bytes: isize -> t_Array u8 (mk_usize 8)
-
-unfold
-let impl_17__to_le_bytes = impl_17__to_le_bytes'
+let impl_17__to_le_bytes (bytes: isize) : t_Array u8 (mk_usize 8) =
+  Rust_primitives.Slice.array_from_fn #u8
+    (mk_usize 8)
+    #(usize -> u8)
+    (fun i ->
+        let i:usize = i in
+        cast (bytes >>!
+            ((mk_u32 8 *! (cast (i <: usize) <: u32) <: u32) %!
+              Rust_primitives.Arithmetic.v_SIZE_BITS
+              <:
+              u32)
+            <:
+            isize)
+        <:
+        u8)
 
 /// See [`std::primitive::i8::signum`] (and similar for other signed integer types)
 let impl_17__signum (x: isize) : isize =
@@ -2375,7 +2671,7 @@ let impl_17__rem_euclid (x y: isize)
 
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_17__abs (x: isize) : Prims.Pure isize (requires x >. impl_17__MIN) (fun _ -> Prims.l_True) =
-  Rust_primitives.Arithmetic.abs_isize x
+  if x <. mk_isize 0 then Rust_primitives.Arithmetic.neg x else x
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_17__unchecked_div (x y: isize)
