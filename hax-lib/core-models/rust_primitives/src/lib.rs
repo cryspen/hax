@@ -206,10 +206,11 @@ pub mod string {
     pub fn str_index(s: &'static str, i: usize) -> char {
         s.chars().nth(i).unwrap()
     }
-    /// Length in `char`s, to match `str_sub`/`str_index` above. `str::len`
-    /// counts bytes, so the two disagree on any multi-byte char.
-    pub fn str_len(s: &'static str) -> usize {
+    pub fn str_chars_count(s: &'static str) -> usize {
         s.chars().count()
+    }
+    pub fn str_len(s: &'static str) -> usize {
+        s.len()
     }
     // `Option`/`Result` are `core` types, which `core_models` may not touch, so
     // these fallible primitives answer with a validity flag instead.
@@ -348,8 +349,8 @@ pub mod arithmetic {
 }
 
 // `array_slice` is only reached through the F* variant of `core_models::array`'s
-// `Index` impls, and `str_sub`/`str_index` only through `alloc`'s `String`, so
-// they are checked here directly.
+// `Index` impls, and `str_sub`/`str_index`/`str_chars_count` only through
+// `alloc`'s `String`, so they are checked here directly.
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
@@ -416,5 +417,21 @@ mod tests {
             prop_assert_eq!(super::string::str_sub(leaked, b, e), expected.as_str());
             prop_assert_eq!(super::string::str_index(leaked, b), chars[b]);
         }
+
+        #[test]
+        fn test_str_len_and_chars_count(text in ".*") {
+            let expected_bytes = text.len();
+            let expected_chars = text.chars().count();
+            let leaked: &'static str = Box::leak(text.into_boxed_str());
+            prop_assert_eq!(super::string::str_len(leaked), expected_bytes);
+            prop_assert_eq!(super::string::str_chars_count(leaked), expected_chars);
+        }
+    }
+
+    #[test]
+    fn test_str_len_is_a_byte_count() {
+        assert_eq!(super::string::str_len("é"), "é".len());
+        assert_eq!(super::string::str_len("é"), 2);
+        assert_eq!(super::string::str_chars_count("é"), 1);
     }
 }

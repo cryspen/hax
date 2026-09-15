@@ -10,4 +10,6 @@ val str_sub: string -> usize -> usize -> string
 
 val str_index: string -> usize -> FStar.Char.char
 
+val str_chars_count: string -> usize
+
 val str_len: string -> usize

@@ -653,8 +653,7 @@ mod string {
             *self = String(str_concat(self.0, str_of_char(c)))
         }
         fn pop(&mut self) -> Option<char> {
-            // Char count, not `str::len`: the primitives below index by char.
-            let l = str_len(self.0);
+            let l = str_chars_count(self.0);
             if l > 0 {
                 let c = str_index(self.0, l - 1);
                 *self = String(str_sub(self.0, 0, l - 1));
