@@ -232,7 +232,6 @@ impl BackendTestContext {
     async fn run_verification(&self, job: JobKind) -> Result<()> {
         let dir = self.path_to_snapshots().await?;
         let output = match self.backend {
-            BackendName::Fstar => run_fstar(true, dir).await?,
             BackendName::LegacyLean => run_lean(dir).await?,
             _ => unreachable!(),
         };

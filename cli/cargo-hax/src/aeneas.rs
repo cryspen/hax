@@ -251,17 +251,7 @@ fn crate_dir(project: &tools::project::ProjectContext) -> PathBuf {
 /// member-level value overrides the workspace-level one, consistent with
 /// the tool version resolution order; the default is enabled.
 pub fn project_files_enabled(project: &tools::project::ProjectContext) -> bool {
-    let crate_dir = crate_dir(project);
-    project
-        .member_config(&crate_dir)
-        .and_then(|config| config.project_files)
-        .or_else(|| {
-            project
-                .workspace_config
-                .as_ref()
-                .and_then(|config| config.project_files)
-        })
-        .unwrap_or(true)
+    crate::project_files::enabled(project, &crate_dir(project))
 }
 
 /// Runs the charon + aeneas pipeline for the `lean` backend.
