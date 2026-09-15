@@ -13,6 +13,10 @@ pub use hax_lib_macros::int;
 /// Mathematical integers for writting specifications. Mathematical
 /// integers are unbounded and arithmetic operation on them never over
 /// or underflow.
+/// 
+/// They are executable, but they are limited to a fixed number of bytes,
+/// so that they can carry the `Copy` trait. The backends model them as
+/// true mathematical integers anyway.
 #[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Debug)]
 pub struct Int(BigInt);
 
@@ -72,10 +76,14 @@ impl Div for Int {
 }
 
 impl Int {
-    /// Raises `2` at the power `self`
+    /// Raises `2` at the power `self`. Panics when `self` is negative.
     pub fn pow2(self) -> Self {
-        let exponent = self.get().to_u32().expect("Exponent doesn't fit in a u32");
-        Self::new(num_bigint::BigInt::from(2u8).pow(exponent))
+        use num_traits::Pow;
+        let exponent = self
+            .get()
+            .to_biguint()
+            .expect("`Int::pow2`: the exponent must be non-negative");
+        Self::new(Pow::pow(num_bigint::BigInt::from(2u8), exponent))
     }
 
     /// Constructs a `Int` out of a string literal. This function
