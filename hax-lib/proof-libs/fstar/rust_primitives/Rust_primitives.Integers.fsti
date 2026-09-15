@@ -251,7 +251,6 @@ let mod (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0}) =
 /// Comparison Operators
 /// 
 let eq (#t:inttype) (a:int_t t) (b:int_t t) = v a = v b
-let ne (#t:inttype) (a:int_t t) (b:int_t t) = v b <> v b
 let lt (#t:inttype) (a:int_t t) (b:int_t t) = v a < v b
 let lte (#t:inttype) (a:int_t t) (b:int_t t) = v a <= v b
 let gt (#t:inttype) (a:int_t t) (b:int_t t) = v a > v b

@@ -222,11 +222,8 @@ FSTAR_HANDWRITTEN = \
     Core_models.Core_arch.X86.Pclmulqdq.fsti \
     Core_models.Core_arch.X86.Sse2.fsti \
     Core_models.fst \
-    Core_models.Iter.Adapters.Rev.fsti \
     Core_models.Iter.Sources.Repeat_with.fsti \
     Core_models.Iter.Traits.fst \
-    Core_models.Mem.Maybe_uninit.fsti \
-    Core_models.Mem.Transmutability.fsti \
     Core_models.Num.Checked_mul_spec.fst \
     Core_models.Num.Niche_types.fsti \
     Core_models.Num.Overflow_spec.fst \
