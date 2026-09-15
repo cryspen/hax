@@ -24,7 +24,7 @@ val lemma_get_bit_bounded #t (x:int_t t) (d:num_bits t) (i:usize):
 
 /// If upper bits of `x` are zero, then `x` is bounded accordingly
 val lemma_get_bit_bounded' #t (x:int_t t) (d:num_bits t):
-  Lemma (requires forall i. v i > d ==> get_bit x i == 0)
+  Lemma (requires forall i. v i >= d ==> get_bit x i == 0)
         (ensures bounded x d)
 
 open FStar.FunctionalExtensionality

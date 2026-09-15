@@ -311,9 +311,8 @@ val logand_lemma: #t:inttype -> a:int_t t -> b:int_t t ->
 
 val logand_mask_lemma: #t:inttype
   -> a:int_t t
-  -> m:nat{m < bits t} ->
-  Lemma (pow2 m < maxint t /\
-         logand a (sub #t (mk_int #t (pow2 m)) (mk_int #t 1)) ==
+  -> m:nat{m < bits t /\ pow2 m < maxint t} ->
+  Lemma (logand a (sub #t (mk_int #t (pow2 m)) (mk_int #t 1)) ==
          mk_int (v a % pow2 m))
   [SMTPat (logand #t a (sub #t (mk_int #t (pow2 m)) (mk_int #t 1)))]
 
@@ -576,6 +575,7 @@ val get_bit_cast #t #u
 
 val get_bit_cast_extend #t #u
   (x: int_t t) (nth: usize)
-  : Lemma (requires bits t < bits u /\ v nth >= bits t /\ v nth < bits u)
+  : Lemma (requires bits t < bits u /\ v nth >= bits t /\ v nth < bits u /\
+                    (unsigned t \/ v x >= 0))
           (ensures get_bit (cast_mod #t #u x) nth == 0)
           [SMTPat (get_bit (cast_mod #t #u x) nth)]
