@@ -35,17 +35,6 @@ Lemma ff_pre_post_ensures (x : bool) (y : bool) :
   f_eq (result) (y) = true.
 Proof. Admitted.
 
-Class t_T (v_Self : Type) : Type :=
-  {
-    f_U : Type;
-    f_c : t_u8;
-    f_d : unit -> unit;
-    f_m : v_Self -> t_u8 -> bool;
-  }.
-Arguments t_T (_).
-
-
-
 Class t_TrGeneric (v_Self : Type) (v_U : Type) `{t_Clone (v_U)} : Type :=
   {
     f_f : v_U -> v_Self;
@@ -76,3 +65,14 @@ Notation "'S2_S2_record'" := Build_S2_record.
 
 Definition impl_S2__ff_s2 '(_ : unit) : unit :=
   dropped_body.
+
+Class t_T (v_Self : Type) : Type :=
+  {
+    f_U : Type;
+    f_c : t_u8;
+    f_d : unit -> unit;
+    f_m : v_Self -> t_u8 -> bool;
+  }.
+Arguments t_T (_).
+
+

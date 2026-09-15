@@ -15,12 +15,6 @@ From Core Require Import Core.
 
 
 
-Class t_Operation (v_Self : Type) : Type :=
-  {
-    f_double : t_u8 -> t_u8;
-  }.
-Arguments t_Operation (_).
-
 Record ViaAdd_record : Type :=
   {
   }.
@@ -35,13 +29,19 @@ Record ViaMul_record : Type :=
 #[export]
 Notation "'ViaMul_ViaMul_record'" := Build_ViaMul_record.
 
-Instance t_Operation_749126356 : t_Operation ((t_ViaAdd)) :=
+Class t_Operation (v_Self : Type) : Type :=
+  {
+    f_double : t_u8 -> t_u8;
+  }.
+Arguments t_Operation (_).
+
+Instance t_Operation_490315196 : t_Operation ((t_ViaAdd)) :=
   {
     implaabbcc_t_Operation_f_double := fun  (x : t_u8)=>
       f_add (x) (x);
   }.
 
-Instance t_Operation_1024252701 : t_Operation ((t_ViaMul)) :=
+Instance t_Operation_339661565 : t_Operation ((t_ViaMul)) :=
   {
     implaabbcc_t_Operation_f_double := fun  (x : t_u8)=>
       f_mul (x) ((2 : t_u8));

@@ -446,6 +446,84 @@ def Impl_3.f.spec (self : Dummy) :
 end new_tests.legacy__attributes__lib.future_self
 
 
+namespace new_tests.legacy__attributes__lib.future_and_result_order
+
+--  One `&mut` input, non-unit result: `(u32, bool)` in the engine lanes,
+--  `(bool, u32)` in the aeneas/Lean lane.
+def one_mut_and_result (x : u32) :
+    RustM (rust_primitives.hax.Tuple2 u32 Bool) := do
+  let x : u32 ← (core_models.num.Impl_8.wrapping_add x (1 : u32));
+  let hax_temp_output : Bool ← (x ==? (0 : u32));
+  (pure (rust_primitives.hax.Tuple2.mk x hax_temp_output))
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def one_mut_and_result.spec (x : u32) :
+    Spec
+      (requires := do pure True)
+      (ensures := fun
+          ⟨x_future, result⟩ => do
+          ((← (x_future
+              ==? (← (core_models.num.Impl_8.wrapping_add x (1 : u32)))))
+            &&? (← (result ==? (← (x_future ==? (0 : u32)))))))
+      (one_mut_and_result (x : u32)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [one_mut_and_result] <;> bv_decide
+}
+
+--  Two `&mut` inputs: pins the futures\' order relative to each other as
+--  well as relative to the result. `(u8, u64, bool)` in the engine lanes,
+--  `(bool, u8, u64)` in the aeneas/Lean lane.
+def two_mut_and_result (a : u8) (b : u64) :
+    RustM (rust_primitives.hax.Tuple3 u8 u64 Bool) := do
+  let a : u8 ← (core_models.num.Impl_6.wrapping_add a (1 : u8));
+  let b : u64 ← (core_models.num.Impl_9.wrapping_add b (2 : u64));
+  let hax_temp_output : Bool ← (a ==? (0 : u8));
+  (pure (rust_primitives.hax.Tuple3.mk a b hax_temp_output))
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def two_mut_and_result.spec (a : u8) (b : u64) :
+    Spec
+      (requires := do pure True)
+      (ensures := fun
+          ⟨a_future, b_future, result⟩ => do
+          ((← ((← (a_future
+                ==? (← (core_models.num.Impl_6.wrapping_add a (1 : u8)))))
+              &&? (← (b_future
+                ==? (← (core_models.num.Impl_9.wrapping_add b (2 : u64)))))))
+            &&? (← (result ==? (← (a_future ==? (0 : u8)))))))
+      (two_mut_and_result (a : u8) (b : u64)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [two_mut_and_result] <;> bv_decide
+}
+
+--  One `&mut` input, unit result: the result binder is dropped altogether,
+--  so what is left is futures-only and the reordering is a no-op — both
+--  lanes agree here.
+def one_mut_no_result (x : u32) : RustM u32 := do
+  let x : u32 ← (core_models.num.Impl_8.wrapping_add x (1 : u32));
+  (pure x)
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def one_mut_no_result.spec (x : u32) :
+    Spec
+      (requires := do pure True)
+      (ensures := fun
+          x_future => do
+          (x_future ==? (← (core_models.num.Impl_8.wrapping_add x (1 : u32)))))
+      (one_mut_no_result (x : u32)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [one_mut_no_result] <;> bv_decide
+}
+
+end new_tests.legacy__attributes__lib.future_and_result_order
+
+
 namespace new_tests.legacy__attributes__lib.replace_body
 
 @[spec]
@@ -473,13 +551,6 @@ end new_tests.legacy__attributes__lib.replace_body
 
 
 namespace new_tests.legacy__attributes__lib.pre_post_on_traits_and_impls
-
-class Operation.AssociatedTypes (Self : Type) where
-
-class Operation (Self : Type)
-  [associatedTypes : outParam (Operation.AssociatedTypes (Self : Type))]
-  where
-  double (Self) : (u8 -> RustM u8)
 
 structure ViaAdd where
   -- no fields
@@ -510,13 +581,6 @@ def Impl.double_hoisted.spec (x : u8) :
   contract := by hax_mvcgen [Impl.double_hoisted] <;> bv_decide
 }
 
-@[reducible] instance Impl.AssociatedTypes :
-  Operation.AssociatedTypes ViaAdd
-  where
-
-instance Impl : Operation ViaAdd where
-  double := (Impl.double_hoisted)
-
 def Impl_1.double_hoisted (x : u8) : RustM u8 := do (x *? (2 : u8))
 
 set_option hax_mvcgen.specset "bv" in
@@ -539,32 +603,6 @@ def Impl_1.double_hoisted.spec (x : u8) :
   pureEnsures := by hax_construct_pure <;> bv_decide
   contract := by hax_mvcgen [Impl_1.double_hoisted] <;> bv_decide
 }
-
-@[reducible] instance Impl_1.AssociatedTypes :
-  Operation.AssociatedTypes ViaMul
-  where
-
-instance Impl_1 : Operation ViaMul where
-  double := (Impl_1.double_hoisted)
-
-class TraitWithRequiresAndEnsures.AssociatedTypes (Self : Type) where
-
-class TraitWithRequiresAndEnsures (Self : Type)
-  [associatedTypes : outParam (TraitWithRequiresAndEnsures.AssociatedTypes (Self
-      : Type))]
-  where
-  method (Self) : (Self -> u8 -> RustM u8)
-
-@[spec]
-def test
-    (T : Type)
-    [trait_constr_test_associated_type_i0 :
-      TraitWithRequiresAndEnsures.AssociatedTypes
-      T]
-    [trait_constr_test_i0 : TraitWithRequiresAndEnsures T ]
-    (x : T) :
-    RustM u8 := do
-  ((← (TraitWithRequiresAndEnsures.method T x (99 : u8))) -? (88 : u8))
 
 end new_tests.legacy__attributes__lib.pre_post_on_traits_and_impls
 
@@ -964,16 +1002,6 @@ end new_tests.legacy__attributes__lib.verifcation_status
 
 namespace new_tests.legacy__attributes__lib.requires_mut
 
-class Foo.AssociatedTypes (Self : Type) where
-
-class Foo (Self : Type)
-  [associatedTypes : outParam (Foo.AssociatedTypes (Self : Type))]
-  where
-  f (Self) : (u8 -> u8 -> RustM (rust_primitives.hax.Tuple2 u8 u8))
-  g (Self) : (u8 -> u8 -> RustM u8)
-  h (Self) : (u8 -> u8 -> RustM rust_primitives.hax.Tuple0)
-  i (Self) : (u8 -> u8 -> RustM u8)
-
 def Impl.f_hoisted (x : u8) (y : u8) :
     RustM (rust_primitives.hax.Tuple2 u8 u8) := do
   let y : u8 ← (y +? x);
@@ -1050,29 +1078,7 @@ def Impl.i_hoisted.spec (x : u8) (y : u8) :
   contract := by hax_mvcgen [Impl.i_hoisted] <;> bv_decide
 }
 
-@[reducible] instance Impl.AssociatedTypes :
-  Foo.AssociatedTypes rust_primitives.hax.Tuple0
-  where
-
-instance Impl : Foo rust_primitives.hax.Tuple0 where
-  f := (Impl.f_hoisted)
-  g := (Impl.g_hoisted)
-  h := (Impl.h_hoisted)
-  i := (Impl.i_hoisted)
-
 end new_tests.legacy__attributes__lib.requires_mut
-
-
-namespace new_tests.legacy__attributes__lib.issue_1266
-
-class T.AssociatedTypes (Self : Type) where
-
-class T (Self : Type)
-  [associatedTypes : outParam (T.AssociatedTypes (Self : Type))]
-  where
-  v (Self) : (Self -> RustM Self)
-
-end new_tests.legacy__attributes__lib.issue_1266
 
 
 namespace new_tests.legacy__attributes__lib.issue_2089
@@ -1297,6 +1303,88 @@ def fib (x : usize) : RustM usize := do
 partial_fixpoint
 
 end new_tests.legacy__attributes__lib
+
+
+namespace new_tests.legacy__attributes__lib.issue_1266
+
+class T.AssociatedTypes (Self : Type) where
+
+class T (Self : Type)
+  [associatedTypes : outParam (T.AssociatedTypes (Self : Type))]
+  where
+  v (Self) : (Self -> RustM Self)
+
+end new_tests.legacy__attributes__lib.issue_1266
+
+
+namespace new_tests.legacy__attributes__lib.pre_post_on_traits_and_impls
+
+class Operation.AssociatedTypes (Self : Type) where
+
+class Operation (Self : Type)
+  [associatedTypes : outParam (Operation.AssociatedTypes (Self : Type))]
+  where
+  double (Self) : (u8 -> RustM u8)
+
+@[reducible] instance Impl.AssociatedTypes :
+  Operation.AssociatedTypes ViaAdd
+  where
+
+instance Impl : Operation ViaAdd where
+  double := (Impl.double_hoisted)
+
+@[reducible] instance Impl_1.AssociatedTypes :
+  Operation.AssociatedTypes ViaMul
+  where
+
+instance Impl_1 : Operation ViaMul where
+  double := (Impl_1.double_hoisted)
+
+class TraitWithRequiresAndEnsures.AssociatedTypes (Self : Type) where
+
+class TraitWithRequiresAndEnsures (Self : Type)
+  [associatedTypes : outParam (TraitWithRequiresAndEnsures.AssociatedTypes (Self
+      : Type))]
+  where
+  method (Self) : (Self -> u8 -> RustM u8)
+
+@[spec]
+def test
+    (T : Type)
+    [trait_constr_test_associated_type_i0 :
+      TraitWithRequiresAndEnsures.AssociatedTypes
+      T]
+    [trait_constr_test_i0 : TraitWithRequiresAndEnsures T ]
+    (x : T) :
+    RustM u8 := do
+  ((← (TraitWithRequiresAndEnsures.method T x (99 : u8))) -? (88 : u8))
+
+end new_tests.legacy__attributes__lib.pre_post_on_traits_and_impls
+
+
+namespace new_tests.legacy__attributes__lib.requires_mut
+
+class Foo.AssociatedTypes (Self : Type) where
+
+class Foo (Self : Type)
+  [associatedTypes : outParam (Foo.AssociatedTypes (Self : Type))]
+  where
+  f (Self) : (u8 -> u8 -> RustM (rust_primitives.hax.Tuple2 u8 u8))
+  g (Self) : (u8 -> u8 -> RustM u8)
+  h (Self) : (u8 -> u8 -> RustM rust_primitives.hax.Tuple0)
+  i (Self) : (u8 -> u8 -> RustM u8)
+
+@[reducible] instance Impl.AssociatedTypes :
+  Foo.AssociatedTypes rust_primitives.hax.Tuple0
+  where
+
+instance Impl : Foo rust_primitives.hax.Tuple0 where
+  f := (Impl.f_hoisted)
+  g := (Impl.g_hoisted)
+  h := (Impl.h_hoisted)
+  i := (Impl.i_hoisted)
+
+end new_tests.legacy__attributes__lib.requires_mut
 
 
 namespace new_tests.legacy__attributes__lib.issue_2089

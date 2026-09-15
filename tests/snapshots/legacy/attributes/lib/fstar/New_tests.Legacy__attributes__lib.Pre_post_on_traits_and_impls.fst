@@ -3,6 +3,10 @@ module New_tests.Legacy__attributes__lib.Pre_post_on_traits_and_impls
 open FStar.Mul
 open Core_models
 
+type t_ViaAdd = | ViaAdd : t_ViaAdd
+
+type t_ViaMul = | ViaMul : t_ViaMul
+
 class t_Operation (v_Self: Type0) = {
   f_double_pre:x: u8
     -> pred:
@@ -20,10 +24,6 @@ class t_Operation (v_Self: Type0) = {
           (Rust_primitives.Hax.Int.from_machine result <: Hax_lib.Int.t_Int) };
   f_double:x0: u8 -> Prims.Pure u8 (f_double_pre x0) (fun result -> f_double_post x0 result)
 }
-
-type t_ViaAdd = | ViaAdd : t_ViaAdd
-
-type t_ViaMul = | ViaMul : t_ViaMul
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl: t_Operation t_ViaAdd =
