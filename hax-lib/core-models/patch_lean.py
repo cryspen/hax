@@ -635,8 +635,8 @@ def relocate_blocks_to_end(
     `end_marker` — preserving their relative order.
 
     Aeneas orders definitions from its *generic* call graph, which does not
-    see the *monomorphised* dependency a `StepBy<Range<usize>>` iterator has
-    on the concrete `Usize` `Step` instance. That instance is a computable
+    see the *monomorphised* dependency a `StepBy<Range<usize>>` or
+    `Skip<Range<usize>>` iterator has on the concrete `Usize` `Step` instance. That instance is a computable
     `def` emitted late in `Funs.lean` (interleaved with the `num.*` defs it
     relies on), so the adapter lands *before* it and elaboration fails with
     `unknown identifier core.Usize.Insts.CoreIterRangeStep`. Hoisting the
@@ -702,12 +702,15 @@ def main() -> int:
             text = rename_iter_param(text)
             text = qualify_result_monad_impls(text)
             text = drop_itermut_iterator_instance(text)
-            # The `StepBy` iterator monomorphises onto the concrete `Usize`
-            # `Step` instance, which Aeneas emits *later* in the file. Hoist
-            # the adapter past it so the reference resolves.
+            # The `StepBy` and `Skip` iterators monomorphise onto the concrete
+            # `Usize` `Step` instance, which Aeneas emits *later* in the file.
+            # Hoist the adapters past it so the references resolve.
             text = relocate_blocks_to_end(
                 text,
-                ["iter::adapters::step_by::{impl core_models::iter::traits::iterator::Iterator"],
+                [
+                    "iter::adapters::step_by::{impl core_models::iter::traits::iterator::Iterator",
+                    "iter::adapters::skip::{impl core_models::iter::traits::iterator::Iterator",
+                ],
                 end_marker="end CoreModels.core",
             )
         if path == types_path:

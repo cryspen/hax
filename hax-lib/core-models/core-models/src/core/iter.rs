@@ -580,6 +580,7 @@ pub mod adapters {
         pub struct StepBy<I> {
             iter: I,
             step: usize,
+            first_take: bool,
         }
 
         #[hax_lib::attributes]
@@ -590,7 +591,11 @@ pub mod adapters {
                 if step == 0 {
                     crate::panicking::internal::panic()
                 }
-                StepBy { iter, step }
+                StepBy {
+                    iter,
+                    step,
+                    first_take: true,
+                }
             }
         }
 
@@ -601,13 +606,14 @@ pub mod adapters {
 
             // Yields indices 0, step, 2*step, …, so the first call must not skip.
             fn next(&mut self) -> Option<<I as Iterator>::Item> {
-                let current = self.iter.next();
-                // No early exit: Aeneas can't translate `break`, and `next` on an
-                // exhausted iterator is a no-op.
-                for _ in 1..self.step {
-                    self.iter.next();
+                let start = if self.first_take { self.step } else { 1 };
+                self.first_take = false;
+                for _ in start..self.step {
+                    if let Option::None = self.iter.next() {
+                        return Option::None;
+                    }
                 }
-                current
+                self.iter.next()
             }
         }
     }
@@ -867,13 +873,14 @@ pub mod adapters {
             }
         }
         #[hax_lib::attributes]
-        // opaque: while-loop generates Rust_primitives.Hax.while_loop, causing F* dependency cycle
+        // opaque: for-loop generates Rust_primitives.Hax.Folds, causing F* dependency cycle
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
         impl<I: Iterator> Iterator for Skip<I> {
             type Item = I::Item;
             fn next(&mut self) -> Option<I::Item> {
-                while self.n > 0 {
-                    self.n -= 1;
+                let n = self.n;
+                self.n = 0;
+                for _ in 0..n {
                     if let Option::None = self.iter.next() {
                         return Option::None;
                     }
@@ -1846,6 +1853,87 @@ mod tests {
             || VecIter::new(vec![1u8, 2, 3]).step_by(0),
             || [1u8, 2, 3].iter().step_by(0),
         );
+    }
+
+    /// Replays a fixed (possibly non-fused) script of results and counts every
+    /// `next` call. Implements both the model's and std's `Iterator`, so that the
+    /// two call patterns can be compared step by step.
+    struct Scripted<'a> {
+        script: Vec<std::option::Option<u8>>,
+        pos: usize,
+        calls: &'a std::cell::Cell<usize>,
+    }
+
+    impl<'a> Scripted<'a> {
+        fn new(script: Vec<std::option::Option<u8>>, calls: &'a std::cell::Cell<usize>) -> Self {
+            Self {
+                script,
+                pos: 0,
+                calls,
+            }
+        }
+        fn step(&mut self) -> std::option::Option<u8> {
+            self.calls.set(self.calls.get() + 1);
+            let v = self.script.get(self.pos).copied().flatten();
+            self.pos += 1;
+            v
+        }
+    }
+
+    impl<'a> Iterator for Scripted<'a> {
+        type Item = u8;
+        fn next(&mut self) -> Option<u8> {
+            self.step().inject()
+        }
+    }
+
+    impl<'a> std::iter::Iterator for Scripted<'a> {
+        type Item = u8;
+        fn next(&mut self) -> std::option::Option<u8> {
+            self.step()
+        }
+    }
+
+    fn scripts() -> Vec<Vec<std::option::Option<u8>>> {
+        vec![
+            (1..=9u8).map(Some).collect(),
+            vec![None, Some(2), Some(3), Some(4)],
+            vec![Some(1), None, Some(3), None, Some(5)],
+        ]
+    }
+
+    #[test]
+    fn test_step_by_drives_the_inner_iterator_like_std() {
+        for script in scripts() {
+            for step in 1..=4usize {
+                let mc = std::cell::Cell::new(0usize);
+                let sc = std::cell::Cell::new(0usize);
+                let mut m = IteratorMethods::step_by(Scripted::new(script.clone(), &mc), step);
+                let mut s = std::iter::Iterator::step_by(Scripted::new(script.clone(), &sc), step);
+                for _ in 0..6 {
+                    let sv = std::iter::Iterator::next(&mut s);
+                    assert_eq!(m.next(), sv.inject());
+                    assert_eq!(mc.get(), sc.get());
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_skip_drives_the_inner_iterator_like_std() {
+        for script in scripts() {
+            for n in 0..=4usize {
+                let mc = std::cell::Cell::new(0usize);
+                let sc = std::cell::Cell::new(0usize);
+                let mut m = IteratorMethods::skip(Scripted::new(script.clone(), &mc), n);
+                let mut s = std::iter::Iterator::skip(Scripted::new(script.clone(), &sc), n);
+                for _ in 0..6 {
+                    let sv = std::iter::Iterator::next(&mut s);
+                    assert_eq!(m.next(), sv.inject());
+                    assert_eq!(mc.get(), sc.get());
+                }
+            }
+        }
     }
 
     macro_rules! step_tests {
