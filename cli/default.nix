@@ -7,6 +7,8 @@ let
   # Crate readmes are compiled in as rustdoc crate docs via
   # `#![doc = include_str!("../README.md")]`.
   is-crate-readme = path: builtins.match ".*/README[.]md" path != null;
+  # The F* Makefile `cargo-hax` embeds with `include_str!`.
+  is-fstar-makefile = path: builtins.match ".*/fstar/Makefile[.]hax" path != null;
   buildInputs = lib.optionals stdenv.isDarwin [ libiconv zlib.dev ];
   binaries = [ hax hax-engine.bin rustc gcc hax_rust_engine ] ++ buildInputs;
   commonArgs = {
@@ -20,7 +22,8 @@ let
           || is-crate-readme path)
         && (craneLib.filterCargoSources path type
           || is-webapp-static-asset path
-          || is-crate-readme path))
+          || is-crate-readme path
+          || is-fstar-makefile path))
         || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
     inherit buildInputs doCheck;

@@ -9,6 +9,9 @@ _build
 result
 .DS_Store
 .depend
+.depend.tmp
+.hax-roots
+dep.graph
 .cache
 .fstar-cache
 .lake

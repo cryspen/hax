@@ -221,35 +221,6 @@ pub async fn hax_engine(
     })
 }
 
-/// Executes F*
-pub async fn run_fstar(lax: bool, file_path: PathBuf) -> Result<BackendOutput> {
-    let root_path = std::env::current_dir()?;
-    let makefile_path = file_path.join("Makefile");
-    if !makefile_path.exists() {
-        let template_path = root_path.join("templates").join("Makefile.fstar.template");
-        if template_path.exists() {
-            std::fs::copy(template_path, makefile_path)?;
-        }
-    }
-    let mut command = tokio::process::Command::new("make");
-    if lax {
-        command.env("OTHERFLAGS", "--lax");
-    }
-    command.current_dir(file_path);
-    let out = command.output().await?;
-    let stderr = String::from_utf8_lossy(&out.stderr).to_string();
-    let mut error = stderr.lines().rev().take(10).collect::<Vec<_>>();
-    error.reverse();
-
-    Ok(BackendOutput {
-        error_code: out
-            .status
-            .code()
-            .context("No error code: was the process terminated?")?,
-        stderr: error.join("\n"),
-    })
-}
-
 /// Executes Lean
 pub async fn run_lean(dir: PathBuf) -> Result<BackendOutput> {
     let root_path = std::env::current_dir()?;
