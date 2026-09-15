@@ -240,12 +240,17 @@ let sub (#t:inttype) (a:int_t t)
 let decr (#t:inttype) (a:int_t t{minint t < v a}) =
     mk_int #t (v a - 1)
 
-let div (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0 /\ (unsigned t \/ range (v a / v b) t)}) =
-  assert (unsigned t \/ range (v a / v b) t);
-  mk_int #t (v a / v b)
-  
-let mod (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0}) =
-  mk_int #t (v a % v b)
+let trunc_div (a: int) (b: int{b <> 0}) : int =
+  let q = abs a / abs b in
+  if (a >= 0) = (b >= 0) then q else -q
+
+let trunc_mod (a: int) (b: int{b <> 0}) : int = a - b * trunc_div a b
+
+let div (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0 /\ (unsigned t \/ range (trunc_div (v a) (v b)) t)}) =
+  mk_int #t (trunc_div (v a) (v b))
+
+let mod (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0 /\ (unsigned t \/ range (trunc_div (v a) (v b)) t)}) =
+  mk_int #t (trunc_mod (v a) (v b))
 
 
 /// Comparison Operators
