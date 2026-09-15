@@ -48,11 +48,11 @@ jobs:
           toolchain: ${{ env.RUST_TOOLCHAIN }}
           components: rustfmt
 
-      - run: cargo fmt --all -- --check
+      - run: cargo fmt -- --check
 
-      # `tests/` is a separate workspace; `cargo fmt --all` from the
+      # `tests/` is a separate workspace; `cargo fmt` from the
       # root doesn't reach it.
-      - run: cargo fmt --all -- --check
+      - run: cargo fmt -- --check
         working-directory: hax-lib/core-models/tests
 
   # ---------------------------------------------------------------- rust tests
