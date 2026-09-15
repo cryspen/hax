@@ -1,3 +1,8 @@
+---
+title: Trust
+weight: -4
+---
+
 # Is hax-verified code guaranteed to be correct?
 
 No.
