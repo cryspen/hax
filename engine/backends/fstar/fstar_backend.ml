@@ -329,8 +329,10 @@ struct
       (c Rust_primitives__hax__int__add, (2, "+"));
       (c Rust_primitives__hax__int__sub, (2, "-"));
       (c Rust_primitives__hax__int__mul, (2, "*"));
-      (c Rust_primitives__hax__int__div, (2, "/"));
-      (c Rust_primitives__hax__int__rem, (2, "%"));
+      (* Neither `Int` division nor `Int` remainder has an infix form here:
+         the bigint operations truncate towards zero, while F*'s `/` and `%`
+         on `int` are Euclidean. Division prints as a call to
+         `Rust_primitives.Hax.Int.div`, which spells out the difference. *)
       (c Rust_primitives__hax__int__neg, (1, "-"));
       (c Rust_primitives__hax__int__ge, (2, ">="));
       (c Rust_primitives__hax__int__le, (2, "<="));
