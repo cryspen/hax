@@ -1,0 +1,74 @@
+name: Use a local hax-lib
+description: >-
+  Point a project's dependencies on hax's library crates at a local hax
+  checkout, and check that the project's resolve graph really points there.
+
+inputs:
+  project:
+    description: Path to the project checkout to repoint.
+    required: true
+  hax:
+    description: Path to the hax checkout to depend on.
+    default: .
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PROJECT: ${{ inputs.project }}
+        HAX: ${{ inputs.hax }}
+      run: |
+        set -euo pipefail
+        project=$(cd "$PROJECT" && pwd)
+        hax=$(cd "$HAX" && pwd)
+
+        crates=$(cargo metadata --format-version 1 --no-deps \
+            --manifest-path "$hax/Cargo.toml" \
+          | jq -r '.packages[] | select(.name | startswith("hax-"))
+                   | "\(.name) \(.manifest_path | rtrimstr("/Cargo.toml"))"')
+
+        cd "$project"
+
+        edges=$(cargo metadata --format-version 1 --no-deps | jq -r '
+          .packages[] as $p | $p.dependencies[]
+          | select(.name | startswith("hax-"))
+          | "\($p.name) \(.name) \(.kind // "normal") \(.target // "-")"' | sort -u)
+
+        if [ -z "$edges" ]; then
+          echo "::error::no dependency on a hax crate anywhere in $project"
+          exit 1
+        fi
+
+        while read -r member dep kind target; do
+          path=$(awk -v d="$dep" '$1 == d {print $2}' <<<"$crates")
+          if [ -z "$path" ]; then
+            echo "::error::$member depends on $dep, which $hax does not provide"
+            exit 1
+          fi
+          flags=()
+          case "$kind" in
+            dev) flags+=(--dev) ;;
+            build) flags+=(--build) ;;
+          esac
+          label="$kind"
+          [ "$target" = "-" ] || { flags+=(--target "$target"); label="$kind, $target"; }
+          cargo add "$dep" --path "$path" -p "$member" \
+            ${flags[@]+"${flags[@]}"} --quiet
+          echo "$member: $dep ($label) -> $path"
+        done <<<"$edges"
+
+        published=$(cargo metadata --format-version 1 | jq -r '
+          (.packages | map({key: .id, value: .}) | from_entries) as $byid
+          | .workspace_members as $ws
+          | .resolve.nodes[] | select(.id | IN($ws[])) as $node
+          | $node.deps[] | $byid[.pkg]
+          | select(.name | startswith("hax-")) | select(.source != null)
+          | "  \($byid[$node.id].name) depends on \(.name) \(.version) from \(.source)"')
+
+        if [ -n "$published" ]; then
+          echo "::error::these direct dependencies still resolve to a published version:"
+          echo "$published"
+          exit 1
+        fi
+        echo "every direct hax dependency of $project resolves to $hax"
