@@ -1,10 +1,11 @@
+use hax_lib::int::*;
 use hax_lib::{ensures, fstar, requires};
 
 const FIELD_MODULUS: i32 = 3329;
 const UNSIGNED_FIELD_MODULUS: u32 = FIELD_MODULUS as u32;
 
 #[requires(n == 4 || n == 5 || n == 10 || n == 11 || n == 16)]
-#[ensures(|result| result < 2u32.pow(n as u32))]
+#[ensures(|result| result.to_int() < n.to_int().pow2())]
 fn get_n_least_significant_bits(n: u8, value: u32) -> u32 {
     let nth_bit = 1 << n;
     let mask = nth_bit - 1;
