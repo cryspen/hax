@@ -106,19 +106,48 @@ unfold let fold_range_step_by_upper_bound (#u: inttype)
   (start: int_t u) (end_: int_t u)
   (step: usize {v step > 0})
   : end':int {fold_range_step_by_wf_index start end_ step false end'}
-  = if v end_ <= v start 
-    then v end_
-    else
-      let range: nat = v end_ - v start in
-      let k: nat = range / v step in
-      let end' = v start + k * v step in
-      FStar.Math.Lemmas.division_propriety range (v step);
-      end'
+  = if v end_ <= v start
+    then v start
+    else v end_ - 1 - ((v end_ - 1 - v start) % v step) + v step
 #pop-options
 
+let fold_range_step_by_bound_lemma (k: pos) (a: nat) (b: nat)
+  : Lemma (requires a % k == 0 /\ a <= b)
+          (ensures a <= b - b % k /\ (a + k > b ==> a == b - b % k))
+  = FStar.Math.Lemmas.lemma_div_le a b k;
+    FStar.Math.Lemmas.euclidean_division_definition a k;
+    FStar.Math.Lemmas.euclidean_division_definition b k;
+    FStar.Math.Lemmas.lemma_mult_le_right k (a / k) (b / k);
+    if a / k + 1 <= b / k
+    then FStar.Math.Lemmas.lemma_mult_le_right k (a / k + 1) (b / k)
+
+#push-options "--z3rlimit 100"
+let rec fold_range_step_by_from
+  (#acc_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (step: usize {v step > 0 /\ range (v end_ + v step) u})
+  (inv: acc_t -> (i:int_t u{fold_range_step_by_wf_index start end_ step false (v i)}) -> Type0)
+  (i: int_t u {v i >= v start /\ (v i - v start) % v step == 0
+            /\ (v start < v end_ ==> v i <= fold_range_step_by_upper_bound start end_ step)})
+  (init: acc_t {inv init i})
+  (f: (acc:acc_t -> j:int_t u  {v j < v end_ - ((v end_ - 1 - v start) % v step) /\ fold_range_step_by_wf_index start end_ step true (v j) /\ inv acc j}
+                 -> acc':acc_t {(inv acc' (mk_int (v j + v step)))}))
+  : Tot (result: acc_t {if v i < v end_
+                        then inv result (mk_int (fold_range_step_by_upper_bound start end_ step))
+                        else inv result i})
+        (decreases (v end_ - v i + v step))
+  = if v i < v end_
+    then begin
+      fold_range_step_by_bound_lemma (v step) (v i - v start) (v end_ - 1 - v start);
+      FStar.Math.Lemmas.lemma_mod_plus (v i - v start) 1 (v step);
+      fold_range_step_by_from start end_ step inv (mk_int (v i + v step)) (f init i) f
+    end
+    else init
+
 /// Fold function that is generated for `for` loops iterating on
-/// `s.enumerate()`-like iterators
-val fold_range_step_by
+/// `(start..end_).step_by(step)`-like iterators
+let fold_range_step_by
   (#acc_t: Type0) (#u: inttype)
   (start: int_t u)
   (end_: int_t u)
@@ -128,6 +157,10 @@ val fold_range_step_by
   (f: (acc:acc_t -> i:int_t u  {v i < v end_ - ((v end_ - 1 - v start) % v step) /\ fold_range_step_by_wf_index start end_ step true (v i) /\ inv acc i}
                  -> acc':acc_t {(inv acc' (mk_int (v i + v step)))}))
   : result: acc_t {inv result (mk_int (fold_range_step_by_upper_bound start end_ step))}
+  = (if v start < v end_
+     then fold_range_step_by_bound_lemma (v step) 0 (v end_ - 1 - v start));
+    fold_range_step_by_from start end_ step inv start init f
+#pop-options
 
 (**** `start..end_` *)
 unfold let fold_range_wf_index (#u: inttype)
