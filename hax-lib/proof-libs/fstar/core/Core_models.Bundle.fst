@@ -3315,7 +3315,9 @@ type t_Result (v_T: Type0) (v_E: Type0) =
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_6__from_str_radix': src: string -> radix: u32
-  -> t_Result u8 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u8 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_6__from_str_radix = impl_6__from_str_radix'
@@ -3323,7 +3325,9 @@ let impl_6__from_str_radix = impl_6__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_7__from_str_radix': src: string -> radix: u32
-  -> t_Result u16 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u16 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_7__from_str_radix = impl_7__from_str_radix'
@@ -3331,7 +3335,9 @@ let impl_7__from_str_radix = impl_7__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_8__from_str_radix': src: string -> radix: u32
-  -> t_Result u32 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u32 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_8__from_str_radix = impl_8__from_str_radix'
@@ -3339,7 +3345,9 @@ let impl_8__from_str_radix = impl_8__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_9__from_str_radix': src: string -> radix: u32
-  -> t_Result u64 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u64 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_9__from_str_radix = impl_9__from_str_radix'
@@ -3347,7 +3355,9 @@ let impl_9__from_str_radix = impl_9__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_10__from_str_radix': src: string -> radix: u32
-  -> t_Result u128 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u128 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_10__from_str_radix = impl_10__from_str_radix'
@@ -3355,7 +3365,9 @@ let impl_10__from_str_radix = impl_10__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_11__from_str_radix': src: string -> radix: u32
-  -> t_Result usize Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result usize Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_11__from_str_radix = impl_11__from_str_radix'
@@ -3363,7 +3375,9 @@ let impl_11__from_str_radix = impl_11__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_12__from_str_radix': src: string -> radix: u32
-  -> t_Result i8 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i8 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_12__from_str_radix = impl_12__from_str_radix'
@@ -3371,7 +3385,9 @@ let impl_12__from_str_radix = impl_12__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_13__from_str_radix': src: string -> radix: u32
-  -> t_Result i16 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i16 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_13__from_str_radix = impl_13__from_str_radix'
@@ -3379,7 +3395,9 @@ let impl_13__from_str_radix = impl_13__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_14__from_str_radix': src: string -> radix: u32
-  -> t_Result i32 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i32 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_14__from_str_radix = impl_14__from_str_radix'
@@ -3387,7 +3405,9 @@ let impl_14__from_str_radix = impl_14__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_15__from_str_radix': src: string -> radix: u32
-  -> t_Result i64 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i64 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_15__from_str_radix = impl_15__from_str_radix'
@@ -3395,7 +3415,9 @@ let impl_15__from_str_radix = impl_15__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_16__from_str_radix': src: string -> radix: u32
-  -> t_Result i128 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i128 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_16__from_str_radix = impl_16__from_str_radix'
@@ -3403,7 +3425,9 @@ let impl_16__from_str_radix = impl_16__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_17__from_str_radix': src: string -> radix: u32
-  -> t_Result isize Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result isize Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_17__from_str_radix = impl_17__from_str_radix'
