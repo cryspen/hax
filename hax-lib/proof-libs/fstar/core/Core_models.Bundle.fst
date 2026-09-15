@@ -244,7 +244,8 @@ let impl__new__from__skip_while (#v_I #v_P: Type0) (iter: v_I) (predicate: v_P)
 /// See [`std::iter::StepBy`]
 type t_StepBy (v_I: Type0) = {
   f_iter:v_I;
-  f_step:usize
+  f_step:usize;
+  f_first_take:bool
 }
 
 let impl__new__from__step_by (#v_I: Type0) (iter: v_I) (step: usize)
@@ -252,7 +253,7 @@ let impl__new__from__step_by (#v_I: Type0) (iter: v_I) (step: usize)
   let _:Prims.unit =
     if step =. mk_usize 0 then Core_models.Panicking.Internal.panic #Prims.unit ()
   in
-  { f_iter = iter; f_step = step } <: t_StepBy v_I
+  { f_iter = iter; f_step = step; f_first_take = true } <: t_StepBy v_I
 
 /// See [`std::iter::Take`]
 type t_Take (v_I: Type0) = {
