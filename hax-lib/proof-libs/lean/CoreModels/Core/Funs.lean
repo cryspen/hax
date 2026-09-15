@@ -4769,6 +4769,12 @@ def fmt.Arguments.write_fmt
 def fmt.rt.Argument.none : RustM (Array fmt.rt.Argument 0#usize) := do
   ok (Std.Array.empty fmt.rt.Argument)
 
+/-- [core_models::num::{core_models::num::u8}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
+    Visibility: public -/
+def num.U8.to_le_bytes (bytes : Std.U8) : RustM (Array Std.U8 1#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_u8 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for u8}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4776,7 +4782,8 @@ def U8.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.U8) (h : H) :
   RustM H
   := do
-  let s ← lift (Array.to_slice (Array.make 1#usize [ self ]))
+  let a ← num.U8.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u8}]
@@ -4787,6 +4794,12 @@ def U8.Insts.CoreHashHash : hash.Hash Std.U8 := {
     U8.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::u16}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
+    Visibility: public -/
+def num.U16.to_le_bytes (bytes : Std.U16) : RustM (Array Std.U8 2#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_u16 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for u16}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4794,8 +4807,8 @@ def U16.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.U16) (h : H) :
   RustM H
   := do
-  let i ← lift (UScalar.cast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.U16.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u16}]
@@ -4806,6 +4819,12 @@ def U16.Insts.CoreHashHash : hash.Hash Std.U16 := {
     U16.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::u32}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
+    Visibility: public -/
+def num.U32.to_le_bytes (bytes : Std.U32) : RustM (Array Std.U8 4#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_u32 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for u32}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4813,8 +4832,8 @@ def U32.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.U32) (h : H) :
   RustM H
   := do
-  let i ← lift (UScalar.cast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.U32.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u32}]
@@ -4825,6 +4844,12 @@ def U32.Insts.CoreHashHash : hash.Hash Std.U32 := {
     U32.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::u64}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
+    Visibility: public -/
+def num.U64.to_le_bytes (bytes : Std.U64) : RustM (Array Std.U8 8#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_u64 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for u64}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4832,8 +4857,8 @@ def U64.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.U64) (h : H) :
   RustM H
   := do
-  let i ← lift (UScalar.cast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.U64.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u64}]
@@ -4844,6 +4869,13 @@ def U64.Insts.CoreHashHash : hash.Hash Std.U64 := {
     U64.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::u128}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
+    Visibility: public -/
+def num.U128.to_le_bytes
+  (bytes : Std.U128) : RustM (Array Std.U8 16#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_u128 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for u128}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4851,8 +4883,8 @@ def U128.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.U128) (h : H) :
   RustM H
   := do
-  let i ← lift (UScalar.cast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.U128.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for u128}]
@@ -4863,6 +4895,13 @@ def U128.Insts.CoreHashHash : hash.Hash Std.U128 := {
     U128.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::usize}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
+    Visibility: public -/
+def num.Usize.to_le_bytes
+  (bytes : Std.Usize) : RustM (Array Std.U8 8#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_usize bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for usize}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4870,8 +4909,8 @@ def Usize.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.Usize) (h : H) :
   RustM H
   := do
-  let i ← lift (UScalar.cast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.Usize.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for usize}]
@@ -4882,6 +4921,12 @@ def Usize.Insts.CoreHashHash : hash.Hash Std.Usize := {
     Usize.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::i8}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
+    Visibility: public -/
+def num.I8.to_le_bytes (bytes : Std.I8) : RustM (Array Std.U8 1#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_i8 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for i8}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4889,8 +4934,8 @@ def I8.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.I8) (h : H) :
   RustM H
   := do
-  let i ← lift (IScalar.hcast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.I8.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i8}]
@@ -4901,6 +4946,12 @@ def I8.Insts.CoreHashHash : hash.Hash Std.I8 := {
     I8.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::i16}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
+    Visibility: public -/
+def num.I16.to_le_bytes (bytes : Std.I16) : RustM (Array Std.U8 2#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_i16 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for i16}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4908,8 +4959,8 @@ def I16.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.I16) (h : H) :
   RustM H
   := do
-  let i ← lift (IScalar.hcast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.I16.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i16}]
@@ -4920,6 +4971,12 @@ def I16.Insts.CoreHashHash : hash.Hash Std.I16 := {
     I16.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::i32}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
+    Visibility: public -/
+def num.I32.to_le_bytes (bytes : Std.I32) : RustM (Array Std.U8 4#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_i32 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for i32}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4927,8 +4984,8 @@ def I32.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.I32) (h : H) :
   RustM H
   := do
-  let i ← lift (IScalar.hcast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.I32.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i32}]
@@ -4939,6 +4996,12 @@ def I32.Insts.CoreHashHash : hash.Hash Std.I32 := {
     I32.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::i64}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
+    Visibility: public -/
+def num.I64.to_le_bytes (bytes : Std.I64) : RustM (Array Std.U8 8#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_i64 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for i64}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4946,8 +5009,8 @@ def I64.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.I64) (h : H) :
   RustM H
   := do
-  let i ← lift (IScalar.hcast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.I64.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i64}]
@@ -4958,6 +5021,13 @@ def I64.Insts.CoreHashHash : hash.Hash Std.I64 := {
     I64.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::i128}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
+    Visibility: public -/
+def num.I128.to_le_bytes
+  (bytes : Std.I128) : RustM (Array Std.U8 16#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_i128 bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for i128}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4965,8 +5035,8 @@ def I128.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.I128) (h : H) :
   RustM H
   := do
-  let i ← lift (IScalar.hcast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.I128.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for i128}]
@@ -4977,6 +5047,13 @@ def I128.Insts.CoreHashHash : hash.Hash Std.I128 := {
     I128.Insts.CoreHashHash.hash HasherInst
 }
 
+/-- [core_models::num::{core_models::num::isize}::to_le_bytes]:
+    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
+    Visibility: public -/
+def num.Isize.to_le_bytes
+  (bytes : Std.Isize) : RustM (Array Std.U8 8#usize) := do
+  rust_primitives.arithmetic.to_le_bytes_isize bytes
+
 /-- [core_models::hash::{impl core_models::hash::Hash for isize}::hash]:
     Source: 'core-models/src/core/hash.rs', lines 27:16-30:17
     Visibility: public -/
@@ -4984,8 +5061,8 @@ def Isize.Insts.CoreHashHash.hash
   {H : Type} (HasherInst : hash.Hasher H) (self : Std.Isize) (h : H) :
   RustM H
   := do
-  let i ← lift (IScalar.hcast .U8 self)
-  let s ← lift (Array.to_slice (Array.make 1#usize [ i ]))
+  let a ← num.Isize.to_le_bytes self
+  let s ← lift (Array.to_slice a)
   HasherInst.write h s
 
 /-- Trait implementation: [core_models::hash::{impl core_models::hash::Hash for isize}]
@@ -9405,44 +9482,6 @@ def num.Usize.to_be_bytes
   (bytes : Std.Usize) : RustM (Array Std.U8 8#usize) := do
   rust_primitives.arithmetic.to_be_bytes_usize bytes
 
-/-- [core_models::num::{core_models::num::u8}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
-    Visibility: public -/
-def num.U8.to_le_bytes (bytes : Std.U8) : RustM (Array Std.U8 1#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_u8 bytes
-
-/-- [core_models::num::{core_models::num::u16}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
-    Visibility: public -/
-def num.U16.to_le_bytes (bytes : Std.U16) : RustM (Array Std.U8 2#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_u16 bytes
-
-/-- [core_models::num::{core_models::num::u32}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
-    Visibility: public -/
-def num.U32.to_le_bytes (bytes : Std.U32) : RustM (Array Std.U8 4#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_u32 bytes
-
-/-- [core_models::num::{core_models::num::u64}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
-    Visibility: public -/
-def num.U64.to_le_bytes (bytes : Std.U64) : RustM (Array Std.U8 8#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_u64 bytes
-
-/-- [core_models::num::{core_models::num::u128}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
-    Visibility: public -/
-def num.U128.to_le_bytes
-  (bytes : Std.U128) : RustM (Array Std.U8 16#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_u128 bytes
-
-/-- [core_models::num::{core_models::num::usize}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 199:12-201:13
-    Visibility: public -/
-def num.Usize.to_le_bytes
-  (bytes : Std.Usize) : RustM (Array Std.U8 8#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_usize bytes
-
 /-- [core_models::num::{core_models::num::u8}::checked_div]:
     Source: 'core-models/src/core/num/mod.rs', lines 203:12-209:13
     Visibility: public -/
@@ -10866,44 +10905,6 @@ def num.I128.to_be_bytes
 def num.Isize.to_be_bytes
   (bytes : Std.Isize) : RustM (Array Std.U8 8#usize) := do
   rust_primitives.arithmetic.to_be_bytes_isize bytes
-
-/-- [core_models::num::{core_models::num::i8}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
-    Visibility: public -/
-def num.I8.to_le_bytes (bytes : Std.I8) : RustM (Array Std.U8 1#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_i8 bytes
-
-/-- [core_models::num::{core_models::num::i16}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
-    Visibility: public -/
-def num.I16.to_le_bytes (bytes : Std.I16) : RustM (Array Std.U8 2#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_i16 bytes
-
-/-- [core_models::num::{core_models::num::i32}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
-    Visibility: public -/
-def num.I32.to_le_bytes (bytes : Std.I32) : RustM (Array Std.U8 4#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_i32 bytes
-
-/-- [core_models::num::{core_models::num::i64}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
-    Visibility: public -/
-def num.I64.to_le_bytes (bytes : Std.I64) : RustM (Array Std.U8 8#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_i64 bytes
-
-/-- [core_models::num::{core_models::num::i128}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
-    Visibility: public -/
-def num.I128.to_le_bytes
-  (bytes : Std.I128) : RustM (Array Std.U8 16#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_i128 bytes
-
-/-- [core_models::num::{core_models::num::isize}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 471:12-473:13
-    Visibility: public -/
-def num.Isize.to_le_bytes
-  (bytes : Std.Isize) : RustM (Array Std.U8 8#usize) := do
-  rust_primitives.arithmetic.to_le_bytes_isize bytes
 
 /-- [core_models::num::{core_models::num::i8}::checked_div]:
     Source: 'core-models/src/core/num/mod.rs', lines 475:12-481:13
