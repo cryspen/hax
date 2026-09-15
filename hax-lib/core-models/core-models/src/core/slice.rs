@@ -232,7 +232,7 @@ impl<T> Slice<T> {
     // range cannot be read out of it and there is no body to run (same
     // limitation as `alloc`'s `Vec::drain`).
     #[cfg_attr(coverage_nightly, coverage(off))]
-    #[hax_lib::opaque]
+    #[hax_lib::exclude]
     // mutants::skip: excluded from coverage above, so no test can kill a mutant here.
     #[cfg_attr(test, mutants::skip)]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
