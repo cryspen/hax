@@ -33,21 +33,27 @@ def int.Int.Insts.CoreOpsArithSubIntInt.sub
 def int.Int.Insts.CoreOpsArithMulIntInt.mul
   : int.Int → int.Int → RustM int.Int := fun a b => ok (a * b)
 
+/-- Division on `Int` is the division of the underlying bigint: it truncates towards zero
+and panics on a zero divisor. -/
 @[spec]
 def int.Int.Insts.CoreOpsArithDivIntInt.div
-  : int.Int → int.Int → RustM int.Int := fun a b => ok (a / b)
+  : int.Int → int.Int → RustM int.Int := fun a b =>
+  if b = 0 then fail .panic else ok (Int.tdiv a b)
 
 @[spec]
 def int.Int.Insts.CoreOpsArithNegInt.neg
   : int.Int → RustM int.Int := fun a => ok (-a)
 
+/-- Euclidean remainder. Panics on a zero divisor, like the bigint it is computed on. -/
 @[spec]
 def int.Int.rem_euclid
-  : int.Int → int.Int → RustM int.Int := fun a v => ok (Int.emod a v)
+  : int.Int → int.Int → RustM int.Int := fun a v =>
+  if v = 0 then fail .panic else ok (Int.emod a v)
 
+/-- Raises `2` at the power `n`. Panics on a negative exponent. -/
 @[spec]
 def int.Int.pow2 : int.Int → RustM int.Int :=
-  fun n => ok ((2 : Int) ^ Int.toNat n)
+  fun n => if n < 0 then fail .panic else ok ((2 : Int) ^ Int.toNat n)
 
 /-! ## Literal construction (`int!`)
 

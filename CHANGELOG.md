@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+hax-lib crate:
+ - Allow any positive exponent for hax_lib::Int::pow2
+
+### Security
+
+Lean backend and library:
+ - Fix the models of hax_lib.int.Int division, remainder and pow2
+ 
+F* backend and library:
+ - Fix the model of `Rust_primitives.Hax.Int.div`
+
 ## [0.4.0] - 2026-09-04
 
 Changes to the Rust engine:

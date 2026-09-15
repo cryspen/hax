@@ -329,7 +329,9 @@ struct
       (c Rust_primitives__hax__int__add, (2, "+"));
       (c Rust_primitives__hax__int__sub, (2, "-"));
       (c Rust_primitives__hax__int__mul, (2, "*"));
-      (c Rust_primitives__hax__int__div, (2, "/"));
+      (* `Int` division has no infix form here: it truncates towards zero,
+         while F*'s `/` on `int` is Euclidean. It prints as a call to
+         `Rust_primitives.Hax.Int.div`, which spells out the difference. *)
       (c Rust_primitives__hax__int__rem, (2, "%"));
       (c Rust_primitives__hax__int__neg, (1, "-"));
       (c Rust_primitives__hax__int__ge, (2, ">="));
