@@ -45,9 +45,19 @@ all:
 	rm -f .depend && $(MAKE) .depend
 	$(MAKE) verify
 
-# By default, we process all the files in the current directory. Here, we
-# *extend* the set of relevant files with the tests.
-ROOTS = $(wildcard *.fst)
+# By default, we process all the files in the current directory. An interface
+# with no implementation is a root of its own: nothing else pulls it in, so
+# without this it would never be type-checked.
+FST = $(wildcard *.fst)
+FSTI_ONLY = $(filter-out $(FST:.fst=.fsti),$(wildcard *.fsti))
+
+# Dead modules that do not even elaborate (unknown identifiers); nothing
+# references them.
+FSTI_BROKEN = \
+    Core_models.Mem.Maybe_uninit.fsti \
+    Core_models.Mem.Transmutability.fsti
+
+ROOTS = $(FST) $(filter-out $(FSTI_BROKEN),$(FSTI_ONLY))
 
 FSTAR_INCLUDE_DIRS = $(HAX_PROOF_LIBS_HOME)/rust_primitives $(HAX_PROOF_LIBS_HOME)/core $(HAX_LIBS_HOME)/proofs/fstar/extraction/
 
