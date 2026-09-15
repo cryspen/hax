@@ -111,6 +111,7 @@ macro_rules! uint_impl {
                 paste! { [<rem_euclid_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::pow`] (and similar for other integer types)
+            #[hax_lib::requires(<$Name>::overflowing_pow(x, exp).1 == false)]
             pub fn pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 paste! { [<pow_ $Name>](x, exp) }
             }
@@ -401,6 +402,7 @@ macro_rules! iint_impl {
                 paste! { [<rem_euclid_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::pow`] (and similar for other integer types)
+            #[hax_lib::requires(<$Name>::overflowing_pow(x, exp).1 == false)]
             pub fn pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 paste! { [<pow_ $Name>](x, exp) }
             }
