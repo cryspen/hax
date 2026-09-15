@@ -59,14 +59,28 @@ val fold_chunked_slice
 (**** `s.enumerate()` *)
 /// Fold function that is generated for `for` loops iterating on
 /// `s.enumerate()`-like iterators
-val fold_enumerated_slice
+let rec fold_enumerated_slice_from
+  (#t: Type0) (#acc_t: Type0)
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
+  (i0: usize {v i0 <= v (length s)})
+  (init: acc_t {inv init i0})
+  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) /\ inv acc  (fst i)}
+                 -> acc':acc_t    {v (fst i) < v (length s) /\ inv acc' (fst i +! sz 1)}))
+  : Tot (result: acc_t {inv result (length s)}) (decreases (v (length s) - v i0))
+  = if v i0 < v (length s)
+    then fold_enumerated_slice_from s inv (i0 +! sz 1) (f init (i0, Seq.index s (v i0))) f
+    else init
+
+let fold_enumerated_slice
   (#t: Type0) (#acc_t: Type0)
   (s: t_Slice t)
   (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
   (init: acc_t {inv init (sz 0)})
   (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) /\ inv acc  (fst i)}
-                 -> acc':acc_t    {v (fst i) < v (length s) /\ inv acc' (fst i)}))
+                 -> acc':acc_t    {v (fst i) < v (length s) /\ inv acc' (fst i +! sz 1)}))
   : result: acc_t {inv result (length s)}
+  = fold_enumerated_slice_from s inv (sz 0) init f
 
 val fold_enumerated_slice_return
   (#t: Type0) (#acc_t: Type0) (#ret: Type0)
