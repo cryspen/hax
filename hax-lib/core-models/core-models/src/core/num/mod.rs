@@ -168,6 +168,7 @@ macro_rules! uint_impl {
             }
             /// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[hax_lib::requires(x > 0)]
             pub fn ilog2(x: $Self) -> core::primitive::u32 {
                 paste! { [<ilog2_ $Name>](x) }
             }
@@ -451,6 +452,7 @@ macro_rules! iint_impl {
             }
             /// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[hax_lib::requires(x > 0)]
             pub fn ilog2(x: $Self) -> core::primitive::u32 {
                 paste! { [<ilog2_ $Name>](x) }
             }

@@ -355,13 +355,6 @@ val impl_6__leading_zeros': x: u8 -> u32
 unfold
 let impl_6__leading_zeros = impl_6__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_6__ilog2': x: u8 -> u32
-
-unfold
-let impl_6__ilog2 = impl_6__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_6__from_be_bytes': bytes: t_Array u8 (mk_usize 1) -> u8
@@ -446,6 +439,13 @@ let impl_6__rotate_right (x: u8) (n: u32) : u8 =
 let impl_6__rotate_left (x: u8) (n: u32) : u8 =
   let m:u32 = n %! mk_u32 8 in
   if m =. mk_u32 0 then x else (x <<! m <: u8) ^. (x >>! (mk_u32 8 -! m <: u32) <: u8)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_6__ilog2': x: u8 -> Prims.Pure u32 (requires x >. mk_u8 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_6__ilog2 = impl_6__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_6__unchecked_div (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
@@ -536,13 +536,6 @@ val impl_7__leading_zeros': x: u16 -> u32
 unfold
 let impl_7__leading_zeros = impl_7__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_7__ilog2': x: u16 -> u32
-
-unfold
-let impl_7__ilog2 = impl_7__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_7__from_be_bytes': bytes: t_Array u8 (mk_usize 2) -> u16
@@ -630,6 +623,13 @@ let impl_7__rotate_right (x: u16) (n: u32) : u16 =
 let impl_7__rotate_left (x: u16) (n: u32) : u16 =
   let m:u32 = n %! mk_u32 16 in
   if m =. mk_u32 0 then x else (x <<! m <: u16) ^. (x >>! (mk_u32 16 -! m <: u32) <: u16)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_7__ilog2': x: u16 -> Prims.Pure u32 (requires x >. mk_u16 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_7__ilog2 = impl_7__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_7__unchecked_div (x y: u16)
@@ -720,13 +720,6 @@ val impl_8__leading_zeros': x: u32 -> u32
 unfold
 let impl_8__leading_zeros = impl_8__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_8__ilog2': x: u32 -> u32
-
-unfold
-let impl_8__ilog2 = impl_8__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_8__from_be_bytes': bytes: t_Array u8 (mk_usize 4) -> u32
@@ -814,6 +807,13 @@ let impl_8__rotate_right (x n: u32) : u32 =
 let impl_8__rotate_left (x n: u32) : u32 =
   let m:u32 = n %! mk_u32 32 in
   if m =. mk_u32 0 then x else (x <<! m <: u32) ^. (x >>! (mk_u32 32 -! m <: u32) <: u32)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_8__ilog2': x: u32 -> Prims.Pure u32 (requires x >. mk_u32 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_8__ilog2 = impl_8__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_8__unchecked_div (x y: u32)
@@ -904,13 +904,6 @@ val impl_9__leading_zeros': x: u64 -> u32
 unfold
 let impl_9__leading_zeros = impl_9__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_9__ilog2': x: u64 -> u32
-
-unfold
-let impl_9__ilog2 = impl_9__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_9__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> u64
@@ -998,6 +991,13 @@ let impl_9__rotate_right (x: u64) (n: u32) : u64 =
 let impl_9__rotate_left (x: u64) (n: u32) : u64 =
   let m:u32 = n %! mk_u32 64 in
   if m =. mk_u32 0 then x else (x <<! m <: u64) ^. (x >>! (mk_u32 64 -! m <: u32) <: u64)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_9__ilog2': x: u64 -> Prims.Pure u32 (requires x >. mk_u64 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_9__ilog2 = impl_9__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_9__unchecked_div (x y: u64)
@@ -1087,13 +1087,6 @@ val impl_10__leading_zeros': x: u128 -> u32
 
 unfold
 let impl_10__leading_zeros = impl_10__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_10__ilog2': x: u128 -> u32
-
-unfold
-let impl_10__ilog2 = impl_10__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -1185,6 +1178,13 @@ let impl_10__rotate_right (x: u128) (n: u32) : u128 =
 let impl_10__rotate_left (x: u128) (n: u32) : u128 =
   let m:u32 = n %! mk_u32 128 in
   if m =. mk_u32 0 then x else (x <<! m <: u128) ^. (x >>! (mk_u32 128 -! m <: u32) <: u128)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_10__ilog2': x: u128 -> Prims.Pure u32 (requires x >. mk_u128 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_10__ilog2 = impl_10__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_10__unchecked_div (x y: u128)
@@ -1278,13 +1278,6 @@ val impl_11__leading_zeros': x: usize -> u32
 
 unfold
 let impl_11__leading_zeros = impl_11__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_11__ilog2': x: usize -> u32
-
-unfold
-let impl_11__ilog2 = impl_11__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -1384,6 +1377,13 @@ let impl_11__rotate_left (x: usize) (n: u32) : usize =
   if m =. mk_u32 0
   then x
   else (x <<! m <: usize) ^. (x >>! (Rust_primitives.Arithmetic.v_SIZE_BITS -! m <: u32) <: usize)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_11__ilog2': x: usize -> Prims.Pure u32 (requires x >. mk_usize 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_11__ilog2 = impl_11__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_11__unchecked_div (x y: usize)
@@ -1488,13 +1488,6 @@ val impl_12__leading_zeros': x: i8 -> u32
 unfold
 let impl_12__leading_zeros = impl_12__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_12__ilog2': x: i8 -> u32
-
-unfold
-let impl_12__ilog2 = impl_12__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_12__from_be_bytes': bytes: t_Array u8 (mk_usize 1) -> i8
@@ -1591,6 +1584,13 @@ let impl_12__rem_euclid (x y: i8)
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_12__abs (x: i8) : Prims.Pure i8 (requires x >. impl_12__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i8 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_12__ilog2': x: i8 -> Prims.Pure u32 (requires x >. mk_i8 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_12__ilog2 = impl_12__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_12__unchecked_div (x y: i8)
@@ -1701,13 +1701,6 @@ val impl_13__leading_zeros': x: i16 -> u32
 unfold
 let impl_13__leading_zeros = impl_13__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_13__ilog2': x: i16 -> u32
-
-unfold
-let impl_13__ilog2 = impl_13__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_13__from_be_bytes': bytes: t_Array u8 (mk_usize 2) -> i16
@@ -1805,6 +1798,13 @@ let impl_13__rem_euclid (x y: i16)
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_13__abs (x: i16) : Prims.Pure i16 (requires x >. impl_13__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i16 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_13__ilog2': x: i16 -> Prims.Pure u32 (requires x >. mk_i16 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_13__ilog2 = impl_13__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_13__unchecked_div (x y: i16)
@@ -1915,13 +1915,6 @@ val impl_14__leading_zeros': x: i32 -> u32
 unfold
 let impl_14__leading_zeros = impl_14__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_14__ilog2': x: i32 -> u32
-
-unfold
-let impl_14__ilog2 = impl_14__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_14__from_be_bytes': bytes: t_Array u8 (mk_usize 4) -> i32
@@ -2019,6 +2012,13 @@ let impl_14__rem_euclid (x y: i32)
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_14__abs (x: i32) : Prims.Pure i32 (requires x >. impl_14__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i32 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_14__ilog2': x: i32 -> Prims.Pure u32 (requires x >. mk_i32 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_14__ilog2 = impl_14__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_14__unchecked_div (x y: i32)
@@ -2129,13 +2129,6 @@ val impl_15__leading_zeros': x: i64 -> u32
 unfold
 let impl_15__leading_zeros = impl_15__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_15__ilog2': x: i64 -> u32
-
-unfold
-let impl_15__ilog2 = impl_15__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_15__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> i64
@@ -2233,6 +2226,13 @@ let impl_15__rem_euclid (x y: i64)
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_15__abs (x: i64) : Prims.Pure i64 (requires x >. impl_15__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i64 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_15__ilog2': x: i64 -> Prims.Pure u32 (requires x >. mk_i64 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_15__ilog2 = impl_15__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_15__unchecked_div (x y: i64)
@@ -2343,13 +2343,6 @@ val impl_16__leading_zeros': x: i128 -> u32
 unfold
 let impl_16__leading_zeros = impl_16__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_16__ilog2': x: i128 -> u32
-
-unfold
-let impl_16__ilog2 = impl_16__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_16__from_be_bytes': bytes: t_Array u8 (mk_usize 16) -> i128
@@ -2449,6 +2442,13 @@ let impl_16__rem_euclid (x y: i128)
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_16__abs (x: i128) : Prims.Pure i128 (requires x >. impl_16__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i128 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_16__ilog2': x: i128 -> Prims.Pure u32 (requires x >. mk_i128 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_16__ilog2 = impl_16__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_16__unchecked_div (x y: i128)
@@ -2562,13 +2562,6 @@ val impl_17__leading_zeros': x: isize -> u32
 unfold
 let impl_17__leading_zeros = impl_17__leading_zeros'
 
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_17__ilog2': x: isize -> u32
-
-unfold
-let impl_17__ilog2 = impl_17__ilog2'
-
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
 val impl_17__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> isize
@@ -2672,6 +2665,13 @@ let impl_17__rem_euclid (x y: isize)
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_17__abs (x: isize) : Prims.Pure isize (requires x >. impl_17__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_isize 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_17__ilog2': x: isize -> Prims.Pure u32 (requires x >. mk_isize 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_17__ilog2 = impl_17__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_17__unchecked_div (x y: isize)
