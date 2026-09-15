@@ -77,13 +77,6 @@ val impl_1__clear': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> t_Vec v
 unfold
 let impl_1__clear (#v_T #v_A: Type0) = impl_1__clear' #v_T #v_A
 
-assume
-val impl_1__drain': #v_T: Type0 -> #v_A: Type0 -> #v_R: Type0 -> self: t_Vec v_T v_A -> e_range: v_R
-  -> (t_Vec v_T v_A & Alloc.Vec.Drain.t_Drain v_T v_A)
-
-unfold
-let impl_1__drain (#v_T #v_A #v_R: Type0) = impl_1__drain' #v_T #v_A #v_R
-
 let impl_1__push (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (x: v_T)
     : Prims.Pure (t_Vec v_T v_A)
       (requires

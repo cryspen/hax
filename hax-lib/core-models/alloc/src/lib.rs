@@ -895,7 +895,7 @@ pub mod vec {
             let l = seq_len(&self.0);
             Vec(seq_drain(&mut self.0, at, l))
         }
-        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
         pub fn drain<R /* : RangeBounds<usize> */>(
             &mut self,
             _range: R,
@@ -1142,7 +1142,7 @@ pub mod vec {
             let l = seq_len(&self.0);
             Vec(seq_drain(&mut self.0, at, l), PhantomData)
         }
-        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
         pub fn drain<R /* : RangeBounds<usize> */>(&mut self, _range: R) -> drain::Drain<T, A> {
             let l = seq_len(&self.0);
             drain::Drain(seq_drain(&mut self.0, 0, l), PhantomData) // TODO use range bounds
