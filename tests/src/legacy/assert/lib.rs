@@ -1,4 +1,3 @@
-//! @fail(tc): legacy-lean(1)
 #![allow(dead_code)]
 
 pub fn asserts() {

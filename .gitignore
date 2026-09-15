@@ -10,6 +10,7 @@ result
 .DS_Store
 .depend
 .cache
+.fstar-cache
 .lake
 .hax-tests-cache
 proof-libs/fstar/rust_primitives/#*#
