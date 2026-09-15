@@ -8427,7 +8427,7 @@ def Isize.Insts.CoreMarkerCopy : marker.Copy Std.Isize := {
 }
 
 /-- [core_models::mem::drop]:
-    Source: 'core-models/src/core/mem.rs', lines 97:0-97:24
+    Source: 'core-models/src/core/mem.rs', lines 98:0-98:24
     Visibility: public -/
 def mem.drop {T : Type} (_x : T) : RustM Unit := do
   ok ()

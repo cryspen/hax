@@ -73,6 +73,7 @@ pub fn needs_drop<T: ?Sized>() -> bool {
 // Excluded from coverage: calling it is instant UB, so no test may run it.
 #[cfg_attr(coverage_nightly, coverage(off))]
 #[hax_lib::opaque]
+#[hax_lib::requires(false)]
 pub unsafe fn uninitialized<T>() -> T {
     panic!()
 }
@@ -107,6 +108,7 @@ pub unsafe fn take<T>(x: &mut T) -> T {
 
 /// See [`std::mem::transmute_copy`]
 #[hax_lib::opaque]
+#[hax_lib::requires(false)]
 pub unsafe fn transmute_copy<Src, Dst>(src: &Src) -> Dst {
     unsafe { rust_primitives::mem::transmute_copy(src) }
 }
@@ -124,12 +126,14 @@ pub fn variant_count<T>() -> usize {
 
 /// See [`std::mem::zeroed`]
 #[hax_lib::opaque]
+#[hax_lib::requires(false)]
 pub unsafe fn zeroed<T>() -> T {
     unsafe { rust_primitives::mem::zeroed() }
 }
 
 /// See [`std::mem::transmute`]
 #[hax_lib::opaque]
+#[hax_lib::requires(false)]
 pub unsafe fn transmute<Src, Dst>(src: Src) -> Dst {
     unsafe { rust_primitives::mem::transmute(src) }
 }

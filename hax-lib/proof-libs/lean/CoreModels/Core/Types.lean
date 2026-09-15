@@ -680,7 +680,7 @@ def marker.PhantomData (T : Type) := T
 -/  -- replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
-    Source: 'core-models/src/core/mem.rs', lines 138:4-140:5
+    Source: 'core-models/src/core/mem.rs', lines 142:4-144:5
     Visibility: public -/
 structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
