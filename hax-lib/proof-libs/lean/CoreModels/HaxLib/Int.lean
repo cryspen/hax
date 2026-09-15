@@ -35,7 +35,8 @@ def int.Int.Insts.CoreOpsArithMulIntInt.mul
 
 @[spec]
 def int.Int.Insts.CoreOpsArithDivIntInt.div
-  : int.Int → int.Int → RustM int.Int := fun a b => ok (a / b)
+  : int.Int → int.Int → RustM int.Int :=
+  fun a b => if b = 0 then fail .panic else ok (a / b)
 
 @[spec]
 def int.Int.Insts.CoreOpsArithNegInt.neg
@@ -43,7 +44,8 @@ def int.Int.Insts.CoreOpsArithNegInt.neg
 
 @[spec]
 def int.Int.rem_euclid
-  : int.Int → int.Int → RustM int.Int := fun a v => ok (Int.emod a v)
+  : int.Int → int.Int → RustM int.Int :=
+  fun a v => if v = 0 then fail .panic else ok (Int.emod a v)
 
 @[spec]
 def int.Int.pow2 : int.Int → RustM int.Int :=
