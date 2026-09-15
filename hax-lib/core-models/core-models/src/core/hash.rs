@@ -17,15 +17,15 @@ pub trait Hash {
 
 // The integer `Hash` impls std keeps in `core::hash::impls`.
 //
-// DEVIATION(std): std feeds `to_ne_bytes()`; the abstract `Hasher` makes the
-// exact bytes unobservable, so we feed a single cast byte.
+// DEVIATION(std): std feeds `to_ne_bytes()`; the model has no native-endian
+// conversion and pins little-endian everywhere, so we feed `to_le_bytes()`.
 macro_rules! impl_hash_for_int {
-    ($($t:ty),*) => {
+    ($($t:ty => $n:ident),*) => {
         $(
             #[hax_lib::attributes]
             impl Hash for $t {
                 fn hash<H: Hasher>(&self, mut h: H) -> H {
-                    h.write(&[*self as u8]);
+                    h.write(&crate::num::$n::to_le_bytes(*self));
                     h
                 }
             }
@@ -34,18 +34,18 @@ macro_rules! impl_hash_for_int {
 }
 
 impl_hash_for_int!(
-    core::primitive::u8,
-    core::primitive::u16,
-    core::primitive::u32,
-    core::primitive::u64,
-    core::primitive::u128,
-    core::primitive::usize,
-    core::primitive::i8,
-    core::primitive::i16,
-    core::primitive::i32,
-    core::primitive::i64,
-    core::primitive::i128,
-    core::primitive::isize
+    core::primitive::u8 => u8,
+    core::primitive::u16 => u16,
+    core::primitive::u32 => u32,
+    core::primitive::u64 => u64,
+    core::primitive::u128 => u128,
+    core::primitive::usize => usize,
+    core::primitive::i8 => i8,
+    core::primitive::i16 => i16,
+    core::primitive::i32 => i32,
+    core::primitive::i64 => i64,
+    core::primitive::i128 => i128,
+    core::primitive::isize => isize
 );
 
 #[cfg(test)]
@@ -67,8 +67,8 @@ mod tests {
         }
     }
 
-    // DEVIATION(std): the model feeds one cast byte instead of `to_ne_bytes()`
-    // (see `impl_hash_for_int`), so there is nothing in `core` to compare to.
+    // DEVIATION(std): the model feeds `to_le_bytes()` instead of `to_ne_bytes()`
+    // (see `impl_hash_for_int`); on a little-endian target the two agree.
     macro_rules! hash_tests {
         ($($t:ident),*) => {
             paste! { $(
@@ -76,12 +76,23 @@ mod tests {
                     #[test]
                     fn [<test_hash_ $t>](x in any::<$t>()) {
                         let h = Hash::hash(&x, Recorder(std::vec::Vec::new()));
-                        prop_assert_eq!(h.0.as_slice(), &[x as u8][..]);
-                        prop_assert_eq!(h.finish(), 1);
+                        prop_assert_eq!(h.0.as_slice(), &x.to_le_bytes()[..]);
+                        prop_assert_eq!(h.finish(), (size_of::<$t>()) as u64);
                     }
                 }
             )* }
         };
+    }
+
+    proptest! {
+        /// Distinct values of a multi-byte integer must not collide, which the
+        /// old single-truncated-byte model allowed (`hash(1u16) == hash(257u16)`).
+        #[test]
+        fn test_hash_u16_injective(x in any::<u16>(), y in any::<u16>()) {
+            let hx = Hash::hash(&x, Recorder(std::vec::Vec::new())).0;
+            let hy = Hash::hash(&y, Recorder(std::vec::Vec::new())).0;
+            prop_assert_eq!(x == y, hx == hy);
+        }
     }
 
     hash_tests!(
