@@ -126,14 +126,11 @@ val impl_1__swap_remove': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> n
 unfold
 let impl_1__swap_remove (#v_T #v_A: Type0) = impl_1__swap_remove' #v_T #v_A
 
-/// `remove` drops one element, so it never grows the vector. The exact
-/// `len\' = len - 1` would need `index < len` as a precondition (else on
-/// an empty vector it asserts a `usize` is `-1`), which callers holding
-/// only a length upper bound cannot discharge, so state the inequality.
+/// `remove` drops one element, so it never grows the vector.
 assume
 val impl_1__remove': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> index: usize
   -> Prims.Pure (t_Vec v_T v_A & v_T)
-      Prims.l_True
+      (requires index <. (impl_1__len #v_T #v_A self <: usize))
       (ensures
         fun temp_0_ ->
           let (self_e_future: t_Vec v_T v_A), (_: v_T) = temp_0_ in

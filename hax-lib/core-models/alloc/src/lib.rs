@@ -181,7 +181,9 @@ mod collections {
                 let mut max: Option<&T> = None;
                 let mut index = 0;
                 for i in 0..self.len() {
-                    hax_lib::loop_invariant!(|i: usize| (i > 0) == max.is_some());
+                    hax_lib::loop_invariant!(
+                        |i: usize| (i > 0) == max.is_some() && (i == 0 || index < i)
+                    );
                     if max.is_none_or(|max| self.0[i] > *max) {
                         max = Some(&self.0[i]);
                         index = i;
@@ -870,11 +872,9 @@ pub mod vec {
                 removed
             }
         }
-        /// `remove` drops one element, so it never grows the vector. The exact
-        /// `len' = len - 1` would need `index < len` as a precondition (else on
-        /// an empty vector it asserts a `usize` is `-1`), which callers holding
-        /// only a length upper bound cannot discharge, so state the inequality.
+        /// `remove` drops one element, so it never grows the vector.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[hax_lib::requires(index < self.len())]
         #[hax_lib::ensures(|_| future(self).len().to_int() <= self.len().to_int())]
         pub fn remove(&mut self, index: usize) -> T {
             seq_remove(&mut self.0, index)
@@ -1119,11 +1119,9 @@ pub mod vec {
                 removed
             }
         }
-        /// `remove` drops one element, so it never grows the vector. The exact
-        /// `len' = len - 1` would need `index < len` as a precondition (else on
-        /// an empty vector it asserts a `usize` is `-1`), which callers holding
-        /// only a length upper bound cannot discharge, so state the inequality.
+        /// `remove` drops one element, so it never grows the vector.
         #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[hax_lib::requires(index < self.len())]
         #[hax_lib::ensures(|_| future(self).len().to_int() <= self.len().to_int())]
         pub fn remove(&mut self, index: usize) -> T {
             seq_remove(&mut self.0, index)
