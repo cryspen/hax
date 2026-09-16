@@ -1,4 +1,4 @@
-module Core_models.Num.Count_ones_spec
+module Core_models.Specs.Num.Count_ones
 
 /// Behavioural contract of the `count_ones` integer models, which sum the bits
 /// of their argument rather than routing through a primitive.

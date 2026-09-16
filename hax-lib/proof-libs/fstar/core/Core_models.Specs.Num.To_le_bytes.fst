@@ -1,4 +1,4 @@
-module Core_models.Num.To_le_bytes_spec
+module Core_models.Specs.Num.To_le_bytes
 
 /// Behavioural contract of the `to_le_bytes` integer models, which extract the
 /// bytes with shifts rather than routing through a primitive.

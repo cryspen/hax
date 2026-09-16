@@ -1,4 +1,4 @@
-module Core_models.Num.Abs_spec
+module Core_models.Specs.Num.Abs
 
 /// Behavioural contract of the `abs` integer models, which are modelled by
 /// negation rather than routed through a primitive (#2107).

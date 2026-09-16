@@ -1,4 +1,4 @@
-module Rand_core.Fill_bytes_spec
+module Rand_core.Specs.Fill_bytes
 
 /// Usable form of the `RngCore` trait contract.
 ///

@@ -214,6 +214,12 @@ fstar-rand-core:
 # tree instead of lingering forever (`git status` shows the deletion, and CI's
 # "committed extraction must match" check catches it). Without this, a stale
 # module keeps type-checking as part of `ROOTS` and nothing ever notices.
+#
+# These are the modules the extraction cannot produce but generated code refers
+# to: crate roots, interfaces for excluded modules, and architecture stubs. The
+# hand-written proof obligations are not listed, because the extraction can
+# never produce a `*.Specs.*` module and `fstar-prune` keeps that whole
+# namespace; see the note there.
 FSTAR_HANDWRITTEN = \
     Core_models.Core_arch.Arm_shared.Neon.fsti \
     Core_models.Core_arch.fsti \
@@ -227,12 +233,7 @@ FSTAR_HANDWRITTEN = \
     Core_models.Iter.Traits.fst \
     Core_models.Mem.Maybe_uninit.fsti \
     Core_models.Mem.Transmutability.fsti \
-    Core_models.Num.Abs_spec.fst \
-    Core_models.Num.Checked_mul_spec.fst \
-    Core_models.Num.Count_ones_spec.fst \
     Core_models.Num.Niche_types.fsti \
-    Core_models.Num.Overflow_spec.fst \
-    Core_models.Num.To_le_bytes_spec.fst \
     Core_models.Ops.Index.IndexMut.fst \
     Core_models.Str.fsti \
     Core_models.Time.fsti \
@@ -241,13 +242,16 @@ FSTAR_HANDWRITTEN = \
     Rand.Distributions.Distribution.fsti \
     Rand.Distributions.Integer.fsti \
     Rand.Distr.Integer.fsti \
-    Rand.Rng.fsti \
-    Rand_core.Fill_bytes_spec.fst
+    Rand.Rng.fsti
 
 # Delete every generated module so the reinstall below cannot leave a stale one.
+# `<Crate>.Specs.*` is reserved for hand-written proof obligations: the Rust
+# crates have no `specs` module, so the extraction never emits that namespace
+# and keeping all of it needs no list to stay in sync.
 fstar-prune:
 	@cd $(FSTAR_DIR) && for f in *.fst *.fsti; do \
 	    [ -e "$$f" ] || continue; \
+	    case "$$f" in *.Specs.*) continue ;; esac; \
 	    case " $(FSTAR_HANDWRITTEN) " in \
 	        *" $$f "*) ;; \
 	        *) rm -f "$$f" ;; \

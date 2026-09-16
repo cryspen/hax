@@ -1,4 +1,4 @@
-module Core_models.Num.Checked_mul_spec
+module Core_models.Specs.Num.Checked_mul
 
 /// Behavioural contract of the `checked_mul` integer models, which route
 /// through `Rust_primitives.Integers.mul_overflow`.
