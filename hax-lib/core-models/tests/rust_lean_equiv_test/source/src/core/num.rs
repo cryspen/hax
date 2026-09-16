@@ -957,7 +957,9 @@ pub fn test_u8_to_le_bytes_basic() -> bool {
 #[rust_lean_test]
 pub fn test_u64_to_le_bytes_basic() -> bool {
     0x0123456789abcdefu64.to_le_bytes()
-        == [0xefu8, 0xcdu8, 0xabu8, 0x89u8, 0x67u8, 0x45u8, 0x23u8, 0x01u8]
+        == [
+            0xefu8, 0xcdu8, 0xabu8, 0x89u8, 0x67u8, 0x45u8, 0x23u8, 0x01u8,
+        ]
 }
 
 #[rust_lean_test]

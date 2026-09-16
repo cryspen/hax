@@ -206,8 +206,7 @@ macro_rules! uint_impl {
             pub fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 rust_primitives::slice::array_from_fn(|i| {
                     // The identity, and what proves the shift in range.
-                    (bytes >> (8u32 * i as core::primitive::u32 % $Bits))
-                        as core::primitive::u8
+                    (bytes >> (8u32 * i as core::primitive::u32 % $Bits)) as core::primitive::u8
                 })
             }
             /// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
