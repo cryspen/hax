@@ -1208,7 +1208,7 @@ let impl_11__MIN: usize = mk_usize 0
 let impl_11__MAX: usize = Rust_primitives.Arithmetic.v_USIZE_MAX
 
 /// See [`std::primitive::u8::BITS`] (and similar for other unsigned integer types)
-let impl_11__BITS: u32 = mk_u32 64
+let impl_11__BITS: u32 = Rust_primitives.Arithmetic.v_SIZE_BITS
 
 /// See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
 let impl_11__wrapping_add (x y: usize) : usize = Rust_primitives.Arithmetic.wrapping_add_usize x y
@@ -2478,7 +2478,7 @@ let impl_17__MIN: isize = Rust_primitives.Arithmetic.v_ISIZE_MIN
 let impl_17__MAX: isize = Rust_primitives.Arithmetic.v_ISIZE_MAX
 
 /// See [`std::primitive::i8::BITS`] (and similar for other signed integer types)
-let impl_17__BITS: u32 = mk_u32 64
+let impl_17__BITS: u32 = Rust_primitives.Arithmetic.v_SIZE_BITS
 
 let impl_17__wrapping_add (x y: isize) : isize = Rust_primitives.Arithmetic.wrapping_add_isize x y
 

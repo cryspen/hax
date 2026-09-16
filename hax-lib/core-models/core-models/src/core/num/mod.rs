@@ -17,7 +17,6 @@ macro_rules! uint_impl {
         $Name: ty,
         $Max: expr,
         $Bits: expr,
-        $ShiftBits: expr,
         $Bytes: expr,
     ) => {
         #[hax_lib::attributes]
@@ -130,16 +129,10 @@ macro_rules! uint_impl {
                 }
             }
             /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-            // Modelled by summing the bits rather than through a `count_ones_$Name`
-            // primitive: the primitive is `x.count_ones()`, which extracts back into
-            // this model. The invariant bounds the accumulator so `n + 1` cannot
-            // overflow.
             pub fn count_ones(x: $Self) -> core::primitive::u32 {
                 let mut n = 0u32;
-                for i in 0u32..$ShiftBits {
-                    // F*-only: the Lean models have no `_internal_loop_invariant`,
-                    // and Aeneas needs no bound to translate `n + 1` (it is fallible
-                    // there). F* does: the invariant is what rules out the overflow.
+                for i in 0u32..$Bits {
+                    // Rules out the `n + 1` overflow; F* alone needs it.
                     #[cfg(hax_backend_fstar)]
                     hax_lib::loop_invariant!(|i: core::primitive::u32| n <= i);
                     if (x >> i) & 1 == 1 {
@@ -151,21 +144,21 @@ macro_rules! uint_impl {
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
-                let m = n % $ShiftBits;
+                let m = n % $Bits;
                 if m == 0 {
                     x
                 } else {
-                    (x >> m) ^ (x << ($ShiftBits - m))
+                    (x >> m) ^ (x << ($Bits - m))
                 }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
-                let m = n % $ShiftBits;
+                let m = n % $Bits;
                 if m == 0 {
                     x
                 } else {
-                    (x << m) ^ (x >> ($ShiftBits - m))
+                    (x << m) ^ (x >> ($Bits - m))
                 }
             }
             /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
@@ -210,18 +203,10 @@ macro_rules! uint_impl {
                 paste! { [<to_be_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-            // Modelled by byte extraction rather than through a `to_le_bytes_$Name`
-            // primitive: the primitive is `x.to_le_bytes()`, which extracts back into
-            // this model. Truncating each shifted value is the little-endian byte
-            // layout for both signednesses (`>>` is arithmetic on signed types, but
-            // that only affects bits at or above the one being kept).
             pub fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 rust_primitives::slice::array_from_fn(|i| {
-                    // `% $ShiftBits` is the identity here (`i < $Bytes`), and is what
-                    // makes the shift amount provably in range: F*'s `usize` is
-                    // 32-or-64-bit, so only `SIZE_BITS` bounds it. Same idiom as
-                    // `rotate_left`/`rotate_right` above.
-                    (bytes >> (8u32 * i as core::primitive::u32 % $ShiftBits))
+                    // The identity, and what proves the shift in range.
+                    (bytes >> (8u32 * i as core::primitive::u32 % $Bits))
                         as core::primitive::u8
                 })
             }
@@ -301,7 +286,6 @@ macro_rules! iint_impl {
         $Max: expr,
         $Min: expr,
         $Bits: expr,
-        $ShiftBits: expr,
         $Bytes: expr,
     ) => {
         #[hax_lib::attributes]
@@ -434,17 +418,10 @@ macro_rules! iint_impl {
                 }
             }
             /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
-            // Modelled by summing the bits rather than through a `count_ones_$Name`
-            // primitive: the primitive is `x.count_ones()`, which extracts back into
-            // this model. `>>` is arithmetic here, but that only affects bits at or
-            // above `i`, so `(x >> i) & 1` is still bit `i`. The invariant bounds the
-            // accumulator so `n + 1` cannot overflow.
             pub fn count_ones(x: $Self) -> core::primitive::u32 {
                 let mut n = 0u32;
-                for i in 0u32..$ShiftBits {
-                    // F*-only: the Lean models have no `_internal_loop_invariant`,
-                    // and Aeneas needs no bound to translate `n + 1` (it is fallible
-                    // there). F* does: the invariant is what rules out the overflow.
+                for i in 0u32..$Bits {
+                    // Rules out the `n + 1` overflow; F* alone needs it.
                     #[cfg(hax_backend_fstar)]
                     hax_lib::loop_invariant!(|i: core::primitive::u32| n <= i);
                     if (x >> i) & 1 == 1 {
@@ -454,9 +431,6 @@ macro_rules! iint_impl {
                 n
             }
             /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
-            // Modelled by negation rather than through an `abs_$Name` primitive:
-            // the primitive is `x.abs()`, which extracts back into this model.
-            // `requires` rules out `MIN`, where the negation overflows.
             #[hax_lib::requires(x > <$Name>::MIN)]
             pub fn abs(x: $Self) -> $Self {
                 if x < 0 { -x } else { x }
@@ -513,18 +487,10 @@ macro_rules! iint_impl {
                 paste! { [<to_be_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-            // Modelled by byte extraction rather than through a `to_le_bytes_$Name`
-            // primitive: the primitive is `x.to_le_bytes()`, which extracts back into
-            // this model. Truncating each shifted value is the little-endian byte
-            // layout for both signednesses (`>>` is arithmetic on signed types, but
-            // that only affects bits at or above the one being kept).
             pub fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 rust_primitives::slice::array_from_fn(|i| {
-                    // `% $ShiftBits` is the identity here (`i < $Bytes`), and is what
-                    // makes the shift amount provably in range: F*'s `usize` is
-                    // 32-or-64-bit, so only `SIZE_BITS` bounds it. Same idiom as
-                    // `rotate_left`/`rotate_right` above.
-                    (bytes >> (8u32 * i as core::primitive::u32 % $ShiftBits))
+                    // The identity, and what proves the shift in range.
+                    (bytes >> (8u32 * i as core::primitive::u32 % $Bits))
                         as core::primitive::u8
                 })
             }
@@ -658,7 +624,6 @@ uint_impl! {
     u8,
     255,
     8,
-    8,
     1,
 }
 
@@ -666,7 +631,6 @@ uint_impl! {
     core::primitive::u16,
     u16,
     65535,
-    16,
     16,
     2,
 }
@@ -676,7 +640,6 @@ uint_impl! {
     u32,
     4294967295,
     32,
-    32,
     4,
 }
 
@@ -684,7 +647,6 @@ uint_impl! {
     core::primitive::u64,
     u64,
     18446744073709551615,
-    64,
     64,
     8,
 }
@@ -694,7 +656,6 @@ uint_impl! {
     u128,
     340282366920938463463374607431768211455,
     128,
-    128,
     16,
 }
 
@@ -702,11 +663,6 @@ uint_impl! {
     core::primitive::usize,
     usize,
     USIZE_MAX,
-    // `usize::BITS` as a plain literal (= SIZE_BITS, the 64-bit model width) rather
-    // than the `rust_primitives::SIZE_BITS` const-ref: a const-ref extracts to a
-    // `Result U32`, but aeneas inlines associated consts as plain values at use sites
-    // (`usize::BITS - x`), matching the fixed-width `u32::BITS : U32`. Value-identical.
-    64,
     SIZE_BITS,
     SIZE_BYTES,
 }
@@ -718,7 +674,6 @@ iint_impl! {
     127,
     -128,
     8,
-    8,
     1,
 }
 
@@ -728,7 +683,6 @@ iint_impl! {
     i16,
     32767,
     -32768,
-    16,
     16,
     2,
 }
@@ -740,7 +694,6 @@ iint_impl! {
     2147483647,
     -2147483648,
     32,
-    32,
     4,
 }
 
@@ -750,7 +703,6 @@ iint_impl! {
     i64,
     9223372036854775807,
     -9223372036854775808,
-    64,
     64,
     8,
 }
@@ -762,7 +714,6 @@ iint_impl! {
     170141183460469231731687303715884105727,
     -170141183460469231731687303715884105728,
     128,
-    128,
     16,
 }
 
@@ -772,9 +723,6 @@ iint_impl! {
     isize,
     ISIZE_MAX,
     ISIZE_MIN,
-    // Plain literal (= SIZE_BITS) so `isize::BITS` extracts to a plain `U32`; see the
-    // usize note above.
-    64,
     SIZE_BITS,
     SIZE_BYTES,
 }
