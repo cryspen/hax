@@ -17,7 +17,6 @@ macro_rules! uint_impl {
         $Name: ty,
         $Max: expr,
         $Bits: expr,
-        $ShiftBits: expr,
         $Bytes: expr,
     ) => {
         #[hax_lib::attributes]
@@ -131,26 +130,35 @@ macro_rules! uint_impl {
             }
             /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
             pub fn count_ones(x: $Self) -> core::primitive::u32 {
-                paste! { [<count_ones_ $Name>](x) }
+                let mut n = 0u32;
+                for i in 0u32..$Bits {
+                    // Rules out the `n + 1` overflow; F* alone needs it.
+                    #[cfg(hax_backend_fstar)]
+                    hax_lib::loop_invariant!(|i: core::primitive::u32| n <= i);
+                    if (x >> i) & 1 == 1 {
+                        n += 1;
+                    }
+                }
+                n
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
-                let m = n % $ShiftBits;
+                let m = n % $Bits;
                 if m == 0 {
                     x
                 } else {
-                    (x >> m) ^ (x << ($ShiftBits - m))
+                    (x >> m) ^ (x << ($Bits - m))
                 }
             }
             /// See [`std::primitive::u8::rotate_left`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::fstar::before("[@@ \"opaque_to_smt\"]"))]
             pub fn rotate_left(x: $Self, n: core::primitive::u32) -> $Self {
-                let m = n % $ShiftBits;
+                let m = n % $Bits;
                 if m == 0 {
                     x
                 } else {
-                    (x << m) ^ (x >> ($ShiftBits - m))
+                    (x << m) ^ (x >> ($Bits - m))
                 }
             }
             /// See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
@@ -195,9 +203,11 @@ macro_rules! uint_impl {
                 paste! { [<to_be_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
-                paste! { [<to_le_bytes_ $Name>](bytes) }
+                rust_primitives::slice::array_from_fn(|i| {
+                    // The identity, and what proves the shift in range.
+                    (bytes >> (8u32 * i as core::primitive::u32 % $Bits)) as core::primitive::u8
+                })
             }
             /// See [`std::primitive::u8::checked_div`] (and similar for other integer types)
             pub fn checked_div(x: $Self, y: $Self) -> Option<$Self> {
@@ -408,12 +418,21 @@ macro_rules! iint_impl {
             }
             /// See [`std::primitive::u8::count_ones`] (and similar for other integer types)
             pub fn count_ones(x: $Self) -> core::primitive::u32 {
-                paste! { [<count_ones_ $Name>](x) }
+                let mut n = 0u32;
+                for i in 0u32..$Bits {
+                    // Rules out the `n + 1` overflow; F* alone needs it.
+                    #[cfg(hax_backend_fstar)]
+                    hax_lib::loop_invariant!(|i: core::primitive::u32| n <= i);
+                    if (x >> i) & 1 == 1 {
+                        n += 1;
+                    }
+                }
+                n
             }
             /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
             #[hax_lib::requires(x > <$Name>::MIN)]
             pub fn abs(x: $Self) -> $Self {
-                paste! { [<abs_ $Name>](x) }
+                if x < 0 { -x } else { x }
             }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
@@ -467,9 +486,12 @@ macro_rules! iint_impl {
                 paste! { [<to_be_bytes_ $Name>](bytes) }
             }
             /// See [`std::primitive::u8::to_le_bytes`] (and similar for other integer types)
-            #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
-                paste! { [<to_le_bytes_ $Name>](bytes) }
+                rust_primitives::slice::array_from_fn(|i| {
+                    // The identity, and what proves the shift in range.
+                    (bytes >> (8u32 * i as core::primitive::u32 % $Bits))
+                        as core::primitive::u8
+                })
             }
             /// See [`std::primitive::i8::checked_div`] (and similar for other signed integer types)
             pub fn checked_div(x: $Self, y: $Self) -> Option<$Self> {
@@ -601,7 +623,6 @@ uint_impl! {
     u8,
     255,
     8,
-    8,
     1,
 }
 
@@ -609,7 +630,6 @@ uint_impl! {
     core::primitive::u16,
     u16,
     65535,
-    16,
     16,
     2,
 }
@@ -619,7 +639,6 @@ uint_impl! {
     u32,
     4294967295,
     32,
-    32,
     4,
 }
 
@@ -627,7 +646,6 @@ uint_impl! {
     core::primitive::u64,
     u64,
     18446744073709551615,
-    64,
     64,
     8,
 }
@@ -637,7 +655,6 @@ uint_impl! {
     u128,
     340282366920938463463374607431768211455,
     128,
-    128,
     16,
 }
 
@@ -645,11 +662,9 @@ uint_impl! {
     core::primitive::usize,
     usize,
     USIZE_MAX,
-    // `usize::BITS` as a plain literal (= SIZE_BITS, the 64-bit model width) rather
-    // than the `rust_primitives::SIZE_BITS` const-ref: a const-ref extracts to a
-    // `Result U32`, but aeneas inlines associated consts as plain values at use sites
-    // (`usize::BITS - x`), matching the fixed-width `u32::BITS : U32`. Value-identical.
-    64,
+    // A const-ref, not a literal, so `usize::BITS` extracts as `RustM _` while
+    // a consumer's `usize::BITS` is pure. `patch_lean.py` drops the extracted
+    // definition in favour of the pure `CoreModels.Core.FunsPrologue` one.
     SIZE_BITS,
     SIZE_BYTES,
 }
@@ -710,9 +725,8 @@ iint_impl! {
     isize,
     ISIZE_MAX,
     ISIZE_MIN,
-    // Plain literal (= SIZE_BITS) so `isize::BITS` extracts to a plain `U32`; see the
-    // usize note above.
-    64,
+    // Extracts as `RustM _`; see the `usize` note above.
+    SIZE_BITS,
     SIZE_BYTES,
 }
 

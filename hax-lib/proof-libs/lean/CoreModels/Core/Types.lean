@@ -697,74 +697,134 @@ def num.error.IntErrorKind := Unit
 structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
 
+/-- [core_models::num::{core_models::num::u8}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 207:54-210:17 -/
+@[reducible]
+def num.U8.to_le_bytes.closure := Std.U8
+
+/-- [core_models::num::{core_models::num::u16}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 207:54-210:17 -/
+@[reducible]
+def num.U16.to_le_bytes.closure := Std.U16
+
+/-- [core_models::num::{core_models::num::u32}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 207:54-210:17 -/
+@[reducible]
+def num.U32.to_le_bytes.closure := Std.U32
+
+/-- [core_models::num::{core_models::num::u64}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 207:54-210:17 -/
+@[reducible]
+def num.U64.to_le_bytes.closure := Std.U64
+
+/-- [core_models::num::{core_models::num::u128}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 207:54-210:17 -/
+@[reducible]
+def num.U128.to_le_bytes.closure := Std.U128
+
+/-- [core_models::num::{core_models::num::usize}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 207:54-210:17 -/
+@[reducible]
+def num.Usize.to_le_bytes.closure := Std.Usize
+
+/-- [core_models::num::{core_models::num::i8}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 490:54-494:17 -/
+@[reducible]
+def num.I8.to_le_bytes.closure := Std.I8
+
+/-- [core_models::num::{core_models::num::i16}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 490:54-494:17 -/
+@[reducible]
+def num.I16.to_le_bytes.closure := Std.I16
+
+/-- [core_models::num::{core_models::num::i32}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 490:54-494:17 -/
+@[reducible]
+def num.I32.to_le_bytes.closure := Std.I32
+
+/-- [core_models::num::{core_models::num::i64}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 490:54-494:17 -/
+@[reducible]
+def num.I64.to_le_bytes.closure := Std.I64
+
+/-- [core_models::num::{core_models::num::i128}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 490:54-494:17 -/
+@[reducible]
+def num.I128.to_le_bytes.closure := Std.I128
+
+/-- [core_models::num::{core_models::num::isize}::to_le_bytes::closure]
+    Source: 'core-models/src/core/num/mod.rs', lines 490:54-494:17 -/
+@[reducible]
+def num.Isize.to_le_bytes.closure := Std.Isize
+
 /-- [core_models::num::u8]
-    Source: 'core-models/src/core/num/mod.rs', lines 550:0-550:14
+    Source: 'core-models/src/core/num/mod.rs', lines 572:0-572:14
     Visibility: public -/
 @[reducible]
 def num.u8 := Unit
 
 /-- [core_models::num::u16]
-    Source: 'core-models/src/core/num/mod.rs', lines 553:0-553:15
+    Source: 'core-models/src/core/num/mod.rs', lines 575:0-575:15
     Visibility: public -/
 @[reducible]
 def num.u16 := Unit
 
 /-- [core_models::num::u32]
-    Source: 'core-models/src/core/num/mod.rs', lines 556:0-556:15
+    Source: 'core-models/src/core/num/mod.rs', lines 578:0-578:15
     Visibility: public -/
 @[reducible]
 def num.u32 := Unit
 
 /-- [core_models::num::u64]
-    Source: 'core-models/src/core/num/mod.rs', lines 559:0-559:15
+    Source: 'core-models/src/core/num/mod.rs', lines 581:0-581:15
     Visibility: public -/
 @[reducible]
 def num.u64 := Unit
 
 /-- [core_models::num::u128]
-    Source: 'core-models/src/core/num/mod.rs', lines 562:0-562:16
+    Source: 'core-models/src/core/num/mod.rs', lines 584:0-584:16
     Visibility: public -/
 @[reducible]
 def num.u128 := Unit
 
 /-- [core_models::num::usize]
-    Source: 'core-models/src/core/num/mod.rs', lines 565:0-565:17
+    Source: 'core-models/src/core/num/mod.rs', lines 587:0-587:17
     Visibility: public -/
 @[reducible]
 def num.usize := Unit
 
 /-- [core_models::num::i8]
-    Source: 'core-models/src/core/num/mod.rs', lines 568:0-568:14
+    Source: 'core-models/src/core/num/mod.rs', lines 590:0-590:14
     Visibility: public -/
 @[reducible]
 def num.i8 := Unit
 
 /-- [core_models::num::i16]
-    Source: 'core-models/src/core/num/mod.rs', lines 571:0-571:15
+    Source: 'core-models/src/core/num/mod.rs', lines 593:0-593:15
     Visibility: public -/
 @[reducible]
 def num.i16 := Unit
 
 /-- [core_models::num::i32]
-    Source: 'core-models/src/core/num/mod.rs', lines 574:0-574:15
+    Source: 'core-models/src/core/num/mod.rs', lines 596:0-596:15
     Visibility: public -/
 @[reducible]
 def num.i32 := Unit
 
 /-- [core_models::num::i64]
-    Source: 'core-models/src/core/num/mod.rs', lines 577:0-577:15
+    Source: 'core-models/src/core/num/mod.rs', lines 599:0-599:15
     Visibility: public -/
 @[reducible]
 def num.i64 := Unit
 
 /-- [core_models::num::i128]
-    Source: 'core-models/src/core/num/mod.rs', lines 580:0-580:16
+    Source: 'core-models/src/core/num/mod.rs', lines 602:0-602:16
     Visibility: public -/
 @[reducible]
 def num.i128 := Unit
 
 /-- [core_models::num::isize]
-    Source: 'core-models/src/core/num/mod.rs', lines 583:0-583:17
+    Source: 'core-models/src/core/num/mod.rs', lines 605:0-605:17
     Visibility: public -/
 @[reducible]
 def num.isize := Unit

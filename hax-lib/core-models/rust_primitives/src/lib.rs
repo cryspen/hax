@@ -273,9 +273,6 @@ pub mod arithmetic {
                 pub fn [<overflowing_pow_ $Self>](x: $Self, exp: u32) -> ($Self, bool) {
                     x.overflowing_pow(exp)
                 }
-                pub fn [<count_ones_ $Self>](x: $Self) -> u32 {
-                    x.count_ones()
-                }
                 pub fn [<leading_zeros_ $Self>](x: $Self) -> u32 {
                     x.leading_zeros()
                 }
@@ -290,9 +287,6 @@ pub mod arithmetic {
                 }
                 pub fn [<to_be_bytes_ $Self>](bytes: $Self) -> [u8; $Bytes] {
                     bytes.to_be_bytes()
-                }
-                pub fn [<to_le_bytes_ $Self>](bytes: $Self) -> [u8; $Bytes] {
-                    bytes.to_le_bytes()
                 }
                 // Validity flag rather than `Result`: see `string::str_from_utf8`.
                 pub fn [<from_str_radix_ $Self>](src: &str, radix: u32) -> (bool, $Self) {
@@ -309,9 +303,6 @@ pub mod arithmetic {
         ($($Self: ident)*) => {
             paste! {
                 $(
-                    pub fn [<abs_ $Self>](x: $Self) -> $Self {
-                        x.abs()
-                    }
                     pub fn [<rotate_right_ $Self>](x: $Self, n: u32) -> $Self {
                         x.rotate_right(n)
                     }

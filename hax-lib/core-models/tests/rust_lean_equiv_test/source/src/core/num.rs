@@ -105,6 +105,17 @@ pub fn test_i32_max() -> bool {
     i32::MAX == 2147483647i32
 }
 
+// The pointer-sized widths, which the model pins at 64 bits.
+#[rust_lean_test]
+pub fn test_usize_bits() -> bool {
+    usize::BITS == 64u32
+}
+
+#[rust_lean_test]
+pub fn test_isize_bits() -> bool {
+    isize::BITS == 64u32
+}
+
 // =============================================================================
 // wrapping_add
 // =============================================================================
@@ -549,6 +560,48 @@ pub fn test_u32_count_ones_max() -> bool {
     u32::MAX.count_ones() == 32u32
 }
 
+#[rust_lean_test]
+pub fn test_u64_count_ones_max() -> bool {
+    u64::MAX.count_ones() == 64u32
+}
+
+#[rust_lean_test]
+pub fn test_u128_count_ones_max() -> bool {
+    u128::MAX.count_ones() == 128u32
+}
+
+#[rust_lean_test]
+pub fn test_usize_count_ones_max() -> bool {
+    usize::MAX.count_ones() == 64u32
+}
+
+#[rust_lean_test]
+pub fn test_usize_count_ones_zero() -> bool {
+    0usize.count_ones() == 0u32
+}
+
+// The signed models shift arithmetically, so a negative argument exercises the
+// sign-extended high bits.
+#[rust_lean_test]
+pub fn test_i32_count_ones_minus_one() -> bool {
+    (-1i32).count_ones() == 32u32
+}
+
+#[rust_lean_test]
+pub fn test_i32_count_ones_min() -> bool {
+    i32::MIN.count_ones() == 1u32
+}
+
+#[rust_lean_test]
+pub fn test_i64_count_ones_minus_one() -> bool {
+    (-1i64).count_ones() == 64u32
+}
+
+#[rust_lean_test]
+pub fn test_isize_count_ones_minus_one() -> bool {
+    (-1isize).count_ones() == 64u32
+}
+
 // =============================================================================
 // rotate_left / rotate_right
 // =============================================================================
@@ -725,8 +778,43 @@ pub fn test_i8_abs_max() -> bool {
 }
 
 #[rust_lean_test]
+pub fn test_i8_abs_min_plus_one() -> bool {
+    (i8::MIN + 1).abs() == i8::MAX
+}
+
+#[rust_lean_test]
 pub fn test_i16_abs_neg() -> bool {
     (-100i16).abs() == 100i16
+}
+
+#[rust_lean_test]
+pub fn test_i16_abs_min_plus_one() -> bool {
+    (i16::MIN + 1).abs() == i16::MAX
+}
+
+#[rust_lean_test]
+pub fn test_i32_abs_neg() -> bool {
+    (-100000i32).abs() == 100000i32
+}
+
+#[rust_lean_test]
+pub fn test_i32_abs_min_plus_one() -> bool {
+    (i32::MIN + 1).abs() == i32::MAX
+}
+
+#[rust_lean_test]
+pub fn test_i64_abs_neg() -> bool {
+    (-100000i64).abs() == 100000i64
+}
+
+#[rust_lean_test]
+pub fn test_i128_abs_neg() -> bool {
+    (-100000i128).abs() == 100000i128
+}
+
+#[rust_lean_test]
+pub fn test_isize_abs_neg() -> bool {
+    (-100000isize).abs() == 100000isize
 }
 
 // =============================================================================
@@ -870,6 +958,46 @@ pub fn test_u32_to_be_bytes_basic() -> bool {
 #[rust_lean_test]
 pub fn test_u32_to_le_bytes_basic() -> bool {
     0x12345678u32.to_le_bytes() == [0x78u8, 0x56u8, 0x34u8, 0x12u8]
+}
+
+#[rust_lean_test]
+pub fn test_u8_to_le_bytes_basic() -> bool {
+    0xabu8.to_le_bytes() == [0xabu8]
+}
+
+#[rust_lean_test]
+pub fn test_u64_to_le_bytes_basic() -> bool {
+    0x0123456789abcdefu64.to_le_bytes()
+        == [
+            0xefu8, 0xcdu8, 0xabu8, 0x89u8, 0x67u8, 0x45u8, 0x23u8, 0x01u8,
+        ]
+}
+
+#[rust_lean_test]
+pub fn test_u64_to_le_bytes_max() -> bool {
+    u64::MAX.to_le_bytes() == [0xffu8; 8]
+}
+
+#[rust_lean_test]
+pub fn test_usize_to_le_bytes_basic() -> bool {
+    1usize.to_le_bytes() == [1u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8]
+}
+
+// Signed: the bytes are the two's-complement ones, reached through an arithmetic
+// shift in the model.
+#[rust_lean_test]
+pub fn test_i32_to_le_bytes_minus_one() -> bool {
+    (-1i32).to_le_bytes() == [0xffu8, 0xffu8, 0xffu8, 0xffu8]
+}
+
+#[rust_lean_test]
+pub fn test_i32_to_le_bytes_min() -> bool {
+    i32::MIN.to_le_bytes() == [0u8, 0u8, 0u8, 0x80u8]
+}
+
+#[rust_lean_test]
+pub fn test_i8_to_le_bytes_minus_one() -> bool {
+    (-1i8).to_le_bytes() == [0xffu8]
 }
 
 // =============================================================================

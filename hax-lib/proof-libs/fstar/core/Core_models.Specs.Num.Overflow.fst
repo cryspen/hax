@@ -1,4 +1,4 @@
-module Core_models.Num.Overflow_spec
+module Core_models.Specs.Num.Overflow
 
 /// Behavioural contract of the `checked_*` integer models, which route
 /// through `Rust_primitives.Arithmetic.overflowing_{add,sub}_*`.
