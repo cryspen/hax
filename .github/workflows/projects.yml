@@ -195,6 +195,9 @@ jobs:
         uses: ./hax/.github/actions/open-issue-once
         env:
           GH_TOKEN: ${{ github.token }}
+          # The workspace root is not a checkout, so `gh` cannot find the
+          # repository on its own.
+          GH_REPO: ${{ github.repository }}
         with:
           label: ci
           title: Nightly hax run of ${{ matrix.name }} is failing
