@@ -161,8 +161,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $PACKAGES
 
-      # The directory, not the checkout root: cargo finds the workspace above
-      # it, and not every project has one at its root.
+      # The directory the run uses, not the checkout root: cargo looks for the
+      # workspace from there, as the project's own scripts do.
       - name: Use the hax-lib from this checkout
         uses: ./hax/.github/actions/use-local-hax-lib
         with:

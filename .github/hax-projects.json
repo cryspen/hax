@@ -55,17 +55,6 @@
     "timeout": 120
   },
   {
-    "name": "libcrux-iot-ml-dsa",
-    "repository": "celabshq/libcrux-iot",
-    "directory": "libcrux-iot/ml-dsa",
-    "fstar": "v2025.12.15",
-    "stage": "extract",
-    "extract": "./hax.sh extract",
-    "lax": "./hax.sh prove --admit",
-    "prove": "./hax.sh prove",
-    "timeout": 120
-  },
-  {
     "name": "spqr",
     "repository": "signalapp/SparsePostQuantumRatchet",
     "directory": ".",
