@@ -506,6 +506,10 @@ fn scenario_options(
                 ifuel: entry.ifuel.unwrap_or(defaults.ifuel),
                 interfaces: entry.interfaces.clone(),
                 line_width: entry.line_width.unwrap_or(defaults.line_width),
+                scenario: FStarScenarioOptions {
+                    project_files: entry.project_files,
+                    extract_command: Some(format!("cargo hax extract {}", scenario.name())),
+                },
             })
         }
         ScenarioBackend::Coq => Backend::Coq,
@@ -823,6 +827,11 @@ mod tests {
         let Backend::Fstar(fstar) = &backend.backend else {
             panic!("the fstar backend resolves to `Backend::Fstar`")
         };
+        assert_eq!(fstar.scenario.project_files, Some(false));
+        assert_eq!(
+            fstar.scenario.extract_command.as_deref(),
+            Some("cargo hax extract demo-scenario")
+        );
         assert_eq!(fstar.z3rlimit, 11);
         assert_eq!(fstar.fuel, 22);
         assert_eq!(fstar.ifuel, 33);
