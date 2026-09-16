@@ -69,28 +69,29 @@ runs:
             exit 1
           fi
           table "$kind" "$target"
-          label="$kind"
-          [ "$target" = "-" ] || label="$kind, $target"
           # Rewriting the edge replaces whatever it inherited from the
           # workspace, so its feature selection has to be restated here.
           [ "$defaults" = true ] || flags+=(--no-default-features)
           [ -z "$features" ] || flags+=(--features "$features")
+          label="$kind"
+          [ "$target" = "-" ] || label="$kind, $target"
           cargo add "$dep" --path "$path" -p "$member" \
             ${flags[@]+"${flags[@]}"} --quiet
           echo "$member: $dep ($label) -> $path"
         done <<<"$edges"
 
-        published=$(cargo metadata --format-version 1 | jq -r '
-          (.packages | map({key: .id, value: .}) | from_entries) as $byid
-          | .workspace_members as $ws
-          | .resolve.nodes[] | select(.id | IN($ws[])) as $node
-          | $node.deps[] | $byid[.pkg]
-          | select(.name | startswith("hax-")) | select(.source != null)
-          | "  \($byid[$node.id].name) depends on \(.name) \(.version) from \(.source)"')
+        # Not just the members' own edges: a hax crate reached through a
+        # dependency that is not itself a hax crate lands in the graph too, and
+        # a project that then asks `cargo metadata` where hax-lib is gets two
+        # answers.
+        foreign=$(cargo metadata --format-version 1 | jq -r '
+          .packages[] | select(.name | startswith("hax-"))
+          | select(.source != null)
+          | "  \(.name) \(.version) from \(.source)"' | sort -u)
 
-        if [ -n "$published" ]; then
-          echo "::error::these direct dependencies still resolve to a published version:"
-          echo "$published"
+        if [ -n "$foreign" ]; then
+          echo "::error::$project resolves hax crates outside $hax:"
+          echo "$foreign"
           exit 1
         fi
-        echo "every direct hax dependency of $project resolves to $hax"
+        echo "every hax crate in $project's resolve graph comes from $hax"
