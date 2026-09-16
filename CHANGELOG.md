@@ -17,7 +17,7 @@ F* backend and library:
 
 ### Added
 
-Changes to the Lean backend:
+Lean backend and library:
  - Add a script for Lean documentation generation using doc-gen4 (cryspen/hax-evit/208)
 
 ## [0.4.0] - 2026-09-04
