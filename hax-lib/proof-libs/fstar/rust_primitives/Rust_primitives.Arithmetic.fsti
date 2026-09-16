@@ -114,7 +114,7 @@ let overflowing_sub_i8 : i8 -> i8 -> i8 & bool = sub_overflow
 let wrapping_mul_i8 : i8 -> i8 -> i8 = mul_mod
 val saturating_mul_i8 : i8 -> i8 -> i8
 let overflowing_mul_i8 : i8 -> i8 -> i8 & bool = mul_overflow
-let rem_euclid_i8 (x: i8) (y: i8 {v y <> 0}): i8 = mk_i8 (v x % v y)
+let rem_euclid_i8 (x: i8) (y: i8 {v y <> 0 /\ range (trunc_div (v x) (v y)) I8}): i8 = mk_i8 (v x % v y)
 val pow_i8 : i8 -> u32 -> i8
 val overflowing_pow_i8 : i8 -> u32 -> i8 & bool
 
@@ -127,7 +127,7 @@ let overflowing_sub_i16 : i16 -> i16 -> i16 & bool = sub_overflow
 let wrapping_mul_i16 : i16 -> i16 -> i16 = mul_mod
 val saturating_mul_i16 : i16 -> i16 -> i16
 let overflowing_mul_i16 : i16 -> i16 -> i16 & bool = mul_overflow
-let rem_euclid_i16 (x: i16) (y: i16 {v y <> 0}): i16 = mk_i16 (v x % v y)
+let rem_euclid_i16 (x: i16) (y: i16 {v y <> 0 /\ range (trunc_div (v x) (v y)) I16}): i16 = mk_i16 (v x % v y)
 val pow_i16 : x: i16 -> y:u32 -> result: i16 {v x == 2 /\ v y < 15 ==> (Math.Lemmas.pow2_lt_compat 15 (v y); result == mk_i16 (pow2 (v y)))}
 val overflowing_pow_i16 : i16 -> u32 -> i16 & bool
 
@@ -140,7 +140,7 @@ let overflowing_sub_i32 : i32 -> i32 -> i32 & bool = sub_overflow
 let wrapping_mul_i32 : i32 -> i32 -> i32 = mul_mod
 val saturating_mul_i32 : i32 -> i32 -> i32
 let overflowing_mul_i32 : i32 -> i32 -> i32 & bool = mul_overflow
-let rem_euclid_i32 (x: i32) (y: i32 {v y <> 0}): i32 = mk_i32 (v x % v y)
+let rem_euclid_i32 (x: i32) (y: i32 {v y <> 0 /\ range (trunc_div (v x) (v y)) I32}): i32 = mk_i32 (v x % v y)
 val pow_i32 : x : i32 -> y:u32 -> result: i32 {v x == 2 /\ v y <= 16 ==> result == mk_i32 (pow2 (v y))}
 val overflowing_pow_i32 : i32 -> u32 -> i32 & bool
 
@@ -153,7 +153,7 @@ let overflowing_sub_i64 : i64 -> i64 -> i64 & bool = sub_overflow
 let wrapping_mul_i64 : i64 -> i64 -> i64 = mul_mod
 val saturating_mul_i64 : i64 -> i64 -> i64
 let overflowing_mul_i64 : i64 -> i64 -> i64 & bool = mul_overflow
-let rem_euclid_i64 (x: i64) (y: i64 {v y <> 0}): i64 = mk_i64 (v x % v y)
+let rem_euclid_i64 (x: i64) (y: i64 {v y <> 0 /\ range (trunc_div (v x) (v y)) I64}): i64 = mk_i64 (v x % v y)
 val pow_i64 : i64 -> u32 -> i64
 val overflowing_pow_i64 : i64 -> u32 -> i64 & bool
 
@@ -166,7 +166,7 @@ let overflowing_sub_i128 : i128 -> i128 -> i128 & bool = sub_overflow
 let wrapping_mul_i128 : i128 -> i128 -> i128 = mul_mod
 val saturating_mul_i128 : i128 -> i128 -> i128
 let overflowing_mul_i128 : i128 -> i128 -> i128 & bool = mul_overflow
-let rem_euclid_i128 (x: i128) (y: i128 {v y <> 0}): i128 = mk_i128 (v x % v y)
+let rem_euclid_i128 (x: i128) (y: i128 {v y <> 0 /\ range (trunc_div (v x) (v y)) I128}): i128 = mk_i128 (v x % v y)
 val pow_i128 : i128 -> u32 -> i128
 val overflowing_pow_i128 : i128 -> u32 -> i128 & bool
 
@@ -179,7 +179,7 @@ let overflowing_sub_isize : isize -> isize -> isize & bool = sub_overflow
 let wrapping_mul_isize : isize -> isize -> isize = mul_mod
 val saturating_mul_isize : isize -> isize -> isize
 let overflowing_mul_isize : isize -> isize -> isize & bool = mul_overflow
-let rem_euclid_isize (x: isize) (y: isize {v y <> 0}): isize = mk_isize (v x % v y)
+let rem_euclid_isize (x: isize) (y: isize {v y <> 0 /\ range (trunc_div (v x) (v y)) ISIZE}): isize = mk_isize (v x % v y)
 val pow_isize : isize -> u32 -> isize
 val overflowing_pow_isize : isize -> u32 -> isize & bool
 
