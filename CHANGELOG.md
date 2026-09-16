@@ -14,6 +14,16 @@ Lean backend and library:
 
 F* backend and library:
  - Fix the model of `Rust_primitives.Hax.Int.div`
+ - Make signed division and remainder truncate towards zero as Rust does, a
+   breaking change since `div`, `mod` and the signed `rem_euclid` now require
+   the quotient to fit in the type (#1459)
+ - Define `fold_enumerated_slice` and `fold_range_step_by` instead of assuming
+   them, and drop the inconsistent `Rust_primitives.Iterators.foldi_range_step_by`
+ - Correct `logand_mask_lemma`, `get_bit_cast_extend` and `lemma_get_bit_bounded'`,
+   and exclude the sign bit from `num_bits`, all breaking changes
+ - Require `false` on the models of `mem::{uninitialized, zeroed, transmute,
+   transmute_copy}` and on the hand-written functions returning `t_Never`, which
+   could otherwise inhabit any type
 
 ## [0.4.0] - 2026-09-04
 
