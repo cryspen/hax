@@ -1,6 +1,5 @@
 import CoreModels.HaxLib.Prop
 import CoreModels.HaxLib.Int
-import CoreModels.HaxLib.Funs
 
 /-!
 
