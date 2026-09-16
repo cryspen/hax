@@ -56,22 +56,76 @@ val fold_chunked_slice
   )
   : result: acc_t {inv result (mk_int 0)}
 
+(**** `start..end_` *)
+unfold let fold_range_wf_index (#u: inttype)
+  (start: int_t u) (end_: int_t u)
+  (strict: bool) (i: int)
+  = i >= v start 
+     /\ (if strict then i < v end_ else i <= v end_)
+
+unfold let range_empty (#u: inttype)
+  (start: int_t u) (end_: int_t u) = v start > v end_
+
+let rec fold_range
+  (#acc_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
+  (init: acc_t {~(range_empty start end_) ==> inv init start})
+  (f: (acc:acc_t -> i:int_t u  {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) /\ inv acc i}
+                 -> acc':acc_t {(inv acc' (mk_int (v i + 1)))}))
+  : Tot (result: acc_t {if range_empty start end_ then result == init else inv result end_}) 
+        (decreases v end_ - v start)
+  = if v start < v end_
+    then fold_range (start +! mk_int 1) end_ inv (f init start) f
+    else init
+
+let rec fold_range_cf
+  (#acc_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
+  (acc: acc_t {~(range_empty start end_) ==> inv acc start})
+  (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) /\ inv acc i}
+                  -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t))
+                    {
+                      let acc = match tuple with 
+                        | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
+                        | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
+                      inv acc (mk_int (v i + 1))}))
+: Tot (res: acc_t{if range_empty start end_ then res == acc else (exists (final: int_t u). v start <= v final /\ v final <= v end_ /\ inv res final)}) 
+ (decreases v end_ - v start)
+  =
+  if v start < v end_
+  then match f acc start with
+       | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc) -> acc
+       | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
+         fold_range_cf (start +! mk_int 1) end_ inv acc f
+  else acc
+
+let rec fold_range_return
+  (#acc_t: Type0) (#ret_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
+  (acc: acc_t )
+  (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) }
+                  -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret_t (unit & acc_t))) acc_t)
+                    ))
+: Tot (Core_models.Ops.Control_flow.t_ControlFlow ret_t acc_t) (decreases v end_ - v start)
+  =
+  if v start < v end_
+  then match f acc start with
+       | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Break res)-> Core_models.Ops.Control_flow.ControlFlow_Break res
+       
+       | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Continue ((), res)) -> Core_models.Ops.Control_flow.ControlFlow_Continue res
+       | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
+         fold_range_return (start +! mk_int 1) end_ inv acc f
+  else Core_models.Ops.Control_flow.ControlFlow_Continue acc
+
 (**** `s.enumerate()` *)
 /// Fold function that is generated for `for` loops iterating on
 /// `s.enumerate()`-like iterators
-let rec fold_enumerated_slice_from
-  (#t: Type0) (#acc_t: Type0)
-  (s: t_Slice t)
-  (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
-  (i0: usize {v i0 <= v (length s)})
-  (init: acc_t {inv init i0})
-  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) /\ inv acc  (fst i)}
-                 -> acc':acc_t    {v (fst i) < v (length s) /\ inv acc' (fst i +! sz 1)}))
-  : Tot (result: acc_t {inv result (length s)}) (decreases (v (length s) - v i0))
-  = if v i0 < v (length s)
-    then fold_enumerated_slice_from s inv (i0 +! sz 1) (f init (i0, Seq.index s (v i0))) f
-    else init
-
 let fold_enumerated_slice
   (#t: Type0) (#acc_t: Type0)
   (s: t_Slice t)
@@ -80,7 +134,7 @@ let fold_enumerated_slice
   (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) /\ inv acc  (fst i)}
                  -> acc':acc_t    {v (fst i) < v (length s) /\ inv acc' (fst i +! sz 1)}))
   : result: acc_t {inv result (length s)}
-  = fold_enumerated_slice_from s inv (sz 0) init f
+  = fold_range (sz 0) (length s) inv init (fun acc i -> f acc (i, Seq.index s (v i)))
 
 val fold_enumerated_slice_return
   (#t: Type0) (#acc_t: Type0) (#ret: Type0)
@@ -160,73 +214,6 @@ let fold_range_step_by
      then fold_range_step_by_bound_lemma (v step) 0 (v end_ - 1 - v start));
     fold_range_step_by_from start end_ step inv start init f
 #pop-options
-
-(**** `start..end_` *)
-unfold let fold_range_wf_index (#u: inttype)
-  (start: int_t u) (end_: int_t u)
-  (strict: bool) (i: int)
-  = i >= v start 
-     /\ (if strict then i < v end_ else i <= v end_)
-
-unfold let range_empty (#u: inttype)
-  (start: int_t u) (end_: int_t u) = v start > v end_
-
-let rec fold_range
-  (#acc_t: Type0) (#u: inttype)
-  (start: int_t u)
-  (end_: int_t u)
-  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
-  (init: acc_t {~(range_empty start end_) ==> inv init start})
-  (f: (acc:acc_t -> i:int_t u  {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) /\ inv acc i}
-                 -> acc':acc_t {(inv acc' (mk_int (v i + 1)))}))
-  : Tot (result: acc_t {if range_empty start end_ then result == init else inv result end_}) 
-        (decreases v end_ - v start)
-  = if v start < v end_
-    then fold_range (start +! mk_int 1) end_ inv (f init start) f
-    else init
-
-let rec fold_range_cf
-  (#acc_t: Type0) (#u: inttype)
-  (start: int_t u)
-  (end_: int_t u)
-  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
-  (acc: acc_t {~(range_empty start end_) ==> inv acc start})
-  (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) /\ inv acc i}
-                  -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t))
-                    {
-                      let acc = match tuple with 
-                        | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
-                        | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
-                      inv acc (mk_int (v i + 1))}))
-: Tot (res: acc_t{if range_empty start end_ then res == acc else (exists (final: int_t u). v start <= v final /\ v final <= v end_ /\ inv res final)}) 
- (decreases v end_ - v start)
-  =
-  if v start < v end_
-  then match f acc start with
-       | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc) -> acc
-       | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
-         fold_range_cf (start +! mk_int 1) end_ inv acc f
-  else acc
-
-let rec fold_range_return
-  (#acc_t: Type0) (#ret_t: Type0) (#u: inttype)
-  (start: int_t u)
-  (end_: int_t u)
-  (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
-  (acc: acc_t )
-  (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) }
-                  -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret_t (unit & acc_t))) acc_t)
-                    ))
-: Tot (Core_models.Ops.Control_flow.t_ControlFlow ret_t acc_t) (decreases v end_ - v start)
-  =
-  if v start < v end_
-  then match f acc start with
-       | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Break res)-> Core_models.Ops.Control_flow.ControlFlow_Break res
-       
-       | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Continue ((), res)) -> Core_models.Ops.Control_flow.ControlFlow_Continue res
-       | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
-         fold_range_return (start +! mk_int 1) end_ inv acc f
-  else Core_models.Ops.Control_flow.ControlFlow_Continue acc
 
 val fold_return #it #acc #ret #item (i: it) (init: acc) 
   (f: acc -> item -> 
