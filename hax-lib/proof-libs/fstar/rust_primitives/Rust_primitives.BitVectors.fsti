@@ -6,7 +6,7 @@ open Rust_primitives.Integers
 
 // TODO: relate `num_bits` with a notion of bounded integer
 /// Number of bits carried by an integer of type `t`
-type num_bits t = d: nat {d > 0 /\ d <= bits t /\ (signed t ==> d <= bits t)}
+type num_bits t = d: nat {d > 0 /\ d <= bits t /\ (signed t ==> d < bits t)}
 
 /// States that `x` is a positive integer that fits in `d` bits
 type bounded #t (x:int_t t) (d:num_bits t) =
