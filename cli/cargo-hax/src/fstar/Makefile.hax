@@ -107,7 +107,7 @@ FSTAR_INCLUDE_DIRS_EXTRA ?=
 # proof needs it.
 FSTAR_FLAGS_EXTRA ?=
 FINDLIBS_OUTPUT ?= $(shell bash -c '${FINDLIBS}')
-FSTAR_INCLUDE_DIRS = $(shell echo $(FSTAR_INCLUDE_DIRS_EXTRA) $(FINDLIBS_OUTPUT) | tr ' ' '\n' | LC_ALL=C sort -u | tr '\n' ' ')
+FSTAR_INCLUDE_DIRS = $(strip $(shell echo $(FSTAR_INCLUDE_DIRS_EXTRA) $(FINDLIBS_OUTPUT) | tr ' ' '\n' | LC_ALL=C sort -u | tr '\n' ' '))
 
 # Make sure FSTAR_INCLUDE_DIRS has the `proof-libs`, print hints and
 # an error message otherwise
@@ -135,7 +135,12 @@ all-keep-going:
 HAX_AUTO_EXTRACT ?= yes
 HAX_EXTRACT_COMMAND ?= cargo hax into fstar
 
-ifeq "$(HAX_AUTO_EXTRACT)" "yes"
+# Goals that describe or tear down the build rather than run it. They must
+# not extract, and they do not need `.depend`.
+NO_BUILD_GOALS := clean help h describe include-dirs
+BUILDING := $(if $(filter $(NO_BUILD_GOALS),$(MAKECMDGOALS)),,yes)
+
+ifeq "$(BUILDING)$(HAX_AUTO_EXTRACT)" "yesyes"
 ifeq "$(wildcard *.fst *.fsti)" ""
 _ := $(shell $(HAX_EXTRACT_COMMAND) 1>&2)
 endif
@@ -145,14 +150,6 @@ ROOTS ?= $(wildcard *.fst *.fsti)
 ADMIT_MODULES ?=
 
 ADMIT_MODULE_FLAGS ?= --admit_smt_queries true
-
-# Records the roots and the flags `.depend` was generated with, so either
-# changing regenerates it.
-ROOTS_STAMP := .hax-roots
-_ := $(shell { printf '%s\n' $(ROOTS) | LC_ALL=C sort; printf 'flags:%s\n' '$(OTHERFLAGS)'; } \
-          > $(ROOTS_STAMP).tmp; \
-        cmp -s $(ROOTS_STAMP).tmp $(ROOTS_STAMP) || mv -f $(ROOTS_STAMP).tmp $(ROOTS_STAMP); \
-        rm -f $(ROOTS_STAMP).tmp)
 
 # A `.checked` file does not record *how* it was checked, so one produced
 # under a soundness-weakening flag is indistinguishable from a verified one
@@ -169,6 +166,17 @@ CACHE_DIR      ?= ${GIT_ROOT_DIR}.fstar-cache/${CACHE_SUBDIR}checked
 # Under `--lax` F* writes `<module>.checked.lax`, so the targets have to
 # follow the mode, and `.depend` has to be generated in it too.
 CHECKED := $(if $(findstring --lax,$(OTHERFLAGS)),.checked.lax,.checked)
+
+# Records the roots, the flags and the cache directory `.depend` was
+# generated with, so any of them changing regenerates it: `.depend` names
+# its targets under `CACHE_DIR`, and a target it does not name has no
+# prerequisite to build from.
+ROOTS_STAMP := .hax-roots
+_ := $(shell { printf '%s\n' $(ROOTS) | LC_ALL=C sort; \
+               printf 'flags:%s\ncache:%s\n' '$(OTHERFLAGS)' '$(CACHE_DIR)'; } \
+          > $(ROOTS_STAMP).tmp; \
+        cmp -s $(ROOTS_STAMP).tmp $(ROOTS_STAMP) || mv -f $(ROOTS_STAMP).tmp $(ROOTS_STAMP); \
+        rm -f $(ROOTS_STAMP).tmp)
 
 FINDLIBS.sh:
 	$(Q)echo '${FINDLIBS}' > FINDLIBS.sh
@@ -189,7 +197,7 @@ FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)
 	  $(FSTAR) $(OTHERFLAGS) --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@.tmp \
 	    && mv -f $@.tmp $@
 
-ifeq ($(filter clean help h describe include-dirs,$(MAKECMDGOALS)),)
+ifeq "$(BUILDING)" "yes"
 include .depend
 endif
 
@@ -213,7 +221,7 @@ target "" ""
 target "vscode" 'Generates a `hax.fst.config.json` file'
 target "${ANSI_COLOR_TONE}<MyModule.fst>${ANSI_COLOR_BLUE}-in   " 'Useful for Emacs, outputs the F* prefix command to be used'
 target "" ""
-target "clean" 'Cleanup the target'
+target "clean" 'Remove the F* build products (the F* files are kept)'
 target "include-dirs" 'List the F* include directories'
 target "" ""
 target "describe" 'List the F* root modules, and describe the environment.'
@@ -259,9 +267,14 @@ check/%: | .depend $(CACHE_DIR)
 VERIFIED_CHECKED = $(addsuffix $(CHECKED), $(addprefix $(CACHE_DIR)/,$(ROOTS)))
 ADMIT_CHECKED = $(addsuffix $(CHECKED), $(addprefix $(CACHE_DIR)/,$(ADMIT_MODULES)))
 
+# `.depend` is what gives a checked target the module to check. F* run on
+# no file at all exits 0, so a target it does not cover would report a
+# verification that never happened: refuse to run instead.
+REQUIRE_SOURCE = $(if $<,,$(error $@ has no source file: `.depend` does not cover it))
+
 $(ADMIT_CHECKED):
 	$(Q)printf '${ANSI_COLOR_BBLUE}[${ANSI_COLOR_TONE}ADMIT${ANSI_COLOR_BBLUE}] %s ${ANSI_COLOR_RESET}\n' "$(basename $(notdir $@))"
-	$(Q)$(FSTAR) $(OTHERFLAGS) $(ADMIT_MODULE_FLAGS) $< || { \
+	$(Q)$(REQUIRE_SOURCE)$(FSTAR) $(OTHERFLAGS) $(ADMIT_MODULE_FLAGS) $< || { \
 	  echo "" ; \
 	  exit 1 ; \
 	}
@@ -269,7 +282,7 @@ $(ADMIT_CHECKED):
 
 $(CACHE_DIR)/%$(CHECKED): | .depend $(CACHE_DIR)
 	${HEADER}
-	$(Q)$(FSTAR) $(OTHERFLAGS) $< || { \
+	$(Q)$(REQUIRE_SOURCE)$(FSTAR) $(OTHERFLAGS) $< || { \
 	  echo "" ; \
 	  exit 1 ; \
 	}
@@ -287,7 +300,8 @@ hax.fst.config.json: .depend
 vscode:
 	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) hax.fst.config.json
 
+# Only build products: the extracted modules are not distinguishable from
+# the hand-written F* files that live next to them.
 clean:
 	$(Q)rm -f $(addprefix $(CACHE_DIR)/,$(addsuffix $(CHECKED),$(ROOTS)))
 	$(Q)rm -f .depend .depend.tmp $(ROOTS_STAMP) hax.fst.config.json dep.graph
-	$(Q)rm -f *.fst *.fsti

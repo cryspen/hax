@@ -52,19 +52,30 @@ impl Project {
     }
 
     fn make(&self, target: &str) -> (String, bool) {
+        self.run(&[target], &[])
+    }
+
+    /// The log `FSTAR_STUB_RECORDING` appends one line per invocation to.
+    fn fstar_log(&self) -> String {
+        std::fs::read_to_string(self.root().join("fstar.log")).unwrap_or_default()
+    }
+
+    fn run(&self, args: &[&str], env: &[(&str, &str)]) -> (String, bool) {
         let path = format!(
             "{}:{}",
             self.bin.display(),
             std::env::var("PATH").unwrap_or_default()
         );
         let out = Command::new("make")
-            .arg(target)
+            .args(args)
             .current_dir(self.root())
             .env("PATH", path)
             .env("FSTAR_BIN", self.bin.join("fstar.exe"))
+            .env("FSTAR_LOG", self.root().join("fstar.log"))
             .env("FINDLIBS_OUTPUT", self.root().join("proof-libs/fstar/core"))
             .env("HAX_AUTO_EXTRACT", "no")
             .env("NO_COLOR", "1")
+            .envs(env.iter().copied())
             .output()
             .unwrap();
         let combined = format!(
@@ -88,6 +99,115 @@ const FSTAR_STUB_CYCLIC: &str = "#!/bin/sh\n\
 /// Test fixture: stands in for `fstar.exe` succeeding with an empty
 /// dependency graph.
 const FSTAR_STUB_WORKING: &str = "#!/bin/sh\necho '# no dependencies'\nexit 0\n";
+
+/// Test fixture: stands in for a working `fstar.exe`, logging every
+/// invocation to `$FSTAR_LOG`. It reproduces the behavior that makes a
+/// missing source file dangerous: given no module to check, the real
+/// `fstar.exe` prints its usage and exits 0.
+const FSTAR_STUB_RECORDING: &str = r#"#!/bin/sh
+echo "$@" >> "$FSTAR_LOG"
+files=""; dep=0; lax=0; cache=""; next=0
+for a in "$@"; do
+  if [ "$next" = 1 ]; then cache="$a"; next=0; continue; fi
+  case "$a" in
+    --cache_dir) next=1 ;;
+    --dep) dep=1 ;;
+    --lax) lax=1 ;;
+    *.fst|*.fsti) files="$files $a" ;;
+  esac
+done
+sfx=.checked
+[ "$lax" = 1 ] && sfx=.checked.lax
+[ -z "$files" ] && { echo 'fstar.exe: usage' >&2; exit 0; }
+if [ "$dep" = 1 ]; then
+  for f in $files; do echo "$cache/$f$sfx: $f"; done
+  exit 0
+fi
+mkdir -p "$cache"
+for f in $files; do touch "$cache/$f$sfx"; done
+exit 0
+"#;
+
+/// Admitting a module moves the cache directory, so the targets `.depend`
+/// names move with it. A `.depend` left over from the previous
+/// configuration would leave those targets with no source file.
+#[test]
+fn admitting_a_module_regenerates_depend_for_the_new_cache_directory() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    let (out, ok) = project.make("verify");
+    assert!(ok, "{out}");
+
+    let (out, ok) = project.run(&["verify", "ADMIT_MODULES=A.fst"], &[]);
+    assert!(ok, "{out}");
+    let admitted: Vec<_> = project
+        .fstar_log()
+        .lines()
+        .filter(|line| line.contains("--admit_smt_queries"))
+        .map(ToString::to_string)
+        .collect();
+    assert_eq!(admitted.len(), 1, "log: {}", project.fstar_log());
+    assert!(
+        admitted[0].ends_with(" A.fst"),
+        "the admitted module reached F*: {}",
+        admitted[0]
+    );
+}
+
+/// F* given no module to check exits 0, so a checked target `.depend` does
+/// not cover must stop the build rather than pass it.
+#[test]
+fn a_checked_target_with_no_source_file_fails_the_build() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    assert!(project.make(".depend").1);
+
+    // A `.depend` covering nothing, newer than the roots it is derived
+    // from, so that make keeps it.
+    std::fs::write(project.root().join(".depend"), "").unwrap();
+    backdate(&project.root().join("A.fst"));
+    backdate(&project.root().join(".hax-roots"));
+    std::fs::write(project.root().join("fstar.log"), "").unwrap();
+
+    let (out, ok) = project.make("verify");
+    assert!(!ok, "a target with no source file must not pass:\n{out}");
+    assert!(out.contains("has no source file"), "{out}");
+    assert_eq!(project.fstar_log(), "", "F* must not have been run");
+}
+
+/// Goals that describe or tear down the build must neither extract nor
+/// delete F* files that hax cannot regenerate.
+#[test]
+fn clean_and_the_describing_goals_neither_extract_nor_delete_sources() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    let handwritten = project.root().join("Spec.fsti");
+    std::fs::write(&handwritten, "module Spec\n").unwrap();
+    std::fs::remove_file(project.root().join("A.fst")).unwrap();
+
+    let extract = [
+        ("HAX_AUTO_EXTRACT", "yes"),
+        ("HAX_EXTRACT_COMMAND", "touch extracted.marker"),
+    ];
+    for goal in ["clean", "help", "describe", "include-dirs"] {
+        let (out, ok) = project.run(&[goal], &extract);
+        assert!(ok, "`make {goal}` failed:\n{out}");
+        assert!(
+            !project.root().join("extracted.marker").exists(),
+            "`make {goal}` ran an extraction"
+        );
+    }
+    assert!(
+        handwritten.exists(),
+        "`make clean` deleted a hand-written F* file"
+    );
+}
 
 #[test]
 fn a_failed_dep_run_leaves_no_depend_behind_and_stays_recoverable() {
