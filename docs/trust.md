@@ -31,6 +31,9 @@ parts of the code from extraction, and parts of the code can also be excluded vi
 But using these features can also be dangerous: We must make sure that all of the code
 that we want to verify is actually included the extraction.
 
+Some projects have their core implemented in Rust and offer wrappers for other languages.
+Wrappers can be buggy, too, and if they are not implemented in Rust, they are out of scope for hax.
+
 ## Drift between source code and proof artifacts
 
 A real-world Rust project constantly changes, and keeping up the proofs with the code changes
@@ -56,6 +59,15 @@ For F*, the trusted toolchain contains the hax frontend (also using rustc) and t
 Each backend comes with a library modeling the semantics of Rust and its core library.
 The verification relies on this library modeling the semantics of Rust and its core library
 correctly.
+
+For Lean and F*, we model Rust's `core` and `alloc` libraries directly in Rust
+(see [our core models library](https://github.com/cryspen/hax/tree/main/hax-lib/core-models)).
+This Rust library gets extracted via hax into Lean and F*. Only some Rust primitives
+that can not be modeled in terms of others are implemented directly in the backend languages.
+With this approach, we need to trust the Rust model, their translation into the backend language, 
+and the Rust primitives written in the backend language. The advantage of the approach is
+that a Rust model of Rust is easier to audit and that sharing the code between backends
+leads to a higher chance of finding bugs.
 
 In some projects, we also model external Rust crates that are not themselves verified.
 If we do, correctness of the verification also relies on the correctness of these models.
