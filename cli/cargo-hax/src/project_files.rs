@@ -51,9 +51,12 @@ pub fn write_always(path: &Path, contents: &str, message_format: MessageFormat) 
     }
 }
 
-pub fn enabled(project: &tools::project::ProjectContext, crate_dir: &Path) -> bool {
+/// Resolve the `project-files` key for the crate being processed: the
+/// member-level value overrides the workspace-level one, consistent with
+/// the tool version resolution order; the default is enabled.
+pub fn enabled(project: &tools::project::ProjectContext) -> bool {
     project
-        .member_config(crate_dir)
+        .member_config(&project.crate_dir())
         .and_then(|config| config.project_files)
         .or_else(|| {
             project
@@ -62,4 +65,35 @@ pub fn enabled(project: &tools::project::ProjectContext, crate_dir: &Path) -> bo
                 .and_then(|config| config.project_files)
         })
         .unwrap_or(true)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::tools::config::HaxToml;
+    use crate::tools::project::ProjectContext;
+    use std::path::PathBuf;
+
+    /// A virtual workspace: no root package, so the crate directory is the
+    /// working directory, which no member here configures.
+    fn virtual_workspace(project_files: Option<bool>) -> ProjectContext {
+        ProjectContext {
+            workspace_root: PathBuf::from("/ws"),
+            workspace_config: Some(HaxToml {
+                project_files,
+                ..Default::default()
+            }),
+            members: Vec::new(),
+            root_package: None,
+            selects_packages: false,
+            package_specs: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn a_virtual_workspace_resolves_the_workspace_level_key() {
+        assert!(!enabled(&virtual_workspace(Some(false))));
+        assert!(enabled(&virtual_workspace(Some(true))));
+        assert!(enabled(&virtual_workspace(None)));
+    }
 }

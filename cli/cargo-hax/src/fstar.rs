@@ -19,14 +19,15 @@ enum Ownership {
     Theirs,
 }
 
+/// The files a `make` include directive names, whatever whitespace
+/// separates it from them.
 fn include_targets(line: &str) -> Option<&str> {
     let line = line.trim_start();
     if line.starts_with('#') {
         return None;
     }
-    ["include ", "-include ", "sinclude "]
-        .iter()
-        .find_map(|directive| line.strip_prefix(directive))
+    let (directive, targets) = line.split_once(char::is_whitespace)?;
+    matches!(directive, "include" | "-include" | "sinclude").then_some(targets)
 }
 
 fn classify(contents: &str) -> Ownership {
@@ -35,12 +36,35 @@ fn classify(contents: &str) -> Ownership {
     }
     for line in contents.lines() {
         if let Some(targets) = include_targets(line)
-            && targets.split_whitespace().any(|name| name == MAKEFILE_HAX)
+            && targets
+                .split_whitespace()
+                .any(|name| name.trim_start_matches("./") == MAKEFILE_HAX)
         {
             return Ownership::Ours;
         }
     }
     Ownership::Theirs
+}
+
+/// The `cargo hax` command `args` spells, `args` being the arguments of
+/// the current invocation minus the program name. A scenario run re-enters
+/// through `__json` and passes its own command instead, so that spelling
+/// is not one this can reproduce.
+fn command_of_args(args: &[String]) -> String {
+    match args {
+        [] => DEFAULT_EXTRACT_COMMAND.to_string(),
+        [keyword] if keyword == "__json" => DEFAULT_EXTRACT_COMMAND.to_string(),
+        args => match shlex::try_join(args.iter().map(String::as_str)) {
+            Ok(joined) => format!("cargo hax {joined}"),
+            Err(_) => DEFAULT_EXTRACT_COMMAND.to_string(),
+        },
+    }
+}
+
+/// The command that reproduces this extraction, quoted back from the
+/// invocation hax was given.
+pub fn invocation_command() -> String {
+    command_of_args(&crate::get_args("hax")[1..])
 }
 
 fn user_makefile_contents(extract_command: &str) -> String {
@@ -56,11 +80,7 @@ include {MAKEFILE_HAX}
     )
 }
 
-pub fn generate(
-    out_dir: &Path,
-    extract_command: Option<&str>,
-    message_format: MessageFormat,
-) -> bool {
+pub fn generate(out_dir: &Path, extract_command: &str, message_format: MessageFormat) -> bool {
     let makefile = out_dir.join(MAKEFILE);
     let ownership = match std::fs::read_to_string(&makefile) {
         Ok(contents) => classify(&contents),
@@ -77,7 +97,7 @@ pub fn generate(
         message_format,
     );
     if ownership == Ownership::Absent {
-        let contents = user_makefile_contents(extract_command.unwrap_or(DEFAULT_EXTRACT_COMMAND));
+        let contents = user_makefile_contents(extract_command);
         error |= write_always(&makefile, &contents, message_format);
     }
     error
@@ -103,6 +123,8 @@ mod tests {
             "include Makefile.hax\n",
             "ADMIT_MODULES ?= A.fst\ninclude Makefile.hax\n",
             "include other.mk Makefile.hax",
+            "include\tMakefile.hax",
+            "include ./Makefile.hax",
         ] {
             assert_eq!(classify(line), Ownership::Ours, "for {line:?}");
         }
@@ -116,6 +138,7 @@ mod tests {
             "# include Makefile.hax\nall:\n\techo hand-written\n",
             "all:\n\techo hand-written\n",
             "include Makefile.hax.bak",
+            "includeMakefile.hax",
         ] {
             assert_eq!(classify(contents), Ownership::Theirs, "for {contents:?}");
         }
@@ -137,12 +160,36 @@ mod tests {
         );
     }
 
+    #[test]
+    fn the_invocation_is_quoted_back_as_the_command_that_reproduces_it() {
+        let args = |args: &[&str]| {
+            command_of_args(&args.iter().map(ToString::to_string).collect::<Vec<_>>())
+        };
+        assert_eq!(args(&["into", "fstar"]), "cargo hax into fstar");
+        assert_eq!(
+            args(&[
+                "-C",
+                "-p",
+                "mycrate",
+                ";",
+                "into",
+                "fstar",
+                "--interfaces",
+                "+**"
+            ]),
+            "cargo hax -C -p mycrate ';' into fstar --interfaces '+**'"
+        );
+        // A `__json` re-entry says nothing about how it was reached.
+        assert_eq!(args(&["__json"]), DEFAULT_EXTRACT_COMMAND);
+        assert_eq!(args(&[]), DEFAULT_EXTRACT_COMMAND);
+    }
+
     fn scaffold(existing: Option<&str>) -> (tempfile::TempDir, bool) {
         let dir = tempfile::tempdir().unwrap();
         if let Some(contents) = existing {
             std::fs::write(dir.path().join(MAKEFILE), contents).unwrap();
         }
-        let error = generate(dir.path(), None, MessageFormat::Human);
+        let error = generate(dir.path(), DEFAULT_EXTRACT_COMMAND, MessageFormat::Human);
         (dir, error)
     }
 
@@ -170,7 +217,11 @@ mod tests {
         assert!(!error);
         std::fs::write(dir.path().join(MAKEFILE_HAX), "stale\n").unwrap();
 
-        assert!(!generate(dir.path(), None, MessageFormat::Human));
+        assert!(!generate(
+            dir.path(),
+            DEFAULT_EXTRACT_COMMAND,
+            MessageFormat::Human
+        ));
         assert_eq!(read(dir.path(), MAKEFILE).as_deref(), Some(edited));
         assert_eq!(
             read(dir.path(), MAKEFILE_HAX).as_deref(),
@@ -196,7 +247,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         assert!(!generate(
             dir.path(),
-            Some("cargo hax extract barrett"),
+            "cargo hax extract barrett",
             MessageFormat::Human
         ));
         assert!(

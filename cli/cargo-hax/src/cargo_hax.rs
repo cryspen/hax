@@ -376,16 +376,21 @@ fn run_engine(
         serde_json::to_writer(std::io::BufWriter::new(std::io::stdout()), &output).unwrap()
     }
 
-    if matches!(backend.backend, Backend::Fstar(_)) && !backend.dry_run && produced_any {
-        let crate_dir = project
-            .and_then(|project| project.root_package.as_ref())
-            .map(|package| package.dir.clone());
-        let project_files = match (project, &crate_dir) {
-            (Some(project), Some(crate_dir)) => project_files::enabled(project, crate_dir),
-            _ => true,
-        };
+    if let Backend::Fstar(fstar_options) = &backend.backend
+        && !backend.dry_run
+        && produced_any
+    {
+        let project_files = fstar_options
+            .scenario
+            .project_files
+            .unwrap_or_else(|| project.is_none_or(project_files::enabled));
         if project_files {
-            error |= fstar::generate(&out_dir, None, message_format);
+            let extract_command = fstar_options
+                .scenario
+                .extract_command
+                .clone()
+                .unwrap_or_else(fstar::invocation_command);
+            error |= fstar::generate(&out_dir, &extract_command, message_format);
         }
     }
     if !output.debug_json.is_empty() {
