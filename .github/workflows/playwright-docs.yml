@@ -28,7 +28,11 @@ jobs:
       working-directory: docs/.test
       run: npx playwright install --with-deps
     - name: Replace version with commit hash
-      run: sed -i "s/const HAX_PLAYGROUND_FORCED_VERSION = false;/const HAX_PLAYGROUND_FORCED_VERSION = \"${GITHUB_SHA}\";/" hax_playground.js
+      run: |
+        js=hax_playground.js
+        grep -q 'const HAX_PLAYGROUND_FORCED_VERSION = false;' "$js" \
+          || { echo "::error::no HAX_PLAYGROUND_FORCED_VERSION line to replace in $js"; exit 1; }
+        sed -i "s/const HAX_PLAYGROUND_FORCED_VERSION = false;/const HAX_PLAYGROUND_FORCED_VERSION = \"${GITHUB_SHA}\";/" "$js"
       working-directory: docs/javascripts
     - name: Playground warmup and build docs
       run: |

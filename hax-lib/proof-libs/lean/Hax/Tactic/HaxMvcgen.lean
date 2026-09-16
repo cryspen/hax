@@ -1,5 +1,14 @@
 import Hax.Tactic.HaxMvcgenAt
 
+/-!
+
+# `hax_mvcgen`
+
+This file implements a tactic `hax_mvcgen` that automatically runs `mvcgen` on
+both goals and hypotheses containing `Triple`s.
+
+-/
+
 set_option autoImplicit true
 
 open Lean Std.Do Elab Parser Tactic Meta

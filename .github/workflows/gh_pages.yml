@@ -43,7 +43,14 @@ jobs:
           # The manual includes sections of the readme as snippets, so the
           # readme must come from the same release.
           cp /tmp/hax-release/README.md README.md
-          git add -A docs/manual README.md # For nix to pick up the replacement
+          # The playable snippets of the manual must be run by the very hax
+          # version they document.
+          js=docs/javascripts/hax_playground.js
+          commit="$(git -C /tmp/hax-release rev-parse HEAD)"
+          grep -q 'const HAX_PLAYGROUND_FORCED_VERSION = false;' "$js" \
+            || { echo "::error::no HAX_PLAYGROUND_FORCED_VERSION line to replace in $js"; exit 1; }
+          sed -i "s/const HAX_PLAYGROUND_FORCED_VERSION = false;/const HAX_PLAYGROUND_FORCED_VERSION = \"$commit\";/" "$js"
+          git add -A docs/manual README.md "$js" # For nix to pick up the replacement
       - name: Build documentation
         run: nix build .#docs
       - name: Upload static files as artifact
