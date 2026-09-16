@@ -28,7 +28,7 @@ let math_integers (x: Hax_lib.Int.t_Int)
   let _:Hax_lib.Int.t_Int = x + x in
   let _:Hax_lib.Int.t_Int = x - x in
   let _:Hax_lib.Int.t_Int = x * x in
-  let _:Hax_lib.Int.t_Int = x / x in
+  let _:Hax_lib.Int.t_Int = Rust_primitives.Hax.Int.div x x in
   let _:i16 = Hax_lib.Int.impl_Int__to_i16 x in
   let _:i32 = Hax_lib.Int.impl_Int__to_i32 x in
   let _:i64 = Hax_lib.Int.impl_Int__to_i64 x in

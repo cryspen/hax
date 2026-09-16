@@ -31,7 +31,7 @@ attribute [grind]
   if y == 0 then
     .fail .divisionByZero
   else
-    pure (x / y)
+    pure (Int.tdiv x y)
 @[spec] def neg (x : Int) : RustM Int := pure (-x)
 @[spec] def gt (x y : Int) : RustM Bool := pure (x > y)
 @[spec] def lt (x y : Int) : RustM Bool := pure (x < y)
