@@ -6,7 +6,8 @@ async function get_latest_hax_main() {
     return commits.match(/(.*);refs\/remotes\/origin\/main;/).pop();
 }
 
-// This line should not be edited: it is used in the action `playwright-docs.yml`.
+// This line should not be edited: it is used in the actions `gh_pages.yml` and
+// `playwright-docs.yml`.
 const HAX_PLAYGROUND_FORCED_VERSION = false;
 
 // Call into the API of the hax playground
