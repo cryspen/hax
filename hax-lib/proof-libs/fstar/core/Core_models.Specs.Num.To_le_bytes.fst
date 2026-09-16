@@ -1,18 +1,12 @@
 module Core_models.Specs.Num.To_le_bytes
 
-/// Behavioural contract of the `to_le_bytes` integer models, which extract the
-/// bytes with shifts rather than routing through a primitive.
-///
-/// Every lemma here is a proof obligation, not runtime code: the file exists so
-/// that a `to_le_bytes` model whose bytes consumers cannot name is a build
-/// failure rather than a silently unusable model.
+/// Byte `b` of a `to_le_bytes` model is `(x >> 8b) mod 256`.
 
 open FStar.Mul
 open Rust_primitives
 
 #push-options "--fuel 0 --ifuel 1 --z3rlimit 50"
 
-/// Byte `b` of the little-endian encoding is `(x >> 8b) mod 256`.
 let to_le_bytes_u64_index (x: u64) (b: nat{b < 8})
     : Lemma
       (ensures

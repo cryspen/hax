@@ -1,42 +1,23 @@
 module Core_models.Specs.Num.Count_ones
 
-/// Behavioural contract of the `count_ones` integer models, which sum the bits
-/// of their argument rather than routing through a primitive.
+/// The `count_ones` models are bounded by their type's width, and at `u8` equal
+/// the popcount.
 ///
-/// Every lemma here is a proof obligation, not runtime code. The bound lemmas
-/// also stand in for the refinement the old `Rust_primitives.Arithmetic`
-/// primitives carried in their type (`r: u32{v r <= 8}` and friends), which a
-/// modelled body cannot express in its return type.
-///
-/// The popcount equality is stated for `u8` only. It is proved by unfolding the
-/// model's `fold_range` once per bit, which is cheap at width 8 and does not
-/// scale: at width 32 the same proof runs for minutes and then fails.
-///
-/// The obvious fix — induct on the fold's start index instead, so the cost is
-/// width-independent — does not work, and the reason is worth recording. The
-/// step is
-///
-///   fold_range s w inv acc f == fold_range (s +! 1) w inv (f acc s) f
-///
-/// which is `fold_range`'s own body, but it is not provable at any fuel. `f`'s
-/// type mentions `start` (`fold_range_wf_index start end_ true (v i)`), so the
-/// `f` in the recursive call is re-typed at `s + 1`: the two occurrences are not
-/// the same term to Z3, and closing the gap needs functional extensionality.
-/// Widening this therefore wants a characterisation lemma for `fold_range` in
-/// `Rust_primitives.Hax.Folds` — where the step can be related pointwise, as a
-/// `Lemma` argument — not more fuel and not a cleverer statement here.
+/// The popcount proof unfolds `fold_range` once per bit, so it does not scale
+/// past width 8. Inducting on the fold's start index instead is not provable at
+/// any fuel: `f`'s type mentions `start`, so the two occurrences of `f` in the
+/// step are not the same term to Z3. Widening this wants a characterisation
+/// lemma for `fold_range` in `Rust_primitives.Hax.Folds`, not more fuel.
 
 open FStar.Mul
 open Rust_primitives
 
-/// Number of set bits of a natural, peeling from the low end. This is the shape
-/// consumers state popcount facts in.
+/// Number of set bits of a natural, peeling from the low end.
 let rec popcount (n: nat) : Tot nat (decreases n) =
   if n = 0 then 0 else n % 2 + popcount (n / 2)
 
-/// Sum of bits `s .. k-1` of `n`. Deliberately recursive on the *low* index, so
-/// that it unfolds in lockstep with the `fold_range` the models extract to
-/// (which recurses by advancing its start index).
+/// Sum of bits `s .. k-1` of `n`, recursive on the *low* index so that it
+/// unfolds in lockstep with the models' `fold_range`.
 let rec bitsum (n: nat) (s: nat) (k: nat{s <= k}) : Tot nat (decreases k - s) =
   if s = k then 0 else (n / pow2 s) % 2 + bitsum n (s + 1) k
 
@@ -77,9 +58,8 @@ let bit_test (#t: inttype) (x: int_t t) (i: u32{v i < bits t})
   = assert_norm (pow2 1 == 2);
     logand_mask_lemma #t (x >>! i) 1
 
-/// The models' `fold_range` invariant bounds the accumulator by the bit index,
-/// so the result never exceeds the width. This is what the old
-/// `Rust_primitives.Arithmetic.count_ones_*` primitives said in their type.
+/// The `fold_range` invariant bounds the accumulator by the bit index, so the
+/// result never exceeds the width.
 let count_ones_u8_bound (x: u8) : Lemma (v (Core_models.Num.impl_u8__count_ones x) <= 8) = ()
 
 let count_ones_u16_bound (x: u16) : Lemma (v (Core_models.Num.impl_u16__count_ones x) <= 16) = ()

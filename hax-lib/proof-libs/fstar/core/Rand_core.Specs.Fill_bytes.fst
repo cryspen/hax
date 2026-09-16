@@ -1,16 +1,9 @@
 module Rand_core.Specs.Fill_bytes
 
-/// Usable form of the `RngCore` trait contract.
-///
-/// The implementations are external — there is no randomness to model — so the
-/// trait's `requires`/`ensures` IS the specification, and what a consumer needs
-/// is to be able to *use* it. hax puts both on the class fields as refinements
-/// (`pred: Type0{true ==> pred}` for a `requires true`, and
-/// `pred: Type0{pred ==> …}` for an `ensures`), which typeclass projection at a
-/// call site otherwise hides from Z3.
-///
-/// Every lemma here discharges from those refinements and carries an SMTPat, so
-/// call sites get the contract for free instead of assuming it.
+/// The `RngCore` contract in usable form. Its implementations are external, so
+/// the trait's `requires`/`ensures` is the specification; hax puts it on the
+/// class fields as refinements, which typeclass projection hides from Z3. The
+/// SMTPats hand it back to call sites.
 
 open FStar.Mul
 open Rust_primitives
