@@ -8459,36 +8459,48 @@ impl_def num.error.TryFromIntError.Insts.CoreCmpPartialEqTryFromIntError
 @[global_simps, irreducible] def num.U128.MIN : Std.U128 := 0#u128
 -/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::u8}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57
     Visibility: public -/
 @[global_simps, irreducible] def num.U8.BITS : Std.U32 := 8#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::u16}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57
     Visibility: public -/
 @[global_simps, irreducible] def num.U16.BITS : Std.U32 := 16#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::u32}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57
     Visibility: public -/
 @[global_simps, irreducible] def num.U32.BITS : Std.U32 := 32#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::u64}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57
     Visibility: public -/
 @[global_simps, irreducible] def num.U64.BITS : Std.U32 := 64#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::u128}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57
     Visibility: public -/
 @[global_simps, irreducible] def num.U128.BITS : Std.U32 := 128#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::usize}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57
     Visibility: public -/
 @[global_simps, irreducible]
 def num.Usize.BITS : RustM Std.U32 := rust_primitives.arithmetic.SIZE_BITS
+-/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::u8}::wrapping_add]:
     Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13
@@ -10326,36 +10338,48 @@ def num.Usize.wrapping_neg (x : Std.Usize) : RustM Std.Usize := do
 def num.I128.MIN : Std.I128 := (-170141183460469231731687303715884105728)#i128
 -/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::i8}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 297:12-297:57
     Visibility: public -/
 @[global_simps, irreducible] def num.I8.BITS : Std.U32 := 8#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::i16}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 297:12-297:57
     Visibility: public -/
 @[global_simps, irreducible] def num.I16.BITS : Std.U32 := 16#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::i32}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 297:12-297:57
     Visibility: public -/
 @[global_simps, irreducible] def num.I32.BITS : Std.U32 := 32#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::i64}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 297:12-297:57
     Visibility: public -/
 @[global_simps, irreducible] def num.I64.BITS : Std.U32 := 64#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::i128}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 297:12-297:57
     Visibility: public -/
 @[global_simps, irreducible] def num.I128.BITS : Std.U32 := 128#u32
+-/  -- provided by CoreModels.Core.FunsPrologue
 
+/-
 /-- [core_models::num::{core_models::num::isize}::BITS]
     Source: 'core-models/src/core/num/mod.rs', lines 297:12-297:57
     Visibility: public -/
 @[global_simps, irreducible]
 def num.Isize.BITS : RustM Std.U32 := rust_primitives.arithmetic.SIZE_BITS
+-/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::i128}::wrapping_add]:
     Source: 'core-models/src/core/num/mod.rs', lines 298:12-300:13
@@ -12364,169 +12388,169 @@ def num.Isize.wrapping_neg (x : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.wrapping_sub_isize 0#isize x
 
 /-- [core_models::num::{impl core_models::default::Default for u8}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def U8.Insts.CoreDefaultDefault.default : RustM Std.U8 := do
   ok 0#u8
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u8}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def U8.Insts.CoreDefaultDefault : default.Default Std.U8 := {
   default := U8.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for u16}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def U16.Insts.CoreDefaultDefault.default : RustM Std.U16 := do
   ok 0#u16
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u16}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def U16.Insts.CoreDefaultDefault : default.Default Std.U16 := {
   default := U16.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for u32}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def U32.Insts.CoreDefaultDefault.default : RustM Std.U32 := do
   ok 0#u32
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u32}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def U32.Insts.CoreDefaultDefault : default.Default Std.U32 := {
   default := U32.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for u64}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def U64.Insts.CoreDefaultDefault.default : RustM Std.U64 := do
   ok 0#u64
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u64}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def U64.Insts.CoreDefaultDefault : default.Default Std.U64 := {
   default := U64.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for u128}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def U128.Insts.CoreDefaultDefault.default : RustM Std.U128 := do
   ok 0#u128
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u128}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def U128.Insts.CoreDefaultDefault : default.Default Std.U128 := {
   default := U128.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for usize}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def Usize.Insts.CoreDefaultDefault.default : RustM Std.Usize := do
   ok 0#usize
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for usize}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def Usize.Insts.CoreDefaultDefault : default.Default Std.Usize := {
   default := Usize.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i8}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def I8.Insts.CoreDefaultDefault.default : RustM Std.I8 := do
   ok 0#i8
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i8}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def I8.Insts.CoreDefaultDefault : default.Default Std.I8 := {
   default := I8.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i16}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def I16.Insts.CoreDefaultDefault.default : RustM Std.I16 := do
   ok 0#i16
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i16}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def I16.Insts.CoreDefaultDefault : default.Default Std.I16 := {
   default := I16.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i32}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def I32.Insts.CoreDefaultDefault.default : RustM Std.I32 := do
   ok 0#i32
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i32}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def I32.Insts.CoreDefaultDefault : default.Default Std.I32 := {
   default := I32.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i64}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def I64.Insts.CoreDefaultDefault.default : RustM Std.I64 := do
   ok 0#i64
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i64}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def I64.Insts.CoreDefaultDefault : default.Default Std.I64 := {
   default := I64.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i128}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def I128.Insts.CoreDefaultDefault.default : RustM Std.I128 := do
   ok 0#i128
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i128}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def I128.Insts.CoreDefaultDefault : default.Default Std.I128 := {
   default := I128.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for isize}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 734:16-736:17
+    Source: 'core-models/src/core/num/mod.rs', lines 738:16-740:17
     Visibility: public -/
 def Isize.Insts.CoreDefaultDefault.default : RustM Std.Isize := do
   ok 0#isize
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for isize}]
-    Source: 'core-models/src/core/num/mod.rs', lines 733:12-737:13 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 737:12-741:13 -/
 @[reducible]
 def Isize.Insts.CoreDefaultDefault : default.Default Std.Isize := {
   default := Isize.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for bool}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 760:4-762:5
+    Source: 'core-models/src/core/num/mod.rs', lines 764:4-766:5
     Visibility: public -/
 def Bool.Insts.CoreDefaultDefault.default : RustM Bool := do
   ok false
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for bool}]
-    Source: 'core-models/src/core/num/mod.rs', lines 758:0-763:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 762:0-767:1 -/
 @[reducible]
 def Bool.Insts.CoreDefaultDefault : default.Default Bool := {
   default := Bool.Insts.CoreDefaultDefault.default

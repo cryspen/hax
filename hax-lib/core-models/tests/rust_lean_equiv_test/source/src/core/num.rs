@@ -105,6 +105,17 @@ pub fn test_i32_max() -> bool {
     i32::MAX == 2147483647i32
 }
 
+// The pointer-sized widths, which the model pins at 64 bits.
+#[rust_lean_test]
+pub fn test_usize_bits() -> bool {
+    usize::BITS == 64u32
+}
+
+#[rust_lean_test]
+pub fn test_isize_bits() -> bool {
+    isize::BITS == 64u32
+}
+
 // =============================================================================
 // wrapping_add
 // =============================================================================

@@ -662,6 +662,9 @@ uint_impl! {
     core::primitive::usize,
     usize,
     USIZE_MAX,
+    // A const-ref, not a literal, so `usize::BITS` extracts as `RustM _` while
+    // a consumer's `usize::BITS` is pure. `patch_lean.py` drops the extracted
+    // definition in favour of the pure `CoreModels.Core.FunsPrologue` one.
     SIZE_BITS,
     SIZE_BYTES,
 }
@@ -722,6 +725,7 @@ iint_impl! {
     isize,
     ISIZE_MAX,
     ISIZE_MIN,
+    // Extracts as `RustM _`; see the `usize` note above.
     SIZE_BITS,
     SIZE_BYTES,
 }

@@ -356,38 +356,44 @@ def qualify_result_monad_impls(text: str) -> str:
     return transform_blocks(text, fn)
 
 
-def desugar_pure_num_bound_binds(text: str) -> str:
-    """The generated `Funs.lean` uses monadic bind syntax to fetch numeric
-    bounds:
+def desugar_pure_num_const_binds(text: str) -> str:
+    """The generated `Funs.lean` uses monadic bind syntax to fetch the integer
+    constants:
 
         let i ← num.Isize.MIN
         let i ← num.U64.MAX
 
-    because in the original Aeneas extraction those bounds are `RustM <T>`
-    (computed via `rust_primitives.arithmetic.<X>_{MIN,MAX}`). Our
-    `Aeneas.Primitives` provides them as PURE values, so the call sites must
-    use `:=` instead of `←`. Rewrite all such bind occurrences.
+    because in the original Aeneas extraction they are `RustM <T>` (computed
+    via `rust_primitives.arithmetic.*`). `comment_out_num_consts` below
+    replaces them with PURE values, so the call sites must use `:=` instead of
+    `←`. Rewrite all such bind occurrences.
     """
     int_alt = "(?:U8|U16|U32|U64|U128|Usize|I8|I16|I32|I64|I128|Isize)"
     pat = re.compile(
-        rf"(let\s+\w+)\s+←\s+(num\.{int_alt}\.(?:MIN|MAX))\b"
+        rf"(let\s+\w+)\s+←\s+(num\.{int_alt}\.(?:MIN|MAX|BITS))\b"
     )
     new, n = pat.subn(r"\1 := \2", text)
-    _record("desugar_pure_num_bound_binds", n)
+    _record("desugar_pure_num_const_binds", n)
     return new
 
 
-def comment_out_num_bounds(text: str) -> str:
-    """Aeneas extracts `core.num.<X>.MIN/MAX` as a mix of pure literals and
-    monadic axioms (depending on whether the bound is computable). We
-    forward-declare them all as PURE in `FunsPrologue` so that earlier
-    code in `Funs.lean` (which references them via `IScalar.cast`) can find
-    them. The duplicates that follow in `Funs.lean` must be commented out.
+def comment_out_num_consts(text: str) -> str:
+    """Aeneas extracts `core.num.<X>.{MIN,MAX,BITS}` as a mix of pure literals
+    and monadic definitions, depending on whether the model spells the value as
+    a literal or as a reference to a `rust_primitives` const (as the
+    pointer-sized types must). A consumer's `<int>::{MIN,MAX,BITS}`, however, is
+    always the PURE `Aeneas.Std.core.num.<X>.*`, so a monadic one here fails to
+    unify with every extracted crate that mentions it.
+
+    `FunsPrologue` therefore declares all of them as pure -- which also puts
+    them ahead of the earlier code in `Funs.lean` that references them via
+    `IScalar.cast`. The duplicates that follow in `Funs.lean` are commented out
+    here.
     """
     types = ("u8", "u16", "u32", "u64", "u128", "usize",
              "i8", "i16", "i32", "i64", "i128", "isize")
-    subs = [f"{{core_models::num::{t}}}::{b}"
-            for t in types for b in ("MIN", "MAX")]
+    subs = [f"{{core_models::num::{t}}}::{c}"
+            for t in types for c in ("MIN", "MAX", "BITS")]
     return comment_out_blocks(text, subs, trailer="provided by CoreModels.Core.FunsPrologue")
 
 def drop_itermut_iterator_instance(text: str) -> str:
@@ -696,8 +702,8 @@ def main() -> int:
         if path == funs_path:
             text = fix_fail_panic(text)
             text = add_funs_prologue_import(text)
-            text = comment_out_num_bounds(text)
-            text = desugar_pure_num_bound_binds(text)
+            text = comment_out_num_consts(text)
+            text = desugar_pure_num_const_binds(text)
             text = fix_result_match(text)
             text = rename_iter_param(text)
             text = qualify_result_monad_impls(text)

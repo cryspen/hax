@@ -311,15 +311,22 @@ def mem.swap :=
 def mem.replace :=
   fun {T} x y => Aeneas.Std.RustM.ok (@Aeneas.Std.core.mem.replace T x y)
 
-/-! ## Redirects to Aeneas's library -/
+/-! ## Redirects to Aeneas's library
+
+The `num.<X>.{MIN,MAX,BITS}` re-exports below stand in for the definitions the
+model would otherwise generate (`patch_lean.py` comments those out). They have
+to be pure values rather than `RustM _`, because that is how an extracted
+consumer of `<int>::{MIN,MAX,BITS}` refers to them; a monadic definition here
+would not unify at any such use site. -/
 
 export Aeneas.Std.core (
-  num.U8.MIN num.U8.MAX num.I8.MIN num.I8.MAX
-  num.U16.MIN num.U16.MAX num.I16.MIN num.I16.MAX
-  num.U32.MIN num.U32.MAX num.I32.MIN num.I32.MAX
-  num.U64.MIN num.U64.MAX num.I64.MIN num.I64.MAX
-  num.U128.MIN num.U128.MAX num.I128.MIN num.I128.MAX
-  num.Usize.MIN num.Usize.MAX num.Isize.MIN num.Isize.MAX
+  num.U8.MIN num.U8.MAX num.U8.BITS num.I8.MIN num.I8.MAX num.I8.BITS
+  num.U16.MIN num.U16.MAX num.U16.BITS num.I16.MIN num.I16.MAX num.I16.BITS
+  num.U32.MIN num.U32.MAX num.U32.BITS num.I32.MIN num.I32.MAX num.I32.BITS
+  num.U64.MIN num.U64.MAX num.U64.BITS num.I64.MIN num.I64.MAX num.I64.BITS
+  num.U128.MIN num.U128.MAX num.U128.BITS num.I128.MIN num.I128.MAX num.I128.BITS
+  num.Usize.MIN num.Usize.MAX num.Usize.BITS
+  num.Isize.MIN num.Isize.MAX num.Isize.BITS
   convert.num.FromU16U8.from
   convert.num.FromU32U8.from
   convert.num.FromU32U16.from
