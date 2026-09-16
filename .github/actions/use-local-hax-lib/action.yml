@@ -42,19 +42,35 @@ runs:
           exit 1
         fi
 
+        # The flags naming the table an edge lives in, shared by `cargo remove`
+        # and `cargo add`.
+        table() {
+          flags=()
+          case "$1" in
+            dev) flags+=(--dev) ;;
+            build) flags+=(--build) ;;
+          esac
+          [ "$2" = "-" ] || flags+=(--target "$2")
+        }
+
+        # Cargo rejects a manifest that gives one crate two sources, so a crate
+        # a member declares in several tables has to leave all of them first.
+        duplicates=$(cut -f1,2 <<<"$edges" | uniq -d)
+        while IFS=$'\t' read -r member dep kind target _ _; do
+          grep -qxF "$(printf '%s\t%s' "$member" "$dep")" <<<"$duplicates" || continue
+          table "$kind" "$target"
+          cargo remove "$dep" -p "$member" ${flags[@]+"${flags[@]}"} --quiet
+        done <<<"$edges"
+
         while IFS=$'\t' read -r member dep kind target defaults features; do
           path=$(awk -v d="$dep" '$1 == d {print $2}' <<<"$crates")
           if [ -z "$path" ]; then
             echo "::error::$member depends on $dep, which $hax does not provide"
             exit 1
           fi
-          flags=()
-          case "$kind" in
-            dev) flags+=(--dev) ;;
-            build) flags+=(--build) ;;
-          esac
+          table "$kind" "$target"
           label="$kind"
-          [ "$target" = "-" ] || { flags+=(--target "$target"); label="$kind, $target"; }
+          [ "$target" = "-" ] || label="$kind, $target"
           # Rewriting the edge replaces whatever it inherited from the
           # workspace, so its feature selection has to be restated here.
           [ "$defaults" = true ] || flags+=(--no-default-features)
