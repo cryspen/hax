@@ -2,6 +2,15 @@ import Lean
 import Aeneas
 import Hax.MissingLean
 
+/-!
+
+# `hax_mvcgen at`
+
+This file implements a tactic `hax_mvcgen at h` that runs `mvcgen` on `Triple`s
+occurring in a hypothesis `h`.
+
+-/
+
 set_option autoImplicit true
 
 open Lean Std.Do Elab Parser Tactic Meta Aeneas Std

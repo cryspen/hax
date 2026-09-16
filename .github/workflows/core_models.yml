@@ -116,6 +116,8 @@ jobs:
     needs: [rust-fmt]   # don't waste cycles on a formatting-broken PR
     steps:
       - uses: actions/checkout@v5
+      - name: Free disk space by removing preinstalled packages
+        uses: jlumbroso/free-disk-space@main
 
       # ---- hax, built from this checkout; it downloads charon and aeneas
       # into its own tool cache. Same setup as `fstar-build` below and as the

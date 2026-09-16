@@ -2,6 +2,14 @@ import Aeneas
 import CoreModels.Core
 import Hax.MissingLean
 
+/-!
+
+# Missing Aeneas
+
+Material that should eventually be upstreamed into Aeneas.
+
+-/
+
 namespace Aeneas.Std
 open Std.Do
 
