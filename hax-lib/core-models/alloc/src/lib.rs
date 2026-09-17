@@ -10,21 +10,13 @@ mod testing {
         fn inject(&self) -> Self::Model;
     }
 
-    /// Ordered by `key` alone, so two `Tagged`s can compare equal and still be
-    /// told apart by `tag`. `PartialEq` has to agree with `Ord`, which rules
-    /// out deriving it over both fields.
+    /// A `key` to order by and a `tag` identifying the element, so that where
+    /// two elements compare equal, a test can still tell which one it got.
     #[derive(Clone, Copy, Debug)]
     pub struct Tagged {
         pub key: u8,
         pub tag: usize,
     }
-
-    impl PartialEq for Tagged {
-        fn eq(&self, other: &Self) -> bool {
-            self.key == other.key
-        }
-    }
-    impl Eq for Tagged {}
 
     /// Asserts the model and real `alloc` both panic on the same input.
     #[track_caller]
@@ -638,7 +630,12 @@ mod slice {
                 let mut std_slice = v;
                 super::Dummy::<Tagged>::sort_by(&mut model[..], by_key);
                 std_slice.sort_by(by_key);
-                prop_assert_eq!(model, std_slice);
+                // Tags, not the values: `Tagged` compares by `key` alone, so
+                // comparing the slices would accept any order within a tie.
+                prop_assert_eq!(
+                    model.iter().map(|t| t.tag).collect::<Vec<_>>(),
+                    std_slice.iter().map(|t| t.tag).collect::<Vec<_>>()
+                );
             }
         }
 
