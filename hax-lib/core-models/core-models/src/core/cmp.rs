@@ -36,6 +36,14 @@ pub enum Ordering {
     Greater = 1,
 }
 
+/// See [`std::fmt::Debug`] for [`Ordering`]
+#[cfg(not(hax_backend_fstar))]
+impl crate::fmt::Debug for Ordering {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
 /// See [`std::cmp::PartialOrd`]
 #[hax_lib::attributes]
 pub trait PartialOrd<Rhs>: PartialEq<Rhs>
@@ -368,6 +376,17 @@ mod tests {
     use super::{Ord, Ordering, PartialEq, PartialOrd};
     use crate::testing::Inject;
     use proptest::prelude::*;
+
+    /// `Debug` for `Ordering` renders nothing, like every other `Debug` in the
+    /// model.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_ordering_debug() {
+        let mut f = crate::fmt::Formatter;
+        for o in [Ordering::Less, Ordering::Equal, Ordering::Greater] {
+            assert!(crate::fmt::Debug::fmt(&o, &mut f).is_ok());
+        }
+    }
 
     proptest! {
         // Ints don't override `ne`, so this exercises the trait's default.

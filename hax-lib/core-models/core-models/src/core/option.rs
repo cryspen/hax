@@ -12,6 +12,14 @@ use super::default::Default;
 use super::result::Result::*;
 use super::result::*;
 
+/// See [`std::fmt::Debug`] for [`Option`]
+#[cfg(not(hax_backend_fstar))]
+impl<T: crate::fmt::Debug> crate::fmt::Debug for Option<T> {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        crate::fmt::Result::Ok(())
+    }
+}
+
 #[hax_lib::attributes]
 impl<T> Option<T> {
     /// See [`std::option::Option::is_some`]
@@ -344,6 +352,16 @@ impl<T> crate::ops::try_trait::FromResidual<Option<crate::convert::Infallible>> 
 mod tests {
     use crate::testing::Inject;
     use proptest::prelude::*;
+
+    /// `Debug` for `Option` renders nothing, like every other `Debug` in the
+    /// model.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_option_debug() {
+        let mut f = crate::fmt::Formatter;
+        assert!(crate::fmt::Debug::fmt(&super::Some(1u8), &mut f).is_ok());
+        assert!(crate::fmt::Debug::fmt(&super::Option::<u8>::None, &mut f).is_ok());
+    }
 
     // `as_mut` is `cfg(not(hax_backend_fstar))` (F* cannot model a `&mut`
     // return), so its test has to carry the same gate.

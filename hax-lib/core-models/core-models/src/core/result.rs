@@ -12,6 +12,14 @@ use super::clone::Clone;
 use super::default::Default;
 use super::option::Option;
 
+/// See [`std::fmt::Debug`] for [`Result`]
+#[cfg(not(hax_backend_fstar))]
+impl<T: super::fmt::Debug, E: super::fmt::Debug> super::fmt::Debug for Result<T, E> {
+    fn fmt(&self, f: &mut super::fmt::Formatter) -> super::fmt::Result {
+        super::fmt::Result::Ok(())
+    }
+}
+
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
     /// See [`std::result::Result::is_ok`]
@@ -488,6 +496,16 @@ mod tests {
     use crate::testing::CloneWitness;
     use crate::testing::Inject;
     use proptest::prelude::*;
+
+    /// `Debug` for `Result` renders nothing, like every other `Debug` in the
+    /// model.
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_result_debug() {
+        let mut f = crate::fmt::Formatter;
+        assert!(crate::fmt::Debug::fmt(&super::Ok::<u8, u8>(1), &mut f).is_ok());
+        assert!(crate::fmt::Debug::fmt(&super::Err::<u8, u8>(1), &mut f).is_ok());
+    }
 
     proptest! {
         #[cfg(not(hax_backend_fstar))]

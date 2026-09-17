@@ -112,6 +112,14 @@ impl<T: Debug + ?Sized> Debug for &T {
     }
 }
 
+/// See [`std::fmt::Debug`] for [`Error`]
+#[cfg(not(hax_backend_fstar))]
+impl Debug for Error {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        Result::Ok(())
+    }
+}
+
 /// See [`std::fmt::Debug`] for `bool`
 #[cfg(not(hax_backend_fstar))]
 impl Debug for core::primitive::bool {
@@ -123,6 +131,22 @@ impl Debug for core::primitive::bool {
 /// See [`std::fmt::Debug`] for `()`
 #[cfg(not(hax_backend_fstar))]
 impl Debug for () {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        Result::Ok(())
+    }
+}
+
+/// See [`std::fmt::Debug`] for `str`
+#[cfg(not(hax_backend_fstar))]
+impl Debug for core::primitive::str {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        Result::Ok(())
+    }
+}
+
+/// See [`std::fmt::Debug`] for `[T]`
+#[cfg(not(hax_backend_fstar))]
+impl<T: Debug> Debug for [T] {
     fn fmt(&self, f: &mut Formatter) -> Result {
         Result::Ok(())
     }
@@ -455,6 +479,7 @@ mod tests {
         }
         check(&true);
         check(&());
+        check(&super::Error);
         check(&1u8);
         // `&T` goes through the reference impl, which forwards to `T`'s.
         check(&&1u8);
@@ -469,6 +494,11 @@ mod tests {
         check(&-1i64);
         check(&-1i128);
         check(&-1isize);
+        // `str` and `[T]` are unsized, so they cannot go through `check`.
+        let mut f = Formatter;
+        let s: &[u8] = &[1, 2, 3];
+        assert!(super::Debug::fmt(s, &mut f).is_ok());
+        assert!(super::Debug::fmt("hello", &mut f).is_ok());
     }
 
     macro_rules! display_tests {
