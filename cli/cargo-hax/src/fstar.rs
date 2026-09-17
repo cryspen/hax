@@ -1,5 +1,5 @@
 use hax_types::cli_options::MessageFormat;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use super::project_files::{absent_or_empty, write_always};
 
@@ -67,13 +67,52 @@ pub fn invocation_command() -> String {
     command_of_args(&crate::get_args("hax")[1..])
 }
 
-fn user_makefile_contents(extract_command: &str) -> String {
+/// `to` expressed relative to `from`, both absolute. `None` when they share
+/// no prefix to walk up to, which an absolute path in a committed file
+/// would not fix.
+fn relative_to(from: &Path, to: &Path) -> Option<PathBuf> {
+    let common = from
+        .components()
+        .zip(to.components())
+        .take_while(|(a, b)| a == b)
+        .count();
+    if common == 0 {
+        return None;
+    }
+    let up = from.components().skip(common).map(|_| "..");
+    let down = to.components().skip(common).map(|c| c.as_os_str());
+    let path: PathBuf = up.map(std::ffi::OsStr::new).chain(down).collect();
+    Some(if path.as_os_str().is_empty() {
+        PathBuf::from(".")
+    } else {
+        path
+    })
+}
+
+/// The directory `make` must run the recorded command from: the one hax was
+/// invoked in, so that relative paths in it resolve as they did.
+fn extract_dir(out_dir: &Path) -> PathBuf {
+    let absolute = |p: &Path| {
+        std::path::absolute(p)
+            .unwrap_or_else(|_| p.to_path_buf())
+            .components()
+            .collect::<PathBuf>()
+    };
+    std::env::current_dir()
+        .ok()
+        .and_then(|cwd| relative_to(&absolute(out_dir), &absolute(&cwd)))
+        .unwrap_or_else(|| PathBuf::from("."))
+}
+
+fn user_makefile_contents(extract_command: &str, extract_dir: &Path) -> String {
+    let extract_dir = extract_dir.display();
     format!(
         "\
 ADMIT_MODULES ?=
 FSTAR_INCLUDE_DIRS_EXTRA ?=
 FSTAR_FLAGS_EXTRA ?=
 HAX_EXTRACT_COMMAND ?= {extract_command}
+HAX_EXTRACT_DIR ?= {extract_dir}
 
 include {MAKEFILE_HAX}
 "
@@ -97,7 +136,7 @@ pub fn generate(out_dir: &Path, extract_command: &str, message_format: MessageFo
         message_format,
     );
     if ownership == Ownership::Absent {
-        let contents = user_makefile_contents(extract_command);
+        let contents = user_makefile_contents(extract_command, &extract_dir(out_dir));
         error |= write_always(&makefile, &contents, message_format);
     }
     error
@@ -146,9 +185,28 @@ mod tests {
 
     #[test]
     fn the_user_makefile_names_the_command_that_reproduces_the_extraction() {
-        let contents = user_makefile_contents("cargo hax extract chacha20");
+        let contents = user_makefile_contents("cargo hax extract chacha20", Path::new("../../.."));
         assert!(contents.contains("HAX_EXTRACT_COMMAND ?= cargo hax extract chacha20"));
+        // `make` runs from the extraction directory, so a relative path in
+        // the command needs the directory it was given in.
+        assert!(contents.contains("HAX_EXTRACT_DIR ?= ../../.."));
         assert_eq!(classify(&contents), Ownership::Ours);
+    }
+
+    #[test]
+    fn the_extraction_directory_is_named_relative_to_the_output() {
+        let rel = |from: &str, to: &str| {
+            relative_to(Path::new(from), Path::new(to)).map(|p| p.display().to_string())
+        };
+        assert_eq!(
+            rel("/ws/proofs/fstar/extraction", "/ws").as_deref(),
+            Some("../../..")
+        );
+        assert_eq!(rel("/ws", "/ws").as_deref(), Some("."));
+        assert_eq!(rel("/ws/a", "/ws/b").as_deref(), Some("../b"));
+        // Nothing in common: no relative path, and an absolute one would be
+        // wrong in a committed file.
+        assert_eq!(rel("/a", "/b").as_deref(), Some("../b"));
     }
 
     #[test]

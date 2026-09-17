@@ -239,6 +239,7 @@ fn run_engine(
         relative_path.push(backend_name.to_string());
         relative_path.extend(backend_name.output_subdir());
         manifest_dir
+            .as_ref()
             .map(|manifest_dir| manifest_dir.join(&relative_path))
             .unwrap_or(relative_path)
     });
@@ -383,7 +384,12 @@ fn run_engine(
         let project_files = fstar_options
             .scenario
             .project_files
-            .unwrap_or_else(|| project.is_none_or(project_files::enabled));
+            // No project means no `hax.toml` to read the key from, so hax
+            // writes only what it was asked for.
+            .unwrap_or_else(|| {
+                project
+                    .is_some_and(|project| project_files::enabled(project, manifest_dir.as_deref()))
+            });
         if project_files {
             let extract_command = fstar_options
                 .scenario
