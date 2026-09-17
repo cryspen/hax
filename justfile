@@ -65,6 +65,21 @@ fmt:
   cargo fmt
   cd engine && dune fmt
 
+# Type-check the committed F* snapshots. The optional argument narrows to
+# snapshots whose path matches, e.g. `just verify-fstar legacy/tuples`.
+verify-fstar MATCHING='':
+  #!/usr/bin/env bash
+  set -euo pipefail
+  # `--keep-going` reports every failing snapshot, not just the first.
+  make -C tests/verify/fstar -Otarget -j "$(nproc)" --keep-going MATCHING='{{MATCHING}}'
+
+# Type-check the committed Lean snapshots. The optional argument narrows to
+# snapshots whose path matches, e.g. `just verify-lean legacy/tuples`.
+verify-lean MATCHING='':
+  #!/usr/bin/env bash
+  set -euo pipefail
+  make -C tests/verify/lean -Otarget -j "$(nproc)" --keep-going MATCHING='{{MATCHING}}'
+
 # Run hax tests
 test *FLAGS:
   cargo run --release --bin test-driver -- ./tests {{FLAGS}}
