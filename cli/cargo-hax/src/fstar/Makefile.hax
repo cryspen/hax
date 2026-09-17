@@ -133,6 +133,7 @@ all-keep-going:
 	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) --keep-going .depend hax.fst.config.json verify
 
 HAX_AUTO_EXTRACT ?= yes
+HAX_EXTRACT_DIR ?= .
 HAX_EXTRACT_COMMAND ?= cargo hax into fstar
 
 # Goals that describe or tear down the build rather than run it. They must
@@ -140,13 +141,27 @@ HAX_EXTRACT_COMMAND ?= cargo hax into fstar
 NO_BUILD_GOALS := clean help h describe include-dirs
 BUILDING := $(if $(filter $(NO_BUILD_GOALS),$(MAKECMDGOALS)),,yes)
 
+# Run from the directory the recorded command was given in, so that the
+# relative paths it may carry still resolve.
 ifeq "$(BUILDING)$(HAX_AUTO_EXTRACT)" "yesyes"
 ifeq "$(wildcard *.fst *.fsti)" ""
-_ := $(shell $(HAX_EXTRACT_COMMAND) 1>&2)
+HAX_EXTRACT_STATUS := $(shell cd $(HAX_EXTRACT_DIR) && $(HAX_EXTRACT_COMMAND) 1>&2; echo $$?)
+ifneq "$(HAX_EXTRACT_STATUS)" "0"
+$(error `$(HAX_EXTRACT_COMMAND)` failed with status $(HAX_EXTRACT_STATUS))
+endif
 endif
 endif
 
 ROOTS ?= $(wildcard *.fst *.fsti)
+
+# An empty set of roots would make every goal below succeed without checking
+# anything, which is indistinguishable from a passing run.
+ifeq "$(BUILDING)" "yes"
+ifeq "$(strip $(ROOTS))" ""
+$(error no F* module in $(CURDIR): nothing to verify)
+endif
+endif
+
 ADMIT_MODULES ?=
 
 ADMIT_MODULE_FLAGS ?= --admit_smt_queries true

@@ -253,7 +253,7 @@ pub fn run(
     let project_files = options
         .scenario
         .project_files
-        .unwrap_or_else(|| crate::project_files::enabled(project));
+        .unwrap_or_else(|| crate::project_files::enabled(project, None));
     let crate_dir = project.crate_dir();
     let crate_name = project
         .root_package

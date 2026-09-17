@@ -54,9 +54,10 @@ pub fn write_always(path: &Path, contents: &str, message_format: MessageFormat) 
 /// Resolve the `project-files` key for the crate being processed: the
 /// member-level value overrides the workspace-level one, consistent with
 /// the tool version resolution order; the default is enabled.
-pub fn enabled(project: &tools::project::ProjectContext) -> bool {
+pub fn enabled(project: &tools::project::ProjectContext, crate_dir: Option<&Path>) -> bool {
+    let crate_dir = crate_dir.map_or_else(|| project.crate_dir(), Path::to_path_buf);
     project
-        .member_config(&project.crate_dir())
+        .member_config(&crate_dir)
         .and_then(|config| config.project_files)
         .or_else(|| {
             project
@@ -92,8 +93,8 @@ mod tests {
 
     #[test]
     fn a_virtual_workspace_resolves_the_workspace_level_key() {
-        assert!(!enabled(&virtual_workspace(Some(false))));
-        assert!(enabled(&virtual_workspace(Some(true))));
-        assert!(enabled(&virtual_workspace(None)));
+        assert!(!enabled(&virtual_workspace(Some(false)), None));
+        assert!(enabled(&virtual_workspace(Some(true)), None));
+        assert!(enabled(&virtual_workspace(None), None));
     }
 }
