@@ -49,7 +49,7 @@ val impl_Nanoseconds__ZERO: t_Nanoseconds
 val impl_1:Core_models.Default.t_Default t_Nanoseconds
 
 val f_default__impl_1__panic_cold_explicit: Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never Prims.l_True (fun _ -> Prims.l_True)
+  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 type t_NonZeroU8Inner = | NonZeroU8Inner : u8 -> t_NonZeroU8Inner
 

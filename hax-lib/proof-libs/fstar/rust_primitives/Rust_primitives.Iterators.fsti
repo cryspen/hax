@@ -12,16 +12,6 @@ val foldi_range  (#n:inttype) (#acc_t:Type)
                        -> acc':acc_t{inv acc' (i +! mk_int 1)}))
                  : res:acc_t{inv res r.f_end}
 
-val foldi_range_step_by  (#n:inttype) (#acc_t:Type)
-                 (#inv:(acc_t -> i:int_t n -> Type))
-                 (r: t_Range (int_t n){r.f_start <=. r.f_end}) 
-                 (step: usize{v step > 0 /\ range (v step) n /\ range (v r.f_end + v step) n})
-                 (acc:acc_t{inv acc r.f_start})
-                 (f: (acc:acc_t -> i:int_t n{i >=. r.f_start /\ i <. r.f_end /\ 
-                                            (v i - v r.f_start) % (v step) == 0 /\ inv acc i}
-                       -> acc':acc_t{inv acc' (i +! mk_int #n (v step))}))
-                 : res:acc_t{inv res r.f_end}
-
 /// Predicate that asserts a slice `s_chunk` is exactly the nth chunk
 /// of the sequence `s`
 let nth_chunk_of #t

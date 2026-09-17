@@ -231,8 +231,6 @@ FSTAR_HANDWRITTEN = \
     Core_models.Iter.Adapters.Rev.fsti \
     Core_models.Iter.Sources.Repeat_with.fsti \
     Core_models.Iter.Traits.fst \
-    Core_models.Mem.Maybe_uninit.fsti \
-    Core_models.Mem.Transmutability.fsti \
     Core_models.Num.Niche_types.fsti \
     Core_models.Ops.Index.IndexMut.fst \
     Core_models.Str.fsti \
