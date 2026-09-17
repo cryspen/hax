@@ -1363,9 +1363,9 @@ mod tests {
         fn test_slice_cmp_equal_lengths_tie(keys in prop::collection::vec(0u8..3, 0..=6)) {
             use crate::testing::Tagged;
             let a: Vec<Tagged> = keys.iter().enumerate()
-                .map(|(i, &k)| Tagged::new(k, i as u8)).collect();
+                .map(|(i, &k)| Tagged::new(k, i)).collect();
             let b: Vec<Tagged> = keys.iter().enumerate()
-                .map(|(i, &k)| Tagged::new(k, 100 + i as u8)).collect();
+                .map(|(i, &k)| Tagged::new(k, 100 + i)).collect();
             prop_assert_eq!(a[..].cmp(&b[..]), std::cmp::Ordering::Equal);
             prop_assert_eq!(
                 <[Tagged] as crate::cmp::Ord>::cmp(&a[..], &b[..]),

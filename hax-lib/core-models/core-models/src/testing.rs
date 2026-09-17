@@ -164,11 +164,11 @@ impl Inject for CloneWitness {
 #[derive(Clone, Copy, Debug)]
 pub struct Tagged {
     pub key: u8,
-    pub tag: u8,
+    pub tag: usize,
 }
 
 impl Tagged {
-    pub fn new(key: u8, tag: u8) -> Self {
+    pub fn new(key: u8, tag: usize) -> Self {
         Tagged { key, tag }
     }
 }
@@ -224,7 +224,7 @@ pub fn tagged_vec(
     proptest::collection::vec(0u8..3, len).prop_map(|keys| {
         keys.into_iter()
             .enumerate()
-            .map(|(i, key)| Tagged::new(key, i as u8))
+            .map(|(i, key)| Tagged::new(key, i))
             .collect()
     })
 }
