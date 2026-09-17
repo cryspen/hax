@@ -599,6 +599,72 @@ pub fn opaque(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     quote! {#attr #charon #item}.into()
 }
 
+pub fn pv_inline(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    quote! {
+        #[cfg_attr(hax_compilation, _hax::pv_inline)]
+        #item
+    }
+    .into()
+}
+
+pub fn pv_extern(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    let fn_name = item.sig.ident.to_string();
+    let arity = item.sig.inputs.len();
+    let arg_names: Vec<String> = item
+        .sig
+        .inputs
+        .iter()
+        .enumerate()
+        .map(|(i, arg)| match arg {
+            syn::FnArg::Receiver(_) => "self".to_string(),
+            syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) => pat_ident.ident.to_string(),
+                _ => format!("p{i}"),
+            },
+        })
+        .collect();
+    let bitstring_args = std::iter::repeat("bitstring")
+        .take(arity)
+        .collect::<Vec<_>>()
+        .join(", ");
+    let decl = format!("fun extern__{fn_name}({bitstring_args}): bitstring.");
+    let body_call = format!("extern__{fn_name}({})", arg_names.join(", "));
+    let decl_lit = syn::LitStr::new(&decl, ::proc_macro2::Span::call_site());
+    let body_lit = syn::LitStr::new(&body_call, ::proc_macro2::Span::call_site());
+    quote! {
+        #[::hax_lib::proverif::before(#decl_lit)]
+        #[::hax_lib::proverif::replace_body(#body_lit)]
+        #item
+    }
+    .into()
+}
+
+pub fn pv_stub(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let payload: syn::LitStr = parse_macro_input!(attr);
+    let item: ::proc_macro2::TokenStream = item.into();
+    quote! {
+        #[::hax_lib::proverif::replace_body(#payload)]
+        #item
+    }
+    .into()
+}
+
+pub fn pv_inverse_of(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let other_path = parse_macro_input!(attr as syn::Path);
+    let other_str = other_path.to_token_stream().to_string().replace(' ', "");
+    let item_fn: ItemFn = parse_macro_input!(item);
+    let self_name = item_fn.sig.ident.to_string();
+    let body = format!("reduc forall x: bitstring; ${{{self_name}}}(${{{other_str}}}(x)) = x.");
+    let body_lit = syn::LitStr::new(&body, ::proc_macro2::Span::call_site());
+    quote! {
+        #[::hax_lib::proverif::replace(#body_lit)]
+        #item_fn
+    }
+    .into()
+}
+
 pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     let n: LitInt = parse_macro_input!(payload);
     let suffix = n.suffix();

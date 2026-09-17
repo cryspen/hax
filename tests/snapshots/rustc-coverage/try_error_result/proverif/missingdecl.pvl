@@ -1,0 +1,19 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* DIAGNOSTIC, not part of the model. Each symbol below is       *)
+(* referenced by lib.pvl but has no definition (and is not in    *)
+(* primitives.pvl). Define it — by hand or by extracting the     *)
+(* crate that owns it — or deliberately leave it abstract, as an *)
+(* ideal-functionality boundary; a permanent residue can be      *)
+(* correct. Declared WITHOUT `[data]` because the real nature    *)
+(* (one-way fun / data constructor / letfun) is unknown.         *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__try_error_result__main, new_tests__rustc_coverage__try_error_result__test2 *)
+fun core__result__Impl__expect_err(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__try_error_result__Impl_1__call, new_tests__rustc_coverage__try_error_result__test2 *)
+const nat_57: bitstring.
+(* referenced by: new_tests__rustc_coverage__try_error_result__test2 *)
+const string_lit__call_x20should_x20fail: bitstring.
+(* referenced by: new_tests__rustc_coverage__try_error_result__main *)
+const string_lit__test1_x20should_x20fail: bitstring.
