@@ -40,6 +40,12 @@ directory alone: a project that drives F\* its own way keeps doing so. To
 turn the build files off everywhere, set `project-files = false` in your
 `hax.toml`.
 
+The extraction directory holds only what hax writes, and hax removes from
+it whatever an extraction no longer produces. Hand-written F\* that the
+extracted code refers to — a lemma reached through `fstar!(..)`, say —
+belongs in `proofs/fstar/models` beside it, which the `Makefile` puts on
+F\*'s include path.
+
 **What is critical? What is worth verifying?**  
 Probably, your Rust crate contains mixed kinds of code: some parts are
 critical (e.g. the library functions at the core of your crate) while
