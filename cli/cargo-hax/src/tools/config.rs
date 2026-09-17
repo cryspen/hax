@@ -601,7 +601,7 @@ fn parse_scenario(name: &str, value: &toml::Value) -> Result<ScenarioEntry, Stri
                 entry.aeneas_args = string_list(key, value)?;
             }
             "project-files" => {
-                only(lean, key, "")?;
+                only(lean || fstar, key, "")?;
                 entry.project_files = Some(boolean(key, value)?);
             }
             "assume-items" => {
@@ -1011,7 +1011,6 @@ line-width = 120
         for (backend, key) in [
             ("lean", "z3rlimit = 1"),
             ("fstar", "charon-args = []"),
-            ("fstar", "project-files = true"),
             ("fstar", "assume-items = []"),
             ("proverif", "interfaces = []"),
         ] {

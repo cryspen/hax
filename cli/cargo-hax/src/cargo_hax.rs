@@ -381,15 +381,17 @@ fn run_engine(
         && !backend.dry_run
         && produced_any
     {
-        let project_files = fstar_options
-            .scenario
-            .project_files
+        // A scenario resolves its own output directory, so only a flag the
+        // caller passed counts as pointing hax at a directory of their own.
+        let explicit_out_dir =
+            backend.output_dir.is_some() && fstar_options.scenario.extract_command.is_none();
+        let project_files = project_files::wanted(
+            explicit_out_dir,
+            fstar_options.scenario.project_files,
             // No project means no `hax.toml` to read the key from, so hax
             // writes only what it was asked for.
-            .unwrap_or_else(|| {
-                project
-                    .is_some_and(|project| project_files::enabled(project, manifest_dir.as_deref()))
-            });
+            project.is_some_and(|project| project_files::enabled(project, manifest_dir.as_deref())),
+        );
         if project_files {
             let extract_command = fstar_options
                 .scenario
