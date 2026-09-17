@@ -49,7 +49,7 @@
     "directory": "crates/algorithms/kmac",
     "fstar": "v2026.03.24",
     "stage": "prove",
-    "extract": "./hax.py clean && ./hax.py extract",
+    "extract": "./hax.py extract",
     "lax": "./hax.py prove --admit",
     "prove": "./hax.py prove",
     "timeout": 120
@@ -61,7 +61,7 @@
     "fstar": "v2025.10.06",
     "packages": "protobuf-compiler",
     "stage": "prove",
-    "extract": "rm -f proofs/fstar/extraction/*.fst* && ./hax.py extract",
+    "extract": "./hax.py extract",
     "lax": "./hax.py prove --admit",
     "prove": "./hax.py prove",
     "timeout": 180
