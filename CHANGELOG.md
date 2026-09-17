@@ -25,6 +25,11 @@ F* backend and library:
    transmute_copy}` and on the hand-written functions returning `t_Never`, which
    could otherwise inhabit any type
 
+### Fixed
+
+F* backend and library:
+ - Apply `rewrite_self` to trait annotations
+
 ## [0.4.0] - 2026-09-04
 
 Changes to the Rust engine:
