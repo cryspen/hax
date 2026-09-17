@@ -127,7 +127,12 @@ let
 
       mv tests/snapshots tests/old-snapshots
       just test --no-verify
-      diff tests/snapshots tests/old-snapshots
+      diff -rN -x coq tests/old-snapshots tests/snapshots || {
+        echo ""
+        echo "The committed snapshots do not match what the engine produces."
+        echo "Regenerate them with \`just test --no-verify\` and commit the result."
+        exit 1
+      }
     '';
     buildInputs = binaries ++ [ just ];
   });
