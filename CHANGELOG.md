@@ -30,6 +30,9 @@ F* backend and library:
 Lean backend and library:
  - Fix the calls to generic functions when the generic argument is not present in the signature (#2274)
 
+F* backend and library:
+ - Apply `rewrite_self` to trait annotations
+
 ## [0.4.0] - 2026-09-04
 
 Changes to the Rust engine:
