@@ -25,6 +25,11 @@ F* backend and library:
    transmute_copy}` and on the hand-written functions returning `t_Never`, which
    could otherwise inhabit any type
 
+### Fixed
+
+Lean backend and library:
+ - Fix the calls to generic functions when the generic argument is not present in the signature (#2274)
+
 ## [0.4.0] - 2026-09-04
 
 Changes to the Rust engine:
