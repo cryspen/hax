@@ -107,7 +107,12 @@ FSTAR_INCLUDE_DIRS_EXTRA ?=
 # proof needs it.
 FSTAR_FLAGS_EXTRA ?=
 FINDLIBS_OUTPUT ?= $(shell bash -c '${FINDLIBS}')
-FSTAR_INCLUDE_DIRS = $(strip $(shell echo $(FSTAR_INCLUDE_DIRS_EXTRA) $(FINDLIBS_OUTPUT) | tr ' ' '\n' | LC_ALL=C sort -u | tr '\n' ' '))
+
+# Hand-written F* the extraction refers to lives beside it rather than in
+# it, so that the extraction directory holds only what hax writes.
+FSTAR_MODELS_DIR ?= ../models
+
+FSTAR_INCLUDE_DIRS = $(strip $(shell echo $(FSTAR_INCLUDE_DIRS_EXTRA) $(wildcard $(FSTAR_MODELS_DIR)) $(FINDLIBS_OUTPUT) | tr ' ' '\n' | LC_ALL=C sort -u | tr '\n' ' '))
 
 # Make sure FSTAR_INCLUDE_DIRS has the `proof-libs`, print hints and
 # an error message otherwise
@@ -246,6 +251,7 @@ target "NO_COLOR" "Set to anything to disable colors"
 target "ADMIT_MODULES" "List of modules where F* will assume every SMT query"
 target "FSTAR_INCLUDE_DIRS_EXTRA" "List of extra include F* dirs"
 target "FSTAR_FLAGS_EXTRA" "Extra flags appended to the F* command line"
+target "FSTAR_MODELS_DIR" "Hand-written F* the extraction refers to (default \`../models\`)"
 target "HAX_AUTO_EXTRACT" "\`yes\` or \`no\`: run hax when no F* file is present"
 ${EXTRA_HELPMESSAGE}
 endef
