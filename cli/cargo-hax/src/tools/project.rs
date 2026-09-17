@@ -175,6 +175,16 @@ impl ProjectContext {
             .and_then(|member| member.config.as_ref())
     }
 
+    /// The directory of the crate being processed: the root package of
+    /// the current invocation, or the working directory when there is no
+    /// root package (a virtual workspace).
+    pub fn crate_dir(&self) -> PathBuf {
+        self.root_package
+            .as_ref()
+            .map(|package| package.dir.clone())
+            .unwrap_or_else(|| std::env::current_dir().expect("Could not get current directory"))
+    }
+
     /// The member names, joined for error messages.
     pub fn member_names(&self) -> String {
         self.members
