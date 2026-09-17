@@ -17,7 +17,7 @@ F* backend and library:
  - Make signed division and remainder truncate towards zero as Rust does, a
    breaking change since `div`, `mod` and the signed `rem_euclid` now require
    the quotient to fit in the type (#1459)
- - Define `fold_enumerated_slice` and `fold_range_step_by` instead of assuming
+ - Fix `fold_enumerated_slice` and `fold_range_step_by` by defining instead of assuming
    them, and drop the inconsistent `Rust_primitives.Iterators.foldi_range_step_by`
  - Correct `logand_mask_lemma`, `get_bit_cast_extend` and `lemma_get_bit_bounded'`,
    and exclude the sign bit from `num_bits`, all breaking changes
