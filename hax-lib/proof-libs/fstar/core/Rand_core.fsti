@@ -52,14 +52,14 @@ class t_TryRngCore (v_Self: Type0) = {
   f_try_fill_bytes_post:
       self_: v_Self ->
       dst: t_Slice u8 ->
-      x: (v_Self & t_Slice u8 & Core_models.Result.t_Result Prims.unit i0.f_Error)
+      x: (v_Self & t_Slice u8 & Core_models.Result.t_Result Prims.unit f_Error)
     -> pred:
       Type0
         { pred ==>
           (let
             (self_e_future: v_Self),
             (dst_future: t_Slice u8),
-            (_: Core_models.Result.t_Result Prims.unit i0.f_Error) =
+            (_: Core_models.Result.t_Result Prims.unit f_Error) =
               x
             in
             (Core_models.Slice.impl__len #u8 dst_future <: usize) =.
