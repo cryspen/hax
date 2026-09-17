@@ -51,6 +51,13 @@ pub fn write_always(path: &Path, contents: &str, message_format: MessageFormat) 
     }
 }
 
+/// Whether an extraction writes the backend's project files. An
+/// `--output-dir` the caller passed points hax at a directory they manage,
+/// which gets extracted code only.
+pub fn wanted(explicit_out_dir: bool, configured: Option<bool>, default: bool) -> bool {
+    !explicit_out_dir && configured.unwrap_or(default)
+}
+
 /// Resolve the `project-files` key for the crate being processed: the
 /// member-level value overrides the workspace-level one, consistent with
 /// the tool version resolution order; the default is enabled.
@@ -89,6 +96,22 @@ mod tests {
             selects_packages: false,
             package_specs: Vec::new(),
         }
+    }
+
+    #[test]
+    fn an_explicit_output_directory_gets_extracted_code_only() {
+        assert!(!wanted(true, None, true));
+        // Even a configured `project-files = true`: the flag is per
+        // invocation and names the directory, so it is the more specific.
+        assert!(!wanted(true, Some(true), true));
+    }
+
+    #[test]
+    fn otherwise_the_configured_value_wins_over_the_default() {
+        assert!(wanted(false, None, true));
+        assert!(!wanted(false, None, false));
+        assert!(!wanted(false, Some(false), true));
+        assert!(wanted(false, Some(true), false));
     }
 
     #[test]
