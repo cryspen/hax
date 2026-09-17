@@ -14,7 +14,21 @@ Using the default versions shipped with your hax release is the recommended way 
 
 hax distinguishes two kinds of tool version.
 
-*Managed tools* are installed by hax. There are two: `aeneas` and `charon`. hax downloads, verifies, and caches these binaries itself.
+*Managed tools* are installed by hax. There are three: `aeneas`, `charon`, and `fstar`. hax downloads, verifies, and caches these binaries itself.
+
+`fstar` differs from the other two in that hax never runs it: the F* backend
+extracts `.fst` files, and F* itself is run by the `Makefile` hax generates
+next to them. So an extraction never downloads F*. Install it when you want
+the version hax pins rather than whatever is on your `PATH`:
+
+```bash
+cargo hax tools install fstar
+```
+
+The generated `Makefile.hax` points `FSTAR_BIN` at the installed copy when
+there is one, and otherwise falls back to an `fstar.exe` on `PATH` or under
+`FSTAR_HOME`. Override it per project with a `[tools] fstar` entry in
+`hax.toml`, exactly as for the other two.
 
 *Declared versions* are versions hax must know but does not install. There are two: `lean` (the Lean toolchain, written verbatim into the `lean-toolchain` files hax generates) and `hax-lean-lib` (the Lean library that extracted code builds against).
 
@@ -26,7 +40,7 @@ You do not have to install anything up front. The first time a `cargo hax into l
 
 The cache lives under `$XDG_CACHE_HOME/hax/tools/` (falling back to `~/.cache/hax/tools/` when `XDG_CACHE_HOME` is unset, empty, or not an absolute path), with one directory per tool and version. Downloads are verified before they are moved into place, so an interrupted download never leaves a half-installed version behind. They use the proxy and the certificate store the environment configures. The cache only grows; drop versions you no longer need with [`tools remove`](#tools-remove), or all of them with [`tools clean`](#tools-clean).
 
-Pre-built binaries are available for the platforms hax supports: Linux (`x86_64` and `aarch64`) and macOS (`aarch64`). On any other platform there is nothing to download, and hax reports so, naming the version it wanted; build `aeneas` and `charon` yourself and point hax at them as described under [Using a local build](#using-a-local-build).
+Pre-built binaries are available for the platforms hax supports: Linux (`x86_64` and `aarch64`) and macOS (`aarch64`). On any other platform there is nothing to download, and hax reports so, naming the version it wanted; build the tool yourself and point hax at it as described under [Using a local build](#using-a-local-build).
 
 ## The `cargo hax tools` subcommands
 
@@ -168,7 +182,7 @@ Whenever a run resolves a managed tool or a declared version to something other 
 
 ## Using a local build
 
-If you build `aeneas` or `charon` yourself (for example from source), commit a `path` entry for it in `hax.toml` instead of a version:
+If you build a managed tool yourself (for example from source), commit a `path` entry for it in `hax.toml` instead of a version:
 
 ```toml
 [tools]

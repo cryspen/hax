@@ -11,6 +11,11 @@
 # Managed tools, pinned by upstream release tag.
 aeneas = "nightly-2026.09.03-6852e64"
 charon = "nightly-2026.09.02"
+# F* is not run by hax: the generated F* Makefile points at this version,
+# and `cargo hax tools install fstar` puts it in the cache. It must stay in
+# step with the `fstar` input of `flake.nix`, which is the version hax's
+# `proof-libs` are written against and CI verifies with; a test checks that.
+fstar = "v2025.10.06"
 
 [versions]
 # Declared-only versions: known to hax, but not installed by it.

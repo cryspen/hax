@@ -12,6 +12,23 @@ const MAKEFILE_HAX_CONTENTS: &str = include_str!("fstar/Makefile.hax");
 
 const DEFAULT_EXTRACT_COMMAND: &str = "cargo hax into fstar";
 
+/// The line of `Makefile.hax` the resolved F* is substituted into. Matched
+/// literally, so it must stay spelled as the file spells it.
+const FSTAR_BIN_LINE: &str = "HAX_FSTAR_BIN  :=";
+
+/// `Makefile.hax` with the resolved F* substituted in. An absent one
+/// leaves the line empty and the Makefile's own detection takes over.
+fn makefile_hax_contents(fstar_bin: Option<&Path>) -> String {
+    let Some(fstar_bin) = fstar_bin else {
+        return MAKEFILE_HAX_CONTENTS.to_string();
+    };
+    MAKEFILE_HAX_CONTENTS.replacen(
+        FSTAR_BIN_LINE,
+        &format!("{FSTAR_BIN_LINE} {}", fstar_bin.display()),
+        1,
+    )
+}
+
 #[derive(Debug, PartialEq, Eq)]
 enum Ownership {
     Absent,
@@ -119,7 +136,12 @@ include {MAKEFILE_HAX}
     )
 }
 
-pub fn generate(out_dir: &Path, extract_command: &str, message_format: MessageFormat) -> bool {
+pub fn generate(
+    out_dir: &Path,
+    extract_command: &str,
+    fstar_bin: Option<&Path>,
+    message_format: MessageFormat,
+) -> bool {
     let makefile = out_dir.join(MAKEFILE);
     let ownership = match std::fs::read_to_string(&makefile) {
         Ok(contents) => classify(&contents),
@@ -132,7 +154,7 @@ pub fn generate(out_dir: &Path, extract_command: &str, message_format: MessageFo
 
     let mut error = write_always(
         &out_dir.join(MAKEFILE_HAX),
-        MAKEFILE_HAX_CONTENTS,
+        &makefile_hax_contents(fstar_bin),
         message_format,
     );
     if ownership == Ownership::Absent {
@@ -184,6 +206,20 @@ mod tests {
     }
 
     #[test]
+    fn a_resolved_fstar_is_substituted_into_the_makefile() {
+        let bare = makefile_hax_contents(None);
+        assert!(bare.contains("\nHAX_FSTAR_BIN  :=\n"), "{bare}");
+
+        let resolved = makefile_hax_contents(Some(Path::new("/cache/fstar/bin/fstar.exe")));
+        assert!(
+            resolved.contains("\nHAX_FSTAR_BIN  := /cache/fstar/bin/fstar.exe\n"),
+            "{resolved}"
+        );
+        // Only the declaration is touched: the detection stays as a fallback.
+        assert!(resolved.contains("FSTAR_BIN_DETECT :="), "{resolved}");
+        assert_eq!(bare.lines().count(), resolved.lines().count());
+    }
+
     fn the_user_makefile_names_the_command_that_reproduces_the_extraction() {
         let contents = user_makefile_contents("cargo hax extract chacha20", Path::new("../../.."));
         assert!(contents.contains("HAX_EXTRACT_COMMAND ?= cargo hax extract chacha20"));
@@ -247,7 +283,12 @@ mod tests {
         if let Some(contents) = existing {
             std::fs::write(dir.path().join(MAKEFILE), contents).unwrap();
         }
-        let error = generate(dir.path(), DEFAULT_EXTRACT_COMMAND, MessageFormat::Human);
+        let error = generate(
+            dir.path(),
+            DEFAULT_EXTRACT_COMMAND,
+            None,
+            MessageFormat::Human,
+        );
         (dir, error)
     }
 
@@ -278,6 +319,7 @@ mod tests {
         assert!(!generate(
             dir.path(),
             DEFAULT_EXTRACT_COMMAND,
+            None,
             MessageFormat::Human
         ));
         assert_eq!(read(dir.path(), MAKEFILE).as_deref(), Some(edited));
@@ -306,6 +348,7 @@ mod tests {
         assert!(!generate(
             dir.path(),
             "cargo hax extract barrett",
+            None,
             MessageFormat::Human
         ));
         assert!(

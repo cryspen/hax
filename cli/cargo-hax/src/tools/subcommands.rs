@@ -38,58 +38,32 @@ fn reported(name: &str, resolution: &Resolution) -> ToolResolution {
 /// across all workspace crates: pins, member overrides, and defaults.
 pub fn install(spec: Option<&str>, force: bool, message_format: MessageFormat) -> i32 {
     let requests: Vec<(String, String)> = match spec {
+        // A bare tool name installs the version this project resolves to,
+        // which is what `tools show` reports for it.
+        Some(tool) if !tool.contains('@') => {
+            if !MANAGED_TOOLS.contains(&tool) {
+                return error(
+                    format!(
+                        "`{tool}` is not a managed tool (managed tools: {})",
+                        MANAGED_TOOLS.join(", ")
+                    ),
+                    message_format,
+                );
+            }
+            match resolved_versions(&[tool], message_format) {
+                Ok(versions) => versions,
+                Err(message) => return error(message, message_format),
+            }
+        }
         Some(spec) => match parse_spec(spec) {
             Ok(request) => vec![request],
             Err(message) => return error(message, message_format),
         },
-        None => {
-            let ctx = match ProjectContext::load(message_format) {
-                Ok(ctx) => ctx,
-                Err(message) => return error(message, message_format),
-            };
-            let workspace = ctx.workspace_config.as_ref();
-            let defaults = defaults();
-            let mut versions = BTreeSet::new();
-            for tool in MANAGED_TOOLS {
-                // The workspace-wide resolution, plus each member's: the
-                // cache must cover whatever any member's processing
-                // resolves to.
-                let mut resolutions = vec![resolve_tool(tool, None, workspace, defaults)];
-                for member in &ctx.members {
-                    if member.config.is_some() {
-                        resolutions.push(resolve_tool(
-                            tool,
-                            member.config.as_ref(),
-                            workspace,
-                            defaults,
-                        ));
-                    }
-                }
-                for resolution in resolutions {
-                    match resolution.kind {
-                        Resolved::Version(version) => {
-                            versions.insert((tool.to_string(), version));
-                        }
-                        // The committed configuration itself states that
-                        // this binary is provided outside the cache.
-                        Resolved::Path(path) => {
-                            HaxMessage::GenericWarning {
-                                message: format!(
-                                    "tool `{tool}` resolves to the path {} ({}); \
-                                     nothing to install for it",
-                                    path.display(),
-                                    resolution.source.describe(),
-                                ),
-                            }
-                            .report(message_format, None);
-                        }
-                    }
-                }
-            }
-            versions.into_iter().collect()
-        }
+        None => match resolved_versions(MANAGED_TOOLS, message_format) {
+            Ok(versions) => versions,
+            Err(message) => return error(message, message_format),
+        },
     };
-
     let mut failed = false;
     let mut installed = Vec::new();
     for (tool, version) in &requests {
@@ -113,6 +87,59 @@ pub fn install(spec: Option<&str>, force: bool, message_format: MessageFormat) -
     }
     HaxMessage::ToolsInstalled { installed }.report(message_format, None);
     if failed { 1 } else { 0 }
+}
+
+/// The versions `tools` resolve to across the project: the workspace-wide
+/// resolution plus each member's, since the cache must cover whatever any
+/// member's processing resolves to.
+fn resolved_versions(
+    tools: &[&str],
+    message_format: MessageFormat,
+) -> Result<Vec<(String, String)>, String> {
+    let ctx = match ProjectContext::load(message_format) {
+        Ok(ctx) => ctx,
+        Err(message) => return Err(message),
+    };
+    let workspace = ctx.workspace_config.as_ref();
+    let defaults = defaults();
+    let mut versions = BTreeSet::new();
+    for tool in tools.iter().copied() {
+        // The workspace-wide resolution, plus each member's: the
+        // cache must cover whatever any member's processing
+        // resolves to.
+        let mut resolutions = vec![resolve_tool(tool, None, workspace, defaults)];
+        for member in &ctx.members {
+            if member.config.is_some() {
+                resolutions.push(resolve_tool(
+                    tool,
+                    member.config.as_ref(),
+                    workspace,
+                    defaults,
+                ));
+            }
+        }
+        for resolution in resolutions {
+            match resolution.kind {
+                Resolved::Version(version) => {
+                    versions.insert((tool.to_string(), version));
+                }
+                // The committed configuration itself states that
+                // this binary is provided outside the cache.
+                Resolved::Path(path) => {
+                    HaxMessage::GenericWarning {
+                        message: format!(
+                            "tool `{tool}` resolves to the path {} ({}); \
+                             nothing to install for it",
+                            path.display(),
+                            resolution.source.describe(),
+                        ),
+                    }
+                    .report(message_format, None);
+                }
+            }
+        }
+    }
+    Ok(versions.into_iter().collect())
 }
 
 /// Parse a `<tool>@<version>` specification naming a managed tool.
