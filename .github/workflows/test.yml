@@ -43,6 +43,14 @@ jobs:
       - name: Test `cargo-hax`
         run: cargo test -p cargo-hax --verbose
 
+      # Also apart, and for the same reason: `hax-rust-engine` takes
+      # `hax-frontend-exporter` with `default-features = false`, so a shared
+      # invocation with `hax-driver` would unify the `rustc` feature onto it.
+      # This is the only place these tests run: the nix build no longer runs
+      # the workspace's test suites (see `cli/default.nix`).
+      - name: Test `hax-rust-engine`
+        run: cargo test -p hax-rust-engine --verbose
+
       - name: Test `hax-frontend-exporter` with feature `rustc` off
         run: cargo check -p hax-frontend-exporter --no-default-features --verbose
 
