@@ -25,17 +25,17 @@ let impl: t_Speak t_Cat =
 
 (* [hax::excluded] dyn_in_sig — Explicit rejection by a phase in the Hax engine: a node of kind [Dyn] have been found in the AST *)
 
-/// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008)
-/// @fail(extraction): fstar(HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): coq(HAX0008, HAX0008, HAX0008), proverif(HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008)
 let dyn_in_body (_: Prims.unit) : u8 =
   let c:t_Cat = Cat <: t_Cat in
   Rust_primitives.Hax.failure "[hax::opaque] Explicit rejection by a phase in the Hax engine: a node of kind [Dyn] have been found in the AST"
     ""
 
-/// @fail(extraction): coq(HAX0010, HAX0003), ssprove(HAX0003, HAX0010), legacy-lean(HAX0010, HAX0003), fstar(HAX0010, HAX0003), proverif(HAX0010, HAX0003)
-let mut_ref_return (x: u8) : Rust_primitives.Hax.t_Failure "" =
-  Rust_primitives.Hax.failure "[hax::opaque] The mutation of this &mut is not allowed here." ""
+(* [hax::excluded] mut_ref_return — something is not implemented yet. This function returns a mutable reference, which the backend cannot state; the item is excluded. *)
 
-/// @fail(extraction): proverif(HAX0010, HAX0010, HAX0010, HAX0003, HAX0003, HAX0003), legacy-lean(HAX0010, HAX0010, HAX0010, HAX0003, HAX0003, HAX0003), ssprove(HAX0003, HAX0003, HAX0003, HAX0010, HAX0010, HAX0010), coq(HAX0010, HAX0010, HAX0010, HAX0003, HAX0003, HAX0003), fstar(HAX0010, HAX0010, HAX0010, HAX0003, HAX0003, HAX0003)
-let body_split (buf: t_Slice u8) : u8 =
-  Rust_primitives.Hax.failure "[hax::opaque] The mutation of this &mut is not allowed here." ""
+/// @fail(extraction): proverif(HAX0003, HAX0003, HAX0003, HAX0010, HAX0010, HAX0010), ssprove(HAX0003, HAX0003, HAX0003, HAX0010, HAX0010, HAX0010), coq(HAX0003, HAX0003, HAX0003, HAX0010, HAX0010, HAX0010)
+assume
+val body_split': buf: t_Slice u8 -> (t_Slice u8 & u8)
+
+unfold
+let body_split = body_split'

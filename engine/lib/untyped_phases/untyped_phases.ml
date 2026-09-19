@@ -1471,6 +1471,39 @@ module Hoist_side_effects : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
+module Reject_or_opacify_mut_ref : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+  end
+
+  module Phase = Phases.Reject_or_opacify_mut_ref (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
 let and_mut_defsite : (module PHASE_FULL) = (module And_mut_defsite)
 let bundle_cycles : (module PHASE_FULL) = (module Bundle_cycles)
 let cf_into_monads : (module PHASE_FULL) = (module Cf_into_monads)
@@ -1545,6 +1578,9 @@ let reject_trait_item_default : (module PHASE_FULL) =
 let reject_unsafe : (module PHASE_FULL) = (module Reject_unsafe)
 let hoist_side_effects : (module PHASE_FULL) = (module Hoist_side_effects)
 
+let reject_or_opacify_mut_ref : (module PHASE_FULL) =
+  (module Reject_or_opacify_mut_ref)
+
 let phases_list : (module PHASE_FULL) list =
   [
     and_mut_defsite;
@@ -1589,6 +1625,7 @@ let phases_list : (module PHASE_FULL) list =
     reject_trait_item_default;
     reject_unsafe;
     hoist_side_effects;
+    reject_or_opacify_mut_ref;
   ]
 
 let phase_of_name : string -> (module PHASE_FULL) option = function
@@ -1634,6 +1671,7 @@ let phase_of_name : string -> (module PHASE_FULL) option = function
   | "reject_trait_item_default" -> Some reject_trait_item_default
   | "reject_unsafe" -> Some reject_unsafe
   | "hoist_side_effects" -> Some hoist_side_effects
+  | "reject_or_opacify_mut_ref" -> Some reject_or_opacify_mut_ref
   | _ -> None
 
 let phases : string list =
@@ -1680,6 +1718,7 @@ let phases : string list =
     "reject_trait_item_default";
     "reject_unsafe";
     "hoist_side_effects";
+    "reject_or_opacify_mut_ref";
   ]
 
 (*
