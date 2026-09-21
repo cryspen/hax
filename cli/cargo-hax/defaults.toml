@@ -9,7 +9,7 @@
 
 [tools]
 # Managed tools, pinned by upstream release tag.
-aeneas = "nightly-2026.09.03-6852e64"
+aeneas = "build-183e4f0"
 charon = "nightly-2026.09.02"
 
 [versions]

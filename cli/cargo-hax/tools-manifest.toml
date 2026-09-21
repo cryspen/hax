@@ -102,6 +102,21 @@ url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.09.03-68
 sha256 = "6da3ec50ffad504cc9b97f39f55e79a5af1efe811b27471f9383aaa07b41d3de"
 entry_points = { aeneas = "aeneas" }
 
+[tools.aeneas."build-183e4f0".linux-x86_64]
+url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-linux-x86_64.tar.gz"
+sha256 = "9d3670021746fa911f7e6d767c521e521d03c3bf51cec0176a18f3f06faea44d"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."build-183e4f0".linux-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-linux-aarch64.tar.gz"
+sha256 = "ee913f37e247b01f5c473166811efe31246347eef09f288f863e322f2a510ece"
+entry_points = { aeneas = "aeneas" }
+
+[tools.aeneas."build-183e4f0".macos-aarch64]
+url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-macos-aarch64.tar.gz"
+sha256 = "dd6be33b9f21a8bcfd089f4da9b36ad89be3848d877d812b8ca1ea0f28be86ca"
+entry_points = { aeneas = "aeneas" }
+
 # ---- charon -----------------------------------------------------------------
 # Provenance: upstream AeneasVerif/charon nightly releases. Archives are
 # flat: `charon`, `charon-driver` and a `rust-toolchain` file at the root.
