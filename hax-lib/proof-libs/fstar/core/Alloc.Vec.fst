@@ -64,15 +64,30 @@ let impl_1__is_empty (#v_T #v_A: Type0) (self: t_Vec v_T v_A) : bool =
 let impl_1__as_slice (#v_T #v_A: Type0) (self: t_Vec v_T v_A) : t_Slice v_T =
   Rust_primitives.Sequence.seq_to_slice #v_T self._0
 
-assume
-val impl_1__truncate': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> n: usize
-  -> t_Vec v_T v_A
+/// See [`std::vec::Vec::truncate`]: keeps the first `n` elements and drops the
+/// rest. `n` at or above the current length is a no-op, so the resulting
+/// length is `min n (len self)`.
+let impl_1__truncate' (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (n: usize)
+    : Prims.Pure (t_Vec v_T v_A)
+      Prims.l_True
+      (ensures
+        fun res ->
+          Seq.length res._0 ==
+          (if v n <= Seq.length self._0 then v n else Seq.length self._0)) =
+  if v n <= Seq.length self._0
+  then { self with _0 = Seq.slice self._0 0 (v n) }
+  else self
 
 unfold
 let impl_1__truncate (#v_T #v_A: Type0) = impl_1__truncate' #v_T #v_A
 
-assume
-val impl_1__clear': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> t_Vec v_T v_A
+/// See [`std::vec::Vec::clear`]: removes every element, leaving the vector
+/// empty. Capacity is not modelled, so this is exactly the empty sequence.
+let impl_1__clear' (#v_T #v_A: Type0) (self: t_Vec v_T v_A)
+    : Prims.Pure (t_Vec v_T v_A)
+      Prims.l_True
+      (ensures fun res -> (Rust_primitives.Sequence.seq_len #v_T res._0 <: usize) == mk_usize 0) =
+  { self with _0 = Rust_primitives.Sequence.seq_empty #v_T () }
 
 unfold
 let impl_1__clear (#v_T #v_A: Type0) = impl_1__clear' #v_T #v_A

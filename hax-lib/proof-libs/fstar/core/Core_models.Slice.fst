@@ -48,13 +48,24 @@ let impl__copy_within
      = impl__copy_within' #v_T #v_R #i0
 
 /// See [`std::slice::binary_search`]
+/// std: "If the value is found then `Result::Ok` is returned, containing the
+/// index of the matching element. ... If the value is not found then
+/// `Result::Err` is returned, containing the index where a matching element
+/// could be inserted while maintaining sorted order." Both indices are
+/// therefore in range; `Ok` strictly so, `Err` up to and including `len`.
 assume
 val impl__binary_search':
     #v_T: Type0 ->
     {| i0: Core_models.Cmp.t_Ord v_T |} ->
     s: t_Slice v_T ->
     x: v_T
-  -> Core_models.Result.t_Result usize usize
+  -> Prims.Pure (Core_models.Result.t_Result usize usize)
+      Prims.l_True
+      (ensures
+        fun res ->
+          match res with
+          | Core_models.Result.Result_Ok i -> v i < Seq.length s
+          | Core_models.Result.Result_Err i -> v i <= Seq.length s)
 
 unfold
 let impl__binary_search
