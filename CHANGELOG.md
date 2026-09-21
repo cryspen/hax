@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+cargo-hax:
+ - `cargo hax into fstar` generates the F* `Makefile` next to the extraction (#2256, fix #2201)
+
 ### Security
 
 Lean backend and library:

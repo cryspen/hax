@@ -237,33 +237,6 @@ fn collect_output_lines(output: &process::Output) -> Vec<String> {
 
     lines
 }
-/// The directory of the crate being processed: the root package of the
-/// current invocation.
-fn crate_dir(project: &tools::project::ProjectContext) -> PathBuf {
-    project
-        .root_package
-        .as_ref()
-        .map(|package| package.dir.clone())
-        .unwrap_or_else(|| std::env::current_dir().expect("Could not get current directory"))
-}
-
-/// Resolve the `project-files` key for the crate being processed: the
-/// member-level value overrides the workspace-level one, consistent with
-/// the tool version resolution order; the default is enabled.
-pub fn project_files_enabled(project: &tools::project::ProjectContext) -> bool {
-    let crate_dir = crate_dir(project);
-    project
-        .member_config(&crate_dir)
-        .and_then(|config| config.project_files)
-        .or_else(|| {
-            project
-                .workspace_config
-                .as_ref()
-                .and_then(|config| config.project_files)
-        })
-        .unwrap_or(true)
-}
-
 /// Runs the charon + aeneas pipeline for the `lean` backend.
 /// Returns `true` if an error occurred.
 ///
@@ -280,10 +253,8 @@ pub fn run(
     let project_files = options
         .scenario
         .project_files
-        .unwrap_or_else(|| project_files_enabled(project));
-    // Per-crate tool resolution: the crate being processed is the root
-    // package of the current invocation.
-    let crate_dir = crate_dir(project);
+        .unwrap_or_else(|| crate::project_files::enabled(project, None));
+    let crate_dir = project.crate_dir();
     let crate_name = project
         .root_package
         .as_ref()

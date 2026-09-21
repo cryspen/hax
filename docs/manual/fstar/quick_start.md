@@ -18,10 +18,6 @@ what you are looking for!
 *Note: the instructions below assume you are in the folder of the specific crate (**not workspace!**) you want to extract.*
 
 
- - Create the folder `proofs/fstar/extraction`, right next to the `Cargo.toml` of the crate you want to verify.  
-   `mkdir -p proofs/fstar/extraction`
- - Copy [this makefile](https://github.com/cryspen/hax/blob/main/docs/manual/fstar/tutorial/proofs/fstar/extraction/Makefile) to `proofs/fstar/extraction/Makefile`  
-   `curl -o proofs/fstar/extraction/Makefile https://raw.githubusercontent.com/cryspen/hax/main/docs/manual/fstar/tutorial/proofs/fstar/extraction/Makefile`
  - Add `hax-lib` as a dependency to your crate, enabled only when using hax.  
    `cargo add --target 'cfg(hax)' --git https://github.com/cryspen/hax hax-lib`  
    *(`hax-lib` is not mandatory, but this guide assumes it is present)*
@@ -33,6 +29,22 @@ specific crate you want to extract.*
 
 Run the command `cargo hax into fstar` to extract every item of your
 crate as F\* modules in the subfolder `proofs/fstar/extraction`.
+
+Alongside the extracted modules, hax writes the build files that run F\*
+on them: `Makefile.hax`, which hax owns and rewrites on every extraction,
+and a short `Makefile` that includes it and holds your own settings
+(`ADMIT_MODULES`, `FSTAR_INCLUDE_DIRS_EXTRA`, `FSTAR_FLAGS_EXTRA`). The
+`Makefile` is created once and never overwritten. If the directory already
+has a `Makefile` that does not include `Makefile.hax`, hax leaves the
+directory alone: a project that drives F\* its own way keeps doing so. To
+turn the build files off everywhere, set `project-files = false` in your
+`hax.toml`.
+
+The extraction directory holds only what hax writes, and hax removes from
+it whatever an extraction no longer produces. Hand-written F\* that the
+extracted code refers to — a lemma reached through `fstar!(..)`, say —
+belongs in `proofs/fstar/models` beside it, which the `Makefile` puts on
+F\*'s include path.
 
 **What is critical? What is worth verifying?**  
 Probably, your Rust crate contains mixed kinds of code: some parts are
