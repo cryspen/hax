@@ -71,7 +71,8 @@ let impl_10__pop
       (fun temp_0_ i ->
           let (index: usize), (max: Core_models.Option.t_Option v_T) = temp_0_ in
           let i:usize = i in
-          (i >. mk_usize 0 <: bool) =. (Core_models.Option.impl__is_some #v_T max <: bool) <: bool)
+          ((i >. mk_usize 0 <: bool) =. (Core_models.Option.impl__is_some #v_T max <: bool) <: bool) &&
+          ((i =. mk_usize 0 <: bool) || (index <. i <: bool)))
       (index, max <: (usize & Core_models.Option.t_Option v_T))
       (fun temp_0_ i ->
           let (index: usize), (max: Core_models.Option.t_Option v_T) = temp_0_ in

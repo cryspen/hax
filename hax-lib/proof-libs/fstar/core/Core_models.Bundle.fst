@@ -319,9 +319,6 @@ let impl_6__saturating_mul (x y: u8) : u8 = Rust_primitives.Arithmetic.saturatin
 let impl_6__overflowing_mul (x y: u8) : (u8 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u8 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_6__pow (x: u8) (exp: u32) : u8 = Rust_primitives.Arithmetic.pow_u8 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_6__overflowing_pow (x: u8) (exp: u32) : (u8 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u8 x exp
@@ -354,13 +351,6 @@ val impl_6__leading_zeros': x: u8 -> u32
 
 unfold
 let impl_6__leading_zeros = impl_6__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_6__ilog2': x: u8 -> u32
-
-unfold
-let impl_6__ilog2 = impl_6__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -433,6 +423,12 @@ let impl_6__unchecked_mul (x y: u8)
 let impl_6__rem_euclid (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u8 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_6__pow (x: u8) (exp: u32)
+    : Prims.Pure u8
+      (requires (impl_6__overflowing_pow x exp <: (u8 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_u8 x exp
+
 [@@ "opaque_to_smt"]
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
@@ -446,6 +442,13 @@ let impl_6__rotate_right (x: u8) (n: u32) : u8 =
 let impl_6__rotate_left (x: u8) (n: u32) : u8 =
   let m:u32 = n %! mk_u32 8 in
   if m =. mk_u32 0 then x else (x <<! m <: u8) ^. (x >>! (mk_u32 8 -! m <: u32) <: u8)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_6__ilog2': x: u8 -> Prims.Pure u32 (requires x >. mk_u8 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_6__ilog2 = impl_6__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_6__unchecked_div (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
@@ -500,9 +503,6 @@ let impl_7__saturating_mul (x y: u16) : u16 = Rust_primitives.Arithmetic.saturat
 let impl_7__overflowing_mul (x y: u16) : (u16 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u16 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_7__pow (x: u16) (exp: u32) : u16 = Rust_primitives.Arithmetic.pow_u16 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_7__overflowing_pow (x: u16) (exp: u32) : (u16 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u16 x exp
@@ -535,13 +535,6 @@ val impl_7__leading_zeros': x: u16 -> u32
 
 unfold
 let impl_7__leading_zeros = impl_7__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_7__ilog2': x: u16 -> u32
-
-unfold
-let impl_7__ilog2 = impl_7__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -617,6 +610,12 @@ let impl_7__unchecked_mul (x y: u16)
 let impl_7__rem_euclid (x y: u16) : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u16 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_7__pow (x: u16) (exp: u32)
+    : Prims.Pure u16
+      (requires (impl_7__overflowing_pow x exp <: (u16 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_u16 x exp
+
 [@@ "opaque_to_smt"]
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
@@ -630,6 +629,13 @@ let impl_7__rotate_right (x: u16) (n: u32) : u16 =
 let impl_7__rotate_left (x: u16) (n: u32) : u16 =
   let m:u32 = n %! mk_u32 16 in
   if m =. mk_u32 0 then x else (x <<! m <: u16) ^. (x >>! (mk_u32 16 -! m <: u32) <: u16)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_7__ilog2': x: u16 -> Prims.Pure u32 (requires x >. mk_u16 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_7__ilog2 = impl_7__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_7__unchecked_div (x y: u16)
@@ -684,9 +690,6 @@ let impl_8__saturating_mul (x y: u32) : u32 = Rust_primitives.Arithmetic.saturat
 let impl_8__overflowing_mul (x y: u32) : (u32 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u32 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_8__pow (x exp: u32) : u32 = Rust_primitives.Arithmetic.pow_u32 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_8__overflowing_pow (x exp: u32) : (u32 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u32 x exp
@@ -719,13 +722,6 @@ val impl_8__leading_zeros': x: u32 -> u32
 
 unfold
 let impl_8__leading_zeros = impl_8__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_8__ilog2': x: u32 -> u32
-
-unfold
-let impl_8__ilog2 = impl_8__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -801,6 +797,12 @@ let impl_8__unchecked_mul (x y: u32)
 let impl_8__rem_euclid (x y: u32) : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u32 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_8__pow (x exp: u32)
+    : Prims.Pure u32
+      (requires (impl_8__overflowing_pow x exp <: (u32 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_u32 x exp
+
 [@@ "opaque_to_smt"]
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
@@ -814,6 +816,13 @@ let impl_8__rotate_right (x n: u32) : u32 =
 let impl_8__rotate_left (x n: u32) : u32 =
   let m:u32 = n %! mk_u32 32 in
   if m =. mk_u32 0 then x else (x <<! m <: u32) ^. (x >>! (mk_u32 32 -! m <: u32) <: u32)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_8__ilog2': x: u32 -> Prims.Pure u32 (requires x >. mk_u32 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_8__ilog2 = impl_8__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_8__unchecked_div (x y: u32)
@@ -868,9 +877,6 @@ let impl_9__saturating_mul (x y: u64) : u64 = Rust_primitives.Arithmetic.saturat
 let impl_9__overflowing_mul (x y: u64) : (u64 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u64 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_9__pow (x: u64) (exp: u32) : u64 = Rust_primitives.Arithmetic.pow_u64 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_9__overflowing_pow (x: u64) (exp: u32) : (u64 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u64 x exp
@@ -903,13 +909,6 @@ val impl_9__leading_zeros': x: u64 -> u32
 
 unfold
 let impl_9__leading_zeros = impl_9__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_9__ilog2': x: u64 -> u32
-
-unfold
-let impl_9__ilog2 = impl_9__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -985,6 +984,12 @@ let impl_9__unchecked_mul (x y: u64)
 let impl_9__rem_euclid (x y: u64) : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u64 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_9__pow (x: u64) (exp: u32)
+    : Prims.Pure u64
+      (requires (impl_9__overflowing_pow x exp <: (u64 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_u64 x exp
+
 [@@ "opaque_to_smt"]
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
@@ -998,6 +1003,13 @@ let impl_9__rotate_right (x: u64) (n: u32) : u64 =
 let impl_9__rotate_left (x: u64) (n: u32) : u64 =
   let m:u32 = n %! mk_u32 64 in
   if m =. mk_u32 0 then x else (x <<! m <: u64) ^. (x >>! (mk_u32 64 -! m <: u32) <: u64)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_9__ilog2': x: u64 -> Prims.Pure u32 (requires x >. mk_u64 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_9__ilog2 = impl_9__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_9__unchecked_div (x y: u64)
@@ -1052,9 +1064,6 @@ let impl_10__saturating_mul (x y: u128) : u128 = Rust_primitives.Arithmetic.satu
 let impl_10__overflowing_mul (x y: u128) : (u128 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u128 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_10__pow (x: u128) (exp: u32) : u128 = Rust_primitives.Arithmetic.pow_u128 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_10__overflowing_pow (x: u128) (exp: u32) : (u128 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_u128 x exp
@@ -1087,13 +1096,6 @@ val impl_10__leading_zeros': x: u128 -> u32
 
 unfold
 let impl_10__leading_zeros = impl_10__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_10__ilog2': x: u128 -> u32
-
-unfold
-let impl_10__ilog2 = impl_10__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -1172,6 +1174,12 @@ let impl_10__rem_euclid (x y: u128)
     : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u128 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_10__pow (x: u128) (exp: u32)
+    : Prims.Pure u128
+      (requires (impl_10__overflowing_pow x exp <: (u128 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_u128 x exp
+
 [@@ "opaque_to_smt"]
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
@@ -1185,6 +1193,13 @@ let impl_10__rotate_right (x: u128) (n: u32) : u128 =
 let impl_10__rotate_left (x: u128) (n: u32) : u128 =
   let m:u32 = n %! mk_u32 128 in
   if m =. mk_u32 0 then x else (x <<! m <: u128) ^. (x >>! (mk_u32 128 -! m <: u32) <: u128)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_10__ilog2': x: u128 -> Prims.Pure u32 (requires x >. mk_u128 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_10__ilog2 = impl_10__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_10__unchecked_div (x y: u128)
@@ -1243,9 +1258,6 @@ let impl_11__saturating_mul (x y: usize) : usize =
 let impl_11__overflowing_mul (x y: usize) : (usize & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_usize x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_11__pow (x: usize) (exp: u32) : usize = Rust_primitives.Arithmetic.pow_usize x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_11__overflowing_pow (x: usize) (exp: u32) : (usize & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_usize x exp
@@ -1278,13 +1290,6 @@ val impl_11__leading_zeros': x: usize -> u32
 
 unfold
 let impl_11__leading_zeros = impl_11__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_11__ilog2': x: usize -> u32
-
-unfold
-let impl_11__ilog2 = impl_11__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -1367,6 +1372,12 @@ let impl_11__rem_euclid (x y: usize)
     : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_usize x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_11__pow (x: usize) (exp: u32)
+    : Prims.Pure usize
+      (requires (impl_11__overflowing_pow x exp <: (usize & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_usize x exp
+
 [@@ "opaque_to_smt"]
 
 /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
@@ -1384,6 +1395,13 @@ let impl_11__rotate_left (x: usize) (n: u32) : usize =
   if m =. mk_u32 0
   then x
   else (x <<! m <: usize) ^. (x >>! (Rust_primitives.Arithmetic.v_SIZE_BITS -! m <: u32) <: usize)
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_11__ilog2': x: usize -> Prims.Pure u32 (requires x >. mk_usize 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_11__ilog2 = impl_11__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_11__unchecked_div (x y: usize)
@@ -1438,9 +1456,6 @@ let impl_12__saturating_mul (x y: i8) : i8 = Rust_primitives.Arithmetic.saturati
 let impl_12__overflowing_mul (x y: i8) : (i8 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i8 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_12__pow (x: i8) (exp: u32) : i8 = Rust_primitives.Arithmetic.pow_i8 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_12__overflowing_pow (x: i8) (exp: u32) : (i8 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i8 x exp
@@ -1487,13 +1502,6 @@ val impl_12__leading_zeros': x: i8 -> u32
 
 unfold
 let impl_12__leading_zeros = impl_12__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_12__ilog2': x: i8 -> u32
-
-unfold
-let impl_12__ilog2 = impl_12__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -1588,9 +1596,22 @@ let impl_12__rem_euclid (x y: i8)
       (requires y <>. mk_i8 0 && ~.((x =. impl_12__MIN <: bool) && (y =. mk_i8 (-1) <: bool)))
       (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i8 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_12__pow (x: i8) (exp: u32)
+    : Prims.Pure i8
+      (requires (impl_12__overflowing_pow x exp <: (i8 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_i8 x exp
+
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_12__abs (x: i8) : Prims.Pure i8 (requires x >. impl_12__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i8 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_12__ilog2': x: i8 -> Prims.Pure u32 (requires x >. mk_i8 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_12__ilog2 = impl_12__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_12__unchecked_div (x y: i8)
@@ -1651,9 +1672,6 @@ let impl_13__saturating_mul (x y: i16) : i16 = Rust_primitives.Arithmetic.satura
 let impl_13__overflowing_mul (x y: i16) : (i16 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i16 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_13__pow (x: i16) (exp: u32) : i16 = Rust_primitives.Arithmetic.pow_i16 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_13__overflowing_pow (x: i16) (exp: u32) : (i16 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i16 x exp
@@ -1700,13 +1718,6 @@ val impl_13__leading_zeros': x: i16 -> u32
 
 unfold
 let impl_13__leading_zeros = impl_13__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_13__ilog2': x: i16 -> u32
-
-unfold
-let impl_13__ilog2 = impl_13__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -1802,9 +1813,22 @@ let impl_13__rem_euclid (x y: i16)
       (requires y <>. mk_i16 0 && ~.((x =. impl_13__MIN <: bool) && (y =. mk_i16 (-1) <: bool)))
       (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i16 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_13__pow (x: i16) (exp: u32)
+    : Prims.Pure i16
+      (requires (impl_13__overflowing_pow x exp <: (i16 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_i16 x exp
+
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_13__abs (x: i16) : Prims.Pure i16 (requires x >. impl_13__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i16 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_13__ilog2': x: i16 -> Prims.Pure u32 (requires x >. mk_i16 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_13__ilog2 = impl_13__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_13__unchecked_div (x y: i16)
@@ -1865,9 +1889,6 @@ let impl_14__saturating_mul (x y: i32) : i32 = Rust_primitives.Arithmetic.satura
 let impl_14__overflowing_mul (x y: i32) : (i32 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i32 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_14__pow (x: i32) (exp: u32) : i32 = Rust_primitives.Arithmetic.pow_i32 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_14__overflowing_pow (x: i32) (exp: u32) : (i32 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i32 x exp
@@ -1914,13 +1935,6 @@ val impl_14__leading_zeros': x: i32 -> u32
 
 unfold
 let impl_14__leading_zeros = impl_14__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_14__ilog2': x: i32 -> u32
-
-unfold
-let impl_14__ilog2 = impl_14__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -2016,9 +2030,22 @@ let impl_14__rem_euclid (x y: i32)
       (requires y <>. mk_i32 0 && ~.((x =. impl_14__MIN <: bool) && (y =. mk_i32 (-1) <: bool)))
       (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i32 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_14__pow (x: i32) (exp: u32)
+    : Prims.Pure i32
+      (requires (impl_14__overflowing_pow x exp <: (i32 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_i32 x exp
+
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_14__abs (x: i32) : Prims.Pure i32 (requires x >. impl_14__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i32 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_14__ilog2': x: i32 -> Prims.Pure u32 (requires x >. mk_i32 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_14__ilog2 = impl_14__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_14__unchecked_div (x y: i32)
@@ -2079,9 +2106,6 @@ let impl_15__saturating_mul (x y: i64) : i64 = Rust_primitives.Arithmetic.satura
 let impl_15__overflowing_mul (x y: i64) : (i64 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i64 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_15__pow (x: i64) (exp: u32) : i64 = Rust_primitives.Arithmetic.pow_i64 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_15__overflowing_pow (x: i64) (exp: u32) : (i64 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i64 x exp
@@ -2128,13 +2152,6 @@ val impl_15__leading_zeros': x: i64 -> u32
 
 unfold
 let impl_15__leading_zeros = impl_15__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_15__ilog2': x: i64 -> u32
-
-unfold
-let impl_15__ilog2 = impl_15__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -2230,9 +2247,22 @@ let impl_15__rem_euclid (x y: i64)
       (requires y <>. mk_i64 0 && ~.((x =. impl_15__MIN <: bool) && (y =. mk_i64 (-1) <: bool)))
       (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i64 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_15__pow (x: i64) (exp: u32)
+    : Prims.Pure i64
+      (requires (impl_15__overflowing_pow x exp <: (i64 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_i64 x exp
+
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_15__abs (x: i64) : Prims.Pure i64 (requires x >. impl_15__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i64 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_15__ilog2': x: i64 -> Prims.Pure u32 (requires x >. mk_i64 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_15__ilog2 = impl_15__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_15__unchecked_div (x y: i64)
@@ -2293,9 +2323,6 @@ let impl_16__saturating_mul (x y: i128) : i128 = Rust_primitives.Arithmetic.satu
 let impl_16__overflowing_mul (x y: i128) : (i128 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i128 x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_16__pow (x: i128) (exp: u32) : i128 = Rust_primitives.Arithmetic.pow_i128 x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_16__overflowing_pow (x: i128) (exp: u32) : (i128 & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_i128 x exp
@@ -2342,13 +2369,6 @@ val impl_16__leading_zeros': x: i128 -> u32
 
 unfold
 let impl_16__leading_zeros = impl_16__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_16__ilog2': x: i128 -> u32
-
-unfold
-let impl_16__ilog2 = impl_16__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -2446,9 +2466,22 @@ let impl_16__rem_euclid (x y: i128)
       (requires y <>. mk_i128 0 && ~.((x =. impl_16__MIN <: bool) && (y =. mk_i128 (-1) <: bool)))
       (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_i128 x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_16__pow (x: i128) (exp: u32)
+    : Prims.Pure i128
+      (requires (impl_16__overflowing_pow x exp <: (i128 & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_i128 x exp
+
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_16__abs (x: i128) : Prims.Pure i128 (requires x >. impl_16__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_i128 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_16__ilog2': x: i128 -> Prims.Pure u32 (requires x >. mk_i128 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_16__ilog2 = impl_16__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_16__unchecked_div (x y: i128)
@@ -2512,9 +2545,6 @@ let impl_17__saturating_mul (x y: isize) : isize =
 let impl_17__overflowing_mul (x y: isize) : (isize & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_isize x y
 
-/// See [`std::primitive::u8::pow`] (and similar for other integer types)
-let impl_17__pow (x: isize) (exp: u32) : isize = Rust_primitives.Arithmetic.pow_isize x exp
-
 /// See [`std::primitive::u8::overflowing_pow`] (and similar for other integer types)
 let impl_17__overflowing_pow (x: isize) (exp: u32) : (isize & bool) =
   Rust_primitives.Arithmetic.overflowing_pow_isize x exp
@@ -2561,13 +2591,6 @@ val impl_17__leading_zeros': x: isize -> u32
 
 unfold
 let impl_17__leading_zeros = impl_17__leading_zeros'
-
-/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
-assume
-val impl_17__ilog2': x: isize -> u32
-
-unfold
-let impl_17__ilog2 = impl_17__ilog2'
 
 /// See [`std::primitive::u8::from_be_bytes`] (and similar for other integer types)
 assume
@@ -2669,9 +2692,22 @@ let impl_17__rem_euclid (x y: isize)
       (requires y <>. mk_isize 0 && ~.((x =. impl_17__MIN <: bool) && (y =. mk_isize (-1) <: bool)))
       (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.rem_euclid_isize x y
 
+/// See [`std::primitive::u8::pow`] (and similar for other integer types)
+let impl_17__pow (x: isize) (exp: u32)
+    : Prims.Pure isize
+      (requires (impl_17__overflowing_pow x exp <: (isize & bool))._2 =. false)
+      (fun _ -> Prims.l_True) = Rust_primitives.Arithmetic.pow_isize x exp
+
 /// See [`std::primitive::i8::abs`] (and similar for other signed integer types)
 let impl_17__abs (x: isize) : Prims.Pure isize (requires x >. impl_17__MIN) (fun _ -> Prims.l_True) =
   if x <. mk_isize 0 then Rust_primitives.Arithmetic.neg x else x
+
+/// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
+assume
+val impl_17__ilog2': x: isize -> Prims.Pure u32 (requires x >. mk_isize 0) (fun _ -> Prims.l_True)
+
+unfold
+let impl_17__ilog2 = impl_17__ilog2'
 
 /// See [`std::primitive::u8::unchecked_div`] (and similar for other integer types)
 let impl_17__unchecked_div (x y: isize)
@@ -3611,7 +3647,9 @@ type t_Result (v_T: Type0) (v_E: Type0) =
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_6__from_str_radix': src: string -> radix: u32
-  -> t_Result u8 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u8 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_6__from_str_radix = impl_6__from_str_radix'
@@ -3619,7 +3657,9 @@ let impl_6__from_str_radix = impl_6__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_7__from_str_radix': src: string -> radix: u32
-  -> t_Result u16 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u16 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_7__from_str_radix = impl_7__from_str_radix'
@@ -3627,7 +3667,9 @@ let impl_7__from_str_radix = impl_7__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_8__from_str_radix': src: string -> radix: u32
-  -> t_Result u32 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u32 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_8__from_str_radix = impl_8__from_str_radix'
@@ -3635,7 +3677,9 @@ let impl_8__from_str_radix = impl_8__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_9__from_str_radix': src: string -> radix: u32
-  -> t_Result u64 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u64 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_9__from_str_radix = impl_9__from_str_radix'
@@ -3643,7 +3687,9 @@ let impl_9__from_str_radix = impl_9__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_10__from_str_radix': src: string -> radix: u32
-  -> t_Result u128 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result u128 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_10__from_str_radix = impl_10__from_str_radix'
@@ -3651,7 +3697,9 @@ let impl_10__from_str_radix = impl_10__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_11__from_str_radix': src: string -> radix: u32
-  -> t_Result usize Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result usize Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_11__from_str_radix = impl_11__from_str_radix'
@@ -3659,7 +3707,9 @@ let impl_11__from_str_radix = impl_11__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_12__from_str_radix': src: string -> radix: u32
-  -> t_Result i8 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i8 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_12__from_str_radix = impl_12__from_str_radix'
@@ -3667,7 +3717,9 @@ let impl_12__from_str_radix = impl_12__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_13__from_str_radix': src: string -> radix: u32
-  -> t_Result i16 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i16 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_13__from_str_radix = impl_13__from_str_radix'
@@ -3675,7 +3727,9 @@ let impl_13__from_str_radix = impl_13__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_14__from_str_radix': src: string -> radix: u32
-  -> t_Result i32 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i32 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_14__from_str_radix = impl_14__from_str_radix'
@@ -3683,7 +3737,9 @@ let impl_14__from_str_radix = impl_14__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_15__from_str_radix': src: string -> radix: u32
-  -> t_Result i64 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i64 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_15__from_str_radix = impl_15__from_str_radix'
@@ -3691,7 +3747,9 @@ let impl_15__from_str_radix = impl_15__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_16__from_str_radix': src: string -> radix: u32
-  -> t_Result i128 Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result i128 Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_16__from_str_radix = impl_16__from_str_radix'
@@ -3699,7 +3757,9 @@ let impl_16__from_str_radix = impl_16__from_str_radix'
 /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 assume
 val impl_17__from_str_radix': src: string -> radix: u32
-  -> t_Result isize Core_models.Num.Error.t_ParseIntError
+  -> Prims.Pure (t_Result isize Core_models.Num.Error.t_ParseIntError)
+      (requires radix >=. mk_u32 2 && radix <=. mk_u32 36)
+      (fun _ -> Prims.l_True)
 
 unfold
 let impl_17__from_str_radix = impl_17__from_str_radix'

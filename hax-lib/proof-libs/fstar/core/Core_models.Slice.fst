@@ -30,23 +30,6 @@ let impl__contains
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialEq v_T v_T)
      = impl__contains' #v_T #i0
 
-/// See [`std::slice::copy_within`]
-assume
-val impl__copy_within':
-    #v_T: Type0 ->
-    #v_R: Type0 ->
-    {| i0: Core_models.Marker.t_Copy v_T |} ->
-    s: t_Slice v_T ->
-    src: v_R ->
-    dest: usize
-  -> t_Slice v_T
-
-unfold
-let impl__copy_within
-      (#v_T #v_R: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
-     = impl__copy_within' #v_T #v_R #i0
-
 /// See [`std::slice::binary_search`]
 assume
 val impl__binary_search':

@@ -111,6 +111,7 @@ macro_rules! uint_impl {
                 paste! { [<rem_euclid_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::pow`] (and similar for other integer types)
+            #[hax_lib::requires(<$Name>::overflowing_pow(x, exp).1 == false)]
             pub fn pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 paste! { [<pow_ $Name>](x, exp) }
             }
@@ -168,11 +169,13 @@ macro_rules! uint_impl {
             }
             /// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[hax_lib::requires(x > 0)]
             pub fn ilog2(x: $Self) -> core::primitive::u32 {
                 paste! { [<ilog2_ $Name>](x) }
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
             #[hax_lib::opaque]
+            #[hax_lib::requires(radix >= 2 && radix <= 36)]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
@@ -399,6 +402,7 @@ macro_rules! iint_impl {
                 paste! { [<rem_euclid_ $Name>](x, y) }
             }
             /// See [`std::primitive::u8::pow`] (and similar for other integer types)
+            #[hax_lib::requires(<$Name>::overflowing_pow(x, exp).1 == false)]
             pub fn pow(x: $Self, exp: core::primitive::u32) -> $Self {
                 paste! { [<pow_ $Name>](x, exp) }
             }
@@ -451,11 +455,13 @@ macro_rules! iint_impl {
             }
             /// See [`std::primitive::u8::ilog2`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+            #[hax_lib::requires(x > 0)]
             pub fn ilog2(x: $Self) -> core::primitive::u32 {
                 paste! { [<ilog2_ $Name>](x) }
             }
             /// See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
             #[hax_lib::opaque]
+            #[hax_lib::requires(radix >= 2 && radix <= 36)]
             pub fn from_str_radix(
                 src: &str,
                 radix: core::primitive::u32,
