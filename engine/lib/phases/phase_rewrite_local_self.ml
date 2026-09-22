@@ -14,7 +14,7 @@ module Make (F : Features.T) =
         let ctx = Diagnostics.Context.Phase phase_id
       end)
 
-      module Attrs = Attr_payloads.Make (F) (Error)
+      module Deps = Dependencies.Make (F)
 
       let in_trait_item =
         object
@@ -27,8 +27,9 @@ module Make (F : Features.T) =
             | ie -> ie
         end
 
-      (* A `requires`/`ensures` clause is a standalone function taking the trait
-         it constrains as an ordinary bound, so that bound is `Self` as well.
+      (* A clause (`requires`, `ensures`, `decreases`, ...) is a standalone
+         function taking the trait it constrains as an ordinary bound, so that
+         bound is `Self` as well.
          Matching on the bound's goal rather than on its name keeps a method's
          own type parameters, which may be bounded by the same trait, apart. *)
       let in_clause (trait : concrete_ident) (generics : generics) =
@@ -52,7 +53,7 @@ module Make (F : Features.T) =
         end
 
       let ditems (l : item list) : item list =
-        let (module Attrs) = Attrs.with_items l in
+        let associated_items = Deps.uid_associated_items l in
         (* A clause is a standalone item that its trait item points to through
            an attribute, so visiting the trait alone does not reach it. *)
         let clause_traits =
@@ -60,9 +61,7 @@ module Make (F : Features.T) =
               match i.v with
               | Trait { name; items; _ } ->
                   List.concat_map items ~f:(fun ti ->
-                      Attr_payloads.AssocRole.[ Requires; Ensures ]
-                      |> List.concat_map ~f:(fun role ->
-                          Attrs.associated_items role ti.ti_attrs)
+                      associated_items ti.ti_attrs
                       |> List.map ~f:(fun clause -> (clause.ident, name)))
               | _ -> [])
         in
