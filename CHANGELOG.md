@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Security
+### Fixed
 
 Lean backend and library:
+ - Fix the calls to generic functions when the generic argument is not present in the signature (#2274)
  - Fix the models of hax_lib.int.Int division, remainder and pow2
 
 F* backend and library:
@@ -24,11 +25,8 @@ F* backend and library:
  - Require `false` on the models of `mem::{uninitialized, zeroed, transmute,
    transmute_copy}` and on the hand-written functions returning `t_Never`, which
    could otherwise inhabit any type
-
-### Fixed
-
-Lean backend and library:
- - Fix the calls to generic functions when the generic argument is not present in the signature (#2274)
+ - Correct precondition on index for `remove` on `Vec`
+ - Remove unsound model of `drain` on `Vec`
 
 ## [0.4.0] - 2026-09-04
 
