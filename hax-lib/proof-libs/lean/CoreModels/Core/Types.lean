@@ -1059,11 +1059,34 @@ structure ops.range.Range (T : Type) where
 def ops.range.RangeFull := Unit
 
 /-- [core_models::ops::range::RangeInclusive]
-    Source: 'core-models/src/core/ops.rs', lines 333:4-336:5
+    Source: 'core-models/src/core/ops.rs', lines 335:4-339:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
-  start : T
+  lo : T
+  hi : T
+  exhausted : Bool
+
+/-- [core_models::ops::range::RangeToInclusive]
+    Source: 'core-models/src/core/ops.rs', lines 341:4-343:5
+    Visibility: public -/
+structure ops.range.RangeToInclusive (T : Type) where
   «end» : T
+
+/-- [core_models::ops::range::Bound]
+    Source: 'core-models/src/core/ops.rs', lines 383:4-387:5
+    Visibility: public -/
+@[discriminant isize]
+inductive ops.range.Bound (T : Type) where
+| Included : T → ops.range.Bound T
+| Excluded : T → ops.range.Bound T
+| Unbounded : ops.range.Bound T
+
+/-- Trait declaration: [core_models::ops::range::RangeBounds]
+    Source: 'core-models/src/core/ops.rs', lines 390:4-395:5
+    Visibility: public -/
+structure ops.range.RangeBounds (Self : Type) (T : Type) where
+  start_bound : Self → RustM (ops.range.Bound T)
+  end_bound : Self → RustM (ops.range.Bound T)
 
 /-- [core_models::panic::location::Location]
     Source: 'core-models/src/core/panic.rs', lines 11:4-15:5

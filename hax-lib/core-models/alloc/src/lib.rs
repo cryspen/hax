@@ -2,6 +2,8 @@
 // `coverage(off)` is unstable; `cfg(coverage_nightly)` is set only by
 // `cargo llvm-cov`, so normal builds and extraction never see this.
 #![cfg_attr(coverage_nightly, feature(coverage_attribute))]
+// `Vec::drain` resolves its range with `core::slice::range`, which is unstable.
+#![feature(slice_range)]
 
 #[cfg(test)]
 mod testing {
@@ -717,7 +719,6 @@ mod string {
 
 #[cfg(not(hax_backend_fstar))]
 pub mod vec {
-    // TODO drain (to be done with iterators)
     use hax_lib::ToInt;
     use rust_primitives::sequence::*;
 
@@ -895,16 +896,18 @@ pub mod vec {
             let l = seq_len(&self.0);
             Vec(seq_drain(&mut self.0, at, l))
         }
-        #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
-        pub fn drain<R /* : RangeBounds<usize> */>(
+        // Generic in `A`: this `Vec` has none, but Lean callers pass the
+        // allocator of std's `Drain<'_, T, A>` explicitly.
+        #[hax_lib::requires(core::slice::try_range(range, ..self.len()).is_some())]
+        pub fn drain<A, R: core::ops::RangeBounds<usize>>(
             &mut self,
-            _range: R,
-        ) -> drain::Drain<T, crate::alloc::Global> {
-            let l = seq_len(&self.0);
+            range: R,
+        ) -> drain::Drain<T, A> {
+            let r = core::slice::range(range, ..self.len());
             drain::Drain(
-                seq_drain(&mut self.0, 0, l),
-                std::marker::PhantomData::<crate::alloc::Global>,
-            ) // TODO use range bounds
+                seq_drain(&mut self.0, r.start, r.end),
+                std::marker::PhantomData,
+            )
         }
     }
     pub mod drain {
@@ -1142,10 +1145,10 @@ pub mod vec {
             let l = seq_len(&self.0);
             Vec(seq_drain(&mut self.0, at, l), PhantomData)
         }
-        #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
-        pub fn drain<R /* : RangeBounds<usize> */>(&mut self, _range: R) -> drain::Drain<T, A> {
-            let l = seq_len(&self.0);
-            drain::Drain(seq_drain(&mut self.0, 0, l), PhantomData) // TODO use range bounds
+        #[hax_lib::requires(core::slice::try_range(range, ..self.len()).is_some())]
+        pub fn drain<R: core::ops::RangeBounds<usize>>(&mut self, range: R) -> drain::Drain<T, A> {
+            let r = core::slice::range(range, ..self.len());
+            drain::Drain(seq_drain(&mut self.0, r.start, r.end), PhantomData)
         }
     }
 

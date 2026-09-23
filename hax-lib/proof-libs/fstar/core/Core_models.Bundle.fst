@@ -2906,9 +2906,35 @@ let impl_31 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
 
 /// See [`std::ops::RangeInclusive`]
 type t_RangeInclusive (v_T: Type0) = {
-  f_start:v_T;
-  f_end:v_T
+  f_lo:v_T;
+  f_hi:v_T;
+  f_exhausted:bool
 }
+
+/// See [`std::ops::RangeToInclusive`]
+type t_RangeToInclusive (v_T: Type0) = { f_end:v_T }
+
+/// See [`std::ops::Bound`]
+type t_Bound (v_T: Type0) =
+  | Bound_Included : v_T -> t_Bound v_T
+  | Bound_Excluded : v_T -> t_Bound v_T
+  | Bound_Unbounded : t_Bound v_T
+
+let bound_as_ref (#v_T: Type0) (bound: t_Bound v_T) : t_Bound v_T =
+  match bound <: t_Bound v_T with
+  | Bound_Included x -> Bound_Included x <: t_Bound v_T
+  | Bound_Excluded x -> Bound_Excluded x <: t_Bound v_T
+  | Bound_Unbounded  -> Bound_Unbounded <: t_Bound v_T
+
+/// See [`std::ops::RangeInclusive::new`]
+let impl_7__new (#v_T: Type0) (start v_end: v_T) : t_RangeInclusive v_T =
+  { f_lo = start; f_hi = v_end; f_exhausted = false } <: t_RangeInclusive v_T
+
+/// See [`std::ops::RangeInclusive::start`]
+let impl_7__start (#v_T: Type0) (self: t_RangeInclusive v_T) : v_T = self.f_lo
+
+/// See [`std::ops::RangeInclusive::end`]
+let impl_7__end (#v_T: Type0) (self: t_RangeInclusive v_T) : v_T = self.f_hi
 
 /// See [`std::option::Option`]
 type t_Option (v_T: Type0) =
@@ -4753,6 +4779,100 @@ let impl_144: t_From isize bool =
     f_from_pre = (fun (x: bool) -> true);
     f_from_post = (fun (x: bool) (out: isize) -> true);
     f_from = fun (x: bool) -> if x then mk_isize 1 else mk_isize 0
+  }
+
+/// See [`std::ops::RangeBounds`]
+class t_RangeBounds (v_Self: Type0) (v_T: Type0) = {
+  f_start_bound_pre:self_: v_Self -> pred: Type0{true ==> pred};
+  f_start_bound_post:v_Self -> t_Bound v_T -> Type0;
+  f_start_bound:x0: v_Self
+    -> Prims.Pure (t_Bound v_T) (f_start_bound_pre x0) (fun result -> f_start_bound_post x0 result);
+  f_end_bound_pre:self_: v_Self -> pred: Type0{true ==> pred};
+  f_end_bound_post:v_Self -> t_Bound v_T -> Type0;
+  f_end_bound:x0: v_Self
+    -> Prims.Pure (t_Bound v_T) (f_end_bound_pre x0) (fun result -> f_end_bound_post x0 result)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl__from__range (#v_T: Type0) : t_RangeBounds t_RangeFull v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeFull) -> true);
+    f_start_bound_post = (fun (self: t_RangeFull) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeFull) -> Bound_Unbounded <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeFull) -> true);
+    f_end_bound_post = (fun (self: t_RangeFull) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeFull) -> Bound_Unbounded <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1__from__range (#v_T: Type0) : t_RangeBounds (t_RangeFrom v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeFrom v_T) -> true);
+    f_start_bound_post = (fun (self: t_RangeFrom v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeFrom v_T) -> Bound_Included self.f_start <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeFrom v_T) -> true);
+    f_end_bound_post = (fun (self: t_RangeFrom v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeFrom v_T) -> Bound_Unbounded <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_2__from__range (#v_T: Type0) : t_RangeBounds (t_RangeTo v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeTo v_T) -> true);
+    f_start_bound_post = (fun (self: t_RangeTo v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeTo v_T) -> Bound_Unbounded <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeTo v_T) -> true);
+    f_end_bound_post = (fun (self: t_RangeTo v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeTo v_T) -> Bound_Excluded self.f_end <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_3__from__range (#v_T: Type0) : t_RangeBounds (t_Range v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_Range v_T) -> true);
+    f_start_bound_post = (fun (self: t_Range v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_Range v_T) -> Bound_Included self.f_start <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_Range v_T) -> true);
+    f_end_bound_post = (fun (self: t_Range v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_Range v_T) -> Bound_Excluded self.f_end <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_4__from__range (#v_T: Type0) : t_RangeBounds (t_Bound v_T & t_Bound v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: (t_Bound v_T & t_Bound v_T)) -> true);
+    f_start_bound_post = (fun (self: (t_Bound v_T & t_Bound v_T)) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: (t_Bound v_T & t_Bound v_T)) -> bound_as_ref #v_T self._1);
+    f_end_bound_pre = (fun (self: (t_Bound v_T & t_Bound v_T)) -> true);
+    f_end_bound_post = (fun (self: (t_Bound v_T & t_Bound v_T)) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: (t_Bound v_T & t_Bound v_T)) -> bound_as_ref #v_T self._2
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_5__from__range (#v_T: Type0) : t_RangeBounds (t_RangeInclusive v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeInclusive v_T) -> true);
+    f_start_bound_post = (fun (self: t_RangeInclusive v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeInclusive v_T) -> Bound_Included self.f_lo <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeInclusive v_T) -> true);
+    f_end_bound_post = (fun (self: t_RangeInclusive v_T) (out: t_Bound v_T) -> true);
+    f_end_bound
+    =
+    fun (self: t_RangeInclusive v_T) ->
+      if self.f_exhausted
+      then Bound_Excluded self.f_hi <: t_Bound v_T
+      else Bound_Included self.f_hi <: t_Bound v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_6__from__range (#v_T: Type0) : t_RangeBounds (t_RangeToInclusive v_T) v_T =
+  {
+    f_start_bound_pre = (fun (self: t_RangeToInclusive v_T) -> true);
+    f_start_bound_post = (fun (self: t_RangeToInclusive v_T) (out: t_Bound v_T) -> true);
+    f_start_bound = (fun (self: t_RangeToInclusive v_T) -> Bound_Unbounded <: t_Bound v_T);
+    f_end_bound_pre = (fun (self: t_RangeToInclusive v_T) -> true);
+    f_end_bound_post = (fun (self: t_RangeToInclusive v_T) (out: t_Bound v_T) -> true);
+    f_end_bound = fun (self: t_RangeToInclusive v_T) -> Bound_Included self.f_end <: t_Bound v_T
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -7798,7 +7918,7 @@ let iter_reduce
      = iter_reduce' #v_I #v_F #i0 #i1
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl__from__range: t_Iterator (t_Range u8) =
+let impl_8__from__range: t_Iterator (t_Range u8) =
   {
     f_Item = u8;
     f_next_pre = (fun (self: t_Range u8) -> true);
@@ -7818,7 +7938,7 @@ let impl__from__range: t_Iterator (t_Range u8) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1__from__range: t_Iterator (t_Range u16) =
+let impl_9__from__range: t_Iterator (t_Range u16) =
   {
     f_Item = u16;
     f_next_pre = (fun (self: t_Range u16) -> true);
@@ -7838,7 +7958,7 @@ let impl_1__from__range: t_Iterator (t_Range u16) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2__from__range: t_Iterator (t_Range u32) =
+let impl_10__from__range: t_Iterator (t_Range u32) =
   {
     f_Item = u32;
     f_next_pre = (fun (self: t_Range u32) -> true);
@@ -7858,7 +7978,7 @@ let impl_2__from__range: t_Iterator (t_Range u32) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3__from__range: t_Iterator (t_Range u64) =
+let impl_11__from__range: t_Iterator (t_Range u64) =
   {
     f_Item = u64;
     f_next_pre = (fun (self: t_Range u64) -> true);
@@ -7878,7 +7998,7 @@ let impl_3__from__range: t_Iterator (t_Range u64) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4__from__range: t_Iterator (t_Range u128) =
+let impl_12__from__range: t_Iterator (t_Range u128) =
   {
     f_Item = u128;
     f_next_pre = (fun (self: t_Range u128) -> true);
@@ -7900,7 +8020,7 @@ let impl_4__from__range: t_Iterator (t_Range u128) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5__from__range: t_Iterator (t_Range usize) =
+let impl_13__from__range: t_Iterator (t_Range usize) =
   {
     f_Item = usize;
     f_next_pre = (fun (self: t_Range usize) -> true);
@@ -7922,7 +8042,7 @@ let impl_5__from__range: t_Iterator (t_Range usize) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_6__from__range: t_Iterator (t_Range i8) =
+let impl_14__from__range: t_Iterator (t_Range i8) =
   {
     f_Item = i8;
     f_next_pre = (fun (self: t_Range i8) -> true);
@@ -7942,7 +8062,7 @@ let impl_6__from__range: t_Iterator (t_Range i8) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_7__from__range: t_Iterator (t_Range i16) =
+let impl_15__from__range: t_Iterator (t_Range i16) =
   {
     f_Item = i16;
     f_next_pre = (fun (self: t_Range i16) -> true);
@@ -7962,7 +8082,7 @@ let impl_7__from__range: t_Iterator (t_Range i16) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_8__from__range: t_Iterator (t_Range i32) =
+let impl_16__from__range: t_Iterator (t_Range i32) =
   {
     f_Item = i32;
     f_next_pre = (fun (self: t_Range i32) -> true);
@@ -7982,7 +8102,7 @@ let impl_8__from__range: t_Iterator (t_Range i32) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_9__from__range: t_Iterator (t_Range i64) =
+let impl_17__from__range: t_Iterator (t_Range i64) =
   {
     f_Item = i64;
     f_next_pre = (fun (self: t_Range i64) -> true);
@@ -8002,7 +8122,7 @@ let impl_9__from__range: t_Iterator (t_Range i64) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_10__from__range: t_Iterator (t_Range i128) =
+let impl_18__from__range: t_Iterator (t_Range i128) =
   {
     f_Item = i128;
     f_next_pre = (fun (self: t_Range i128) -> true);
@@ -8024,7 +8144,7 @@ let impl_10__from__range: t_Iterator (t_Range i128) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_11__from__range: t_Iterator (t_Range isize) =
+let impl_19__from__range: t_Iterator (t_Range isize) =
   {
     f_Item = isize;
     f_next_pre = (fun (self: t_Range isize) -> true);

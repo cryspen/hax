@@ -330,8 +330,15 @@ pub mod range {
     /// See [`std::ops::RangeFull`]
     pub struct RangeFull;
     /// See [`std::ops::RangeInclusive`]
+    // Not `start`/`end` as in std (where they are private): Lean would then
+    // name the `start`/`end` methods apart from the ones clients call.
     pub struct RangeInclusive<T> {
-        pub start: T,
+        pub lo: T,
+        pub hi: T,
+        pub exhausted: bool,
+    }
+    /// See [`std::ops::RangeToInclusive`]
+    pub struct RangeToInclusive<T> {
         pub end: T,
     }
 
@@ -371,6 +378,114 @@ pub mod range {
     }
 
     impl_iterator_range_int!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
+
+    /// See [`std::ops::Bound`]
+    pub enum Bound<T> {
+        Included(T),
+        Excluded(T),
+        Unbounded,
+    }
+    /// See [`std::ops::RangeBounds`]
+    #[hax_lib::attributes]
+    pub trait RangeBounds<T> {
+        #[hax_lib::requires(true)]
+        fn start_bound(&self) -> Bound<&T>;
+        #[hax_lib::requires(true)]
+        fn end_bound(&self) -> Bound<&T>;
+    }
+    impl<T> RangeBounds<T> for RangeFull {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+    }
+    impl<T> RangeBounds<T> for RangeFrom<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.start)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+    }
+    impl<T> RangeBounds<T> for RangeTo<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Excluded(&self.end)
+        }
+    }
+    impl<T> RangeBounds<T> for Range<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.start)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Excluded(&self.end)
+        }
+    }
+    impl<T> RangeBounds<T> for (Bound<T>, Bound<T>) {
+        fn start_bound(&self) -> Bound<&T> {
+            bound_as_ref(&self.0)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            bound_as_ref(&self.1)
+        }
+    }
+    // std's `Bound::as_ref`, as a function: an inherent `impl Bound` block
+    // would take a positional `impl_N` name that must match real core's.
+    fn bound_as_ref<T>(bound: &Bound<T>) -> Bound<&T> {
+        match bound {
+            Bound::Included(x) => Bound::Included(x),
+            Bound::Excluded(x) => Bound::Excluded(x),
+            Bound::Unbounded => Bound::Unbounded,
+        }
+    }
+    impl<T> RangeBounds<T> for RangeInclusive<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.lo)
+        }
+        // An exhausted iterator ends with `start == end`, and must look empty.
+        fn end_bound(&self) -> Bound<&T> {
+            if self.exhausted {
+                Bound::Excluded(&self.hi)
+            } else {
+                Bound::Included(&self.hi)
+            }
+        }
+    }
+    impl<T> RangeBounds<T> for RangeToInclusive<T> {
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.end)
+        }
+    }
+    // `a..=b` desugars to `RangeInclusive::new`, which clients reach as
+    // `impl_7__new` after real core's numbering. Impl blocks are numbered in
+    // the order rustc creates them: those written directly, in source order,
+    // before those expanded from a macro (including an attribute macro such as
+    // `hax_lib::attributes`). This one must stay the eighth of the former.
+    impl<T> RangeInclusive<T> {
+        /// See [`std::ops::RangeInclusive::new`]
+        pub fn new(start: T, end: T) -> Self {
+            RangeInclusive {
+                lo: start,
+                hi: end,
+                exhausted: false,
+            }
+        }
+        /// See [`std::ops::RangeInclusive::start`]
+        pub fn start(&self) -> &T {
+            &self.lo
+        }
+        /// See [`std::ops::RangeInclusive::end`]
+        pub fn end(&self) -> &T {
+            &self.hi
+        }
+    }
 }
 
 #[cfg(test)]
@@ -378,6 +493,16 @@ mod tests {
     use crate::testing::Inject;
     use pastey::paste;
     use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_range_inclusive_new(start in any::<u8>(), end in any::<u8>()) {
+            let model = super::range::RangeInclusive::new(start, end);
+            let std_range = start..=end;
+            prop_assert_eq!(*model.start(), *std_range.start());
+            prop_assert_eq!(*model.end(), *std_range.end());
+        }
+    }
 
     // `int_trait_impls!` covers u8..u64. The `requires` rules out wrapping, so
     // the domain is every non-overflowing pair, edges included.

@@ -9,9 +9,6 @@
 //! The tests only ever spell the type as `super::Vec<T>`, which resolves to
 //! `Vec<T>` in the default variant and to `Vec<T, Global>` in the F\* one —
 //! identical surface, so nothing here needs to know which is in play.
-//!
-//! Not covered here: `drain` ignores its range argument (only the full range is
-//! exercised below), so it is kept opaque for aeneas too — see the Makefile.
 
 use crate::testing::Inject;
 use proptest::prelude::*;
@@ -214,15 +211,61 @@ proptest! {
         prop_assert_eq!(model, v.inject());
     }
 
-    /// `drain` ignores its range argument, so only the full range agrees
-    /// with std. The drained elements and the emptied `Vec` are both checked.
+    /// Every range form, built with `start <= end <= len` so that none panics.
     #[test]
-    fn test_drain_full(v in prop::collection::vec(any::<u8>(), 0..50)) {
-        let mut model = v.inject();
-        let drained: std::vec::Vec<u8> = model.drain(..).collect();
-        prop_assert_eq!(drained.as_slice(), v.as_slice());
-        prop_assert_eq!(model, std::vec::Vec::new().inject());
+    fn test_drain(
+        (v, start, end) in prop::collection::vec(any::<u8>(), 0..20)
+            .prop_flat_map(|v| {
+                let n = v.len();
+                (Just(v), 0..=n)
+            })
+            .prop_flat_map(|(v, start)| {
+                let n = v.len();
+                (Just(v), Just(start), start..=n)
+            }),
+    ) {
+        use std::ops::Bound;
+        check_drain(&v, start..end)?;
+        check_drain(&v, start..)?;
+        check_drain(&v, ..end)?;
+        check_drain(&v, ..)?;
+        check_drain(&v, (Bound::Included(start), Bound::Excluded(end)))?;
+        if end > start {
+            check_drain(&v, start..=end - 1)?;
+        }
+        if end > 0 {
+            check_drain(&v, ..=end - 1)?;
+        }
+        if start > 0 {
+            check_drain(&v, (Bound::Excluded(start - 1), Bound::Excluded(end)))?;
+        }
     }
+}
+
+/// `drain` on either `Vec` variant; the default one leaves the allocator open.
+fn model_drain<R: std::ops::RangeBounds<usize>>(
+    model: &mut super::Vec<u8>,
+    range: R,
+) -> std::vec::Vec<u8> {
+    #[cfg(not(hax_backend_fstar))]
+    let drain = model.drain::<crate::alloc::Global, R>(range);
+    #[cfg(hax_backend_fstar)]
+    let drain = model.drain(range);
+    drain.collect()
+}
+
+/// The drained elements and what is left in the `Vec` must both match std.
+fn check_drain<R: std::ops::RangeBounds<usize> + Clone>(
+    v: &[u8],
+    range: R,
+) -> Result<(), TestCaseError> {
+    let mut model = v.to_vec().inject();
+    let mut std_v = v.to_vec();
+    let drained: std::vec::Vec<u8> = model_drain(&mut model, range.clone());
+    let std_drained: std::vec::Vec<u8> = std_v.drain(range).collect();
+    prop_assert_eq!(drained, std_drained);
+    prop_assert_eq!(model, std_v.inject());
+    Ok(())
 }
 
 #[test]
@@ -350,6 +393,20 @@ fn test_index_out_of_bounds_panics() {
     let (model, real) = vec_of(3);
     let i = std::hint::black_box(3usize);
     crate::testing::panics_like_core(|| model[i], || real[i]);
+}
+
+#[test]
+fn test_drain_out_of_range_panics() {
+    let end = std::hint::black_box(4usize);
+    let (mut model, mut real) = vec_of(3);
+    crate::testing::panics_like_core(|| model_drain(&mut model, 1..end), || real.drain(1..end));
+    let (mut model, mut real) = vec_of(3);
+    crate::testing::panics_like_core(|| model_drain(&mut model, 2..1), || real.drain(2..1));
+    let (mut model, mut real) = vec_of(3);
+    crate::testing::panics_like_core(
+        || model_drain(&mut model, ..=usize::MAX),
+        || real.drain(..=usize::MAX),
+    );
 }
 
 #[test]
