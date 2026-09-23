@@ -13,49 +13,6 @@ let nth_chunk_of #t
   =  Seq.slice s (Seq.length s_chunk * chunk_nth) (Seq.length s_chunk * (chunk_nth + 1))
   == s_chunk
 
-/// Fold function that is generated for `for` loops iterating on
-/// `s.chunks_exact(chunk_size).enumerate()`-like iterators
-val fold_enumerated_chunked_slice
-  (#t: Type0) (#acc_t: Type0)
-  (chunk_size: usize {v chunk_size > 0})
-  (s: t_Slice t)
-  (inv: acc_t -> (i:usize{v i <= Seq.length s / v chunk_size}) -> Type0)
-  (init: acc_t {inv init (sz 0)})
-  (f: ( acc:acc_t
-      -> item:(usize & t_Slice t) {
-        let (i, s_chunk) = item in
-          v i < Seq.length s / v chunk_size
-        /\ length s_chunk == chunk_size
-        /\ nth_chunk_of s s_chunk (v i)
-        /\ inv acc i
-      }
-      -> acc':acc_t {
-        inv acc' (fst item +! sz 1)
-      }
-      )
-  )
-  : result: acc_t {inv result (mk_int (Seq.length s / v chunk_size))}
-
-/// Fold function that is generated for `for` loops iterating on
-/// `s.chunks_exact(chunk_size)`-like iterators
-val fold_chunked_slice
-  (#t: Type0) (#acc_t: Type0)
-  (chunk_size: usize {v chunk_size > 0})
-  (s: t_Slice t)
-  (inv: acc_t -> (i:usize) -> Type0)
-  (init: acc_t {inv init (sz 0)})
-  (f: ( acc:acc_t
-      -> item:(t_Slice t) {
-        length item == chunk_size /\
-        inv acc (sz 0)
-      }
-      -> acc':acc_t {
-        inv acc' (sz 0)
-      }
-      )
-  )
-  : result: acc_t {inv result (mk_int 0)}
-
 (**** `start..end_` *)
 unfold let fold_range_wf_index (#u: inttype)
   (start: int_t u) (end_: int_t u)
@@ -136,14 +93,174 @@ let fold_enumerated_slice
   : result: acc_t {inv result (length s)}
   = fold_range (sz 0) (length s) inv init (fun acc i -> f acc (i, Seq.index s (v i)))
 
-val fold_enumerated_slice_return
+let fold_enumerated_slice_cf
+  (#t: Type0) (#acc_t: Type0)
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
+  (init: acc_t {inv init (sz 0)})
+  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) /\ inv acc (fst i)}
+                 -> tuple:(Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t)
+                    {
+                      let acc = match tuple with
+                        | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
+                        | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
+                      inv acc (fst i +! sz 1)}))
+  : result: acc_t {exists (final: usize). v final <= v (length s) /\ inv result final}
+  = fold_range_cf (sz 0) (length s) inv init (fun acc i -> f acc (i, Seq.index s (v i)))
+
+let fold_enumerated_slice_return
   (#t: Type0) (#acc_t: Type0) (#ret: Type0)
   (s: t_Slice t)
   (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
   (init: acc_t {inv init (sz 0)})
-  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) (*/\ inv acc  (fst i)*)}
-                 -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc_t)) (acc':acc_t)    (*{v (fst i) < v (length s) /\ inv acc' (fst i)}*)))
-  : result: Core_models.Ops.Control_flow.t_ControlFlow ret acc_t(* {inv result (length s)} *)
+  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i))}
+                 -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc_t)) acc_t))
+  : Core_models.Ops.Control_flow.t_ControlFlow ret acc_t
+  = fold_range_return (sz 0) (length s) inv init (fun acc i -> f acc (i, Seq.index s (v i)))
+
+(**** `s.chunks_exact(chunk_size)` and its `.enumerate()` *)
+let chunk_bound_lemma (n: nat) (k: pos) (i: nat)
+  : Lemma (requires i < n / k) (ensures k * (i + 1) <= n)
+  = FStar.Math.Lemmas.lemma_mult_le_left k (i + 1) (n / k);
+    FStar.Math.Lemmas.lemma_div_mod n k
+
+/// The `i`-th chunk of `s.chunks_exact(chunk_size)`
+let nth_chunk (#t: Type0) (chunk_size: usize {v chunk_size > 0}) (s: t_Slice t)
+  (i: nat {i < Seq.length s / v chunk_size})
+  : chunk: t_Slice t {length chunk == chunk_size /\ nth_chunk_of s chunk i}
+  = chunk_bound_lemma (Seq.length s) (v chunk_size) i;
+    Seq.slice s (v chunk_size * i) (v chunk_size * (i + 1))
+
+/// Fold function that is generated for `for` loops iterating on
+/// `s.chunks_exact(chunk_size).enumerate()`-like iterators
+let fold_enumerated_chunked_slice
+  (#t: Type0) (#acc_t: Type0)
+  (chunk_size: usize {v chunk_size > 0})
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize{v i <= Seq.length s / v chunk_size}) -> Type0)
+  (init: acc_t {inv init (sz 0)})
+  (f: ( acc:acc_t
+      -> item:(usize & t_Slice t) {
+        let (i, s_chunk) = item in
+          v i < Seq.length s / v chunk_size
+        /\ length s_chunk == chunk_size
+        /\ nth_chunk_of s s_chunk (v i)
+        /\ inv acc i
+      }
+      -> acc':acc_t {
+        inv acc' (fst item +! sz 1)
+      }
+      )
+  )
+  : result: acc_t {inv result (mk_int (Seq.length s / v chunk_size))}
+  = fold_range (sz 0) (sz (Seq.length s / v chunk_size)) inv init
+      (fun acc i -> f acc (i, nth_chunk chunk_size s (v i)))
+
+let fold_enumerated_chunked_slice_cf
+  (#t: Type0) (#acc_t: Type0)
+  (chunk_size: usize {v chunk_size > 0})
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize{v i <= Seq.length s / v chunk_size}) -> Type0)
+  (init: acc_t {inv init (sz 0)})
+  (f: ( acc:acc_t
+      -> item:(usize & t_Slice t) {
+        let (i, s_chunk) = item in
+          v i < Seq.length s / v chunk_size
+        /\ length s_chunk == chunk_size
+        /\ nth_chunk_of s s_chunk (v i)
+        /\ inv acc i
+      }
+      -> tuple:(Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t) {
+        let acc = match tuple with
+          | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
+          | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
+        inv acc (fst item +! sz 1)
+      }
+      )
+  )
+  : result: acc_t {exists (final: usize). v final <= Seq.length s / v chunk_size /\ inv result final}
+  = fold_range_cf (sz 0) (sz (Seq.length s / v chunk_size)) inv init
+      (fun acc i -> f acc (i, nth_chunk chunk_size s (v i)))
+
+let fold_enumerated_chunked_slice_return
+  (#t: Type0) (#acc_t: Type0) (#ret: Type0)
+  (chunk_size: usize {v chunk_size > 0})
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize{v i <= Seq.length s / v chunk_size}) -> Type0)
+  (init: acc_t)
+  (f: ( acc:acc_t
+      -> item:(usize & t_Slice t) {
+        let (i, s_chunk) = item in
+          v i < Seq.length s / v chunk_size
+        /\ length s_chunk == chunk_size
+        /\ nth_chunk_of s s_chunk (v i)
+      }
+      -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc_t)) acc_t
+      )
+  )
+  : Core_models.Ops.Control_flow.t_ControlFlow ret acc_t
+  = fold_range_return (sz 0) (sz (Seq.length s / v chunk_size)) inv init
+      (fun acc i -> f acc (i, nth_chunk chunk_size s (v i)))
+
+/// Fold function that is generated for `for` loops iterating on
+/// `s.chunks_exact(chunk_size)`-like iterators
+let fold_chunked_slice
+  (#t: Type0) (#acc_t: Type0)
+  (chunk_size: usize {v chunk_size > 0})
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize) -> Type0)
+  (init: acc_t {inv init (sz 0)})
+  (f: ( acc:acc_t
+      -> item:(t_Slice t) {
+        length item == chunk_size /\
+        inv acc (sz 0)
+      }
+      -> acc':acc_t {
+        inv acc' (sz 0)
+      }
+      )
+  )
+  : result: acc_t {inv result (mk_int 0)}
+  = fold_range (sz 0) (sz (Seq.length s / v chunk_size)) (fun acc _ -> inv acc (sz 0)) init
+      (fun acc i -> f acc (nth_chunk chunk_size s (v i)))
+
+let fold_chunked_slice_cf
+  (#t: Type0) (#acc_t: Type0)
+  (chunk_size: usize {v chunk_size > 0})
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize) -> Type0)
+  (init: acc_t {inv init (sz 0)})
+  (f: ( acc:acc_t
+      -> item:(t_Slice t) {
+        length item == chunk_size /\
+        inv acc (sz 0)
+      }
+      -> tuple:(Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t) {
+        let acc = match tuple with
+          | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
+          | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
+        inv acc (sz 0)
+      }
+      )
+  )
+  : result: acc_t {inv result (mk_int 0)}
+  = fold_range_cf (sz 0) (sz (Seq.length s / v chunk_size)) (fun acc _ -> inv acc (sz 0)) init
+      (fun acc i -> f acc (nth_chunk chunk_size s (v i)))
+
+let fold_chunked_slice_return
+  (#t: Type0) (#acc_t: Type0) (#ret: Type0)
+  (chunk_size: usize {v chunk_size > 0})
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize) -> Type0)
+  (init: acc_t)
+  (f: ( acc:acc_t
+      -> item:(t_Slice t) {length item == chunk_size}
+      -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc_t)) acc_t
+      )
+  )
+  : Core_models.Ops.Control_flow.t_ControlFlow ret acc_t
+  = fold_range_return (sz 0) (sz (Seq.length s / v chunk_size)) (fun acc _ -> inv acc (sz 0)) init
+      (fun acc i -> f acc (nth_chunk chunk_size s (v i)))
 
 (**** `(start..end_).step_by(step)` *)
 unfold let fold_range_step_by_wf_index (#u: inttype)
@@ -213,6 +330,99 @@ let fold_range_step_by
   = (if v start < v end_
      then fold_range_step_by_bound_lemma (v step) 0 (v end_ - 1 - v start));
     fold_range_step_by_from start end_ step inv start init f
+
+/// Unlike `fold_range_step_by`, callable when `end_ + step` overflows: the
+/// invariant after a step, and so the result, then only hold if it does not.
+let rec fold_range_step_by_cf_from
+  (#acc_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (step: usize {v step > 0})
+  (inv: acc_t -> (i:int_t u{fold_range_step_by_wf_index start end_ step false (v i)}) -> Type0)
+  (i: int_t u {v i >= v start /\ (v i - v start) % v step == 0
+            /\ (v start < v end_ ==> v i <= fold_range_step_by_upper_bound start end_ step)})
+  (acc: acc_t {inv acc i})
+  (f: (acc:acc_t -> j:int_t u  {v j < v end_ - ((v end_ - 1 - v start) % v step) /\ fold_range_step_by_wf_index start end_ step true (v j) /\ inv acc j}
+                 -> tuple:(Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t)
+                    {
+                      let acc = match tuple with
+                        | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
+                        | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
+                      range (v j + v step) u ==> inv acc (mk_int (v j + v step))}))
+  : Tot (res: acc_t {range (v end_ + v step) u ==>
+                     (exists (final: int_t u{fold_range_step_by_wf_index start end_ step false (v final)}). inv res final)})
+        (decreases (v end_ - v i + v step))
+  = if v i < v end_
+    then begin
+      fold_range_step_by_bound_lemma (v step) (v i - v start) (v end_ - 1 - v start);
+      FStar.Math.Lemmas.lemma_mod_plus (v i - v start) 1 (v step);
+      match f acc i with
+      | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc) -> acc
+      | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
+        if v i + v step < v end_
+        then fold_range_step_by_cf_from start end_ step inv (mk_int (v i + v step)) acc f
+        else acc
+    end
+    else acc
+
+let fold_range_step_by_cf
+  (#acc_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (step: usize {v step > 0})
+  (inv: acc_t -> (i:int_t u{fold_range_step_by_wf_index start end_ step false (v i)}) -> Type0)
+  (init: acc_t {inv init start})
+  (f: (acc:acc_t -> i:int_t u  {v i < v end_ - ((v end_ - 1 - v start) % v step) /\ fold_range_step_by_wf_index start end_ step true (v i) /\ inv acc i}
+                 -> tuple:(Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t)
+                    {
+                      let acc = match tuple with
+                        | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
+                        | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
+                      range (v i + v step) u ==> inv acc (mk_int (v i + v step))}))
+  : res: acc_t {range (v end_ + v step) u ==>
+                (exists (final: int_t u{fold_range_step_by_wf_index start end_ step false (v final)}). inv res final)}
+  = (if v start < v end_
+     then fold_range_step_by_bound_lemma (v step) 0 (v end_ - 1 - v start));
+    fold_range_step_by_cf_from start end_ step inv start init f
+
+let rec fold_range_step_by_return_from
+  (#acc_t: Type0) (#ret_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (step: usize {v step > 0})
+  (i: int_t u {v i >= v start /\ (v i - v start) % v step == 0})
+  (acc: acc_t)
+  (f: (acc:acc_t -> j:int_t u {v j < v end_ - ((v end_ - 1 - v start) % v step) /\ fold_range_step_by_wf_index start end_ step true (v j)}
+                 -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret_t (unit & acc_t)) acc_t))
+  : Tot (Core_models.Ops.Control_flow.t_ControlFlow ret_t acc_t)
+        (decreases (v end_ - v i))
+  = if v i < v end_
+    then begin
+      fold_range_step_by_bound_lemma (v step) (v i - v start) (v end_ - 1 - v start);
+      FStar.Math.Lemmas.lemma_mod_plus (v i - v start) 1 (v step);
+      match f acc i with
+      | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Break res) ->
+        Core_models.Ops.Control_flow.ControlFlow_Break res
+      | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Continue ((), res)) ->
+        Core_models.Ops.Control_flow.ControlFlow_Continue res
+      | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
+        if v i + v step < v end_
+        then fold_range_step_by_return_from start end_ step (mk_int (v i + v step)) acc f
+        else Core_models.Ops.Control_flow.ControlFlow_Continue acc
+    end
+    else Core_models.Ops.Control_flow.ControlFlow_Continue acc
+
+let fold_range_step_by_return
+  (#acc_t: Type0) (#ret_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (step: usize {v step > 0})
+  (inv: acc_t -> (i:int_t u{fold_range_step_by_wf_index start end_ step false (v i)}) -> Type0)
+  (init: acc_t)
+  (f: (acc:acc_t -> i:int_t u {v i < v end_ - ((v end_ - 1 - v start) % v step) /\ fold_range_step_by_wf_index start end_ step true (v i)}
+                 -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret_t (unit & acc_t)) acc_t))
+  : Core_models.Ops.Control_flow.t_ControlFlow ret_t acc_t
+  = fold_range_step_by_return_from start end_ step start init f
 #pop-options
 
 val fold_return #it #acc #ret #item (i: it) (init: acc) 
@@ -220,4 +430,6 @@ val fold_return #it #acc #ret #item (i: it) (init: acc)
     Core_models.Ops.Control_flow.t_ControlFlow  
     (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc)) acc): 
   Core_models.Ops.Control_flow.t_ControlFlow ret acc
-  
+
+val fold_cf #it #acc #item (i: it) (init: acc)
+  (f: acc -> item -> Core_models.Ops.Control_flow.t_ControlFlow (unit & acc) acc): acc
