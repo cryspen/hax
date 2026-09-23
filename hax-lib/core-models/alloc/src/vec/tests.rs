@@ -293,9 +293,9 @@ fn test_default() {
     assert_eq!(model, std_v.inject());
 }
 
-// ----- Clone / PartialEq / IntoIterator -------
+// ----- Clone / PartialEq -------
 //
-// The F* variant of `vec` models none of these three, so the tests below are
+// The F* variant of `vec` models neither, so the tests below are
 // specific to the default variant. (Its `PartialEq` is what `prop_assert_eq!`
 // uses above; under `hax_backend_fstar` that comes from a `cfg(test)` derive.)
 
@@ -339,28 +339,13 @@ proptest! {
         let b = if use_equal { a.clone() } else { b };
         prop_assert_eq!(a.inject() != b.inject(), a != b);
     }
+}
 
+proptest! {
     #[test]
     fn test_vec_into_iter(v in prop::collection::vec(any::<u8>(), 0..30)) {
         let mut it = v.inject().into_iter();
         let mut collected: std::vec::Vec<u8> = std::vec::Vec::new();
-        while let Some(x) = it.next() {
-            collected.push(x);
-        }
-        prop_assert_eq!(collected.as_slice(), v.as_slice());
-    }
-}
-
-// The F* variant models no `IntoIterator` for `Vec`, so its `IntoIter` has to be
-// built by hand.
-#[cfg(hax_backend_fstar)]
-proptest! {
-    #[test]
-    fn test_into_iter_direct(v in prop::collection::vec(any::<u8>(), 0..30)) {
-        let mut it = super::into_iter::IntoIter(
-            rust_primitives::sequence::seq_from_boxed_slice(v.clone().into_boxed_slice()),
-        );
-        let mut collected = std::vec::Vec::new();
         while let Some(x) = it.next() {
             collected.push(x);
         }

@@ -1154,8 +1154,11 @@ pub mod vec {
 
     pub mod into_iter {
         use rust_primitives::sequence::*;
-        pub struct IntoIter<T>(pub Seq<T>);
-        impl<T> Iterator for IntoIter<T> {
+        pub struct IntoIter<T, A = crate::alloc::Global>(
+            pub Seq<T>,
+            pub std::marker::PhantomData<A>,
+        );
+        impl<T, A> Iterator for IntoIter<T, A> {
             type Item = T;
             fn next(&mut self) -> Option<Self::Item> {
                 if seq_len(&self.0) == 0 {
@@ -1163,6 +1166,15 @@ pub mod vec {
                 } else {
                     Some(seq_remove(&mut self.0, 0))
                 }
+            }
+        }
+        // Here rather than in `vec`, where any new `impl` block shifts the
+        // positional `impl_N__` names of `Vec`'s inherent methods.
+        impl<T, A> IntoIterator for super::Vec<T, A> {
+            type Item = T;
+            type IntoIter = IntoIter<T, A>;
+            fn into_iter(self) -> Self::IntoIter {
+                IntoIter(self.0, std::marker::PhantomData)
             }
         }
     }
