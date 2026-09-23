@@ -30,21 +30,6 @@ let impl__contains
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialEq v_T v_T)
      = impl__contains' #v_T #i0
 
-/// See [`std::slice::binary_search`]
-assume
-val impl__binary_search':
-    #v_T: Type0 ->
-    {| i0: Core_models.Cmp.t_Ord v_T |} ->
-    s: t_Slice v_T ->
-    x: v_T
-  -> Core_models.Result.t_Result usize usize
-
-unfold
-let impl__binary_search
-      (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
-     = impl__binary_search' #v_T #i0
-
 /// See [`std::slice::get`]
 let impl__get
       (#v_T #v_I: Type0)
@@ -181,6 +166,18 @@ let impl__split_at_checked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
     Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
   else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
 
+/// See [`std::slice::as_chunks`]
+let impl__as_chunks (#v_T: Type0) (v_N: usize) (s: t_Slice v_T)
+    : Prims.Pure (t_Slice (t_Array v_T v_N) & t_Slice v_T)
+      (requires v_N >. mk_usize 0)
+      (fun _ -> Prims.l_True) = Rust_primitives.Slice.slice_as_chunks #v_T v_N s
+
+/// See [`std::slice::as_rchunks`]
+let impl__as_rchunks (#v_T: Type0) (v_N: usize) (s: t_Slice v_T)
+    : Prims.Pure (t_Slice v_T & t_Slice (t_Array v_T v_N))
+      (requires v_N >. mk_usize 0)
+      (fun _ -> Prims.l_True) = Rust_primitives.Slice.slice_as_rchunks #v_T v_N s
+
 /// See [`std::slice::copy_within`]
 let impl__copy_within
       (#v_T #v_R: Type0)
@@ -223,6 +220,90 @@ let impl__copy_within
       dest
   in
   s
+
+/// See [`std::slice::binary_search`]
+let impl__binary_search
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_Ord v_T)
+      (s: t_Slice v_T)
+      (x: v_T)
+    : Prims.Pure (Core_models.Result.t_Result usize usize)
+      Prims.l_True
+      (ensures
+        fun r ->
+          let r:Core_models.Result.t_Result usize usize = r in
+          match r <: Core_models.Result.t_Result usize usize with
+          | Core_models.Result.Result_Ok i ->
+            i <. (impl__len #v_T s <: usize) &&
+            (match
+                Core_models.Cmp.f_cmp #v_T
+                  #FStar.Tactics.Typeclasses.solve
+                  (Rust_primitives.Slice.slice_index #v_T s i <: v_T)
+                  x
+                <:
+                Core_models.Cmp.t_Ordering
+              with
+              | Core_models.Cmp.Ordering_Equal  -> true
+              | _ -> false)
+          | Core_models.Result.Result_Err i -> i <=. (impl__len #v_T s <: usize)) =
+  let size:usize = impl__len #v_T s in
+  if size =. mk_usize 0
+  then Core_models.Result.Result_Err (mk_usize 0) <: Core_models.Result.t_Result usize usize
+  else
+    let base:usize = mk_usize 0 in
+    let (base: usize), (size: usize) =
+      Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+        Core_models.Num.impl_usize__BITS
+        (fun temp_0_ temp_1_ ->
+            let (base: usize), (size: usize) = temp_0_ in
+            let _:u32 = temp_1_ in
+            (mk_usize 1 <=. size <: bool) &&
+            (((Rust_primitives.Hax.Int.from_machine base <: Hax_lib.Int.t_Int) +
+                (Rust_primitives.Hax.Int.from_machine size <: Hax_lib.Int.t_Int)
+                <:
+                Hax_lib.Int.t_Int) <=
+              (Rust_primitives.Hax.Int.from_machine (impl__len #v_T s <: usize) <: Hax_lib.Int.t_Int
+              )
+              <:
+              bool))
+        (base, size <: (usize & usize))
+        (fun temp_0_ temp_1_ ->
+            let (base: usize), (size: usize) = temp_0_ in
+            let _:u32 = temp_1_ in
+            if size >. mk_usize 1 <: bool
+            then
+              let half:usize = size /! mk_usize 2 in
+              let mid:usize = base +! half in
+              let base:usize =
+                match
+                  Core_models.Cmp.f_cmp #v_T
+                    #FStar.Tactics.Typeclasses.solve
+                    (Rust_primitives.Slice.slice_index #v_T s mid <: v_T)
+                    x
+                  <:
+                  Core_models.Cmp.t_Ordering
+                with
+                | Core_models.Cmp.Ordering_Greater  -> base
+                | _ -> mid
+              in
+              let size:usize = size -! half in
+              base, size <: (usize & usize)
+            else base, size <: (usize & usize))
+    in
+    match
+      Core_models.Cmp.f_cmp #v_T
+        #FStar.Tactics.Typeclasses.solve
+        (Rust_primitives.Slice.slice_index #v_T s base <: v_T)
+        x
+      <:
+      Core_models.Cmp.t_Ordering
+    with
+    | Core_models.Cmp.Ordering_Equal  ->
+      Core_models.Result.Result_Ok base <: Core_models.Result.t_Result usize usize
+    | Core_models.Cmp.Ordering_Less  ->
+      Core_models.Result.Result_Err (base +! mk_usize 1) <: Core_models.Result.t_Result usize usize
+    | Core_models.Cmp.Ordering_Greater  ->
+      Core_models.Result.Result_Err base <: Core_models.Result.t_Result usize usize
 
 /// See [`std::slice::get_unchecked`]
 assume

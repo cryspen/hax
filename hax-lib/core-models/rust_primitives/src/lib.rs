@@ -43,6 +43,15 @@ pub mod slice {
     pub fn slice_copy_within<T: Copy>(s: &mut [T], start: usize, end: usize, dest: usize) {
         s.copy_within(start..end, dest)
     }
+    // Safe Rust cannot view a `&[T]` as a `&[[T; N]]`.
+    #[hax_lib::requires(N > 0)]
+    pub fn slice_as_chunks<T, const N: usize>(s: &[T]) -> (&[[T; N]], &[T]) {
+        s.as_chunks::<N>()
+    }
+    #[hax_lib::requires(N > 0)]
+    pub fn slice_as_rchunks<T, const N: usize>(s: &[T]) -> (&[T], &[[T; N]]) {
+        s.as_rchunks::<N>()
+    }
     // `reverse`/`swap` mutate in place; with no `Clone`/`Copy` bound the elements
     // can't be read out of the shared-ref `slice_index`/`slice_slice` and written
     // back, so they are primitives.

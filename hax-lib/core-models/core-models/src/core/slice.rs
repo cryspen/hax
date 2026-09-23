@@ -227,6 +227,16 @@ impl<T> Slice<T> {
     {
         rust_primitives::slice::slice_contains(s, v)
     }
+    /// See [`std::slice::as_chunks`]
+    #[hax_lib::requires(N > 0)]
+    fn as_chunks<const N: usize>(s: &[T]) -> (&[[T; N]], &[T]) {
+        rust_primitives::slice::slice_as_chunks(s)
+    }
+    /// See [`std::slice::as_rchunks`]
+    #[hax_lib::requires(N > 0)]
+    fn as_rchunks<const N: usize>(s: &[T]) -> (&[T], &[[T; N]]) {
+        rust_primitives::slice::slice_as_rchunks(s)
+    }
     /// See [`std::slice::copy_within`]
     #[hax_lib::requires(
         match index::try_range(src, crate::ops::range::RangeTo { end: Slice::len(s) }) {
@@ -242,11 +252,19 @@ impl<T> Slice<T> {
         rust_primitives::slice::slice_copy_within(s, r.start, r.end, dest)
     }
     /// See [`std::slice::binary_search`]
-    // F*-only: the equivalence tests call this, so Lean needs the body; it is
-    // written over primitives the Lean library provides.
-    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     // The Rust documentation leaves the behavior unspecified when there are multiple
     // matches or when the array is unsorted. We follow the Rust core implementation.
+    #[cfg_attr(
+        not(hax_backend_lean),
+        hax_lib::ensures(|r| match r {
+            Result::Ok(i) => i < Slice::len(s)
+                && matches!(
+                    crate::cmp::Ord::cmp(rust_primitives::slice::slice_index(s, i), x),
+                    crate::cmp::Ordering::Equal
+                ),
+            Result::Err(i) => i <= Slice::len(s),
+        })
+    )]
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize>
     where
         T: crate::cmp::Ord,
@@ -256,15 +274,24 @@ impl<T> Slice<T> {
             return Result::Err(0);
         }
         let mut base = 0;
-        while size > 1 {
-            let half = size / 2;
-            let mid = base + half;
-            // Only `Greater` keeps `base`, so an equal run resolves to its last.
-            base = match crate::cmp::Ord::cmp(rust_primitives::slice::slice_index(s, mid), x) {
-                crate::cmp::Ordering::Greater => base,
-                _ => mid,
-            };
-            size -= half;
+        // A `for` rather than std's `while`: `Rust_primitives.Hax`, which holds
+        // F*'s `while_loop`, depends on this module. Each step takes `size` to
+        // `ceil(size / 2)`, so `usize::BITS` steps bring any length down to 1.
+        for _ in 0..usize::BITS {
+            #[cfg(hax_backend_fstar)]
+            hax_lib::loop_invariant!(|_: u32| 1 <= size
+                && hax_lib::ToInt::to_int(base) + hax_lib::ToInt::to_int(size)
+                    <= hax_lib::ToInt::to_int(Slice::len(s)));
+            if size > 1 {
+                let half = size / 2;
+                let mid = base + half;
+                // Only `Greater` keeps `base`, so an equal run resolves to its last.
+                base = match crate::cmp::Ord::cmp(rust_primitives::slice::slice_index(s, mid), x) {
+                    crate::cmp::Ordering::Greater => base,
+                    _ => mid,
+                };
+                size -= half;
+            }
         }
         match crate::cmp::Ord::cmp(rust_primitives::slice::slice_index(s, base), x) {
             crate::cmp::Ordering::Equal => Result::Ok(base),
@@ -1835,6 +1862,22 @@ mod tests {
                     ),
                 }
             }
+        }
+    }
+
+    fn check_as_chunks<const N: usize>(v: &[u8]) -> Result<(), TestCaseError> {
+        prop_assert_eq!(Slice::as_chunks::<N>(v), v.as_chunks::<N>());
+        prop_assert_eq!(Slice::as_rchunks::<N>(v), v.as_rchunks::<N>());
+        Ok(())
+    }
+
+    proptest! {
+        #[test]
+        fn test_as_chunks(v in prop::collection::vec(any::<u8>(), 0..=20)) {
+            check_as_chunks::<1>(&v)?;
+            check_as_chunks::<2>(&v)?;
+            check_as_chunks::<3>(&v)?;
+            check_as_chunks::<7>(&v)?;
         }
     }
 

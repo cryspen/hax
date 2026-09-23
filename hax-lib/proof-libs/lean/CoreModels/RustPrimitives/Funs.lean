@@ -124,6 +124,37 @@ def rust_primitives.slice.slice_copy_within
       by have := s.property; simp only [List.length_setSlice!]; omega⟩
   else fail .panic
 
+/-- The `i`-th `N`-element chunk of `l` from offset `off`, if it is complete. -/
+def rust_primitives.slice.chunk_at {T : Type} (N : Std.Usize) (l : List T) (off i : Nat) :
+    Option (Array T N) :=
+  let c := (l.drop (off + N.val * i)).take N.val
+  if h : c.length = N.val then some ⟨c, h⟩ else none
+
+/-- [rust_primitives::slice::slice_as_chunks]. The final `else` is unreachable:
+    every chunk is complete and both lists are no longer than `s`. -/
+@[spec]
+def rust_primitives.slice.slice_as_chunks {T : Type} (N : Std.Usize) :
+    Slice T → RustM ((Slice (Array T N)) × (Slice T)) := fun s =>
+  if N.val = 0 then fail .panic else
+  let k := s.length / N.val
+  let chunks := (List.range k).filterMap (rust_primitives.slice.chunk_at N s.val 0)
+  let rest := s.val.drop (N.val * k)
+  if h : chunks.length ≤ Std.Usize.max ∧ rest.length ≤ Std.Usize.max ∧ chunks.length = k
+  then ok (⟨chunks, h.1⟩, ⟨rest, h.2.1⟩) else fail .panic
+
+/-- [rust_primitives::slice::slice_as_rchunks]: as `slice_as_chunks`, with the
+    remainder at the front. -/
+@[spec]
+def rust_primitives.slice.slice_as_rchunks {T : Type} (N : Std.Usize) :
+    Slice T → RustM ((Slice T) × (Slice (Array T N))) := fun s =>
+  if N.val = 0 then fail .panic else
+  let k := s.length / N.val
+  let r := s.length % N.val
+  let chunks := (List.range k).filterMap (rust_primitives.slice.chunk_at N s.val r)
+  let rest := s.val.take r
+  if h : rest.length ≤ Std.Usize.max ∧ chunks.length ≤ Std.Usize.max ∧ chunks.length = k
+  then ok (⟨rest, h.1⟩, ⟨chunks, h.2.1⟩) else fail .panic
+
 /-- This helper function for `array_from_fn` takes a `FnMut` closure and produces a list. A list
     is easier to produce than an array because we do not need to produce a length-proof. -/
 def rust_primitives.slice.array_from_fn_go {T F : Type}

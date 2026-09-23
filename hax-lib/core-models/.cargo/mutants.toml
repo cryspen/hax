@@ -17,6 +17,10 @@ exclude_re = [
     "replace < with <= in .*::partial_cmp",
     "replace < with <= in .*Ord for .*::cmp",
 
+    # `if size > 1` guards `binary_search`'s halving step; at size == 1 the step
+    # has `half == 0`, so it leaves `base` and `size` as they are.
+    "replace > with >= in Slice<T>::binary_search",
+
     # `if n < l { seq_drain(n, l) }`: at n == l the mutant drains an empty
     # range, which is a no-op.
     "replace < with <= in vec::Vec<.*>::truncate",

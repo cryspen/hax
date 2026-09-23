@@ -415,6 +415,20 @@ pub fn test_range_inclusive_accessors() -> bool {
 }
 
 #[rust_lean_test]
+pub fn test_as_chunks() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let (chunks, rest) = a.as_slice().as_chunks::<2>();
+    chunks.len() == 2 && chunks[0] == [1u8, 2] && chunks[1] == [3u8, 4] && rest == [5u8]
+}
+
+#[rust_lean_test]
+pub fn test_as_rchunks() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let (rest, chunks) = a.as_slice().as_rchunks::<2>();
+    chunks.len() == 2 && chunks[0] == [2u8, 3] && chunks[1] == [4u8, 5] && rest == [1u8]
+}
+
+#[rust_lean_test]
 pub fn test_copy_within() -> bool {
     let mut a: [u8; 4] = [1, 2, 3, 4];
     let s: &mut [u8] = &mut a;
