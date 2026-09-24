@@ -507,8 +507,9 @@ mod tests {
         use crate::testing::DebugWitness;
         let mut f = crate::fmt::Formatter;
         for fails in [false, true] {
-            let ok = super::Ok::<_, u8>(DebugWitness { fails });
-            let err = super::Err::<u8, _>(DebugWitness { fails });
+            // One instantiation for both arms, so coverage sees them together.
+            let ok = super::Ok::<_, DebugWitness>(DebugWitness { fails });
+            let err = super::Err::<DebugWitness, _>(DebugWitness { fails });
             assert_eq!(crate::fmt::Debug::fmt(&ok, &mut f).is_err(), fails);
             assert_eq!(crate::fmt::Debug::fmt(&err, &mut f).is_err(), fails);
         }
