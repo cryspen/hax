@@ -394,7 +394,7 @@ pub mod range {
         #[hax_lib::requires(true)]
         fn end_bound(&self) -> Bound<&T>;
         /// See [`std::ops::RangeBounds::contains`]
-        // The F* library has no default methods: each impl defines it there.
+        // F* has no default methods: there, `RangeBoundsDefaults` provides it.
         #[cfg(not(hax_backend_fstar))]
         #[hax_lib::requires(true)]
         fn contains<U>(&self, item: &U) -> bool
@@ -404,12 +404,6 @@ pub mod range {
         {
             bounds_contain(self.start_bound(), self.end_bound(), item)
         }
-        #[cfg(hax_backend_fstar)]
-        #[hax_lib::requires(true)]
-        fn contains<U>(&self, item: &U) -> bool
-        where
-            T: PartialOrd<U>,
-            U: ?Sized + PartialOrd<T>;
     }
     // `partial_cmp` rather than `<=`: the F* `PartialOrd` has no `le`.
     fn bounds_contain<T, U: ?Sized>(start: Bound<&T>, end: Bound<&T>, item: &U) -> bool
@@ -427,18 +421,22 @@ pub mod range {
             }
             Bound::Unbounded => true,
         };
-        let before_end = match end {
-            Bound::Included(end) => matches!(
-                item.partial_cmp(end),
-                Option::Some(Ordering::Less | Ordering::Equal)
-            ),
-            Bound::Excluded(end) => matches!(item.partial_cmp(end), Option::Some(Ordering::Less)),
-            Bound::Unbounded => true,
-        };
-        after_start && before_end
+        // Like std, `end` is not compared once `start` rules `item` out.
+        if after_start {
+            match end {
+                Bound::Included(end) => matches!(
+                    item.partial_cmp(end),
+                    Option::Some(Ordering::Less | Ordering::Equal)
+                ),
+                Bound::Excluded(end) => {
+                    matches!(item.partial_cmp(end), Option::Some(Ordering::Less))
+                }
+                Bound::Unbounded => true,
+            }
+        } else {
+            false
+        }
     }
-    // An F* instance cannot call its own methods, so there `contains` takes
-    // the same bound expressions as `start_bound` and `end_bound`.
     macro_rules! range_bounds_methods {
         (|$r:ident| $start:expr, $end:expr) => {
             fn start_bound(&self) -> Bound<&T> {
@@ -448,15 +446,6 @@ pub mod range {
             fn end_bound(&self) -> Bound<&T> {
                 let $r = self;
                 $end
-            }
-            #[cfg(hax_backend_fstar)]
-            fn contains<U>(&self, item: &U) -> bool
-            where
-                T: PartialOrd<U>,
-                U: ?Sized + PartialOrd<T>,
-            {
-                let $r = self;
-                bounds_contain($start, $end, item)
             }
         };
     }
@@ -536,7 +525,7 @@ pub mod range {
             T: PartialOrd<U>,
             U: ?Sized + PartialOrd<T>,
         {
-            <Self as RangeBounds<T>>::contains(self, item)
+            bounds_contain(self.start_bound(), self.end_bound(), item)
         }
         /// See [`std::ops::RangeInclusive::is_empty`]
         // The bound repeats the impl's, as in core: clients pass both.
@@ -553,6 +542,31 @@ pub mod range {
                     _ => true,
                 }
             }
+        }
+    }
+
+    // `RangeBounds::contains` for F*, where a trait cannot provide it: this
+    // blanket impl gives it to every `RangeBounds`, including clients' own.
+    // Last in the module, so that it does not shift the `impl_N` names above.
+    #[cfg(any(hax_backend_fstar, test))]
+    #[hax_lib::attributes]
+    pub(crate) trait RangeBoundsDefaults<T> {
+        #[hax_lib::requires(true)]
+        fn contains<U>(&self, item: &U) -> bool
+        where
+            Self: RangeBounds<T>,
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>;
+    }
+    #[cfg(any(hax_backend_fstar, test))]
+    impl<T, R> RangeBoundsDefaults<T> for R {
+        fn contains<U>(&self, item: &U) -> bool
+        where
+            Self: RangeBounds<T>,
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>,
+        {
+            bounds_contain(self.start_bound(), self.end_bound(), item)
         }
     }
 }
@@ -574,7 +588,14 @@ mod tests {
         }
 
         #[test]
-        fn test_range_inclusive_contains(start in any::<u8>(), end in any::<u8>(), item in any::<u8>()) {
+        fn test_range_inclusive_contains(
+            start in any::<u8>(),
+            end in any::<u8>(),
+            same in any::<bool>(),
+            item in any::<u8>(),
+        ) {
+            // Independent draws are almost never equal: that edge is `same`.
+            let end = if same { start } else { end };
             let model = super::range::RangeInclusive::new(start, end);
             let std_range = start..=end;
             prop_assert_eq!(model.contains(&item), std_range.contains(&item));
@@ -596,10 +617,36 @@ mod tests {
         ) {
             use std::ops::RangeBounds as _;
             for (model, real) in crate::testing::range_forms(start, end) {
-                let model = crate::ops::range::RangeBounds::<usize>::contains(&model, &item);
-                prop_assert_eq!(model, real.contains(&item));
+                let expected = real.contains(&item);
+                #[cfg(not(hax_backend_fstar))]
+                prop_assert_eq!(
+                    crate::ops::range::RangeBounds::<usize>::contains(&model, &item),
+                    expected
+                );
+                prop_assert_eq!(
+                    crate::ops::range::RangeBoundsDefaults::<usize>::contains(&model, &item),
+                    expected
+                );
             }
         }
+    }
+
+    /// std does not compare against the end once the start rules the item out.
+    #[test]
+    fn test_contains_skips_end_below_start() {
+        use crate::ops::range::{Bound, RangeBoundsDefaults, RangeInclusive};
+        use crate::testing::Tripwire;
+        let item = Tripwire(1);
+        assert!(!(Tripwire(2)..=Tripwire(u8::MAX)).contains(&item));
+        let model = RangeInclusive::new(Tripwire(2), Tripwire(u8::MAX));
+        assert!(!model.contains(&item));
+        let model = (
+            Bound::Excluded(Tripwire(1)),
+            Bound::Included(Tripwire(u8::MAX)),
+        );
+        #[cfg(not(hax_backend_fstar))]
+        assert!(!crate::ops::range::RangeBounds::contains(&model, &item));
+        assert!(!RangeBoundsDefaults::contains(&model, &item));
     }
 
     // `int_trait_impls!` covers u8..u64. The `requires` rules out wrapping, so

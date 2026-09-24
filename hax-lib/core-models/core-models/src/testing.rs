@@ -202,15 +202,6 @@ impl crate::ops::range::RangeBounds<usize> for ModelRange {
             |r| crate::ops::range::RangeBounds::<usize>::end_bound(r)
         )
     }
-    fn contains<U>(&self, item: &U) -> bool
-    where
-        usize: crate::cmp::PartialOrd<U>,
-        U: ?Sized + crate::cmp::PartialOrd<usize>,
-    {
-        on_model_range!(self, |r| crate::ops::range::RangeBounds::<usize>::contains(
-            r, item
-        ))
-    }
 }
 
 fn bound(kind: u8, x: usize) -> (crate::ops::range::Bound<usize>, std::ops::Bound<usize>) {
@@ -281,4 +272,34 @@ pub fn range_forms(
 pub fn range_endpoint() -> impl proptest::strategy::Strategy<Value = usize> {
     use proptest::prelude::*;
     prop_oneof![0usize..=10, Just(usize::MAX - 1), Just(usize::MAX)]
+}
+
+/// Compares like its `u8`, but panics if either side is `u8::MAX`.
+pub struct Tripwire(pub u8);
+
+impl Tripwire {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        assert!(self.0 != u8::MAX && other.0 != u8::MAX, "tripwire compared");
+        self.0.cmp(&other.0)
+    }
+}
+impl std::cmp::PartialEq for Tripwire {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other).is_eq()
+    }
+}
+impl std::cmp::PartialOrd for Tripwire {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl crate::cmp::PartialEq<Tripwire> for Tripwire {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other).is_eq()
+    }
+}
+impl crate::cmp::PartialOrd<Tripwire> for Tripwire {
+    fn partial_cmp(&self, other: &Self) -> crate::option::Option<crate::cmp::Ordering> {
+        crate::option::Option::Some(self.cmp(other).inject())
+    }
 }

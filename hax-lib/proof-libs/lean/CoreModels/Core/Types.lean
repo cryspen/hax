@@ -1082,7 +1082,7 @@ inductive ops.range.Bound (T : Type) where
 | Unbounded : ops.range.Bound T
 
 /-- Trait declaration: [core_models::ops::range::RangeBounds]
-    Source: 'core-models/src/core/ops.rs', lines 391:4-413:5
+    Source: 'core-models/src/core/ops.rs', lines 391:4-407:5
     Visibility: public -/
 structure ops.range.RangeBounds (Self : Type) (T : Type) where
   start_bound : Self → RustM (ops.range.Bound T)
