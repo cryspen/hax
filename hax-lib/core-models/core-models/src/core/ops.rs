@@ -314,6 +314,7 @@ pub mod drop {
 }
 
 pub mod range {
+    use crate::cmp::{Ordering, PartialOrd};
     /// See [`std::ops::RangeTo`]
     pub struct RangeTo<T> {
         pub end: T,
@@ -392,46 +393,87 @@ pub mod range {
         fn start_bound(&self) -> Bound<&T>;
         #[hax_lib::requires(true)]
         fn end_bound(&self) -> Bound<&T>;
+        /// See [`std::ops::RangeBounds::contains`]
+        // The F* library has no default methods: each impl defines it there.
+        #[cfg(not(hax_backend_fstar))]
+        #[hax_lib::requires(true)]
+        fn contains<U>(&self, item: &U) -> bool
+        where
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>,
+        {
+            bounds_contain(self.start_bound(), self.end_bound(), item)
+        }
+        #[cfg(hax_backend_fstar)]
+        #[hax_lib::requires(true)]
+        fn contains<U>(&self, item: &U) -> bool
+        where
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>;
+    }
+    // `partial_cmp` rather than `<=`: the F* `PartialOrd` has no `le`.
+    fn bounds_contain<T, U: ?Sized>(start: Bound<&T>, end: Bound<&T>, item: &U) -> bool
+    where
+        T: PartialOrd<U>,
+        U: PartialOrd<T>,
+    {
+        let after_start = match start {
+            Bound::Included(start) => matches!(
+                start.partial_cmp(item),
+                Option::Some(Ordering::Less | Ordering::Equal)
+            ),
+            Bound::Excluded(start) => {
+                matches!(start.partial_cmp(item), Option::Some(Ordering::Less))
+            }
+            Bound::Unbounded => true,
+        };
+        let before_end = match end {
+            Bound::Included(end) => matches!(
+                item.partial_cmp(end),
+                Option::Some(Ordering::Less | Ordering::Equal)
+            ),
+            Bound::Excluded(end) => matches!(item.partial_cmp(end), Option::Some(Ordering::Less)),
+            Bound::Unbounded => true,
+        };
+        after_start && before_end
+    }
+    // An F* instance cannot call its own methods, so there `contains` takes
+    // the same bound expressions as `start_bound` and `end_bound`.
+    macro_rules! range_bounds_methods {
+        (|$r:ident| $start:expr, $end:expr) => {
+            fn start_bound(&self) -> Bound<&T> {
+                let $r = self;
+                $start
+            }
+            fn end_bound(&self) -> Bound<&T> {
+                let $r = self;
+                $end
+            }
+            #[cfg(hax_backend_fstar)]
+            fn contains<U>(&self, item: &U) -> bool
+            where
+                T: PartialOrd<U>,
+                U: ?Sized + PartialOrd<T>,
+            {
+                let $r = self;
+                bounds_contain($start, $end, item)
+            }
+        };
     }
     impl<T> RangeBounds<T> for RangeFull {
-        fn start_bound(&self) -> Bound<&T> {
-            Bound::Unbounded
-        }
-        fn end_bound(&self) -> Bound<&T> {
-            Bound::Unbounded
-        }
+        range_bounds_methods!(|_r| Bound::Unbounded, Bound::Unbounded);
     }
     impl<T> RangeBounds<T> for RangeFrom<T> {
-        fn start_bound(&self) -> Bound<&T> {
-            Bound::Included(&self.start)
-        }
-        fn end_bound(&self) -> Bound<&T> {
-            Bound::Unbounded
-        }
+        range_bounds_methods!(|r| Bound::Included(&r.start), Bound::Unbounded);
     }
     impl<T> RangeBounds<T> for RangeTo<T> {
-        fn start_bound(&self) -> Bound<&T> {
-            Bound::Unbounded
-        }
-        fn end_bound(&self) -> Bound<&T> {
-            Bound::Excluded(&self.end)
-        }
+        range_bounds_methods!(|r| Bound::Unbounded, Bound::Excluded(&r.end));
     }
     impl<T> RangeBounds<T> for Range<T> {
-        fn start_bound(&self) -> Bound<&T> {
-            Bound::Included(&self.start)
-        }
-        fn end_bound(&self) -> Bound<&T> {
-            Bound::Excluded(&self.end)
-        }
+        range_bounds_methods!(|r| Bound::Included(&r.start), Bound::Excluded(&r.end));
     }
     impl<T> RangeBounds<T> for (Bound<T>, Bound<T>) {
-        fn start_bound(&self) -> Bound<&T> {
-            bound_as_ref(&self.0)
-        }
-        fn end_bound(&self) -> Bound<&T> {
-            bound_as_ref(&self.1)
-        }
+        range_bounds_methods!(|r| bound_as_ref(&r.0), bound_as_ref(&r.1));
     }
     // std's `Bound::as_ref`, as a function: an inherent `impl Bound` block
     // would take a positional `impl_N` name that must match real core's.
@@ -442,32 +484,26 @@ pub mod range {
             Bound::Unbounded => Bound::Unbounded,
         }
     }
+    // An exhausted iterator ends with `start == end`, and must look empty.
     impl<T> RangeBounds<T> for RangeInclusive<T> {
-        fn start_bound(&self) -> Bound<&T> {
-            Bound::Included(&self.lo)
-        }
-        // An exhausted iterator ends with `start == end`, and must look empty.
-        fn end_bound(&self) -> Bound<&T> {
-            if self.exhausted {
-                Bound::Excluded(&self.hi)
+        range_bounds_methods!(
+            |r| Bound::Included(&r.lo),
+            if r.exhausted {
+                Bound::Excluded(&r.hi)
             } else {
-                Bound::Included(&self.hi)
+                Bound::Included(&r.hi)
             }
-        }
+        );
     }
     impl<T> RangeBounds<T> for RangeToInclusive<T> {
-        fn start_bound(&self) -> Bound<&T> {
-            Bound::Unbounded
-        }
-        fn end_bound(&self) -> Bound<&T> {
-            Bound::Included(&self.end)
-        }
+        range_bounds_methods!(|r| Bound::Unbounded, Bound::Included(&r.end));
     }
-    // `a..=b` desugars to `RangeInclusive::new`, which clients reach as
-    // `impl_7__new` after real core's numbering. Impl blocks are numbered in
-    // the order rustc creates them: those written directly, in source order,
-    // before those expanded from a macro (including an attribute macro such as
-    // `hax_lib::attributes`). This one must stay the eighth of the former.
+    // Clients reach these as `impl_7__new` and `impl_10__contains`, after real
+    // core's numbering. Impl blocks are numbered in the order rustc creates
+    // them: those written directly, in source order, before those expanded
+    // from a macro (including an attribute macro such as `hax_lib::attributes`).
+    // These must stay the eighth and eleventh of the former, which
+    // `Core_models.Specs.Ops.Range` checks.
     impl<T> RangeInclusive<T> {
         /// See [`std::ops::RangeInclusive::new`]
         pub fn new(start: T, end: T) -> Self {
@@ -485,6 +521,39 @@ pub mod range {
         pub fn end(&self) -> &T {
             &self.hi
         }
+        /// See [`std::ops::RangeInclusive::into_inner`]
+        pub fn into_inner(self) -> (T, T) {
+            (self.lo, self.hi)
+        }
+    }
+    // Stand-ins for real core's `impl RangeInclusive<usize>` and `Debug` impl.
+    impl RangeInclusive<usize> {}
+    impl<T> RangeInclusive<T> {}
+    impl<T: PartialOrd<T>> RangeInclusive<T> {
+        /// See [`std::ops::RangeInclusive::contains`]
+        pub fn contains<U>(&self, item: &U) -> bool
+        where
+            T: PartialOrd<U>,
+            U: ?Sized + PartialOrd<T>,
+        {
+            <Self as RangeBounds<T>>::contains(self, item)
+        }
+        /// See [`std::ops::RangeInclusive::is_empty`]
+        // The bound repeats the impl's, as in core: clients pass both.
+        pub fn is_empty(&self) -> bool
+        where
+            T: PartialOrd<T>,
+        {
+            if self.exhausted {
+                true
+            } else {
+                match self.lo.partial_cmp(&self.hi) {
+                    Option::Some(Ordering::Less) => false,
+                    Option::Some(Ordering::Equal) => false,
+                    _ => true,
+                }
+            }
+        }
     }
 }
 
@@ -501,6 +570,35 @@ mod tests {
             let std_range = start..=end;
             prop_assert_eq!(*model.start(), *std_range.start());
             prop_assert_eq!(*model.end(), *std_range.end());
+            prop_assert_eq!(model.into_inner(), std_range.into_inner());
+        }
+
+        #[test]
+        fn test_range_inclusive_contains(start in any::<u8>(), end in any::<u8>(), item in any::<u8>()) {
+            let model = super::range::RangeInclusive::new(start, end);
+            let std_range = start..=end;
+            prop_assert_eq!(model.contains(&item), std_range.contains(&item));
+            prop_assert_eq!(model.is_empty(), std_range.is_empty());
+            if start <= end {
+                let exhausted = super::range::RangeInclusive { lo: end, hi: end, exhausted: true };
+                let mut std_range = std_range;
+                std_range.nth((end - start) as usize);
+                prop_assert_eq!(exhausted.contains(&item), std_range.contains(&item));
+                prop_assert_eq!(exhausted.is_empty(), std_range.is_empty());
+            }
+        }
+
+        #[test]
+        fn test_range_bounds_contains(
+            start in crate::testing::range_endpoint(),
+            end in crate::testing::range_endpoint(),
+            item in crate::testing::range_endpoint(),
+        ) {
+            use std::ops::RangeBounds as _;
+            for (model, real) in crate::testing::range_forms(start, end) {
+                let model = crate::ops::range::RangeBounds::<usize>::contains(&model, &item);
+                prop_assert_eq!(model, real.contains(&item));
+            }
         }
     }
 

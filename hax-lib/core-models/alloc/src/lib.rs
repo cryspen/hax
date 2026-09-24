@@ -896,8 +896,8 @@ pub mod vec {
             let l = seq_len(&self.0);
             Vec(seq_drain(&mut self.0, at, l))
         }
-        // Generic in `A`: this `Vec` has none, but Lean callers pass the
-        // allocator of std's `Drain<'_, T, A>` explicitly.
+        // Generic in `A` like std's `Vec<T, A>::drain`, for Lean callers. This
+        // `Vec` has no allocator to infer it from, so Rust callers must name it.
         #[hax_lib::requires(core::slice::try_range(range, ..self.len()).is_some())]
         pub fn drain<A, R: core::ops::RangeBounds<usize>>(
             &mut self,

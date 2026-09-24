@@ -776,7 +776,8 @@ pub mod index {
         }
     }
 
-    // Last in the module: the F* `range` below shadows the integer `range`.
+    // In F*, `range` below shadows the integer refinement `range` in every item
+    // hax emits after it in `Core_models.Slice.Index`, whatever the order here.
     /// See [`std::slice::try_range`]
     pub fn try_range<R: crate::ops::range::RangeBounds<usize>>(
         range: R,
@@ -1772,135 +1773,68 @@ mod tests {
         }
     }
 
-    fn bound(kind: u8, x: usize) -> (crate::ops::range::Bound<usize>, std::ops::Bound<usize>) {
-        use crate::ops::range::Bound as M;
-        use std::ops::Bound as S;
-        match kind {
-            0 => (M::Included(x), S::Included(x)),
-            1 => (M::Excluded(x), S::Excluded(x)),
-            _ => (M::Unbounded, S::Unbounded),
-        }
-    }
-
-    /// Runs `$body` once per `RangeBounds` impl of the model, with `$m()` and
-    /// `$s()` building the model range and its std twin from `$start`/`$end`.
-    macro_rules! for_each_range_form {
-        ($start:expr, $end:expr, |$m:ident, $s:ident| $body:block) => {{
-            use crate::ops::range as model;
-            let (start, end): (usize, usize) = ($start, $end);
-            {
-                let $m = || model::Range { start, end };
-                let $s = || start..end;
-                $body
-            }
-            {
-                let $m = || model::RangeFrom { start };
-                let $s = || start..;
-                $body
-            }
-            {
-                let $m = || model::RangeTo { end };
-                let $s = || ..end;
-                $body
-            }
-            {
-                let $m = || model::RangeFull;
-                let $s = || ..;
-                $body
-            }
-            {
-                let $m = || model::RangeInclusive::new(start, end);
-                let $s = || start..=end;
-                $body
-            }
-            {
-                let $m = || model::RangeToInclusive { end };
-                let $s = || ..=end;
-                $body
-            }
-            // Iterating to the end leaves `start == end` with `exhausted` set.
-            if start <= end {
-                let $m = || model::RangeInclusive {
-                    lo: end,
-                    hi: end,
-                    exhausted: true,
-                };
-                let $s = || {
-                    let mut r = start..=end;
-                    r.nth(end - start);
-                    r
-                };
-                $body
-            }
-            for ks in 0..3 {
-                for ke in 0..3 {
-                    let $m = || (bound(ks, start).0, bound(ke, end).0);
-                    let $s = || (bound(ks, start).1, bound(ke, end).1);
-                    $body
-                }
-            }
-        }};
-    }
-
-    /// Range endpoints around the slice lengths below, plus the overflow edge.
-    fn endpoint() -> impl Strategy<Value = usize> {
-        prop_oneof![0usize..=10, Just(usize::MAX - 1), Just(usize::MAX)]
-    }
-
     proptest! {
         #[test]
-        fn test_try_range(start in endpoint(), end in endpoint(), len in 0usize..=8) {
-            for_each_range_form!(start, end, |m, s| {
-                let model = super::index::try_range(m(), crate::ops::range::RangeTo { end: len });
+        fn test_try_range(
+            start in crate::testing::range_endpoint(),
+            end in crate::testing::range_endpoint(),
+            len in 0usize..=8,
+        ) {
+            for (m, s) in crate::testing::range_forms(start, end) {
+                let model = super::index::try_range(m, crate::ops::range::RangeTo { end: len });
                 let model = match model {
                     ModelOption::Some(r) => Some((r.start, r.end)),
                     ModelOption::None => None,
                 };
-                let real = std::slice::try_range(s(), ..len).map(|r| (r.start, r.end));
+                let real = std::slice::try_range(s, ..len).map(|r| (r.start, r.end));
                 prop_assert_eq!(model, real);
-            });
+            }
         }
 
         #[test]
-        fn test_range(start in endpoint(), end in endpoint(), len in 0usize..=8) {
-            for_each_range_form!(start, end, |m, s| {
+        fn test_range(
+            start in crate::testing::range_endpoint(),
+            end in crate::testing::range_endpoint(),
+            len in 0usize..=8,
+        ) {
+            for (m, s) in crate::testing::range_forms(start, end) {
                 let bounds = crate::ops::range::RangeTo { end: len };
-                match std::slice::try_range(s(), ..len) {
+                match std::slice::try_range(s, ..len) {
                     Some(real) => {
-                        let model = super::index::range(m(), bounds);
+                        let model = super::index::range(m, bounds);
                         prop_assert_eq!((model.start, model.end), (real.start, real.end));
                     }
                     None => crate::testing::panics_like_core(
-                        || super::index::range(m(), bounds),
-                        || std::slice::range(s(), ..len),
+                        || super::index::range(m, bounds),
+                        || std::slice::range(s, ..len),
                     ),
                 }
-            });
+            }
         }
 
         #[test]
         fn test_copy_within(
             slice in prop::collection::vec(any::<u8>(), 0..=8),
-            start in endpoint(),
-            end in endpoint(),
-            dest in endpoint(),
+            start in crate::testing::range_endpoint(),
+            end in crate::testing::range_endpoint(),
+            dest in crate::testing::range_endpoint(),
         ) {
-            for_each_range_form!(start, end, |m, s| {
+            for (m, s) in crate::testing::range_forms(start, end) {
                 let mut model = slice.clone();
                 let mut real = slice.clone();
                 let len = slice.len();
-                match std::slice::try_range(s(), ..len) {
+                match std::slice::try_range(s, ..len) {
                     Some(r) if dest <= len - (r.end - r.start) => {
-                        Slice::copy_within(&mut model[..], m(), dest);
-                        real.copy_within(s(), dest);
+                        Slice::copy_within(&mut model[..], m, dest);
+                        real.copy_within(s, dest);
                         prop_assert_eq!(model, real);
                     }
                     _ => crate::testing::panics_like_core(
-                        || Slice::copy_within(&mut model[..], m(), dest),
-                        || real.copy_within(s(), dest),
+                        || Slice::copy_within(&mut model[..], m, dest),
+                        || real.copy_within(s, dest),
                     ),
                 }
-            });
+            }
         }
     }
 

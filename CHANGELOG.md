@@ -11,11 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Lean backend and library:
  - Add models of `RangeBounds`, `RangeToInclusive`, `RangeInclusive::{new,
-   start, end}`, `copy_within` on slices and `drain` on `Vec`
+   start, end, into_inner, contains, is_empty}`, `copy_within` on slices and
+   `drain` on `Vec`. `RangeInclusive` has no `Iterator` model yet, so
+   `for i in a..=b` still does not extract
+ - `ops.range.RangeInclusive` has the fields `lo`, `hi` and `exhausted` instead
+   of `start` and `«end»`, and `RangeInclusive.start` and `RangeInclusive.end`
+   are now functions returning `RustM T`, a breaking change for hand-written
+   proofs using them
 
 F* backend and library:
  - Add models of `RangeBounds`, `RangeToInclusive` and `RangeInclusive::{new,
-   start, end}`, so that `a..=b` and `..=b` now extract to defined items
+   start, end, into_inner, contains, is_empty}`, so that `a..=b` and `..=b` can
+   be built and queried. `RangeInclusive` has no `Iterator` instance yet, so
+   `for i in a..=b` still does not typecheck
 
 ### Fixed
 
@@ -41,7 +49,7 @@ F* backend and library:
    preconditions for the ranges on which Rust panics. This is a breaking change
    for the hand-written uses of two items: `Core_models.Ops.Range.impl` to
    `impl_6` are now the `RangeBounds` instances, with the `Iterator` instances of
-   `Range` moving to `impl_8` to `impl_19`, and `t_RangeInclusive` has the fields
+   `Range` moving to `impl_11` to `impl_22`, and `t_RangeInclusive` has the fields
    `f_lo`, `f_hi` and `f_exhausted` instead of `f_start` and `f_end`
 
 F* backend and library:

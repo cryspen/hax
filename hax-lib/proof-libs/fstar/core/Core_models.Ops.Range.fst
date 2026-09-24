@@ -17,12 +17,6 @@ include Core_models.Bundle {t_RangeInclusive as t_RangeInclusive}
 
 include Core_models.Bundle {t_RangeToInclusive as t_RangeToInclusive}
 
-include Core_models.Bundle {impl_8__from__range as impl_8}
-
-include Core_models.Bundle {impl_9__from__range as impl_9}
-
-include Core_models.Bundle {impl_10__from__range as impl_10}
-
 include Core_models.Bundle {impl_11__from__range as impl_11}
 
 include Core_models.Bundle {impl_12__from__range as impl_12}
@@ -40,6 +34,12 @@ include Core_models.Bundle {impl_17__from__range as impl_17}
 include Core_models.Bundle {impl_18__from__range as impl_18}
 
 include Core_models.Bundle {impl_19__from__range as impl_19}
+
+include Core_models.Bundle {impl_20__from__range as impl_20}
+
+include Core_models.Bundle {impl_21__from__range as impl_21}
+
+include Core_models.Bundle {impl_22__from__range as impl_22}
 
 include Core_models.Bundle {t_Bound as t_Bound}
 
@@ -63,6 +63,14 @@ include Core_models.Bundle {f_end_bound_post as f_end_bound_post}
 
 include Core_models.Bundle {f_end_bound as f_end_bound}
 
+include Core_models.Bundle {f_contains_pre as f_contains_pre}
+
+include Core_models.Bundle {f_contains_post as f_contains_post}
+
+include Core_models.Bundle {f_contains as f_contains}
+
+include Core_models.Bundle {bounds_contain as bounds_contain}
+
 include Core_models.Bundle {impl__from__range as impl}
 
 include Core_models.Bundle {impl_1__from__range as impl_1}
@@ -75,7 +83,7 @@ include Core_models.Bundle {impl_4__from__range as impl_4}
 
 include Core_models.Bundle {bound_as_ref as bound_as_ref}
 
-include Core_models.Bundle {impl_5__from__range as impl_5}
+include Core_models.Bundle {impl_5 as impl_5}
 
 include Core_models.Bundle {impl_6__from__range as impl_6}
 
@@ -84,3 +92,9 @@ include Core_models.Bundle {impl_7__new as impl_7__new}
 include Core_models.Bundle {impl_7__start as impl_7__start}
 
 include Core_models.Bundle {impl_7__end as impl_7__end}
+
+include Core_models.Bundle {impl_7__into_inner as impl_7__into_inner}
+
+include Core_models.Bundle {impl_10__contains as impl_10__contains}
+
+include Core_models.Bundle {impl_10__is_empty as impl_10__is_empty}

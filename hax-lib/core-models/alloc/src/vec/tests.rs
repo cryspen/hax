@@ -7,8 +7,9 @@
 //! compiled per cfg and these tests run against whichever is selected.
 //!
 //! The tests only ever spell the type as `super::Vec<T>`, which resolves to
-//! `Vec<T>` in the default variant and to `Vec<T, Global>` in the F\* one —
-//! identical surface, so nothing here needs to know which is in play.
+//! `Vec<T>` in the default variant and to `Vec<T, Global>` in the F\* one.
+//! Their surface is identical except for `drain`, which the default variant
+//! makes generic in the allocator: tests call it through `model_drain`.
 
 use crate::testing::Inject;
 use proptest::prelude::*;
