@@ -1,6 +1,7 @@
 .PHONY: fstar
 
 fstar:
+	cargo hax extract process-order
 	make -C proofs/process-order/fstar/extraction
 
 clean:

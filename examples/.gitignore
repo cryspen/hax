@@ -1,5 +1,6 @@
 /*/target
 /*/proofs/*/fstar/extraction/*.fst
+/*/proofs/*/fstar/extraction/Makefile.hax
 /*/proofs/*/lean/.lake
 /*/proofs/*/lean/llbc/*.llbc
 /*/proofs/*/lean/.gitignore

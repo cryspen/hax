@@ -1,6 +1,7 @@
 .PHONY: fstar clean
 
 fstar:
+	cargo hax extract chacha20
 	make -C proofs/chacha20/fstar/extraction
 
 clean:

@@ -1,6 +1,7 @@
 .PHONY: fstar clean
 
 fstar:
+	cargo hax extract kyber-compress
 	make -C proofs/kyber-compress/fstar/extraction
 
 clean:
