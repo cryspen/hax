@@ -112,6 +112,35 @@ structure alloc.layout.Layout where
 @[reducible]
 def alloc.layout.LayoutError := Unit
 
+/-
+/-- [core_models::result::Result]
+    Source: 'core-models/src/core/result.rs', lines 3:0-8:1
+    Visibility: public -/
+@[discriminant isize]
+inductive result.Result (T : Type) (E : Type) where
+| Ok : T → result.Result T E
+| Err : E → result.Result T E
+-/
+
+/-- [core_models::fmt::Formatter]
+    Source: 'core-models/src/core/fmt.rs', lines 13:0-13:21
+    Visibility: public -/
+@[reducible]
+def fmt.Formatter := Unit
+
+/-- [core_models::fmt::Error]
+    Source: 'core-models/src/core/fmt.rs', lines 4:0-4:17
+    Visibility: public -/
+@[reducible]
+def fmt.Error := Unit
+
+/-- Trait declaration: [core_models::fmt::Debug]
+    Source: 'core-models/src/core/fmt.rs', lines 88:0-94:1
+    Visibility: public -/
+structure fmt.Debug (Self : Type) where
+  fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
+    fmt.Formatter)
+
 /-- [core_models::array::TryFromSliceError]
     Source: 'core-models/src/core/array.rs', lines 4:0-4:29
     Visibility: public -/
@@ -206,37 +235,8 @@ structure default.Default (Self : Type) where
 @[reducible]
 def array.DefaultArray.default.closure (T : Type) (N : Std.Usize) := Unit
 
-/-
-/-- [core_models::result::Result]
-    Source: 'core-models/src/core/result.rs', lines 3:0-8:1
-    Visibility: public -/
-@[discriminant isize]
-inductive result.Result (T : Type) (E : Type) where
-| Ok : T → result.Result T E
-| Err : E → result.Result T E
--/
-
-/-- [core_models::fmt::Formatter]
-    Source: 'core-models/src/core/fmt.rs', lines 10:0-10:21
-    Visibility: public -/
-@[reducible]
-def fmt.Formatter := Unit
-
-/-- [core_models::fmt::Error]
-    Source: 'core-models/src/core/fmt.rs', lines 4:0-4:17
-    Visibility: public -/
-@[reducible]
-def fmt.Error := Unit
-
-/-- Trait declaration: [core_models::fmt::Debug]
-    Source: 'core-models/src/core/fmt.rs', lines 85:0-91:1
-    Visibility: public -/
-structure fmt.Debug (Self : Type) where
-  fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
-    fmt.Formatter)
-
 /-- Trait declaration: [core_models::convert::AsRef]
-    Source: 'core-models/src/core/convert.rs', lines 83:0-87:1
+    Source: 'core-models/src/core/convert.rs', lines 91:0-95:1
     Visibility: public -/
 structure convert.AsRef (Self : Type) (T : Type) where
   as_ref : Self → RustM T
@@ -264,7 +264,7 @@ inductive cmp.Ordering where
 -/
 
 /-- Trait declaration: [core_models::cmp::PartialOrd]
-    Source: 'core-models/src/core/cmp.rs', lines 41:0-77:1
+    Source: 'core-models/src/core/cmp.rs', lines 49:0-85:1
     Visibility: public -/
 structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   PartialEqInst : cmp.PartialEq Self Rhs
@@ -275,12 +275,12 @@ structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
   ge : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Neq]
-    Source: 'core-models/src/core/cmp.rs', lines 80:0-83:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 88:0-91:1 -/
 structure cmp.Neq (Self : Type) (Rhs : Type) where
   neq : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Ord]
-    Source: 'core-models/src/core/cmp.rs', lines 151:0-155:1
+    Source: 'core-models/src/core/cmp.rs', lines 159:0-163:1
     Visibility: public -/
 structure cmp.Ord (Self : Type) where
   EqInst : cmp.Eq Self
@@ -288,7 +288,7 @@ structure cmp.Ord (Self : Type) where
   cmp : Self → Self → RustM cmp.Ordering
 
 /-- [core_models::cmp::Reverse]
-    Source: 'core-models/src/core/cmp.rs', lines 174:0-174:29
+    Source: 'core-models/src/core/cmp.rs', lines 182:0-182:29
     Visibility: public -/
 @[reducible]
 def cmp.Reverse (T : Type) := T
@@ -322,7 +322,7 @@ structure convert.TryFrom (Self : Type) (T : Type) (Self_Error : Type) where
 def convert.Infallible := Unit
 
 /-- [core_models::convert::{impl core_models::convert::TryFrom<&'_0 [T], core_models::array::TryFromSliceError> for [T; N]}::try_from::closure]
-    Source: 'core-models/src/core/convert.rs', lines 59:61-61:13 -/
+    Source: 'core-models/src/core/convert.rs', lines 67:61-69:13 -/
 @[reducible]
 def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
   Type) (N : Std.Usize) :=
@@ -335,7 +335,7 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
 def num.error.TryFromIntError := Unit
 
 /-- Trait declaration: [core_models::fmt::Display]
-    Source: 'core-models/src/core/fmt.rs', lines 79:0-82:1
+    Source: 'core-models/src/core/fmt.rs', lines 82:0-85:1
     Visibility: public -/
 structure fmt.Display (Self : Type) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
@@ -354,25 +354,25 @@ structure error.Error (Self : Type) where
 def f32.f32 := Unit
 
 /-- [core_models::fmt::Arguments]
-    Source: 'core-models/src/core/fmt.rs', lines 94:0-94:33
+    Source: 'core-models/src/core/fmt.rs', lines 97:0-97:33
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 244:4-251:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 280:4-287:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 253:4-255:5
+    Source: 'core-models/src/core/fmt.rs', lines 289:4-291:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 334:4-338:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 370:4-374:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -380,7 +380,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 340:4-345:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 376:4-381:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -388,7 +388,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 347:4-347:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 383:4-383:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
@@ -686,13 +686,13 @@ structure mem.manually_drop.ManuallyDrop (T : Type) where
   value : T
 
 /-- [core_models::num::error::IntErrorKind]
-    Source: 'core-models/src/core/num/error.rs', lines 35:0-35:24
+    Source: 'core-models/src/core/num/error.rs', lines 51:0-51:24
     Visibility: public -/
 @[reducible]
 def num.error.IntErrorKind := Unit
 
 /-- [core_models::num::error::ParseIntError]
-    Source: 'core-models/src/core/num/error.rs', lines 19:0-21:1
+    Source: 'core-models/src/core/num/error.rs', lines 27:0-29:1
     Visibility: public -/
 structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
@@ -1104,7 +1104,7 @@ structure pin.helper.PinHelper (Ptr : Type) where
   pointer : Ptr
 
 /-- [core_models::result::SeqIter]
-    Source: 'core-models/src/core/result.rs', lines 353:0-353:53 -/
+    Source: 'core-models/src/core/result.rs', lines 364:0-364:53 -/
 @[reducible]
 def result.SeqIter (A : Type) := rust_primitives.sequence.Seq A
 
@@ -1168,12 +1168,12 @@ structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
 def str.error.Utf8Error := Unit
 
 /-- [core_models::str::iter::Split]
-    Source: 'core-models/src/core/str.rs', lines 53:4-53:23 -/
+    Source: 'core-models/src/core/str.rs', lines 72:4-72:23 -/
 @[reducible]
 def str.iter.Split (T : Type) := T
 
 /-- Trait declaration: [core_models::str::traits::FromStr]
-    Source: 'core-models/src/core/str.rs', lines 57:4-60:5 -/
+    Source: 'core-models/src/core/str.rs', lines 76:4-79:5 -/
 structure str.traits.FromStr (Self : Type) (Self_Err : Type) where
   from_str : Str → RustM (result.Result Self Self_Err)
 

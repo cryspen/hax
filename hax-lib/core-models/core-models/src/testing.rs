@@ -158,3 +158,21 @@ impl Inject for CloneWitness {
         }
     }
 }
+
+/// A value whose `Debug` fails on demand, so a model that skips formatting an
+/// inner value is observable.
+#[cfg(not(hax_backend_fstar))]
+pub struct DebugWitness {
+    pub fails: bool,
+}
+
+#[cfg(not(hax_backend_fstar))]
+impl crate::fmt::Debug for DebugWitness {
+    fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
+        if self.fails {
+            crate::fmt::Result::Err(crate::fmt::Error)
+        } else {
+            crate::fmt::Result::Ok(())
+        }
+    }
+}

@@ -7,6 +7,8 @@ open Rust_primitives
 type t_Error = | Error : t_Error
 
 /// See [`std::fmt::Formatter`]
+/// DEVIATION(std): the model's formatter has no output, so `Debug` and
+/// `Display` only model whether formatting succeeds.
 type t_Formatter = | Formatter : t_Formatter
 
 val impl_Formatter__write_str (self: t_Formatter) (data: string)
