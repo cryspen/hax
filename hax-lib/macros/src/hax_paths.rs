@@ -28,6 +28,11 @@ pub fn expects_path_decoration(path: &Path) -> Result<Option<String>> {
     expects_hax_path(DECORATION_KINDS, path)
 }
 
+/// Whether `meta` is a decoration, see [`expects_path_decoration`].
+pub fn is_decoration(meta: &Meta) -> bool {
+    matches!(meta, Meta::List(ml) if matches!(expects_path_decoration(&ml.path), Ok(Some(_))))
+}
+
 /// Expects a path to be `[[::]hax_lib]::refine`
 pub fn expects_refine(path: &Path) -> Result<Option<String>> {
     expects_hax_path(&["refine"], path)
@@ -57,4 +62,32 @@ pub fn expects_hax_path(allowlist: &[&str], path: &Path) -> Result<Option<String
             _ => None,
         },
     )
+}
+
+/// Drops the metas of `attrs` rejected by `keep`, descending into
+/// `cfg_attr(PRED, ..)` wrappers. A `cfg_attr` left empty is dropped.
+pub fn retain_through_cfg_attr(attrs: &mut Vec<Attribute>, keep: impl Fn(&Meta) -> bool) {
+    fn retain(meta: &mut Meta, keep: &impl Fn(&Meta) -> bool) -> bool {
+        let Meta::List(ml) = meta else {
+            return keep(meta);
+        };
+        if !ml.path.is_ident("cfg_attr") {
+            return keep(meta);
+        }
+        let Ok(args) =
+            ml.parse_args_with(punctuated::Punctuated::<Meta, Token![,]>::parse_terminated)
+        else {
+            return true;
+        };
+        let mut args = args.into_iter();
+        let Some(pred) = args.next() else {
+            return true;
+        };
+        let nested: Vec<Meta> = args
+            .filter_map(|mut meta| retain(&mut meta, keep).then_some(meta))
+            .collect();
+        ml.tokens = quote::quote! {#pred, #(#nested),*};
+        !nested.is_empty()
+    }
+    attrs.retain_mut(|attr| retain(&mut attr.meta, &keep));
 }

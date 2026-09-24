@@ -31,21 +31,12 @@ pub fn internal_macro_misuse(name: &str) -> TokenStream {
     quote! { ::std::compile_error!(#message) }.into()
 }
 
-fn not_hax_attribute(attr: &syn::Attribute) -> bool {
-    if let Meta::List(ml) = &attr.meta {
-        !matches!(expects_path_decoration(&ml.path), Ok(Some(_)))
-    } else {
-        true
-    }
+fn is_refine(meta: &Meta) -> bool {
+    matches!(meta, Meta::List(ml) if matches!(expects_refine(&ml.path), Ok(Some(_))))
 }
 
-fn not_field_attribute(attr: &syn::Attribute) -> bool {
-    if let Meta::List(ml) = &attr.meta {
-        !(matches!(expects_refine(&ml.path), Ok(Some(_)))
-            || matches!(expects_order(&ml.path), Ok(Some(_))))
-    } else {
-        true
-    }
+fn is_order(meta: &Meta) -> bool {
+    matches!(meta, Meta::List(ml) if matches!(expects_order(&ml.path), Ok(Some(_))))
 }
 
 /// Strips the hax attributes enabled by `#[attributes]`.
@@ -59,7 +50,7 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
-                    fun.attrs.retain(not_hax_attribute)
+                    retain_through_cfg_attr(&mut fun.attrs, |meta| !is_decoration(meta))
                 }
             }
             visit_mut::visit_item_trait_mut(self, item);
@@ -68,10 +59,16 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    fun.attrs.retain(not_hax_attribute)
+                    retain_through_cfg_attr(&mut fun.attrs, |meta| !is_decoration(meta))
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
+        }
+        fn visit_fields_named_mut(&mut self, fields_named: &mut FieldsNamed) {
+            visit_mut::visit_fields_named_mut(self, fields_named);
+            for field in fields_named.named.iter_mut() {
+                retain_through_cfg_attr(&mut field.attrs, |meta| !is_order(meta))
+            }
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
@@ -79,7 +76,9 @@ pub fn attributes(item: TokenStream) -> TokenStream {
             match item {
                 Item::Struct(s) => {
                     for field in s.fields.iter_mut() {
-                        field.attrs.retain(not_field_attribute)
+                        retain_through_cfg_attr(&mut field.attrs, |meta| {
+                            !(is_refine(meta) || is_order(meta))
+                        })
                     }
                 }
                 _ => (),

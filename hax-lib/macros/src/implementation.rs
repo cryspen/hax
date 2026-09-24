@@ -426,20 +426,19 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 .collect();
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    let decorated = fun.attrs.iter().any(|attr| {
-                        matches!(&attr.meta, Meta::List(ml)
-                            if matches!(expects_path_decoration(&ml.path), Ok(Some(_))))
-                    });
+                    let mut decorated = false;
+                    for attr in &fun.attrs {
+                        visit_meta_through_cfg_attr(
+                            &mut attr.meta.clone(),
+                            None,
+                            &mut |meta, _| decorated |= is_decoration(meta),
+                        );
+                    }
                     if decorated {
                         if let Some(error) = foreign_self_projection_error(&fun.sig, &assoc) {
                             // Drop the specifications: generating them would
                             // pile rustc errors on top of ours.
-                            fun.attrs.retain(|attr| match &attr.meta {
-                                Meta::List(ml) => {
-                                    !matches!(expects_path_decoration(&ml.path), Ok(Some(_)))
-                                }
-                                _ => true,
-                            });
+                            retain_through_cfg_attr(&mut fun.attrs, |meta| !is_decoration(meta));
                             self.extra_items.push(error);
                             continue;
                         }
@@ -470,23 +469,26 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
             visit_mut::visit_fields_named_mut(self, fields_named);
 
             fn handle_reorder_attribute(attrs: &mut [Attribute], errors: &mut Vec<TokenStream>) {
-                let Some((attr, order)) = attrs.iter_mut().find_map(|attr| {
-                    if let Ok(Some(_)) = expects_order(attr.path()) {
-                        let lit: LitInt = attr.parse_args().ok()?;
-                        Some((attr, lit))
-                    } else {
-                        None
-                    }
-                }) else {
-                    return;
-                };
-
-                let Ok(n) = order.base10_parse() else {
-                    errors.push(parse_quote!{const _: () = {compile_error!("Expected a (base 10) i32 literal.")};});
-                    return;
-                };
-                let payload = AttrPayload::Order(n);
-                *attr = parse_quote!(#payload);
+                let mut found = false;
+                for attr in attrs {
+                    visit_meta_through_cfg_attr(&mut attr.meta, None, &mut |meta, _cfg| {
+                        let Meta::List(ml) = meta else { return };
+                        if found || !matches!(expects_order(&ml.path), Ok(Some(_))) {
+                            return;
+                        }
+                        let Ok(order) = syn::parse2::<LitInt>(ml.tokens.clone()) else {
+                            return;
+                        };
+                        found = true;
+                        let Ok(n) = order.base10_parse() else {
+                            errors.push(parse_quote!{const _: () = {compile_error!("Expected a (base 10) i32 literal.")};});
+                            return;
+                        };
+                        let payload = AttrPayload::Order(n);
+                        let payload: Attribute = parse_quote!(#payload);
+                        *meta = payload.meta;
+                    });
+                }
             }
 
             for field in &mut fields_named.named {
@@ -538,31 +540,40 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         .collect();
                     for (i, field) in s.fields.iter_mut().enumerate() {
                         let prev = &idents[0..=i];
-                        let refine: Option<(&mut Attribute, Expr)> =
-                            field.attrs.iter_mut().find_map(|attr| {
-                                if let Ok(Some(_)) = expects_refine(attr.path()) {
-                                    let payload = attr.parse_args().ok()?;
-                                    Some((attr, payload))
-                                } else {
-                                    None
+                        let mut refine: Option<(ItemUid, Expr, Option<Meta>)> = None;
+                        for attr in field.attrs.iter_mut() {
+                            visit_meta_through_cfg_attr(&mut attr.meta, None, &mut |meta, cfg| {
+                                let Meta::List(ml) = meta else { return };
+                                if refine.is_some()
+                                    || !matches!(expects_refine(&ml.path), Ok(Some(_)))
+                                {
+                                    return;
                                 }
+                                let Ok(payload) = syn::parse2::<Expr>(ml.tokens.clone()) else {
+                                    return;
+                                };
+                                let uid = ItemUid::fresh();
+                                let assoc_attr = AttrPayload::AssociatedItem {
+                                    role: AssociationRole::Refine,
+                                    item: uid.clone(),
+                                };
+                                let assoc_attr: Attribute = parse_quote! { #assoc_attr };
+                                *meta = assoc_attr.meta;
+                                refine = Some((uid, payload, cfg.cloned()));
                             });
-                        if let Some((attr, refine)) = refine {
+                        }
+                        if let Some((uid, refine, cfg)) = refine {
                             let binders: TokenStream = prev
                                 .iter()
                                 .map(|(name, ty)| quote! {#name: #ty, })
                                 .collect();
-                            let uid = ItemUid::fresh();
-                            let uid_attr = AttrPayload::Uid(uid.clone());
-                            let assoc_attr = AttrPayload::AssociatedItem {
-                                role: AssociationRole::Refine,
-                                item: uid,
-                            };
-                            *attr = syn::parse_quote! { #assoc_attr };
+                            let uid_attr = AttrPayload::Uid(uid);
+                            let cfg = cfg.map(|pred| quote! {#[cfg(#pred)]});
                             let status_attr =
                                 &AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
                             extra.push(syn::parse_quote! {
                                 #[cfg(#HaxCfgOptionName)]
+                                #cfg
                                 #status_attr
                                 const _: () = {
                                     #uid_attr

@@ -38,6 +38,28 @@ Proof. Admitted.
 Definition impl_Counter__get_inline (self : t_Counter) `{f_lt (f_n self_) ((5 : t_usize)) = true} : t_usize :=
   f_n self.
 
+Record Refined_record (v_LEN : t_usize) : Type :=
+  {
+    Refined_f_indices : t_Array (t_u8) (v_LEN);
+    Refined_f_x : t_u8;
+  }.
+Arguments Build_Refined_record {_}.
+Arguments Refined_f_indices {_}.
+Arguments Refined_f_x {_}.
+#[export] Instance settable_Refined_record `{v_LEN : t_usize} : Settable _ :=
+  settable! (Build_Refined_record (v_LEN := v_LEN)) <Refined_f_indices; Refined_f_x>.
+
+Record Reordered_record : Type :=
+  {
+    Reordered_f_y : t_u8;
+    Reordered_f_x : t_u8;
+  }.
+
+
+
+#[export] Instance settable_Reordered_record : Settable _ :=
+  settable! (Build_Reordered_record) <Reordered_f_y; Reordered_f_x>.
+
 Class t_Double (v_Self : Type) : Type :=
   {
     f_double : v_Self -> t_u8 -> t_u8;
