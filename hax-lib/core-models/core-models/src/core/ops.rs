@@ -507,12 +507,6 @@ pub mod range {
             Bound::Included(&self.end)
         }
     }
-    // Clients reach these as `impl_7__new` and `impl_10__contains`, after real
-    // core's numbering. Impl blocks are numbered in the order rustc creates
-    // them: those written directly, in source order, before those expanded
-    // from a macro (including an attribute macro such as `hax_lib::attributes`).
-    // These must stay the eighth and eleventh of the former, which
-    // `Core_models.Specs.Ops.Range` checks.
     impl<T> RangeInclusive<T> {
         /// See [`std::ops::RangeInclusive::new`]
         pub fn new(start: T, end: T) -> Self {
