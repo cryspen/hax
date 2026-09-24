@@ -246,11 +246,20 @@ let trunc_div (a: int) (b: int{b <> 0}) : int =
 
 let trunc_mod (a: int) (b: int{b <> 0}) : int = a - b * trunc_div a b
 
+/// Unsigned operands are non-negative, so truncating and Euclidean division
+/// agree; taking `/` and `%` on that branch keeps the sign case-splits of
+/// [trunc_div] and [abs] out of unsigned consumers' contexts. [unsigned t]
+/// matches on a concrete [inttype], so the branch reduces rather than
+/// reaching the solver.
 let div (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0 /\ (unsigned t \/ range (trunc_div (v a) (v b)) t)}) =
-  mk_int #t (trunc_div (v a) (v b))
+  if unsigned t
+  then mk_int #t (v a / v b)
+  else mk_int #t (trunc_div (v a) (v b))
 
 let mod (#t:inttype) (a:int_t t) (b:int_t t{v b <> 0 /\ (unsigned t \/ range (trunc_div (v a) (v b)) t)}) =
-  mk_int #t (trunc_mod (v a) (v b))
+  if unsigned t
+  then mk_int #t (v a % v b)
+  else mk_int #t (trunc_mod (v a) (v b))
 
 
 /// Comparison Operators
