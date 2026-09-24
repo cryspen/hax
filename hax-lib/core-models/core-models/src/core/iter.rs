@@ -629,8 +629,9 @@ pub mod adapters {
         // `FnMut`, as in std: a downstream `.map(closure)` yields an `FnMut`
         // instance, and `Fn` would reject it. Pinned by `iter_map` in
         // `tests/client_test/src/lib.rs`.
+        // F* gets a hand-written instance instead, emitted after `Zip`'s.
         #[hax_lib::attributes]
-        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
         impl<I: Iterator, O, F: FnMut(I::Item) -> O> Iterator for Map<I, F> {
             type Item = O;
 
@@ -770,8 +771,52 @@ pub mod adapters {
                 Self { it1, it2 }
             }
         }
+        // `Map`'s F* instance, which must follow `t_Iterator`, as this one does.
+        // hax drops the `Output = O` of `Map`'s `F: FnMut(I::Item) -> O` bound,
+        // leaving `O` undetermined, so the instance takes `F`'s `Output` as the
+        // item type instead. F*'s instance search skips a goal with an unsolved
+        // type argument unless it is a declared functional dependency, hence
+        // `t_IteratorOf`, which solves `I`'s item type before the `FnMut` goal.
         #[hax_lib::attributes]
-        #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
+        #[cfg_attr(
+            hax_backend_fstar,
+            hax_lib::fstar::after(
+                "[@@ FStar.Tactics.Typeclasses.fundeps [1]]
+class t_IteratorOf (v_I: Type0) (v_A: Type0) = {
+  f_iterator_of_iterator: t_Iterator v_I;
+  f_iterator_of_item: squash (f_iterator_of_iterator.f_Item == v_A)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let iterator_of_iterator (#v_I: Type0) {| i0: t_Iterator v_I |} : t_IteratorOf v_I i0.f_Item =
+  { f_iterator_of_iterator = i0; f_iterator_of_item = () }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1__from__map
+      (#v_I #v_F #v_A: Type0)
+      {| io: t_IteratorOf v_I v_A |}
+      {| i1: Core_models.Ops.Function.t_FnMut v_F v_A |}
+    : t_Iterator (Core_models.Iter.Adapters.Map.t_Map v_I v_F) =
+  let i0 = io.f_iterator_of_iterator in
+  {
+    f_Item = i1.Core_models.Ops.Function._super_i0.Core_models.Ops.Function.f_Output;
+    f_next_pre = (fun (self: Core_models.Iter.Adapters.Map.t_Map v_I v_F) -> true);
+    f_next_post = (fun (self: Core_models.Iter.Adapters.Map.t_Map v_I v_F) _ -> true);
+    f_next
+    =
+    fun (self: Core_models.Iter.Adapters.Map.t_Map v_I v_F) ->
+      let (tmp0: v_I), (out: t_Option i0.f_Item) = f_next #v_I #i0 self.Core_models.Iter.Adapters.Map.f_iter in
+      let self:Core_models.Iter.Adapters.Map.t_Map v_I v_F = { self with Core_models.Iter.Adapters.Map.f_iter = tmp0 } in
+      match out with
+      | Option_Some v ->
+        self,
+        Option_Some
+          (Core_models.Ops.Function.f_call_mut #v_F #v_A #i1 self.Core_models.Iter.Adapters.Map.f_f
+              (FStar.Pervasives.coerce_eq io.f_iterator_of_item v))
+      | Option_None -> self, Option_None
+  }"
+            )
+        )]
         impl<I1: Iterator, I2: Iterator> Iterator for Zip<I1, I2> {
             type Item = (I1::Item, I2::Item);
             fn next(&mut self) -> Option<Self::Item> {

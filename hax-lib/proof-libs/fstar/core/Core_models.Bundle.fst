@@ -203,15 +203,6 @@ type t_Inspect (v_I: Type0) (v_F: Type0) = {
 let impl__new__from__inspect (#v_I #v_F: Type0) (iter: v_I) (f: v_F) : t_Inspect v_I v_F =
   { f_iter = iter; f_f = f } <: t_Inspect v_I v_F
 
-/// See [`std::iter::Map`]
-type t_Map (v_I: Type0) (v_F: Type0) = {
-  f_iter:v_I;
-  f_f:v_F
-}
-
-let impl__new__from__map (#v_I #v_F: Type0) (iter: v_I) (f: v_F) : t_Map v_I v_F =
-  { f_iter = iter; f_f = f } <: t_Map v_I v_F
-
 /// See [`std::iter::MapWhile`]
 type t_MapWhile (v_I: Type0) (v_F: Type0) = {
   f_iter:v_I;
@@ -7679,23 +7670,6 @@ let impl_1__from__inspect
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_1__from__map':
-    #v_I: Type0 ->
-    #v_O: Type0 ->
-    #v_F: Type0 ->
-    {| i0: t_Iterator v_I |} ->
-    {| i1: Core_models.Ops.Function.t_FnMut v_F i0.f_Item |}
-  -> t_Iterator (t_Map v_I v_F)
-
-unfold
-let impl_1__from__map
-      (#v_I #v_O #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_FnMut v_F i0.f_Item)
-     = impl_1__from__map' #v_I #v_O #v_F #i0 #i1
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-assume
 val impl_1__from__map_while':
     #v_I: Type0 ->
     #v_B: Type0 ->
@@ -7794,20 +7768,84 @@ let impl__new__from__zip
     : t_Zip v_I1 v_I2 = { f_it1 = it1; f_it2 = it2 } <: t_Zip v_I1 v_I2
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-assume
-val impl_1__from__zip':
-    #v_I1: Type0 ->
-    #v_I2: Type0 ->
-    {| i0: t_Iterator v_I1 |} ->
-    {| i1: t_Iterator v_I2 |}
-  -> t_Iterator (t_Zip v_I1 v_I2)
-
-unfold
 let impl_1__from__zip
       (#v_I1 #v_I2: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I1)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Iterator v_I2)
-     = impl_1__from__zip' #v_I1 #v_I2 #i0 #i1
+    : t_Iterator (t_Zip v_I1 v_I2) =
+  {
+    f_Item = (i0.f_Item & i1.f_Item);
+    f_next_pre = (fun (self: t_Zip v_I1 v_I2) -> true);
+    f_next_post
+    =
+    (fun (self: t_Zip v_I1 v_I2) (out1: (t_Zip v_I1 v_I2 & t_Option (i0.f_Item & i1.f_Item))) ->
+        true);
+    f_next
+    =
+    fun (self: t_Zip v_I1 v_I2) ->
+      let (tmp0: v_I1), (out: t_Option i0.f_Item) =
+        f_next #v_I1 #FStar.Tactics.Typeclasses.solve self.f_it1
+      in
+      let self:t_Zip v_I1 v_I2 = { self with f_it1 = tmp0 } <: t_Zip v_I1 v_I2 in
+      let (self: t_Zip v_I1 v_I2), (hax_temp_output: t_Option (i0.f_Item & i1.f_Item)) =
+        match out <: t_Option i0.f_Item with
+        | Option_Some v1 ->
+          let (tmp0: v_I2), (out: t_Option i1.f_Item) =
+            f_next #v_I2 #FStar.Tactics.Typeclasses.solve self.f_it2
+          in
+          let self:t_Zip v_I1 v_I2 = { self with f_it2 = tmp0 } <: t_Zip v_I1 v_I2 in
+          (match out <: t_Option i1.f_Item with
+            | Option_Some v2 ->
+              self,
+              (Option_Some (v1, v2 <: (i0.f_Item & i1.f_Item)) <: t_Option (i0.f_Item & i1.f_Item))
+              <:
+              (t_Zip v_I1 v_I2 & t_Option (i0.f_Item & i1.f_Item))
+            | Option_None  ->
+              self, (Option_None <: t_Option (i0.f_Item & i1.f_Item))
+              <:
+              (t_Zip v_I1 v_I2 & t_Option (i0.f_Item & i1.f_Item)))
+        | Option_None  ->
+          self, (Option_None <: t_Option (i0.f_Item & i1.f_Item))
+          <:
+          (t_Zip v_I1 v_I2 & t_Option (i0.f_Item & i1.f_Item))
+      in
+      self, hax_temp_output <: (t_Zip v_I1 v_I2 & t_Option (i0.f_Item & i1.f_Item))
+  }
+
+[@@ FStar.Tactics.Typeclasses.fundeps [1]]
+class t_IteratorOf (v_I: Type0) (v_A: Type0) = {
+  f_iterator_of_iterator: t_Iterator v_I;
+  f_iterator_of_item: squash (f_iterator_of_iterator.f_Item == v_A)
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let iterator_of_iterator (#v_I: Type0) {| i0: t_Iterator v_I |} : t_IteratorOf v_I i0.f_Item =
+  { f_iterator_of_iterator = i0; f_iterator_of_item = () }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1__from__map
+      (#v_I #v_F #v_A: Type0)
+      {| io: t_IteratorOf v_I v_A |}
+      {| i1: Core_models.Ops.Function.t_FnMut v_F v_A |}
+    : t_Iterator (Core_models.Iter.Adapters.Map.t_Map v_I v_F) =
+  let i0 = io.f_iterator_of_iterator in
+  {
+    f_Item = i1.Core_models.Ops.Function._super_i0.Core_models.Ops.Function.f_Output;
+    f_next_pre = (fun (self: Core_models.Iter.Adapters.Map.t_Map v_I v_F) -> true);
+    f_next_post = (fun (self: Core_models.Iter.Adapters.Map.t_Map v_I v_F) _ -> true);
+    f_next
+    =
+    fun (self: Core_models.Iter.Adapters.Map.t_Map v_I v_F) ->
+      let (tmp0: v_I), (out: t_Option i0.f_Item) = f_next #v_I #i0 self.Core_models.Iter.Adapters.Map.f_iter in
+      let self:Core_models.Iter.Adapters.Map.t_Map v_I v_F = { self with Core_models.Iter.Adapters.Map.f_iter = tmp0 } in
+      match out with
+      | Option_Some v ->
+        self,
+        Option_Some
+          (Core_models.Ops.Function.f_call_mut #v_F #v_A #i1 self.Core_models.Iter.Adapters.Map.f_f
+              (FStar.Pervasives.coerce_eq io.f_iterator_of_item v))
+      | Option_None -> self, Option_None
+  }
 
 assume
 val iter_fold':
@@ -9022,7 +9060,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
-      t_Map v_Self v_F
+      Core_models.Iter.Adapters.Map.t_Map v_Self v_F
     -> Type0;
   f_map:
       #v_O: Type0 ->
@@ -9030,7 +9068,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       x0: v_Self ->
       x1: v_F
-    -> Prims.Pure (t_Map v_Self v_F)
+    -> Prims.Pure (Core_models.Iter.Adapters.Map.t_Map v_Self v_F)
         (f_map_pre #v_O #v_F #i1 x0 x1)
         (fun result -> f_map_post #v_O #v_F #i1 x0 x1 result);
   f_enumerate_pre:v_Self -> Type0;
@@ -9522,7 +9560,7 @@ let impl__from__iterator
           Core_models.Ops.Function.t_FnMut v_F i0.f_Item)
         (self: v_I)
         (f: v_F)
-        (out: t_Map v_I v_F)
+        (out: Core_models.Iter.Adapters.Map.t_Map v_I v_F)
         ->
         true);
     f_map
@@ -9536,7 +9574,7 @@ let impl__from__iterator
         (self: v_I)
         (f: v_F)
         ->
-        impl__new__from__map #v_I #v_F self f);
+        Core_models.Iter.Adapters.Map.impl__new #v_I #v_F self f);
     f_enumerate_pre = (fun (self: v_I) -> true);
     f_enumerate_post = (fun (self: v_I) (out: t_Enumerate v_I) -> true);
     f_enumerate = (fun (self: v_I) -> impl__new #v_I self);

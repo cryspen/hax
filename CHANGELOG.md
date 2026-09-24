@@ -14,12 +14,21 @@ Lean backend and library:
    start, end, into_inner, contains, is_empty}`, `copy_within` on slices and
    `drain` on `Vec`. `RangeInclusive` has no `Iterator` model yet, so
    `for i in a..=b` still does not extract
+ - Add models of `as_chunks` and `as_rchunks` on slices
 
 F* backend and library:
  - Add models of `RangeBounds`, `RangeToInclusive` and `RangeInclusive::{new,
    start, end, into_inner, contains, is_empty}`, so that `a..=b` and `..=b` can
    be built and queried. `RangeInclusive` has no `Iterator` instance yet, so
    `for i in a..=b` still does not typecheck
+ - Add the fold combinators for `break` and `return` in `step_by`,
+   `enumerate` and `chunks_exact` loops, and for `break` in loops over any
+   iterator, which the engine emitted but the library did not define
+ - Add models of `as_chunks` and `as_rchunks` on slices, of `IntoIterator` for
+   `Vec` and of `rand::Rng`, and define the `Iterator` instances of `Zip` and
+   `Map`, so that loops over them and `collect` type-check
+ - Give `binary_search` a postcondition bounding its result, by defining it
+   instead of assuming it
 
 ### Changed
 
@@ -34,6 +43,8 @@ F* backend and library:
    instances of `Range` moving to `impl_12` to `impl_23`, and
    `t_RangeInclusive` has the fields `f_lo`, `f_hi` and `f_exhausted` instead of
    `f_start` and `f_end`
+ - Breaking: `Alloc.Vec.Into_iter.t_IntoIter` takes std's allocator parameter,
+   which the extraction already passed
 
 ### Fixed
 
@@ -54,6 +65,8 @@ F* backend and library:
    transmute_copy}` and on the hand-written functions returning `t_Never`, which
    could otherwise inhabit any type
  - Correct precondition on index for `remove` on `Vec`
+ - Define `fold_chunked_slice`, `fold_enumerated_chunked_slice` and
+   `fold_enumerated_slice_return` instead of assuming them
  - Replace the total models of `copy_within` on slices and `drain` on `Vec`,
    which could not see their range, by ones with std's signatures and
    preconditions for the ranges on which Rust panics

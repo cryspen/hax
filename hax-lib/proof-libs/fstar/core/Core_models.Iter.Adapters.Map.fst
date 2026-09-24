@@ -3,8 +3,11 @@ module Core_models.Iter.Adapters.Map
 open FStar.Mul
 open Rust_primitives
 
-include Core_models.Bundle {t_Map as t_Map}
+/// See [`std::iter::Map`]
+type t_Map (v_I: Type0) (v_F: Type0) = {
+  f_iter:v_I;
+  f_f:v_F
+}
 
-include Core_models.Bundle {impl__new__from__map as impl__new}
-
-include Core_models.Bundle {impl_1__from__map as impl_1}
+let impl__new (#v_I #v_F: Type0) (iter: v_I) (f: v_F) : t_Map v_I v_F =
+  { f_iter = iter; f_f = f } <: t_Map v_I v_F
