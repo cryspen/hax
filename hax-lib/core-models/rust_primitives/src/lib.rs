@@ -38,6 +38,11 @@ pub mod slice {
     pub fn slice_clone_from_slice<T: Clone>(s: &mut [T], src: &[T]) {
         s.clone_from_slice(src)
     }
+    // Safe Rust can only copy between two regions of one slice through std.
+    #[hax_lib::requires(start <= end && end <= slice_length(s) && dest <= slice_length(s) - (end - start))]
+    pub fn slice_copy_within<T: Copy>(s: &mut [T], start: usize, end: usize, dest: usize) {
+        s.copy_within(start..end, dest)
+    }
     // `reverse`/`swap` mutate in place; with no `Clone`/`Copy` bound the elements
     // can't be read out of the shared-ref `slice_index`/`slice_slice` and written
     // back, so they are primitives.

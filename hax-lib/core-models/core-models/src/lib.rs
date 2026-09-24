@@ -32,7 +32,11 @@
 // int_roundings: lets the proptests call std's still-unstable signed `div_ceil`.
 // `fmt_helpers_for_derive`: the proptests compare against std's
 // `Formatter::debug_struct_fields_finish`, which is unstable.
-#![cfg_attr(test, feature(step_trait, int_roundings, fmt_helpers_for_derive))]
+// `slice_range`: the proptests compare against std's `slice::try_range`.
+#![cfg_attr(
+    test,
+    feature(step_trait, int_roundings, fmt_helpers_for_derive, slice_range)
+)]
 
 // Lean-only modules. They carry no operations -- the types exist so that a
 // client mentioning them resolves, which is all Aeneas's Lean library gives

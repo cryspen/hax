@@ -228,18 +228,18 @@ impl<T> Slice<T> {
         rust_primitives::slice::slice_contains(s, v)
     }
     /// See [`std::slice::copy_within`]
-    // Excluded from coverage: `R` carries no `RangeBounds` bound, so the source
-    // range cannot be read out of it and there is no body to run (same
-    // limitation as `alloc`'s `Vec::drain`).
-    #[cfg_attr(coverage_nightly, coverage(off))]
-    #[hax_lib::exclude]
-    // mutants::skip: excluded from coverage above, so no test can kill a mutant here.
-    #[cfg_attr(test, mutants::skip)]
-    fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
+    #[hax_lib::requires(
+        match index::try_range(src, crate::ops::range::RangeTo { end: Slice::len(s) }) {
+            Option::Some(r) => dest <= Slice::len(s) - (r.end - r.start),
+            Option::None => false,
+        }
+    )]
+    fn copy_within<R: crate::ops::range::RangeBounds<usize>>(s: &mut [T], src: R, dest: usize)
     where
         T: Copy,
     {
-        panic!()
+        let r = index::range(src, crate::ops::range::RangeTo { end: Slice::len(s) });
+        rust_primitives::slice::slice_copy_within(s, r.start, r.end, dest)
     }
     /// See [`std::slice::binary_search`]
     // F*-only: the equivalence tests call this, so Lean needs the body; it is
@@ -773,6 +773,60 @@ pub mod index {
         #[cfg_attr(not(hax_backend_lean), hax_lib::requires(i.get(self).is_some()))]
         fn index_mut(&mut self, i: I) -> &mut I::Output {
             i.get_unchecked_mut(self)
+        }
+    }
+
+    // In F*, `range` below shadows the integer refinement `range` in every item
+    // hax emits after it in `Core_models.Slice.Index`, whatever the order here.
+    /// See [`std::slice::try_range`]
+    pub fn try_range<R: crate::ops::range::RangeBounds<usize>>(
+        range: R,
+        bounds: crate::ops::range::RangeTo<usize>,
+    ) -> Option<crate::ops::range::Range<usize>> {
+        let len = bounds.end;
+        match start_index(&range) {
+            Option::Some(start) => match end_index(&range, len) {
+                Option::Some(end) => {
+                    if start > end || end > len {
+                        Option::None
+                    } else {
+                        Option::Some(crate::ops::range::Range { start, end })
+                    }
+                }
+                Option::None => Option::None,
+            },
+            Option::None => Option::None,
+        }
+    }
+
+    // One function per bound: Aeneas fails on a body that matches on both.
+    fn start_index<R: crate::ops::range::RangeBounds<usize>>(range: &R) -> Option<usize> {
+        use crate::ops::range::Bound;
+        match range.start_bound() {
+            Bound::Included(start) => Option::Some(*start),
+            Bound::Excluded(start) => crate::num::usize::checked_add(*start, 1),
+            Bound::Unbounded => Option::Some(0),
+        }
+    }
+
+    fn end_index<R: crate::ops::range::RangeBounds<usize>>(range: &R, len: usize) -> Option<usize> {
+        use crate::ops::range::Bound;
+        match range.end_bound() {
+            Bound::Included(end) => crate::num::usize::checked_add(*end, 1),
+            Bound::Excluded(end) => Option::Some(*end),
+            Bound::Unbounded => Option::Some(len),
+        }
+    }
+
+    /// See [`std::slice::range`]
+    #[hax_lib::requires(try_range(range, bounds).is_some())]
+    pub fn range<R: crate::ops::range::RangeBounds<usize>>(
+        range: R,
+        bounds: crate::ops::range::RangeTo<usize>,
+    ) -> crate::ops::range::Range<usize> {
+        match try_range(range, bounds) {
+            Option::Some(r) => r,
+            Option::None => crate::panicking::internal::panic(),
         }
     }
 }
@@ -1716,6 +1770,71 @@ mod tests {
             Slice::get_unchecked_mut(&mut model[..], crate::ops::range::Range { start, end }).fill(v);
             unsafe { std_slice.get_unchecked_mut(start..end).fill(v); }
             prop_assert_eq!(model, std_slice);
+        }
+    }
+
+    proptest! {
+        #[test]
+        fn test_try_range(
+            start in crate::testing::range_endpoint(),
+            end in crate::testing::range_endpoint(),
+            len in 0usize..=8,
+        ) {
+            for (m, s) in crate::testing::range_forms(start, end) {
+                let model = super::index::try_range(m, crate::ops::range::RangeTo { end: len });
+                let model = match model {
+                    ModelOption::Some(r) => Some((r.start, r.end)),
+                    ModelOption::None => None,
+                };
+                let real = std::slice::try_range(s, ..len).map(|r| (r.start, r.end));
+                prop_assert_eq!(model, real);
+            }
+        }
+
+        #[test]
+        fn test_range(
+            start in crate::testing::range_endpoint(),
+            end in crate::testing::range_endpoint(),
+            len in 0usize..=8,
+        ) {
+            for (m, s) in crate::testing::range_forms(start, end) {
+                let bounds = crate::ops::range::RangeTo { end: len };
+                match std::slice::try_range(s, ..len) {
+                    Some(real) => {
+                        let model = super::index::range(m, bounds);
+                        prop_assert_eq!((model.start, model.end), (real.start, real.end));
+                    }
+                    None => crate::testing::panics_like_core(
+                        || super::index::range(m, bounds),
+                        || std::slice::range(s, ..len),
+                    ),
+                }
+            }
+        }
+
+        #[test]
+        fn test_copy_within(
+            slice in prop::collection::vec(any::<u8>(), 0..=8),
+            start in crate::testing::range_endpoint(),
+            end in crate::testing::range_endpoint(),
+            dest in crate::testing::range_endpoint(),
+        ) {
+            for (m, s) in crate::testing::range_forms(start, end) {
+                let mut model = slice.clone();
+                let mut real = slice.clone();
+                let len = slice.len();
+                match std::slice::try_range(s, ..len) {
+                    Some(r) if dest <= len - (r.end - r.start) => {
+                        Slice::copy_within(&mut model[..], m, dest);
+                        real.copy_within(s, dest);
+                        prop_assert_eq!(model, real);
+                    }
+                    _ => crate::testing::panics_like_core(
+                        || Slice::copy_within(&mut model[..], m, dest),
+                        || real.copy_within(s, dest),
+                    ),
+                }
+            }
         }
     }
 

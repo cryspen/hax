@@ -179,6 +179,44 @@ let impl_1__split_off (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (at: usize)
   in
   self, hax_temp_output <: (t_Vec v_T v_A & t_Vec v_T v_A)
 
+let impl_1__drain
+      (#v_T #v_A #v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Range.t_RangeBounds v_R usize)
+      (self: t_Vec v_T v_A)
+      (range: v_R)
+    : Prims.Pure (t_Vec v_T v_A & Alloc.Vec.Drain.t_Drain v_T v_A)
+      (requires
+        Core_models.Option.impl__is_some #(Core_models.Ops.Range.t_Range usize)
+          (Core_models.Slice.Index.try_range #v_R
+              range
+              ({ Core_models.Ops.Range.f_end = impl_1__len #v_T #v_A self <: usize }
+                <:
+                Core_models.Ops.Range.t_RangeTo usize)
+            <:
+            Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize)))
+      (fun _ -> Prims.l_True) =
+  let r:Core_models.Ops.Range.t_Range usize =
+    Core_models.Slice.Index.range #v_R
+      range
+      ({ Core_models.Ops.Range.f_end = impl_1__len #v_T #v_A self <: usize }
+        <:
+        Core_models.Ops.Range.t_RangeTo usize)
+  in
+  let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: Rust_primitives.Sequence.t_Seq v_T) =
+    Rust_primitives.Sequence.seq_drain #v_T
+      self._0
+      r.Core_models.Ops.Range.f_start
+      r.Core_models.Ops.Range.f_end
+  in
+  let self:t_Vec v_T v_A = { self with _0 = tmp0 } <: t_Vec v_T v_A in
+  let hax_temp_output:Alloc.Vec.Drain.t_Drain v_T v_A =
+    Alloc.Vec.Drain.Drain out
+      (Core_models.Marker.PhantomData <: Core_models.Marker.t_PhantomData v_A)
+    <:
+    Alloc.Vec.Drain.t_Drain v_T v_A
+  in
+  self, hax_temp_output <: (t_Vec v_T v_A & Alloc.Vec.Drain.t_Drain v_T v_A)
+
 let impl_2__extend_from_slice
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)

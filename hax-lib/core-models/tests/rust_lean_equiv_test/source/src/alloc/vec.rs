@@ -335,8 +335,31 @@ pub fn test_vec_resize_same_len_is_noop() -> bool {
 
 // ----- drain (iterator) ------------------------------------------------------
 
-// Vec::drain ignores its `RangeBounds` argument, so it is `--opaque` for charon
-// (see the Makefile) and has no Lean body to test against.
+#[rust_lean_test]
+pub fn test_vec_drain() -> bool {
+    let mut a: Vec<u8> = Vec::new();
+    a.push(1u8);
+    a.push(2u8);
+    a.push(3u8);
+    a.push(4u8);
+    let (first, second, third) = {
+        let mut d = a.drain(1..3);
+        (d.next(), d.next(), d.next())
+    };
+    let mut ea: Vec<u8> = Vec::new();
+    ea.push(1u8);
+    ea.push(4u8);
+    first == Some(2u8) && second == Some(3u8) && third == None && a == ea
+}
+
+#[rust_lean_test(panics)]
+pub fn test_vec_drain_past_end() -> bool {
+    let mut a: Vec<u8> = Vec::new();
+    a.push(1u8);
+    a.push(2u8);
+    let _ = a.drain(1..3);
+    a.len() == 1
+}
 
 // ----- closure-using methods (excluded) --------------------------------------
 

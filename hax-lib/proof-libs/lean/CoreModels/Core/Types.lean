@@ -1034,36 +1034,61 @@ structure ops.drop.Drop (Self : Type) where
   drop : Self → RustM Self
 
 /-- [core_models::ops::range::RangeTo]
-    Source: 'core-models/src/core/ops.rs', lines 318:4-320:5
+    Source: 'core-models/src/core/ops.rs', lines 319:4-321:5
     Visibility: public -/
 structure ops.range.RangeTo (T : Type) where
   «end» : T
 
 /-- [core_models::ops::range::RangeFrom]
-    Source: 'core-models/src/core/ops.rs', lines 322:4-324:5
+    Source: 'core-models/src/core/ops.rs', lines 323:4-325:5
     Visibility: public -/
 structure ops.range.RangeFrom (T : Type) where
   start : T
 
 /-- [core_models::ops::range::Range]
-    Source: 'core-models/src/core/ops.rs', lines 326:4-329:5
+    Source: 'core-models/src/core/ops.rs', lines 327:4-330:5
     Visibility: public -/
 structure ops.range.Range (T : Type) where
   start : T
   «end» : T
 
 /-- [core_models::ops::range::RangeFull]
-    Source: 'core-models/src/core/ops.rs', lines 331:4-331:25
+    Source: 'core-models/src/core/ops.rs', lines 332:4-332:25
     Visibility: public -/
 @[reducible]
 def ops.range.RangeFull := Unit
 
 /-- [core_models::ops::range::RangeInclusive]
-    Source: 'core-models/src/core/ops.rs', lines 333:4-336:5
+    Source: 'core-models/src/core/ops.rs', lines 336:4-340:5
     Visibility: public -/
 structure ops.range.RangeInclusive (T : Type) where
-  start : T
+  lo : T
+  hi : T
+  exhausted : Bool
+
+/-- [core_models::ops::range::RangeToInclusive]
+    Source: 'core-models/src/core/ops.rs', lines 342:4-344:5
+    Visibility: public -/
+structure ops.range.RangeToInclusive (T : Type) where
   «end» : T
+
+/-- [core_models::ops::range::Bound]
+    Source: 'core-models/src/core/ops.rs', lines 384:4-388:5
+    Visibility: public -/
+@[discriminant isize]
+inductive ops.range.Bound (T : Type) where
+| Included : T → ops.range.Bound T
+| Excluded : T → ops.range.Bound T
+| Unbounded : ops.range.Bound T
+
+/-- Trait declaration: [core_models::ops::range::RangeBounds]
+    Source: 'core-models/src/core/ops.rs', lines 391:4-407:5
+    Visibility: public -/
+structure ops.range.RangeBounds (Self : Type) (T : Type) where
+  start_bound : Self → RustM (ops.range.Bound T)
+  end_bound : Self → RustM (ops.range.Bound T)
+  contains : forall {U : Type} (cmpPartialOrdInst : cmp.PartialOrd T U)
+    (cmpPartialOrdInst1 : cmp.PartialOrd U T), Self → U → RustM Bool
 
 /-- [core_models::panic::location::Location]
     Source: 'core-models/src/core/panic.rs', lines 11:4-15:5

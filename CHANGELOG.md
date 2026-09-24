@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.1] - 2026-09-23
 
+### Added
+
+Lean backend and library:
+ - Add models of `RangeBounds`, `RangeToInclusive`, `RangeInclusive::{new,
+   start, end, into_inner, contains, is_empty}`, `copy_within` on slices and
+   `drain` on `Vec`. `RangeInclusive` has no `Iterator` model yet, so
+   `for i in a..=b` still does not extract
+
+F* backend and library:
+ - Add models of `RangeBounds`, `RangeToInclusive` and `RangeInclusive::{new,
+   start, end, into_inner, contains, is_empty}`, so that `a..=b` and `..=b` can
+   be built and queried. `RangeInclusive` has no `Iterator` instance yet, so
+   `for i in a..=b` still does not typecheck
+
+### Changed
+
+Lean backend and library:
+ - Breaking: `ops.range.RangeInclusive` has the fields `lo`, `hi` and
+   `exhausted` instead of `start` and `«end»`, and `RangeInclusive.start` and
+   `RangeInclusive.end` are now functions returning `RustM T`
+
+F* backend and library:
+ - Breaking: `Core_models.Ops.Range.impl` to `impl_6` are now the `RangeBounds`
+   instances and `impl_11` the `RangeBoundsDefaults` one, with the `Iterator`
+   instances of `Range` moving to `impl_12` to `impl_23`, and
+   `t_RangeInclusive` has the fields `f_lo`, `f_hi` and `f_exhausted` instead of
+   `f_start` and `f_end`
+
 ### Fixed
 
 Lean backend and library:
@@ -26,7 +54,9 @@ F* backend and library:
    transmute_copy}` and on the hand-written functions returning `t_Never`, which
    could otherwise inhabit any type
  - Correct precondition on index for `remove` on `Vec`
- - Remove unsound model of `drain` on `Vec`
+ - Replace the total models of `copy_within` on slices and `drain` on `Vec`,
+   which could not see their range, by ones with std's signatures and
+   preconditions for the ranges on which Rust panics
 
 F* backend and library:
  - Apply `rewrite_self` to trait annotations

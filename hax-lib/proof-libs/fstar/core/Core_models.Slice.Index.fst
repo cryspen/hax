@@ -3,6 +3,94 @@ module Core_models.Slice.Index
 open FStar.Mul
 open Rust_primitives
 
+let start_index
+      (#v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Range.t_RangeBounds v_R usize)
+      (range: v_R)
+    : Core_models.Option.t_Option usize =
+  match
+    Core_models.Ops.Range.f_start_bound #v_R #usize #FStar.Tactics.Typeclasses.solve range
+    <:
+    Core_models.Ops.Range.t_Bound usize
+  with
+  | Core_models.Ops.Range.Bound_Included start ->
+    Core_models.Option.Option_Some start <: Core_models.Option.t_Option usize
+  | Core_models.Ops.Range.Bound_Excluded start ->
+    Core_models.Num.impl_usize__checked_add start (mk_usize 1)
+  | Core_models.Ops.Range.Bound_Unbounded  ->
+    Core_models.Option.Option_Some (mk_usize 0) <: Core_models.Option.t_Option usize
+
+let end_index
+      (#v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Range.t_RangeBounds v_R usize)
+      (range: v_R)
+      (len: usize)
+    : Core_models.Option.t_Option usize =
+  match
+    Core_models.Ops.Range.f_end_bound #v_R #usize #FStar.Tactics.Typeclasses.solve range
+    <:
+    Core_models.Ops.Range.t_Bound usize
+  with
+  | Core_models.Ops.Range.Bound_Included v_end ->
+    Core_models.Num.impl_usize__checked_add v_end (mk_usize 1)
+  | Core_models.Ops.Range.Bound_Excluded v_end ->
+    Core_models.Option.Option_Some v_end <: Core_models.Option.t_Option usize
+  | Core_models.Ops.Range.Bound_Unbounded  ->
+    Core_models.Option.Option_Some len <: Core_models.Option.t_Option usize
+
+/// See [`std::slice::try_range`]
+let try_range
+      (#v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Range.t_RangeBounds v_R usize)
+      (range: v_R)
+      (bounds: Core_models.Ops.Range.t_RangeTo usize)
+    : Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize) =
+  let len:usize = bounds.Core_models.Ops.Range.f_end in
+  match start_index #v_R range <: Core_models.Option.t_Option usize with
+  | Core_models.Option.Option_Some start ->
+    (match end_index #v_R range len <: Core_models.Option.t_Option usize with
+      | Core_models.Option.Option_Some v_end ->
+        if start >. v_end || v_end >. len
+        then
+          Core_models.Option.Option_None
+          <:
+          Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize)
+        else
+          Core_models.Option.Option_Some
+          ({ Core_models.Ops.Range.f_start = start; Core_models.Ops.Range.f_end = v_end }
+            <:
+            Core_models.Ops.Range.t_Range usize)
+          <:
+          Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize)
+      | Core_models.Option.Option_None  ->
+        Core_models.Option.Option_None
+        <:
+        Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize))
+  | Core_models.Option.Option_None  ->
+    Core_models.Option.Option_None
+    <:
+    Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize)
+
+/// See [`std::slice::range`]
+let range
+      (#v_R: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Range.t_RangeBounds v_R usize)
+      (range: v_R)
+      (bounds: Core_models.Ops.Range.t_RangeTo usize)
+    : Prims.Pure (Core_models.Ops.Range.t_Range usize)
+      (requires
+        Core_models.Option.impl__is_some #(Core_models.Ops.Range.t_Range usize)
+          (try_range #v_R range bounds
+            <:
+            Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize)))
+      (fun _ -> Prims.l_True) =
+  match
+    try_range #v_R range bounds <: Core_models.Option.t_Option (Core_models.Ops.Range.t_Range usize)
+  with
+  | Core_models.Option.Option_Some r -> r
+  | Core_models.Option.Option_None  ->
+    Core_models.Panicking.Internal.panic #(Core_models.Ops.Range.t_Range usize) ()
+
 /// See [`std::slice::SliceIndex`]. `get_unchecked` is the same in-bounds
 /// projection as `index` (no raw pointers); the `*_mut` variants take
 /// `&mut T` and return `&mut Output`.

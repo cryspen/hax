@@ -54,10 +54,8 @@ ALLOC_CHARON_EXCLUDES = \
 # re-adds. The items are therefore absent from the committed Lean tree, and a
 # crate that calls them will not elaborate; what this buys over `--exclude` is
 # that no *wrong* body is extracted.
-#   - `Vec::drain` ignores its range argument: `RangeBounds` is not modelled.
 #   - `fmt::format` returns the empty string: `fmt::Arguments` is not modelled.
 ALLOC_CHARON_OPAQUE = \
-    --opaque 'alloc_models::vec::_::drain' \
     --opaque 'alloc_models::fmt::format'
 
 .PHONY: all extract patch lean build clean clean-generated tests \

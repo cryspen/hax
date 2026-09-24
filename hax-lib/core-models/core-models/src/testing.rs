@@ -158,3 +158,148 @@ impl Inject for CloneWitness {
         }
     }
 }
+
+/// The model's `RangeBounds` forms under one type, so a test body can loop over
+/// them. Each method delegates to the wrapped range's own impl.
+pub enum ModelRange {
+    Range(crate::ops::range::Range<usize>),
+    From(crate::ops::range::RangeFrom<usize>),
+    To(crate::ops::range::RangeTo<usize>),
+    Full(crate::ops::range::RangeFull),
+    Inclusive(crate::ops::range::RangeInclusive<usize>),
+    ToInclusive(crate::ops::range::RangeToInclusive<usize>),
+    Pair(
+        (
+            crate::ops::range::Bound<usize>,
+            crate::ops::range::Bound<usize>,
+        ),
+    ),
+}
+
+macro_rules! on_model_range {
+    ($range:expr, |$r:ident| $body:expr) => {
+        match $range {
+            ModelRange::Range($r) => $body,
+            ModelRange::From($r) => $body,
+            ModelRange::To($r) => $body,
+            ModelRange::Full($r) => $body,
+            ModelRange::Inclusive($r) => $body,
+            ModelRange::ToInclusive($r) => $body,
+            ModelRange::Pair($r) => $body,
+        }
+    };
+}
+
+impl crate::ops::range::RangeBounds<usize> for ModelRange {
+    fn start_bound(&self) -> crate::ops::range::Bound<&usize> {
+        on_model_range!(self, |r| {
+            crate::ops::range::RangeBounds::<usize>::start_bound(r)
+        })
+    }
+    fn end_bound(&self) -> crate::ops::range::Bound<&usize> {
+        on_model_range!(
+            self,
+            |r| crate::ops::range::RangeBounds::<usize>::end_bound(r)
+        )
+    }
+}
+
+fn bound(kind: u8, x: usize) -> (crate::ops::range::Bound<usize>, std::ops::Bound<usize>) {
+    use crate::ops::range::Bound as M;
+    use std::ops::Bound as S;
+    match kind {
+        0 => (M::Included(x), S::Included(x)),
+        1 => (M::Excluded(x), S::Excluded(x)),
+        _ => (M::Unbounded, S::Unbounded),
+    }
+}
+
+/// Every `RangeBounds` form of the model built from `start` and `end`, each
+/// paired with the bounds std gives the same range.
+pub fn range_forms(
+    start: usize,
+    end: usize,
+) -> std::vec::Vec<(ModelRange, (std::ops::Bound<usize>, std::ops::Bound<usize>))> {
+    use crate::ops::range as m;
+    use std::ops::RangeBounds;
+    fn bounds<R: RangeBounds<usize>>(r: R) -> (std::ops::Bound<usize>, std::ops::Bound<usize>) {
+        (r.start_bound().cloned(), r.end_bound().cloned())
+    }
+    let mut forms = vec![
+        (
+            ModelRange::Range(m::Range { start, end }),
+            bounds(start..end),
+        ),
+        (ModelRange::From(m::RangeFrom { start }), bounds(start..)),
+        (ModelRange::To(m::RangeTo { end }), bounds(..end)),
+        (ModelRange::Full(m::RangeFull), bounds(..)),
+        (
+            ModelRange::Inclusive(m::RangeInclusive::new(start, end)),
+            bounds(start..=end),
+        ),
+        (
+            ModelRange::ToInclusive(m::RangeToInclusive { end }),
+            bounds(..=end),
+        ),
+    ];
+    // Iterating to the end leaves `start == end` with `exhausted` set.
+    if start <= end {
+        let mut exhausted = start..=end;
+        exhausted.nth(end - start);
+        forms.push((
+            ModelRange::Inclusive(m::RangeInclusive {
+                lo: end,
+                hi: end,
+                exhausted: true,
+            }),
+            bounds(exhausted),
+        ));
+    }
+    for ks in 0..3 {
+        for ke in 0..3 {
+            let (model_start, std_start) = bound(ks, start);
+            let (model_end, std_end) = bound(ke, end);
+            forms.push((
+                ModelRange::Pair((model_start, model_end)),
+                (std_start, std_end),
+            ));
+        }
+    }
+    forms
+}
+
+/// Range endpoints around the slice lengths the tests use, plus the overflow edge.
+pub fn range_endpoint() -> impl proptest::strategy::Strategy<Value = usize> {
+    use proptest::prelude::*;
+    prop_oneof![0usize..=10, Just(usize::MAX - 1), Just(usize::MAX)]
+}
+
+/// Compares like its `u8`, but panics if either side is `u8::MAX`.
+pub struct Tripwire(pub u8);
+
+impl Tripwire {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        assert!(self.0 != u8::MAX && other.0 != u8::MAX, "tripwire compared");
+        self.0.cmp(&other.0)
+    }
+}
+impl std::cmp::PartialEq for Tripwire {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other).is_eq()
+    }
+}
+impl std::cmp::PartialOrd for Tripwire {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl crate::cmp::PartialEq<Tripwire> for Tripwire {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other).is_eq()
+    }
+}
+impl crate::cmp::PartialOrd<Tripwire> for Tripwire {
+    fn partial_cmp(&self, other: &Self) -> crate::option::Option<crate::cmp::Ordering> {
+        crate::option::Option::Some(self.cmp(other).inject())
+    }
+}
