@@ -10,6 +10,14 @@ mod testing {
         fn inject(&self) -> Self::Model;
     }
 
+    /// A `key` to order by and a `tag` identifying the element, so that where
+    /// two elements compare equal, a test can still tell which one it got.
+    #[derive(Clone, Copy, Debug)]
+    pub struct Tagged {
+        pub key: u8,
+        pub tag: usize,
+    }
+
     /// Asserts the model and real `alloc` both panic on the same input.
     #[track_caller]
     pub fn panics_like_core<A, B>(model: impl FnOnce() -> A, core: impl FnOnce() -> B) {
@@ -610,6 +618,26 @@ mod slice {
                 super::Dummy::<u8>::sort_by(&mut model[..], cmp);
                 std_slice.sort_by(cmp);
                 prop_assert_eq!(model, std_slice);
+            }
+
+            // Stability, which sorting `u8`s cannot show.
+            #[test]
+            fn test_sort_by_is_stable(keys in prop::collection::vec(0u8..3, 0..20)) {
+                use crate::testing::Tagged;
+                let by_key = |a: &Tagged, b: &Tagged| a.key.cmp(&b.key);
+                let v: Vec<Tagged> = keys.into_iter().enumerate()
+                    .map(|(tag, key)| Tagged { key, tag })
+                    .collect();
+                let mut model = v.clone();
+                let mut std_slice = v;
+                super::Dummy::<Tagged>::sort_by(&mut model[..], by_key);
+                std_slice.sort_by(by_key);
+                // Tags, not the values: `Tagged` compares by `key` alone, so
+                // comparing the slices would accept any order within a tie.
+                prop_assert_eq!(
+                    model.iter().map(|t| t.tag).collect::<Vec<_>>(),
+                    std_slice.iter().map(|t| t.tag).collect::<Vec<_>>()
+                );
             }
         }
 
