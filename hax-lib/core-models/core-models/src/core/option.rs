@@ -16,7 +16,10 @@ use super::result::*;
 #[cfg(not(hax_backend_fstar))]
 impl<T: crate::fmt::Debug> crate::fmt::Debug for Option<T> {
     fn fmt(&self, f: &mut crate::fmt::Formatter) -> crate::fmt::Result {
-        crate::fmt::Result::Ok(())
+        match self {
+            Some(x) => crate::fmt::Debug::fmt(x, f),
+            None => crate::fmt::Result::Ok(()),
+        }
     }
 }
 
@@ -353,14 +356,17 @@ mod tests {
     use crate::testing::Inject;
     use proptest::prelude::*;
 
-    /// `Debug` for `Option` renders nothing, like every other `Debug` in the
-    /// model.
+    /// `Debug` for `Option` forwards to the payload's.
     #[cfg(not(hax_backend_fstar))]
     #[test]
     fn test_option_debug() {
+        use crate::testing::DebugWitness;
         let mut f = crate::fmt::Formatter;
-        assert!(crate::fmt::Debug::fmt(&super::Some(1u8), &mut f).is_ok());
-        assert!(crate::fmt::Debug::fmt(&super::Option::<u8>::None, &mut f).is_ok());
+        let ok = super::Some(DebugWitness { fails: false });
+        let err = super::Some(DebugWitness { fails: true });
+        assert!(crate::fmt::Debug::fmt(&ok, &mut f).is_ok());
+        assert!(crate::fmt::Debug::fmt(&err, &mut f).is_err());
+        assert!(crate::fmt::Debug::fmt(&super::Option::<DebugWitness>::None, &mut f).is_ok());
     }
 
     // `as_mut` is `cfg(not(hax_backend_fstar))` (F* cannot model a `&mut`

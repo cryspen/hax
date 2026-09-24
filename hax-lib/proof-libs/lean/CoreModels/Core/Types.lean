@@ -123,7 +123,7 @@ inductive result.Result (T : Type) (E : Type) where
 -/
 
 /-- [core_models::fmt::Formatter]
-    Source: 'core-models/src/core/fmt.rs', lines 10:0-10:21
+    Source: 'core-models/src/core/fmt.rs', lines 13:0-13:21
     Visibility: public -/
 @[reducible]
 def fmt.Formatter := Unit
@@ -135,7 +135,7 @@ def fmt.Formatter := Unit
 def fmt.Error := Unit
 
 /-- Trait declaration: [core_models::fmt::Debug]
-    Source: 'core-models/src/core/fmt.rs', lines 85:0-91:1
+    Source: 'core-models/src/core/fmt.rs', lines 88:0-94:1
     Visibility: public -/
 structure fmt.Debug (Self : Type) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
@@ -335,7 +335,7 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
 def num.error.TryFromIntError := Unit
 
 /-- Trait declaration: [core_models::fmt::Display]
-    Source: 'core-models/src/core/fmt.rs', lines 79:0-82:1
+    Source: 'core-models/src/core/fmt.rs', lines 82:0-85:1
     Visibility: public -/
 structure fmt.Display (Self : Type) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
@@ -354,25 +354,25 @@ structure error.Error (Self : Type) where
 def f32.f32 := Unit
 
 /-- [core_models::fmt::Arguments]
-    Source: 'core-models/src/core/fmt.rs', lines 94:0-94:33
+    Source: 'core-models/src/core/fmt.rs', lines 97:0-97:33
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 268:4-275:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 280:4-287:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 277:4-279:5
+    Source: 'core-models/src/core/fmt.rs', lines 289:4-291:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 358:4-362:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 370:4-374:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -380,7 +380,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 364:4-369:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 376:4-381:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -388,7 +388,7 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 371:4-371:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 383:4-383:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
@@ -1104,7 +1104,7 @@ structure pin.helper.PinHelper (Ptr : Type) where
   pointer : Ptr
 
 /-- [core_models::result::SeqIter]
-    Source: 'core-models/src/core/result.rs', lines 361:0-361:53 -/
+    Source: 'core-models/src/core/result.rs', lines 364:0-364:53 -/
 @[reducible]
 def result.SeqIter (A : Type) := rust_primitives.sequence.Seq A
 

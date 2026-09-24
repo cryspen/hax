@@ -16,7 +16,10 @@ use super::option::Option;
 #[cfg(not(hax_backend_fstar))]
 impl<T: super::fmt::Debug, E: super::fmt::Debug> super::fmt::Debug for Result<T, E> {
     fn fmt(&self, f: &mut super::fmt::Formatter) -> super::fmt::Result {
-        super::fmt::Result::Ok(())
+        match self {
+            Result::Ok(x) => super::fmt::Debug::fmt(x, f),
+            Result::Err(e) => super::fmt::Debug::fmt(e, f),
+        }
     }
 }
 
@@ -497,14 +500,18 @@ mod tests {
     use crate::testing::Inject;
     use proptest::prelude::*;
 
-    /// `Debug` for `Result` renders nothing, like every other `Debug` in the
-    /// model.
+    /// `Debug` for `Result` forwards to the payload's, on either side.
     #[cfg(not(hax_backend_fstar))]
     #[test]
     fn test_result_debug() {
+        use crate::testing::DebugWitness;
         let mut f = crate::fmt::Formatter;
-        assert!(crate::fmt::Debug::fmt(&super::Ok::<u8, u8>(1), &mut f).is_ok());
-        assert!(crate::fmt::Debug::fmt(&super::Err::<u8, u8>(1), &mut f).is_ok());
+        for fails in [false, true] {
+            let ok = super::Ok::<_, u8>(DebugWitness { fails });
+            let err = super::Err::<u8, _>(DebugWitness { fails });
+            assert_eq!(crate::fmt::Debug::fmt(&ok, &mut f).is_err(), fails);
+            assert_eq!(crate::fmt::Debug::fmt(&err, &mut f).is_err(), fails);
+        }
     }
 
     proptest! {

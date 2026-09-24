@@ -4280,7 +4280,7 @@ def Isize.Insts.CoreConvertFromBool : convert.From Std.Isize Bool := {
 }
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::debug_struct_field1_finish]:
-    Source: 'core-models/src/core/fmt.rs', lines 17:8-23:9
+    Source: 'core-models/src/core/fmt.rs', lines 20:8-26:9
     Visibility: public -/
 def fmt.Formatter.debug_struct_field1_finish
   {T1 : Type} (DebugInst : fmt.Debug T1) (self : fmt.Formatter)
@@ -4290,7 +4290,7 @@ def fmt.Formatter.debug_struct_field1_finish
   ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::debug_struct_field2_finish]:
-    Source: 'core-models/src/core/fmt.rs', lines 17:8-23:9
+    Source: 'core-models/src/core/fmt.rs', lines 20:8-26:9
     Visibility: public -/
 def fmt.Formatter.debug_struct_field2_finish
   {T1 : Type} {T2 : Type} (DebugInst : fmt.Debug T1) (DebugInst1 : fmt.Debug
@@ -4301,7 +4301,7 @@ def fmt.Formatter.debug_struct_field2_finish
   ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::debug_struct_field3_finish]:
-    Source: 'core-models/src/core/fmt.rs', lines 17:8-23:9
+    Source: 'core-models/src/core/fmt.rs', lines 20:8-26:9
     Visibility: public -/
 def fmt.Formatter.debug_struct_field3_finish
   {T1 : Type} {T2 : Type} {T3 : Type} (DebugInst : fmt.Debug T1) (DebugInst1 :
@@ -4313,7 +4313,7 @@ def fmt.Formatter.debug_struct_field3_finish
   ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::debug_struct_field4_finish]:
-    Source: 'core-models/src/core/fmt.rs', lines 17:8-23:9
+    Source: 'core-models/src/core/fmt.rs', lines 20:8-26:9
     Visibility: public -/
 def fmt.Formatter.debug_struct_field4_finish
   {T1 : Type} {T2 : Type} {T3 : Type} {T4 : Type} (DebugInst : fmt.Debug T1)
@@ -4326,7 +4326,7 @@ def fmt.Formatter.debug_struct_field4_finish
   ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::debug_struct_field5_finish]:
-    Source: 'core-models/src/core/fmt.rs', lines 17:8-23:9
+    Source: 'core-models/src/core/fmt.rs', lines 20:8-26:9
     Visibility: public -/
 def fmt.Formatter.debug_struct_field5_finish
   {T1 : Type} {T2 : Type} {T3 : Type} {T4 : Type} {T5 : Type} (DebugInst :
@@ -4340,7 +4340,7 @@ def fmt.Formatter.debug_struct_field5_finish
   ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::write_str]:
-    Source: 'core-models/src/core/fmt.rs', lines 28:4-30:5
+    Source: 'core-models/src/core/fmt.rs', lines 31:4-33:5
     Visibility: public -/
 def fmt.Formatter.write_str
   (self : fmt.Formatter) (data : Str) :
@@ -4349,7 +4349,7 @@ def fmt.Formatter.write_str
   ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::debug_struct_fields_finish]:
-    Source: 'core-models/src/core/fmt.rs', lines 54:4-66:5
+    Source: 'core-models/src/core/fmt.rs', lines 57:4-69:5
     Visibility: public -/
 def fmt.Formatter.debug_struct_fields_finish
   {T : Type} (DebugInst : fmt.Debug T) (self : fmt.Formatter)
@@ -4364,7 +4364,7 @@ def fmt.Formatter.debug_struct_fields_finish
   else ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{core_models::fmt::Formatter}::debug_tuple_field1_finish]:
-    Source: 'core-models/src/core/fmt.rs', lines 69:4-75:5
+    Source: 'core-models/src/core/fmt.rs', lines 72:4-78:5
     Visibility: public -/
 def fmt.Formatter.debug_tuple_field1_finish
   {T1 : Type} (DebugInst : fmt.Debug T1) (self : fmt.Formatter)
@@ -4374,7 +4374,7 @@ def fmt.Formatter.debug_tuple_field1_finish
   ok (result.Result.Ok (), self)
 
 /-- [core_models::fmt::{impl core_models::fmt::Debug for &'_0 T}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 110:4-112:5
+    Source: 'core-models/src/core/fmt.rs', lines 113:4-115:5
     Visibility: public -/
 def Shared0T.Insts.CoreFmtDebug.fmt
   {T : Type} (DebugInst : fmt.Debug T) (self : T) (f : fmt.Formatter) :
@@ -4383,7 +4383,7 @@ def Shared0T.Insts.CoreFmtDebug.fmt
   DebugInst.fmt self f
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for &'_0 T}]
-    Source: 'core-models/src/core/fmt.rs', lines 109:0-113:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 112:0-116:1 -/
 @[reducible]
 def Shared0T.Insts.CoreFmtDebug {T : Type} (DebugInst : fmt.Debug T) :
   fmt.Debug T := {
@@ -4391,7 +4391,7 @@ def Shared0T.Insts.CoreFmtDebug {T : Type} (DebugInst : fmt.Debug T) :
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Debug for core_models::fmt::Error}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 118:4-120:5
+    Source: 'core-models/src/core/fmt.rs', lines 121:4-123:5
     Visibility: public -/
 def fmt.Error.Insts.CoreFmtDebug.fmt
   (self : fmt.Error) (f : fmt.Formatter) :
@@ -4400,14 +4400,14 @@ def fmt.Error.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for core_models::fmt::Error}]
-    Source: 'core-models/src/core/fmt.rs', lines 117:0-121:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 120:0-124:1 -/
 @[reducible]
 def fmt.Error.Insts.CoreFmtDebug : fmt.Debug fmt.Error := {
   fmt := fmt.Error.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Debug for bool}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 126:4-128:5
+    Source: 'core-models/src/core/fmt.rs', lines 129:4-131:5
     Visibility: public -/
 def Bool.Insts.CoreFmtDebug.fmt
   (self : Bool) (f : fmt.Formatter) :
@@ -4416,14 +4416,14 @@ def Bool.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for bool}]
-    Source: 'core-models/src/core/fmt.rs', lines 125:0-129:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 128:0-132:1 -/
 @[reducible]
 def Bool.Insts.CoreFmtDebug : fmt.Debug Bool := {
   fmt := Bool.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Debug for ()}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 134:4-136:5
+    Source: 'core-models/src/core/fmt.rs', lines 137:4-139:5
     Visibility: public -/
 def Tuple.Insts.CoreFmtDebug.fmt
   (_ : Unit) (f : fmt.Formatter) :
@@ -4432,14 +4432,14 @@ def Tuple.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for ()}]
-    Source: 'core-models/src/core/fmt.rs', lines 133:0-137:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 136:0-140:1 -/
 @[reducible]
 def Tuple.Insts.CoreFmtDebug : fmt.Debug Unit := {
   fmt := Tuple.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Debug for str}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 142:4-144:5
+    Source: 'core-models/src/core/fmt.rs', lines 145:4-147:5
     Visibility: public -/
 def Str.Insts.CoreFmtDebug.fmt
   (self : Str) (f : fmt.Formatter) :
@@ -4448,23 +4448,64 @@ def Str.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for str}]
-    Source: 'core-models/src/core/fmt.rs', lines 141:0-145:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 144:0-148:1 -/
 @[reducible]
 def Str.Insts.CoreFmtDebug : fmt.Debug Str := {
   fmt := Str.Insts.CoreFmtDebug.fmt
 }
 
-/-- [core_models::fmt::{impl core_models::fmt::Debug for [T]}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 150:4-152:5
+/-- [core_models::fmt::{impl core_models::fmt::Debug for [T]}::fmt]: loop body 0:
+    Source: 'core-models/src/core/fmt.rs', lines 157:8-162:9
     Visibility: public -/
+@[rust_loop_body]
+def Slice.Insts.CoreFmtDebug.fmt_loop.body
+  {T : Type} (DebugInst : fmt.Debug T) (self : Slice T) (f : fmt.Formatter)
+  (res : result.Result Unit fmt.Error) (i : Std.Usize) :
+  RustM (ControlFlow (fmt.Formatter × (result.Result Unit fmt.Error) ×
+    Std.Usize) ((result.Result Unit fmt.Error) × fmt.Formatter))
+  := do
+  let i1 ← rust_primitives.slice.slice_length self
+  if i < i1
+  then
+    let (f1, res1) ←
+      match res with
+      | core.result.Result.Ok _ =>
+        do
+        let t ← rust_primitives.slice.slice_index self i
+        let (res2, f2) ← DebugInst.fmt t f
+        ok (f2, res2)
+      | core.result.Result.Err _ => ok (f, res)
+    let i2 ← i + 1#usize
+    ok (cont (f1, res1, i2))
+  else ok (done (res, f))
+
+/-- [core_models::fmt::{impl core_models::fmt::Debug for [T]}::fmt]: loop 0:
+    Source: 'core-models/src/core/fmt.rs', lines 157:8-162:9
+    Visibility: public -/
+@[rust_loop]
+def Slice.Insts.CoreFmtDebug.fmt_loop
+  {T : Type} (DebugInst : fmt.Debug T) (self : Slice T) (f : fmt.Formatter)
+  (res : result.Result Unit fmt.Error) (i : Std.Usize) :
+  RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
+  := do
+  loop
+    (fun (f1, res1, i1) => Slice.Insts.CoreFmtDebug.fmt_loop.body
+      DebugInst self f1 res1 i1)
+    (f, res, i)
+
+/-- [core_models::fmt::{impl core_models::fmt::Debug for [T]}::fmt]:
+    Source: 'core-models/src/core/fmt.rs', lines 153:4-164:5
+    Visibility: public -/
+@[reducible]
 def Slice.Insts.CoreFmtDebug.fmt
   {T : Type} (DebugInst : fmt.Debug T) (self : Slice T) (f : fmt.Formatter) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
-  ok (result.Result.Ok (), f)
+  Slice.Insts.CoreFmtDebug.fmt_loop DebugInst self f (result.Result.Ok
+    ()) 0#usize
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Debug for [T]}]
-    Source: 'core-models/src/core/fmt.rs', lines 149:0-153:1 -/
+    Source: 'core-models/src/core/fmt.rs', lines 152:0-165:1 -/
 @[reducible]
 def Slice.Insts.CoreFmtDebug {T : Type} (DebugInst : fmt.Debug T) :
   fmt.Debug (Slice T) := {
@@ -4472,7 +4513,7 @@ def Slice.Insts.CoreFmtDebug {T : Type} (DebugInst : fmt.Debug T) :
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u8}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def U8.Insts.CoreFmtDebug.fmt
   (self : Std.U8) (f : fmt.Formatter) :
@@ -4481,14 +4522,14 @@ def U8.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u8}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def U8.Insts.CoreFmtDebug : fmt.Debug Std.U8 := {
   fmt := U8.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u16}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def U16.Insts.CoreFmtDebug.fmt
   (self : Std.U16) (f : fmt.Formatter) :
@@ -4497,14 +4538,14 @@ def U16.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u16}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def U16.Insts.CoreFmtDebug : fmt.Debug Std.U16 := {
   fmt := U16.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u32}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def U32.Insts.CoreFmtDebug.fmt
   (self : Std.U32) (f : fmt.Formatter) :
@@ -4513,14 +4554,14 @@ def U32.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u32}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def U32.Insts.CoreFmtDebug : fmt.Debug Std.U32 := {
   fmt := U32.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u64}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def U64.Insts.CoreFmtDebug.fmt
   (self : Std.U64) (f : fmt.Formatter) :
@@ -4529,14 +4570,14 @@ def U64.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u64}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def U64.Insts.CoreFmtDebug : fmt.Debug Std.U64 := {
   fmt := U64.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for u128}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def U128.Insts.CoreFmtDebug.fmt
   (self : Std.U128) (f : fmt.Formatter) :
@@ -4545,14 +4586,14 @@ def U128.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for u128}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def U128.Insts.CoreFmtDebug : fmt.Debug Std.U128 := {
   fmt := U128.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for usize}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def Usize.Insts.CoreFmtDebug.fmt
   (self : Std.Usize) (f : fmt.Formatter) :
@@ -4561,14 +4602,14 @@ def Usize.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for usize}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def Usize.Insts.CoreFmtDebug : fmt.Debug Std.Usize := {
   fmt := Usize.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i8}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def I8.Insts.CoreFmtDebug.fmt
   (self : Std.I8) (f : fmt.Formatter) :
@@ -4577,14 +4618,14 @@ def I8.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i8}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def I8.Insts.CoreFmtDebug : fmt.Debug Std.I8 := {
   fmt := I8.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i16}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def I16.Insts.CoreFmtDebug.fmt
   (self : Std.I16) (f : fmt.Formatter) :
@@ -4593,14 +4634,14 @@ def I16.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i16}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def I16.Insts.CoreFmtDebug : fmt.Debug Std.I16 := {
   fmt := I16.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i32}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def I32.Insts.CoreFmtDebug.fmt
   (self : Std.I32) (f : fmt.Formatter) :
@@ -4609,14 +4650,14 @@ def I32.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i32}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def I32.Insts.CoreFmtDebug : fmt.Debug Std.I32 := {
   fmt := I32.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i64}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def I64.Insts.CoreFmtDebug.fmt
   (self : Std.I64) (f : fmt.Formatter) :
@@ -4625,14 +4666,14 @@ def I64.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i64}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def I64.Insts.CoreFmtDebug : fmt.Debug Std.I64 := {
   fmt := I64.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for i128}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def I128.Insts.CoreFmtDebug.fmt
   (self : Std.I128) (f : fmt.Formatter) :
@@ -4641,14 +4682,14 @@ def I128.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for i128}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def I128.Insts.CoreFmtDebug : fmt.Debug Std.I128 := {
   fmt := I128.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::num::{impl core_models::fmt::Debug for isize}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 166:20-168:21
+    Source: 'core-models/src/core/fmt.rs', lines 178:20-180:21
     Visibility: public -/
 def Isize.Insts.CoreFmtDebug.fmt
   (self : Std.Isize) (f : fmt.Formatter) :
@@ -4657,14 +4698,14 @@ def Isize.Insts.CoreFmtDebug.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::num::{impl core_models::fmt::Debug for isize}]
-    Source: 'core-models/src/core/fmt.rs', lines 165:16-169:17 -/
+    Source: 'core-models/src/core/fmt.rs', lines 177:16-181:17 -/
 @[reducible]
 def Isize.Insts.CoreFmtDebug : fmt.Debug Std.Isize := {
   fmt := Isize.Insts.CoreFmtDebug.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u8}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def U8.Insts.CoreFmtDisplay.fmt
   (self : Std.U8) (f : fmt.Formatter) :
@@ -4673,14 +4714,14 @@ def U8.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u8}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def U8.Insts.CoreFmtDisplay : fmt.Display Std.U8 := {
   fmt := U8.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u16}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def U16.Insts.CoreFmtDisplay.fmt
   (self : Std.U16) (f : fmt.Formatter) :
@@ -4689,14 +4730,14 @@ def U16.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u16}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def U16.Insts.CoreFmtDisplay : fmt.Display Std.U16 := {
   fmt := U16.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u32}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def U32.Insts.CoreFmtDisplay.fmt
   (self : Std.U32) (f : fmt.Formatter) :
@@ -4705,14 +4746,14 @@ def U32.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u32}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def U32.Insts.CoreFmtDisplay : fmt.Display Std.U32 := {
   fmt := U32.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u64}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def U64.Insts.CoreFmtDisplay.fmt
   (self : Std.U64) (f : fmt.Formatter) :
@@ -4721,14 +4762,14 @@ def U64.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u64}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def U64.Insts.CoreFmtDisplay : fmt.Display Std.U64 := {
   fmt := U64.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for u128}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def U128.Insts.CoreFmtDisplay.fmt
   (self : Std.U128) (f : fmt.Formatter) :
@@ -4737,14 +4778,14 @@ def U128.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for u128}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def U128.Insts.CoreFmtDisplay : fmt.Display Std.U128 := {
   fmt := U128.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for usize}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def Usize.Insts.CoreFmtDisplay.fmt
   (self : Std.Usize) (f : fmt.Formatter) :
@@ -4753,14 +4794,14 @@ def Usize.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for usize}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def Usize.Insts.CoreFmtDisplay : fmt.Display Std.Usize := {
   fmt := Usize.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i8}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def I8.Insts.CoreFmtDisplay.fmt
   (self : Std.I8) (f : fmt.Formatter) :
@@ -4769,14 +4810,14 @@ def I8.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i8}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def I8.Insts.CoreFmtDisplay : fmt.Display Std.I8 := {
   fmt := I8.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i16}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def I16.Insts.CoreFmtDisplay.fmt
   (self : Std.I16) (f : fmt.Formatter) :
@@ -4785,14 +4826,14 @@ def I16.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i16}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def I16.Insts.CoreFmtDisplay : fmt.Display Std.I16 := {
   fmt := I16.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i32}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def I32.Insts.CoreFmtDisplay.fmt
   (self : Std.I32) (f : fmt.Formatter) :
@@ -4801,14 +4842,14 @@ def I32.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i32}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def I32.Insts.CoreFmtDisplay : fmt.Display Std.I32 := {
   fmt := I32.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i64}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def I64.Insts.CoreFmtDisplay.fmt
   (self : Std.I64) (f : fmt.Formatter) :
@@ -4817,14 +4858,14 @@ def I64.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i64}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def I64.Insts.CoreFmtDisplay : fmt.Display Std.I64 := {
   fmt := I64.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for i128}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def I128.Insts.CoreFmtDisplay.fmt
   (self : Std.I128) (f : fmt.Formatter) :
@@ -4833,14 +4874,14 @@ def I128.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for i128}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def I128.Insts.CoreFmtDisplay : fmt.Display Std.I128 := {
   fmt := I128.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{impl core_models::fmt::Display for isize}::fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 196:16-198:17
+    Source: 'core-models/src/core/fmt.rs', lines 208:16-210:17
     Visibility: public -/
 def Isize.Insts.CoreFmtDisplay.fmt
   (self : Std.Isize) (f : fmt.Formatter) :
@@ -4849,14 +4890,14 @@ def Isize.Insts.CoreFmtDisplay.fmt
   ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::fmt::{impl core_models::fmt::Display for isize}]
-    Source: 'core-models/src/core/fmt.rs', lines 195:12-199:13 -/
+    Source: 'core-models/src/core/fmt.rs', lines 207:12-211:13 -/
 @[reducible]
 def Isize.Insts.CoreFmtDisplay : fmt.Display Std.Isize := {
   fmt := Isize.Insts.CoreFmtDisplay.fmt
 }
 
 /-- [core_models::fmt::{core_models::fmt::Arguments<'a>}::write_fmt]:
-    Source: 'core-models/src/core/fmt.rs', lines 230:4-232:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 242:4-244:5 -/
 def fmt.Arguments.write_fmt
   (f : fmt.Formatter) (args : fmt.Arguments) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
@@ -4864,7 +4905,7 @@ def fmt.Arguments.write_fmt
   ok (result.Result.Ok (), f)
 
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::none]:
-    Source: 'core-models/src/core/fmt.rs', lines 319:8-321:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 331:8-333:9 -/
 def fmt.rt.Argument.none : RustM (Array fmt.rt.Argument 0#usize) := do
   ok (Std.Array.empty fmt.rt.Argument)
 
@@ -6725,7 +6766,7 @@ def iter.adapters.fuse.Fuse.Insts.CoreIterTraitsIteratorIterator {I :
 }
 
 /-- [core_models::option::{core_models::option::Option<T>}::expect]:
-    Source: 'core-models/src/core/option.rs', lines 73:4-78:5
+    Source: 'core-models/src/core/option.rs', lines 76:4-81:5
     Visibility: public -/
 def option.Option.expect
   {T : Type} (self : option.Option T) (_msg : Str) : RustM T := do
@@ -6780,7 +6821,7 @@ def iter.range.Step.backward_unchecked.default
   StepInst.backward start count
 
 /-- [core_models::option::{core_models::option::Option<T>}::unwrap]:
-    Source: 'core-models/src/core/option.rs', lines 82:4-87:5
+    Source: 'core-models/src/core/option.rs', lines 85:4-90:5
     Visibility: public -/
 def option.Option.unwrap {T : Type} (self : option.Option T) : RustM T := do
   match self with
@@ -13435,17 +13476,19 @@ def
 }
 
 /-- [core_models::option::{impl core_models::fmt::Debug for core_models::option::Option<T>}::fmt]:
-    Source: 'core-models/src/core/option.rs', lines 18:4-20:5
+    Source: 'core-models/src/core/option.rs', lines 18:4-23:5
     Visibility: public -/
 def option.Option.Insts.CoreFmtDebug.fmt
   {T : Type} (fmtDebugInst : fmt.Debug T) (self : option.Option T)
   (f : fmt.Formatter) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
-  ok (result.Result.Ok (), f)
+  match self with
+  | option.Option.Some x => fmtDebugInst.fmt x f
+  | option.Option.None => ok (result.Result.Ok (), f)
 
 /-- Trait implementation: [core_models::option::{impl core_models::fmt::Debug for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 17:0-21:1 -/
+    Source: 'core-models/src/core/option.rs', lines 17:0-24:1 -/
 @[reducible]
 def option.Option.Insts.CoreFmtDebug {T : Type} (fmtDebugInst :
   fmt.Debug T) : fmt.Debug (option.Option T) := {
@@ -13453,7 +13496,7 @@ def option.Option.Insts.CoreFmtDebug {T : Type} (fmtDebugInst :
 }
 
 /-- [core_models::option::{core_models::option::Option<T>}::is_some]:
-    Source: 'core-models/src/core/option.rs', lines 27:4-29:5
+    Source: 'core-models/src/core/option.rs', lines 30:4-32:5
     Visibility: public -/
 def option.Option.is_some
   {T : Type} (self : option.Option T) : RustM Bool := do
@@ -13462,7 +13505,7 @@ def option.Option.is_some
   | option.Option.None => ok false
 
 /-- [core_models::option::{core_models::option::Option<T>}::is_some_and]:
-    Source: 'core-models/src/core/option.rs', lines 32:4-37:5
+    Source: 'core-models/src/core/option.rs', lines 35:4-40:5
     Visibility: public -/
 def option.Option.is_some_and
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleTBoolInst :
@@ -13474,7 +13517,7 @@ def option.Option.is_some_and
   | option.Option.None => ok false
 
 /-- [core_models::option::{core_models::option::Option<T>}::is_none]:
-    Source: 'core-models/src/core/option.rs', lines 40:4-42:5
+    Source: 'core-models/src/core/option.rs', lines 43:4-45:5
     Visibility: public -/
 def option.Option.is_none
   {T : Type} (self : option.Option T) : RustM Bool := do
@@ -13482,7 +13525,7 @@ def option.Option.is_none
   ok (b = false)
 
 /-- [core_models::option::{core_models::option::Option<T>}::is_none_or]:
-    Source: 'core-models/src/core/option.rs', lines 45:4-50:5
+    Source: 'core-models/src/core/option.rs', lines 48:4-53:5
     Visibility: public -/
 def option.Option.is_none_or
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleTBoolInst :
@@ -13494,7 +13537,7 @@ def option.Option.is_none_or
   | option.Option.None => ok true
 
 /-- [core_models::option::{core_models::option::Option<T>}::as_ref]:
-    Source: 'core-models/src/core/option.rs', lines 53:4-58:5
+    Source: 'core-models/src/core/option.rs', lines 56:4-61:5
     Visibility: public -/
 def option.Option.as_ref
   {T : Type} (self : option.Option T) : RustM (option.Option T) := do
@@ -13503,7 +13546,7 @@ def option.Option.as_ref
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::as_mut]:
-    Source: 'core-models/src/core/option.rs', lines 64:4-69:5
+    Source: 'core-models/src/core/option.rs', lines 67:4-72:5
     Visibility: public -/
 def option.Option.as_mut
   {T : Type} (self : option.Option T) :
@@ -13523,7 +13566,7 @@ def option.Option.as_mut
     ok (option.Option.None, back)
 
 /-- [core_models::option::{core_models::option::Option<T>}::unwrap_or]:
-    Source: 'core-models/src/core/option.rs', lines 90:4-95:5
+    Source: 'core-models/src/core/option.rs', lines 93:4-98:5
     Visibility: public -/
 def option.Option.unwrap_or
   {T : Type} (self : option.Option T) (default1 : T) : RustM T := do
@@ -13532,7 +13575,7 @@ def option.Option.unwrap_or
   | option.Option.None => ok default1
 
 /-- [core_models::option::{core_models::option::Option<T>}::unwrap_or_else]:
-    Source: 'core-models/src/core/option.rs', lines 98:4-103:5
+    Source: 'core-models/src/core/option.rs', lines 101:4-106:5
     Visibility: public -/
 def option.Option.unwrap_or_else
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleTInst :
@@ -13544,7 +13587,7 @@ def option.Option.unwrap_or_else
   | option.Option.None => coreopsfunctionFnOnceFTupleTInst.call_once f ()
 
 /-- [core_models::option::{core_models::option::Option<T>}::unwrap_or_default]:
-    Source: 'core-models/src/core/option.rs', lines 106:4-114:5
+    Source: 'core-models/src/core/option.rs', lines 109:4-117:5
     Visibility: public -/
 def option.Option.unwrap_or_default
   {T : Type} (defaultDefaultInst : default.Default T) (self : option.Option T)
@@ -13556,7 +13599,7 @@ def option.Option.unwrap_or_default
   | option.Option.None => defaultDefaultInst.default
 
 /-- [core_models::option::{core_models::option::Option<T>}::map]:
-    Source: 'core-models/src/core/option.rs', lines 117:4-125:5
+    Source: 'core-models/src/core/option.rs', lines 120:4-128:5
     Visibility: public -/
 def option.Option.map
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
@@ -13570,7 +13613,7 @@ def option.Option.map
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::map_or]:
-    Source: 'core-models/src/core/option.rs', lines 128:4-136:5
+    Source: 'core-models/src/core/option.rs', lines 131:4-139:5
     Visibility: public -/
 def option.Option.map_or
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
@@ -13583,7 +13626,7 @@ def option.Option.map_or
   | option.Option.None => ok default1
 
 /-- [core_models::option::{core_models::option::Option<T>}::map_or_else]:
-    Source: 'core-models/src/core/option.rs', lines 139:4-148:5
+    Source: 'core-models/src/core/option.rs', lines 142:4-151:5
     Visibility: public -/
 def option.Option.map_or_else
   {T : Type} {U : Type} {D : Type} {F : Type}
@@ -13598,7 +13641,7 @@ def option.Option.map_or_else
     coreopsfunctionFnOnceDTupleUInst.call_once default1 ()
 
 /-- [core_models::option::{core_models::option::Option<T>}::map_or_default]:
-    Source: 'core-models/src/core/option.rs', lines 151:4-160:5
+    Source: 'core-models/src/core/option.rs', lines 154:4-163:5
     Visibility: public -/
 def option.Option.map_or_default
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTUInst :
@@ -13611,7 +13654,7 @@ def option.Option.map_or_default
   | option.Option.None => defaultDefaultInst.default
 
 /-- [core_models::option::{core_models::option::Option<T>}::ok_or]:
-    Source: 'core-models/src/core/option.rs', lines 163:4-168:5
+    Source: 'core-models/src/core/option.rs', lines 166:4-171:5
     Visibility: public -/
 def option.Option.ok_or
   {T : Type} {E : Type} (self : option.Option T) (err : E) :
@@ -13622,7 +13665,7 @@ def option.Option.ok_or
   | option.Option.None => ok (result.Result.Err err)
 
 /-- [core_models::option::{core_models::option::Option<T>}::ok_or_else]:
-    Source: 'core-models/src/core/option.rs', lines 171:4-176:5
+    Source: 'core-models/src/core/option.rs', lines 174:4-179:5
     Visibility: public -/
 def option.Option.ok_or_else
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleEInst :
@@ -13636,7 +13679,7 @@ def option.Option.ok_or_else
     ok (result.Result.Err t)
 
 /-- [core_models::option::{core_models::option::Option<T>}::and_then]:
-    Source: 'core-models/src/core/option.rs', lines 179:4-187:5
+    Source: 'core-models/src/core/option.rs', lines 182:4-190:5
     Visibility: public -/
 def option.Option.and_then
   {T : Type} {U : Type} {F : Type} (coreopsfunctionFnOnceFTupleTOptionInst :
@@ -13650,7 +13693,7 @@ def option.Option.and_then
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::filter]:
-    Source: 'core-models/src/core/option.rs', lines 204:4-215:5
+    Source: 'core-models/src/core/option.rs', lines 207:4-218:5
     Visibility: public -/
 def option.Option.filter
   {T : Type} {P : Type} (coreopsfunctionFnOncePTupleSharedTBoolInst :
@@ -13666,7 +13709,7 @@ def option.Option.filter
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::or]:
-    Source: 'core-models/src/core/option.rs', lines 218:4-223:5
+    Source: 'core-models/src/core/option.rs', lines 221:4-226:5
     Visibility: public -/
 def option.Option.or
   {T : Type} (self : option.Option T) (optb : option.Option T) :
@@ -13677,7 +13720,7 @@ def option.Option.or
   | option.Option.None => ok optb
 
 /-- [core_models::option::{core_models::option::Option<T>}::or_else]:
-    Source: 'core-models/src/core/option.rs', lines 226:4-231:5
+    Source: 'core-models/src/core/option.rs', lines 229:4-234:5
     Visibility: public -/
 def option.Option.or_else
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleOptionInst :
@@ -13690,7 +13733,7 @@ def option.Option.or_else
   | option.Option.None => coreopsfunctionFnOnceFTupleOptionInst.call_once f ()
 
 /-- [core_models::option::{core_models::option::Option<T>}::xor]:
-    Source: 'core-models/src/core/option.rs', lines 234:4-240:5
+    Source: 'core-models/src/core/option.rs', lines 237:4-243:5
     Visibility: public -/
 def option.Option.xor
   {T : Type} (self : option.Option T) (optb : option.Option T) :
@@ -13707,7 +13750,7 @@ def option.Option.xor
     | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::zip]:
-    Source: 'core-models/src/core/option.rs', lines 243:4-248:5
+    Source: 'core-models/src/core/option.rs', lines 246:4-251:5
     Visibility: public -/
 def option.Option.zip
   {T : Type} {U : Type} (self : option.Option T) (other : option.Option U) :
@@ -13721,7 +13764,7 @@ def option.Option.zip
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::inspect]:
-    Source: 'core-models/src/core/option.rs', lines 251:4-256:5
+    Source: 'core-models/src/core/option.rs', lines 254:4-259:5
     Visibility: public -/
 def option.Option.inspect
   {T : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedTTupleInst :
@@ -13735,7 +13778,7 @@ def option.Option.inspect
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<core_models::option::Option<T>>}::flatten]:
-    Source: 'core-models/src/core/option.rs', lines 262:4-267:5
+    Source: 'core-models/src/core/option.rs', lines 265:4-270:5
     Visibility: public -/
 def option.OptionOption.flatten
   {T : Type} (self : option.Option (option.Option T)) :
@@ -13746,7 +13789,7 @@ def option.OptionOption.flatten
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{core_models::option::Option<T>}::cloned]:
-    Source: 'core-models/src/core/option.rs', lines 273:4-278:5
+    Source: 'core-models/src/core/option.rs', lines 276:4-281:5
     Visibility: public -/
 def option.Option.cloned
   {T : Type} (cloneCloneInst : clone.Clone T) (self : option.Option T) :
@@ -13759,14 +13802,14 @@ def option.Option.cloned
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}::default]:
-    Source: 'core-models/src/core/option.rs', lines 284:4-286:5
+    Source: 'core-models/src/core/option.rs', lines 287:4-289:5
     Visibility: public -/
 def option.Option.Insts.CoreDefaultDefault.default
   (T : Type) : RustM (option.Option T) := do
   ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::default::Default for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 282:0-287:1 -/
+    Source: 'core-models/src/core/option.rs', lines 285:0-290:1 -/
 @[reducible]
 def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
   (option.Option T) := {
@@ -13774,7 +13817,7 @@ def option.Option.Insts.CoreDefaultDefault (T : Type) : default.Default
 }
 
 /-- [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}::clone]:
-    Source: 'core-models/src/core/option.rs', lines 292:4-297:5
+    Source: 'core-models/src/core/option.rs', lines 295:4-300:5
     Visibility: public -/
 def option.Option.Insts.CoreCloneClone.clone
   {T : Type} (cloneCloneInst : clone.Clone T) (self : option.Option T) :
@@ -13787,7 +13830,7 @@ def option.Option.Insts.CoreCloneClone.clone
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::clone::Clone for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 291:0-298:1 -/
+    Source: 'core-models/src/core/option.rs', lines 294:0-301:1 -/
 @[reducible]
 impl_def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
   clone.Clone T) : clone.Clone (option.Option T) := {
@@ -13797,7 +13840,7 @@ impl_def option.Option.Insts.CoreCloneClone {T : Type} (cloneCloneInst :
 }
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::eq]:
-    Source: 'core-models/src/core/option.rs', lines 306:4-312:5
+    Source: 'core-models/src/core/option.rs', lines 309:4-315:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.eq
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -13815,7 +13858,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.eq
     | option.Option.None => ok true
 
 /-- [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}::ne]:
-    Source: 'core-models/src/core/option.rs', lines 303:4-305:5
+    Source: 'core-models/src/core/option.rs', lines 306:4-308:5
     Visibility: public -/
 def option.Option.Insts.CoreCmpPartialEqOption.ne
   {T : Type} (cmpPartialEqInst : cmp.PartialEq T T) (self : option.Option T)
@@ -13828,7 +13871,7 @@ def option.Option.Insts.CoreCmpPartialEqOption.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::option::{impl core_models::cmp::PartialEq<core_models::option::Option<T>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 301:0-313:1 -/
+    Source: 'core-models/src/core/option.rs', lines 304:0-316:1 -/
 @[reducible]
 def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
   (cmpPartialEqInst : cmp.PartialEq T T) : cmp.PartialEq (option.Option T)
@@ -13838,7 +13881,7 @@ def option.Option.Insts.CoreCmpPartialEqOption {T : Type}
 }
 
 /-- [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::branch]:
-    Source: 'core-models/src/core/option.rs', lines 327:4-332:5
+    Source: 'core-models/src/core/option.rs', lines 330:4-335:5
     Visibility: public -/
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
   {T : Type} (self : option.Option T) :
@@ -13850,14 +13893,14 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.branch
     ok (ops.control_flow.ControlFlow.Break option.Option.None)
 
 /-- [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_output]:
-    Source: 'core-models/src/core/option.rs', lines 323:4-325:5
+    Source: 'core-models/src/core/option.rs', lines 326:4-328:5
     Visibility: public -/
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible.from_output
   {T : Type} (output : T) : RustM (option.Option T) := do
   ok (option.Option.Some output)
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::Try<T, core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 319:0-333:1 -/
+    Source: 'core-models/src/core/option.rs', lines 322:0-336:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
   : ops.try_trait.Try (option.Option T) T (option.Option convert.Infallible)
@@ -13869,7 +13912,7 @@ def option.Option.Insts.CoreOpsTry_traitTryTOptionInfallible (T : Type)
 }
 
 /-- [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}::from_residual]:
-    Source: 'core-models/src/core/option.rs', lines 343:4-348:5
+    Source: 'core-models/src/core/option.rs', lines 346:4-351:5
     Visibility: public -/
 def
   option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible.from_residual
@@ -13881,7 +13924,7 @@ def
   | option.Option.None => ok option.Option.None
 
 /-- Trait implementation: [core_models::option::{impl core_models::ops::try_trait::FromResidual<core_models::option::Option<core_models::convert::Infallible>> for core_models::option::Option<T>}]
-    Source: 'core-models/src/core/option.rs', lines 339:0-349:1 -/
+    Source: 'core-models/src/core/option.rs', lines 342:0-352:1 -/
 @[reducible]
 def option.Option.Insts.CoreOpsTry_traitFromResidualOptionInfallible (T
   : Type) : ops.try_trait.FromResidual (option.Option T) (option.Option
@@ -13910,17 +13953,19 @@ def panicking.panic_fmt (_fmt : fmt.Arguments) : RustM Never := do
   fail Error.panic
 
 /-- [core_models::result::{impl core_models::fmt::Debug for core_models::result::Result<T, E>}::fmt]:
-    Source: 'core-models/src/core/result.rs', lines 18:4-20:5
+    Source: 'core-models/src/core/result.rs', lines 18:4-23:5
     Visibility: public -/
 def result.Result.Insts.CoreFmtDebug.fmt
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (fmtDebugInst1 : fmt.Debug
   E) (self : result.Result T E) (f : fmt.Formatter) :
   RustM ((result.Result Unit fmt.Error) × fmt.Formatter)
   := do
-  Aeneas.Std.RustM.ok (result.Result.Ok (), f)
+  match self with
+  | core.result.Result.Ok x => fmtDebugInst.fmt x f
+  | core.result.Result.Err e => fmtDebugInst1.fmt e f
 
 /-- Trait implementation: [core_models::result::{impl core_models::fmt::Debug for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 17:0-21:1 -/
+    Source: 'core-models/src/core/result.rs', lines 17:0-24:1 -/
 @[reducible]
 def result.Result.Insts.CoreFmtDebug {T : Type} {E : Type} (fmtDebugInst
   : fmt.Debug T) (fmtDebugInst1 : fmt.Debug E) : fmt.Debug (result.Result T E)
@@ -13929,7 +13974,7 @@ def result.Result.Insts.CoreFmtDebug {T : Type} {E : Type} (fmtDebugInst
 }
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::is_ok_and]:
-    Source: 'core-models/src/core/result.rs', lines 32:4-37:5
+    Source: 'core-models/src/core/result.rs', lines 35:4-40:5
     Visibility: public -/
 def result.Result.is_ok_and
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleTBoolInst :
@@ -13941,7 +13986,7 @@ def result.Result.is_ok_and
   | core.result.Result.Err _ => Aeneas.Std.RustM.ok false
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::is_err_and]:
-    Source: 'core-models/src/core/result.rs', lines 46:4-51:5
+    Source: 'core-models/src/core/result.rs', lines 49:4-54:5
     Visibility: public -/
 def result.Result.is_err_and
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleEBoolInst :
@@ -13953,7 +13998,7 @@ def result.Result.is_err_and
   | core.result.Result.Err e => coreopsfunctionFnOnceFTupleEBoolInst.call_once f e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or_else]:
-    Source: 'core-models/src/core/result.rs', lines 113:4-118:5
+    Source: 'core-models/src/core/result.rs', lines 116:4-121:5
     Visibility: public -/
 def result.Result.unwrap_or_else
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleETInst :
@@ -13965,7 +14010,7 @@ def result.Result.unwrap_or_else
   | core.result.Result.Err e => coreopsfunctionFnOnceFTupleETInst.call_once op e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or_default]:
-    Source: 'core-models/src/core/result.rs', lines 121:4-129:5
+    Source: 'core-models/src/core/result.rs', lines 124:4-132:5
     Visibility: public -/
 def result.Result.unwrap_or_default
   {T : Type} {E : Type} (defaultDefaultInst : default.Default T)
@@ -13977,7 +14022,7 @@ def result.Result.unwrap_or_default
   | core.result.Result.Err _ => defaultDefaultInst.default
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map]:
-    Source: 'core-models/src/core/result.rs', lines 132:4-140:5
+    Source: 'core-models/src/core/result.rs', lines 135:4-143:5
     Visibility: public -/
 def result.Result.map
   {T : Type} {E : Type} {U : Type} {F : Type}
@@ -13992,7 +14037,7 @@ def result.Result.map
   | core.result.Result.Err e => Aeneas.Std.RustM.ok (result.Result.Err e)
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map_or]:
-    Source: 'core-models/src/core/result.rs', lines 143:4-151:5
+    Source: 'core-models/src/core/result.rs', lines 146:4-154:5
     Visibility: public -/
 def result.Result.map_or
   {T : Type} {E : Type} {U : Type} {F : Type}
@@ -14005,7 +14050,7 @@ def result.Result.map_or
   | core.result.Result.Err _ => Aeneas.Std.RustM.ok default1
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map_or_else]:
-    Source: 'core-models/src/core/result.rs', lines 154:4-163:5
+    Source: 'core-models/src/core/result.rs', lines 157:4-166:5
     Visibility: public -/
 def result.Result.map_or_else
   {T : Type} {E : Type} {U : Type} {D : Type} {F : Type}
@@ -14020,7 +14065,7 @@ def result.Result.map_or_else
     coreopsfunctionFnOnceDTupleEUInst.call_once default1 e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::inspect]:
-    Source: 'core-models/src/core/result.rs', lines 179:4-184:5
+    Source: 'core-models/src/core/result.rs', lines 182:4-187:5
     Visibility: public -/
 def result.Result.inspect
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedTTupleInst
@@ -14034,7 +14079,7 @@ def result.Result.inspect
   | core.result.Result.Err _ => Aeneas.Std.RustM.ok self
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::inspect_err]:
-    Source: 'core-models/src/core/result.rs', lines 187:4-192:5
+    Source: 'core-models/src/core/result.rs', lines 190:4-195:5
     Visibility: public -/
 def result.Result.inspect_err
   {T : Type} {E : Type} {F : Type} (coreopsfunctionFnOnceFTupleSharedETupleInst
@@ -14048,7 +14093,7 @@ def result.Result.inspect_err
     Aeneas.Std.RustM.ok self
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::and]:
-    Source: 'core-models/src/core/result.rs', lines 213:4-218:5
+    Source: 'core-models/src/core/result.rs', lines 216:4-221:5
     Visibility: public -/
 def result.Result.and
   {T : Type} {E : Type} {U : Type} (self : result.Result T E)
@@ -14060,7 +14105,7 @@ def result.Result.and
   | core.result.Result.Err e => Aeneas.Std.RustM.ok (result.Result.Err e)
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::and_then]:
-    Source: 'core-models/src/core/result.rs', lines 221:4-229:5
+    Source: 'core-models/src/core/result.rs', lines 224:4-232:5
     Visibility: public -/
 def result.Result.and_then
   {T : Type} {E : Type} {U : Type} {F : Type}
@@ -14073,7 +14118,7 @@ def result.Result.and_then
   | core.result.Result.Err e => Aeneas.Std.RustM.ok (result.Result.Err e)
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::or]:
-    Source: 'core-models/src/core/result.rs', lines 232:4-237:5
+    Source: 'core-models/src/core/result.rs', lines 235:4-240:5
     Visibility: public -/
 def result.Result.or
   {T : Type} {E : Type} {F : Type} (self : result.Result T E)
@@ -14085,7 +14130,7 @@ def result.Result.or
   | core.result.Result.Err _ => Aeneas.Std.RustM.ok res
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::or_else]:
-    Source: 'core-models/src/core/result.rs', lines 240:4-245:5
+    Source: 'core-models/src/core/result.rs', lines 243:4-248:5
     Visibility: public -/
 def result.Result.or_else
   {T : Type} {E : Type} {F : Type} {O : Type}
@@ -14099,7 +14144,7 @@ def result.Result.or_else
     coreopsfunctionFnOnceOTupleEResultInst.call_once op e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_or]:
-    Source: 'core-models/src/core/result.rs', lines 248:4-253:5
+    Source: 'core-models/src/core/result.rs', lines 251:4-256:5
     Visibility: public -/
 def result.Result.unwrap_or
   {T : Type} {E : Type} (self : result.Result T E) (default1 : T) :
@@ -14110,7 +14155,7 @@ def result.Result.unwrap_or
   | core.result.Result.Err _ => Aeneas.Std.RustM.ok default1
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::map_err]:
-    Source: 'core-models/src/core/result.rs', lines 255:4-263:5
+    Source: 'core-models/src/core/result.rs', lines 258:4-266:5
     Visibility: public -/
 def result.Result.map_err
   {T : Type} {E : Type} {F : Type} {O : Type}
@@ -14125,7 +14170,7 @@ def result.Result.map_err
     Aeneas.Std.RustM.ok (result.Result.Err t)
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::expect]:
-    Source: 'core-models/src/core/result.rs', lines 274:4-282:5
+    Source: 'core-models/src/core/result.rs', lines 277:4-285:5
     Visibility: public -/
 def result.Result.expect
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug E) (self : result.Result T E)
@@ -14137,7 +14182,7 @@ def result.Result.expect
   | core.result.Result.Err _ => panicking.internal.panic T
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap]:
-    Source: 'core-models/src/core/result.rs', lines 286:4-294:5
+    Source: 'core-models/src/core/result.rs', lines 289:4-297:5
     Visibility: public -/
 def result.Result.unwrap
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug E) (self : result.Result T E)
@@ -14149,7 +14194,7 @@ def result.Result.unwrap
   | core.result.Result.Err _ => panicking.internal.panic T
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::expect_err]:
-    Source: 'core-models/src/core/result.rs', lines 298:4-306:5
+    Source: 'core-models/src/core/result.rs', lines 301:4-309:5
     Visibility: public -/
 def result.Result.expect_err
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (self : result.Result T E)
@@ -14161,7 +14206,7 @@ def result.Result.expect_err
   | core.result.Result.Err e => Aeneas.Std.RustM.ok e
 
 /-- [core_models::result::{core_models::result::Result<T, E>}::unwrap_err]:
-    Source: 'core-models/src/core/result.rs', lines 310:4-318:5
+    Source: 'core-models/src/core/result.rs', lines 313:4-321:5
     Visibility: public -/
 def result.Result.unwrap_err
   {T : Type} {E : Type} (fmtDebugInst : fmt.Debug T) (self : result.Result T E)
@@ -14173,7 +14218,7 @@ def result.Result.unwrap_err
   | core.result.Result.Err e => Aeneas.Std.RustM.ok e
 
 /-- [core_models::result::{impl core_models::iter::traits::iterator::Iterator<A> for core_models::result::SeqIter<A>}::next]:
-    Source: 'core-models/src/core/result.rs', lines 367:4-373:5
+    Source: 'core-models/src/core/result.rs', lines 370:4-376:5
     Visibility: public -/
 def result.SeqIter.Insts.CoreIterTraitsIteratorIterator.next
   {A : Type} (self : result.SeqIter A) :
@@ -14187,7 +14232,7 @@ def result.SeqIter.Insts.CoreIterTraitsIteratorIterator.next
     ok (option.Option.Some t, s)
 
 /-- Trait implementation: [core_models::result::{impl core_models::iter::traits::iterator::Iterator<A> for core_models::result::SeqIter<A>}]
-    Source: 'core-models/src/core/result.rs', lines 364:0-374:1 -/
+    Source: 'core-models/src/core/result.rs', lines 367:0-377:1 -/
 @[reducible]
 def result.SeqIter.Insts.CoreIterTraitsIteratorIterator (A : Type) :
   iter.traits.iterator.Iterator (result.SeqIter A) A := {
@@ -14195,7 +14240,7 @@ def result.SeqIter.Insts.CoreIterTraitsIteratorIterator (A : Type) :
 }
 
 /-- [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}::branch]:
-    Source: 'core-models/src/core/result.rs', lines 428:4-433:5
+    Source: 'core-models/src/core/result.rs', lines 431:4-436:5
     Visibility: public -/
 def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
   {T : Type} {E : Type} (self : result.Result T E) :
@@ -14207,7 +14252,7 @@ def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.branch
     Aeneas.Std.RustM.ok (ops.control_flow.ControlFlow.Break (result.Result.Err e))
 
 /-- [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}::from_output]:
-    Source: 'core-models/src/core/result.rs', lines 423:4-425:5
+    Source: 'core-models/src/core/result.rs', lines 426:4-428:5
     Visibility: public -/
 def
   result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE.from_output
@@ -14215,7 +14260,7 @@ def
   Aeneas.Std.RustM.ok (result.Result.Ok output)
 
 /-- Trait implementation: [core_models::result::{impl core_models::ops::try_trait::Try<T, core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 418:0-434:1 -/
+    Source: 'core-models/src/core/result.rs', lines 421:0-437:1 -/
 @[reducible]
 def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE (T : Type)
   (E : Type) : ops.try_trait.Try (result.Result T E) T (result.Result
@@ -14228,7 +14273,7 @@ def result.Result.Insts.CoreOpsTry_traitTryTResultInfallibleE (T : Type)
 }
 
 /-- [core_models::result::{core_models::result::Result<core_models::option::Option<T>, E>}::transpose]:
-    Source: 'core-models/src/core/result.rs', lines 440:4-446:5
+    Source: 'core-models/src/core/result.rs', lines 443:4-449:5
     Visibility: public -/
 def result.ResultOptionE.transpose
   {T : Type} {E : Type} (self : result.Result (option.Option T) E) :
@@ -14242,7 +14287,7 @@ def result.ResultOptionE.transpose
   | core.result.Result.Err e => Aeneas.Std.RustM.ok (option.Option.Some (result.Result.Err e))
 
 /-- [core_models::result::{impl core_models::cmp::PartialEq<core_models::result::Result<T, E>> for core_models::result::Result<T, E>}::eq]:
-    Source: 'core-models/src/core/result.rs', lines 456:4-462:5
+    Source: 'core-models/src/core/result.rs', lines 459:4-465:5
     Visibility: public -/
 def result.Result.Insts.CoreCmpPartialEqResult.eq
   {T : Type} {E : Type} (cmpPartialEqInst : cmp.PartialEq T T)
@@ -14261,7 +14306,7 @@ def result.Result.Insts.CoreCmpPartialEqResult.eq
     | core.result.Result.Err b => cmpPartialEqInst1.eq a b
 
 /-- Trait implementation: [core_models::result::{impl core_models::cmp::PartialEq<core_models::result::Result<T, E>> for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 453:0-463:1 -/
+    Source: 'core-models/src/core/result.rs', lines 456:0-466:1 -/
 @[reducible]
 impl_def result.Result.Insts.CoreCmpPartialEqResult {T : Type} {E :
   Type} (cmpPartialEqInst : cmp.PartialEq T T) (cmpPartialEqInst1 :
@@ -14275,7 +14320,7 @@ impl_def result.Result.Insts.CoreCmpPartialEqResult {T : Type} {E :
 }
 
 /-- [core_models::result::{impl core_models::ops::try_trait::FromResidual<core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, F>}::from_residual]:
-    Source: 'core-models/src/core/result.rs', lines 473:4-478:5
+    Source: 'core-models/src/core/result.rs', lines 476:4-481:5
     Visibility: public -/
 def
   result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE.from_residual
@@ -14290,7 +14335,7 @@ def
     Aeneas.Std.RustM.ok (result.Result.Err t)
 
 /-- Trait implementation: [core_models::result::{impl core_models::ops::try_trait::FromResidual<core_models::result::Result<core_models::convert::Infallible, E>> for core_models::result::Result<T, F>}]
-    Source: 'core-models/src/core/result.rs', lines 470:0-479:1 -/
+    Source: 'core-models/src/core/result.rs', lines 473:0-482:1 -/
 @[reducible]
 def result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE (T
   : Type) {E : Type} {F : Type} (convertFromInst : convert.From F E) :
@@ -14302,7 +14347,7 @@ def result.Result.Insts.CoreOpsTry_traitFromResidualResultInfallibleE (T
 }
 
 /-- [core_models::result::{impl core_models::clone::Clone for core_models::result::Result<T, E>}::clone]:
-    Source: 'core-models/src/core/result.rs', lines 485:4-490:5
+    Source: 'core-models/src/core/result.rs', lines 488:4-493:5
     Visibility: public -/
 def result.Result.Insts.CoreCloneClone.clone
   {T : Type} {E : Type} (cloneCloneInst : clone.Clone T) (cloneCloneInst1 :
@@ -14318,7 +14363,7 @@ def result.Result.Insts.CoreCloneClone.clone
     Aeneas.Std.RustM.ok (result.Result.Err t)
 
 /-- Trait implementation: [core_models::result::{impl core_models::clone::Clone for core_models::result::Result<T, E>}]
-    Source: 'core-models/src/core/result.rs', lines 484:0-491:1 -/
+    Source: 'core-models/src/core/result.rs', lines 487:0-494:1 -/
 @[reducible]
 impl_def result.Result.Insts.CoreCloneClone {T : Type} {E : Type}
   (cloneCloneInst : clone.Clone T) (cloneCloneInst1 : clone.Clone E) :
