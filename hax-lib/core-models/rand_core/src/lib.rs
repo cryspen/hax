@@ -38,7 +38,7 @@ mod os {
     impl super::RngCore for OsRng {
         // Excluded from coverage: the model has no source of randomness, so
         // these are dummies and the constants below are not behaviour a test
-        // could pin. `mutants::skip` for the same reason.
+        // could pin.
         #[cfg_attr(coverage_nightly, coverage(off))]
         #[cfg_attr(test, mutants::skip)]
         fn next_u32(&mut self) -> u32 {

@@ -21,9 +21,9 @@ exclude_re = [
     # range, which is a no-op.
     "replace < with <= in vec::Vec<.*>::truncate",
 
-    # `if new_size > l` likewise: at new_size == l the mutant grows by
-    # `seq_create(value, 0)` and concatenates an empty sequence, where the
-    # original drains the empty range `l..l`.
+    # `if new_size > l`: at new_size == l the mutant concatenates the empty
+    # `seq_create(value, 0)` and the original drains the empty range `l..l`;
+    # both are no-ops.
     "replace > with >= in vec::Vec<.*>::resize",
 
     # `self.0[i] > *max` makes the *first* maximal element win; `>=` makes the
