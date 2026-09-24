@@ -352,6 +352,15 @@ pub fn test_vec_drain() -> bool {
     first == Some(2u8) && second == Some(3u8) && third == None && a == ea
 }
 
+#[rust_lean_test(panics)]
+pub fn test_vec_drain_past_end() -> bool {
+    let mut a: Vec<u8> = Vec::new();
+    a.push(1u8);
+    a.push(2u8);
+    let _ = a.drain(1..3);
+    a.len() == 1
+}
+
 // ----- closure-using methods (excluded) --------------------------------------
 
 // TODO(closure-extraction + vec-extraction-arity-mismatch): Vec::retain takes

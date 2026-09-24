@@ -450,6 +450,23 @@ pub fn test_copy_within_range_forms() -> bool {
     a == [4u8, 5, 4, 5, 5]
 }
 
+// `dest` is one past the last position that fits the copied range.
+#[rust_lean_test(panics)]
+pub fn test_copy_within_dest_past_end() -> bool {
+    let mut a: [u8; 4] = [1, 2, 3, 4];
+    let s: &mut [u8] = &mut a;
+    s.copy_within(0..2, 3);
+    a == [1u8, 2, 3, 1]
+}
+
+#[rust_lean_test(panics)]
+pub fn test_copy_within_src_past_end() -> bool {
+    let mut a: [u8; 4] = [1, 2, 3, 4];
+    let s: &mut [u8] = &mut a;
+    s.copy_within(3..=4, 0);
+    a == [4u8, 2, 3, 4]
+}
+
 #[rust_lean_test]
 pub fn test_copy_within_bound_pair() -> bool {
     use core::ops::Bound;

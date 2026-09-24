@@ -15,6 +15,11 @@
 //!
 //! Only for extractions that elaborate and disagree. One that fails to
 //! elaborate breaks the build with or without a guard — comment those out.
+//!
+//! # Panicking inputs
+//!
+//! `#[rust_lean_test(panics)]` expects the function to panic instead: the Rust
+//! wrapper is `#[should_panic]`, and the Lean guard requires `.fail`.
 
 use proc_macro::TokenStream;
 use quote::{format_ident, quote};
@@ -23,13 +28,17 @@ use syn::{ItemFn, LitStr, parse_macro_input};
 #[proc_macro_attribute]
 pub fn rust_lean_test(attr: TokenStream, item: TokenStream) -> TokenStream {
     let mut skip_lean: Option<LitStr> = None;
+    let mut panics = false;
     if !attr.is_empty() {
         let parser = syn::meta::parser(|meta| {
             if meta.path.is_ident("skip_lean") {
                 skip_lean = Some(meta.value()?.parse()?);
                 Ok(())
+            } else if meta.path.is_ident("panics") {
+                panics = true;
+                Ok(())
             } else {
-                Err(meta.error("expected `skip_lean = \"reason\"`"))
+                Err(meta.error("expected `skip_lean = \"reason\"` or `panics`"))
             }
         });
         parse_macro_input!(attr with parser);
@@ -47,18 +56,30 @@ pub fn rust_lean_test(attr: TokenStream, item: TokenStream) -> TokenStream {
     let name = &input.sig.ident;
     let check_name = format_ident!("__rust_lean_test_{}", name);
 
+    let check = if panics {
+        quote! {
+            #[should_panic]
+            fn #check_name() {
+                #name();
+            }
+        }
+    } else {
+        quote! {
+            fn #check_name() {
+                assert!(
+                    #name(),
+                    concat!("rust_lean_test `", stringify!(#name), "` returned false"),
+                );
+            }
+        }
+    };
     let expanded = quote! {
         #input
 
         #[cfg(test)]
         #[test]
         #[allow(non_snake_case)]
-        fn #check_name() {
-            assert!(
-                #name(),
-                concat!("rust_lean_test `", stringify!(#name), "` returned false"),
-            );
-        }
+        #check
     };
 
     expanded.into()
