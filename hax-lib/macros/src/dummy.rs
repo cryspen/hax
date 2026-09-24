@@ -31,14 +31,6 @@ pub fn internal_macro_misuse(name: &str) -> TokenStream {
     quote! { ::std::compile_error!(#message) }.into()
 }
 
-fn is_refine(meta: &Meta) -> bool {
-    matches!(meta, Meta::List(ml) if matches!(expects_refine(&ml.path), Ok(Some(_))))
-}
-
-fn is_order(meta: &Meta) -> bool {
-    matches!(meta, Meta::List(ml) if matches!(expects_order(&ml.path), Ok(Some(_))))
-}
-
 /// Strips the hax attributes enabled by `#[attributes]`.
 pub fn attributes(item: TokenStream) -> TokenStream {
     let item: Item = parse_macro_input!(item);
@@ -50,7 +42,7 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_trait_mut(&mut self, item: &mut ItemTrait) {
             for ti in item.items.iter_mut() {
                 if let TraitItem::Fn(fun) = ti {
-                    retain_through_cfg_attr(&mut fun.attrs, |meta| !is_decoration(meta))
+                    fun.attrs.retain(|attr| !is_decoration(&attr.meta))
                 }
             }
             visit_mut::visit_item_trait_mut(self, item);
@@ -59,29 +51,22 @@ pub fn attributes(item: TokenStream) -> TokenStream {
         fn visit_item_impl_mut(&mut self, item: &mut ItemImpl) {
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    retain_through_cfg_attr(&mut fun.attrs, |meta| !is_decoration(meta))
+                    fun.attrs.retain(|attr| !is_decoration(&attr.meta))
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
         }
-        fn visit_fields_named_mut(&mut self, fields_named: &mut FieldsNamed) {
-            visit_mut::visit_fields_named_mut(self, fields_named);
-            for field in fields_named.named.iter_mut() {
-                retain_through_cfg_attr(&mut field.attrs, |meta| !is_order(meta))
-            }
+        fn visit_field_mut(&mut self, field: &mut Field) {
+            visit_mut::visit_field_mut(self, field);
+            retain_through_cfg_attr(&mut field.attrs, |meta, _| !is_order(meta))
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
 
-            match item {
-                Item::Struct(s) => {
-                    for field in s.fields.iter_mut() {
-                        retain_through_cfg_attr(&mut field.attrs, |meta| {
-                            !(is_refine(meta) || is_order(meta))
-                        })
-                    }
+            if let Item::Struct(s) = item {
+                for field in s.fields.iter_mut() {
+                    retain_through_cfg_attr(&mut field.attrs, |meta, _| !is_refine(meta))
                 }
-                _ => (),
             }
         }
     }

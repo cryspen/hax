@@ -11,7 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Changes to the hax-lib crate:
  - Support `refine` and `order` written behind a `cfg_attr` on the fields of an item annotated
-   with `#[hax_lib::attributes]`, keeping the `cfg_attr` predicate (#1496)
+   with `#[hax_lib::attributes]`, keeping the `cfg_attr` predicate, e.g. one per backend (#1496)
+ - Raise the `#[hax_lib::attributes]` errors about a specification only when it is enabled
  - Strip `order` from enum variant fields in builds without `--cfg hax`
 
 ## [0.4.1] - 2026-09-23

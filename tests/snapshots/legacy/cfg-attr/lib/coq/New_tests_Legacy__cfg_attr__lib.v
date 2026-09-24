@@ -60,6 +60,28 @@ Record Reordered_record : Type :=
 #[export] Instance settable_Reordered_record : Settable _ :=
   settable! (Build_Reordered_record) <Reordered_f_y; Reordered_f_x>.
 
+Record PerBackendRefined_record : Type :=
+  {
+    PerBackendRefined_f_x : t_u8;
+  }.
+
+
+#[export] Instance settable_PerBackendRefined_record : Settable _ :=
+  settable! (Build_PerBackendRefined_record) <PerBackendRefined_f_x>.
+
+Record PerBackendReordered_record : Type :=
+  {
+    PerBackendReordered_f_x : t_u8;
+    PerBackendReordered_f_z : t_u8;
+    PerBackendReordered_f_y : t_u8;
+  }.
+
+
+
+
+#[export] Instance settable_PerBackendReordered_record : Settable _ :=
+  settable! (Build_PerBackendReordered_record) <PerBackendReordered_f_x; PerBackendReordered_f_z; PerBackendReordered_f_y>.
+
 Class t_Double (v_Self : Type) : Type :=
   {
     f_double : v_Self -> t_u8 -> t_u8;
@@ -67,7 +89,7 @@ Class t_Double (v_Self : Type) : Type :=
   }.
 Arguments t_Double (_).
 
-Instance t_Double_715653907 : t_Double ((t_Counter)) :=
+Instance t_Double_38059042 : t_Double ((t_Counter)) :=
   {
     implaabbcc_t_Double_f_double := fun  (self : t_Counter) (x : t_u8)=>
       f_add (x) (x);

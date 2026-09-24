@@ -346,62 +346,60 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 if let TraitItem::Fn(fun) = ti {
                     let sig = fun.sig.clone();
                     let extra_items = &mut self.extra_items;
-                    for attr in &mut fun.attrs {
-                        visit_meta_through_cfg_attr(&mut attr.meta, None, &mut |meta, cfg| {
-                            let Meta::List(ml) = meta else { return };
-                            let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
-                                return;
-                            };
-                            let decoration = syn::Ident::new(&decoration, ml.path.span());
+                    visit_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
+                        let Meta::List(ml) = meta else { return };
+                        let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
+                            return;
+                        };
+                        let decoration = syn::Ident::new(&decoration, ml.path.span());
 
-                            let mut generics = trait_generics.clone();
-                            // `Self_` needs the trait itself among its bounds, not
-                            // just the supertraits, else `Self::Assoc` has nothing
-                            // to resolve against (#2089).
-                            let mut bounds = supertraits.clone();
-                            bounds.push(TypeParamBound::Trait(TraitBound {
-                                paren_token: None,
-                                modifier: TraitBoundModifier::None,
-                                lifetimes: None,
-                                path: self_trait.clone(),
-                            }));
-                            let predicate = WherePredicate::Type(PredicateType {
-                                lifetimes: None,
-                                bounded_ty: parse_quote! {Self_},
-                                colon_token: Token![:](span),
-                                bounds,
-                            });
-                            let mut where_clause = generics
-                                .where_clause
-                                .clone()
-                                .unwrap_or(parse_quote! {where});
-                            where_clause.predicates.push(predicate);
-                            generics.where_clause = Some(where_clause);
-                            let self_ty: Type = parse_quote! {Self_};
-                            let tokens = ml.tokens.clone();
-                            let generics = merge_generics(parse_quote! {<Self_>}, generics);
-                            let ImplFnDecoration {
-                                kind, phi, self_ty, ..
-                            } = parse_quote! {#decoration, #generics, where, #self_ty, #tokens};
-                            let (decoration, relation_attr) = make_fn_decoration(
-                                phi,
-                                sig.clone(),
-                                kind,
-                                Some(generics),
-                                Some(self_ty),
-                                SelfProjection::TypeParam,
-                            );
-                            // Replacing the meta (and not the whole attribute) keeps any
-                            // enclosing `cfg_attr` wrapper: the relation attribute and the
-                            // sibling item below appear under the very same conditions.
-                            let relation_attr: Attribute = parse_quote! {#relation_attr};
-                            *meta = relation_attr.meta;
-                            extra_items.push(match cfg {
-                                Some(pred) => cfg_gate(decoration, pred),
-                                None => decoration,
-                            });
+                        let mut generics = trait_generics.clone();
+                        // `Self_` needs the trait itself among its bounds, not
+                        // just the supertraits, else `Self::Assoc` has nothing
+                        // to resolve against (#2089).
+                        let mut bounds = supertraits.clone();
+                        bounds.push(TypeParamBound::Trait(TraitBound {
+                            paren_token: None,
+                            modifier: TraitBoundModifier::None,
+                            lifetimes: None,
+                            path: self_trait.clone(),
+                        }));
+                        let predicate = WherePredicate::Type(PredicateType {
+                            lifetimes: None,
+                            bounded_ty: parse_quote! {Self_},
+                            colon_token: Token![:](span),
+                            bounds,
                         });
-                    }
+                        let mut where_clause = generics
+                            .where_clause
+                            .clone()
+                            .unwrap_or(parse_quote! {where});
+                        where_clause.predicates.push(predicate);
+                        generics.where_clause = Some(where_clause);
+                        let self_ty: Type = parse_quote! {Self_};
+                        let tokens = ml.tokens.clone();
+                        let generics = merge_generics(parse_quote! {<Self_>}, generics);
+                        let ImplFnDecoration {
+                            kind, phi, self_ty, ..
+                        } = parse_quote! {#decoration, #generics, where, #self_ty, #tokens};
+                        let (decoration, relation_attr) = make_fn_decoration(
+                            phi,
+                            sig.clone(),
+                            kind,
+                            Some(generics),
+                            Some(self_ty),
+                            SelfProjection::TypeParam,
+                        );
+                        // Replacing the meta (and not the whole attribute) keeps any
+                        // enclosing `cfg_attr` wrapper: the relation attribute and the
+                        // sibling item below appear under the very same conditions.
+                        let relation_attr: Attribute = parse_quote! {#relation_attr};
+                        *meta = relation_attr.meta;
+                        extra_items.push(match cfg {
+                            Some(pred) => cfg_gate(decoration, pred),
+                            None => decoration,
+                        });
+                    });
                 }
             }
             visit_mut::visit_item_trait_mut(self, item);
@@ -426,41 +424,46 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 .collect();
             for ii in item.items.iter_mut() {
                 if let ImplItem::Fn(fun) = ii {
-                    let mut decorated = false;
-                    for attr in &fun.attrs {
-                        visit_meta_through_cfg_attr(
-                            &mut attr.meta.clone(),
-                            None,
-                            &mut |meta, _| decorated |= is_decoration(meta),
-                        );
-                    }
-                    if decorated {
-                        if let Some(error) = foreign_self_projection_error(&fun.sig, &assoc) {
-                            // Drop the specifications: generating them would
-                            // pile rustc errors on top of ours.
-                            retain_through_cfg_attr(&mut fun.attrs, |meta| !is_decoration(meta));
-                            self.extra_items.push(error);
-                            continue;
-                        }
-                    }
-                    for attr in fun.attrs.iter_mut() {
-                        visit_meta_through_cfg_attr(&mut attr.meta, None, &mut |meta, _cfg| {
-                            let Meta::List(ml) = meta else { return };
-                            let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
-                                return;
-                            };
-                            let decoration = syn::Ident::new(&decoration, ml.path.span());
-                            let tokens = ml.tokens.clone();
-                            ml.tokens = impl_fn_decoration_args(
-                                &decoration,
-                                &generics,
-                                &self_ty,
-                                &as_trait,
-                                &tokens,
-                            );
-                            ml.path = parse_quote! {::hax_lib::impl_fn_decoration};
+                    if let Some(error) = foreign_self_projection_error(&fun.sig, &assoc) {
+                        // Drop the specifications: generating them would
+                        // pile rustc errors on top of ours. The error is
+                        // raised whenever one of them is enabled.
+                        let mut cfgs: Vec<Option<Meta>> = vec![];
+                        retain_through_cfg_attr(&mut fun.attrs, |meta, cfg| {
+                            let decorated = is_decoration(meta);
+                            if decorated {
+                                cfgs.push(cfg.cloned());
+                            }
+                            !decorated
                         });
+                        if !cfgs.is_empty() {
+                            self.extra_items.push(
+                                match cfgs.into_iter().collect::<Option<Vec<_>>>() {
+                                    Some(preds) => {
+                                        cfg_gate(error, &parse_quote! {any(#(#preds),*)})
+                                    }
+                                    None => error,
+                                },
+                            );
+                        }
+                        continue;
                     }
+                    visit_through_cfg_attr(&mut fun.attrs, |meta, _cfg| {
+                        let Meta::List(ml) = meta else { return };
+                        let Ok(Some(decoration)) = expects_path_decoration(&ml.path) else {
+                            return;
+                        };
+                        let decoration = syn::Ident::new(&decoration, ml.path.span());
+                        let tokens = ml.tokens.clone();
+                        ml.tokens = impl_fn_decoration_args(
+                            &decoration,
+                            &generics,
+                            &self_ty,
+                            &as_trait,
+                            &tokens,
+                        );
+                        ml.path = parse_quote! {::hax_lib::impl_fn_decoration};
+                    });
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
@@ -468,27 +471,27 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
         fn visit_fields_named_mut(&mut self, fields_named: &mut FieldsNamed) {
             visit_mut::visit_fields_named_mut(self, fields_named);
 
-            fn handle_reorder_attribute(attrs: &mut [Attribute], errors: &mut Vec<TokenStream>) {
-                let mut found = false;
-                for attr in attrs {
-                    visit_meta_through_cfg_attr(&mut attr.meta, None, &mut |meta, _cfg| {
-                        let Meta::List(ml) = meta else { return };
-                        if found || !matches!(expects_order(&ml.path), Ok(Some(_))) {
-                            return;
-                        }
-                        let Ok(order) = syn::parse2::<LitInt>(ml.tokens.clone()) else {
-                            return;
-                        };
-                        found = true;
-                        let Ok(n) = order.base10_parse() else {
-                            errors.push(parse_quote!{const _: () = {compile_error!("Expected a (base 10) i32 literal.")};});
-                            return;
-                        };
-                        let payload = AttrPayload::Order(n);
-                        let payload: Attribute = parse_quote!(#payload);
-                        *meta = payload.meta;
-                    });
-                }
+            fn handle_reorder_attribute(attrs: &mut Vec<Attribute>, errors: &mut Vec<TokenStream>) {
+                retain_through_cfg_attr(attrs, |meta, cfg| {
+                    if !is_order(meta) {
+                        return true;
+                    }
+                    let Meta::List(ml) = meta else { unreachable!() };
+                    let Ok(n) =
+                        syn::parse2::<LitInt>(ml.tokens.clone()).and_then(|lit| lit.base10_parse())
+                    else {
+                        let error = quote! {const _: () = {compile_error!("Expected a (base 10) i32 literal.")};};
+                        errors.push(match cfg {
+                            Some(pred) => cfg_gate(error, pred),
+                            None => error,
+                        });
+                        return false;
+                    };
+                    let payload = AttrPayload::Order(n);
+                    let payload: Attribute = parse_quote!(#payload);
+                    *meta = payload.meta;
+                    true
+                });
             }
 
             for field in &mut fields_named.named {
@@ -540,35 +543,32 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                         .collect();
                     for (i, field) in s.fields.iter_mut().enumerate() {
                         let prev = &idents[0..=i];
-                        let mut refine: Option<(ItemUid, Expr, Option<Meta>)> = None;
-                        for attr in field.attrs.iter_mut() {
-                            visit_meta_through_cfg_attr(&mut attr.meta, None, &mut |meta, cfg| {
-                                let Meta::List(ml) = meta else { return };
-                                if refine.is_some()
-                                    || !matches!(expects_refine(&ml.path), Ok(Some(_)))
-                                {
-                                    return;
-                                }
-                                let Ok(payload) = syn::parse2::<Expr>(ml.tokens.clone()) else {
-                                    return;
-                                };
-                                let uid = ItemUid::fresh();
-                                let assoc_attr = AttrPayload::AssociatedItem {
-                                    role: AssociationRole::Refine,
-                                    item: uid.clone(),
-                                };
-                                let assoc_attr: Attribute = parse_quote! { #assoc_attr };
-                                *meta = assoc_attr.meta;
-                                refine = Some((uid, payload, cfg.cloned()));
-                            });
-                        }
-                        if let Some((uid, refine, cfg)) = refine {
-                            let binders: TokenStream = prev
-                                .iter()
-                                .map(|(name, ty)| quote! {#name: #ty, })
-                                .collect();
-                            let uid_attr = AttrPayload::Uid(uid);
+                        let binders: TokenStream = prev
+                            .iter()
+                            .map(|(name, ty)| quote! {#name: #ty, })
+                            .collect();
+                        retain_through_cfg_attr(&mut field.attrs, |meta, cfg| {
+                            if !is_refine(meta) {
+                                return true;
+                            }
+                            let Meta::List(ml) = meta else { unreachable!() };
                             let cfg = cfg.map(|pred| quote! {#[cfg(#pred)]});
+                            let refine = match syn::parse2::<Expr>(ml.tokens.clone()) {
+                                Ok(refine) => refine,
+                                Err(error) => {
+                                    let error = error.to_compile_error();
+                                    extra.push(parse_quote! {#cfg const _: () = {#error};});
+                                    return false;
+                                }
+                            };
+                            let uid = ItemUid::fresh();
+                            let assoc_attr = AttrPayload::AssociatedItem {
+                                role: AssociationRole::Refine,
+                                item: uid.clone(),
+                            };
+                            let assoc_attr: Attribute = parse_quote! { #assoc_attr };
+                            *meta = assoc_attr.meta;
+                            let uid_attr = AttrPayload::Uid(uid);
                             let status_attr =
                                 &AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
                             extra.push(syn::parse_quote! {
@@ -580,8 +580,9 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                                     #status_attr
                                     fn refinement #generics (#binders) -> ::hax_lib::Prop #where_clause { ::hax_lib::Prop::from(#refine) }
                                 };
-                            })
-                        }
+                            });
+                            true
+                        });
                     }
                 }
                 _ => (),

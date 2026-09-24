@@ -75,3 +75,21 @@ struct Reordered {
     #[cfg_attr(hax, hax_lib::order(-1))]
     y: u8,
 }
+
+/// One refinement per backend: each backend only sees its own.
+#[cfg_attr(hax, hax_lib::attributes)]
+struct PerBackendRefined {
+    #[cfg_attr(hax_backend_fstar, hax_lib::refine(x < 5))]
+    #[cfg_attr(hax_backend_coq, hax_lib::refine(x < 6))]
+    x: u8,
+}
+
+/// One field order per backend: `y` comes first in F\*, last in Coq.
+#[cfg_attr(hax, hax_lib::attributes)]
+struct PerBackendReordered {
+    x: u8,
+    #[cfg_attr(hax_backend_fstar, hax_lib::order(-1))]
+    #[cfg_attr(hax_backend_coq, hax_lib::order(5))]
+    y: u8,
+    z: u8,
+}
