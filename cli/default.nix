@@ -74,7 +74,8 @@ let
       "--locked -p cargo-hax --bin hax-export-json-schemas --features cargo-hax/legacy-engine";
   });
   # All `hax-engine-names-extract` needs; unlike `hax`, it does not wait for
-  # `hax_export_json_schemas`, so both build in parallel.
+  # `hax_export_json_schemas`, so both build in parallel. `cargo-hax` looks for
+  # the driver next to its own executable, hence one directory for both.
   hax_frontend_only = stdenv.mkDerivation {
     name = "hax-frontend-only-${commonArgs.version}";
     phases = [ "installPhase" ];
@@ -119,16 +120,22 @@ let
     # '';
     inherit cargoArtifacts pname;
   });
+  # [cargo test] builds independent workspaces. Each time another
+  # workspace is added, it's corresponding lockfile should be added
+  # in the [cargoLockList] list below.
+  tests-vendor-dir = craneLib.vendorMultipleCargoDeps {
+    cargoLockList = [ ../Cargo.lock ../tests/Cargo.lock ];
+  };
   tests = craneLib.buildPackage (commonArgs // {
-    inherit cargoArtifacts;
+    # Cargo rebuilds any dependency whose vendored source path changed, so
+    # these artifacts must come from the same vendor directory.
+    cargoArtifacts = craneLib.buildDepsOnly (commonArgs // {
+      pname = "hax-tests";
+      cargoVendorDir = tests-vendor-dir;
+    });
     pname = "hax-tests";
     doCheck = true;
-    # [cargo test] builds independent workspaces. Each time another
-    # workspace is added, it's corresponding lockfile should be added
-    # in the [cargoLockList] list below.
-    cargoVendorDir = craneLib.vendorMultipleCargoDeps {
-      cargoLockList = [ ../Cargo.lock ../tests/Cargo.lock ];
-    };
+    cargoVendorDir = tests-vendor-dir;
     CI = "true";
     cargoBuildCommand = "true";
     checkPhaseCargoCommand = ''
