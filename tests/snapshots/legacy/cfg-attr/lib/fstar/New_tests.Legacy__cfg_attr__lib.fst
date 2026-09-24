@@ -26,6 +26,30 @@ let impl_Counter__get_fstar_only (self: t_Counter)
 let impl_Counter__get_inline (self: t_Counter)
     : Prims.Pure usize (requires self.f_n <. mk_usize 5) (fun _ -> Prims.l_True) = self.f_n
 
+type t_Refined (v_LEN: usize) = {
+  f_indices:f_indices:
+  t_Array u8 v_LEN
+    { forall (i: usize).
+        b2t (i <. (Core_models.Slice.impl__len #u8 (f_indices <: t_Slice u8) <: usize) <: bool) ==>
+        b2t ((cast (f_indices.[ i ] <: u8) <: usize) <. mk_usize 2 <: bool) };
+  f_x:f_x: u8{b2t (f_x <. mk_u8 5 <: bool)}
+}
+
+type t_Reordered = {
+  f_y:u8;
+  f_x:u8
+}
+
+/// One refinement per backend: each backend only sees its own.
+type t_PerBackendRefined = { f_x:f_x: u8{b2t (f_x <. mk_u8 5 <: bool)} }
+
+/// One field order per backend: `y` comes first in F\\*, last in Coq.
+type t_PerBackendReordered = {
+  f_y:u8;
+  f_x:u8;
+  f_z:u8
+}
+
 class t_Double (v_Self: Type0) = {
   f_double_pre:self_: v_Self -> x: u8 -> pred: Type0{x <. mk_u8 100 ==> pred};
   f_double_post:self_: v_Self -> x: u8 -> result: u8 -> pred: Type0{pred ==> result >=. x};

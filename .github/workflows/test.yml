@@ -43,6 +43,11 @@ jobs:
       - name: Test `cargo-hax`
         run: cargo test -p cargo-hax --verbose
 
+      - name: Test `hax-lib-macros` without `--cfg hax`
+        run: cargo test -p hax-lib-macros --test dummy_attributes --verbose
+        env:
+          RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
+
       - name: Test `hax-frontend-exporter` with feature `rustc` off
         run: cargo check -p hax-frontend-exporter --no-default-features --verbose
 
