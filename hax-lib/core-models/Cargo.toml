@@ -23,3 +23,4 @@ members = [
 # fstar` runs. (This crate is `exclude`d from the root workspace, but a
 # path dependency across workspaces is fine.)
 hax-lib = { path = ".." }
+mutants = "0.0.3"

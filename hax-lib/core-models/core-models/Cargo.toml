@@ -13,7 +13,7 @@ hax-lib.workspace = true
 
 [dev-dependencies]
 proptest = "1.9.0"
-mutants = "0.0.3"
+mutants.workspace = true
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = [
