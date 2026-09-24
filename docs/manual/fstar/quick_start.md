@@ -40,11 +40,14 @@ directory alone: a project that drives F\* its own way keeps doing so. To
 turn the build files off everywhere, set `project-files = false` in your
 `hax.toml`.
 
-The extraction directory holds only what hax writes, and hax removes from
-it whatever an extraction no longer produces. Hand-written F\* that the
-extracted code refers to — a lemma reached through `fstar!(..)`, say —
-belongs in `proofs/fstar/models` beside it, which the `Makefile` puts on
-F\*'s include path.
+The extraction directory is meant to hold only what hax writes: the
+`Makefile` verifies every F\* module in it. hax does not delete a module
+that an extraction no longer produces, so after renaming or removing Rust
+modules, delete the stale `.fst`/`.fsti` files (or empty the directory
+before extracting again). Hand-written F\* that the extracted code refers
+to — a lemma reached through `fstar!(..)`, say — belongs in
+`proofs/fstar/models` beside it, which the `Makefile` puts on F\*'s
+include path.
 
 **What is critical? What is worth verifying?**  
 Probably, your Rust crate contains mixed kinds of code: some parts are

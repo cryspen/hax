@@ -60,6 +60,22 @@ impl Project {
         std::fs::read_to_string(self.root().join("fstar.log")).unwrap_or_default()
     }
 
+    /// How many times F* checked `module`, as opposed to computing
+    /// dependencies.
+    fn checks_of(&self, module: &str) -> usize {
+        self.fstar_log()
+            .lines()
+            .filter(|line| !line.contains("--dep") && line.ends_with(&format!(" {module}")))
+            .count()
+    }
+
+    fn dep_runs(&self) -> usize {
+        self.fstar_log()
+            .lines()
+            .filter(|line| line.contains("--dep"))
+            .count()
+    }
+
     fn run(&self, args: &[&str], env: &[(&str, &str)]) -> (String, bool) {
         let path = format!(
             "{}:{}",
@@ -101,9 +117,8 @@ const FSTAR_STUB_CYCLIC: &str = "#!/bin/sh\n\
 const FSTAR_STUB_WORKING: &str = "#!/bin/sh\necho '# no dependencies'\nexit 0\n";
 
 /// Test fixture: stands in for a working `fstar.exe`, logging every
-/// invocation to `$FSTAR_LOG`. It reproduces the behavior that makes a
-/// missing source file dangerous: given no module to check, the real
-/// `fstar.exe` prints its usage and exits 0.
+/// invocation to `$FSTAR_LOG`. Like the real one, it exits 0 given no module
+/// to check, and leaves an existing `.checked` file untouched.
 const FSTAR_STUB_RECORDING: &str = r#"#!/bin/sh
 echo "$@" >> "$FSTAR_LOG"
 files=""; dep=0; lax=0; cache=""; next=0
@@ -124,7 +139,7 @@ if [ "$dep" = 1 ]; then
   exit 0
 fi
 mkdir -p "$cache"
-for f in $files; do touch "$cache/$f$sfx"; done
+for f in $files; do [ -e "$cache/$f$sfx" ] || touch "$cache/$f$sfx"; done
 exit 0
 "#;
 
@@ -290,4 +305,127 @@ fn adding_and_removing_a_module_invalidates_depend() {
         stamp.contains("A.fst"),
         "the remaining module dropped out of the stamp: {stamp:?}"
     );
+}
+
+/// The extraction runs after make has read the directory once, so the
+/// modules it writes must still be found.
+#[test]
+fn auto_extraction_verifies_the_modules_it_writes() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    std::fs::remove_file(project.root().join("A.fst")).unwrap();
+    let extract = [
+        ("HAX_AUTO_EXTRACT", "yes"),
+        ("HAX_EXTRACT_COMMAND", "touch B.fst"),
+    ];
+    let (out, ok) = project.run(&["verify"], &extract);
+    assert!(ok, "{out}");
+    assert_eq!(
+        project.checks_of("B.fst"),
+        1,
+        "log: {}",
+        project.fstar_log()
+    );
+}
+
+/// A flag passed through `FSTAR_FLAGS_EXTRA` weakens a check as much as one
+/// in `OTHERFLAGS`, so its results must not be reused by a plain run.
+#[test]
+fn extra_fstar_flags_do_not_share_the_verified_cache() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    let admit = [("FSTAR_FLAGS_EXTRA", "--admit_smt_queries true")];
+    let (out, ok) = project.run(&["verify"], &admit);
+    assert!(ok, "{out}");
+    let (out, ok) = project.make("verify");
+    assert!(ok, "{out}");
+    assert_eq!(
+        project.checks_of("A.fst"),
+        2,
+        "log: {}",
+        project.fstar_log()
+    );
+}
+
+/// F* keeps a `.checked` file that is still valid, so make must bring it up
+/// to date itself, or it would recheck the module on every run.
+#[test]
+fn a_module_f_star_did_not_rewrite_is_not_rechecked_forever() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    assert!(project.make("verify").1);
+    backdate(&project.root().join(".fstar-cache/checked/A.fst.checked"));
+
+    for _ in 0..2 {
+        let (out, ok) = project.make("verify");
+        assert!(ok, "{out}");
+    }
+    assert_eq!(
+        project.checks_of("A.fst"),
+        2,
+        "log: {}",
+        project.fstar_log()
+    );
+}
+
+/// A library module may gain an import, so changing one must regenerate
+/// `.depend`.
+#[test]
+fn a_changed_library_module_regenerates_depend() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    std::fs::create_dir(project.root().join("lib")).unwrap();
+    std::fs::write(project.root().join("lib/M.fst"), "module M\n").unwrap();
+    let lib = [("FSTAR_INCLUDE_DIRS_EXTRA", "lib")];
+    assert!(project.run(&[".depend"], &lib).1);
+    // `.depend` last, so that it is the newest of them.
+    for file in ["lib/M.fst", "A.fst", ".hax-roots", ".depend"] {
+        backdate(&project.root().join(file));
+    }
+    assert!(project.run(&[".depend"], &lib).1);
+    assert_eq!(project.dep_runs(), 1, "up to date: {}", project.fstar_log());
+
+    std::fs::write(project.root().join("lib/M.fst"), "module M\nopen A\n").unwrap();
+    assert!(project.run(&[".depend"], &lib).1);
+    assert_eq!(project.dep_runs(), 2, "log: {}", project.fstar_log());
+}
+
+#[test]
+fn clean_then_verify_in_one_run_verifies() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    assert!(project.make("verify").1);
+    let (out, ok) = project.run(&["clean", "verify"], &[]);
+    assert!(ok, "{out}");
+    assert_eq!(
+        project.checks_of("A.fst"),
+        2,
+        "log: {}",
+        project.fstar_log()
+    );
+}
+
+/// The include order decides which of two same-named modules F* picks, so
+/// removing duplicates must not reorder it.
+#[test]
+fn include_directories_keep_their_order() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    let (out, ok) = project.run(&["A.fst-in"], &[("FSTAR_INCLUDE_DIRS_EXTRA", "zz aa zz")]);
+    assert!(ok, "{out}");
+    let core = project.root().join("proof-libs/fstar/core");
+    let expected = format!("--include zz --include aa --include {}", core.display());
+    assert!(out.contains(&expected), "{out}");
 }

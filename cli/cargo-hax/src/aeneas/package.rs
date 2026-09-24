@@ -546,11 +546,6 @@ fn parse_root_imports(contents: &str) -> RootImports {
     imports
 }
 
-/// Whether generation treats `path` as absent and would write it. An empty
-/// file counts as absent: it holds no content worth preserving (typically
-/// the leftover of an interrupted write) and would otherwise never be
-/// repaired, since existing files are not touched.
-
 /// The pins in an existing lakefile that differ from the current
 /// resolution, as (require name, found rev, expected rev). Only the two
 /// requires hax manages are compared; a lakefile that does not parse is

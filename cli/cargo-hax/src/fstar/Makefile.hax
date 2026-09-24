@@ -14,9 +14,9 @@
 # ROOTS contains all the top-level F* files you wish to verify
 # The default target `verify` verified ROOTS and its dependencies
 # To lax-check instead, set `OTHERFLAGS="--lax"` on the command-line
-# Lax/admit runs (`--lax`, `--admit_smt_queries`, or any `ADMIT_MODULES`) use a
-# separate cache directory, so their results are never reused by, or confused
-# with, a full verification run.
+# Runs with any `OTHERFLAGS`, `FSTAR_FLAGS_EXTRA` or `ADMIT_MODULES` use their
+# own subdirectory of `CACHE_DIR`, so a lax or admitted result is never reused
+# by, or confused with, a full verification run.
 #
 # To make F* emacs mode use the settings in this file, you need to
 # add the following lines to your .emacs
@@ -103,16 +103,23 @@ endef
 export FINDLIBS
 
 FSTAR_INCLUDE_DIRS_EXTRA ?=
-# Extra F* flags for this project, e.g. `--ext context_pruning` where a
+# Extra F* flags for this project, e.g. `--z3rlimit_factor 2` where a
 # proof needs it.
 FSTAR_FLAGS_EXTRA ?=
-FINDLIBS_OUTPUT ?= $(shell bash -c '${FINDLIBS}')
+# Expanded once, as it runs `cargo metadata`; sub-makes inherit it.
+ifeq ($(origin FINDLIBS_OUTPUT),undefined)
+FINDLIBS_OUTPUT := $(shell bash -c '${FINDLIBS}')
+endif
+export FINDLIBS_OUTPUT
 
 # Hand-written F* the extraction refers to lives beside it rather than in
 # it, so that the extraction directory holds only what hax writes.
 FSTAR_MODELS_DIR ?= ../models
 
-FSTAR_INCLUDE_DIRS = $(strip $(shell echo $(FSTAR_INCLUDE_DIRS_EXTRA) $(wildcard $(FSTAR_MODELS_DIR)) $(FINDLIBS_OUTPUT) | tr ' ' '\n' | LC_ALL=C sort -u | tr '\n' ' '))
+# Drops duplicates but keeps the order, which decides the module F* picks
+# when two directories define the same one.
+hax_uniq = $(if $1,$(firstword $1) $(call hax_uniq,$(filter-out $(firstword $1),$1)))
+FSTAR_INCLUDE_DIRS := $(strip $(call hax_uniq,$(FSTAR_INCLUDE_DIRS_EXTRA) $(FINDLIBS_OUTPUT) $(wildcard $(FSTAR_MODELS_DIR))))
 
 # Make sure FSTAR_INCLUDE_DIRS has the `proof-libs`, print hints and
 # an error message otherwise
@@ -144,7 +151,7 @@ HAX_EXTRACT_COMMAND ?= cargo hax into fstar
 # Goals that describe or tear down the build rather than run it. They must
 # not extract, and they do not need `.depend`.
 NO_BUILD_GOALS := clean help h describe include-dirs
-BUILDING := $(if $(filter $(NO_BUILD_GOALS),$(MAKECMDGOALS)),,yes)
+BUILDING := $(if $(filter-out $(NO_BUILD_GOALS),$(or $(MAKECMDGOALS),all)),yes)
 
 # Run from the directory the recorded command was given in, so that the
 # relative paths it may carry still resolve.
@@ -157,7 +164,11 @@ endif
 endif
 endif
 
-ROOTS ?= $(wildcard *.fst *.fsti)
+# Not `$(wildcard)`: make caches the directory listing, which predates the
+# modules an extraction above has just written.
+ifeq ($(origin ROOTS),undefined)
+ROOTS := $(sort $(shell shopt -s nullglob; printf '%s ' *.fst *.fsti))
+endif
 
 # An empty set of roots would make every goal below succeed without checking
 # anything, which is indistinguishable from a passing run.
@@ -173,27 +184,30 @@ ADMIT_MODULE_FLAGS ?= --admit_smt_queries true
 
 # A `.checked` file does not record *how* it was checked, so one produced
 # under a soundness-weakening flag is indistinguishable from a verified one
-# and a later full run would trust it. Keying the cache directory on
-# OTHERFLAGS and ADMIT_MODULES gives each configuration its own.
-CACHE_KEY := $(strip $(OTHERFLAGS) $(ADMIT_MODULES))
-ifeq ($(CACHE_KEY),)
-CACHE_SUBDIR :=
-else
-CACHE_SUBDIR := config-$(shell printf '%s' '$(CACHE_KEY)' | cksum | cut -d' ' -f1)/
-endif
-CACHE_DIR      ?= ${GIT_ROOT_DIR}.fstar-cache/${CACHE_SUBDIR}checked
+# and a later full run would trust it. Keying the cache directory on every
+# flag that reaches F* gives each configuration its own, also under a
+# user-set CACHE_DIR.
+CACHE_KEY := $(strip $(OTHERFLAGS) $(FSTAR_FLAGS_EXTRA) \
+  $(if $(strip $(ADMIT_MODULES)),$(ADMIT_MODULES) $(ADMIT_MODULE_FLAGS)))
+CACHE_DIR ?= ${GIT_ROOT_DIR}.fstar-cache/checked
+MODE_CACHE_DIR := $(CACHE_DIR)$(if $(CACHE_KEY),/config-$(shell printf '%s' '$(CACHE_KEY)' | cksum | cut -d' ' -f1))
 
 # Under `--lax` F* writes `<module>.checked.lax`, so the targets have to
 # follow the mode, and `.depend` has to be generated in it too.
-CHECKED := $(if $(findstring --lax,$(OTHERFLAGS)),.checked.lax,.checked)
+CHECKED := $(if $(findstring --lax,$(OTHERFLAGS) $(FSTAR_FLAGS_EXTRA)),.checked.lax,.checked)
 
-# Records the roots, the flags and the cache directory `.depend` was
-# generated with, so any of them changing regenerates it: `.depend` names
-# its targets under `CACHE_DIR`, and a target it does not name has no
-# prerequisite to build from.
+# The modules the roots may depend on: `.depend` is regenerated when one of
+# them changes, as it may then import something else.
+LIB_SOURCES := $(wildcard $(foreach dir,$(FSTAR_INCLUDE_DIRS),$(dir)/*.fst $(dir)/*.fsti))
+
+# Records the roots, the flags, the include path and the cache directory
+# `.depend` was generated with, so any of them changing regenerates it:
+# `.depend` names its targets under `MODE_CACHE_DIR`, and a target it does
+# not name has no prerequisite to build from.
 ROOTS_STAMP := .hax-roots
 _ := $(shell { printf '%s\n' $(ROOTS) | LC_ALL=C sort; \
-               printf 'flags:%s\ncache:%s\n' '$(OTHERFLAGS)' '$(CACHE_DIR)'; } \
+               printf 'flags:%s\ninclude:%s\ncache:%s\n' \
+                 '$(OTHERFLAGS) $(FSTAR_FLAGS_EXTRA)' '$(FSTAR_INCLUDE_DIRS)' '$(MODE_CACHE_DIR)'; } \
           > $(ROOTS_STAMP).tmp; \
         cmp -s $(ROOTS_STAMP).tmp $(ROOTS_STAMP) || mv -f $(ROOTS_STAMP).tmp $(ROOTS_STAMP); \
         rm -f $(ROOTS_STAMP).tmp)
@@ -205,14 +219,15 @@ include-dirs:
 
 FSTAR_FLAGS = \
   --warn_error -321-331-241-274-239-271 \
-  --cache_checked_modules --cache_dir $(CACHE_DIR) \
+  --ext context_pruning --z3version 4.13.3 \
+  --cache_checked_modules --cache_dir $(MODE_CACHE_DIR) \
   --already_cached "+Prims+FStar+LowStar+C+Spec.Loops+TestLib" \
   $(addprefix --include ,$(FSTAR_INCLUDE_DIRS)) \
   $(FSTAR_FLAGS_EXTRA)
 
 FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)
 
-.depend: $(ROOTS) $(ROOTS_STAMP) | $(CACHE_DIR)
+.depend: $(ROOTS) $(ROOTS_STAMP) $(LIB_SOURCES) | $(MODE_CACHE_DIR)
 	$(Q)trap 'rm -f $@.tmp' EXIT; \
 	  $(FSTAR) $(OTHERFLAGS) --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@.tmp \
 	    && mv -f $@.tmp $@
@@ -221,7 +236,7 @@ ifeq "$(BUILDING)" "yes"
 include .depend
 endif
 
-$(CACHE_DIR):
+$(MODE_CACHE_DIR):
 	$(Q)mkdir -p $@
 
 define HELPMESSAGE
@@ -269,6 +284,7 @@ describe:
 	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_BIN${ANSI_COLOR_RESET} = %s\n' '${FSTAR_BIN}'
 	@printf ' - ${ANSI_COLOR_BLUE}GIT_ROOT_DIR${ANSI_COLOR_RESET} = %s\n' '${GIT_ROOT_DIR}'
 	@printf ' - ${ANSI_COLOR_BLUE}CACHE_DIR${ANSI_COLOR_RESET} = %s\n' '${CACHE_DIR}'
+	@printf ' - ${ANSI_COLOR_BLUE}MODE_CACHE_DIR${ANSI_COLOR_RESET} = %s\n' '${MODE_CACHE_DIR}'
 	@printf ' - ${ANSI_COLOR_BLUE}ADMIT_MODULE_FLAGS${ANSI_COLOR_RESET} = %s\n' '${ADMIT_MODULE_FLAGS}'
 	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_INCLUDE_DIRS_EXTRA${ANSI_COLOR_RESET} = %s\n' '${FSTAR_INCLUDE_DIRS_EXTRA}'
 	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_FLAGS_EXTRA${ANSI_COLOR_RESET} = %s\n' '${FSTAR_FLAGS_EXTRA}'
@@ -278,15 +294,15 @@ h: ;@bash -c "$$HELPMESSAGE"
 
 HEADER = $(Q)printf '${ANSI_COLOR_BBLUE}[CHECK] %s ${ANSI_COLOR_RESET}\n' "$(basename $(notdir $@))"
 
-run/%: | .depend $(CACHE_DIR)
+run/%: | .depend $(MODE_CACHE_DIR)
 	${HEADER}
 	$(Q)$(FSTAR) $(OTHERFLAGS) $(@:run/%=%)
 
-check/%: | .depend $(CACHE_DIR)
-	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) "${CACHE_DIR}/$(@:check/%=%)$(CHECKED)"
+check/%: | .depend $(MODE_CACHE_DIR)
+	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) "${MODE_CACHE_DIR}/$(@:check/%=%)$(CHECKED)"
 
-VERIFIED_CHECKED = $(addsuffix $(CHECKED), $(addprefix $(CACHE_DIR)/,$(ROOTS)))
-ADMIT_CHECKED = $(addsuffix $(CHECKED), $(addprefix $(CACHE_DIR)/,$(ADMIT_MODULES)))
+VERIFIED_CHECKED = $(addsuffix $(CHECKED), $(addprefix $(MODE_CACHE_DIR)/,$(ROOTS)))
+ADMIT_CHECKED = $(addsuffix $(CHECKED), $(addprefix $(MODE_CACHE_DIR)/,$(ADMIT_MODULES)))
 
 # `.depend` is what gives a checked target the module to check. F* run on
 # no file at all exits 0, so a target it does not cover would report a
@@ -299,14 +315,19 @@ $(ADMIT_CHECKED):
 	  echo "" ; \
 	  exit 1 ; \
 	}
+	$(Q)touch -c $@
 	$(Q)printf "\n\n"
 
-$(CACHE_DIR)/%$(CHECKED): | .depend $(CACHE_DIR)
+# F* leaves a `.checked` file that is still valid untouched, which would
+# leave it older than its source forever. `-c`: never create one F* did not
+# write.
+$(MODE_CACHE_DIR)/%$(CHECKED): | .depend $(MODE_CACHE_DIR)
 	${HEADER}
 	$(Q)$(REQUIRE_SOURCE)$(FSTAR) $(OTHERFLAGS) $< || { \
 	  echo "" ; \
 	  exit 1 ; \
 	}
+	$(Q)touch -c $@
 	$(Q)printf "\n\n"
 
 verify: $(VERIFIED_CHECKED) $(ADMIT_CHECKED)
@@ -324,5 +345,5 @@ vscode:
 # Only build products: the extracted modules are not distinguishable from
 # the hand-written F* files that live next to them.
 clean:
-	$(Q)rm -f $(addprefix $(CACHE_DIR)/,$(addsuffix $(CHECKED),$(ROOTS)))
+	$(Q)rm -f $(addprefix $(MODE_CACHE_DIR)/,$(addsuffix $(CHECKED),$(ROOTS)))
 	$(Q)rm -f .depend .depend.tmp $(ROOTS_STAMP) hax.fst.config.json dep.graph

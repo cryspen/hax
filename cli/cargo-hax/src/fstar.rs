@@ -54,6 +54,8 @@ fn command_of_args(args: &[String]) -> String {
     match args {
         [] => DEFAULT_EXTRACT_COMMAND.to_string(),
         [keyword] if keyword == "__json" => DEFAULT_EXTRACT_COMMAND.to_string(),
+        // A make assignment cannot span lines.
+        args if args.iter().any(|arg| arg.contains('\n')) => DEFAULT_EXTRACT_COMMAND.to_string(),
         args => match shlex::try_join(args.iter().map(String::as_str)) {
             Ok(joined) => format!("cargo hax {joined}"),
             Err(_) => DEFAULT_EXTRACT_COMMAND.to_string(),
@@ -68,8 +70,8 @@ pub fn invocation_command() -> String {
 }
 
 /// `to` expressed relative to `from`, both absolute. `None` when they share
-/// no prefix to walk up to, which an absolute path in a committed file
-/// would not fix.
+/// no component at all (two Windows drives, say), as no relative path then
+/// leads from one to the other.
 fn relative_to(from: &Path, to: &Path) -> Option<PathBuf> {
     let common = from
         .components()
@@ -104,8 +106,37 @@ fn extract_dir(out_dir: &Path) -> PathBuf {
         .unwrap_or_else(|| PathBuf::from("."))
 }
 
+/// `value` as the right-hand side of a make assignment, which would expand
+/// `$` and cut at `#`. A backslash is literal unless it precedes `#`.
+fn make_escape(value: &str) -> String {
+    let mut escaped = String::with_capacity(value.len());
+    let mut backslashes = 0;
+    for c in value.chars() {
+        match c {
+            '\\' => backslashes += 1,
+            '#' => {
+                escaped.extend(std::iter::repeat_n('\\', 2 * backslashes + 1));
+                escaped.push('#');
+                backslashes = 0;
+            }
+            c => {
+                escaped.extend(std::iter::repeat_n('\\', backslashes));
+                backslashes = 0;
+                if c == '$' {
+                    escaped.push('$');
+                }
+                escaped.push(c);
+            }
+        }
+    }
+    escaped.extend(std::iter::repeat_n('\\', backslashes));
+    escaped
+}
+
 fn user_makefile_contents(extract_command: &str, extract_dir: &Path) -> String {
-    let extract_dir = extract_dir.display();
+    let extract_command = make_escape(extract_command);
+    let extract_dir = extract_dir.to_string_lossy();
+    let extract_dir = make_escape(&shlex::try_quote(&extract_dir).unwrap_or("'.'".into()));
     format!(
         "\
 ADMIT_MODULES ?=
@@ -204,9 +235,46 @@ mod tests {
         );
         assert_eq!(rel("/ws", "/ws").as_deref(), Some("."));
         assert_eq!(rel("/ws/a", "/ws/b").as_deref(), Some("../b"));
-        // Nothing in common: no relative path, and an absolute one would be
-        // wrong in a committed file.
+        // The root alone is enough in common.
         assert_eq!(rel("/a", "/b").as_deref(), Some("../b"));
+    }
+
+    /// What `make` reads back from the generated assignments.
+    fn assigned_by_make(extract_command: &str, extract_dir: &str) -> Option<(String, String)> {
+        let dir = tempfile::tempdir().unwrap();
+        let contents = user_makefile_contents(extract_command, Path::new(extract_dir));
+        std::fs::write(dir.path().join(MAKEFILE), contents).unwrap();
+        std::fs::write(
+            dir.path().join(MAKEFILE_HAX),
+            "$(info $(HAX_EXTRACT_COMMAND))\n$(info $(HAX_EXTRACT_DIR))\nall: ; @:\n",
+        )
+        .unwrap();
+        let out = std::process::Command::new("make")
+            .current_dir(dir.path())
+            .output()
+            .ok()?;
+        assert!(out.status.success(), "{out:?}");
+        let stdout = String::from_utf8(out.stdout).unwrap();
+        let (command, dir) = stdout.trim_end().split_once('\n').unwrap();
+        Some((command.to_string(), dir.to_string()))
+    }
+
+    #[test]
+    fn make_reads_back_the_command_and_directory_verbatim() {
+        let command = r"cargo hax -C --features 'a#b' ';' into -i '+x::$y \# z\' fstar";
+        let Some((read_command, read_dir)) = assigned_by_make(command, "../my proj#1") else {
+            return;
+        };
+        assert_eq!(read_command, command);
+        assert_eq!(read_dir, "'../my proj#1'");
+    }
+
+    #[test]
+    fn a_multi_line_argument_falls_back_to_the_default_command() {
+        assert_eq!(
+            command_of_args(&["into".into(), "-i".into(), "a\nb".into(), "fstar".into()]),
+            DEFAULT_EXTRACT_COMMAND
+        );
     }
 
     #[test]

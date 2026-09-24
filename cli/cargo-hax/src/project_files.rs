@@ -5,10 +5,17 @@ use std::path::Path;
 
 use super::tools;
 
+/// Whether generation treats `path` as absent and would write it. An empty
+/// file counts as absent: it holds no content worth preserving (typically
+/// the leftover of an interrupted write) and would otherwise never be
+/// repaired, since existing files are not touched.
 pub fn absent_or_empty(path: &Path) -> bool {
     !fs::metadata(path).is_ok_and(|metadata| !metadata.is_file() || metadata.len() > 0)
 }
 
+/// Write `contents` to `path` if [`absent_or_empty`] holds for it.
+/// Reports the file as produced (wrote or unchanged) via `HaxMessage`.
+/// Returns whether writing failed.
 pub fn write_if_absent(path: &Path, contents: &str, message_format: MessageFormat) -> bool {
     if !absent_or_empty(path) {
         HaxMessage::ProducedFile {
