@@ -121,11 +121,7 @@ impl TestModule {
     /// Returns true if verification needs to run for this test, i.e. if the backend supports verification,
     /// verification is not expected to fail, and `--no-verify` was not passed.
     pub fn needs_verification(&self, backend: BackendName, options: &crate::cli::Cli) -> bool {
-        // F* is not type-checked here: `just verify-fstar` checks the committed
-        // snapshots instead.
-        !options.no_verify()
-            && matches!(backend, BackendName::LegacyLean)
-            && self.verification_expected(backend)
+        !options.no_verify() && self.verification_expected(backend)
     }
 
     /// The directory holding this test's snapshots, relative to

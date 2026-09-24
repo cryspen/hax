@@ -221,6 +221,42 @@ pub async fn hax_engine(
     })
 }
 
+/// Lax-checks the F* snapshot in `dir` with `tests/verify/fstar/Makefile`,
+/// the build `just verify-fstar` runs over every snapshot.
+pub async fn run_fstar(tests_dir: &Path, dir: &Path) -> Result<BackendOutput> {
+    let mut matching = String::new();
+    for c in format!("{}/", dir.display()).chars() {
+        if r"\.[]*^".contains(c) {
+            matching.push('\\');
+        }
+        matching.push(c);
+    }
+    let out = tokio::process::Command::new("make")
+        .arg("-C")
+        .arg(tests_dir.join("verify").join("fstar"))
+        .arg(format!("MATCHING={matching}"))
+        // Per snapshot, as tests run concurrently: the shared ones describe
+        // the whole selection.
+        .arg(format!("DEPEND={}", dir.join(".depend").display()))
+        .arg(format!(
+            "SOURCES_STAMP={}",
+            dir.join(".hax-roots").display()
+        ))
+        .output()
+        .await?;
+    let stderr = String::from_utf8_lossy(&out.stderr).to_string();
+    let mut error = stderr.lines().rev().take(10).collect::<Vec<_>>();
+    error.reverse();
+
+    Ok(BackendOutput {
+        error_code: out
+            .status
+            .code()
+            .context("No error code: was the process terminated?")?,
+        stderr: error.join("\n"),
+    })
+}
+
 /// Executes Lean
 pub async fn run_lean(dir: PathBuf) -> Result<BackendOutput> {
     let root_path = std::env::current_dir()?;
