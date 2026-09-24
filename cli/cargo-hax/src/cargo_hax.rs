@@ -378,7 +378,6 @@ fn run_engine(
     }
 
     if let Backend::Fstar(fstar_options) = &backend.backend
-        && !backend.dry_run
         && produced_any
     {
         let project_files = fstar_options

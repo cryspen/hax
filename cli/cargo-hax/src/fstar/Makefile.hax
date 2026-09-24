@@ -139,10 +139,10 @@ endif
 .PHONY: all all-keep-going verify clean vscode describe help h include-dirs
 
 all:
-	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) .depend hax.fst.config.json verify
+	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) $(DEPEND) hax.fst.config.json verify
 
 all-keep-going:
-	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) --keep-going .depend hax.fst.config.json verify
+	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) --keep-going $(DEPEND) hax.fst.config.json verify
 
 HAX_AUTO_EXTRACT ?= yes
 HAX_EXTRACT_DIR ?= .
@@ -150,7 +150,7 @@ HAX_EXTRACT_COMMAND ?= cargo hax into fstar
 
 # Goals that describe or tear down the build rather than run it. They must
 # not extract, and they do not need `.depend`.
-NO_BUILD_GOALS := clean help h describe include-dirs
+NO_BUILD_GOALS := clean help h describe include-dirs FINDLIBS.sh %.fst-in %.fsti-in
 BUILDING := $(if $(filter-out $(NO_BUILD_GOALS),$(or $(MAKECMDGOALS),all)),yes)
 
 # Run from the directory the recorded command was given in, so that the
@@ -182,6 +182,9 @@ ADMIT_MODULES ?=
 
 ADMIT_MODULE_FLAGS ?= --admit_smt_queries true
 
+# `$1` as one single-quoted shell word.
+hax_shell_quote = '$(subst ','\'',$1)'
+
 # A `.checked` file does not record *how* it was checked, so one produced
 # under a soundness-weakening flag is indistinguishable from a verified one
 # and a later full run would trust it. Keying the cache directory on every
@@ -190,7 +193,8 @@ ADMIT_MODULE_FLAGS ?= --admit_smt_queries true
 CACHE_KEY := $(strip $(OTHERFLAGS) $(FSTAR_FLAGS_EXTRA) \
   $(if $(strip $(ADMIT_MODULES)),$(ADMIT_MODULES) $(ADMIT_MODULE_FLAGS)))
 CACHE_DIR ?= ${GIT_ROOT_DIR}.fstar-cache/checked
-MODE_CACHE_DIR := $(CACHE_DIR)$(if $(CACHE_KEY),/config-$(shell printf '%s' '$(CACHE_KEY)' | cksum | cut -d' ' -f1))
+CONFIG := $(if $(CACHE_KEY),config-$(shell printf '%s' $(call hax_shell_quote,$(CACHE_KEY)) | cksum | cut -d' ' -f1))
+MODE_CACHE_DIR := $(CACHE_DIR)$(if $(CONFIG),/$(CONFIG))
 
 # Under `--lax` F* writes `<module>.checked.lax`, so the targets have to
 # follow the mode, and `.depend` has to be generated in it too.
@@ -200,14 +204,19 @@ CHECKED := $(if $(findstring --lax,$(OTHERFLAGS) $(FSTAR_FLAGS_EXTRA)),.checked.
 # them changes, as it may then import something else.
 LIB_SOURCES := $(wildcard $(foreach dir,$(FSTAR_INCLUDE_DIRS),$(dir)/*.fst $(dir)/*.fsti))
 
+# `.depend` names its targets under `MODE_CACHE_DIR`, so each configuration
+# gets its own, and switching between them does not regenerate either.
+DEPEND := .depend$(if $(CONFIG),-$(CONFIG))
+
 # Records the roots, the flags, the include path and the cache directory
-# `.depend` was generated with, so any of them changing regenerates it:
-# `.depend` names its targets under `MODE_CACHE_DIR`, and a target it does
-# not name has no prerequisite to build from.
-ROOTS_STAMP := .hax-roots
+# `DEPEND` was generated with, so any of them changing regenerates it: a
+# target it does not name has no prerequisite to build from.
+ROOTS_STAMP := .hax-roots$(if $(CONFIG),-$(CONFIG))
 _ := $(shell { printf '%s\n' $(ROOTS) | LC_ALL=C sort; \
                printf 'flags:%s\ninclude:%s\ncache:%s\n' \
-                 '$(OTHERFLAGS) $(FSTAR_FLAGS_EXTRA)' '$(FSTAR_INCLUDE_DIRS)' '$(MODE_CACHE_DIR)'; } \
+                 $(call hax_shell_quote,$(OTHERFLAGS) $(FSTAR_FLAGS_EXTRA)) \
+                 $(call hax_shell_quote,$(FSTAR_INCLUDE_DIRS)) \
+                 $(call hax_shell_quote,$(MODE_CACHE_DIR)); } \
           > $(ROOTS_STAMP).tmp; \
         cmp -s $(ROOTS_STAMP).tmp $(ROOTS_STAMP) || mv -f $(ROOTS_STAMP).tmp $(ROOTS_STAMP); \
         rm -f $(ROOTS_STAMP).tmp)
@@ -227,13 +236,13 @@ FSTAR_FLAGS = \
 
 FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)
 
-.depend: $(ROOTS) $(ROOTS_STAMP) $(LIB_SOURCES) | $(MODE_CACHE_DIR)
+$(DEPEND): $(ROOTS) $(ROOTS_STAMP) $(LIB_SOURCES) | $(MODE_CACHE_DIR)
 	$(Q)trap 'rm -f $@.tmp' EXIT; \
 	  $(FSTAR) $(OTHERFLAGS) --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@.tmp \
 	    && mv -f $@.tmp $@
 
 ifeq "$(BUILDING)" "yes"
-include .depend
+include $(DEPEND)
 endif
 
 $(MODE_CACHE_DIR):
@@ -281,24 +290,24 @@ describe:
 	  printf "${ANSI_COLOR_GRAY}$$(dirname -- "$$root")/${ANSI_COLOR_RESET}%s${ANSI_COLOR_GRAY}.${ANSI_COLOR_TONE}%s${ANSI_COLOR_RESET}%b\n" "$$noext" "$$ext" $$([[ "${ADMIT_MODULES}" =~ (^| )$$root($$| ) ]] && echo '${ANSI_COLOR_RED}\t[ADMITTED]${ANSI_COLOR_RESET}'); \
 	done
 	@printf '\n${ANSI_COLOR_BBLUE}Environment:${ANSI_COLOR_RESET}\n'
-	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_BIN${ANSI_COLOR_RESET} = %s\n' '${FSTAR_BIN}'
-	@printf ' - ${ANSI_COLOR_BLUE}GIT_ROOT_DIR${ANSI_COLOR_RESET} = %s\n' '${GIT_ROOT_DIR}'
-	@printf ' - ${ANSI_COLOR_BLUE}CACHE_DIR${ANSI_COLOR_RESET} = %s\n' '${CACHE_DIR}'
-	@printf ' - ${ANSI_COLOR_BLUE}MODE_CACHE_DIR${ANSI_COLOR_RESET} = %s\n' '${MODE_CACHE_DIR}'
-	@printf ' - ${ANSI_COLOR_BLUE}ADMIT_MODULE_FLAGS${ANSI_COLOR_RESET} = %s\n' '${ADMIT_MODULE_FLAGS}'
-	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_INCLUDE_DIRS_EXTRA${ANSI_COLOR_RESET} = %s\n' '${FSTAR_INCLUDE_DIRS_EXTRA}'
-	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_FLAGS_EXTRA${ANSI_COLOR_RESET} = %s\n' '${FSTAR_FLAGS_EXTRA}'
+	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_BIN${ANSI_COLOR_RESET} = %s\n' $(call hax_shell_quote,$(FSTAR_BIN))
+	@printf ' - ${ANSI_COLOR_BLUE}GIT_ROOT_DIR${ANSI_COLOR_RESET} = %s\n' $(call hax_shell_quote,$(GIT_ROOT_DIR))
+	@printf ' - ${ANSI_COLOR_BLUE}CACHE_DIR${ANSI_COLOR_RESET} = %s\n' $(call hax_shell_quote,$(CACHE_DIR))
+	@printf ' - ${ANSI_COLOR_BLUE}MODE_CACHE_DIR${ANSI_COLOR_RESET} = %s\n' $(call hax_shell_quote,$(MODE_CACHE_DIR))
+	@printf ' - ${ANSI_COLOR_BLUE}ADMIT_MODULE_FLAGS${ANSI_COLOR_RESET} = %s\n' $(call hax_shell_quote,$(ADMIT_MODULE_FLAGS))
+	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_INCLUDE_DIRS_EXTRA${ANSI_COLOR_RESET} = %s\n' $(call hax_shell_quote,$(FSTAR_INCLUDE_DIRS_EXTRA))
+	@printf ' - ${ANSI_COLOR_BLUE}FSTAR_FLAGS_EXTRA${ANSI_COLOR_RESET} = %s\n' $(call hax_shell_quote,$(FSTAR_FLAGS_EXTRA))
 
 help: ;@bash -c "$$HELPMESSAGE"
 h: ;@bash -c "$$HELPMESSAGE"
 
 HEADER = $(Q)printf '${ANSI_COLOR_BBLUE}[CHECK] %s ${ANSI_COLOR_RESET}\n' "$(basename $(notdir $@))"
 
-run/%: | .depend $(MODE_CACHE_DIR)
+run/%: | $(DEPEND) $(MODE_CACHE_DIR)
 	${HEADER}
 	$(Q)$(FSTAR) $(OTHERFLAGS) $(@:run/%=%)
 
-check/%: | .depend $(MODE_CACHE_DIR)
+check/%: | $(DEPEND) $(MODE_CACHE_DIR)
 	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) "${MODE_CACHE_DIR}/$(@:check/%=%)$(CHECKED)"
 
 VERIFIED_CHECKED = $(addsuffix $(CHECKED), $(addprefix $(MODE_CACHE_DIR)/,$(ROOTS)))
@@ -321,7 +330,7 @@ $(ADMIT_CHECKED):
 # F* leaves a `.checked` file that is still valid untouched, which would
 # leave it older than its source forever. `-c`: never create one F* did not
 # write.
-$(MODE_CACHE_DIR)/%$(CHECKED): | .depend $(MODE_CACHE_DIR)
+$(MODE_CACHE_DIR)/%$(CHECKED): | $(DEPEND) $(MODE_CACHE_DIR)
 	${HEADER}
 	$(Q)$(REQUIRE_SOURCE)$(FSTAR) $(OTHERFLAGS) $< || { \
 	  echo "" ; \
@@ -337,7 +346,7 @@ verify: $(VERIFIED_CHECKED) $(ADMIT_CHECKED)
 %.fsti-in:
 	$(info $(FSTAR_FLAGS) $(OTHERFLAGS))
 
-hax.fst.config.json: .depend
+hax.fst.config.json: $(DEPEND)
 	$(Q)echo "$(FSTAR_INCLUDE_DIRS)" | jq --arg fstar "$(FSTAR_BIN)" -R 'split(" ") | {fstar_exe: $$fstar | gsub("^\\s+|\\s+$$";""), include_dirs: .}' > $@
 vscode:
 	$(Q)$(MAKE) -f $(PATH_TO_CHILD_MAKEFILE) hax.fst.config.json
@@ -346,4 +355,4 @@ vscode:
 # the hand-written F* files that live next to them.
 clean:
 	$(Q)rm -f $(addprefix $(MODE_CACHE_DIR)/,$(addsuffix $(CHECKED),$(ROOTS)))
-	$(Q)rm -f .depend .depend.tmp $(ROOTS_STAMP) hax.fst.config.json dep.graph
+	$(Q)rm -f .depend .depend.tmp .depend-config-* .hax-roots .hax-roots-config-* hax.fst.config.json dep.graph

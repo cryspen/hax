@@ -3,7 +3,7 @@
 # Generated files under snapshots
 snapshots/**/Makefile
 snapshots/**/Makefile.hax
-snapshots/**/.hax-roots
+snapshots/**/.hax-roots*
 snapshots/**/dep.graph
 snapshots/**/lakefile.toml
 snapshots/**/lean-toolchain

@@ -468,6 +468,17 @@ fn feature_args(entry: &ScenarioEntry) -> Vec<String> {
     args
 }
 
+/// The `cargo hax extract` command that runs only `scenario`, the way this
+/// invocation ran it: a name alone may select a scenario of another package.
+fn extract_command(scenario: &ResolvedScenario, hermeticity: &CargoHermeticityOptions) -> String {
+    let mut args = vec!["-p".to_string(), scenario.scoped.package.clone()];
+    args.extend(hermeticity.flags());
+    args.push(scenario.name().to_string());
+    let joined = shlex::try_join(args.iter().map(String::as_str))
+        .expect("package and scenario names hold no NUL byte");
+    format!("cargo hax extract {joined}")
+}
+
 /// Build the complete `Options` value a scenario run re-enters `cargo-hax`
 /// with: the same value `cargo hax into` would have parsed, so the run
 /// takes exactly the same code paths.
@@ -508,7 +519,7 @@ fn scenario_options(
                 line_width: entry.line_width.unwrap_or(defaults.line_width),
                 scenario: FStarScenarioOptions {
                     project_files: entry.project_files,
-                    extract_command: Some(format!("cargo hax extract {}", scenario.name())),
+                    extract_command: Some(extract_command(scenario, hermeticity)),
                 },
             })
         }
@@ -830,7 +841,7 @@ mod tests {
         assert_eq!(fstar.scenario.project_files, Some(false));
         assert_eq!(
             fstar.scenario.extract_command.as_deref(),
-            Some("cargo hax extract demo-scenario")
+            Some("cargo hax extract -p fixture --locked demo-scenario")
         );
         assert_eq!(fstar.z3rlimit, 11);
         assert_eq!(fstar.fuel, 22);

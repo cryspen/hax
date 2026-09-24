@@ -10,7 +10,8 @@ result
 .DS_Store
 .depend
 .depend.tmp
-.hax-roots
+.depend-config-*
+.hax-roots*
 dep.graph
 .cache
 .fstar-cache

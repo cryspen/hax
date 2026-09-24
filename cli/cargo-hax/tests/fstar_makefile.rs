@@ -210,7 +210,14 @@ fn clean_and_the_describing_goals_neither_extract_nor_delete_sources() {
         ("HAX_AUTO_EXTRACT", "yes"),
         ("HAX_EXTRACT_COMMAND", "touch extracted.marker"),
     ];
-    for goal in ["clean", "help", "describe", "include-dirs"] {
+    for goal in [
+        "clean",
+        "help",
+        "describe",
+        "include-dirs",
+        "Spec.fsti-in",
+        "FINDLIBS.sh",
+    ] {
         let (out, ok) = project.run(&[goal], &extract);
         assert!(ok, "`make {goal}` failed:\n{out}");
         assert!(
@@ -349,6 +356,56 @@ fn extra_fstar_flags_do_not_share_the_verified_cache() {
         "log: {}",
         project.fstar_log()
     );
+}
+
+/// Flags that differ only in their quoting are different flags to F*.
+#[test]
+fn quoted_flags_get_their_own_cache_directory() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    for flags in ["--x 'a b'", "--x ab", "--x 'a b'"] {
+        let (out, ok) = project.run(&["verify"], &[("FSTAR_FLAGS_EXTRA", flags)]);
+        assert!(ok, "{out}");
+    }
+    assert_eq!(
+        project.checks_of("A.fst"),
+        2,
+        "log: {}",
+        project.fstar_log()
+    );
+    assert_eq!(project.dep_runs(), 2, "log: {}", project.fstar_log());
+}
+
+/// Each configuration keeps its own `.depend`, so alternating between two
+/// computes each graph once.
+#[test]
+fn switching_configurations_does_not_regenerate_depend() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    for _ in 0..2 {
+        for flags in ["", "--lax"] {
+            let (out, ok) = project.run(&["verify", &format!("OTHERFLAGS={flags}")], &[]);
+            assert!(ok, "{out}");
+        }
+    }
+    assert_eq!(project.dep_runs(), 2, "log: {}", project.fstar_log());
+}
+
+/// The Emacs hook only asks for the flags: no dependency graph for that.
+#[test]
+fn the_editor_goal_prints_the_flags_without_computing_dependencies() {
+    if !have("make") {
+        return;
+    }
+    let project = Project::new(FSTAR_STUB_RECORDING);
+    let (out, ok) = project.run(&["--quiet", "A.fst-in"], &[]);
+    assert!(ok, "{out}");
+    assert!(out.contains("--cache_dir"), "{out}");
+    assert_eq!(project.dep_runs(), 0, "log: {}", project.fstar_log());
 }
 
 /// F* keeps a `.checked` file that is still valid, so make must bring it up

@@ -39,7 +39,7 @@ pub fn write_always(path: &Path, contents: &str, message_format: MessageFormat) 
         .report(message_format, None);
         return false;
     }
-    match fs::write(path, contents) {
+    match write_by_rename(path, contents) {
         Ok(()) => {
             HaxMessage::ProducedFile {
                 path: path.to_path_buf(),
@@ -56,6 +56,20 @@ pub fn write_always(path: &Path, contents: &str, message_format: MessageFormat) 
             true
         }
     }
+}
+
+/// Replaces `path` in one step: a reader that already opened it, such as
+/// `make` parsing a `Makefile.hax` whose recipe runs hax, keeps reading the
+/// old contents rather than a mix of both.
+fn write_by_rename(path: &Path, contents: &str) -> std::io::Result<()> {
+    let mut tmp = path.as_os_str().to_owned();
+    tmp.push(".hax-tmp");
+    let tmp = std::path::PathBuf::from(tmp);
+    fs::write(&tmp, contents)
+        .and_then(|()| fs::rename(&tmp, path))
+        .inspect_err(|_| {
+            let _ = fs::remove_file(&tmp);
+        })
 }
 
 /// Resolve the `project-files` key for the crate being processed: the
@@ -96,6 +110,21 @@ mod tests {
             selects_packages: false,
             package_specs: Vec::new(),
         }
+    }
+
+    #[test]
+    fn a_reader_of_the_old_file_keeps_seeing_the_old_contents() {
+        use std::io::Read;
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("Makefile.hax");
+        fs::write(&path, "old").unwrap();
+        let mut reader = fs::File::open(&path).unwrap();
+        assert!(!write_always(&path, "new contents", MessageFormat::Human));
+        let mut read = String::new();
+        reader.read_to_string(&mut read).unwrap();
+        assert_eq!(read, "old");
+        assert_eq!(fs::read_to_string(&path).unwrap(), "new contents");
+        assert_eq!(fs::read_dir(dir.path()).unwrap().count(), 1);
     }
 
     #[test]

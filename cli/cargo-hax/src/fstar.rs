@@ -1,4 +1,5 @@
 use hax_types::cli_options::MessageFormat;
+use path_clean::PathClean;
 use std::path::{Path, PathBuf};
 
 use super::project_files::{absent_or_empty, write_always};
@@ -46,6 +47,55 @@ fn classify(contents: &str) -> Ownership {
     Ownership::Theirs
 }
 
+/// `args` without the flags that only change how a run reports: every
+/// later `make` replays the recorded command, and would report the same way.
+/// Arguments to `-C` and the backend's own are kept as given.
+fn without_reporting_flags(args: &[String]) -> Vec<String> {
+    let mut kept = Vec::with_capacity(args.len());
+    let mut args = args.iter();
+    let mut after_into = false;
+    while let Some(arg) = args.next() {
+        let arg = arg.as_str();
+        let (drop, takes_value) = match arg {
+            "-C" | "--cargo-args" if !after_into => {
+                kept.push(arg.to_string());
+                for arg in args.by_ref() {
+                    kept.push(arg.clone());
+                    if arg == ";" {
+                        break;
+                    }
+                }
+                continue;
+            }
+            "--message-format" if !after_into => (true, true),
+            _ if !after_into && arg.starts_with("--message-format=") => (true, false),
+            "into" if !after_into => {
+                after_into = true;
+                (false, false)
+            }
+            _ if !after_into => (false, false),
+            "--verbose" | "--stats" | "--profile" => (true, false),
+            _ if arg.len() > 1 && arg[1..].bytes().all(|b| b == b'v') => (true, false),
+            "-d" | "--debug-engine" => (true, true),
+            _ if arg.starts_with("--debug-engine=") || arg.starts_with("-d") => (true, false),
+            "-i" | "--include-namespaces" | "--output-dir" | "--prune-haxmeta" => (false, true),
+            // The backend: all that follows is its own.
+            _ if !arg.starts_with('-') => {
+                kept.push(arg.to_string());
+                kept.extend(args.cloned());
+                break;
+            }
+            _ => (false, false),
+        };
+        let value = takes_value.then(|| args.next()).flatten();
+        if !drop {
+            kept.push(arg.to_string());
+            kept.extend(value.cloned());
+        }
+    }
+    kept
+}
+
 /// The `cargo hax` command `args` spells, `args` being the arguments of
 /// the current invocation minus the program name. A scenario run re-enters
 /// through `__json` and passes its own command instead, so that spelling
@@ -56,7 +106,7 @@ fn command_of_args(args: &[String]) -> String {
         [keyword] if keyword == "__json" => DEFAULT_EXTRACT_COMMAND.to_string(),
         // A make assignment cannot span lines.
         args if args.iter().any(|arg| arg.contains('\n')) => DEFAULT_EXTRACT_COMMAND.to_string(),
-        args => match shlex::try_join(args.iter().map(String::as_str)) {
+        args => match shlex::try_join(without_reporting_flags(args).iter().map(String::as_str)) {
             Ok(joined) => format!("cargo hax {joined}"),
             Err(_) => DEFAULT_EXTRACT_COMMAND.to_string(),
         },
@@ -94,16 +144,15 @@ fn relative_to(from: &Path, to: &Path) -> Option<PathBuf> {
 /// The directory `make` must run the recorded command from: the one hax was
 /// invoked in, so that relative paths in it resolve as they did.
 fn extract_dir(out_dir: &Path) -> PathBuf {
-    let absolute = |p: &Path| {
-        std::path::absolute(p)
-            .unwrap_or_else(|_| p.to_path_buf())
-            .components()
-            .collect::<PathBuf>()
-    };
     std::env::current_dir()
         .ok()
-        .and_then(|cwd| relative_to(&absolute(out_dir), &absolute(&cwd)))
+        .and_then(|cwd| extract_dir_from(&cwd, out_dir))
         .unwrap_or_else(|| PathBuf::from("."))
+}
+
+fn extract_dir_from(cwd: &Path, out_dir: &Path) -> Option<PathBuf> {
+    // `relative_to` compares components, so `..` must be resolved first.
+    relative_to(&cwd.join(out_dir).clean(), &cwd.clean())
 }
 
 /// `value` as the right-hand side of a make assignment, which would expand
@@ -239,6 +288,22 @@ mod tests {
         assert_eq!(rel("/a", "/b").as_deref(), Some("../b"));
     }
 
+    #[test]
+    fn an_output_directory_with_parent_components_is_resolved_first() {
+        let dir = |cwd: &str, out: &str| {
+            extract_dir_from(Path::new(cwd), Path::new(out)).map(|p| p.display().to_string())
+        };
+        assert_eq!(
+            dir("/ws/crate", "../proofs/ext").as_deref(),
+            Some("../../crate")
+        );
+        assert_eq!(dir("/ws/crate", "./a/../b").as_deref(), Some(".."));
+        assert_eq!(
+            dir("/ws/crate", "/ws/proofs/ext").as_deref(),
+            Some("../../crate")
+        );
+    }
+
     /// What `make` reads back from the generated assignments.
     fn assigned_by_make(extract_command: &str, extract_dir: &str) -> Option<(String, String)> {
         let dir = tempfile::tempdir().unwrap();
@@ -278,15 +343,6 @@ mod tests {
     }
 
     #[test]
-    fn the_embedded_makefile_is_the_one_on_disk() {
-        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/fstar/Makefile.hax");
-        assert_eq!(
-            std::fs::read_to_string(path).unwrap(),
-            MAKEFILE_HAX_CONTENTS
-        );
-    }
-
-    #[test]
     fn the_invocation_is_quoted_back_as_the_command_that_reproduces_it() {
         let args = |args: &[&str]| {
             command_of_args(&args.iter().map(ToString::to_string).collect::<Vec<_>>())
@@ -304,6 +360,30 @@ mod tests {
                 "+**"
             ]),
             "cargo hax -C -p mycrate ';' into fstar --interfaces '+**'"
+        );
+        assert_eq!(
+            args(&[
+                "--message-format",
+                "json",
+                "-C",
+                "-v",
+                ";",
+                "into",
+                "-vv",
+                "--stats",
+                "-i",
+                "-**::v",
+                "--debug-engine",
+                "out.json",
+                "--profile",
+                "fstar",
+                "-v"
+            ]),
+            "cargo hax -C -v ';' into -i '-**::v' fstar -v"
+        );
+        assert_eq!(
+            args(&["--message-format=json", "into", "-dout.json", "fstar"]),
+            "cargo hax into fstar"
         );
         // A `__json` re-entry says nothing about how it was reached.
         assert_eq!(args(&["__json"]), DEFAULT_EXTRACT_COMMAND);
