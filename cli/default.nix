@@ -1,5 +1,5 @@
-{ craneLib, stdenv, makeWrapper, lib, rustc, rustc-docs, gcc, hax-engine
-, doCheck ? true, zlib, just, libiconv }:
+{ craneLib, stdenv, makeWrapper, lib, rustc, rustc-docs, gcc, hax-engine, zlib
+, just, libiconv }:
 let
   pname = "hax";
   is-webapp-static-asset = path:
@@ -24,18 +24,12 @@ let
           || is-crate-readme path))
         || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
-    inherit buildInputs doCheck;
+    inherit buildInputs;
+    # Workspace tests run in the `Test Workspace` CI job instead.
+    doCheck = false;
     cargoExtraArgs = "--locked";
     doNotRemoveReferencesToRustToolchain = true;
-  } // (if doCheck then {
-    # [cargo test] builds independent workspaces. Each time another
-    # workspace is added, it's corresponding lockfile should be added
-    # in the [cargoLockList] list below.
-    cargoVendorDir = craneLib.vendorMultipleCargoDeps {
-      cargoLockList = [ ../Cargo.lock ../tests/Cargo.lock ];
-    };
-  } else
-    { });
+  };
   # hax dependencies (without hax itself)
   cargoArtifacts = craneLib.buildDepsOnly (commonArgs // { pname = pname; });
   # `cargo-hax` alone, matching a plain `cargo install cargo-hax`: built in its
@@ -118,6 +112,12 @@ let
     inherit cargoArtifacts;
     pname = "hax-tests";
     doCheck = true;
+    # [cargo test] builds independent workspaces. Each time another
+    # workspace is added, it's corresponding lockfile should be added
+    # in the [cargoLockList] list below.
+    cargoVendorDir = craneLib.vendorMultipleCargoDeps {
+      cargoLockList = [ ../Cargo.lock ../tests/Cargo.lock ];
+    };
     CI = "true";
     cargoBuildCommand = "true";
     checkPhaseCargoCommand = ''
