@@ -14,8 +14,9 @@ let
     src = lib.cleanSourceWith {
       src = craneLib.path ./..;
       filter = path: type:
-        (builtins.isNull
-        (builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path)
+        # Trees no workspace member builds against, kept out of the source hash.
+        (builtins.isNull (builtins.match
+          ".*/(tests|examples|docs|proof-libs|hax-lib/core-models)/.*" path)
         && (builtins.isNull (builtins.match ".*[.](md|svg)" path)
           || is-crate-readme path)
         && (craneLib.filterCargoSources path type
