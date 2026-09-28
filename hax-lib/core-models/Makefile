@@ -372,14 +372,14 @@ endif
 
 # `--test-workspace` because a model's mutants are usually killed by *another*
 # crate's tests: with cargo-mutants' default (only the mutated package's own
-# tests) 43 of `rust_primitives`' mutants survive spuriously.
+# tests) many of `rust_primitives`' mutants survive spuriously.
 mutants:
 	RUSTFLAGS="$(MUTANTS_RUSTFLAGS)" \
 	    cargo mutants $(MUTANTS_MODE) --test-workspace true $(MUTANTS_FLAGS)
 
 # The same sweep under the other cfg. Model variants gated on
 # cfg(hax_backend_fstar) are not built by the default sweep, so their mutants are
-# never compiled and every one of them looks like a survivor (62 of alloc's 79).
+# never compiled and every one of them looks like a survivor.
 mutants-fstar:
 	$(MAKE) mutants MUTANTS_RUSTFLAGS="--cfg hax_backend_fstar" \
 	    MUTANTS_FLAGS="--output mutants-fstar $(MUTANTS_FLAGS)"
