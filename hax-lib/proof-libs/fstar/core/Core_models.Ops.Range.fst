@@ -65,6 +65,10 @@ include Core_models.Bundle {f_end_bound as f_end_bound}
 
 include Core_models.Bundle {bounds_contain as bounds_contain}
 
+include Core_models.Bundle {bound_le as bound_le}
+
+include Core_models.Bundle {bound_lt as bound_lt}
+
 include Core_models.Bundle {impl__from__range as impl}
 
 include Core_models.Bundle {impl_1__from__range as impl_1}

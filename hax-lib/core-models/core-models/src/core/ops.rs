@@ -405,37 +405,47 @@ pub mod range {
             bounds_contain(self.start_bound(), self.end_bound(), item)
         }
     }
-    // `partial_cmp` rather than `<=`: the F* `PartialOrd` has no `le`.
     fn bounds_contain<T, U: ?Sized>(start: Bound<&T>, end: Bound<&T>, item: &U) -> bool
     where
         T: PartialOrd<U>,
         U: PartialOrd<T>,
     {
         let after_start = match start {
-            Bound::Included(start) => matches!(
-                start.partial_cmp(item),
-                Option::Some(Ordering::Less | Ordering::Equal)
-            ),
-            Bound::Excluded(start) => {
-                matches!(start.partial_cmp(item), Option::Some(Ordering::Less))
-            }
+            Bound::Included(start) => bound_le(start, item),
+            Bound::Excluded(start) => bound_lt(start, item),
             Bound::Unbounded => true,
         };
         // Like std, `end` is not compared once `start` rules `item` out.
         if after_start {
             match end {
-                Bound::Included(end) => matches!(
-                    item.partial_cmp(end),
-                    Option::Some(Ordering::Less | Ordering::Equal)
-                ),
-                Bound::Excluded(end) => {
-                    matches!(item.partial_cmp(end), Option::Some(Ordering::Less))
-                }
+                Bound::Included(end) => bound_le(item, end),
+                Bound::Excluded(end) => bound_lt(item, end),
                 Bound::Unbounded => true,
             }
         } else {
             false
         }
+    }
+    // std compares with `<=` and `<`, so a type's own `le` and `lt` are used.
+    #[cfg(not(hax_backend_fstar))]
+    fn bound_le<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
+        a.le(b)
+    }
+    #[cfg(not(hax_backend_fstar))]
+    fn bound_lt<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
+        a.lt(b)
+    }
+    // F* has no `le`/`lt` between two different types: these ignore overrides.
+    #[cfg(hax_backend_fstar)]
+    fn bound_le<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
+        matches!(
+            a.partial_cmp(b),
+            Option::Some(Ordering::Less | Ordering::Equal)
+        )
+    }
+    #[cfg(hax_backend_fstar)]
+    fn bound_lt<A: ?Sized + PartialOrd<B>, B: ?Sized>(a: &A, b: &B) -> bool {
+        matches!(a.partial_cmp(b), Option::Some(Ordering::Less))
     }
     impl<T> RangeBounds<T> for RangeFull {
         fn start_bound(&self) -> Bound<&T> {
@@ -661,6 +671,59 @@ mod tests {
         #[cfg(not(hax_backend_fstar))]
         assert!(!crate::ops::range::RangeBounds::contains(&model, &item));
         assert!(!RangeBoundsDefaults::contains(&model, &item));
+    }
+
+    // F* compares with `partial_cmp`, having no `le`/`lt` to override.
+    #[cfg(not(hax_backend_fstar))]
+    mod contains_uses_le_and_lt {
+        /// Incomparable, yet `le` holds and `lt` does not: std goes by the latter.
+        struct Skewed;
+        impl std::cmp::PartialEq for Skewed {
+            fn eq(&self, _: &Self) -> bool {
+                false
+            }
+        }
+        impl std::cmp::PartialOrd for Skewed {
+            fn partial_cmp(&self, _: &Self) -> Option<std::cmp::Ordering> {
+                None
+            }
+            fn le(&self, _: &Self) -> bool {
+                true
+            }
+            fn lt(&self, _: &Self) -> bool {
+                false
+            }
+        }
+        impl crate::cmp::PartialEq<Skewed> for Skewed {
+            fn eq(&self, _: &Self) -> bool {
+                false
+            }
+        }
+        impl crate::cmp::PartialOrd<Skewed> for Skewed {
+            fn partial_cmp(&self, _: &Self) -> crate::option::Option<crate::cmp::Ordering> {
+                crate::option::Option::None
+            }
+            fn le(&self, _: &Self) -> bool {
+                true
+            }
+            fn lt(&self, _: &Self) -> bool {
+                false
+            }
+        }
+
+        #[test]
+        fn test_contains_uses_le_and_lt() {
+            use crate::ops::range::{Bound, RangeBounds, RangeInclusive};
+            assert!(Skewed.partial_cmp(&Skewed).is_none());
+            assert!(Skewed != Skewed);
+            assert!(crate::cmp::PartialOrd::partial_cmp(&Skewed, &Skewed).is_none());
+            assert!(!crate::cmp::PartialEq::eq(&Skewed, &Skewed));
+            assert!((Skewed..=Skewed).contains(&Skewed));
+            assert!(RangeInclusive::new(Skewed, Skewed).contains(&Skewed));
+            assert!(!(Skewed..Skewed).contains(&Skewed));
+            let model = (Bound::Included(Skewed), Bound::Excluded(Skewed));
+            assert!(!RangeBounds::contains(&model, &Skewed));
+        }
     }
 
     // `int_trait_impls!` covers u8..u64. The `requires` rules out wrapping, so

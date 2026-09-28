@@ -8169,6 +8169,26 @@ let impl_23__from__range: t_Iterator (t_Range isize) =
       self, hax_temp_output <: (t_Range isize & t_Option isize)
   }
 
+let bound_le
+      (#v_A #v_B: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_A v_B)
+      (a: v_A)
+      (b: v_B)
+    : bool =
+  match f_partial_cmp #v_A #v_B #FStar.Tactics.Typeclasses.solve a b <: t_Option t_Ordering with
+  | Option_Some (Ordering_Less ) | Option_Some (Ordering_Equal ) -> true
+  | _ -> false
+
+let bound_lt
+      (#v_A #v_B: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_A v_B)
+      (a: v_A)
+      (b: v_B)
+    : bool =
+  match f_partial_cmp #v_A #v_B #FStar.Tactics.Typeclasses.solve a b <: t_Option t_Ordering with
+  | Option_Some (Ordering_Less ) -> true
+  | _ -> false
+
 let bounds_contain
       (#v_T #v_U: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_U)
@@ -8178,35 +8198,15 @@ let bounds_contain
     : bool =
   let after_start:bool =
     match start <: t_Bound v_T with
-    | Bound_Included start ->
-      (match
-          f_partial_cmp #v_T #v_U #FStar.Tactics.Typeclasses.solve start item <: t_Option t_Ordering
-        with
-        | Option_Some (Ordering_Less ) | Option_Some (Ordering_Equal ) -> true
-        | _ -> false)
-    | Bound_Excluded start ->
-      (match
-          f_partial_cmp #v_T #v_U #FStar.Tactics.Typeclasses.solve start item <: t_Option t_Ordering
-        with
-        | Option_Some (Ordering_Less ) -> true
-        | _ -> false)
+    | Bound_Included start -> bound_le #v_T #v_U start item
+    | Bound_Excluded start -> bound_lt #v_T #v_U start item
     | Bound_Unbounded  -> true
   in
   if after_start
   then
     match v_end <: t_Bound v_T with
-    | Bound_Included v_end ->
-      (match
-          f_partial_cmp #v_U #v_T #FStar.Tactics.Typeclasses.solve item v_end <: t_Option t_Ordering
-        with
-        | Option_Some (Ordering_Less ) | Option_Some (Ordering_Equal ) -> true
-        | _ -> false)
-    | Bound_Excluded v_end ->
-      (match
-          f_partial_cmp #v_U #v_T #FStar.Tactics.Typeclasses.solve item v_end <: t_Option t_Ordering
-        with
-        | Option_Some (Ordering_Less ) -> true
-        | _ -> false)
+    | Bound_Included v_end -> bound_le #v_U #v_T item v_end
+    | Bound_Excluded v_end -> bound_lt #v_U #v_T item v_end
     | Bound_Unbounded  -> true
   else false
 
