@@ -1,0 +1,97 @@
+name: Use a local hax-lib
+description: >-
+  Point a project's dependencies on hax's library crates at a local hax
+  checkout, and check that the project's resolve graph really points there.
+
+inputs:
+  project:
+    description: Path to the project checkout to repoint.
+    required: true
+  hax:
+    description: Path to the hax checkout to depend on.
+    default: .
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        PROJECT: ${{ inputs.project }}
+        HAX: ${{ inputs.hax }}
+      run: |
+        set -euo pipefail
+        project=$(cd "$PROJECT" && pwd)
+        hax=$(cd "$HAX" && pwd)
+
+        crates=$(cargo metadata --format-version 1 --no-deps \
+            --manifest-path "$hax/Cargo.toml" \
+          | jq -r '.packages[] | select(.name | startswith("hax-"))
+                   | "\(.name) \(.manifest_path | rtrimstr("/Cargo.toml"))"')
+
+        cd "$project"
+
+        edges=$(cargo metadata --format-version 1 --no-deps | jq -r '
+          .packages[] as $p | $p.dependencies[]
+          | select(.name | startswith("hax-"))
+          | [$p.name, .name, (.kind // "normal"), (.target // "-"),
+             (.uses_default_features | tostring), (.features | join(","))]
+          | @tsv' | sort -u)
+
+        if [ -z "$edges" ]; then
+          echo "::error::no dependency on a hax crate anywhere in $project"
+          exit 1
+        fi
+
+        # The flags naming the table an edge lives in, shared by `cargo remove`
+        # and `cargo add`.
+        table() {
+          flags=()
+          case "$1" in
+            dev) flags+=(--dev) ;;
+            build) flags+=(--build) ;;
+          esac
+          [ "$2" = "-" ] || flags+=(--target "$2")
+        }
+
+        # Cargo rejects a manifest that gives one crate two sources, so a crate
+        # a member declares in several tables has to leave all of them first.
+        duplicates=$(cut -f1,2 <<<"$edges" | uniq -d)
+        while IFS=$'\t' read -r member dep kind target _ _; do
+          grep -qxF "$(printf '%s\t%s' "$member" "$dep")" <<<"$duplicates" || continue
+          table "$kind" "$target"
+          cargo remove "$dep" -p "$member" ${flags[@]+"${flags[@]}"} --quiet
+        done <<<"$edges"
+
+        while IFS=$'\t' read -r member dep kind target defaults features; do
+          path=$(awk -v d="$dep" '$1 == d {print $2}' <<<"$crates")
+          if [ -z "$path" ]; then
+            echo "::error::$member depends on $dep, which $hax does not provide"
+            exit 1
+          fi
+          table "$kind" "$target"
+          # Rewriting the edge replaces whatever it inherited from the
+          # workspace, so its feature selection has to be restated here.
+          [ "$defaults" = true ] || flags+=(--no-default-features)
+          [ -z "$features" ] || flags+=(--features "$features")
+          label="$kind"
+          [ "$target" = "-" ] || label="$kind, $target"
+          cargo add "$dep" --path "$path" -p "$member" \
+            ${flags[@]+"${flags[@]}"} --quiet
+          echo "$member: $dep ($label) -> $path"
+        done <<<"$edges"
+
+        # Not just the members' own edges: a hax crate reached through a
+        # dependency that is not itself a hax crate lands in the graph too, and
+        # a project that then asks `cargo metadata` where hax-lib is gets two
+        # answers.
+        foreign=$(cargo metadata --format-version 1 | jq -r '
+          .packages[] | select(.name | startswith("hax-"))
+          | select(.source != null)
+          | "  \(.name) \(.version) from \(.source)"' | sort -u)
+
+        if [ -n "$foreign" ]; then
+          echo "::error::$project resolves hax crates outside $hax:"
+          echo "$foreign"
+          exit 1
+        fi
+        echo "every hax crate in $project's resolve graph comes from $hax"
