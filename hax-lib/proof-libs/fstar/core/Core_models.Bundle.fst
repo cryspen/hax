@@ -4784,18 +4784,10 @@ let impl__from__range (#v_T: Type0) : t_RangeBounds t_RangeFull v_T =
   {
     f_start_bound_pre = (fun (self: t_RangeFull) -> true);
     f_start_bound_post = (fun (self: t_RangeFull) (out: t_Bound v_T) -> true);
-    f_start_bound
-    =
-    (fun (self: t_RangeFull) ->
-        let e_r:t_RangeFull = self in
-        Bound_Unbounded <: t_Bound v_T);
+    f_start_bound = (fun (self: t_RangeFull) -> Bound_Unbounded <: t_Bound v_T);
     f_end_bound_pre = (fun (self: t_RangeFull) -> true);
     f_end_bound_post = (fun (self: t_RangeFull) (out: t_Bound v_T) -> true);
-    f_end_bound
-    =
-    fun (self: t_RangeFull) ->
-      let e_r:t_RangeFull = self in
-      Bound_Unbounded <: t_Bound v_T
+    f_end_bound = fun (self: t_RangeFull) -> Bound_Unbounded <: t_Bound v_T
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -4803,18 +4795,10 @@ let impl_1__from__range (#v_T: Type0) : t_RangeBounds (t_RangeFrom v_T) v_T =
   {
     f_start_bound_pre = (fun (self: t_RangeFrom v_T) -> true);
     f_start_bound_post = (fun (self: t_RangeFrom v_T) (out: t_Bound v_T) -> true);
-    f_start_bound
-    =
-    (fun (self: t_RangeFrom v_T) ->
-        let r:t_RangeFrom v_T = self in
-        Bound_Included r.f_start <: t_Bound v_T);
+    f_start_bound = (fun (self: t_RangeFrom v_T) -> Bound_Included self.f_start <: t_Bound v_T);
     f_end_bound_pre = (fun (self: t_RangeFrom v_T) -> true);
     f_end_bound_post = (fun (self: t_RangeFrom v_T) (out: t_Bound v_T) -> true);
-    f_end_bound
-    =
-    fun (self: t_RangeFrom v_T) ->
-      let r:t_RangeFrom v_T = self in
-      Bound_Unbounded <: t_Bound v_T
+    f_end_bound = fun (self: t_RangeFrom v_T) -> Bound_Unbounded <: t_Bound v_T
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -4822,18 +4806,10 @@ let impl_2__from__range (#v_T: Type0) : t_RangeBounds (t_RangeTo v_T) v_T =
   {
     f_start_bound_pre = (fun (self: t_RangeTo v_T) -> true);
     f_start_bound_post = (fun (self: t_RangeTo v_T) (out: t_Bound v_T) -> true);
-    f_start_bound
-    =
-    (fun (self: t_RangeTo v_T) ->
-        let r:t_RangeTo v_T = self in
-        Bound_Unbounded <: t_Bound v_T);
+    f_start_bound = (fun (self: t_RangeTo v_T) -> Bound_Unbounded <: t_Bound v_T);
     f_end_bound_pre = (fun (self: t_RangeTo v_T) -> true);
     f_end_bound_post = (fun (self: t_RangeTo v_T) (out: t_Bound v_T) -> true);
-    f_end_bound
-    =
-    fun (self: t_RangeTo v_T) ->
-      let r:t_RangeTo v_T = self in
-      Bound_Excluded r.f_end <: t_Bound v_T
+    f_end_bound = fun (self: t_RangeTo v_T) -> Bound_Excluded self.f_end <: t_Bound v_T
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -4841,18 +4817,10 @@ let impl_3__from__range (#v_T: Type0) : t_RangeBounds (t_Range v_T) v_T =
   {
     f_start_bound_pre = (fun (self: t_Range v_T) -> true);
     f_start_bound_post = (fun (self: t_Range v_T) (out: t_Bound v_T) -> true);
-    f_start_bound
-    =
-    (fun (self: t_Range v_T) ->
-        let r:t_Range v_T = self in
-        Bound_Included r.f_start <: t_Bound v_T);
+    f_start_bound = (fun (self: t_Range v_T) -> Bound_Included self.f_start <: t_Bound v_T);
     f_end_bound_pre = (fun (self: t_Range v_T) -> true);
     f_end_bound_post = (fun (self: t_Range v_T) (out: t_Bound v_T) -> true);
-    f_end_bound
-    =
-    fun (self: t_Range v_T) ->
-      let r:t_Range v_T = self in
-      Bound_Excluded r.f_end <: t_Bound v_T
+    f_end_bound = fun (self: t_Range v_T) -> Bound_Excluded self.f_end <: t_Bound v_T
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -4860,18 +4828,10 @@ let impl_4__from__range (#v_T: Type0) : t_RangeBounds (t_Bound v_T & t_Bound v_T
   {
     f_start_bound_pre = (fun (self: (t_Bound v_T & t_Bound v_T)) -> true);
     f_start_bound_post = (fun (self: (t_Bound v_T & t_Bound v_T)) (out: t_Bound v_T) -> true);
-    f_start_bound
-    =
-    (fun (self: (t_Bound v_T & t_Bound v_T)) ->
-        let r:(t_Bound v_T & t_Bound v_T) = self in
-        bound_as_ref #v_T r._1);
+    f_start_bound = (fun (self: (t_Bound v_T & t_Bound v_T)) -> bound_as_ref #v_T self._1);
     f_end_bound_pre = (fun (self: (t_Bound v_T & t_Bound v_T)) -> true);
     f_end_bound_post = (fun (self: (t_Bound v_T & t_Bound v_T)) (out: t_Bound v_T) -> true);
-    f_end_bound
-    =
-    fun (self: (t_Bound v_T & t_Bound v_T)) ->
-      let r:(t_Bound v_T & t_Bound v_T) = self in
-      bound_as_ref #v_T r._2
+    f_end_bound = fun (self: (t_Bound v_T & t_Bound v_T)) -> bound_as_ref #v_T self._2
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]

@@ -386,32 +386,45 @@ pub mod range {
         #[hax_lib::requires(true)]
         fn end_bound(&self) -> Bound<&T>;
     }
-    macro_rules! range_bounds_methods {
-        (|$r:ident| $start:expr, $end:expr) => {
-            fn start_bound(&self) -> Bound<&T> {
-                let $r = self;
-                $start
-            }
-            fn end_bound(&self) -> Bound<&T> {
-                let $r = self;
-                $end
-            }
-        };
-    }
     impl<T> RangeBounds<T> for RangeFull {
-        range_bounds_methods!(|_r| Bound::Unbounded, Bound::Unbounded);
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
     }
     impl<T> RangeBounds<T> for RangeFrom<T> {
-        range_bounds_methods!(|r| Bound::Included(&r.start), Bound::Unbounded);
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.start)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
     }
     impl<T> RangeBounds<T> for RangeTo<T> {
-        range_bounds_methods!(|r| Bound::Unbounded, Bound::Excluded(&r.end));
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Unbounded
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Excluded(&self.end)
+        }
     }
     impl<T> RangeBounds<T> for Range<T> {
-        range_bounds_methods!(|r| Bound::Included(&r.start), Bound::Excluded(&r.end));
+        fn start_bound(&self) -> Bound<&T> {
+            Bound::Included(&self.start)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            Bound::Excluded(&self.end)
+        }
     }
     impl<T> RangeBounds<T> for (Bound<T>, Bound<T>) {
-        range_bounds_methods!(|r| bound_as_ref(&r.0), bound_as_ref(&r.1));
+        fn start_bound(&self) -> Bound<&T> {
+            bound_as_ref(&self.0)
+        }
+        fn end_bound(&self) -> Bound<&T> {
+            bound_as_ref(&self.1)
+        }
     }
     // std's `Bound::as_ref`, as a function: an inherent `impl Bound` block
     // would take a positional `impl_N` name that must match real core's.
