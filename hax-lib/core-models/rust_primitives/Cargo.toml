@@ -9,6 +9,8 @@ hax-lib.workspace = true
 
 [dev-dependencies]
 proptest = "1.9.0"
+# Not inherited: the staged `alloc` extraction crate (see the Makefile) resolves
+# this crate's inherited deps against the root hax workspace, which lacks it.
 mutants = "0.0.3"
 
 [lints.rust]
