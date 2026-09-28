@@ -4,9 +4,15 @@ open FStar.Mul
 open Rust_primitives.Arrays
 open Rust_primitives.Integers
 
-// TODO: relate `num_bits` with a notion of bounded integer
-/// Number of bits carried by an integer of type `t`
-type num_bits t = d: nat {d > 0 /\ d <= bits t /\ (signed t ==> d < bits t)}
+/// Number of bits a raw bit-vector view reads from each lane of an array.
+/// A view has no sign semantics: `get_bit` is total over the whole width, so a
+/// view may read every bit of a lane, including the sign bit.
+type lane_bits t = d: nat {d > 0 /\ d <= bits t}
+
+/// Number of magnitude bits of a non-negative integer (see `bounded`). A signed
+/// type spends its top bit on the sign, so it carries one fewer; equivalently,
+/// and without the signedness case split, `pow2 d <= maxint t + 1`.
+type num_bits t = d: lane_bits t {signed t ==> d < bits t}
 
 /// States that `x` is a positive integer that fits in `d` bits
 type bounded #t (x:int_t t) (d:num_bits t) =
@@ -36,14 +42,14 @@ type bit_vec (len: nat) = i:nat {i < len} ^-> bit
 #push-options "--fuel 0 --ifuel 1 --z3rlimit 50"
 let bit_vec_of_int_t_array (#n: inttype) (#len: usize) 
                 (arr: t_Array (int_t n) len)
-                (d: num_bits n): bit_vec (v len * d)
+                (d: lane_bits n): bit_vec (v len * d)
   = on (i: nat {i < v len * d}) 
        (fun i -> get_bit (Seq.index arr (i / d)) (sz (i % d)))
 
 let bit_vec_of_refined_int_t_array (#n: inttype) (#len: usize) 
                 #refinement
                 (arr: t_Array (x: int_t n {refinement x}) len)
-                (d: num_bits n): bit_vec (v len * d)
+                (d: lane_bits n): bit_vec (v len * d)
   = on (i: nat {i < v len * d})
        (fun i -> get_bit (Seq.index arr (i / d)) (sz (i % d)))
 #pop-options
@@ -59,16 +65,16 @@ let bit_vec_of_nat_array (#len: usize)
 #pop-options
 
 /// Transforms a bit vector to an integer
-val bit_vec_to_int_t #t (d: num_bits t) (bv: bit_vec d): int_t t
+val bit_vec_to_int_t #t (d: lane_bits t) (bv: bit_vec d): int_t t
 
 /// `bit_vec_to_int_t` and `get_bit` are (modulo usize) inverse
 val bit_vec_to_int_t_lemma
-    #t (d: num_bits t) (bv: bit_vec d)
+    #t (d: lane_bits t) (bv: bit_vec d)
     i
   : Lemma (get_bit (bit_vec_to_int_t d bv) (sz i) == bv i)
 
 /// Transforms a bit vector into an array of integers
-val bit_vec_to_int_t_array #t (#len: usize) (d: num_bits t) (bv: bit_vec (v len * d))
+val bit_vec_to_int_t_array #t (#len: usize) (d: lane_bits t) (bv: bit_vec (v len * d))
   : Pure (t_Array (int_t t) len)
          (requires True)
          (ensures fun r -> (forall i. bit_vec_of_int_t_array r d i == bv i))
