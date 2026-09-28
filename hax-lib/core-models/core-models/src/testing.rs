@@ -184,6 +184,8 @@ pub enum ModelRange {
     From(crate::ops::range::RangeFrom<usize>),
     To(crate::ops::range::RangeTo<usize>),
     Full(crate::ops::range::RangeFull),
+    Inclusive(crate::ops::range::RangeInclusive<usize>),
+    ToInclusive(crate::ops::range::RangeToInclusive<usize>),
     Pair(
         (
             crate::ops::range::Bound<usize>,
@@ -199,6 +201,8 @@ macro_rules! on_model_range {
             ModelRange::From($r) => $body,
             ModelRange::To($r) => $body,
             ModelRange::Full($r) => $body,
+            ModelRange::Inclusive($r) => $body,
+            ModelRange::ToInclusive($r) => $body,
             ModelRange::Pair($r) => $body,
         }
     };
@@ -247,7 +251,28 @@ pub fn range_forms(
         (ModelRange::From(m::RangeFrom { start }), bounds(start..)),
         (ModelRange::To(m::RangeTo { end }), bounds(..end)),
         (ModelRange::Full(m::RangeFull), bounds(..)),
+        (
+            ModelRange::Inclusive(m::RangeInclusive::new(start, end)),
+            bounds(start..=end),
+        ),
+        (
+            ModelRange::ToInclusive(m::RangeToInclusive { end }),
+            bounds(..=end),
+        ),
     ];
+    // Iterating to the end leaves `start == end` with `exhausted` set.
+    if start <= end {
+        let mut exhausted = start..=end;
+        exhausted.nth(end - start);
+        forms.push((
+            ModelRange::Inclusive(m::RangeInclusive {
+                lo: end,
+                hi: end,
+                exhausted: true,
+            }),
+            bounds(exhausted),
+        ));
+    }
     for ks in 0..3 {
         for ke in 0..3 {
             let (model_start, std_start) = bound(ks, start);
@@ -265,4 +290,34 @@ pub fn range_forms(
 pub fn range_endpoint() -> impl proptest::strategy::Strategy<Value = usize> {
     use proptest::prelude::*;
     prop_oneof![0usize..=10, Just(usize::MAX - 1), Just(usize::MAX)]
+}
+
+/// Compares like its `u8`, but panics if either side is `u8::MAX`.
+pub struct Tripwire(pub u8);
+
+impl Tripwire {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        assert!(self.0 != u8::MAX && other.0 != u8::MAX, "tripwire compared");
+        self.0.cmp(&other.0)
+    }
+}
+impl std::cmp::PartialEq for Tripwire {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other).is_eq()
+    }
+}
+impl std::cmp::PartialOrd for Tripwire {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl crate::cmp::PartialEq<Tripwire> for Tripwire {
+    fn eq(&self, other: &Self) -> bool {
+        self.cmp(other).is_eq()
+    }
+}
+impl crate::cmp::PartialOrd<Tripwire> for Tripwire {
+    fn partial_cmp(&self, other: &Self) -> crate::option::Option<crate::cmp::Ordering> {
+        crate::option::Option::Some(self.cmp(other).inject())
+    }
 }

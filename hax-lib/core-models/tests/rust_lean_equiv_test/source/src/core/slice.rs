@@ -409,6 +409,12 @@ pub fn test_binary_search_unsorted_present_but_missed() -> bool {
 }
 
 #[rust_lean_test]
+pub fn test_range_inclusive_accessors() -> bool {
+    let r = 1usize..=3;
+    *r.start() == 1 && *r.end() == 3
+}
+
+#[rust_lean_test]
 pub fn test_copy_within() -> bool {
     let mut a: [u8; 4] = [1, 2, 3, 4];
     let s: &mut [u8] = &mut a;
@@ -423,6 +429,16 @@ pub fn test_copy_within_overlapping() -> bool {
     let s: &mut [u8] = &mut a;
     s.copy_within(0..3, 2);
     a == [1u8, 2, 1, 2, 3]
+}
+
+// Each call below changes the array, so a no-op or off-by-one model fails.
+#[rust_lean_test]
+pub fn test_copy_within_inclusive_ranges() -> bool {
+    let mut a: [u8; 5] = [1, 2, 3, 4, 5];
+    let s: &mut [u8] = &mut a;
+    s.copy_within(3..=4, 0);
+    s.copy_within(..=1, 2);
+    a == [4u8, 5, 4, 5, 5]
 }
 
 #[rust_lean_test]
@@ -441,6 +457,14 @@ pub fn test_copy_within_dest_past_end() -> bool {
     let s: &mut [u8] = &mut a;
     s.copy_within(0..2, 3);
     a == [1u8, 2, 3, 1]
+}
+
+#[rust_lean_test(panics)]
+pub fn test_copy_within_src_past_end() -> bool {
+    let mut a: [u8; 4] = [1, 2, 3, 4];
+    let s: &mut [u8] = &mut a;
+    s.copy_within(3..=4, 0);
+    a == [4u8, 2, 3, 4]
 }
 
 #[rust_lean_test]

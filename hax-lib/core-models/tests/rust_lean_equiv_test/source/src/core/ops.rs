@@ -1,10 +1,10 @@
 //! Equivalence tests for `core::ops::*`.
 //!
-//! Mirrors the proptest block in `core-models/src/core/ops.rs`, which
-//! has exactly two cases:
+//! Mirrors the proptest block in `core-models/src/core/ops.rs`:
 //!   - `arith::AddAssign::add_assign` on `u8` (with `x, y` constrained
-//!     to `0..128` so the sum cannot overflow), and
-//!   - `arith::SubAssign::sub_assign` on `u8` (when `x >= y`).
+//!     to `0..128` so the sum cannot overflow),
+//!   - `arith::SubAssign::sub_assign` on `u8` (when `x >= y`), and
+//!   - `RangeInclusive`'s inherent methods and `RangeBounds::contains`.
 //!
 //! On the Rust side we use the `+=` / `-=` operators (which dispatch
 //! through `AddAssign` / `SubAssign`); on the Lean side Aeneas
@@ -94,4 +94,39 @@ pub fn test_sub_assign_u8_max_minus_one() -> bool {
     let mut x: u8 = u8::MAX;
     x -= 1u8;
     x == 254u8
+}
+
+// =============================================================================
+// Ranges
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_range_inclusive_into_inner() -> bool {
+    (2u8..=5).into_inner() == (2u8, 5u8)
+}
+
+#[rust_lean_test]
+pub fn test_range_inclusive_contains() -> bool {
+    let r = 2u8..=5;
+    r.contains(&2) && r.contains(&5) && !r.contains(&1) && !r.contains(&6)
+}
+
+#[rust_lean_test]
+pub fn test_range_inclusive_is_empty() -> bool {
+    !(2u8..=2).is_empty() && (3u8..=2).is_empty()
+}
+
+fn contains_via_bounds<R: core::ops::RangeBounds<u8>>(r: R, x: u8) -> bool {
+    r.contains(&x)
+}
+
+#[rust_lean_test]
+pub fn test_range_bounds_contains() -> bool {
+    use core::ops::Bound;
+    contains_via_bounds(2u8..5, 4)
+        && !contains_via_bounds(2u8..5, 5)
+        && contains_via_bounds(..=5u8, 5)
+        && !contains_via_bounds(3u8.., 2)
+        && contains_via_bounds(.., 0)
+        && !contains_via_bounds((Bound::Excluded(2u8), Bound::Unbounded), 2)
 }
